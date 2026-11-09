@@ -922,18 +922,18 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
                      " (gas + solid) + remaining DECLARED feed commitment"
                      " A u c_in (endTime - t); the raffinate leaves as a"
                      " continuous external-outlet ledger record\n";
-        if (!ergun_) std::cout << "  [fixedBedAdsorber '" << name_ << "'] KNOWN declared"
-                     " error of the constant-(u, P, T) closure: the outlet"
-                     " carrier flux is fabricated at exactly the net uptake"
-                     " rate (the hidden roll-up).  The campaign material"
-                     " balance WILL SHOW this fabrication as a real residual"
-                     " on the carrier -- a named error must bite the"
-                     " equation that owns it, never be discounted out"
-                     " (forum #119).  Pinned as carrier_fabricated_mol and"
-                     " physical_mass_closure_rel; the tight telescopic"
-                     " model_closure_* columns test the DISCRETISATION,"
-                     " not physical conservation.  A4's velocity update"
-                     " (Ergun) removes the error physically.\n";
+        if (!ergun_) std::cout << "  [fixedBedAdsorber '" << name_ << "'] carrier"
+                     " make-up stream: the constant-(u, P, T) closure ASSUMES"
+                     " the outlet carrier flux stays constant while the bed"
+                     " removes adsorbate, which implies carrier nobody fed"
+                     " (at exactly the net uptake rate).  That matter is"
+                     " booked as a NAMED INLET of the bed, `carrierMakeUp`,"
+                     " one ledger record carrying exactly it -- so the"
+                     " campaign mass and element balances close and the"
+                     " stream is the explanation.  Its size is the"
+                     " assumption's size: carrier_fabricated_mol and"
+                     " carrier_makeup_rel (fraction of the matter fed);"
+                     " `flowModel ergun` needs no such stream.\n";
         if (ergun_)
             std::cout << "  [fixedBedAdsorber '" << name_ << "'] energy (A4):"
                          " adsorption duty LEDGERED -- Q = Sum dH_ads*dn_ads"
@@ -1778,7 +1778,7 @@ sVector FixedBedAdsorber::materialInventory() const
     // inventory reports REAL matter, so the campaign balance shows the
     // fabrication as a genuine residual on the carrier -- the named error
     // bites the equation that owns it.  Its size is pinned as the
-    // carrier_fabricated_mol KPI and as physical_mass_closure_rel; A4's
+    // carrier_fabricated_mol KPI and as carrier_makeup_rel; A4's
     // velocity update (Ergun) removes it physically.
     {
         scalar cSum = 0.0;
@@ -1790,15 +1790,6 @@ sVector FixedBedAdsorber::materialInventory() const
         inv[carrierIdx_] = (holdup + feedRemaining) / 1000.0;
     }
     return inv;
-}
-
-std::map<std::string, scalar> FixedBedAdsorber::declaredMaterialResidual() const
-{
-    if (ergun_) return {};
-    // + = fabricated (appears in the outlet without having been fed), in
-    // kmol of the carrier species -- the exact identity d(fab)/dt =
-    // rho_b A dz Sum dq/dt of the declared constant-(u, P, T) closure.
-    return { { compNames_[carrierIdx_], carrierFabricated_() / 1000.0 } };
 }
 
 BatchState FixedBedAdsorber::takeContinuousDischarge(scalar tNow)
@@ -1916,7 +1907,7 @@ FixedBedAdsorber::energyRecords(scalar tEnd)
 scalar FixedBedAdsorber::vesselEnthalpy(bool& ok, std::string& why) const
 {
     //  The A3 constant-(u, P, T) closure FABRICATES carrier at the net
-    //  uptake rate (declaredMaterialResidual).  Matter and its enthalpy
+    //  uptake rate (the carrierMakeUp stream).  Matter and its enthalpy
     //  cannot be made to close by pricing harder -- the error is the flow
     //  model's, and the honest verdict is the named refusal until the case
     //  declares the A4 velocity update.
@@ -2043,8 +2034,8 @@ std::string FixedBedAdsorber::energyLedgerGap() const
     //  makes the physical energy balance wrong by construction, and a
     //  verdict on it would be decorative.
     if (ergun_) return "";
-    return "constant-(u,P,T) closure: fabricated carrier (see"
-           " declaredMaterialResidual) makes the physical energy balance"
+    return "constant-(u,P,T) closure: fabricated carrier (the"
+           " carrierMakeUp stream books its matter, not its enthalpy) makes the physical energy balance"
            " unclaimable -- declare `flowModel ergun` (A4) to close it";
 }
 
@@ -2418,6 +2409,39 @@ FixedBedAdsorber::takeDatumAmendments()
 {
     std::vector<DatumAmendment> out;
     out.swap(pendingAmendments_);
+
+    //  THE CARRIER MAKE-UP STREAM (C258, 2026-11-09).  The constant-(u, P, T)
+    //  closure ASSUMES the carrier flux stays constant while the bed removes
+    //  adsorbate, so the outlet carries carrier nobody fed: exactly
+    //  d(fab)/dt = rho_b A dz Sum dq/dt (carrierFabricated_).  A modelling
+    //  assumption that creates matter is not allowed to show as a violated
+    //  balance: it is booked as its own NAMED INLET of the bed
+    //  (`carrierMakeUp`), one accumulating ledger record carrying exactly
+    //  that mass, so mass and element closures hold and the stream is the
+    //  explanation.  net desorption (a purge) books the same stream the
+    //  other way.  The Ergun closure fabricates nothing and books nothing.
+    if (!ergun_)
+    {
+        const scalar fab_kmol = carrierFabricated_() / 1000.0;
+        const scalar d = fab_kmol - carrierBooked_kmol_;
+        carrierBooked_kmol_ = fab_kmol;
+        if (d != 0.0)
+        {
+            DatumAmendment am;
+            am.into       = d > 0.0;
+            am.kind       = "carrierMakeUp";
+            am.accumulate = true;
+            am.named      = true;
+            am.why        = "carrier implied by the constant-(u, P, T)"
+                            " assumption";
+            am.pkg.n.assign(state_.n.size(), 0.0);
+            am.pkg.n[carrierIdx_] = std::abs(d);
+            am.pkg.T  = T_;
+            am.pkg.P  = P_;
+            am.pkg.vf = 1.0;
+            out.push_back(std::move(am));
+        }
+    }
     return out;
 }
 
@@ -2441,6 +2465,8 @@ FixedBedAdsorber::trajectoryExtras() const
         const scalar cOutCar = carrierCell_(N_ - 1);
         ex.emplace_back("c_out_" + compNames_[carrierIdx_], cOutCar);
         ex.emplace_back("y_out_" + compNames_[carrierIdx_], cOutCar / cTot_);
+        //  the carrierMakeUp stream, cumulative, per time (C258)
+        ex.emplace_back("carrier_makeup_mol", carrierFabricated_());
     }
     for (std::size_t a = 0; a < nAds; ++a)
     {
@@ -2476,7 +2502,7 @@ FixedBedAdsorber::trajectoryExtras() const
         // MODEL-EQUATION closure (telescopic, forum #119): this tests the
         // DISCRETISATION identity of the solved equations, not physical
         // conservation -- the physical residual of the constant-(u, P, T)
-        // assumption lives in physical_mass_closure_rel, where it BITES.
+        // assumption lives in carrier_makeup_rel, where it BITES.
         ex.emplace_back("model_closure_" + compNames_[adsIdx_[a]],
                         std::abs(mIn + hold0_[a] - holdup - mOut) / den);
     }
@@ -2548,7 +2574,7 @@ std::map<std::string, scalar> FixedBedAdsorber::kpis() const
         const scalar uInt = uIntegral_
                           + u_ * std::max(tNow_ - uSegStart_, scalar(0.0));
         const scalar fedTot = A_ * cTot_ * uInt;
-        k["physical_mass_closure_rel"] =
+        k["carrier_makeup_rel"] =
             carrierFabricated_() / std::max(fedTot, scalar(1.0e-30));
     }
     for (std::size_t a = 0; a < nAds; ++a)

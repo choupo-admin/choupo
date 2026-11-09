@@ -163,7 +163,7 @@ The run must reproduce these to the golden tolerances -- an independent analytic
 \begin{tutnarrative}
 CO2/He breakthrough on a zeolite-13X bed.
 
-THE A3 anchor case (spec 2026-07-12): a 0.5 m isothermal fixed bed of zeolite 13X, fed 15\% CO2 in helium at u = 0.05 m/s superficial, 1 bar, 298 K. Helium carries NO isotherm record on 13X $\to$ announced inert CARRIER, transported but never adsorbed, closed by difference from the constant c\_tot = P/(RT). At 15\% CO2 this is NOT a dilute approximation: the constant-(u, P, T) closure fabricates He at the net uptake rate and the campaign material balance SHOWS that residual (KPIs carrier\_fabricated\_mol, physical\_mass\_closure\_rel) -- the named error bites, by design (forum \#119); the genuinely clean transport anchor is batch14. The engine announces, BEFORE integrating, where the front must arrive:
+THE A3 anchor case (spec 2026-07-12): a 0.5 m isothermal fixed bed of zeolite 13X, fed 15\% CO2 in helium at u = 0.05 m/s superficial, 1 bar, 298 K. Helium carries NO isotherm record on 13X $\to$ announced inert CARRIER, transported but never adsorbed, closed by difference from the constant c\_tot = P/(RT). At 15\% CO2 this is NOT a dilute approximation: the constant-(u, P, T) closure implies He at the net uptake rate, and the campaign books it as a NAMED INLET STREAM of the bed, `carrierMakeUp` ("carrier implied by the constant-(u, P, T) assumption"), so mass and element balances close and the stream is the explanation; its size is the assumption's size (KPIs carrier\_fabricated\_mol, carrier\_makeup\_rel); the genuinely clean transport anchor is batch14. The engine announces, BEFORE integrating, where the front must arrive:
 
 q$\ast$(c\_in) = 5$\ast$9$\ast$0.15/(1 + 9$\ast$0.15) = 2.872340426 mol/kg R\_f = eps + rho\_b q$\ast$ / c\_in = 304.0512509 t\_st = (L/u) R\_f = 3040.512509 s u\_sh = u/R\_f = 1.644459605e-4 m/s
 
@@ -171,7 +171,7 @@ Independent gates this run must reproduce (anchors\_a3.py, FV N = 100):
 
 t\_b(5\%) = 2890.669098 s t\_50 = 3036.448293 s t\_b(95\%) = 3204.166058 s INT(1 - c\_out/c\_in)dt = t\_st to 2.2e-10 (telescopic FV conservation) ledger mass closure <= 1e-10 (IN/OUT integrated as rows of the SAME ODE)
 
-Numerics: conservative FV, nCells = 100 DECLARED (do the 25/50/100/200 mesh study -- batch15 publishes it: first-order upwind, observed order \textasciitilde{}1.03-1.05), Danckwerts inlet as the imposed face flux u$\ast$c\_in, outlet dc/dz = 0. u, P, T are DECLARED constants of this phase, and the price is said OUT LOUD: the real velocity drops \textasciitilde{}15\% across the uptake zone, so the constant-u closure FABRICATES carrier (He) at exactly the net uptake rate (9.19 mol here) -- announced in the run header, pinned as the KPI carrier\_fabricated\_mol, discounted in the campaign inventory; Ergun and the energy balance land in A4 (the energy gap is NAMED).
+Numerics: conservative FV, nCells = 100 DECLARED (do the 25/50/100/200 mesh study -- batch15 publishes it: first-order upwind, observed order \textasciitilde{}1.03-1.05), Danckwerts inlet as the imposed face flux u$\ast$c\_in, outlet dc/dz = 0. u, P, T are DECLARED constants of this phase, and the price is said OUT LOUD: the real velocity drops \textasciitilde{}15\% across the uptake zone, so the constant-u closure FABRICATES carrier (He) at exactly the net uptake rate (9.19 mol here) -- announced in the run header, pinned as the KPI carrier\_fabricated\_mol and booked as the `carrierMakeUp` inlet stream of the campaign ledger; Ergun (`flowModel ergun`) needs no such stream, and the energy balance of this closure stays UNAVAILABLE (named).
 
 Log: run header prints the hypotheses, the derived rho\_p, Pe = 250, the Gershgorin step bound term by term and the stiffness verdict; profiles land in <t>/bed.profile every 100 s; trajectory.csv carries c\_out, y\_out, qbar and the per-species ledger closure.
 
@@ -188,10 +188,10 @@ Log: run header prints the hypotheses, the derived rho\_p, Pe = 250, the Gershgo
 \goldrow{kpi}{bed}{mass\_closure\_CO2}{8.94231742202e-15}
 \goldrow{kpi}{bed}{n\_CO2\_final}{1.21079552014e-05}
 \goldrow{kpi}{bed}{n\_He\_final}{6.86117461711e-05}
-\goldrow{kpi}{bed}{physical\_mass\_closure\_rel}{0.108446875314}
 \goldrow{kpi}{bed}{qbar\_CO2\_final}{2.87234042488}
 \goldrow{kpi}{bed}{retention\_factor\_CO2}{304.051250948}
-\goldmore{34}
+\goldrow{kpi}{bed}{t\_50\_CO2}{3036.44839047}
+\goldmore{41}
 \end{tutgolden}
 
 \clearpage
@@ -266,10 +266,10 @@ This case pins the N = 25 member; its numbers are DELIBERATELY the worst of the 
 \goldrow{kpi}{bed}{mass\_closure\_CO2}{7.40535661511e-15}
 \goldrow{kpi}{bed}{n\_CO2\_final}{1.21079316034e-05}
 \goldrow{kpi}{bed}{n\_He\_final}{6.86117697691e-05}
-\goldrow{kpi}{bed}{physical\_mass\_closure\_rel}{0.108446766597}
 \goldrow{kpi}{bed}{qbar\_CO2\_final}{2.87233754538}
 \goldrow{kpi}{bed}{retention\_factor\_CO2}{304.051250948}
-\goldmore{34}
+\goldrow{kpi}{bed}{t\_50\_CO2}{3041.40641271}
+\goldmore{41}
 \end{tutgolden}
 
 \clearpage
@@ -286,7 +286,7 @@ This case pins the N = 25 member; its numbers are DELIBERATELY the worst of the 
 \goldrow{kpi}{bed}{P\_last\_cell\_Pa}{99893.8796441}
 \goldrow{kpi}{bed}{P\_out\_boundary\_Pa}{99893.3459257}
 \goldrow{kpi}{bed}{carrier\_fabricated\_mol}{0}
-\goldrow{kpi}{bed}{physical\_mass\_closure\_rel}{0}
+\goldrow{kpi}{bed}{carrier\_makeup\_rel}{0}
 \goldrow{kpi}{campaign}{mass\_closure\_rel}{0}
 \goldrow{kpi}{bed}{E\_adsorption\_seg0\_kJ}{0}
 \goldrow{kpi}{bed}{E\_adsorption\_total\_kJ}{0}
@@ -309,20 +309,20 @@ This case pins the N = 25 member; its numbers are DELIBERATELY the worst of the 
 \tutwhat{A4 F2: 400 ppm uptake, Ergun must approach the A3 constant-velocity limit}
 \begin{tutgolden}
 \goldrow{kpi}{campaign}{element\_C\_closure\_rel}{5.32078747864e-13}
-\goldrow{kpi}{campaign}{element\_He\_closure\_rel}{0.000139137956493}
+\goldrow{kpi}{campaign}{element\_He\_closure\_rel}{2.64689939494e-13}
 \goldrow{kpi}{campaign}{element\_O\_closure\_rel}{5.32078747864e-13}
-\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{0.000139137956493}
-\goldrow{kpi}{campaign}{element\_worst\_closure\_vs\_declared\_rel}{5.32078747864e-13}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{5.33338602831e-13}
 \goldrow{kpi}{campaign}{energy\_balance\_available}{0}
 \goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
 \goldrow{kpi}{campaign}{energy\_records\_valid}{2}
-\goldrow{kpi}{campaign}{mass\_closure\_rel}{0.000138528772162}
+\goldrow{kpi}{campaign}{mass\_closure\_rel}{2.65824582384e-13}
 \goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0.161636709221}
 \goldrow{kpi}{campaign}{mass\_kg\_final}{0.000558961907879}
 \goldrow{kpi}{campaign}{mass\_kg\_initial}{0.162173202362}
-\goldrow{kpi}{campaign}{mass\_residual\_kg}{2.24687671715e-05}
+\goldrow{kpi}{campaign}{mass\_residual\_kg}{4.31155965422e-14}
 \goldrow{kpi}{campaign}{moles\_kmol\_external\_out}{0.0403339312462}
-\goldmore{63}
+\goldrow{kpi}{campaign}{moles\_kmol\_final}{2.73636608673e-05}
+\goldmore{72}
 \end{tutgolden}
 
 \clearpage
@@ -390,11 +390,11 @@ The carrier-fabrication caveat of the constant-(u, P, T) closure applies unchang
 \goldrow{kpi}{bed}{mass\_closure\_CO2}{1.23888355951e-14}
 \goldrow{kpi}{bed}{n\_CO2\_final}{3.21638319252e-07}
 \goldrow{kpi}{bed}{n\_He\_final}{8.03980630532e-05}
-\goldrow{kpi}{bed}{physical\_mass\_closure\_rel}{0.00289489594687}
 \goldrow{kpi}{bed}{qbar\_CO2\_final}{0.164302830236}
 \goldrow{kpi}{bed}{t\_50\_CO2}{3036.44839075}
 \goldrow{kpi}{bed}{t\_breakthrough\_5pct\_CO2}{2890.66919752}
-\goldmore{42}
+\goldrow{kpi}{bed}{t\_breakthrough\_95pct\_CO2}{3204.16573565}
+\goldmore{49}
 \end{tutgolden}
 
 \clearpage
@@ -912,11 +912,7 @@ THE HAND ESTIMATE, computed from this case's own curated records (water Antoine 
 
 air water activity p\_v = P Y/(Y + Mv/Mc) = 1551 Pa a\_w = p\_v / Psat(333.15 K) = 0.0774 GAB equilibrium K a\_w = 0.0743 X\_eq = Xm C Ka /((1-Ka)(1-Ka+C Ka)) = 0.01580 kg/kg wet bulb (Lewis = 1) T\_wb = 300.53 K (27.4 C, a 32.6 K depression) driving force Y\_sat(T\_wb) - Y = 0.014011 kg/kg constant-rate flux R\_c = k\_Y dY = 0.05 $\ast$ 0.014011 = 7.0057e-4 kg/(m2 s) R\_c A = 3.5028e-4 kg/s latent load R\_c A lambda(T\_wb) = 0.8645 kW (the AIR's, not the campaign's -- KPI only, never ledgered) break time t\_c = m\_s (X\_0 - X\_c)/(R\_c A) = 1027.7 s falling-rate constant tau = m\_s (X\_c - X\_eq)/(R\_c A) = 595.0 s end of run X(3000 s) = X\_eq + (X\_c - X\_eq) exp(-(3000-t\_c)/tau) = 0.019584 kg/kg
 
-What to look at in the output: trajectory.csv columns dryer.X\_kg\_kg and dryer.R\_kg\_m2\_s: the drying curve and the rate curve, engine columns, not a post-processing. R is FLAT at 7.0057e-4 until X falls through X\_c = 0.12, then decays linearly in (X - X\_eq) -- the textbook break, visible as a corner. The falling rate is DECLARED as the characteristic drying curve f = Phi\textasciicircum{}n with n = 1, which IS the linear law; the drying EduTool varies n (n < 1 reaches X\_eq in finite time, n > 1 an algebraic tail slower than the exponential), and dryer02\_characteristic\_curves runs four shapes side by side. the KPI t\_critical is OBSERVED (the interpolated crossing between two accepted states), not the analytic 1027.7 s above; they agree because dX/dt is exactly constant on that leg. THE CAMPAIGN MASS BALANCE DOES NOT CLOSE, AND IT SHOULD NOT. Look at it, because it is the first thing an examiner will point at: it reports 2.600000 kg in against 2.039168 kg out, a 21.6 \% shortfall. That shortfall is the DRIED WATER. It left the solid and went into the air -- and the air here is a DECLARED ENVIRONMENT (a temperature and a humidity), not a stream this campaign owns, so there is no vessel on the books for the water to arrive in. The vessel's inventory genuinely shrinks.
-
-What makes that a stated model boundary rather than a leak is that the unit PREDICTS the gap independently, from its own evaporation history, and the campaign checks the two against each other: the observed shortfall matches the declared prediction to 7e-17 (element\_worst\_closure\_vs\_declared\_rel). The raw numbers are never discounted -- 21.6 \% is what the balance says and what the balance reports. If this dryer ever lost matter for a REAL reason, that cross-check is what would move, and it is pinned in `expected`.
-
-So the honest sentence to give at a viva is: "the balance is open at the air boundary by construction, the opening is the 0.5608 kg of water evaporated, and the model reproduces that number from the other side." Closing it for real means making the drying air a ledgered stream, which this unit deliberately does not do.
+What to look at in the output: trajectory.csv columns dryer.X\_kg\_kg and dryer.R\_kg\_m2\_s: the drying curve and the rate curve, engine columns, not a post-processing. R is FLAT at 7.0057e-4 until X falls through X\_c = 0.12, then decays linearly in (X - X\_eq) -- the textbook break, visible as a corner. The falling rate is DECLARED as the characteristic drying curve f = Phi\textasciicircum{}n with n = 1, which IS the linear law; the drying EduTool varies n (n < 1 reaches X\_eq in finite time, n > 1 an algebraic tail slower than the exponential), and dryer02\_characteristic\_curves runs four shapes side by side. the KPI t\_critical is OBSERVED (the interpolated crossing between two accepted states), not the analytic 1027.7 s above; they agree because dX/dt is exactly constant on that leg. THE CAMPAIGN MASS BALANCE CLOSES BECAUSE THE DRIED WATER IS AN OUTLET. The solid is charged with 2.600000 kg and ends with 2.039168 kg; the 0.560832 kg of difference is the DRIED WATER. It left the solid and went into the air, and the campaign books it as an external OUTLET STREAM of the dryer (the ledger record `dryer $\to$ (external boundary)`, "evaporated water leaving the solid into the drying air"): initial = final + external out, mass and element closure at round-off. The air stays a DECLARED ENVIRONMENT (a temperature and a humidity, not a vessel this campaign owns), but matter crossing the campaign boundary is a stream whatever receives it. Until 2026-11-09 this unit left the water off the books and the balance read a 21.6 \% shortfall that only the log explained; a violated balance on screen is a defect, so it is a stream now (DEV.md 4c C258).
 
 the campaign energy balance is UNAVAILABLE, and says why in one sentence: the drying heat comes from air this campaign never owned. The number is not hidden -- it is the latentDuty\_kW KPI.
 
@@ -925,20 +921,20 @@ Method hypotheses, each announced at run time: Lewis = 1 in the adiabatic-satura
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{campaign}{element\_C\_closure\_rel}{0}
-\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{0.319043490708}
-\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{0.319043490708}
-\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{0.319043490708}
-\goldrow{kpi}{campaign}{element\_worst\_closure\_vs\_declared\_rel}{7.11118003994e-17}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{0}
 \goldrow{kpi}{campaign}{energy\_balance\_available}{0}
 \goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
 \goldrow{kpi}{campaign}{energy\_records\_valid}{0}
-\goldrow{kpi}{campaign}{mass\_closure\_rel}{0.215704585481}
-\goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0}
+\goldrow{kpi}{campaign}{mass\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0.560831925217}
 \goldrow{kpi}{campaign}{mass\_kg\_final}{2.03916808853}
 \goldrow{kpi}{campaign}{mass\_kg\_initial}{2.60000001375}
-\goldrow{kpi}{campaign}{mass\_residual\_kg}{0.560831925217}
-\goldrow{kpi}{campaign}{moles\_kmol\_external\_out}{0}
-\goldmore{21}
+\goldrow{kpi}{campaign}{mass\_residual\_kg}{0}
+\goldrow{kpi}{campaign}{moles\_kmol\_external\_out}{0.0311313863568}
+\goldrow{kpi}{campaign}{moles\_kmol\_final}{0.00801707164323}
+\goldmore{23}
 \end{tutgolden}
 
 \clearpage
@@ -972,20 +968,20 @@ EVERY CURVE HERE IS HYPOTHETICAL. No measured characteristic curve of sucrose is
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{campaign}{element\_C\_closure\_rel}{0}
-\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{0.30993864697}
-\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{0.30993864697}
-\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{0.30993864697}
-\goldrow{kpi}{campaign}{element\_worst\_closure\_vs\_declared\_rel}{7.11118003994e-17}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{8.24896884633e-15}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{8.24896884633e-15}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{8.24896884633e-15}
 \goldrow{kpi}{campaign}{energy\_balance\_available}{0}
 \goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
 \goldrow{kpi}{campaign}{energy\_records\_valid}{0}
-\goldrow{kpi}{campaign}{mass\_closure\_rel}{0.209548821137}
-\goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0}
+\goldrow{kpi}{campaign}{mass\_closure\_rel}{5.4657133231e-15}
+\goldrow{kpi}{campaign}{mass\_kg\_external\_out}{2.17930775135}
 \goldrow{kpi}{campaign}{mass\_kg\_final}{8.22069230365}
 \goldrow{kpi}{campaign}{mass\_kg\_initial}{10.400000055}
-\goldrow{kpi}{campaign}{mass\_residual\_kg}{2.17930775135}
-\goldrow{kpi}{campaign}{moles\_kmol\_external\_out}{0}
-\goldmore{69}
+\goldrow{kpi}{campaign}{mass\_residual\_kg}{5.68434188608e-14}
+\goldrow{kpi}{campaign}{moles\_kmol\_external\_out}{0.120971842984}
+\goldrow{kpi}{campaign}{moles\_kmol\_final}{0.0356219890164}
+\goldmore{80}
 \end{tutgolden}
 
 \subsection{electrodialysis}

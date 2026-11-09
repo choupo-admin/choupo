@@ -1121,6 +1121,8 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                << ", \"from\": " << esc(tr.from)
                << ", \"to\": "   << esc(tr.to)
                << ", \"kind\": " << esc(tr.kind)
+               << (tr.why.empty() ? std::string()
+                                  : ", \"why\": " + esc(tr.why))
                << ", \"dn\": {";
             bool first = true;
             for (const auto& [c, v] : tr.dn)

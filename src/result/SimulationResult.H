@@ -297,6 +297,10 @@ struct SimulationResult
         std::string from, to;                    // vessels; to may be an
                                                  // "(external boundary)" role
         std::string kind;                        // discrete|continuous|external
+        std::string why;                         // the engine's own one-line
+                                                 // reason this stream exists
+                                                 // (named streams, C258);
+                                                 // empty for plain transfers
         std::map<std::string, scalar> dn;        // kmol moved, per component
         scalar      H_kJ    = 0.0;               // integrated transported enthalpy
         bool        H_valid = false;

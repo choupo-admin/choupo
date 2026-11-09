@@ -235,6 +235,7 @@ void BatchDryer::initialise(const DictPtr&       unitDict,
         throw std::runtime_error(who + ": the dry-solid charge is zero -- X"
             " is moisture per kg DRY SOLID and has no meaning without one");
     nWater0_ = state_.n[iWater_];                                  // kmol
+    nBooked_ = 0.0;
     X_0_     = nWater0_ * Mv / m_solid_;
 
     // -----------------------------------------------------------------
@@ -496,15 +497,33 @@ void BatchDryer::noteTimeAdvanced(scalar t)
 // -----------------------------------------------------------------------
 //  Ledgers.
 // -----------------------------------------------------------------------
-std::map<std::string, scalar> BatchDryer::declaredMaterialResidual() const
+BatchState BatchDryer::takeContinuousDischarge(scalar /*tNow*/)
 {
-    //  Negative = matter this declared closure DESTROYS by construction:
-    //  the evaporated moisture left across the declared air boundary, which
-    //  is outside the campaign.  The campaign's raw numbers stay raw; this
-    //  is the independent cross-check that separates "declared, quantified
-    //  model boundary" from "unexplained leak".
-    const scalar evaporated_kmol = nWater0_ - state_.n[iWater_];
-    return { { thermo_->comp(iWater_).name(), -evaporated_kmol } };
+    //  THE EVAPORATED WATER IS AN OUTLET STREAM OF THE CAMPAIGN (C258,
+    //  2026-11-09).  It leaves the solid into the drying air, so it is
+    //  matter crossing the campaign boundary -- the physics, not an
+    //  assumption -- and the driver books it as an unrouted external
+    //  outlet (no `dischargeTo` is declared) every accepted step.  Until
+    //  then the campaign ledger saw 2.60 kg charged and 2.04 kg left with
+    //  no outlet recorded and read 0.56 kg destroyed (dryer01: mass closure
+    //  0.216, element 0.319), a violated balance that only the log
+    //  explained.  The package is the water VAPOUR at the solid's own T
+    //  and P: its enthalpy is the air's affair and the campaign energy
+    //  claim stays UNAVAILABLE (energyLedgerGap).
+    BatchState out;
+    out.n.assign(state_.n.size(), 0.0);
+    out.T  = state_.T;
+    out.P  = state_.P;
+    out.V  = 0.0;
+    out.vf = 1.0;
+    const scalar evaporated = nWater0_ - state_.n[iWater_];
+    const scalar d = evaporated - nBooked_;
+    if (d > 0.0)
+    {
+        out.n[iWater_] = d;
+        nBooked_ = evaporated;
+    }
+    return out;
 }
 
 scalar BatchDryer::vesselEnthalpy(bool& ok, std::string& why) const

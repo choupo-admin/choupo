@@ -937,6 +937,7 @@ if (flowsheetDict->found("cycle"))
             tr.to   = "(external boundary)";   // no receiver declared: the
                                                //   distillate leaves the plant
             tr.kind = "external";
+            tr.why  = units[i]->continuousDischargeWhy();
             ventSlot[i] = transfers.size();
             transfers.push_back(std::move(tr));
             it = ventSlot.find(i);
@@ -956,12 +957,25 @@ if (flowsheetDict->found("cycle"))
     //  per step -- while a discrete declaration gets its own record and
     //  its own timeline entry, exactly as before the unification.
     std::map<std::string, std::size_t> amendSlot;
+    //  NAMED STREAMS (C258): total mass per kind, per direction, of the
+    //  amendments a unit flags `named` -- published as campaign KPIs so the
+    //  screen can draw each as its own bar (matter an ASSUMPTION creates or
+    //  destroys, booked as a stream so the balance closes).
+    std::map<std::string, scalar> namedInKg, namedOutKg;
     auto drainAmendments = [&](std::size_t i, scalar tNow,
                                const std::string& trigger)
     {
         for (auto& am : units[i]->takeDatumAmendments())
         {
             if (am.pkg.totalMoles() <= 0.0) continue;
+            if (am.named)
+            {
+                scalar kg = 0.0;
+                for (std::size_t c = 0;
+                     c < thermo.n() && c < am.pkg.n.size(); ++c)
+                    kg += am.pkg.n[c] * thermo.comp(c).MW();
+                (am.into ? namedInKg : namedOutKg)[am.kind] += kg;
+            }
             sVector& tgt = am.into ? amendIn : amendOut;
             if (tgt.size() != thermo.n()) tgt.assign(thermo.n(), 0.0);
             for (std::size_t c = 0;
@@ -983,6 +997,7 @@ if (flowsheetDict->found("cycle"))
                     tr.tStart = tNow; tr.tEnd = tNow;
                     tr.from = from; tr.to = to;
                     tr.kind = am.kind;
+                    tr.why  = am.why;
                     amendSlot[key] = transfers.size();
                     transfers.push_back(std::move(tr));
                     it = amendSlot.find(key);
@@ -1632,6 +1647,10 @@ if (flowsheetDict->found("cycle"))
             ck["mass_kg_initial"]      = m0;
             ck["mass_kg_final"]        = mF;
             ck["mass_kg_external_out"] = mOut;
+            for (const auto& [kd, kg] : namedInKg)
+                ck["mass_kg_stream_in_" + kd] = kg;
+            for (const auto& [kd, kg] : namedOutKg)
+                ck["mass_kg_stream_out_" + kd] = kg;
             if (!amendIn.empty() || !amendOut.empty())
             {
                 ck["mass_kg_amend_in"]  = mAmendIn;
