@@ -77,6 +77,18 @@ THE ARMS.
       published `rms`: the model column the gate cannot recompute without
       re-implementing the fit is tied to a number the op published by itself.
 
+  (h) A STEADY CASE'S DECLARED VIEWS (C271).  tutorials/steady/distillation/
+      column14_klemola_c4_splitter, run with choupoSolve in a copy: its four
+      declared views are written in declaration order (CSV + sidecar = the
+      block's entry, the index = the files), every measured number of the
+      parity and the table is its reference-file cell, every Choupo number
+      is recomputed from the result JSON (a stream's mass fraction in %, its
+      flow in kg/h, the reboiler duty in MW, the stage temperature in degC),
+      the difference rows are Choupo - measured, and four refusals fire by
+      name: an unknown stream and an unknown unit operation (each listing
+      what exists), an unknown diagnostic, and an unknown reference column
+      BEFORE the solve (no result emitted).
+
 WHAT THIS GATE DOES NOT CHECK, said plainly: that a view is the RIGHT view for
 the paper (the case author's claim, read by a human); the GUI's drawing (its own
 tests hold its parser to a real run); any unit but by its spelling (the engine
@@ -836,6 +848,162 @@ def arm_f(tmp):
         fails.append("(f) without its views postProcessing/table1 holds %s" % left)
 
 
+# ---------------------------------------------------------------- (h)
+SOLVE = ROOT / "choupoSolve"
+C14 = ROOT / "tutorials/steady/distillation/column14_klemola_c4_splitter"
+H_TOL = 1e-9      # a model number is recomputed from the result JSON's own 12 figures
+
+
+def run_solve(case_dir):
+    env = dict(os.environ, CHOUPO_HOME=str(ROOT))
+    r = subprocess.run([str(SOLVE), "."], capture_output=True, text=True, timeout=1800,
+                       env=env, cwd=str(case_dir))
+    out = r.stdout + r.stderr
+    res = None
+    if "<<<Choupo:result-begin>>>" in out:
+        res = json.loads(out.split("<<<Choupo:result-begin>>>")[1]
+                            .split("<<<Choupo:result-end>>>")[0])
+    return r.returncode, out, res
+
+
+def near(a, b, scale=0.0):
+    """a is b to H_TOL of the larger of them (or of `scale`: a difference of two close numbers
+    carries the rounding of the numbers it was taken from)."""
+    return a is not None and b is not None and abs(a - b) <= H_TOL * max(abs(a), abs(b), scale, 1e-12)
+
+
+def arm_h(tmp):
+    """A STEADY case's declared views (C271): produced, the measured numbers the
+    reference file's, the model numbers the run's, four refusals by name."""
+    n = {"views": 0, "numbers": 0, "refusals": 0}
+    if not SOLVE.exists():
+        fails.append("(h) no choupoSolve binary (build first)")
+        return n
+    case = copy_full(tmp / "steady", C14)
+    for junk in ("reports", "converged"):
+        shutil.rmtree(case / junk, ignore_errors=True)
+    rc, out, res = run_solve(case)
+    if rc != 0 or res is None or "postProcessing" not in res:
+        fails.append("(h) column14 did not run with its views (exit %d)" % rc)
+        return n
+    block = res["postProcessing"]
+    d = read_dict(case / "system" / "postDict")
+    declared = d["views"]
+    names = [v["name"] for v in declared]
+    if [it["name"] for it in block["items"]] != names:
+        fails.append("(h) the views listed are %s, not the declared %s"
+                     % ([it["name"] for it in block["items"]], names))
+        return n
+    files = []
+    for it in block["items"]:
+        n["views"] += 1
+        csvp, jsp = case / it["file"], (case / it["file"]).with_suffix(".json")
+        if not csvp.exists() or not jsp.exists():
+            fails.append("(h) %s: its CSV or sidecar was not written" % it["name"])
+            continue
+        if json.loads(jsp.read_text()) != it:
+            fails.append("(h) %s: the sidecar is not the block's entry" % it["name"])
+        files += [str(csvp.relative_to(case)), str(jsp.relative_to(case))]
+    idx = [l for l in (case / "postProcessing" / "views.index").read_text().splitlines()
+           if l and not l.startswith("#")]
+    on_disk = sorted(str(f.relative_to(case)) for f in (case / "postProcessing").rglob("*")
+                     if f.is_file() and f.name != "views.index")
+    if sorted(idx) != sorted(files) or on_disk != sorted(files):
+        fails.append("(h) the index %s / the files %s are not the views' files" % (idx, on_disk))
+
+    # ---- the numbers, recomputed by this gate's own reading
+    ref = {r["item"]: r for r in read_csv_rows(case / "constant/reference/klemola1996_table2.csv")}
+    mw = res["componentMolarMass"]
+
+    def w_pct(stream, comp):
+        comp_x = res["streams"][stream]["composition"]
+        tot = sum(comp_x[c] * mw[c] for c in comp_x)
+        return 100.0 * comp_x[comp] * mw[comp] / tot
+
+    def model(stream_or_unit, key, unit_op=False):
+        if unit_op:
+            return res["kpis"][stream_or_unit][key] / 1000.0          # kW -> MW_power
+        if key.startswith("w_"):
+            return w_pct(stream_or_unit, key[2:])                    # mass fraction -> %
+        if key == "F_mass":
+            return res["streams"][stream_or_unit]["F_mass"] * 3600.0  # kg/s -> kg/h
+        raise KeyError(key)
+
+    par = next(v for v in declared if v["name"] == "parity_products")
+    rows = read_csv_rows(case / "postProcessing/case/parity_products.csv")
+    for sr in par["series"]:
+        got = [(num(r["x"]), num(r["y"])) for r in rows if r["series"] == sr["name"]]
+        want = [(float(ref[p["select"]["item"]][p["x"]]), model(p["stream"], p["y"]))
+                for p in sr["pairs"]]
+        if len(got) != len(want) or not all(near(a[0], b[0]) and near(a[1], b[1])
+                                            for a, b in zip(got, want)):
+            fails.append("(h) parity series %s: %s is not %s" % (sr["name"], got, want))
+        n["numbers"] += 2 * len(want)
+    tab = next(v for v in declared if v["name"] == "table_measured_vs_choupo")
+    trows = {r["row"]: r for r in read_csv_rows(case / "postProcessing/case/table_measured_vs_choupo.csv")}
+    cols = [c["name"] for c in tab["columns"]]
+    vals = {}
+    for rw in tab["rows"]:
+        if "cells" not in rw:
+            continue
+        vals[rw["name"]] = {}
+        for c in cols:
+            b = rw["cells"][c]
+            if "reference" in b:
+                v = float(ref[b["select"]["item"]][b["key"]])
+            elif "unitOp" in b:
+                v = model(b["unitOp"], b["key"], True)
+            else:
+                v = model(b["stream"], b["key"])
+            vals[rw["name"]][c] = v
+            if not near(num(trows[rw["name"]][c]), v):
+                fails.append("(h) table %s/%s: %s is not %s" % (rw["name"], c, trows[rw["name"]][c], v))
+            n["numbers"] += 1
+    for c in cols:
+        dv = vals["choupo"][c] - vals["measured"][c]
+        sc = max(abs(vals["choupo"][c]), abs(vals["measured"][c]))
+        if not near(num(trows["diff"][c]), dv, sc) or not near(num(trows["rel"][c]), dv / abs(vals["measured"][c]), sc / abs(vals["measured"][c])):
+            fails.append("(h) table difference rows, column %s" % c)
+        n["numbers"] += 2
+    prof = res["profiles"]["splitter"]["columns"]
+    prow = read_csv_rows(case / "postProcessing/unit_splitter/profile_temperature.csv")
+    got = [num(r["y"]) for r in prow if r["series"] == "temperature"]
+    if len(got) != len(prof["T"]) or not all(near(a, b - 273.15) for a, b in zip(got, prof["T"])):
+        fails.append("(h) the temperature profile is not the run's, in degC")
+    n["numbers"] += len(got)
+
+    # ---- the refusals: an unknown stream / unit / diagnostic after the solve, an unknown
+    #      reference column BEFORE it (no result is emitted)
+    base = (case / "system" / "postDict").read_text()
+    probes = [
+        ("unknown stream", "stream distillate; y w_isoButane;", "stream distillat; y w_isoButane;",
+         ["stream 'distillat' is not a stream of this run", "Streams: ", "distillate"], True),
+        ("unknown unit operation", "unitOp splitter;   key Q_reboiler_kW;", "unitOp splitt;   key Q_reboiler_kW;",
+         ["unit operation 'splitt' is not a unit operation of this run", "Unit operations: splitter"], True),
+        ("unknown diagnostic", "key w_nButane; }", "key w_nButan; }",
+         ["publishes no diagnostic 'w_nButan'", "Its diagnostics:"], True),
+        ("unknown reference column", "x top_wt;", "x topp_wt;",
+         ["has no column 'topp_wt'", "Columns: item"], False),
+    ]
+    for tag, old, new, needles, after_run in probes:
+        if base.count(old) < 1:
+            fails.append("(h) the probe `%s` could not be built (its anchor text moved)" % tag)
+            continue
+        pc = copy_full(tmp / ("steady_refuse_" + re.sub(r"\W+", "_", tag)), C14)
+        (pc / "system" / "postDict").write_text(base.replace(old, new, 1))
+        prc, pout, pres = run_solve(pc)
+        miss = [x for x in needles if x not in pout]
+        if prc == 0:
+            fails.append("(h) `%s` was ACCEPTED (exit 0)" % tag)
+        elif miss:
+            fails.append("(h) `%s` exited %d without naming %s:\n%s" % (tag, prc, miss, pout[-500:]))
+        elif not after_run and pres is not None:
+            fails.append("(h) `%s` was refused only AFTER the solve emitted a result" % tag)
+        else:
+            n["refusals"] += 1
+    return n
+
+
 def main():
     if not PROPS.exists():
         print("check_postprocessing: FAILED -- no choupoProps binary (build first)")
@@ -846,6 +1014,7 @@ def main():
         got = [arm_bcd(tmp, w) for w in WITNESSES]
         fired = arm_e(tmp)
         arm_f(tmp)
+        hh = arm_h(tmp)
     if fails or any(g is None for g in got):
         print("check_postprocessing: FAILED")
         for f in fails:
@@ -870,6 +1039,12 @@ def main():
           " profile CSV -- anything but their two ends (the face concentrations and"
           " potential steps the op publishes)."
           % (6, nviews, len(WITNESSES), ncells, nanch, nfit, fired, NENDS[0]))
+    print("check_postprocessing (h): a STEADY case's declared views -- column14's %d views"
+          " (parity, table, two stage profiles) written in declaration order, sidecars = the"
+          " block, index = the files; %d numbers (measured = the reference file, Choupo = the"
+          " run, differences recomputed) equal; %d refusals fire by name (an unknown stream,"
+          " unit operation, diagnostic; an unknown reference column BEFORE the solve)."
+          % (hh["views"], hh["numbers"], hh["refusals"]))
     return 0
 
 

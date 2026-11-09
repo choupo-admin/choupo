@@ -144,6 +144,11 @@ export function RunSummaryStrip() {
           </Item>
           <Products s={s} />
           <Group gap={8} wrap="nowrap" style={{ flex: "0 0 auto" }}>
+            {s.declaredViews > 0 && (
+              <Tooltip label="The figures and tables this case declares: the run set beside the measured data" withArrow>
+                <span data-door="views"><Door to="plots">Views</Door></span>
+              </Tooltip>
+            )}
             <Tooltip label="The stream table, the balances and the advisories" withArrow>
               <span><Door to="streams">Streams</Door></span>
             </Tooltip>

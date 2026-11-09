@@ -2062,6 +2062,11 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
     //  Only when the postDict declares `batchPlan {}`; result/BatchPlanJson.cpp.
     emitBatchPlanJson(os, r.batchPlan);
 
+    //  ---- postProcessing: the views a steady case DECLARES (C271) ---------
+    //  The body views::Reader returned; empty -> nothing is written.
+    if (!r.postProcessingBlock.empty())
+        os << ",\n  \"postProcessing\": " << r.postProcessingBlock;
+
     os << "\n}\n";
     os << "<<<Choupo:result-end>>>\n";
 }

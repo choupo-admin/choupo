@@ -86,6 +86,15 @@ export function seriesMode(style: string, role: string): "lines" | "markers" | "
   return role === "experiment" ? "markers" : role === "computed" ? "lines" : "lines+markers";
 }
 
+/** The range a case declared for an axis (C271), in Plotly's terms: a log axis is
+ *  ranged in decades.  Only where BOTH ends are declared; else Plotly autoranges. */
+export function axisRange(a: { scale: "linear" | "log"; min?: number; max?: number }): { range?: [number, number] } {
+  if (a.min === undefined || a.max === undefined) return {};
+  return a.scale === "log" && a.min > 0 && a.max > 0
+    ? { range: [Math.log10(a.min), Math.log10(a.max)] }
+    : { range: [a.min, a.max] };
+}
+
 export function axisTitle(a: { label: string; unit: string }): string {
   return a.unit && a.unit !== "-" ? `${a.label} [${a.unit}]` : a.label;
 }
@@ -157,7 +166,7 @@ function PlotFigure({ item, csv, references, onEnlarge, height }: {
     const all = item.series.flatMap((s) => [...pts.get(s.name)!.x, ...pts.get(s.name)!.y]);
     if (all.length > 0) {
       const lo = Math.min(...all), hi = Math.max(...all);
-      traces.unshift({ type: "scatter", mode: "lines", name: "fitted = measured",
+      traces.unshift({ type: "scatter", mode: "lines", name: item.op ? "fitted = measured" : "1:1 (model = measured)",
         x: [lo, hi], y: [lo, hi], hoverinfo: "skip",
         line: { color: "#868e96", width: 1, dash: "dot" } });
     }
@@ -167,9 +176,9 @@ function PlotFigure({ item, csv, references, onEnlarge, height }: {
     autosize: true,
     margin: { l: 64, r: 16, t: 8, b: 48 },
     xaxis: { ...darkLayout.xaxis, title: { text: axisTitle(item.xAxis) },
-             type: item.xAxis.scale === "log" ? "log" : "linear", automargin: true },
+             type: item.xAxis.scale === "log" ? "log" : "linear", automargin: true, ...axisRange(item.xAxis) },
     yaxis: { ...darkLayout.yaxis, title: { text: axisTitle(item.yAxis) },
-             type: item.yAxis.scale === "log" ? "log" : "linear", automargin: true },
+             type: item.yAxis.scale === "log" ? "log" : "linear", automargin: true, ...axisRange(item.yAxis) },
     //  below the axis title, never over it: anchored by its top, well clear
     legend: { ...darkLayout.legend, orientation: "h", x: 0, y: -0.3, yanchor: "top", font: { size: 11 } },
     showlegend: traces.length > 1,

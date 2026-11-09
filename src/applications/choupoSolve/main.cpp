@@ -80,6 +80,7 @@ Description
 #include "postProcessing/layout/BuildingLayout.H"
 #include "io/InternalStateIO.H"
 #include "postProcessing/PostProcessor.H"
+#include "postProcessing/views/RunPublications.H"
 #include "reporting/Report.H"
 #include "reporting/UtilityAllocationReport.H"
 #include "thermo/PropertyContext.H"
@@ -792,6 +793,25 @@ try
     DictPtr postDict;
     if (fs::exists("system/postDict"))
         postDict = Dictionary::fromFile("system/postDict");
+
+    //  THE CASE'S DECLARED VIEWS (C271): `references` and `views` in
+    //  system/postDict, the very grammar choupoProps reads from its propsDict
+    //  (views::Reader).  PARSED HERE, before the solve, so a typo in the
+    //  grammar or a reference file that is missing costs no run; the unit and
+    //  stream names exist only once the flowsheet is flattened, so they are
+    //  held to the run when the views are resolved, after the post chain.  A
+    //  case that declares none builds nothing and writes nothing.
+    std::unique_ptr<views::Reader> viewReader;
+    if (postDict && (postDict->found("views") || postDict->found("references")))
+    {
+        if (fs::exists("system/outerDict"))
+            throw std::runtime_error("system/postDict declares `views`, and the case"
+                " runs under an outerDict: a view draws ONE solved pass, an outer"
+                " driver makes many.  Declare the views in a case without an outerDict.");
+        viewReader = std::make_unique<views::Reader>(postDict, std::vector<std::string>{},
+                                                     "postDict", true);
+        views::clearStale();
+    }
 
     //  THE PLANT LAYOUT (2026-10-17, DEV.md 4c C75).  Optional; absent, no
     //  line of any output changes.  Read here, checked after the sizing pass
@@ -1531,6 +1551,13 @@ try
         if (postDict)
             dictAudit::report(dictAudit::auditTree(*postDict, "postDict"),
                               verbosity);
+
+        //  THE DECLARED VIEWS are resolved against what the run published
+        //  (units and streams), after the post chain so that anything it wrote
+        //  is on disk, and carried on the result as its `postProcessing` block.
+        if (viewReader)
+            result.postProcessingBlock =
+                viewReader->evaluate(views::publicationsOfRun(result), verbosity);
 
         //  solverDict AND outerDict GET THE SAME AUDIT, and the corpus was
         //  MEASURED before the wiring shipped -- the method the DictAudit
