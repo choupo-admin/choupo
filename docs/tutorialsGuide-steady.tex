@@ -2591,7 +2591,7 @@ The dryer atomises the feed with a 0.1 m disc spinning at 20 000 rpm.
   \draw[->] ($(dryer.east)+(0,0.17)$) -- ($(dryer.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {exhaustAir};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{Spray dryer REA (model chen): Reaction Engineering Approach kinetics -- smooth rate, no critical-moisture break}
+\tutwhat{Spray dryer REA (model chen): Reaction Engineering Approach kinetics -- smooth rate, no critical-moisture break -- in a SHORT chamber with a coarse spray, where the powder leaves before equilibrium and the kinetics decide its moisture (sprayDryer01's chamber dries any kinetics to the isotherm; README)}
 \begin{tutnarrative}
 spray dryer: Reaction Engineering Approach (REA) drying kinetics (Chen model).
 
@@ -2599,24 +2599,32 @@ feed: 100 kg/h of a 40 wt\% sucrose solution at 25 $^\circ$C. 40 kg/h sucrose / 
 
 dryingAir: 50 kmol/h of hot air (real air (N2/O2/Ar)) at 200 $^\circ$C, 1 bar. Dry air (no inlet humidity) for a clean wet-bulb demo.
 
-The dryer atomises the feed with a 0.1 m disc spinning at 20 000 rpm.
+The dryer atomises the feed with a 0.1 m disc spinning at 5 000 rpm into a SHORT chamber (1.0 m across, 0.5 m tall).
+
+WHY THIS HARDWARE, AND NOT sprayDryer01's (DEV.md 4c C269 decision (3)). Until 2026-11-09 this case ran sprayDryer01's dryer (20 000 rpm, a 5 m chamber) and every headline number equalled sprayDryer01's to the last digit. Not because the REA was ignored -- `model chen` integrates its own rate -- but because a 60 um droplet finishes its constant-rate drying in 0.08 s and the chamber holds it 7.1 s: ANY kinetic model reaches the isotherm's X\_eq long before the outlet, and the outlet only reports X\_eq. A drying kinetics decides the product only where the residence time is comparable to the drying time. So here the wheel is slower (a coarser spray, \textasciitilde{}139 um, 0.34 s of constant-rate drying) and the chamber shorter (0.46 s of residence): the powder leaves BEFORE it reaches equilibrium, and the kinetics decide how wet it is. Both changes are HARDWARE, author- set to make the point; the drying data (Xc, activationDecay in constant/dryingKinetics, the GAB isotherm on sucrose) are unchanged. Compare: README.md.
 
 \end{tutnarrative}
+\tutreadme{The question this case asks: does the drying-rate model change the powder? Run sprayDryer01\_sugar first, then this case.}
+\tutreadme{The feed (100 kg/h of 40 wt\% sucrose solution at 25 C), the drying air (50 kmol/h of dry air at 200 C), the sucrose's GAB isotherm and the drying record sugarDrying (constant/dryingKinetics) are sprayDryer01's. Two things differ.}
+\tutreadme{$\ast$ The drying-rate MODEL: model chen; (the Reaction Engineering Approach: one smooth rate, no critical-moisture break) instead of sprayDryer01's default characteristic drying curve (a constant rate down to Xc = 0.15, then a falling rate). $\ast$ The HARDWARE: the wheel turns at 5 000 rpm instead of 20 000, so the droplets are coarser (about 139 um instead of 60), and the chamber is 0.5 m tall instead of 5 m.}
+\tutreadme{In sprayDryer01 a droplet finishes its constant-rate drying in 0.08 s and the chamber holds it 7.1 s. Whatever the rate model, the powder reaches the isotherm's equilibrium moisture long before the outlet, and the outlet reports only that equilibrium: put model chen; into sprayDryer01 and every number stays the same to the last digit. A kinetic model decides the product only where the residence time is comparable to the drying time. Here the constant-rate drying takes 0.34 s and the residence is 0.46 s, so the powder leaves before it is at equilibrium.}
+\tutreadme{Read X\_final, moisture\_pct\_wb and residenceTime on the dryer, then change model chen; to model langrishKockel; in system/flowsheetDict (the characteristic drying curve on the same 1-D trajectory) and run again.}
+\tutreadme{The REA leaves the powder wetter: its rate falls smoothly from the first second of drying, while the drying curve keeps the full rate down to the critical moisture and then falls steeply. Which one is right for sucrose is not a question this case can answer: the critical moisture and the REA's activationDecay in constant/dryingKinetics are author-set, not fitted to a measured drying curve. Fit both to a measured single-droplet curve before trusting either.}
 \begin{tutgolden}
 \goldrow{stream}{dryingAir}{F}{0.0138888888889}
-\goldrow{stream}{exhaustAir}{F}{0.0148043580604}
+\goldrow{stream}{exhaustAir}{F}{0.0148001063712}
 \goldrow{stream}{feed}{F}{0.000957611111111}
-\goldrow{stream}{powder}{F}{4.2141939629e-05}
-\goldrow{kpi}{dryer}{Nu}{2.24583682227}
+\goldrow{stream}{powder}{F}{4.63936287663e-05}
+\goldrow{kpi}{dryer}{Nu}{2.85605353642}
 \goldrow{kpi}{dryer}{Pr}{0.746977616919}
-\goldrow{kpi}{dryer}{Re}{0.203916784363}
+\goldrow{kpi}{dryer}{Re}{2.47264038599}
 \goldrow{kpi}{dryer}{Sc}{0.6026290984}
-\goldrow{kpi}{dryer}{Sh}{2.22885536787}
-\goldrow{kpi}{dryer}{T\_out}{366.288022769}
+\goldrow{kpi}{dryer}{Sh}{2.79692067766}
+\goldrow{kpi}{dryer}{T\_out}{366.680124094}
 \goldrow{kpi}{dryer}{T\_wetbulb}{318.053221267}
 \goldrow{kpi}{dryer}{X\_critical}{0.15}
-\goldrow{kpi}{dryer}{X\_equilibrium}{0.0156916759917}
-\goldrow{kpi}{dryer}{X\_final}{0.0156916759917}
+\goldrow{kpi}{dryer}{X\_equilibrium}{0.0154493313057}
+\goldrow{kpi}{dryer}{X\_final}{0.0225846049486}
 \goldmore{40}
 \end{tutgolden}
 
@@ -2708,7 +2716,7 @@ Prices (product/raw-material/labour) live in constant/economics, each dated and 
 \goldrow{kpi}{heater}{F}{0.138888888889}
 \goldrow{kpi}{heater}{P}{101325}
 \goldrow{kpi}{heater}{Q}{300000}
-\goldmore{81}
+\goldmore{84}
 \end{tutgolden}
 
 \clearpage
@@ -2755,7 +2763,7 @@ Prices (product/raw-material/labour) live in constant/economics, each dated and 
 \goldrow{kpi}{heater}{F}{0.138888888889}
 \goldrow{kpi}{heater}{P}{101325}
 \goldrow{kpi}{heater}{Q}{300000}
-\goldmore{78}
+\goldmore{81}
 \end{tutgolden}
 
 \clearpage
@@ -2827,7 +2835,7 @@ HONEST SIMPLIFICATIONS. (1) The converter is a SINGLE adiabatic bed, so it runs 
 \goldrow{stream}{cwOut}{T}{303.623979494}
 \goldrow{stream}{hotEffluent}{F}{10.5340993656}
 \goldrow{stream}{hotEffluent}{T}{824.893401805}
-\goldmore{305}
+\goldmore{308}
 \end{tutgolden}
 
 \clearpage
@@ -9718,7 +9726,7 @@ So this case still demonstrates constrained SQP, shadow prices and a KKT certifi
 \goldrow{kpi}{heater}{F}{0.138888888889}
 \goldrow{kpi}{heater}{P}{101325}
 \goldrow{kpi}{heater}{Q}{200000}
-\goldmore{78}
+\goldmore{81}
 \end{tutgolden}
 
 \clearpage

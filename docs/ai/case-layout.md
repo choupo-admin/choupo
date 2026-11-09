@@ -1316,10 +1316,14 @@ and `taxCreditOnLoss_NPV`, plus `taxOnLoss`, `lossYears` and
 year publishes none of these.  Under `none` the rule reaches every tax the
 appraisal computes: the cash flow, the simple payback, the year-by-year table
 and the equity view (the loan's interest shield is floored the same way);
-the salvage gain is taxed as before.  Any other word refuses by name.  Worked
-cases: the three tablet plants (`tutorials/batch/plant/donepezil01_tablets`,
-`donepezil02_two_strengths`: every year a loss, the credit announced;
-`apalutamide01_tablets`: no loss year); the gate
+the salvage gain is taxed as before.  Any other word refuses by name.  Measured
+on 2026-11-09, twelve of the fifteen economics cases have a loss year and
+carry the announcement (the green-ammonia plants every operating year: the
+credit is 87 MEUR of `greenAmmoniaPEQ_baseCase`'s NPV); a case's README says
+which reading its NPV is.  Worked cases: the three tablet plants
+(`tutorials/batch/plant/donepezil01_tablets`: 7 loss years, 2.71 MEUR of the
+NPV; `donepezil02_two_strengths`: all 10; `apalutamide01_tablets`: no loss
+year); the gate
 `bin/curate/check_economic_extensions.py` arm (i) shows both readings on a
 priced-down twin of `economics04`.
 

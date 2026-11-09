@@ -666,3 +666,6 @@ kpi     pinch                  Q_hot_total_kW   102544.725068    1e-4
 kpi     pinch                  Q_recovery_max_kW 61928.63929      1e-4
 kpi     pinch                  n_pinches        0                1e-4
 kpi     pinch                  problem_class    3                1e-4
+kpi     economics              lossYears        15               1e-4
+kpi     economics              taxCreditOnLoss  226727245.112    1e-4
+kpi     economics              taxCreditOnLoss_NPV 116126456.003    1e-4

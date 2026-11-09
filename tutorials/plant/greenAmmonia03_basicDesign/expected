@@ -1228,3 +1228,6 @@ utility CONVERTER.InterbedCooler2 cooling.steamGenerationHP.eur_h -872.79408428 
 kpi     economics              C_OL             1156105.19836    1e-4
 kpi     economics              operatingPositions 14.0440378809    1e-4
 kpi     economics              operatorsPerShift 3.12089730687    1e-4
+kpi     economics              lossYears        15               1e-4
+kpi     economics              taxCreditOnLoss  140174063.558    1e-4
+kpi     economics              taxCreditOnLoss_NPV 72290427.1436    1e-4

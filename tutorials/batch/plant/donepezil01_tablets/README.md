@@ -320,12 +320,14 @@ decision-grade until the quotes, the staffing and the prices are yours.
 **Which tax reading this NPV is.**  Every operating year of this plant is a
 loss, and the cash flow CREDITS tax in each of them (`taxOnLoss credit`,
 the default of the `economics` block): tau x the loss, 556 kEUR a year for
-seven years, 2.74 MEUR undiscounted (2.08 MEUR of the NPV) — which assumes
-the owner has OTHER taxable profit to set the loss against, as a group with
-a consolidated return has.  The run announces it (`[assumed] economics`
-in the caveat block).  A stand-alone project has no such profit: declare
-`taxOnLoss none;` in `system/postDict` and the loss years pay no tax and
-earn no credit (no loss carry-forward is modelled), NPV −20.8 MEUR.
+the seven years the plant depreciates, 3.89 MEUR in all and 2.71 MEUR of the
+NPV — which assumes the owner has OTHER taxable profit to set the loss
+against, as a group with a consolidated return has.  The run announces it
+(`[assumed] economics` in the caveat block; `taxCreditOnLoss` and
+`taxCreditOnLoss_NPV` in the economics KPIs).  A stand-alone project has no
+such profit: declare `taxOnLoss none;` in `system/postDict` and the loss
+years pay no tax and earn no credit (no loss carry-forward is modelled), and
+the NPV falls by exactly that 2.71 MEUR, to −21.4 MEUR.
 
 ## 7. Plant layout
 

@@ -93,3 +93,6 @@ kpi     economics              grossMargin_RM   -156730346.031   1e-4
 kpi     economics              grossMargin_RM_UT -156934098.105   1e-4
 kpi     economics              operatingPositions 11.8888603323    1e-4
 kpi     economics              operatorsPerShift 2.64196896272    1e-4
+kpi     economics              lossYears        10               1e-4
+kpi     economics              taxCreditOnLoss  420471669.456    1e-4
+kpi     economics              taxCreditOnLoss_NPV 258364032.258    1e-4

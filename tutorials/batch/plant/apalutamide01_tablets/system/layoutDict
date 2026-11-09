@@ -300,15 +300,17 @@ pipeRack
 //  rack's upper tier (7.2 m, above the roads' 5 m headroom).  Since C229 a
 //  declared route begins and ends at the PORT's one-metre stub, not at the
 //  item's top centre: the first waypoint of the acetone line stands over the
-//  tank's low outlet stub (x 13.7 m), the last of the condensate line over the
-//  receiving tank's roof nozzle stub (x 22 m, 3 m up).
+//  tank's low outlet stub (x 13.2 m: one metre west of the 3.6 m box), the
+//  last of the condensate line over the receiving tank's roof nozzle stub
+//  (x 22.6 m, 3.8 m up: the 2.8 m box).  Both moved with the boxes on
+//  2026-11-09 (C269): redo them whenever a tank box moves.
 pipes
 {
     //  The fresh acetone, from the farm into the solution-preparation room.
     acetoneToPrep
     {
-        waypoints ( { x 13.7 m; y -10 m; z 7.2 m; }
-                    { x 13.7 m; y -7 m;  z 7.2 m; }
+        waypoints ( { x 13.2 m; y -10 m; z 7.2 m; }
+                    { x 13.2 m; y -7 m;  z 7.2 m; }
                     { x -6.5 m; y -7 m;  z 7.2 m; }
                     { x -6.5 m; y -7 m;  z 4.5 m; }
                     { x -8 m;   y -7 m;  z 4.5 m; } );    // the wall penetration
@@ -321,8 +323,8 @@ pipes
                     { x -6.5 m; y 8 m;    z 7.2 m; }
                     { x 4 m;    y 8 m;    z 7.2 m; }
                     { x 4 m;    y -6.6 m; z 7.2 m; }
-                    { x 22 m;   y -6.6 m; z 7.2 m; }
-                    { x 22 m;   y -10 m;  z 7.2 m; } );
+                    { x 22.6 m; y -6.6 m; z 7.2 m; }
+                    { x 22.6 m; y -10 m;  z 7.2 m; } );
     }
 }
 
