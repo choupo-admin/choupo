@@ -21,6 +21,23 @@ else
     $(error MODE must be 'release' or 'debug', got '$(MODE)')
 endif
 
+#  SANITIZE=1  ->  AddressSanitizer + UndefinedBehaviorSanitizer (DEV.md 4c
+#  C253 (c)).  A THIRD, PARALLEL build tree (build/<platform>Asan, beside the
+#  release and Debug ones, so it never touches either), -O1 -g with frame
+#  pointers kept for readable stacks.  Opt-in and OFF by default: with
+#  SANITIZE unset this block does nothing and the default build is byte for
+#  byte what it was.  The sanitizer flags go in OPT (hence CXXFLAGS, hence the
+#  compile stamp, so a sanitized object can never be mistaken for a plain one)
+#  and in LDFLAGS (appended below), which the shared-library link needs
+#  because it uses LDFLAGS alone.  Recovery stays ON (no -fno-sanitize-recover): the first
+#  finding must not hide the second, and the weekly job is report-only.
+#      make SANITIZE=1 -j1 all
+ifeq ($(SANITIZE),1)
+    BUILD_SUFFIX := Asan
+    SAN_FLAGS    := -fsanitize=address,undefined -fno-omit-frame-pointer
+    OPT          := -O1 -g $(SAN_FLAGS)
+endif
+
 BUILD   := build/$(PLATFORM)$(BUILD_SUFFIX)
 
 # ---- Platform-specific toolchain ------------------------------------
@@ -75,6 +92,10 @@ INCLUDES := -Isrc -I.
 
 CXXFLAGS := $(CXXSTD) $(OPT) $(WARN) $(INCLUDES) -pthread
 LDFLAGS  := $(LDFLAGS_PLATFORM) -pthread
+
+ifeq ($(SANITIZE),1)
+    LDFLAGS += -fsanitize=address,undefined
+endif
 
 # Position-independent code for libchoupo.so (moved here from the Makefile
 # so CXXFLAGS is FINAL before the flag stamps below hash it).

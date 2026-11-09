@@ -90,6 +90,14 @@ CXX="${CXX:-g++}"
 echo "buildCode: ensuring libchoupo.a is up to date ..."
 make -C "$ROOT" --no-print-directory lib
 
+# SANITIZE=1 (make/compiler.mk): the engine library just ensured above is the
+# AddressSanitizer + UndefinedBehaviorSanitizer one (make reads SANITIZE from
+# the environment), so the per-case binary must be linked with the sanitizer
+# runtime too, or it cannot load that library.  Unset, this is empty and the
+# link line is exactly what it always was.
+SAN_FLAGS=""
+[ "${SANITIZE:-}" = 1 ] && SAN_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer"
+
 # Which binary's entry to link against -- read the case's `application`
 # (walking UP, like the engine's folder cascade; a composite sector inherits
 # the plant controlDict).  choupoSolve (default) for a flowsheet case;
@@ -177,14 +185,14 @@ fi
 # case/code/.build/).
 echo "buildCode: the compile command is plain g++ (build-time, nothing hidden):"
 echo ""
-echo "    $CXX -std=c++17 -O2 $EXTRA_FLAGS -I $ROOT/src $EXTRA_INC \\"
+echo "    $CXX -std=c++17 -O2 ${SAN_FLAGS:+$SAN_FLAGS }$EXTRA_FLAGS -I $ROOT/src $EXTRA_INC \\"
 echo "        $MAIN $APP_AUX \\"
 for s in $USER_SRC; do echo "        $s \\"; done
 echo "        -L$LIBDIR -lchoupo -Wl,-rpath,$LIBDIR $EXTRA_LIBS \\"
 echo "        -o $BIN"
 echo ""
 # shellcheck disable=SC2086
-"$CXX" -std=c++17 -O2 $EXTRA_FLAGS -I "$ROOT/src" $EXTRA_INC \
+"$CXX" -std=c++17 -O2 $SAN_FLAGS $EXTRA_FLAGS -I "$ROOT/src" $EXTRA_INC \
     "$MAIN" $APP_AUX $USER_SRC \
     -L"$LIBDIR" -lchoupo -Wl,-rpath,"$LIBDIR" $EXTRA_LIBS \
     -o "$BIN"

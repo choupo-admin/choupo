@@ -1,0 +1,177 @@
+# =============================================================================
+#  ci  --  the regression suite on GitHub's runner, so a sweep no longer runs
+#          only on the maintainer's laptop (DEV.md 4c C253 (a)).
+#
+#  WHAT RUNS WHEN
+#    every push to any branch, every pull request   -> job `fast`
+#        native build, then `bin/runTests --fast`: one case per tutorial
+#        family with the sweep's own per-case checks, then the conservation
+#        gates scoped to that pass.  `--fast` authorises NO commit (it says so
+#        in its own last lines); it answers "has any family of the corpus gone
+#        dark?" in minutes.
+#    nightly (03:17 UTC, the default branch)         -> job `full`
+#    manual (workflow_dispatch, input `tier`)        -> `fast` or `full`
+#        the full `bin/runTests` sweep: every case and every gate.
+#  The weekly sanitizer build lives in sanitize.yml, report-only.
+#
+#  WHAT THIS WORKFLOW NEVER DOES: deploy anything.  The site is published by
+#  publish-site.yml into ANOTHER repository, and this file has no secret, no
+#  `pages:` scope and read-only `contents`.  A second publisher is how the
+#  live domain was once contested (see publish-site.yml's header).
+#
+#  THE RUNNER IS A FRESH CLONE.  What that changes, by name (each is also
+#  printed by the step "What this run does NOT check" so a log reader sees it):
+#    * `check_workspace_truth` (gate zero) refuses a detached HEAD and compares
+#      HEAD with a real `git fetch` of origin/<branch>.  actions/checkout
+#      defaults to a detached merge commit on pull_request and a shallow
+#      history: so the checkout below names the BRANCH, takes full history,
+#      and the proof then runs for real -- it is NOT skipped.
+#    * `check_build_fresh` compares artefact mtimes with source mtimes.  The
+#      build below is made after the checkout, so it holds.
+#    * the private `data/local` tier and `thirdParty/` archives are gitignored
+#      and absent.  The tree ships `data/local` empty by design and the gates
+#      that read it either pin its emptiness or state their reduced claim in
+#      their own output; none is skipped here.
+#    * `~/Choupo-Literature` (the maintainer's paper folder) is read by no
+#      gate; it is not on the runner.
+# =============================================================================
+name: ci
+
+on:
+  push:
+    branches: ['**']          # every branch; tags are not CI subjects
+  pull_request:
+  schedule:
+    - cron: '17 3 * * *'      # nightly, on the default branch (schedules always are)
+  workflow_dispatch:
+    inputs:
+      tier:
+        description: 'Which tier to run'
+        type: choice
+        options: [fast, full]
+        default: fast
+
+concurrency:
+  #  A newer push to a branch cancels that branch's older run (the push and
+  #  the pull_request run of one branch share a group, so they cancel each
+  #  other and only one stays).  The nightly and a manual dispatch get groups
+  #  of their own: a push to main must not cancel a 60-minute sweep.
+  group: ci-${{ github.event_name == 'schedule' && 'nightly' || github.event_name == 'workflow_dispatch' && format('dispatch-{0}', github.run_id) || github.head_ref || github.ref_name }}
+  cancel-in-progress: ${{ github.event_name != 'schedule' && github.event_name != 'workflow_dispatch' }}
+
+permissions:
+  contents: read
+
+env:
+  #  The runner has no terminal and a 4-core box: the suite's own default
+  #  (`nproc`) is right, and CHOUPO_JOBS stays unset.
+  LC_ALL: C.UTF-8
+
+jobs:
+  fast:
+    if: github.event_name != 'schedule' && (github.event_name != 'workflow_dispatch' || inputs.tier == 'fast')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          #  The BRANCH, not the detached ref, so `check_workspace_truth` can
+          #  prove HEAD against origin/<branch>; full history because its
+          #  ancestry test is a merge-base.  For a pull request from a fork,
+          #  head.repo is the fork, whose origin carries that branch.
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Native build
+        uses: ./.github/actions/native-build
+
+      - name: What this run does NOT check
+        run: bash .github/scripts/ci-not-checked.sh fast
+
+      - name: bin/runTests --fast
+        run: |
+          set -o pipefail
+          mkdir -p "$RUNNER_TEMP/ci-out"
+          bin/runTests --fast 2>&1 | tee "$RUNNER_TEMP/ci-out/runTests-fast.log"
+          #  `tee` hides runTests' exit code without pipefail; with it the
+          #  step fails exactly when the suite does.
+
+      - name: Tally
+        if: always()
+        run: bash .github/scripts/ci-summary.sh "$RUNNER_TEMP/ci-out/runTests-fast.log"
+
+      - name: Upload the log and the timings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-fast-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/ci-out/
+            build/suiteTimings.csv
+          if-no-files-found: warn
+          retention-days: 14
+
+  full:
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.tier == 'full')
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Native build
+        uses: ./.github/actions/native-build
+
+      #  ---- what the full sweep's gates need besides the binaries.  Each is
+      #       a gate that REFUSES when its tool is absent (a check that cannot
+      #       run must not pass), so the install is load-bearing, not tidy:
+      #         clang++      check_wasm_dialect (syntax-checks every TU against
+      #                      the WASM toolchain's dialect)
+      #         poppler      check_guide_pdf_version (title page of each guide)
+      #         texlive      the guide builds the guide gates read
+      #         node + npm   gui-tests: the app's tests and typecheck
+      - name: Gate toolchain (clang, poppler, LaTeX)
+        run: |
+          sudo apt-get install -y -qq clang poppler-utils
+          sudo apt-get install -y --no-install-recommends \
+            texlive-latex-recommended texlive-latex-extra texlive-pictures \
+            texlive-fonts-recommended lmodern
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: gui/package-lock.json
+
+      - name: gui dependencies
+        run: npm ci --no-audit --no-fund
+        working-directory: gui
+
+      - name: What this run does NOT check
+        run: bash .github/scripts/ci-not-checked.sh full
+
+      - name: bin/runTests (full sweep)
+        run: |
+          set -o pipefail
+          mkdir -p "$RUNNER_TEMP/ci-out"
+          bin/runTests 2>&1 | tee "$RUNNER_TEMP/ci-out/runTests-full.log"
+
+      - name: Tally
+        if: always()
+        run: bash .github/scripts/ci-summary.sh "$RUNNER_TEMP/ci-out/runTests-full.log"
+
+      - name: Upload the log and the timings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-full-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/ci-out/
+            build/suiteTimings.csv
+            build/suiteJobTimes.tsv
+          if-no-files-found: warn
+          retention-days: 30

@@ -1,0 +1,99 @@
+# =============================================================================
+#  sanitize  --  a weekly AddressSanitizer + UndefinedBehaviorSanitizer build
+#                of the engine, run through `bin/runTests --fast`
+#                (DEV.md 4c C253 (c)).
+#
+#  WHY.  A golden pins what a run prints, so a stable wrong answer passes and
+#  so does an out-of-range read that happens to return the same number every
+#  time.  Memory errors and undefined behaviour are the class of C++ fault no
+#  golden can see; a sanitizer build finds them while the suite is green.
+#
+#  REPORT-ONLY, ON PURPOSE (first weeks).  The job is `continue-on-error`, it
+#  never gates a push (it does not run on push at all) and it uploads its
+#  findings as an artefact and a step summary.  Promoting it to a gate is a
+#  later decision, taken when the list of findings is empty or pinned.
+#
+#  HOW IT IS BUILT.  `make SANITIZE=1` (make/compiler.mk): a parallel build
+#  tree build/linux64GccAsan, -O1 -g, the default build untouched.  The run
+#  sets ASAN_OPTIONS/UBSAN_OPTIONS so that findings go to FILES (log_path), not
+#  to stderr: stderr is part of what the suite compares, and a sanitizer line
+#  in it would turn a finding into a golden failure of an innocent case.
+#  Leak detection is OFF (detect_leaks=0): process-lifetime registries are
+#  never freed by design here and would drown the memory errors in noise; it is
+#  the first thing to turn on once the rest is clean.
+#
+#  Never deploys anything; read-only token.
+# =============================================================================
+name: sanitize
+
+on:
+  schedule:
+    - cron: '23 4 * * 0'      # Sunday, 04:23 UTC, the default branch
+  workflow_dispatch:
+
+concurrency:
+  group: sanitize
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  asan-ubsan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    continue-on-error: true          # report-only: never turns the repository red
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Native build, ASan + UBSan
+        uses: ./.github/actions/native-build
+        with:
+          make-args: SANITIZE=1
+          cache-name: asan
+
+      - name: bin/runTests --fast under the sanitizers
+        run: |
+          set -o pipefail
+          mkdir -p "$RUNNER_TEMP/san" "$RUNNER_TEMP/ci-out"
+          #  SANITIZE=1 in the ENVIRONMENT: make reads it, so the `make lib`
+          #  that bin/buildCode runs for a case with its own code/ builds (or
+          #  finds) the sanitized library instead of compiling a second,
+          #  plain tree beside it, and buildCode links the sanitizer runtime.
+          export SANITIZE=1
+          export ASAN_OPTIONS="detect_leaks=0:abort_on_error=0:halt_on_error=0:log_path=$RUNNER_TEMP/san/asan"
+          export UBSAN_OPTIONS="print_stacktrace=1:halt_on_error=0:log_path=$RUNNER_TEMP/san/ubsan"
+          #  Gates that build or run a probe look for the binaries in the
+          #  release tree's path (build/linux64Gcc, hard-coded in dozens of
+          #  gate scripts); measured 2026-11-09, check_element_balance failed
+          #  with FileNotFoundError on the sanitized tree.  A symlink gives
+          #  them the sanitized binaries at that path, no gate edited.
+          ln -sfn linux64GccAsan build/linux64Gcc
+          bin/runTests --fast 2>&1 | tee "$RUNNER_TEMP/ci-out/runTests-fast-asan.log"
+
+      - name: The findings, as a list
+        if: always()
+        run: |
+          bash .github/scripts/sanitize-report.sh "$RUNNER_TEMP/san" "$RUNNER_TEMP/ci-out" build/suiteOutputs | tee "$RUNNER_TEMP/ci-out/sanitizer-findings.txt"
+          {
+            echo "### Sanitizer findings (report-only)"
+            echo '```'
+            head -120 "$RUNNER_TEMP/ci-out/sanitizer-findings.txt"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          bash .github/scripts/ci-summary.sh "$RUNNER_TEMP/ci-out/runTests-fast-asan.log"
+
+      - name: Upload the log and the raw sanitizer files
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sanitize-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/ci-out/
+            ${{ runner.temp }}/san/
+            build/suiteTimings.csv
+          if-no-files-found: warn
+          retention-days: 30
