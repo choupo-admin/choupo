@@ -3623,6 +3623,17 @@ accepts today, and that is a policy call.
 > domain); the limit values are the CASE's declared input, dated and cited, never
 > compiled into the tool (price-data doctrine, applied to a regulation).  One general,
 > Sonnet, after the C246 pair; every claim measured before the brief.
+> MEASURED BEFORE THE BRIEF (2026-11-09), and one claim above was wrong: the engine has
+> NO fired-unit type (`UnitOperation.cpp` registers `gibbsReactor`; `boiler` is an
+> alias of the phase changer), so "a real fired unit's flue gas" has no such witness.
+> The combustors of the corpus are Gibbs reactors: `gibbs06_thermal_nox` (NO in the
+> burnt gas), `gibbs03_methane_combustion` and `gibbs05_adiabatic_flame` (CO2, flame
+> temperature).  The engine half therefore reads the OUTLET STREAM of a Gibbs
+> combustor -- flow, T, composition -> the emission rate of NO or CO2 and the buoyancy
+> flux -- and says so; a stack as a sized item of a fired unit waits for a fired unit.
+> The page's own arithmetic follows the pool-fire tool's declaration (registry:
+> discipline "Process safety", kind construction, origins page / reference /
+> assumption).  Dispatched the same night.
 
 > **C246 (Vitor, 2026-11-08: "ao contrário do OpenFOAM, não deixa o utilizador especificar
 > os coeficientes de sub-relaxação ... podia haver valores default e depois o user podia
