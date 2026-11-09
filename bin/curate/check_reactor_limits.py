@@ -593,6 +593,65 @@ def main() -> int:
                        " no liquid Cp it is refused naming pureLiquid and the missing"
                        " liquid Cp; with no block the old message still stands")
 
+        # -- R10 (C259 (d), the PFR half): the PFR's energy pre-check had the
+        #  same h_pure_ig question and the same false message.  Witness: the
+        #  SAME cstr08 case with its unit retyped `pfr` (one volume, the same
+        #  adiabatic energy balance on the same measured propylene-oxide
+        #  hydration; T_guess is a CSTR word and goes), glycol record as in R9.
+        ok = True
+
+        def as_pfr(dst, liquid, drop_cp=False):
+            c = probe(src8, dst)
+            fd = c / "system/flowsheetDict"
+            t = fd.read_text()
+            t = t.replace("type        cstr;", "type        pfr;", 1)
+            t2 = re.sub(r"T_guess\s+340;[^\n]*\n(?:[^\n]*start point[^\n]*\n)?(?:[^\n]*290 lands[^\n]*\n)?",
+                        "nSteps       200;\n", t, count=1)
+            if t2 == t:
+                failures.append("R10: the pfr fixture could not be built -- no T_guess line")
+                return None
+            fd.write_text(t2.replace("type        cstr;", "type        pfr;"))
+            if liquid and not edit(c / glyc, gas_blk, liq_blk, "R10"):
+                return None
+            if drop_cp and not edit(c / glyc, "liquidHeatCapacity",
+                                    "liquidHeatCapacityOFF", "R10"):
+                return None
+            return c
+
+        c10 = as_pfr(td / "r10_gasRung", False)
+        if c10 is not None:
+            if expect_runs("R10 (gas rung, as shipped)", c10) is None:
+                ok = False
+        c10 = as_pfr(td / "r10_liquid", True)
+        if c10 is not None:
+            if expect_runs("R10 (pureLiquid record)", c10) is None:
+                ok = False
+        c10 = as_pfr(td / "r10_noCp", True, True)
+        if c10 is not None:
+            if not expect_refusal("R10 (pureLiquid, no liquid Cp)", c10,
+                                  ["PFR:", "12Propanediol", "pureLiquid",
+                                   "liquidHeatCapacity"]):
+                ok = False
+            else:
+                rc, out = run(c10)
+                if "has none" in out:
+                    failures.append("R10: the PFR refusal still says the record has"
+                                    " no standardThermochemistry block")
+                    ok = False
+        c10 = as_pfr(td / "r10_noBlock", False)
+        if c10 is not None:
+            std = c10 / glyc
+            t9 = std.read_text()
+            i0 = t9.index("standardThermochemistry\n{")
+            std.write_text(t9[:i0] + t9[t9.index("}", i0) + 1:])
+            if not expect_refusal("R10 (no block at all)", c10,
+                                  ["PFR:", "12Propanediol", "has none"]):
+                ok = False
+        if ok:
+            oks.append("R10 the same case retyped pfr: gas-rung and pureLiquid glycol"
+                       " RUN; with no liquid Cp it is refused naming pureLiquid and the"
+                       " missing liquid Cp; with no block the old message stands")
+
     if failures:
         print("check_reactor_limits: FAIL")
         for f in failures:
