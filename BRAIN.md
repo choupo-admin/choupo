@@ -131,6 +131,7 @@ are indoor by rule (C100) and the viewer marks them.
 
 ## WHAT CHANGED LAST (newest first; keep ten lines)
 
+- 2026-11-09 C271 LANDED: a steady case declares `references` and `views` in its postDict; column14 against Klemola Table 2 drawn in the app through WASM (keys +0.31 % / -0.17 %, boiler -21 % shown, not tuned). Rule 4c: the artefact first, validation by behavioural reach.
 - 2026-11-09 C268 the reference plant gets its site (roads, fence, gates, 0 findings); C266 a student walk of the 14 pharmaceutical cases in the running app: the solver matches the goldens, the screens carry real errors (a number formatter that drops zeros, solids counted twice, a GUI-computed 8000 h/yr); held for the discussion with Vitor.
 - 2026-11-09 C258 debt closed: the thermal adsorber's energy balance in conservative form; batch25 claims and closes its first law (3.7e-10); cstr08's glycol on its measured liquid datum.
 - 2026-11-09 C259 (a) and (d): verified references on 62 lesson pages (202 entries, each with how it was verified; gate check_lesson_references); the CSTR and PFR no longer refuse a pureLiquid-reference record with a false message.
@@ -140,4 +141,3 @@ are indoor by rule (C100) and the viewer marks them.
 - 2026-11-09 SECOND BATCH (4b6f82ebc): C246 solver knobs + `relaxation` tool, C249 (c) `campaign-plan`, C250 pharmaceutical pack and token budgets; the site stopped deploying (2.2 GB Pages artifact) and was pruned; C251 home revised on Vitor's reading; C252, C253 recorded.
 - 2026-11-08 NIGHT BATCH: C245 slice 3 (residual purity; `newton legacy;` declared, aqueous columns on the bounded Newton), C248 PIF readiness (breakEven crash fixed, student path), C249 multi-product tutorial donepezil02 with every tool, C251 EduTools home; C246/C247/C250 recorded.
 - 2026-11-08 C245 slice 2: tear Newton, simultaneous MESH and CSTR declare bounds and throw InfeasibleTrial instead of clipping; 17 closure rows re-recorded; aqueous columns and reactive phase 1 stay legacy (debts). C246 recorded (solver knobs a case may turn).
-- 2026-11-08 C245: kernel audit (docs/audits/2026-11-08-kernel-numerical-audit.md); Newton contract, CubicEoS pseudo-root, Rodas4, adsorber 2x, column08 unseeded (6bceec76d); C239 Tc rule continuous, Ar on Henry, ammonia re-sealed 2608 (e5d7017b8); C227 (a).

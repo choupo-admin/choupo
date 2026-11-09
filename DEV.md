@@ -3221,6 +3221,106 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **C274 (Vitor, 2026-11-09 night: "nao falta um caso que use o Cosmo ou outros modelos
+> mais sofisticados?").**  MEASURED (grep of every thermoPhysPropDict / propsDict):
+> COSMO-SAC 1 case, props bench only (`cosmoSAC01_water_ethanol`), no unit uses it;
+> PC-SAFT 5 (3 props, flash10, flash20), no column; UNIFAC 38, eNRTL 10, pitzerHMW 11,
+> edwardsPitzer 3.  To build: (1) a column on a pair with no measured binary parameters in
+> the catalogue, solved ideal / UNIFAC / COSMO-SAC, showing what the model moves (stages,
+> reboiler duty), anchored on measured VLE, the system chosen among the 77 components
+> with a sigma profile; (2) PC-SAFT on a pressure column (joins the C239 debt).  OPEN,
+> after C272.
+
+> **C273 (Vitor, 2026-11-09 night, on the published EduTools home: "isto ja esta muito
+> melhor! Mas as cores ainda estao bastante boring nao e?").**  Every section and every
+> card is the same dark tile.  To build: one categorical accent per SECTION (heading, its
+> jump-to link, a thin edge on its cards), validated in light and dark, never the phase
+> colours (semantic on a flowsheet).  Shown to Vitor as a screenshot before it is called
+> done.  OPEN.
+
+> **C272 (Vitor, 2026-11-09 night, on swro01: "havendo trains era preciso ter o layout de
+> uma train detalhado? Os outros depois ficavam apenas de forma esquematica!" -- then "Faz
+> isso de acordo com as boas praticas!").**  MEASURED: swro01's `system/layoutDict` places
+> the 42 per-train items one by one (from line 107), the same box six times at
+> x = -100 + 19 (k - 1) m, and the 3D shows six rows of boxes with 15 pipes not drawn;
+> "Trains and racks" (C199 phase B, `gui/src/case/roHallDrawings.ts`, `hallSet.ts`)
+> already draws one train, the hall plan, a rack section and elevation; C268 pipes
+> parallel items by a main and branches (`PlantLayout.H` 123).  Missing is the drafting
+> practice of a TYPICAL: the layout declares ONE train once (items relative to the
+> train's origin, its internal piping) and a repeat (count, pitch, axis); the engine
+> expands it, checks every train's real envelope, routes the common headers with a branch
+> per train; plan and 3D draw train 1 in full and trains 2..N as an outline marked
+> "typical of train 1".  OPEN; brief after C271 lands; the render goes to Vitor first.
+
+> **C271 (Vitor, 2026-11-09 evening, ASKING AGAIN for what he asked on 11-08: "Eu tinha
+> pedido para na destilação do Klemola haver um gráfico de pós-processamento ou mais a
+> comparar os resultados previstos com os experimentais!  Isso é uma representação gráfica
+> inteligente tailor made para dar sentido à simulação!  E tem de haver um dicionário onde
+> se possa dizer como isso deve ser feito!"): THE FIRST SLICE OF C265 IS column14, NOW.**
+> A request repeated is a request that was dropped (CLAUDE.md 10): it was recorded (C243
+> amendment (4)-(5), absorbed into C265) and then queued behind C264 with no date, which to
+> him is the same as lost.  MEASURED before deciding: the grammar he asks for ALREADY
+> EXISTS for choupoProps (`references ( ... ); views ( ... );`, src/postProcessing/views/
+> Views.{H,cpp}, record docs/design/a-post-processing-dictionary.md; its section 7 writes
+> the generalisation path to choupoSolve and section 9 says it is not built).  DECISION
+> (architect): no second grammar.  The SAME two lists, read by the SAME `views::Reader`,
+> in `system/postDict` (his word: the post-processing dictionary; C265's home), with each
+> UNIT (KPIs, stage/axial profile) and each STREAM (T, P, flows, mole AND mass fractions)
+> a producer, a cited reference file under `constant/reference/` drawn over them, and the
+> GUI drawing the declared views FIRST on a flowsheet case with the component the props
+> review screen already uses (it computes nothing).  Witness: column14 against Klemola &
+> Ilme (1996) Table 2 -- a parity figure of both products in the paper's own unit (wt %),
+> a measured | computed | deviation table that includes what does NOT reproduce (the two
+> minor keys, the boiler duty 8.09 against 10.24 MW), and the stage profile; every view
+> with the author's note.  C265's `headline` kind, the per-loop defaults of C243 (1)-(3)
+> and the time-integrated binaries are the NEXT slices, not this one.  Dispatched to a
+> general the same hour; the architect reads the rendered figure before calling it done.
+>
+> LANDED 2026-11-09 (b7b10d809). `references` and `views` at the top level of a steady
+> case's `system/postDict`, read by the props bench's own reader; publications built only
+> when views are declared, so a case without them is byte-identical (measured on swro01 and
+> economics01). Validation sized by that reach: build, column14 scoped with its mass,
+> element and energy gates, 17 gates naming the touched files, `--gui` 47/0, `--fast` 78/0;
+> NO full sweep (rule 4c). End to end: column14 opened in the served app, Run through the
+> rebuilt WASM, header MASS 100 % / ENERGY residual 0, the four views drawn; table reads
+> 93.7924 / 0.111541 / 0.461224 / 97.9325 wt % against 93.5 / 0.2 / 0.3 / 98.1, flows 8126
+> and 18108 against 8115 and 18119 kg/h, boiler 8.090 against 10.240 MW (-21.0 %), the
+> reference values read from `constant/reference/klemola1996_table2.csv` and nowhere in
+> `gui/src`. OPEN: the boiler gap is shown, not explained (CMO, subcooled reflux) and the
+> model is not to be tuned to it; the wide table scrolls sideways; the anchored parity point
+> sits at the plot corner; views under an `outerDict` are refused by name.
+
+> **C270 (Vitor, 2026-11-09: "Sabes se se pode aproveitar alguma coisa disto? ... Se não,
+> apaga" -- his PIF class demo of 2026-09-28, ~/Avitor/2026-2027/Aulas/PIF/IA_demo_capacidade:
+> choosing a rotary tablet press for 120 M tablets/yr with an assistant): YES, ONE PIECE OF
+> ENGINEERING THE ENGINE LACKS; the folder is KEPT (it is his course material).**  Measured:
+> nothing in src/ or the pharmaceutical pack knows DWELL TIME or OEE, and the tablet press
+> is rated on stations x rpm alone.  The demo's point, re-derived here and matching its
+> results to the tablet: the punch head's flat (L = 10 mm) must stay under the compression
+> roll for a minimum dwell time (12 ms from a compaction simulator), so the turret's pitch-
+> circle speed is capped at v = L / t_dwell, the speed at n = v / (pi D) -- 72.3, 61.2 and
+> 48.2 rpm for its presses A, B, C (D 0.22 / 0.26 / 0.33 m) against catalogue 100 / 90 /
+> 80 -- and the real capacity is stations x n: 52 087, 73 456, 86 812 tablets/h against the
+> catalogue's 72 000, 108 000, 144 000.  A press chosen on its catalogue rpm looks to have
+> 53 % margin and has 11 %.  And OEE = A x P x Q already counts the rejects; a reject rate on
+> top counts them twice.  TO BUILD (after C263's compressor design, the same "the sheet must
+> design, not only price" family): the rated tablet press takes the formulation's minimum
+> dwell time and the punch flat as declared, sourced inputs (refused if absent? no --
+> announced as unchecked if absent, backwards-compatible), publishes the dwell-limited speed
+> and capacity beside the catalogue's, and the batch plan uses the lower; an optional
+> declared OEE (A, P, Q) with the double-count stated.  The demo's presses are DIDACTIC (its
+> own files say so), so no number from it enters a case; the method and the exercise
+> ("predict before you calculate": demand +17 %, OEE 55 %, dwell 15 ms) become a section of
+> the pharmaceutical pack and a candidate EduTool page beside `campaign-plan`.
+> Vitor, the same evening: "ok! é boa ideia!" -- agreed.  SOURCE RULE: the architect's
+> explanation to him (scale-up from a slow laboratory press to a fast production press,
+> capping and lamination, compaction simulators, the formulation's dwell need being the
+> product's property and not the press maker's) is general knowledge, NOT yet a read source;
+> ~/Choupo-Literature holds no tableting text (searched 2026-11-09).  The builder finds and
+> READS an open source (a review on compaction dwell time, verified on Crossref, or a
+> pharmaceutics textbook chapter Vitor supplies) before any sentence of it enters the engine,
+> a lesson or the pack.
+
 > **C269 (Vitor, 2026-11-09, on the C266 pharmaceutical findings: "Avança.  Eu revejo depois.
 > O que a teoria vê não precisa de ser martelado numericamente!"): THE WALK'S FINDINGS ARE
 > FIXED NOW, AND THE ENGINEERING ITEMS ARE DECIDED BY THEORY, each decision written here for

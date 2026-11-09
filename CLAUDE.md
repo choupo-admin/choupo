@@ -116,6 +116,21 @@ it.  The rules below; the corollaries that make them concrete are in §10.
    se criar uma corrente extra para apanhar a massa"), so the balance closes
    and the stream is the explanation.  Never report a suite as "all well"
    without saying which balances it held (DEV.md 4c C258).
+4c. **THE ARTEFACT FIRST, AND VALIDATION BY WHAT THE BEHAVIOUR CAN REACH
+   (Vitor, 2026-11-09, after a figure he had asked for sat finished for half
+   an hour behind an integration, and a 28-minute sweep was announced for a
+   change that left every case without `views` byte-identical).**  What he
+   asked to SEE is sent the moment it exists, with its validation state said
+   in one line (drawn / integrated / verified in the running app are three
+   different states and are named as such).  Tests are chosen by the
+   behaviour a change can alter and the failures that are credible, never by
+   the name of a file it touches: `main.cpp` edited behind a condition that no
+   existing case meets reaches no existing case, and the evidence for that is
+   a byte-identical result, not a sweep.  A large regression never stands in
+   for the one end-to-end run of the thing that was built.  Evidence that
+   still describes the code is not retaken.  And no estimate of duration is
+   given in place of the result.
+
 5. **Do not change a permanent rule as a reflex to criticism.**  Change it
    when Vítor asks, or when there is a durable technical reason -- and
    state the reason in the change.
