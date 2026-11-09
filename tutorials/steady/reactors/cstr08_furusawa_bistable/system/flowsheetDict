@@ -1,0 +1,103 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  cstr08_furusawa_bistable  --  an ADIABATIC CSTR on a measured exothermic
+  reaction, scanned for steady states.  It finds THREE.
+
+  THE SOURCE.  Furusawa, Nishimura & Miyauchi, "Experimental study of a
+  bistable continuous stirred-tank reactor", J. Chem. Eng. Japan 2 (1969)
+  95-100, doi:10.1252/jcej.2.95 (open on J-STAGE).  They ran propylene-oxide
+  hydration, acid-catalysed, in an insulated Dewar CSTR, chosen "because of
+  its high heat of reaction, its high activation energy and its significant
+  reaction rate at room temperature", and ran three conditions (Table 1):
+
+      condition   tau [s]   T0 [K]    what they measured
+      1            980      274.3     one steady state, LOW conversion
+      2           1330      274.6     two stable states (three crossings)
+      3           1550      287.1     one steady state, HIGH conversion
+
+  WHAT THIS CASE TAKES FROM THE PAPER, and nothing else is tuned:
+    * the kinetics, first order in propylene oxide, their Eq. (11):
+      k = 4.71e9 exp(-18.0 kcal/mol / RT) 1/s   (constant/reactions);
+    * the feed: an equal-volume propylene-oxide + methanol solution mixed
+      with acidified water to 2.15 mol/L of propylene oxide.  Per litre of
+      feed, with the record volumes added (the paper's own assumption 2,
+      no volume change): 2.15 mol oxide, 3.72 mol methanol, 38.58 mol water
+      -- the molar flows in 0/feed are that composition at 0.01 kmol/h of
+      oxide;
+    * the inlet temperature: the controlled 274.3 K PLUS the 10 K the heat
+      of DILUTION adds on mixing, as the paper itself does ("the inlet
+      temperature of the reactor could then be regarded as being 10.0 deg.
+      higher than the controlled value"): 284.3 K.  An ideal liquid has no
+      heat of mixing, so the paper's correction is the honest one here;
+    * the residence time of CONDITION 1, 980 s: V_R below is the feed's
+      volumetric flow (1.292e-6 m3/s on the record volumes) times 980 s;
+    * adiabatic: the measured heat loss was under 1 % of what the effluent
+      carries away, and is left out.
+
+  WHAT THE ENGINE ADDS, and where it parts from the paper.  The heat of
+  reaction is not declared: it is priced from the formation enthalpies of
+  the four records on an IDEAL liquid.  At complete conversion that gives an
+  adiabatic rise of 56.1 K (the scan ceiling, 340.37 K, minus 284.3 K).  The
+  paper MEASURED 45.5 K in a batch Dewar and 48.6 K in the running reactor,
+  and used 46.8 K: the engine releases about 20 % more heat than the real
+  mixture did.  The gap is not chased here; an ideal liquid carries no heats
+  of solution of the oxide and the glycol in water, which is where a
+  calorimeter and a table of pure-liquid formation enthalpies part.
+
+  The consequence is the lesson.  The three-crossing window is narrow (the
+  paper calls its own condition-2 phase plane "structurally unstable"), and
+  20 % more heat moves it to SHORTER residence times.  So the engine finds
+  three crossings at condition 1, where the experiment saw one cold state:
+
+      291.48 K   extinguished, X = 0.13   stable
+      305.28 K   middle                   unstable (the slope test fails)
+      333.79 K   ignited,      X = 0.88   stable -- reported (T_guess 340)
+
+  and at condition 2 (tau 1330 s, 284.6 K) it finds only the ignited state,
+  336.6 K, where the experiment saw two; at condition 3 (tau 1550 s, 297.1 K)
+  one ignited state, 352.1 K, as measured.  The paper's own model, with its
+  measured 46.8 K, puts three crossings at condition 2 (295.8, 302.4 and
+  320.9 K, by hand from Eq. (11)).  Read the case as the van Heerden
+  construction on a real, measured rate law -- not as a reproduction of the
+  measured states.
+
+      phi(T) = H_out(T) - H_in - Q_ext(T) = 0
+
+  Eliminate the extent and what remains is ONE equation in the temperature,
+  the textbook "heat generated equals heat removed".  The generation curve
+  G(T) is a sigmoid (the rate saturates once the reactant is gone); the
+  removal line R(T) = F cp (T - T_in) is straight (adiabatic: the only sink
+  is the sensible heat that leaves with the product).
+  A straight line can cut a sigmoid THREE times:
+  the extinguished state, an unstable middle state, and the ignited state.
+  Choupo scans, finds them all, prints them, and reports the one nearest
+  `T_guess`.  Change T_guess and the reactor moves to another branch -- the
+  same equipment, the same feed, a different answer.  That is not a
+  numerical defect; it is the physics, and it is why real reactors need a
+  start-up procedure.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        cstr;
+        in          feed;
+        outputs     ( reactorOut );
+        operation
+        {
+            V_R          0.00126615;    // m^3 = 1.29199e-6 m3/s x 980 s (condition 1)
+            thermalMode  adiabatic;     // the removal line is pure sensible heat
+            T_guess      340;            // start point of the Newton: lands on the
+                                         //   IGNITED state; 290 lands on the cold one
+        }
+        reactions   ( hydration_PO );
+    }
+);

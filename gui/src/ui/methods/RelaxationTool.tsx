@@ -108,7 +108,7 @@ export function RelaxationTool(): JSX.Element {
   const verdictText: Record<typeof reg, string> = {
     converges: passes === null ? "" : `converges: the mistake shrinks by a factor ${Math.abs(aEff).toFixed(3)} per pass, about ${passes} passes to gain six digits`,
     "oscillates-out": "does not converge: the effective slope is below -1, so the mistake alternates in sign and grows. A smaller w would pull it back inside (-1, 1)",
-    runaway: "does not converge: the gain is at least 1, so the effective slope is at least 1 for every w from 0 to 1. No relaxation factor rescues this loop",
+    runaway: "does not converge: the gain is at least 1, so the effective slope is at least 1 for every w from 0 to 1. No positive relaxation factor rescues this loop (above a gain of 1 only a reversed step, w < 0, would)",
     neutral: "does not converge: the effective slope is exactly -1 or 1, the mistake neither grows nor shrinks",
   };
 

@@ -167,14 +167,14 @@ void BatchDiafilter::initialise(const DictPtr&       unitDict,
         else if (law == "intermediate") foulingLaw_ = FoulingLaw::Intermediate;
         else if (law == "standard" || law == "complete")
             throw std::runtime_error(
-                "batchDiafilter '" + name() + "': Hermia's `" + law + "` law"
-                " describes a change in pore-INTERNAL geometry, which this"
-                " unit's lumped permeance (one A_eff for the whole membrane)"
-                " cannot represent honestly.  It is REFUSED rather than"
-                " approximated by a neighbouring law that would fit the data"
-                " and mean something else.  Declare `cake` (a deposited layer)"
-                " or `intermediate` (progressive pore blocking) if either"
-                " describes your feed.");
+                "batchDiafilter '" + name() + "': Hermia's `" + law + "` law ("
+                + (law == "standard" ? "pore walls narrowing inside the membrane"
+                                     : "pores sealed at their entrances")
+                + ") is not implemented in this unit.  It is REFUSED rather"
+                " than approximated by a neighbouring law that would fit the"
+                " data and mean something else.  Declare `cake` (a deposited"
+                " layer) or `intermediate` (progressive pore blocking) if"
+                " either describes your feed.");
         else
             throw std::runtime_error(
                 "batchDiafilter '" + name() + "': unknown fouling law '" + law

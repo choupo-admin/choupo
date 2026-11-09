@@ -251,7 +251,8 @@ export interface PatentInputs {
 }
 
 /** The defaults are the apalutamide01_tablets business case: 2121 MUSD x
- *  0.533 x 0.92 = 1039 MEUR, the 19.13 EUR reference price (dossier 3.2,
+ *  0.533 x 0.92 = 1040 MEUR (the dossier rounds an intermediate
+ *  and writes 1039, the default below), the 19.13 EUR reference price (dossier 3.2,
  *  3.3), 0.72546 g a tablet and 14.0 M tablets a year (10156 kg), the
  *  case's projectLife 10 and discountRate 0.10. */
 export function defaultInputs(): PatentInputs {

@@ -67,7 +67,7 @@ export const PLANT_COST_STEPS: readonly LessonStep[] = [
       + "it hides everything it adds. Choupo's engine prints the same "
       + "multiplier as a cross-check line: 3.63 times the sum of the "
       + "purchased costs, labelled as not used in the fixed capital "
-      + "(EconomicsPass.cpp:2970-2971; the print is at line 3523). The "
+      + "(EconomicsPass.cpp:2971-2972; the print is at line 3524). The "
       + "factor can be declared as langFactor.",
     formula: String.raw`F_{\mathrm{L}}=K\,C_{\mathrm{Be}}`,
     where: [
@@ -86,6 +86,11 @@ export const PLANT_COST_STEPS: readonly LessonStep[] = [
       + "insulation, each a fraction f of the purchased equipment cost. The "
       + "indirect costs (engineering and supervision, construction "
       + "expenses, the contractor's fee, the contingency) are fractions g "
+      + "of the direct cost, which is THIS PAGE's convention: Peters, "
+      + "Timmerhaus & West, ch. 6, quote engineering, construction "
+      + "expenses, fee and contingency as percentages of the DELIVERED "
+      + "EQUIPMENT cost, so a value read there must be divided by (1 + the "
+      + "sum of your direct fractions) before it is typed in as a fraction "
       + "of the direct cost. Every fraction is YOUR input. Beside each "
       + "direct input the page prints a pointer, without a number, to the "
       + "chapter that tabulates it (Peters, Timmerhaus & West, ch. 6, by "
@@ -112,10 +117,11 @@ export const PLANT_COST_STEPS: readonly LessonStep[] = [
       + "instruments that kind of item brings with it) to get C_BM, and "
       + "each item's total module cost is 1.18 times that (contingency "
       + "and fee: CostingModel.H:69, used at Turton.cpp:722). The fixed "
-      + "capital is then 1.18 times the sum of the C_BM plus a site "
+      + "capital is then 1.18 times the sum of the C_BM (plus any declared buildings cost, "
+      + "zero here) plus a site "
       + "factor, default 0.50, times the sum of the base-case C_BM, for "
       + "the site development and the auxiliary facilities "
-      + "(EconomicsPass.cpp:2963, the default at :2821). On this page the "
+      + "(EconomicsPass.cpp:2964, the default at :2822). On this page the "
       + "items are at base conditions, so the base-case sum equals the "
       + "C_BM sum; the engine takes each item's material and pressure "
       + "factors into account and the page does not. The equipment list "
@@ -148,16 +154,16 @@ export const PLANT_COST_STEPS: readonly LessonStep[] = [
       + "cost to make it, receivables at the SALES price, a minimum cash "
       + "(zero here, the engine has it), less payables to suppliers; a day "
       + "of an annual figure is 1/365 of it, as in the engine "
-      + "(EconomicsPass.cpp:216). A fraction of the annual sales. A "
+      + "(EconomicsPass.cpp:217). A fraction of the annual sales. A "
       + "fraction of the fixed capital (the engine's fallback is 0.15, "
-      + "EconomicsPass.cpp:2773). They answer one question and give "
+      + "EconomicsPass.cpp:2774). They answer one question and give "
       + "different numbers; the page prints the spread. A book may "
       + "quote working capital as a share of the TOTAL capital investment, "
       + "which is a different base from the fixed capital: a share x of "
       + "the total is x/(1-x) of the fixed (the page converts it; it "
       + "gives no share, declare yours with your source). The itemised "
       + "build-up is the engine's `workingCapital { ... }` model "
-      + "(buildWorkingCapital, EconomicsPass.cpp:240; it takes product "
+      + "(buildWorkingCapital, EconomicsPass.cpp:241; it takes product "
       + "stock from the case's storage tanks, which this page replaces by "
       + "days). The Economics errors page, class 5, shows the same three "
       + "methods differing by an order of magnitude on another plant.",
@@ -192,10 +198,10 @@ export const PLANT_COST_STEPS: readonly LessonStep[] = [
       + "equal total payments (annuity) or equal principal (linear). The "
       + "table below is that schedule year by year. It is the schedule the "
       + "engine writes to reports/economics/financing.csv when a case "
-      + "declares financing { } (EconomicsPass.cpp:555): draws at the end "
-      + "of each construction year (:1896), construction interest "
-      + "capitalised (:1908), interest paid on the opening balance in "
-      + "operation (:1929). One difference: the page spreads the draws "
+      + "declares financing { } (EconomicsPass.cpp:556): draws at the end "
+      + "of each construction year (:1897), construction interest "
+      + "capitalised (:1909), interest paid on the opening balance in "
+      + "operation (:1930). One difference: the page spreads the draws "
       + "evenly over the construction years, the engine follows the case's "
       + "capital schedule. With a one-year construction the whole outlay "
       + "is made at its end and no interest accrues, as in the engine. The "
@@ -249,17 +255,19 @@ export const PLANT_COST_QUIZ: readonly QuizQuestion[] = [
   },
   {
     id: "factor-base",
-    q: "The direct items are fractions of the purchased equipment cost; the indirect items of the direct cost. If you apply the indirect fractions to the equipment cost instead, what happens?",
+    q: "On this page the direct items are fractions of the purchased equipment cost and the indirect items fractions of the direct cost (Peters, Timmerhaus & West quote the indirect items on the equipment cost). If you type a book's equipment-based indirect fractions into the page without re-basing them, what happens?",
     options: [
       "Nothing: the base does not matter",
-      "The indirect costs are understated, because the direct cost is larger than the equipment cost",
-      "The indirect costs are overstated",
+      "The indirect costs are understated",
+      "The indirect costs are overstated, because the direct cost is larger than the equipment cost the fractions were measured on",
       "The fixed capital is unchanged but the working capital changes",
     ],
-    correct: 1,
+    correct: 2,
     feedback: "A fraction is only meaningful with its base. The direct cost is "
-      + "the equipment times (1 + the sum of the direct fractions), so the "
-      + "same fractions on the equipment cost alone give a smaller number.",
+      + "the equipment times (1 + the sum of the direct fractions), so a "
+      + "fraction that was measured on the equipment cost, applied here to "
+      + "the larger direct cost, overstates the indirect costs. Re-base it "
+      + "first: divide by (1 + the sum of the direct fractions).",
     steps: [3],
   },
   {

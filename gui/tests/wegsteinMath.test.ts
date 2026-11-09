@@ -117,13 +117,31 @@ describe("the transcription of Wegstein::step", () => {
     expect(v[0]!.why).toBe("slope ~ 1");
   });
 
-  it("a positive raw q is clamped away by q_max = 0 (the wrong direction)", () => {
-    //  s = 1.5 > 1: not a contraction, q = 3 -- a step AWAY from the image.
+  it("a positive raw q is clamped away by q_max = 0 (a reversed step is refused)", () => {
+    //  s = 1.5 > 1: the fixed point (0) REPELS direct substitution, and
+    //  q = s/(s-1) = 3 reverses the direct step.  C259 (2026-11-09): this arm
+    //  used to call that "a step AWAY from the image ... the wrong
+    //  direction", and the page said a positive q "sends the iterate away
+    //  from the answer".  On a linear map that is false -- the reversed step
+    //  lands EXACTLY on the fixed point -- so the arm now pins both halves:
+    //  what the clamp does, and what the unclamped step would have done.
     const g = (x: number) => 1.5 * x;
     const v = wegsteinStep([2], [g(2)], { x: [1], gx: [g(1)] }, -5, 0);
     expect(v[0]!.qRaw).toBeCloseTo(3, 12);
     expect(v[0]!.q).toBe(0);
     expect(v[0]!.next).toBe(g(2));      // falls back to direct substitution
+    //  Unclamped: 3*2 + (1-3)*3 = 0, the fixed point of g, in one step.
+    const open = wegsteinStep([2], [g(2)], { x: [1], gx: [g(1)] }, -5, 10);
+    expect(open[0]!.q).toBeCloseTo(3, 12);
+    expect(open[0]!.next).toBeCloseTo(0, 12);
+    //  The page's own example: G(x) = 2x - 2, from x = 5.  Direct
+    //  substitution goes to 8; Wegstein (q = 2) goes to 2 = x*.
+    const G = (x: number) => 2 * x - 2;
+    const w = wegsteinStep([5], [G(5)], { x: [4], gx: [G(4)] }, -5, 10);
+    expect(G(5)).toBe(8);
+    expect(w[0]!.q).toBeCloseTo(2, 12);
+    expect(w[0]!.next).toBeCloseTo(2, 12);
+    expect(G(2)).toBe(2);
   });
 
   it("each variable is accelerated by its OWN history and no other", () => {

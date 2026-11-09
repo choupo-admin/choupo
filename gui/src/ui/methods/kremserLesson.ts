@@ -98,10 +98,13 @@ export const KREMSER_STEPS: readonly LessonStep[] = [
         + "run 309-315 K against a feed at 298 K" },
     ],
     note: "A > 1: the operating line is steeper than the equilibrium line, "
-      + "the two diverge going up the column, and more stages keep buying "
-      + "recovery.  A < 1: they converge, the staircase pinches, and no "
-      + "number of stages will finish the job — you need more solvent or a "
-      + "better one, not a taller column.  A ≈ 1.4 is the classical economic "
+      + "so the two open out towards the rich end at the bottom and close "
+      + "towards the lean end at the top — every extra stage keeps buying "
+      + "recovery, and the limit of infinitely many stages is complete "
+      + "recovery.  A < 1: the lines close towards the BOTTOM, the staircase "
+      + "pinches against the entering gas (the leaving solvent is saturated), "
+      + "and no number of stages will finish the job — you need more solvent "
+      + "or a better one, not a taller column.  A ≈ 1.4 is the classical economic "
       + "compromise between solvent pumping and column height.",
   },
   {

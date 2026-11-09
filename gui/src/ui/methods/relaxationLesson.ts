@@ -146,16 +146,22 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
           + "factor appears alone. It stays above -1 exactly when w is "
           + "smaller than 2 over 1 - a.",
         eq: String.raw`a_{\mathrm{eff}} = 1 - w\,(1 - a) \;>\; -1 \iff w < \frac{2}{1 - a}`},
-      { step: "For a gain of 1 or more the product w (1 - a) is zero or "
-          + "negative, so the effective slope is at least 1: there is no "
-          + "w that contracts.",
-        eq: String.raw`a \ge 1 \;\Rightarrow\; a_{\mathrm{eff}} = 1 + w\,(a - 1) \;\ge\; 1`},
+      { step: "For a gain of 1 or more and any POSITIVE w the product "
+          + "w (1 - a) is zero or negative, so the effective slope is at "
+          + "least 1: there is no positive w that contracts.",
+        eq: String.raw`a \ge 1,\ w > 0 \;\Rightarrow\; a_{\mathrm{eff}} = 1 + w\,(a - 1) \;\ge\; 1`},
+      { step: "A NEGATIVE factor is a different matter: for a > 1 it reverses "
+          + "the step, and w = 1/(1 - a) < 0 makes the effective slope zero "
+          + "(a = 2, w = -1: a_eff = 0). That reversed step is what "
+          + "Wegstein's q = 1 - w > 1 does, and what the recycle clamp "
+          + "refuses (next page, step 6). Only a = 1 has no factor at all.",
+        eq: String.raw`a > 1:\ \ w = \frac{1}{1 - a} < 0 \;\Rightarrow\; a_{\mathrm{eff}} = 0`},
     ],
-    formula: String.raw`a < 1:\ \ 0 < w < \frac{2}{1 - a} \qquad\qquad a \ge 1:\ \ \text{no } w \text{ converges}`,
+    formula: String.raw`a < 1:\ \ 0 < w < \frac{2}{1 - a} \qquad\qquad a \ge 1:\ \ \text{no } w > 0 \text{ converges}`,
     where: [],
     note: "The third figure draws exactly this: the (a, w) plane, the band "
       + "where the iteration contracts, and the region a > 1 shaded because "
-      + "no w converges there.",
+      + "no positive w converges there (the figure draws only w > 0).",
   },
   {
     n: 4,

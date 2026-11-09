@@ -43,9 +43,9 @@ License
   SELF-FEEDING (the Methods-workspace contract): the DEFAULT mode is
   STANDALONE — the tool runs the ENGINE itself, in the browser
   (choupoSolve WASM), on its own witness
-      tutorials/steady/reactors/cstr05_multiplicity
-  (bundled identifier "steady/reactors/cstr05_multiplicity"), with a compact
-  knob panel writing DECLARED dict scalars through methodRun's textual
+      tutorials/steady/reactors/cstr08_furusawa_bistable
+  (bundled identifier "steady/reactors/cstr08_furusawa_bistable"), with a
+  compact knob panel writing DECLARED dict scalars through methodRun's textual
   ScalarOverride.  When the app's CURRENT run carries a servable CSTR
   profile (the G_kW + R_kW column pair), a source toggle offers "Current
   run" beside the classroom witness.
@@ -293,30 +293,34 @@ export function interpolateAt(
 //     witness does not declare — that is authoring new dict content, not
 //     turning a declared knob.
 //   * `P` in 0/feed — declared and addressable (pinned: it DOES resolve).
-//     It used to be called a placebo (P never reached the physics); since
-//     C73/C77 it does -- at 1 atm the product boils inside the energy balance
-//     and the hot branch drops from ~406 K to ~361 K -- so leaving it out is
-//     a curator's pedagogical choice, not a placebo argument (DEV.md 4c C77).
+//     Since C73/C77 it reaches the physics (a product that boils enters the
+//     energy balance); this witness runs at 1 atm and stays liquid on every
+//     branch, so leaving P out is a curator's pedagogical choice, not a
+//     placebo argument (DEV.md 4c C77).
 //   * the Arrhenius `A` and `Ea` in constant/reactions — both addressable
 //     (pinned: they DO resolve), deliberately not exposed.  Two reasons: the
 //     Van Heerden construction is an OPERATING one (same equipment, same
-//     chemistry, a different start-up), and the witness's reaction header
-//     states its kinetics are "a teaching variant" whose pre-exponential was
-//     "retuned so that k(350 K) is unchanged" — a knob that silently breaks
-//     that calibration would leave the tool teaching a case other than the
-//     one it names.
+//     chemistry, a different start-up), and the witness's kinetics are a
+//     MEASURED rate law (Furusawa, Nishimura & Miyauchi 1969, Eq. 11) — a
+//     knob that silently changed them would leave the tool teaching a case
+//     other than the one it cites.
 //
 // One DIFFERENCE from the Levenspiel witnesses, recorded because it looks
 // like a contradiction: cstr01 declares `operation { V_R 0.005; }` INLINE on
-// one line, out of the line-anchored grammar's reach — cstr05 declares the
-// same key on its OWN line inside a multi-line `operation { … }` block, so
-// here V_R IS addressable and IS a knob.  The absence over there was never
+// one line, out of the line-anchored grammar's reach — this witness declares
+// the same key on its OWN line inside a multi-line `operation { … }` block,
+// so here V_R IS addressable and IS a knob.  The absence over there was never
 // about the key; it was about the line.
 
 /** Bundled identifier of the witness ("<category>/<subclass>/<case>" —
  *  steady is a sub-classed category, so the `reactors` segment is part of
  *  it). */
-export const VAN_HEERDEN_WITNESS = "steady/reactors/cstr05_multiplicity";
+//  C259: the witness was cstr05_multiplicity until 2026-11-09.  Since the
+//  acetic-acid correction its esterification is nearly thermoneutral and it
+//  has ONE steady state at every knob setting, so a page about three had
+//  none to show.  cstr08 runs a measured exothermic rate law and the engine
+//  finds three (its golden pins steadyStates 3).
+export const VAN_HEERDEN_WITNESS = "steady/reactors/cstr08_furusawa_bistable";
 
 export interface VanHeerdenKnob {
   /** Stable id — the key of the knob-value state bag. */
@@ -341,30 +345,36 @@ export interface VanHeerdenKnob {
 }
 
 export const VAN_HEERDEN_KNOBS: readonly VanHeerdenKnob[] = [
-  // cstr05 declares `T_guess 380;` BARE (the K is implied by the dimension
+  // cstr08 declares `T_guess 340;` BARE (the K is implied by the dimension
   // check), so the dict unit is the empty word and the label carries the K.
   { id: "T_guess", label: "T_guess (K) — which branch is reported",
     file: "system/flowsheetDict", key: "T_guess",
-    def: 380, min: 280, max: 430, step: 2.5, unit: "",
+    def: 340, min: 280, max: 360, step: 1, unit: "",
     why: "the engine reports the root NEAREST this temperature — the same "
       + "equipment and feed, a different answer; watch the reported marker "
       + "jump" },
   { id: "feedT", label: "feed T", file: "0/feed", key: "T",
-    def: 300, min: 280, max: 360, step: 1, unit: "K",
-    why: "the feed enters cold, where the rate is negligible; raise it and "
-      + "the removal line slides along with the whole balance" },
-  { id: "ethanol", label: "feed ethanol (limiting)", file: "0/feed",
-    key: "ethanol", def: 0.5, min: 0.1, max: 2, step: 0.05, unit: "kmol/h",
+    def: 284.3, min: 270, max: 310, step: 0.1, unit: "K",
+    why: "the feed enters cold, where the rate is small; raise it and the "
+      + "removal line slides along with the whole balance (the paper's "
+      + "condition 3 is 297.1 K)" },
+  { id: "oxide", label: "feed propylene oxide (limiting)", file: "0/feed",
+    key: "12PropyleneOxide", def: 0.01, min: 0.002, max: 0.02, step: 0.0005,
+    unit: "kmol/h",
     why: "how much chemical energy the feed carries, and how steep the "
       + "removal line is" },
-  { id: "aceticAcid", label: "feed acetic acid", file: "0/feed",
-    key: "aceticAcid", def: 0.5, min: 0.1, max: 2, step: 0.05, unit: "kmol/h",
-    why: "the co-reactant — it dilutes and it carries sensible heat" },
-  // `V_R 0.005;` is declared bare too (m³ lives in the dict's comment).
+  { id: "water", label: "feed water", file: "0/feed",
+    key: "water", def: 0.1794213, min: 0.05, max: 0.4, step: 0.005,
+    unit: "kmol/h",
+    why: "the co-reactant and the diluent — it carries most of the sensible "
+      + "heat" },
+  // `V_R 0.00126615;` is declared bare too (m³ lives in the dict's comment).
   { id: "V_R", label: "reactor volume V_R (m³)", file: "system/flowsheetDict",
-    key: "V_R", def: 0.005, min: 0.001, max: 0.02, step: 0.001, unit: "",
+    key: "V_R", def: 0.00126615, min: 0.0005, max: 0.003, step: 0.00005,
+    unit: "",
     why: "residence time: it stretches the generation sigmoid against a "
-      + "removal line that does not move" },
+      + "removal line that does not move (0.00172 m³ is the paper's "
+      + "condition 2, 0.00200 m³ its condition 3)" },
 ];
 
 export type VanHeerdenKnobValues = { [id: string]: number };
@@ -406,9 +416,10 @@ const PROVENANCE =
 // engine to notice: text is placed where it is told and overlaps in silence.
 //
 // REPRODUCED AND MEASURED, in Chromium, on this frame's own geometry fed with
-// the REAL engine output (native choupoSolve on the witness
+// the REAL engine output (native choupoSolve on the then witness
 // cstr05_multiplicity: T over 275–431.707 K, roots at 300.425 / 345.541 /
-// 405.904 K, the third reported).  In a 1021x637 mount at the app's own font:
+// 405.904 K, the third reported -- a run that case no longer produces since
+// the acetic-acid correction; the measurement of the LAYOUT stands).  In a 1021x637 mount at the app's own font:
 //
 //     OLD   "G(T) — heat generated"  x 778.5  w 156.7
 //           "405.9 K — reported"     x 806.0  w 132.3   ->  129.2 px of

@@ -151,8 +151,10 @@ export const COLUMN_CONTROL_STEPS: readonly LessonStep[] = [
         + "and a pressure move shifts the temperature with no composition "
         + "change at all.  AND READ THE SUBSCRIPT AGAINST THE OUTPUT: the "
         + "engine publishes a KPI also called `T_top`, and it is specifically "
-        + "STAGE 1 — which in Choupo's numbering is the CONDENSER, not a "
-        + "tray at all.  The temperature on this page is whichever "
+        + "STAGE 1 — which, under the default total condenser, is the TOP "
+        + "TRAY (the condenser above it is not a stage; with `condenser { "
+        + "type partial; }` stage 1 is the condenser).  The temperature on "
+        + "this page is whichever "
         + "rectifying tray carries the sensor, and step 4 exists precisely "
         + "because that is usually NOT the top one: the top tray is where the "
         + "profile is flattest and a sensor there is nearly deaf.",
@@ -162,7 +164,8 @@ export const COLUMN_CONTROL_STEPS: readonly LessonStep[] = [
         + "BOTTOM composition — a tray temperature in the stripping section, "
         + "under exactly the same proxy caveat as T_top.  The engine's "
         + "matching KPI is spelt `T_bottom` (there is no `T_bot` key), and "
-        + "it carries the same warning: it is stage N, the reboiler itself.",
+        + "it carries the same warning: it is stage N, the partial reboiler "
+        + "— an equilibrium stage, not a tray.",
         unit: "K" },
       { sym: "\\leftarrow",
         means: "Reads 'is controlled by': the quantity on the left "
@@ -199,9 +202,11 @@ export const COLUMN_CONTROL_STEPS: readonly LessonStep[] = [
 \end{array}`,
     where: [
       { sym: "n", means: "The STAGE index — which tray, counted down the "
-        + "column.  The candidates are the trays only: stage 1 is the "
-        + "condenser and the last stage the reboiler, and neither is a place "
-        + "to put a control sensor.", unit: "dimensionless (a stage number)" },
+        + "column.  The candidates are the trays only: under the default "
+        + "total condenser that is stages 1 to N−1 (stage 1 is the top tray), "
+        + "under a partial condenser stages 2 to N−1 (stage 1 is the "
+        + "condenser); the last stage is the reboiler, not a place to put a "
+        + "tray sensor.", unit: "dimensionless (a stage number)" },
       { sym: "n^*", means: "The stage the criterion SELECTS — the answer, the "
         + "tray you would put the thermocouple on.", unit: "stage number" },
       { sym: "\\mathrm{argmax}_n",
@@ -215,7 +220,8 @@ export const COLUMN_CONTROL_STEPS: readonly LessonStep[] = [
         unit: "K" },
       { sym: "\\Delta T", means: "The temperature RESPONSE of a stage: the "
         + "difference between the perturbed run and the base run at that "
-        + "stage.  It is SIGNED on purpose — the response changes sign "
+        + "stage.  It is SIGNED on purpose — for a handle that moves the "
+        + "internal flows (L and V together) the response changes sign "
         + "somewhere between the two ends, and a sensor at the crossing is "
         + "nearly deaf to the handle however steep the profile looks there.",
         unit: "K" },
@@ -230,11 +236,15 @@ export const COLUMN_CONTROL_STEPS: readonly LessonStep[] = [
         + "same Δu serves every tray, so the argmax ranks the trays by that "
         + "gain.", unit: "u's own" },
     ],
-    note: "The sign is where the trap lives.  The temperature response "
-      + "changes sign somewhere between the two ends of the column, and a "
-      + "sensor sitting at that crossing is nearly deaf to the handle however "
-      + "steep the profile looks there — which the slope criterion cannot "
-      + "warn you about, because it never asks the handle a question.  Note "
+    note: "The sign is where the trap lives.  For a handle that moves L and "
+      + "V together — sharpening the separation, the reflux handle here — the "
+      + "temperature response changes sign somewhere between the two ends of "
+      + "the column, and a sensor sitting at that crossing is nearly deaf to "
+      + "the handle however steep the profile looks there — which the slope "
+      + "criterion cannot warn you about, because it never asks the handle a "
+      + "question.  A handle that shifts the whole profile (the distillate "
+      + "handle here) need not change sign at all, and on the witness it "
+      + "does not: check where the sign changes, if it does.  Note "
       + "also what the substitution assumes: temperature stands for "
       + "composition exactly only for a ZEOTROPIC binary at a fixed "
       + "pressure — an azeotropic one gives two compositions the same "
@@ -255,11 +265,12 @@ export const COLUMN_CONTROL_STEPS: readonly LessonStep[] = [
       + "LV — hold ONE composition and let the other float on a fixed flow.  "
       + "It removes the interaction of step 3 completely, because there is "
       + "only one quality loop left to interact.  It costs energy, since the "
-      + "floating end is over-purified most of the time, and it is very "
-      + "commonly the right engineering answer.",
+      + "floating end is over-purified most of the time — and Choupo's "
+      + "Design Guide record treats it as the default to start from (the "
+      + "Cited heuristics view prints that record with its limits).",
     note: "Dual-composition control is what the textbooks analyse and it is "
       + "what makes this a 2×2 problem in the first place, so it is easy to "
-      + "leave a course believing it is the norm.  It is not, and knowing "
+      + "leave a course believing it is the only serious option.  Knowing "
       + "that a defensible structure can simply decline half the problem is "
       + "worth as much as knowing the names of the other five.  What the "
       + "single-ended option does NOT tell you is which end to hold, or what "

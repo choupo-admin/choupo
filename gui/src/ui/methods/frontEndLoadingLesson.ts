@@ -67,8 +67,8 @@ export const FEL_STEPS: readonly LessonStep[] = [
     n: 2,
     title: "The stages are numbered differently by different sources",
     body: "Do not memorise one numbering as the truth.  One family of "
-      + "sources, the Wikipedia article on front-end loading citing CII's "
-      + "Best Practices Guide (2012), counts five phases, FEL 0 to FEL 4: "
+      + "sources, the Wikipedia article on front-end loading (which carries "
+      + "no inline citation for the list), counts five phases, FEL 0 to FEL 4: "
       + "conceptualization, feasibility evaluation, preliminary design, "
       + "basic design, and project execution.  Other owner practice counts "
       + "three front-end stages: FEL-1 concept screening, FEL-2 feasibility "

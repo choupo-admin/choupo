@@ -280,8 +280,13 @@ export const LS_STEPS: readonly LessonStep[] = [
       + "(FitParameters.cpp:1018), and the run publishes `params_at_bound` so "
       + "that a parameter pressed against a limit you invented is visible "
       + "rather than silent. And convergence is declared on the RELATIVE fall "
-      + "in the objective, against the `tolerance` the dict declares — not on "
-      + "the size of the step and not on the residual itself.",
+      + "in the objective, against the `tolerance` the dict declares "
+      + "(FitParameters.cpp:1038) — or, when a step is REJECTED and every "
+      + "component of it is already below a thousandth of the "
+      + "finite-difference step the Jacobian was built with, the search is "
+      + "declared converged at that floor rather than inflating lambda to a "
+      + "false 'diverged' (FitParameters.cpp:1042). Never on the size of the "
+      + "residual itself.",
   },
   {
     n: 6,

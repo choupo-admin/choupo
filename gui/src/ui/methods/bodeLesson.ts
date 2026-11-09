@@ -117,9 +117,10 @@ export const BODE_STEPS: readonly LessonStep[] = [
           + "phases — that is what a complex product is.",
         eq: String.raw`\lvert G_1 G_2 \rvert = \lvert G_1 \rvert \lvert G_2 \rvert \qquad \angle(G_1 G_2) = \angle G_1 + \angle G_2`},
       { step: "So take 20·log10 of the magnitude and it adds as well.  The "
-          + "factor 20 (not 10) is historical, from power ratios; what "
-          + "matters here is only that it is a FIXED multiple of the "
-          + "logarithm.",
+          + "factor is 20, not 10, because the decibel is defined on POWER, "
+          + "10·log10(P2/P1), and power goes as the square of amplitude: "
+          + "10·log10(AR²) = 20·log10(AR).  For what follows, what matters "
+          + "is only that it is a FIXED multiple of the logarithm.",
         eq: String.raw`\mathrm{dB} = 20 \log_{10}(\mathrm{AR})`},
       { step: "Two landmarks worth memorising, both recomputable on any "
           + "calculator: unity is the zero of the axis, and a halving of "
@@ -285,12 +286,15 @@ G(i\omega) &= \frac{1}{1 + i\omega\tau}\\[4pt]
     body: "A PID controller has a frequency response like anything else, "
       + "and reading it explains the two things students are told to "
       + "memorise.  INTEGRAL action is huge at low frequency (it is what "
-      + "kills offset) and contributes −90° of phase there — it is the term "
-      + "that destabilises.  DERIVATIVE action grows at high frequency and "
-      + "contributes up to +90° — it is the term that buys phase back, and "
-      + "the term that amplifies measurement noise, for the same reason.  "
-      + "Between them lies a band where the two cancel and the controller "
-      + "is a pure gain.",
+      + "kills offset) and contributes up to −90° of phase there — it is "
+      + "the term that COSTS PHASE MARGIN (gain alone can destabilise a "
+      + "loop too; integral action makes it happen at a lower gain).  "
+      + "DERIVATIVE action grows at high frequency and contributes up to "
+      + "+90° — it is the term that buys phase back, and the term that "
+      + "amplifies measurement noise, for the same reason.  Between them, "
+      + "at ω = 1/√(τ_I·τ_D), the two cancel and the controller is a pure "
+      + "gain — a single frequency, widening into a band of nearly pure "
+      + "gain only when τ_I is much larger than τ_D.",
     derivation: [
       { step: "The textbook ideal form — the one most published tuning "
           + "rules are written in (some are given for the series or the "
@@ -330,14 +334,18 @@ K_p &= K_c &\qquad K_i &= \frac{K_c}{\tau_I} &\qquad K_d &= K_c \tau_D
       { sym: "K_p \\,/\\, K_i \\,/\\, K_d",
         means: "the three gains Choupo's dict "
         + "actually declares, in the parallel form u = u_bias + K_p·e + "
-        + "K_i·∫e·dt − K_d·d(PV)/dt (src/control/PIDController.cpp:123-127)",
-        unit: "K_p [-], K_i [1/s], K_d [s]" },
+        + "K_i·∫e·dt − K_d·d(PV)/dt (src/control/PIDController.cpp:123-127).  "
+        + "e is in the measured variable's (PV's) unit and u in the "
+        + "manipulated variable's (MV's), so K_p is dimensionless only when "
+        + "the two share a unit",
+        unit: "K_p [MV/PV], K_i [MV/(PV·s)], K_d [MV·s/PV]" },
     ],
     note: "What is drawn here is the IDEAL derivative term.  The controller "
       + "the engine runs differentiates the MEASURED variable over one time "
       + "step, not the error (src/control/PIDController.cpp:115-120), which is a "
-      + "different object at high frequency and has no set-point response "
-      + "at all.  It also freezes its integral when the actuator saturates "
+      + "different object at high frequency, and its derivative term has no "
+      + "set-point response (no derivative kick) — the P and I terms still "
+      + "act on the error (src/control/PIDController.cpp:123-127).  It also freezes its integral when the actuator saturates "
       + "(src/control/PIDController.cpp:135), which is not a linear "
       + "operation and therefore has no "
       + "frequency response whatsoever.  A Bode diagram is a statement "

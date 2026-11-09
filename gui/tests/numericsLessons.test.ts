@@ -218,6 +218,27 @@ describe("each page SAYS the engine fact it rests on", () => {
     expect(weg).toMatch(/toy/i);
   });
 
+  it("Wegstein: the tear vector counts the pressure, in both branches", () => {
+    //  C259: the engine packs P since DEV.md 4c C186 (5); the page had kept
+    //  N_c + 2 / N_c + 1 and a limit saying the pressure is NOT torn.
+    const step2 = WEGSTEIN_STEPS.find((s) => s.n === 2)!;
+    expect(step2.formula).toMatch(/N_c \+ 3 \\text\{ numbers\}/);
+    expect(step2.formula).toMatch(/N_c \+ 2 \\text\{ numbers\}/);
+    expect(step2.formula).not.toMatch(/N_c \+ 1/);
+    expect(allText(WEGSTEIN_STEPS.find((s) => s.n === 7)!))
+      .toMatch(/2 \(N_c \+ 2\)/);
+    expect(weg).not.toMatch(/pressure\s+(and the phase split )?(are|is) NOT torn/i);
+  });
+
+  it("Wegstein: a positive q is not taught as the wrong direction", () => {
+    //  C259: for a linear map with slope s > 1, q = s/(s-1) > 1 lands
+    //  EXACTLY on the fixed point (wegsteinMath.test.ts pins it); the clamp's
+    //  reason is distrust of the secant on a non-linear sweep.
+    expect(weg).not.toMatch(/away from the answer|wrong direction/i);
+    expect(weg).toMatch(/REPELS direct substitution/);
+    expect(weg).toMatch(/non-linear/);
+  });
+
   it("QP: the engine's own self-check is named as the anchor", () => {
     expect(qp).toMatch(/1e-9|1 in 10\^9/);
     expect(qp).toMatch(/self-check|asserts/i);
@@ -437,6 +458,23 @@ describe("every file:line these pages cite into the engine resolves", () => {
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 3589, "latent under-convergence"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 3627, "/ scale[i]"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 1873, "mixes flows and"],
+    //  C259 (2026-11-09): the pressure is a tear variable in both branches
+    //  (DEV.md 4c C186 (5)), and the pages had kept the pre-C186 counts.
+    //  These hold the lines the corrected counts rest on.  The Wegstein page's
+    //  step-2 and step-8 citations used to be bare ":NNNN" forms, which the
+    //  regex above does not read, so five of them had drifted unseen; they
+    //  now carry the file name and are held here.
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 1797, "PRESSURE IS A TEAR VARIABLE"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 1802, "v.push_back(s.P / 1.0e5)"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 1847, "s.P = v[off] * 1.0e5"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 1858, "scalar normL2("],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3529, "pressure is a tear variable"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3603, "// P"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3711, "the phase proxy"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3330, "γ-info"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3447, "|dQ/Q|"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3116, "FAILED solve"],
+    ["src/solver/NewtonND.cpp", 189, "central finite differences"],
     //  291, not 290: the engine gained a comment line above it and the
     //  anchor was left behind.  The lesson's own citation is the RANGE
     //  288-291 and still covers it; this list holds the ONE line that must
@@ -454,6 +492,10 @@ describe("every file:line these pages cite into the engine resolves", () => {
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 4966, "OFF-CYCLE TEAR"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 5023, "[plan] material recycle"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 4907, "c <= p->second"],
+    //  C259: the plan is validated AFTER 0/ is read and seeded and before any
+    //  unit solves (tearLesson step 7, caseAssemblyLesson step 3).
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 2201, "StreamStateIO::readStateDir(\"0\""],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 2586, "validateSequentialPlan(tears"],
     // --- the QP
     ["src/solver/ActiveSetQP.cpp", 152, "N&W Algorithm 16.3"],
     ["src/solver/ActiveSetQP.cpp", 409, "N&W eq. 16.41"],
@@ -479,6 +521,10 @@ describe("every file:line these pages cite into the engine resolves", () => {
     ["src/propertyOps/FitParameters.cpp", 1018, "std::clamp(trial[j].value"],
     ["src/propertyOps/FitParameters.cpp", 1036, "lambda *= 0.7"],
     ["src/propertyOps/FitParameters.cpp", 1043, "lambda *= 2.5"],
+    //  C259: the two convergence declarations (relative fall on an accepted
+    //  step; the step floor on a rejected one, C245).
+    ["src/propertyOps/FitParameters.cpp", 1038, "if (rel < tol) { converged = true; break; }"],
+    ["src/propertyOps/FitParameters.cpp", 1042, "1.0e-3 * fdStep"],
     ["src/propertyOps/FitParameters.cpp", 671, "lambda0"],
     // --- least squares: the apparatus around it, which is the actual lesson
     ["src/propertyOps/FitParameters.cpp", 534, "EvidencePartition::read"],

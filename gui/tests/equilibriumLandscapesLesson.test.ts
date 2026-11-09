@@ -105,7 +105,7 @@ describe("the equilibrium-landscapes lesson", () => {
 
   it("draws the GLOBAL caveat on thermal NO and calls it a model limitation", () => {
     const s = all(5);
-    expect(s).toContain("GibbsReactor.cpp:413–412");
+    expect(s).toContain("GibbsReactor.cpp:414–416");  // C259: was the reversed "413–412"
     expect(s).toContain("reports MORE NO than the true equilibrium");
     expect(s).toContain("LIMITATION OF THE SINGLE-NUMBER MODEL, NOT A FINDING ABOUT FLAMES");
     expect(prose(step(5).formula!)).toContain(String.raw`\ce{N2 + O2 <=> 2 NO}`);
@@ -116,7 +116,11 @@ describe("the equilibrium-landscapes lesson", () => {
     //  N2 + 3 H2 at 298 K as the biological reaction teaches Haber-Bosch
     //  chemistry at ambient conditions, which is a different lesson.
     const s = all(6);
-    expect(s).toContain("There is no hydrogen on the biological route");
+    //  C259: "no hydrogen" was true of the FEED and false of the enzyme,
+    //  which evolves about one H2 per N2 as an obligatory by-product.  The
+    //  pin now holds both halves: none fed, and the by-product named.
+    expect(s).toContain("No hydrogen is FED on the biological route");
+    expect(s).toContain("obligatory by-product, about one H₂ per N₂ fixed");
     expect(s).toContain("PROTONS and ELECTRONS");
     expect(s).toContain("balanced by electron count");
     const f = prose(step(6).formula!);
@@ -140,7 +144,7 @@ describe("the equilibrium-landscapes lesson", () => {
     //  310.15 K, and on a gibbsMap with glucose beside gases.
     expect(s).toContain("h_formation liquid leg needs liquidHeatCapacity");
     expect(s).toContain("wrong by a heat of sublimation");
-    expect(s).toContain("Component.cpp:1538–1550");
+    expect(s).toContain("Component.cpp:1566–1578");  // C259: the refusal moved; 1538 is now rung()
     expect(s).toContain("Reaction.cpp:136–149");
     expect(s).toContain("Formula.cpp:485–496");
   });

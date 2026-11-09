@@ -55,6 +55,7 @@ import {
   bestOrder, cycleString, cyclesOf, isInternal, judgeDeclaration, judgePlan,
   planAnnouncements, planFindings, withdrawTearOverrides,
 } from "../src/ui/methods/tearMath.js";
+import { TEAR_STEPS } from "../src/ui/methods/tearLesson.js";
 import { applyKeyRename, methodCase } from "../src/case/methodRun.js";
 import { tutorialByName } from "../src/cases/tutorials.js";
 
@@ -189,20 +190,39 @@ describe("what a cut costs", () => {
     const g = byId("rsr");
     const v = judgePlan(g, g.declaredOrder);
     expect(v.tears).toHaveLength(1);
-    //  4 components: Wegstein (F, z1..z4, T) = 6; Newton (F1..F4, T) = 5.
-    expect(v.variablesWegstein).toBe(6);
-    expect(v.variablesNewton).toBe(5);
+    //  4 components: Wegstein (F, z1..z4, T, P) = 7; Newton (F1..F4, T, P) = 6.
+    //  C259 (2026-11-09): these were 6 / 5 / 10, the counts from before the
+    //  pressure became a tear variable (DEV.md 4c C186 (5)); the engine packs
+    //  P in both branches (Flowsheet.cpp:1802 and :3529), so the pinned
+    //  numbers had frozen the stale arithmetic rather than the engine's.
+    expect(v.variablesWegstein).toBe(7);
+    expect(v.variablesNewton).toBe(6);
     //  Two central-difference sweeps per Newton variable.
-    expect(v.sweepsPerNewtonStep).toBe(10);
+    expect(v.sweepsPerNewtonStep).toBe(12);
   });
 
   it("a second tear doubles both counts", () => {
     const g = byId("independent");            // 5 components, 2 tears
     const v = judgePlan(g, g.declaredOrder);
     expect(v.tears).toHaveLength(2);
-    expect(v.variablesNewton).toBe(2 * 6);
-    expect(v.variablesWegstein).toBe(2 * 7);
-    expect(v.sweepsPerNewtonStep).toBe(24);
+    //  Per tear: Newton 5 + 2 = 7, Wegstein 5 + 3 = 8 (C259: were 6 and 7,
+    //  pre-C186).  So the second tear costs Newton 2 x 7 = 14 sweeps per
+    //  step -- the "fourteen" tearLesson step 5 states.
+    expect(v.variablesNewton).toBe(2 * 7);
+    expect(v.variablesWegstein).toBe(2 * 8);
+    expect(v.sweepsPerNewtonStep).toBe(28);
+    expect(v.sweepsPerNewtonStep / v.tears.length).toBe(14);
+  });
+
+  it("the lesson states the same counts this module computes", () => {
+    //  C259: the page and this module had both kept the pre-C186 counts;
+    //  hold the page's words to the arithmetic so they cannot part again.
+    const step5 = TEAR_STEPS.find((s) => s.n === 5)!;
+    const text = JSON.stringify(step5);
+    expect(text).toContain("n_W = N_t (N_c + 3)");
+    expect(text).toContain("n_N = N_t (N_c + 2)");
+    expect(step5.note).toMatch(/fourteen/);
+    expect(text).toMatch(/pressure/);
   });
 
   it("no tears means no variables and no iteration at all", () => {
