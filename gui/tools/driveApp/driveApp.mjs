@@ -495,16 +495,21 @@ async function probeEduTools(browser, base) {
   try {
     await page.goto(url, 60000);
     const chrome = await requireBootedApp(page, url);
+    //  Since DEV.md 4c C251 the workspace opens on its HOME (no tool in the
+    //  URL): the probe accepts the home's marker as proof the workspace
+    //  rendered, and a tool's marker on an older build that opened on one.
     for (let waited = 0; waited <= 30000; waited += 500) {
       const s = await page.evaluate(TOOL_STATE, POLL).catch(() => null);
       if (s && s.tool) return chrome;
+      const home = await page.evaluate("!!document.querySelector('[data-method-home]')").catch(() => false);
+      if (home) return chrome;
       await sleep(500);
     }
     throw new Refusal(
-      `the app booted at ${url} (${chrome.badge || "no version badge"}) but carries no [data-method-tool] marker after 30 s. `
-      + "This smoke reads that marker (MethodsWorkspace.tsx, DEV.md 4c C122) to know a tool page rendered; a build "
-      + "without it cannot be judged, and nothing was.",
-      "drive a build of a tree that carries the marker (C122 or later)");
+      `the app booted at ${url} (${chrome.badge || "no version badge"}) but carries neither the [data-method-home] marker `
+      + "(EduToolsHome.tsx, DEV.md 4c C251) nor a [data-method-tool] marker (MethodsWorkspace.tsx, C122) after 30 s. "
+      + "This smoke reads those markers to know the workspace rendered; a build without them cannot be judged, and nothing was.",
+      "drive a build of a tree that carries a marker (C122 or later; the home since C251)");
   } finally { await closePage(browser, page); }
 }
 
