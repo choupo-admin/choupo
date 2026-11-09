@@ -4228,6 +4228,19 @@ accepts today, and that is a policy call.
 > argument vector; forced-failure arms for 3b/3g need an engine test hook; stripper02's
 > own diagnosis (ReactiveVLE's reach near V = 1, or the heel in the MESH residual); the
 > 1 - sum x linear constraint in the line search (slice 2 debt (b)).
+> SLICE 5a LANDED (2026-11-09 night, merge ea24fbfb3): the vapour pressure continuous
+> and monotone outside every correlation's window and above Tc, in ONE place
+> (VaporPressureModel::Psat_Pa), announced once per component and side; water joined
+> to IF97 at both window edges; gate check_psat_continuity.  The author's own scope (44
+> cases from an instrumented Step-0 count) MISSED the reach: the integration found six
+> gate failures (two dryer gates recomputing Psat by another route -- one fixed by
+> giving the gate the engine's rule, the other a publication-precision bound set from
+> the printed digits), and the full sweep 13 more moved cases; all were a component
+> leaving its window, re-recorded row by row with the reason (hda, apalutamide01,
+> ChemicalPlantTutorial, aceticAcid02_plant, acetonePlant, solidDryer02 and the 13).
+> Lesson, kept: a Step-0 count by instrumentation is a floor, not the reach; the sweep
+> is the reach.  The largest moves are trace gas solubilities and supercritical K
+> (acetonePlant's vent gas +129 %, gibbs09's dissolved H2 +136 %), which C256 replaces.
 
 > **C244 (Vitor, 2026-11-07: "não quero que tenhas tantas variações dos projetos base!!
 > Isso fica uma grande salganhada!"): ONE REFERENCE PLANT PER PROCESS; THE VARIANTS
