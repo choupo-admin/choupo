@@ -290,6 +290,15 @@ hydrogen alone costs more than the ammonia sells for, and the appraisal
 says so: NPV is strongly negative and there is no IRR. That is the
 economics of green ammonia at an assumed hydrogen price, not a defect.
 
+**Which tax reading this NPV is.** The plant loses money in every one of its
+15 operating years, and by default the cash flow treats each year's negative
+tax as a credit: it assumes the owner has other taxable profit to set the
+loss against. That credit is worth about 87.5 MEUR of the NPV (the run
+announces it, with the KPIs `lossYears`, `taxCreditOnLoss` and
+`taxCreditOnLoss_NPV`). A stand-alone project has no such profit; declare
+`taxOnLoss none;` in the `economics` block for that reading, and the NPV
+falls by that amount. Neither reading carries a loss forward.
+
 ### Utilities: what serves each duty, and the converter's steam credit
 
 Every heat duty a unit publishes is served by a plant utility, carried by
