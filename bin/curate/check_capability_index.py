@@ -129,6 +129,93 @@ def budget_findings():
     return bad
 
 
+PROMPT_MAX_WORDS = 300
+
+
+def prompts_findings(home=None, landing=None, ts=None):
+    """C252: docs/ai/prompts.md, the one home of the three student prompts.
+    (1) it parses as three fenced prompts A, B, C; (2) every www.choupo.org URL
+    it names is a file bin/curate/llm_site.py publishes (the publisher's own
+    mapping, not a copy of it); (3) the pack list of B names exactly the files of
+    docs/ai/packs/; (4) A + B + C stay within PROMPT_MAX_WORDS words (a prompt is
+    tokens the student pays for); (5) the VIEWS carry the home's text: the
+    /llm/prompts.md llm_site assembles, the landing bin/buildSite would build
+    (the injection, run in memory on site/index.html) and the Help pop-out's
+    generated module.  The arguments are for the self-test only."""
+    import tempfile
+    sys.path.insert(0, str(ROOT / "bin" / "curate"))
+    import llm_site
+    import prompts_home
+    home = Path(home) if home else ROOT / "docs" / "ai" / "prompts.md"
+    landing = Path(landing) if landing else ROOT / "site" / "index.html"
+    bad = []
+    if not home.is_file() or home.stat().st_size == 0:
+        return ["%s is missing or empty -- the student prompts have no home" % home]
+    text = home.read_text(encoding="utf-8")
+    try:
+        doc = prompts_home.parse(text)
+    except ValueError as e:
+        return ["prompts.md: %s" % e]
+    prompts = [s["prompt"] for s in doc["sections"]]
+    published = llm_site.published_urls()
+    for url in sorted(set(re.findall(r"https://www\.choupo\.org(/[^\s)`>]*)", text))):
+        url = url.rstrip(".,;")
+        if "<" in url:
+            continue                      # expanded by the pack check below
+        if url not in published and not url.startswith("/app"):
+            bad.append("prompts.md names %s, which llm_site.py does not publish" % url)
+    packs_dir = ROOT / "docs" / "ai" / "packs"
+    on_disk = sorted(p.stem for p in packs_dir.glob("*.md"))
+    listed = []
+    for s in doc["sections"]:
+        for n in s["notes"]:
+            if n.startswith("Packs:"):
+                listed = re.findall(r"`([A-Za-z0-9_-]+)`", n)
+    if not listed:
+        bad.append("prompts.md: section B has no 'Packs:' line naming the packs")
+    elif sorted(listed) != on_disk:
+        bad.append("prompts.md names packs %s but docs/ai/packs/ holds %s"
+                   % (sorted(listed), on_disk))
+    words = sum(len(p.split()) for p in prompts)
+    if words > PROMPT_MAX_WORDS:
+        bad.append("prompts A+B+C are %d words, over the %d-word ceiling"
+                   % (words, PROMPT_MAX_WORDS))
+    #  the views
+    if not landing.is_file():
+        bad.append("%s is missing -- the landing cannot carry the prompts" % landing)
+    else:
+        try:
+            built = prompts_home.inject(landing.read_text(encoding="utf-8"), doc)
+            if prompts_home.landing_prompts(built) != prompts:
+                bad.append("the landing section does not carry the home's three prompts")
+        except ValueError as e:
+            bad.append("landing: %s" % e)
+    import contextlib, io
+    with tempfile.TemporaryDirectory() as d, contextlib.redirect_stdout(io.StringIO()):
+        if llm_site.build(d) != 0:
+            bad.append("llm_site.py could not assemble /llm (see its message)")
+        else:
+            served = Path(d, "llm", "prompts.md")
+            if not served.is_file():
+                bad.append("/llm/prompts.md is not served")
+            else:
+                try:
+                    got = [s["prompt"] for s in prompts_home.parse(
+                        served.read_text(encoding="utf-8").replace(
+                            llm_site.dev_note() + "\n\n", "", 1))["sections"]]
+                except ValueError as e:
+                    got = ["/llm/prompts.md does not parse as the prompts: %s" % e]
+                if got != prompts:
+                    bad.append("/llm/prompts.md does not carry the home's three prompts")
+            if llm_site.verify(d) != 0:
+                bad.append("llm_site.py --verify refused what it assembled")
+    ts_path = Path(ts) if ts else ROOT / prompts_home.OUT_TS
+    if not ts_path.is_file() or ts_path.read_text(encoding="utf-8") != prompts_home.render_ts(doc):
+        bad.append("%s is stale against docs/ai/prompts.md -- run bin/curate/prompts_home.py"
+                   % prompts_home.OUT_TS)
+    return bad
+
+
 def main():
     index = INDEX
     if "--index" in sys.argv:
@@ -206,6 +293,7 @@ def main():
 
     if index == INDEX:
         bad += budget_findings()
+        bad += prompts_findings()
 
     if bad:
         print("check_capability_index: FAIL: %d dead or incomplete reference(s) "
@@ -218,8 +306,8 @@ def main():
           "registries, %d path(s) present (%d witness case(s)), %d untyped "
           "name(s) found in the tree; every concept names a typed name and a "
           "witness (names only -- the prose about them is not checked); every "
-          "brief and pack within its declared word budget"
-          % (counts["typed"], counts["paths"], counts["cases"], counts["untyped"]))
+          "brief and pack within its declared word budget; the three student prompts name only published URLs and existing packs, stay within %d words and are carried verbatim by /llm/prompts.md, the landing and the Help module"
+          % (counts["typed"], counts["paths"], counts["cases"], counts["untyped"], PROMPT_MAX_WORDS))
     return 0
 
 
