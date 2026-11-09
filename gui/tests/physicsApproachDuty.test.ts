@@ -54,18 +54,18 @@ describe("the page names what is carried and what is recomputed", () => {
     const eq = readFileSync(new URL(
       "../../src/unitOperations/reactor/EquilibriumReactor.cpp", import.meta.url),
       "utf-8").split("\n");
-    expect(eq[873 - 1]).toContain("outletState(");
-    expect(eq[874 - 1]).toContain("T, P, zout");
-    expect(eq[936 - 1]).toContain("priceState(T, P, zout");
-    expect(eq[940 - 1]).toContain("Q_W = (H_out - H_in)");
-    expect(eq[947 - 1]).toContain("out.T = T");
-    expect(eq[947 - 1]).toContain("out.z = zout");
+    expect(eq[874 - 1]).toContain("outletState(");
+    expect(eq[875 - 1]).toContain("T, P, zout");
+    expect(eq[937 - 1]).toContain("priceState(T, P, zout");
+    expect(eq[941 - 1]).toContain("Q_W = (H_out - H_in)");
+    expect(eq[948 - 1]).toContain("out.T = T");
+    expect(eq[948 - 1]).toContain("out.z = zout");
     const gb = readFileSync(new URL(
       "../../src/unitOperations/reactor/GibbsReactor.cpp", import.meta.url),
       "utf-8").split("\n");
     expect(gb.slice(748 - 1, 754).join(" ")).toContain("s.T, s.P, s.z");
     expect(gb[754 - 1]).toContain("kpis_[\"Q_kW\"] = H_out_kW - H_in_kW");
-    expect(body).toContain("EquilibriumReactor.cpp:873, 936–940, 947");
+    expect(body).toContain("EquilibriumReactor.cpp:874, 937–941, 948");
     expect(body).toContain("GibbsReactor.cpp:748–754");
   });
 });
