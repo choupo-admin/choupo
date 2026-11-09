@@ -28,7 +28,7 @@ License
 
 /*---------------------------------------------------------------------------*\
   Prompts pop-out (DEV.md 4c C252): Help > "Prompts for your AI assistant...".
-  Opens the three student prompts in a SEPARATE browser tab, each with a copy
+  Opens the student prompt (one, C257) in a SEPARATE browser tab, each with a copy
   button.  The text is NOT written here: it is `help/prompts.generated.ts`,
   which bin/curate/prompts_home.py generates from docs/ai/prompts.md -- the one
   home that the landing and /llm/prompts.md also derive from.  A viewer, not an
@@ -54,8 +54,8 @@ export function promptsHtml(): string {
   const intro = PROMPTS.intro.map((l) => `<p class="note">${inline(l)}</p>`).join("");
   const cards = PROMPTS.sections.map((s) =>
     `<h3>${inline(s.heading)}</h3>` +
-    `<pre id="prompt${s.id}">${escText(s.prompt)}</pre>` +
-    `<button type="button" data-copy="prompt${s.id}">Copy prompt ${s.id}</button>` +
+    `<pre id="prompt">${escText(s.prompt)}</pre>` +
+    `<button type="button" data-copy="prompt">Copy the prompt for your AI</button>` +
     s.notes.map((n) => `<p class="note">${inline(n)}</p>`).join("")).join("");
   return `<!doctype html><html lang="en"><head>
 <meta charset="utf-8">

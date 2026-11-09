@@ -5,7 +5,7 @@
     bin/curate/prompts_home.py --check         exit 1 when that file is stale
     bin/curate/prompts_home.py --landing       print the landing section's HTML
 
-Design record: DEV.md 4c C252.  The three student prompts live in ONE file,
+Design record: DEV.md 4c C252.  The student prompt (one since C257) lives in ONE file,
 docs/ai/prompts.md.  Three views are DERIVED from it and never hand-copied:
 /llm/prompts.md (bin/curate/llm_site.py copies the file), the landing section
 "Work with your AI assistant" (bin/buildSite injects `landing_html()`), and the
@@ -14,9 +14,8 @@ reader of the file goes through `parse()`, so the format has one definition:
 
     # title
     <intro lines>
-    ## A. <heading>      then ONE ```text fence (the prompt), then optional notes
-    ## B. ...
-    ## C. ...
+    ## <heading>        then ONE ```text fence (the prompt), then optional notes
+                        (exactly ONE section: C257 replaced the three prompts by one)
 
 Pure standard library.  Exit 0 = ok; 1 = stale / malformed."""
 import html
@@ -32,7 +31,7 @@ OUT_TS = Path("gui/src/help/prompts.generated.ts")
 
 def parse(text):
     """-> {"title", "intro": [str], "sections": [{"id","heading","prompt","notes":[str]}]}.
-    Raises ValueError, by name, on a file that is not three fenced prompts A, B, C."""
+    Raises ValueError, by name, on a file that is not ONE fenced prompt."""
     parts = re.split(r"(?m)^## ", text)
     head = parts[0]
     m = re.match(r"#\s+(.+)", head)
@@ -50,11 +49,11 @@ def parse(text):
                              % (heading, len(fences)))
         notes = [l.strip() for l in re.sub(r"```text\n.*?```", "", body, flags=re.S).split("\n")
                  if l.strip()]
-        sections.append({"id": heading[:1], "heading": heading,
+        sections.append({"id": "", "heading": heading,
                          "prompt": fences[0].rstrip("\n"), "notes": notes})
-    if [s["id"] for s in sections] != ["A", "B", "C"]:
-        raise ValueError("prompts.md must hold exactly the sections A, B, C in order; found %s"
-                         % [s["id"] for s in sections])
+    if len(sections) != 1:
+        raise ValueError("prompts.md must hold exactly ONE section with one prompt; found %d"
+                         % len(sections))
     return {"title": m.group(1).strip(), "intro": intro, "sections": sections}
 
 
@@ -80,10 +79,10 @@ def landing_html(doc=None):
     out.append('<div class="prompt-list">')
     for s in doc["sections"]:
         out.append('<div class="prompt-card"><h3>%s</h3>' % inline(s["heading"]))
-        out.append('<pre class="prompt-text" id="prompt%s">%s</pre>'
-                   % (s["id"], html.escape(s["prompt"], quote=False)))
+        out.append('<pre class="prompt-text" id="prompt">%s</pre>'
+                   % (html.escape(s["prompt"], quote=False)))
         out.append('<button type="button" class="button light prompt-copy" '
-                   'data-copy="prompt%s">Copy prompt %s</button>' % (s["id"], s["id"]))
+                   'data-copy="prompt">Copy the prompt for your AI</button>')
         for n in s["notes"]:
             out.append('<p class="prompt-note">%s</p>' % inline(n))
         out.append('</div>')
@@ -105,9 +104,9 @@ def inject(page_text, doc=None):
 
 
 def landing_prompts(page_text):
-    """The three prompt texts a built landing carries (read back, unescaped)."""
+    """The prompt text(s) a built landing carries (read back, unescaped)."""
     return [html.unescape(m) for m in re.findall(
-        r'<pre class="prompt-text" id="prompt[ABC]">(.*?)</pre>', page_text, re.S)]
+        r'<pre class="prompt-text" id="prompt">(.*?)</pre>', page_text, re.S)]
 
 
 def render_ts(doc):
