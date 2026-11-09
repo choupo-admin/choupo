@@ -171,7 +171,7 @@ export interface Numbering {
 
 export const FEL_NUMBERINGS: readonly Numbering[] = [
   { source: "Five phases, as the Wikipedia article on front-end loading "
-      + "lays them out, citing CII's Best Practices Guide (2012) and the PDRI",
+      + "lays them out (uncited for the list)",
     stages: [
       { label: "FEL 0", name: "Conceptualization" },
       { label: "FEL 1", name: "Feasibility Evaluation" },

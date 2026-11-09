@@ -61,6 +61,12 @@ export const PATENT_STEPS: readonly LessonStep[] = [
       + "12,303,493 B2 with an anticipated expiry on 3 December 2035 (an "
       + "assumption by Google Patents, not a legal conclusion), and the "
       + "European counterparts and their certificates were not verified. "
+      + "The 2035 date is the FORMULATION family's: loss of exclusivity "
+      + "for a generic is set by the compound patent with its extensions "
+      + "(PTE in the US, SPC in the EU) and by regulatory data and market "
+      + "protection, which may end earlier or later, and a generic that "
+      + "does not copy the dispersion is not held by this family at all, "
+      + "so the date is an input you replace, not a fact of the molecule. "
       + "The plant is built to launch when exclusivity ends, and year 0 of "
       + "its cash flow is that launch.",
   },
@@ -97,7 +103,9 @@ export const PATENT_STEPS: readonly LessonStep[] = [
       + "volume of the molecule the market consumes, which the page holds "
       + "constant (a lower price lets more patients afford the medicine, "
       + "and the page does not model that). For apalutamide the dossier "
-      + "derives 1039 million EUR a year in Europe from the originator's "
+      + "derives about 1040 million EUR a year in Europe (2121 x 0.533 x "
+      + "0.92; the dossier rounds an intermediate and writes 1039, the "
+      + "default input here) from the originator's "
       + "company-wide sales and a European share that is itself an "
       + "estimate, and takes a reference price of 19.13 EUR a tablet, "
       + "which gives about 54 million tablets a year. These are the "
@@ -119,7 +127,7 @@ export const PATENT_STEPS: readonly LessonStep[] = [
       + "generic producers: the United States FDA's median generic price "
       + "was 39 % below the brand's pre-entry price with one producer, 54 "
       + "% with two, 79 % with four and more than 95 % with six or more "
-      + "(Conrad and Lutter 2019, p. 2; US retail, 2015-2017 entries). The "
+      + "(Conrad and Lutter 2019, p. 2; US, manufacturer-level AMP and invoice prices of retail-channel drugs, 2015-2017 entries). The "
       + "second indexes it by TIME since the first generic entry: in the "
       + "European Commission's sector inquiry generics entered about 25 % "
       + "below the originator's price and were 40 % below it after two "
@@ -197,10 +205,9 @@ export const PATENT_STEPS: readonly LessonStep[] = [
       + "with it, and the working capital does not follow it). The one "
       + "price must reproduce the revenue the falling price would have "
       + "earned, in present value, so it is the discounted-volume-weighted "
-      + "average price. It is NOT the simple average of the "
+      + "average price. It is NOT the volume-weighted average of the "
       + "yearly prices: the early years, when the price is highest, are "
-      + "discounted least, so they weigh more here than in a simple "
-      + "average of volumes. It is the right constant only for the "
+      + "discounted least, so they weigh more here than there. It is the right constant only for the "
       + "discount rate you gave it. Paste both, run the case, and compare its revenue "
       + "line with the table above.",
     formula: String.raw`p^{*}=\frac{\mathrm{PV}}{\sum_{j} N_j\,(1+i)^{-j}}\qquad u_j=\frac{N_j}{Q}`,
@@ -218,7 +225,7 @@ export const PATENT_STEPS: readonly LessonStep[] = [
       + "It does not predict how many rivals arrive or what share you "
       + "win; the two curves for that are an illustration and say so. The "
       + "price curves are published medians of other products in other "
-      + "years, one for the United States retail market and one for an "
+      + "years, one for US manufacturer-level (AMP) and invoice prices of retail-channel drugs and one for an "
       + "average of European medicines, and a single product in a single "
       + "country, with tenders or reference pricing, can be far from "
       + "either. The databases that would give a price-erosion curve for "
@@ -273,7 +280,7 @@ export const PATENT_QUIZ: readonly QuizQuestion[] = [
     ],
     correct: 2,
     feedback: "They measure different things in different markets and "
-      + "years: US retail medians by entrants, an EU average of "
+      + "years: US medians (AMP and invoice prices) by entrants, an EU average of "
       + "medicines by time. Neither is a forecast for your tablet. State "
       + "the choice and its reason, and let the sensitivity show what the "
       + "other would do.",

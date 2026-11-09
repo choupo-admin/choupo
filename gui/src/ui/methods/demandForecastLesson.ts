@@ -50,9 +50,9 @@ export const DEMAND_STEPS: readonly LessonStep[] = [
     n: 2,
     title: "Units first: thousands and millions",
     body: "A series of sales is given in packs, in thousands of packs, in "
-      + "millions of packs, or in defined daily doses (the DDD is the "
-      + "assumed average daily dose of the drug in its main indication, "
-      + "defined by the WHO's ATC/DDD methodology). A slip of one scale "
+      + "millions of packs, or in defined daily doses (the DDD is, in the WHO's "
+      + "ATC/DDD wording, the assumed average maintenance dose per day for "
+      + "a drug used for its main indication in adults). A slip of one scale "
       + "multiplies every later number by 1000 and gives a plant a "
       + "thousand times too large or too small, with an economics that "
       + "looks fine. So the page asks the unit of the series and the unit "

@@ -102,8 +102,9 @@ export const ECON_ERRORS_STEPS: readonly LessonStep[] = [
     body: "A company pays tax on what is left after it has deducted "
       + "what the sales cost to make and the depreciation of the plant. "
       + "Charging the rate on sales instead takes tax on money that never "
-      + "was profit: with a 21 % rate and a margin of a few tens of per "
-      + "cent it can take more than the whole operating profit, and the "
+      + "was profit: with a 21 % rate it takes a fifth of the sales whatever the "
+      + "margin, which on a margin of twenty or thirty per cent is most or "
+      + "all of the operating profit, and the "
       + "project looks like a loser, or, with the rate typed in the wrong "
       + "place, like a winner. The depreciation is deducted for tax but is "
       + "not a cash payment, so it comes back into the cash flow.",

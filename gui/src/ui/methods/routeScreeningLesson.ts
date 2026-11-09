@@ -34,7 +34,8 @@
       route C  X_eq 0.999999924497  Kp 9.2931e19   dHrxn -254.841540127
                (per reaction as written: 2 CH3OH, so -127.42 per mole)
       gibbsC   y_methanol 1.819e-10, y_CH4 0.4991, y_water 0.3321,
-               y_CO2 0.1670 -- half the methane burns, none becomes methanol
+               y_CO2 0.1670 -- a quarter of the methane burns (O2 limits), none
+               becomes methanol; 0.4991 is the outlet mole fraction
       corners 475/575 K x 10/100 bar all run; gibbsC methanol <= 1.1e-9.
 \*---------------------------------------------------------------------------*/
 
