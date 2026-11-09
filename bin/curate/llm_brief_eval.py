@@ -18,6 +18,9 @@ USAGE
     Default briefs: core (bin/llmctx --core) and bridge (the GUI clipboard guide).
     --rescore re-reads existing reply.txt files and calls NO model.
     Brief `llm` = docs/ai/brief.md + every docs/ai/packs/*.md (what a student's assistant reads).
+    Brief `prompts` = the THREE-PROMPT PATH of docs/ai/prompts.md (C252): prompt A's reading list
+    (start-here, brief, capabilities, whole, in that order) + the ONE pack prompt B would name for
+    the problem (PROMPT_PACK below; a problem a student would not send to a pack gets none).
 
 REVISION MODE (DEV.md 4c C200; the brief's section 10).  A problem file whose first lines
 declare  `start: <case path under tutorials/>`  and  `feedback: <text>`  is a REVISION
@@ -156,7 +159,37 @@ def brief_llm():
         out += f"\n\n<!-- docs/ai/packs/{p.name} -->\n{p.read_text()}"
     return out
 
+# The pack a student would pick for prompt B, per problem prefix (the pack list of
+# docs/ai/prompts.md).  A flash or a revision problem names no pack: prompt A alone.
+PROMPT_PACK = {
+    "p04": "recycles", "p05": "reactors", "p06": "separations", "p07": "separations",
+    "p08": "pressure", "p09": "pressure", "p11": "batch-plant", "p12": "batch-plant",
+    "p13": "layout", "p-pharma-1": "pharmaceutical", "p-pharma-2": "pharmaceutical",
+    "p-pharma-3": "pharmaceutical",
+}
+
+def brief_prompts(pid):
+    """Prompt A's three documents, whole and in order, then the pack of prompt B (if any)."""
+    sys.path.insert(0, str(ROOT / "bin" / "curate"))
+    import prompts_home
+    ai = ROOT / "docs" / "ai"
+    # the student's first message (prompt A, read from its one home), then the three
+    # documents it names, which the assistant would have fetched
+    out = ("# The student's first message (docs/ai/prompts.md, prompt A)\n\n"
+           + prompts_home.load()["sections"][0]["prompt"])
+    for name in ("start-here", "brief", "capabilities"):
+        out += f"\n\n<!-- docs/ai/{name}.md -->\n{(ai / (name + '.md')).read_text()}"
+    pack = PROMPT_PACK.get(pid)
+    if pack:
+        pf = ai / "packs" / f"{pack}.md"
+        if not pf.is_file():
+            sys.exit(f"PROMPT_PACK names pack {pack!r} for {pid}: docs/ai/packs/{pack}.md does not exist")
+        out += f"\n\n<!-- docs/ai/packs/{pack}.md -->\n{pf.read_text()}"
+    return out
+
 def load_brief(spec):
+    if spec == "prompts":
+        return "prompts", brief_prompts(None)    # per-problem text is rebuilt in main()
     if spec == "llm":
         return "llm", brief_llm()
     if spec == "core":
@@ -682,7 +715,7 @@ def main():
     global NEUTRAL_CWD
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--out", required=True, help="scratch output dir (never inside tutorials/ or data/)")
-    ap.add_argument("--brief", action="append", help="core | bridge | name=path (repeatable)")
+    ap.add_argument("--brief", action="append", help="core | bridge | llm | prompts | name=path (repeatable)")
     ap.add_argument("--problems", help="comma list of problem prefixes, e.g. p01,p05")
     ap.add_argument("--model", default="haiku")
     ap.add_argument("--rescore", action="store_true", help="re-score existing reply.txt, call no model")
@@ -721,6 +754,8 @@ def main():
         for p in probs:
             pid = p.stem.split("_")[0]
             rmeta, rbody = parse_problem(p.read_text())
+            if bname == "prompts":
+                btxt = brief_prompts(pid)
             rd = out / bname / pid; rd.mkdir(parents=True, exist_ok=True)
             reply_f = rd / "reply.txt"; raw_f = rd / "raw.json"
             tokens = {"in": 0, "in_net": 0, "out": 0}
