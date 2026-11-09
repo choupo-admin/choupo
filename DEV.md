@@ -3221,6 +3221,149 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **C262 (Vitor, 2026-11-09: "em Dezembro vou ter de consolidar a forma como recebo feedback
+> da comunidade.  Achas que se pode criar um depósito de casos de estudo auto-contidos que
+> colaboradores queiram deixar?"): YES -- A COMMUNITY CASE REPOSITORY, A TIER APART FROM THE
+> CURATED CORPUS; DESIGNED IN DECEMBER TOGETHER WITH THE FEEDBACK INTAKE (C261).**  Why it
+> fits: a Choupo case is already a self-contained folder (the credo: every datum in
+> constant/, verified by hiding data/standards), a sealed case already pins its catalogue,
+> and the app already opens a case from a .zip -- which is also what a student's assistant
+> produces (C257).  Shape proposed: (1) its OWN repository, not tutorials/: the curated corpus
+> is golden-checked and gated, and a contributed case is a different level of trust -- the
+> same split as data/standards vs data/local, and the same reason the public `proposed` tier
+> was retired (a public middle tier is where third-party values leak in).  (2) Automatic
+> admission, no human in the loop for the first rung: CI runs every submitted case on the
+> released engine and refuses it unless it runs, is self-contained, closes every mass,
+> element and energy balance it claims (rule 4b, the same gate), carries a header (what it
+> is, sources) and passes check_source_licence (no NonCommercial or unlicensed values).
+> (3) Three rungs, shown on the case: SUBMITTED (the CI passed), REVIEWED (a technical
+> reviewer's record, C261), PROMOTED (copied into tutorials/ by the architect, with a golden
+> -- the only rung that enters the corpus).  (4) Credit through the same registry as reviews
+> (C261: a CONTRIBUTOR of a case, consent by the act of submitting under their own name), a
+> licence the submitter states at submission (CC BY 4.0 for the case text and data that is
+> theirs; DCO sign-off as the main project), and a gallery page on the site with
+> "open in the app".  (5) Submission by a pull request or an issue form with the .zip
+> attached.  Open questions for December: the licence of a case's prose vs the GPL of the
+> engine; moderation of a case that passes CI but teaches something wrong (REVIEWED is the
+> answer, SUBMITTED says only "it runs and conserves"); whether submissions pin an engine
+> release or follow `main`.  Not built before December.
+
+> **C261 (Vitor, 2026-11-09: "temos de pensar como vamos reconhecer créditos de colegas
+> que façam revisão", with another assistant's proposal "Choupo Reviews & Contributors" --
+> a scalable record a reviewer can cite in a CV -- which ARRIVED TRUNCATED after its first
+> sentence; the rest is asked for).  And: "não me metas em questões legais"; Karol's credit
+> waits for his own approval (C260 amended: nothing with his name is built).**  Starting
+> position, to be weighed against the full proposal: the trigger written in
+> docs/design/how-a-curator-is-credited.md section 5 has fired (a fourth surface, the
+> "Who reviewed what" page) -- so ONE review registry, every surface generated from it
+> (AUTHORS, the tool badge, the guide preamble, the public page), each review an entry
+> with the reviewer's own wording, scope (tool, sections), the commit and date of the
+> version read, and the commits that acted on it; a stable URL per review for a CV; the
+> page says when the reviewed text has changed since.  CONSENT BY THE REVIEWER'S OWN ACT:
+> the reviewer submits or confirms the entry themselves (a review form / issue template
+> where they write their name and capacity), so the project lead is never the
+> intermediary of anyone's consent.  Status: design, no code until the full proposal is
+> read.
+> FULL PROPOSAL READ (the same day) AND DECIDED.  ADOPTED: three roles kept apart --
+> CONTRIBUTOR (reported an error or an improvement; credited in the history, and listed only
+> with consent), TECHNICAL REVIEWER (a substantive review of a named scope, version and date;
+> a public record of its own), CURATOR (an ongoing responsibility for a content's quality,
+> the existing role, Monica Faria's record migrates into the registry as one).  One record
+> per review, in a plain-text file in git (no new dependency: a format the curation tools
+> already parse), static pages generated from it, a permanent URL per review, a ready-to-copy
+> English citation, the version read (commit + date) and the sections, what the reviewer
+> raised, the commits that acted on it, its state (received / incorporated / partly), the
+> limits of the review ("did not review the whole tool, did not approve the final version"),
+> and, added by the architect, a line saying when the reviewed text has changed since.  The
+> existing curator homes (AUTHORS, registry.ts, preamble.tex, check_curator_parity) become
+> GENERATED from the registry -- the trigger section 5 of how-a-curator-is-credited.md wrote.
+> One discreet link from the landing.  NOT ADOPTED NOW: the PDF certificate with a QR code
+> (a URL is the verifiable thing; a certificate is a second, forgeable copy of it), per-person
+> profile pages (later, once a person has two reviews), DOIs (only for a substantive report
+> its author chooses to deposit), any ORCID claim.  CONSENT: nothing with a name enters the
+> PUBLIC repository before the person has approved the exact text -- a draft record lives
+> outside the tree, never as a committed "pending" entry; the reviewer approves by opening the
+> entry themselves (an issue form) or by one reply to the draft, and the project lead forwards
+> at most one email and judges nothing.  No affiliation or office is written unless the
+> reviewer supplies it.  Karol: no record until he approves.  BUILD after the C259 fix
+> branches land (the integration queue is over the C242 limit today).
+
+> **C260 (Vitor, 2026-11-09: a review of the `ip-strategy` EduTool by a friend, Karol Peirs,
+> who examines at the European Patent Office, forwarded with "podes ver se dá para tu
+> refletires?  E como fazemos para lhe dar crédito?  Temos de ver este ponto com
+> cuidado"): THREE POINTS, ALL ACCEPTED, AND THE CREDIT HELD UNTIL HE CONSENTS TO ITS
+> WORDING.**  (1) Section 2, "The costs are three." follows the Art. 64(3) sentence with no
+> transition and reads as a non sequitur; it is a terse enumeration (disclosure, money,
+> enforcement), not an invention, but a patent professional stumbled on it, so it is
+> rewritten.  The C259 auditor of this page did not flag it -- a human expert reading
+> as a reader catches what a line-by-line check passes.  (2) Section 8 says the EPC leaves
+> infringement to national law (Art. 64(3)); true of the Convention, incomplete since the
+> Unified Patent Court opened (2023-06-01): for the participating states, infringement of
+> a Unitary Patent, and of a European patent not opted out, is decided by one court under
+> the UPC Agreement.  For a page about patent strategy that is S2, not a footnote: a
+> dedicated section on the UPC is added (jurisdiction, opt-out and the transitional
+> period, divisions, what stays national -- prior use among it), every statement read in
+> the UPC Agreement or on the court's / EPO's pages, never from memory.  (3) The worked
+> case studies (section 19 on) are hard for a non-chemist: noted; each gets a two-line
+> plain-language summary at its head, nothing cut.  CREDIT, decided: the existing CURATOR
+> mechanism (AUTHORS `Curators`, registry.ts `curator`, check_curator_parity) is for a
+> person who ANSWERS for the reviewed scope, with an affiliation drawn on the tool; an
+> examiner of a patent office named with that office beside a patent-law page could be
+> read as the office's endorsement, which is his employer's question, not ours.  So: until
+> he says otherwise, an ACKNOWLEDGEMENT on the page, in a personal capacity, with no
+> affiliation, saying what he read (the draft of <date>, sections 1-18, not the case
+> studies) and that remaining errors are the project's; curator only if he reviews the
+> revised page and wants it.  Nothing is written with his name until Vitor brings his
+> written consent to the exact text and the spelling of his name (rule 00: consent of a
+> named person stays Vitor's).  AMENDED the same day (Vitor): Karol is left aside until he
+> approves; nothing carries his name, and Vitor is not asked to handle consent (C261).
+> LANDING (Vitor, the same message thread: "na landing page devia de haver um link para
+> afirmar isso?"): yes, but as ONE page "Who reviewed what" (every curator and
+> acknowledged reviewer: name, capacity, the tool and sections read, the date of the
+> version read), linked once from the landing; never a headline naming an institution.
+> Built when the first consent to its exact wording is in hand.
+
+> **C259 (Vitor, 2026-11-09 morning: "Será que podes pôr o general em modo Fable a rever
+> os EduTools todos com muito cuidado, para em Dezembro eu não ficar embaraçado perante os
+> meus colegas?"): A SCIENTIFIC AUDIT OF EVERY EDUTOOL LESSON, READ-ONLY FIRST.**  This is
+> C255 decision 2 (the audit owed after seven errors stood in lesson text that every gate
+> called green: the gates hold claims about the ENGINE, none about physics), commissioned.
+> Shape decided by the architect: five Fable auditors, one per territory (thermodynamics and
+> reaction; separations, heat and control; safety and layout; design and economics; how
+> Choupo works and numerics), ~60 lesson files and their tool/math sources.  Each RECOMPUTES
+> every number and checks every equation, symbol definition, unit, citation and claim about
+> practice or about the engine (at its file:line), and returns findings with severity (S1 a
+> colleague would catch; S2 misleading; S3 clarity) plus the list of claims it verified, so
+> an empty list is not mistaken for an unread page.  NO FIX IN THIS PASS: the architect
+> reviews every S1/S2 against the source before a fix slice is dispatched, because a wrong
+> correction in a lesson is the same embarrassment.  Target: every S1 fixed and landed well
+> before December.
+> ADDENDUM (Vitor, same morning: "põe as referências bibliográficas que achares adequadas e
+> confirma que existem e que não há alucinações"): each auditor also checks every citation a
+> lesson already makes (exists AND says what the lesson claims; a wrong one is S1) and
+> proposes 2-4 references per lesson.  A reference is admitted only with its verification
+> recorded: the PDF read in ~/Choupo-Literature (file, page), the DOI resolved on Crossref
+> with matching metadata, or a publisher / standards body / EUR-Lex / catalogue page (URL).
+> What cannot be verified is listed UNVERIFIED and never shipped.  Where the references go
+> in the lesson (a structured field rendered at the page's end, gated against a registry of
+> verified entries) is decided when the fix slice is briefed.
+> AUDIT DONE (same day, five Fable auditors, read-only; reports kept in the session
+> scratchpad c259/): S1 / S2 -- thermodynamics and reaction 5 / 9; separations, heat and
+> control 7 / 15; how Choupo works and numerics 3 / 4; design and economics 0 / 3; safety,
+> materials and layout 1 / 3.  Total 16 S1, 34 S2, ~45 S3 (most S3 are prose file:line
+> citations drifted by merges: nothing gates them).  No cited source was found not to
+> exist; one DOI an auditor remembered resolved to a different paper, which is why nothing
+> is admitted from memory.  The architect re-checked the headline S1s at their lines:
+> Kremser A>1 direction reversed; "stage 1 is the condenser" (DistillationColumn.H:40);
+> Hermia complete blocking called pore-internal; FUG feed T enters through q; Wegstein "a
+> positive q sends the iterate away" (s=2: q=2 lands on x* exactly, also in theoryGuide.tex);
+> pressure IS torn since C186 (stale counts pinned by a test); cstr05 the "multiplicity"
+> witness has one steady state and no shipped case has three; the TPD formula lacks ln
+> gamma(y); processSafety says no inventory is computed while the goldens pin it.  Fix
+> slices dispatched per territory (each re-verifies before editing and reports
+> disagreements instead of editing); a van Heerden witness with three sourced steady
+> states is being built; references wait for a lesson `references` field + gate.
+
 > **C258 (Vitor, 2026-11-09, a screenshot of batch15_mesh_study's Global balances --
 > "mass closure 4.16E-2", "worst element closure 1.13E-1 (He)" -- in a panic: "andas a
 > correr suites e a dizer que está tudo bem e no final há violação de balanços
@@ -3263,6 +3406,26 @@ accepts today, and that is a policy call.
 > as its own bar; every mass and element balance of every shipped case closes; the
 > gate keeps no declared-cause exemption for them.  The size of the assumption stays
 > visible as that stream's magnitude, which is where it belongs.
+> LANDED 2026-11-09 (350b60dc7, via integ 50ccff75d).  MASS AND ELEMENTS: the dryers'
+> evaporated water is an outlet stream; the constant-velocity adsorber's fabricated carrier
+> is the named inlet `carrierMakeUp`; batch13/14/15/17/19 and dryer01/02 re-recorded with
+> reasons (batch15, the case Vitor opened: 4.2 % -> closes).  ENERGY: an isothermal Ergun
+> bed is held at T by a wall duty Q = -R T (n_gas,final - n_gas,initial), derived from the
+> two gas holdups (never from the residual) and booked as the named heat stream
+> `isothermalDuty` -- batch16 1.0 -> 1.8e-12, batch24 1.0 -> 1.1e-15; batch25's adiabatic
+> blowdown carries its energy equation in non-conservative form (7.9 % at every step size,
+> so not numerical): the engine REFUSES that energy claim by name (OPEN DEBT: the
+> conservative form, so batch25 claims its first law again).  The declared-residual hook
+> and the GUI-computed percentage are deleted.  THE GATE, check_campaign_closure, in three
+> layers: static over every `expected` in EVERY runTests mode (514 files: no pinned
+> mass / element / solute closure above 1e-3, no claimed energy closure above 1e-2),
+> refused at `--record`, and live on every time-integrated case (80 run, all within
+> tolerance; 3 declared opt-outs produce no answer at all).  NO EXEMPTION EXISTS.
+> Validation: scope over the whole batch and ctrl trees 83/0, --fast 78/0, --gui 45/0,
+> FULL SWEEP on the integrated tree 865 PASS / 1 FAIL (brain-fresh, regenerated here) /
+> 6 EXPECTED-FAIL, 38.6 min.  What the suite holds after this: steady -- mass, element and
+> plant-boundary energy (check_mass/element/energy_closure; energy KNOWN_OPEN 5 cases,
+> unchanged); time-integrated -- mass, element, solute and every claimed energy closure.
 
 > **C257 (Vitor, 2026-11-09: another assistant's recommendation "tornar o Choupo AI-first",
 > pasted whole, with the instruction "eu quero apenas que tu o ouças e reflitas um pouco.
