@@ -33,7 +33,7 @@ import {
   Stack, Table, Text, TextInput, Title,
 } from "@mantine/core";
 
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { LessonQuiz } from "./lessonQuiz.js";
 import {
   PATENT_LIMITS, PATENT_NOT_ADVICE, PATENT_QUIZ, PATENT_STEPS,
@@ -482,6 +482,8 @@ export function PatentExpiryTool(): JSX.Element {
             Front-End Loading
           </Anchor>{" "}(where the market study sits in a project).
         </Text>
+
+        <LessonReferences tool="patent-expiry" />
       </Stack>
     </Box>
   );

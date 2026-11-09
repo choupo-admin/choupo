@@ -98,7 +98,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useCallback, useMemo, useState } from "react";
-import { lessonStepper } from "./lessonStep.js";
+import { lessonStepper, LessonReferences } from "./lessonStep.js";
 import {
   Alert, Badge, Box, Group, Loader, SegmentedControl, Stack, Switch, Text,
   Title, Tooltip,
@@ -1027,6 +1027,8 @@ export function VanHeerdenTool(): JSX.Element {
         {lessonStep(5)}
 
         {lessonLimits}
+
+        <LessonReferences tool="vanheerden" />
       </Stack>
     </Box>
   );

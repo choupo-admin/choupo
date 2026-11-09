@@ -35,7 +35,7 @@ import {
   SegmentedControl, Stack, Table, Text, Textarea, Title,
 } from "@mantine/core";
 
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { LessonQuiz } from "./lessonQuiz.js";
 import { DEMAND_LIMITS, DEMAND_QUIZ, DEMAND_STEPS } from "./demandForecastLesson.js";
 import {
@@ -462,6 +462,8 @@ export function DemandForecastTool(): JSX.Element {
         <LessonQuiz title="Check your understanding" questions={DEMAND_QUIZ} lesson={DEMAND_STEPS} />
         <LessonLimits limits={DEMAND_LIMITS} />
         <Group gap="xs"><Badge variant="light">no engine run</Badge></Group>
+
+        <LessonReferences tool="demand-forecast" />
       </Stack>
     </Box>
   );

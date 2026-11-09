@@ -78,7 +78,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { lessonStepper } from "./lessonStep.js";
+import { lessonStepper, LessonReferences } from "./lessonStep.js";
 import {
   Alert, Badge, Box, Group, Loader, SegmentedControl, Slider, Stack,
   Text, Title, Tooltip,
@@ -1103,6 +1103,8 @@ export function RayleighTool(): JSX.Element {
           ))}
         </Box>
       </Box>
+
+        <LessonReferences tool="rayleigh" />
       </Stack>
     </Box>
   );

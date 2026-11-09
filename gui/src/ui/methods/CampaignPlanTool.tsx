@@ -48,7 +48,7 @@ import { ganttFigure } from "../../case/batchGantt.js";
 import type { BatchPlan, MultiProductPlan } from "../../adapters/batchPlanPayload.js";
 import { BatchGanttSvg } from "../BatchPlanSection.js";
 import { KnobSlider, type PanelKnob } from "./knobPanel.js";
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { LessonQuiz } from "./lessonQuiz.js";
 import { OriginMark } from "./origin.js";
 import {
@@ -465,6 +465,8 @@ export function CampaignPlanTool(): JSX.Element {
 
         <LessonQuiz title="Check your understanding" questions={CAMPAIGN_PLAN_QUIZ} lesson={CAMPAIGN_PLAN_STEPS} />
         <LessonLimits limits={CAMPAIGN_PLAN_LIMITS} />
+
+        <LessonReferences tool="campaign-plan" />
       </Stack>
     </Box>
   );

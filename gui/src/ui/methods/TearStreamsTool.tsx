@@ -46,7 +46,7 @@ import {
   Stack, Switch, Table, Text, Title,
 } from "@mantine/core";
 
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { useNarrowViewport } from "./methodsChrome.js";
 import { TEAR_LIMITS, TEAR_STEPS } from "./tearLesson.js";
 import { PanelNote } from "./knobPanel.js";
@@ -669,6 +669,8 @@ export function TearStreamsTool(): JSX.Element {
         </Stack>
 
         <LessonLimits limits={TEAR_LIMITS} />
+
+        <LessonReferences tool="tear-streams" />
       </Stack>
     </Box>
   );

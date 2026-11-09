@@ -94,7 +94,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
-import { lessonStepper } from "./lessonStep.js";
+import { lessonStepper, LessonReferences } from "./lessonStep.js";
 import {
   Alert, Badge, Box, Button, Group, Loader, SegmentedControl, Stack, Table,
   Text, Title,
@@ -1003,6 +1003,8 @@ export function PinchCompositeTool(
         {lessonStep(5)}
 
         {lessonLimits}
+
+        <LessonReferences tool="pinch-composite" />
       </Stack>
     </Box>
   );

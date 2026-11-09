@@ -62,7 +62,7 @@ import {
 import { useMethodRun, type DictOverride } from "../../case/methodRun.js";
 import type { RunResult, UnitProfile } from "../../adapters/SolverAdapter.js";
 import { KnobSlider, PanelNote, type PanelKnob } from "./knobPanel.js";
-import { Tex } from "./lessonStep.js";
+import { Tex, LessonReferences } from "./lessonStep.js";
 import {
   LADDER_LIMITS, LADDER_QUIZ, LADDER_SECTIONS, type LadderSection,
 } from "./reactorLadderLesson.js";
@@ -498,6 +498,8 @@ export function ReactorLadderTool(): JSX.Element {
             Declared pathways
           </Anchor>.
         </Text>
+
+        <LessonReferences tool="reactor-ladder" />
       </Stack>
     </Box>
   );

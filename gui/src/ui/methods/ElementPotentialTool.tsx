@@ -46,7 +46,7 @@ import {
 import { useMethodRun } from "../../case/methodRun.js";
 import type { RunResult } from "../../adapters/SolverAdapter.js";
 import { KnobSlider, PanelNote } from "./knobPanel.js";
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { EP_LIMITS, EP_STEPS } from "./elementPotentialLesson.js";
 import {
   AMMONIA_T, EP_LIQUID_WITNESS, EP_LOGS, EP_UNITS, EP_WITNESS, SHIFT_ATOMS,
@@ -401,6 +401,8 @@ export function ElementPotentialTool(): JSX.Element {
             Declared pathways
           </Anchor>.
         </Text>
+
+        <LessonReferences tool="element-potential" />
       </Stack>
     </Box>
   );

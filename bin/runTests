@@ -2741,6 +2741,23 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/lsym.$$
 
+    #  EduTool REFERENCES gate (DEV.md 4c C259 (a)): every bibliographic
+    #  reference a lesson page prints carries the record of how it was
+    #  verified (Crossref, a PDF read, a catalogue, an official page), every
+    #  DOI is well formed and reads the same on every page, no lesson repeats
+    #  a work, and every listed page draws its block.  Network-free, pure
+    #  file reading, so it cannot SKIP.
+    gate_exec "$ROOT/bin/curate/check_lesson_references.py" > /tmp/lref.$$ 2>&1
+    if [ $? = 0 ]; then
+        printf "PASS  %-40s  (%s)\n" "lesson-references-gate" "$(head -1 /tmp/lref.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_lesson_references.py)\n" "lesson-references-gate"
+        cat /tmp/lref.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/lref.$$
+
     #  Citation re-pointer gate (DEV.md 4c C196): the tool that re-points
     #  GUI lessons' file:line citations after an engine edit moves lines is
     #  held to a synthetic fixture of each shape it manages.  Pure file

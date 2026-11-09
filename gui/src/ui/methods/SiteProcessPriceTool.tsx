@@ -31,7 +31,7 @@ import {
   Alert, Badge, Box, Button, Checkbox, Group, NativeSelect, NumberInput, Stack, Table, Text, TextInput, Title,
 } from "@mantine/core";
 
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { LessonQuiz } from "./lessonQuiz.js";
 import {
   SITE_PROCESS_PRICE_LIMITS, SITE_PROCESS_PRICE_QUIZ, SITE_PROCESS_PRICE_STEPS,
@@ -422,6 +422,8 @@ export function SiteProcessPriceTool(): JSX.Element {
         <LessonQuiz title="Check your understanding" questions={SITE_PROCESS_PRICE_QUIZ} lesson={SITE_PROCESS_PRICE_STEPS} />
 
         <LessonLimits limits={SITE_PROCESS_PRICE_LIMITS} />
+
+        <LessonReferences tool="site-process-price" />
       </Stack>
     </Box>
   );

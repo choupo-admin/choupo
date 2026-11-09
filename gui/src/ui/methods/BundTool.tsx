@@ -50,7 +50,7 @@ import {
 } from "./bundLesson.js";
 import { LessonQuiz } from "./lessonQuiz.js";
 import { KnobField, KnobNumber, PanelNote } from "./knobPanel.js";
-import { LessonLimits, LessonStepView } from "./lessonStep.js";
+import { LessonLimits, LessonStepView, LessonReferences } from "./lessonStep.js";
 import { setActiveMethodTool } from "./registry.js";
 import { OriginMark } from "./origin.js";
 
@@ -535,6 +535,8 @@ export function BundTool(): JSX.Element {
             </Box>
           ))}
         </Box>
+
+        <LessonReferences tool="bund" />
       </Stack>
     </Box>
   );

@@ -53,6 +53,7 @@ License
 
 import { Alert, Box, Code, Stack, Table, Text, Title } from "@mantine/core";
 import { OriginMark } from "./origin.js";
+import { LessonReferences } from "./lessonStep.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -395,6 +396,8 @@ export function ClausGibbsTool(): JSX.Element {
           which is step 2's assumption, made visible by removing it.
         </Text>
       </Box>
+
+      <LessonReferences tool="claus-gibbs" />
     </Stack>
     </Box>
   );

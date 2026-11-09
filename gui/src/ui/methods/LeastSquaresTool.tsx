@@ -68,7 +68,7 @@ import {
   Alert, Badge, Box, Group, Loader, Stack, Table, Text, Title,
 } from "@mantine/core";
 
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { useNarrowViewport } from "./methodsChrome.js";
 import { LS_LIMITS, LS_STEPS } from "./leastSquaresLesson.js";
 import { KnobSlider, PanelNote, type PanelKnob } from "./knobPanel.js";
@@ -703,6 +703,8 @@ export function LeastSquaresTool(): JSX.Element {
         {step(11)}
 
         <LessonLimits limits={LS_LIMITS} />
+
+        <LessonReferences tool="least-squares" />
       </Stack>
     </Box>
   );

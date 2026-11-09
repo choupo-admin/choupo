@@ -51,7 +51,7 @@ import {
 
 import { useMethodRun } from "../../case/methodRun.js";
 import { OriginMark, type OriginKind } from "./origin.js";
-import { LessonLimits, Tex, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, Tex, lessonStepper, LessonReferences } from "./lessonStep.js";
 import {
   SIMPLICITY_LIMITS, SIMPLICITY_QUIZ, SIMPLICITY_SOURCES, SIMPLICITY_STEPS,
 } from "./correlationSimplicityLesson.js";
@@ -1018,6 +1018,8 @@ export function CorrelationSimplicityTool(): JSX.Element {
         <LessonQuiz title="Check your understanding (all five pages)"
           questions={SIMPLICITY_QUIZ} lesson={SIMPLICITY_STEPS} />
         <LessonLimits limits={SIMPLICITY_LIMITS} />
+
+        <LessonReferences tool="correlation-simplicity" />
       </Stack>
     </Box>
   );

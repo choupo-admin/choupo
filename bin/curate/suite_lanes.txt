@@ -69,6 +69,7 @@ PRE  | PAR    | bin/curate/check_fastset.py                        | traced: wri
 PRE  | SERIAL | bin/curate/check_method_tools.py                   | runs node
 PRE  | PAR    | bin/curate/check_edutool_form.py                   | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_lesson_symbols.py                 | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
+PRE  | PAR    | bin/curate/check_lesson_references.py              | traced 2026-11-09 (strace -f, alone): no write-open, create, unlink, rename or mkdir at all; one execve (itself); no make, no node, no pool
 PRE  | PAR    | bin/curate/check_tree_gate.py                      | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | SERIAL | bin/curate/check_lithium_routes.py                 | writes tutorials/plant/lithiumBrinePlant/converged (+89 more)
 PRE  | PAR    | bin/curate/check_species_ontology.py               | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool

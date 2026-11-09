@@ -73,10 +73,11 @@
   lessonTex.ts for why `throwOnError: false` is the wrong shape here.
 \*---------------------------------------------------------------------------*/
 
-import { Box, Text, Title } from "@mantine/core";
+import { Anchor, Box, Text, Title } from "@mantine/core";
 
 import { renderTex, splitInlineTex } from "./lessonTex.js";
 import { chapterSlug } from "./chapters.js";
+import { lessonReferences } from "./lessonReferences.js";
 import { openMethodToolAt, type MethodToolId } from "./registry.js";
 
 /** One symbol, bound to the words it stands for.
@@ -296,6 +297,60 @@ export function LessonLimits(
           <Box key={l.id} mb={8} data-chapter-anchor={chapterSlug(l.title)}>
             <Text size="sm" fw={600}>{l.title}</Text>
             <Text size="sm" c="dimmed">{l.body}</Text>
+          </Box>
+        ))}
+      </Box>
+    </Box>
+  );
+}
+
+/** THE REFERENCES OF A PAGE, drawn at its end (DEV.md 4c C259 (a)).
+ *
+ *  One renderer, for the same reason as the step: every tool calls this with
+ *  its own id, and the list itself lives in lessonReferences.json, where
+ *  check_lesson_references holds every entry to a recorded verification.
+ *  The verification is NOT drawn -- it is evidence for a reviewer, and a
+ *  reader needs the citation.  A tool with no references draws nothing.
+ *
+ *  When the page draws its own sources list (`pageSources`), this block
+ *  names it and jumps to it rather than repeating it: the two lists then
+ *  read as "what this page quotes" and "where to read further". */
+export function LessonReferences({ tool }: { tool: MethodToolId }): JSX.Element | null {
+  const block = lessonReferences(tool);
+  if (!block) return null;
+  const own = block.pageSources;
+  return (
+    <Box data-lesson-references="">
+      <Title order={5}>References</Title>
+      {own && (
+        <Text size="sm" c="dimmed" mt={4}>
+          {"What this page quotes, and how each source was read, is listed under "}
+          <Text span component="a" href="#" c="accent"
+            onClick={(e) => { e.preventDefault(); openMethodToolAt(tool, chapterSlug(own)); }}>
+            “{own}”
+          </Text>
+          {"; the works below are for further reading."}
+        </Text>
+      )}
+      <Box component="ol" mt={6} mb={0} pl={22}>
+        {block.references.map((r) => (
+          <Box component="li" key={r.doi ?? r.url ?? r.text} mb={6}>
+            <Text size="sm">
+              {r.text}
+              {r.doi && (
+                <>{" "}<Anchor href={`https://doi.org/${r.doi}`} target="_blank"
+                  rel="noopener noreferrer" size="sm" style={{ overflowWrap: "anywhere" }}>
+                  doi:{r.doi}
+                </Anchor></>
+              )}
+              {r.url && (
+                <>{" "}<Anchor href={r.url} target="_blank" rel="noopener noreferrer"
+                  size="sm" style={{ overflowWrap: "anywhere" }}>
+                  read online
+                </Anchor></>
+              )}
+            </Text>
+            {r.note && <Text size="xs" c="dimmed">{r.note}</Text>}
           </Box>
         ))}
       </Box>

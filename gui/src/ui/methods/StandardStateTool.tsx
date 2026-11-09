@@ -50,7 +50,7 @@ import {
 import { methodCase, useMethodRun } from "../../case/methodRun.js";
 import { KnobSlider, PanelNote } from "./knobPanel.js";
 import { LessonQuiz } from "./lessonQuiz.js";
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import {
   STANDARD_STATE_LIMITS, STANDARD_STATE_QUIZ, STANDARD_STATE_STEPS,
 } from "./standardStateLesson.js";
@@ -432,6 +432,8 @@ export function StandardStateTool(): JSX.Element {
           lesson={STANDARD_STATE_STEPS} />
 
         <LessonLimits limits={STANDARD_STATE_LIMITS} />
+
+        <LessonReferences tool="standard-state" />
       </Stack>
     </Box>
   );

@@ -99,7 +99,7 @@ import type { DictOverride } from "../../case/methodRun.js";
 import { methodCase, useMethodRun } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
 import { KnobNumber, PanelNote } from "./knobPanel.js";
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { Plot, PLOT_COLORS, darkLayout } from "../plotting/plotly.js";
 import {
   BATCH_MEMBRANE_LIMITS, BATCH_MEMBRANE_STEPS,
@@ -1044,6 +1044,8 @@ export function BatchMembraneTool(): JSX.Element {
         </Box>
 
         {limits}
+
+        <LessonReferences tool="batch-membrane" />
       </Stack>
     </Box>
   );

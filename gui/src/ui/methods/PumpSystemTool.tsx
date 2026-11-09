@@ -93,7 +93,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
-import { lessonStepper } from "./lessonStep.js";
+import { lessonStepper, LessonReferences } from "./lessonStep.js";
 import {
   Alert, Badge, Box, Group, Loader, SegmentedControl, Stack, Table, Text,
   Title, Tooltip,
@@ -810,6 +810,7 @@ export function PumpSystemTool(): JSX.Element {
         {lessonStep(5)}
         {lessonLimits}
 
+        <LessonReferences tool="pump-system" />
       </Stack>
     </Box>
   );

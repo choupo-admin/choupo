@@ -56,7 +56,7 @@ import {
 import { useMethodRun, type DictOverride } from "../../case/methodRun.js";
 import type { RunResult } from "../../adapters/SolverAdapter.js";
 import { KnobSlider, PanelNote, type PanelKnob } from "./knobPanel.js";
-import { Tex } from "./lessonStep.js";
+import { Tex, LessonReferences } from "./lessonStep.js";
 import {
   SCREEN_LIMITS, SCREEN_SECTIONS, type ScreenSection,
 } from "./routeScreeningLesson.js";
@@ -397,6 +397,8 @@ export function RouteScreeningTool(): JSX.Element {
             Declared pathways
           </Anchor>{" "}(selectivity as a declaration).
         </Text>
+
+        <LessonReferences tool="route-screening" />
       </Stack>
     </Box>
   );

@@ -105,7 +105,7 @@ import {
 
 import { useMethodRun, type DictOverride } from "../../case/methodRun.js";
 import { KnobSlider, PanelNote, type PanelKnob } from "./knobPanel.js";
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { APPROACH_LIMITS, APPROACH_STEPS } from "./approachToEquilibriumLesson.js";
 import { setActiveMethodTool } from "./registry.js";
 import { OriginMark } from "./origin.js";
@@ -544,6 +544,8 @@ export function ApproachToEquilibriumTool(): JSX.Element {
             Synthesis gas: one gas, many products
           </Anchor>.
         </Text>
+
+        <LessonReferences tool="approach-to-equilibrium" />
       </Stack>
     </Box>
   );

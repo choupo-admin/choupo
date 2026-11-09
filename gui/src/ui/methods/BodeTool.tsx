@@ -54,7 +54,7 @@ import {
   Alert, Badge, Box, Group, Loader, SegmentedControl, Stack, Text, Title,
 } from "@mantine/core";
 
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { BODE_LIMITS, BODE_STEPS } from "./bodeLesson.js";
 import { KnobSlider, PanelNote, type PanelKnob } from "./knobPanel.js";
 import { useEngineSeries } from "../../case/engineSeries.js";
@@ -740,6 +740,8 @@ export function BodeTool(): JSX.Element {
         {step(8)}
 
         <LessonLimits limits={BODE_LIMITS} />
+
+        <LessonReferences tool="bode" />
       </Stack>
     </Box>
   );

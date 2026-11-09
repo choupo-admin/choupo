@@ -60,7 +60,7 @@ import { useMethodRun } from "../../case/methodRun.js";
 import { readHxy, deltaD, hAt, leverLV, vapourEnthalpyAt }
   from "../../case/ponchonSavarit.js";
 import { PonchonPlot } from "../plotting/PonchonPlot.js";
-import { LessonStepView } from "./lessonStep.js";
+import { LessonStepView, LessonReferences } from "./lessonStep.js";
 import { PONCHON_STEPS } from "./ponchonLesson.js";
 import { OriginMark } from "./origin.js";
 
@@ -245,6 +245,8 @@ export function PonchonSavaritTool(): JSX.Element {
           Theory: <Code>ch:ponchon</Code> in the Theory Guide.  Engine:{" "}
           <Code>src/propertyOps/EnthalpyConcentration.{"{H,cpp}"}</Code>.
         </Text>
+
+        <LessonReferences tool="ponchon-savarit" />
       </Stack>
     </Box>
   );

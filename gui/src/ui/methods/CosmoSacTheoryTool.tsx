@@ -61,6 +61,7 @@ import { Alert, Box, Code, Group, Loader, Stack, Text, Title }
 
 import { useMethodRun } from "../../case/methodRun.js";
 import { OriginMark } from "./origin.js";
+import { LessonReferences } from "./lessonStep.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -394,6 +395,8 @@ export function CosmoSacTheoryTool(): JSX.Element {
           measured dataset.
         </Text>
       </Box>
+
+      <LessonReferences tool="cosmo-sac-theory" />
     </Stack>
     </Box>
   );

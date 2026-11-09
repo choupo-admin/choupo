@@ -52,7 +52,7 @@ import {
   Table, Text, Title,
 } from "@mantine/core";
 
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { WegsteinCobweb } from "./WegsteinCobweb.js";
 import { SlopeHandle } from "./RelaxationFigures.js";
 import { useNarrowViewport } from "./methodsChrome.js";
@@ -758,6 +758,8 @@ export function WegsteinTool(): JSX.Element {
         </Box>
 
         <LessonLimits limits={WEGSTEIN_LIMITS} />
+
+        <LessonReferences tool="wegstein" />
       </Stack>
     </Box>
   );

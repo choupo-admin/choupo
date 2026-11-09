@@ -81,7 +81,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
-import { lessonStepper } from "./lessonStep.js";
+import { lessonStepper, LessonReferences } from "./lessonStep.js";
 import {
   Alert, Badge, Box, Group, Loader, SegmentedControl, Stack, Text, Title,
   Tooltip,
@@ -978,6 +978,8 @@ export function LevenspielTool(): JSX.Element {
       {lessonStep(4)}
       {lessonStep(5)}
       {lessonLimits}
+
+        <LessonReferences tool="levenspiel" />
       </Stack>
     </Box>
   );

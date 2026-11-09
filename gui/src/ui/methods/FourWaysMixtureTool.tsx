@@ -58,6 +58,7 @@ import { Alert, Box, Group, Loader, Stack, Text, Title }
 import { useMethodRun } from "../../case/methodRun.js";
 import type { AadRecord } from "../../adapters/SolverAdapter.js";
 import { OriginMark } from "./origin.js";
+import { LessonReferences } from "./lessonStep.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -346,6 +347,7 @@ export function FourWaysMixtureTool(): JSX.Element {
           </Text>
         </Box>
 
+        <LessonReferences tool="four-ways-mixture" />
       </Stack>
     </Box>
   );

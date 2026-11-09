@@ -42,7 +42,7 @@ import {
 import { useCaseFilesRun } from "../../case/methodRun.js";
 import { filesToCaseFiles } from "../../cases/tutorials.js";
 import { KnobField, PanelNote } from "./knobPanel.js";
-import { LessonLimits, LessonStepView } from "./lessonStep.js";
+import { LessonLimits, LessonStepView, LessonReferences } from "./lessonStep.js";
 import {
   BENCH_VESSELS, MATERIALS_WITNESS, benchFiles, constructionMaterials,
   vesselAnswer, vesselLines, type VesselAnswer,
@@ -357,6 +357,8 @@ export function MaterialsTool(): JSX.Element {
             </Box>
           ))}
         </Box>
+
+        <LessonReferences tool="materials" />
       </Stack>
     </Box>
   );

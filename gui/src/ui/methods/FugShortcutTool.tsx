@@ -84,7 +84,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { Suspense, lazy, useMemo, useState, type ComponentProps } from "react";
-import { lessonStepper } from "./lessonStep.js";
+import { lessonStepper, LessonReferences } from "./lessonStep.js";
 import {
   Alert, Badge, Box, Group, Loader, LoadingOverlay, SegmentedControl, Stack,
   Switch, Text, Title, Tooltip,
@@ -787,6 +787,8 @@ export function FugShortcutTool(): JSX.Element {
         </Text>
 
         {lessonLimits}
+
+        <LessonReferences tool="fug" />
       </Stack>
     </Box>
   );

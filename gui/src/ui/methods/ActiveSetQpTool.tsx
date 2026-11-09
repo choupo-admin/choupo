@@ -52,7 +52,7 @@ import {
   Title,
 } from "@mantine/core";
 
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { useNarrowViewport } from "./methodsChrome.js";
 import { QP_LIMITS, QP_STEPS } from "./activeSetQpLesson.js";
 import { KnobSlider, PanelNote, type PanelKnob } from "./knobPanel.js";
@@ -616,6 +616,8 @@ export function ActiveSetQpTool(): JSX.Element {
         </Box>
 
         <LessonLimits limits={QP_LIMITS} />
+
+        <LessonReferences tool="active-set-qp" />
       </Stack>
     </Box>
   );

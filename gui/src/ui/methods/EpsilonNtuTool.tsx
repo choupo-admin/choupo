@@ -73,7 +73,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
-import { lessonStepper } from "./lessonStep.js";
+import { lessonStepper, LessonReferences } from "./lessonStep.js";
 import { useNarrowViewport } from "./methodsChrome.js";
 import {
   Alert, Badge, Box, Group, Loader, SegmentedControl, Select, Stack, Text,
@@ -484,6 +484,7 @@ export function EpsilonNtuTool(): JSX.Element {
         {lessonStep(5)}
         {lessonLimits}
 
+        <LessonReferences tool="entu" />
       </Stack>
     </Box>
   );

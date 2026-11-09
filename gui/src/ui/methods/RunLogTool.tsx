@@ -35,7 +35,7 @@ import {
   Text, Title, UnstyledButton,
 } from "@mantine/core";
 
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { useNarrowViewport } from "./methodsChrome.js";
 import { PanelNote } from "./knobPanel.js";
 import {
@@ -578,6 +578,8 @@ export function RunLogTool(): JSX.Element {
         {step(7)}{showsFor(7)}
 
         <LessonLimits limits={RUN_LOG_LIMITS} />
+
+        <LessonReferences tool="run-log" />
       </Stack>
     </Box>
   );

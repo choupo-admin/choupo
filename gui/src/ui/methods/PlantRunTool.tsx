@@ -32,7 +32,7 @@ import {
   Alert, Badge, Box, Button, Group, NativeSelect, NumberInput, Stack, Table, Text, Title,
 } from "@mantine/core";
 
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { LessonQuiz } from "./lessonQuiz.js";
 import {
   PLANT_RUN_LIMITS, PLANT_RUN_QUIZ, PLANT_RUN_STEPS,
@@ -543,6 +543,8 @@ export function PlantRunTool(): JSX.Element {
         <LessonQuiz title="Check your understanding" questions={PLANT_RUN_QUIZ} lesson={PLANT_RUN_STEPS} />
 
         <LessonLimits limits={PLANT_RUN_LIMITS} />
+
+        <LessonReferences tool="plant-running-cost" />
       </Stack>
     </Box>
   );
