@@ -3369,7 +3369,7 @@ accepts today, and that is a policy call.
 > disk).  TWO MORE GENERALS, ON DISJOINT PATHS.**  (1) c291-px-pairs: NRTL
 > pairs from isothermal bubble-PRESSURE (P-x) data -- the NIST index holds
 > 1676 such pairs against the 1410 bubble-T pairs the C284/C290 pipeline
-> reads -- in a NEW tool (bin/curate/pairs_px.py), case numbers curate500+,
+> reads -- in a NEW tool (a P-x pairs script, to be written), case numbers curate500+,
 > graded like C286.  (2) c292-components-2: the next new catalogue
 > components (the compounds with measured vapour pressure, density and Cp
 > but NO measured critical constant: Tc and Pc estimated by Joback and
