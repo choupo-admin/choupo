@@ -3261,6 +3261,30 @@ accepts today, and that is a policy call.
 > (3) a `rho_liquid_<comp>` key in choupoProps, so a density audit need not
 > recompute the engine's route.  Each record correction moves goldens: list first.
 
+> **C282 (Vitor, 2026-11-10, from the cloud session: "Mas o que eu quero e criar
+> componentes novos e binarios! Isso vai ser feito?" ... "Estima").  NEW BINARY
+> PAIRS AND NEW COMPONENTS FROM THE THERMOML ARCHIVE, AS A PIPELINE.**  RULING ON
+> COMPONENTS: a new compound whose critical constants are not measured may enter
+> with Tc, Pc (and omega) ESTIMATED by group contribution (Joback), each value
+> marked as an estimate with its method, and its measured properties fitted
+> under the C16 protocol.  MEASURED before dispatch: 152 compounds outside the
+> catalogue carry vapour pressure + liquid density + Cp in the archive, 25 of
+> them also measured critical constants.  ORDER: binaries first (every rule is
+> already decided, C16/C225/C226/C280), components after.  BINARIES, SLICE 1
+> (dispatched, stated defaults): `bin/choupo-curate pair A B` chaining what is
+> manual today -- identity, study search, the partition rule declared before any
+> fit (fit = the study with most interior points, held out = the next largest
+> sharing no author), the band rule of C16, a curate case from a template, the
+> fit, the held-out verdict and the dossier -- plus the `autoPromoted` state
+> C226 accepted (humanReviewed false, voiced on every run like interim but
+> saying no human reviewed it; never overwrites a literature or reviewed
+> record; one command reverts).  PILOT: five miscible pairs, NRTL, ranked by
+> independent studies; their series stay in their cases in the C16 form.  OPEN,
+> for Vitor or the architect: the BULK form C226 asks for (DOI + sha256 +
+> filter, data regenerated from the local archive) needs the reproduction gate
+> to run where the archive is absent, which no gate does today; it is decided
+> before slice 2, not walked into.
+
 > **C281 (Vitor, 2026-11-10, from the cloud session: "Ataca primeiro o
 > Ambrose-Walton").  THE AMBROSE-WALTON VAPOUR PRESSURES: SAY WHAT THEY ARE, THEN
 > REPLACE THEM WHERE MEASUREMENTS EXIST.**  MEASURED before dispatch: 48 catalogue

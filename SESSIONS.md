@@ -40,7 +40,8 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| c281-aw-announce | `src/thermo/vaporPressure/AmbroseWalton.*`, the 48 `vaporPressure { model AmbroseWalton; }` blocks in `data/standards/components/` | 2026-11-10 |
+| c282-pairs-pilot | `bin/choupo-curate`, `src/thermo/PairAudit.*`, `bin/curate/check_regressed_pairs.py`, new `tutorials/props/curation/curate15*`..`curate19*`, new pair files in `data/standards/parameters/NRTL/` | 2026-11-10 |
+| (C281 step 2, not dispatched) | the 48 `vaporPressure { model AmbroseWalton; }` blocks | 2026-11-10 |
 
 The NIST ThermoML cache (4.2 GB, gitignored) lives only in the cloud container,
 in the worktree `.claude/worktrees/review-newcomer/thirdParty/thermoml`.
