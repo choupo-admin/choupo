@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of curate36_vp_nAminoethylEthanolamine
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/nAminoethylEthanolamine-vapourPressure-je2002489.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je2002489";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je2002489.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je2002489.json";
+        articleFile   "je2002489.xml";
+        articleSha256 "e06fdeb3f583b0fe2f3c4b2bd212c45b06f1a7e412346129c62fe44fb3a84fff";
+        extractor     vapourPressure;
+        inchiKey      "LHIJANUOQQMGNT-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey LHIJANUOQQMGNT-UHFFFAOYSA-N --into <dir>";
+        sha256        "619c44c87f2c77b6d163d1f45e1b9f7d427d5256a701093d4e17e306a017ff42";
+        identity
+        {
+            nAminoethylEthanolamine { cas "111-41-1"; inchiKey "LHIJANUOQQMGNT-UHFFFAOYSA-N"; }
+        }
+    }
+);
