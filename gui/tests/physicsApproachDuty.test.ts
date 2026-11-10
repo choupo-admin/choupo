@@ -48,7 +48,7 @@ describe("the page names what is carried and what is recomputed", () => {
   it("no longer sends the duty to the unshifted run", () => {
     expect(body).not.toContain("everything else from the unshifted one");
     expect(body).toContain("Q = H_out(T, shifted composition) − H_in");
-    expect(body).toContain("RECOMPUTE the enthalpy and the duty");
+    expect(body).toContain("recompute the enthalpy and the duty");
   });
   it("cites the lines where the engine prices the outlet at T with the shifted composition", () => {
     const eq = readFileSync(new URL(

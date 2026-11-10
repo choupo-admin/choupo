@@ -60,6 +60,8 @@ const all = (n: number): string => {
     ...(s.derivation ?? []).map((d) => d.step)].join(" "));
 };
 
+//  DEV.md 4c C277: emphasis capitals in the prose were lower-cased; the claims
+//  pinned below are unchanged.
 describe("the Gibbs-reactor approach lesson", () => {
   it("has eight steps, numbered without a gap, in the commissioned order", () => {
     expect(APPROACH_STEPS).toHaveLength(8);
@@ -80,7 +82,7 @@ describe("the Gibbs-reactor approach lesson", () => {
     //  The correction the architect's own framing needed: the ladder is real,
     //  and what moves you up it is information arriving, not the calendar.
     const s = all(2);
-    expect(s).toContain("DATA AVAILABILITY, not the date");
+    expect(s).toContain("data availability, not the date");
     expect(s).toContain("licensor");
     expect(s).toMatch(/very first screening flowsheet/);
   });
@@ -101,12 +103,12 @@ describe("the Gibbs-reactor approach lesson", () => {
     //  assertion in this file survives, it should be this one.
     const s = all(4);
     expect(s).toContain(
-      "POSITIVE IS CONSERVATIVE ONLY FOR AN EXOTHERMIC REACTION");
+      "Positive is conservative only for an exothermic reaction");
     //  Ruled 2026-09-26: the author declares a MAGNITUDE, the engine assigns
     //  the sign and announces it, and a negative declaration is refused.
-    expect(s).toContain("declared as a MAGNITUDE");
+    expect(s).toContain("declared as a magnitude");
     expect(s).toContain("refused by name");
-    expect(s).toContain("the ENGINE assigns the direction");
+    expect(s).toContain("the engine assigns the direction");
     expect(s).not.toContain("Both signs are accepted");
     expect(s).toMatch(/steam reforming/);
     const f = prose(step(4).formula!);
@@ -118,10 +120,10 @@ describe("the Gibbs-reactor approach lesson", () => {
 
   it("carries the three caveats the engine prints ITSELF, all three", () => {
     const s = all(5);
-    expect(s).toContain("EMPIRICAL");
-    expect(s).toContain("GLOBAL");
-    expect(s).toContain("AT HIGH PRESSURE IT WILL ABSORB MISSING FUGACITY "
-      + "CORRECTIONS");
+    expect(s).toContain("it is empirical");
+    expect(s).toContain("it is global");
+    expect(s).toContain("at high pressure it will absorb missing fugacity "
+      + "corrections");
     //  The reformer is the case where GLOBAL bites hardest, because the two
     //  reactions on one catalyst want OPPOSITE signs.
     expect(s).toMatch(/opposite/i);
@@ -144,9 +146,9 @@ describe("the Gibbs-reactor approach lesson", () => {
 
   it("names the two absences rather than implying them", () => {
     const s = all(6);
-    expect(s).toContain("FRACTIONAL or extent approach");
+    expect(s).toContain("fractional or extent approach");
     expect(s).toContain("not interchangeable");
-    expect(s).toContain("PELLET EFFECTIVENESS FACTOR");
+    expect(s).toContain("pellet effectiveness factor");
     expect(s).toContain("CatalystPellet.cpp");
   });
 
@@ -161,7 +163,7 @@ describe("the Gibbs-reactor approach lesson", () => {
 describe("the two steps commissioned 2026-10-02 (DEV.md C29)", () => {
   it("says N Gibbs beds in series are ONE Gibbs reactor, with the measurement", () => {
     const s = all(7);
-    expect(s).toContain("Three Gibbs beds in series are ONE Gibbs reactor");
+    expect(s).toContain("Three Gibbs beds in series are one Gibbs reactor");
     expect(s).toContain("no volume and no path");
     expect(s).toContain("0.191745443741");
     expect(s).toContain("0.191745443739");
@@ -179,7 +181,7 @@ describe("the two steps commissioned 2026-10-02 (DEV.md C29)", () => {
     expect(s).toContain("preferably 1 C. to 10 C.");
     expect(s).toContain("most preferably between 5 and 20");
     expect(s).toContain("a 50 F. approach to the apparent equilibrium");
-    expect(s).toContain("METHANOL SYNTHESIS: no value is given here");
+    expect(s).toContain("Methanol synthesis: no value is given here");
   });
 });
 
@@ -257,7 +259,7 @@ describe("the tool's one piece of arithmetic", () => {
     //  A slider whose floor is below zero would teach a declaration the
     //  engine rejects by name (GibbsReactor.cpp:337-348).
     expect(DT_KNOB.min).toBe(0);
-    expect(DT_KNOB.label).toMatch(/MAGNITUDE/);
+    expect(DT_KNOB.label).toMatch(/magnitude/);
   });
 
   it("moves the feed temperature with the reactor, and asserts the unit", () => {
