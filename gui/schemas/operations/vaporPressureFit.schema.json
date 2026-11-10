@@ -72,6 +72,60 @@
         }
       }
     },
+    "objective": {
+      "type": "object",
+      "additionalProperties": false,
+      "title": "Objective (what the fit minimises)",
+      "description": "DEV.md 4c C280, C281 step 3: the same block as fitParameters, read through FitObjective. `method`: leastSquares (the op's own search in log10 P), minimax (the LARGEST relative pressure error, by Nelder-Mead from the least-squares answer) or twoStage (the DEFAULT: least squares, then minimax from that answer; both answers kept). The one residual is the pressure, relative, (P_model - P)/P (`scale { Psat relative; }`, the only scale built). The run header names the objective and says when it is the default.",
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": [
+            "leastSquares",
+            "minimax",
+            "twoStage"
+          ],
+          "default": "twoStage"
+        },
+        "scale": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "Psat": {
+              "type": "string",
+              "enum": [
+                "relative"
+              ]
+            }
+          }
+        },
+        "maxEvaluations": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "description": "minimax stage only (default 1500)"
+        }
+      }
+    },
+    "outliers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maxRelativeError"
+      ],
+      "title": "Outliers (discarded by name)",
+      "description": "DEV.md 4c C283: after the least-squares stage a fit point whose relative pressure error exceeds `maxRelativeError` (with its unit, `percent`) is discarded BY NAME (dataset DOI, T, P), published in curation.outliersDropped, and the least-squares stage repeated once on the kept points. Absent, nothing is discarded.",
+      "properties": {
+        "maxRelativeError": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "description": "e.g. `15 percent`"
+        }
+      }
+    },
     "acceptance": {
       "type": "object",
       "additionalProperties": false,

@@ -112,6 +112,13 @@ ENTRIES = [
        None, "pre",
        note="a curation snapshot no gate holds fresh: regenerated on "
             "conflict only"),
+    _e("vpCuratorList", ["docs/reviews/2026-11-10-vapour-pressure-curator-list.md"],
+       [PY, "bin/curate/vp_curator_list.py"],
+       None, "pre", conflict="human",
+       note="DEV.md 4c C281 step 3 / C283: the human's decision sheet for the "
+            "vapour-pressure refits; needs the local ThermoML cache (exits 2 "
+            "without it), so no gate holds it fresh -- regenerated after a "
+            "`choupo-curate vp` run, a conflict is a human's"),
     _e("modelsCatalogue", ["generated/modelsCatalogue.json"],
        None, None, "pre", conflict="human",
        note="sits in generated/ and has NO generator (check_models_catalogue "
