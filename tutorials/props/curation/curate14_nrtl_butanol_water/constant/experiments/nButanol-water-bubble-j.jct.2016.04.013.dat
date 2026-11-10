@@ -1,0 +1,64 @@
+/*--------------------------------------------------------------------------*\
+  MEASURED BUBBLE-POINT EVIDENCE for water + 1-butanol, read from a ThermoML file by
+  a curator script (the binodal blocks of a mixed file are not reached by
+  bin/choupo-thermoml extract-vle; the script is not part of the tree).
+
+  system       nButanol + water   (x is nButanol's liquid mole fraction)
+  points       2   (the boiling temperature of the vapour-liquid-liquid heteroazeotrope, read at the two liquid compositions)
+  pressure     101.3 kPa
+  The role this evidence plays -- fit or held-out validation -- is NOT set
+  here.  It is declared in the operation that consumes it, before any
+  fitting runs (src/propertyOps/EvidencePartition.H).
+
+  REDISTRIBUTION.  These are measured values reported in the article cited
+  below, located through the NIST/TRC ThermoML Archive (a finding aid;
+  thirdParty/thermoml/README.md).  The article is the source; the archive's
+  arrangement is not reproduced.  Nobody has read the numbers back against
+  the article: reviewStatus says so.
+\*--------------------------------------------------------------------------*/
+
+property     binaryVLE.T_bubble;
+system       ( nButanol water );
+pressure     101.3 kPa;
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Garcia-Cano, J.[Jorge]; Gomis, V.[Vicente]; Asensi, J. C.[Juan Carlos]; Saquete, M. D.[Maria Dolores]; Font, A.[Alicia] (2016). Isobaric vapor-liquid-liquid-solid equilibrium of the water + NaCl + 1-butanol system at 101.3 kPa. J. Chem. Thermodyn.. doi:10.1016/j.jct.2016.04.013";
+    archiveFile  "j.jct.2016.04.013.xml";
+    archive      "ThermoML.v2020-09-30.tgz (NIST/TRC ThermoML Archive, doi:10.18434/mds2-2422)";
+    block        3;
+    doi          "10.1016/j.jct.2016.04.013";
+    sha256       "461be41d83ed04e81fe49ebec0c33d0b649f585e8a0b6739d58569b8e87085a6";
+    identity
+    {
+        nButanol       { cas "71-36-3"; inchiKey "LRHPLDYGYMQRHN-UHFFFAOYSA-N"; }
+        water          { cas "7732-18-5"; inchiKey "XLYOFNOQVPJJNP-UHFFFAOYSA-N"; }
+        rule           "the archive's standard InChIKey matched to the catalogue record's CAS through two resolvers that agree (PubChem PUG REST and NCI CACTUS), molecular formula checked -- never by name";
+    }
+    conversion   "reported as mass fractions; converted to mole fractions with M(1-butanol) 74.123 and M(water) 18.015 g/mol";
+}
+
+uncertainty
+{
+    T_bubble
+    {
+        kind    expandedCombined;   // ThermoML nCombExpandUncertValue
+        level   95;            // per cent confidence
+        unit    K;
+        values  ( 0.15 0.15 );   // per point, in `data` order
+    }
+}
+
+columns
+(
+    { name x[nButanol];  unit -;  }
+    { name T_bubble;  unit K;  }
+);
+
+data
+(
+      0.0210  365.72
+      0.3622  365.72
+);

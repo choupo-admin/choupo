@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*  curate14_nrtl_butanol_water: the REAL water + 1-butanol pair, NRTL fitted to
+    measured bubble temperatures AND tie lines in ONE fit (kind T_bubble+LLE).
+    See system/propsDict for the whole story.  */
+
+application   choupoProps;
+description   "Water + 1-butanol: NRTL fitted to measured ThermoML bubble temperatures AND tie lines in ONE fit (kind T_bubble+LLE), held out against other studies, with leave-one-study-out triage";
+verbosity     2;

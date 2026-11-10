@@ -1,0 +1,55 @@
+/*--------------------------------------------------------------------------*\
+  MEASURED LIQUID-LIQUID EVIDENCE for water + 1-butanol, read from a ThermoML file by
+  a curator script (the binodal blocks of a mixed file are not reached by
+  bin/choupo-thermoml extract-vle; the script is not part of the tree).
+
+  system       nButanol + water   (x is nButanol's liquid mole fraction)
+  tie lines    5   (x_nButanol in the water-rich liquid = phase1, in the butanol-rich liquid = phase2)
+  pressure     about atmospheric (not a variable of the binodal)
+  The role this evidence plays -- fit or held-out validation -- is NOT set
+  here.  It is declared in the operation that consumes it, before any
+  fitting runs (src/propertyOps/EvidencePartition.H).
+
+  REDISTRIBUTION.  These are measured values reported in the article cited
+  below, located through the NIST/TRC ThermoML Archive (a finding aid;
+  thirdParty/thermoml/README.md).  The article is the source; the archive's
+  arrangement is not reproduced.  Nobody has read the numbers back against
+  the article: reviewStatus says so.
+\*--------------------------------------------------------------------------*/
+
+property     binaryLLE.binodal;
+system       ( nButanol water );
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Lladosa, E.[Estela]; Monton, J. B. [Juan B.]; Burguet, M. C.[M. Cruz]; Munoz, R.[Rosa] (2008). Phase Equilibrium for the Esterification Reaction of Acetic Acid + Butan-1-ol at 101.3 kPa. J. Chem. Eng. Data. doi:10.1021/je700411p";
+    archiveFile  "je700411p.xml";
+    archive      "ThermoML.v2020-09-30.tgz (NIST/TRC ThermoML Archive, doi:10.18434/mds2-2422)";
+    block        13;
+    doi          "10.1021/je700411p";
+    sha256       "32ed6e15958b58bc35d7eb647d3cb4b75e9d6232ffbe7608a87c9c4b09cc34b1";
+    identity
+    {
+        nButanol       { cas "71-36-3"; inchiKey "LRHPLDYGYMQRHN-UHFFFAOYSA-N"; }
+        water          { cas "7732-18-5"; inchiKey "XLYOFNOQVPJJNP-UHFFFAOYSA-N"; }
+        rule           "the archive's standard InChIKey matched to the catalogue record's CAS through two resolvers that agree (PubChem PUG REST and NCI CACTUS), molecular formula checked -- never by name";
+    }
+}
+
+columns
+(
+    { name T;                    unit K;  }
+    { name x_nButanol_phase1;    unit -;  }
+    { name x_nButanol_phase2;    unit -;  }
+);
+
+data
+(
+      323.15  0.01670  0.45740
+      333.15  0.01620  0.43870
+      343.15  0.01720  0.41890
+      353.15  0.01810  0.39650
+      362.45  0.01870  0.36730
+);
