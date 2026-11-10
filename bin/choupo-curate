@@ -1514,8 +1514,18 @@ def vp_decl_text(pl, case_rel):
     return "\n".join(lines)
 
 
-def vp_props_text(pl, case_name):
+VP_OBJECTIVE = "twoStage"   # C281 step 3: Vitor's fitting practice (C280), declared
+VP_OBJ_WORDS = {"twoStage": "least squares in log10 P, then the largest relative error "
+                            "in P minimised from it",
+                "leastSquares": "least squares in log10 P",
+                "minimax": "the largest relative error in P minimised"}
+
+
+def vp_props_text(pl, case_name, earlier=None):
     comp, fit, held = pl["comp"], pl["fit"], pl["held"]
+    earlier_par = ("" if not earlier else
+                   "\n  EARLIER FIT, SUPERSEDED BY THIS DECLARATION\n  @@EARLIER-BEGIN@@\n"
+                   + wrap(earlier) + "\n  @@EARLIER-END@@\n")
     ranked = "\n".join(
         f"      {s['doi']:<30} {s['n']:>4} pts  {s['Tmin']:g}-{s['Tmax']:g} K  "
         + "; ".join(a.split(",")[0] for a in s["authors"][:4])
@@ -1532,9 +1542,9 @@ def vp_props_text(pl, case_name):
 \\*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\\
   {case_name} -- the vapour pressure of {comp}, REFITTED to
-  measurements (DEV.md 4c C281 step 2).  Written by `bin/choupo-curate vp
-  {comp}`; everything above the RESULT paragraph is the DECLARATION, committed
-  before any fit ran, so it can be read against the result.
+  measurements (DEV.md 4c C281 steps 2 and 3).  Written by `bin/choupo-curate
+  vp {comp}`; everything above the RESULT paragraph is the DECLARATION,
+  committed before any fit ran, so it can be read against the result.
 
   WHY.  The catalogue record carried `vaporPressure {{ model AmbroseWalton; }}`,
   a corresponding-states ESTIMATE from Tc, Pc and omega that never reads the
@@ -1557,6 +1567,12 @@ def vp_props_text(pl, case_name):
 
   NORMAL BOILING POINT: {pl['tb_rule']}.
 
+  OBJECTIVE (C281 step 3, declared): `objective {{ method {VP_OBJECTIVE}; }}` --
+  Vitor's fitting practice (DEV.md 4c C280): least squares in log10 P for a
+  first estimate, then the LARGEST relative error in P, (P_model - P)/P, over
+  the fit points minimised from it; both answers are kept in the result.  A
+  student who prefers another objective declares `leastSquares` or `minimax`.
+{earlier_par}
   NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares both
   series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates
   them into constant/archiveExtracts/ (gitignored).
@@ -1593,6 +1609,8 @@ operations
             maxAAD  {pl['band_txt']} percent;
             origin  "{pl['origin']}";
         }}
+
+        objective  {{ method {VP_OBJECTIVE}; }}
 
         output     {{ file fit_antoine.csv; }}
     }}
@@ -1675,6 +1693,11 @@ def vp_run(case):
     return {"A": d.get("A"), "B": d.get("B"), "C": d.get("C"), "R2": d.get("R2"),
             "n": d.get("n_points"), "n_heldout": d.get("n_heldout"),
             "aad_pct": d.get("aad_heldout_pct"), "verdict": cu.get("verdict"),
+            "max_pct": d.get("relErr_max_heldout_pct"),
+            "aad_ls": d.get("aad_heldout_pct_leastSquares"),
+            "max_ls": d.get("relErr_max_heldout_pct_leastSquares"),
+            "objective": {0: "leastSquares", 1: "minimax", 2: "twoStage"}.get(
+                int(d.get("objective_method", -1)), "unstated"),
             "maxAAD": float(cu.get("acceptanceMaxAADPct", "nan")),
             "Tmin": min(fitds["T"]), "Tmax": max(fitds["T"])}, out
 
@@ -1710,17 +1733,68 @@ def vp_judge(case, rf):
 
 def vp_fill_result(case, rf, reason):
     txt = (f"WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).  "
+           f"Objective {rf['objective']}.  "
            f"Antoine log10(Psat/bar) = {rf['A']:.6f} - {rf['B']:.4f}/(T + "
            f"{rf['C']:.4f}), in-sample R2 {rf['R2']:.6f} over {int(rf['n'])} points, "
            f"{rf['Tmin']:g}-{rf['Tmax']:g} K.  HELD OUT: {int(rf['n_heldout'])} points, "
-           f"AAD {rf['aad_pct']:.4f} % against the band {rf['maxAAD']:g} % -> "
-           f"{rf['verdict']}.  Its own normal boiling point (101.325 kPa): "
+           f"AAD {rf['aad_pct']:.4f} % (max {rf['max_pct']:.4f} %) against the band "
+           f"{rf['maxAAD']:g} % -> {rf['verdict']}"
+           + (f"; the stage-1 least-squares answer on the same points: AAD "
+              f"{rf['aad_ls']:.4f} %, max {rf['max_ls']:.4f} %" if rf.get("aad_ls") is not None else "")
+           + f".  Its own normal boiling point (101.325 kPa): "
            f"{rf['Tnb']:.2f} K.  {reason}")
     p = case / "system" / "propsDict"
     t = p.read_text()
     t = re.sub(r"@@RESULT-BEGIN@@.*?@@RESULT-END@@",
                "@@RESULT-BEGIN@@\n" + wrap(txt) + "\n  @@RESULT-END@@", t, flags=re.S)
     p.write_text(t)
+
+
+def earlier_of(case):
+    m = re.search(r"@@EARLIER-BEGIN@@(.*?)@@EARLIER-END@@",
+                  (case / "system" / "propsDict").read_text(), re.S)
+    return " ".join(m.group(1).split()) if m else None
+
+
+def vp_redeclare(pl, no_commit):
+    """C281 step 3: a NEW declaration for a case the tool already wrote --
+    the SAME partition and band (re-derived by the same rules and refused if
+    they differ: never a re-partition after seeing a result), the declared
+    objective added, the earlier result kept in the header, committed before
+    the fit runs."""
+    case = vp_case_dir(pl["comp"])
+    if case is None:
+        refuse("--redeclare: no case for this component -- run `vp` first")
+    pd = case / "system" / "propsDict"
+    old = pd.read_text()
+    if re.search(r"^\s*objective\s*\{", crp.strip_comments(old), re.M):
+        refuse(f"--redeclare: {case.name} already declares an objective")
+    if (case / DECL).read_text() != vp_decl_text(pl, case.relative_to(ROOT).as_posix()):
+        refuse(f"--redeclare: {case.name}'s archiveDatasets differ from the ones the "
+               "rules give now -- the evidence would change, which is not a redeclaration")
+    for doi, role in ((pl["fit"]["doi"], "fit"), (pl["held"]["doi"], "validation")):
+        if not re.search(r'identity\s*\{\s*doi\s+"%s";\s*\}\s*role\s+%s;'
+                         % (re.escape(doi), role), old):
+            refuse(f"--redeclare: {case.name} does not declare doi {doi} as `{role}` -- "
+                   "the partition would move; refused")
+    if not re.search(r"maxAAD\s+%s percent;" % re.escape(pl["band_txt"]), old):
+        refuse(f"--redeclare: {case.name}'s band is not maxAAD {pl['band_txt']} % -- refused")
+    m = re.search(r"@@RESULT-BEGIN@@(.*?)@@RESULT-END@@", old, re.S)
+    prev = " ".join(m.group(1).split()) if m else "(no result recorded)"
+    earlier = ("C281 step 2, objective leastSquares (log10 P), the same partition "
+               "and band: " + prev)
+    pd.write_text(vp_props_text(pl, case.name, earlier))
+    if not no_commit:
+        git(["add", "--", str(pd)])
+        git(["commit", "-q", "-m",
+             f"C281 step 3: {case.name} -- the new declaration, before the fit\n\n"
+             f"bin/choupo-curate vp {pl['comp']} --redeclare: the same partition "
+             f"(fit doi {pl['fit']['doi']}, held out doi {pl['held']['doi']}) and "
+             f"band (maxAAD {pl['band_txt']} %) as step 2, re-derived by the same "
+             f"rules; `objective {{ method {VP_OBJECTIVE}; }}` declared (DEV.md 4c "
+             "C280 practice); the step-2 result kept in the header."])
+        say(f"  committed the new declaration: {git(['rev-parse', '--short', 'HEAD']).strip()}")
+    return case
 
 
 def vp_main(a):
@@ -1745,14 +1819,17 @@ def vp_main(a):
         say(f"  Tb       {pl['tb_rule']}")
         if a.plan:
             return 0
-        if a.resume:
+        if a.redeclare:
+            case = vp_redeclare(pl, a.no_commit)
+        elif a.resume:
             case = vp_case_dir(pl["comp"])
             if case is None:
                 refuse("--resume: no case for this component")
-            norm = lambda s: re.sub(r"@@RESULT-BEGIN@@.*?@@RESULT-END@@", "", s, flags=re.S)
+            norm = lambda s: re.sub(r"@@(RESULT|EARLIER)-BEGIN@@.*?@@(RESULT|EARLIER)-END@@",
+                                    "", s, flags=re.S)
             if (case / DECL).read_text() != vp_decl_text(pl, case.relative_to(ROOT).as_posix()) \
                     or norm((case / "system" / "propsDict").read_text()) != \
-                    norm(vp_props_text(pl, case.name)):
+                    norm(vp_props_text(pl, case.name, earlier_of(case))):
                 refuse(f"--resume: {case.name}'s declaration differs from the one the "
                        "rules give now -- a declaration is never rewritten after it "
                        "was committed")
@@ -1809,7 +1886,7 @@ def vp_prov(rf, case, decl, origin):
                "            }\n")
     return ("    vaporPressure\n    {\n"
             "        origin        fitted;\n"
-            '        method        "vaporPressureFit (three-parameter Antoine, least squares in log10 P)";\n'
+            f'        method        "vaporPressureFit (three-parameter Antoine; objective {rf["objective"]}: {VP_OBJ_WORDS.get(rf["objective"], "unstated")})";\n'
             '        methodVersion "choupoProps Choupo-dev";\n'
             f'        fittedInCase  "{case_rel}";\n'
             "        reviewStatus  autoPromoted;\n"
@@ -1912,6 +1989,10 @@ def main():
     v.add_argument("--no-commit", action="store_true")
     v.add_argument("--promote", action="store_true")
     v.add_argument("--resume", action="store_true")
+    v.add_argument("--redeclare", action="store_true",
+                   help="C281 step 3: rewrite an existing case's declaration with the "
+                        "declared objective (same partition and band, refused "
+                        "otherwise), commit it, then fit")
     f = sp.add_parser("fetch", help="regenerate a case's extracts")
     f.add_argument("case")
     r = sp.add_parser("revert", help="remove a record this tool promoted")
