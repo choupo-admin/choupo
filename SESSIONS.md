@@ -32,7 +32,6 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| c272-typical-train | `src/postProcessing/layout/`, `tutorials/plant/swro01_campoDalias` | 2026-11-10 |
 | c266-walk-stage2 | `docs/audits/2026-11-10-student-walk-stage2.md` (report only) | 2026-11-10 |
 
 ## Cloud session
