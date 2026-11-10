@@ -1,0 +1,115 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      Dichloroethane;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-ethylAcetate.b_ij  -100.644279443;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-ethylAcetate.b_ji  43.9299310383;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "371671498ac1a0aa";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/Dichloroethane-ethylAcetate-bubbleP-je034259j-b19.dat";
+            doi       "10.1021/je034259j";
+            sha256    "9b097498da26d2f8dc0af2df64c2c5af9fbf9b7fd1aa4150a8a9b4bb774027f0";
+            provenance measured;
+            archiveFile "je034259j.xml";
+            system    "Dichloroethane + ethylAcetate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1523; max 0.9782; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-ethylAcetate.b_ij  451.596661392;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-ethylAcetate.b_ji  -357.718319186;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "371671498ac1a0aa";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/Dichloroethane-ethylAcetate-bubbleP-je034259j-b19.dat";
+            doi       "10.1021/je034259j";
+            sha256    "9b097498da26d2f8dc0af2df64c2c5af9fbf9b7fd1aa4150a8a9b4bb774027f0";
+            provenance measured;
+            archiveFile "je034259j.xml";
+            system    "Dichloroethane + ethylAcetate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1523; max 0.9782; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

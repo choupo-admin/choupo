@@ -1,0 +1,115 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      224Trimethylpentane;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-nHeptane.b_ij  58.9228275339;
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-nHeptane.b_ji  -60.6586366934;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "3dc4e6410383a090";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/224Trimethylpentane-nHeptane-bubbleP-j.fluid.2015.07.049-b3.dat";
+            doi       "10.1016/j.fluid.2015.07.049";
+            sha256    "211f510a7abf36ba65db341672543cc1a5e28136c68c8b5dce97f72bfdd672a3";
+            provenance measured;
+            archiveFile "j.fluid.2015.07.049.xml";
+            system    "224Trimethylpentane + nHeptane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0496; max 0.9508; n 22; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-nHeptane.b_ij  58.8902507549;
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-nHeptane.b_ji  -60.6295844128;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "3dc4e6410383a090";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/224Trimethylpentane-nHeptane-bubbleP-j.fluid.2015.07.049-b3.dat";
+            doi       "10.1016/j.fluid.2015.07.049";
+            sha256    "211f510a7abf36ba65db341672543cc1a5e28136c68c8b5dce97f72bfdd672a3";
+            provenance measured;
+            archiveFile "j.fluid.2015.07.049.xml";
+            system    "224Trimethylpentane + nHeptane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0496; max 0.9508; n 22; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);
