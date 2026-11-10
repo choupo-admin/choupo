@@ -246,7 +246,7 @@ export const PUMP_STEPS: readonly LessonStep[] = [
       + "no knob "
       + "reaches its K — the panel steepens the system curve by shrinking D "
       + "or lengthening L instead, which moves the crossing the same way "
-      + "through a different mechanism.  And this pump model has NO speed "
+      + "through a different mechanism.  And this pump model has no speed "
       + "at all — W_shaft is shaft power, not rpm — so the affinity laws "
       + "above are stated and never evaluated.  Nothing you see on the plot "
       + "is an affinity-law prediction.  Be careful with the cube even away "
