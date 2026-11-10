@@ -5185,9 +5185,19 @@ PYEOF
     # voiced at run time.  Six by-hand sabotages; two SURVIVED the first draft
     # because a regex read the header PROSE "reviewStatus interim: ..." as the
     # field.
-    if gate_exec "$ROOT/bin/curate/check_regressed_pairs.py" > /tmp/regpairs.$$ 2>&1; then
+    #  Exit 2 = CANNOT RUN (C282, 2026-11-10): a pipeline case keeps no
+    #  measured series in the tree and regenerates them from NIST or the local
+    #  ThermoML cache; with neither reachable its records cannot be
+    #  reproduced, which is reported SKIP and counted as NEITHER pass nor fail
+    #  -- the method-tools-gate convention below, never a green line.
+    gate_exec "$ROOT/bin/curate/check_regressed_pairs.py" > /tmp/regpairs.$$ 2>&1
+    rp_rc=$?
+    if [ "$rp_rc" = 0 ]; then
         printf "PASS  %-40s  (%s)\n" "regressed-pairs-gate" "$(head -1 /tmp/regpairs.$$)"
         pass=$((pass+1))
+    elif [ "$rp_rc" = 2 ]; then
+        printf "SKIP  %-40s  (%s; NOT counted as a pass)\n" "regressed-pairs-gate" "$(head -1 /tmp/regpairs.$$)"
+        sed -n '2,$p' /tmp/regpairs.$$
     else
         printf "FAIL  %-40s  (run bin/curate/check_regressed_pairs.py)\n" "regressed-pairs-gate"
         cat /tmp/regpairs.$$
@@ -7594,6 +7604,26 @@ for case_dir in "$1"; do
                  | grep -m1 -vE '^[[:space:]]*$')
         printf "EXPECTED-FAIL %-32s  (%s)\n" "$name_short" "${reason:-deliberate teaching non-convergence}"
         expected_fail=$((expected_fail+1)); EF_NAMES+=("$name_short"); continue
+    fi
+
+    #  A CASE WHOSE MEASURED SERIES ARE NOT IN THE TREE (C282, 2026-11-10,
+    #  Vitor: only the fitted parameters are kept).  It declares them in
+    #  constant/archiveDatasets and `bin/choupo-curate fetch` regenerates them
+    #  (local ThermoML cache, else the NIST per-article URL; both sha256 sums
+    #  checked) before the run.  A sha256 mismatch is a FAIL; neither cache nor
+    #  NIST reachable is SKIP, NOT counted as a pass -- the gates' convention,
+    #  printed by name with the remedy, never a green line and never silent.
+    if [ -f "$case_dir/constant/archiveDatasets" ]; then
+        fetch_out=$(python3 -I "$ROOT/bin/choupo-curate" fetch "$case_dir" 2>&1); fetch_rc=$?
+        if [ "$fetch_rc" = 2 ]; then
+            printf "SKIP  %-40s  (not run: %s; NOT counted as a pass)\n" "$name_short" \
+                "$(printf '%s' "$fetch_out" | tail -1 | cut -c1-240)"
+            continue
+        elif [ "$fetch_rc" != 0 ]; then
+            printf "FAIL  %-40s  (its declared datasets could not be regenerated: %s)\n" \
+                "$name_short" "$(printf '%s' "$fetch_out" | tail -1 | cut -c1-240)"
+            fail=$((fail+1)); continue
+        fi
     fi
 
     #  ONE CASE, TWO MODES (DEV.md 4c C152): a case carrying BOTH

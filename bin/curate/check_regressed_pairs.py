@@ -83,6 +83,23 @@ case-local one that did not earn promotion):
       inline pair carries no span, so nothing is announced) and must be
       identical.
 
+  AMENDED (DEV.md 4c C282, 2026-11-10): `reviewStatus autoPromoted`.  A
+      record its fitting pipeline (bin/choupo-curate pair --promote)
+      promoted WITHOUT a human reading it is accepted beside `interim` in
+      arms (b) and (d) on three conditions: it carries `humanReviewed
+      false;` (a machine-promoted record that claims a human read it is
+      refused), it names `promotedBy`, and its case's run prints the
+      engine's OWN autoPromoted sentence (`reviewStatus autoPromoted`) --
+      not merely an `[unreviewed] pair` line, which an inline pair also
+      prints.  And a case whose measured series are NOT in the tree (Vitor,
+      2026-11-10: only the fitted parameters are kept) declares them in
+      `constant/archiveDatasets`; the gate regenerates them with
+      `bin/choupo-curate fetch` (local cache, else the NIST URL, both sha256
+      sums checked) before arms (a) and (e).  Where neither the cache nor
+      NIST can be reached, those records are NOT RUN, listed by name, and
+      the gate exits 2 -- never a pass (a check that cannot run must not
+      pass) and never a silent skip.
+
 WHAT IT DOES NOT CHECK.  Whether the measurements are RIGHT -- each dataset
 says `reviewStatus transcribedNotCheckedAgainstArticle`, and reading them
 back against the articles is a curator's act.  Whether the band was the right
@@ -106,6 +123,16 @@ ROOT = Path(__file__).resolve().parents[2]
 PROPS = ROOT / "choupoProps"
 STD = ROOT / "data" / "standards" / "parameters" / "NRTL"
 PROMOTION_FIELDS = ("fittedInCase", "reviewStatus", "reviewReason", "reuse")
+CURATE = ROOT / "bin" / "choupo-curate"
+ARCHIVE_DECL = "constant/archiveDatasets"
+
+
+def fetch_case(case):
+    """(code, message): 0 fetched/verified, 1 refused, 2 cannot run."""
+    p = subprocess.run([sys.executable, "-I", str(CURATE), "fetch", str(case)],
+                       capture_output=True, text=True, timeout=900,
+                       env=dict(os.environ, CHOUPO_HOME=str(ROOT)))
+    return p.returncode, (p.stdout + p.stderr).strip()
 
 
 def strip_comments(t):
@@ -591,6 +618,7 @@ def main():
     std_names = {p.name for p in std}
     local = [p for p in local if p.name not in std_names]
     fails, checked, stable_checked, ll_checked = [], [], [], []
+    not_run, fetched = [], {}
     if len(std) < 7:
         fails.append(f"only {len(std)} regressed record(s) under {STD.relative_to(ROOT)} "
                      "-- the C16 floor is seven (four from slice 1, three from slice 2); "
@@ -632,7 +660,19 @@ def main():
                 fails.append(f"{tag}: fittedInCase `{case_rel}` is not a case")
                 continue
             case = ROOT / case_rel
-            for ds in sorted((case / "constant" / "experiments").glob("*.dat")):
+            if (case / ARCHIVE_DECL).exists():
+                if case_rel not in fetched:
+                    fetched[case_rel] = fetch_case(case)
+                code, msg = fetched[case_rel]
+                if code == 2:
+                    not_run.append(f"{tag}: {msg.splitlines()[-1] if msg else 'fetch could not run'}")
+                    continue
+                if code != 0:
+                    fails.append(f"{tag}: its case's declared datasets could not be "
+                                 f"regenerated: {msg[-400:]}")
+                    continue
+            for ds in sorted((case / "constant" / "experiments").glob("*.dat")) + \
+                    sorted((case / "constant" / "archiveExtracts").glob("*.dat")):
                 check_dataset(ds, fails, tag)
             #  ONE RUN PER NAMED CASE.  Two records may name the same case:
             #  a witness that carries an unchanged COPY of a case-local
@@ -673,7 +713,25 @@ def main():
             #  ethanol-ethylAcetate.dat), so either spelling is the pair.
             said = [f"[unreviewed] pair {rf['i']}-{rf['j']}",
                     f"[unreviewed] pair {rf['j']}-{rf['i']}"]
-            if word(rec, "reviewStatus") == "interim" and \
+            status = word(rec, "reviewStatus")
+            if status == "autoPromoted":
+                if word(rec, "humanReviewed") != "false":
+                    fails.append(f"{tag}: `reviewStatus autoPromoted` without "
+                                 "`humanReviewed false;` (it reads "
+                                 f"{word(rec, 'humanReviewed')!r}) -- a record a "
+                                 "machine promoted must say no human reviewed it")
+                if not word(rec, "promotedBy"):
+                    fails.append(f"{tag}: `reviewStatus autoPromoted` names no "
+                                 "`promotedBy` -- the pipeline that promoted it")
+                if not any(f"{x}: reviewStatus autoPromoted" in out for x in said):
+                    fails.append(f"{tag}: marked `reviewStatus autoPromoted` and its "
+                                 "case printed no `[unreviewed] pair ...: reviewStatus "
+                                 "autoPromoted` line -- the engine does not voice it")
+            elif word(rec, "humanReviewed") == "false" and status not in ("interim",):
+                fails.append(f"{tag}: `humanReviewed false;` beside `reviewStatus "
+                             f"{status}` -- only an interim or autoPromoted record can "
+                             "say no human reviewed it")
+            if status == "interim" and \
                     not any(x in out for x in said):
                 fails.append(f"{tag}: marked `reviewStatus interim` and its case "
                              "printed no `[unreviewed] pair` line -- the engine "
@@ -690,12 +748,23 @@ def main():
         print("check_regressed_pairs: FAILED")
         for f in fails:
             print("  - " + f)
+        for f in not_run:
+            print("  - NOT RUN " + f)
         return 1
+    if not_run:
+        print(f"check_regressed_pairs: NOT RUN -- {len(not_run)} regressed record(s) "
+              "could not be reproduced because their measured series are not in the "
+              "tree and could not be regenerated (no ThermoML cache, NIST "
+              f"unreachable); everything else held ({len(checked)} reproduced).  "
+              "NOT counted as a pass:")
+        for f in not_run:
+            print("  - " + f)
+        return 2
     print(f"check_regressed_pairs: OK -- {len(checked)} regressed NRTL record(s) "
           f"reproduced by re-running the case each names ({'; '.join(checked)}): "
           "parameters, evidence identity, validity span and held-out verdict "
           "equal what the run regresses now; only validated fits are in the "
-          "catalogue; `interim` is voiced at run time; every dataset carries "
+          "catalogue; `interim` and `autoPromoted` (with `humanReviewed false`) are voiced at run time; every dataset carries "
           "DOI, archive sha256, CAS+InChIKey and per-point uncertainty; "
           f"{len(stable_checked)} catalogue pair(s) predict ONE liquid across "
           "their validity span (arm f, the record's NRTL recomputed); "

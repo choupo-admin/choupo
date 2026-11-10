@@ -872,7 +872,12 @@ def fetch(case, quiet=False):
                 src = src.parent / d["articleFile"]
                 src.parent.mkdir(parents=True, exist_ok=True)
                 try:
-                    with urllib.request.urlopen(d["url"], timeout=60) as r:
+                    #  A generic client name: NIST refuses the library's
+                    #  default agent (measured, HTTP 403), and no personal
+                    #  detail goes to an outside service.
+                    req = urllib.request.Request(
+                        d["url"], headers={"User-Agent": "choupo-curate"})
+                    with urllib.request.urlopen(req, timeout=60) as r:
                         src.write_bytes(r.read())
                 except Exception as ex:   # noqa: BLE001 -- any network failure
                     say(f"choupo-curate fetch: NOT RUN -- NIST ThermoML unreachable "
@@ -975,8 +980,14 @@ pair {{ i {c1}; j {c2}; }}
 """
 
 
+def body_of(text):
+    """The record from its `components ( ... );` line on -- the first line of
+    DATA, never the word in a header's prose."""
+    return text[re.search(r"^components\s*\(", text, re.M).start():]
+
+
 def record_from_proposal(prop_text, header, fields):
-    body = prop_text[prop_text.index("components"):]
+    body = body_of(prop_text)
     ins = "".join(f"    {k:<13} {v};\n" for k, v in fields)
     body = re.sub(r"(\n    fitDate )", "\n" + ins.rstrip("\n") + r"\1", body, count=1)
     return header + body
@@ -1032,7 +1043,7 @@ def run_pipeline(case, stem, pl, commit):
     verdict = rf["verdict"]
     if split:
         reason = ("NOT PROMOTABLE: the pair splits ONE liquid inside its own validity "
-                  "span (check_regressed_pairs arm f) -- " + split[0].split(": ", 1)[1][:240])
+                  "span (check_regressed_pairs arm f) -- " + split[0].split(": ", 1)[1])
     elif verdict != "validated":
         reason = (f"NOT PROMOTABLE: held-out verdict {verdict} (AAD {rf['aad_pct']} % "
                   f"against the band {rf['maxAAD']} % declared before the fit)")
@@ -1088,6 +1099,20 @@ def fill_result(case, js, rf, reason, pl):
     p.write_text(t)
 
 
+def mark_result(case, old, new):
+    """Rewrite one phrase of the RESULT paragraph of the case header, and
+    re-wrap it (the paragraph is prose; whitespace carries nothing)."""
+    pd = case / "system" / "propsDict"
+    x = pd.read_text()
+    m = re.search(r"@@RESULT-BEGIN@@(.*?)@@RESULT-END@@", x, re.S)
+    para = " ".join(m.group(1).split())
+    if old not in para:
+        return
+    para = para.replace(old, new, 1)
+    pd.write_text(x[:m.start()] + "@@RESULT-BEGIN@@\n" + wrap(para) + "\n  @@RESULT-END@@"
+                  + x[m.end():])
+
+
 def git(args):
     p = subprocess.run(["git"] + args, cwd=str(ROOT), capture_output=True, text=True)
     if p.returncode != 0:
@@ -1129,9 +1154,11 @@ def promote(a, b):
     if split:
         refuse(f"{rp.stem}: " + split[0])
     decl = (case / "system" / "propsDict").read_text()
-    if "TRIAGE (C226" not in decl:
-        refuse(f"{case.name} carries no triage declaration -- the study triage of "
-               "C226 item 3 is a condition of automatic promotion")
+    tri = re.search(r"TRIAGE \(C226.*?\n\n", decl, re.S)
+    if tri is None or "NOT RUN" in tri.group(0):
+        refuse(f"{case.name}: the study triage of C226 item 3 did not run (fewer than "
+               "three usable studies, or no triage declared) -- it is a condition of "
+               "AUTOMATIC promotion; a human may still promote by the C16 route")
     case_rel = case.relative_to(ROOT).as_posix()
     hdr = record_header(
         rp.stem, rf["i"], rf["j"], case_rel,
@@ -1142,7 +1169,7 @@ def promote(a, b):
         "  curator who reads the series back against the articles marks it\n"
         "  `reviewStatus reviewed; humanReviewed true;`.  Revert with\n"
         f"  `bin/choupo-curate revert {rp.stem}`.")
-    body = text[text.index("components"):]
+    body = body_of(text)
     body = re.sub(r"(\n    reviewStatus\s+)interim;",
                   r"\1autoPromoted;\n    humanReviewed false;\n"
                   f'    promotedBy    "{PROMOTED_BY}";\n'
@@ -1150,9 +1177,24 @@ def promote(a, b):
     dest = STD_NRTL / f"{rp.stem}.dat"
     if dest.exists():
         refuse(f"{dest.relative_to(ROOT)} exists -- never overwritten")
+    #  Transactional: the catalogue record and the case's re-seal land
+    #  together, or neither does.
     dest.write_text(hdr + body)
     rp.unlink()
-    seal(case)
+    try:
+        seal(case)
+    except SystemExit:
+        dest.unlink()
+        rp.write_text(text)
+        seal(case)
+        raise
+    mark_result(case, "PROMOTABLE by `bin/choupo-curate pair ... --promote`:",
+                f"PROMOTED on {date.today().isoformat()} into "
+                f"{dest.relative_to(ROOT).as_posix()} as reviewStatus autoPromoted, "
+                "humanReviewed false, because:")
+    mark_result(case, "(and since REVERTED by `choupo-curate revert`)",
+                "(REVERTED by `choupo-curate revert`, then promoted again on "
+                f"{date.today().isoformat()})")
     say(f"choupo-curate: PROMOTED {dest.relative_to(ROOT)} (autoPromoted, "
         f"humanReviewed false); {case.name} re-sealed on it")
     return 0
@@ -1170,20 +1212,51 @@ def revert(stem):
                "-- revert removes ONLY a record this tool promoted")
     case = ROOT / crp.word(t, "fittedInCase")
     text = dest.read_text()
-    dest.unlink()
-    seal(case)                               # drops the sealed copy
     rp = case / "constant" / "parameters" / "NRTL" / f"{stem}.dat"
     rf = crp.facts(text)
     hdr = record_header(stem, rf["i"], rf["j"], case.relative_to(ROOT).as_posix(),
                         "reviewStatus interim: a case-local record (its automatic "
                         "promotion was REVERTED).")
-    body = text[text.index("components"):]
+    body = body_of(text)
     body = re.sub(r"\n    humanReviewed[^\n]*|\n    promotedBy[^\n]*|\n    promotedDate[^\n]*",
                   "", body)
-    body = body.replace("reviewStatus  autoPromoted;", "reviewStatus  interim;")
+    body = re.sub(r"(\n    reviewStatus\s+)autoPromoted;", r"\1interim;", body, count=1)
+    old_case = rp.read_text() if rp.exists() else None
+    #  The case's sealed copy is REPLACED by the case-local record and taken
+    #  out of the importer's ownership (`--adopt-local`), then the catalogue
+    #  record goes; on any failure both are put back.
+    dest.unlink()
     rp.parent.mkdir(parents=True, exist_ok=True)
     rp.write_text(hdr + body)
-    seal(case)
+    man = case / "constant" / "propertyManifest"
+    old_man = man.read_text() if man.exists() else None
+    if old_man is not None:
+        #  The importer's rule 4 asks for exactly this by hand: the claim on
+        #  the sealed copy is removed, so the file becomes an AUTHORED record
+        #  (curate12's shape) rather than an edited import.
+        key = f'"parameters/NRTL/{stem}.dat"'
+        k = old_man.find(key)
+        if k >= 0:
+            b = old_man.index("{", k)
+            depth, n = 0, b
+            for n in range(b, len(old_man)):
+                depth += {"{": 1, "}": -1}.get(old_man[n], 0)
+                if depth == 0:
+                    break
+            ls = old_man.rfind("\n", 0, k)
+            man.write_text(old_man[:ls] + old_man[n + 1:])
+    p = subprocess.run([sys.executable, "-I", str(IMPORT), str(case)],
+                       capture_output=True, text=True, env=env(), timeout=1800)
+    if p.returncode != 0:
+        dest.write_text(text)
+        if old_case is not None:
+            rp.write_text(old_case)
+        if old_man is not None:
+            man.write_text(old_man)
+        refuse(f"bin/choupo-import on {case.name} exited "
+               f"{p.returncode}; nothing reverted: {(p.stdout + p.stderr)[-600:]}")
+    mark_result(case, "PROMOTED on", "PROMOTED (and since REVERTED by `choupo-curate "
+                "revert`) on")
     say(f"choupo-curate: REVERTED {dest.relative_to(ROOT)}; the record is case-local "
         f"again in {case.name}")
     return 0
