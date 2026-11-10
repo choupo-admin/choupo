@@ -84,11 +84,11 @@ export const LADDER: readonly {
     what: "biphenyl — a component of the hot-oil fluids" },
   { op: "rung_glycerol", comp: "glycerol", T: 563.15,
     what: "glycerol — and here the ladder breaks, on purpose",
-    caveat: "This record's vapour pressure is `origin predictive` — "
+    caveat: "This record's vapour pressure is declared \u201corigin predictive\u201d — "
       + "Ambrose-Walton corresponding states from Tc, Pc and omega, at "
       + "omega = 1.54, far outside where such a correlation was fitted.  The "
       + "record itself says \u201cvalidate against saturation data\u201d, and this "
-      + "row IS that validation: it misses by a factor of 19.  Kept, and "
+      + "row is that validation: it misses by a factor of 19.  Kept, and "
       + "labelled, because a table that only shows the rungs that land "
       + "teaches that records can be trusted without being checked." },
 ];
@@ -236,8 +236,8 @@ export function PropertyTrustTool(): JSX.Element {
             T = 373.15 K, OUTSIDE its declared Trange (273 373).</code>{" "}
             <strong>But 0.15 K of extrapolation is not what went wrong.</strong>
             {" "}At 373.00 K, safely inside the window, the same correlation
-            already reads 1.020 atm.  The extrapolation is worth about half a
-            per cent of the two and a half.
+            already reads 1.020 atm.  The extrapolation is worth about 0.6 of
+            the 2.6 per cent.
           </Text>
           <Text size="sm" mt={6}>
             What the rung actually found is this:{" "}
@@ -304,7 +304,7 @@ export function PropertyTrustTool(): JSX.Element {
           <Text size="sm" mt={6} component="div">
             <ul style={{ marginTop: 4, paddingLeft: 20 }}>
               <li><strong>Correlations declare validity windows</strong>, and
-                a value taken outside one is ANNOUNCED — returned, because
+                a value taken outside one is announced — returned, because
                 extrapolation is a legitimate engineering choice, but never
                 silent;</li>
               <li><strong>estimates are labelled at the value</strong>{" "}
@@ -314,7 +314,7 @@ export function PropertyTrustTool(): JSX.Element {
               <li><strong>internal-consistency checks run in the test
                 suite</strong>, so an Antoine record whose declared Tb and
                 fitted Psat disagree past a band is a named finding, not a
-                surprise — with a reach worth knowing: that check does NOT
+                surprise — with a reach worth knowing: that check does not
                 catch either record above, because water misses by 2.6 %
                 (inside its 3 % band) at a Tb 0.15 K outside its window, and
                 glycerol’s curve is not an Antoine set at all;</li>

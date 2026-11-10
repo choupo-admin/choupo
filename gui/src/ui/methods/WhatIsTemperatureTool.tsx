@@ -441,7 +441,7 @@ export function WhatIsTemperatureTool(): JSX.Element {
             like{" "}
             <strong><M t="T_{90} = 500.012\ \mathrm{K},\quad U = 0.015\ \mathrm{K}\ (k = 2)" /></strong>{" "}
             — where
-            that ± is INVENTED here, for its shape alone, because no budget
+            that ± is invented here, for its shape alone, because no budget
             for this number has been read back from anywhere — plus how it
             was obtained.  Display resolution and measurement uncertainty are
             different things and need not be comparable — though when a final
@@ -540,7 +540,7 @@ export function WhatIsTemperatureTool(): JSX.Element {
           <Text size="sm" mt={4}>
             The pyrometer is the instrument where the bridge is most visible.
             It observes <strong>radiance</strong>, not temperature directly,
-            and to turn radiance into a temperature it must ASSUME an
+            and to turn radiance into a temperature it must assume an
             emissivity <M t="\varepsilon" />.  What an error in that assumption costs is
             computable, from Wien’s approximation to Planck:
           </Text>
@@ -563,7 +563,7 @@ export function WhatIsTemperatureTool(): JSX.Element {
             so a <strong>10 % error in the emissivity you assumed</strong>{" "}
             moves the answer by about{" "}
             <strong>{emissivityBand_K(0.65, T_HOT_K, 0.10).toFixed(0)} K</strong>.
-            Tens of kelvin — against a display that prints a tenth of a
+            More than ten kelvin — against a display that prints a tenth of a
             degree.  In a metrology laboratory the assumption can be made
             very good (a blackbody cavity, a characterised surface); pointed
             at an oxidised tube it usually{" "}

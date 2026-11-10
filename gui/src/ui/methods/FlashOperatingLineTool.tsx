@@ -80,9 +80,9 @@ export const FLASH_STEPS: readonly {
   {
     n: 2,
     title: "Two things are true at once, and each is a curve",
-    body: "EQUILIBRIUM says what vapour a given liquid makes: y*(x), which "
+    body: "Equilibrium says what vapour a given liquid makes: y*(x), which "
       + "the engine computes from the thermodynamics and which knows nothing "
-      + "about how much feed you have.  The MATERIAL BALANCE says the feed "
+      + "about how much feed you have.  The material balance says the feed "
       + "must be shared out: whatever leaves as liquid plus whatever leaves "
       + "as vapour is what came in.  Neither alone gives an answer.  On "
       + "this page — a binary at a fixed pressure and a fixed vapour "
@@ -91,7 +91,10 @@ export const FLASH_STEPS: readonly {
       + "property of this configuration, not a theorem about every flash: "
       + "a non-ideal or multiphase mixture can have several states that "
       + "satisfy both, which is why an engine also tests the stability of "
-      + "the phases it finds.",
+      + "the phases it finds.  In the balance below, F, L and V are the "
+      + "molar flows of feed, liquid and vapour, and z, x and y the mole "
+      + "fractions of the more volatile component in the feed, the liquid "
+      + "and the vapour.",
     formula: "F\\,z = L\\,x + V\\,y",
   },
   {
@@ -99,12 +102,12 @@ export const FLASH_STEPS: readonly {
     title: "The balance is a straight line, and it pivots on the feed",
     body: "Divide the balance by F and let ψ = V/F be the vapour fraction.  "
       + "The result is a line — and two things about it do all the teaching.  "
-      + "It passes through (z, z), a point ON THE DIAGONAL, no matter what ψ "
-      + "is: the line PIVOTS about the feed.  And its slope is −L/V, the "
+      + "It passes through (z, z), a point on the diagonal, no matter what ψ "
+      + "is: the line pivots about the feed.  And its slope is −L/V, the "
       + "phase ratio itself.",
     formula: "y = -\\frac{1-\\psi}{\\psi}\\,x + \\frac{z}{\\psi} \\qquad \\text{through } (z,\\,z),\\ \\text{slope } -L/V",
-    note: "ψ → 0 turns it VERTICAL (nothing has boiled: the liquid is the "
-      + "feed — the bubble point).  ψ → 1 turns it HORIZONTAL (everything has "
+    note: "ψ → 0 turns it vertical (nothing has boiled: the liquid is the "
+      + "feed — the bubble point).  ψ → 1 turns it horizontal (everything has "
       + "boiled: the vapour is the feed — the dew point).  Between those two "
       + "the line sweeps out every split the drum can produce.",
   },
@@ -113,10 +116,10 @@ export const FLASH_STEPS: readonly {
     title: "Where they cross is the answer",
     body: "The intersection of the operating line with the equilibrium curve "
       + "is, on this monotone curve, the only state that satisfies both, so "
-      + "it IS the flash: read x "
+      + "it is the flash: read x "
       + "off the horizontal axis for the liquid, y off the vertical for the "
       + "vapour.  And the feed pivot splits the segment between them in the "
-      + "ratio of the two products — the LEVER RULE, which is the material "
+      + "ratio of the two products — the lever rule, which is the material "
       + "balance read as a length.",
     formula: "\\frac{V}{F} = \\frac{z - x}{y - x}",
     note: "That intersection is Rachford-Rice, solved with a ruler.  The "
@@ -129,41 +132,41 @@ export const FLASH_STEPS: readonly {
 export const FLASH_LIMITS: readonly { id: string; title: string; body: string }[] = [
   {
     id: "binary",
-    title: "BINARY ONLY. The operating line is a line only for two components.",
+    title: "Binary only. The operating line is a line only for two components.",
     body: "With three or more there is no x–y plane to draw it in, the "
       + "intersection stops being a picture, and Rachford-Rice has to be "
       + "solved as an equation rather than read off a page. Everything about "
-      + "the IDEA survives — equilibrium and the balance, both at once — but "
+      + "the idea survives — equilibrium and the balance, both at once — but "
       + "the construction does not. Do not leave this page thinking a "
       + "multicomponent flash is a drawing.",
   },
   {
     id: "ideal",
-    title: "This pair is IDEAL and monotone, chosen so the curve does not fight the lesson.",
+    title: "This pair is ideal and monotone, chosen so the curve does not fight the lesson.",
     body: "Benzene/toluene has no azeotrope: y*(x) stays above the diagonal "
       + "the whole way, so the only thing moving is the operating line. A "
       + "real non-ideal pair can cross the diagonal, and there the "
       + "construction still works but the reading changes completely — the "
       + "corpus carries one at props/compare/acetone01_ipa_water_azeotrope, "
       + "whose azeotrope is a published anchor.  (Its sibling "
-      + "acetone04_acetone_water_vle is the OPPOSITE lesson: acetone/water "
+      + "acetone04_acetone_water_vle is the opposite lesson: acetone/water "
       + "has no azeotrope, and the case exists so a model that invents one "
       + "is caught.)  "
-      + "An azeotropic curve is a better SECOND case and a worse first one.",
+      + "An azeotropic curve is a better second case and a worse first one.",
   },
   {
     id: "interp",
     title: "The construction interpolates LINEARLY between the engine's rows.",
     body: "51 points, straight segments between them, no spline — a spline "
       + "would overshoot near a sharp curvature and invent equilibrium the "
-      + "engine never computed. So the sampling IS the resolution of every "
+      + "engine never computed. So the sampling is the resolution of every "
       + "number read off this diagram, and the deviation against the engine's "
       + "own flash below is the honest measure of it.",
   },
   {
     id: "isothermal",
     title: "Nothing here is an energy balance.",
-    body: "The flash temperature is READ off the boiling locus at the "
+    body: "The flash temperature is read off the boiling locus at the "
       + "converged liquid composition; it is not obtained from a duty. A real "
       + "adiabatic flash solves the energy balance simultaneously and lands "
       + "at a different temperature — Choupo has that operation "
@@ -393,11 +396,11 @@ export function FlashOperatingLineTool(): JSX.Element {
             <Text size="sm">
               {sol.regime === "all-liquid"
                 ? "Nothing has boiled: the operating line is vertical, the "
-                  + "liquid IS the feed, and there is no vapour to read.  This "
+                  + "liquid is the feed, and there is no vapour to read.  This "
                   + "is the bubble point, and it is a limit of the "
                   + "construction rather than a failure of it."
                 : "Everything has boiled: the line is horizontal, the vapour "
-                  + "IS the feed, and there is no liquid to read.  This is the "
+                  + "is the feed, and there is no liquid to read.  This is the "
                   + "dew point."}
             </Text>
           </Alert>
@@ -408,7 +411,7 @@ export function FlashOperatingLineTool(): JSX.Element {
         <Alert variant="light" title="Does the drawing agree with the solver?">
           <OriginMark of="engine" note="the recorded run of flash01_benzene_toluene, quoted" />
           <Text size="sm">
-            The corpus carries the same pair flashed by the ENGINE — not by
+            The corpus carries the same pair flashed by the engine — not by
             this construction — in{" "}
             <code>tutorials/steady/flash/flash01_benzene_toluene</code>: at{" "}
             {ENGINE_CHECK.T_K} K, {ENGINE_CHECK.P_bar} bar and z ={" "}
@@ -419,7 +422,7 @@ export function FlashOperatingLineTool(): JSX.Element {
             Set the knobs to that feed and vapour fraction and the intersection
             should land at that temperature.  Any gap is the price of reading a
             curve sampled at 51 points with straight lines between them — which
-            is a property of the DRAWING, not of the physics, and is the
+            is a property of the drawing, not of the physics, and is the
             honest thing this page can show you about its own method.
           </Text>
         </Alert>

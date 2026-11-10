@@ -119,7 +119,7 @@ describe("the ladder's claims", () => {
 
   it("COSMO-SAC carries the licence honesty, by name", () => {
     const cosmo = MODEL_LADDER.find((m) => m.name.includes("COSMO"))!;
-    expect(cosmo.note).toContain("SYNTHETIC teaching surrogates");
+    expect(cosmo.note).toContain("synthetic teaching surrogates");
     expect(cosmo.note).toContain("bin/choupo-import-cosmo");
     expect(cosmo.note).toContain("refuses");
   });
@@ -143,7 +143,7 @@ describe("the honest absences", () => {
   it("PC-SAFT and COSMO-SAC are deliberately not AAD rows", () => {
     expect(AAD_MODELS.map((m) => m.op)).toEqual(
       ["txy_ideal", "txy_wilson", "txy_nrtl", "txy_unifac"]);
-    expect(prose(SRC)).toContain("deliberately NOT rows");
+    expect(prose(SRC)).toContain("deliberately not rows");
     expect(prose(SRC)).toContain("A missing row is honest");
   });
 

@@ -139,15 +139,15 @@ export const CHANG_CIRCLES: readonly {
     title: "Keeping the fixed points fixed",
     circle: "A thermometer is graduated between two phenomena assumed to "
       + "happen always at the same temperature.  But how was that judged, "
-      + "before any trusted thermometer existed?  And water does NOT "
+      + "before any trusted thermometer existed?  And water does not "
       + "cooperate: it superheats, it bumps, it hisses, and its boiling "
       + "temperature moves with the vessel, the dissolved air and the "
       + "pressure.  Cavendish, around 1780: \u201cThe excess of the heat of "
       + "water above the boiling point is influenced by a great variety of "
       + "circumstances.\u201d",
     escape: "A self-improving spiral of quantification: bodily sensation "
-      + "first, then an ORDINAL thermoscope that ranks without numbering, "
-      + "then a CARDINAL thermometer.  Each stage is built with the "
+      + "first, then an ordinal thermoscope that ranks without numbering, "
+      + "then a cardinal thermometer.  Each stage is built with the "
       + "previous one and ends up better than it.",
   },
   {
@@ -156,16 +156,16 @@ export const CHANG_CIRCLES: readonly {
     circle: "The two-point method assumes the fluid expands uniformly with "
       + "temperature.  To test that you must plot volume against "
       + "temperature \u2014 and you have no temperature until the thermometer "
-      + "you are testing is trusted.  Chang calls this the PROBLEM OF NOMIC "
-      + "MEASUREMENT, and it is general: you want X, you can only observe "
+      + "you are testing is trusted.  Chang calls this the problem of nomic "
+      + "measurement, and it is general: you want X, you can only observe "
       + "Y, you need a law X = f(Y), and f cannot be tested without knowing "
       + "X.  Mercury, alcohol and air thermometers disagreed, and at most "
       + "one of them could be right.",
-    escape: "Regnault's COMPARABILITY, and it is beautifully minimal: a "
-      + "real physical property has ONE value in a given situation (the "
+    escape: "Regnault's comparability, and it is beautifully minimal: a "
+      + "real physical property has one value in a given situation (the "
       + "principle of single value), so an instrument that disagrees with "
       + "itself, or with others of its own kind, is wrong \u2014 and you can "
-      + "know that WITHOUT knowing which one is right.  It tests "
+      + "know that without knowing which one is right.  It tests "
       + "thermometers while assuming nothing about the nature of heat.",
   },
   {
@@ -176,8 +176,8 @@ export const CHANG_CIRCLES: readonly {
       + "melts in the kiln.  There is no pre-existing standard in the new "
       + "domain against which a new method could be checked.  Wedgwood the "
       + "potter measured his kilns by the shrinkage of clay \u2014 and clay "
-      + "CONTRACTS with heat, so the scale ran backwards.",
-    escape: "CONVERGENCE.  The concept in the new domain is partly BUILT by "
+      + "contracts with heat, so the scale ran backwards.",
+    escape: "Convergence.  The concept in the new domain is partly built by "
       + "several independent methods being made to agree there.  Not one "
       + "method validated against a standard, but a standard assembled out "
       + "of agreement.",
@@ -189,7 +189,7 @@ export const CHANG_CIRCLES: readonly {
       + "substance whatsoever.  But connecting that abstraction to any "
       + "actual apparatus needs a theory, and testing the theory needs "
       + "temperature measurements \u2014 which need the connection.",
-    escape: "ITERATION on an admitted guess: assume the unjustified "
+    escape: "Iteration on an admitted guess: assume the unjustified "
       + "hypothesis provisionally, use it, and let the results correct the "
       + "assumption you started from.  Peirce's observation, which Chang "
       + "quotes: reasoning \u201cnot only corrects its conclusions, it even "
@@ -472,7 +472,7 @@ export function ThermometerTrustTool(): JSX.Element {
             <ul style={{ marginTop: 4, paddingLeft: 20 }}>
               <li>helium vapour pressure, <strong>0.65 – 5 K</strong>;</li>
               <li>an interpolating constant-volume gas thermometer,{" "}
-                <strong>3 – 24.5561 K</strong> — the same PHYSICS as §1's gas
+                <strong>3 – 24.5561 K</strong> — the same physics as §1's gas
                 thermometer, but pressed into service as a defining
                 interpolating instrument over a narrow cryogenic band,
                 not the primary thermometer §1 runs at 500 K;</li>
@@ -584,7 +584,7 @@ export function ThermometerTrustTool(): JSX.Element {
             leave the resistor — and almost nothing else in chemical
             processing goes there.{"  "}
             <strong>Only the hot end leaves.</strong>  Above 1234.93 K the
-            platinum resistance thermometer no longer DEFINES the scale —
+            platinum resistance thermometer no longer defines the scale —
             radiation thermometry does, referred back to the silver, gold or
             copper point, and above copper ({ITS90_TOP_K} K) no defining
             fixed point remains.  Sensors still exist there; what changes is
@@ -715,7 +715,7 @@ export function ThermometerTrustTool(): JSX.Element {
             others, and being cross-examined.{"  "}
             <strong>Comparability, convergence, iteration</strong>: those are
             the three tests, they are three hundred years old, and many of
-            the gates in this simulator’s own test suite are one of them
+            the checks in this simulator’s own test suite are one of them
             wearing work clothes.
           </Text>
           <Text size="xs" c="dimmed" mt={8}>

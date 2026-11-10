@@ -323,7 +323,7 @@ export function BjerrumTool(): JSX.Element {
                 {x2 !== null && (
                   <> HCO3<sup>−</sup> and CO3<sup>2−</sup> cross at{" "}
                     <strong>pH {x2.toFixed(3)}</strong>.</>)}
-                {" "}Neither pK was an input to any of them.
+                {" "}The equilibrium constants were inputs; neither crossing was.
               </>
             ) : "waiting for the run…"}
           </Text>

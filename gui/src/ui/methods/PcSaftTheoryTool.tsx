@@ -100,11 +100,11 @@ export const PCSAFT_STEPS: readonly PcSaftStep[] = [
   {
     n: 1,
     title: "A different kind of model, and it matters before any equation",
-    body: "Wilson, NRTL, UNIQUAC, UNIFAC and COSMO-SAC all build an EXCESS "
-      + "GIBBS ENERGY and differentiate it to get $\\gamma$.  Not one of them "
+    body: "Wilson, NRTL, UNIQUAC, UNIFAC and COSMO-SAC all build an excess "
+      + "Gibbs energy and differentiate it to get $\\gamma$.  Not one of them "
       + "knows what a density is: they price the liquid's non-ideality and "
       + "hand the vapour to a separate model.  PC-SAFT (Gross & Sadowski, "
-      + "2001) builds a residual HELMHOLTZ energy as a function of "
+      + "2001) builds a residual Helmholtz energy as a function of "
       + "temperature, density and composition — so one surface gives the "
       + "liquid root, the vapour root, the density of each, and the fugacity "
       + "in both, including for a component above its critical temperature.  "
@@ -126,12 +126,12 @@ export const PCSAFT_STEPS: readonly PcSaftStep[] = [
       + "n-alkane a long thin one, and $m$ need not be an integer — it is a "
       + "fitted shape parameter, not a count of atoms.",
     after: "The residual Helmholtz energy is then assembled from physically "
-      + "NAMED contributions, which is the whole appeal of the SAFT family "
+      + "named contributions, which is the whole appeal of the SAFT family "
       + "over a patched cubic: you can point at the term that is failing.  "
       + "Notation, used on the rest of this page: $A^{\\mathrm{res}}$ is the "
       + "residual Helmholtz energy of $N$ molecules (in J), and "
-      + "$\\tilde a = A^{\\mathrm{res}}/(NkT)$ its REDUCED, dimensionless form "
-      + "— the one the engine computes.  $\\rho = N/V$ is the NUMBER "
+      + "$\\tilde a = A^{\\mathrm{res}}/(NkT)$ its reduced, dimensionless form "
+      + "— the one the engine computes.  $\\rho = N/V$ is the number "
       + "density, molecules per m³, so that $\\rho\\sigma^3$ (with "
       + "$\\sigma$ in m) is dimensionless; the engine converts $\\sigma$ from "
       + "the record's ångström on load.",
@@ -146,7 +146,7 @@ export const PCSAFT_STEPS: readonly PcSaftStep[] = [
     title: "The hard chain: a reference that already knows about shape",
     body: "Start with hard spheres that cannot overlap and have no "
       + "attraction, then tie them into chains.  First the spheres get a "
-      + "TEMPERATURE-DEPENDENT diameter — real molecules are soft, and at "
+      + "temperature-dependent diameter — real molecules are soft, and at "
       + "higher $T$ you can push them closer:",
     eq: [
       "d_i(T) = \\sigma_i \\left[ 1 - 0.12 \\exp\\!\\left( -\\frac{3\\,\\varepsilon_i}{kT} \\right) \\right]",
@@ -179,8 +179,8 @@ export const PCSAFT_STEPS: readonly PcSaftStep[] = [
     ],
     after: "$C_1$ is a compressibility term of the hard chain, written out in "
       + "full in the source.  The two overlined averages are where the "
-      + "MIXTURE enters, and they are double sums over pairs, with the "
-      + "energy REDUCED by $kT$ so that each term is dimensionless once "
+      + "mixture enters, and they are double sums over pairs, with the "
+      + "energy divided by $kT$ so that each term is dimensionless once "
       + "multiplied by $\\rho$:",
     eq2: [
       "\\overline{m^2 \\varepsilon \\sigma^3} = \\sum_i \\sum_j x_i x_j\\, m_i m_j \\left(\\frac{\\varepsilon_{ij}}{kT}\\right) \\sigma_{ij}^3 \\qquad \\overline{m^2 \\varepsilon^2 \\sigma^3} = \\sum_i \\sum_j x_i x_j\\, m_i m_j \\left(\\frac{\\varepsilon_{ij}}{kT}\\right)^{\\!2} \\sigma_{ij}^3",
@@ -197,11 +197,11 @@ export const PCSAFT_STEPS: readonly PcSaftStep[] = [
     n: 5,
     title: "Association: hydrogen bonds as a chemical equilibrium of sites",
     body: "For water, alcohols and acids the dispersion term is not enough: "
-      + "much of the physics IS the directional bond.  Wertheim's "
-      + "first-order theory puts discrete SITES on the segments and asks "
+      + "much of the physics is the directional bond.  Wertheim's "
+      + "first-order theory puts discrete sites on the segments and asks "
       + "what fraction of each site type is still unbonded.  Two parameters "
       + "per component — the bond energy $\\varepsilon^{AB}/k$ and the "
-      + "bonding volume $\\kappa^{AB}$ — plus a SCHEME saying how many donor "
+      + "bonding volume $\\kappa^{AB}$ — plus a scheme saying how many donor "
       + "and acceptor sites there are ($2B$: one of each; $4C$: two of "
       + "each).",
     eq: [
@@ -214,7 +214,7 @@ export const PCSAFT_STEPS: readonly PcSaftStep[] = [
       + "molecules uses the Wolbach–Sandler rules — the energies averaged, "
       + "the volumes combined geometrically — which is how ethanol's OH "
       + "finds water's.  Once the fixed point has converged, the site "
-      + "fractions CLOSE into the association contribution, summed over "
+      + "fractions close into the association contribution, summed over "
       + "the sites $A$ of each molecule ($M_i$ of them in all):",
     eq2: ["\\tilde a^{\\mathrm{assoc}} = \\sum_i x_i \\left[ \\sum_{A \\in i} \\left( \\ln X^A_i - \\frac{X^A_i}{2} \\right) + \\frac{M_i}{2} \\right]"],
     assumes: "One bond per site (TPT1), no ring formation, and sites within "
@@ -243,8 +243,8 @@ export const PCSAFT_STEPS: readonly PcSaftStep[] = [
       + "$P(\\rho)$ equals the requested pressure, and there can be one root "
       + "or three.  The smallest is the vapour-like root and the largest "
       + "the liquid-like one; a middle root has $\\partial P/\\partial\\rho < "
-      + "0$ — compress it and its pressure FALLS — so it is mechanically "
-      + "unstable and is never used.  Two roots are two CANDIDATE phases, "
+      + "0$ — compress it and its pressure falls — so it is mechanically "
+      + "unstable and is never used.  Two roots are two candidate phases, "
       + "not an equilibrium: which phases exist, and in what amounts, is "
       + "decided by the flash, which requires every component's fugacity to "
       + "be equal in the phases it keeps.  (Both derivatives are taken "
@@ -335,7 +335,7 @@ export function PcSaftTheoryTool(): JSX.Element {
       ))}
 
       <Alert variant="light" color="orange"
-        title="The association scheme is part of the FIT — paid for once, in this repository">
+        title="The association scheme is part of the fit — paid for once, in this repository">
         <OriginMark of="engine" note="K_water = 0.0044 is what the engine returned with the 4C curation, quoted from the repository's history" />
         <Text size="sm">
           A student meeting <Code>assocScheme</Code> naturally reads it as a
@@ -349,7 +349,7 @@ export function PcSaftTheoryTool(): JSX.Element {
           did not use.
         </Text>
         <Text size="sm" mt={6}>
-          This is not hypothetical.  Water WAS curated here as 4C.  It{" "}
+          This is not hypothetical.  Water was curated here as 4C.  It{" "}
           <strong>passed a pure-density anchor</strong> — by coincidence,
           because a pure fluid can absorb the error into the other
           parameters — while the ethanol/water mixture flash collapsed to
@@ -357,23 +357,23 @@ export function PcSaftTheoryTool(): JSX.Element {
           catches what a pure anchor cannot, which is why
           {" "}<Code>flash20_ethanol_water_pcsaft</Code> exists and pins the
           mixture’s K-values.  The engine itself cannot tell: it refuses an
-          UNKNOWN scheme and a partial parameter trio, but a record does not
+          unknown scheme and a partial parameter trio, but a record does not
           say which scheme its numbers were regressed under, so a known
           scheme paired with the wrong numbers runs — and only the mixture
-          witness’s golden fails.
+          witness’s recorded K-values fail.
         </Text>
       </Alert>
 
       <Alert variant="light"
-        title="k_ij = 0, and why this absence is milder than the others">
-        <OriginMark of="engine" note="V/F and the K-values are the recorded run (golden) of flash20_ethanol_water_pcsaft, quoted" />
+        title={<>k<sub>ij</sub> = 0, and why this absence is milder than the others</>}>
+        <OriginMark of="engine" note="V/F and the K-values are the recorded run of flash20_ethanol_water_pcsaft, quoted" />
         <Text size="sm">
           A binary with no <M t="k_{ij}" /> runs at zero, announced.  On the
           local-composition page you met NRTL running a pair at
-          {" "}<M t="\tau = 0" />, which makes that pair's BINARY exactly
+          {" "}<M t="\tau = 0" />, which makes that pair's binary exactly
           ideal (inside a larger mixture the other pairs still act); on
           the UNIFAC page a missing group pair runs at
-          {" "}<M t="\Psi = 1" />, which makes that one GROUP pair athermal
+          {" "}<M t="\Psi = 1" />, which makes that one group pair athermal
           while the combinatorial term and every other group pair stay.
           Both drop a fitted interaction and put nothing in its place.
         </Text>
@@ -391,7 +391,7 @@ export function PcSaftTheoryTool(): JSX.Element {
         <Text size="sm" mt={6}>
           How good a prediction is a separate question, and
           {" "}<Code>flash20</Code> answers it for one state: at 358.15 K and
-          1 atm its golden pins the predictive PC-SAFT flash at
+          1 atm its recorded run gives the predictive PC-SAFT flash at
           {" "}<M t="V/F = 0.649" /> against 0.512 for the fitted NRTL, and
           the converged <M t="K_{\mathrm{ethanol}} = 11.47" /> against
           3.896 (<M t="K_{\mathrm{water}}" /> 0.581 against 0.602).  That is
@@ -405,7 +405,7 @@ export function PcSaftTheoryTool(): JSX.Element {
       <Box>
         <Title order={5}>Check yourself</Title>
         <Check
-          q="Does k_ij = 0 switch the attraction between two components off?"
+          q={<>Does <M t="k_{ij} = 0" /> switch the attraction between two components off?</>}
           a={<>No.  The cross energy is still
             {" "}<M t="\sqrt{\varepsilon_i\varepsilon_j}" />, the combining
             rule’s estimate; <M t="k_{ij}" /> only corrects it.</>} />
@@ -433,7 +433,7 @@ export function PcSaftTheoryTool(): JSX.Element {
           {" "}<M t="m" />, <M t="\sigma" /> and <M t="\varepsilon" /> are
           the same substance to this model.  The dispersion series was fitted
           to n-alkanes and is extrapolated everywhere else.  And the
-          parameters, though not fitted to your MIXTURE, were still fitted to
+          parameters, though not fitted to your mixture, were still fitted to
           something — usually pure vapour pressure and liquid density — so a
           component far from that evidence is being extrapolated too,
           quietly.

@@ -118,7 +118,7 @@ export function RulesOfThumbTool(): JSX.Element
                     </Anchor>{" "}
                     — what to pick when the problem stops being <em>solve this
                     flash</em> and becomes <em>what equipment do I even choose?</em>
-                    {"  "}Every line below opens the guide at that chapter.
+                    {"  "}Every line below opens the guide at that chapter or section.
                 </Text>
             </Box>
 

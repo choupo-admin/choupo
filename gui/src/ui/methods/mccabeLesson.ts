@@ -103,7 +103,7 @@ y &= \frac{\bar L}{\bar V}\,x - \frac{B}{\bar V}\,x_B
         + "liquid on a tray" },
       { sym: "y", means: "mole fraction of the same component in the vapour "
         + "leaving that tray" },
-      { sym: "R", means: "the reflux ratio l/D — liquid returned to the "
+      { sym: "R", means: "the reflux ratio L/D — liquid returned to the "
         + "column per mole of distillate taken off" },
       { sym: "x_D", means: "composition of the distillate, the product leaving "
         + "the top" },

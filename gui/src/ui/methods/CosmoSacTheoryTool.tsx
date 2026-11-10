@@ -102,18 +102,18 @@ export const COSMO_STEPS = [
     n: 1,
     title: "A molecule is a charged surface, not a sphere with a parameter",
     body: "Every other activity model on the comparison page describes a "
-      + "molecule by numbers fitted to how it BEHAVES — an interaction "
+      + "molecule by numbers fitted to how it behaves — an interaction "
       + "energy, a group count, a segment diameter.  COSMO-SAC starts one "
       + "level down.  A quantum-chemistry calculation places the molecule "
       + "in a perfect conductor, which screens its charge exactly, and "
       + "reads off the screening charge density σ at every point of the "
       + "cavity surface.  Nothing about a mixture has been used yet: this "
-      + "is a property of ONE molecule.  It is not unique, though: it "
+      + "is a property of one molecule.  It is not unique, though: it "
       + "depends on the conformation chosen, the quantum method and basis, "
       + "the cavity construction and how the profile was prepared — "
       + "which is why a profile carries the name of the set it came from.  "
       + "In this implementation it is computed elsewhere and then held "
-      + "FIXED: the run reads it from the component record and never "
+      + "fixed: the run reads it from the component record and never "
       + "recomputes it.",
     assumes: "The conductor screening is a good stand-in for a real "
       + "solvent, and the correction back to reality is the pairwise "
@@ -123,11 +123,11 @@ export const COSMO_STEPS = [
   {
     n: 2,
     title: "Collapse the surface into a σ-profile",
-    body: "The geometry is thrown away and only the STATISTICS are kept: "
+    body: "The geometry is thrown away and only the statistics are kept: "
       + "p_i(σ) is how much of molecule i's surface carries charge density "
       + "σ, tabulated on a fixed grid of 51 points from −0.025 to 0.025 "
       + "e/Å² in steps of 0.001.  Together with the cavity area A_i and "
-      + "volume V_i, that profile is the WHOLE input — no binary data, no "
+      + "volume V_i, that profile is the whole input — no binary data, no "
       + "group table, nothing fitted to this pair.",
     assumes: "Where a segment sits on the molecule does not matter, only "
       + "how much charge density it carries.  This is why COSMO-SAC cannot "
@@ -144,17 +144,17 @@ export const COSMO_STEPS = [
       + "energy.  Two terms, and the second is zero almost everywhere.",
     eq: "ΔW(σ_m, σ_n) = (α'/2)(σ_m + σ_n)²\n"
       + "              + c_HB · max(0, σ_acc − σ_HB) · min(0, σ_don + σ_HB)",
-    after: "The first term is the MISFIT: it punishes two segments whose "
+    after: "The first term is the misfit: it punishes two segments whose "
       + "charges do not cancel, and it is symmetric — two positives cost "
-      + "as much as two negatives.  The second is the HYDROGEN BOND, "
+      + "as much as two negatives.  The second is the hydrogen bond, "
       + "written with σ_acc = max(σ_m,σ_n) and σ_don = min(σ_m,σ_n): it "
       + "is non-zero only when one segment is more positive than +σ_HB "
-      + "AND the other more negative than −σ_HB, and then it is NEGATIVE "
+      + "and the other more negative than −σ_HB, and then it is negative "
       + "— an attraction.  That single product is why water and ethanol "
       + "behave unlike water and hexane in this model, and it is switched "
       + "on by a cutoff of 0.0084 e/Å², not by anyone declaring that a "
       + "hydrogen bond exists.",
-    assumes: "Interactions are PAIRWISE between surface segments and "
+    assumes: "Interactions are pairwise between surface segments and "
       + "independent of what the rest of either molecule is doing.",
     cites: "CosmoSac.cpp:103-107",
   },
@@ -164,17 +164,17 @@ export const COSMO_STEPS = [
     body: "Now ask: in a liquid whose surface has the composite profile "
       + "p(σ), how much is a segment of density σ_m disfavoured?  The "
       + "answer depends on what it will meet, which depends on how "
-      + "disfavoured THOSE segments are — so the equation contains itself.",
+      + "disfavoured those segments are — so the equation contains itself.",
     eq: "Γ(σ_m) = 1 / Σ_n p(σ_n) · Γ(σ_n) · exp( −ΔW(σ_m,σ_n) / RT )",
     after: "This is a fixed point, not a formula: the engine starts from "
       + "Γ ≡ 1, sweeps the grid, and averages the new estimate with the "
       + "old one half-and-half — damping, without which it oscillates — "
       + "until no Γ moves by more than 1e-8, giving up after 500 sweeps.  "
-      + "It is worth seeing that the ONLY place temperature enters this "
+      + "It is worth seeing that the only place temperature enters this "
       + "model is the RT in that exponential.  The σ-profiles do not "
       + "depend on T, and neither does ΔW.",
     assumes: "The liquid is a mixture of independent surface segments.  "
-      + "Their pairings are NOT random — the exp(−ΔW/RT) in the equation "
+      + "Their pairings are not random — the exp(−ΔW/RT) in the equation "
       + "Boltzmann-weights every contact, so a segment does prefer "
       + "partners it pairs well with — but nothing beyond the pair is "
       + "tracked: no geometry, no neighbour of a neighbour.",
@@ -183,13 +183,13 @@ export const COSMO_STEPS = [
   {
     n: 5,
     title: "The residual part: move each molecule's segments into the mixture",
-    body: "Solve step 4 twice.  Once for the MIXTURE's composite profile "
+    body: "Solve step 4 twice.  Once for the mixture's composite profile "
       + "p_S(σ) — the area-weighted average over all components — and once "
       + "for the pure component's own profile p_i(σ).  The residual "
       + "activity coefficient is the cost of moving molecule i's segments "
       + "from the second environment to the first, one segment at a time:",
     eq: "ln γ_i^res = (A_i / a_eff) · Σ_k p_i(σ_k) · [ ln Γ_S(σ_k) − ln Γ_i(σ_k) ]",
-    after: "Read the prefactor: A_i/a_eff is simply HOW MANY segments "
+    after: "Read the prefactor: A_i/a_eff is simply how many segments "
       + "molecule i has.  And read the difference: if the mixture's "
       + "environment is identical to the pure one, every bracket is zero "
       + "and ln γ_i^res = 0 exactly.  That is not a numerical coincidence "
@@ -204,13 +204,13 @@ export const COSMO_STEPS = [
     body: "Even with no energetic preference at all, mixing molecules of "
       + "different size and shape changes the entropy.  COSMO-SAC uses the "
       + "same Staverman–Guggenheim expression as the UNIQUAC family, with "
-      + "the size and area parameters taken from the SAME cavity the "
+      + "the size and area parameters taken from the same cavity the "
       + "σ-profile came from rather than from a separate table:",
     eq: "r_i = V_i / r₀ ,   q_i = A_i / q₀ ,   l_i = (z/2)(r_i − q_i) − (r_i − 1)\n"
       + "ln γ_i^comb = ln(φ_i/x_i) + (z/2) q_i ln(θ_i/φ_i) + l_i "
       + "− (φ_i/x_i) Σ_j x_j l_j",
-    after: "Here φ_i = x_i r_i / Σ_j x_j r_j is the VOLUME fraction and "
-      + "θ_i = x_i q_i / Σ_j x_j q_j the AREA fraction of component i, and "
+    after: "Here φ_i = x_i r_i / Σ_j x_j r_j is the volume fraction and "
+      + "θ_i = x_i q_i / Σ_j x_j q_j the area fraction of component i, and "
       + "z = 10 is the lattice coordination number.  "
       + "The engine forms φ_i/x_i and θ_i/x_i as ratios and never "
       + "divides by x_i, so the expression stays finite at infinite "
@@ -233,18 +233,16 @@ export const COSMO_STEPS = [
       + "on vapour-liquid equilibrium data for many systems; σ_HB, and the "
       + "form of the misfit factor α' (which moves only through a_eff), were "
       + "taken over from Klamt's COSMO-RS.  What was decided "
-      + "before anyone mixed water and ethanol is everything SPECIFIC to "
+      + "before anyone mixed water and ethanol is everything specific to "
       + "that pair.",
     after: "Which is the claim to test, and the reason the comparison page "
-      + "exists: predictive means “no data for THIS mixture used”, never "
+      + "exists: predictive means “no data for this mixture used”, never "
       + "“as accurate as a fit”.",
-    assumes: "That the two contributions are SEPARABLE and simply add — "
+    assumes: "That the two contributions are separable and simply add — "
       + "that the entropy of packing different-sized molecules and the "
       + "energy of pairing their surfaces can be computed independently "
-      + "and summed.  The typechecker caught this step declaring no "
-      + "assumption at all while the other six did, which is worth "
-      + "recording: it is the assumption easiest to forget, because it is "
-      + "made by the plus sign rather than by any term.",
+      + "and summed.  This is the assumption easiest to forget, because it "
+      + "is made by the plus sign rather than by any term.",
     cites: "CosmoSac.cpp:185",
   },
 ] as const;
@@ -279,10 +277,10 @@ export function CosmoSacTheoryTool(): JSX.Element {
         title="Read this before you trust a number on this page">
         <Text size="sm">
           The public tree ships <strong>synthetic teaching surrogates</strong>
-          {" "}for the σ-profiles: the VT-2005 profile set, published in 2006, four years after
-          this 2002 model, and normally used with it,
+          {" "}for the σ-profiles: the VT-2005 profile set (published in 2006, four years after
+          this 2002 model, and normally used with it)
           cannot be redistributed here.  The mechanism below
-          is exact and the code is the real one; the NUMBERS the witness
+          is exact and the code is the real one; the numbers the witness
           produces demonstrate behaviour and are <strong>not validated
           against measurement</strong>.  Install your own copy with{" "}
           <Code>bin/choupo-import-cosmo</Code> and the model reads it; without
@@ -357,7 +355,7 @@ export function CosmoSacTheoryTool(): JSX.Element {
           <Code>tutorials/{COSMO_WITNESS}</Code>, at 298.15 K and 1 bar.  It
           asks the model four questions, and the first is the one that tests
           step 5's exact cancellation: <strong>pure water</strong>, where the
-          mixture profile IS the pure profile, so every bracket in the
+          mixture profile is the pure profile, so every bracket in the
           residual sum is zero and ln γ must come back as zero — not small,
           zero.  Then a 50/50 water/ethanol, a ternary with acetone, and
           water/hexane, where the hydrogen-bond term of step 3 has nothing to
@@ -375,7 +373,7 @@ export function CosmoSacTheoryTool(): JSX.Element {
         {!run.busy && !run.err && (
           <Text size="xs" c={INK} mt={8}>
             The run writes one curve per op; open the case to read the
-            γ values it produced.  They are shown here as the ENGINE's
+            γ values it produced.  They are shown here as the engine's
             output and nothing on this page recomputes them.
           </Text>
         )}

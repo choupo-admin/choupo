@@ -121,7 +121,7 @@ describe("the lesson runs end to end", () => {
     expect(b).toContain("horizontal to the right");
     expect(b).toContain("horizontal to the left until the saturation curve");
     expect(b).toContain("dew point");
-    expect(b).toContain("UP an adiabatic-saturation line");
+    expect(b).toContain("up an adiabatic-saturation line");
     expect(b).toContain("straight segment");
     //  The same lever rule as the flash and the extraction triangle.
     expect(prose(s4.note!)).toContain("lever rule");
