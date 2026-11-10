@@ -60,7 +60,7 @@ import { useMethodRun } from "../../case/methodRun.js";
 import { readHxy, deltaD, hAt, leverLV, vapourEnthalpyAt }
   from "../../case/ponchonSavarit.js";
 import { PonchonPlot } from "../plotting/PonchonPlot.js";
-import { LessonStepView, LessonReferences } from "./lessonStep.js";
+import { LessonStepView, LessonReferences, Tex } from "./lessonStep.js";
 import { PONCHON_STEPS } from "./ponchonLesson.js";
 import { OriginMark } from "./origin.js";
 
@@ -122,7 +122,7 @@ function ConstructionPane(): JSX.Element {
         <Text size="sm">
           The run produced no equilibria this construction can be drawn on.
           A refused node keeps its grid coordinate and leaves the solved
-          fields empty, and those rows are DROPPED here rather than
+          fields empty, and those rows are dropped here rather than
           interpolated across — a curve bridged over a state the engine
           declined to compute would be a drawing, not a result.
         </Text>
@@ -157,22 +157,27 @@ function ConstructionPane(): JSX.Element {
         <Box mt={8} px="sm" py={8}
           style={{ border: `1px solid ${GRID}`, borderRadius: 4 }}>
           <Text size="sm">
-            Δ_D sits at{" "}
-            <Text span ff="monospace">{(readback.delta / 1000).toFixed(1)} kJ/mol</Text>
+            <Tex mode="inline" src={"\\Delta_D"} /> sits at{" "}
+            <Tex mode="inline"
+              src={`${(readback.delta / 1000).toFixed(1)}\\ \\text{kJ/mol}`} />
             {" "}— off the top of the curves, as it should be: it is a net
             flow over a flow, not a state.  Read the lever rule back:{" "}
-            <Text span ff="monospace">
-              L/V = {readback.lv === null ? "—" : readback.lv.toFixed(4)}
-            </Text>
+            <Tex mode="inline"
+              src={`L/V = ${readback.lv === null ? "-" : readback.lv.toFixed(4)}`} />
             , against{" "}
-            <Text span ff="monospace">R/(R+1) = {(R / (R + 1)).toFixed(4)}</Text>
+            <Tex mode="inline"
+              src={`R/(R+1) = ${(R / (R + 1)).toFixed(4)}`} />
             {" "}from the reflux you dialled.
           </Text>
           <Text size="sm" mt={6}>
             <strong>They agree identically, and that is worth less than it
-            looks.</strong>  Δ_D was PLACED from R, so
-            Δ_D − H₁ = R(H₁ − h_D) and Δ_D − h_D = (R + 1)(H₁ − h_D) by
-            construction: the ratio comes out R/(R+1) whatever H₁ is, even a
+            looks.</strong>  <Tex mode="inline" src={"\\Delta_D"} /> was placed
+            from <Tex mode="inline" src={"R"} />, so
+          </Text>
+          <Tex mode="display" src={"\\Delta_D - H_1 = R\\,(H_1 - h_D) \\qquad \\Delta_D - h_D = (R + 1)\\,(H_1 - h_D)"} />
+          <Text size="sm">
+            by construction: the ratio comes out <Tex mode="inline" src={"R/(R+1)"} />{" "}
+            whatever <Tex mode="inline" src={"H_1"} /> is, even a
             wrong one.  This readback confirms the difference point was put
             where the reflux says, and nothing else — it cannot tell you the
             enthalpies underneath it are right.  (An earlier version of this
@@ -180,10 +185,13 @@ function ConstructionPane(): JSX.Element {
             an identity, not a check, and the arithmetic above says which.)
           </Text>
           <Text size="sm" mt={6}>
-            The check that WOULD bite is the one this page does not yet reach:
-            step to the next tray and read the lever there.  L₁/V₂ is no
-            longer R/(R+1) — it depends on the SHAPE of the two curves — so
-            comparing it against the material balance V₂ = L₁ + D tests the
+            The check that would bite is the one this page does not yet reach:
+            step to the next tray and read the lever there.{" "}
+            <Tex mode="inline" src={"L_1/V_2"} /> is no
+            longer <Tex mode="inline" src={"R/(R+1)"} /> — it depends on the
+            shape of the two curves — so
+            comparing it against the material balance{" "}
+            <Tex mode="inline" src={"V_2 = L_1 + D"} /> tests the
             enthalpies rather than restating the reflux.  That needs the
             staircase named below as missing.
           </Text>
@@ -216,9 +224,15 @@ export function PonchonSavaritTool(): JSX.Element {
           </Text>
         </Box>
 
-        {PONCHON_STEPS.map((s) => <LessonStepView key={s.n} step={s} />)}
+        {PONCHON_STEPS.filter((s) => s.n === 1)
+          .map((s) => <LessonStepView key={s.n} step={s} />)}
 
+        {/* The figure comes second (DEV.md 4c C277): steps 2-4 now explain
+            what the student has just watched. */}
         <ConstructionPane />
+
+        {PONCHON_STEPS.filter((s) => s.n !== 1)
+          .map((s) => <LessonStepView key={s.n} step={s} />)}
 
         <Alert variant="light" color="orange"
           title="What this construction does not do">
@@ -233,7 +247,7 @@ export function PonchonSavaritTool(): JSX.Element {
           </Text>
           <Text size="sm" mt={6}>
             The diagram above draws the curves, the ties, the difference
-            point and ONE ray — the top tray's.  It does not step a full
+            point and one ray — the top tray's.  It does not step a full
             staircase down the column, and there is no second difference
             point for the stripping section yet.  Stated rather than left
             for you to discover: what is here is enough to see where Δ_D

@@ -49,9 +49,9 @@ export const PONCHON_STEPS: readonly LessonStep[] = [
     n: 1,
     title: "Put enthalpy on the vertical axis instead of vapour composition",
     body: "McCabe-Thiele plots y against x: equilibrium and material balance, "
-      + "and no energy anywhere.  Ponchon-Savarit plots ENTHALPY against "
+      + "and no energy anywhere.  Ponchon-Savarit plots enthalpy against "
       + "composition.  Two curves appear — the saturated liquid below, the "
-      + "saturated vapour above — and an equilibrium pair is a TIE LINE "
+      + "saturated vapour above — and an equilibrium pair is a tie line "
       + "joining a point on one to a point on the other.  Everything that "
       + "follows is geometry on that diagram.",
     formula: String.raw`\begin{aligned}
@@ -60,7 +60,7 @@ export const PONCHON_STEPS: readonly LessonStep[] = [
 \end{aligned}`,
     where: [
       { sym: "x", means: "mole fraction of the more volatile component in the "
-        + "saturated LIQUID" },
+        + "saturated liquid" },
       { sym: "y", means: "mole fraction of the same component in the vapour "
         + "in equilibrium with that liquid" },
       { sym: "h", means: "molar enthalpy of the saturated liquid",
@@ -69,7 +69,7 @@ export const PONCHON_STEPS: readonly LessonStep[] = [
         unit: "J/mol" },
     ],
     note: "The engine publishes exactly this and nothing more: one row per "
-      + "equilibrium, carrying BOTH ends of the tie and the temperature they "
+      + "equilibrium, carrying both ends of the tie and the temperature they "
       + "share, so nothing downstream has to pair rows or interpolate one "
       + "end of a tie.",
   },
@@ -77,14 +77,14 @@ export const PONCHON_STEPS: readonly LessonStep[] = [
     n: 2,
     title: "Two balances at once, and why that forces a straight line",
     body: "Take any envelope around the top of the column — the condenser, "
-      + "the trays above the cut, and the distillate leaving.  Write BOTH "
+      + "the trays above the cut, and the distillate leaving.  Write both "
       + "balances over it: material, and energy.  The condenser here is a "
-      + "TOTAL one, and the page had never said so: it condenses the top "
-      + "vapour entirely, so the distillate is a LIQUID at h_D and the "
-      + "vapour leaving the top tray carries the SAME COMPOSITION as it, "
+      + "total one, and the page had never said so: it condenses the top "
+      + "vapour entirely, so the distillate is a liquid at h_D and the "
+      + "vapour leaving the top tray carries the same composition as it, "
       + "y₁ = x_D.  A partial condenser is a different diagram — its "
       + "distillate is a vapour, and the reflux is the liquid in "
-      + "EQUILIBRIUM with it, one tie line away.  Confusing the two moves "
+      + "equilibrium with it, one tie line away.  Confusing the two moves "
       + "the difference point, which is exactly the defect this page "
       + "carried until 2026-09-01.",
     derivation: [
@@ -96,11 +96,11 @@ V y &= L x + D\, x_D\\
 V H &= L h + D\, h_D - Q_C
 \end{aligned}`},
       { step: "Divide the energy balance by D and group everything that "
-          + "belongs to the product.  Define ONE quantity for it — the net "
+          + "belongs to the product.  Define one quantity for it — the net "
           + "enthalpy leaving the top per mole of distillate.",
         eq: String.raw`\Delta_D \equiv h_D - \frac{Q_C}{D}`},
       { step: "Eliminate V and L between the three balances.  What survives "
-          + "is a statement that three points are COLINEAR: the liquid "
+          + "is a statement that three points are colinear: the liquid "
           + "(x, h), the vapour (y, H), and a single point Δ at "
           + "(x_D, Δ_D) that does not move as you go from tray to tray.",
         eq: String.raw`(y, H),\ (x, h) \text{ and } (x_D, \Delta_D) \text{ lie on one straight line}`},
@@ -108,7 +108,7 @@ V H &= L h + D\, h_D - Q_C
           + "of any stream — its enthalpy is a net flow divided by a flow, "
           + "and it usually sits far off the diagram.  It is the whole "
           + "construction: every operating line in the rectifying section "
-          + "is a ray drawn FROM it.", eq: "" },
+          + "is a ray drawn from it.", eq: "" },
       { step: "Repeat the argument on a bottom envelope and a second "
           + "difference point appears, carrying the reboiler duty.  The feed "
           + "ties the two: Δ_D, the feed point and Δ_B are themselves "
@@ -128,14 +128,14 @@ V H &= L h + D\, h_D - Q_C
       { sym: "h_D", means: "molar enthalpy of the distillate", unit: "J/mol" },
       { sym: "h_B", means: "molar enthalpy of the bottoms", unit: "J/mol" },
       { sym: "h_F", means: "molar enthalpy of the feed, which is what makes "
-        + "its thermal condition a POSITION on this diagram rather than a "
+        + "its thermal condition a position on this diagram rather than a "
         + "separate parameter q", unit: "J/mol" },
       { sym: "z_F", means: "feed composition" },
       { sym: "Q_C", means: "condenser duty, removed from the top", unit: "W" },
       { sym: "Q_R", means: "reboiler duty, added at the bottom", unit: "W" },
       { sym: "\\Delta_D",
         means: "the difference point's enthalpy coordinate at the "
-        + "top: net enthalpy leaving per mole of distillate.  NOT a stream "
+        + "top: net enthalpy leaving per mole of distillate.  Not a stream "
         + "enthalpy — no stream in the column has it", unit: "J/mol" },
       { sym: "\\Delta_B", means: "the same at the bottom", unit: "J/mol" },
       { sym: "x_n", means: "liquid leaving tray n" },
@@ -147,7 +147,7 @@ V H &= L h + D\, h_D - Q_C
   {
     n: 3,
     title: "The lever rule: flows read off the diagram with a ruler",
-    body: "Because the three points are colinear, the RATIO of the flows is "
+    body: "Because the three points are colinear, the ratio of the flows is "
       + "the ratio of the segments — the ordinary lever rule of any "
       + "two-phase mixture, now doing the work a numerical balance does in "
       + "McCabe-Thiele.",
@@ -157,8 +157,8 @@ V H &= L h + D\, h_D - Q_C
           + "point, the vapour and the liquid.",
         eq: String.raw`\frac{L}{V} = \frac{\Delta_D - H}{\Delta_D - h}`},
       { step: "So the reflux is not a number you carry alongside the "
-          + "diagram — it IS the position of Δ_D.  Pull the difference "
-          + "point further from the curves and the reflux RISES (L/V → 1); push it "
+          + "diagram — it is the position of Δ_D.  Pull the difference "
+          + "point further from the curves and the reflux rises (L/V → 1); push it "
           + "away to infinity and the rays become vertical, which is total "
           + "reflux and the minimum stage count.", eq: "" },
       { step: "And minimum reflux is where a ray coincides with a TIE LINE: "
@@ -169,14 +169,14 @@ V H &= L h + D\, h_D - Q_C
     formula: String.raw`\frac{L}{V} = \frac{\Delta_D - H}{\Delta_D - h}`,
     where: [],
     note: "Stepping off stages is then the same alternation as McCabe: a TIE "
-      + "LINE to move from a liquid to the vapour in equilibrium with it, "
+      + "line to move from a liquid to the vapour in equilibrium with it, "
       + "then a RAY from the difference point to move to the next tray.",
   },
   {
     n: 4,
     title: "What this buys, and it is the point of the whole page",
-    body: "McCabe-Thiele's operating lines are straight because of CONSTANT "
-      + "MOLAR OVERFLOW: the assumption that one mole condensing releases "
+    body: "McCabe-Thiele's operating lines are straight because of constant "
+      + "molar overflow: the assumption that one mole condensing releases "
       + "exactly the heat one mole needs to vaporise, so L and V never "
       + "change within a section.  Nothing on that page can show you what "
       + "the assumption costs, because the assumption is what makes the "
@@ -184,7 +184,7 @@ V H &= L h + D\, h_D - Q_C
     derivation: [
       { step: "Here nothing was assumed about the latent heats.  L and V "
           + "vary from tray to tray, and that variation is carried by the "
-          + "SHAPE of the two enthalpy curves — which the engine computes "
+          + "shape of the two enthalpy curves — which the engine computes "
           + "from the same thermophysical system the rest of the case "
           + "declares.", eq: "" },
       { step: "Two PARALLEL STRAIGHT LINES are enough for constant molar "
@@ -197,10 +197,10 @@ V H &= L h + D\, h_D - Q_C
           + "it L, does not change from tray to tray.", eq: "" },
       { step: "That is a SUFFICIENT condition, not a measure of error.  Look "
           + "at h(x) and H(y) for your system: where they depart from "
-          + "parallel and straight, the internal flows CAN vary within a "
+          + "parallel and straight, the internal flows can vary within a "
           + "section.  How much that changes the reflux or the stage count "
           + "is a different number, and it is obtained only by solving both "
-          + "models for the SAME specifications — same thermodynamics, "
+          + "models for the same specifications — same thermodynamics, "
           + "pressure, feed, products and condenser and reboiler convention "
           + "— where a departure that is small far from a pinch can matter "
           + "a great deal near one.  This page does not make that "
