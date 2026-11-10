@@ -39,7 +39,7 @@ datasets
     }
     {
         file          "constant/archiveExtracts/nHexylAcetate-vapourPressure-j.jct.2005.08.003.dat";
-        role          validation;   // informational: the operation declares it
+        role          fit;   // informational: the operation declares it
         doi           "10.1016/j.jct.2005.08.003";
         url           "https://trc.nist.gov/ThermoML/10.1016/j.jct.2005.08.003.xml";
         page          "https://trc.nist.gov/ThermoML/10.1016/j.jct.2005.08.003.json";
