@@ -76,6 +76,12 @@ MARK = "THE RULE (DEV.md 4c C283 amended, C284)"
 COMP = ROOT / "data" / "standards" / "components"
 
 
+#  Components ARCHIVED by a coordinator's ruling: no pair containing one is
+#  fitted, promoted or started (DEV.md 4c, the coordinator session,
+#  2026-11-10: acetic acid is archived this month -- its vapour dimerises).
+ARCHIVED = {"aceticAcid": "acetic acid archived (DEV.md 4c)"}
+
+
 class Refused(Exception):
     pass
 
@@ -154,7 +160,10 @@ def candidates(pmax=110.0):
              "points": sum(r["points"] for r in ud), "Tmax": max(r["T_K"][1] for r in rs),
              "status": "candidate", "why": ""}
         have = cc.existing_records(*k)
-        if have:
+        arch = [ARCHIVED[c] for c in k if c in ARCHIVED]
+        if arch:
+            e["status"], e["why"] = "excluded", arch[0]
+        elif have:
             e["status"], e["why"] = "present", ", ".join(have)
         else:
             for c in k:
@@ -190,6 +199,9 @@ def plan(a, b, pmax, work):
     a, b = ca[0], cb[0]
     if a == b:
         refuse("a pair needs two different components")
+    for c in (a, b):
+        if c in ARCHIVED:
+            refuse("EXCLUDED: " + ARCHIVED[c])
     for c in (a, b):
         cl, Tc, vpm = component_class(c)
         if cl != "volatileLiquid":
@@ -723,6 +735,9 @@ def run(case, pl, commit):
 # --------------------------------------------------------------------------
 def promote(a, b):
     a, b = cc.identity(a)[0], cc.identity(b)[0]
+    for c in (a, b):
+        if c in ARCHIVED:
+            refuse("EXCLUDED: " + ARCHIVED[c])
     case = case_of(a, b)
     if case is None:
         return cc.promote(a, b)

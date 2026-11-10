@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------*\
-  curate149_nrtl_ethylAcetate_aceticAcid -- the thermophysical system: gamma-phi at LOW PRESSURE.
+  curate160_nrtl_cyclohexane_nHeptane -- the thermophysical system: gamma-phi at LOW PRESSURE.
     * vapour: IDEAL GAS (fugacity coefficient 1, no Poynting term);
     * pure components: the catalogue's own vapour-pressure records, UNCHANGED;
     * liquid: NRTL, tau_ij = a_ij + b_ij/T, alpha 0.30 FIXED.
@@ -11,7 +11,7 @@
 recordType    thermophysicalPropertySystem;
 schemaVersion 2;
 
-components       ( ethylAcetate  aceticAcid );
+components       ( cyclohexane  nHeptane );
 
 equilibrium
 {
@@ -24,10 +24,10 @@ equilibrium
             model NRTL;
             binaryParameters   // the FIT'S starting point -- see the header
             {
-                ethylAcetate-aceticAcid
+                cyclohexane-nHeptane
                 {
-                    i ethylAcetate;
-                    j aceticAcid;
+                    i cyclohexane;
+                    j nHeptane;
                     a_ij 0;
                     b_ij 0;
                     a_ji 0;

@@ -7,16 +7,16 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  curate116_nrtl_aceticAcid_isopropylAcetate -- AN NRTL PAIR FROM EVERY LABORATORY'S MEASUREMENTS.
+  curate160_nrtl_cyclohexane_nHeptane -- AN NRTL PAIR FROM EVERY LABORATORY'S MEASUREMENTS.
 
-  WRITTEN BY bin/choupo-curate pair aceticAcid isopropylAcetate (DEV.md 4c C284, the bulk run;
+  WRITTEN BY bin/choupo-curate pair cyclohexane nHeptane (DEV.md 4c C284, the bulk run;
   record docs/design/binary-pairs-from-open-measurements.md section 10).
 
   THE DECLARATION -- WRITTEN AND COMMITTED BEFORE ANY FIT RAN (several
   declarations of the bulk run share one commit).
 
-  IDENTITY.  aceticAcid (CAS 64-19-7, InChIKey QTBSBXVTEAMEQO-UHFFFAOYSA-N)
-  + isopropylAcetate (CAS 108-21-4, InChIKey JMMWKPVZQRWMSS-UHFFFAOYSA-N), joined
+  IDENTITY.  cyclohexane (CAS 110-82-7, InChIKey XDTMQSROBMDMFD-UHFFFAOYSA-N)
+  + nHeptane (CAS 142-82-5, InChIKey IMNFDUFMRHMDMM-UHFFFAOYSA-N), joined
   to the archive through identity.json -- never by name.  CLASS (C284): both
   records are volatile molecular liquids (no role nonvolatile/solute, no
   dissociatesTo, no charge, no solid, a vapour-pressure model), and every
@@ -30,9 +30,8 @@
   STUDIES: every bubble-temperature block of the pair at or below 110 kPa
   with a declared uncertainty (2 block(s)).  FITTED, ALL OF THEM
   (2):
-      10.1021/acs.jced.9b00152       block 6    95 pts  5 isobars 20-101.3 kPa  318.48-387.99 K  U 0.47-0.84 K
-      10.1021/je049711t              block 6    14 pts  101.33 kPa  364.49-386.43 K  U 0.49-0.5 K
-        (reports x of the other member: written as x[aceticAcid] = 1 - x by --x-of)
+      10.1016/j.jct.2019.02.006      block 11   10 pts  101.3 kPa  355.41-369.87 K  U 1.04-1.1 K
+      10.1021/acs.jced.8b00929       block 6     9 pts  101.3 kPa  355.19-368.67 K  U 0.41-0.42 K
   SET ASIDE BY THE EXTRACTION RULES, BY NAME:
       (none)
 
@@ -73,18 +72,18 @@ operations
 
         parameters
         (
-            { path  equilibrium.liquid.activityModel.binaryParameters.aceticAcid-isopropylAcetate.b_ij;  initial 0;  min -3000;  max 3000; }
-            { path  equilibrium.liquid.activityModel.binaryParameters.aceticAcid-isopropylAcetate.b_ji;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.cyclohexane-nHeptane.b_ij;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.cyclohexane-nHeptane.b_ji;  initial 0;  min -3000;  max 3000; }
         );
 
         evidence
         (
             {
-                dataset  "constant/archiveExtracts/aceticAcid-isopropylAcetate-bubble-acs.jced.9b00152.dat";
+                dataset  "constant/archiveExtracts/cyclohexane-nHeptane-bubble-j.jct.2019.02.006.dat";
                 role     fit;
             }
             {
-                dataset  "constant/archiveExtracts/aceticAcid-isopropylAcetate-bubble-je049711t.dat";
+                dataset  "constant/archiveExtracts/cyclohexane-nHeptane-bubble-acs.jced.8b00929.dat";
                 role     fit;
             }
         );
@@ -93,7 +92,7 @@ operations
         residual
         {
             kind        T_bubble;
-            components  ( aceticAcid isopropylAcetate );
+            components  ( cyclohexane nHeptane );
             weighting   uncertainty;
         }
 
@@ -109,7 +108,7 @@ operations
         {
             fit_log    fit_history.csv;
             parity     parity.csv;
-            proposal   aceticAcid-isopropylAcetate.proposal.dat;
+            proposal   cyclohexane-nHeptane.proposal.dat;
         }
     }
     {
@@ -118,18 +117,18 @@ operations
 
         parameters
         (
-            { path  equilibrium.liquid.activityModel.binaryParameters.aceticAcid-isopropylAcetate.b_ij;  initial 800;  min -3000;  max 3000; }
-            { path  equilibrium.liquid.activityModel.binaryParameters.aceticAcid-isopropylAcetate.b_ji;  initial -400;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.cyclohexane-nHeptane.b_ij;  initial 800;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.cyclohexane-nHeptane.b_ji;  initial -400;  min -3000;  max 3000; }
         );
 
         evidence
         (
             {
-                dataset  "constant/archiveExtracts/aceticAcid-isopropylAcetate-bubble-acs.jced.9b00152.dat";
+                dataset  "constant/archiveExtracts/cyclohexane-nHeptane-bubble-j.jct.2019.02.006.dat";
                 role     fit;
             }
             {
-                dataset  "constant/archiveExtracts/aceticAcid-isopropylAcetate-bubble-je049711t.dat";
+                dataset  "constant/archiveExtracts/cyclohexane-nHeptane-bubble-acs.jced.8b00929.dat";
                 role     fit;
             }
         );
@@ -138,7 +137,7 @@ operations
         residual
         {
             kind        T_bubble;
-            components  ( aceticAcid isopropylAcetate );
+            components  ( cyclohexane nHeptane );
             weighting   uncertainty;
         }
 
@@ -158,37 +157,37 @@ operations
     {
         name        txy_ideal;
         type        propertyScan1D;
-        vary        { variable x[aceticAcid];  from 0.0;  to 1.0;  n 101; }
-        state       { P 101.3 kPa;  composition { aceticAcid 0.5;  isopropylAcetate 0.5; } }
+        vary        { variable x[cyclohexane];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { cyclohexane 0.5;  nHeptane 0.5; } }
         thermo
         {
             equilibrium { liquid { activityModel { model ideal; } } }
         }
-        properties  ( T_bubble  y_eq_aceticAcid );
+        properties  ( T_bubble  y_eq_cyclohexane );
         output      { file txy_ideal.csv; }
     }
     {
         name        txy_unifac;
         type        propertyScan1D;
-        vary        { variable x[aceticAcid];  from 0.0;  to 1.0;  n 101; }
-        state       { P 101.3 kPa;  composition { aceticAcid 0.5;  isopropylAcetate 0.5; } }
+        vary        { variable x[cyclohexane];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { cyclohexane 0.5;  nHeptane 0.5; } }
         thermo
         {
             equilibrium { liquid { activityModel { model UNIFAC; } } }
         }
-        properties  ( T_bubble  y_eq_aceticAcid );
+        properties  ( T_bubble  y_eq_cyclohexane );
         output      { file txy_unifac.csv; }
     }
     {
         name        txy_nrtl;
         type        propertyScan1D;
-        vary        { variable x[aceticAcid];  from 0.0;  to 1.0;  n 101; }
-        state       { P 101.3 kPa;  composition { aceticAcid 0.5;  isopropylAcetate 0.5; } }
+        vary        { variable x[cyclohexane];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { cyclohexane 0.5;  nHeptane 0.5; } }
         thermo
         {
             equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the case's own record */ } } }
         }
-        properties  ( T_bubble  y_eq_aceticAcid );
+        properties  ( T_bubble  y_eq_cyclohexane );
         output      { file txy_nrtl.csv; }
     }
 );
@@ -196,11 +195,19 @@ operations
 experimental
 (
     {
-        name      study2;
-        component aceticAcid;
+        name      study1;
+        component cyclohexane;
         kind      txy;
         models    ( txy_ideal  txy_unifac  txy_nrtl );
-        dataset   "constant/archiveExtracts/aceticAcid-isopropylAcetate-bubble-je049711t.dat";
-        source    "IN-SAMPLE (fitted): doi 10.1021/je049711t";
+        dataset   "constant/archiveExtracts/cyclohexane-nHeptane-bubble-j.jct.2019.02.006.dat";
+        source    "IN-SAMPLE (fitted): doi 10.1016/j.jct.2019.02.006";
+    }
+    {
+        name      study2;
+        component cyclohexane;
+        kind      txy;
+        models    ( txy_ideal  txy_unifac  txy_nrtl );
+        dataset   "constant/archiveExtracts/cyclohexane-nHeptane-bubble-acs.jced.8b00929.dat";
+        source    "IN-SAMPLE (fitted): doi 10.1021/acs.jced.8b00929";
     }
 );

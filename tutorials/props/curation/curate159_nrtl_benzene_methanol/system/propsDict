@@ -7,16 +7,16 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  curate149_nrtl_ethylAcetate_aceticAcid -- AN NRTL PAIR FROM EVERY LABORATORY'S MEASUREMENTS.
+  curate159_nrtl_benzene_methanol -- AN NRTL PAIR FROM EVERY LABORATORY'S MEASUREMENTS.
 
-  WRITTEN BY bin/choupo-curate pair ethylAcetate aceticAcid (DEV.md 4c C284, the bulk run;
+  WRITTEN BY bin/choupo-curate pair benzene methanol (DEV.md 4c C284, the bulk run;
   record docs/design/binary-pairs-from-open-measurements.md section 10).
 
   THE DECLARATION -- WRITTEN AND COMMITTED BEFORE ANY FIT RAN (several
   declarations of the bulk run share one commit).
 
-  IDENTITY.  ethylAcetate (CAS 141-78-6, InChIKey XEKOWRVHYACXOJ-UHFFFAOYSA-N)
-  + aceticAcid (CAS 64-19-7, InChIKey QTBSBXVTEAMEQO-UHFFFAOYSA-N), joined
+  IDENTITY.  benzene (CAS 71-43-2, InChIKey UHOVQNZJYSORNB-UHFFFAOYSA-N)
+  + methanol (CAS 67-56-1, InChIKey OKKJLVBELUTLKV-UHFFFAOYSA-N), joined
   to the archive through identity.json -- never by name.  CLASS (C284): both
   records are volatile molecular liquids (no role nonvolatile/solute, no
   dissociatesTo, no charge, no solid, a vapour-pressure model), and every
@@ -30,8 +30,9 @@
   STUDIES: every bubble-temperature block of the pair at or below 110 kPa
   with a declared uncertainty (2 block(s)).  FITTED, ALL OF THEM
   (2):
-      10.1016/j.fluid.2005.07.010    block 11   26 pts  101.325 kPa  350.61-388.86 K  U 0.25-0.25 K
-      10.1016/j.fluid.2009.10.002    block 10    5 pts  77.3 kPa  347.75-375.25 K  U 0.23-0.35 K
+      10.1016/j.fluid.2019.03.022    block 0    17 pts  101.3 kPa  331.56-343.83 K  U 0.09-1.08 K
+      10.1016/j.jct.2006.06.002      block 2     6 pts  5 isobars 99.5-100.5 kPa  331.83-336.09 K  U 0.25-0.5 K
+        (reports x of the other member: written as x[benzene] = 1 - x by --x-of)
   SET ASIDE BY THE EXTRACTION RULES, BY NAME:
       (none)
 
@@ -72,18 +73,18 @@ operations
 
         parameters
         (
-            { path  equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-aceticAcid.b_ij;  initial 0;  min -3000;  max 3000; }
-            { path  equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-aceticAcid.b_ji;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.benzene-methanol.b_ij;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.benzene-methanol.b_ji;  initial 0;  min -3000;  max 3000; }
         );
 
         evidence
         (
             {
-                dataset  "constant/archiveExtracts/ethylAcetate-aceticAcid-bubble-j.fluid.2005.07.010.dat";
+                dataset  "constant/archiveExtracts/benzene-methanol-bubble-j.fluid.2019.03.022.dat";
                 role     fit;
             }
             {
-                dataset  "constant/archiveExtracts/ethylAcetate-aceticAcid-bubble-j.fluid.2009.10.002.dat";
+                dataset  "constant/archiveExtracts/benzene-methanol-bubble-j.jct.2006.06.002.dat";
                 role     fit;
             }
         );
@@ -92,7 +93,7 @@ operations
         residual
         {
             kind        T_bubble;
-            components  ( ethylAcetate aceticAcid );
+            components  ( benzene methanol );
             weighting   uncertainty;
         }
 
@@ -108,7 +109,7 @@ operations
         {
             fit_log    fit_history.csv;
             parity     parity.csv;
-            proposal   aceticAcid-ethylAcetate.proposal.dat;
+            proposal   benzene-methanol.proposal.dat;
         }
     }
     {
@@ -117,18 +118,18 @@ operations
 
         parameters
         (
-            { path  equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-aceticAcid.b_ij;  initial 800;  min -3000;  max 3000; }
-            { path  equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-aceticAcid.b_ji;  initial -400;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.benzene-methanol.b_ij;  initial 800;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.benzene-methanol.b_ji;  initial -400;  min -3000;  max 3000; }
         );
 
         evidence
         (
             {
-                dataset  "constant/archiveExtracts/ethylAcetate-aceticAcid-bubble-j.fluid.2005.07.010.dat";
+                dataset  "constant/archiveExtracts/benzene-methanol-bubble-j.fluid.2019.03.022.dat";
                 role     fit;
             }
             {
-                dataset  "constant/archiveExtracts/ethylAcetate-aceticAcid-bubble-j.fluid.2009.10.002.dat";
+                dataset  "constant/archiveExtracts/benzene-methanol-bubble-j.jct.2006.06.002.dat";
                 role     fit;
             }
         );
@@ -137,7 +138,7 @@ operations
         residual
         {
             kind        T_bubble;
-            components  ( ethylAcetate aceticAcid );
+            components  ( benzene methanol );
             weighting   uncertainty;
         }
 
@@ -157,37 +158,37 @@ operations
     {
         name        txy_ideal;
         type        propertyScan1D;
-        vary        { variable x[ethylAcetate];  from 0.0;  to 1.0;  n 101; }
-        state       { P 101.325 kPa;  composition { ethylAcetate 0.5;  aceticAcid 0.5; } }
+        vary        { variable x[benzene];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { benzene 0.5;  methanol 0.5; } }
         thermo
         {
             equilibrium { liquid { activityModel { model ideal; } } }
         }
-        properties  ( T_bubble  y_eq_ethylAcetate );
+        properties  ( T_bubble  y_eq_benzene );
         output      { file txy_ideal.csv; }
     }
     {
         name        txy_unifac;
         type        propertyScan1D;
-        vary        { variable x[ethylAcetate];  from 0.0;  to 1.0;  n 101; }
-        state       { P 101.325 kPa;  composition { ethylAcetate 0.5;  aceticAcid 0.5; } }
+        vary        { variable x[benzene];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { benzene 0.5;  methanol 0.5; } }
         thermo
         {
             equilibrium { liquid { activityModel { model UNIFAC; } } }
         }
-        properties  ( T_bubble  y_eq_ethylAcetate );
+        properties  ( T_bubble  y_eq_benzene );
         output      { file txy_unifac.csv; }
     }
     {
         name        txy_nrtl;
         type        propertyScan1D;
-        vary        { variable x[ethylAcetate];  from 0.0;  to 1.0;  n 101; }
-        state       { P 101.325 kPa;  composition { ethylAcetate 0.5;  aceticAcid 0.5; } }
+        vary        { variable x[benzene];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { benzene 0.5;  methanol 0.5; } }
         thermo
         {
             equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the case's own record */ } } }
         }
-        properties  ( T_bubble  y_eq_ethylAcetate );
+        properties  ( T_bubble  y_eq_benzene );
         output      { file txy_nrtl.csv; }
     }
 );
@@ -196,10 +197,10 @@ experimental
 (
     {
         name      study1;
-        component ethylAcetate;
+        component benzene;
         kind      txy;
         models    ( txy_ideal  txy_unifac  txy_nrtl );
-        dataset   "constant/archiveExtracts/ethylAcetate-aceticAcid-bubble-j.fluid.2005.07.010.dat";
-        source    "IN-SAMPLE (fitted): doi 10.1016/j.fluid.2005.07.010";
+        dataset   "constant/archiveExtracts/benzene-methanol-bubble-j.fluid.2019.03.022.dat";
+        source    "IN-SAMPLE (fitted): doi 10.1016/j.fluid.2019.03.022";
     }
 );

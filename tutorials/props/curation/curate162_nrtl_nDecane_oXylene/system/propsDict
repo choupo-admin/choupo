@@ -7,16 +7,16 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  curate154_nrtl_ethanol_aceticAcid -- AN NRTL PAIR FROM EVERY LABORATORY'S MEASUREMENTS.
+  curate162_nrtl_nDecane_oXylene -- AN NRTL PAIR FROM EVERY LABORATORY'S MEASUREMENTS.
 
-  WRITTEN BY bin/choupo-curate pair ethanol aceticAcid (DEV.md 4c C284, the bulk run;
+  WRITTEN BY bin/choupo-curate pair nDecane oXylene (DEV.md 4c C284, the bulk run;
   record docs/design/binary-pairs-from-open-measurements.md section 10).
 
   THE DECLARATION -- WRITTEN AND COMMITTED BEFORE ANY FIT RAN (several
   declarations of the bulk run share one commit).
 
-  IDENTITY.  ethanol (CAS 64-17-5, InChIKey LFQSCWFLJHTTHZ-UHFFFAOYSA-N)
-  + aceticAcid (CAS 64-19-7, InChIKey QTBSBXVTEAMEQO-UHFFFAOYSA-N), joined
+  IDENTITY.  nDecane (CAS 124-18-5, InChIKey DIOQZVSQGTUSAI-UHFFFAOYSA-N)
+  + oXylene (CAS 95-47-6, InChIKey CTQNGGLPUBDAKN-UHFFFAOYSA-N), joined
   to the archive through identity.json -- never by name.  CLASS (C284): both
   records are volatile molecular liquids (no role nonvolatile/solute, no
   dissociatesTo, no charge, no solid, a vapour-pressure model), and every
@@ -30,8 +30,9 @@
   STUDIES: every bubble-temperature block of the pair at or below 110 kPa
   with a declared uncertainty (2 block(s)).  FITTED, ALL OF THEM
   (2):
-      10.1021/je300810p              block 13   22 pts  101.325 kPa  352.56-389.53 K  U 0.58-0.7 K
-      10.1016/j.fluid.2009.10.002    block 13    5 pts  77.3 kPa  348.85-370.65 K  U 0.23-0.39 K
+      10.1016/j.fluid.2012.09.019    block 12   11 pts  20 kPa  366.11-391.33 K  U 0.12-0.14 K
+      10.1016/j.fluid.2004.10.027    block 24    5 pts  95.8 kPa  417.45-434.95 K  U 1.01-1.01 K
+        (reports x of the other member: written as x[nDecane] = 1 - x by --x-of)
   SET ASIDE BY THE EXTRACTION RULES, BY NAME:
       (none)
 
@@ -72,18 +73,18 @@ operations
 
         parameters
         (
-            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-aceticAcid.b_ij;  initial 0;  min -3000;  max 3000; }
-            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-aceticAcid.b_ji;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.b_ij;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.b_ji;  initial 0;  min -3000;  max 3000; }
         );
 
         evidence
         (
             {
-                dataset  "constant/archiveExtracts/ethanol-aceticAcid-bubble-je300810p.dat";
+                dataset  "constant/archiveExtracts/nDecane-oXylene-bubble-j.fluid.2012.09.019.dat";
                 role     fit;
             }
             {
-                dataset  "constant/archiveExtracts/ethanol-aceticAcid-bubble-j.fluid.2009.10.002.dat";
+                dataset  "constant/archiveExtracts/nDecane-oXylene-bubble-j.fluid.2004.10.027.dat";
                 role     fit;
             }
         );
@@ -92,7 +93,7 @@ operations
         residual
         {
             kind        T_bubble;
-            components  ( ethanol aceticAcid );
+            components  ( nDecane oXylene );
             weighting   uncertainty;
         }
 
@@ -108,7 +109,7 @@ operations
         {
             fit_log    fit_history.csv;
             parity     parity.csv;
-            proposal   aceticAcid-ethanol.proposal.dat;
+            proposal   nDecane-oXylene.proposal.dat;
         }
     }
     {
@@ -117,18 +118,18 @@ operations
 
         parameters
         (
-            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-aceticAcid.b_ij;  initial 800;  min -3000;  max 3000; }
-            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-aceticAcid.b_ji;  initial -400;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.b_ij;  initial 800;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.b_ji;  initial -400;  min -3000;  max 3000; }
         );
 
         evidence
         (
             {
-                dataset  "constant/archiveExtracts/ethanol-aceticAcid-bubble-je300810p.dat";
+                dataset  "constant/archiveExtracts/nDecane-oXylene-bubble-j.fluid.2012.09.019.dat";
                 role     fit;
             }
             {
-                dataset  "constant/archiveExtracts/ethanol-aceticAcid-bubble-j.fluid.2009.10.002.dat";
+                dataset  "constant/archiveExtracts/nDecane-oXylene-bubble-j.fluid.2004.10.027.dat";
                 role     fit;
             }
         );
@@ -137,7 +138,7 @@ operations
         residual
         {
             kind        T_bubble;
-            components  ( ethanol aceticAcid );
+            components  ( nDecane oXylene );
             weighting   uncertainty;
         }
 
@@ -157,37 +158,37 @@ operations
     {
         name        txy_ideal;
         type        propertyScan1D;
-        vary        { variable x[ethanol];  from 0.0;  to 1.0;  n 101; }
-        state       { P 101.325 kPa;  composition { ethanol 0.5;  aceticAcid 0.5; } }
+        vary        { variable x[nDecane];  from 0.0;  to 1.0;  n 101; }
+        state       { P 20 kPa;  composition { nDecane 0.5;  oXylene 0.5; } }
         thermo
         {
             equilibrium { liquid { activityModel { model ideal; } } }
         }
-        properties  ( T_bubble  y_eq_ethanol );
+        properties  ( T_bubble  y_eq_nDecane );
         output      { file txy_ideal.csv; }
     }
     {
         name        txy_unifac;
         type        propertyScan1D;
-        vary        { variable x[ethanol];  from 0.0;  to 1.0;  n 101; }
-        state       { P 101.325 kPa;  composition { ethanol 0.5;  aceticAcid 0.5; } }
+        vary        { variable x[nDecane];  from 0.0;  to 1.0;  n 101; }
+        state       { P 20 kPa;  composition { nDecane 0.5;  oXylene 0.5; } }
         thermo
         {
             equilibrium { liquid { activityModel { model UNIFAC; } } }
         }
-        properties  ( T_bubble  y_eq_ethanol );
+        properties  ( T_bubble  y_eq_nDecane );
         output      { file txy_unifac.csv; }
     }
     {
         name        txy_nrtl;
         type        propertyScan1D;
-        vary        { variable x[ethanol];  from 0.0;  to 1.0;  n 101; }
-        state       { P 101.325 kPa;  composition { ethanol 0.5;  aceticAcid 0.5; } }
+        vary        { variable x[nDecane];  from 0.0;  to 1.0;  n 101; }
+        state       { P 20 kPa;  composition { nDecane 0.5;  oXylene 0.5; } }
         thermo
         {
             equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the case's own record */ } } }
         }
-        properties  ( T_bubble  y_eq_ethanol );
+        properties  ( T_bubble  y_eq_nDecane );
         output      { file txy_nrtl.csv; }
     }
 );
@@ -196,10 +197,10 @@ experimental
 (
     {
         name      study1;
-        component ethanol;
+        component nDecane;
         kind      txy;
         models    ( txy_ideal  txy_unifac  txy_nrtl );
-        dataset   "constant/archiveExtracts/ethanol-aceticAcid-bubble-je300810p.dat";
-        source    "IN-SAMPLE (fitted): doi 10.1021/je300810p";
+        dataset   "constant/archiveExtracts/nDecane-oXylene-bubble-j.fluid.2012.09.019.dat";
+        source    "IN-SAMPLE (fitted): doi 10.1016/j.fluid.2012.09.019";
     }
 );
