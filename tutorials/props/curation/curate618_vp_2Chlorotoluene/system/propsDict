@@ -61,7 +61,20 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 4.327301 - 1624.8392/(T +
+  -54.7477), in-sample R2 0.999929 over 19 kept points, 274.2-428.76 K
+  (10.1016/j.fluid.2014.07.029 14/14 kept; 10.1016/j.fluid.2007.01.042
+  5/5 kept). Relative error in P over the kept points: mean 1.8530 %, max
+  3.0337 %; AmbroseWalton on the same points: mean 69.6969 %, max 84.2434
+  %. Outliers discarded: none. Its own normal boiling point (101.325
+  kPa): 430.73 K. PROMOTED on 2026-11-10 into
+  data/standards/components/2Chlorotoluene.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade clean under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 2
+  studies, 19 points kept, 0 discarded as outliers; max relative error
+  3.034 % (mean 1.853 %), grade clean (limits 5 / 10 / 20 %); no Tb
+  declared; AmbroseWalton on the same points mean 69.7 % / max 84.24 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

@@ -62,7 +62,20 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 3.992703 - 1299.1034/(T +
+  -144.7797), in-sample R2 0.999719 over 41 kept points, 372.06-469.71 K
+  (10.1021/je400082c 21/21 kept; 10.1021/je5010824 20/20 kept). Relative
+  error in P over the kept points: mean 1.3081 %, max 2.5021 %;
+  AmbroseWalton on the same points: mean 312.7483 %, max 594.9099 %.
+  Outliers discarded: none. Its own normal boiling point (101.325 kPa):
+  470.62 K. PROMOTED on 2026-11-10 into
+  data/standards/components/12Butanediol.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade clean under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 2
+  studies, 41 points kept, 0 discarded as outliers; max relative error
+  2.502 % (mean 1.308 %), grade clean (limits 5 / 10 / 20 %); no Tb
+  declared; AmbroseWalton on the same points mean 312.7 % / max 594.9 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

@@ -67,7 +67,22 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 5.072896 - 1943.0827/(T +
+  -77.5351), in-sample R2 0.999431 over 100 kept points, 345.15-460.87 K
+  (10.1021/je4004993 22/22 kept; 10.1016/j.jct.2016.01.019 21/21 kept;
+  10.1016/j.fluid.2014.09.015 15/15 kept; 10.1021/je4009014 14/14 kept;
+  10.1021/je100803e 12/12 kept; 10.1021/je034096z 11/11 kept;
+  10.1021/je5010824 5/5 kept). Relative error in P over the kept points:
+  mean 2.7950 %, max 5.1642 %; AmbroseWalton on the same points: mean
+  555.9471 %, max 1185.3770 %. Outliers discarded: none. Its own normal
+  boiling point (101.325 kPa): 461.00 K. PROMOTED on 2026-11-10 into
+  data/standards/components/12Propanediol.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade warning under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 7
+  studies, 100 points kept, 0 discarded as outliers; max relative error
+  5.164 % (mean 2.795 %), grade warning (limits 5 / 10 / 20 %); no Tb
+  declared; AmbroseWalton on the same points mean 555.9 % / max 1185 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

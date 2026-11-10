@@ -60,7 +60,19 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 5.011475 - 1773.6466/(T +
+  -32.6227), in-sample R2 0.999896 over 10 kept points, 288.35-332.89 K
+  (10.1021/je050056e 10/10 kept). Relative error in P over the kept
+  points: mean 0.7449 %, max 0.9012 %; AmbroseWalton on the same points:
+  mean 725.5812 %, max 995.7455 %. Outliers discarded: none. Its own
+  normal boiling point (101.325 kPa): 386.94 K. PROMOTED on 2026-11-10
+  into data/standards/components/1HPerfluorooctane.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade clean under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 1
+  studies, 10 points kept, 0 discarded as outliers; max relative error
+  0.9012 % (mean 0.7449 %), grade clean (limits 5 / 10 / 20 %); no Tb
+  declared; AmbroseWalton on the same points mean 725.6 % / max 995.7 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

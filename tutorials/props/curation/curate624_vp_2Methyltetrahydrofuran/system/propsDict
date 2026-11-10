@@ -62,7 +62,21 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 4.176680 - 1289.1655/(T +
+  -43.8140), in-sample R2 0.999996 over 46 kept points, 279-508.21 K
+  (10.1016/j.fluid.2015.05.002 26/26 kept; 10.1021/acs.jced.6b00576 13/13
+  kept; 10.1016/j.jct.2017.12.015 7/7 kept). Relative error in P over the
+  kept points: mean 0.3703 %, max 0.6399 %; AmbroseWalton on the same
+  points: mean 53.0498 %, max 83.2867 %. Outliers discarded: none. Its
+  own normal boiling point (101.325 kPa): 352.89 K. PROMOTED on
+  2026-11-10 into data/standards/components/2Methyltetrahydrofuran.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: fit grade
+  clean under the DEFAULT graded acceptance of DEV.md 4c C285 (no
+  system/curationDict), 3 studies, 46 points kept, 0 discarded as
+  outliers; max relative error 0.6399 % (mean 0.3703 %), grade clean
+  (limits 5 / 10 / 20 %); no Tb declared; AmbroseWalton on the same
+  points mean 53.05 % / max 83.29 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 
