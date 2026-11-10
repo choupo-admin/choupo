@@ -39,7 +39,7 @@ datasets
     }
     {
         file          "constant/archiveExtracts/diButylCarbonate-vapourPressure-j.jct.2008.02.012.dat";
-        role          validation;   // informational: the operation declares it
+        role          fit;   // informational: the operation declares it
         doi           "10.1016/j.jct.2008.02.012";
         url           "https://trc.nist.gov/ThermoML/10.1016/j.jct.2008.02.012.xml";
         page          "https://trc.nist.gov/ThermoML/10.1016/j.jct.2008.02.012.json";
