@@ -42,8 +42,8 @@ describe("the page separates what the method allows from what the unit models", 
   it("no longer says the log-mean fails across a phase change", () => {
     expect(note).not.toContain("is not the driving force at all");
     expect(note).not.toContain("with both streams single-phase; there");
-    expect(note).toContain("WHAT THE METHOD ALLOWS");
-    expect(note).toContain("WHAT THIS UNIT MODELS");
+    expect(note).toContain("What the method allows");
+    expect(note).toContain("What this unit models");
     expect(note).toContain("1 − exp(−NTU)");
   });
   it("cites the unit's phase-change handling at the lines that hold it", () => {
