@@ -1515,9 +1515,19 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
     {
         const auto& L = r.layout;
         os << ",\n  \"layout\": {\n    \"items\": [";
-        for (std::size_t i = 0; i < L.items.size(); ++i)
+        //  C272: the items a typical train REPEATED are checked and piped as
+        //  items but published apart (`typicalItems`, below), and `items`
+        //  carries train 1 in full plus one OUTLINE per repeated train and
+        //  room, so the plan draws train 1 in full and the others as a repeat.
+        std::vector<const LayoutItem*> shown, repeated;
+        for (const auto& it : L.items)
+            (it.typicalCopy ? repeated : shown).push_back(&it);
+        for (const auto& it : L.outlines) shown.push_back(&it);
+        auto emitItems = [&](const std::vector<const LayoutItem*>& list)
         {
-            const auto& it = L.items[i];
+        for (std::size_t i = 0; i < list.size(); ++i)
+        {
+            const auto& it = *list[i];
             os << (i ? ",\n" : "\n") << "      { \"id\": " << esc(it.id)
                << ", \"nonProcess\": " << (it.nonProcess ? "true" : "false")
                << ", \"kind\": " << esc(it.kind)
@@ -1533,6 +1543,13 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
             //  indoors, so an item in the open publishes what it always did.
             if (!it.room.empty())
                 os << ", \"room\": " << esc(it.room);
+            //  C272: only an item of a typical train, so every other item
+            //  publishes what it always did.
+            if (!it.typical.empty())
+                os << ", \"typical\": " << esc(it.typical)
+                   << ", \"trainIndex\": " << it.trainIndex
+                   << ", \"outline\": "
+                   << (it.footprintFrom == "typical" ? "true" : "false");
             if (!it.ignition.empty())
                 os << ", \"ignition\": " << esc(it.ignition);
             if (!it.source.empty())
@@ -1551,7 +1568,35 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
             }
             os << " }";
         }
-        os << "\n    ],\n    \"areas\": [";
+        };
+        emitItems(shown);
+        os << "\n    ]";
+        if (!L.typicals.empty())
+        {
+            os << ",\n    \"typicals\": [";
+            for (std::size_t i = 0; i < L.typicals.size(); ++i)
+            {
+                const auto& t = L.typicals[i];
+                os << (i ? ",\n" : "\n") << "      { \"id\": "
+                   << esc("typical:" + t.name)
+                   << ", \"count\": " << t.count
+                   << ", \"pitchX\": " << num(t.pitchX)
+                   << ", \"pitchY\": " << num(t.pitchY)
+                   << ", \"repeated\": " << t.repeated
+                   << ", \"members\": [";
+                for (std::size_t m = 0; m < t.members.size(); ++m)
+                    os << (m ? ", " : " ") << esc(t.members[m]);
+                os << " ], \"source\": " << esc(t.source)
+                   << ", \"reason\": " << esc(t.reason) << " }";
+            }
+            os << "\n    ]";
+            //  The repeated items, one record each like an item: pinned by
+            //  the same golden rows, and the plan does not draw them.
+            os << ",\n    \"typicalItems\": [";
+            emitItems(repeated);
+            os << "\n    ]";
+        }
+        os << ",\n    \"areas\": [";
         for (std::size_t i = 0; i < L.areas.size(); ++i)
         {
             const auto& a = L.areas[i];

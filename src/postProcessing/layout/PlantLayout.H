@@ -251,6 +251,11 @@ Description
     ANNOUNCED (`unlabelledCrossing`), never refused.  Published: the line,
     its length, each opening, each crossing; the draft carries no fence.
 
+    A TYPICAL TRAIN (2026-11-10, DEV.md 4c C272): `typicals ( ... )` declares
+    train 1's sized items once and repeats them N times at a pitch
+    (TypicalTrain.H).  The repeats are items to every check and to the pipe
+    router; the result publishes them as one outline per train and room.
+
     SECONDARY CONTAINMENT (2026-10-21, DEV.md 4c C134).  A case may declare
     `bunds ( { name; kind bund|impounding; items ( ... ); region { xMin;
     xMax; yMin; yMax; } | polygon ( { x; y; } ... ); wall { height; };
