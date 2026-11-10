@@ -137,11 +137,11 @@ describe("the spine's order and claims", () => {
   });
 
   it("omega is taught as a parameter of a model", () => {
-    expect(prose(SRC)).toContain("PARAMETER OF A MODEL");
+    expect(prose(SRC)).toContain("parameter of a model");
   });
 
   it("Antoine is taught as fitted, with a window", () => {
-    expect(prose(SRC)).toContain("FITTED, not measured");
+    expect(prose(SRC)).toContain("Fitted, not measured");
     expect(prose(SRC)).toContain("declared window");
   });
 
@@ -167,6 +167,6 @@ describe("the settled-architecture claims", () => {
 
   it("hands off to the trust page rather than duplicating it", () => {
     expect(SRC).toContain("When a property database lies to you");
-    expect(prose(SRC)).toContain("SOURCES disagree");
+    expect(prose(SRC)).toContain("sources disagree");
   });
 });

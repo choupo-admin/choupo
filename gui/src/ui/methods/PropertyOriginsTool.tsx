@@ -80,13 +80,13 @@ export function pctError(est: number, ref: number): number {
 /** The rows the comparison table shows: the witness's published diag key,
  *  the reference (where the case cites one), and the display label. */
 export const ORIGIN_ROWS = [
-  { key: "Tb_K", label: "normal boiling point Tb [K]", ref: REFERENCE.Tb_K },
-  { key: "Tc_K", label: "critical temperature Tc [K]", ref: REFERENCE.Tc_K },
-  { key: "Pc_bar", label: "critical pressure Pc [bar]", ref: REFERENCE.Pc_bar },
-  { key: "omega", label: "acentric factor ω [–]", ref: REFERENCE.omega },
-  { key: "dHf_kJmol", label: "ΔHf° (formation) [kJ/mol]", ref: null },
-  { key: "Hvap_kJmol", label: "ΔHvap(Tb) [kJ/mol]", ref: null },
-  { key: "Cp298", label: "Cp°(298 K) [J/(mol·K)]", ref: null },
+  { key: "Tb_K", label: "normal boiling point Tb [K]", ref: REFERENCE.Tb_K, dp: 1 },
+  { key: "Tc_K", label: "critical temperature Tc [K]", ref: REFERENCE.Tc_K, dp: 1 },
+  { key: "Pc_bar", label: "critical pressure Pc [bar]", ref: REFERENCE.Pc_bar, dp: 1 },
+  { key: "omega", label: "acentric factor ω [–]", ref: REFERENCE.omega, dp: 3 },
+  { key: "dHf_kJmol", label: "ΔHf° (formation) [kJ/mol]", ref: null, dp: 2 },
+  { key: "Hvap_kJmol", label: "ΔHvap(Tb) [kJ/mol]", ref: null, dp: 2 },
+  { key: "Cp298", label: "Cp°(298 K) [J/(mol·K)]", ref: null, dp: 2 },
 ] as const;
 
 /** The anatomy cards: each field family of a component .dat, the question
@@ -116,16 +116,16 @@ export const ANATOMY = [
     field: "idealGasHeatCapacity { coefficients }",
     question: "How do H and S move with T?",
     cite: "src/thermo/heatCapacity/PolynomialCp.cpp · closed-form integrals",
-    note: "The temperature SHAPE of H, S, G — integrated on paper once, "
+    note: "The temperature shape of H, S, G — integrated on paper once, "
       + "evaluated exactly, never a quadrature loop.",
   },
   {
     field: "Tc, Pc, omega",
-    question: "How does the REAL gas depart from ideal?",
+    question: "How does the real gas depart from ideal?",
     cite: "src/thermo/equationOfState/CubicEoS.cpp:113 · a(T) = a_c·α(Tr; ω) (the slope m(ω): SRK.cpp:56, PR.cpp:73)",
     note: "Asleep under idealGas; they wake when a case declares a cubic. "
-      + "ω is a PARAMETER OF A MODEL as much as a property of a substance "
-      + "— it is DEFINED by the vapour pressure at T_r = 0.7, "
+      + "ω is a parameter of a model as much as a property of a substance "
+      + "— it is defined by the vapour pressure at T_r = 0.7, "
       + "ω = −log₁₀(P_sat/P_c) − 1 there, so it is read off vapour-pressure "
       + "data or a correlation, never measured on a bench of its own — and "
       + "in the estimate below it comes from (Tb, Tc, Pc) by Lee–Kesler.",
@@ -139,19 +139,19 @@ export const ANATOMY = [
   },
   {
     field: "vaporPressure { Antoine + Trange }",
-    question: "When does it boil, at THIS pressure?",
+    question: "When does it boil, at this pressure?",
     cite: "src/thermo/vaporPressure/ · Psat(T), window-checked",
-    note: "FITTED, not measured: three coefficients regressed to data over "
+    note: "Fitted, not measured: three coefficients regressed to data over "
       + "a declared window. Outside the window the engine announces the "
       + "extrapolation rather than pretending.",
   },
   {
     field: "groups ( ... )",
-    question: "What is the molecule MADE of?",
+    question: "What is the molecule made of?",
     cite: "src/propertyOps/EstimateComponent.cpp · Joback decomposition",
     note: "The curation recipe: when nobody measured a constant, the "
       + "molecule is priced by its parts, group by group.  The table above "
-      + "shows the TOTALS of that pricing, not the per-group sum, and its ω "
+      + "shows the totals of that pricing, not the per-group sum, and its ω "
       + "row is not a group sum at all.",
   },
 ] as const;
@@ -160,7 +160,7 @@ export const ANATOMY = [
 export const ORIGINS_INTERROGATION = [
   "Who measured this number — or is it fitted, or estimated? (The record's provenance tags answer.)",
   "Is it a property of the substance or a parameter of a model — which vapour-pressure data or correlation was ω read from?",
-  "What is the estimation method's typical error on THIS property class — and does your design survive it?",
+  "What is the estimation method's typical error on this property class — and does your design survive it?",
   "Is the datum on the rung the record declares (ideal gas / pure liquid / pure solid)?",
   "If the value is an estimate, who reviews it before it enters the catalogue?",
 ] as const;
@@ -190,11 +190,11 @@ function EstimateTable({ d }: { d: { [k: string]: number } }) {
             style={{ borderBottom: `1px solid ${GRID}` }}>
             <Text size="sm" style={{ flex: 2 }}>{r.label}</Text>
             <Text size="sm" ff="monospace" ta="right" style={{ flex: 1 }}>
-              {est.toFixed(2)}
+              {est.toFixed(r.dp)}
             </Text>
             <Text size="sm" ff="monospace" ta="right" style={{ flex: 1 }}
               c={r.ref === null ? INK : undefined}>
-              {r.ref === null ? "—" : r.ref.toFixed(2)}
+              {r.ref === null ? "—" : r.ref.toFixed(r.dp)}
             </Text>
             <Text size="sm" ff="monospace" ta="right" style={{ flex: 1 }}
               c={r.ref === null ? INK : ACCENT}>
@@ -287,7 +287,7 @@ export function PropertyOriginsTool(): JSX.Element {
           <Text size="sm" mt={6}>
             A couple of percent on the boiling point and the criticals —
             good enough to size a first design, and exactly the number you
-            must NOT forget you are standing on.  The formation enthalpy is
+            must not forget you are standing on.  The formation enthalpy is
             estimated too, but the case cites no reference for it, so how far
             off it is cannot be read here: that is what “uncited” means.
             The engine writes the estimate as a reviewable
@@ -301,7 +301,7 @@ export function PropertyOriginsTool(): JSX.Element {
           <Title order={5}>3 · What each field feeds</Title>
           <Text size="sm" mt={4}>
             The anatomy that makes the file legible: not what each field
-            IS, but what CONSUMES it — because that is what breaks when the
+            is, but what consumes it — because that is what breaks when the
             number is wrong.
           </Text>
           <Box my={8}>
@@ -340,7 +340,7 @@ export function PropertyOriginsTool(): JSX.Element {
           </Box>
           <Text size="xs" c={INK} mt={6}>
             The neighbouring page “When a property database lies to you”
-            picks up from here: what to do when two SOURCES disagree.  This
+            picks up from here: what to do when two sources disagree.  This
             one is about the step before — knowing which kind of number you
             are holding at all.
           </Text>
