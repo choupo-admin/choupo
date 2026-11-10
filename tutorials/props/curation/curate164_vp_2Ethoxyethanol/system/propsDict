@@ -66,7 +66,23 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 54.031976 -
+  182574.8370/(T + 2972.8847), in-sample R2 0.996203 over 44 kept points,
+  345.63-407.95 K (10.1016/j.fluid.2007.03.030 25/25 kept;
+  10.1016/j.fluid.2012.08.030 11/11 kept; 10.1021/je300202z 8/8 kept).
+  Relative error in P over the kept points: mean 3.5407 %, max 5.7089 %;
+  AmbroseWalton on the same points: mean 23.3634 %, max 39.9725 %.
+  Outliers discarded: none. Its own normal boiling point (101.325 kPa):
+  406.49 K. PROMOTED on 2026-11-10 into
+  data/standards/components/2Ethoxyethanol.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade warning under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 3
+  studies, 44 points kept, 0 discarded as outliers; max relative error
+  5.709 % (mean 3.541 %), grade warning (limits 5 / 10 / 20 %); Tb
+  outside the kept points' range, normal boiling point 406.49 K, -1.92 K
+  from the record's Tb 408.405 K, grade warning (limits 1 / 2 / 4 K);
+  AmbroseWalton on the same points mean 23.36 % / max 39.97 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

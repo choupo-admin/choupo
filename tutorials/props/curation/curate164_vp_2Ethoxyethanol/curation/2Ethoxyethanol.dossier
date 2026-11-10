@@ -1,0 +1,89 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      2Ethoxyethanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        A  54.0319756856;
+        B  182574.837039;
+        C  2972.88465544;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "cecd651af38a1161";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Ethoxyethanol-vapourPressure-j.fluid.2007.03.030.dat";
+            doi       "10.1016/j.fluid.2007.03.030";
+            sha256    "adb8c6f363fae91b97bb723285b49a0ec807911a84e3b2ebbd7b97eea15405b3";
+            provenance measured;
+            archiveFile "j.fluid.2007.03.030.xml";
+            system    "2Ethoxyethanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Ethoxyethanol-vapourPressure-j.fluid.2012.08.030.dat";
+            doi       "10.1016/j.fluid.2012.08.030";
+            sha256    "6419d37a8c040cf93cb31454cedb04ddb1f440e7ccee355d910c4b6718dc9f18";
+            provenance measured;
+            archiveFile "j.fluid.2012.08.030.xml";
+            system    "2Ethoxyethanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Ethoxyethanol-vapourPressure-je300202z.dat";
+            doi       "10.1021/je300202z";
+            sha256    "0de86b52e832bd7be3f606d904468235304c17843b03f9b7406c13d2dfefae64";
+            provenance measured;
+            archiveFile "je300202z.xml";
+            system    "2Ethoxyethanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 345.63; max 407.95; n 44; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.996203203825;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

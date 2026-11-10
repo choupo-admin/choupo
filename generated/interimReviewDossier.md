@@ -259,8 +259,11 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `components/12Butadiene.dat` -- **reviewStatus interim**
 * `components/12PropyleneOxide.dat` -- **reviewStatus interim**
 * `components/13Butadiene.dat` -- **reviewStatus interim**
+* `components/13Butanediol.dat` -- **reviewStatus autoPromoted**
+* `components/13Propanediol.dat` -- **reviewStatus autoPromoted**
 * `components/14Butanediol.dat` -- **reviewStatus interim**
 * `components/14Dioxane.dat` -- **reviewStatus interim**
+* `components/16Hexanediol.dat` -- **reviewStatus autoPromoted**
 * `components/1Butene.dat` -- **reviewStatus interim**
 * `components/1Heptanol.dat` -- **reviewStatus interim**
 * `components/1Heptene.dat` -- **reviewStatus interim**
@@ -309,6 +312,7 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `components/25Dinitrotoluene.dat` -- **reviewStatus interim**
 * `components/26Dinitrotoluene.dat` -- **reviewStatus interim**
 * `components/2Butanol.dat` -- **reviewStatus interim**
+* `components/2Ethoxyethanol.dat` -- **reviewStatus autoPromoted**
 * `components/2EthylMXylene.dat` -- **reviewStatus interim**
 * `components/2EthylPXylene.dat` -- **reviewStatus interim**
 * `components/2Heptanone.dat` -- **reviewStatus interim**
@@ -339,6 +343,7 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `components/33Dimethyl2Butanone.dat` -- **reviewStatus interim**
 * `components/33Dimethylhexane.dat` -- **reviewStatus interim**
 * `components/33Dimethylpentane.dat` -- **reviewStatus interim**
+* `components/33Oxydipropanol.dat` -- **reviewStatus autoPromoted**
 * `components/34Dimethylhexane.dat` -- **reviewStatus interim**
 * `components/34Dinitrotoluene.dat` -- **reviewStatus interim**
 * `components/35Dinitrotoluene.dat` -- **reviewStatus interim**
@@ -495,6 +500,7 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `components/acrylonitrile.dat` -- **reviewStatus interim**
 * `components/adipicAcid.dat` -- **reviewStatus interim**
 * `components/air.dat` -- **reviewStatus interim**
+* `components/allylAlcohol.dat` -- **reviewStatus autoPromoted**
 * `components/aniline.dat` -- **reviewStatus interim**
 * `components/anisole.dat` -- **reviewStatus interim**
 * `components/benzene.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
@@ -577,6 +583,7 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `components/ethylFormate.dat` -- **reviewStatus interim**
 * `components/ethylMercaptan.dat` -- **reviewStatus interim**
 * `components/ethylMethylDisulfide.dat` -- **reviewStatus interim**
+* `components/ethylOctanoate.dat` -- **reviewStatus autoPromoted**
 * `components/ethylPhenylCarbonate.dat` -- **reviewStatus interim**
 * `components/ethylPropylDisulfide.dat` -- **reviewStatus interim**
 * `components/ethylTertPentylEther.dat` -- **reviewStatus interim**
@@ -646,6 +653,7 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `components/methylIsobutylKetone.dat` -- **reviewStatus interim**
 * `components/methylIsopropylEther.dat` -- **reviewStatus interim**
 * `components/methylIsopropylKetone.dat` -- **reviewStatus interim**
+* `components/methylLevulinate.dat` -- **reviewStatus autoPromoted**
 * `components/methylLinoleate.dat` -- **reviewStatus interim**
 * `components/methylLinolenate.dat` -- **reviewStatus interim**
 * `components/methylMercaptan.dat` -- **reviewStatus interim**
@@ -857,4 +865,4 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `species/SO4.dat` -- **reviewStatus interim**
 * `species/Sr.dat` -- **reviewStatus interim**
 
-Totals: 531 record(s) with structured review metadata, 47 detected by text marker only (legacy fallback -- migrate on touch/review).
+Totals: 539 record(s) with structured review metadata, 47 detected by text marker only (legacy fallback -- migrate on touch/review).

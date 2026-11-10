@@ -61,7 +61,20 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 4.843255 - 2057.0652/(T +
+  -81.5527), in-sample R2 0.999922 over 21 kept points, 365.15-703.4 K
+  (10.1021/je4009014 13/13 kept; 10.1021/je060269j 8/8 kept). Relative
+  error in P over the kept points: mean 2.7003 %, max 4.2239 %;
+  AmbroseWalton on the same points: mean 4.5240 %, max 11.4663 %.
+  Outliers discarded: none. Its own normal boiling point (101.325 kPa):
+  506.78 K. PROMOTED on 2026-11-10 into
+  data/standards/components/33Oxydipropanol.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade clean under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 2
+  studies, 21 points kept, 0 discarded as outliers; max relative error
+  4.224 % (mean 2.7 %), grade clean (limits 5 / 10 / 20 %); no Tb
+  declared; AmbroseWalton on the same points mean 4.524 % / max 11.47 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

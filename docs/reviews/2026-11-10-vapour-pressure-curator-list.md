@@ -27,6 +27,12 @@ disagrees with the others is the wrong one.
 
 | component | fit grade | tool decision | studies fitted | max error % (kept points) | Tnb - Tb / K |
 |---|---|---|---|---|---|
+| 13Butanediol | warning | PROMOTED | 3 | 7.199 | no Tb |
+| 13Propanediol | warning | PROMOTED | 4 | 7.249 | no Tb |
+| 16Hexanediol | clean | PROMOTED | 1 | 1.39 | no Tb |
+| 2Ethoxyethanol | warning | PROMOTED | 3 | 5.709 | -1.92 |
+| 33Oxydipropanol | clean | PROMOTED | 2 | 4.224 | no Tb |
+| allylAlcohol | clean | PROMOTED | 3 | 1.417 | +0.57 |
 | diButylCarbonate | severe | PROMOTED | 2 | 8.817 | -3.76 |
 | diEthylCarbonate | warning | PROMOTED | 6 | 7.543 | -0.05 |
 | diNButylEther | clean | PROMOTED | 4 | 3.993 | -1.67 |
@@ -34,10 +40,12 @@ disagrees with the others is the wrong one.
 | diethylethanolamine | clean | PROMOTED | 3 | 3.474 | -0.24 |
 | dimethylSulfoxide | clean | PROMOTED | 3 | 0.7943 | +1.48 |
 | dimethylethanolamine | warning | PROMOTED | 3 | 8.506 | +3.27 |
+| ethylOctanoate | clean | PROMOTED | 1 | 2.742 | no Tb |
 | furfural | severe | PROMOTED | 3 | 5.073 | -2.54 |
 | glycerol | refused | NOT PROMOTED | 4 | 8.69 | -5.23 |
 | mNitrotoluene | refused | NOT PROMOTED | 1 | 2.934 | -22.24 |
 | methylDiEthanolAmine | severe | PROMOTED | 4 | 11.08 | +4.85 |
+| methylLevulinate | warning | PROMOTED | 2 | 5.658 | no Tb |
 | methylTertPentylEther | clean | PROMOTED | 4 | 3.952 | +0.59 |
 | methylethanolamine | clean | PROMOTED | 3 | 4.36 | -0.86 |
 | monoethanolamine | clean | PROMOTED | 6 | 4.529 | -0.19 |
@@ -51,6 +59,109 @@ disagrees with the others is the wrong one.
 | squalane | warning | PROMOTED | 1 | 9.432 | +59.11 |
 | triethanolamine | refused | NOT PROMOTED | 1 | 12.15 | -6.63 |
 | triethylamine | clean | PROMOTED | 1 | 0.2609 | -0.47 |
+
+## 13Butanediol
+
+CAS 107-88-0; declares no Tb.  Fitted on 3 studies (every usable one); Antoine log10(P/bar) = 5.022835 - 1987.1123/(T + -87.7092); its normal boiling point 483.78 K.
+
+**Fit grade (DEV.md 4c C285):** warning
+
+**Tool decision:** PROMOTED on 2026-11-10 into data/standards/components/13Butanediol.dat as reviewStatus autoPromoted, humanReviewed false, because: fit grade warning under the DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 3 studies, 44 points kept, 0 discarded as outliers; max relative error 7.199 % (mean 4.71 %), grade warning (limits 5 / 10 / 20 %); no Tb declared; AmbroseWalton on the same points mean 4.977 % / max 10.83 %
+
+**Discarded as outliers:** none
+
+| study | role | n (kept) | T range / K | fit mean / max % | AmbroseWalton mean / max % |
+|---|---|---|---|---|---|
+| `10.1021/je400082c` (Zhang; Wu; Sun) | fitted | 22 (22) | 387.75-453.1 | 4.29 / 7.20 | 3.48 / 6.30 |
+| `10.1021/je060419q` (Verevkin) | fitted | 13 (13) | 288.3-332.3 | 5.24 / 7.20 | 8.67 / 10.83 |
+| `10.1021/je060269j` (VonNiederhausern; Wilson; Giles) | fitted | 9 (9) | 481.4-688.2 | 4.97 / 7.20 | 3.31 / 6.69 |
+
+## 13Propanediol
+
+CAS 504-63-2; declares no Tb.  Fitted on 4 studies (every usable one); Antoine log10(P/bar) = 6.171449 - 2687.6528/(T + -47.7069); its normal boiling point 483.61 K.
+
+**Fit grade (DEV.md 4c C285):** warning
+
+**Tool decision:** PROMOTED on 2026-11-10 into data/standards/components/13Propanediol.dat as reviewStatus autoPromoted, humanReviewed false, because: fit grade warning under the DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 4 studies, 59 points kept, 0 discarded as outliers; max relative error 7.249 % (mean 3.612 %), grade warning (limits 5 / 10 / 20 %); no Tb declared; AmbroseWalton on the same points mean 141.4 % / max 313.4 %
+
+**Discarded as outliers:** none
+
+| study | role | n (kept) | T range / K | fit mean / max % | AmbroseWalton mean / max % |
+|---|---|---|---|---|---|
+| `10.1016/j.jct.2016.01.019` (Rane; Kumari; Soujanya) | fitted | 20 (20) | 414.2-465.45 | 3.48 / 7.25 | 42.24 / 78.70 |
+| `10.1021/je200766t` (Mokbel; Sawaya; Zanota) | fitted | 18 (18) | 313.2-461.85 | 3.14 / 7.25 | 118.88 / 267.75 |
+| `10.1021/je060419q` (Verevkin) | fitted | 14 (14) | 293.5-342.3 | 3.85 / 7.25 | 250.97 / 307.29 |
+| `10.1016/j.jct.2015.01.014` (Emel'yanenko; Verevkin) | fitted | 7 (7) | 292.5-346.4 | 4.73 / 7.25 | 263.70 / 313.40 |
+| `10.1016/j.jct.2018.12.030` (Khoshooei; Sharp; Afacan) | not fitted (< 5 pts) | 1 (1) | 487.43-487.43 | 13.16 / 13.16 | 24.65 / 24.65 |
+
+## 16Hexanediol
+
+CAS 629-11-8; declares no Tb.  Fitted on 1 study (every usable one); Antoine log10(P/bar) = 4.626258 - 1878.9662/(T + -119.1422); its normal boiling point 525.80 K.
+
+**Fit grade (DEV.md 4c C285):** clean
+
+**Tool decision:** PROMOTED on 2026-11-10 into data/standards/components/16Hexanediol.dat as reviewStatus autoPromoted, humanReviewed false, because: fit grade clean under the DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 1 studies, 8 points kept, 0 discarded as outliers; max relative error 1.39 % (mean 1.084 %), grade clean (limits 5 / 10 / 20 %); no Tb declared; AmbroseWalton on the same points mean 3.382 % / max 5.481 %
+
+**Discarded as outliers:** none
+
+| study | role | n (kept) | T range / K | fit mean / max % | AmbroseWalton mean / max % |
+|---|---|---|---|---|---|
+| `10.1021/je0602465` (VonNiederhausern; Wilson; Giles) | fitted | 8 (8) | 523.2-740.4 | 1.08 / 1.39 | 3.38 / 5.48 |
+| `10.1021/acs.jced.9b00306` (Yang; Li; Cao) | not fitted (< 5 pts) | 3 (3) | 456.93-525.1 | 8.82 / 15.80 | 12.20 / 22.45 |
+
+## 2Ethoxyethanol
+
+CAS 110-80-5; record Tb 408.405 K.  Fitted on 3 studies (every usable one); Antoine log10(P/bar) = 54.031976 - 182574.8370/(T + 2972.8847); its normal boiling point 406.49 K (-1.92 K from Tb).
+
+**Fit grade (DEV.md 4c C285):** warning
+
+**Tool decision:** PROMOTED on 2026-11-10 into data/standards/components/2Ethoxyethanol.dat as reviewStatus autoPromoted, humanReviewed false, because: fit grade warning under the DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 3 studies, 44 points kept, 0 discarded as outliers; max relative error 5.709 % (mean 3.541 %), grade warning (limits 5 / 10 / 20 %); Tb outside the kept points' range, normal boiling point 406.49 K, -1.92 K from the record's Tb 408.405 K, grade warning (limits 1 / 2 / 4 K); AmbroseWalton on the same points mean 23.36 % / max 39.97 %
+
+**Discarded as outliers:** none
+
+| study | role | n (kept) | T range / K | fit mean / max % | AmbroseWalton mean / max % |
+|---|---|---|---|---|---|
+| `10.1016/j.fluid.2007.03.030` (Lladosa; Monton; Burguet) | fitted | 25 (25) | 345.63-407.95 | 3.52 / 5.71 | 23.36 / 32.85 |
+| `10.1016/j.fluid.2012.08.030` (Reddy; Kumar; Rao) | fitted | 11 (11) | 373.48-406.33 | 4.12 / 5.71 | 27.24 / 39.97 |
+| `10.1021/je300202z` (Rana; Bhate; Mahajani) | fitted | 8 (8) | 388.6-407.8 | 2.82 / 5.36 | 18.03 / 23.06 |
+| `10.1021/je0255628` (Alderson; Bhethanabotla; Campbell) | not fitted (< 5 pts) | 4 (4) | 308.15-313.15 | 67.88 / 86.86 | 51.94 / 59.05 |
+| `10.1021/je025566c` (Chylinski; Fras; Malanowski) | not fitted (< 5 pts) | 3 (3) | 333.15-353.15 | 10.37 / 21.05 | 37.79 / 42.61 |
+| `10.1021/je034153o` (Pathare; Bhethanabotla; Campbell) | not fitted (< 5 pts) | 3 (3) | 303.15-303.15 | 104.82 / 106.86 | 58.55 / 60.13 |
+| `10.1021/je200565u` (Cortinovis; Salvagnini; Tavares) | not fitted (< 5 pts) | 3 (3) | 406.2-407.8 | 10.44 / 13.61 | 23.06 / 25.76 |
+| `` | set aside | -- | -- | article file not in the local cache | |
+
+## 33Oxydipropanol
+
+CAS 2396-61-4; declares no Tb.  Fitted on 2 studies (every usable one); Antoine log10(P/bar) = 4.843255 - 2057.0652/(T + -81.5527); its normal boiling point 506.78 K.
+
+**Fit grade (DEV.md 4c C285):** clean
+
+**Tool decision:** PROMOTED on 2026-11-10 into data/standards/components/33Oxydipropanol.dat as reviewStatus autoPromoted, humanReviewed false, because: fit grade clean under the DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 2 studies, 21 points kept, 0 discarded as outliers; max relative error 4.224 % (mean 2.7 %), grade clean (limits 5 / 10 / 20 %); no Tb declared; AmbroseWalton on the same points mean 4.524 % / max 11.47 %
+
+**Discarded as outliers:** none
+
+| study | role | n (kept) | T range / K | fit mean / max % | AmbroseWalton mean / max % |
+|---|---|---|---|---|---|
+| `10.1021/je4009014` (Fendu; Oprea) | fitted | 13 (13) | 365.15-397.15 | 2.27 / 4.22 | 5.38 / 11.47 |
+| `10.1021/je060269j` (VonNiederhausern; Wilson; Giles) | fitted | 8 (8) | 505-703.4 | 3.40 / 4.22 | 3.13 / 6.10 |
+
+## allylAlcohol
+
+CAS 107-18-6; record Tb 369.925 K.  Fitted on 3 studies (every usable one); Antoine log10(P/bar) = 4.704344 - 1398.8210/(T + -72.7855); its normal boiling point 370.49 K (+0.57 K from Tb).
+
+**Fit grade (DEV.md 4c C285):** clean
+
+**Tool decision:** PROMOTED on 2026-11-10 into data/standards/components/allylAlcohol.dat as reviewStatus autoPromoted, humanReviewed false, because: fit grade clean under the DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 3 studies, 29 points kept, 0 discarded as outliers; max relative error 1.417 % (mean 0.6417 %), grade clean (limits 5 / 10 / 20 %); Tb inside the kept points' range, normal boiling point 370.49 K, +0.57 K from the record's Tb 369.925 K (reported, not a condition); AmbroseWalton on the same points mean 2.902 % / max 6.382 %
+
+**Discarded as outliers:** none
+
+| study | role | n (kept) | T range / K | fit mean / max % | AmbroseWalton mean / max % |
+|---|---|---|---|---|---|
+| `10.1021/je0499519` (Lubomska; Malanowski) | fitted | 17 (17) | 311.42-355.7 | 0.43 / 0.97 | 3.23 / 6.38 |
+| `10.1021/je060088h` (VonNiederhausern; Wilson; Giles) | fitted | 6 (6) | 438.1-546.5 | 0.80 / 1.25 | 2.48 / 4.31 |
+| `10.1021/je400885z` (McDougal; Jasperson; Wilson) | fitted | 6 (6) | 373.15-423.15 | 1.10 / 1.42 | 2.39 / 3.42 |
+| `10.1021/acs.jced.6b00893` (Li; Hua; Xiong) | not fitted (< 5 pts) | 1 (1) | 369.75-369.75 | 2.65 / 2.65 | 1.78 / 1.78 |
+| `10.1021/acs.jced.8b00908` (Diao; Wang; Xu) | not fitted (< 5 pts) | 1 (1) | 369.94-369.94 | 1.97 / 1.97 | 1.11 / 1.11 |
 
 ## diButylCarbonate
 
@@ -188,6 +299,20 @@ CAS 108-01-0; record Tb 404.15 K.  Fitted on 3 studies (every usable one); Antoi
 | `10.1016/j.jct.2013.03.020` (Chiali-Baba-Ahmed; Dergal; Negadi) | fitted | 25 (25) | 273.15-363.15 | 7.57 / 8.51 | 40.36 / 63.98 |
 | `10.1021/je101259r` (Klepacova; Huttenhuis; Derks) | fitted | 15 (15) | 309.5-447.8 | 4.95 / 8.51 | 15.34 / 34.88 |
 
+## ethylOctanoate
+
+CAS 106-32-1; declares no Tb.  Fitted on 1 study (every usable one); Antoine log10(P/bar) = 4.289283 - 1723.6415/(T + -80.3962); its normal boiling point 482.78 K.
+
+**Fit grade (DEV.md 4c C285):** clean
+
+**Tool decision:** PROMOTED on 2026-11-10 into data/standards/components/ethylOctanoate.dat as reviewStatus autoPromoted, humanReviewed false, because: fit grade clean under the DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 1 studies, 17 points kept, 0 discarded as outliers; max relative error 2.742 % (mean 2.044 %), grade clean (limits 5 / 10 / 20 %); no Tb declared; AmbroseWalton on the same points mean 9.643 % / max 18.09 %
+
+**Discarded as outliers:** none
+
+| study | role | n (kept) | T range / K | fit mean / max % | AmbroseWalton mean / max % |
+|---|---|---|---|---|---|
+| `10.1021/je200730m` (Benziane; Khimeche; Mokbel) | fitted | 17 (17) | 273.26-452.3 | 2.04 / 2.74 | 9.64 / 18.09 |
+
 ## furfural
 
 CAS 98-01-1; record Tb 434.85 K.  Fitted on 3 studies (every usable one); Antoine log10(P/bar) = 4.578554 - 1695.1936/(T + -61.6013); its normal boiling point 432.31 K (-2.54 K from Tb).
@@ -259,6 +384,21 @@ CAS 105-59-9; record Tb 520.15 K.  Fitted on 4 studies (every usable one); Antoi
 | `10.1021/je800290k` (Kim; Svendsen; Borresen) | fitted | 7 (7) | 409.69-435.5 | 6.06 / 11.08 | 93.51 / 94.82 |
 | `10.1021/acs.jced.8b00054` (Soames; Helal; Iglauer) | fitted | 6 (5) | 430.52-488.42 | 8.41 / 18.56 | 84.71 / 90.37 |
 | `10.1016/j.fluid.2010.08.026` | set aside | -- | -- | j.fluid.2010.08.026.xml: 1 of 1 pressure rows of methylDiEthanolAmine declare no stated uncertainty -- a partial uncertainty is no uncertain | |
+
+## methylLevulinate
+
+CAS 624-45-3; declares no Tb.  Fitted on 2 studies (every usable one); Antoine log10(P/bar) = 4.618303 - 1844.8759/(T + -67.5116); its normal boiling point 467.48 K.
+
+**Fit grade (DEV.md 4c C285):** warning
+
+**Tool decision:** PROMOTED on 2026-11-10 into data/standards/components/methylLevulinate.dat as reviewStatus autoPromoted, humanReviewed false, because: fit grade warning under the DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 2 studies, 38 points kept, 0 discarded as outliers; max relative error 5.658 % (mean 2.27 %), grade warning (limits 5 / 10 / 20 %); no Tb declared; AmbroseWalton on the same points mean 3.355 % / max 8.94 %
+
+**Discarded as outliers:** none
+
+| study | role | n (kept) | T range / K | fit mean / max % | AmbroseWalton mean / max % |
+|---|---|---|---|---|---|
+| `10.1016/j.jct.2013.05.025` (Lomba; Lafuente; Garcia-Mardones) | fitted | 25 (25) | 333.15-453.15 | 1.79 / 5.66 | 4.44 / 8.94 |
+| `10.1016/j.tca.2017.12.006` (Emel'yanenko; Altuntepe; Held) | fitted | 13 (13) | 293.5-353.2 | 3.19 / 5.66 | 1.26 / 2.73 |
 
 ## methylTertPentylEther
 

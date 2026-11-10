@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 622,
+  "cases": 631,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 15
@@ -2869,6 +2869,62 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/curation/curate164_vp_2Ethoxyethanol": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate165_vp_ethylOctanoate": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate168_vp_13Propanediol": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate169_vp_13Butanediol": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/curation/curate16_nrtl_ethanol_dimethylCarbonate": {
    "application": "choupoProps",
    "ops": [
@@ -2879,6 +2935,62 @@
     "formulation": "gammaPhi",
     "activityModels": [
      "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate171_vp_16Hexanediol": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate172_vp_allylAlcohol": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate174_vp_33Oxydipropanol": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate176_vp_methylLevulinate": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
      "ideal"
     ]
    },
@@ -3035,6 +3147,21 @@
    "application": "choupoProps",
    "ops": [
     "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate287_new_components": {
+   "application": "choupoProps",
+   "ops": [
+    "estimateComponent",
+    "propertyScan1D"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -9384,7 +9511,15 @@
     "tutorials/props/curation/curate160_nrtl_cyclohexane_nHeptane",
     "tutorials/props/curation/curate161_nrtl_nDecane_mXylene",
     "tutorials/props/curation/curate162_nrtl_nDecane_oXylene",
+    "tutorials/props/curation/curate164_vp_2Ethoxyethanol",
+    "tutorials/props/curation/curate165_vp_ethylOctanoate",
+    "tutorials/props/curation/curate168_vp_13Propanediol",
+    "tutorials/props/curation/curate169_vp_13Butanediol",
     "tutorials/props/curation/curate16_nrtl_ethanol_dimethylCarbonate",
+    "tutorials/props/curation/curate171_vp_16Hexanediol",
+    "tutorials/props/curation/curate172_vp_allylAlcohol",
+    "tutorials/props/curation/curate174_vp_33Oxydipropanol",
+    "tutorials/props/curation/curate176_vp_methylLevulinate",
     "tutorials/props/curation/curate17_nrtl_diisopropylEther_isopropanol",
     "tutorials/props/curation/curate18_nrtl_isopropanol_dimethylCarbonate",
     "tutorials/props/curation/curate19_nrtl_ethanol_224Trimethylpentane",
@@ -9396,6 +9531,7 @@
     "tutorials/props/curation/curate25_vp_dimethylethanolamine",
     "tutorials/props/curation/curate26_vp_furfural",
     "tutorials/props/curation/curate27_vp_glycerol",
+    "tutorials/props/curation/curate287_new_components",
     "tutorials/props/curation/curate28_vp_methylDiEthanolAmine",
     "tutorials/props/curation/curate29_vp_methylTertPentylEther",
     "tutorials/props/curation/curate30_vp_methylethanolamine",
@@ -10947,7 +11083,15 @@
     "tutorials/props/curation/curate160_nrtl_cyclohexane_nHeptane",
     "tutorials/props/curation/curate161_nrtl_nDecane_mXylene",
     "tutorials/props/curation/curate162_nrtl_nDecane_oXylene",
+    "tutorials/props/curation/curate164_vp_2Ethoxyethanol",
+    "tutorials/props/curation/curate165_vp_ethylOctanoate",
+    "tutorials/props/curation/curate168_vp_13Propanediol",
+    "tutorials/props/curation/curate169_vp_13Butanediol",
     "tutorials/props/curation/curate16_nrtl_ethanol_dimethylCarbonate",
+    "tutorials/props/curation/curate171_vp_16Hexanediol",
+    "tutorials/props/curation/curate172_vp_allylAlcohol",
+    "tutorials/props/curation/curate174_vp_33Oxydipropanol",
+    "tutorials/props/curation/curate176_vp_methylLevulinate",
     "tutorials/props/curation/curate17_nrtl_diisopropylEther_isopropanol",
     "tutorials/props/curation/curate18_nrtl_isopropanol_dimethylCarbonate",
     "tutorials/props/curation/curate19_nrtl_ethanol_224Trimethylpentane",
@@ -10959,6 +11103,7 @@
     "tutorials/props/curation/curate25_vp_dimethylethanolamine",
     "tutorials/props/curation/curate26_vp_furfural",
     "tutorials/props/curation/curate27_vp_glycerol",
+    "tutorials/props/curation/curate287_new_components",
     "tutorials/props/curation/curate28_vp_methylDiEthanolAmine",
     "tutorials/props/curation/curate29_vp_methylTertPentylEther",
     "tutorials/props/curation/curate30_vp_methylethanolamine",
@@ -11292,6 +11437,7 @@
    ],
    "estimateComponent": [
     "tutorials/plant/polycaprolactonePlant/properties",
+    "tutorials/props/curation/curate287_new_components",
     "tutorials/props/estimate/estimate_acetone",
     "tutorials/props/estimate/estimate_ethanol_benzene",
     "tutorials/props/estimate/estimate_petroleum_cut",
@@ -11585,6 +11731,7 @@
     "tutorials/props/curation/curate17_nrtl_diisopropylEther_isopropanol",
     "tutorials/props/curation/curate18_nrtl_isopropanol_dimethylCarbonate",
     "tutorials/props/curation/curate19_nrtl_ethanol_224Trimethylpentane",
+    "tutorials/props/curation/curate287_new_components",
     "tutorials/props/molecular/entropy01_air_ledger",
     "tutorials/props/molecular/flash01_operating_line",
     "tutorials/props/steam/steam02_water_transport",
@@ -11664,6 +11811,14 @@
    ],
    "vaporPressureFit": [
     "tutorials/props/curation/curate01_water_evidence_partition",
+    "tutorials/props/curation/curate164_vp_2Ethoxyethanol",
+    "tutorials/props/curation/curate165_vp_ethylOctanoate",
+    "tutorials/props/curation/curate168_vp_13Propanediol",
+    "tutorials/props/curation/curate169_vp_13Butanediol",
+    "tutorials/props/curation/curate171_vp_16Hexanediol",
+    "tutorials/props/curation/curate172_vp_allylAlcohol",
+    "tutorials/props/curation/curate174_vp_33Oxydipropanol",
+    "tutorials/props/curation/curate176_vp_methylLevulinate",
     "tutorials/props/curation/curate20_vp_diButylCarbonate",
     "tutorials/props/curation/curate21_vp_diEthylCarbonate",
     "tutorials/props/curation/curate22_vp_diNButylEther",

@@ -1,0 +1,98 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      13Propanediol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        A  6.1714490781;
+        B  2687.65283506;
+        C  -47.7069329261;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "fe6d6ba3b80583da";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/13Propanediol-vapourPressure-j.jct.2016.01.019.dat";
+            doi       "10.1016/j.jct.2016.01.019";
+            sha256    "67af4c62caba8fe9644d6ff093aebc32c6ebb933b139d8ff89e558561d21ba3a";
+            provenance measured;
+            archiveFile "j.jct.2016.01.019.xml";
+            system    "13Propanediol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/13Propanediol-vapourPressure-je200766t.dat";
+            doi       "10.1021/je200766t";
+            sha256    "3d1646bd31387e679d96d72530e61de2b93919168e8d5b6ab8374ea28e90756a";
+            provenance measured;
+            archiveFile "je200766t.xml";
+            system    "13Propanediol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/13Propanediol-vapourPressure-je060419q.dat";
+            doi       "10.1021/je060419q";
+            sha256    "c791a3b4363a3e0b649cce98e59347f24487b4a1cd56a07836d1431ad241481a";
+            provenance measured;
+            archiveFile "je060419q.xml";
+            system    "13Propanediol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/13Propanediol-vapourPressure-j.jct.2015.01.014.dat";
+            doi       "10.1016/j.jct.2015.01.014";
+            sha256    "5c8580550fb1a1b95082bc597c78ea9f1c801a7cc2e58bd8d05705965ae7239c";
+            provenance measured;
+            archiveFile "j.jct.2015.01.014.xml";
+            system    "13Propanediol";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 292.5; max 465.45; n 59; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.999850829335;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

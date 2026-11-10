@@ -1,0 +1,80 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      methylLevulinate;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        A  4.61830270357;
+        B  1844.87591677;
+        C  -67.5116488784;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b7380f2a91195e17";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylLevulinate-vapourPressure-j.jct.2013.05.025.dat";
+            doi       "10.1016/j.jct.2013.05.025";
+            sha256    "49b2377c595751f1bc0e0f1de6760d082ded1fd4f5daef76a8f3a2d207ec253d";
+            provenance measured;
+            archiveFile "j.jct.2013.05.025.xml";
+            system    "methylLevulinate";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylLevulinate-vapourPressure-j.tca.2017.12.006.dat";
+            doi       "10.1016/j.tca.2017.12.006";
+            sha256    "9cac6d55becbbaa69a93735820a151c18a19e77a538610e13f9c90276038b729";
+            provenance measured;
+            archiveFile "j.tca.2017.12.006.xml";
+            system    "methylLevulinate";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 293.5; max 453.15; n 38; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.999817243581;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

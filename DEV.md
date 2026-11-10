@@ -3362,6 +3362,69 @@ accepts today, and that is a policy call.
 > either), a full sweep.  Pairs are not graded in this slice.  Record:
 > docs/design/binary-pairs-from-open-measurements.md section 10.1.
 
+> **C287 (Vitor, 2026-11-10, relayed by the coordinator: "o que eu quero e
+> criar componentes novos e binarios" -- urgent; then, the same hour: every
+> new record carries its FORMATION properties, dHf_298 and s_298, measured if
+> the archive has them, else Joback with s_298 derived from Joback's dHf and
+> dGf and the elements' entropies, dGf not stored).  NEW CATALOGUE COMPONENTS
+> FROM THE THERMOML ARCHIVE, SLICE 1:** the compounds outside the catalogue
+> that the archive measures for vapour pressure, liquid density, liquid Cp AND
+> critical constants.  Rules (the coordinator's brief, on C282's ruling):
+> Tc, Pc measured, combined by median with the spread stated; vapour pressure
+> by `bin/choupo-curate vp` (C283/C285); Vliq and liquid Cp fitted under the
+> same protocol (every laboratory, least squares then minimax, outliers above
+> 15 % dropped by name, graded 5 / 10 / 20 %, `fitGrade` in the provenance);
+> omega from the fitted vapour pressure at Tr = 0.7; what the archive does not
+> measure estimated by Joback and marked so; `autoPromoted; humanReviewed
+> false` voiced by the loader; no measured series in the tree.
+
+> **C287 RESULT (slice 1, branch c287-new-components, 2026-11-10).**
+> TOOL: `bin/curate/c287_new_components.py plan|write` (harvests the cache,
+> fits Vliq on the ENGINE'S OWN liquid density -- V = Vliq Rackett(T)/
+> Rackett(298.15 K) with the record's Tc, Pc, omega, one parameter, LS then
+> closed-form minimax -- and the liquid Cp polynomial, computes Joback from
+> data/standards/parameters/Joback.dat, writes the record with the
+> AmbroseWalton block `vp --promote` replaces, and keeps a promoted vapour
+> pressure verbatim on a rewrite).  RECOUNT: 22 non-catalogue compounds carry
+> vp + liquid rho + liquid Cp + a critical constant (the earlier 25 counted
+> without the liquid-phase filter); identity by InChIKey, CAS by PubChem then
+> re-derived by `choupo-thermoml identity` (two resolvers agree) for all 16
+> kept.  EXCLUDED 6 by name: HFO-1234ze(E) (already R1234zeE, unresolved in
+> the bridge), ethyl nonafluorobutyl ether (three CAS, an isomer mixture),
+> N-methylpiperidine and N-formylmorpholine (no ring tertiary-amine group in
+> the Joback table), 1,2-dimethoxyethane and N-methylformamide (no vp study
+> of >= 5 points).  HELD 8, every fit graded and promotable but 0.7 Tc lies
+> 58-237 K beyond the measured vapour pressures, so omega would be an Antoine
+> extrapolation (butylLevulinate gave 0.096): methylTetradecanoate,
+> 13Propanediamine, di2EthylhexylPhthalate, ethylLevulinate, 16Hexanediamine,
+> butylLevulinate, glycerylTrioctanoate, glycerylTridecanoate -- the stated
+> default is 50 K, the omega route is Vitor's; their declarations are in the
+> history (curate163, 166, 167, 170, 173, 175, 177, 178) and their cases and
+> records were removed before commit.  ADDED 8 (the catalogue 608 -> 616),
+> each vapour pressure in its case curate164/165/168/169/171/172/174/176:
+> 2Ethoxyethanol (vp warning 5.71 % and Tnb -1.92 K, 3 DOIs; Tb measured, 2
+> DOIs), ethylOctanoate (vp clean 2.74 %, 1 DOI), 13Propanediol (vp warning
+> 7.25 %, 4 DOIs), 13Butanediol (vp warning 7.20 %, 3 DOIs), 16Hexanediol (vp
+> clean 1.39 %, 1 DOI), allylAlcohol (vp clean 1.42 %, 3 DOIs; Tb measured),
+> 33Oxydipropanol (vp clean 4.22 %, 2 DOIs), methylLevulinate (vp warning
+> 5.66 %, 2 DOIs); every Vliq and liquid Cp fit is clean (max 1.19 % and
+> 0.57 %; Vliq from 1-29 DOIs, Cp from 1-3).  Tc and Pc from 1-2 DOIs each;
+> Tb measured for two, ABSENT for six (never read off the fitted curve).
+> ESTIMATED, every one: ideal-gas Cp and dHf_298 by Joback (the archive holds
+> no formation or combustion block for any of them: two article titles name
+> one, no data block), s_298 derived from Joback's dHf and dGf with the
+> CODATA element entropies; check_estimates verifies the 8 dHf (48 from 40).
+> ENGINE: `rho_liquid_<comp>` in the props evaluator (the liquid density
+> through ThermoPackage::density, liquid branch).  SMOKE:
+> tutorials/props/curation/curate287_new_components reproduces the Joback
+> numbers and evaluates Psat, Cp_liquid and rho_liquid of all eight, 300-340
+> K, with no refusal.  FINDINGS: 2Ethoxyethanol's promoted Antoine has C =
+> +2973 K (A 54.0, B 182575) -- graded warning on its 345-408 K window, a
+> degenerate minimax on a narrow span (the engine continues ln Psat outside
+> it); 16Hexanediol's Vliq rests on ONE density at 293 K, below its melting
+> point (`measuredAt`, said in the record); every new record still owes a
+> human read-back (`humanReviewed false`).
+
 > **C284 (Vitor, 2026-11-10: "faz favor de acelerar e comecares a produzir
 > componentes e binarios! ... os componentes tem classificacoes e os binarios
 > so se devem fazer para compostos que os aceitem").  PRODUCE PAIRS IN BULK,

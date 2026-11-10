@@ -60,7 +60,19 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 4.626258 - 1878.9662/(T +
+  -119.1422), in-sample R2 0.999928 over 8 kept points, 523.2-740.4 K
+  (10.1021/je0602465 8/8 kept). Relative error in P over the kept points:
+  mean 1.0839 %, max 1.3903 %; AmbroseWalton on the same points: mean
+  3.3824 %, max 5.4812 %. Outliers discarded: none. Its own normal
+  boiling point (101.325 kPa): 525.80 K. PROMOTED on 2026-11-10 into
+  data/standards/components/16Hexanediol.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade clean under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 1
+  studies, 8 points kept, 0 discarded as outliers; max relative error
+  1.39 % (mean 1.084 %), grade clean (limits 5 / 10 / 20 %); no Tb
+  declared; AmbroseWalton on the same points mean 3.382 % / max 5.481 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 
