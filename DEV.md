@@ -3376,7 +3376,7 @@ accepts today, and that is a policy call.
 > stored, uploaded or redistributed.  Owner: the laptop session (gui/).
 
 > **C288 (Vitor, 2026-11-10, after the discussion of reaction heats on the
-> ideal-gas formation route: "e melhor fazer como o aspen faz e ate criar um
+> ideal-gas formation route: "e melhor fazer como [um simulador comercial] faz e ate criar um
 > EduTools a explicar esta questao!").  A MEASURED HEAT OF REACTION MAY
 > CORRECT THE DUTY, AND THE CORRECTION IS A NAMED TERM.**  Vitor's decision
 > amends the 2026-06-27 heat-of-reaction contract (CLAUDE.md section 5): a
