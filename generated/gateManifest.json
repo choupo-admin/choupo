@@ -1630,6 +1630,16 @@
       "exit": 0,
       "claim": "check_ambrose_walton_announced: OK -- (e) 32 AW records, at most the pinned 32; (a) 32 AW records: 21 announce a gap, each equal to the independent Python value within 0.01 K, the other 11 print the estimate line only; (b) the consistent component prints only the estimate line, the inconsistent one exactly one gap line, both in the result JSON advisories; (c) nine Psat values (3 components x 3 T) equal the parent commit's build and the published equations; (d) a record with no Tb prints the estimate line and no gap line.  The gate checks that the reader is TOLD and that no number moved, never that the estimate is ACCURATE or that a declared Tb is right.",
       "seconds": 0.1
+    },
+    "check_no_symlinks": {
+      "exit": 0,
+      "claim": "check_no_symlinks: OK -- 30394 tracked entries under data/, none is a symlink (mode 120000).  NOT CHECKED: untracked links, links outside data/, the gitignored data/local tier.",
+      "seconds": 0.0
+    },
+    "check_pair_names": {
+      "exit": 0,
+      "claim": "check_pair_names: OK -- 649 component stems (2 named debt), 135 symmetric pair files in byte order over existing components, 130 fittedInCase paths resolve, no case-insensitive collisions.  NOT APPLIED: Henry, Pitzer, EdwardsPitzer, eNRTL, UNIFAC, SRK, adsorption, solution.",
+      "seconds": 0.0
     }
   }
 }

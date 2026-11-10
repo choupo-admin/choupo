@@ -6765,6 +6765,28 @@ PYEOF
     fi
     rm -f /tmp/stdwrite.$$
 
+    # no-symlinks gate (2026-11-10, DEV.md 4c C296 slice 1).  No tracked symlink under data/: a record has one home.
+    if gate_exec "$ROOT/bin/curate/check_no_symlinks.py" > /tmp/nosymlk.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "no-symlinks-gate" "$(head -1 /tmp/nosymlk.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_no_symlinks.py)\n" "no-symlinks-gate"
+        cat /tmp/nosymlk.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/nosymlk.$$
+
+    # pair-names gate (2026-11-10, DEV.md 4c C296 slice 1).  Component and pair file names follow the byte-order rule the engine reads (alphaPairFilename).
+    if gate_exec "$ROOT/bin/curate/check_pair_names.py" > /tmp/pairnames.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "pair-names-gate" "$(head -1 /tmp/pairnames.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_pair_names.py)\n" "pair-names-gate"
+        cat /tmp/pairnames.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/pairnames.$$
+
     # model-default-registered gate (2026-09-06).  A `massTransfer {}` block
     # that merely forgot its `model` key died naming 'constant' -- a model the
     # ENGINE invented in its own default, pruned from the factory on
