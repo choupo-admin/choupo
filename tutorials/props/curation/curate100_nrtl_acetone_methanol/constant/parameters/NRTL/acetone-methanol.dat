@@ -1,0 +1,182 @@
+// [imported] origin "data/standards/parameters/NRTL/acetone-methanol.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- acetone(i) + methanol(j)
+
+  REGRESSED BY CHOUPO'S CURATION PIPELINE (bin/choupo-curate, DEV.md 4c C282;
+  record docs/design/binary-pairs-from-open-measurements.md) to measured
+  bubble temperatures.  The articles named under `evidence` are the
+  SOURCE of the measurements; the NIST/TRC ThermoML Archive located them.
+  NO MEASURED POINT IS IN THIS RECORD OR THIS TREE: the case regenerates
+  them from the DOIs and sha256 sums it declares (constant/archiveDatasets).
+  The PARAMETERS are Choupo's own work.
+
+  EQUATION: tau_ij = a_ij + b_ij / T [b in K], G_ij = exp(-alpha tau_ij),
+  Renon & Prausnitz direction (src/thermo/activityCoefficient/NRTL.cpp).
+  a_ij = a_ji = 0 and alpha = 0.30 FIXED, not fitted.
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
+  vapour-pressure records for both pure components.
+
+  reviewStatus autoPromoted; humanReviewed false: PROMOTED AUTOMATICALLY by
+  its fitting pipeline (every laboratory fitted, outliers beyond 3 K
+  discarded by name, max |T_model - T| over the kept points below 1 K --
+  DEV.md 4c C283 amended; one liquid across its validity span), and NO
+  HUMAN HAS REVIEWED IT.  The engine says so on every run that reads it.
+  Nothing was held out: the `validation {}` block says so, and the
+  acceptance is the `curation {}` block.  A curator who reads the series
+  back against the articles marks it `reviewStatus reviewed; humanReviewed
+  true;`.  Revert with `bin/choupo-curate revert acetone-methanol`.
+
+  REPRODUCE: run tutorials/props/curation/curate100_nrtl_acetone_methanol (after `bin/choupo-curate fetch` on it); its fit
+  writes acetone-methanol.proposal.dat, which bin/curate/check_regressed_pairs.py holds
+  equal to this record.
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i acetone; j methanol; }
+
+components  ( acetone  methanol );
+model       NRTL;
+
+parameters
+{
+    i           acetone;
+    j           methanol;
+    a_ij        0.00000000;
+    b_ij        103.58615288;
+    a_ji        0.00000000;
+    b_ji        112.54970592;
+    alpha       0.30000000;
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "tutorials/props/curation/curate100_nrtl_acetone_methanol";
+    reviewStatus  autoPromoted;
+    humanReviewed false;
+    promotedBy    "bin/choupo-curate pair --promote";
+    promotedDate  "2026-11-10";
+    reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+    fitDate       "2026-11-10";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetone-methanol-bubble-je5007373.dat";
+            doi       "10.1021/je5007373";
+            sha256    "79535f504457aabf09e5c9df149e586cf96d04212b422eb7813ac641cdbadfd1";
+            provenance measured;
+            archiveFile "je5007373.xml";
+            system    "acetone + methanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetone-methanol-bubble-j.fluid.2006.09.007.dat";
+            doi       "10.1016/j.fluid.2006.09.007";
+            sha256    "d4601d0e519b650f37ea06b2410d2508cfa49ed4478f0750bd757caa9be18c03";
+            provenance measured;
+            archiveFile "j.fluid.2006.09.007.xml";
+            system    "acetone + methanol";
+            pressure  "100000.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetone-methanol-bubble-je0603170.dat";
+            doi       "10.1021/je0603170";
+            sha256    "3922e66535572b611e70b08d8c1c6e9b640065e32f6ebbbe4acfa7f12271398d";
+            provenance measured;
+            archiveFile "je0603170.xml";
+            system    "acetone + methanol";
+            pressure  "100000.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetone-methanol-bubble-j.fluid.2017.03.014.dat";
+            doi       "10.1016/j.fluid.2017.03.014";
+            sha256    "a4c89e4f7c5200bcfbab6dc436eb169b8098dfcc679b700f36306283e75616ee";
+            provenance measured;
+            archiveFile "j.fluid.2017.03.014.xml";
+            system    "acetone + methanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetone-methanol-bubble-j.fluid.2017.11.035.dat";
+            doi       "10.1016/j.fluid.2017.11.035";
+            sha256    "3de59f3824e25a5583a4fb1bfd35fbb3a66f50f4c1b179697988efe47a023537";
+            provenance measured;
+            archiveFile "j.fluid.2017.11.035.xml";
+            system    "acetone + methanol";
+            pressure  "101000.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetone-methanol-bubble-j.fluid.2014.10.011.dat";
+            doi       "10.1016/j.fluid.2014.10.011";
+            sha256    "aa1b9032227ac9876f1f5b9e3774b050d028d005290353c55dd5de7a07c30c37";
+            provenance measured;
+            archiveFile "j.fluid.2014.10.011.xml";
+            system    "acetone + methanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetone-methanol-bubble-je049688b.dat";
+            doi       "10.1021/je049688b";
+            sha256    "8e1f96a5d0f31e4488639bf19bc96dd3ebbb9f9fd65d03d41ab20f6be37af1ea";
+            provenance measured;
+            archiveFile "je049688b.xml";
+            system    "acetone + methanol";
+            pressure  "101000.000000 Pa";
+        }
+    );
+    fingerprint "482058beda317298";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          408.26744690;
+    rms_K         0.22467652;
+    nDataPoints   156;
+    identifiable  true;
+    maxAbsCorr    0.99722744;
+
+    validity
+    {
+        temperature { min 327.96 K; max 337.05 K; }
+        pressure    { min 100000 Pa; max 101300 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validationRefused;
+
+    heldOut     none;   // every declared dataset carried `role fit`
+
+    acceptance  none;   // no band was declared before the fit, so no
+                        // pass/fail may be read out of the residual above
+}
+
+curation
+{
+    rule            "DEV.md 4c C283 (amended) + C284";
+    evidence        allLaboratories;   // every study fitted, none held out
+    objective       twoStage;
+    outlierLimit    3 K;   // |T_model - T| after the least-squares stage
+    outliersDropped 0;
+    pointsKept      156;
+    noBubblePoint   0;
+    maxAbsError     0.6221 K;
+    meanAbsError    0.1633 K;
+    acceptance      1 K;   // max |T_model - T| over the kept points
+    verdict         accepted;
+}

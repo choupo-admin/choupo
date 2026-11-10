@@ -51,11 +51,17 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      none: every one of the 39 points lies within 3 K after the
+      least-squares stage.
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 437.4 K, b_ji = 485.2 K over 39 kept points of 2
+  laboratories (0 discarded): max |dT| 2.682 K, mean 0.903 K against the
+  acceptance 1 K -> notAccepted. fit_nrtl_start2 lands on the same pair
+  (437.4, 485.2). NOT PROMOTABLE: max |dT| 2.682 K over the 39 kept
+  points is not below 1 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

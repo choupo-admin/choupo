@@ -52,11 +52,25 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      5 point(s) of 17: doi 10.1016/j.fluid.2004.10.027 row 1: x 0.7909,
+      P 95.800 kPa, T 441.55 K, dT -8.02 K; doi
+      10.1016/j.fluid.2004.10.027 row 2: x 0.6021, P 95.800 kPa, T 436.75
+      K, dT -10.87 K; doi 10.1016/j.fluid.2004.10.027 row 3: x 0.5195, P
+      95.800 kPa, T 434.05 K, dT -10.94 K; doi
+      10.1016/j.fluid.2004.10.027 row 4: x 0.3062, P 95.800 kPa, T 425.25
+      K, dT -8.16 K; doi 10.1016/j.fluid.2004.10.027 row 5: x 0.2014, P
+      95.800 kPa, T 420.05 K, dT -5.48 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = -263.0 K, b_ji = 429.5 K over 12 kept points of 2
+  laboratories (5 discarded): max |dT| 0.107 K, mean 0.064 K against the
+  acceptance 1 K -> accepted. fit_nrtl_start2 lands on the same pair
+  (-263.0, 429.5). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/mXylene-nDecane.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: max |dT| 0.107 K < 1 K over
+  the 12 kept points, one liquid across the validity span
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -86,6 +100,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/nDecane-mXylene-bubble-j.fluid.2004.10.027.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 );   // C283 outliers, by name in the header
             }
         );
 
@@ -131,6 +146,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/nDecane-mXylene-bubble-j.fluid.2004.10.027.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 );   // C283 outliers, by name in the header
             }
         );
 

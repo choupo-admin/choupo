@@ -53,11 +53,24 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      7 point(s) of 35: doi 10.1021/je0501585 row 1: x 0.0338, P 97.300
+      kPa, T 439.60 K, dT +4.37 K; doi 10.1021/je0501585 row 2: x 0.0450,
+      P 97.300 kPa, T 438.40 K, dT +4.97 K; doi 10.1021/je0501585 row 3:
+      x 0.0850, P 97.300 kPa, T 435.80 K, dT +5.51 K; doi
+      10.1021/je0501585 row 4: x 0.1363, P 97.300 kPa, T 434.20 K, dT
+      +4.59 K; doi 10.1021/je0501585 row 5: x 0.1500, P 97.300 kPa, T
+      433.70 K, dT +4.43 K; doi 10.1021/je0501585 row 6: x 0.2000, P
+      97.300 kPa, T 431.80 K, dT +4.04 K; doi 10.1021/je0501585 row 7: x
+      0.2500, P 97.300 kPa, T 430.60 K, dT +3.05 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 550.6 K, b_ji = -378.9 K over 28 kept points of 3
+  laboratories (7 discarded): max |dT| 1.424 K, mean 0.334 K against the
+  acceptance 1 K -> notAccepted. fit_nrtl_start2 lands on the same pair
+  (550.6, -378.9). NOT PROMOTABLE: max |dT| 1.424 K over the 28 kept
+  points is not below 1 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -83,6 +96,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/pXylene-nDecane-bubble-je0501585.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 6 7 );   // C283 outliers, by name in the header
             }
             {
                 dataset  "constant/archiveExtracts/pXylene-nDecane-bubble-j.fluid.2012.09.019.dat";
@@ -132,6 +146,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/pXylene-nDecane-bubble-je0501585.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 6 7 );   // C283 outliers, by name in the header
             }
             {
                 dataset  "constant/archiveExtracts/pXylene-nDecane-bubble-j.fluid.2012.09.019.dat";

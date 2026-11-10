@@ -52,11 +52,32 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      11 point(s) of 67: doi 10.1016/j.fluid.2017.09.008 row 39: x
+      0.5970, P 55.100 kPa, T 367.82 K, dT -3.15 K; doi
+      10.1016/j.fluid.2017.09.008 row 40: x 0.5970, P 75.000 kPa, T
+      376.10 K, dT -3.34 K; doi 10.1016/j.fluid.2017.09.008 row 41: x
+      0.5970, P 85.100 kPa, T 379.52 K, dT -3.33 K; doi
+      10.1016/j.fluid.2017.09.008 row 42: x 0.5970, P 98.500 kPa, T
+      384.56 K, dT -4.30 K; doi 10.1016/j.fluid.2017.09.008 row 47: x
+      0.6990, P 75.000 kPa, T 385.84 K, dT -3.45 K; doi
+      10.1016/j.fluid.2017.09.008 row 48: x 0.6990, P 85.100 kPa, T
+      389.62 K, dT -3.66 K; doi 10.1016/j.fluid.2017.09.008 row 49: x
+      0.6990, P 99.400 kPa, T 394.11 K, dT -3.64 K; doi
+      10.1016/j.fluid.2017.09.008 row 52: x 0.7910, P 35.100 kPa, T
+      375.90 K, dT -3.18 K; doi 10.1016/j.fluid.2017.09.008 row 53: x
+      0.7910, P 55.100 kPa, T 389.39 K, dT -4.52 K; doi
+      10.1016/j.fluid.2017.09.008 row 54: x 0.8980, P 9.000 kPa, T 359.99
+      K, dT -3.91 K; doi 10.1016/j.fluid.2017.09.008 row 55: x 0.8980, P
+      15.000 kPa, T 373.10 K, dT -4.88 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = -693.3 K, b_ji = 1272.4 K over 56 kept points of 2
+  laboratories (11 discarded): max |dT| 4.030 K, mean 1.658 K against the
+  acceptance 1 K -> notAccepted. fit_nrtl_start2 lands on A DIFFERENT
+  pair (993.3, -656.6). NOT PROMOTABLE: max |dT| 4.030 K over the 56 kept
+  points is not below 1 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -82,6 +103,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/oCresol-ethanol-bubble-j.fluid.2017.09.008.dat";
                 role     fit;
+                discard  ( 39 40 41 42 47 48 49 52 53 54 55 );   // C283 outliers, by name in the header
             }
             {
                 dataset  "constant/archiveExtracts/oCresol-ethanol-bubble-j.fluid.2006.03.018.dat";
@@ -127,6 +149,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/oCresol-ethanol-bubble-j.fluid.2017.09.008.dat";
                 role     fit;
+                discard  ( 39 40 41 42 47 48 49 52 53 54 55 );   // C283 outliers, by name in the header
             }
             {
                 dataset  "constant/archiveExtracts/oCresol-ethanol-bubble-j.fluid.2006.03.018.dat";

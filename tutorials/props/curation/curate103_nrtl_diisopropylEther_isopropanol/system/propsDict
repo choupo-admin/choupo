@@ -53,11 +53,30 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      10 point(s) of 136: doi 10.1016/j.fluid.2014.09.014 row 3: x
+      0.0510, P 79.990 kPa, T 341.61 K, dT +3.61 K; doi
+      10.1016/j.fluid.2014.09.014 row 4: x 0.0510, P 94.790 kPa, T 345.39
+      K, dT +4.13 K; doi 10.1016/j.fluid.2014.09.014 row 5: x 0.0720, P
+      53.330 kPa, T 330.55 K, dT +3.37 K; doi 10.1016/j.fluid.2014.09.014
+      row 6: x 0.0720, P 66.670 kPa, T 334.24 K, dT +5.06 K; doi
+      10.1016/j.fluid.2014.09.014 row 7: x 0.0720, P 94.790 kPa, T 343.55
+      K, dT +4.64 K; doi 10.1016/j.fluid.2014.09.014 row 8: x 0.1530, P
+      53.330 kPa, T 326.50 K, dT +3.15 K; doi 10.1016/j.fluid.2014.09.014
+      row 10: x 0.1530, P 79.990 kPa, T 335.32 K, dT +4.54 K; doi
+      10.1016/j.fluid.2014.09.014 row 11: x 0.1530, P 94.790 kPa, T
+      340.38 K, dT +3.95 K; doi 10.1016/j.fluid.2014.09.014 row 12: x
+      0.1940, P 79.990 kPa, T 335.17 K, dT +3.28 K; doi
+      10.1016/j.fluid.2014.09.014 row 13: x 0.1940, P 94.790 kPa, T
+      339.23 K, dT +3.72 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 250.5 K, b_ji = 207.6 K over 126 kept points of 4
+  laboratories (10 discarded): max |dT| 2.337 K, mean 0.718 K against the
+  acceptance 1 K -> notAccepted. fit_nrtl_start2 lands on the same pair
+  (250.5, 207.6). NOT PROMOTABLE: max |dT| 2.337 K over the 126 kept
+  points is not below 1 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -83,6 +102,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/diisopropylEther-isopropanol-bubble-j.fluid.2014.09.014.dat";
                 role     fit;
+                discard  ( 3 4 5 6 7 8 10 11 12 13 );   // C283 outliers, by name in the header
             }
             {
                 dataset  "constant/archiveExtracts/diisopropylEther-isopropanol-bubble-j.fluid.2007.09.014.dat";
@@ -136,6 +156,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/diisopropylEther-isopropanol-bubble-j.fluid.2014.09.014.dat";
                 role     fit;
+                discard  ( 3 4 5 6 7 8 10 11 12 13 );   // C283 outliers, by name in the header
             }
             {
                 dataset  "constant/archiveExtracts/diisopropylEther-isopropanol-bubble-j.fluid.2007.09.014.dat";

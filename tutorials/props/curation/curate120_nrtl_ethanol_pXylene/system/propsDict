@@ -51,11 +51,17 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      1 point(s) of 82: doi 10.1021/je0342318 row 2: x 0.0310, P 101.300
+      kPa, T 391.42 K, dT -5.11 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 209.5 K, b_ji = 514.2 K over 81 kept points of 2
+  laboratories (1 discarded): max |dT| 3.080 K, mean 0.772 K against the
+  acceptance 1 K -> notAccepted. fit_nrtl_start2 lands on the same pair
+  (209.5, 514.2). NOT PROMOTABLE: max |dT| 3.080 K over the 81 kept
+  points is not below 1 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -85,6 +91,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/ethanol-pXylene-bubble-je0342318.dat";
                 role     fit;
+                discard  ( 2 );   // C283 outliers, by name in the header
             }
         );
 
@@ -130,6 +137,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/ethanol-pXylene-bubble-je0342318.dat";
                 role     fit;
+                discard  ( 2 );   // C283 outliers, by name in the header
             }
         );
 

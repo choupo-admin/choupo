@@ -52,11 +52,18 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      2 point(s) of 54: doi 10.1021/je030131q row 1: x 0.9090, P 95.800
+      kPa, T 375.95 K, dT +4.73 K; doi 10.1021/je030131q row 2: x 0.8349,
+      P 95.800 kPa, T 372.35 K, dT +3.70 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 75.9 K, b_ji = 309.1 K over 52 kept points of 2
+  laboratories (2 discarded): max |dT| 2.151 K, mean 0.373 K against the
+  acceptance 1 K -> notAccepted. fit_nrtl_start2 lands on the same pair
+  (75.9, 309.1). NOT PROMOTABLE: max |dT| 2.151 K over the 52 kept points
+  is not below 1 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -86,6 +93,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/nButanol-dimethylCarbonate-bubble-je030131q.dat";
                 role     fit;
+                discard  ( 1 2 );   // C283 outliers, by name in the header
             }
         );
 
@@ -131,6 +139,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/nButanol-dimethylCarbonate-bubble-je030131q.dat";
                 role     fit;
+                discard  ( 1 2 );   // C283 outliers, by name in the header
             }
         );
 

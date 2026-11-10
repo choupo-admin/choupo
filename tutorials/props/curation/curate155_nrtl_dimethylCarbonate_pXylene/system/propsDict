@@ -52,11 +52,24 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      6 point(s) of 25: doi 10.1016/j.jct.2019.01.027 row 10: x 0.4007, P
+      101.300 kPa, T 380.65 K, dT -3.06 K; doi 10.1016/j.jct.2019.01.027
+      row 11: x 0.4878, P 101.300 kPa, T 377.25 K, dT -3.26 K; doi
+      10.1021/acs.jced.7b00372 row 7: x 0.4312, P 93.130 kPa, T 369.75 K,
+      dT +3.73 K; doi 10.1021/acs.jced.7b00372 row 8: x 0.2628, P 93.130
+      kPa, T 376.35 K, dT +6.06 K; doi 10.1021/acs.jced.7b00372 row 9: x
+      0.1584, P 93.130 kPa, T 384.79 K, dT +5.54 K; doi
+      10.1021/acs.jced.7b00372 row 10: x 0.0631, P 93.130 kPa, T 396.71
+      K, dT +3.34 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 666.1 K, b_ji = -266.8 K over 19 kept points of 2
+  laboratories (6 discarded): max |dT| 3.093 K, mean 1.497 K against the
+  acceptance 1 K -> notAccepted. fit_nrtl_start2 lands on the same pair
+  (666.1, -266.8). NOT PROMOTABLE: max |dT| 3.093 K over the 19 kept
+  points is not below 1 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -82,10 +95,12 @@ operations
             {
                 dataset  "constant/archiveExtracts/dimethylCarbonate-pXylene-bubble-j.jct.2019.01.027.dat";
                 role     fit;
+                discard  ( 10 11 );   // C283 outliers, by name in the header
             }
             {
                 dataset  "constant/archiveExtracts/dimethylCarbonate-pXylene-bubble-acs.jced.7b00372.dat";
                 role     fit;
+                discard  ( 7 8 9 10 );   // C283 outliers, by name in the header
             }
         );
 
@@ -127,10 +142,12 @@ operations
             {
                 dataset  "constant/archiveExtracts/dimethylCarbonate-pXylene-bubble-j.jct.2019.01.027.dat";
                 role     fit;
+                discard  ( 10 11 );   // C283 outliers, by name in the header
             }
             {
                 dataset  "constant/archiveExtracts/dimethylCarbonate-pXylene-bubble-acs.jced.7b00372.dat";
                 role     fit;
+                discard  ( 7 8 9 10 );   // C283 outliers, by name in the header
             }
         );
 

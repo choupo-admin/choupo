@@ -1,0 +1,137 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      2Methyl1Propanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-nNDimethylformamide.b_ij  311.540655998;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-nNDimethylformamide.b_ji  -366.485972318;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "8c3a9d6877242515";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methyl1Propanol-nNDimethylformamide-bubble-j.fluid.2006.08.018.dat";
+            doi       "10.1016/j.fluid.2006.08.018";
+            sha256    "efd075a1a7973909792b56e5f48979fc69b4de7609c3c07c261b8ab7be59e044";
+            provenance measured;
+            archiveFile "j.fluid.2006.08.018.xml";
+            system    "2Methyl1Propanol + nNDimethylformamide";
+            pressure  "95500.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methyl1Propanol-nNDimethylformamide-bubble-j.fluid.2005.03.014.dat";
+            doi       "10.1016/j.fluid.2005.03.014";
+            sha256    "f84756a5bf562e4d953f894e39cd860626ffd864af890e9733349d917e934c5f";
+            provenance measured;
+            archiveFile "j.fluid.2005.03.014.xml";
+            system    "2Methyl1Propanol + nNDimethylformamide";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0512; max 0.9502; n 37; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-nNDimethylformamide.b_ij  336.293711035;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-nNDimethylformamide.b_ji  -381.422400408;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "8c3a9d6877242515";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methyl1Propanol-nNDimethylformamide-bubble-j.fluid.2006.08.018.dat";
+            doi       "10.1016/j.fluid.2006.08.018";
+            sha256    "efd075a1a7973909792b56e5f48979fc69b4de7609c3c07c261b8ab7be59e044";
+            provenance measured;
+            archiveFile "j.fluid.2006.08.018.xml";
+            system    "2Methyl1Propanol + nNDimethylformamide";
+            pressure  "95500.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methyl1Propanol-nNDimethylformamide-bubble-j.fluid.2005.03.014.dat";
+            doi       "10.1016/j.fluid.2005.03.014";
+            sha256    "f84756a5bf562e4d953f894e39cd860626ffd864af890e9733349d917e934c5f";
+            provenance measured;
+            archiveFile "j.fluid.2005.03.014.xml";
+            system    "2Methyl1Propanol + nNDimethylformamide";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0512; max 0.9502; n 37; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

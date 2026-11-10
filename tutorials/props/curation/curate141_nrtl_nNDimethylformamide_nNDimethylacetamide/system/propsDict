@@ -52,11 +52,37 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      15 point(s) of 34: doi 10.1016/j.fluid.2008.07.018 row 2: x 0.8445,
+      P 95.500 kPa, T 419.85 K, dT +3.75 K; doi
+      10.1016/j.fluid.2008.07.018 row 3: x 0.7835, P 95.500 kPa, T 419.15
+      K, dT +4.76 K; doi 10.1016/j.fluid.2008.07.018 row 4: x 0.7307, P
+      95.500 kPa, T 418.65 K, dT +5.58 K; doi 10.1016/j.fluid.2008.07.018
+      row 5: x 0.6847, P 95.500 kPa, T 418.25 K, dT +6.29 K; doi
+      10.1016/j.fluid.2008.07.018 row 6: x 0.6441, P 95.500 kPa, T 417.95
+      K, dT +6.89 K; doi 10.1016/j.fluid.2008.07.018 row 7: x 0.6071, P
+      95.500 kPa, T 417.75 K, dT +7.39 K; doi 10.1016/j.fluid.2008.07.018
+      row 8: x 0.5468, P 95.500 kPa, T 417.45 K, dT +8.22 K; doi
+      10.1016/j.fluid.2008.07.018 row 9: x 0.5175, P 95.500 kPa, T 417.25
+      K, dT +8.71 K; doi 10.1016/j.fluid.2008.07.018 row 10: x 0.4841, P
+      95.500 kPa, T 417.05 K, dT +9.26 K; doi 10.1016/j.fluid.2008.07.018
+      row 11: x 0.4457, P 95.500 kPa, T 416.95 K, dT +9.79 K; doi
+      10.1016/j.fluid.2008.07.018 row 12: x 0.4012, P 95.500 kPa, T
+      416.75 K, dT +10.54 K; doi 10.1016/j.fluid.2008.07.018 row 13: x
+      0.3489, P 95.500 kPa, T 416.55 K, dT +11.46 K; doi
+      10.1016/j.fluid.2008.07.018 row 14: x 0.2867, P 95.500 kPa, T
+      416.35 K, dT +12.64 K; doi 10.1016/j.fluid.2008.07.018 row 15: x
+      0.2114, P 95.500 kPa, T 416.15 K, dT +14.27 K; doi
+      10.1016/j.fluid.2008.07.018 row 16: x 0.1182, P 95.500 kPa, T
+      415.85 K, dT +16.83 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 742.2 K, b_ji = -361.3 K over 19 kept points of 2
+  laboratories (15 discarded): max |dT| 1.437 K, mean 0.862 K against the
+  acceptance 1 K -> notAccepted. fit_nrtl_start2 lands on the same pair
+  (742.2, -361.3). NOT PROMOTABLE: max |dT| 1.437 K over the 19 kept
+  points is not below 1 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -86,6 +112,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/nNDimethylformamide-nNDimethylacetamide-bubble-j.fluid.2008.07.018.dat";
                 role     fit;
+                discard  ( 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 );   // C283 outliers, by name in the header
             }
         );
 
@@ -131,6 +158,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/nNDimethylformamide-nNDimethylacetamide-bubble-j.fluid.2008.07.018.dat";
                 role     fit;
+                discard  ( 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 );   // C283 outliers, by name in the header
             }
         );
 

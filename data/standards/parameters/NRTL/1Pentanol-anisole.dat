@@ -1,0 +1,130 @@
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- 1Pentanol(i) + anisole(j)
+
+  REGRESSED BY CHOUPO'S CURATION PIPELINE (bin/choupo-curate, DEV.md 4c C282;
+  record docs/design/binary-pairs-from-open-measurements.md) to measured
+  bubble temperatures.  The articles named under `evidence` are the
+  SOURCE of the measurements; the NIST/TRC ThermoML Archive located them.
+  NO MEASURED POINT IS IN THIS RECORD OR THIS TREE: the case regenerates
+  them from the DOIs and sha256 sums it declares (constant/archiveDatasets).
+  The PARAMETERS are Choupo's own work.
+
+  EQUATION: tau_ij = a_ij + b_ij / T [b in K], G_ij = exp(-alpha tau_ij),
+  Renon & Prausnitz direction (src/thermo/activityCoefficient/NRTL.cpp).
+  a_ij = a_ji = 0 and alpha = 0.30 FIXED, not fitted.
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
+  vapour-pressure records for both pure components.
+
+  reviewStatus autoPromoted; humanReviewed false: PROMOTED AUTOMATICALLY by
+  its fitting pipeline (every laboratory fitted, outliers beyond 3 K
+  discarded by name, max |T_model - T| over the kept points below 1 K --
+  DEV.md 4c C283 amended; one liquid across its validity span), and NO
+  HUMAN HAS REVIEWED IT.  The engine says so on every run that reads it.
+  Nothing was held out: the `validation {}` block says so, and the
+  acceptance is the `curation {}` block.  A curator who reads the series
+  back against the articles marks it `reviewStatus reviewed; humanReviewed
+  true;`.  Revert with `bin/choupo-curate revert 1Pentanol-anisole`.
+
+  REPRODUCE: run tutorials/props/curation/curate122_nrtl_1Pentanol_anisole (after `bin/choupo-curate fetch` on it); its fit
+  writes 1Pentanol-anisole.proposal.dat, which bin/curate/check_regressed_pairs.py holds
+  equal to this record.
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i 1Pentanol; j anisole; }
+
+components  ( 1Pentanol  anisole );
+model       NRTL;
+
+parameters
+{
+    i           1Pentanol;
+    j           anisole;
+    a_ij        0.00000000;
+    b_ij        143.64068180;
+    a_ji        0.00000000;
+    b_ji        178.75542362;
+    alpha       0.30000000;
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "tutorials/props/curation/curate122_nrtl_1Pentanol_anisole";
+    reviewStatus  autoPromoted;
+    humanReviewed false;
+    promotedBy    "bin/choupo-curate pair --promote";
+    promotedDate  "2026-11-10";
+    reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+    fitDate       "2026-11-10";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Pentanol-anisole-bubble-je700594n.dat";
+            doi       "10.1021/je700594n";
+            sha256    "7b512b206820a896626fa4fe3bfac6be1fa539588544d4b1f7b0f59a43b30844";
+            provenance measured;
+            archiveFile "je700594n.xml";
+            system    "1Pentanol + anisole";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Pentanol-anisole-bubble-je034189g.dat";
+            doi       "10.1021/je034189g";
+            sha256    "461b5fb8c3a3954232444ec96e9f1d3955834cebe55eaeb73453fa187e3b670a";
+            provenance measured;
+            archiveFile "je034189g.xml";
+            system    "1Pentanol + anisole";
+            pressure  "101320.000000 Pa";
+        }
+    );
+    fingerprint "bcba90c591cc9401";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          193.93535519;
+    rms_K         0.27783532;
+    nDataPoints   68;
+    identifiable  true;
+    maxAbsCorr    0.99631756;
+
+    validity
+    {
+        temperature { min 372.65 K; max 422.80 K; }
+        pressure    { min 26660 Pa; max 101320 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validationRefused;
+
+    heldOut     none;   // every declared dataset carried `role fit`
+
+    acceptance  none;   // no band was declared before the fit, so no
+                        // pass/fail may be read out of the residual above
+}
+
+curation
+{
+    rule            "DEV.md 4c C283 (amended) + C284";
+    evidence        allLaboratories;   // every study fitted, none held out
+    objective       twoStage;
+    outlierLimit    3 K;   // |T_model - T| after the least-squares stage
+    outliersDropped 0;
+    pointsKept      68;
+    noBubblePoint   0;
+    maxAbsError     0.8840 K;
+    meanAbsError    0.1973 K;
+    acceptance      1 K;   // max |T_model - T| over the kept points
+    verdict         accepted;
+}

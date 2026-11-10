@@ -51,11 +51,22 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      5 point(s) of 29: doi 10.1021/je7001336 row 2: x 0.1192, P 94.400
+      kPa, T 395.05 K, dT +3.96 K; doi 10.1021/je7001336 row 3: x 0.2130,
+      P 94.400 kPa, T 383.75 K, dT +4.35 K; doi 10.1021/je7001336 row 4:
+      x 0.3512, P 94.400 kPa, T 373.25 K, dT +3.99 K; doi
+      10.1021/je7001336 row 5: x 0.4036, P 94.400 kPa, T 370.35 K, dT
+      +3.74 K; doi 10.1021/je7001336 row 6: x 0.5199, P 94.400 kPa, T
+      365.25 K, dT +3.07 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 418.3 K, b_ji = -300.5 K over 24 kept points of 2
+  laboratories (5 discarded): max |dT| 2.570 K, mean 1.380 K against the
+  acceptance 1 K -> notAccepted. fit_nrtl_start2 lands on the same pair
+  (418.3, -300.5). NOT PROMOTABLE: max |dT| 2.570 K over the 24 kept
+  points is not below 1 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -85,6 +96,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/2Methyl2Propanol-nNDimethylformamide-bubble-je7001336.dat";
                 role     fit;
+                discard  ( 2 3 4 5 6 );   // C283 outliers, by name in the header
             }
         );
 
@@ -130,6 +142,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/2Methyl2Propanol-nNDimethylformamide-bubble-je7001336.dat";
                 role     fit;
+                discard  ( 2 3 4 5 6 );   // C283 outliers, by name in the header
             }
         );
 

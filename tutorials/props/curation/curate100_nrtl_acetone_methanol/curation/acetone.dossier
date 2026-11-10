@@ -1,0 +1,237 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      acetone;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.b_ij  103.586152881;
+        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.b_ji  112.549705917;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "482058beda317298";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetone-methanol-bubble-je5007373.dat";
+            doi       "10.1021/je5007373";
+            sha256    "79535f504457aabf09e5c9df149e586cf96d04212b422eb7813ac641cdbadfd1";
+            provenance measured;
+            archiveFile "je5007373.xml";
+            system    "acetone + methanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetone-methanol-bubble-j.fluid.2006.09.007.dat";
+            doi       "10.1016/j.fluid.2006.09.007";
+            sha256    "d4601d0e519b650f37ea06b2410d2508cfa49ed4478f0750bd757caa9be18c03";
+            provenance measured;
+            archiveFile "j.fluid.2006.09.007.xml";
+            system    "acetone + methanol";
+            pressure  "100000.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetone-methanol-bubble-je0603170.dat";
+            doi       "10.1021/je0603170";
+            sha256    "3922e66535572b611e70b08d8c1c6e9b640065e32f6ebbbe4acfa7f12271398d";
+            provenance measured;
+            archiveFile "je0603170.xml";
+            system    "acetone + methanol";
+            pressure  "100000.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetone-methanol-bubble-j.fluid.2017.03.014.dat";
+            doi       "10.1016/j.fluid.2017.03.014";
+            sha256    "a4c89e4f7c5200bcfbab6dc436eb169b8098dfcc679b700f36306283e75616ee";
+            provenance measured;
+            archiveFile "j.fluid.2017.03.014.xml";
+            system    "acetone + methanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetone-methanol-bubble-j.fluid.2017.11.035.dat";
+            doi       "10.1016/j.fluid.2017.11.035";
+            sha256    "3de59f3824e25a5583a4fb1bfd35fbb3a66f50f4c1b179697988efe47a023537";
+            provenance measured;
+            archiveFile "j.fluid.2017.11.035.xml";
+            system    "acetone + methanol";
+            pressure  "101000.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetone-methanol-bubble-j.fluid.2014.10.011.dat";
+            doi       "10.1016/j.fluid.2014.10.011";
+            sha256    "aa1b9032227ac9876f1f5b9e3774b050d028d005290353c55dd5de7a07c30c37";
+            provenance measured;
+            archiveFile "j.fluid.2014.10.011.xml";
+            system    "acetone + methanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetone-methanol-bubble-je049688b.dat";
+            doi       "10.1021/je049688b";
+            sha256    "8e1f96a5d0f31e4488639bf19bc96dd3ebbb9f9fd65d03d41ab20f6be37af1ea";
+            provenance measured;
+            archiveFile "je049688b.xml";
+            system    "acetone + methanol";
+            pressure  "101000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.015; max 0.972; n 156; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.b_ij  103.586154136;
+        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.b_ji  112.549704752;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "482058beda317298";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetone-methanol-bubble-je5007373.dat";
+            doi       "10.1021/je5007373";
+            sha256    "79535f504457aabf09e5c9df149e586cf96d04212b422eb7813ac641cdbadfd1";
+            provenance measured;
+            archiveFile "je5007373.xml";
+            system    "acetone + methanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetone-methanol-bubble-j.fluid.2006.09.007.dat";
+            doi       "10.1016/j.fluid.2006.09.007";
+            sha256    "d4601d0e519b650f37ea06b2410d2508cfa49ed4478f0750bd757caa9be18c03";
+            provenance measured;
+            archiveFile "j.fluid.2006.09.007.xml";
+            system    "acetone + methanol";
+            pressure  "100000.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetone-methanol-bubble-je0603170.dat";
+            doi       "10.1021/je0603170";
+            sha256    "3922e66535572b611e70b08d8c1c6e9b640065e32f6ebbbe4acfa7f12271398d";
+            provenance measured;
+            archiveFile "je0603170.xml";
+            system    "acetone + methanol";
+            pressure  "100000.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetone-methanol-bubble-j.fluid.2017.03.014.dat";
+            doi       "10.1016/j.fluid.2017.03.014";
+            sha256    "a4c89e4f7c5200bcfbab6dc436eb169b8098dfcc679b700f36306283e75616ee";
+            provenance measured;
+            archiveFile "j.fluid.2017.03.014.xml";
+            system    "acetone + methanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetone-methanol-bubble-j.fluid.2017.11.035.dat";
+            doi       "10.1016/j.fluid.2017.11.035";
+            sha256    "3de59f3824e25a5583a4fb1bfd35fbb3a66f50f4c1b179697988efe47a023537";
+            provenance measured;
+            archiveFile "j.fluid.2017.11.035.xml";
+            system    "acetone + methanol";
+            pressure  "101000.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetone-methanol-bubble-j.fluid.2014.10.011.dat";
+            doi       "10.1016/j.fluid.2014.10.011";
+            sha256    "aa1b9032227ac9876f1f5b9e3774b050d028d005290353c55dd5de7a07c30c37";
+            provenance measured;
+            archiveFile "j.fluid.2014.10.011.xml";
+            system    "acetone + methanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetone-methanol-bubble-je049688b.dat";
+            doi       "10.1021/je049688b";
+            sha256    "8e1f96a5d0f31e4488639bf19bc96dd3ebbb9f9fd65d03d41ab20f6be37af1ea";
+            provenance measured;
+            archiveFile "je049688b.xml";
+            system    "acetone + methanol";
+            pressure  "101000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.015; max 0.972; n 156; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

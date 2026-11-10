@@ -1,0 +1,142 @@
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- diisopropylEther(i) + isopropanol(j)
+
+  REGRESSED BY CHOUPO'S CURATION PIPELINE (bin/choupo-curate, DEV.md 4c C282;
+  record docs/design/binary-pairs-from-open-measurements.md) to measured
+  bubble temperatures.  The articles named under `evidence` are the
+  SOURCE of the measurements; the NIST/TRC ThermoML Archive located them.
+  NO MEASURED POINT IS IN THIS RECORD OR THIS TREE: the case regenerates
+  them from the DOIs and sha256 sums it declares (constant/archiveDatasets).
+  The PARAMETERS are Choupo's own work.
+
+  EQUATION: tau_ij = a_ij + b_ij / T [b in K], G_ij = exp(-alpha tau_ij),
+  Renon & Prausnitz direction (src/thermo/activityCoefficient/NRTL.cpp).
+  a_ij = a_ji = 0 and alpha = 0.30 FIXED, not fitted.
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
+  vapour-pressure records for both pure components.
+
+  reviewStatus interim: a case-local record, regressed and not read back.  Fitted on EVERY laboratory (C283), so the
+  `validation {}` block below says, truthfully, that nothing
+  was held out; the acceptance is the `curation {}` block.
+  NOT PROMOTABLE: max |dT| 2.337 K over the 126 kept points is not below
+  1 K
+
+  REPRODUCE: run tutorials/props/curation/curate103_nrtl_diisopropylEther_isopropanol (after `bin/choupo-curate fetch` on it); its fit
+  writes diisopropylEther-isopropanol.proposal.dat, which bin/curate/check_regressed_pairs.py holds
+  equal to this record.
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i diisopropylEther; j isopropanol; }
+
+components  ( diisopropylEther  isopropanol );
+model       NRTL;
+
+parameters
+{
+    i           diisopropylEther;
+    j           isopropanol;
+    a_ij        0.00000000;
+    b_ij        250.50308773;
+    a_ji        0.00000000;
+    b_ji        207.59427219;
+    alpha       0.30000000;
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "tutorials/props/curation/curate103_nrtl_diisopropylEther_isopropanol";
+    reviewStatus  interim;
+    reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+    fitDate       "2026-11-10";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diisopropylEther-isopropanol-bubble-j.fluid.2014.09.014.dat";
+            doi       "10.1016/j.fluid.2014.09.014";
+            sha256    "d41cda01c43a3cc76aeaf4a625ed8e978cc642c74d02ad242d7a042b8a1ec367";
+            provenance measured;
+            archiveFile "j.fluid.2014.09.014.xml";
+            system    "diisopropylEther + isopropanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diisopropylEther-isopropanol-bubble-j.fluid.2007.09.014.dat";
+            doi       "10.1016/j.fluid.2007.09.014";
+            sha256    "1a941fcef044b10b910fb6eb431a005076144b4b9414d6581ff49e84e1c6dcdb";
+            provenance measured;
+            archiveFile "j.fluid.2007.09.014.xml";
+            system    "diisopropylEther + isopropanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diisopropylEther-isopropanol-bubble-je300994y.dat";
+            doi       "10.1021/je300994y";
+            sha256    "8c1682c6dd6f8ff2d44ad5b8ab25cc70777931d2f330498695f7f60ee0cc160a";
+            provenance measured;
+            archiveFile "je300994y.xml";
+            system    "diisopropylEther + isopropanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diisopropylEther-isopropanol-bubble-j.jct.2018.11.013.dat";
+            doi       "10.1016/j.jct.2018.11.013";
+            sha256    "41b94834e8edd281aecb470938028a5bb98300047fb3a2b701378f79c20f955c";
+            provenance measured;
+            archiveFile "j.jct.2018.11.013.xml";
+            system    "diisopropylEther + isopropanol";
+            pressure  "101300.000000 Pa";
+        }
+    );
+    fingerprint "55fdc48e7191b791";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          934.64373148;
+    rms_K         0.94280357;
+    nDataPoints   126;
+    identifiable  true;
+    maxAbsCorr    0.98624028;
+
+    validity
+    {
+        temperature { min 307.18 K; max 352.94 K; }
+        pressure    { min 30000 Pa; max 101300 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validationRefused;
+
+    heldOut     none;   // every declared dataset carried `role fit`
+
+    acceptance  none;   // no band was declared before the fit, so no
+                        // pass/fail may be read out of the residual above
+}
+
+curation
+{
+    rule            "DEV.md 4c C283 (amended) + C284";
+    evidence        allLaboratories;   // every study fitted, none held out
+    objective       twoStage;
+    outlierLimit    3 K;   // |T_model - T| after the least-squares stage
+    outliersDropped 10;
+    pointsKept      126;
+    noBubblePoint   0;
+    maxAbsError     2.3372 K;
+    meanAbsError    0.7175 K;
+    acceptance      1 K;   // max |T_model - T| over the kept points
+    verdict         notAccepted;
+}

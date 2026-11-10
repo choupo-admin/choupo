@@ -52,11 +52,17 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      1 point(s) of 74: doi 10.1021/acs.jced.7b00945 row 3: x 0.3170, P
+      100.000 kPa, T 410.95 K, dT -3.01 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 350.0 K, b_ji = -358.9 K over 73 kept points of 3
+  laboratories (1 discarded): max |dT| 2.584 K, mean 0.714 K against the
+  acceptance 1 K -> notAccepted. fit_nrtl_start2 lands on the same pair
+  (350.0, -358.9). NOT PROMOTABLE: max |dT| 2.584 K over the 73 kept
+  points is not below 1 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -82,6 +88,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/water-ethyleneGlycol-bubble-acs.jced.7b00945.dat";
                 role     fit;
+                discard  ( 3 );   // C283 outliers, by name in the header
             }
             {
                 dataset  "constant/archiveExtracts/water-ethyleneGlycol-bubble-je2008704.dat";
@@ -131,6 +138,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/water-ethyleneGlycol-bubble-acs.jced.7b00945.dat";
                 role     fit;
+                discard  ( 3 );   // C283 outliers, by name in the header
             }
             {
                 dataset  "constant/archiveExtracts/water-ethyleneGlycol-bubble-je2008704.dat";

@@ -3311,6 +3311,27 @@ accepts today, and that is a policy call.
 > dropped by name, accepted at max 5 % relative / under 1 K), autoPromoted
 > with humanReviewed false, and reports the counts.
 
+> **C284 RESULT (2026-11-10, cloud general, branch c284-pairs-batch).**
+> `bin/choupo-curate pair` / `pairs --list|--declare|--run|--promote` run
+> under C283 amended and C284 (bin/curate/pairs_c283.py; `--rule c282` keeps
+> the pilot).  Class read from the component records; every usable laboratory
+> fitted (`extract-vle --x-of` now reorients a study reporting the other
+> member, x = 1 - x'); a least-squares stage, points beyond 3 K written into
+> the case as `discard ( rows );` (new optional evidence key, announced,
+> fingerprinted only when declared) and listed by name; twoStage refit;
+> accepted at max |dT| < 1 K on the kept points, carried in the record's
+> `curation {}` block; check_regressed_pairs arm (j) re-derives the discards
+> and holds the block to the run.  COUNTS: 617 archive pairs of two catalogue
+> components; 15 already in the catalogue; 8 refused by class (acetaldehyde x3
+> `role nonvolatile`, 3 supercritical in the data, H3PO4 solid, HNO3 no vapour
+> pressure); 81 wait on C281 (AmbroseWalton); 21 excluded (acetic acid
+> archived, the coordinator's ruling -- four acetic declarations withdrawn,
+> one promotion undone before commit); 60 declared in bulk and fitted
+> (curate100-162): 19 ACCEPTED and PROMOTED autoPromoted (public NRTL pairs
+> 12 -> 31), 41 not accepted (all on max |dT| >= 1 K; 6 of them also split
+> one liquid); 431 in the queue, each with one usable study.  Table and
+> readings: docs/design/binary-pairs-from-open-measurements.md section 10.
+
 > **C283 (Vitor, 2026-11-10, on the vapour-pressure fits that failed their
 > held-out band: "isto nao e ciencia exata ... Por default um erro relativo de
 > 5% chega e sobra! E um erro inferior a 1 grau K tambem!").  THE DEFAULT

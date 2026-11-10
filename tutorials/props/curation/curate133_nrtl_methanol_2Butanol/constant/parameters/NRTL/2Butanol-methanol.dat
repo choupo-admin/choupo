@@ -1,0 +1,124 @@
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- methanol(i) + 2Butanol(j)
+
+  REGRESSED BY CHOUPO'S CURATION PIPELINE (bin/choupo-curate, DEV.md 4c C282;
+  record docs/design/binary-pairs-from-open-measurements.md) to measured
+  bubble temperatures.  The articles named under `evidence` are the
+  SOURCE of the measurements; the NIST/TRC ThermoML Archive located them.
+  NO MEASURED POINT IS IN THIS RECORD OR THIS TREE: the case regenerates
+  them from the DOIs and sha256 sums it declares (constant/archiveDatasets).
+  The PARAMETERS are Choupo's own work.
+
+  EQUATION: tau_ij = a_ij + b_ij / T [b in K], G_ij = exp(-alpha tau_ij),
+  Renon & Prausnitz direction (src/thermo/activityCoefficient/NRTL.cpp).
+  a_ij = a_ji = 0 and alpha = 0.30 FIXED, not fitted.
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
+  vapour-pressure records for both pure components.
+
+  reviewStatus interim: a case-local record, regressed and not read back.  Fitted on EVERY laboratory (C283), so the
+  `validation {}` block below says, truthfully, that nothing
+  was held out; the acceptance is the `curation {}` block.
+  NOT PROMOTABLE: max |dT| 1.087 K over the 40 kept points is not below 1
+  K
+
+  REPRODUCE: run tutorials/props/curation/curate133_nrtl_methanol_2Butanol (after `bin/choupo-curate fetch` on it); its fit
+  writes 2Butanol-methanol.proposal.dat, which bin/curate/check_regressed_pairs.py holds
+  equal to this record.
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i methanol; j 2Butanol; }
+
+components  ( methanol  2Butanol );
+model       NRTL;
+
+parameters
+{
+    i           methanol;
+    j           2Butanol;
+    a_ij        0.00000000;
+    b_ij        149.25467491;
+    a_ji        0.00000000;
+    b_ji        -147.95171669;
+    alpha       0.30000000;
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "tutorials/props/curation/curate133_nrtl_methanol_2Butanol";
+    reviewStatus  interim;
+    reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+    fitDate       "2026-11-10";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-2Butanol-bubble-j.jct.2013.12.021.dat";
+            doi       "10.1016/j.jct.2013.12.021";
+            sha256    "ff7d8a50395b4b907d9a299bb4508a614304b7d903c0307a56d01efc6a650370";
+            provenance measured;
+            archiveFile "j.jct.2013.12.021.xml";
+            system    "methanol + 2Butanol";
+            pressure  "101330.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-2Butanol-bubble-acs.jced.8b00499.dat";
+            doi       "10.1021/acs.jced.8b00499";
+            sha256    "7c8ad5774fc5451236ce514876303010a98893ffd65bf223164ceeffbe3d9b78";
+            provenance measured;
+            archiveFile "acs.jced.8b00499.xml";
+            system    "methanol + 2Butanol";
+            pressure  "101300.000000 Pa";
+        }
+    );
+    fingerprint "1008118377732559";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          48.84514240;
+    rms_K         0.34289405;
+    nDataPoints   40;
+    identifiable  false;
+    maxAbsCorr    0.99999996;
+
+    validity
+    {
+        temperature { min 337.95 K; max 368.15 K; }
+        pressure    { min 101300 Pa; max 101330 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validationRefused;
+
+    heldOut     none;   // every declared dataset carried `role fit`
+
+    acceptance  none;   // no band was declared before the fit, so no
+                        // pass/fail may be read out of the residual above
+}
+
+curation
+{
+    rule            "DEV.md 4c C283 (amended) + C284";
+    evidence        allLaboratories;   // every study fitted, none held out
+    objective       twoStage;
+    outlierLimit    3 K;   // |T_model - T| after the least-squares stage
+    outliersDropped 0;
+    pointsKept      40;
+    noBubblePoint   0;
+    maxAbsError     1.0867 K;
+    meanAbsError    0.2336 K;
+    acceptance      1 K;   // max |T_model - T| over the kept points
+    verdict         notAccepted;
+}

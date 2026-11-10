@@ -51,11 +51,19 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      none: every one of the 36 points lies within 3 K after the
+      least-squares stage.
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 243.0 K, b_ji = 22.8 K over 36 kept points of 2
+  laboratories (0 discarded): max |dT| 0.659 K, mean 0.297 K against the
+  acceptance 1 K -> accepted. fit_nrtl_start2 lands on the same pair
+  (243.0, 22.8). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/methanol-methylEthylKetone.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: max |dT| 0.659
+  K < 1 K over the 36 kept points, one liquid across the validity span
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

@@ -52,11 +52,24 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      6 point(s) of 105: doi 10.1021/je400238j row 82: x 0.9542, P 60.000
+      kPa, T 348.36 K, dT +4.14 K; doi 10.1016/j.fluid.2018.07.013 row 1:
+      x 0.9884, P 101.300 kPa, T 390.55 K, dT -4.82 K; doi
+      10.1016/j.fluid.2018.07.013 row 2: x 0.9762, P 101.300 kPa, T
+      385.55 K, dT -8.27 K; doi 10.1016/j.fluid.2018.07.013 row 3: x
+      0.9692, P 101.300 kPa, T 382.15 K, dT -8.44 K; doi
+      10.1016/j.fluid.2018.07.013 row 4: x 0.9498, P 101.300 kPa, T
+      371.55 K, dT -4.90 K; doi 10.1016/j.fluid.2018.07.013 row 5: x
+      0.9413, P 101.300 kPa, T 368.05 K, dT -3.63 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 506.6 K, b_ji = 442.1 K over 99 kept points of 2
+  laboratories (6 discarded): max |dT| 3.047 K, mean 0.745 K against the
+  acceptance 1 K -> notAccepted. fit_nrtl_start2 lands on the same pair
+  (506.6, 442.1). NOT PROMOTABLE: max |dT| 3.047 K over the 99 kept
+  points is not below 1 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -82,10 +95,12 @@ operations
             {
                 dataset  "constant/archiveExtracts/nOctane-ethanol-bubble-je400238j.dat";
                 role     fit;
+                discard  ( 82 );   // C283 outliers, by name in the header
             }
             {
                 dataset  "constant/archiveExtracts/nOctane-ethanol-bubble-j.fluid.2018.07.013.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 );   // C283 outliers, by name in the header
             }
         );
 
@@ -127,10 +142,12 @@ operations
             {
                 dataset  "constant/archiveExtracts/nOctane-ethanol-bubble-je400238j.dat";
                 role     fit;
+                discard  ( 82 );   // C283 outliers, by name in the header
             }
             {
                 dataset  "constant/archiveExtracts/nOctane-ethanol-bubble-j.fluid.2018.07.013.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 );   // C283 outliers, by name in the header
             }
         );
 

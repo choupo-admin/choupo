@@ -51,11 +51,41 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      19 point(s) of 60: doi 10.1021/je030117d row 1: x 0.0101, P 101.325
+      kPa, T 363.95 K, dT +6.11 K; doi 10.1021/je030117d row 2: x 0.0163,
+      P 101.325 kPa, T 358.95 K, dT +9.80 K; doi 10.1021/je030117d row 3:
+      x 0.0255, P 101.325 kPa, T 355.79 K, dT +10.64 K; doi
+      10.1021/je030117d row 4: x 0.0295, P 101.325 kPa, T 353.00 K, dT
+      +12.30 K; doi 10.1021/je030117d row 5: x 0.0400, P 101.325 kPa, T
+      349.38 K, dT +12.73 K; doi 10.1021/je030117d row 6: x 0.0543, P
+      101.325 kPa, T 344.78 K, dT +12.64 K; doi 10.1021/je030117d row 7:
+      x 0.0700, P 101.325 kPa, T 340.75 K, dT +11.39 K; doi
+      10.1021/je030117d row 8: x 0.0887, P 101.325 kPa, T 337.55 K, dT
+      +8.51 K; doi 10.1021/je030117d row 9: x 0.1068, P 101.325 kPa, T
+      334.15 K, dT +6.46 K; doi 10.1021/je030117d row 10: x 0.1250, P
+      101.325 kPa, T 331.20 K, dT +4.50 K; doi 10.1021/je030117d row 11:
+      x 0.1371, P 101.325 kPa, T 329.22 K, dT +3.54 K; doi
+      10.1016/j.fluid.2015.05.031 row 1: x 0.0060, P 101.320 kPa, T
+      367.67 K, dT +3.11 K; doi 10.1016/j.fluid.2015.05.031 row 2: x
+      0.0130, P 101.320 kPa, T 363.52 K, dT +5.96 K; doi
+      10.1016/j.fluid.2015.05.031 row 3: x 0.0230, P 101.320 kPa, T
+      358.34 K, dT +8.76 K; doi 10.1016/j.fluid.2015.05.031 row 4: x
+      0.0330, P 101.320 kPa, T 353.86 K, dT +10.41 K; doi
+      10.1016/j.fluid.2015.05.031 row 5: x 0.0420, P 101.320 kPa, T
+      350.79 K, dT +10.68 K; doi 10.1016/j.fluid.2015.05.031 row 6: x
+      0.0620, P 101.320 kPa, T 344.59 K, dT +10.24 K; doi
+      10.1016/j.fluid.2015.05.031 row 7: x 0.0920, P 101.320 kPa, T
+      337.26 K, dT +7.76 K; doi 10.1016/j.fluid.2015.05.031 row 8: x
+      0.1110, P 101.320 kPa, T 332.97 K, dT +6.46 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 710.3 K, b_ji = 158.2 K over 41 kept points of 2
+  laboratories (19 discarded): max |dT| 5.372 K, mean 1.181 K against the
+  acceptance 1 K -> notAccepted. fit_nrtl_start2 lands on the same pair
+  (710.3, 158.2). NOT PROMOTABLE: max |dT| 5.372 K over the 41 kept
+  points is not below 1 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -81,10 +111,12 @@ operations
             {
                 dataset  "constant/archiveExtracts/methylFormate-nHeptane-bubble-je030117d.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 6 7 8 9 10 11 );   // C283 outliers, by name in the header
             }
             {
                 dataset  "constant/archiveExtracts/methylFormate-nHeptane-bubble-j.fluid.2015.05.031.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 6 7 8 );   // C283 outliers, by name in the header
             }
         );
 
@@ -126,10 +158,12 @@ operations
             {
                 dataset  "constant/archiveExtracts/methylFormate-nHeptane-bubble-je030117d.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 6 7 8 9 10 11 );   // C283 outliers, by name in the header
             }
             {
                 dataset  "constant/archiveExtracts/methylFormate-nHeptane-bubble-j.fluid.2015.05.031.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 6 7 8 );   // C283 outliers, by name in the header
             }
         );
 

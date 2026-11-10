@@ -51,11 +51,22 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      5 point(s) of 47: doi 10.1021/je101302p row 5: x 0.0854, P 101.300
+      kPa, T 408.15 K, dT -3.08 K; doi 10.1021/je101302p row 6: x 0.1055,
+      P 101.300 kPa, T 406.55 K, dT -3.18 K; doi 10.1021/je101302p row 7:
+      x 0.1474, P 101.300 kPa, T 404.15 K, dT -3.95 K; doi
+      10.1021/je101302p row 8: x 0.2114, P 101.300 kPa, T 399.45 K, dT
+      -3.34 K; doi 10.1021/je101302p row 9: x 0.2559, P 101.300 kPa, T
+      396.71 K, dT -3.04 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = -384.8 K, b_ji = 632.4 K over 42 kept points of 2
+  laboratories (5 discarded): max |dT| 2.916 K, mean 0.557 K against the
+  acceptance 1 K -> notAccepted. fit_nrtl_start2 lands on the same pair
+  (-384.8, 632.4). NOT PROMOTABLE: max |dT| 2.916 K over the 42 kept
+  points is not below 1 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -85,6 +96,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/1Propanol-propionicAcid-bubble-je101302p.dat";
                 role     fit;
+                discard  ( 5 6 7 8 9 );   // C283 outliers, by name in the header
             }
         );
 
@@ -130,6 +142,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/1Propanol-propionicAcid-bubble-je101302p.dat";
                 role     fit;
+                discard  ( 5 6 7 8 9 );   // C283 outliers, by name in the header
             }
         );
 

@@ -1,0 +1,177 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      acetonitrile;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-methanol.b_ij  351.450556036;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-methanol.b_ji  -20.0515818547;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "bbbe9eec64c2c576";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-methanol-bubble-j.fluid.2018.08.009.dat";
+            doi       "10.1016/j.fluid.2018.08.009";
+            sha256    "81899196e15a4ee4622f443aa983636a215e5cb860e7e3fcb5e5d8edcdd831b8";
+            provenance measured;
+            archiveFile "j.fluid.2018.08.009.xml";
+            system    "acetonitrile + methanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-methanol-bubble-acs.jced.5b00796.dat";
+            doi       "10.1021/acs.jced.5b00796";
+            sha256    "dc72e7585c0d97de54ad97529963dccb6cfaf69cd94622cbe4d30c3bdf368478";
+            provenance measured;
+            archiveFile "acs.jced.5b00796.xml";
+            system    "acetonitrile + methanol";
+            pressure  "101320.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-methanol-bubble-j.jct.2016.05.011.dat";
+            doi       "10.1016/j.jct.2016.05.011";
+            sha256    "f784f031b2ff87e3e3033753568ee52ad0953bd8de44ebd5ece08e7c937d8859";
+            provenance measured;
+            archiveFile "j.jct.2016.05.011.xml";
+            system    "acetonitrile + methanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-methanol-bubble-j.fluid.2012.12.003.dat";
+            doi       "10.1016/j.fluid.2012.12.003";
+            sha256    "b684fe66f9eccc75253eb910e6cbfdc7cc241bc943f6a82105408eb8d9ba7dc2";
+            provenance measured;
+            archiveFile "j.fluid.2012.12.003.xml";
+            system    "acetonitrile + methanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.005; max 0.958; n 51; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-methanol.b_ij  351.450557583;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-methanol.b_ji  -20.0515826932;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "bbbe9eec64c2c576";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-methanol-bubble-j.fluid.2018.08.009.dat";
+            doi       "10.1016/j.fluid.2018.08.009";
+            sha256    "81899196e15a4ee4622f443aa983636a215e5cb860e7e3fcb5e5d8edcdd831b8";
+            provenance measured;
+            archiveFile "j.fluid.2018.08.009.xml";
+            system    "acetonitrile + methanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-methanol-bubble-acs.jced.5b00796.dat";
+            doi       "10.1021/acs.jced.5b00796";
+            sha256    "dc72e7585c0d97de54ad97529963dccb6cfaf69cd94622cbe4d30c3bdf368478";
+            provenance measured;
+            archiveFile "acs.jced.5b00796.xml";
+            system    "acetonitrile + methanol";
+            pressure  "101320.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-methanol-bubble-j.jct.2016.05.011.dat";
+            doi       "10.1016/j.jct.2016.05.011";
+            sha256    "f784f031b2ff87e3e3033753568ee52ad0953bd8de44ebd5ece08e7c937d8859";
+            provenance measured;
+            archiveFile "j.jct.2016.05.011.xml";
+            system    "acetonitrile + methanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-methanol-bubble-j.fluid.2012.12.003.dat";
+            doi       "10.1016/j.fluid.2012.12.003";
+            sha256    "b684fe66f9eccc75253eb910e6cbfdc7cc241bc943f6a82105408eb8d9ba7dc2";
+            provenance measured;
+            archiveFile "j.fluid.2012.12.003.xml";
+            system    "acetonitrile + methanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.005; max 0.958; n 51; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);
