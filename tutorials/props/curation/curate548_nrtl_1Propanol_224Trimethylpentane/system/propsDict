@@ -52,11 +52,22 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      1 point(s) of 22: doi 10.1021/je200279q row 1: x 0.0475, T 318.15
+      K, P 9.000 kPa, dP/P +92.0 %
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 299.8 K, b_ji = 505.1 K over 21 kept points of 1
+  block(s), 1 laboratory(ies), 1 temperature(s) (1 discarded): max |dP|/P
+  2.41 %, mean 0.87 %, graded clean -> accepted. fit_nrtl_start2 lands on
+  the same pair (299.8, 505.1). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/1Propanol-224Trimethylpentane.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: fit grade
+  clean -- max |dP|/P 2.41 % over the 21 kept points (limits 5 / 10 / 20
+  %), one liquid across the validity span SINGLE TEMPERATURE: b/T was
+  fitted at one temperature; its extrapolation is untested. SINGLE
+  LABORATORY: one article's data, nothing to cross-check it.
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these temperatures in this
@@ -82,6 +93,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/1Propanol-224Trimethylpentane-bubbleP-je200279q-b6.dat";
                 role     fit;
+                discard  ( 1 );   // C291 outliers, by name in the header
             }
         );
 
@@ -122,6 +134,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/1Propanol-224Trimethylpentane-bubbleP-je200279q-b6.dat";
                 role     fit;
+                discard  ( 1 );   // C291 outliers, by name in the header
             }
         );
 
@@ -144,5 +157,17 @@ operations
         {
             parity     parity_start2.csv;
         }
+    }
+    {
+        name        txy_nrtl;
+        type        propertyScan1D;
+        vary        { variable x[1Propanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 20.66 kPa;  composition { 1Propanol 0.5;  224Trimethylpentane 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_1Propanol );
+        output      { file txy_nrtl.csv; }
     }
 );

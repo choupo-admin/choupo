@@ -1,0 +1,115 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      diisopropylEther;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-1Propanol.b_ij  275.693665823;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-1Propanol.b_ji  109.277323331;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "57499844fa366f8f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diisopropylEther-1Propanol-bubbleP-j.fluid.2005.11.014-b3.dat";
+            doi       "10.1016/j.fluid.2005.11.014";
+            sha256    "53353a15c05af54b0c02000f5ec5341942b11fcd2549f51cdb888dbb1aae3b79";
+            provenance measured;
+            archiveFile "j.fluid.2005.11.014.xml";
+            system    "diisopropylEther + 1Propanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.051; max 0.9555; n 22; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-1Propanol.b_ij  275.694008898;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-1Propanol.b_ji  109.276920189;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "57499844fa366f8f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diisopropylEther-1Propanol-bubbleP-j.fluid.2005.11.014-b3.dat";
+            doi       "10.1016/j.fluid.2005.11.014";
+            sha256    "53353a15c05af54b0c02000f5ec5341942b11fcd2549f51cdb888dbb1aae3b79";
+            provenance measured;
+            archiveFile "j.fluid.2005.11.014.xml";
+            system    "diisopropylEther + 1Propanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.051; max 0.9555; n 22; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

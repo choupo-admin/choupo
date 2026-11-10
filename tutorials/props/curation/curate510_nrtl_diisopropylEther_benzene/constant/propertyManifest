@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/benzene.dat"
+        {
+            type          imported;
+            sha256        "af31cf9da05b7d34c657c430cef68abbf0f08db2402827a4867f7a64073225c9";
+            computationalSha256 "b8a586d23e8f38eb0b5c0f9534f7057eb2d4059de464edbdc18995094fdca93e";
+            origin        "data/standards/components/benzene.dat";
+            originSha256  "77d7604645ff3a28b34d91023e497586af35fa74849c914378f858666a2b900e";
+            release       Choupo-2608;
+        }
+        "components/diisopropylEther.dat"
+        {
+            type          imported;
+            sha256        "6b45fb87942cba6849ea2f42f7d6cb49d4528e835d1f21c29048fceeccea86b4";
+            computationalSha256 "53efee790e5c19c8bd17869b2bec4c3ecdca58f454a09607bb2e61f9a19009e9";
+            origin        "data/standards/components/diisopropylEther.dat";
+            originSha256  "357def78c8c89b1216f62ddb46f352dc2af6f86a1b4c487cc88100d809302b51";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/benzene-diisopropylEther.dat"
+        {
+            type          imported;
+            sha256        "5c5b7a1f09e21c92f78adc1dba02ca53141146d746061d75b3185888c01e2583";
+            computationalSha256 "74620c218a52ecc8e611e8cf1da186d51ba32dee48220d2ab05043649f551254";
+            origin        "data/standards/parameters/NRTL/benzene-diisopropylEther.dat";
+            originSha256  "232820aae13d740429ff36240ac36a97a8c77dcee77174961c95e48db200bc93";
+            release       Choupo-2608;
+        }
+    }
+}

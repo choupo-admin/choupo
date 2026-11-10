@@ -55,11 +55,22 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      none: every one of the 26 points lies within 20 % after the
+      least-squares stage.
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 316.1 K, b_ji = 23.8 K over 26 kept points of 1
+  block(s), 1 laboratory(ies), 1 temperature(s) (0 discarded): max |dP|/P
+  0.78 %, mean 0.54 %, graded clean -> accepted. fit_nrtl_start2 lands on
+  the same pair (316.1, 23.8). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/diisopropylEther-nButanol.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: fit grade
+  clean -- max |dP|/P 0.78 % over the 26 kept points (limits 5 / 10 / 20
+  %), one liquid across the validity span SINGLE TEMPERATURE: b/T was
+  fitted at one temperature; its extrapolation is untested. SINGLE
+  LABORATORY: one article's data, nothing to cross-check it.
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these temperatures in this
@@ -147,5 +158,17 @@ operations
         {
             parity     parity_start2.csv;
         }
+    }
+    {
+        name        txy_nrtl;
+        type        propertyScan1D;
+        vary        { variable x[diisopropylEther];  from 0.0;  to 1.0;  n 101; }
+        state       { P 26.052 kPa;  composition { diisopropylEther 0.5;  nButanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_diisopropylEther );
+        output      { file txy_nrtl.csv; }
     }
 );

@@ -630,7 +630,8 @@ def curation_block(verdict, n_kept, n_drop, mx, mean, nan, grade, one_liquid, nT
             f'    rule            "{RULE}";\n'
             f"    evidence        allLaboratories;   // every block fitted, none held out\n"
             f"    objective       twoStage;\n"
-            f"    residual        P_bubble relative;   // (P_model - P)/P at each point's stated T\n"
+            f"    residual        P_bubble;\n"
+            f"    residualScale   relative;   // (P_model - P)/P at each point's stated T\n"
             f"    outlierLimit_pct {OUTLIER_PCT:g};   // |P_model - P|/P after the least-squares stage\n"
             f"    outliersDropped {n_drop};\n"
             f"    pointsKept      {n_kept};\n"
@@ -646,6 +647,49 @@ def curation_block(verdict, n_kept, n_drop, mx, mean, nan, grade, one_liquid, nT
             f"    singleTemperature {'true' if nT == 1 else 'false'};   // true: b/T was fitted at ONE temperature\n"
             f"    singleLaboratory  {'true' if nL == 1 else 'false'};   // true: ONE laboratory's data, nothing to cross-check it\n"
             f"    verdict         {verdict};\n}}\n")
+
+
+def readback_op(c1, c2, P_kPa):
+    """The pair AS THE CASE'S OWN RECORD (or the catalogue's, once promoted):
+    a T-x scan at a pressure inside the data, thermo `model NRTL` with no
+    inline pair.  It is what loads the record through the pair loader (so the
+    engine voices autoPromoted and a warning / severe grade) -- the fit ops
+    run on the inline starting pair.  Appended by the run, after the fits."""
+    return f"""    {{
+        name        txy_nrtl;
+        type        propertyScan1D;
+        vary        {{ variable x[{c1}];  from 0.0;  to 1.0;  n 101; }}
+        state       {{ P {P_kPa:g} kPa;  composition {{ {c1} 0.5;  {c2} 0.5; }} }}
+        thermo
+        {{
+            equilibrium {{ liquid {{ activityModel {{ model NRTL; /* no inline pair: the case's own record */ }} }} }}
+        }}
+        properties  ( T_bubble  y_eq_{c1} );
+        output      {{ file txy_nrtl.csv; }}
+    }}
+"""
+
+
+def readback_P(case):
+    """A pressure inside the data: the median measured pressure of the case's
+    largest dataset, kPa."""
+    best = None
+    for d in cc.parse_decl(case) or []:
+        ds = read_dataset(case / d["file"])
+        if best is None or ds["n"] > best["n"]:
+            best = ds
+    v = sorted(best["P_kPa_list"])
+    return v[len(v) // 2]
+
+
+def append_readback(case, c1, c2):
+    pd = case / "system" / "propsDict"
+    t = pd.read_text()
+    if "name        txy_nrtl;" in t:
+        return False
+    k = t.rindex(");")
+    pd.write_text(t[:k] + readback_op(c1, c2, readback_P(case)) + t[k:])
+    return True
 
 
 def run(case, pl):
@@ -670,7 +714,7 @@ def run(case, pl):
         f"none: every one of the {len(rows)} points lies within {OUTLIER_PCT:g} % after the least-squares stage."
     pd = case / "system" / "propsDict"
     new = props_text(pl, case.name, stem, discards=found, outlier_txt=otxt)
-    if pc.normalise(new) != pc.normalise(pd.read_text()):
+    if normalise(new) != normalise(pd.read_text()):
         refuse(f"{case.name}: the declaration on disk differs from the one the rules give "
                "-- a declaration is never rewritten after it was committed")
     pd.write_text(new)
@@ -715,6 +759,7 @@ def run(case, pl):
     rp = case / "constant" / "parameters" / "NRTL" / f"{stem}.dat"
     rp.parent.mkdir(parents=True, exist_ok=True)
     rp.write_text(rec)
+    append_readback(case, c1, c2)
     cc.seal(case)
     rc, out, js = cc.run_props(case)
     if rc != 0:
@@ -824,6 +869,13 @@ def promote(a, b):
 # --------------------------------------------------------------------------
 #  the command line
 # --------------------------------------------------------------------------
+def normalise(t):
+    """pairs_c283.normalise, and the read-back op the run appends is not part
+    of the declaration either."""
+    t = pc.normalise(t)
+    return re.sub(r"    \{\n        name        txy_nrtl;.*?\n    \}\n", "", t, flags=re.S)
+
+
 def main(argv):
     import argparse
     ap = argparse.ArgumentParser(prog="pairs_px")
@@ -838,6 +890,8 @@ def main(argv):
     r = sp.add_parser("run")
     r.add_argument("--only", nargs="*")
     r.add_argument("--json")
+    rb = sp.add_parser("readback")
+    rb.add_argument("--only", nargs="*")
     p = sp.add_parser("promote")
     p.add_argument("--only", nargs="*")
     a = ap.parse_args(argv)
@@ -883,6 +937,15 @@ def main(argv):
         if a.json:
             Path(a.json).write_text(json.dumps(out, indent=1))
         return 0
+    if a.cmd == "readback":
+        for case, x, y, num in px_cases():
+            if a.only and str(num) not in a.only:
+                continue
+            if append_readback(case, x, y):
+                cc.seal(case)
+                rc, o, js = cc.run_props(case)
+                cc.say(f"[{case.name}] read-back op appended; sealed case exit {rc}")
+        return 0
     cases = px_cases()
     if a.only:
         want = {int(v) for v in a.only}
@@ -898,7 +961,7 @@ def main(argv):
                     rec["outcome"] = "ran already"
                 else:
                     pl = plan(x, y, PMAX_KPA, work)
-                    if pc.normalise((case / cc.DECL).read_text()) != pc.normalise(
+                    if normalise((case / cc.DECL).read_text()) != normalise(
                             decl_text(pl, case.relative_to(ROOT).as_posix())):
                         refuse(f"{case.name}'s dataset declaration differs from the one the rules give now")
                     for s in pl["studies"]:
@@ -932,7 +995,7 @@ def main(argv):
               + (f"  {rec['verdict']} grade {rec['grade']} max {rec['max']:.2f} %"
                  f"{' SPLITS' if rec.get('split') else ''}" if "verdict" in rec else ""), flush=True)
         out.append(rec)
-        if a.json:
+        if getattr(a, "json", None):
             Path(a.json).write_text(json.dumps(out, indent=1, default=str))
     return 0
 

@@ -53,11 +53,20 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      none: every one of the 38 points lies within 20 % after the
+      least-squares stage.
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 43.2 K, b_ji = 567.1 K over 38 kept points of 2
+  block(s), 2 laboratory(ies), 2 temperature(s) (0 discarded): max |dP|/P
+  2.61 %, mean 1.13 %, graded clean -> accepted. fit_nrtl_start2 lands on
+  the same pair (43.2, 567.1). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/nButanol-toluene.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade clean -- max
+  |dP|/P 2.61 % over the 38 kept points (limits 5 / 10 / 20 %), one
+  liquid across the validity span
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these temperatures in this
@@ -153,5 +162,17 @@ operations
         {
             parity     parity_start2.csv;
         }
+    }
+    {
+        name        txy_nrtl;
+        type        propertyScan1D;
+        vary        { variable x[nButanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 7.786 kPa;  composition { nButanol 0.5;  toluene 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_nButanol );
+        output      { file txy_nrtl.csv; }
     }
 );

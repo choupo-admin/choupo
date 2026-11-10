@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/1Hexene.dat"
+        {
+            type          imported;
+            sha256        "f3f6034e2b70cdd43e4cb310f98078980f8bb43a1f29ba10550002e16efddb79";
+            computationalSha256 "4bb3257c1ee9df2672cd685a9d6064728e3775327be2f9c7993aefac1d89ad26";
+            origin        "data/standards/components/1Hexene.dat";
+            originSha256  "5512ce3cac416444fb8400aa7b92dd95e1dd0b55037227404c5729c5304892ee";
+            release       Choupo-2608;
+        }
+        "components/diNButylEther.dat"
+        {
+            type          imported;
+            sha256        "520f34bcf4b2cc40b800bf56197b0bf3e46b2d3595820e8ae5bd3109e51992f7";
+            computationalSha256 "347e70ac545721e0773f566a1a104896e643893d1b7a02119a01e1be0faf0585";
+            origin        "data/standards/components/diNButylEther.dat";
+            originSha256  "67cbc82448b0e10b7f1128add532b91c5697f0711a0e16ee17e0570b0b1ba731";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1Hexene-diNButylEther.dat"
+        {
+            type          imported;
+            sha256        "cccdd347fb31a511c147e2a1837487694c8425d8a8cf1f59e3be148772bc07f5";
+            computationalSha256 "4b8ed834aa0b17a6e53457f84e946a1d94cef3e0ea1aa987772cb02f6e5d673d";
+            origin        "data/standards/parameters/NRTL/1Hexene-diNButylEther.dat";
+            originSha256  "6289ceef927d570777a0c9df63dda96c19505c60892e319352a384e6d0bea403";
+            release       Choupo-2608;
+        }
+    }
+}

@@ -1,0 +1,115 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      tertButylEthylEther;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-nHeptane.b_ij  543.568510717;
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-nHeptane.b_ji  -294.802510619;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1962c00b74016193";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/tertButylEthylEther-nHeptane-bubbleP-je0602115-b3.dat";
+            doi       "10.1021/je0602115";
+            sha256    "e6eee84cb361b42d6436453158c10f621ec2b02a5177cd1641dcfef311875b7d";
+            provenance measured;
+            archiveFile "je0602115.xml";
+            system    "tertButylEthylEther + nHeptane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0525; max 0.9472; n 26; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-nHeptane.b_ij  543.568519795;
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-nHeptane.b_ji  -294.802514681;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1962c00b74016193";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/tertButylEthylEther-nHeptane-bubbleP-je0602115-b3.dat";
+            doi       "10.1021/je0602115";
+            sha256    "e6eee84cb361b42d6436453158c10f621ec2b02a5177cd1641dcfef311875b7d";
+            provenance measured;
+            archiveFile "je0602115.xml";
+            system    "tertButylEthylEther + nHeptane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0525; max 0.9472; n 26; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

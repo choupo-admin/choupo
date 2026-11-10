@@ -54,11 +54,20 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      none: every one of the 59 points lies within 20 % after the
+      least-squares stage.
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = -24.7 K, b_ji = -223.6 K over 59 kept points of 2
+  block(s), 2 laboratory(ies), 2 temperature(s) (0 discarded): max |dP|/P
+  2.74 %, mean 1.14 %, graded clean -> accepted. fit_nrtl_start2 lands on
+  the same pair (-24.7, -223.6). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/ethanol-nNDimethylacetamide.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: fit grade
+  clean -- max |dP|/P 2.74 % over the 59 kept points (limits 5 / 10 / 20
+  %), one liquid across the validity span
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these temperatures in this
@@ -154,5 +163,17 @@ operations
         {
             parity     parity_start2.csv;
         }
+    }
+    {
+        name        txy_nrtl;
+        type        propertyScan1D;
+        vary        { variable x[ethanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 61.07 kPa;  composition { ethanol 0.5;  nNDimethylacetamide 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_ethanol );
+        output      { file txy_nrtl.csv; }
     }
 );

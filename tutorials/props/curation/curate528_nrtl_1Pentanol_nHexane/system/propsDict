@@ -52,11 +52,22 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      none: every one of the 24 points lies within 20 % after the
+      least-squares stage.
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 53.2 K, b_ji = 660.4 K over 24 kept points of 1
+  block(s), 1 laboratory(ies), 1 temperature(s) (0 discarded): max |dP|/P
+  2.64 %, mean 1.61 %, graded clean -> accepted. fit_nrtl_start2 lands on
+  the same pair (53.2, 660.4). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/1Pentanol-nHexane.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade clean -- max
+  |dP|/P 2.64 % over the 24 kept points (limits 5 / 10 / 20 %), one
+  liquid across the validity span SINGLE TEMPERATURE: b/T was fitted at
+  one temperature; its extrapolation is untested. SINGLE LABORATORY: one
+  article's data, nothing to cross-check it.
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these temperatures in this
@@ -144,5 +155,17 @@ operations
         {
             parity     parity_start2.csv;
         }
+    }
+    {
+        name        txy_nrtl;
+        type        propertyScan1D;
+        vary        { variable x[1Pentanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 31.431 kPa;  composition { 1Pentanol 0.5;  nHexane 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_1Pentanol );
+        output      { file txy_nrtl.csv; }
     }
 );

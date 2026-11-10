@@ -55,11 +55,20 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      1 point(s) of 38: doi 10.1016/j.jct.2004.01.001 row 14: x 0.0211, T
+      308.15 K, P 4.030 kPa, dP/P -21.1 %
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 466.3 K, b_ji = 115.3 K over 37 kept points of 2
+  block(s), 2 laboratory(ies), 2 temperature(s) (1 discarded): max |dP|/P
+  11.25 %, mean 4.93 %, graded severe -> accepted. fit_nrtl_start2 lands
+  on the same pair (466.3, 115.3). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/benzene-nButanol.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade severe -- max
+  |dP|/P 11.25 % over the 37 kept points (limits 5 / 10 / 20 %), one
+  liquid across the validity span
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these temperatures in this
@@ -89,6 +98,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/benzene-nButanol-bubbleP-j.jct.2004.01.001-b18.dat";
                 role     fit;
+                discard  ( 14 );   // C291 outliers, by name in the header
             }
         );
 
@@ -133,6 +143,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/benzene-nButanol-bubbleP-j.jct.2004.01.001-b18.dat";
                 role     fit;
+                discard  ( 14 );   // C291 outliers, by name in the header
             }
         );
 
@@ -155,5 +166,17 @@ operations
         {
             parity     parity_start2.csv;
         }
+    }
+    {
+        name        txy_nrtl;
+        type        propertyScan1D;
+        vary        { variable x[benzene];  from 0.0;  to 1.0;  n 101; }
+        state       { P 20.402 kPa;  composition { benzene 0.5;  nButanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_benzene );
+        output      { file txy_nrtl.csv; }
     }
 );

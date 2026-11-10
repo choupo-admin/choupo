@@ -53,11 +53,20 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      none: every one of the 25 points lies within 20 % after the
+      least-squares stage.
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 385.6 K, b_ji = 189.0 K over 25 kept points of 2
+  block(s), 2 laboratory(ies), 2 temperature(s) (0 discarded): max |dP|/P
+  1.61 %, mean 0.84 %, graded clean -> accepted. fit_nrtl_start2 lands on
+  the same pair (385.6, 189.0). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/diethylSulfide-ethanol.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: fit grade
+  clean -- max |dP|/P 1.61 % over the 25 kept points (limits 5 / 10 / 20
+  %), one liquid across the validity span
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these temperatures in this
@@ -153,5 +162,17 @@ operations
         {
             parity     parity_start2.csv;
         }
+    }
+    {
+        name        txy_nrtl;
+        type        propertyScan1D;
+        vary        { variable x[diethylSulfide];  from 0.0;  to 1.0;  n 101; }
+        state       { P 82.5 kPa;  composition { diethylSulfide 0.5;  ethanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_diethylSulfide );
+        output      { file txy_nrtl.csv; }
     }
 );

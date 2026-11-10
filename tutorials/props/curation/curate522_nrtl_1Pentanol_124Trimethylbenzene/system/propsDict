@@ -52,11 +52,27 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      2 point(s) of 24: doi 10.1016/j.fluid.2017.12.031 row 1: x 0.0500,
+      T 313.15 K, P 1.076 kPa, the model finds no bubble pressure; doi
+      10.1016/j.fluid.2017.12.031 row 2: x 0.0997, T 313.15 K, P 1.107
+      kPa, the model finds no bubble pressure
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = -324.9 K, b_ji = 1982.0 K over 22 kept points of 1
+  block(s), 1 laboratory(ies), 1 temperature(s) (2 discarded): max |dP|/P
+  8.89 %, mean 5.20 %, graded warning -> accepted. fit_nrtl_start2 lands
+  on the same pair (-324.8, 1982.8). NOT PROMOTABLE (fit grade warning,
+  max |dP|/P 8.89 %): the pair splits ONE liquid inside its own validity
+  span (check_regressed_pairs arm f) -- predicts a LIQUID-LIQUID SPLIT at
+  313.15 K (x_1Pentanol 0.003 .. 0.323), inside its own validity span
+  313.15-313.15 K -- its evidence is bubble temperatures of ONE liquid,
+  which a bubble scan cannot contradict; a pair that splits that liquid
+  stays in its case, not the catalogue (or it DECLARES `liquidLiquid
+  true;` with tie-line evidence and a gap band) SINGLE TEMPERATURE: b/T
+  was fitted at one temperature; its extrapolation is untested. SINGLE
+  LABORATORY: one article's data, nothing to cross-check it.
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these temperatures in this
@@ -82,6 +98,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/1Pentanol-124Trimethylbenzene-bubbleP-j.fluid.2017.12.031-b10.dat";
                 role     fit;
+                discard  ( 1 2 );   // C291 outliers, by name in the header
             }
         );
 
@@ -122,6 +139,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/1Pentanol-124Trimethylbenzene-bubbleP-j.fluid.2017.12.031-b10.dat";
                 role     fit;
+                discard  ( 1 2 );   // C291 outliers, by name in the header
             }
         );
 
@@ -144,5 +162,17 @@ operations
         {
             parity     parity_start2.csv;
         }
+    }
+    {
+        name        txy_nrtl;
+        type        propertyScan1D;
+        vary        { variable x[1Pentanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 1.168 kPa;  composition { 1Pentanol 0.5;  124Trimethylbenzene 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_1Pentanol );
+        output      { file txy_nrtl.csv; }
     }
 );

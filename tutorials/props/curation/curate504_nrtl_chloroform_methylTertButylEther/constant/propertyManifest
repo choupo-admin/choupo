@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/chloroform.dat"
+        {
+            type          imported;
+            sha256        "6be151f882172f8d5ae6500892038a926c189af1b420ff62488a78b9170d482e";
+            computationalSha256 "4b74a318b869383610da3b090af40078ce9b35bf42168fa8fc990acc7b277eee";
+            origin        "data/standards/components/chloroform.dat";
+            originSha256  "ce6cc1f0babb4e035ae33118d8a4876d3a0bb9954605ed196ff04e41545c0458";
+            release       Choupo-2608;
+        }
+        "components/methylTertButylEther.dat"
+        {
+            type          imported;
+            sha256        "3ab4fc9f9327983ed432deddaaf6061975e40ac5921def969bbda74ee79584d8";
+            computationalSha256 "b1298108ed625d2ded4bbb653cacef55bab384b4f0fbcebe9718c8c3de5d157a";
+            origin        "data/standards/components/methylTertButylEther.dat";
+            originSha256  "956b9c6cdfcb9eeaa8430150111c3743638477d7171c7b4271a1881802b0f0d5";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/chloroform-methylTertButylEther.dat"
+        {
+            type          imported;
+            sha256        "61944d0b5e5012cdbe41dd7f41de3b168e4f993f70a9f3be57bea5527bb0307b";
+            computationalSha256 "165de4e2be05c8e48b29f835295647cc99852b0f152d97cd4dca61b3fe80d653";
+            origin        "data/standards/parameters/NRTL/chloroform-methylTertButylEther.dat";
+            originSha256  "22d89b4067d19d0bb6a82b85b56b41a435da92997c513d83810bf1bdd15017b6";
+            release       Choupo-2608;
+        }
+    }
+}

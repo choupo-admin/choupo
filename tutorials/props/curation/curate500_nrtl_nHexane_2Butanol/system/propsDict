@@ -65,11 +65,54 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      26 point(s) of 84: doi 10.1016/j.fluid.2011.08.009 row 1: x 0.9998,
+      T 329.22 K, P 15.310 kPa, dP/P +336.6 %; doi
+      10.1016/j.fluid.2011.08.009 row 2: x 0.9989, T 329.22 K, P 15.520
+      kPa, dP/P +330.6 %; doi 10.1016/j.fluid.2011.08.009 row 3: x
+      0.9981, T 329.22 K, P 15.840 kPa, dP/P +321.8 %; doi
+      10.1016/j.fluid.2011.08.009 row 4: x 0.9971, T 329.22 K, P 16.160
+      kPa, dP/P +313.3 %; doi 10.1016/j.fluid.2011.08.009 row 5: x
+      0.9927, T 329.22 K, P 17.580 kPa, dP/P +279.3 %; doi
+      10.1016/j.fluid.2011.08.009 row 6: x 0.9882, T 329.22 K, P 18.670
+      kPa, dP/P +256.7 %; doi 10.1016/j.fluid.2011.08.009 row 7: x
+      0.9703, T 329.22 K, P 22.750 kPa, dP/P +190.9 %; doi
+      10.1016/j.fluid.2011.08.009 row 8: x 0.9511, T 329.22 K, P 26.080
+      kPa, dP/P +152.0 %; doi 10.1016/j.fluid.2011.08.009 row 9: x
+      0.9315, T 329.22 K, P 28.760 kPa, dP/P +126.9 %; doi
+      10.1016/j.fluid.2011.08.009 row 10: x 0.8927, T 329.22 K, P 34.810
+      kPa, dP/P +84.7 %; doi 10.1016/j.fluid.2011.08.009 row 11: x
+      0.8518, T 329.22 K, P 40.950 kPa, dP/P +54.5 %; doi
+      10.1016/j.fluid.2011.08.009 row 12: x 0.7938, T 329.22 K, P 47.170
+      kPa, dP/P +31.0 %; doi 10.1016/j.fluid.2011.08.009 row 17: x
+      0.3991, T 329.22 K, P 66.120 kPa, dP/P -21.2 %; doi
+      10.1016/j.fluid.2011.08.009 row 18: x 0.3937, T 329.22 K, P 65.560
+      kPa, dP/P -20.7 %; doi 10.1016/j.fluid.2011.08.009 row 19: x
+      0.2868, T 329.22 K, P 67.400 kPa, dP/P -27.2 %; doi
+      10.1016/j.fluid.2011.08.009 row 20: x 0.1853, T 329.22 K, P 68.400
+      kPa, dP/P -34.4 %; doi 10.1016/j.fluid.2011.08.009 row 21: x
+      0.0996, T 329.22 K, P 68.830 kPa, dP/P -45.5 %; doi
+      10.1016/j.fluid.2011.08.009 row 22: x 0.0306, T 329.22 K, P 67.960
+      kPa, dP/P -63.4 %; doi 10.1016/j.fluid.2011.08.009 row 23: x
+      0.0199, T 329.22 K, P 67.460 kPa, dP/P -67.6 %; doi
+      10.1016/j.fluid.2011.08.009 row 24: x 0.0084, T 329.22 K, P 66.580
+      kPa, dP/P -72.6 %; doi 10.1016/j.fluid.2011.08.009 row 25: x
+      0.0048, T 329.22 K, P 66.100 kPa, dP/P -74.3 %; doi
+      10.1016/j.fluid.2011.08.009 row 26: x 0.0016, T 329.22 K, P 65.670
+      kPa, dP/P -75.9 %; doi 10.1016/j.fluid.2011.08.009: 22 of its 26
+      points lie beyond 20 % (more than half): the WHOLE study is
+      discarded
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 736.5 K, b_ji = 38.9 K over 58 kept points of 2
+  block(s), 2 laboratory(ies), 2 temperature(s) (26 discarded): max
+  |dP|/P 4.90 %, mean 3.17 %, graded clean -> accepted. fit_nrtl_start2
+  lands on the same pair (736.5, 38.9). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/2Butanol-nHexane.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade clean -- max
+  |dP|/P 4.90 % over the 58 kept points (limits 5 / 10 / 20 %), one
+  liquid across the validity span
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these temperatures in this
@@ -99,6 +142,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/nHexane-2Butanol-bubbleP-j.fluid.2011.08.009-b6.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 );   // C291 outliers, by name in the header
             }
         );
 
@@ -143,6 +187,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/nHexane-2Butanol-bubbleP-j.fluid.2011.08.009-b6.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 );   // C291 outliers, by name in the header
             }
         );
 
@@ -165,5 +210,17 @@ operations
         {
             parity     parity_start2.csv;
         }
+    }
+    {
+        name        txy_nrtl;
+        type        propertyScan1D;
+        vary        { variable x[nHexane];  from 0.0;  to 1.0;  n 101; }
+        state       { P 56.79 kPa;  composition { nHexane 0.5;  2Butanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_nHexane );
+        output      { file txy_nrtl.csv; }
     }
 );
