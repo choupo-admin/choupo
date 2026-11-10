@@ -164,7 +164,7 @@ export const BENCHES: { readonly [B in BenchId]: Bench } = {
       { file: FS, unit: "gibbsC", from: "P          50 bar;", to: "P          1 bar;" },
     ],
     about: "the Gibbs reactor gibbsC of the methanol-route screen, whose feed is "
-      + "already 2 CH4 + O2 at 525 K, made ADIABATIC (no heat in or out; the "
+      + "already 2 CH4 + O2 at 525 K, made adiabatic (no heat in or out; the "
       + "engine finds the outlet temperature) at 1 bar.",
   },
   shift: {
@@ -505,7 +505,7 @@ export const MOVES: { readonly [P in SyngasPart]: readonly SyngasMove[] } = {
     { ...SMR, id: "smr-hot", label: "hotter: 1200 K",
       edits: [{ ...RH, from: "T          1000.0 K;", to: "T          1200 K;" }],
       expect: "At 1200 K the methane is all but gone (1.000 converted), the duty rises to "
-        + "71.75 kW, and H2/CO FALLS to 4.52: the shift, which releases heat, retreats in "
+        + "71.75 kW, and H2/CO falls to 4.52: the shift, which releases heat, retreats in "
         + "the hotter gas.  The module stays at 3.000.",
       quotes: [q(0, "X_CH4", 1), q(0, "Q_kW", 71.75), q(0, "H2_CO", 4.52), q(0, "M", 3)] },
     { ...SMR, id: "smr-lean", label: "less steam: S/C 2",

@@ -513,7 +513,7 @@ export function ApproachToEquilibriumTool(): JSX.Element {
                 <Group gap="sm" wrap="nowrap" align="center" mb={6}>
                   <Loader size="xs" />
                   <Text size="xs" c="dimmed">
-                    two Gibbs minimisations — seconds, not instant
+                    two Gibbs minimisations — seconds, not instantly
                   </Text>
                 </Group>
               )}

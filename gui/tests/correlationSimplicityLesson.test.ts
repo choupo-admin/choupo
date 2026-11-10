@@ -283,7 +283,7 @@ describe("correlation-simplicity: the lesson text", () => {
   };
   it("Churchill's blend is taught as an interpolation, never as the physics of the band", () => {
     const t13 = stepText(13);
-    expect(t13).toMatch(/INTERPOLATION/);
+    expect(t13).toMatch(/interpolation/);
     expect(t13).toMatch(/continuous in Re/);
     expect(t13).toMatch(/not a model of the transition/);
     expect(t13).not.toMatch(/for the whole range/);

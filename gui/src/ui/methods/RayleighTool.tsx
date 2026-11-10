@@ -791,7 +791,7 @@ export function RayleighTool(): JSX.Element {
             <Group gap={6} wrap="nowrap" align="center">
               <Loader size="xs" />
               <Text size="xs" c="dimmed">
-                re-integrating the still — seconds, not instant
+                re-integrating the still — seconds, not instantly
               </Text>
             </Group>
           )}
@@ -872,7 +872,7 @@ export function RayleighTool(): JSX.Element {
             <Group gap="sm" wrap="nowrap" align="center">
               <Loader size="sm" />
               <Text size="sm" c="dimmed">
-                the engine is integrating the still — seconds, not instant
+                the engine is integrating the still — seconds, not instantly
               </Text>
             </Group>
           ) : (
@@ -944,7 +944,7 @@ export function RayleighTool(): JSX.Element {
         <Tooltip withArrow multiline w={420}
           label={"ln(W0/W) is a logarithm of the ratio of the engine's own "
             + "first and last pot holdups (W = Σ n_i over the trajectory's "
-            + "mole columns) — the RIGOROUS side, integrated by the engine's "
+            + "mole columns) — the rigorous side, integrated by the engine's "
             + "RK4 with a bubble-point y* at every stage."}>
           <Badge variant="light" color="cyan" tt="none"
             styles={{ root: { cursor: "help" } }}>
@@ -952,10 +952,10 @@ export function RayleighTool(): JSX.Element {
           </Badge>
         </Tooltip>
         <Tooltip withArrow multiline w={420}
-          label={"The GRAPHICAL side: trapezoids over the engine's own "
+          label={"The graphical side: trapezoids over the engine's own "
             + `y*(x) points (${CURVE_POINTS}-point sweep), integrated in `
-            + "view between the run's own x_W(t_end) and x_0 — the one "
-            + "authorized geometric computation this tool owns.  null means "
+            + "view between the run's own x_W(t_end) and x_0 — the one geometric "
+            + "computation this page does itself.  null means "
             + "the window is not covered by finite integrand points."}>
           <Badge variant="light" color="orange" tt="none"
             styles={{ root: { cursor: "help" } }}>
@@ -964,7 +964,7 @@ export function RayleighTool(): JSX.Element {
         </Tooltip>
         {relDev !== null && (
           <Tooltip withArrow multiline w={440}
-            label={"Both sides model the SAME chemistry — the witness "
+            label={"Both sides model the same chemistry — the witness "
               + "declares ideal Raoult (γ = 1) and its vapour leaves at "
               + "y*(x) of the pot, and the sweep declares the same package "
               + "at the same P — so this gap measures the graphical "
@@ -1036,7 +1036,7 @@ export function RayleighTool(): JSX.Element {
 
       {/* The pedagogy line, stated rather than implied. */}
       <Text size="xs" c="dimmed" px={12} pb={6} style={{ flexShrink: 0 }}>
-        The shaded area ∫ dx/(y*(x) − x) over [x_W, x_0] IS ln(W0/W) in the
+        The shaded area ∫ dx/(y*(x) − x) over [x_W, x_0] is ln(W0/W) in the
         classical graphical Rayleigh method — integrated in view from the
         engine&apos;s equilibrium curve (trapezoids over its published
         points).  W and x are display arithmetic on the trajectory&apos;s own

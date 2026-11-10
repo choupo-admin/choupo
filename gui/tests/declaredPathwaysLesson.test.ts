@@ -63,8 +63,8 @@ describe("the declared-pathways lesson", () => {
 
   it("sets SPECIES against REACTIONS, the two questions of step 1", () => {
     const s = all(1);
-    expect(s).toContain("A Gibbs reactor is told SPECIES");
-    expect(s).toContain("An equilibrium reactor is told REACTIONS");
+    expect(s).toContain("A Gibbs reactor is told species");
+    expect(s).toContain("An equilibrium reactor is told reactions");
     const f = prose(step(1).formula!);
     expect(f).toContain(String.raw`A\,n = b`);
     expect(f).toContain(String.raw`n = n_0 + \nu^{\top}\xi`);
@@ -86,7 +86,7 @@ describe("the declared-pathways lesson", () => {
       /name\s+declared;[\s\S]*?reactions\s*\(([^)]*)\)/);
     expect(declared?.[1]?.trim().split(/\s+/)).toEqual(
       [...DECLARED_REACTIONS]);
-    expect(all(3)).toContain("leaves METHANATION off its list");
+    expect(all(3)).toContain("leaves methanation off its list");
     //  and the three library entries it names exist, balanced as the header
     //  says (C, H, O by atom count).
     for (const r of ["methanolSynthesis", "waterGasShift", "methanation"])
@@ -101,18 +101,18 @@ describe("the declared-pathways lesson", () => {
   });
 
   it("states the bound: the declared answer is a CONSTRAINED minimum", () => {
-    expect(all(3)).toContain("CONSTRAINED minimum of the same G");
+    expect(all(3)).toContain("constrained minimum of the same G");
     expect(prose(step(3).formula!)).toContain(String.raw`\ge`);
   });
 
   it("gives the approach its per-reaction sign, and says which way it runs", () => {
     const s = all(4);
-    expect(s).toContain("MAGNITUDE");
-    expect(s).toContain("the ENGINE assigns the direction to each declared "
+    expect(s).toContain("magnitude");
+    expect(s).toContain("the engine assigns the direction to each declared "
       + "reaction separately");
-    expect(s).toContain("runs BACKWARD");
+    expect(s).toContain("runs backward");
     expect(s).toContain("TemperatureApproach.H:87");
-    expect(s).toContain("READ PER REACTION, NOT JOINTLY");
+    expect(s).toContain("Read per reaction, not jointly");
   });
 
   it("gives every equation a where-list", () => {

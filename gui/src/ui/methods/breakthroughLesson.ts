@@ -51,7 +51,7 @@ export const BREAKTHROUGH_STEPS: readonly LessonStep[] = [
       + "absorber, an extractor: you draw one operating point and the plant "
       + "sits on it.  A fixed bed never does.  Feed enters clean solid, the "
       + "solid fills up, and what leaves the outlet changes with the clock — "
-      + "so the answer is not a point but a HISTORY, and the number a designer "
+      + "so the answer is not a point but a history, and the number a designer "
       + "acts on is a time.  What the engine integrates is a concentration "
       + "field moving down a bed while the solid underneath it loads.",
     formula: String.raw`\begin{aligned}
@@ -63,40 +63,40 @@ export const BREAKTHROUGH_STEPS: readonly LessonStep[] = [
       { sym: "t", means: "time since the feed was admitted to a clean bed",
         unit: "s" },
       { sym: "q",
-        means: "the ADSORBED loading, per mass of adsorbent; q_i is component i's "
+        means: "the adsorbed loading, per mass of adsorbent; q_i is component i's "
         + "share of it",
         unit: "mol/kg" },
-      { sym: "c_i", means: "concentration of species i in the GAS moving "
+      { sym: "c_i", means: "concentration of species i in the gas moving "
         + "through the bed", unit: "mol/m³" },
-      { sym: "q_i", means: "the LOADING — moles of i held on the solid per "
+      { sym: "q_i", means: "the loading — moles of i held on the solid per "
         + "kilogram of adsorbent.  Per kilogram of the thing that stays "
         + "behind, which is why the bed's inventory is a simple sum",
         unit: "mol/kg" },
-      { sym: "q^*_i", means: "the loading the solid WOULD hold if it were at "
+      { sym: "q^*_i", means: "the loading the solid would hold if it were at "
         + "equilibrium with the gas beside it — the star is equilibrium, not "
         + "an operating value", unit: "mol/kg" },
       { sym: "\\varepsilon",
-        means: "the VOID FRACTION of the bed — the share of its "
+        means: "the void fraction of the bed — the share of its "
         + "volume that is gas, between the particles.  The engine's own line "
         + "prints ρ_p = ρ_b/(1−ε), which is what fixes both meanings" },
-      { sym: "\\rho_b", means: "the BULK density of the packing — kilograms of "
-        + "adsorbent per cubic metre of BED, voids included (not per cubic "
+      { sym: "\\rho_b", means: "the bulk density of the packing — kilograms of "
+        + "adsorbent per cubic metre of bed, voids included (not per cubic "
         + "metre of solid, which is ρ_p)", unit: "kg/m³" },
-      { sym: "u", means: "the SUPERFICIAL velocity — volumetric flow divided "
+      { sym: "u", means: "the superficial velocity — volumetric flow divided "
         + "by the empty tube's cross-section, as if the packing were not "
         + "there.  The gas between the particles actually moves faster, at "
         + "u/ε", unit: "m/s" },
       { sym: "z", means: "distance along the bed from the inlet", unit: "m" },
       { sym: "D_\\mathrm{ax}",
-        means: "the AXIAL DISPERSION coefficient — how much the "
+        means: "the axial dispersion coefficient — how much the "
         + "front smears by mixing along the flow", unit: "m²/s" },
-      { sym: "k_i", means: "the LINEAR DRIVING FORCE coefficient — one "
+      { sym: "k_i", means: "the linear driving force coefficient — one "
         + "declared rate constant standing for the pore, film and crystal "
         + "resistances together", unit: "1/s" },
     ],
     note: "Those two lines are what this unit actually solves — no more.  One "
       + "dimension (axial), a declared mesh of finite volumes, first-order "
-      + "upwind advection, and a LINEAR DRIVING FORCE for the uptake: the "
+      + "upwind advection, and a linear driving force for the uptake: the "
       + "solid chases its own equilibrium loading q* at a rate k, and the "
       + "whole of pore diffusion, film resistance and crystal uptake is "
       + "lumped into that one declared coefficient.",
@@ -106,7 +106,7 @@ export const BREAKTHROUGH_STEPS: readonly LessonStep[] = [
     title: "The mass-transfer zone: a band of half-loaded solid, travelling",
     body: "The solid nearest the inlet saturates first; far downstream it is "
       + "still clean.  Between the two sits a band where the loading runs from "
-      + "full to zero — the MASS-TRANSFER ZONE — and it is the only part of "
+      + "full to zero — the mass-transfer zone — and it is the only part of "
       + "the bed where anything is happening at all.  It forms near the inlet "
       + "and then travels, and it travels far more slowly than the gas, "
       + "because nearly every mole that enters leaves the gas and sits on the "
@@ -118,7 +118,7 @@ u_\mathrm{zone} &= \frac{u}{R_f}\\[4pt]
 t_\mathrm{st} &= \frac{L}{u}\, R_f
 \end{aligned}`,
     where: [
-      { sym: "R_f", means: "the RETENTION FACTOR — the engine's own word, "
+      { sym: "R_f", means: "the retention factor — the engine's own word, "
         + "and its KPI key (`retention_factor_<i>`) — how many times slower "
         + "the concentration front travels than the gas does, because most of "
         + "each molecule's time is spent on the solid" },
@@ -128,15 +128,15 @@ t_\mathrm{st} &= \frac{L}{u}\, R_f
         means: "the speed of the mass-transfer zone through "
         + "the bed — the front, not the gas", unit: "m/s" },
       { sym: "t_\\mathrm{st}",
-        means: "the STOICHIOMETRIC time — when the front would "
+        means: "the stoichiometric time — when the front would "
         + "reach the exit if it were infinitely sharp", unit: "s" },
       { sym: "L", means: "the length of the bed", unit: "m" },
     ],
-    note: "The engine prints all three BEFORE it integrates and publishes R_f "
+    note: "The engine prints all three before it integrates and publishes R_f "
       + "and t_st as KPIs — so the arrival time is a prediction you can check "
       + "against the curve, not a number read off it afterwards.  On the "
       + "classroom witness R_f ≈ 304, and it is measured against the "
-      + "SUPERFICIAL velocity: L/u = 10 s of empty-tube transit against a "
+      + "superficial velocity: L/u = 10 s of empty-tube transit against a "
       + "front that needs about 3040 s.  The gas actually moving between the "
       + "particles is faster — u/ε = 0.125 m/s, 4 s across the bed — so "
       + "against the real gas the lag is R_f/ε.  That is exactly why R_f "
@@ -150,7 +150,7 @@ t_\mathrm{st} &= \frac{L}{u}\, R_f
       + "clean — from outside, a bed half spent looks exactly like a fresh "
       + "one.  The outlet lifts when the zone's leading edge arrives and "
       + "reaches the feed value when its trailing edge has left.  So the "
-      + "S-shaped curve is a picture of the ZONE itself, redrawn in time at "
+      + "S-shaped curve is a picture of the zone itself, redrawn in time at "
       + "one fixed place: its steepness IS the zone's width, and a bed with a "
       + "zone of zero width would give the square wave the plot draws at t_st "
       + "instead.",
@@ -172,25 +172,25 @@ t_\mathrm{st} &= \frac{L}{u}\, R_f
     n: 4,
     title: "The consequence a designer acts on: the bed is only partly used",
     body: "You cannot run to t_st, because the product is off specification "
-      + "the moment the leading edge arrives.  You switch at BREAKTHROUGH — "
+      + "the moment the leading edge arrives.  You switch at breakthrough — "
       + "t_b, some small chosen fraction of the feed value, 5 % here.  At that "
       + "instant everything upstream of the zone is saturated, everything "
       + "downstream is still clean, and the zone itself is somewhere in "
       + "between: the capacity you bought and did not use is set entirely by "
-      + "how WIDE the zone is.  The usual bookkeeping turns that width into a "
+      + "how wide the zone is.  The usual bookkeeping turns that width into a "
       + "length of bed thrown away at every switch.",
     formula: String.raw`\mathrm{LUB} = L \left( 1 - \frac{t_b}{t_\mathrm{st}} \right) \qquad \text{(length of unused bed)}`,
     where: [
       { sym: "\\mathrm{LUB}",
-        means: "LENGTH OF UNUSED BED — the capacity left unused when "
-        + "you switched, expressed as an EQUIVALENT length of bed.  It is "
+        means: "Length of unused bed — the capacity left unused when "
+        + "you switched, expressed as an equivalent length of bed.  It is "
         + "not a clean slice at the outlet: the unused capacity sits mostly "
         + "inside the partly loaded zone, and this lumps it into one length "
         + "— the price of a front with width",
         unit: "m" },
-      { sym: "t_b", means: "the BREAKTHROUGH time — when the outlet first "
-        + "reaches the concentration you declared unacceptable.  In DESIGN "
-        + "it is a CHOICE and not a property of the bed; in this engine it "
+      { sym: "t_b", means: "the breakthrough time — when the outlet first "
+        + "reaches the concentration you declared unacceptable.  In design "
+        + "it is a choice and not a property of the bed; in this engine it "
         + "is not a knob at all — the unit publishes crossings at a fixed "
         + "5 %, 50 % and 95 % of the feed value, and the 5 % one is what "
         + "this page reads", unit: "s" },
@@ -207,13 +207,13 @@ t_\mathrm{st} &= \frac{L}{u}\, R_f
   {
     n: 5,
     title: "What makes the zone sharp or broad — and why beds work in pairs",
-    body: "Two things fight.  The ISOTHERM decides whether the front sharpens "
-      + "itself: on a FAVOURABLE isotherm — concave and saturating, the "
+    body: "Two things fight.  The isotherm decides whether the front sharpens "
+      + "itself: on a favourable isotherm — concave and saturating, the "
       + "Langmuir shape this case uses — the concentrated part of the wave "
       + "travels faster than the dilute part, so the front keeps steepening "
       + "until dispersion balances it and, given a long enough bed, settles "
       + "into a constant pattern "
-      + "that no longer changes as it travels.  On an UNFAVOURABLE isotherm "
+      + "that no longer changes as it travels.  On an unfavourable isotherm "
       + "the ordering reverses, and the front spreads for the whole length of "
       + "the bed.  Against sharpening work the rate processes, whatever the "
       + "isotherm does: a finite LDF coefficient means the solid cannot keep "
@@ -226,36 +226,36 @@ b(T) &= b(T_\mathrm{ref}) \exp\!\left[ -\frac{\Delta H_\mathrm{ads}}{R} \left( \
 \end{aligned}`,
     where: [
       { sym: "b",
-        means: "the Langmuir AFFINITY, the same quantity as b_i written without its "
+        means: "the Langmuir affinity, the same quantity as b_i written without its "
         + "component index when the temperature law is the subject",
         unit: "1/Pa" },
       { sym: "q_\\mathrm{sat,i}",
         means: "the saturation loading of i — the monolayer "
         + "the Langmuir picture allows", unit: "mol/kg" },
-      { sym: "b_i", means: "the AFFINITY of i for the surface, which falls as "
-        + "the bed warms.  Its pressure basis is DECLARED per record "
+      { sym: "b_i", means: "the affinity of i for the surface, which falls as "
+        + "the bed warms.  Its pressure basis is declared per record "
         + "(`pressureBasis`), not fixed by the engine: CO2 on 13X here is "
-        + "per BAR (b_298 = 9.0)", unit: "1/bar (declared)" },
+        + "per bar (b_298 = 9.0)", unit: "1/bar (declared)" },
       { sym: "p_i", means: "partial pressure of i in the gas, in whatever "
         + "unit that record's `pressureBasis` declares — bar for this one, "
         + "so the witness's own check reads 9 × 0.15",
         unit: "bar (declared)" },
-      { sym: "b_j,\\ p_j", means: "the same two quantities for EVERY OTHER "
+      { sym: "b_j,\\ p_j", means: "the same two quantities for every other "
         + "adsorbing species — the subscript changes, the meaning does not" },
       { sym: "T", means: "the temperature of the bed at that point",
         unit: "K" },
-      { sym: "\\sum_j", means: "a sum over EVERY adsorbing species, including "
+      { sym: "\\sum_j", means: "a sum over every adsorbing species, including "
         + "i itself.  The shared denominator is the competition: what one "
         + "species takes, another cannot have" },
       { sym: "\\Delta H_\\mathrm{ads}",
-        means: "the heat of adsorption, NEGATIVE because "
+        means: "the heat of adsorption, negative because "
         + "adsorption releases heat — which is why a warm bed holds less and "
         + "why a hot purge regenerates one", unit: "J/mol" },
       { sym: "T_\\mathrm{ref}",
         means: "the temperature at which the affinity was "
         + "measured, the anchor the van't Hoff term moves away from",
         unit: "K" },
-      { sym: "R", means: "the gas constant — NOT the reflux ratio a "
+      { sym: "R", means: "the gas constant — not the reflux ratio a "
         + "distillation page calls R, and not the retention factor R_f "
         + "above", unit: "J/(mol·K)" },
     ],
@@ -263,12 +263,12 @@ b(T) &= b(T_\mathrm{ref}) \exp\!\left[ -\frac{\Delta H_\mathrm{ads}}{R} \left( \
       + "rises and a warm bed holds less: raise the temperature knob and the "
       + "front arrives sooner.  That is the lever temperature-swing "
       + "regeneration pulls, and it is why a bed is a batch operation run in "
-      + "PAIRS: one loads while the other is purged, heated or depressurised, "
-      + "so the breakthrough time BOUNDS the loading step: the bed must be "
+      + "pairs: one loads while the other is purged, heated or depressurised, "
+      + "so the breakthrough time bounds the loading step: the bed must be "
       + "switched by t_b, and the regeneration of its partner must finish "
       + "within that interval.  It is not the cycle time itself, but it "
       + "sets how often you switch, how much adsorbent you buy and how much "
-      + "regeneration duty you pay for.  This tool draws ONE loading step from a clean bed.",
+      + "regeneration duty you pay for.  This tool draws one loading step from a clean bed.",
   },
 ];
 
@@ -276,7 +276,7 @@ export const BREAKTHROUGH_LIMITS:
   readonly { id: string; title: string; body: string }[] = [
   {
     id: "isothermal-witness",
-    title: "The classroom bed is DECLARED isothermal, and adsorption is "
+    title: "The classroom bed is declared isothermal, and adsorption is "
       + "exothermic.",
     body: "The witness holds T at 298 K by declaration, so no temperature "
       + "field is computed and none is drawn. A real bed heats where it "
@@ -316,7 +316,7 @@ export const BREAKTHROUGH_LIMITS:
       + "— but no fixed-bed case in the corpus runs two adsorbing species, so "
       + "nothing on this plot exercises it. The roll-up and displacement a "
       + "real multi-component front shows, where a weakly held species is "
-      + "pushed out ahead of a strongly held one and briefly leaves at MORE "
+      + "pushed out ahead of a strongly held one and briefly leaves at more "
       + "than its feed concentration, is not here.",
   },
   {
@@ -332,7 +332,7 @@ export const BREAKTHROUGH_LIMITS:
   },
   {
     id: "mesh",
-    title: "Part of the spreading is the MESH, and the case that measures it "
+    title: "Part of the spreading is the mesh, and the case that measures it "
       + "is a separate one.",
     body: "First-order upwind advection on a declared mesh adds numerical "
       + "dispersion of order u·Δz/2. With the witness's own numbers — u = "

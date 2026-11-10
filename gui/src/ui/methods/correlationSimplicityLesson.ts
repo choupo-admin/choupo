@@ -95,7 +95,7 @@ export const SIMPLICITY_STEPS: readonly LessonStep[] = [
       + "written with a fractional power, and it checks that every group's "
       + "dimensions sum to zero.  With the core density, velocity and "
       + "diameter, the pipe gives the friction factor's group (without its "
-      + "conventional 2), the INVERSE of the Reynolds number -- a group's "
+      + "conventional 2), the inverse of the Reynolds number -- a group's "
       + "inverse is as good a group, as the next step shows -- and the "
       + "relative roughness.  For convection in a pipe, the core "
       + "conductivity, density, viscosity and diameter gives the Nusselt, "
@@ -176,7 +176,7 @@ export const SIMPLICITY_STEPS: readonly LessonStep[] = [
     title: "What it does not give: the shape of the function",
     body: "The theorem says which arguments Phi has.  It says nothing at all "
       + "about Phi itself.  The curve drawn below beside the engine's "
-      + "Colebrook curve is INVENTED -- the engine's own friction factor "
+      + "Colebrook curve is invented -- the engine's own friction factor "
       + "multiplied by a ripple of chosen amplitude and frequency -- and it is "
       + "exactly as admissible to dimensional analysis as the real one: it "
       + "depends on Re and on eps/D and on nothing else.  So is a curve with "
@@ -184,7 +184,7 @@ export const SIMPLICITY_STEPS: readonly LessonStep[] = [
       + "superposed.  Reducing six variables to three groups could, in "
       + "principle, have done nothing but move an arbitrary function from "
       + "one set of arguments to another.  That real correlations are "
-      + "SMOOTH, and over long stretches nearly STRAIGHT on logarithmic axes, "
+      + "smooth, and over long stretches nearly straight on logarithmic axes, "
       + "is a fact about the physics, not about the dimensions -- and the "
       + "next three pages are about where that fact comes from.",
     formula: String.raw`\Phi_\mathrm{w}(\mathrm{Re}) = \Phi(\mathrm{Re})\left[1 + a\,\sin\!\left(2\pi k\,\frac{\ln \mathrm{Re}}{\ln 10}\right)\right]`,
@@ -274,7 +274,7 @@ export const SIMPLICITY_STEPS: readonly LessonStep[] = [
       + "variable y is damped quickly at the rate gamma and is driven by x. "
       + " When gamma is much larger than eps, y relaxes long before x has "
       + "changed, so at every moment y sits where its own equation puts it "
-      + "for the current x: it is SLAVED to x.  Setting dy/dt to zero gives "
+      + "for the current x: it is slaved to x.  Setting dy/dt to zero gives "
       + "y as a function of x, and substituting it leaves one equation in "
       + "the master variable alone.  Two variables have become one, but not "
       + "by dimensional analysis: by the separation of their time scales.  "
@@ -316,7 +316,7 @@ export const SIMPLICITY_STEPS: readonly LessonStep[] = [
       + "slave's, which the reduction throws away.  Move the slider toward "
       + "small gamma/eps: the error of the reduced trajectory grows, and "
       + "below gamma = 8 eps the roots become complex and the full system "
-      + "OVERSHOOTS and oscillates on its way to x* -- a motion a single "
+      + "overshoots and oscillates on its way to x* -- a motion a single "
       + "first-order equation cannot make at all.  The reduction was never "
       + "exact; it was accurate in proportion to the separation of scales.",
     formula: String.raw`\lambda^2 + \gamma\,\lambda + 2\varepsilon\gamma = 0 \;\Rightarrow\; \lambda_{1,2} = \frac{-\gamma \pm \sqrt{\gamma^2 - 8\varepsilon\gamma}}{2} \approx -2\varepsilon,\; -\gamma \quad (\gamma \gg \varepsilon)`,
@@ -345,8 +345,8 @@ export const SIMPLICITY_STEPS: readonly LessonStep[] = [
       + "wall-shear constant of the velocity profile, and 2 % low in the "
       + "large-Pr limit, whose coefficient is 0.339 (Blasius, Boundary layers in fluids with little friction; "
       + "Pohlhausen, Heat exchange between solid bodies and fluids with "
-      + "small friction and small heat conduction).  This is the LAMINAR, "
-      + "EXTERNAL, flat-plate regime, uniform wall temperature, Pr above "
+      + "small friction and small heat conduction).  This is the laminar, "
+      + "external, flat-plate regime, uniform wall temperature, Pr above "
       + "about 0.6, below transition -- and the engine carries no flat-plate "
       + "correlation, so it is told here and not run.  Contrast the turbulent "
       + "pipe: Dittus-Boelter's Nu = 0.023 Re^0.8 Pr^0.4 "
@@ -432,7 +432,7 @@ export const SIMPLICITY_STEPS: readonly LessonStep[] = [
       + "join: raise each asymptote to a power n, add, and take the n-th "
       + "root.  The larger asymptote wins far from the crossover, both count "
       + "near it, and the exponent n sets how sharp the corner is.  The join "
-      + "is an INTERPOLATION.  It makes the answer continuous in Re, which is "
+      + "is an interpolation.  It makes the answer continuous in Re, which is "
       + "what a solver needs when the Reynolds number of a line moves from "
       + "one iteration to the next, and it says nothing about the physics "
       + "between the asymptotes -- the next step is about why there is no "
@@ -467,7 +467,7 @@ export const SIMPLICITY_STEPS: readonly LessonStep[] = [
       + "FrictionFactorCorrelation.cpp:52-53 -- neither asymptote holds, and "
       + "what is missing there is not a better correlation.  Laminar flow in "
       + "a straight pipe is, as far as is known, linearly stable at every Re: "
-      + "a small enough disturbance dies away.  Above a Reynolds number of about 2000 a LARGE enough "
+      + "a small enough disturbance dies away.  Above a Reynolds number of about 2000 a large enough "
       + "disturbance makes it turbulent instead, so whether a given pipe runs "
       + "laminar or turbulent depends on the disturbances it meets -- how the "
       + "fluid entered, how still the supply is, vibration reaching the line, "
@@ -651,7 +651,7 @@ export const SIMPLICITY_LIMITS: readonly LessonLimit[] = [
     body: "The sweeps are the correlations as functions of Re and Pr (and "
       + "eps/D).  Entrance lengths, the wall-to-bulk viscosity correction "
       + "and non-circular ducts are not in them.  Kern's correlation in the "
-      + "Nusselt sweep is a SHELL-side law whose Reynolds number is built on "
+      + "Nusselt sweep is a shell-side law whose Reynolds number is built on "
       + "the crossflow velocity and the equivalent diameter; it is not "
       + "drawn here.",
   },
@@ -680,7 +680,7 @@ export const SIMPLICITY_QUIZ: readonly QuizQuestion[] = [
   {
     id: "shape-of-phi", steps: [4, 5],
     q: "Dimensional analysis has shown that the friction factor depends only "
-      + "on Re and ε/D.  What does it say about the SHAPE of that function?",
+      + "on Re and ε/D.  What does it say about the shape of that function?",
     options: [
       "That it is a power law in Re",
       "That it is smooth, though not necessarily a power law",

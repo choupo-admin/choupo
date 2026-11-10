@@ -298,7 +298,7 @@ R(T) &= (F c_p + \mathrm{UA})\, T - (F c_p T_\mathrm{in} + \mathrm{UA}\, T_\math
       + "any curve is drawn, by the adiabatic rise measured in units of the "
       + "Arrhenius steepness, B = Ea ΔT_ad / (R T_in²): for one first-order "
       + "reaction three crossings need B above 4γ/(γ − 4), with γ = Ea / "
-      + "(R T_in), which is 4 for a very steep law.  Here Ea is 75.3 kJ/mol, "
+      + "(R T_in), a bound that tends to 4 for a very steep law.  Here Ea is 75.3 kJ/mol, "
       + "the engine's ΔT_ad is 57.8 K and T_in is 284.3 K, so B = 6.5 against "
       + "a bound of 4.6.  The esterification the corpus's other CSTRs run is "
       + "nearly thermoneutral (an adiabatic rise of about 11 K), B is about "

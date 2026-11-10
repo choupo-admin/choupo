@@ -786,7 +786,7 @@ export function VanHeerdenTool(): JSX.Element {
             <Group gap={6} wrap="nowrap" align="center">
               <Loader size="xs" />
               <Text size="xs" c="dimmed">
-                re-solving the reactor — seconds, not instant
+                re-solving the reactor — seconds, not instantly
               </Text>
             </Group>
           )}
@@ -861,7 +861,7 @@ export function VanHeerdenTool(): JSX.Element {
                     <Loader size="sm" />
                     <Text size="sm" c="dimmed">
                       the engine is scanning the energy balance — seconds, not
-                      instant
+                      instantly
                     </Text>
                   </Group>
                 ) : (

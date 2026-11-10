@@ -359,7 +359,7 @@ export function StandardStateTool(): JSX.Element {
               </Group>
               {worst && (
                 <Text size="xs" c="dimmed" mt={6}>
-                  Where the two RESIDUALS disagree most: {worst.T} K, {worst.P} bar —
+                  Where the two residuals disagree most: {worst.T} K, {worst.P} bar —
                   engine {fmt(worst.eng / 1000, 3)} against reference{" "}
                   {fmt(worst.ref / 1000, 3)} kJ/mol. The ideal-gas part agrees to a
                   few joules per mole everywhere; the residual is where SRK is a
@@ -415,7 +415,7 @@ export function StandardStateTool(): JSX.Element {
           )}
           <PanelNote>
             Hydrogen is an element, so on the engine&apos;s elements datum its
-            ideal-gas enthalpy is zero at 298.15 K and the number above IS the
+            ideal-gas enthalpy is zero at 298.15 K and the number above is the
             sensible rise. The percentage divides one well-identified difference by
             another; no percentage of a zero-dependent value appears on this page.
           </PanelNote>
