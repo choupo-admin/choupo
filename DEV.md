@@ -3233,7 +3233,12 @@ accepts today, and that is a policy call.
 > hide an uninvestigated gap).  DECIDED: the subcooled reflux stays (measured fact); the
 > declared view gains the minor keys in kg/h beside the table's own closure error, so
 > the screen stops showing a percentage of a number the source cannot resolve.  Physics
-> lever still open and unfitted: a declared stage pressure profile (A2).  OPEN.
+> lever still open and unfitted: a declared stage pressure profile (A2).
+> SCREEN DONE 2026-11-10 (5e9987803): reference `klemolaMinor` and view
+> `table_minor_keys_kgph`; run in the app through WASM and read (16.2 / -14.3 / 0.67 and
+> 54.4 / 125.3 / 74.4 kg/h); screenshot sent to Vitor.  Seen on that screen and not
+> fixed: the declared tables print six significant figures (0.669606) where the source
+> has three.  The pressure-profile lever stays OPEN.
 >
 > **C277 (Vitor, 2026-11-09 night, after C276: "Entao agora reve o resto dos EduTools com
 > calma e faz o mesmo.").**  Every tool in `gui/src/ui/methods/registry.ts` read on the
