@@ -58,11 +58,22 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      none: every one of the 20 points lies within 3 K after the
+      least-squares stage.
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = -205.3 K, b_ji = -362.2 K over 20 kept points of 1
+  laboratories (0 discarded): max |dT| 1.298 K, mean 0.813 K, graded
+  warning (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (-205.3, -362.2). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/nNDimethylformamide-pCresol.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: fit grade
+  warning -- max |dT| 1.298 K over the 20 kept points (limits 1 / 2 / 4
+  K), one liquid across the validity span -- it rests on ONE laboratory's
+  measurements (doi 10.1016/j.fluid.2008.01.020); nothing here tells its
+  systematic error from the model's (DEV.md 4c C290)
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

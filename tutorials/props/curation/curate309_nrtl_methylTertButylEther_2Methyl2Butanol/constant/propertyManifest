@@ -1,0 +1,74 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/2Methyl2Butanol.dat"
+        {
+            type          imported;
+            sha256        "41b67d8503cd462c0f4eaf12658194998edaf79e3e0094fa9121af61c972dce3";
+            computationalSha256 "3522fbb1b1e8180db8f907267733e4ecab249df19c5713bda18a3f5e83202358";
+            origin        "data/standards/components/2Methyl2Butanol.dat";
+            originSha256  "67ef3b27783251b9636818108d8171b2a526a24a49fba0734c5b1a646683202b";
+            release       Choupo-2608;
+        }
+        "components/methylTertButylEther.dat"
+        {
+            type          imported;
+            sha256        "3ab4fc9f9327983ed432deddaaf6061975e40ac5921def969bbda74ee79584d8";
+            computationalSha256 "b1298108ed625d2ded4bbb653cacef55bab384b4f0fbcebe9718c8c3de5d157a";
+            origin        "data/standards/components/methylTertButylEther.dat";
+            originSha256  "956b9c6cdfcb9eeaa8430150111c3743638477d7171c7b4271a1881802b0f0d5";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Methyl2Butanol-methylTertButylEther.dat"
+        {
+            type          imported;
+            sha256        "9927903ad9877cfdf2e4702e93cbd6c07f39d0e7b2465fc9b1c1f264373888e7";
+            computationalSha256 "e8f127a0e4736433cf193e7ee9e04ef9031d59981874ddc855fe7f103a3ce921";
+            origin        "data/standards/parameters/NRTL/2Methyl2Butanol-methylTertButylEther.dat";
+            originSha256  "49af29b7ff2a78712f074ce1ee3a617a13f5b5b0cc9190e0ccc305d9b197d209";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+    }
+}

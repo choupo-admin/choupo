@@ -58,11 +58,22 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      none: every one of the 23 points lies within 3 K after the
+      least-squares stage.
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 159.8 K, b_ji = 165.0 K over 23 kept points of 1
+  laboratories (0 discarded): max |dT| 1.357 K, mean 0.446 K, graded
+  warning (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (159.8, 165.0). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/ethylAcetate-nPentane.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: fit grade
+  warning -- max |dT| 1.357 K over the 23 kept points (limits 1 / 2 / 4
+  K), one liquid across the validity span -- it rests on ONE laboratory's
+  measurements (doi 10.1021/je100832h); nothing here tells its systematic
+  error from the model's (DEV.md 4c C290)
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

@@ -58,11 +58,22 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      none: every one of the 26 points lies within 3 K after the
+      least-squares stage.
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 482.2 K, b_ji = -188.9 K over 26 kept points of 1
+  laboratories (0 discarded): max |dT| 0.499 K, mean 0.292 K, graded
+  clean (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on A
+  DIFFERENT pair (227.0, -0.4). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/1Pentanol-diEthylCarbonate.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: fit grade
+  clean -- max |dT| 0.499 K over the 26 kept points (limits 1 / 2 / 4 K),
+  one liquid across the validity span -- it rests on ONE laboratory's
+  measurements (doi 10.1021/je0201018); nothing here tells its systematic
+  error from the model's (DEV.md 4c C290)
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

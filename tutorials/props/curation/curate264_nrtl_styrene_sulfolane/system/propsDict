@@ -58,11 +58,29 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      7 point(s) of 30: doi 10.1021/je200098d row 1: x 0.0750, P 20.000
+      kPa, T 398.40 K, dT +7.32 K; doi 10.1021/je200098d row 4: x 0.2070,
+      P 5.000 kPa, T 344.30 K, dT -3.58 K; doi 10.1021/je200098d row 6: x
+      0.2070, P 20.000 kPa, T 373.20 K, dT +7.35 K; doi 10.1021/je200098d
+      row 8: x 0.2630, P 20.000 kPa, T 372.50 K, dT +3.96 K; doi
+      10.1021/je200098d row 9: x 0.2640, P 5.000 kPa, T 341.40 K, dT
+      -3.89 K; doi 10.1021/je200098d row 12: x 0.3580, P 5.000 kPa, T
+      338.90 K, dT -4.36 K; doi 10.1021/je200098d row 13: x 0.4590, P
+      5.000 kPa, T 337.10 K, dT -4.00 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 713.2 K, b_ji = 131.1 K over 23 kept points of 1
+  laboratories (7 discarded): max |dT| 3.067 K, mean 1.574 K, graded
+  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (713.2, 131.1). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/styrene-sulfolane.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade severe -- max
+  |dT| 3.067 K over the 23 kept points (limits 1 / 2 / 4 K), one liquid
+  across the validity span -- it rests on ONE laboratory's measurements
+  (doi 10.1021/je200098d); nothing here tells its systematic error from
+  the model's (DEV.md 4c C290)
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -88,6 +106,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/styrene-sulfolane-bubble-je200098d.dat";
                 role     fit;
+                discard  ( 1 4 6 8 9 12 13 );   // C283 outliers, by name in the header
             }
         );
 
@@ -129,6 +148,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/styrene-sulfolane-bubble-je200098d.dat";
                 role     fit;
+                discard  ( 1 4 6 8 9 12 13 );   // C283 outliers, by name in the header
             }
         );
 

@@ -58,11 +58,39 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      10 point(s) of 24: doi 10.1016/j.fluid.2015.05.031 row 1: x 0.0080,
+      P 101.320 kPa, T 413.55 K, dT +4.98 K; doi
+      10.1016/j.fluid.2015.05.031 row 2: x 0.0140, P 101.320 kPa, T
+      405.82 K, dT +8.58 K; doi 10.1016/j.fluid.2015.05.031 row 3: x
+      0.0200, P 101.320 kPa, T 398.05 K, dT +12.22 K; doi
+      10.1016/j.fluid.2015.05.031 row 4: x 0.0260, P 101.320 kPa, T
+      391.05 K, dT +15.11 K; doi 10.1016/j.fluid.2015.05.031 row 5: x
+      0.0410, P 101.320 kPa, T 378.85 K, dT +17.19 K; doi
+      10.1016/j.fluid.2015.05.031 row 6: x 0.0670, P 101.320 kPa, T
+      363.02 K, dT +16.60 K; doi 10.1016/j.fluid.2015.05.031 row 7: x
+      0.1100, P 101.320 kPa, T 345.24 K, dT +12.23 K; doi
+      10.1016/j.fluid.2015.05.031 row 8: x 0.1370, P 101.320 kPa, T
+      337.80 K, dT +9.18 K; doi 10.1016/j.fluid.2015.05.031 row 9: x
+      0.2080, P 101.320 kPa, T 323.99 K, dT +4.73 K; doi
+      10.1016/j.fluid.2015.05.031 row 10: x 0.2540, P 101.320 kPa, T
+      318.40 K, dT +3.12 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 867.8 K, b_ji = 55.0 K over 14 kept points of 1
+  laboratories (10 discarded): max |dT| 3.332 K, mean 1.032 K, graded
+  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (867.8, 55.0). NOT PROMOTABLE (fit grade severe, max |dT|
+  3.332 K): the pair splits ONE liquid inside its own validity span
+  (check_regressed_pairs arm f) -- predicts a LIQUID-LIQUID SPLIT at
+  305.12 K (x_methylFormate 0.515 .. 0.913), inside its own validity span
+  305.12-313.31 K -- its evidence is bubble temperatures of ONE liquid,
+  which a bubble scan cannot contradict; a pair that splits that liquid
+  stays in its case, not the catalogue (or it DECLARES `liquidLiquid
+  true;` with tie-line evidence and a gap band) -- it rests on ONE
+  laboratory's measurements (doi 10.1016/j.fluid.2015.05.031); nothing
+  here tells its systematic error from the model's (DEV.md 4c C290)
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -88,6 +116,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/methylFormate-nNonane-bubble-j.fluid.2015.05.031.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 6 7 8 9 10 );   // C283 outliers, by name in the header
             }
         );
 
@@ -129,6 +158,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/methylFormate-nNonane-bubble-j.fluid.2015.05.031.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 6 7 8 9 10 );   // C283 outliers, by name in the header
             }
         );
 

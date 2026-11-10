@@ -58,11 +58,22 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      none: every one of the 19 points lies within 3 K after the
+      least-squares stage.
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 512.0 K, b_ji = 106.5 K over 19 kept points of 1
+  laboratories (0 discarded): max |dT| 0.693 K, mean 0.187 K, graded
+  clean (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (512.0, 106.5). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/224Trimethylpentane-acetone.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: fit grade
+  clean -- max |dT| 0.693 K over the 19 kept points (limits 1 / 2 / 4 K),
+  one liquid across the validity span -- it rests on ONE laboratory's
+  measurements (doi 10.1016/j.fluid.2005.01.007); nothing here tells its
+  systematic error from the model's (DEV.md 4c C290)
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

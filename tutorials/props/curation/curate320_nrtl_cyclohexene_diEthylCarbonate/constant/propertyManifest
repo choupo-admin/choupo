@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/cyclohexene.dat"
+        {
+            type          imported;
+            sha256        "0f91438afe315eea9a2c909c336166a1e103fb7a04d459b2f2409def340d6630";
+            computationalSha256 "1e8fb94519c7576ae958ab1e3b9d3011f5b3e54b3c29ff0158ddd192454475ce";
+            origin        "data/standards/components/cyclohexene.dat";
+            originSha256  "342747afb1925b35c8c63af9101e6a5f1a47d91884c529a5668ead87427de35d";
+            release       Choupo-2608;
+        }
+        "components/diEthylCarbonate.dat"
+        {
+            type          imported;
+            sha256        "d8297bed82a1e4c68340219492b44b2ebadfbba7475aca72c40a6041306fc5aa";
+            computationalSha256 "8b6426f096215db86e54acf5b49c9e1f191a8537d8473b789e919cf2a04b518c";
+            origin        "data/standards/components/diEthylCarbonate.dat";
+            originSha256  "25a6e822c12684b0de747028ccffc0bb8b01e03ac67152b15f90400b912f7a58";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/cyclohexene-diEthylCarbonate.dat"
+        {
+            type          imported;
+            sha256        "7783aeacbe175982f5f8c2251494c5f49cec273de7412e80ea34fdab641dee92";
+            computationalSha256 "4a82cd1c82ee953023b1bd83014b1961850dc741e9c2ad1e618d60126ecae72b";
+            origin        "data/standards/parameters/NRTL/cyclohexene-diEthylCarbonate.dat";
+            originSha256  "de5d65b1ad311616824da062a18e429bb11d964db07283cdddf3ed2e3b3e91f6";
+            release       Choupo-2608;
+        }
+    }
+}

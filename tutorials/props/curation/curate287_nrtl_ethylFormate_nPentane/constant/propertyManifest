@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/ethylFormate.dat"
+        {
+            type          imported;
+            sha256        "0e2547bb92bc3f10017fc4885e6e39b85bb87975140b8bb9c97487c44d5dceea";
+            computationalSha256 "935ebeec34b034a9bd4d07467d1f329de0c4e931299d1f49eece9caf521f2a39";
+            origin        "data/standards/components/ethylFormate.dat";
+            originSha256  "13533abf560f6d758d68d31587e0099db671c79f4f0e5c6e7061cfa233bb8fb4";
+            release       Choupo-2608;
+        }
+        "components/nPentane.dat"
+        {
+            type          imported;
+            sha256        "0192a7a72e572931b34ed2ca5d716e726212adfcb5589b7d2b1f999eab5f3e76";
+            computationalSha256 "40c410de6d3e844afb5a87474c71f128d20e96400e1536ea9dc041f9c5f28e5d";
+            origin        "data/standards/components/nPentane.dat";
+            originSha256  "e0c83e4f36c30c45a745b592d704a73066cf6b78985aaac90982889a54c6d1f9";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/ethylFormate-nPentane.dat"
+        {
+            type          imported;
+            sha256        "a35ef5508d2be3c9baa09ace34507016ffdebcb0e56d7fce8593b1122081376e";
+            computationalSha256 "a3af6f6cf1e22ea0266befc7511514a2953a4cec861802fb5bb60cf9d555e677";
+            origin        "data/standards/parameters/NRTL/ethylFormate-nPentane.dat";
+            originSha256  "480843ae3cae03f97a86cd689066b72b1047059685007bae50b190c047732841";
+            release       Choupo-2608;
+        }
+    }
+}

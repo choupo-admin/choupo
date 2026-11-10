@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/cumene.dat"
+        {
+            type          imported;
+            sha256        "5763ffde2778cdb5ff38fc349c211e0968f20e6b43170985e05036c248f75ab2";
+            computationalSha256 "9421ee66e28c8a041fdf92e06c2afef534cfeff30c781ee4b3ff218f5dd97e79";
+            origin        "data/standards/components/cumene.dat";
+            originSha256  "9880d3c429c6a7695e717ac0ff1ce82e3105b4962e59880afb15e4d311f9319e";
+            release       Choupo-2608;
+        }
+        "components/vinylAcetate.dat"
+        {
+            type          imported;
+            sha256        "7a01b5fadbca767f032fc05788b2101ff0a4e6e4cb3e67bab970fd05c0d9deb2";
+            computationalSha256 "8c838d5e4f66ad4d5012ac33fa0f579bed652d41f336a7c827eac682534104ba";
+            origin        "data/standards/components/vinylAcetate.dat";
+            originSha256  "cad58598b4ebd8ceeb7af1676f256a8c4c32c3fe41af01b0251b98e014fd3f39";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/cumene-vinylAcetate.dat"
+        {
+            type          imported;
+            sha256        "ae18e9bc69d1ac53c85f355334185c6287c046e5e3064b4b2ac7a91e13630263";
+            computationalSha256 "a67c04fcd9bfe53e51fd55a2ad6dcfdaa2d8933fceda3c3a89f8aa994a576c17";
+            origin        "data/standards/parameters/NRTL/cumene-vinylAcetate.dat";
+            originSha256  "fc11e863b8a7eafe4c506ad7f6166ca47dd977d02c6ca29a2c5daa9930d7baf0";
+            release       Choupo-2608;
+        }
+    }
+}

@@ -1,0 +1,133 @@
+// [imported] origin "data/standards/parameters/NRTL/2Methyl1Propanol-dimethylSulfoxide.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- 2Methyl1Propanol(i) + dimethylSulfoxide(j)
+
+  REGRESSED BY CHOUPO'S CURATION PIPELINE (bin/choupo-curate, DEV.md 4c C282;
+  record docs/design/binary-pairs-from-open-measurements.md) to measured
+  bubble temperatures.  The articles named under `evidence` are the
+  SOURCE of the measurements; the NIST/TRC ThermoML Archive located them.
+  NO MEASURED POINT IS IN THIS RECORD OR THIS TREE: the case regenerates
+  them from the DOIs and sha256 sums it declares (constant/archiveDatasets).
+  The PARAMETERS are Choupo's own work.
+
+  EQUATION: tau_ij = a_ij + b_ij / T [b in K], G_ij = exp(-alpha tau_ij),
+  Renon & Prausnitz direction (src/thermo/activityCoefficient/NRTL.cpp).
+  a_ij = a_ji = 0 and alpha = 0.30 FIXED, not fitted.
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
+  vapour-pressure records for both pure components.
+
+  reviewStatus autoPromoted; humanReviewed false: PROMOTED AUTOMATICALLY by
+  its fitting pipeline (every laboratory fitted, outliers beyond 3 K
+  discarded by name, max |T_model - T| over the kept points GRADED
+  clean / warning / severe at 1 / 2 / 4 K -- DEV.md 4c C283
+  amended, C285, C286; THIS fit: clean, 0.5188 K; one liquid
+  across its validity span), and NO HUMAN HAS REVIEWED IT.  The
+  pair rests on ONE laboratory's measurements (curation
+  `laboratories 1;`, DEV.md 4c C290).  The
+  engine says so on every run that reads it, and voices a warning
+  or a severe grade beside it.
+  Nothing was held out: the `validation {}` block says so, and the
+  acceptance is the `curation {}` block.  A curator who reads the series
+  back against the articles marks it `reviewStatus reviewed; humanReviewed
+  true;`.  Revert with `bin/choupo-curate revert 2Methyl1Propanol-dimethylSulfoxide`.
+
+  REPRODUCE: run tutorials/props/curation/curate307_nrtl_2Methyl1Propanol_dimethylSulfoxide (after `bin/choupo-curate fetch` on it); its fit
+  writes 2Methyl1Propanol-dimethylSulfoxide.proposal.dat, which bin/curate/check_regressed_pairs.py holds
+  equal to this record.
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i 2Methyl1Propanol; j dimethylSulfoxide; }
+
+components  ( 2Methyl1Propanol  dimethylSulfoxide );
+model       NRTL;
+
+parameters
+{
+    i           2Methyl1Propanol;
+    j           dimethylSulfoxide;
+    a_ij        0.00000000;
+    b_ij        61.96289797;
+    a_ji        0.00000000;
+    b_ji        -216.37276834;
+    alpha       0.30000000;
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "tutorials/props/curation/curate307_nrtl_2Methyl1Propanol_dimethylSulfoxide";
+    reviewStatus  autoPromoted;
+    humanReviewed false;
+    fitGrade      clean;   // DEV.md 4c C285 (C286): max |T_model - T| over the kept points, graded 1 / 2 / 4 K
+    fitGradeMaxTemperatureError_K 0.5188;
+    promotedBy    "bin/choupo-curate pair --promote";
+    promotedDate  "2026-11-10";
+    reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+    fitDate       "2026-11-10";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methyl1Propanol-dimethylSulfoxide-bubble-acs.jced.7b00241.dat";
+            doi       "10.1021/acs.jced.7b00241";
+            sha256    "d4970a98abac735a96c0733db4da2b98ca1e61da48c74afb9930e58460b465e6";
+            provenance measured;
+            archiveFile "acs.jced.7b00241.xml";
+            system    "2Methyl1Propanol + dimethylSulfoxide";
+            pressure  "101300.000000 Pa";
+        }
+    );
+    fingerprint "03603c0020121a0e";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          1.08342565;
+    rms_K         0.25592821;
+    nDataPoints   21;
+    identifiable  true;
+    maxAbsCorr    0.99772877;
+
+    validity
+    {
+        temperature { min 383.06 K; max 455.11 K; }
+        pressure    { min 101300 Pa; max 101300 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validationRefused;
+
+    heldOut     none;   // every declared dataset carried `role fit`
+
+    acceptance  none;   // no band was declared before the fit, so no
+                        // pass/fail may be read out of the residual above
+}
+
+curation
+{
+    rule            "DEV.md 4c C283 (amended) + C284, graded by C285 (C286)";
+    evidence        allLaboratories;   // every study fitted, none held out
+    objective       twoStage;
+    outlierLimit    3 K;   // |T_model - T| after the least-squares stage
+    outliersDropped 0;
+    pointsKept      21;
+    noBubblePoint   0;
+    maxAbsError     0.5188 K;
+    meanAbsError    0.1892 K;
+    acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
+    gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
+    grade           clean;
+    oneLiquid       true;   // arm (f) over the validity span; a pair that splits ONE liquid is never promoted, whatever its grade
+    laboratories    1;   // studies with a kept point; the pair rests on ONE laboratory's measurements (DEV.md 4c C290)
+    verdict         accepted;
+}

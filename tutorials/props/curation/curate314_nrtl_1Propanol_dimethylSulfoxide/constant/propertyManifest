@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/1Propanol.dat"
+        {
+            type          imported;
+            sha256        "6f8dab202717440a53ff49356dddaa632b8e71ad54a651d6c4f2513519864916";
+            computationalSha256 "c964d7a44b9335ec39b77584095dac5935998f8ccd1f814a9dbe51801adf4389";
+            origin        "data/standards/components/1Propanol.dat";
+            originSha256  "e576ef637c75dec43096777ad538d23ab32c8828de898339ba9226732172d96f";
+            release       Choupo-2608;
+        }
+        "components/dimethylSulfoxide.dat"
+        {
+            type          imported;
+            sha256        "d0645447457ce82ab3cc1c5c9b24ade9e1a72fd7e63d1f97cb76d3de6edc3843";
+            computationalSha256 "d408f92d38a1dba4d9c8342a49863025a4a67d27900239d913d6f6e8da72f82e";
+            origin        "data/standards/components/dimethylSulfoxide.dat";
+            originSha256  "f96e96de368f808f5f982ca5a1267fd09ae9823c507446568adb26e438fc8583";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1Propanol-dimethylSulfoxide.dat"
+        {
+            type          imported;
+            sha256        "581fe08daa0b29f2771fbb621d5975cd8cf4077737a8f4b913b2a14b1f147a35";
+            computationalSha256 "0356899d192aa5ce082b12cd37c54403de89a3e880ea9deb561760cd88bc2e6b";
+            origin        "data/standards/parameters/NRTL/1Propanol-dimethylSulfoxide.dat";
+            originSha256  "38b44fad65b2b3f03508bc81790aefcf99b232aeace221881f85f449d2906f44";
+            release       Choupo-2608;
+        }
+    }
+}

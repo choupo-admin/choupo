@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/diEthylCarbonate.dat"
+        {
+            type          imported;
+            sha256        "d8297bed82a1e4c68340219492b44b2ebadfbba7475aca72c40a6041306fc5aa";
+            computationalSha256 "8b6426f096215db86e54acf5b49c9e1f191a8537d8473b789e919cf2a04b518c";
+            origin        "data/standards/components/diEthylCarbonate.dat";
+            originSha256  "25a6e822c12684b0de747028ccffc0bb8b01e03ac67152b15f90400b912f7a58";
+            release       Choupo-2608;
+        }
+        "components/methylEthylKetone.dat"
+        {
+            type          imported;
+            sha256        "586be099c39ea991906a44b6e4174465bc5e616d454876c74d82213df9047df8";
+            computationalSha256 "9482c1f6a07785e2c4edc34219616f07e0c69837a8d3d2343ead92c064a412cb";
+            origin        "data/standards/components/methylEthylKetone.dat";
+            originSha256  "94912c130c9f2e982c8024d262432ce98809290bc68daaad011926f80f84413a";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/diEthylCarbonate-methylEthylKetone.dat"
+        {
+            type          imported;
+            sha256        "39a6d5d675db8149390ec651c8588736cf4e0253f7f9804b6fe09dccb0197aa9";
+            computationalSha256 "140b5fdf433c800fabecd36f358d96d49a338070f9c49f9f50ac82d7d5552f49";
+            origin        "data/standards/parameters/NRTL/diEthylCarbonate-methylEthylKetone.dat";
+            originSha256  "d668136fdbf63fb3405f219f58465ad5dc72f58e3452b109d733d6939cece05b";
+            release       Choupo-2608;
+        }
+    }
+}
