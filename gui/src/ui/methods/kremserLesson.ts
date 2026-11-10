@@ -36,15 +36,15 @@ export const KREMSER_STEPS: readonly LessonStep[] = [
       + "against it and takes it.  Stage by stage this is the McCabe "
       + "staircase again — an operating line from the material balance, an "
       + "equilibrium line from the thermodynamics, and steps between them.  "
-      + "What changes is the bookkeeping: absorption is written in MOLE "
-      + "RATIOS, moles of solute per mole of solute-free carrier, because the "
+      + "What changes is the bookkeeping: absorption is written in mole "
+      + "ratios, moles of solute per mole of solute-free carrier, because the "
       + "carrier gas and the solvent pass through almost unchanged while the "
       + "total flows do not.",
     formula: String.raw`Y = \frac{y}{1-y} \qquad X = \frac{x}{1-x}`,
     where: [
-      { sym: "y", means: "solute MOLE FRACTION in the gas — per mole of gas, "
+      { sym: "y", means: "solute mole fraction in the gas — per mole of gas, "
         + "total" },
-      { sym: "Y", means: "solute MOLE RATIO in the gas — per mole of "
+      { sym: "Y", means: "solute mole ratio in the gas — per mole of "
         + "solute-free carrier gas, which is the quantity that does not "
         + "change as the solute leaves",
         unit: "mol solute / mol carrier" },
@@ -56,14 +56,14 @@ export const KREMSER_STEPS: readonly LessonStep[] = [
     ],
     note: "In ratios the operating line is straight even when the total flows "
       + "are not constant, which is exactly the assumption distillation has "
-      + "to make and absorption gets for free — ON PAPER.  Choupo's absorber "
-      + "does NOT take that road: it solves a stage tridiagonal in mole "
-      + "FRACTIONS at constant total L and V, so it makes the same "
+      + "to make and absorption gets for free — on paper.  Choupo's absorber "
+      + "does not take that road: it solves a stage tridiagonal in mole "
+      + "fractions at constant total L and V, so it makes the same "
       + "constant-flow assumption after all, and the A it publishes is a "
       + "total-flow ratio.  The ratio bookkeeping is here because it is how "
       + "the method is taught and derived, not because it is what runs.  "
-      + "And a straight OPERATING line is only half of what the closed form "
-      + "of step 3 needs: the EQUILIBRIUM must be straight in the same "
+      + "And a straight operating line is only half of what the closed form "
+      + "of step 3 needs: the equilibrium must be straight in the same "
       + "basis, Y = m·X in ratios.  y = K·x in fractions is a different "
       + "line once drawn in ratios, and the two coincide only when the "
       + "solution is dilute.  Everything below uses y = K·x, the engine's "
@@ -73,7 +73,7 @@ export const KREMSER_STEPS: readonly LessonStep[] = [
     n: 2,
     title: "One number decides almost everything: the absorption factor",
     body: "The operating line's slope is L/V, the liquid-to-gas ratio.  The "
-      + "equilibrium line's slope is K.  Their RATIO is the absorption "
+      + "equilibrium line's slope is K.  Their ratio is the absorption "
       + "factor, and it is the single number that says whether the column "
       + "can work at all: it compares the solvent's capacity to carry the "
       + "solute away against the solute's tendency to stay in the gas.",
@@ -82,18 +82,18 @@ export const KREMSER_STEPS: readonly LessonStep[] = [
       { sym: "A", means: "the absorption factor — how hard the solvent pulls "
         + "relative to how hard the equilibrium pushes back.  A > 1 and the "
         + "solvent wins" },
-      { sym: "L", means: "molar flow of the LEAN SOLVENT STREAM — the whole "
+      { sym: "L", means: "molar flow of the lean solvent stream — the whole "
         + "stream, not a solute-free basis.  Textbooks usually write Kremser "
         + "solute-free; Choupo's absorber reads the declared stream F and "
         + "publishes it as the L_in KPI, so recompute A with the total or "
         + "your arithmetic will not match the screen",
         unit: "mol/s" },
-      { sym: "V", means: "molar flow of the GAS FEED STREAM — again the whole "
+      { sym: "V", means: "molar flow of the gas feed stream — again the whole "
         + "stream (L_over_V is 1.5 on the witness: 150/100, not 150/90)",
         unit: "mol/s" },
       { sym: "K", means: "the equilibrium ratio y/x — the slope of the "
         + "equilibrium line.  The published K_i, and the A built from it, are "
-        + "the engine's single REFERENCE value at the gas feed temperature; "
+        + "the engine's single reference value at the gas feed temperature; "
         + "the stages are solved on their own K(T_j), which on the witness "
         + "run 309-315 K against a feed at 298 K" },
     ],
@@ -101,7 +101,7 @@ export const KREMSER_STEPS: readonly LessonStep[] = [
       + "so the two open out towards the rich end at the bottom and close "
       + "towards the lean end at the top — every extra stage keeps buying "
       + "recovery, and the limit of infinitely many stages is complete "
-      + "recovery.  A < 1: the lines close towards the BOTTOM, the staircase "
+      + "recovery.  A < 1: the lines close towards the bottom, the staircase "
       + "pinches against the entering gas (the leaving solvent is saturated), "
       + "and no number of stages will finish the job — you need more solvent "
       + "or a better one, not a taller column.  A ≈ 1.4 is the classical economic "
@@ -111,9 +111,9 @@ export const KREMSER_STEPS: readonly LessonStep[] = [
     n: 3,
     title: "And then the staircase collapses into a formula",
     body: "This is the part worth remembering.  When the equilibrium line is "
-      + "STRAIGHT, the steps of the staircase form a geometric series, and "
+      + "straight, the steps of the staircase form a geometric series, and "
       + "the whole construction sums in closed form — in the form below, "
-      + "for an entering solvent that carries NO solute; a solvent that "
+      + "for an entering solvent that carries no solute; a solvent that "
       + "arrives already loaded recovers less.  You no longer draw "
       + "stages — you compute the recovery directly from A and N.  That is "
       + "Kremser, and it is why absorbers are designed with a formula while "
@@ -127,14 +127,14 @@ export const KREMSER_STEPS: readonly LessonStep[] = [
         means: "the fraction of the entering solute the "
         + "solvent captures, when the entering solvent carries no solute" },
       { sym: "A", means: "the absorption factor, as above" },
-      { sym: "N", means: "the number of EQUILIBRIUM stages — ideal ones, not "
+      { sym: "N", means: "the number of equilibrium stages — ideal ones, not "
         + "trays: a real column needs more" },
     ],
     note: "The A = 1 case is a removable singularity, not a special physics: "
       + "both branches meet there, and the limit is the textbook N/(N+1).  "
       + "The engine's stagewise answer is plotted against this formula on the "
       + "same axes, so you can see where the assumption holds and where it "
-      + "starts to cost you.  Note what that comparison is against: THIS "
+      + "starts to cost you.  Note what that comparison is against: This "
       + "absorber model — Henry's law, constant total flows, K varying with "
       + "stage temperature only — not a general non-ideal absorber.  "
       + "Agreement here does not validate the formula, or the column, "
@@ -159,20 +159,20 @@ export const KREMSER_STEPS: readonly LessonStep[] = [
 export const KREMSER_LIMITS: readonly { id: string; title: string; body: string }[] = [
   {
     id: "straight-equilibrium",
-    title: "The closed form needs a STRAIGHT equilibrium line.",
+    title: "The closed form needs a straight equilibrium line.",
     body: "Kremser sums a geometric series, and that series exists only "
       + "because each step scales by the same factor A. A curved equilibrium "
       + "line — a concentrated solute, a solute that reacts in the liquid — "
       + "breaks the series and the formula stops being exact.  Choupo's "
-      + "absorber does not rescue you there either: it reads HENRY'S LAW and "
-      + "REFUSES an activity-model package by name, and it re-evaluates K at "
-      + "the fixed INLET compositions, so its K bends with stage temperature "
+      + "absorber does not rescue you there either: it reads henry's law and "
+      + "refuses an activity-model package by name, and it re-evaluates K at "
+      + "the fixed inlet compositions, so its K bends with stage temperature "
       + "and never with composition.  What the column buys over the formula "
       + "is the temperature profile, not a curved equilibrium.",
   },
   {
     id: "isothermal",
-    title: "It also assumes ONE temperature, and absorption is exothermic.",
+    title: "It also assumes one temperature, and absorption is exothermic.",
     body: "Heat of solution warms the liquid as it descends, K rises, and A "
       + "falls where the formula assumes it constant. The tool announces a "
       + "temperature rise when the run has one, and the deviation beside the "
@@ -181,7 +181,7 @@ export const KREMSER_LIMITS: readonly { id: string; title: string; body: string 
   },
   {
     id: "dilute",
-    title: "Mole RATIOS, and the usual dilute-solution habits.",
+    title: "Mole ratios, and the usual dilute-solution habits.",
     body: "The ratio construction is exact only when the equilibrium is "
       + "also linear in ratios (Y = m·X); with y = K·x that holds only for "
       + "a dilute solute.  And the carrier gas is taken as insoluble and "
