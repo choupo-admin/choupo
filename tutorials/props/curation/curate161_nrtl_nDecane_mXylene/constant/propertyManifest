@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/mXylene-nDecane.dat"
         {
             type          imported;
-            sha256        "5435571b8e4751e90731541f100ef36b9f0e8f7d2d465e01174419f74cabce98";
-            computationalSha256 "7fa0f51f6a880794f08a6ad468344c90a9f86a62f56678fb17b9ed990c54f6f8";
+            sha256        "652ed4925c5f480de998503b918a5d0d774ae354b060da5c325e6c018abd15f0";
+            computationalSha256 "5674a67044f58b92fa12098135542c477c8a4193ba41374bd87a64888efa2e10";
             origin        "data/standards/parameters/NRTL/mXylene-nDecane.dat";
-            originSha256  "1d1ab215a4c293b0b139dcd1f065bf35f4a1475e9b999d49e0d68c2ab428a70e";
+            originSha256  "df725040977323340e9c102b3c2ee92e588ffc9c85fbb2c02b253e28389e3981";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

@@ -65,7 +65,15 @@
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 191.7 K, b_ji = 249.3 K over 58 kept points of 3
+  laboratories (0 discarded): max |dT| 1.320 K, mean 0.283 K, graded
+  warning (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (191.7, 249.3). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/1Propanol-acetonitrile.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: fit grade
+  warning -- max |dT| 1.320 K over the 58 kept points (limits 1 / 2 / 4
+  K), one liquid across the validity span
   @@RESULT-END@@
 
   EARLIER FITS, SUPERSEDED BY THIS DECLARATION

@@ -17,9 +17,12 @@
 
   reviewStatus autoPromoted; humanReviewed false: PROMOTED AUTOMATICALLY by
   its fitting pipeline (every laboratory fitted, outliers beyond 3 K
-  discarded by name, max |T_model - T| over the kept points below 1 K --
-  DEV.md 4c C283 amended; one liquid across its validity span), and NO
-  HUMAN HAS REVIEWED IT.  The engine says so on every run that reads it.
+  discarded by name, max |T_model - T| over the kept points GRADED
+  clean / warning / severe at 1 / 2 / 4 K -- DEV.md 4c C283
+  amended, C285, C286; THIS fit: clean, 0.8840 K; one liquid
+  across its validity span), and NO HUMAN HAS REVIEWED IT.  The
+  engine says so on every run that reads it, and voices a warning
+  or a severe grade beside it.
   Nothing was held out: the `validation {}` block says so, and the
   acceptance is the `curation {}` block.  A curator who reads the series
   back against the articles marks it `reviewStatus reviewed; humanReviewed
@@ -57,6 +60,8 @@ provenance
     fittedInCase  "tutorials/props/curation/curate122_nrtl_1Pentanol_anisole";
     reviewStatus  autoPromoted;
     humanReviewed false;
+    fitGrade      clean;   // DEV.md 4c C285 (C286): max |T_model - T| over the kept points, graded 1 / 2 / 4 K
+    fitGradeMaxTemperatureError_K 0.8840;
     promotedBy    "bin/choupo-curate pair --promote";
     promotedDate  "2026-11-10";
     reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
@@ -116,7 +121,7 @@ validation
 
 curation
 {
-    rule            "DEV.md 4c C283 (amended) + C284";
+    rule            "DEV.md 4c C283 (amended) + C284, graded by C285 (C286)";
     evidence        allLaboratories;   // every study fitted, none held out
     objective       twoStage;
     outlierLimit    3 K;   // |T_model - T| after the least-squares stage
@@ -125,6 +130,9 @@ curation
     noBubblePoint   0;
     maxAbsError     0.8840 K;
     meanAbsError    0.1973 K;
-    acceptance      1 K;   // max |T_model - T| over the kept points
+    acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
+    gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
+    grade           clean;
+    oneLiquid       true;   // arm (f) over the validity span; a pair that splits ONE liquid is never promoted, whatever its grade
     verdict         accepted;
 }

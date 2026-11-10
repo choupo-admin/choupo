@@ -85,7 +85,15 @@
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 742.2 K, b_ji = -361.3 K over 19 kept points of 2
+  laboratories (15 discarded): max |dT| 1.437 K, mean 0.862 K, graded
+  warning (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (742.2, -361.3). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/nNDimethylacetamide-nNDimethylformamide.dat
+  as reviewStatus autoPromoted, humanReviewed false, because: fit grade
+  warning -- max |dT| 1.437 K over the 19 kept points (limits 1 / 2 / 4
+  K), one liquid across the validity span
   @@RESULT-END@@
 
   EARLIER FITS, SUPERSEDED BY THIS DECLARATION

@@ -18,8 +18,8 @@
   reviewStatus interim: a case-local record, regressed and not read back.  Fitted on EVERY laboratory (C283), so the
   `validation {}` block below says, truthfully, that nothing
   was held out; the acceptance is the `curation {}` block.
-  NOT PROMOTABLE: max |dT| 4.241 K over the 24 kept points is not below 1
-  K
+  NOT PROMOTABLE: fit grade refused -- max |dT| 4.241 K over the 24 kept
+  points is above 4 K
 
   REPRODUCE: run tutorials/props/curation/curate147_nrtl_dimethylCarbonate_oXylene (after `bin/choupo-curate fetch` on it); its fit
   writes dimethylCarbonate-oXylene.proposal.dat, which bin/curate/check_regressed_pairs.py holds
@@ -110,7 +110,7 @@ validation
 
 curation
 {
-    rule            "DEV.md 4c C283 (amended) + C284";
+    rule            "DEV.md 4c C283 (amended) + C284, graded by C285 (C286)";
     evidence        allLaboratories;   // every study fitted, none held out
     objective       twoStage;
     outlierLimit    3 K;   // |T_model - T| after the least-squares stage
@@ -119,6 +119,9 @@ curation
     noBubblePoint   0;
     maxAbsError     4.2414 K;
     meanAbsError    1.7409 K;
-    acceptance      1 K;   // max |T_model - T| over the kept points
+    acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
+    gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
+    grade           refused;
+    oneLiquid       true;   // arm (f) over the validity span; a pair that splits ONE liquid is never promoted, whatever its grade
     verdict         notAccepted;
 }

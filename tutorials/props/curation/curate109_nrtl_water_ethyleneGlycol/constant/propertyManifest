@@ -43,5 +43,14 @@ propertyManifest
             originSha256  "3723b03d86ab148fd084c01f9fc3cce1bb4398a3dc6b6914e0336c40d4ade16d";
             release       Choupo-2608;
         }
+        "parameters/NRTL/ethyleneGlycol-water.dat"
+        {
+            type          imported;
+            sha256        "19bd5df51acf1db7bd7ae554631e4c89217f7ee6001405ac4e795d228e3df7da";
+            computationalSha256 "a49ea92fabc9c18dcba1992227bcd645a889fae81a4d0c752cf13d2a9f65921c";
+            origin        "data/standards/parameters/NRTL/ethyleneGlycol-water.dat";
+            originSha256  "ccd8eb0c5ae8e6c7e8dae12a92ae7270af7ad5d77276fb9e3f4466994ffe145b";
+            release       Choupo-2608;
+        }
     }
 }

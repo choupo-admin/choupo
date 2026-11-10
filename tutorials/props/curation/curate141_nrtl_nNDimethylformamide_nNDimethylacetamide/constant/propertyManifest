@@ -43,5 +43,14 @@ propertyManifest
             originSha256  "9c683ee45a5fcc273e4186865d45184b187b080ff179cec4f0ac16d72933fc21";
             release       Choupo-2608;
         }
+        "parameters/NRTL/nNDimethylacetamide-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "68d6b4fc0015f72474c0c2d132651b6d4601bd2e9a2b118eb779196a96af0922";
+            computationalSha256 "1083367c03e219a623557c9fdb2e8d97a5d2163e9e6c33a6e0bb75be1623abda";
+            origin        "data/standards/parameters/NRTL/nNDimethylacetamide-nNDimethylformamide.dat";
+            originSha256  "7b909053b6f67167bda8b6a62e1ba0ab4e740f6f0843076cafff323f650d477c";
+            release       Choupo-2608;
+        }
     }
 }

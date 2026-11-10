@@ -97,7 +97,15 @@
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = -928.6 K, b_ji = 609.0 K over 96 kept points of 3
+  laboratories (25 discarded): max |dT| 3.833 K, mean 1.069 K, graded
+  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on A
+  DIFFERENT pair (3000.0, -1057.2). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/triethyleneGlycol-water.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: fit grade
+  severe -- max |dT| 3.833 K over the 96 kept points (limits 1 / 2 / 4
+  K), one liquid across the validity span
   @@RESULT-END@@
 
   EARLIER FITS, SUPERSEDED BY THIS DECLARATION

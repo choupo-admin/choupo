@@ -63,7 +63,16 @@
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 72.0 K, b_ji = 106.2 K over 20 kept points of 1
+  laboratories (0 discarded): max |dT| 0.334 K, mean 0.136 K, graded
+  clean (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (72.0, 106.2). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/cyclohexane-tetrahydrofuran.dat as
+  reviewStatus autoPromoted, humanReviewed false, regraded in place by
+  the C286 re-run, because: fit grade clean -- max |dT| 0.334 K over the
+  20 kept points (limits 1 / 2 / 4 K), one liquid across the validity
+  span
   @@RESULT-END@@
 
   EARLIER FITS, SUPERSEDED BY THIS DECLARATION

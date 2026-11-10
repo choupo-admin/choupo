@@ -65,7 +65,15 @@
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 240.6 K, b_ji = 163.9 K over 84 kept points of 2
+  laboratories (0 discarded): max |dT| 1.955 K, mean 0.377 K, graded
+  warning (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (240.6, 163.9). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/1Propanol-dimethylCarbonate.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: fit grade
+  warning -- max |dT| 1.955 K over the 84 kept points (limits 1 / 2 / 4
+  K), one liquid across the validity span
   @@RESULT-END@@
 
   EARLIER FITS, SUPERSEDED BY THIS DECLARATION

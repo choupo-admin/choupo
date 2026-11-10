@@ -43,6 +43,15 @@ propertyManifest
             originSha256  "fc83aedc37a243b53683835301a4a8aaabc51fde333ec26b3b3b0ca011d118fa";
             release       Choupo-2608;
         }
+        "parameters/NRTL/2Methyl1Propanol-isobutylAcetate.dat"
+        {
+            type          imported;
+            sha256        "fb09e6e03d34e7f95f1d2dbae18d38d4b1dcd61be026af82537885828ece2a23";
+            computationalSha256 "a6e734b1a4f6fcb1933a93cef92c86bec59572bcda8ec843ae7de088cbc65cdf";
+            origin        "data/standards/parameters/NRTL/2Methyl1Propanol-isobutylAcetate.dat";
+            originSha256  "0f5744bc7c9022c1260d9289a34698cccf5ec945f7805c8d680cb473d82cf779";
+            release       Choupo-2608;
+        }
         "parameters/UNIFAC/groups.dat"
         {
             type          imported;

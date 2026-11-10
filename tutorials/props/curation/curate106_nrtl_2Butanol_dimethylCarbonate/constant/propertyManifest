@@ -43,5 +43,14 @@ propertyManifest
             originSha256  "4364b5ed2f6a4ccf01a7fe01b0939072b8747fbf150e92362a4030c825ea8eba";
             release       Choupo-2608;
         }
+        "parameters/NRTL/2Butanol-dimethylCarbonate.dat"
+        {
+            type          imported;
+            sha256        "3f77f2b767003f38e45332ff106c6d0d54853afe7e238ce03c02f1504b7c09e1";
+            computationalSha256 "867cf0a6a46004d4ef6d0b0d14152bdd365f893ec2e08ed68303ca64aca2b229";
+            origin        "data/standards/parameters/NRTL/2Butanol-dimethylCarbonate.dat";
+            originSha256  "1c62f20ec43a34e47785bc55322bf869be10a469e11159767a13669f45853d33";
+            release       Choupo-2608;
+        }
     }
 }

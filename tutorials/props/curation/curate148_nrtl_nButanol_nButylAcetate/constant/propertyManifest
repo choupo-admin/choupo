@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/nButanol-nButylAcetate.dat"
         {
             type          imported;
-            sha256        "a88fa911e88e551c2a79bb47059e951668772c6032ec67ef210001519e9dfb06";
-            computationalSha256 "4c0baad5b2e7d7bc3448dfb142c4c7b5a318fbc240b6dd595598577cc2a69c8e";
+            sha256        "e6ab76c58d8ac9cc2485a10aa6538800c1057e24d0727ab6b2ff14de56c7c188";
+            computationalSha256 "c063a812ac2a9cb386ee57797f7e6f504436b3628172c7b9ef4aa079cfe532dc";
             origin        "data/standards/parameters/NRTL/nButanol-nButylAcetate.dat";
-            originSha256  "585f1445b236b0d84665e5b2a0b666c33a6d145e0586ed513e1c43bfeb148b56";
+            originSha256  "ec5e9da1b4fbf5110ed47bf4c7c8d9ff732762020f3da5cebac2b0345ba52414";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

@@ -64,7 +64,15 @@
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 248.2 K, b_ji = 191.8 K over 34 kept points of 2
+  laboratories (0 discarded): max |dT| 2.060 K, mean 0.709 K, graded
+  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (248.2, 191.8). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/nButanol-pXylene.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade severe -- max
+  |dT| 2.060 K over the 34 kept points (limits 1 / 2 / 4 K), one liquid
+  across the validity span
   @@RESULT-END@@
 
   EARLIER FITS, SUPERSEDED BY THIS DECLARATION

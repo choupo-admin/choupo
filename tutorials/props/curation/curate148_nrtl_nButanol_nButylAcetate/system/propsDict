@@ -64,7 +64,16 @@
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 535.9 K, b_ji = -226.7 K over 28 kept points of 2
+  laboratories (0 discarded): max |dT| 0.581 K, mean 0.235 K, graded
+  clean (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (535.9, -226.7). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/nButanol-nButylAcetate.dat as
+  reviewStatus autoPromoted, humanReviewed false, regraded in place by
+  the C286 re-run, because: fit grade clean -- max |dT| 0.581 K over the
+  28 kept points (limits 1 / 2 / 4 K), one liquid across the validity
+  span
   @@RESULT-END@@
 
   EARLIER FITS, SUPERSEDED BY THIS DECLARATION

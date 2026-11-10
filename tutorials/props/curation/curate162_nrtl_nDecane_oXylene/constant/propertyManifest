@@ -43,6 +43,15 @@ propertyManifest
             originSha256  "b6c6ede5d7ff713e82c02f27faf3ced0b49ef4762c4baa0eae22702c78888efe";
             release       Choupo-2608;
         }
+        "parameters/NRTL/nDecane-oXylene.dat"
+        {
+            type          imported;
+            sha256        "a8c6125cd328727b16186d015782255fd09220a60f0d9374248d364e24ef3d88";
+            computationalSha256 "22069afd03b2ad3d63691dd96a8e3fdccdff18ff9f2a405ae9277eb8620381b1";
+            origin        "data/standards/parameters/NRTL/nDecane-oXylene.dat";
+            originSha256  "9ffdc86647238a71bd3d0070b1b994e62535c7398aaac5d1b232c5fb6af92df3";
+            release       Choupo-2608;
+        }
         "parameters/UNIFAC/groups.dat"
         {
             type          imported;

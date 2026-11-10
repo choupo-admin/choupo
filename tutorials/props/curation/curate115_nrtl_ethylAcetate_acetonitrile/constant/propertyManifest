@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/acetonitrile-ethylAcetate.dat"
         {
             type          imported;
-            sha256        "be8042c1d07f7ab48e2dc5119235bbbcb72df9ae653564071fbae504ba1f7a12";
-            computationalSha256 "26ace268ceb0d5c56e2f0e9fe69a351c39e63af8c28b3721d0d6bd32e5488598";
+            sha256        "6c2fc51c8cf899205b9ed05476ca8ba54fec9e9926cc2cd1219a5d192174bdfd";
+            computationalSha256 "75fddb2d90ac58e2b83d680e79db3d757286543b5ac7a16df21dc59a00a15354";
             origin        "data/standards/parameters/NRTL/acetonitrile-ethylAcetate.dat";
-            originSha256  "2fef7f3b0f3835fd65b81d1041b4935fc95ad380cdca56bde4bccb98d553aeb2";
+            originSha256  "af7abe711c9b9bf82401e5f2aaf4d13183e72f6233040a2c0c71d807e50ef3c9";
             release       Choupo-2608;
         }
     }

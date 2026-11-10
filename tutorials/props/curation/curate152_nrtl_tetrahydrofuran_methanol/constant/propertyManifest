@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/methanol-tetrahydrofuran.dat"
         {
             type          imported;
-            sha256        "ac896a8450ecf4e47f7269b0b6f1c939546b21e327227fc079392554d1719f0b";
-            computationalSha256 "866602b84044c58ad7e5e2dd8a11ca5dc7ba2d91c2ab3e931ae38b78659c2bd8";
+            sha256        "b40f0b177f2df3988b22f6d5d28aecb9d71a0b8ab506ab5e569198b9c751dfe4";
+            computationalSha256 "73b9bb477c4df3cd1e30dd9d7213c86adcbff4f98af629b623d99e247aa43b19";
             origin        "data/standards/parameters/NRTL/methanol-tetrahydrofuran.dat";
-            originSha256  "2d147331339b4154c775ed2133ff17075b3aa64ccdfda8a05409499077c7a2a5";
+            originSha256  "9b809732baaef24730765e33a1984d9796adb70d371ae0b180379e0278626210";
             release       Choupo-2608;
         }
     }

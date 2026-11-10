@@ -43,5 +43,14 @@ propertyManifest
             originSha256  "9c683ee45a5fcc273e4186865d45184b187b080ff179cec4f0ac16d72933fc21";
             release       Choupo-2608;
         }
+        "parameters/NRTL/2Butanol-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "921674c970d1796f90e9660fcd1640397b649a7429e3804e78ceef19fe8f4820";
+            computationalSha256 "a8b65e7ed97251bbcf3eed72c9551a69085ef2d4f1dec6ffa7db75c195b61293";
+            origin        "data/standards/parameters/NRTL/2Butanol-nNDimethylformamide.dat";
+            originSha256  "62892c4e178a516c9028e5a1e214d594f0bc7a1746c6c0d856731c1a480c7d39";
+            release       Choupo-2608;
+        }
     }
 }

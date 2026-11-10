@@ -43,6 +43,15 @@ propertyManifest
             originSha256  "04a2c2a72fb0170f6e58dca0a4ced5760f40fbde24d6f7bdd0ffab546944f9f8";
             release       Choupo-2608;
         }
+        "parameters/NRTL/1Pentanol-nNonane.dat"
+        {
+            type          imported;
+            sha256        "d7eab740266bd1e50c601bd9b4fdfb56150ddf4cfa5f4ba490697f5ba6eeabe8";
+            computationalSha256 "7ca85fe21dd6105bada3886c4aeb2fd113ace213ddcbad977ec22264fe617f86";
+            origin        "data/standards/parameters/NRTL/1Pentanol-nNonane.dat";
+            originSha256  "cd3c1bad02e38200defc6071b3f5754620509f16107d320610df09fb7ff14d86";
+            release       Choupo-2608;
+        }
         "parameters/UNIFAC/groups.dat"
         {
             type          imported;

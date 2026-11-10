@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/2Methyl1Butanol-ethanol.dat"
         {
             type          imported;
-            sha256        "733b4b7bea8a2ec57a0cba32236a013ade508f2b737d3ec3fc9582f41ce89d3e";
-            computationalSha256 "928f9c7296a9b59333e7e4cc719578ae987116339ea3a6c268417ac7db754e14";
+            sha256        "228483858f6697d02e6ce6d20aac20c64c5f6f7ef7463b1c529876e66eb33620";
+            computationalSha256 "853de3d73227f9ee4593fba24df1dc078ae12b1db0f6a7257d4d382633a1a83a";
             origin        "data/standards/parameters/NRTL/2Methyl1Butanol-ethanol.dat";
-            originSha256  "14a04f9213e79e267fa365991240d4e12eac1d471ac4b53f9aa1eeb69f243519";
+            originSha256  "3d614625764d49711bd4d47001049f18f5ed5e11adb7ba27084db78d27e76174";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

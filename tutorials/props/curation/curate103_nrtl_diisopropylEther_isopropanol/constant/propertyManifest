@@ -43,5 +43,14 @@ propertyManifest
             originSha256  "510b474f696cf7952c89a27d0a48623266b8a79f3026cc348a934361bd763e07";
             release       Choupo-2608;
         }
+        "parameters/NRTL/diisopropylEther-isopropanol.dat"
+        {
+            type          imported;
+            sha256        "5cce558cca6185cc162fa750c6e8ee1f58654a8133df20f7e64db69c3485704a";
+            computationalSha256 "ad742daf267e68ae969c54ac98301d760152d97e5b796cb76cb59568856b837a";
+            origin        "data/standards/parameters/NRTL/diisopropylEther-isopropanol.dat";
+            originSha256  "715fe75a9754882a3cce324ab25849f0d0ad12534b97749ea618417bebca983b";
+            release       Choupo-2608;
+        }
     }
 }

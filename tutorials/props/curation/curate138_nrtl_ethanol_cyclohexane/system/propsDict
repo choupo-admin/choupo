@@ -64,7 +64,18 @@
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 437.4 K, b_ji = 485.2 K over 39 kept points of 2
+  laboratories (0 discarded): max |dT| 2.682 K, mean 0.903 K, graded
+  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (437.4, 485.2). NOT PROMOTABLE (fit grade severe, max |dT|
+  2.682 K): the pair splits ONE liquid inside its own validity span
+  (check_regressed_pairs arm f) -- predicts a LIQUID-LIQUID SPLIT at
+  337.65 K (x_ethanol 0.286 .. 0.686), inside its own validity span
+  337.65-353.45 K -- its evidence is bubble temperatures of ONE liquid,
+  which a bubble scan cannot contradict; a pair that splits that liquid
+  stays in its case, not the catalogue (or it DECLARES `liquidLiquid
+  true;` with tie-line evidence and a gap band)
   @@RESULT-END@@
 
   EARLIER FITS, SUPERSEDED BY THIS DECLARATION

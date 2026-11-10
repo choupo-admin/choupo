@@ -65,7 +65,15 @@
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 261.4 K, b_ji = 282.7 K over 75 kept points of 3
+  laboratories (0 discarded): max |dT| 2.122 K, mean 0.755 K, graded
+  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (261.4, 282.7). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/1Pentanol-nNonane.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade severe -- max
+  |dT| 2.122 K over the 75 kept points (limits 1 / 2 / 4 K), one liquid
+  across the validity span
   @@RESULT-END@@
 
   EARLIER FITS, SUPERSEDED BY THIS DECLARATION

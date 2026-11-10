@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/1Pentanol-2Hexanone.dat"
         {
             type          imported;
-            sha256        "3a19114773507d923b742e708ed364d9d7209bcee50ea7274b435ab5026f6bd0";
-            computationalSha256 "3b529e90b1d021b4c6b59b6dc0067423f2d8ee9bad5ea7cf93a1ddceb36714d3";
+            sha256        "fcd547bbb27d844ef22ced8126410f8cf3e67820b1ba4831a44eea9dd09b5b4a";
+            computationalSha256 "47a9356388e47f55167a0f5504d1faa6ceec5e3b5ed94364f9da568462412fea";
             origin        "data/standards/parameters/NRTL/1Pentanol-2Hexanone.dat";
-            originSha256  "72e588c9ea01bf76f328a47098f314554488d98b53ede818a1346723fdcd3f79";
+            originSha256  "e4b0e05b8c2c58676f92de1947314419550bb055b6c6c5680a4d9baab748bc05";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

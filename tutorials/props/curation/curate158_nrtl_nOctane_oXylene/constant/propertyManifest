@@ -43,6 +43,15 @@ propertyManifest
             originSha256  "b6c6ede5d7ff713e82c02f27faf3ced0b49ef4762c4baa0eae22702c78888efe";
             release       Choupo-2608;
         }
+        "parameters/NRTL/nOctane-oXylene.dat"
+        {
+            type          imported;
+            sha256        "8d0054420203ae0e977f21e6a0a77f6c3c38f7cc01f9443f137c3f61af3981e8";
+            computationalSha256 "5be9d510e05dacef7908679924f03cb77f8801933d5b46d436ac49cce20965c6";
+            origin        "data/standards/parameters/NRTL/nOctane-oXylene.dat";
+            originSha256  "4da913484369169e578c32700cee18629c3925446cb553b81e90a12e07c6565c";
+            release       Choupo-2608;
+        }
         "parameters/UNIFAC/groups.dat"
         {
             type          imported;

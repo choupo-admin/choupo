@@ -43,5 +43,14 @@ propertyManifest
             originSha256  "d07d8e2aa11a5f1acb72593e0fcd1281a502b07ee6da32603bcc97d97b54abd4";
             release       Choupo-2608;
         }
+        "parameters/NRTL/methylPropionate-nHeptane.dat"
+        {
+            type          imported;
+            sha256        "d0c59f5ab6cd57a212bb31812c556c44a9f5b5ee6a9a073e25be39ee05a0c89c";
+            computationalSha256 "350fce010e73b86bc606eb0ca1b9b32bebc38502e7dab03682b1fbb969dbbe39";
+            origin        "data/standards/parameters/NRTL/methylPropionate-nHeptane.dat";
+            originSha256  "16619181fe1245713a78074924d1cac6233ebf7724d56cc5754aae75afeb631f";
+            release       Choupo-2608;
+        }
     }
 }

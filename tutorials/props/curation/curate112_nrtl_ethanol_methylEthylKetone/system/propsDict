@@ -67,7 +67,16 @@
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 159.6 K, b_ji = 82.5 K over 53 kept points of 3
+  laboratories (0 discarded): max |dT| 0.155 K, mean 0.056 K, graded
+  clean (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (159.6, 82.5). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/ethanol-methylEthylKetone.dat as
+  reviewStatus autoPromoted, humanReviewed false, regraded in place by
+  the C286 re-run, because: fit grade clean -- max |dT| 0.155 K over the
+  53 kept points (limits 1 / 2 / 4 K), one liquid across the validity
+  span
   @@RESULT-END@@
 
   EARLIER FITS, SUPERSEDED BY THIS DECLARATION

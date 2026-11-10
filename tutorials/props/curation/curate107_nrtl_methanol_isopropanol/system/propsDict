@@ -65,7 +65,15 @@
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 82.7 K, b_ji = -60.7 K over 111 kept points of 3
+  laboratories (0 discarded): max |dT| 1.736 K, mean 0.631 K, graded
+  warning (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on A
+  DIFFERENT pair (85.7, -63.3). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/isopropanol-methanol.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade warning -- max
+  |dT| 1.736 K over the 111 kept points (limits 1 / 2 / 4 K), one liquid
+  across the validity span
   @@RESULT-END@@
 
   EARLIER FITS, SUPERSEDED BY THIS DECLARATION

@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/cyclohexane-tetrahydrofuran.dat"
         {
             type          imported;
-            sha256        "8a5fd7b8d03b5daf3f1a8d334f8c880314757d9a38d9029f2b98cc6ae9f59286";
-            computationalSha256 "0a1a848fa509c7344781be7bf545224801115e13bcd5fa78c18260099c296d03";
+            sha256        "6e39293a1802aaad41cde07619bcd11fb96a9276bf6dfdbd8d5c261e1279657d";
+            computationalSha256 "ed52ec76738acc2860ac73fc66e14decb567a59d14f9c5d5ea5655efc6da520c";
             origin        "data/standards/parameters/NRTL/cyclohexane-tetrahydrofuran.dat";
-            originSha256  "3514dfe7646b1fde15a6d232a7a3636e0d85de0172294f8704c1bf00b8f3f48b";
+            originSha256  "359014f396dac9e6d5d663c4491477e69404ea6d3b81a4850794c2b5ec311217";
             release       Choupo-2608;
         }
     }

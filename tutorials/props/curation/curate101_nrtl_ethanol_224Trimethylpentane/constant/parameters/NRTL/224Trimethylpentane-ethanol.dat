@@ -18,8 +18,14 @@
   reviewStatus interim: a case-local record, regressed and not read back.  Fitted on EVERY laboratory (C283), so the
   `validation {}` block below says, truthfully, that nothing
   was held out; the acceptance is the `curation {}` block.
-  NOT PROMOTABLE: max |dT| 1.882 K over the 85 kept points is not below 1
-  K
+  NOT PROMOTABLE (fit grade warning, max |dT| 1.882 K): the pair splits
+  ONE liquid inside its own validity span (check_regressed_pairs arm f)
+  -- predicts a LIQUID-LIQUID SPLIT at 343.95 K (x_ethanol 0.290 ..
+  0.587), inside its own validity span 343.95-362.55 K -- its evidence is
+  bubble temperatures of ONE liquid, which a bubble scan cannot
+  contradict; a pair that splits that liquid stays in its case, not the
+  catalogue (or it DECLARES `liquidLiquid true;` with tie-line evidence
+  and a gap band)
 
   REPRODUCE: run tutorials/props/curation/curate101_nrtl_ethanol_224Trimethylpentane (after `bin/choupo-curate fetch` on it); its fit
   writes 224Trimethylpentane-ethanol.proposal.dat, which bin/curate/check_regressed_pairs.py holds
@@ -140,7 +146,7 @@ validation
 
 curation
 {
-    rule            "DEV.md 4c C283 (amended) + C284";
+    rule            "DEV.md 4c C283 (amended) + C284, graded by C285 (C286)";
     evidence        allLaboratories;   // every study fitted, none held out
     objective       twoStage;
     outlierLimit    3 K;   // |T_model - T| after the least-squares stage
@@ -149,6 +155,9 @@ curation
     noBubblePoint   0;
     maxAbsError     1.8816 K;
     meanAbsError    0.5160 K;
-    acceptance      1 K;   // max |T_model - T| over the kept points
-    verdict         notAccepted;
+    acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
+    gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
+    grade           warning;
+    oneLiquid       false;   // arm (f) over the validity span; a pair that splits ONE liquid is never promoted, whatever its grade
+    verdict         accepted;
 }

@@ -18,8 +18,14 @@
   reviewStatus interim: a case-local record, regressed and not read back.  Fitted on EVERY laboratory (C283), so the
   `validation {}` block below says, truthfully, that nothing
   was held out; the acceptance is the `curation {}` block.
-  NOT PROMOTABLE: max |dT| 3.584 K over the 28 kept points is not below 1
-  K
+  NOT PROMOTABLE (fit grade severe, max |dT| 3.584 K): the pair splits
+  ONE liquid inside its own validity span (check_regressed_pairs arm f)
+  -- predicts a LIQUID-LIQUID SPLIT at 325.00 K (x_ethylBenzene 0.381 ..
+  0.782), inside its own validity span 325.0-492.15 K -- its evidence is
+  bubble temperatures of ONE liquid, which a bubble scan cannot
+  contradict; a pair that splits that liquid stays in its case, not the
+  catalogue (or it DECLARES `liquidLiquid true;` with tie-line evidence
+  and a gap band)
 
   REPRODUCE: run tutorials/props/curation/curate136_nrtl_ethylBenzene_sulfolane (after `bin/choupo-curate fetch` on it); its fit
   writes ethylBenzene-sulfolane.proposal.dat, which bin/curate/check_regressed_pairs.py holds
@@ -109,7 +115,7 @@ validation
 
 curation
 {
-    rule            "DEV.md 4c C283 (amended) + C284";
+    rule            "DEV.md 4c C283 (amended) + C284, graded by C285 (C286)";
     evidence        allLaboratories;   // every study fitted, none held out
     objective       twoStage;
     outlierLimit    3 K;   // |T_model - T| after the least-squares stage
@@ -118,6 +124,9 @@ curation
     noBubblePoint   0;
     maxAbsError     3.5839 K;
     meanAbsError    1.5271 K;
-    acceptance      1 K;   // max |T_model - T| over the kept points
-    verdict         notAccepted;
+    acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
+    gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
+    grade           severe;
+    oneLiquid       false;   // arm (f) over the validity span; a pair that splits ONE liquid is never promoted, whatever its grade
+    verdict         accepted;
 }

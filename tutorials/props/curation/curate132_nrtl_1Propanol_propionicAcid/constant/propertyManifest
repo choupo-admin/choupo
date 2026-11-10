@@ -43,6 +43,15 @@ propertyManifest
             originSha256  "74be98a87e97423686e9debff43064dd787fc82406395de96177ace800e85554";
             release       Choupo-2608;
         }
+        "parameters/NRTL/1Propanol-propionicAcid.dat"
+        {
+            type          imported;
+            sha256        "bb1708338132007e6c27730348c1991f45fce8e632282934355b96d0f20ea6b9";
+            computationalSha256 "19788ab7374fc72b38945697aab7adb9bfdf1636103c534c2028445d92bc275e";
+            origin        "data/standards/parameters/NRTL/1Propanol-propionicAcid.dat";
+            originSha256  "9d22f1fff3b85ec0f6583fc0d6efe7b3af86eb6e01ba0eb87c315895f2b7884f";
+            release       Choupo-2608;
+        }
         "parameters/UNIFAC/groups.dat"
         {
             type          imported;

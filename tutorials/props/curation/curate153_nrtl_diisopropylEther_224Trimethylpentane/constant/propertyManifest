@@ -43,5 +43,14 @@ propertyManifest
             originSha256  "357def78c8c89b1216f62ddb46f352dc2af6f86a1b4c487cc88100d809302b51";
             release       Choupo-2608;
         }
+        "parameters/NRTL/224Trimethylpentane-diisopropylEther.dat"
+        {
+            type          imported;
+            sha256        "08553a3703d6d25e1f5f9bb9cd30ac13b121489296fe4c62bae5d7991e9d71e1";
+            computationalSha256 "073e3ae48b887bcf9e0cadffa2dfeff22d17ed5f96d8d19cbb0d338ae9938611";
+            origin        "data/standards/parameters/NRTL/224Trimethylpentane-diisopropylEther.dat";
+            originSha256  "a3dead7a0a38df4b0fc76a1bf8fe7c6e17ad386d766ab1e190952bbba2bdc7f2";
+            release       Choupo-2608;
+        }
     }
 }

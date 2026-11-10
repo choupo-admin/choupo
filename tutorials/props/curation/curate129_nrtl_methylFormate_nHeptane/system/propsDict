@@ -88,7 +88,12 @@
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 710.3 K, b_ji = 158.2 K over 41 kept points of 2
+  laboratories (19 discarded): max |dT| 5.372 K, mean 1.181 K, graded
+  refused (limits 1 / 2 / 4 K) -> notAccepted. fit_nrtl_start2 lands on
+  the same pair (710.3, 158.2). NOT PROMOTABLE: fit grade refused -- max
+  |dT| 5.372 K over the 41 kept points is above 4 K
   @@RESULT-END@@
 
   EARLIER FITS, SUPERSEDED BY THIS DECLARATION

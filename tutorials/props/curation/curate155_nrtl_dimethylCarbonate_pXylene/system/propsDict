@@ -72,7 +72,15 @@
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 666.1 K, b_ji = -266.8 K over 19 kept points of 2
+  laboratories (6 discarded): max |dT| 3.093 K, mean 1.497 K, graded
+  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (666.1, -266.8). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/dimethylCarbonate-pXylene.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: fit grade
+  severe -- max |dT| 3.093 K over the 19 kept points (limits 1 / 2 / 4
+  K), one liquid across the validity span
   @@RESULT-END@@
 
   EARLIER FITS, SUPERSEDED BY THIS DECLARATION

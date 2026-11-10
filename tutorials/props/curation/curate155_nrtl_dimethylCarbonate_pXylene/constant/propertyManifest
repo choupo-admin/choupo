@@ -43,5 +43,14 @@ propertyManifest
             originSha256  "c84be1d773e7fda137a6721e882622f7cd66ba63f6278257a98da939fe724bfc";
             release       Choupo-2608;
         }
+        "parameters/NRTL/dimethylCarbonate-pXylene.dat"
+        {
+            type          imported;
+            sha256        "551d532b8074d055219ccbed3333733bc3ca410be73f42c36853ddfef293f11e";
+            computationalSha256 "a2f85cf9a70755a2605e5d37ee1a372f4f75388c7cc9e8c671af3f1740a30b69";
+            origin        "data/standards/parameters/NRTL/dimethylCarbonate-pXylene.dat";
+            originSha256  "af6a47a44324e105975f3bab8af709086fa9a3108cef4cc4236b947412f4b406";
+            release       Choupo-2608;
+        }
     }
 }

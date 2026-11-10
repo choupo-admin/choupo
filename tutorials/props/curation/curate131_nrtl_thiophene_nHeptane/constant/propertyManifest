@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/nHeptane-thiophene.dat"
         {
             type          imported;
-            sha256        "84733dfb860914e8ccd7659aadebbd91465c20d194a342761bb296793bc00e45";
-            computationalSha256 "d0039b52d6ceae4131cf45adc38b581d609927d90b1d293709b4ae9c64e5ed48";
+            sha256        "b456999efcd4c6342b2ca7f8386faca65957f004b60062de8791ec5e30da015e";
+            computationalSha256 "3099fb31749136a40bb0b1a8fd643fbb24e19f3ff6c5111505d92e651c1e384e";
             origin        "data/standards/parameters/NRTL/nHeptane-thiophene.dat";
-            originSha256  "ced9c66cfe7309329952da00836d5a278d43ccac436531cd04b98d807f80d2ce";
+            originSha256  "1ed45fb190db53faba9fb96950f51ae0aae036938a7e049f5c68f340f580e68c";
             release       Choupo-2608;
         }
     }

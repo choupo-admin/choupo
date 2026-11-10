@@ -43,6 +43,15 @@ propertyManifest
             originSha256  "8cedd68cbab3194cfb72728ae31e42118e256931e9e166b4c53ace9dbbe27376";
             release       Choupo-2608;
         }
+        "parameters/NRTL/benzene-methanol.dat"
+        {
+            type          imported;
+            sha256        "4041967589681d1ee00178936f52167240e6e2039fcebbba42295672d8615d6b";
+            computationalSha256 "7694dd93f2e15b604354666178ce9095d156a81f89c4c38e8f858c23608ddc04";
+            origin        "data/standards/parameters/NRTL/benzene-methanol.dat";
+            originSha256  "0ab1d6fd8b9ac73f21bef7d5ee692701d931b9d43e5bd0096383c5aefb5c7a63";
+            release       Choupo-2608;
+        }
         "parameters/UNIFAC/groups.dat"
         {
             type          imported;
