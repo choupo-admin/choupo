@@ -129,7 +129,7 @@ export const LS_STEPS: readonly LessonStep[] = [
     formula: String.raw`\chi^2_w(p) = \sum_{i=1}^{N} \left(\frac{r_i(p)}{\sigma_i}\right)^2
 \qquad \text{Choupo: } \sigma_i = 1 \ \text{for every } i`,
     where: [
-      { sym: "\\chi_{w}", means: "the WEIGHTED sum of squares, each residual "
+      { sym: "\\chi_{w}", means: "the weighted sum of squares, each residual "
         + "measured in its own point's standard uncertainty" },
       { sym: "\\sigma_i", means: "the declared standard uncertainty of "
         + "measurement i. Choupo's bubble-temperature fit does not read one, "
@@ -182,7 +182,7 @@ export const LS_STEPS: readonly LessonStep[] = [
         + "sensitivity of residual i to parameter j" },
       { sym: "p_j", means: "the j-th entry of the parameter vector: one "
         + "adjustable coefficient" },
-      { sym: "\\delta", means: "the STEP: the change to the parameters this "
+      { sym: "\\delta", means: "the step: the change to the parameters this "
         + "solve proposes" },
       { sym: "r", means: "the column of residuals at the current parameters" },
       { sym: "\\nabla", means: "the gradient with respect to the parameters; "
@@ -219,7 +219,7 @@ export const LS_STEPS: readonly LessonStep[] = [
     ],
     formula: String.raw`\left( J' J + \lambda\,\operatorname{diag}(J' J) \right) \delta = -J' r`,
     where: [
-      { sym: "\\lambda", means: "the DAMPING. Zero is Gauss-Newton; large is "
+      { sym: "\\lambda", means: "the damping. Zero is Gauss-Newton; large is "
         + "a short step down the gradient. It is declared in the operation's "
         + "dict as `lambda0` (read at FitParameters.cpp:671) and then moved "
         + "by the engine every iteration" },
