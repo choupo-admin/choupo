@@ -3245,6 +3245,51 @@ accepts today, and that is a policy call.
 > DISPATCHED 2026-11-10 from the cloud session; integration by the cloud session
 > only after the laptop session is told, so two commanders do not push at once.
 
+> **C280 (Vitor, 2026-11-10, on the butanol-water fit: "Eu quando faco ajuste
+> comeco por minimizar os residuos quadraticos pra ter uma estimativa inicial.
+> Depois no final prefiro minimizar o erro maximo! Porque isso e que me da a
+> garantia que nao apanho com um erro nas extremidades grande a estragar-me a
+> previsao!" and "Excepto para a Temperatura, costumo focar-me no erro relativo
+> medio e no maximo. Para T trabalho com valores absolutos").  `fitParameters`
+> GETS A RELATIVE RESIDUAL AND A FINAL MINIMAX STAGE.**  Two parts: (1) a
+> composition residual may be declared RELATIVE (a temperature residual stays
+> absolute), and the report prints mean and maximum relative error for
+> compositions, mean and maximum absolute error for T; (2) `objective`
+> gains a second stage that starts from the least-squares answer and minimises
+> the LARGEST error, announced as such, with both answers kept in the result.
+> WHY IT IS NEEDED, measured on curate14 (landed with this entry): the
+> five-parameter NRTL holds the butanol solubility in water flat (0.019 at 288
+> K, 0.022 at 366 K, measured 0.016-0.021) where the two-parameter form took it
+> to 0.067, and the held-out tie-line AAD is 0.0061; but in relative terms the
+> water-rich liquid is 12 % mean / 24 % max in the fit set and SYSTEMATICALLY
+> 15 % high above 320 K, because an absolute residual weighs a mole fraction of
+> 0.02 twenty-five times less than one of 0.5.  The between-study scatter on
+> that liquid is itself about 15 % (0.0159 to 0.0207 at 298.15 K).  THE PAIR IS
+> NOT PROMOTED to `data/standards/parameters/NRTL/` until this stage has run on
+> it.  Also ruled the same day and applied in curate14: a held-out bubble miss
+> of 1.7 K was "para mim esta bem ... modelacao e por definicao sempre
+> aproximada" -- the bubble band for a pair is the data's U95 PLUS the
+> catalogue vapour-pressure error at the set's pressure (0.85 K here), never
+> the U95 alone; and "a solubilidade tem de ficar bem" -- for a two-liquid
+> pair the solubility against temperature is the first thing judged.  Still
+> missing from the chain, found building the case: `choupo-thermoml` has no
+> `lle-index` / `extract-lle` (the tie lines were read by a curator script kept
+> out of the tree); the fit/held-out partition is by DOI and nothing checks
+> it; water's Antoine record is 0.70 K low at 1 atm (C279 will measure the
+> rest of the catalogue the same way).
+> RULED THE SAME HOUR (Vitor: "Naturalmente que pomos esse metodo como default,
+> mas o dicionario deve permitir o aluno por outras funcoes objetivo ... Cada
+> caso tem as suas especificidades!"): the two-stage method is the DEFAULT of
+> `fitParameters`, and the objective is a DECLARED, SELECTABLE entry of the
+> dict (`objective { ... }`: least squares only, minimax only, the two stages;
+> residual absolute or relative per property), named in the run header so the
+> student sees which one produced the numbers.  Consequence to be measured,
+> not assumed: a changed default moves the golden of every existing
+> `fitParameters` case; each is either pinned to `leastSquares` explicitly
+> (its published result was a least-squares one) or re-recorded, and the list
+> with the reason per case goes in the commit.
+
+
 > **C278 (Vitor, 2026-11-10, on column14 in the app after C275: the purity predictions
 > "ficaram uma merda", can it be made to match better).**  MEASURED the same turn, nothing
 > changed: the two product purities are 93.90 vs 93.5 wt % and 97.98 vs 98.1 wt %; what
