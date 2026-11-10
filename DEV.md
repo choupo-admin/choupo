@@ -3250,6 +3250,19 @@ accepts today, and that is a policy call.
 > ficarem melhor"): no drawing waits for approval; each tool is changed at once, the
 > shared shell first (knob reasons one click away, the engine-note line grey unless a
 > model left its validity), then each tool by what its own screen shows.
+> FIRST PASS LANDED 2026-11-10 (fb8ee61e8): the shell change; the figure or bench moved
+> to follow step 1 on about twenty pages (pool-fire 9028 -> 996 px, sines-pta 4963 ->
+> 1591, plant-layout 3930 -> 1310, overpressure 3434 -> 951, mccabe 2563 -> 419,
+> front-end-loading 2301 -> 478, psychro 2225 -> 813); the equations that failed to
+> render fixed; emphasis capitals removed.  Held by `--gui` 47 gates and 7341 tests on
+> the merged tree (one test pinned a capitalised phrase and was aligned).  Judged by
+> the architect and told to Vitor: REAL, NOT SUBSTANTIAL.  The amount of text is
+> unchanged, no figure was redrawn, 39 of 60 tools were measured and about a dozen
+> screens read by eye, the ten economics/IP pages and `case-assembly` untouched,
+> `process-safety` keeps its bench after the fictitious-reaction notice by decision.
+> Seen and not fixed: pool-fire legend capitals and `kW^(2/5)/m` in plain text.
+> NEXT (stays OPEN): cut the text and redraw the figure on ONE page, `thiele`, show
+> that screen to Vitor, then repeat.
 >
 > **C276 (Vitor, 2026-11-09 night: "Podes ver se isto e apelativo para um aluno?" on the
 > published `thiele` tool).**  READ on the live site at 1440x900, seven screens.  Verdict:
