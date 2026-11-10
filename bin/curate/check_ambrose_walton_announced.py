@@ -5,8 +5,9 @@ when its curve contradicts the record it was built from -- and moves no number.
     bin/curate/check_ambrose_walton_announced.py
 
 WHY THIS EXISTS (2026-11-10, DEV.md 4c C281 step 1).  48 catalogue components
-declared `vaporPressure { model AmbroseWalton; }` (47 since C281 step 2, which
-replaced nHexylAcetate's by an Antoine fitted to measurements; arm (e)).  The model reads Tc, Pc and
+declared `vaporPressure { model AmbroseWalton; }` (46 since C281 step 3, which
+replaced dimethylSulfoxide's and methylDiEthanolAmine's by Antoines fitted to
+measurements and restored nHexylAcetate's; arm (e)).  The model reads Tc, Pc and
 omega only and never the record's Tb; evaluated from each record's own
 constants, the curve's normal boiling point (P = 101325 Pa) misses the record's
 Tb by more than 2 K for 26 of the 48 and by more than 10 K for 14 (maleic acid
@@ -76,7 +77,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 EXE = ROOT / "choupoProps"
 THRESHOLD_K = 1.0            # the engine's tbGapAnnounce_K (stated default)
-AW_MAX = 47                  # arm (e): 48 at step 1, 47 after C281 step 2
+AW_MAX = 46                  # arm (e): 48 at step 1, 47 after C281 step 2, 46 after step 3
+                             # (dimethylSulfoxide + methylDiEthanolAmine promoted, nHexylAcetate reverted)
 
 # Parent-commit (19933c63f) values, printed by its build before the change.
 PARENT = [

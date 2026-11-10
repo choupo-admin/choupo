@@ -107,7 +107,9 @@ case-local one that did not earn promotion):
       its case is fetched and run, and the record's coefficients (to 1e-8
       relative), its Trange (the FIT dataset's own span), its evidence (role,
       DOI, extract sha256 against the case's archiveDatasets), its verdict,
-      held-out points, AAD and band must equal the run's; only `validated`
+      held-out points, AAD and band must equal the run's; the case DECLARES
+      `objective { method twoStage; }`, its run publishes twoStage and the
+      record's provenance `method` names it (C281 step 3); only `validated`
       is in the catalogue; the entry is `reviewStatus autoPromoted;
       humanReviewed false;` with `promotedBy`; and the case's run prints the
       component loader's `[unreviewed] component '<c>': `vaporPressure`
@@ -626,8 +628,10 @@ def check_ll_arm(tmp, fails):
 #  catalogue, `autoPromoted` carries `humanReviewed false` and `promotedBy`,
 #  and the case's own run VOICES the status through the component loader.
 STD_COMP = ROOT / "data" / "standards" / "components"
-VP_FLOOR = 1      # the number promoted at landing (C281 step 2): a
+VP_FLOOR = 2      # promoted at C281 step 3 (dimethylSulfoxide,
+                  # methylDiEthanolAmine; step 2's nHexylAcetate reverted): a
                   # collapsed scan surface must not read as a clean catalogue
+VP_OBJECTIVE = "twoStage"   # C281 step 3: the declared objective of every regression
 
 
 def vp_entry(text):
@@ -697,7 +701,7 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
     if len(recs) < VP_FLOOR:
         fails.append(f"arm (i): only {len(recs)} regressed vapour-pressure record(s) "
                      f"under {STD_COMP.relative_to(ROOT)} -- {VP_FLOOR} were promoted "
-                     "at landing (C281 step 2); the scan surface has collapsed or the "
+                     "by C281 step 3; the scan surface has collapsed or the "
                      "records lost their `fittedInCase`")
     for p in recs:
         comp, text = p.stem, p.read_text()
@@ -798,6 +802,26 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
         if rf["evidence"] != want:
             fails.append(f"{tag}: evidence {sorted(rf['evidence'])} differs from its "
                          f"case's declaration {sorted(want)}")
+        #  THE OBJECTIVE (C281 step 3).  The record is reproduced by the
+        #  objective its case DECLARES, and that objective is the one the
+        #  record names: the case's `objective { method <m>; }`, the run's
+        #  published method, and the record's provenance `method` must agree,
+        #  and the catalogue's regressions are twoStage (Vitor's practice,
+        #  C280) -- a record fitted by another objective is a different curve.
+        decl_m = re.search(r"^\s*objective\s*\{[^}]*\bmethod\s+(\w+)\s*;",
+                           strip_comments((case / "system" / "propsDict").read_text()),
+                           re.M)
+        decl_m = decl_m.group(1) if decl_m else None
+        run_m = {0: "leastSquares", 1: "minimax", 2: "twoStage"}.get(
+            int(d.get("objective_method", -1)) if d.get("objective_method") is not None
+            else -1)
+        rec_m = re.search(r'\bmethod\s+"[^"]*\bobjective (\w+):', ent or "")
+        rec_m = rec_m.group(1) if rec_m else None
+        if decl_m != VP_OBJECTIVE or run_m != VP_OBJECTIVE or rec_m != VP_OBJECTIVE:
+            fails.append(f"{tag}: objective -- the case declares {decl_m!r}, its run "
+                         f"published {run_m!r}, the record names {rec_m!r}; a "
+                         f"catalogue vapour pressure is the `{VP_OBJECTIVE}` fit its "
+                         "case declares (C281 step 3)")
         said = f"[unreviewed] component '{comp}': `vaporPressure` reviewStatus autoPromoted"
         if said not in out:
             fails.append(f"{tag}: marked autoPromoted and its case printed no "
@@ -988,7 +1012,7 @@ def main():
           "by name and passed the right one (arm f, amended); "
           f"{len(vp_done)} catalogue vapour pressure(s) regressed by `choupo-curate vp` "
           f"({', '.join(vp_done) or 'none'}) reproduced by their cases -- Antoine "
-          "coefficients, Trange = the fit's span, evidence, held-out verdict -- "
+          "coefficients under the declared twoStage objective, Trange = the fit's span, evidence, held-out verdict -- "
           "autoPromoted with humanReviewed false and voiced by the component "
           "loader into the caveat block (arm i); "
           f"{span_held} water pair(s) used BELOW their span announce it once "
