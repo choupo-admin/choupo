@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of curate163_vp_di2EthylhexylPhthalate
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/di2EthylhexylPhthalate-vapourPressure-je7005067.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je7005067";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je7005067.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je7005067.json";
+        articleFile   "je7005067.xml";
+        articleSha256 "2ff34a1f215bbe72e7c063e66a28cccff92229aaf97c2eaa54c3de09a1beaca6";
+        extractor     vapourPressure;
+        inchiKey      "BJQHLKABXJIVAM-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey BJQHLKABXJIVAM-UHFFFAOYSA-N --into <dir>";
+        sha256        "304434a72edf35d2c26c10abc532ba3ea8739ac29539654e6abc7d568b962b68";
+        identity
+        {
+            di2EthylhexylPhthalate { cas "117-81-7"; inchiKey "BJQHLKABXJIVAM-UHFFFAOYSA-N"; }
+        }
+    }
+);
