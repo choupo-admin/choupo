@@ -3417,6 +3417,28 @@ accepts today, and that is a policy call.
 > (check by grep) are listed, not silently left.  Status: recorded, general to
 > be dispatched (gui only; `--gui` is its validation).  Owner: architect.
 
+> **C297 engine half LANDED 2026-11-10 (5f8bc2df1 via integ merge).**  Decision
+> on validation: NO full sweep, reason written per rule 4: the new parser is
+> reached only inside the `reviewStatus autoPromoted` branch and prints nothing
+> new when no `review {}` block exists; measured byte-identical (stdout, stderr
+> and all result files, `diff -r`) before/after on three cases that read
+> autoPromoted components; the 14 gates the diff reaches passed (caveat surface,
+> component-name hint, doc references, estimate visible, Gibbs-Duhem, guide
+> anchors, layering, promoted-pair record, registry scan, regressed pairs, seal
+> growth, solubility parameter, generated artefacts, manifest).  Lesson
+> citations into Database.cpp (runLog.ts 692/694, caseAssembly.ts 177/184)
+> unchanged.  Open: no shipped case yet carries a block, so the component side
+> is untested with one; `humanReviewed` is not yet read as `by human|none`
+> (decided with the acceptance tightening, step (c)).
+>
+> **C299 follow-up (second slice, to dispatch):** the Pinch page now follows the
+> Units menu (branch c299-pinch-units, first slice); about 15 other result
+> displays still print kW as a literal: UnitNode.tsx:620, RunSummaryStrip.tsx:137,
+> StreamTerminal.tsx:195, PropertyPanel.tsx:761/789/801,
+> HeatExchangerDatasheet.tsx:243/381, ColumnDatasheet.tsx:215/361,
+> StreamsWorkspace.tsx:591, ReportsWorkspace.tsx:298/415-462,
+> FirstLawPlot.tsx:119-212, PlotsWorkspace.tsx:272.  EduTool lesson prose stays.
+
 > **C298 (Vitor, 2026-11-10: "A outra sessao para ja esta parada!  Eu vou
 > passar as tarefas dela para aqui porque temos aqui mais cores!").  THE
 > CLOUD'S CURATION WORK CONTINUES ON THE LAPTOP.**  The cloud pushed
