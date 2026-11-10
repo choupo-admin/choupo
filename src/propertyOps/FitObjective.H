@@ -68,7 +68,11 @@ Description
     absolute | relative`.  Any other word is refused, with what is built.
 
     WHAT THE OBJECTIVE REACHES.  The bubble kinds (T_bubble, P_bubble,
-    T_bubble+LLE).  The isotherm and membrane kinds keep their own searches:
+    T_bubble+LLE), and -- since DEV.md 4c C281 step 3 -- `vaporPressureFit`
+    (kind `Psat`): the same block, the same three methods and the same
+    default; its one residual is the pressure, RELATIVE, (P_model - P)/P
+    (`scale { Psat relative; }`, the only scale built), and its stage 1 is
+    the op's own least-squares search in log10 P.  The isotherm and membrane kinds keep their own searches:
     `objective` is read there only to REFUSE anything but `method
     leastSquares`, by name, rather than ignore a request.
 
@@ -104,6 +108,7 @@ struct Spec
     std::string tBubble = "absolute";
     std::string pBubble = "relative";
     std::string binodal = "relative";
+    std::string pSat    = "relative";         // kind Psat (vaporPressureFit) only
     bool runsLeastSquares() const { return method != Method::minimax; }
     bool runsMinimax()      const { return method != Method::leastSquares; }
 };
