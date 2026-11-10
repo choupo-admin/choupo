@@ -311,8 +311,8 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
         // (it integrates T), so the heat of reaction is always consulted.  The
         // ctrl toy components (compA/compB, no standardThermochemistry) take the announced
         // dict-override branch -- their numbers are unchanged.
-        std::optional<scalar> dictDH;
-        if (rxn->found("dH_rxn")) dictDH = rxn->lookupScalar("dH_rxn");
+        const std::string heatCtx = "DynamicCSTR '" + name_ + "' reaction '" + rn + "'";
+        const std::optional<scalar> dictDH = resolveDeclaredHeat(thermo, r.comps, r.nu, parseDeclaredHeat(*rxn, heatCtx), heatCtx, 3).overrideForResolver;
         std::string heatSource;
         r.dH = reactionHeat(thermo, r.comps, r.nu, T_, "liquid", dictDH,
                             "DynamicCSTR '" + name_ + "' reaction '" + rn + "'",

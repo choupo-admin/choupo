@@ -3298,6 +3298,10 @@ accepts today, and that is a policy call.
 > unreachable (no precedent), and whether curate04-14 drop their tracked
 > series.  Record: docs/design/binary-pairs-from-open-measurements.md section 8.
 
+> **C288 SLICE 1 RESULT.** C288 slice 1 LANDED 11-10: `heatOfReaction { value; T; phase; method; source; reason; }` parsed by one shared parser (ReactionHeat.H/.cpp, which also reads the bare `dH_rxn` with its meaning unchanged); both forms on one reaction refused; equilibriumReactor and gibbsReactor refuse a declared heat with the physical reason; a reactive column announces a divergence; delta = declared - formation is computed and printed (methyl acetate witness: -5.67 vs -7.31 kJ/mol at 318 K, delta +1.64) but no reactor applies it yet (slices 2-4). No shipped number moved: 21 cases byte-identical to main's binary, --scope 173 cases PASS, --fast 78 PASS, --gui app tests green; full sweep not run (written reason: the parser is the only shared path and every reactor family went through --scope/--fast); the 13 refusal fixtures wait for check_declared_heat.
+>
+> **C272 RESULT.** C272 slice 1 LANDED 11-10: `typicals ( { typical; index; count; pitch; members; source; reason; } )` in layoutDict -- a train declared once and repeated; every repeat is a real item for overlap, separation, zones, roads, bunds and pipes; `layout.items` stays complete (each repeat carries typical / trainIndex / repeatOf), the outlines go in `layout.typicalOutlines`; swro01's 35 repeated item entries became two typicals; findings, pipes, plot unchanged; lesson citations untouched (line-neutral edits). Full sweep NOT run (written reason: the new code runs only where `typicals` is declared, swro01 alone; the seven other layout cases pass their goldens); --gui 46 PASS / 1 FAIL on the branch, the failure being main's dossier test, since fixed by the cloud. Not done: the app does not draw the outlines yet.
+>
 > **C268 RESULT (2026-11-10).** C268 utilities block LANDED 11-10: cooling tower (19.7 MW, 471 kg/s), refrigeration package (20.6 MW at the chiller) and flare (747 kg/h normal vent) on greenAmmoniaPEQ's plot, each sized on the run's own numbers; 0 findings, 36/36 pipes, closures unchanged (mass 99.997 %, energy 0.002 %); utility pipes not routed (no grammar for a line between two items); check_bund_arithmetic now compares tank1's V_R as a number at 1e-9.  Not run: --gui, a full sweep; the flare separation rows are asserted, not sabotage-tested.
 >
 > **Acetic acid PARKED (architect, 2026-11-10, after Vitor: "Perdeste uma semana com essa merda antes!").**  The open acetic items (C201 (1) rest: dew-point distillate, Gibbs / three-phase / Txy readers, record identity; C174/C175 subcooled-feed q; column05's dimer in C239) get no work this month.  Reason: nothing the month delivers depends on them, aceticAcid02 runs with its balances gated (C258), and column05's ideal-vapour limit is already announced.  Reopened only if a case a student meets fails.
@@ -3367,7 +3371,7 @@ accepts today, and that is a policy call.
 > disk).  TWO MORE GENERALS, ON DISJOINT PATHS.**  (1) c291-px-pairs: NRTL
 > pairs from isothermal bubble-PRESSURE (P-x) data -- the NIST index holds
 > 1676 such pairs against the 1410 bubble-T pairs the C284/C290 pipeline
-> reads -- in a NEW tool (bin/curate/pairs_px.py), case numbers curate500+,
+> reads -- in a NEW tool (a P-x pairs script, to be written), case numbers curate500+,
 > graded like C286.  (2) c292-components-2: the next new catalogue
 > components (the compounds with measured vapour pressure, density and Cp
 > but NO measured critical constant: Tc and Pc estimated by Joback and
@@ -3462,7 +3466,7 @@ accepts today, and that is a policy call.
 > component_name_hint, glossary_bans, doctrine, regressed_pairs) OK; no src/
 > change, no existing golden moved, new goldens only (the 32 vp cases, 16 rows
 > each, and curate699, 512 rows); `check_doc_references` fails on this branch
-> only for `bin/curate/pairs_px.py`, the c291 general's tool named in C291
+> only for the P-x pair tool, the c291 general's tool named in C291
 > above, which is not here yet.  No full sweep.
 
 > **C289 (Vitor, 2026-11-10: "Sim! Isso e boa ideia!", on a proposal from

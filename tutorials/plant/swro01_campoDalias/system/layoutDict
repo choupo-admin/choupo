@@ -33,16 +33,22 @@
   the brine outfall and its diffuser, the irrigation and potable network --
   and none of it is drawn.
 
-  THE PLANT IS SIX TRAINS IN ONE BUILDING (DEV.md 4c C199).  The sizing pass
-  yields one item per train for each high-pressure pump, booster, second-pass
-  pump, energy-recovery array and vessel bank (`HPpump/train1` ..
-  `RO2b/train6`: 42 items).  The vessel banks publish their own envelope (the
-  racks side by side, the loading clearance at the east end), so they declare
-  no footprint here; the pumps and arrays publish none, so their plan boxes are
-  author-set.  All 42 stand in the rooms of the `building {}` at the end of
-  this file (pump hall, first-pass hall, second-pass hall, energy-recovery
-  hall), which fixes their base on the floor and makes the engine refuse an
-  item that does not fit its room.  Train k stands at x = -100 + 19 (k - 1) m.
+  THE PLANT IS SIX TRAINS IN ONE BUILDING (DEV.md 4c C199, C272).  The sizing
+  pass yields one item per train for each high-pressure pump, booster,
+  second-pass pump, energy-recovery array and vessel bank (`HPpump/train1` ..
+  `RO2b/train6`: 42 items).  TRAIN 1 IS DECLARED IN FULL (its seven items
+  below) and the other five are a REPEAT of it, declared once in `typicals`:
+  the engine moves train 1's items by the pitch, sizes each from its own
+  sizing, stands it in its room and checks and pipes it like any item; the
+  plan and the 3D draw trains 2..6 as outlines, "typical of train 1".  The
+  vessel banks publish their own envelope (the racks side by side, the loading
+  clearance at the east end), so they declare no footprint here; the pumps and
+  arrays publish none, so their plan boxes are author-set.  All 42 stand in
+  the rooms of the `building {}` at the end of this file (pump hall,
+  first-pass hall, second-pass hall, energy-recovery hall), which fixes their
+  base on the floor and makes the engine refuse an item that does not fit its
+  room; a room lists train 1's item and the repeats follow.  Train k stands at
+  x = -100 + 19 (k - 1) m (its energy-recovery array at y = -27 + 5 (k - 1) m).
   The pretreatment is still a pair of NON-PROCESS boxes.
 
   WHAT THE PIPE ROUTER CAN AND CANNOT DO HERE.  Indoor piping is not routed
@@ -114,31 +120,6 @@ items
         orientation alongX;
     }
     {
-        item        "RO1/train2";
-        x           -81 m;  y -14 m;
-        orientation alongX;
-    }
-    {
-        item        "RO1/train3";
-        x           -62 m;  y -14 m;
-        orientation alongX;
-    }
-    {
-        item        "RO1/train4";
-        x           -43 m;  y -14 m;
-        orientation alongX;
-    }
-    {
-        item        "RO1/train5";
-        x           -24 m;  y -14 m;
-        orientation alongX;
-    }
-    {
-        item        "RO1/train6";
-        x           -5 m;  y -14 m;
-        orientation alongX;
-    }
-    {
         item        "RO2a/train1";
         x           -100 m;  y 11 m;
         orientation alongX;
@@ -146,56 +127,6 @@ items
     {
         item        "RO2b/train1";
         x           -100 m;  y 4.5 m;
-        orientation alongX;
-    }
-    {
-        item        "RO2a/train2";
-        x           -81 m;  y 11 m;
-        orientation alongX;
-    }
-    {
-        item        "RO2b/train2";
-        x           -81 m;  y 4.5 m;
-        orientation alongX;
-    }
-    {
-        item        "RO2a/train3";
-        x           -62 m;  y 11 m;
-        orientation alongX;
-    }
-    {
-        item        "RO2b/train3";
-        x           -62 m;  y 4.5 m;
-        orientation alongX;
-    }
-    {
-        item        "RO2a/train4";
-        x           -43 m;  y 11 m;
-        orientation alongX;
-    }
-    {
-        item        "RO2b/train4";
-        x           -43 m;  y 4.5 m;
-        orientation alongX;
-    }
-    {
-        item        "RO2a/train5";
-        x           -24 m;  y 11 m;
-        orientation alongX;
-    }
-    {
-        item        "RO2b/train5";
-        x           -24 m;  y 4.5 m;
-        orientation alongX;
-    }
-    {
-        item        "RO2a/train6";
-        x           -5 m;  y 11 m;
-        orientation alongX;
-    }
-    {
-        item        "RO2b/train6";
-        x           -5 m;  y 4.5 m;
         orientation alongX;
     }
     {
@@ -217,128 +148,8 @@ items
         footprint   { length 6 m; width 4 m; height 3 m; }   // author-set: the train's second-pass feed pump
     }
     {
-        item        "HPpump/train2";
-        x           -85 m;  y -43 m;
-        orientation alongX;
-        footprint   { length 10 m; width 6 m; height 4 m; }   // author-set: the train's high-pressure pump and motor skid (about 1.5 MW)
-    }
-    {
-        item        "Booster/train2";
-        x           -76 m;  y -43 m;
-        orientation alongX;
-        footprint   { length 5 m; width 3 m; height 3 m; }   // author-set: the train's booster
-    }
-    {
-        item        "Pass2Pump/train2";
-        x           -81 m;  y -36 m;
-        orientation alongX;
-        footprint   { length 6 m; width 4 m; height 3 m; }   // author-set: the train's second-pass feed pump
-    }
-    {
-        item        "HPpump/train3";
-        x           -66 m;  y -43 m;
-        orientation alongX;
-        footprint   { length 10 m; width 6 m; height 4 m; }   // author-set: the train's high-pressure pump and motor skid (about 1.5 MW)
-    }
-    {
-        item        "Booster/train3";
-        x           -57 m;  y -43 m;
-        orientation alongX;
-        footprint   { length 5 m; width 3 m; height 3 m; }   // author-set: the train's booster
-    }
-    {
-        item        "Pass2Pump/train3";
-        x           -62 m;  y -36 m;
-        orientation alongX;
-        footprint   { length 6 m; width 4 m; height 3 m; }   // author-set: the train's second-pass feed pump
-    }
-    {
-        item        "HPpump/train4";
-        x           -47 m;  y -43 m;
-        orientation alongX;
-        footprint   { length 10 m; width 6 m; height 4 m; }   // author-set: the train's high-pressure pump and motor skid (about 1.5 MW)
-    }
-    {
-        item        "Booster/train4";
-        x           -38 m;  y -43 m;
-        orientation alongX;
-        footprint   { length 5 m; width 3 m; height 3 m; }   // author-set: the train's booster
-    }
-    {
-        item        "Pass2Pump/train4";
-        x           -43 m;  y -36 m;
-        orientation alongX;
-        footprint   { length 6 m; width 4 m; height 3 m; }   // author-set: the train's second-pass feed pump
-    }
-    {
-        item        "HPpump/train5";
-        x           -28 m;  y -43 m;
-        orientation alongX;
-        footprint   { length 10 m; width 6 m; height 4 m; }   // author-set: the train's high-pressure pump and motor skid (about 1.5 MW)
-    }
-    {
-        item        "Booster/train5";
-        x           -19 m;  y -43 m;
-        orientation alongX;
-        footprint   { length 5 m; width 3 m; height 3 m; }   // author-set: the train's booster
-    }
-    {
-        item        "Pass2Pump/train5";
-        x           -24 m;  y -36 m;
-        orientation alongX;
-        footprint   { length 6 m; width 4 m; height 3 m; }   // author-set: the train's second-pass feed pump
-    }
-    {
-        item        "HPpump/train6";
-        x           -9 m;  y -43 m;
-        orientation alongX;
-        footprint   { length 10 m; width 6 m; height 4 m; }   // author-set: the train's high-pressure pump and motor skid (about 1.5 MW)
-    }
-    {
-        item        "Booster/train6";
-        x           0 m;  y -43 m;
-        orientation alongX;
-        footprint   { length 5 m; width 3 m; height 3 m; }   // author-set: the train's booster
-    }
-    {
-        item        "Pass2Pump/train6";
-        x           -5 m;  y -36 m;
-        orientation alongX;
-        footprint   { length 6 m; width 4 m; height 3 m; }   // author-set: the train's second-pass feed pump
-    }
-    {
         item        "PX/train1";
         x           22 m;  y -27 m;
-        orientation alongX;
-        footprint   { length 12 m; width 4 m; height 3 m; }   // author-set: the train's array of six rotary devices on a skid
-    }
-    {
-        item        "PX/train2";
-        x           22 m;  y -22 m;
-        orientation alongX;
-        footprint   { length 12 m; width 4 m; height 3 m; }   // author-set: the train's array of six rotary devices on a skid
-    }
-    {
-        item        "PX/train3";
-        x           22 m;  y -17 m;
-        orientation alongX;
-        footprint   { length 12 m; width 4 m; height 3 m; }   // author-set: the train's array of six rotary devices on a skid
-    }
-    {
-        item        "PX/train4";
-        x           22 m;  y -12 m;
-        orientation alongX;
-        footprint   { length 12 m; width 4 m; height 3 m; }   // author-set: the train's array of six rotary devices on a skid
-    }
-    {
-        item        "PX/train5";
-        x           22 m;  y -7 m;
-        orientation alongX;
-        footprint   { length 12 m; width 4 m; height 3 m; }   // author-set: the train's array of six rotary devices on a skid
-    }
-    {
-        item        "PX/train6";
-        x           22 m;  y -2 m;
         orientation alongX;
         footprint   { length 12 m; width 4 m; height 3 m; }   // author-set: the train's array of six rotary devices on a skid
     }
@@ -605,6 +416,37 @@ fence
     );
 }
 
+//  THE TYPICAL TRAIN (DEV.md 4c C272).  Train 1's items are placed above, in
+//  full; the other five trains are REPEATS of it, declared once here.  The
+//  engine moves each member by (k - 1) x the pitch, takes its size from the
+//  sized item of train k, stands it in the room the building lists for train
+//  1's item, checks it and pipes it like any item (a header with a branch per
+//  train), and publishes trains 2..6 as one OUTLINE per room, marked "typical
+//  of train 1".  Two groups, because the pieces do not repeat on one pitch:
+//  the pumps and racks step 19 m along x, one train beside the next; the
+//  energy-recovery arrays stand in their own hall, stacked 5 m apart along y.
+typicals
+(
+    {
+        typical "train";
+        index   "train";
+        count   6;
+        pitch   { x 19 m; y 0 m; }
+        members ( "RO1/train1" "RO2a/train1" "RO2b/train1" "HPpump/train1" "Booster/train1" "Pass2Pump/train1" );
+        source  "author-set assumption for this exercise: the six trains are identical, side by side on a 19 m pitch";
+        reason  "the pump, the booster, the second-pass pump and the two passes' racks of one train repeat unchanged train after train";
+    }
+    {
+        typical "erArray";
+        index   "train";
+        count   6;
+        pitch   { x 0 m; y 5 m; }
+        members ( "PX/train1" );
+        source  "author-set assumption for this exercise: the six trains' energy-recovery skids stacked on a 5 m pitch along y";
+        reason  "each train's array of pressure exchangers stands on its own skid, one beside the next in the energy-recovery hall";
+    }
+);
+
 //  THE RO BUILDING (DEV.md 4c C100, C199).  One shell, four rooms the sized
 //  items STAND IN (their base is the room's floor): the pump hall along the
 //  south wall, the first-pass hall with the six trains' racks, the second-pass
@@ -635,16 +477,16 @@ building
     rooms
     (
         { room pumpHall;  floor ground; xMin -115 m; xMax 8 m;  yMin -47 m; yMax -32 m; grade CNC; pressure 0 Pa; relativeTo outside;
-          equipment ( HPpump/train1 Booster/train1 Pass2Pump/train1 HPpump/train2 Booster/train2 Pass2Pump/train2 HPpump/train3 Booster/train3 Pass2Pump/train3 HPpump/train4 Booster/train4 Pass2Pump/train4 HPpump/train5 Booster/train5 Pass2Pump/train5 HPpump/train6 Booster/train6 Pass2Pump/train6 );
+          equipment ( HPpump/train1 Booster/train1 Pass2Pump/train1 );   // the repeats of trains 2..6 follow (`typicals`)
           source "author-set"; reason "the six trains' high-pressure pumps, boosters and second-pass pumps in one hall along the south wall, each pump in line with its train's racks"; }
         { room ro1Hall;   floor ground; xMin -115 m; xMax 8 m;  yMin -32 m; yMax 2 m;   grade CNC; pressure 0 Pa; relativeTo outside;
-          equipment ( RO1/train1 RO1/train2 RO1/train3 RO1/train4 RO1/train5 RO1/train6 );
+          equipment ( RO1/train1 );
           source "author-set"; reason "the first pass: the six trains' racks of seawater vessels, each bank's loading clearance at its east end"; }
         { room ro2Hall;   floor ground; xMin -115 m; xMax 8 m;  yMin 2 m;   yMax 16 m;  grade CNC; pressure 0 Pa; relativeTo outside;
-          equipment ( RO2a/train1 RO2b/train1 RO2a/train2 RO2b/train2 RO2a/train3 RO2b/train3 RO2a/train4 RO2b/train4 RO2a/train5 RO2b/train5 RO2a/train6 RO2b/train6 );
+          equipment ( RO2a/train1 RO2b/train1 );
           source "author-set"; reason "the second pass: the six trains' racks of brackish vessels, the 54-vessel and the 18-vessel stages"; }
         { room pxHall;    floor ground; xMin 8 m;    xMax 36 m; yMin -32 m; yMax 2 m;   grade CNC; pressure 0 Pa; relativeTo outside;
-          equipment ( PX/train1 PX/train2 PX/train3 PX/train4 PX/train5 PX/train6 );
+          equipment ( PX/train1 );
           source "author-set"; reason "the energy-recovery arrays of the six trains on skids beside the first-pass hall, the high-pressure brine and seawater headers short"; }
     );
 

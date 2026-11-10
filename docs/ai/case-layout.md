@@ -1587,6 +1587,41 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   carries; a store on a stream that is not routed is a finding by name.
   A `pipes` override on a stream that carries a header is refused; move
   a branch's port with `ports` (an item of an attached store is accepted).
+  A TYPICAL TRAIN (C272): a plant of N identical trains declares ONE train
+  and a repeat, as a drawing office does.  Train 1's sized items are placed
+  in `items ( ... )` like any other; `typicals` repeats them:
+  ```
+  typicals
+  (
+      { typical "train"; index "train"; count 6;
+        pitch { x 19 m; y 0 m; }                       // train k+1 = train k + pitch
+        members ( "RO1/train1" "HPpump/train1" "Booster/train1" );
+        source "..."; reason "..."; }                  // both required
+  );
+  ```
+  A member's id must end with `<index>1`; train k's sized item has the same id
+  with `<index>k` (the sizing pass's `trains { count N; }` makes them).  The
+  engine moves each member by (k - 1) x `pitch`, takes the size from THAT
+  item's own sizing, and puts it in the room the building lists for train 1's
+  item (a room's `equipment` names train 1 only; the repeats follow).  Every
+  repeated item takes part in EVERY check (overlap, separation, zones, roads,
+  bunds, area, pipe clash) and in the pipe router (a header gets a branch per
+  train) exactly as if you had declared it, so an outline cannot hide a
+  clash.  What is PUBLISHED: `layout.items` stays complete -- every real item,
+  the repeats included, each of a typical carrying `typical` and `trainIndex`
+  and each repeat `repeatOf` (train 1's id) -- and, apart, `layout.typicalOutlines`:
+  one OUTLINE per repeated train and room (id `<typical>#<k>[@<room>]`, kind
+  `typicalOutline`; the plan box that holds the train's items in that room),
+  which a plan may draw dashed as "typical of train 1".  `layout.typicals`
+  lists each group (count, pitch, members, items
+  repeated).  One group has one pitch: equipment that steps differently
+  (swro01's energy-recovery arrays stack along y while its pumps and racks
+  step along x) is a second group.  REFUSED: a member not placed in `items`,
+  a repeat also declared in `items`, a count below 2, a zero pitch, a member
+  of two groups, a train the sizing pass did not produce, a train whose sizer
+  publishes a size where train 1's item declares one (or the reverse), an item
+  indoors in train 1 and not in train k.  Witness: `swro01_campoDalias`
+  (35 item entries became two `typicals` entries).
   A stream the
   layout cannot reach (an unsized tank, an unplaced item) is listed as not
   routed, with the reason, the units at its two ends and the point of the end
