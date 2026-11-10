@@ -236,7 +236,7 @@ q^*_\mathrm{isotherm} &= \frac{(R_f - \varepsilon)\, c_\mathrm{in}}{\rho_b}
     formula: String.raw`\begin{aligned}
 f_\mathrm{used} &= \frac{t_b}{t_\mathrm{st}}\\[4pt]
 \mathrm{LUB} &= L_\mathrm{lab} \left( 1 - \frac{t_b}{t_\mathrm{st}} \right)\\[4pt]
-L_\mathrm{MTZ} &\approx 2\, \mathrm{LUB} \qquad \text{(a SYMMETRIC front only)}
+L_\mathrm{MTZ} &\approx 2\, \mathrm{LUB} \qquad \text{(a symmetric front only)}
 \end{aligned}`,
     where: [
       { sym: "f_\\mathrm{used}", means: "the fraction of the laboratory bed's "
@@ -306,8 +306,8 @@ m_\mathrm{ads} &= \rho_b \frac{\pi D^2}{4} L_\mathrm{full}
       + "column that throws away 5 % of itself looks poor, and a three-metre "
       + "plant bed with the same 2.5 cm unused wastes under 1 %.  That is "
       + "why laboratory columns look terrible and plant beds do not, and why "
-      + "the plant bed's service time is not the laboratory column's scaled "
-      + "by length -- it is a little longer than that, because the unused "
+      + "the plant bed's service time is not the laboratory column's "
+      + "breakthrough time scaled by length -- it is a little longer than that, because the unused "
       + "length is added once rather than scaled.  Which knob re-runs the "
       + "engine and which does not: the velocity, length, temperature, "
       + "pressure and horizon knobs write the witness's dict and re-run the "
