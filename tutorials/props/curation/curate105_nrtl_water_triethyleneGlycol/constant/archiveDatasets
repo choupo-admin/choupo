@@ -1,0 +1,77 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of curate105_nrtl_water_triethyleneGlycol
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/water-triethyleneGlycol-bubble-j.fluid.2015.07.030.dat";
+        role          fit;   // C283: every laboratory is fitted
+        doi           "10.1016/j.fluid.2015.07.030";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2015.07.030.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2015.07.030.json";
+        articleFile   "j.fluid.2015.07.030.xml";
+        articleSha256 "3c39e5f5d25ad4b398dc7527e15f6577b93a3d6ee322809bb0ba9a6a3edc6ac1";
+        block         6;
+        filter        ( --interior-only );
+        extract       "bin/choupo-thermoml extract-vle <article file> --block 6 --interior-only --into <dir>";
+        sha256        "6b6c25cc42d3901450edb32c101d8c9b09814d11b93bf839e56e1b0d38884f90";
+        identity
+        {
+            water          { cas "7732-18-5"; inchiKey "XLYOFNOQVPJJNP-UHFFFAOYSA-N"; }
+            triethyleneGlycol { cas "112-27-6"; inchiKey "ZIBGPFATKBEMQZ-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/water-triethyleneGlycol-bubble-acs.jced.7b00945.dat";
+        role          fit;   // C283: every laboratory is fitted
+        doi           "10.1021/acs.jced.7b00945";
+        url           "https://trc.nist.gov/ThermoML/10.1021/acs.jced.7b00945.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/acs.jced.7b00945.json";
+        articleFile   "acs.jced.7b00945.xml";
+        articleSha256 "7a094d2fcbf64ff45ed75e2fb055cd819d00874e7fa16d6e6ff8eadce98e8526";
+        block         5;
+        filter        ( --interior-only );
+        extract       "bin/choupo-thermoml extract-vle <article file> --block 5 --interior-only --into <dir>";
+        sha256        "d4f6052a9859949cb5b2b139c40c44b5b8b956b113edffe3a6e266b32315c799";
+        identity
+        {
+            water          { cas "7732-18-5"; inchiKey "XLYOFNOQVPJJNP-UHFFFAOYSA-N"; }
+            triethyleneGlycol { cas "112-27-6"; inchiKey "ZIBGPFATKBEMQZ-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/water-triethyleneGlycol-bubble-je800675u.dat";
+        role          fit;   // C283: every laboratory is fitted
+        doi           "10.1021/je800675u";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je800675u.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je800675u.json";
+        articleFile   "je800675u.xml";
+        articleSha256 "e72d83523617f26bbb451945faa3c5b81253daf69988572eda61974efe64d028";
+        block         0;
+        filter        ( --interior-only );
+        extract       "bin/choupo-thermoml extract-vle <article file> --block 0 --interior-only --into <dir>";
+        sha256        "b6a329432fe49735af8b43360f05f2d9858c1eddd7597c7de88c3de3d37fc447";
+        identity
+        {
+            water          { cas "7732-18-5"; inchiKey "XLYOFNOQVPJJNP-UHFFFAOYSA-N"; }
+            triethyleneGlycol { cas "112-27-6"; inchiKey "ZIBGPFATKBEMQZ-UHFFFAOYSA-N"; }
+        }
+    }
+);
