@@ -393,7 +393,7 @@ level up.)
 | `nHexacosane` | 366.707 | (volatile) | 510-742 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `nHexadecane` | 226.4412 | (volatile) | 438-632 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `nHexane` | 86.178 | (volatile) | 286-343 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `nHexylAcetate` | 144.2114 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
+| `nHexylAcetate` | 144.2114 | fit | 398-440 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `nHexylMercaptan` | 118.2404 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `nitrobenzene` | 123.1094 | (volatile) | 263-626 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `nitroethane` | 75.0666 | (volatile) | 334-500 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |

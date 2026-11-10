@@ -1189,12 +1189,10 @@ WHAT THE RUN SHOWS (pinned in `expected`). Both starts recover b\_ij and b\_ji o
 \tutentry{curate14\_nrtl\_butanol\_water}{tutorials/props/curation/curate14\_nrtl\_butanol\_water}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_mixed}\\[-1pt]{\tiny fitParameters}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{fit\_mixed\_start2}\\[-1pt]{\tiny fitParameters}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{loso\_jced\_7b00302}\\[-1pt]{\tiny fitParameters}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{loso\_je5007218}\\[-1pt]{\tiny fitParameters}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{loso\_fluid\_2007\_12\_003}\\[-1pt]{\tiny fitParameters}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{loso\_jced\_6b00941}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_binodal}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{fit\_binodal\_start2}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{report\_homogeneous\_bubble}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{fit\_twoStage}\\[-1pt]{\tiny fitParameters}};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Water + 1-butanol: NRTL fitted to measured ThermoML bubble temperatures AND tie lines in ONE fit (kind T\_bubble+LLE), held out against other studies, with leave-one-study-out triage}
@@ -1205,33 +1203,874 @@ The synthetic witness curate13 proves that the machinery recovers a pair it was 
 
 WHAT THE ARCHIVE HOLDS FOR THIS PAIR (found by reading the XML, not by the indexer). No file of the archive is a pure binary water + 1-butanol study. Every datum below is a BINARY BLOCK inside a ternary or quaternary study (the authors report the binary edge of their system), so: (a) bin/choupo-thermoml vle-index finds ONE usable isobaric bubble series (doi 10.1021/je700411p, 15 interior points) and the heteroazeotrope temperatures of two more; (b) the liquid-liquid blocks are not reached by `extract-vle`, so the tie-line files were written by a small curator script (kept out of the tree) that reads the same XML, pairs the two liquids of each temperature, and converts mass fractions to mole fractions (M 74.123 and 18.015 g/mol, said in the file). Whether a given binary row was measured by its authors or taken from the literature is not recorded in the archive; the files say `reviewStatus transcribedNotCheckedAgainstArticle` and the run announces it.
 
-THE PARTITION, DECLARED BEFORE THE FIRST FIT. FIT bubble temperatures: doi 10.1021/je700411p (15 points, 101.3 kPa); tie lines: the five studies that report THREE OR MORE temperatures -- 10.1021/je700411p (5), 10.1021/acs.jced.7b00302 (3), 10.1021/je5007218 (3), 10.1016/j.fluid.2007.12.003 (3), 10.1021/acs.jced.6b00941 (3): 17 tie lines, 288-362 K. HELD OUT bubble temperatures: 10.1016/j.jct.2014.07.021 and 10.1016/j.jct.2016.04.013 (two heteroazeotrope temperatures each, about 365.8 K); tie lines: the eighteen other studies, one or two temperatures each (21 tie lines, 288-366 K). No author name of a held-out study appears in a fit study (the archive carries no affiliations, so a shared author is the dependence the rule can check). BANDS written in `acceptance` below with their origin (maxAAD 0.23 \% of T, maxLLE 0.01 in mole fraction). TRIAGE `loso\_$\ast$` fit the pair with ONE tie-line study moved from fit to held-out in turn, to see whether the verdict is the property of the pair or of one study.
+THE PROMOTED OPERATION (C280, 2026-11-10; the sections below it are the negative results that led here, kept short). `fit\_binodal` fits the BINODAL and the HETEROAZEOTROPE temperature, not the homogeneous butanol-rich bubble series: least squares (declared: the water-rich tie lines carry a 15 \% scatter between laboratories, measured about a quadratic in T as mean 5.5 \%, max 18.6 \%, and a minimax objective equalises the largest error of both liquids at that scatter), binodal rows relative. FIT bubble: 10.1016/j.jct.2014.07.021 (2 heteroazeotrope points); tie lines: that study and 10.1021/acs.jced.7b00302, je5007218, j.fluid.2007.12.003, acs.jced.6b00941 -- 14 tie lines, 288-366 K. HELD OUT bubble: 10.1016/j.jct.2016.04.013 (2 heteroazeotrope points); 29 tie lines of 21 other studies including 10.1021/je700411p. The homogeneous bubble series of je700411p (15 points, x 0.56-0.99, 366-390 K) is scored by `report\_homogeneous\_bubble`, the SAME fit against that series only, so its miss is its own line and does not enter the heteroazeotrope verdict. (The mixed kind needed bubble evidence in the fit: the two heteroazeotrope points. Whether a fit with none is allowed was not tried.) RESULT (the engine's ERROR REPORT; five parameters b\_ij 1894.0429, b\_ji -163.8364, a\_ij -4.7108, a\_ji 4.0996, alpha 0.4459): VERDICT validated -- held-out tie-line AAD 0.0056 against 0.01, held-out heteroazeotrope bubble 0.376 K = 0.103 \% against 0.23 \%. Relative error mean / max, fit | held out: water-rich 6.9 \% / 17.3 \% | 5.2 \% / 16.6 \%; butanol-rich 1.9 \% / 5.8 \% | 2.2 \% / 11.5 \%. Solubility of butanol in water, model: 0.0194 (288 K), 0.0175 (320 K), 0.0173 (340 K), 0.0183 (366 K) -- the shallow minimum is drawn. fit\_binodal\_start2 lands on the same pair (b\_ij 1894.08). `fit\_twoStage` (the fitter's default objective on this partition): b\_ij 2132.88; rich-liquid relative 5.6 \% mean, 15 \% max, held-out tie-line AAD 0.0143 -- notValidated: minimax follows the water-rich scatter. WHAT THE PAIR IS NOT FOR: `report\_homogeneous\_bubble` scores the homogeneous butanol-rich series held out: mean 2.18 K = 0.59 \% (max 3.2 K) against the 0.23 \% band, NOT loosened -- notValidated, as found. The pair is for the liquid-liquid split and the heteroazeotrope; at 1 atm on the butanol-rich homogeneous side it reads about 2-3 K high. The catalogue record says so. The explicit data of this section replace the "WHAT THE RUN FOUND" blocks below for the promoted record; those describe the earlier partition (je700411p in the fit, loso\_$\ast$ operations since dropped).
 
-THE FIT. NRTL with tau\_ij = a\_ij + b\_ij/T and alpha free: FIVE parameters (b\_ij, b\_ji, a\_ij, a\_ji, alpha), i = nButanol, j = water. Bubble rows are weighted by 1/U (each point's own stated expanded uncertainty), tie-line mole fractions by 1/0.0005. The start (b\_ij 0, b\_ji 1000 K, a 0, alpha 0.30) splits the liquid at every measured tie line; `fit\_mixed\_start2` starts elsewhere (400 / 1400 / alpha 0.40) and must land on the same pair.
+THE FIRST PARTITION (superseded), DECLARED BEFORE THE FIRST FIT. FIT bubble temperatures: doi 10.1021/je700411p (15 points, 101.3 kPa); tie lines: the five studies that report THREE OR MORE temperatures -- 10.1021/je700411p (5), 10.1021/acs.jced.7b00302 (3), 10.1021/je5007218 (3), 10.1016/j.fluid.2007.12.003 (3), 10.1021/acs.jced.6b00941 (3): 17 tie lines, 288-362 K. HELD OUT bubble temperatures: 10.1016/j.jct.2014.07.021 and 10.1016/j.jct.2016.04.013 (two heteroazeotrope temperatures each, about 365.8 K); tie lines: the eighteen other studies, one or two temperatures each (21 tie lines, 288-366 K). No author name of a held-out study appears in a fit study (the archive carries no affiliations, so a shared author is the dependence the rule can check). BANDS written in `acceptance` below with their origin (maxAAD 0.23 \% of T, maxLLE 0.01 in mole fraction). TRIAGE `loso\_$\ast$` fit the pair with ONE tie-line study moved from fit to held-out in turn, to see whether the verdict is the property of the pair or of one study.
+
+OBJECTIVE (C280). The operations below run the DEFAULT objective of `fitParameters`, twoStage, with tie-line rows relative; read the run header for the one that produced a number. The weights stated under THE FIT are the pre-C280 ones: the tie-line weight is now `sigmaRelative`, below. THE FIT. NRTL with tau\_ij = a\_ij + b\_ij/T and alpha free: FIVE parameters (b\_ij, b\_ji, a\_ij, a\_ji, alpha), i = nButanol, j = water. Bubble rows are weighted by 1/U (each point's own stated expanded uncertainty), tie-line mole fractions by 1/0.0005. The start (b\_ij 0, b\_ji 1000 K, a 0, alpha 0.30) splits the liquid at every measured tie line; `fit\_mixed\_start2` starts elsewhere (400 / 1400 / alpha 0.40) and must land on the same pair.
 
 THE FIRST FORM, AND WHY IT WAS LEFT (kept as the record of a negative result). With a\_ij = a\_ji = 0, alpha = 0.30 fixed and the tie lines weighted by 1/0.005, the fit gave b\_ij = -39.14 K, b\_ji = 1178.21 K: held-out bubble AAD 1.72 K, held-out tie-line AAD 0.0165, and a butanol solubility in water that ROSE from 0.019 (288 K) to 0.067 (366 K) where the measurements keep it flat (0.016-0.021). Two b's and one alpha cannot draw a flat solubility line, and a weight of 0.005 on a mole fraction of 0.02 cannot see it. Both were changed, each with its reason in `residual` and `acceptance` below; the tie-line band (0.01) was not.
 
-WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). VALIDATED under the bands below. fit\_mixed: b\_ij = 1486.66 K, b\_ji = -27.30 K, a\_ij = -3.6282, a\_ji = 3.6295, alpha = 0.4428; fit\_mixed\_start2 lands on the same five numbers. The four tau parameters are strongly correlated (max|corr| 0.998, cond JtJ 3.5e4): the pair is ONE set, to be used whole, and no single number of it carries a meaning. Solubility of butanol in water (mole fraction, model): 0.0188 at 288 K, 0.0186 at 300 K, 0.0189 at 320 K, 0.0197 at 340 K, 0.0215 at 366 K -- flat, as measured. HELD OUT (21 tie lines, 18 studies, all predicted as two liquids): AAD 0.0061 against 0.01; water-rich liquid AAD 0.0010 (max 0.0027), butanol-rich liquid AAD 0.0113 (max 0.060, recomputed outside the engine). The largest miss is one measurement, x = 0.550 at 298.15 K (10.1016/j.fluid.2014.07.011), where two other studies report 0.487 and 0.488 at the same temperature and the model gives 0.490. In the fit set the largest tie-line miss is 0.021. Bubble temperatures HELD OUT (4 heteroazeotrope points, two studies): AAD 0.53 K = 0.15 \% against 0.23 \%. Leave-one-study-out (4 of the 5 tie-line fit studies; the fifth, 10.1021/je700411p, is the only bubble series and the engine refuses its archive file in both roles): alpha 0.4385-0.4456, held-out tie-line AAD 0.0029-0.0075, held-out bubble AAD 0.54-0.59 K; every verdict is the same. The result is the pair's against these data, not one study's. IN RELATIVE TERMS (recomputed outside the engine), which is how a composition is judged: butanol-rich liquid, mean 1.1 \% (max 4.0 \%) in the fit set and 2.3 \% (max 10.9 \%, the one 298.15 K point above) held out; water-rich liquid, mean 12 \% (max 24 \%) in the fit set and 5.5 \% (max 17 \%) held out. The studies themselves disagree by that much on the water-rich liquid (0.0159 to 0.0207 at 298.15 K, 0.0170 to 0.0220 at 303 K), and below 320 K the model runs through the middle of them. ABOVE 320 K IT IS SYSTEMATICALLY HIGH, 0.019-0.021 against 0.016-0.019: the shallow minimum the measurements show near 333 K is not drawn. NOT DONE, and it is the cause of the line above: the fit minimises ABSOLUTE squared residuals, so a mole fraction of 0.02 weighs 25 times less than one of 0.5. The practice this case should follow (Vitor, 2026-11-10): least squares for a first estimate, then minimise the LARGEST error, relative for compositions and absolute for temperature, so that no extremity carries a large miss. The fitter has neither the relative residual nor the minimax stage yet (DEV.md 4c C280); the pair is NOT promoted to the catalogue until that stage has run. Independence: je700411p supplies the bubble series AND five tie lines of the fit (the run announces "one publication, counted twice"); the five held-out heteroazeotrope temperatures are three values (365.7-366.2 K).
+WHAT THE ABSOLUTE LEAST-SQUARES RUN FOUND -- the form this case had before C280 (measured, not argued; reproduced 2026-11-10 by `objective \{ method leastSquares; scale \{ binodal absolute; \} \}` with `liquidLiquid \{ sigma 0.0005; \}`, the numbers below to the last digit). VALIDATED under the bands below. It is NO LONGER what `expected` pins: the case now runs the default objective, and the section "WHAT THE MINIMAX STAGE FOUND" below says what that gave. fit\_mixed: b\_ij = 1486.66 K, b\_ji = -27.30 K, a\_ij = -3.6282, a\_ji = 3.6295, alpha = 0.4428; fit\_mixed\_start2 lands on the same five numbers. The four tau parameters are strongly correlated (max|corr| 0.998, cond JtJ 3.5e4): the pair is ONE set, to be used whole, and no single number of it carries a meaning. Solubility of butanol in water (mole fraction, model): 0.0188 at 288 K, 0.0186 at 300 K, 0.0189 at 320 K, 0.0197 at 340 K, 0.0215 at 366 K -- flat, as measured. HELD OUT (21 tie lines, 18 studies, all predicted as two liquids): AAD 0.0061 against 0.01; water-rich liquid AAD 0.0010 (max 0.0027), butanol-rich liquid AAD 0.0113 (max 0.060, recomputed outside the engine). The largest miss is one measurement, x = 0.550 at 298.15 K (10.1016/j.fluid.2014.07.011), where two other studies report 0.487 and 0.488 at the same temperature and the model gives 0.490. In the fit set the largest tie-line miss is 0.021. Bubble temperatures HELD OUT (4 heteroazeotrope points, two studies): AAD 0.53 K = 0.15 \% against 0.23 \%. Leave-one-study-out (4 of the 5 tie-line fit studies; the fifth, 10.1021/je700411p, is the only bubble series and the engine refuses its archive file in both roles): alpha 0.4385-0.4456, held-out tie-line AAD 0.0029-0.0075, held-out bubble AAD 0.54-0.59 K; every verdict is the same. The result is the pair's against these data, not one study's. IN RELATIVE TERMS (recomputed outside the engine), which is how a composition is judged: butanol-rich liquid, mean 1.1 \% (max 4.0 \%) in the fit set and 2.3 \% (max 10.9 \%, the one 298.15 K point above) held out; water-rich liquid, mean 12 \% (max 24 \%) in the fit set and 5.5 \% (max 17 \%) held out. The studies themselves disagree by that much on the water-rich liquid (0.0159 to 0.0207 at 298.15 K, 0.0170 to 0.0220 at 303 K), and below 320 K the model runs through the middle of them. ABOVE 320 K IT IS SYSTEMATICALLY HIGH, 0.019-0.021 against 0.016-0.019: the shallow minimum the measurements show near 333 K is not drawn. WHAT THE MINIMAX STAGE FOUND (C280; the default objective, twoStage, binodal rows RELATIVE with `sigmaRelative 0.025` -- the absolute 0.0005 expressed at the water-rich liquid's mole fraction of 0.02 -- and bubble rows absolute in kelvin at 1/U; 49 rows: 15 bubble, 34 tie-line; 27 s for the six operations). The practice Vitor asked for (2026-11-10): least squares for the first estimate, then minimise the LARGEST scaled error. VERDICT: notValidated, reported as found and with no band, weight or bound changed to reach another one: held-out tie-line AAD 0.0186 against the 0.01 band (bubble AAD 0.21 \% = 0.77 K, inside 0.23 \%). Relative mean / max error, fit set | held-out set: fit set held out mean max mean max water-rich liquid 6.7 \% 15.7 \% 6.7 \% 19.2 \% butanol-rich liquid 5.7 \% 15.7 \% 7.8 \% 17.2 \% bubble T (absolute) 0.60 K 1.07 K 0.77 K 0.96 K against the pre-C280 pair: water-rich 12 \% / 24 \% fit and 5.4 \% / 17 \% held out; butanol-rich 1.1 \% / 4.0 \% and 2.3 \% / 10.9 \%; bubble T fit mean 2.1 K, max 3.1 K. Solubility of butanol in water, model (mole fraction), measured 0.016-0.021 below 320 K and 0.016-0.019 above: 288 K 320 K 340 K 366 K pre-C280 0.0188 0.0189 0.0197 0.0215 (rises above 320 K) stage 1 (LS) 0.0191 0.0174 0.0171 0.0174 minimax 0.0197 0.0179 0.0175 0.0176 (flat, in the band) (outside the engine: NRTL, equal activities, from the printed parameters.) What it means: the systematic 15 \% excess of the water-rich liquid above 320 K is gone, and the largest relative miss of the fit set fell from 24 \% to 15.7 \%. The price is on the OTHER liquid: the relative scale lets a mole fraction of 0.5 miss by 15 \% -- 0.07 -- as the 0.02 one does, so the butanol-rich side went from AAD 0.011 to 0.036 held out and the verdict flipped on the binodal band, which is absolute. The stage-1 (relative least-squares) pair alone gives held-out tie-line AAD 0.0136, also above 0.01. Three things the run also showed: (a) the minimax objective equalises the relative errors of both liquids at the scatter level of the water-rich measurements (15 \%, the between-study scatter), which the butanol-rich liquid does not have; a per-property weight, or a bound below the data's own scatter, is the lever -- not changed here; (b) the maximum is not smooth, and `fit\_mixed\_start2` ends at a different point (b\_ij 1790 against 1680) where stage 1 alone lands on the same pair from both starts (1684.63 / 1684.64); (c) the correlation is 1.000 at the reported point, so the four tau numbers are still one set. The pair is NOT promoted. Independence: je700411p supplies the bubble series AND five tie lines of the fit (the run announces "one publication, counted twice"); the five held-out heteroazeotrope temperatures are three values (365.7-366.2 K).
 
 WHAT IS NOT CLAIMED. The pair lives in this frame: ideal-gas vapour, the catalogue's Antoine records (water 0.70 K low at 1 atm, C226 item 7), one pressure for the bubble data (101.3 kPa), LLE data at about atmospheric pressure. Nothing here tests it at another pressure or with another vapour model.
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{diag}{fit\_mixed}{aad\_heldout\_K}{0.53480782723}
-\goldrow{diag}{fit\_mixed}{aad\_heldout\_pct}{0.146211417434}
-\goldrow{diag}{fit\_mixed}{chi2}{6683.68606061}
-\goldrow{diag}{fit\_mixed}{chi2\_in\_sample}{6683.68606061}
-\goldrow{diag}{fit\_mixed}{chi2\_reduced}{151.901955923}
-\goldrow{diag}{fit\_mixed}{cond\_JtJ}{35249.2706841}
-\goldrow{diag}{fit\_mixed}{converged}{1}
-\goldrow{diag}{fit\_mixed}{corr\_computed}{1}
-\goldrow{diag}{fit\_mixed}{dof}{44}
-\goldrow{diag}{fit\_mixed}{identifiable}{1}
-\goldrow{diag}{fit\_mixed}{invertible}{1}
-\goldrow{diag}{fit\_mixed}{iter}{16}
-\goldrow{diag}{fit\_mixed}{lle\_aad\_dx}{0.00357460384795}
-\goldrow{diag}{fit\_mixed}{lle\_aad\_dx\_heldout}{0.00611936597293}
-\goldmore{172}
+\goldrow{diag}{fit\_binodal}{aad\_heldout\_K}{0.376320388878}
+\goldrow{diag}{fit\_binodal}{aad\_heldout\_pct}{0.102898498545}
+\goldrow{diag}{fit\_binodal}{bubble\_aad\_fit}{0.245855038585}
+\goldrow{diag}{fit\_binodal}{bubble\_aad\_heldout}{0.376320388878}
+\goldrow{diag}{fit\_binodal}{bubble\_max\_fit}{0.375302576021}
+\goldrow{diag}{fit\_binodal}{bubble\_max\_heldout}{0.506233276606}
+\goldrow{diag}{fit\_binodal}{chi2}{186.974832041}
+\goldrow{diag}{fit\_binodal}{chi2\_in\_sample}{186.974832041}
+\goldrow{diag}{fit\_binodal}{chi2\_reduced}{7.47899328162}
+\goldrow{diag}{fit\_binodal}{cond\_JtJ}{291.796362448}
+\goldrow{diag}{fit\_binodal}{converged}{1}
+\goldrow{diag}{fit\_binodal}{corr\_computed}{1}
+\goldrow{diag}{fit\_binodal}{dof}{25}
+\goldrow{diag}{fit\_binodal}{identifiable}{1}
+\goldmore{163}
+\end{tutgolden}
+
+\clearpage
+\tutentry{curate15\_nrtl\_methanol\_dimethylCarbonate}{tutorials/props/curation/curate15\_nrtl\_methanol\_dimethylCarbonate}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_nrtl}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{fit\_nrtl\_start2}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{txy\_ideal}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{txy\_nrtl}\\[-1pt]{\tiny propertyScan1D}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{NRTL methanol-dimethylCarbonate regressed by the curation pipeline to measured bubble temperatures (ThermoML locates, the article sources), held out against an independent study}
+\begin{tutnarrative}
+AN NRTL PAIR FROM PUBLISHED MEASUREMENTS, BY THE PIPELINE.
+
+WRITTEN BY bin/choupo-curate pair methanol dimethylCarbonate (DEV.md 4c C282; record docs/design/binary-pairs-from-open-measurements.md section 8). Every rule below was decided before this tool existed (C16, C225, C226); the tool applies them and decides nothing.
+
+@@PILOT-BEGIN@@ WHY THIS PAIR -- THE PILOT RANKING (C282; added after the run, but the ranking reads ONLY the archive index and was computed before any fit). Candidates: both components in the catalogue, NO record for the pair in any model directory of data/standards/parameters/, no acetic acid (vapour dimerisation, C16), no component whose vapour pressure is AmbroseWalton (C281), and (checked for the five chosen) no binary block in the archive with a second liquid. Ranked by the number of mutually author-disjoint isobaric bubble-T studies at or below 110 kPa with a declared uncertainty, then by their total points: 1 methanol + dimethylCarbonate 5 independent (9 studies, 274 pts) - acetone + methanol 4 -- passed over: curate05 holds its C16 regression and the two studies' disagreement, a curator's tie-break 2 ethanol + dimethylCarbonate 4 (4 studies, 156 pts) 3 diisopropylEther + isopropanol 3 (4 studies, 152 pts) - triethyleneGlycol + water 3 -- REFUSED by the tool: 2 of 3 studies disagree beyond their U 4 isopropanol + dimethylCarbonate 3 (3 studies, 128 pts) - 2Butanol + dimethylCarbonate 3 -- REFUSED by the tool: no author-disjoint held-out study reports x of the same component 5 ethanol + 224Trimethylpentane 3 (5 studies, 97 pts) THIS CASE: rank 1. @@PILOT-END@@
+
+THE DECLARATION -- WRITTEN AND COMMITTED BEFORE ANY FIT RAN. (C16 slice 2: so the declaration can be read against the result.)
+
+IDENTITY. methanol (CAS 67-56-1, InChIKey OKKJLVBELUTLKV-UHFFFAOYSA-N) + dimethylCarbonate (CAS 616-38-6, InChIKey IEJIGPNLZYLLBP-UHFFFAOYSA-N), joined to the archive through identity.json -- never by name.
+
+NO MEASURED SERIES IN THIS TREE. constant/archiveDatasets names each dataset (DOI, NIST URL, article sha256, extraction selector, extract sha256); `bin/choupo-curate fetch` writes the points into constant/archiveExtracts/, which is gitignored.
+
+STUDIES CONSIDERED: every bubble-temperature block of the pair at or below 110 kPa with a declared uncertainty (9 block(s)). USABLE after the screens: 8. SET ASIDE, BY NAME: - doi 10.1021/je200697m block 2: reports x of dimethylCarbonate, the others of methanol; extract-vle has no reorientation (C16 section 6.1) and a hand edit of a measured file is what the chain exists to prevent
+
+TRIAGE (C226 item 3, leave one study out, fitted by the engine; a study whose held-out AAD exceeds its own largest stated U plus the others' largest stated U disagrees with them beyond their stated uncertainties): 10.1021/je0601309: AAD 0.131 K against the limit 2.400 K $\to$ agrees; 10.1021/acs.jced.7b00185: AAD 0.222 K against the limit 3.210 K $\to$ agrees; 10.1016/j.jct.2012.05.002: AAD 0.411 K against the limit 2.660 K $\to$ agrees; 10.1021/je301290c: AAD 0.260 K against the limit 2.310 K $\to$ agrees; 10.1021/acs.jced.9b00068: AAD 0.613 K against the limit 3.110 K $\to$ agrees; 10.1021/je2005402: AAD 0.453 K against the limit 2.420 K $\to$ agrees; 10.1021/je500443v: AAD 0.193 K against the limit 3.210 K $\to$ agrees; 10.1016/j.fluid.2018.09.005: AAD 0.315 K against the limit 2.570 K $\to$ agrees
+
+PARTITION (the declared rule of C16 slice 2): the FIT set is the usable study with the most interior points; the HELD-OUT set is the next largest that shares NO author with it and was measured at one pressure. FIT doi 10.1021/je0601309 (65 interior points, 5 isobars 40-93.32 kPa) authors: Fukano, M.[Makoto]; Matsuda, H.[Hiroyuki]; Kurihara, K.[Kiyofumi]; Ochi, K.[Kenji] HELD OUT doi 10.1021/je301290c (19 interior points, 101.3 kPa) authors: Chen, X.[Xiaochun]; Cai, F.[Fufeng]; Wu, X.[Xinying]; Asumana, C.[Charles]; Yu, G.[Guangren]
+
+BAND: maxAAD 0.088 \% of the held-out mean T. declared before the fit by bin/choupo-curate, the ONE rule of C16: the held-out set's largest stated expanded uncertainty (U95 = 0.3 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (NONE: the held-out study reports no pure-component bubble point, so the term is ZERO, the strictest reading of the rule -- the band is the measurement's own uncertainty alone; measured with no pair involved), as a percentage of the held-out mean T (341.73 K) = 0.0878 \%, rounded UP to two significant figures
+
+THE FIT. NRTL with a\_ij = a\_ji = 0 and alpha = 0.30 fixed: TWO parameters (b\_ij, b\_ji), the C16 frame (bubble temperatures over these ranges do not identify more). Each point weighted by 1/U, U its own stated expanded uncertainty. Two starts: (0, 0) and (800, -400).
+
+@@RESULT-BEGIN@@ WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). fit\_nrtl: b\_ij = 401.3 K, b\_ji = 89.4 K, in-sample rms 0.176 K over 65 points; fit\_nrtl\_start2 lands on the same pair (401.3, 89.4). HELD OUT: AAD 0.219 K (0.0641 \%) against the band 0.088 \% $\to$ validated. PROMOTED on 2026-11-10 into data/standards/parameters/NRTL/dimethylCarbonate-methanol.dat as reviewStatus autoPromoted, humanReviewed false, because: verdict validated, one liquid across the validity span, triage run @@RESULT-END@@
+
+WHAT IS NOT CLAIMED. The pair is correct at these pressures and in this frame (ideal-gas vapour, the catalogue's own vapour-pressure records); the measurements were transcribed by the archive and have NOT been read back against the articles (the CHECKLIST that `fetch` writes beside the extracts is the aid for that reading).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{fit\_nrtl}{aad\_heldout\_K}{0.218818170286}
+\goldrow{diag}{fit\_nrtl}{aad\_heldout\_pct}{0.0640801029909}
+\goldrow{diag}{fit\_nrtl}{bubble\_aad\_fit}{0.125600062097}
+\goldrow{diag}{fit\_nrtl}{bubble\_aad\_heldout}{0.218818170286}
+\goldrow{diag}{fit\_nrtl}{bubble\_max\_fit}{0.578243594749}
+\goldrow{diag}{fit\_nrtl}{bubble\_max\_heldout}{0.50335641624}
+\goldrow{diag}{fit\_nrtl}{chi2}{34.2428562333}
+\goldrow{diag}{fit\_nrtl}{chi2\_in\_sample}{34.2428562333}
+\goldrow{diag}{fit\_nrtl}{chi2\_reduced}{0.543537400529}
+\goldrow{diag}{fit\_nrtl}{cond\_JtJ}{21.4954110232}
+\goldrow{diag}{fit\_nrtl}{converged}{1}
+\goldrow{diag}{fit\_nrtl}{corr\_computed}{1}
+\goldrow{diag}{fit\_nrtl}{dof}{63}
+\goldrow{diag}{fit\_nrtl}{identifiable}{1}
+\goldmore{58}
+\end{tutgolden}
+
+\clearpage
+\tutentry{curate16\_nrtl\_ethanol\_dimethylCarbonate}{tutorials/props/curation/curate16\_nrtl\_ethanol\_dimethylCarbonate}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_nrtl}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{fit\_nrtl\_start2}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{txy\_ideal}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{txy\_nrtl}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{txy\_ideal\_fitP}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{txy\_nrtl\_fitP}\\[-1pt]{\tiny propertyScan1D}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{NRTL ethanol-dimethylCarbonate regressed by the curation pipeline to measured bubble temperatures (ThermoML locates, the article sources), held out against an independent study}
+\begin{tutnarrative}
+AN NRTL PAIR FROM PUBLISHED MEASUREMENTS, BY THE PIPELINE.
+
+WRITTEN BY bin/choupo-curate pair ethanol dimethylCarbonate (DEV.md 4c C282; record docs/design/binary-pairs-from-open-measurements.md section 8). Every rule below was decided before this tool existed (C16, C225, C226); the tool applies them and decides nothing.
+
+@@PILOT-BEGIN@@ WHY THIS PAIR -- THE PILOT RANKING (C282; added after the run, but the ranking reads ONLY the archive index and was computed before any fit). Candidates: both components in the catalogue, NO record for the pair in any model directory of data/standards/parameters/, no acetic acid (vapour dimerisation, C16), no component whose vapour pressure is AmbroseWalton (C281), and (checked for the five chosen) no binary block in the archive with a second liquid. Ranked by the number of mutually author-disjoint isobaric bubble-T studies at or below 110 kPa with a declared uncertainty, then by their total points: 1 methanol + dimethylCarbonate 5 independent (9 studies, 274 pts) - acetone + methanol 4 -- passed over: curate05 holds its C16 regression and the two studies' disagreement, a curator's tie-break 2 ethanol + dimethylCarbonate 4 (4 studies, 156 pts) 3 diisopropylEther + isopropanol 3 (4 studies, 152 pts) - triethyleneGlycol + water 3 -- REFUSED by the tool: 2 of 3 studies disagree beyond their U 4 isopropanol + dimethylCarbonate 3 (3 studies, 128 pts) - 2Butanol + dimethylCarbonate 3 -- REFUSED by the tool: no author-disjoint held-out study reports x of the same component 5 ethanol + 224Trimethylpentane 3 (5 studies, 97 pts) THIS CASE: rank 2. @@PILOT-END@@
+
+THE DECLARATION -- WRITTEN AND COMMITTED BEFORE ANY FIT RAN. (C16 slice 2: so the declaration can be read against the result.)
+
+IDENTITY. ethanol (CAS 64-17-5, InChIKey LFQSCWFLJHTTHZ-UHFFFAOYSA-N) + dimethylCarbonate (CAS 616-38-6, InChIKey IEJIGPNLZYLLBP-UHFFFAOYSA-N), joined to the archive through identity.json -- never by name.
+
+NO MEASURED SERIES IN THIS TREE. constant/archiveDatasets names each dataset (DOI, NIST URL, article sha256, extraction selector, extract sha256); `bin/choupo-curate fetch` writes the points into constant/archiveExtracts/, which is gitignored.
+
+STUDIES CONSIDERED: every bubble-temperature block of the pair at or below 110 kPa with a declared uncertainty (4 block(s)). USABLE after the screens: 2. SET ASIDE, BY NAME: - doi 10.1021/je0601309 block 9: TRIAGE: disagrees with the other studies beyond their stated uncertainties (leave-one-study-out, below) - doi 10.1016/j.fluid.2018.05.024 block 0: TRIAGE: disagrees with the other studies beyond their stated uncertainties (leave-one-study-out, below)
+
+TRIAGE (C226 item 3, leave one study out, fitted by the engine; a study whose held-out AAD exceeds its own largest stated U plus the others' largest stated U disagrees with them beyond their stated uncertainties): 10.1021/je0601309: AAD 0.896 K against the limit 0.800 K $\to$ DISAGREES -- set aside; 10.1021/acs.jced.9b00414: AAD 0.704 K against the limit 0.830 K $\to$ agrees; 10.1016/j.fluid.2018.05.024: AAD 0.945 K against the limit 0.750 K $\to$ DISAGREES -- set aside; 10.1021/je030131q: AAD 0.673 K against the limit 0.830 K $\to$ agrees
+
+PARTITION (the declared rule of C16 slice 2): the FIT set is the usable study with the most interior points; the HELD-OUT set is the next largest that shares NO author with it and was measured at one pressure. FIT doi 10.1021/acs.jced.9b00414 (20 interior points, 101.3 kPa) authors: Liu, K.[Kai]; Xu, X.[Xin]; Zhang, Y.[Yi]; Xu, D.[Dongmei]; Gao, J.[Jun]; Zhang, L.[Lianzheng] HELD OUT doi 10.1021/je030131q (9 interior points, 95.8 kPa) authors: Vittal Prasad, T. E.; Prashanth, P. R.; Kumar, D. S.; Prasad, D.H.L.
+
+BAND: maxAAD 0.24 \% of the held-out mean T. declared before the fit by bin/choupo-curate, the ONE rule of C16: the held-out set's largest stated expanded uncertainty (U95 = 0.32 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (dimethylCarbonate +0.504 K; measured with no pair involved), as a percentage of the held-out mean T (347.42 K) = 0.2371 \%, rounded UP to two significant figures
+
+THE FIT. NRTL with a\_ij = a\_ji = 0 and alpha = 0.30 fixed: TWO parameters (b\_ij, b\_ji), the C16 frame (bubble temperatures over these ranges do not identify more). Each point weighted by 1/U, U its own stated expanded uncertainty. Two starts: (0, 0) and (800, -400).
+
+@@RESULT-BEGIN@@ WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). fit\_nrtl: b\_ij = 427.6 K, b\_ji = -4.2 K, in-sample rms 0.029 K over 20 points; fit\_nrtl\_start2 lands on the same pair (427.6, -4.2). HELD OUT: AAD 1.184 K (0.3406 \%) against the band 0.24 \% $\to$ notValidated. NOT PROMOTABLE: held-out verdict notValidated (AAD 0.340557 \% against the band 0.24 \% declared before the fit) @@RESULT-END@@
+
+WHAT IS NOT CLAIMED. The pair is correct at these pressures and in this frame (ideal-gas vapour, the catalogue's own vapour-pressure records); the measurements were transcribed by the archive and have NOT been read back against the articles (the CHECKLIST that `fetch` writes beside the extracts is the aid for that reading).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{fit\_nrtl}{aad\_heldout\_K}{1.18370705596}
+\goldrow{diag}{fit\_nrtl}{aad\_heldout\_pct}{0.340556701675}
+\goldrow{diag}{fit\_nrtl}{bubble\_aad\_fit}{0.0171105070697}
+\goldrow{diag}{fit\_nrtl}{bubble\_aad\_heldout}{1.18370705596}
+\goldrow{diag}{fit\_nrtl}{bubble\_max\_fit}{0.0930111024659}
+\goldrow{diag}{fit\_nrtl}{bubble\_max\_heldout}{3.91117758308}
+\goldrow{diag}{fit\_nrtl}{chi2}{0.0995348764533}
+\goldrow{diag}{fit\_nrtl}{chi2\_in\_sample}{0.0995348764533}
+\goldrow{diag}{fit\_nrtl}{chi2\_reduced}{0.00552971535852}
+\goldrow{diag}{fit\_nrtl}{cond\_JtJ}{49.2713871546}
+\goldrow{diag}{fit\_nrtl}{converged}{1}
+\goldrow{diag}{fit\_nrtl}{corr\_computed}{1}
+\goldrow{diag}{fit\_nrtl}{dof}{18}
+\goldrow{diag}{fit\_nrtl}{identifiable}{1}
+\goldmore{66}
+\end{tutgolden}
+
+\clearpage
+\tutentry{curate17\_nrtl\_diisopropylEther\_isopropanol}{tutorials/props/curation/curate17\_nrtl\_diisopropylEther\_isopropanol}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_nrtl}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{fit\_nrtl\_start2}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{txy\_ideal}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{txy\_nrtl}\\[-1pt]{\tiny propertyScan1D}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{NRTL diisopropylEther-isopropanol regressed by the curation pipeline to measured bubble temperatures (ThermoML locates, the article sources), held out against an independent study}
+\begin{tutnarrative}
+AN NRTL PAIR FROM PUBLISHED MEASUREMENTS, BY THE PIPELINE.
+
+WRITTEN BY bin/choupo-curate pair diisopropylEther isopropanol (DEV.md 4c C282; record docs/design/binary-pairs-from-open-measurements.md section 8). Every rule below was decided before this tool existed (C16, C225, C226); the tool applies them and decides nothing.
+
+@@PILOT-BEGIN@@ WHY THIS PAIR -- THE PILOT RANKING (C282; added after the run, but the ranking reads ONLY the archive index and was computed before any fit). Candidates: both components in the catalogue, NO record for the pair in any model directory of data/standards/parameters/, no acetic acid (vapour dimerisation, C16), no component whose vapour pressure is AmbroseWalton (C281), and (checked for the five chosen) no binary block in the archive with a second liquid. Ranked by the number of mutually author-disjoint isobaric bubble-T studies at or below 110 kPa with a declared uncertainty, then by their total points: 1 methanol + dimethylCarbonate 5 independent (9 studies, 274 pts) - acetone + methanol 4 -- passed over: curate05 holds its C16 regression and the two studies' disagreement, a curator's tie-break 2 ethanol + dimethylCarbonate 4 (4 studies, 156 pts) 3 diisopropylEther + isopropanol 3 (4 studies, 152 pts) - triethyleneGlycol + water 3 -- REFUSED by the tool: 2 of 3 studies disagree beyond their U 4 isopropanol + dimethylCarbonate 3 (3 studies, 128 pts) - 2Butanol + dimethylCarbonate 3 -- REFUSED by the tool: no author-disjoint held-out study reports x of the same component 5 ethanol + 224Trimethylpentane 3 (5 studies, 97 pts) THIS CASE: rank 3. @@PILOT-END@@
+
+THE DECLARATION -- WRITTEN AND COMMITTED BEFORE ANY FIT RAN. (C16 slice 2: so the declaration can be read against the result.)
+
+IDENTITY. diisopropylEther (CAS 108-20-3, InChIKey ZAFNJMIOTHYJRJ-UHFFFAOYSA-N) + isopropanol (CAS 67-63-0, InChIKey KFZMGEQAYNKOFK-UHFFFAOYSA-N), joined to the archive through identity.json -- never by name.
+
+NO MEASURED SERIES IN THIS TREE. constant/archiveDatasets names each dataset (DOI, NIST URL, article sha256, extraction selector, extract sha256); `bin/choupo-curate fetch` writes the points into constant/archiveExtracts/, which is gitignored.
+
+STUDIES CONSIDERED: every bubble-temperature block of the pair at or below 110 kPa with a declared uncertainty (4 block(s)). USABLE after the screens: 4. SET ASIDE, BY NAME: (none)
+
+TRIAGE (C226 item 3, leave one study out, fitted by the engine; a study whose held-out AAD exceeds its own largest stated U plus the others' largest stated U disagrees with them beyond their stated uncertainties): 10.1016/j.fluid.2014.09.014: AAD 1.829 K against the limit 2.770 K $\to$ agrees; 10.1016/j.fluid.2007.09.014: AAD 0.579 K against the limit 1.880 K $\to$ agrees; 10.1021/je300994y: AAD 0.298 K against the limit 2.240 K $\to$ agrees; 10.1016/j.jct.2018.11.013: AAD 0.395 K against the limit 2.770 K $\to$ agrees
+
+PARTITION (the declared rule of C16 slice 2): the FIT set is the usable study with the most interior points; the HELD-OUT set is the next largest that shares NO author with it and was measured at one pressure. FIT doi 10.1016/j.fluid.2014.09.014 (67 interior points, 4 isobars 53.33-94.79 kPa) authors: Soujanya, J.; satyavathi, B.; Sankarshana, T. HELD OUT doi 10.1021/je300994y (19 interior points, 101.3 kPa) authors: Zhang, Z.[Zhigang]; Yang, L.[Lei]; Xing, Y.[Yuan]; Li, W.[Wenxiu]
+
+BAND: maxAAD 0.24 \% of the held-out mean T. declared before the fit by bin/choupo-curate, the ONE rule of C16: the held-out set's largest stated expanded uncertainty (U95 = 0.61 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (isopropanol -0.206 K, diisopropylEther +0.116 K; measured with no pair involved), as a percentage of the held-out mean T (342.77 K) = 0.2380 \%, rounded UP to two significant figures
+
+THE FIT. NRTL with a\_ij = a\_ji = 0 and alpha = 0.30 fixed: TWO parameters (b\_ij, b\_ji), the C16 frame (bubble temperatures over these ranges do not identify more). Each point weighted by 1/U, U its own stated expanded uncertainty. Two starts: (0, 0) and (800, -400).
+
+@@RESULT-BEGIN@@ WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). fit\_nrtl: b\_ij = 169.0 K, b\_ji = 410.8 K, in-sample rms 0.815 K over 67 points; fit\_nrtl\_start2 lands on the same pair (168.9, 410.8). HELD OUT: AAD 1.894 K (0.5507 \%) against the band 0.24 \% $\to$ notValidated. NOT PROMOTABLE: held-out verdict notValidated (AAD 0.550724 \% against the band 0.24 \% declared before the fit) @@RESULT-END@@
+
+WHAT IS NOT CLAIMED. The pair is correct at these pressures and in this frame (ideal-gas vapour, the catalogue's own vapour-pressure records); the measurements were transcribed by the archive and have NOT been read back against the articles (the CHECKLIST that `fetch` writes beside the extracts is the aid for that reading).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{fit\_nrtl}{aad\_heldout\_K}{1.89391027641}
+\goldrow{diag}{fit\_nrtl}{aad\_heldout\_pct}{0.550724059447}
+\goldrow{diag}{fit\_nrtl}{bubble\_aad\_fit}{0.645273730052}
+\goldrow{diag}{fit\_nrtl}{bubble\_aad\_heldout}{1.89391027641}
+\goldrow{diag}{fit\_nrtl}{bubble\_max\_fit}{2.17775358224}
+\goldrow{diag}{fit\_nrtl}{bubble\_max\_heldout}{3.19444093153}
+\goldrow{diag}{fit\_nrtl}{chi2}{170.37382008}
+\goldrow{diag}{fit\_nrtl}{chi2\_in\_sample}{170.37382008}
+\goldrow{diag}{fit\_nrtl}{chi2\_reduced}{2.62113569354}
+\goldrow{diag}{fit\_nrtl}{cond\_JtJ}{38.4725080237}
+\goldrow{diag}{fit\_nrtl}{converged}{1}
+\goldrow{diag}{fit\_nrtl}{corr\_computed}{1}
+\goldrow{diag}{fit\_nrtl}{dof}{65}
+\goldrow{diag}{fit\_nrtl}{identifiable}{1}
+\goldmore{58}
+\end{tutgolden}
+
+\clearpage
+\tutentry{curate18\_nrtl\_isopropanol\_dimethylCarbonate}{tutorials/props/curation/curate18\_nrtl\_isopropanol\_dimethylCarbonate}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_nrtl}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{fit\_nrtl\_start2}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{txy\_ideal}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{txy\_nrtl}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{txy\_ideal\_fitP}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{txy\_nrtl\_fitP}\\[-1pt]{\tiny propertyScan1D}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{NRTL isopropanol-dimethylCarbonate regressed by the curation pipeline to measured bubble temperatures (ThermoML locates, the article sources), held out against an independent study}
+\begin{tutnarrative}
+AN NRTL PAIR FROM PUBLISHED MEASUREMENTS, BY THE PIPELINE.
+
+WRITTEN BY bin/choupo-curate pair isopropanol dimethylCarbonate (DEV.md 4c C282; record docs/design/binary-pairs-from-open-measurements.md section 8). Every rule below was decided before this tool existed (C16, C225, C226); the tool applies them and decides nothing.
+
+@@PILOT-BEGIN@@ WHY THIS PAIR -- THE PILOT RANKING (C282; added after the run, but the ranking reads ONLY the archive index and was computed before any fit). Candidates: both components in the catalogue, NO record for the pair in any model directory of data/standards/parameters/, no acetic acid (vapour dimerisation, C16), no component whose vapour pressure is AmbroseWalton (C281), and (checked for the five chosen) no binary block in the archive with a second liquid. Ranked by the number of mutually author-disjoint isobaric bubble-T studies at or below 110 kPa with a declared uncertainty, then by their total points: 1 methanol + dimethylCarbonate 5 independent (9 studies, 274 pts) - acetone + methanol 4 -- passed over: curate05 holds its C16 regression and the two studies' disagreement, a curator's tie-break 2 ethanol + dimethylCarbonate 4 (4 studies, 156 pts) 3 diisopropylEther + isopropanol 3 (4 studies, 152 pts) - triethyleneGlycol + water 3 -- REFUSED by the tool: 2 of 3 studies disagree beyond their U 4 isopropanol + dimethylCarbonate 3 (3 studies, 128 pts) - 2Butanol + dimethylCarbonate 3 -- REFUSED by the tool: no author-disjoint held-out study reports x of the same component 5 ethanol + 224Trimethylpentane 3 (5 studies, 97 pts) THIS CASE: rank 4. @@PILOT-END@@
+
+THE DECLARATION -- WRITTEN AND COMMITTED BEFORE ANY FIT RAN. (C16 slice 2: so the declaration can be read against the result.)
+
+IDENTITY. isopropanol (CAS 67-63-0, InChIKey KFZMGEQAYNKOFK-UHFFFAOYSA-N) + dimethylCarbonate (CAS 616-38-6, InChIKey IEJIGPNLZYLLBP-UHFFFAOYSA-N), joined to the archive through identity.json -- never by name.
+
+NO MEASURED SERIES IN THIS TREE. constant/archiveDatasets names each dataset (DOI, NIST URL, article sha256, extraction selector, extract sha256); `bin/choupo-curate fetch` writes the points into constant/archiveExtracts/, which is gitignored.
+
+STUDIES CONSIDERED: every bubble-temperature block of the pair at or below 110 kPa with a declared uncertainty (3 block(s)). USABLE after the screens: 2. SET ASIDE, BY NAME: - doi 10.1016/j.jct.2011.08.006 block 6: TRIAGE: disagrees with the other studies beyond their stated uncertainties (leave-one-study-out, below)
+
+TRIAGE (C226 item 3, leave one study out, fitted by the engine; a study whose held-out AAD exceeds its own largest stated U plus the others' largest stated U disagrees with them beyond their stated uncertainties): 10.1016/j.jct.2011.08.006: AAD 0.636 K against the limit 0.520 K $\to$ DISAGREES -- set aside; 10.1016/j.jct.2004.09.009: AAD 0.629 K against the limit 0.670 K $\to$ agrees; 10.1021/je030131q: AAD 0.578 K against the limit 0.670 K $\to$ agrees
+
+PARTITION (the declared rule of C16 slice 2): the FIT set is the usable study with the most interior points; the HELD-OUT set is the next largest that shares NO author with it and was measured at one pressure. FIT doi 10.1016/j.jct.2004.09.009 (32 interior points, 101.3 kPa) authors: Pereiro, A. B.; Rodriguez, A.; Canosa, J.; Tojo, J. HELD OUT doi 10.1021/je030131q (9 interior points, 95.8 kPa) authors: Vittal Prasad, T. E.; Prashanth, P. R.; Kumar, D. S.; Prasad, D.H.L.
+
+BAND: maxAAD 0.24 \% of the held-out mean T. declared before the fit by bin/choupo-curate, the ONE rule of C16: the held-out set's largest stated expanded uncertainty (U95 = 0.32 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (dimethylCarbonate +0.504 K, isopropanol -0.231 K; measured with no pair involved), as a percentage of the held-out mean T (351.83 K) = 0.2341 \%, rounded UP to two significant figures
+
+THE FIT. NRTL with a\_ij = a\_ji = 0 and alpha = 0.30 fixed: TWO parameters (b\_ij, b\_ji), the C16 frame (bubble temperatures over these ranges do not identify more). Each point weighted by 1/U, U its own stated expanded uncertainty. Two starts: (0, 0) and (800, -400).
+
+@@RESULT-BEGIN@@ WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). fit\_nrtl: b\_ij = 284.4 K, b\_ji = 62.9 K, in-sample rms 0.132 K over 32 points; fit\_nrtl\_start2 lands on the same pair (284.4, 62.9). HELD OUT: AAD 0.184 K (0.0521 \%) against the band 0.24 \% $\to$ validated. PROMOTED on 2026-11-10 into data/standards/parameters/NRTL/dimethylCarbonate-isopropanol.dat as reviewStatus autoPromoted, humanReviewed false, because: verdict validated, one liquid across the validity span, triage run @@RESULT-END@@
+
+WHAT IS NOT CLAIMED. The pair is correct at these pressures and in this frame (ideal-gas vapour, the catalogue's own vapour-pressure records); the measurements were transcribed by the archive and have NOT been read back against the articles (the CHECKLIST that `fetch` writes beside the extracts is the aid for that reading).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{fit\_nrtl}{aad\_heldout\_K}{0.183696599893}
+\goldrow{diag}{fit\_nrtl}{aad\_heldout\_pct}{0.0520996119818}
+\goldrow{diag}{fit\_nrtl}{bubble\_aad\_fit}{0.0867280388939}
+\goldrow{diag}{fit\_nrtl}{bubble\_aad\_heldout}{0.183696599893}
+\goldrow{diag}{fit\_nrtl}{bubble\_max\_fit}{0.358804574762}
+\goldrow{diag}{fit\_nrtl}{bubble\_max\_heldout}{0.542966592647}
+\goldrow{diag}{fit\_nrtl}{chi2}{4.57923866199}
+\goldrow{diag}{fit\_nrtl}{chi2\_in\_sample}{4.57923866199}
+\goldrow{diag}{fit\_nrtl}{chi2\_reduced}{0.152641288733}
+\goldrow{diag}{fit\_nrtl}{cond\_JtJ}{76.7456403943}
+\goldrow{diag}{fit\_nrtl}{converged}{1}
+\goldrow{diag}{fit\_nrtl}{corr\_computed}{1}
+\goldrow{diag}{fit\_nrtl}{dof}{30}
+\goldrow{diag}{fit\_nrtl}{identifiable}{1}
+\goldmore{68}
+\end{tutgolden}
+
+\clearpage
+\tutentry{curate19\_nrtl\_ethanol\_224Trimethylpentane}{tutorials/props/curation/curate19\_nrtl\_ethanol\_224Trimethylpentane}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_nrtl}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{fit\_nrtl\_start2}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{txy\_ideal}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{txy\_unifac}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{txy\_nrtl}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{txy\_ideal\_fitP}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{txy\_unifac\_fitP}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{txy\_nrtl\_fitP}\\[-1pt]{\tiny propertyScan1D}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{NRTL ethanol-224Trimethylpentane regressed by the curation pipeline to measured bubble temperatures (ThermoML locates, the article sources), held out against an independent study}
+\begin{tutnarrative}
+AN NRTL PAIR FROM PUBLISHED MEASUREMENTS, BY THE PIPELINE.
+
+WRITTEN BY bin/choupo-curate pair ethanol 224Trimethylpentane (DEV.md 4c C282; record docs/design/binary-pairs-from-open-measurements.md section 8). Every rule below was decided before this tool existed (C16, C225, C226); the tool applies them and decides nothing.
+
+@@PILOT-BEGIN@@ WHY THIS PAIR -- THE PILOT RANKING (C282; added after the run, but the ranking reads ONLY the archive index and was computed before any fit). Candidates: both components in the catalogue, NO record for the pair in any model directory of data/standards/parameters/, no acetic acid (vapour dimerisation, C16), no component whose vapour pressure is AmbroseWalton (C281), and (checked for the five chosen) no binary block in the archive with a second liquid. Ranked by the number of mutually author-disjoint isobaric bubble-T studies at or below 110 kPa with a declared uncertainty, then by their total points: 1 methanol + dimethylCarbonate 5 independent (9 studies, 274 pts) - acetone + methanol 4 -- passed over: curate05 holds its C16 regression and the two studies' disagreement, a curator's tie-break 2 ethanol + dimethylCarbonate 4 (4 studies, 156 pts) 3 diisopropylEther + isopropanol 3 (4 studies, 152 pts) - triethyleneGlycol + water 3 -- REFUSED by the tool: 2 of 3 studies disagree beyond their U 4 isopropanol + dimethylCarbonate 3 (3 studies, 128 pts) - 2Butanol + dimethylCarbonate 3 -- REFUSED by the tool: no author-disjoint held-out study reports x of the same component 5 ethanol + 224Trimethylpentane 3 (5 studies, 97 pts) THIS CASE: rank 5. @@PILOT-END@@
+
+THE DECLARATION -- WRITTEN AND COMMITTED BEFORE ANY FIT RAN. (C16 slice 2: so the declaration can be read against the result.)
+
+IDENTITY. ethanol (CAS 64-17-5, InChIKey LFQSCWFLJHTTHZ-UHFFFAOYSA-N) + 224Trimethylpentane (CAS 540-84-1, InChIKey NHTMVDHEPJAVLT-UHFFFAOYSA-N), joined to the archive through identity.json -- never by name.
+
+NO MEASURED SERIES IN THIS TREE. constant/archiveDatasets names each dataset (DOI, NIST URL, article sha256, extraction selector, extract sha256); `bin/choupo-curate fetch` writes the points into constant/archiveExtracts/, which is gitignored.
+
+STUDIES CONSIDERED: every bubble-temperature block of the pair at or below 110 kPa with a declared uncertainty (5 block(s)). USABLE after the screens: 5. SET ASIDE, BY NAME: (none)
+
+TRIAGE (C226 item 3, leave one study out, fitted by the engine; a study whose held-out AAD exceeds its own largest stated U plus the others' largest stated U disagrees with them beyond their stated uncertainties): 10.1021/je300847v: AAD 0.420 K against the limit 4.710 K $\to$ agrees; 10.1021/acs.jced.8b00680: AAD 0.372 K against the limit 4.710 K $\to$ agrees; 10.1016/j.fluid.2005.01.007: AAD 0.436 K against the limit 4.340 K $\to$ agrees; 10.1016/j.fluid.2007.06.005: AAD 0.411 K against the limit 4.310 K $\to$ agrees; 10.1016/j.jct.2005.04.006: AAD 2.145 K against the limit 3.420 K $\to$ agrees
+
+PARTITION (the declared rule of C16 slice 2): the FIT set is the usable study with the most interior points; the HELD-OUT set is the next largest that shares NO author with it and was measured at one pressure. FIT doi 10.1021/je300847v (22 interior points, 101.3 kPa) authors: Pienaar, C.[Cornelia]; Schwarz, C.[Cara]; Knoetze, J. H.[Johannes H.]; Burger, A.[Andries] HELD OUT doi 10.1016/j.fluid.2005.01.007 (19 interior points, 101.32 kPa) authors: Ku, H. -C.[Hsu-Chen]; Tu, C. -H.[Chein-Hsiun]
+
+BAND: maxAAD 0.57 \% of the held-out mean T. declared before the fit by bin/choupo-curate, the ONE rule of C16: the held-out set's largest stated expanded uncertainty (U95 = 1.93 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (224Trimethylpentane -0.012 K, ethanol +0.012 K; measured with no pair involved), as a percentage of the held-out mean T (346.81 K) = 0.5600 \%, rounded UP to two significant figures
+
+THE FIT. NRTL with a\_ij = a\_ji = 0 and alpha = 0.30 fixed: TWO parameters (b\_ij, b\_ji), the C16 frame (bubble temperatures over these ranges do not identify more). Each point weighted by 1/U, U its own stated expanded uncertainty. Two starts: (0, 0) and (800, -400).
+
+@@RESULT-BEGIN@@ WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). fit\_nrtl: b\_ij = 429.4 K, b\_ji = 493.2 K, in-sample rms 0.484 K over 22 points; fit\_nrtl\_start2 lands on the same pair (429.4, 493.2). HELD OUT: AAD 0.394 K (0.1132 \%) against the band 0.57 \% $\to$ validated. NOT PROMOTABLE: the pair splits ONE liquid inside its own validity span (check\_regressed\_pairs arm f) -- predicts a LIQUID-LIQUID SPLIT at 344.57 K (x\_ethanol 0.313 .. 0.648), inside its own validity span 344.57-347.65 K -- its evidence is bubble temperatures of ONE liquid, which a bubble scan cannot contradict; a pair that splits that liquid stays in its case, not the catalogue (or it DECLARES `liquidLiquid true;` with tie-line evidence and a gap band) @@RESULT-END@@
+
+WHAT IS NOT CLAIMED. The pair is correct at these pressures and in this frame (ideal-gas vapour, the catalogue's own vapour-pressure records); the measurements were transcribed by the archive and have NOT been read back against the articles (the CHECKLIST that `fetch` writes beside the extracts is the aid for that reading).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{fit\_nrtl}{aad\_heldout\_K}{0.394419156171}
+\goldrow{diag}{fit\_nrtl}{aad\_heldout\_pct}{0.113232264022}
+\goldrow{diag}{fit\_nrtl}{bubble\_aad\_fit}{0.408550722801}
+\goldrow{diag}{fit\_nrtl}{bubble\_aad\_heldout}{0.394419156171}
+\goldrow{diag}{fit\_nrtl}{bubble\_max\_fit}{0.911330416911}
+\goldrow{diag}{fit\_nrtl}{bubble\_max\_heldout}{1.18628480853}
+\goldrow{diag}{fit\_nrtl}{chi2}{17.6327244815}
+\goldrow{diag}{fit\_nrtl}{chi2\_in\_sample}{17.6327244815}
+\goldrow{diag}{fit\_nrtl}{chi2\_reduced}{0.881636224074}
+\goldrow{diag}{fit\_nrtl}{cond\_JtJ}{15.0198048572}
+\goldrow{diag}{fit\_nrtl}{converged}{1}
+\goldrow{diag}{fit\_nrtl}{corr\_computed}{1}
+\goldrow{diag}{fit\_nrtl}{dof}{20}
+\goldrow{diag}{fit\_nrtl}{identifiable}{1}
+\goldmore{82}
+\end{tutgolden}
+
+\clearpage
+\tutentry{curate20\_vp\_diButylCarbonate}{tutorials/props/curation/curate20\_vp\_diButylCarbonate}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_antoine}\\[-1pt]{\tiny vaporPressureFit}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Antoine vapour pressure of diButylCarbonate fitted by the curation pipeline to measured vapour pressures (ThermoML locates, the article sources), held out against an independent study}
+\begin{tutnarrative}
+the vapour pressure of diButylCarbonate, REFITTED to measurements (DEV.md 4c C281 step 2). Written by `bin/choupo-curate vp diButylCarbonate`; everything above the RESULT paragraph is the DECLARATION, committed before any fit ran, so it can be read against the result.
+
+WHY. The catalogue record carried `vaporPressure \{ model AmbroseWalton; \}`, a corresponding-states ESTIMATE from Tc, Pc and omega that never reads the record's own Tb (C279 measured a median 19.6 \% AAD over the 25 such records with archive data). Here a three-parameter Antoine is fitted to ONE laboratory and held out on ANOTHER that shares no author with it.
+
+STUDIES (one per article, extracted by `choupo-thermoml extract-vp`; ranked by points, ties by DOI): 10.1021/acs.jced.6b00517 23 pts 383.16-478.18 K Yang; Xu; Yang 10.1016/j.jct.2008.02.012 21 pts 287.1-329.1 K Kozlova; Emel'yanenko; Georgieva; Verevkin et al. SET ASIDE BY NAME: (none)
+
+PARTITION (the C16 rule, declared): FIT = the study with the most points, doi 10.1021/acs.jced.6b00517 (23 pts, 383.16-478.18 K); HELD OUT = the next largest sharing no author with it, doi 10.1016/j.jct.2008.02.012 (21 pts, 287.1-329.1 K).
+
+BAND: maxAAD 5.3 \% (declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 21 points (5.1 to 5.5 \%, mean 5.264 \%), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean).
+
+NORMAL BOILING POINT: the record's Tb 480.6 K lies OUTSIDE the measured span 287.1-478.18 K: the fitted Antoine's own normal boiling point (P = 101.325 kPa) must lie within 2 K of it, or the fit is NOT promoted (an extrapolation that misses the record's own boiling point).
+
+NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares both series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates them into constant/archiveExtracts/ (gitignored).
+
+RESULT @@RESULT-BEGIN@@ WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). Antoine log10(Psat/bar) = 4.783236 - 2119.1665/(T + -34.8668), in-sample R2 0.998031 over 23 points, 383.16-478.18 K. HELD OUT: 21 points, AAD 105.1167 \% against the band 5.3 \% $\to$ notValidated. Its own normal boiling point (101.325 kPa): 478.44 K. NOT PROMOTED: held-out verdict notValidated (AAD 105.1 \% against the band 5.3 \% declared before the fit); the record keeps AmbroseWalton @@RESULT-END@@
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{fit\_antoine}{A}{4.78323608922}
+\goldrow{diag}{fit\_antoine}{B}{2119.16653165}
+\goldrow{diag}{fit\_antoine}{C}{-34.8668239828}
+\goldrow{diag}{fit\_antoine}{R2}{0.998031140839}
+\goldrow{diag}{fit\_antoine}{aad\_heldout\_pct}{105.116711331}
+\goldrow{diag}{fit\_antoine}{dHvap\_kJ\_per\_mol}{47.2037494642}
+\goldrow{diag}{fit\_antoine}{n\_heldout}{21}
+\goldrow{diag}{fit\_antoine}{n\_points}{23}
+\goldrow{diag}{fit\_antoine}{rms\_heldout\_log10P}{0.31402082619}
+\goldrow{verdict}{fit\_antoine}{verdict}{notValidated}
+\end{tutgolden}
+
+\clearpage
+\tutentry{curate21\_vp\_diEthylCarbonate}{tutorials/props/curation/curate21\_vp\_diEthylCarbonate}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_antoine}\\[-1pt]{\tiny vaporPressureFit}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Antoine vapour pressure of diEthylCarbonate fitted by the curation pipeline to measured vapour pressures (ThermoML locates, the article sources), held out against an independent study}
+\begin{tutnarrative}
+the vapour pressure of diEthylCarbonate, REFITTED to measurements (DEV.md 4c C281 step 2). Written by `bin/choupo-curate vp diEthylCarbonate`; everything above the RESULT paragraph is the DECLARATION, committed before any fit ran, so it can be read against the result.
+
+WHY. The catalogue record carried `vaporPressure \{ model AmbroseWalton; \}`, a corresponding-states ESTIMATE from Tc, Pc and omega that never reads the record's own Tb (C279 measured a median 19.6 \% AAD over the 25 such records with archive data). Here a three-parameter Antoine is fitted to ONE laboratory and held out on ANOTHER that shares no author with it.
+
+STUDIES (one per article, extracted by `choupo-thermoml extract-vp`; ranked by points, ties by DOI): 10.1016/j.jct.2008.02.012 44 pts 273.1-315.2 K Kozlova; Emel'yanenko; Georgieva; Verevkin et al. 10.1021/acs.jced.7b00295 42 pts 238.15-296.15 K Pokorny; Stejfa; Fulem; Cervinka et al. 10.1021/je200784y 33 pts 354.68-399.27 K Marrufo; Loras; Lladosa 10.1021/je800984q 21 pts 343.77-398.28 K Xing; Fang; Li; Guo et al. 10.1016/j.jct.2014.07.004 17 pts 277.96-353.15 K Dougassa; Jacquemin; Ouatani; Tessier et al. 10.1021/acs.jced.7b00236 10 pts 303.15-323.15 K Anugraha; Altway; Wibawa SET ASIDE BY NAME: 10.1016/j.fluid.2012.11.026: 2 pressure point(s), fewer than 5 10.1016/j.jct.2015.07.024: 3 pressure point(s), fewer than 5 10.1021/acs.jced.5b00064: 1 pressure point(s), fewer than 5 10.1021/acs.jced.6b00085: 1 pressure point(s), fewer than 5 10.1021/acs.jced.9b00068: 1 pressure point(s), fewer than 5 10.1021/acs.jced.9b00430: 1 pressure point(s), fewer than 5 10.1021/je049544x: 1 pressure point(s), fewer than 5
+
+PARTITION (the C16 rule, declared): FIT = the study with the most points, doi 10.1016/j.jct.2008.02.012 (44 pts, 273.1-315.2 K); HELD OUT = the next largest sharing no author with it, doi 10.1021/acs.jced.7b00295 (42 pts, 238.15-296.15 K).
+
+BAND: maxAAD 2.0 \% (declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 42 points (1.29 to 3.99 \%, mean 1.947 \%), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean).
+
+NORMAL BOILING POINT: the record's Tb 399.95 K lies OUTSIDE the measured span 238.15-315.2 K: the fitted Antoine's own normal boiling point (P = 101.325 kPa) must lie within 2 K of it, or the fit is NOT promoted (an extrapolation that misses the record's own boiling point).
+
+NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares both series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates them into constant/archiveExtracts/ (gitignored).
+
+RESULT @@RESULT-BEGIN@@ WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). Antoine log10(Psat/bar) = 7.478412 - 3270.7603/(T + 53.2804), in-sample R2 0.999007 over 44 points, 273.1-315.2 K. HELD OUT: 42 points, AAD 13.1956 \% against the band 2 \% $\to$ notValidated. Its own normal boiling point (101.325 kPa): 384.41 K. NOT PROMOTED: held-out verdict notValidated (AAD 13.2 \% against the band 2 \% declared before the fit); the record keeps AmbroseWalton @@RESULT-END@@
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{fit\_antoine}{A}{7.47841150538}
+\goldrow{diag}{fit\_antoine}{B}{3270.76027652}
+\goldrow{diag}{fit\_antoine}{C}{53.2803949867}
+\goldrow{diag}{fit\_antoine}{R2}{0.999007007731}
+\goldrow{diag}{fit\_antoine}{aad\_heldout\_pct}{13.1955991459}
+\goldrow{diag}{fit\_antoine}{dHvap\_kJ\_per\_mol}{45.8186441633}
+\goldrow{diag}{fit\_antoine}{n\_heldout}{42}
+\goldrow{diag}{fit\_antoine}{n\_points}{44}
+\goldrow{diag}{fit\_antoine}{rms\_heldout\_log10P}{0.0690505745289}
+\goldrow{verdict}{fit\_antoine}{verdict}{notValidated}
+\end{tutgolden}
+
+\clearpage
+\tutentry{curate22\_vp\_diNButylEther}{tutorials/props/curation/curate22\_vp\_diNButylEther}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_antoine}\\[-1pt]{\tiny vaporPressureFit}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Antoine vapour pressure of diNButylEther fitted by the curation pipeline to measured vapour pressures (ThermoML locates, the article sources), held out against an independent study}
+\begin{tutnarrative}
+the vapour pressure of diNButylEther, REFITTED to measurements (DEV.md 4c C281 step 2). Written by `bin/choupo-curate vp diNButylEther`; everything above the RESULT paragraph is the DECLARATION, committed before any fit ran, so it can be read against the result.
+
+WHY. The catalogue record carried `vaporPressure \{ model AmbroseWalton; \}`, a corresponding-states ESTIMATE from Tc, Pc and omega that never reads the record's own Tb (C279 measured a median 19.6 \% AAD over the 25 such records with archive data). Here a three-parameter Antoine is fitted to ONE laboratory and held out on ANOTHER that shares no author with it.
+
+STUDIES (one per article, extracted by `choupo-thermoml extract-vp`; ranked by points, ties by DOI): 10.1016/j.fluid.2006.06.017 26 pts 346.03-413.67 K Lladosa; Monton; Burguet; Munoz 10.1016/j.fluid.2015.05.002 14 pts 430.15-508.15 K Liebergesell; Kaminski; Pauls; de Loos et al. 10.1016/j.fluid.2007.09.002 10 pts 263.15-343.15 K Boukais-Belaribi; Belaribi; Lohmann; Jose 10.1021/je7007523 7 pts 313.15-313.15 K Alonso-Tristan; Villamanan; Chamorro; Segovia SET ASIDE BY NAME: 10.1016/j.fluid.2005.06.017: 1 pressure point(s), fewer than 5 10.1016/j.fluid.2005.11.026: 3 pressure point(s), fewer than 5 10.1016/j.fluid.2012.01.008: 1 pressure point(s), fewer than 5 10.1021/acs.jced.7b00119: 1 pressure point(s), fewer than 5 10.1021/je060237w: 4 pressure point(s), fewer than 5 10.1021/je100019r: 3 pressure point(s), fewer than 5
+
+PARTITION (the C16 rule, declared): FIT = the study with the most points, doi 10.1016/j.fluid.2006.06.017 (26 pts, 346.03-413.67 K); HELD OUT = the next largest sharing no author with it, doi 10.1016/j.fluid.2015.05.002 (14 pts, 430.15-508.15 K).
+
+BAND: maxAAD 0.36 \% (declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 14 points (0.171 to 0.629 \%, mean 0.3574 \%), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean).
+
+NORMAL BOILING POINT: the record's Tb 415.35 K lies INSIDE the measured span 346.03-508.15 K: the held-out verdict is the test there, no further condition.
+
+NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares both series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates them into constant/archiveExtracts/ (gitignored).
+
+RESULT @@RESULT-BEGIN@@ WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). Antoine log10(Psat/bar) = 4.546814 - 1697.1613/(T + -39.9108), in-sample R2 0.999982 over 26 points, 346.03-413.67 K. HELD OUT: 14 points, AAD 4.7526 \% against the band 0.36 \% $\to$ notValidated. Its own normal boiling point (101.325 kPa): 413.64 K. NOT PROMOTED: held-out verdict notValidated (AAD 4.753 \% against the band 0.36 \% declared before the fit); the record keeps AmbroseWalton @@RESULT-END@@
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{fit\_antoine}{A}{4.54681382768}
+\goldrow{diag}{fit\_antoine}{B}{1697.16128423}
+\goldrow{diag}{fit\_antoine}{C}{-39.9108462236}
+\goldrow{diag}{fit\_antoine}{R2}{0.999981541275}
+\goldrow{diag}{fit\_antoine}{aad\_heldout\_pct}{4.75264267862}
+\goldrow{diag}{fit\_antoine}{dHvap\_kJ\_per\_mol}{39.8013100321}
+\goldrow{diag}{fit\_antoine}{n\_heldout}{14}
+\goldrow{diag}{fit\_antoine}{n\_points}{26}
+\goldrow{diag}{fit\_antoine}{rms\_heldout\_log10P}{0.02393907967}
+\goldrow{verdict}{fit\_antoine}{verdict}{notValidated}
+\end{tutgolden}
+
+\clearpage
+\tutentry{curate23\_vp\_diethylethanolamine}{tutorials/props/curation/curate23\_vp\_diethylethanolamine}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_antoine}\\[-1pt]{\tiny vaporPressureFit}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Antoine vapour pressure of diethylethanolamine fitted by the curation pipeline to measured vapour pressures (ThermoML locates, the article sources), held out against an independent study}
+\begin{tutnarrative}
+the vapour pressure of diethylethanolamine, REFITTED to measurements (DEV.md 4c C281 step 2). Written by `bin/choupo-curate vp diethylethanolamine`; everything above the RESULT paragraph is the DECLARATION, committed before any fit ran, so it can be read against the result.
+
+WHY. The catalogue record carried `vaporPressure \{ model AmbroseWalton; \}`, a corresponding-states ESTIMATE from Tc, Pc and omega that never reads the record's own Tb (C279 measured a median 19.6 \% AAD over the 25 such records with archive data). Here a three-parameter Antoine is fitted to ONE laboratory and held out on ANOTHER that shares no author with it.
+
+STUDIES (one per article, extracted by `choupo-thermoml extract-vp`; ranked by points, ties by DOI): 10.1021/je049761y 31 pts 278.2-318.3 K Kapteina; Slovik; Verevkin; Heintz 10.1016/j.fluid.2018.05.032 24 pts 273.64-308.15 K Soares; Stejfa; Ferreira; Pinho et al. 10.1021/je101259r 13 pts 333.2-449.5 K Klepacova; Huttenhuis; Derks; Versteeg SET ASIDE BY NAME: 10.1021/je301219c: 2 pressure point(s), fewer than 5 10.1021/je4008712: 2 pressure point(s), fewer than 5
+
+PARTITION (the C16 rule, declared): FIT = the study with the most points, doi 10.1021/je049761y (31 pts, 278.2-318.3 K); HELD OUT = the next largest sharing no author with it, doi 10.1016/j.fluid.2018.05.032 (24 pts, 273.64-308.15 K).
+
+BAND: maxAAD 1.7 \% (declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 24 points (1.06 to 2.47 \%, mean 1.664 \%), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean).
+
+NORMAL BOILING POINT: the record's Tb 434.15 K lies OUTSIDE the measured span 273.64-318.3 K: the fitted Antoine's own normal boiling point (P = 101.325 kPa) must lie within 2 K of it, or the fit is NOT promoted (an extrapolation that misses the record's own boiling point).
+
+NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares both series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates them into constant/archiveExtracts/ (gitignored).
+
+RESULT @@RESULT-BEGIN@@ WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). Antoine log10(Psat/bar) = 5.211269 - 1996.8790/(T + -43.7040), in-sample R2 0.999590 over 31 points, 278.2-318.3 K. HELD OUT: 24 points, AAD 3.5664 \% against the band 1.7 \% $\to$ notValidated. Its own normal boiling point (101.325 kPa): 427.31 K. NOT PROMOTED: held-out verdict notValidated (AAD 3.566 \% against the band 1.7 \% declared before the fit); the record keeps AmbroseWalton @@RESULT-END@@
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{fit\_antoine}{A}{5.21126894303}
+\goldrow{diag}{fit\_antoine}{B}{1996.87898735}
+\goldrow{diag}{fit\_antoine}{C}{-43.7040322793}
+\goldrow{diag}{fit\_antoine}{R2}{0.999590344094}
+\goldrow{diag}{fit\_antoine}{aad\_heldout\_pct}{3.56636432017}
+\goldrow{diag}{fit\_antoine}{dHvap\_kJ\_per\_mol}{51.3672820437}
+\goldrow{diag}{fit\_antoine}{n\_heldout}{24}
+\goldrow{diag}{fit\_antoine}{n\_points}{31}
+\goldrow{diag}{fit\_antoine}{rms\_heldout\_log10P}{0.0158353317872}
+\goldrow{verdict}{fit\_antoine}{verdict}{notValidated}
+\end{tutgolden}
+
+\clearpage
+\tutentry{curate24\_vp\_dimethylSulfoxide}{tutorials/props/curation/curate24\_vp\_dimethylSulfoxide}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_antoine}\\[-1pt]{\tiny vaporPressureFit}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Antoine vapour pressure of dimethylSulfoxide fitted by the curation pipeline to measured vapour pressures (ThermoML locates, the article sources), held out against an independent study}
+\begin{tutnarrative}
+the vapour pressure of dimethylSulfoxide, REFITTED to measurements (DEV.md 4c C281 step 2). Written by `bin/choupo-curate vp dimethylSulfoxide`; everything above the RESULT paragraph is the DECLARATION, committed before any fit ran, so it can be read against the result.
+
+WHY. The catalogue record carried `vaporPressure \{ model AmbroseWalton; \}`, a corresponding-states ESTIMATE from Tc, Pc and omega that never reads the record's own Tb (C279 measured a median 19.6 \% AAD over the 25 such records with archive data). Here a three-parameter Antoine is fitted to ONE laboratory and held out on ANOTHER that shares no author with it.
+
+STUDIES (one per article, extracted by `choupo-thermoml extract-vp`; ranked by points, ties by DOI): 10.1016/j.fluid.2011.02.002 21 pts 293.15-308.16 K Fulem; Ruzicka; Ruzicka 10.1021/je400531a 19 pts 401.95-463.45 K Zhang; Lv; Huang; Jia et al. 10.1016/j.jct.2018.04.014 9 pts 353.1-433.1 K de Pablo; Segovia; Martin; Martin et al. SET ASIDE BY NAME: 10.1016/j.fluid.2007.08.001: 1 pressure point(s), fewer than 5 10.1016/j.jct.2007.04.004: 1 pressure point(s), fewer than 5 10.1016/j.jct.2018.12.016: 1 pressure point(s), fewer than 5 10.1016/j.jct.2019.03.036: 1 pressure point(s), fewer than 5 10.1021/acs.jced.6b00040: 1 pressure point(s), fewer than 5 10.1021/acs.jced.6b00733: 1 pressure point(s), fewer than 5 10.1021/je700408x: 1 pressure point(s), fewer than 5
+
+PARTITION (the C16 rule, declared): FIT = the study with the most points, doi 10.1016/j.fluid.2011.02.002 (21 pts, 293.15-308.16 K); HELD OUT = the next largest sharing no author with it, doi 10.1021/je400531a (19 pts, 401.95-463.45 K).
+
+BAND: maxAAD 3.2 \% (declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 19 points (1.02 to 6.54 \%, mean 3.128 \%), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean).
+
+NORMAL BOILING POINT: the record's Tb 462.15 K lies INSIDE the measured span 293.15-463.45 K: the held-out verdict is the test there, no further condition.
+
+NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares both series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates them into constant/archiveExtracts/ (gitignored).
+
+RESULT @@RESULT-BEGIN@@ WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). Antoine log10(Psat/bar) = 4.482417 - 1835.6725/(T + -56.0230), in-sample R2 0.999999 over 21 points, 293.15-308.16 K. HELD OUT: 19 points, AAD 3.8716 \% against the band 3.2 \% $\to$ notValidated. Its own normal boiling point (101.325 kPa): 466.07 K. NOT PROMOTED: held-out verdict notValidated (AAD 3.872 \% against the band 3.2 \% declared before the fit); the record keeps AmbroseWalton @@RESULT-END@@
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{fit\_antoine}{A}{4.48241745485}
+\goldrow{diag}{fit\_antoine}{B}{1835.67252915}
+\goldrow{diag}{fit\_antoine}{C}{-56.022982708}
+\goldrow{diag}{fit\_antoine}{R2}{0.999999119286}
+\goldrow{diag}{fit\_antoine}{aad\_heldout\_pct}{3.87155503244}
+\goldrow{diag}{fit\_antoine}{dHvap\_kJ\_per\_mol}{52.4957798174}
+\goldrow{diag}{fit\_antoine}{n\_heldout}{19}
+\goldrow{diag}{fit\_antoine}{n\_points}{21}
+\goldrow{diag}{fit\_antoine}{rms\_heldout\_log10P}{0.0182240012392}
+\goldrow{verdict}{fit\_antoine}{verdict}{notValidated}
+\end{tutgolden}
+
+\clearpage
+\tutentry{curate25\_vp\_dimethylethanolamine}{tutorials/props/curation/curate25\_vp\_dimethylethanolamine}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_antoine}\\[-1pt]{\tiny vaporPressureFit}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Antoine vapour pressure of dimethylethanolamine fitted by the curation pipeline to measured vapour pressures (ThermoML locates, the article sources), held out against an independent study}
+\begin{tutnarrative}
+the vapour pressure of dimethylethanolamine, REFITTED to measurements (DEV.md 4c C281 step 2). Written by `bin/choupo-curate vp dimethylethanolamine`; everything above the RESULT paragraph is the DECLARATION, committed before any fit ran, so it can be read against the result.
+
+WHY. The catalogue record carried `vaporPressure \{ model AmbroseWalton; \}`, a corresponding-states ESTIMATE from Tc, Pc and omega that never reads the record's own Tb (C279 measured a median 19.6 \% AAD over the 25 such records with archive data). Here a three-parameter Antoine is fitted to ONE laboratory and held out on ANOTHER that shares no author with it.
+
+STUDIES (one per article, extracted by `choupo-thermoml extract-vp`; ranked by points, ties by DOI): 10.1021/je049761y 29 pts 277.9-316.3 K Kapteina; Slovik; Verevkin; Heintz 10.1016/j.jct.2013.03.020 25 pts 273.15-363.15 K Chiali-Baba-Ahmed; Dergal; Negadi; Mokbel 10.1021/je101259r 15 pts 309.5-447.8 K Klepacova; Huttenhuis; Derks; Versteeg SET ASIDE BY NAME: (none)
+
+PARTITION (the C16 rule, declared): FIT = the study with the most points, doi 10.1021/je049761y (29 pts, 277.9-316.3 K); HELD OUT = the next largest sharing no author with it, doi 10.1016/j.jct.2013.03.020 (25 pts, 273.15-363.15 K).
+
+BAND: maxAAD 2.2 \% (declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 25 points (2.01 to 2.82 \%, mean 2.165 \%), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean).
+
+NORMAL BOILING POINT: the record's Tb 404.15 K lies OUTSIDE the measured span 273.15-363.15 K: the fitted Antoine's own normal boiling point (P = 101.325 kPa) must lie within 2 K of it, or the fit is NOT promoted (an extrapolation that misses the record's own boiling point).
+
+NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares both series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates them into constant/archiveExtracts/ (gitignored).
+
+RESULT @@RESULT-BEGIN@@ WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). Antoine log10(Psat/bar) = 14.191855 - 9599.5633/(T + 289.4230), in-sample R2 0.998529 over 29 points, 277.9-316.3 K. HELD OUT: 25 points, AAD 12.9406 \% against the band 2.2 \% $\to$ notValidated. Its own normal boiling point (101.325 kPa): 387.26 K. NOT PROMOTED: held-out verdict notValidated (AAD 12.94 \% against the band 2.2 \% declared before the fit); the record keeps AmbroseWalton @@RESULT-END@@
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{fit\_antoine}{A}{14.1918550973}
+\goldrow{diag}{fit\_antoine}{B}{9599.56333988}
+\goldrow{diag}{fit\_antoine}{C}{289.4229977}
+\goldrow{diag}{fit\_antoine}{R2}{0.998528756946}
+\goldrow{diag}{fit\_antoine}{aad\_heldout\_pct}{12.9405651115}
+\goldrow{diag}{fit\_antoine}{dHvap\_kJ\_per\_mol}{50.1131393556}
+\goldrow{diag}{fit\_antoine}{n\_heldout}{25}
+\goldrow{diag}{fit\_antoine}{n\_points}{29}
+\goldrow{diag}{fit\_antoine}{rms\_heldout\_log10P}{0.064013725784}
+\goldrow{verdict}{fit\_antoine}{verdict}{notValidated}
+\end{tutgolden}
+
+\clearpage
+\tutentry{curate26\_vp\_furfural}{tutorials/props/curation/curate26\_vp\_furfural}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_antoine}\\[-1pt]{\tiny vaporPressureFit}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Antoine vapour pressure of furfural fitted by the curation pipeline to measured vapour pressures (ThermoML locates, the article sources), held out against an independent study}
+\begin{tutnarrative}
+the vapour pressure of furfural, REFITTED to measurements (DEV.md 4c C281 step 2). Written by `bin/choupo-curate vp furfural`; everything above the RESULT paragraph is the DECLARATION, committed before any fit ran, so it can be read against the result.
+
+WHY. The catalogue record carried `vaporPressure \{ model AmbroseWalton; \}`, a corresponding-states ESTIMATE from Tc, Pc and omega that never reads the record's own Tb (C279 measured a median 19.6 \% AAD over the 25 such records with archive data). Here a three-parameter Antoine is fitted to ONE laboratory and held out on ANOTHER that shares no author with it.
+
+STUDIES (one per article, extracted by `choupo-thermoml extract-vp`; ranked by points, ties by DOI): 10.1021/acs.jced.7b00574 19 pts 326.05-415.15 K Zheng; Luo; Yin; Chen et al. 10.1021/je060406c 16 pts 276.7-323.4 K Emel'yanenko; Dabrowska; Verevkin; Hertel et al. 10.1021/je020117y 9 pts 339.16-429.5 K Fele; Grilc SET ASIDE BY NAME: 10.1016/j.fluid.2014.10.037: 3 pressure point(s), fewer than 5 10.1016/j.jct.2018.03.019: 1 pressure point(s), fewer than 5 10.1021/acs.jced.8b00451: 1 pressure point(s), fewer than 5 10.1021/je400885z: 4 pressure point(s), fewer than 5
+
+PARTITION (the C16 rule, declared): FIT = the study with the most points, doi 10.1021/acs.jced.7b00574 (19 pts, 326.05-415.15 K); HELD OUT = the next largest sharing no author with it, doi 10.1021/je060406c (16 pts, 276.7-323.4 K).
+
+BAND: maxAAD 5.6 \% (declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 16 points (5.44 to 5.71 \%, mean 5.518 \%), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean).
+
+NORMAL BOILING POINT: the record's Tb 434.85 K lies OUTSIDE the measured span 276.7-415.15 K: the fitted Antoine's own normal boiling point (P = 101.325 kPa) must lie within 2 K of it, or the fit is NOT promoted (an extrapolation that misses the record's own boiling point).
+
+NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares both series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates them into constant/archiveExtracts/ (gitignored).
+
+RESULT @@RESULT-BEGIN@@ WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). Antoine log10(Psat/bar) = 3.638107 - 1181.7414/(T + -109.8817), in-sample R2 0.999802 over 19 points, 326.05-415.15 K. HELD OUT: 16 points, AAD 10.8740 \% against the band 5.6 \% $\to$ notValidated. Its own normal boiling point (101.325 kPa): 435.22 K. NOT PROMOTED: held-out verdict notValidated (AAD 10.87 \% against the band 5.6 \% declared before the fit); the record keeps AmbroseWalton @@RESULT-END@@
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{fit\_antoine}{A}{3.63810681581}
+\goldrow{diag}{fit\_antoine}{B}{1181.74144194}
+\goldrow{diag}{fit\_antoine}{C}{-109.881678268}
+\goldrow{diag}{fit\_antoine}{R2}{0.999802457993}
+\goldrow{diag}{fit\_antoine}{aad\_heldout\_pct}{10.8740041814}
+\goldrow{diag}{fit\_antoine}{dHvap\_kJ\_per\_mol}{41.8426272901}
+\goldrow{diag}{fit\_antoine}{n\_heldout}{16}
+\goldrow{diag}{fit\_antoine}{n\_points}{19}
+\goldrow{diag}{fit\_antoine}{rms\_heldout\_log10P}{0.0708465858112}
+\goldrow{verdict}{fit\_antoine}{verdict}{notValidated}
+\end{tutgolden}
+
+\clearpage
+\tutentry{curate27\_vp\_glycerol}{tutorials/props/curation/curate27\_vp\_glycerol}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_antoine}\\[-1pt]{\tiny vaporPressureFit}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Antoine vapour pressure of glycerol fitted by the curation pipeline to measured vapour pressures (ThermoML locates, the article sources), held out against an independent study}
+\begin{tutnarrative}
+the vapour pressure of glycerol, REFITTED to measurements (DEV.md 4c C281 step 2). Written by `bin/choupo-curate vp glycerol`; everything above the RESULT paragraph is the DECLARATION, committed before any fit ran, so it can be read against the result.
+
+WHY. The catalogue record carried `vaporPressure \{ model AmbroseWalton; \}`, a corresponding-states ESTIMATE from Tc, Pc and omega that never reads the record's own Tb (C279 measured a median 19.6 \% AAD over the 25 such records with archive data). Here a three-parameter Antoine is fitted to ONE laboratory and held out on ANOTHER that shares no author with it.
+
+STUDIES (one per article, extracted by `choupo-thermoml extract-vp`; ranked by points, ties by DOI): 10.1016/j.fluid.2015.03.038 113 pts 303.59-436.13 K Verevkin; Zaitsau; Emel'yanenko; Zhabina 10.1021/je200766t 11 pts 351.8-462.86 K Mokbel; Sawaya; Zanota; Naccoul et al. 10.1016/j.jct.2012.09.032 5 pts 477.25-520.65 K Veneral; Benazzi; Mazutti; Voll et al. 10.1021/je800070y 5 pts 463.15-543.15 K Yan; Suppes SET ASIDE BY NAME: 10.1016/j.jct.2013.09.046: 4 pressure point(s), fewer than 5 10.1021/acs.jced.5b01080: 3 pressure point(s), fewer than 5
+
+PARTITION (the C16 rule, declared): FIT = the study with the most points, doi 10.1016/j.fluid.2015.03.038 (113 pts, 303.59-436.13 K); HELD OUT = the next largest sharing no author with it, doi 10.1021/je200766t (11 pts, 351.8-462.86 K).
+
+BAND: maxAAD 5.0 \% (declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 11 points (0.707 to 7.38 \%, mean 4.98 \%), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean).
+
+NORMAL BOILING POINT: the record's Tb 563.15 K lies OUTSIDE the measured span 303.59-462.86 K: the fitted Antoine's own normal boiling point (P = 101.325 kPa) must lie within 2 K of it, or the fit is NOT promoted (an extrapolation that misses the record's own boiling point).
+
+NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares both series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates them into constant/archiveExtracts/ (gitignored).
+
+RESULT @@RESULT-BEGIN@@ WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). Antoine log10(Psat/bar) = 6.068473 - 2994.6061/(T + -63.1209), in-sample R2 0.999986 over 113 points, 303.59-436.13 K. HELD OUT: 11 points, AAD 8.3035 \% against the band 5 \% $\to$ notValidated. Its own normal boiling point (101.325 kPa): 557.06 K. NOT PROMOTED: held-out verdict notValidated (AAD 8.303 \% against the band 5 \% declared before the fit); the record keeps AmbroseWalton @@RESULT-END@@
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{fit\_antoine}{A}{6.06847253542}
+\goldrow{diag}{fit\_antoine}{B}{2994.60608534}
+\goldrow{diag}{fit\_antoine}{C}{-63.1209263651}
+\goldrow{diag}{fit\_antoine}{R2}{0.99998555311}
+\goldrow{diag}{fit\_antoine}{aad\_heldout\_pct}{8.30349477605}
+\goldrow{diag}{fit\_antoine}{dHvap\_kJ\_per\_mol}{78.375929913}
+\goldrow{diag}{fit\_antoine}{n\_heldout}{11}
+\goldrow{diag}{fit\_antoine}{n\_points}{113}
+\goldrow{diag}{fit\_antoine}{rms\_heldout\_log10P}{0.0435820641946}
+\goldrow{verdict}{fit\_antoine}{verdict}{notValidated}
+\end{tutgolden}
+
+\clearpage
+\tutentry{curate28\_vp\_methylDiEthanolAmine}{tutorials/props/curation/curate28\_vp\_methylDiEthanolAmine}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_antoine}\\[-1pt]{\tiny vaporPressureFit}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Antoine vapour pressure of methylDiEthanolAmine fitted by the curation pipeline to measured vapour pressures (ThermoML locates, the article sources), held out against an independent study}
+\begin{tutnarrative}
+the vapour pressure of methylDiEthanolAmine, REFITTED to measurements (DEV.md 4c C281 step 2). Written by `bin/choupo-curate vp methylDiEthanolAmine`; everything above the RESULT paragraph is the DECLARATION, committed before any fit ran, so it can be read against the result.
+
+WHY. The catalogue record carried `vaporPressure \{ model AmbroseWalton; \}`, a corresponding-states ESTIMATE from Tc, Pc and omega that never reads the record's own Tb (C279 measured a median 19.6 \% AAD over the 25 such records with archive data). Here a three-parameter Antoine is fitted to ONE laboratory and held out on ANOTHER that shares no author with it.
+
+STUDIES (one per article, extracted by `choupo-thermoml extract-vp`; ranked by points, ties by DOI): 10.1021/je060269j 9 pts 519.7-738.4 K VonNiederhausern; Wilson; Giles 10.1021/je400373d 7 pts 467.34-520.28 K Yang; Feng; Cheng; Zhang et al. 10.1021/je800290k 7 pts 409.69-435.5 K Kim; Svendsen; Borresen 10.1021/acs.jced.8b00054 6 pts 430.52-488.42 K Soames; Helal; Iglauer; Barifcani et al. SET ASIDE BY NAME: 10.1016/j.fluid.2010.08.026: j.fluid.2010.08.026.xml: 1 of 1 pressure rows of methylDiEthanolAmine declare no stated uncertainty -- a partial uncertainty is no uncertainty for a held-out band. Nothing was written.
+
+PARTITION (the C16 rule, declared): FIT = the study with the most points, doi 10.1021/je060269j (9 pts, 519.7-738.4 K); HELD OUT = the next largest sharing no author with it, doi 10.1021/je400373d (7 pts, 467.34-520.28 K).
+
+BAND: maxAAD 2.3 \% (declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 7 points (1.97 to 2.5 \%, mean 2.239 \%), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean).
+
+NORMAL BOILING POINT: the record's Tb 520.15 K lies INSIDE the measured span 467.34-738.4 K: the held-out verdict is the test there, no further condition.
+
+NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares both series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates them into constant/archiveExtracts/ (gitignored).
+
+RESULT @@RESULT-BEGIN@@ WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). Antoine log10(Psat/bar) = 4.717858 - 2013.4423/(T + -93.3716), in-sample R2 0.999965 over 9 points, 519.7-738.4 K. HELD OUT: 7 points, AAD 5.1341 \% against the band 2.3 \% $\to$ notValidated. Its own normal boiling point (101.325 kPa): 520.66 K. NOT PROMOTED: held-out verdict notValidated (AAD 5.134 \% against the band 2.3 \% declared before the fit); the record keeps AmbroseWalton @@RESULT-END@@
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{fit\_antoine}{A}{4.71785824219}
+\goldrow{diag}{fit\_antoine}{B}{2013.44229741}
+\goldrow{diag}{fit\_antoine}{C}{-93.3716210697}
+\goldrow{diag}{fit\_antoine}{R2}{0.999965432755}
+\goldrow{diag}{fit\_antoine}{aad\_heldout\_pct}{5.13410755614}
+\goldrow{diag}{fit\_antoine}{dHvap\_kJ\_per\_mol}{50.5143527547}
+\goldrow{diag}{fit\_antoine}{n\_heldout}{7}
+\goldrow{diag}{fit\_antoine}{n\_points}{9}
+\goldrow{diag}{fit\_antoine}{rms\_heldout\_log10P}{0.0237465936082}
+\goldrow{verdict}{fit\_antoine}{verdict}{notValidated}
+\end{tutgolden}
+
+\clearpage
+\tutentry{curate29\_vp\_methylTertPentylEther}{tutorials/props/curation/curate29\_vp\_methylTertPentylEther}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_antoine}\\[-1pt]{\tiny vaporPressureFit}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Antoine vapour pressure of methylTertPentylEther fitted by the curation pipeline to measured vapour pressures (ThermoML locates, the article sources), held out against an independent study}
+\begin{tutnarrative}
+the vapour pressure of methylTertPentylEther, REFITTED to measurements (DEV.md 4c C281 step 2). Written by `bin/choupo-curate vp methylTertPentylEther`; everything above the RESULT paragraph is the DECLARATION, committed before any fit ran, so it can be read against the result.
+
+WHY. The catalogue record carried `vaporPressure \{ model AmbroseWalton; \}`, a corresponding-states ESTIMATE from Tc, Pc and omega that never reads the record's own Tb (C279 measured a median 19.6 \% AAD over the 25 such records with archive data). Here a three-parameter Antoine is fitted to ONE laboratory and held out on ANOTHER that shares no author with it.
+
+STUDIES (one per article, extracted by `choupo-thermoml extract-vp`; ranked by points, ties by DOI): 10.1021/je101250d 21 pts 313.44-359.95 K Mejia; Segura; Cartes 10.1021/je0255980 11 pts 274.2-307.8 K Verevkin; Krasnykh; Vasiltsova; Heintz 10.1021/je049867t 11 pts 298.02-355.64 K Vorenberg; Raal; Ramjugernath 10.1021/je901026b 5 pts 318.13-338.28 K Bernatova; Pavlicek; Wichterle SET ASIDE BY NAME: 10.1016/j.fluid.2005.06.017: 1 pressure point(s), fewer than 5 10.1016/j.fluid.2005.10.024: 2 pressure point(s), fewer than 5 10.1021/je200215d: 1 pressure point(s), fewer than 5
+
+PARTITION (the C16 rule, declared): FIT = the study with the most points, doi 10.1021/je101250d (21 pts, 313.44-359.95 K); HELD OUT = the next largest sharing no author with it, doi 10.1021/je0255980 (11 pts, 274.2-307.8 K).
+
+BAND: maxAAD 7.8 \% (declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 11 points (7.75 to 7.77 \%, mean 7.764 \%), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean).
+
+NORMAL BOILING POINT: the record's Tb 359.51 K lies INSIDE the measured span 274.2-359.95 K: the held-out verdict is the test there, no further condition.
+
+NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares both series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates them into constant/archiveExtracts/ (gitignored).
+
+RESULT @@RESULT-BEGIN@@ WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). Antoine log10(Psat/bar) = 4.240937 - 1366.2891/(T + -36.8588), in-sample R2 0.999996 over 21 points, 313.44-359.95 K. HELD OUT: 11 points, AAD 9.9414 \% against the band 7.8 \% $\to$ notValidated. Its own normal boiling point (101.325 kPa): 359.46 K. NOT PROMOTED: held-out verdict notValidated (AAD 9.941 \% against the band 7.8 \% declared before the fit); the record keeps AmbroseWalton @@RESULT-END@@
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{fit\_antoine}{A}{4.24093692441}
+\goldrow{diag}{fit\_antoine}{B}{1366.28911271}
+\goldrow{diag}{fit\_antoine}{C}{-36.8587932811}
+\goldrow{diag}{fit\_antoine}{R2}{0.999995704179}
+\goldrow{diag}{fit\_antoine}{aad\_heldout\_pct}{9.94141702513}
+\goldrow{diag}{fit\_antoine}{dHvap\_kJ\_per\_mol}{32.4658337548}
+\goldrow{diag}{fit\_antoine}{n\_heldout}{11}
+\goldrow{diag}{fit\_antoine}{n\_points}{21}
+\goldrow{diag}{fit\_antoine}{rms\_heldout\_log10P}{0.0430027908225}
+\goldrow{verdict}{fit\_antoine}{verdict}{notValidated}
+\end{tutgolden}
+
+\clearpage
+\tutentry{curate30\_vp\_methylethanolamine}{tutorials/props/curation/curate30\_vp\_methylethanolamine}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_antoine}\\[-1pt]{\tiny vaporPressureFit}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Antoine vapour pressure of methylethanolamine fitted by the curation pipeline to measured vapour pressures (ThermoML locates, the article sources), held out against an independent study}
+\begin{tutnarrative}
+the vapour pressure of methylethanolamine, REFITTED to measurements (DEV.md 4c C281 step 2). Written by `bin/choupo-curate vp methylethanolamine`; everything above the RESULT paragraph is the DECLARATION, committed before any fit ran, so it can be read against the result.
+
+WHY. The catalogue record carried `vaporPressure \{ model AmbroseWalton; \}`, a corresponding-states ESTIMATE from Tc, Pc and omega that never reads the record's own Tb (C279 measured a median 19.6 \% AAD over the 25 such records with archive data). Here a three-parameter Antoine is fitted to ONE laboratory and held out on ANOTHER that shares no author with it.
+
+STUDIES (one per article, extracted by `choupo-thermoml extract-vp`; ranked by points, ties by DOI): 10.1021/je049761y 16 pts 274.9-320.2 K Kapteina; Slovik; Verevkin; Heintz 10.1021/je101259r 16 pts 341.8-451.1 K Klepacova; Huttenhuis; Derks; Versteeg 10.1021/je400373d 7 pts 388-431.2 K Yang; Feng; Cheng; Zhang et al. SET ASIDE BY NAME: (none)
+
+PARTITION (the C16 rule, declared): FIT = the study with the most points, doi 10.1021/je049761y (16 pts, 274.9-320.2 K); HELD OUT = the next largest sharing no author with it, doi 10.1021/je101259r (16 pts, 341.8-451.1 K).
+
+BAND: maxAAD 2.6 \% (declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 16 points (1.17 to 10.3 \%, mean 2.587 \%), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean).
+
+NORMAL BOILING POINT: the record's Tb 432.388 K lies INSIDE the measured span 274.9-451.1 K: the held-out verdict is the test there, no further condition.
+
+NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares both series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates them into constant/archiveExtracts/ (gitignored).
+
+RESULT @@RESULT-BEGIN@@ WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). Antoine log10(Psat/bar) = 5.008624 - 1878.4613/(T + -62.8829), in-sample R2 0.999948 over 16 points, 274.9-320.2 K. HELD OUT: 16 points, AAD 15.8476 \% against the band 2.6 \% $\to$ notValidated. Its own normal boiling point (101.325 kPa): 438.36 K. NOT PROMOTED: held-out verdict notValidated (AAD 15.85 \% against the band 2.6 \% declared before the fit); the record keeps AmbroseWalton @@RESULT-END@@
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{fit\_antoine}{A}{5.00862394544}
+\goldrow{diag}{fit\_antoine}{B}{1878.46125733}
+\goldrow{diag}{fit\_antoine}{C}{-62.8828803843}
+\goldrow{diag}{fit\_antoine}{R2}{0.999948324583}
+\goldrow{diag}{fit\_antoine}{aad\_heldout\_pct}{15.8476116265}
+\goldrow{diag}{fit\_antoine}{dHvap\_kJ\_per\_mol}{55.6874598963}
+\goldrow{diag}{fit\_antoine}{n\_heldout}{16}
+\goldrow{diag}{fit\_antoine}{n\_points}{16}
+\goldrow{diag}{fit\_antoine}{rms\_heldout\_log10P}{0.0777689162375}
+\goldrow{verdict}{fit\_antoine}{verdict}{notValidated}
+\end{tutgolden}
+
+\clearpage
+\tutentry{curate31\_vp\_monoethanolamine}{tutorials/props/curation/curate31\_vp\_monoethanolamine}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_antoine}\\[-1pt]{\tiny vaporPressureFit}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Antoine vapour pressure of monoethanolamine fitted by the curation pipeline to measured vapour pressures (ThermoML locates, the article sources), held out against an independent study}
+\begin{tutnarrative}
+the vapour pressure of monoethanolamine, REFITTED to measurements (DEV.md 4c C281 step 2). Written by `bin/choupo-curate vp monoethanolamine`; everything above the RESULT paragraph is the DECLARATION, committed before any fit ran, so it can be read against the result.
+
+WHY. The catalogue record carried `vaporPressure \{ model AmbroseWalton; \}`, a corresponding-states ESTIMATE from Tc, Pc and omega that never reads the record's own Tb (C279 measured a median 19.6 \% AAD over the 25 such records with archive data). Here a three-parameter Antoine is fitted to ONE laboratory and held out on ANOTHER that shares no author with it.
+
+STUDIES (one per article, extracted by `choupo-thermoml extract-vp`; ranked by points, ties by DOI): 10.1016/j.fluid.2015.06.045 38 pts 273.65-303.16 K Ruzicka; Fulem; Mahnel; Cervinka 10.1021/je800530u 26 pts 283.15-363.15 K Belabbaci; Razzouk; Mokbel; Jose et al. 10.1021/je800290k 16 pts 357.46-435.61 K Kim; Svendsen; Borresen 10.1021/je049761y 13 pts 279-324.5 K Kapteina; Slovik; Verevkin; Heintz 10.1021/je101259r 7 pts 358.6-441.9 K Klepacova; Huttenhuis; Derks; Versteeg 10.1021/je400885z 6 pts 373.15-423.15 K McDougal; Jasperson; Wilson SET ASIDE BY NAME: 10.1021/je3002078: 1 pressure point(s), fewer than 5 10.1021/je7001336: 1 pressure point(s), fewer than 5
+
+PARTITION (the C16 rule, declared): FIT = the study with the most points, doi 10.1016/j.fluid.2015.06.045 (38 pts, 273.65-303.16 K); HELD OUT = the next largest sharing no author with it, doi 10.1021/je800530u (26 pts, 283.15-363.15 K).
+
+BAND: maxAAD 5.4 \% (declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 26 points (0.773 to 12 \%, mean 5.314 \%), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean).
+
+NORMAL BOILING POINT: the record's Tb 444.15 K lies OUTSIDE the measured span 273.65-363.15 K: the fitted Antoine's own normal boiling point (P = 101.325 kPa) must lie within 2 K of it, or the fit is NOT promoted (an extrapolation that misses the record's own boiling point).
+
+NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares both series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates them into constant/archiveExtracts/ (gitignored).
+
+RESULT @@RESULT-BEGIN@@ WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). Antoine log10(Psat/bar) = 6.766025 - 2807.2440/(T + -17.4236), in-sample R2 0.999993 over 38 points, 273.65-303.16 K. HELD OUT: 26 points, AAD 2.8176 \% against the band 5.4 \% $\to$ validated. Its own normal boiling point (101.325 kPa): 432.68 K. NOT PROMOTED: validated, but the fitted Antoine's normal boiling point 432.68 K misses the record's Tb 444.15 K by -11.47 K, outside the declared 2 K -- an extrapolation that contradicts the record; the record keeps AmbroseWalton @@RESULT-END@@
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{fit\_antoine}{A}{6.76602536554}
+\goldrow{diag}{fit\_antoine}{B}{2807.2440362}
+\goldrow{diag}{fit\_antoine}{C}{-17.4236374886}
+\goldrow{diag}{fit\_antoine}{R2}{0.999992628284}
+\goldrow{diag}{fit\_antoine}{aad\_heldout\_pct}{2.81757334607}
+\goldrow{diag}{fit\_antoine}{dHvap\_kJ\_per\_mol}{60.4982503708}
+\goldrow{diag}{fit\_antoine}{n\_heldout}{26}
+\goldrow{diag}{fit\_antoine}{n\_points}{38}
+\goldrow{diag}{fit\_antoine}{rms\_heldout\_log10P}{0.0151375388401}
+\goldrow{verdict}{fit\_antoine}{verdict}{validated}
+\end{tutgolden}
+
+\clearpage
+\tutentry{curate32\_vp\_nEicosane}{tutorials/props/curation/curate32\_vp\_nEicosane}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_antoine}\\[-1pt]{\tiny vaporPressureFit}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Antoine vapour pressure of nEicosane fitted by the curation pipeline to measured vapour pressures (ThermoML locates, the article sources), held out against an independent study}
+\begin{tutnarrative}
+the vapour pressure of nEicosane, REFITTED to measurements (DEV.md 4c C281 step 2). Written by `bin/choupo-curate vp nEicosane`; everything above the RESULT paragraph is the DECLARATION, committed before any fit ran, so it can be read against the result.
+
+WHY. The catalogue record carried `vaporPressure \{ model AmbroseWalton; \}`, a corresponding-states ESTIMATE from Tc, Pc and omega that never reads the record's own Tb (C279 measured a median 19.6 \% AAD over the 25 such records with archive data). Here a three-parameter Antoine is fitted to ONE laboratory and held out on ANOTHER that shares no author with it.
+
+STUDIES (one per article, extracted by `choupo-thermoml extract-vp`; ranked by points, ties by DOI): 10.1021/acs.jced.6b00821 8 pts 313.15-343.15 K Widegren; Beall; Tolbert; Lovestead et al. 10.1021/je800534x 6 pts 312.76-373.17 K Razzouk; Naccoul; Mokbel; Saab et al. SET ASIDE BY NAME: (none)
+
+PARTITION (the C16 rule, declared): FIT = the study with the most points, doi 10.1021/acs.jced.6b00821 (8 pts, 313.15-343.15 K); HELD OUT = the next largest sharing no author with it, doi 10.1021/je800534x (6 pts, 312.76-373.17 K).
+
+BAND: maxAAD 4.2 \% (declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 6 points (4.02 to 4.42 \%, mean 4.181 \%), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean).
+
+NORMAL BOILING POINT: the record's Tb 616.95 K lies OUTSIDE the measured span 312.76-373.17 K: the fitted Antoine's own normal boiling point (P = 101.325 kPa) must lie within 2 K of it, or the fit is NOT promoted (an extrapolation that misses the record's own boiling point).
+
+NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares both series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates them into constant/archiveExtracts/ (gitignored).
+
+RESULT @@RESULT-BEGIN@@ WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). Antoine log10(Psat/bar) = 3.607758 - 1978.6123/(T + -123.7264), in-sample R2 0.999592 over 8 points, 313.15-343.15 K. HELD OUT: 6 points, AAD 28.3788 \% against the band 4.2 \% $\to$ notValidated. Its own normal boiling point (101.325 kPa): 673.03 K. NOT PROMOTED: held-out verdict notValidated (AAD 28.38 \% against the band 4.2 \% declared before the fit); the record keeps AmbroseWalton @@RESULT-END@@
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{fit\_antoine}{A}{3.60775799445}
+\goldrow{diag}{fit\_antoine}{B}{1978.61234893}
+\goldrow{diag}{fit\_antoine}{C}{-123.726419626}
+\goldrow{diag}{fit\_antoine}{R2}{0.999592413271}
+\goldrow{diag}{fit\_antoine}{aad\_heldout\_pct}{28.3787742947}
+\goldrow{diag}{fit\_antoine}{dHvap\_kJ\_per\_mol}{92.6428700686}
+\goldrow{diag}{fit\_antoine}{n\_heldout}{6}
+\goldrow{diag}{fit\_antoine}{n\_points}{8}
+\goldrow{diag}{fit\_antoine}{rms\_heldout\_log10P}{0.111988601477}
+\goldrow{verdict}{fit\_antoine}{verdict}{notValidated}
+\end{tutgolden}
+
+\clearpage
+\tutentry{curate33\_vp\_nHexylAcetate}{tutorials/props/curation/curate33\_vp\_nHexylAcetate}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_antoine}\\[-1pt]{\tiny vaporPressureFit}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Antoine vapour pressure of nHexylAcetate fitted by the curation pipeline to measured vapour pressures (ThermoML locates, the article sources), held out against an independent study}
+\begin{tutnarrative}
+the vapour pressure of nHexylAcetate, REFITTED to measurements (DEV.md 4c C281 step 2). Written by `bin/choupo-curate vp nHexylAcetate`; everything above the RESULT paragraph is the DECLARATION, committed before any fit ran, so it can be read against the result.
+
+WHY. The catalogue record carried `vaporPressure \{ model AmbroseWalton; \}`, a corresponding-states ESTIMATE from Tc, Pc and omega that never reads the record's own Tb (C279 measured a median 19.6 \% AAD over the 25 such records with archive data). Here a three-parameter Antoine is fitted to ONE laboratory and held out on ANOTHER that shares no author with it.
+
+STUDIES (one per article, extracted by `choupo-thermoml extract-vp`; ranked by points, ties by DOI): 10.1021/je050141m 14 pts 397.97-439.98 K Schmitt; Hasse 10.1016/j.jct.2005.08.003 13 pts 274.5-309.1 K Krasnykh; Verevkin; Koutek; Doubsky SET ASIDE BY NAME: (none)
+
+PARTITION (the C16 rule, declared): FIT = the study with the most points, doi 10.1021/je050141m (14 pts, 397.97-439.98 K); HELD OUT = the next largest sharing no author with it, doi 10.1016/j.jct.2005.08.003 (13 pts, 274.5-309.1 K).
+
+BAND: maxAAD 7.2 \% (declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 13 points (7.08 to 7.24 \%, mean 7.125 \%), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean).
+
+NORMAL BOILING POINT: the record's Tb 444.65 K lies OUTSIDE the measured span 274.5-439.98 K: the fitted Antoine's own normal boiling point (P = 101.325 kPa) must lie within 2 K of it, or the fit is NOT promoted (an extrapolation that misses the record's own boiling point).
+
+NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares both series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates them into constant/archiveExtracts/ (gitignored).
+
+RESULT @@RESULT-BEGIN@@ WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). Antoine log10(Psat/bar) = 4.198146 - 1539.5515/(T + -77.2388), in-sample R2 0.999994 over 14 points, 397.97-439.98 K. HELD OUT: 13 points, AAD 5.8948 \% against the band 7.2 \% $\to$ validated. Its own normal boiling point (101.325 kPa): 444.46 K. PROMOTED on 2026-11-10 into data/standards/components/nHexylAcetate.dat as reviewStatus autoPromoted, humanReviewed false, because: verdict validated, normal boiling point 444.46 K within 2 K of the record's Tb 444.65 K @@RESULT-END@@
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{fit\_antoine}{A}{4.19814570097}
+\goldrow{diag}{fit\_antoine}{B}{1539.5515302}
+\goldrow{diag}{fit\_antoine}{C}{-77.2388159972}
+\goldrow{diag}{fit\_antoine}{R2}{0.999993725373}
+\goldrow{diag}{fit\_antoine}{aad\_heldout\_pct}{5.89481152068}
+\goldrow{diag}{fit\_antoine}{dHvap\_kJ\_per\_mol}{43.3626925966}
+\goldrow{diag}{fit\_antoine}{n\_heldout}{13}
+\goldrow{diag}{fit\_antoine}{n\_points}{14}
+\goldrow{diag}{fit\_antoine}{rms\_heldout\_log10P}{0.0274678562757}
+\goldrow{verdict}{fit\_antoine}{verdict}{validated}
 \end{tutgolden}
 
 \subsection{electrolyte}

@@ -604,3 +604,122 @@ fetch and run them; where it cannot, the case and the gate SKIP by name and
 are not counted as a pass.  That per-case SKIP had no precedent in
 `bin/runTests` (only gates used SKIP), and its summary line does not count
 SKIPs -- the line names each one, the tally does not.
+
+## 9. The same pipeline for one compound: Ambrose-Walton curves refitted (2026-11-10, DEV.md 4c C281 step 2)
+
+### 9.1 What was built
+
+    choupo-curate vp <component> [--plan] [--no-commit] [--resume]
+    choupo-curate vp <component> --promote
+    choupo-curate revert <component>
+    choupo-thermoml extract-vp <article file> --inchikey <key> --into <dir>
+
+`vp` applies section 2-8's rules to a component whose `vaporPressure` is
+`model AmbroseWalton` (it refuses any other curve: it never overwrites one
+somebody fitted or read).  Identity by InChIKey; one study per ARTICLE,
+extracted by `extract-vp`, whose reading of a pure liquid-gas vapour-pressure
+point is the C279 audit's (`audit_components_thermoml.extract_file`,
+imported, so the audit and the refit cannot read two sets of points out of
+one article); a boiling-temperature row is set aside by name (its stated U
+is in kelvin), and an article whose pressure rows do not all state an
+uncertainty is set aside.  Partition: fit = the study with the most points
+(ties by DOI), held out = the next largest sharing no author.  The case
+`curateNN_vp_<component>` declares its two datasets in
+`constant/archiveDatasets` with `extractor vapourPressure;` and the InChIKey,
+and `fetch` regenerates them; the declaration is committed before the fit.
+The case is NOT sealed: the fit reads only its evidence, and the run must
+load the catalogue record so it voices what that record now is.
+
+Two stated defaults, each declared in every case before its fit:
+
+- **The band is the held-out study's MEAN stated relative U95(P)/P**, rounded
+  up to two significant figures -- not section 2.4's largest U.  A pair's U is
+  in kelvin and nearly uniform along a series; a vapour pressure's relative U
+  spans orders of magnitude along one (glycerol's held-out study: 0.7 to
+  7.4 %), so its maximum is set by the lowest-pressure point; and the
+  statistic it is held to, the held-out AAD, is itself a mean.
+- **The normal boiling point.**  Where the record's `Tb` lies outside every
+  measured temperature (fit and held out), the fitted Antoine is an
+  extrapolation there and is promoted only if its own normal boiling point
+  lies within 2 K of `Tb`.  Inside the measured span the held-out verdict is
+  the test.
+
+`--promote` (verdict `validated` and the Tb rule) replaces the block by the
+Antoine (Trange = the fit's own span; outside it the engine announces the
+extrapolation, as for every Antoine), rewrites the banner sentence that
+called Psat an estimate, and replaces the per-value provenance entry by one
+naming the evidence (role, DOI, extract and article sha256), `fittedInCase`,
+the verdict, band and the fitted normal boiling point, marked `reviewStatus
+autoPromoted; humanReviewed false; promotedBy "bin/choupo-curate vp
+--promote";`.  `revert` restores the AmbroseWalton block, entry and banner --
+measured byte-identical to the record before promotion -- and only on a record
+this mode promoted.
+
+**The engine** (`src/thermo/Database.cpp`, the component loader's existing
+home for a record's status): any per-value provenance entry marked `reviewStatus
+autoPromoted` is voiced once per process, `[unreviewed] component '<c>':
+`<entry>` reviewStatus autoPromoted -- ... NO human has reviewed it`, into the
+caveat block and the result JSON advisories; generic over the entry's key.
+
+**The gates.**  `check_regressed_pairs` arm (i): each promoted curve is
+reproduced by its case (Antoine A, B, C to 1e-8 relative; Trange = the fit
+dataset's span; evidence against `archiveDatasets`; verdict, held-out points,
+AAD, band), only `validated` is in the catalogue, the status is `autoPromoted`
+with `humanReviewed false` and `promotedBy`, and the case's run prints the
+loader's line and carries it in the advisories; floor 1.  By-hand sabotages,
+each caught by arm (i) alone: B edited, `humanReviewed true`, Trange widened,
+verdict `notValidated`, AAD edited, and the engine's voice disabled (both the
+console and the JSON checks fired).  `check_ambrose_walton_announced` arm
+(e) pins the AmbroseWalton count at 47 (a new estimate, or a revert, moves
+the pin deliberately); a pin of 46 was tried and refused.
+
+### 9.2 Results
+
+Fourteen of the 48 components had two author-disjoint studies of at least
+five pressure points with stated uncertainty.
+
+| case | component | fit / held out (DOI) | band % | held-out AAD % | verdict | Tnb fit / record Tb, K | outcome |
+|---|---|---|---|---|---|---|---|
+| curate20 | diButylCarbonate | acs.jced.6b00517 / j.jct.2008.02.012 | 5.3 | 105 | notValidated | 478.44 / 480.6 | kept AW |
+| curate21 | diEthylCarbonate | j.jct.2008.02.012 / acs.jced.7b00295 | 2.0 | 13.2 | notValidated | 384.41 / 399.95 | kept AW |
+| curate22 | diNButylEther | j.fluid.2006.06.017 / j.fluid.2015.05.002 | 0.36 | 4.75 | notValidated | 413.64 / 415.35 | kept AW |
+| curate23 | diethylethanolamine | je049761y / j.fluid.2018.05.032 | 1.7 | 3.57 | notValidated | 427.31 / 434.15 | kept AW |
+| curate24 | dimethylSulfoxide | j.fluid.2011.02.002 / je400531a | 3.2 | 3.87 | notValidated | 466.07 / 462.15 | kept AW |
+| curate25 | dimethylethanolamine | je049761y / j.jct.2013.03.020 | 2.2 | 12.9 | notValidated | 387.26 / 404.15 | kept AW |
+| curate26 | furfural | acs.jced.7b00574 / je060406c | 5.6 | 10.9 | notValidated | 435.22 / 434.85 | kept AW |
+| curate27 | glycerol | j.fluid.2015.03.038 / je200766t | 5.0 | 8.30 | notValidated | 557.06 / 563.15 | kept AW |
+| curate28 | methylDiEthanolAmine | je060269j / je400373d | 2.3 | 5.13 | notValidated | 520.66 / 520.15 | kept AW |
+| curate29 | methylTertPentylEther | je101250d / je0255980 | 7.8 | 9.94 | notValidated | 359.46 / 359.51 | kept AW |
+| curate30 | methylethanolamine | je049761y / je101259r | 2.6 | 15.8 | notValidated | 438.36 / 432.39 | kept AW |
+| curate31 | monoethanolamine | j.fluid.2015.06.045 / je800530u | 5.4 | 2.82 | validated | 432.68 / 444.15 | kept AW: Tb rule (-11.5 K) |
+| curate32 | nEicosane | acs.jced.6b00821 / je800534x | 4.2 | 28.4 | notValidated | 673.03 / 616.95 | kept AW |
+| curate33 | nHexylAcetate | je050141m / j.jct.2005.08.003 | 7.2 | 5.89 | validated | 444.46 / 444.65 | **catalogue, autoPromoted** |
+
+(DOI prefixes 10.1021/ for `je...` and `acs.jced...`, 10.1016/ for `j....`.)
+The other 34 keep AmbroseWalton and its step-1 announcement: 20 have no
+usable archive study, 4 no agreed identity, 10 only one independent study.
+No golden moved: no tutorial loads nHexylAcetate (the one tutorial on these
+records, temperature02_engineers_ladder, carries a sealed glycerol, and
+glycerol was not promoted).
+
+### 9.3 Readings, and what is NOT done
+
+- **The single-study partition is the binding constraint.**  A laboratory
+  usually measures one range (transpiration at low T, ebulliometry near the
+  boiling point), so the fit study and the held-out study rarely overlap and
+  the held-out verdict measures the EXTRAPOLATION of a three-parameter
+  Antoine across tens of kelvin (diButylCarbonate: fitted at 383-478 K, held
+  out at 287-329 K, 105 %).  The failing fits are nonetheless far nearer the
+  measurements than the curves they would replace (C279: diethylethanolamine
+  AW 82.7 % over all its points, the refit 3.6 % on an unseen study).
+  Whether a fit on every study but one, or a held-out rule requiring overlap,
+  is allowed is Vítor's decision; nothing was re-partitioned after a result.
+- Under section 2.4's MAXIMUM-U band, dimethylSulfoxide (3.87 % against
+  6.6 %) would have been validated; the band was declared before the fit, so
+  it is recorded, not acted on.
+- monoethanolamine is the Tb rule working: a validated fit on 274-303 K data
+  that puts the normal boiling point 11.5 K low.
+- NOT done: a study triage (C226 item 3 is the pair pipeline's); Wagner or
+  extended Antoine forms; read-back of the series against the articles (all
+  stay `transcribedNotCheckedAgainstArticle`); boiling-temperature rows as
+  evidence.

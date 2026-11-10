@@ -571,6 +571,7 @@ Levenberg-Marquardt regression of thermophysical-model parameters against experi
 | `mode` |   | string | — | `fit` (default) adjusts the parameters; `evaluate` only scores the package as assembled. Any other word is REFUSED. |
 | `parameters` |   | array[object] | — | One entry per scalar. REQUIRED in `fit` mode (an empty list is refused there); optional in `evaluate` mode. A `fit` entry gives `initial`… |
 | `residual` | ✓ | object | — | The quantity the residual measures and the data it measures against. `kind` selects the residual family; the remaining keys are that fami… |
+| `objective` |   | object | — | DEV.md 4c C280. `method`: leastSquares (Levenberg-Marquardt, the sum of squared scaled residuals), minimax (the LARGEST scaled residual, … |
 | `options` |   | object | — | Levenberg-Marquardt controls. Every one is an explicit, announced aid — never a silent default that hides a hard fit. |
 | `output` |   | object | — | Where the fit artefacts go. `proposal` additionally writes a promotable record into the PRIVATE tier (data/local/), never into the curate… |
 | `evidence` |   | array[object] | — | The FIT / HELD-OUT partition (src/propertyOps/EvidencePartition.H). Each entry names a dataset and DECLARES its role; `role` has no defau… |

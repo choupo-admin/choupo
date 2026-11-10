@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 538,
+  "cases": 552,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 15
@@ -1967,6 +1967,202 @@
     "formulation": "gammaPhi",
     "activityModels": [
      "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate20_vp_diButylCarbonate": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate21_vp_diEthylCarbonate": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate22_vp_diNButylEther": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate23_vp_diethylethanolamine": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate24_vp_dimethylSulfoxide": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate25_vp_dimethylethanolamine": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate26_vp_furfural": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate27_vp_glycerol": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate28_vp_methylDiEthanolAmine": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate29_vp_methylTertPentylEther": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate30_vp_methylethanolamine": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate31_vp_monoethanolamine": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate32_vp_nEicosane": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate33_vp_nHexylAcetate": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
      "ideal"
     ]
    },
@@ -8032,6 +8228,20 @@
     "tutorials/props/curation/curate17_nrtl_diisopropylEther_isopropanol",
     "tutorials/props/curation/curate18_nrtl_isopropanol_dimethylCarbonate",
     "tutorials/props/curation/curate19_nrtl_ethanol_224Trimethylpentane",
+    "tutorials/props/curation/curate20_vp_diButylCarbonate",
+    "tutorials/props/curation/curate21_vp_diEthylCarbonate",
+    "tutorials/props/curation/curate22_vp_diNButylEther",
+    "tutorials/props/curation/curate23_vp_diethylethanolamine",
+    "tutorials/props/curation/curate24_vp_dimethylSulfoxide",
+    "tutorials/props/curation/curate25_vp_dimethylethanolamine",
+    "tutorials/props/curation/curate26_vp_furfural",
+    "tutorials/props/curation/curate27_vp_glycerol",
+    "tutorials/props/curation/curate28_vp_methylDiEthanolAmine",
+    "tutorials/props/curation/curate29_vp_methylTertPentylEther",
+    "tutorials/props/curation/curate30_vp_methylethanolamine",
+    "tutorials/props/curation/curate31_vp_monoethanolamine",
+    "tutorials/props/curation/curate32_vp_nEicosane",
+    "tutorials/props/curation/curate33_vp_nHexylAcetate",
     "tutorials/props/electrolyte/archer01_nacl_cold_to_hot",
     "tutorials/props/electrolyte/bjerrum01_carbonate_pH",
     "tutorials/props/electrolyte/composition01_nacl",
@@ -9451,6 +9661,20 @@
     "tutorials/props/curation/curate17_nrtl_diisopropylEther_isopropanol",
     "tutorials/props/curation/curate18_nrtl_isopropanol_dimethylCarbonate",
     "tutorials/props/curation/curate19_nrtl_ethanol_224Trimethylpentane",
+    "tutorials/props/curation/curate20_vp_diButylCarbonate",
+    "tutorials/props/curation/curate21_vp_diEthylCarbonate",
+    "tutorials/props/curation/curate22_vp_diNButylEther",
+    "tutorials/props/curation/curate23_vp_diethylethanolamine",
+    "tutorials/props/curation/curate24_vp_dimethylSulfoxide",
+    "tutorials/props/curation/curate25_vp_dimethylethanolamine",
+    "tutorials/props/curation/curate26_vp_furfural",
+    "tutorials/props/curation/curate27_vp_glycerol",
+    "tutorials/props/curation/curate28_vp_methylDiEthanolAmine",
+    "tutorials/props/curation/curate29_vp_methylTertPentylEther",
+    "tutorials/props/curation/curate30_vp_methylethanolamine",
+    "tutorials/props/curation/curate31_vp_monoethanolamine",
+    "tutorials/props/curation/curate32_vp_nEicosane",
+    "tutorials/props/curation/curate33_vp_nHexylAcetate",
     "tutorials/props/electrolyte/archer01_nacl_cold_to_hot",
     "tutorials/props/electrolyte/enrtl_mixed_nacl_ethanol_esteso",
     "tutorials/props/electrolyte/enrtl_multisalt_nacl_kcl",
@@ -10020,6 +10244,20 @@
    ],
    "vaporPressureFit": [
     "tutorials/props/curation/curate01_water_evidence_partition",
+    "tutorials/props/curation/curate20_vp_diButylCarbonate",
+    "tutorials/props/curation/curate21_vp_diEthylCarbonate",
+    "tutorials/props/curation/curate22_vp_diNButylEther",
+    "tutorials/props/curation/curate23_vp_diethylethanolamine",
+    "tutorials/props/curation/curate24_vp_dimethylSulfoxide",
+    "tutorials/props/curation/curate25_vp_dimethylethanolamine",
+    "tutorials/props/curation/curate26_vp_furfural",
+    "tutorials/props/curation/curate27_vp_glycerol",
+    "tutorials/props/curation/curate28_vp_methylDiEthanolAmine",
+    "tutorials/props/curation/curate29_vp_methylTertPentylEther",
+    "tutorials/props/curation/curate30_vp_methylethanolamine",
+    "tutorials/props/curation/curate31_vp_monoethanolamine",
+    "tutorials/props/curation/curate32_vp_nEicosane",
+    "tutorials/props/curation/curate33_vp_nHexylAcetate",
     "tutorials/props/fit/psat01_antoine_recovery"
    ],
    "vleConsistency": [

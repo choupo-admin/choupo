@@ -3345,6 +3345,49 @@ accepts today, and that is a policy call.
 > rest keep AmbroseWalton and its step-1 announcement.  No golden moves (the
 > one tutorial using these records is sealed); any that does is shown to
 > Vitor before a re-record.
+>
+> **C281 STEP 2 RESULT (2026-11-10, cloud general, branch c281-step2).**  ONE
+> record promoted: `nHexylAcetate` (fit Schmitt & Hasse doi 10.1021/je050141m,
+> 398-440 K; held out Krasnykh et al. doi 10.1016/j.jct.2005.08.003, 275-309 K;
+> held-out AAD 5.89 % against a 7.2 % band; its normal boiling point 444.46 K
+> against the record's 444.65 K) -- its vaporPressure is an Antoine with Trange
+> = the fit's span, `provenance.vaporPressure` names both DOIs, the case
+> (`curate33_vp_nHexylAcetate`) and the verdict, `reviewStatus autoPromoted;
+> humanReviewed false;`.  The AmbroseWalton count is 47.  FOURTEEN components
+> had two author-disjoint studies of >= 5 pressure points with stated
+> uncertainty (curate20-33, each declaration committed before its fit); twelve
+> missed their band (diButylCarbonate 105 %/5.3, diEthylCarbonate 13.2/2.0,
+> diNButylEther 4.75/0.36, diethylethanolamine 3.57/1.7, dimethylSulfoxide
+> 3.87/3.2, dimethylethanolamine 12.9/2.2, furfural 10.9/5.6, glycerol 8.3/5.0,
+> methylDiEthanolAmine 5.13/2.3, methylTertPentylEther 9.94/7.8,
+> methylethanolamine 15.8/2.6, nEicosane 28.4/4.2 -- held-out AAD / band, %);
+> monoethanolamine validated (2.82/5.4) and was NOT promoted by rule 4: fitted
+> on 274-303 K, its normal boiling point is 432.68 K against the record's
+> 444.15 K.  The other 34 keep AmbroseWalton and its step-1 announcement: 20
+> have no usable archive study, 4 no agreed identity (bromine, maleicAcid,
+> methylEthylCarbonate, methylTPentylSulfide), 10 only one independent study.  BUILT:
+> `bin/choupo-curate vp <c> [--plan|--promote]` and `revert <c>` (restores the
+> AmbroseWalton block byte-identically, measured); `bin/choupo-thermoml
+> extract-vp` (the C279 audit's reading of a point, imported); `fetch` reads a
+> declared `extractor vapourPressure`; the component loader voices a per-value
+> `reviewStatus autoPromoted` (`[unreviewed] component 'c': vaporPressure
+> ...`, caveat block; src/thermo/Database.cpp, generic over provenance
+> entries); `check_regressed_pairs` arm (i) holds each promoted curve to its
+> case (6 by-hand sabotages caught, incl. the engine voice removed);
+> `check_ambrose_walton_announced` arm (e) pins the AW count at 47.  STATED
+> DEFAULTS, put to Vitor: the band is the held-out study's MEAN relative U95
+> (not C16's maximum: a vapour pressure's relative U spans orders of magnitude
+> along one series; under the maximum, dimethylSulfoxide would have passed,
+> 3.87 against 6.6 -- recorded, not acted on, because the band was declared
+> before the fit); the Tb tolerance 2 K; no study triage.  FINDING FOR VITOR:
+> the C16 single-study partition makes an Antoine fitted on one laboratory's
+> range EXTRAPOLATE to the other's (diButylCarbonate 383-478 K fit, 287-329 K
+> held out); the fits that failed are still far nearer the measurements than
+> the AW curves C279 measured (e.g. diethylethanolamine 3.6 % against AW's
+> 82.7 %), so whether to allow a fit on all studies but one, or an
+> overlapping-range held-out rule, is his.  No golden moved (no tutorial loads
+> nHexylAcetate).  Record: docs/design/binary-pairs-from-open-measurements.md
+> section 9.
 
 > **C280 RESULT.** C280 LANDED 11-10: `fitParameters` takes `objective { method twoStage|leastSquares|minimax; }` with relative binodal rows; the butanol-water pair is PROMOTED to `data/standards/parameters/NRTL/nButanol-water.dat` (b_ij 1894.04, b_ji -163.84, a_ij -4.7108, a_ji 4.0996, alpha 0.4459), fitted by least squares on 14 tie lines and the heteroazeotrope: held-out tie-line AAD 0.0056 (band 0.01), held-out heteroazeotrope 0.38 K, water-rich liquid 5 % mean (the laboratories' own scatter). NOT for homogeneous butanol-rich VLE at 1 atm: 2.2 K high on average, 3.2 K max, held out and written in the record. On this partition minimax follows one laboratory and twoStage misses the band, so least squares is the promoted method. Held by check_regressed_pairs (record reproduced from its case) and --scope on curate14; NOT run: --gui, schema-coverage and guide freshness gates, a full sweep.
 >
