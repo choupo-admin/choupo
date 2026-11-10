@@ -3402,6 +3402,21 @@ accepts today, and that is a policy call.
 > Database.cpp were moved by hand and each checked to carry its `contains`
 > text), a full sweep.
 
+> **C294 (Vitor, 2026-11-10, on seeing only NRTL pair folders: "Mas esse
+> ajuste e rapido e devia ter sido feito! Eventualmente ate pode melhorar o
+> ajuste!").  EVERY FITTED PAIR GETS THE OTHER ACTIVITY MODELS TOO.**  The
+> pairs fitted since C284 (NRTL) are fitted ALSO with UNIQUAC and Wilson on
+> the SAME evidence, in the SAME case (the case gains the extra
+> `fitParameters` operations and their case-local records; no new case per
+> model, so tutorials/ does not grow by a case per pair), with the same
+> graded acceptance (C286: max |dT| 1/2/4 K; C291: max relative P 5/10/20 %),
+> the same arm-(f) one-liquid refusal per model, promoted autoPromoted /
+> humanReviewed false into data/standards/parameters/UNIQUAC/ and
+> .../Wilson/.  The Explorer can then set the models side by side per pair.
+> The residuals of the three models on the same points are published, never
+> used to choose one for the student.  UNIQUAC needs pure-component r and q;
+> a component without them is reported, not estimated silently.
+
 > **C291 (Vitor, 2026-11-10: "podes lancar dezenas de generais para
 > acelerar?", answered with two, bounded by the machine: 4 cores, ~6 GB of
 > disk).  TWO MORE GENERALS, ON DISJOINT PATHS.**  (1) c291-px-pairs: NRTL

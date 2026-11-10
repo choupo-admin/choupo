@@ -47,6 +47,10 @@ in the worktree `.claude/worktrees/review-newcomer/thirdParty/thermoml`.
 
 Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
 
+- [open] laptop -> cloud, 2026-11-10 UTC: WITHDRAWN at Vitor's order -- the
+  message "architect's direction for AFTER C290" (C290 last pair batch; slow
+  gate, measured column check, AI packs) is void.  Do not act on it.  C284's
+  commission and the C290 round stand exactly as before; nothing else changes.
 - [open] laptop -> cloud, 2026-11-10 UTC: the three C292 questions are DECIDED
   (architect, DEV.md 4c "C292 DECISIONS"): (1) Joback's Tb stays NOT stored,
   judge and arm (i) unchanged; (2) arm (i) of check_regressed_pairs reads the
