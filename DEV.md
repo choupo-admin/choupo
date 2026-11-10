@@ -3362,6 +3362,34 @@ accepts today, and that is a policy call.
 > Database.cpp were moved by hand and each checked to carry its `contains`
 > text), a full sweep.
 
+> **C289 (Vitor, 2026-11-10: "Sim! Isso e boa ideia!", on a proposal from
+> the cloud session).  THE EXPLORER COMPARES A FITTED RECORD WITH THE
+> MEASUREMENTS THE USER BRINGS.**  The measured series are not in the tree
+> (C282) and the NIST server sends no CORS header (measured 2026-11-10), so
+> the browser cannot fetch them.  For every fitted record (pair or
+> vapour-pressure curve with `evidence` DOIs) the Explorer shows, per article:
+> the NIST per-article link with a "download the data" button, and a "load
+> file" control; the user downloads the ThermoML file and loads it, the GUI
+> checks its sha256 against the record, extracts the declared block with the
+> same selector the case uses, and draws the model over the points, study by
+> study, with the dropped outliers marked and the fit grade shown.  Nothing is
+> stored, uploaded or redistributed.  Owner: the laptop session (gui/).
+
+> **C288 (Vitor, 2026-11-10, after the discussion of reaction heats on the
+> ideal-gas formation route: "e melhor fazer como o aspen faz e ate criar um
+> EduTools a explicar esta questao!").  A MEASURED HEAT OF REACTION MAY
+> CORRECT THE DUTY, AND THE CORRECTION IS A NAMED TERM.**  Vitor's decision
+> amends the 2026-06-27 heat-of-reaction contract (CLAUDE.md section 5): a
+> reaction may declare a MEASURED heat of reaction (value, temperature, phase,
+> source); the reactor's duty is then corrected by extent x (declared -
+> computed from formation data at the same conditions), the stream
+> enthalpies stay on the formation datum, and the correction is published
+> beside the duty and as its own line in the energy report (never hidden in
+> the duty).  The formation route stays the default; the mismatch is always
+> printed.  An EduTool explains why a computed reaction heat on the
+> ideal-gas route can be unreliable in the liquid phase and what the
+> correction does.  The EduTool scope is put to Vitor before it is built.
+
 > **C285 (Vitor, 2026-11-10, on the nine vapour pressures above 5 %: "mete
 > mesmo as que estao acima de 5%. Mas acima de 5% - 10% mete um warning, e
 > entre 10 a 20% poe um warning mais severo. Acima de 20% descarta").  THE

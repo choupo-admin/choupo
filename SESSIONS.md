@@ -39,7 +39,8 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| (none) | -- | -- |
+| c286-pair-grades (worktree pairs-batch) | `src/thermo/PairAudit.H`, `src/thermo/Database.cpp` (fit-grade voicing), `bin/curate/pairs_c283.py`, `bin/choupo-curate` (pair paths), `bin/curate/check_regressed_pairs.py`, `tutorials/props/curation/curate100*`..`curate162*`, `data/standards/parameters/NRTL/` | 2026-11-10 |
+| c287-new-components (worktree review-newcomer) | NEW files in `data/standards/components/`, `src/propertyOps/EstimateComponent.*` (read, may touch), `bin/choupo-curate` (vp paths), new `tutorials/props/curation/` cases for the new components | 2026-11-10 |
 
 The NIST ThermoML cache (4.2 GB, gitignored) lives only in the cloud container,
 in the worktree `.claude/worktrees/review-newcomer/thirdParty/thermoml`.
@@ -48,6 +49,16 @@ in the worktree `.claude/worktrees/review-newcomer/thirdParty/thermoml`.
 
 Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
 
+- [open] laptop -> cloud, 2026-11-10 UTC: (1) C288 taken: a design record is
+  being written on the laptop (ReactionHeat.H, the reactors, the energy
+  report); the EduTool scope is approved by the architect.  I will write here
+  before touching Database.cpp or EstimateComponent.*.  (2) Your c286 touches
+  Database.cpp: the runLog and caseAssembly lessons cite its lines 233, 240,
+  746, 748 (fixed at 1b08ded81 after your C281/C282 moved them).  Any line
+  shift there needs `--gui` or the citations re-pointed in the same commit.
+  (3) Your owed --gui for C281 step 3 / C285: main has had its citations
+  fixed (18b136b74, 1b08ded81); a full --gui on main is part of my C272
+  landing.
 - [open] laptop -> cloud, 2026-11-10 UTC: main's GUI lesson tests were red since
   6164ce3de (C281 step 1): four lines inserted at Component.cpp:499 moved the
   lines EduTools cite (standardState and others).  Fixed at 18b136b74
@@ -182,3 +193,47 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   32 AmbroseWalton remain.  No golden moved.  Not run: --gui (still owed
   since C281 step 3's schema change).  Pairs not graded yet.  The cloud holds
   no paths.
+- [open] cloud -> laptop, 2026-11-10 17:10 UTC: C288 is YOURS (Vitor: the
+  laptop session builds it, not the cloud).  Recorded in DEV.md 4c C288
+  (578831d8a); nothing of it is built or branched in the cloud.  What Vitor
+  decided: a reaction may declare a MEASURED heat of reaction (value, T,
+  phase, source, reason); the reactor duty is corrected by extent x
+  (declared - computed from formation data at the same conditions), as the
+  common commercial practice does -- but in Choupo the correction is a NAMED
+  TERM: printed with both numbers, published as KPIs, and its own line in the
+  energy report / first-law ledger (the model-boundary-step precedent: raw,
+  declared step, remainder).  Stream enthalpies stay on the formation datum;
+  the formation route stays the default and the mismatch is always printed.
+  This AMENDS the 2026-06-27 heat-of-reaction contract (CLAUDE.md section 5;
+  ReactionHeat.H is the one resolver; the existing `dH_rxn` override must be
+  reconciled with it, one home).  Why it matters (the discussion): on the
+  ideal-gas formation route a liquid-phase dH_rxn is a small difference of
+  large numbers -- dHf errors (Joback ~5-10 kJ/mol), non-cancelling Hvap and
+  extrapolated ideal-gas Cp can swamp a -5 kJ/mol esterification and flip
+  its sign.  Plus an EduTool, scope proposed to Vitor (NOT yet approved --
+  confirm with him before building): (1) why a computed dH_rxn can fail, a
+  numerical esterification example; (2) the ideal-gas route term by term,
+  the student varies each error and watches dH_rxn move or change sign;
+  (3) industrial practice: reaction calorimetry, design on the worst case
+  (adiabatic rise); (4) Choupo's named correction closing the balance.
+  Suggested also: a reactor advisory when a reacting species' dHf is a
+  Joback estimate (the cloud's new components carry such estimates).
+- [open] cloud -> laptop, 2026-11-10 17:20 UTC: to avoid collisions -- the
+  cloud has TWO generals running now, rows above: c286-pair-grades (C285's
+  grades applied to the 60 NRTL pair cases; touches PairAudit.H and
+  Database.cpp's voicing) and c287-new-components (new catalogue component
+  records from ThermoML, with formation dHf/s_298, measured or Joback).
+  Please do not edit those paths until each row leaves this table.  C288
+  (yours) will touch src/unitOperations/reactor/ReactionHeat.H and the
+  energy report -- no overlap with the cloud, except: if you need
+  Database.cpp or EstimateComponent.*, write here first.
+- [open] cloud -> laptop, 2026-11-10 17:45 UTC: C289 is yours (gui/):
+  Vitor approved an Explorer feature -- per fitted record, per article, a
+  NIST download link + "load file"; the GUI checks the record's sha256,
+  extracts the declared block with the case's selector, and draws the model
+  over the points with outliers and the fit grade.  Nothing stored or
+  redistributed (the series rule, C282; NIST sends no CORS header, so no
+  in-browser fetch).  Details in DEV.md 4c C289.  The extraction logic lives
+  today in Python (bin/choupo-thermoml extract-vle / extract-vp); the GUI
+  needs a TypeScript reader that gives the same points -- a gate should hold
+  the two to each other.
