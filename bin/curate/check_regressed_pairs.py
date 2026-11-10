@@ -105,12 +105,19 @@ case-local one that did not earn promotion):
       `fittedInCase` (or claims `autoPromoted` / `humanReviewed`) was refitted
       by `bin/choupo-curate vp` from an AmbroseWalton estimate to an Antoine:
       its case is fetched and run, and the record's coefficients (to 1e-8
-      relative), its Trange (the FIT dataset's own span), its evidence (role,
-      DOI, extract sha256 against the case's archiveDatasets), its verdict,
-      held-out points, AAD and band must equal the run's; the case DECLARES
-      `objective { method twoStage; }`, its run publishes twoStage and the
-      record's provenance `method` names it (C281 step 3); only `validated`
-      is in the catalogue; the entry is `reviewStatus autoPromoted;
+      relative) must equal the run's; under DEV.md 4c C283 (every usable
+      study fitted, none held out) the gate RECOMPUTES from the record's own
+      coefficients, the case's datasets and the run's list of discarded
+      points: the points kept and dropped, the mean and max relative P error
+      of the fit and of the AmbroseWalton curve on the kept points, and
+      requires acceptance.verdict `accepted`, max <= the acceptance (5 %
+      unless the case's system/curationDict declares another with a reason),
+      the normal boiling point within the acceptance's temperature error
+      where Tb lies outside the kept range, Trange = the kept span, the
+      evidence (role, DOI, extract sha256) equal to the case's
+      archiveDatasets, `outliers { maxRelativeError 15 percent; }` declared,
+      and the objective twoStage in the case, the run and the record's
+      `method` (C281 step 3); the entry is `reviewStatus autoPromoted;
       humanReviewed false;` with `promotedBy`; and the case's run prints the
       component loader's `[unreviewed] component '<c>': `vaporPressure`
       reviewStatus autoPromoted` line AND carries it in the result JSON
@@ -1082,7 +1089,8 @@ def main():
           "by name and passed the right one (arm f, amended); "
           f"{len(vp_done)} catalogue vapour pressure(s) regressed by `choupo-curate vp` "
           f"({', '.join(vp_done) or 'none'}) reproduced by their cases -- Antoine "
-          "coefficients under the declared twoStage objective, Trange = the fit's span, evidence, held-out verdict -- "
+          "coefficients under the declared twoStage objective, the C283 acceptance recomputed on the kept points "
+          "(max <= 5 %, both curves' errors, discarded points, Tb), Trange = the kept span, evidence -- "
           "autoPromoted with humanReviewed false and voiced by the component "
           "loader into the caveat block (arm i); "
           f"{span_held} water pair(s) used BELOW their span announce it once "
