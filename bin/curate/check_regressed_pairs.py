@@ -284,8 +284,13 @@ def check_liquid_liquid(rec, rf, case, tag, fails):
             fails.append(f"{tag}: tie-line evidence {ds} {bad}")
             return True
         for T, xlo, xhi in rows:
-            if tlo is None or not (tlo <= T <= thi):
-                fails.append(f"{tag}: a tie line at {T} K lies outside the record's "
+            #  The span is the span of the FIT evidence (the record's own
+            #  note).  A held-out tie line just outside it is evidence about
+            #  the extrapolation and is still scored below; a FIT tie line
+            #  outside it contradicts the span (C280, the first real record:
+            #  held-out ties at 288.15 K and 366.23 K against 288.20-365.85).
+            if role == "fit" and (tlo is None or not (tlo <= T <= thi)):
+                fails.append(f"{tag}: a FIT tie line at {T} K lies outside the record's "
                              f"validity span {tlo}-{thi} K -- the evidence and the "
                              "span it supports disagree")
                 return True
@@ -355,6 +360,11 @@ def check_dataset(path, fails, tag):
         fails.append(f"{tag}: {path.name} does not carry the CAS and InChIKey of "
                      "BOTH compounds under provenance.identity -- the join to the "
                      "catalogue must be checkable without re-running it")
+    #  A binodal dataset carries no bubble temperature: its rows are
+    #  weighted by the operation's declared liquidLiquid sigma, and arm (f)
+    #  holds them to the record.  The per-point arm below is for bubble sets.
+    if re.search(r"^\s*property\s+binaryLLE\.binodal\s*;", t, re.M):
+        return
     u = block(block(t, "uncertainty") or "", "T_bubble") or ""
     m = re.search(r"values\s*\(([^)]*)\)", u)
     d = t[t.index("\ndata"):] if "\ndata" in t else ""

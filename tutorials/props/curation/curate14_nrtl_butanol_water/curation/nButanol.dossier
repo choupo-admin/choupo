@@ -24,44 +24,34 @@ properties
 (
 {
     property       binaryVLE.T_bubble;
-    operation      fit_mixed;   // type fitParameters
+    operation      fit_binodal;   // type fitParameters
     model          "NRTL binary pair, bubble-T residual at fixed P";
     verdict        validated;
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  1486.66116132;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  -27.2962010703;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ij  -3.62822525404;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ji  3.62945392428;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.alpha  0.442825837459;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  1894.04289944;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  -163.836408837;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ij  -4.71077589137;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ji  4.09957276047;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.alpha  0.445923400221;
     }
 
     evidence
     {
-        partitionFingerprint  "21e7ba3fa2f0f25c";   // frozen before the fit
+        partitionFingerprint  "7e55be3fa48b6ca5";   // frozen before the fit
 
         datasets
         (
         {
             role      fit;
-            dataset   "constant/experiments/nButanol-water-bubble-je700411p.dat";
-            doi       "10.1021/je700411p";
-            sha256    "32ed6e15958b58bc35d7eb647d3cb4b75e9d6232ffbe7608a87c9c4b09cc34b1";
+            dataset   "constant/experiments/nButanol-water-bubble-j.jct.2014.07.021.dat";
+            doi       "10.1016/j.jct.2014.07.021";
+            sha256    "bcb8c39256002005a5f71569dd23d50c496d6d2d1346e79f88376e623a075e9d";
             provenance measured;
-            archiveFile "je700411p.xml";
+            archiveFile "j.jct.2014.07.021.xml";
             system    "nButanol + water";
             pressure  "101300.000000 Pa";
-        }
-        {
-            role      fit;
-            dataset   "constant/experiments/nButanol-water-lle-je700411p.dat";
-            doi       "10.1021/je700411p";
-            sha256    "32ed6e15958b58bc35d7eb647d3cb4b75e9d6232ffbe7608a87c9c4b09cc34b1";
-            provenance measured;
-            archiveFile "je700411p.xml";
-            system    "nButanol + water";
-            property  binaryLLE.binodal;
         }
         {
             role      fit;
@@ -104,14 +94,14 @@ properties
             property  binaryLLE.binodal;
         }
         {
-            role      validation;
-            dataset   "constant/experiments/nButanol-water-bubble-j.jct.2014.07.021.dat";
+            role      fit;
+            dataset   "constant/experiments/nButanol-water-lle-jct.2014.07.021.dat";
             doi       "10.1016/j.jct.2014.07.021";
             sha256    "bcb8c39256002005a5f71569dd23d50c496d6d2d1346e79f88376e623a075e9d";
             provenance measured;
             archiveFile "j.jct.2014.07.021.xml";
             system    "nButanol + water";
-            pressure  "101300.000000 Pa";
+            property  binaryLLE.binodal;
         }
         {
             role      validation;
@@ -125,11 +115,21 @@ properties
         }
         {
             role      validation;
-            dataset   "constant/experiments/nButanol-water-lle-jct.2014.07.021.dat";
-            doi       "10.1016/j.jct.2014.07.021";
-            sha256    "bcb8c39256002005a5f71569dd23d50c496d6d2d1346e79f88376e623a075e9d";
+            dataset   "constant/experiments/nButanol-water-lle-je700411p.dat";
+            doi       "10.1021/je700411p";
+            sha256    "32ed6e15958b58bc35d7eb647d3cb4b75e9d6232ffbe7608a87c9c4b09cc34b1";
             provenance measured;
-            archiveFile "j.jct.2014.07.021.xml";
+            archiveFile "je700411p.xml";
+            system    "nButanol + water";
+            property  binaryLLE.binodal;
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/nButanol-water-lle-je700411p.dat";
+            doi       "10.1021/je700411p";
+            sha256    "32ed6e15958b58bc35d7eb647d3cb4b75e9d6232ffbe7608a87c9c4b09cc34b1";
+            provenance measured;
+            archiveFile "je700411p.xml";
             system    "nButanol + water";
             property  binaryLLE.binodal;
         }
@@ -308,8 +308,8 @@ properties
         domain
         {
             coordinate  x1;
-            fit         { min 0.005; max 0.989; n 49; }
-            validation  { min 0.021; max 0.3622; n 4; }
+            fit         { min 0.01576; max 0.51608; n 30; }
+            validation  { min 0.021; max 0.3622; n 2; }
         }
     }
 
@@ -317,7 +317,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.146211417434;
+        aadHeldOutPct     0.102898498545;
         acceptanceMaxAADPct 0.23;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "the rule of C16 for bubble temperatures, with its second term read as written (REVISED after the first run, and said so): the held-out bubble sets' largest stated expanded uncertainty (U95 = 0.15 K) plus the catalogue vapour-pressure model's error at the pure endpoints at the sets' pressure -- water's Antoine record puts its normal boiling point at 372.45 K against 373.15 K (measured against IAPWS, written in water.dat), 0.70 K -- so 0.85 K = 0.23 % of the held-out mean T (365.79 K). The first reading set that term to ZERO because no held-out set reports a pure endpoint; the vapour-pressure error is in every bubble point whether or not the endpoint is reported, so a perfect pair would have missed 0.042 %. For the binodal: 0.01 in mole fraction, as declared before the first run and NOT changed";
     }
@@ -325,44 +325,34 @@ properties
 
 {
     property       binaryVLE.T_bubble;
-    operation      fit_mixed_start2;   // type fitParameters
+    operation      fit_binodal_start2;   // type fitParameters
     model          "NRTL binary pair, bubble-T residual at fixed P";
     verdict        validated;
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  1486.6607827;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  -27.2907487095;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ij  -3.62822453683;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ji  3.62943653962;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.alpha  0.442825816322;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  1894.07665146;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  -163.805786991;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ij  -4.7108564488;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ji  4.09947517237;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.alpha  0.44592373762;
     }
 
     evidence
     {
-        partitionFingerprint  "21e7ba3fa2f0f25c";   // frozen before the fit
+        partitionFingerprint  "7e55be3fa48b6ca5";   // frozen before the fit
 
         datasets
         (
         {
             role      fit;
-            dataset   "constant/experiments/nButanol-water-bubble-je700411p.dat";
-            doi       "10.1021/je700411p";
-            sha256    "32ed6e15958b58bc35d7eb647d3cb4b75e9d6232ffbe7608a87c9c4b09cc34b1";
+            dataset   "constant/experiments/nButanol-water-bubble-j.jct.2014.07.021.dat";
+            doi       "10.1016/j.jct.2014.07.021";
+            sha256    "bcb8c39256002005a5f71569dd23d50c496d6d2d1346e79f88376e623a075e9d";
             provenance measured;
-            archiveFile "je700411p.xml";
+            archiveFile "j.jct.2014.07.021.xml";
             system    "nButanol + water";
             pressure  "101300.000000 Pa";
-        }
-        {
-            role      fit;
-            dataset   "constant/experiments/nButanol-water-lle-je700411p.dat";
-            doi       "10.1021/je700411p";
-            sha256    "32ed6e15958b58bc35d7eb647d3cb4b75e9d6232ffbe7608a87c9c4b09cc34b1";
-            provenance measured;
-            archiveFile "je700411p.xml";
-            system    "nButanol + water";
-            property  binaryLLE.binodal;
         }
         {
             role      fit;
@@ -405,14 +395,14 @@ properties
             property  binaryLLE.binodal;
         }
         {
-            role      validation;
-            dataset   "constant/experiments/nButanol-water-bubble-j.jct.2014.07.021.dat";
+            role      fit;
+            dataset   "constant/experiments/nButanol-water-lle-jct.2014.07.021.dat";
             doi       "10.1016/j.jct.2014.07.021";
             sha256    "bcb8c39256002005a5f71569dd23d50c496d6d2d1346e79f88376e623a075e9d";
             provenance measured;
             archiveFile "j.jct.2014.07.021.xml";
             system    "nButanol + water";
-            pressure  "101300.000000 Pa";
+            property  binaryLLE.binodal;
         }
         {
             role      validation;
@@ -426,11 +416,21 @@ properties
         }
         {
             role      validation;
-            dataset   "constant/experiments/nButanol-water-lle-jct.2014.07.021.dat";
-            doi       "10.1016/j.jct.2014.07.021";
-            sha256    "bcb8c39256002005a5f71569dd23d50c496d6d2d1346e79f88376e623a075e9d";
+            dataset   "constant/experiments/nButanol-water-lle-je700411p.dat";
+            doi       "10.1021/je700411p";
+            sha256    "32ed6e15958b58bc35d7eb647d3cb4b75e9d6232ffbe7608a87c9c4b09cc34b1";
             provenance measured;
-            archiveFile "j.jct.2014.07.021.xml";
+            archiveFile "je700411p.xml";
+            system    "nButanol + water";
+            property  binaryLLE.binodal;
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/nButanol-water-lle-je700411p.dat";
+            doi       "10.1021/je700411p";
+            sha256    "32ed6e15958b58bc35d7eb647d3cb4b75e9d6232ffbe7608a87c9c4b09cc34b1";
+            provenance measured;
+            archiveFile "je700411p.xml";
             system    "nButanol + water";
             property  binaryLLE.binodal;
         }
@@ -609,8 +609,8 @@ properties
         domain
         {
             coordinate  x1;
-            fit         { min 0.005; max 0.989; n 49; }
-            validation  { min 0.021; max 0.3622; n 4; }
+            fit         { min 0.01576; max 0.51608; n 30; }
+            validation  { min 0.021; max 0.3622; n 2; }
         }
     }
 
@@ -618,7 +618,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.146212839394;
+        aadHeldOutPct     0.102894889861;
         acceptanceMaxAADPct 0.23;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "the rule of C16 for bubble temperatures, with its second term read as written (REVISED after the first run, and said so): the held-out bubble sets' largest stated expanded uncertainty (U95 = 0.15 K) plus the catalogue vapour-pressure model's error at the pure endpoints at the sets' pressure -- water's Antoine record puts its normal boiling point at 372.45 K against 373.15 K (measured against IAPWS, written in water.dat), 0.70 K -- so 0.85 K = 0.23 % of the held-out mean T (365.79 K). The first reading set that term to ZERO because no held-out set reports a pure endpoint; the vapour-pressure error is in every bubble point whether or not the endpoint is reported, so a perfect pair would have missed 0.042 %. For the binodal: 0.01 in mole fraction, as declared before the first run and NOT changed";
     }
@@ -626,42 +626,42 @@ properties
 
 {
     property       binaryVLE.T_bubble;
-    operation      loso_jced_7b00302;   // type fitParameters
+    operation      report_homogeneous_bubble;   // type fitParameters
     model          "NRTL binary pair, bubble-T residual at fixed P";
-    verdict        validated;
+    verdict        notValidated;
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  1326.85062988;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  -77.5339580835;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ij  -3.22574632357;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ji  3.78992198872;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.alpha  0.438535900375;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  1894.04289944;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  -163.836408837;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ij  -4.71077589137;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ji  4.09957276047;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.alpha  0.445923400221;
     }
 
     evidence
     {
-        partitionFingerprint  "28cb6a712ef6520e";   // frozen before the fit
+        partitionFingerprint  "4da37bdcdd7466d2";   // frozen before the fit
 
         datasets
         (
         {
             role      fit;
-            dataset   "constant/experiments/nButanol-water-bubble-je700411p.dat";
-            doi       "10.1021/je700411p";
-            sha256    "32ed6e15958b58bc35d7eb647d3cb4b75e9d6232ffbe7608a87c9c4b09cc34b1";
+            dataset   "constant/experiments/nButanol-water-bubble-j.jct.2014.07.021.dat";
+            doi       "10.1016/j.jct.2014.07.021";
+            sha256    "bcb8c39256002005a5f71569dd23d50c496d6d2d1346e79f88376e623a075e9d";
             provenance measured;
-            archiveFile "je700411p.xml";
+            archiveFile "j.jct.2014.07.021.xml";
             system    "nButanol + water";
             pressure  "101300.000000 Pa";
         }
         {
             role      fit;
-            dataset   "constant/experiments/nButanol-water-lle-je700411p.dat";
-            doi       "10.1021/je700411p";
-            sha256    "32ed6e15958b58bc35d7eb647d3cb4b75e9d6232ffbe7608a87c9c4b09cc34b1";
+            dataset   "constant/experiments/nButanol-water-lle-jced.7b00302.dat";
+            doi       "10.1021/acs.jced.7b00302";
+            sha256    "2b041ca86f91b00e7951d1d6ae46c3bbeefd1ce19bfa296c4b14a134c4902918";
             provenance measured;
-            archiveFile "je700411p.xml";
+            archiveFile "acs.jced.7b00302.xml";
             system    "nButanol + water";
             property  binaryLLE.binodal;
         }
@@ -696,78 +696,17 @@ properties
             property  binaryLLE.binodal;
         }
         {
-            role      validation;
-            dataset   "constant/experiments/nButanol-water-bubble-j.jct.2014.07.021.dat";
+            role      fit;
+            dataset   "constant/experiments/nButanol-water-lle-jct.2014.07.021.dat";
             doi       "10.1016/j.jct.2014.07.021";
             sha256    "bcb8c39256002005a5f71569dd23d50c496d6d2d1346e79f88376e623a075e9d";
             provenance measured;
             archiveFile "j.jct.2014.07.021.xml";
             system    "nButanol + water";
-            pressure  "101300.000000 Pa";
-        }
-        {
-            role      validation;
-            dataset   "constant/experiments/nButanol-water-bubble-j.jct.2016.04.013.dat";
-            doi       "10.1016/j.jct.2016.04.013";
-            sha256    "461be41d83ed04e81fe49ebec0c33d0b649f585e8a0b6739d58569b8e87085a6";
-            provenance measured;
-            archiveFile "j.jct.2016.04.013.xml";
-            system    "nButanol + water";
-            pressure  "101300.000000 Pa";
-        }
-        {
-            role      validation;
-            dataset   "constant/experiments/nButanol-water-lle-jced.7b00302.dat";
-            doi       "10.1021/acs.jced.7b00302";
-            sha256    "2b041ca86f91b00e7951d1d6ae46c3bbeefd1ce19bfa296c4b14a134c4902918";
-            provenance measured;
-            archiveFile "acs.jced.7b00302.xml";
-            system    "nButanol + water";
             property  binaryLLE.binodal;
         }
-        );
-
-        domain
         {
-            coordinate  x1;
-            fit         { min 0.005; max 0.989; n 43; }
-            validation  { min 0.021; max 0.3622; n 4; }
-        }
-    }
-
-    metrics
-    {
-        //  r2InSample: not computed by this operation (it reports chi-square).
-        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.149818880567;
-        acceptanceMaxAADPct 0.23;   // DECLARED BEFORE the fit; part of the fingerprint
-        acceptanceOrigin  "the rule of C16 for bubble temperatures, with its second term read as written (REVISED after the first run, and said so): the held-out bubble sets' largest stated expanded uncertainty (U95 = 0.15 K) plus the catalogue vapour-pressure model's error at the pure endpoints at the sets' pressure -- water's Antoine record puts its normal boiling point at 372.45 K against 373.15 K (measured against IAPWS, written in water.dat), 0.70 K -- so 0.85 K = 0.23 % of the held-out mean T (365.79 K). The first reading set that term to ZERO because no held-out set reports a pure endpoint; the vapour-pressure error is in every bubble point whether or not the endpoint is reported, so a perfect pair would have missed 0.042 %. For the binodal: 0.01 in mole fraction, as declared before the first run and NOT changed";
-    }
-}
-
-{
-    property       binaryVLE.T_bubble;
-    operation      loso_je5007218;   // type fitParameters
-    model          "NRTL binary pair, bubble-T residual at fixed P";
-    verdict        validated;
-
-    fittedParameters
-    {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  1449.48291836;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  45.2779648749;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ij  -3.52971503798;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ji  3.4000958552;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.alpha  0.44235879161;
-    }
-
-    evidence
-    {
-        partitionFingerprint  "b628c21c2547c3a6";   // frozen before the fit
-
-        datasets
-        (
-        {
-            role      fit;
+            role      validation;
             dataset   "constant/experiments/nButanol-water-bubble-je700411p.dat";
             doi       "10.1021/je700411p";
             sha256    "32ed6e15958b58bc35d7eb647d3cb4b75e9d6232ffbe7608a87c9c4b09cc34b1";
@@ -776,83 +715,13 @@ properties
             system    "nButanol + water";
             pressure  "101300.000000 Pa";
         }
-        {
-            role      fit;
-            dataset   "constant/experiments/nButanol-water-lle-je700411p.dat";
-            doi       "10.1021/je700411p";
-            sha256    "32ed6e15958b58bc35d7eb647d3cb4b75e9d6232ffbe7608a87c9c4b09cc34b1";
-            provenance measured;
-            archiveFile "je700411p.xml";
-            system    "nButanol + water";
-            property  binaryLLE.binodal;
-        }
-        {
-            role      fit;
-            dataset   "constant/experiments/nButanol-water-lle-jced.7b00302.dat";
-            doi       "10.1021/acs.jced.7b00302";
-            sha256    "2b041ca86f91b00e7951d1d6ae46c3bbeefd1ce19bfa296c4b14a134c4902918";
-            provenance measured;
-            archiveFile "acs.jced.7b00302.xml";
-            system    "nButanol + water";
-            property  binaryLLE.binodal;
-        }
-        {
-            role      fit;
-            dataset   "constant/experiments/nButanol-water-lle-fluid.2007.12.003.dat";
-            doi       "10.1016/j.fluid.2007.12.003";
-            sha256    "c070e4e43ce62a513df4429493676348434a947f0ecaa958a75f0abfc8ed74bf";
-            provenance measured;
-            archiveFile "j.fluid.2007.12.003.xml";
-            system    "nButanol + water";
-            property  binaryLLE.binodal;
-        }
-        {
-            role      fit;
-            dataset   "constant/experiments/nButanol-water-lle-jced.6b00941.dat";
-            doi       "10.1021/acs.jced.6b00941";
-            sha256    "53461bfec35d34b294b8e558d714a11a2da32b648adeee0ca98609ebe1f6f5e2";
-            provenance measured;
-            archiveFile "acs.jced.6b00941.xml";
-            system    "nButanol + water";
-            property  binaryLLE.binodal;
-        }
-        {
-            role      validation;
-            dataset   "constant/experiments/nButanol-water-bubble-j.jct.2014.07.021.dat";
-            doi       "10.1016/j.jct.2014.07.021";
-            sha256    "bcb8c39256002005a5f71569dd23d50c496d6d2d1346e79f88376e623a075e9d";
-            provenance measured;
-            archiveFile "j.jct.2014.07.021.xml";
-            system    "nButanol + water";
-            pressure  "101300.000000 Pa";
-        }
-        {
-            role      validation;
-            dataset   "constant/experiments/nButanol-water-bubble-j.jct.2016.04.013.dat";
-            doi       "10.1016/j.jct.2016.04.013";
-            sha256    "461be41d83ed04e81fe49ebec0c33d0b649f585e8a0b6739d58569b8e87085a6";
-            provenance measured;
-            archiveFile "j.jct.2016.04.013.xml";
-            system    "nButanol + water";
-            pressure  "101300.000000 Pa";
-        }
-        {
-            role      validation;
-            dataset   "constant/experiments/nButanol-water-lle-je5007218.dat";
-            doi       "10.1021/je5007218";
-            sha256    "1bee430b1b42108e4cb41c02238ef25d08e9d0e82d171430c2c3feed582fdc1d";
-            provenance measured;
-            archiveFile "je5007218.xml";
-            system    "nButanol + water";
-            property  binaryLLE.binodal;
-        }
         );
 
         domain
         {
             coordinate  x1;
-            fit         { min 0.005; max 0.989; n 43; }
-            validation  { min 0.021; max 0.3622; n 4; }
+            fit         { min 0.01576; max 0.51608; n 30; }
+            validation  { min 0.005; max 0.989; n 15; }
         }
     }
 
@@ -860,85 +729,35 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.162170478411;
+        aadHeldOutPct     0.586229383445;
         acceptanceMaxAADPct 0.23;   // DECLARED BEFORE the fit; part of the fingerprint
-        acceptanceOrigin  "the rule of C16 for bubble temperatures, with its second term read as written (REVISED after the first run, and said so): the held-out bubble sets' largest stated expanded uncertainty (U95 = 0.15 K) plus the catalogue vapour-pressure model's error at the pure endpoints at the sets' pressure -- water's Antoine record puts its normal boiling point at 372.45 K against 373.15 K (measured against IAPWS, written in water.dat), 0.70 K -- so 0.85 K = 0.23 % of the held-out mean T (365.79 K). The first reading set that term to ZERO because no held-out set reports a pure endpoint; the vapour-pressure error is in every bubble point whether or not the endpoint is reported, so a perfect pair would have missed 0.042 %. For the binodal: 0.01 in mole fraction, as declared before the first run and NOT changed";
+        acceptanceOrigin  "the SAME band as the promoted operation, not loosened: 0.23 % of the held-out mean T for the bubble rule of C16 (the held-out set's largest stated expanded uncertainty plus the catalogue vapour-pressure error at the pure endpoints).  This operation scores the HOMOGENEOUS butanol-rich series of 10.1021/je700411p (x 0.56-0.99, 366-390 K), which the promoted pair is not for, and reports the miss as it is";
     }
 }
 
 {
     property       binaryVLE.T_bubble;
-    operation      loso_fluid_2007_12_003;   // type fitParameters
+    operation      fit_twoStage;   // type fitParameters
     model          "NRTL binary pair, bubble-T residual at fixed P";
-    verdict        validated;
+    verdict        notValidated;
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  1514.90105391;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  -1.59380890721;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ij  -3.70938312344;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ji  3.54798342052;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.alpha  0.442722274597;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  2132.87636811;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  -154.78897466;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ij  -5.28638064191;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ji  4.06822983604;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.alpha  0.454777401439;
     }
 
     evidence
     {
-        partitionFingerprint  "d9313c14d6f90318";   // frozen before the fit
+        partitionFingerprint  "7e55be3fa48b6ca5";   // frozen before the fit
 
         datasets
         (
         {
             role      fit;
-            dataset   "constant/experiments/nButanol-water-bubble-je700411p.dat";
-            doi       "10.1021/je700411p";
-            sha256    "32ed6e15958b58bc35d7eb647d3cb4b75e9d6232ffbe7608a87c9c4b09cc34b1";
-            provenance measured;
-            archiveFile "je700411p.xml";
-            system    "nButanol + water";
-            pressure  "101300.000000 Pa";
-        }
-        {
-            role      fit;
-            dataset   "constant/experiments/nButanol-water-lle-je700411p.dat";
-            doi       "10.1021/je700411p";
-            sha256    "32ed6e15958b58bc35d7eb647d3cb4b75e9d6232ffbe7608a87c9c4b09cc34b1";
-            provenance measured;
-            archiveFile "je700411p.xml";
-            system    "nButanol + water";
-            property  binaryLLE.binodal;
-        }
-        {
-            role      fit;
-            dataset   "constant/experiments/nButanol-water-lle-jced.7b00302.dat";
-            doi       "10.1021/acs.jced.7b00302";
-            sha256    "2b041ca86f91b00e7951d1d6ae46c3bbeefd1ce19bfa296c4b14a134c4902918";
-            provenance measured;
-            archiveFile "acs.jced.7b00302.xml";
-            system    "nButanol + water";
-            property  binaryLLE.binodal;
-        }
-        {
-            role      fit;
-            dataset   "constant/experiments/nButanol-water-lle-je5007218.dat";
-            doi       "10.1021/je5007218";
-            sha256    "1bee430b1b42108e4cb41c02238ef25d08e9d0e82d171430c2c3feed582fdc1d";
-            provenance measured;
-            archiveFile "je5007218.xml";
-            system    "nButanol + water";
-            property  binaryLLE.binodal;
-        }
-        {
-            role      fit;
-            dataset   "constant/experiments/nButanol-water-lle-jced.6b00941.dat";
-            doi       "10.1021/acs.jced.6b00941";
-            sha256    "53461bfec35d34b294b8e558d714a11a2da32b648adeee0ca98609ebe1f6f5e2";
-            provenance measured;
-            archiveFile "acs.jced.6b00941.xml";
-            system    "nButanol + water";
-            property  binaryLLE.binodal;
-        }
-        {
-            role      validation;
             dataset   "constant/experiments/nButanol-water-bubble-j.jct.2014.07.021.dat";
             doi       "10.1016/j.jct.2014.07.021";
             sha256    "bcb8c39256002005a5f71569dd23d50c496d6d2d1346e79f88376e623a075e9d";
@@ -946,87 +765,6 @@ properties
             archiveFile "j.jct.2014.07.021.xml";
             system    "nButanol + water";
             pressure  "101300.000000 Pa";
-        }
-        {
-            role      validation;
-            dataset   "constant/experiments/nButanol-water-bubble-j.jct.2016.04.013.dat";
-            doi       "10.1016/j.jct.2016.04.013";
-            sha256    "461be41d83ed04e81fe49ebec0c33d0b649f585e8a0b6739d58569b8e87085a6";
-            provenance measured;
-            archiveFile "j.jct.2016.04.013.xml";
-            system    "nButanol + water";
-            pressure  "101300.000000 Pa";
-        }
-        {
-            role      validation;
-            dataset   "constant/experiments/nButanol-water-lle-fluid.2007.12.003.dat";
-            doi       "10.1016/j.fluid.2007.12.003";
-            sha256    "c070e4e43ce62a513df4429493676348434a947f0ecaa958a75f0abfc8ed74bf";
-            provenance measured;
-            archiveFile "j.fluid.2007.12.003.xml";
-            system    "nButanol + water";
-            property  binaryLLE.binodal;
-        }
-        );
-
-        domain
-        {
-            coordinate  x1;
-            fit         { min 0.005; max 0.989; n 43; }
-            validation  { min 0.021; max 0.3622; n 4; }
-        }
-    }
-
-    metrics
-    {
-        //  r2InSample: not computed by this operation (it reports chi-square).
-        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.15529090087;
-        acceptanceMaxAADPct 0.23;   // DECLARED BEFORE the fit; part of the fingerprint
-        acceptanceOrigin  "the rule of C16 for bubble temperatures, with its second term read as written (REVISED after the first run, and said so): the held-out bubble sets' largest stated expanded uncertainty (U95 = 0.15 K) plus the catalogue vapour-pressure model's error at the pure endpoints at the sets' pressure -- water's Antoine record puts its normal boiling point at 372.45 K against 373.15 K (measured against IAPWS, written in water.dat), 0.70 K -- so 0.85 K = 0.23 % of the held-out mean T (365.79 K). The first reading set that term to ZERO because no held-out set reports a pure endpoint; the vapour-pressure error is in every bubble point whether or not the endpoint is reported, so a perfect pair would have missed 0.042 %. For the binodal: 0.01 in mole fraction, as declared before the first run and NOT changed";
-    }
-}
-
-{
-    property       binaryVLE.T_bubble;
-    operation      loso_jced_6b00941;   // type fitParameters
-    model          "NRTL binary pair, bubble-T residual at fixed P";
-    verdict        validated;
-
-    fittedParameters
-    {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  1627.02870387;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  -8.66383479621;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ij  -3.98813186814;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ji  3.5521119153;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.alpha  0.445638402141;
-    }
-
-    evidence
-    {
-        partitionFingerprint  "6018e35e0a7e8886";   // frozen before the fit
-
-        datasets
-        (
-        {
-            role      fit;
-            dataset   "constant/experiments/nButanol-water-bubble-je700411p.dat";
-            doi       "10.1021/je700411p";
-            sha256    "32ed6e15958b58bc35d7eb647d3cb4b75e9d6232ffbe7608a87c9c4b09cc34b1";
-            provenance measured;
-            archiveFile "je700411p.xml";
-            system    "nButanol + water";
-            pressure  "101300.000000 Pa";
-        }
-        {
-            role      fit;
-            dataset   "constant/experiments/nButanol-water-lle-je700411p.dat";
-            doi       "10.1021/je700411p";
-            sha256    "32ed6e15958b58bc35d7eb647d3cb4b75e9d6232ffbe7608a87c9c4b09cc34b1";
-            provenance measured;
-            archiveFile "je700411p.xml";
-            system    "nButanol + water";
-            property  binaryLLE.binodal;
         }
         {
             role      fit;
@@ -1059,14 +797,24 @@ properties
             property  binaryLLE.binodal;
         }
         {
-            role      validation;
-            dataset   "constant/experiments/nButanol-water-bubble-j.jct.2014.07.021.dat";
+            role      fit;
+            dataset   "constant/experiments/nButanol-water-lle-jced.6b00941.dat";
+            doi       "10.1021/acs.jced.6b00941";
+            sha256    "53461bfec35d34b294b8e558d714a11a2da32b648adeee0ca98609ebe1f6f5e2";
+            provenance measured;
+            archiveFile "acs.jced.6b00941.xml";
+            system    "nButanol + water";
+            property  binaryLLE.binodal;
+        }
+        {
+            role      fit;
+            dataset   "constant/experiments/nButanol-water-lle-jct.2014.07.021.dat";
             doi       "10.1016/j.jct.2014.07.021";
             sha256    "bcb8c39256002005a5f71569dd23d50c496d6d2d1346e79f88376e623a075e9d";
             provenance measured;
             archiveFile "j.jct.2014.07.021.xml";
             system    "nButanol + water";
-            pressure  "101300.000000 Pa";
+            property  binaryLLE.binodal;
         }
         {
             role      validation;
@@ -1080,11 +828,191 @@ properties
         }
         {
             role      validation;
-            dataset   "constant/experiments/nButanol-water-lle-jced.6b00941.dat";
-            doi       "10.1021/acs.jced.6b00941";
-            sha256    "53461bfec35d34b294b8e558d714a11a2da32b648adeee0ca98609ebe1f6f5e2";
+            dataset   "constant/experiments/nButanol-water-lle-je700411p.dat";
+            doi       "10.1021/je700411p";
+            sha256    "32ed6e15958b58bc35d7eb647d3cb4b75e9d6232ffbe7608a87c9c4b09cc34b1";
             provenance measured;
-            archiveFile "acs.jced.6b00941.xml";
+            archiveFile "je700411p.xml";
+            system    "nButanol + water";
+            property  binaryLLE.binodal;
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/nButanol-water-lle-je700411p.dat";
+            doi       "10.1021/je700411p";
+            sha256    "32ed6e15958b58bc35d7eb647d3cb4b75e9d6232ffbe7608a87c9c4b09cc34b1";
+            provenance measured;
+            archiveFile "je700411p.xml";
+            system    "nButanol + water";
+            property  binaryLLE.binodal;
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/nButanol-water-lle-fluid.2007.07.011.dat";
+            doi       "10.1016/j.fluid.2007.07.011";
+            sha256    "9acb0cd3121d8f2d17610955dd10f95b4928c6099a22a81b3741b6cdfd910055";
+            provenance measured;
+            archiveFile "j.fluid.2007.07.011.xml";
+            system    "nButanol + water";
+            property  binaryLLE.binodal;
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/nButanol-water-lle-jct.2018.03.024.dat";
+            doi       "10.1016/j.jct.2018.03.024";
+            sha256    "bb853959cbb132a02c201262cbb0876c6ff3de85ca743676647f925280b8cccc";
+            provenance measured;
+            archiveFile "j.jct.2018.03.024.xml";
+            system    "nButanol + water";
+            property  binaryLLE.binodal;
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/nButanol-water-lle-fluid.2019.04.020.dat";
+            doi       "10.1016/j.fluid.2019.04.020";
+            sha256    "ddd003b56e5c63429a69bed13597556ea4398ff8ef2e33013946326be7b1b239";
+            provenance measured;
+            archiveFile "j.fluid.2019.04.020.xml";
+            system    "nButanol + water";
+            property  binaryLLE.binodal;
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/nButanol-water-lle-jct.2019.03.001.dat";
+            doi       "10.1016/j.jct.2019.03.001";
+            sha256    "832e23d07f4f2324ffc32b7a7ec31a476e6293e4eb6576f44876a5f9d91a65b0";
+            provenance measured;
+            archiveFile "j.jct.2019.03.001.xml";
+            system    "nButanol + water";
+            property  binaryLLE.binodal;
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/nButanol-water-lle-jct.2016.04.013.dat";
+            doi       "10.1016/j.jct.2016.04.013";
+            sha256    "461be41d83ed04e81fe49ebec0c33d0b649f585e8a0b6739d58569b8e87085a6";
+            provenance measured;
+            archiveFile "j.jct.2016.04.013.xml";
+            system    "nButanol + water";
+            property  binaryLLE.binodal;
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/nButanol-water-lle-jct.2016.06.010.dat";
+            doi       "10.1016/j.jct.2016.06.010";
+            sha256    "1909169e98f9f62433a95c28a5540d2e05a0d9905c8825d7bfea09c2b60706b9";
+            provenance measured;
+            archiveFile "j.jct.2016.06.010.xml";
+            system    "nButanol + water";
+            property  binaryLLE.binodal;
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/nButanol-water-lle-fluid.2004.12.004.dat";
+            doi       "10.1016/j.fluid.2004.12.004";
+            sha256    "e1b765e8957b96a697a30bcf94b7c879edec195a36cd5f1650cb01da26e9895d";
+            provenance measured;
+            archiveFile "j.fluid.2004.12.004.xml";
+            system    "nButanol + water";
+            property  binaryLLE.binodal;
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/nButanol-water-lle-jct.2015.10.003.dat";
+            doi       "10.1016/j.jct.2015.10.003";
+            sha256    "e185b3cb4c167b80eb62b6f02bbe34fdce0cb36fa83d1e3859aa1aef03ce7f30";
+            provenance measured;
+            archiveFile "j.jct.2015.10.003.xml";
+            system    "nButanol + water";
+            property  binaryLLE.binodal;
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/nButanol-water-lle-jct.2012.04.017.dat";
+            doi       "10.1016/j.jct.2012.04.017";
+            sha256    "2e030acbf4e61f905fd46893b7e0019fa31f4df70f778b4f696f9b2fcb13bf6e";
+            provenance measured;
+            archiveFile "j.jct.2012.04.017.xml";
+            system    "nButanol + water";
+            property  binaryLLE.binodal;
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/nButanol-water-lle-jct.2015.11.002.dat";
+            doi       "10.1016/j.jct.2015.11.002";
+            sha256    "cc433972e60e84cb2931d00e20565694e37ae03be342275e69de2a7bfcde3557";
+            provenance measured;
+            archiveFile "j.jct.2015.11.002.xml";
+            system    "nButanol + water";
+            property  binaryLLE.binodal;
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/nButanol-water-lle-fluid.2012.07.032.dat";
+            doi       "10.1016/j.fluid.2012.07.032";
+            sha256    "b4341f0fc6aac41b9957d885d88311ad0951062766a0b810742dce543334a072";
+            provenance measured;
+            archiveFile "j.fluid.2012.07.032.xml";
+            system    "nButanol + water";
+            property  binaryLLE.binodal;
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/nButanol-water-lle-fluid.2017.12.023.dat";
+            doi       "10.1016/j.fluid.2017.12.023";
+            sha256    "1e9f81dce8d9b15a4c3d619aa324730edb266f04808cf017328dffa82dec52d1";
+            provenance measured;
+            archiveFile "j.fluid.2017.12.023.xml";
+            system    "nButanol + water";
+            property  binaryLLE.binodal;
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/nButanol-water-lle-je400501z.dat";
+            doi       "10.1021/je400501z";
+            sha256    "5ceb58edd3227bad689191fd5b0248b59cc77784c64797cb8b26c261932fd99a";
+            provenance measured;
+            archiveFile "je400501z.xml";
+            system    "nButanol + water";
+            property  binaryLLE.binodal;
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/nButanol-water-lle-acs.jced.6b00725.dat";
+            doi       "10.1021/acs.jced.6b00725";
+            sha256    "53bbfeb2a1e4c37dfc8a8b9d331d3680805dff14a8ade72e712f13e824d8edbd";
+            provenance measured;
+            archiveFile "acs.jced.6b00725.xml";
+            system    "nButanol + water";
+            property  binaryLLE.binodal;
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/nButanol-water-lle-fluid.2018.10.021.dat";
+            doi       "10.1016/j.fluid.2018.10.021";
+            sha256    "7a5049561651bf4c700b980d8ec89447a7617761f52e20d1f467ccdc3834dd35";
+            provenance measured;
+            archiveFile "j.fluid.2018.10.021.xml";
+            system    "nButanol + water";
+            property  binaryLLE.binodal;
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/nButanol-water-lle-jct.2017.03.019.dat";
+            doi       "10.1016/j.jct.2017.03.019";
+            sha256    "054ed9d0d8974e38ea39a0ff37d61a52ce414d42d99d19b8d6d5808a333fff70";
+            provenance measured;
+            archiveFile "j.jct.2017.03.019.xml";
+            system    "nButanol + water";
+            property  binaryLLE.binodal;
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/nButanol-water-lle-fluid.2014.07.011.dat";
+            doi       "10.1016/j.fluid.2014.07.011";
+            sha256    "4f6fda3b1e15246171fa6006a550dc659c59a54652b4339151a8994895128e94";
+            provenance measured;
+            archiveFile "j.fluid.2014.07.011.xml";
             system    "nButanol + water";
             property  binaryLLE.binodal;
         }
@@ -1093,8 +1021,8 @@ properties
         domain
         {
             coordinate  x1;
-            fit         { min 0.005; max 0.989; n 43; }
-            validation  { min 0.021; max 0.3622; n 4; }
+            fit         { min 0.01576; max 0.51608; n 30; }
+            validation  { min 0.021; max 0.3622; n 2; }
         }
     }
 
@@ -1102,7 +1030,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.148565841412;
+        aadHeldOutPct     0.076075084308;
         acceptanceMaxAADPct 0.23;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "the rule of C16 for bubble temperatures, with its second term read as written (REVISED after the first run, and said so): the held-out bubble sets' largest stated expanded uncertainty (U95 = 0.15 K) plus the catalogue vapour-pressure model's error at the pure endpoints at the sets' pressure -- water's Antoine record puts its normal boiling point at 372.45 K against 373.15 K (measured against IAPWS, written in water.dat), 0.70 K -- so 0.85 K = 0.23 % of the held-out mean T (365.79 K). The first reading set that term to ZERO because no held-out set reports a pure endpoint; the vapour-pressure error is in every bubble point whether or not the endpoint is reported, so a perfect pair would have missed 0.042 %. For the binodal: 0.01 in mole fraction, as declared before the first run and NOT changed";
     }
