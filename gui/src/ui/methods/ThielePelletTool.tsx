@@ -133,7 +133,7 @@ export const THIELE_STEPS: readonly {
       + "double both and the pellet behaves identically.  The Thiele modulus "
       + "is that ratio, made dimensionless.",
     formula: "\\phi_R = R\\,\\sqrt{\\frac{k}{D_\\mathrm{eff}}} \\qquad \\phi_\\Lambda = \\frac{V}{S}\\,\\sqrt{\\frac{k}{D_\\mathrm{eff}}}",
-    note: "two lengths differing by a factor of three — and nine in anything "
+    note: "Two lengths differing by a factor of three — and nine in anything "
       + "built on φ².  φ_R uses the sphere's radius (the slab's "
       + "half-thickness) and is what the radial solution is written in; φ_Λ "
       + "uses Λ = V/S, which for a sphere is R/3, and is what makes "
@@ -192,7 +192,7 @@ export const THIELE_STEPS: readonly {
     title: "You cannot measure φ. You can measure η·φ².",
     body: "To compute φ you need k and D_eff — the two things you were "
       + "trying to establish.  This is circular, and the way out is the "
-      + "weisz-prater criterion, which replaces the intrinsic k by what you "
+      + "Weisz-Prater criterion, which replaces the intrinsic k by what you "
       + "can actually observe: the rate the pellet is delivering right now, "
       + "its size, and the surface concentration.  It still needs D_eff — "
       + "an estimate, from the pellet's porosity and tortuosity, not from "
@@ -201,7 +201,7 @@ export const THIELE_STEPS: readonly {
       + "kinetically controlled; well above 1 and you are not.  It answers "
       + "the design question without ever asking for the intrinsic rate.",
     formula: "M_W = \\eta\\,\\phi_\\Lambda^2 = \\frac{r_\\mathrm{obs}\\,\\Lambda^2}{D_\\mathrm{eff}\\,c_s}, \\qquad \\Lambda = \\frac{V}{S}",
-    note: "read the subscript.  This is the generalised Weisz modulus, built "
+    note: "Read the subscript.  This is the generalised Weisz modulus, built "
       + "on Λ = V/S — for a sphere Λ = R/3, so it is nine times smaller than "
       + "the conventional Weisz-Prater number C_WP = r_obs·R²/(D_eff·c_s) "
       + "built on the radius.  Both conventions are in the literature and "
