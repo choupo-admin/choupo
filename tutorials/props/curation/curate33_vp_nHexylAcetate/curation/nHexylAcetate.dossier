@@ -26,13 +26,13 @@ properties
     property       vapourPressure;
     operation      fit_antoine;   // type vaporPressureFit
     model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
-    verdict        validated;
+    verdict        notValidated;
 
     fittedParameters
     {
-        A  4.19814570097;
-        B  1539.5515302;
-        C  -77.2388159972;
+        A  4.2287615826;
+        B  1562.45124483;
+        C  -74.4887197574;
     }
 
     evidence
@@ -71,9 +71,9 @@ properties
 
     metrics
     {
-        r2InSample        0.999993725373;   // the model reproducing the points it was FITTED to
-        rmsHeldOut        0.0274678562757;   // log10(P), on evidence the fit never saw
-        aadHeldOutPct     5.89481152068;
+        r2InSample        0.999991573461;   // the model reproducing the points it was FITTED to
+        rmsHeldOut        0.0407842263458;   // log10(P), on evidence the fit never saw
+        aadHeldOutPct     9.37080634193;
         acceptanceMaxAADPct 7.2;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 13 points (7.08 to 7.24 %, mean 7.125 %), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean";
     }

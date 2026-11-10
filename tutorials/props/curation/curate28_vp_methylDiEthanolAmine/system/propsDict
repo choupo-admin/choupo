@@ -60,7 +60,17 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 4.639497 - 1925.8766/(T +
+  -105.5834), in-sample R2 0.999948 over 9 points, 519.7-738.4 K. HELD
+  OUT: 7 points, AAD 2.2571 % (max 3.6738 %) against the band 2.3 % ->
+  validated; the stage-1 least-squares answer on the same points: AAD
+  5.1341 %, max 8.0690 %. Its own normal boiling point (101.325 kPa):
+  521.20 K. PROMOTED on 2026-11-10 into
+  data/standards/components/methylDiEthanolAmine.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: verdict validated (the
+  record's Tb is inside the measured span or not declared; the fit's own
+  normal boiling point is 521.20 K)
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

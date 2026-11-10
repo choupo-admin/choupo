@@ -65,7 +65,16 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 6.301246 - 2556.1410/(T +
+  -30.0521), in-sample R2 0.999986 over 38 points, 273.65-303.16 K. HELD
+  OUT: 26 points, AAD 1.4219 % (max 2.7692 %) against the band 5.4 % ->
+  validated; the stage-1 least-squares answer on the same points: AAD
+  2.8176 %, max 7.3052 %. Its own normal boiling point (101.325 kPa):
+  436.08 K. NOT PROMOTED: validated, but the fitted Antoine's normal
+  boiling point 436.08 K misses the record's Tb 444.15 K by -8.07 K,
+  outside the declared 2 K -- an extrapolation that contradicts the
+  record; the record keeps AmbroseWalton
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

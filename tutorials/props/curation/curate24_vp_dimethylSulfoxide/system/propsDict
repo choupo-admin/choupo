@@ -65,7 +65,17 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 4.515639 - 1850.8250/(T +
+  -55.0893), in-sample R2 0.999999 over 21 points, 293.15-308.16 K. HELD
+  OUT: 19 points, AAD 2.7312 % (max 5.0537 %) against the band 3.2 % ->
+  validated; the stage-1 least-squares answer on the same points: AAD
+  3.8716 %, max 6.4461 %. Its own normal boiling point (101.325 kPa):
+  465.48 K. PROMOTED on 2026-11-10 into
+  data/standards/components/dimethylSulfoxide.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: verdict validated (the
+  record's Tb is inside the measured span or not declared; the fit's own
+  normal boiling point is 465.48 K)
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

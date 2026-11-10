@@ -30,9 +30,9 @@ properties
 
     fittedParameters
     {
-        A  7.47841150538;
-        B  3270.76027652;
-        C  53.2803949867;
+        A  11.4087000058;
+        B  6651.89951935;
+        C  204.373284727;
     }
 
     evidence
@@ -71,9 +71,9 @@ properties
 
     metrics
     {
-        r2InSample        0.999007007731;   // the model reproducing the points it was FITTED to
-        rmsHeldOut        0.0690505745289;   // log10(P), on evidence the fit never saw
-        aadHeldOutPct     13.1955991459;
+        r2InSample        0.998387348113;   // the model reproducing the points it was FITTED to
+        rmsHeldOut        0.123689399589;   // log10(P), on evidence the fit never saw
+        aadHeldOutPct     25.8562625796;
         acceptanceMaxAADPct 2;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 42 points (1.29 to 3.99 %, mean 1.947 %), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean";
     }

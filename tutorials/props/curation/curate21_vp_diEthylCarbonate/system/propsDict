@@ -68,7 +68,15 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 11.408700 - 6651.8995/(T
+  + 204.3733), in-sample R2 0.998387 over 44 points, 273.1-315.2 K. HELD
+  OUT: 42 points, AAD 25.8563 % (max 90.1072 %) against the band 2 % ->
+  notValidated; the stage-1 least-squares answer on the same points: AAD
+  13.1956 %, max 43.6593 %. Its own normal boiling point (101.325 kPa):
+  378.97 K. NOT PROMOTED: held-out verdict notValidated (AAD 25.86 %
+  against the band 2 % declared before the fit); the record keeps
+  AmbroseWalton
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 
