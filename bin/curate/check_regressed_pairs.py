@@ -1118,6 +1118,15 @@ def c283_failures(rec, cur, case, out, tag, fails, in_std=False):
         fails.append(f"{tag}: the case discards {declared or 'nothing'} and the rule "
                      f"(|dT| > {pc.OUTLIER_K:g} K after a least-squares stage over every "
                      f"point) puts {found or 'nothing'} beyond it")
+    #  C290: `laboratories`, where a record declares it, counts the studies
+    #  that still carry a kept point (an outlier rule can drop a whole one);
+    #  1 is the single-laboratory pair the record must own up to.
+    if num(cur, "laboratories") is not None:
+        nlab = sum(1 for f in files
+                   if pc.cc.read_dataset(case / pc.cc.EXTRACTS / f)["n"] > len(declared.get(f, [])))
+        if int(num(cur, "laboratories")) != nlab:
+            fails.append(f"{tag}: curation laboratories {num(cur, 'laboratories'):g}, but "
+                         f"{nlab} declared stud(y/ies) keep a point after the discards")
     if int(num(cur, "outliersDropped") or 0) != sum(len(v) for v in declared.values()):
         fails.append(f"{tag}: curation outliersDropped {num(cur, 'outliersDropped')} and "
                      f"the case discards {sum(len(v) for v in declared.values())} row(s)")

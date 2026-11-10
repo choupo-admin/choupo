@@ -562,7 +562,7 @@ def write_case(pl, number):
     C284).  See system/propsDict for the declaration and the result.  */
 
 application   choupoProps;
-description   "NRTL {c1}-{c2} regressed by the curation pipeline to every laboratory's measured bubble temperatures (ThermoML locates, the articles source), accepted at max |dT| < 1 K";
+description   "NRTL {c1}-{c2} regressed by the curation pipeline to every laboratory's measured bubble temperatures (ThermoML locates, the articles source), graded by max |dT| (clean 1 K, warning 2 K, severe 4 K, refused above; C285, C286)";
 verbosity     2;
 """)
     hdr = f"""/*---------------------------------------------------------------------------*\\
@@ -580,7 +580,10 @@ verbosity     2;
     (case / "constant" / "archiveDatasets").write_text(
         decl_text(pl, case.relative_to(ROOT).as_posix()))
     unifac = cc.has_unifac(c1) and cc.has_unifac(c2)
-    (case / "system" / "propsDict").write_text(props_text(pl, name, stem, unifac))
+    #  C290: a new declaration carries the graded acceptance from the start
+    #  (C285, applied to pairs by C286); the C284 form is written only by the
+    #  cases that predate it, and re-declared by --redeclare.
+    (case / "system" / "propsDict").write_text(props_text(pl, name, stem, unifac, graded=True))
     ex = case / cc.EXTRACTS
     ex.mkdir(parents=True)
     for s in pl["studies"]:
@@ -705,7 +708,8 @@ def stats(rows):
             len(r), nan)
 
 
-def curation_block(verdict, n_kept, n_drop, mx, mean, nan, grade=None, one_liquid=None):
+def curation_block(verdict, n_kept, n_drop, mx, mean, nan, grade=None, one_liquid=None,
+                   laboratories=None):
     if grade is not None:
         acc = ("    acceptance      graded;   // max |T_model - T| over the kept points, "
                "DEV.md 4c C285 (C286)\n"
@@ -729,7 +733,11 @@ def curation_block(verdict, n_kept, n_drop, mx, mean, nan, grade=None, one_liqui
             f"    noBubblePoint   {nan};\n"
             f"    maxAbsError     {mx:.4f} K;\n"
             f"    meanAbsError    {mean:.4f} K;\n"
-            + acc +
+            + acc
+            + (f"    laboratories    {laboratories};   // studies with a kept point; "
+               + ("the pair rests on ONE laboratory's measurements (DEV.md 4c C290)\n"
+                  if laboratories == 1 else "independent laboratories (DEV.md 4c C290)\n")
+               if laboratories is not None else "") +
             f"    verdict         {verdict};\n}}\n")
 
 
@@ -793,6 +801,14 @@ def run(case, pl, commit):
         reason = (f"PROMOTABLE by `bin/choupo-curate pair ... --promote`: max |dT| "
                   f"{mx:.3f} K < {ACCEPT_K:g} K over the {n_kept} kept points, one "
                   "liquid across the validity span")
+    #  C290: the laboratories that still carry a KEPT point (an outlier rule
+    #  can drop a whole study, as on curate161).
+    labs = [s for s in pl["studies"]
+            if s["n"] > len(found.get(Path(s["path"]).name, []))]
+    if len(labs) == 1:
+        reason += (" -- it rests on ONE laboratory's measurements (doi "
+                   f"{labs[0]['doi']}); nothing here tells its systematic "
+                   "error from the model's (DEV.md 4c C290)")
     hdr = cc.record_header(stem, c1, c2, case_rel,
                            "reviewStatus interim: a case-local record, regressed and "
                            "not read back.  Fitted on EVERY laboratory (C283), so the\n"
@@ -803,7 +819,8 @@ def run(case, pl, commit):
                       "The articles named under `evidence` are the")
     rec = cc.record_from_proposal(ptext, hdr, cc.case_record_fields(case_rel))
     rec = rec.rstrip("\n") + "\n\n" + curation_block(verdict, n_kept, n_drop, mx, mean,
-                                                        nan, grade, not split)
+                                                        nan, grade, not split,
+                                                        len(labs))
     rp = case / "constant" / "parameters" / "NRTL" / f"{stem}.dat"
     own = own_promotion(c1, c2, case_rel) if graded else None
     promoted_now = None
@@ -883,6 +900,9 @@ def promoted_text(text, case, stem, i, j):
                     f"{GRADE_K[2]:g} K -- DEV.md 4c C283\n"
                     f"  amended, C285, C286; THIS fit: {grade}, {mx:.4f} K; one liquid\n"
                     "  across its validity span), and NO HUMAN HAS REVIEWED IT.  The\n"
+                    + ("  pair rests on ONE laboratory's measurements (curation\n"
+                       "  `laboratories 1;`, DEV.md 4c C290).  The\n"
+                       if crp.num(cur, "laboratories") == 1 else "") +
                     "  engine says so on every run that reads it, and voices a warning\n"
                     "  or a severe grade beside it.\n")
     else:
