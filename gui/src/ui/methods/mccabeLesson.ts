@@ -58,7 +58,7 @@ export const MCCABE_STEPS: readonly LessonStep[] = [
       + "gets its own line.  The reflux ratio R = L/D is what sets the slope "
       + "of the upper one — which is why turning R moves the staircase.",
     derivation: [
-      { step: "Cut the column anywhere ABOVE the feed and write a balance on "
+      { step: "Cut the column anywhere above the feed and write a balance on "
           + "the more volatile component over the envelope containing the "
           + "cut, the condenser and the top product.  Vapour V rises past "
           + "the cut carrying y; liquid L falls past it carrying x; D leaves "
@@ -146,7 +146,7 @@ y &= \frac{\bar L}{\bar V}\,x - \frac{B}{\bar V}\,x_B
       + "is q/(q−1), which is why a saturated-liquid feed gives a vertical "
       + "q-line and a saturated vapour a horizontal one.",
     derivation: [
-      { step: "q is DEFINED as the heat needed to bring one mole of feed to "
+      { step: "q is defined as the heat needed to bring one mole of feed to "
           + "saturated vapour, divided by the molar latent heat.  Read off "
           + "the consequences: a saturated liquid feed needs a full latent "
           + "heat, so q = 1; a saturated vapour needs none, so q = 0; a "
