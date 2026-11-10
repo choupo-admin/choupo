@@ -178,7 +178,7 @@ struct EvidenceDataset
     //  has verified, and the difference must reach the run: a citation says
     //  where the numbers are supposed to come from, not that anybody looked.
     //  Empty = the dataset declares none, announced exactly as a missing DOI.
-    std::string reviewStatus;
+    std::string reviewStatus;  std::vector<std::size_t> discard;  // `discard ( <row> ... );` 1-based data rows set aside BY NAME (DEV.md 4c C283; loadColumns and fitWeights skip them)
 };
 
 //  A loaded (x, y) pair from a dataset's declared columns, plus an OPTIONAL

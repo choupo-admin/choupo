@@ -81,7 +81,15 @@ sVector fitWeights(const DictPtr& residualDict,
             throw std::runtime_error(where + ": the T_bubble uncertainty"
                 " declares unit '" + unit + "'.  Only K is read; a"
                 " conversion here would be a silent one.");
-        const auto vals = u->lookupList("values");
+        auto vals = u->lookupList("values");
+        if (!ds.discard.empty() && vals.size() == pts.size() + ds.discard.size())
+        {
+            sVector kept;   // the declared discards (C283), by position
+            for (std::size_t r = 0; r < vals.size(); ++r)
+                if (!std::binary_search(ds.discard.begin(), ds.discard.end(), r + 1))
+                    kept.push_back(vals[r]);
+            vals = kept;
+        }
         if (vals.size() != pts.size())
             throw std::runtime_error(where + ": " + std::to_string(vals.size())
                 + " uncertainty values for " + std::to_string(pts.size())
