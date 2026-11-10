@@ -439,7 +439,7 @@ export const LS_STEPS: readonly LessonStep[] = [
       + "every sink — the console, the curation dossier, the promotable "
       + "record and the result the browser reads — takes that one word rather "
       + "than deciding for itself. Read the ladder and notice what it "
-      + "refuses to do: with evidence held out but NO band declared, the "
+      + "refuses to do: with evidence held out but no band declared, the "
       + "engine reports that the test was performed and claims nothing. It "
       + "will not choose a threshold on your behalf, because deciding whether "
       + "a residual is small enough is a judgement and not a measurement.",
