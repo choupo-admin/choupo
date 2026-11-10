@@ -3302,6 +3302,78 @@ accepts today, and that is a policy call.
 >
 > **Acetic acid PARKED (architect, 2026-11-10, after Vitor: "Perdeste uma semana com essa merda antes!").**  The open acetic items (C201 (1) rest: dew-point distillate, Gibbs / three-phase / Txy readers, record identity; C174/C175 subcooled-feed q; column05's dimer in C239) get no work this month.  Reason: nothing the month delivers depends on them, aceticAcid02 runs with its balances gated (C258), and column05's ideal-vapour limit is already announced.  Reopened only if a case a student meets fails.
 >
+> **C290 (Vitor, 2026-11-10: produce binaries in bulk, now).  THE PAIR QUEUE
+> IS RUN.**  `bin/curate/pairs_c283.py` (C284's machinery, C286's graded
+> acceptance: max |dT| over the kept points 1 / 2 / 4 K, refused above; arm
+> (f) one-liquid refusal; acetic acid excluded) over (a) the pairs C284 held
+> waiting on C281 whose AmbroseWalton member C285 promoted, recounted, and (b)
+> the single-study queue of `pairs --list`.  A single-study pair is allowed by
+> C283; its record must say it rests on ONE laboratory.  Declarations
+> committed before the fits, in batches of about 100, each batch's results
+> committed; every accepted one-liquid pair promoted autoPromoted /
+> humanReviewed false with its fitGrade; no existing golden may move.
+>
+> **C290 RESULT (2026-11-10, cloud general, branch c290-pairs-queue).**
+> RECOUNT: of C284's 81 pairs waiting on C281, 12 still wait (glycerol,
+> nPentylAcetate, triethanolamine, still AmbroseWalton); 70 not-yet-declared
+> candidates have a member C285 promoted.  QUEUE: 500 not-yet-declared
+> candidates (493 with one usable study, 6 with two, 1 with three), ranked by
+> studies then points.  DECLARED 492 in five commits (96, 99, 100, 100, 97),
+> each before its fits; 8 refused at declaration by the extraction rules (no
+> usable study).  FITTED 488 (curate163-654); 4 WITHDRAWN after their batch
+> (curate487/496/513/515, mCresol with an alcohol: the outlier rule kept 2-12
+> points and `fit_nrtl_start2` returns rc 1, so the case does not run and the
+> seal refuses -- withdrawn, not re-declared; the batch-4 result commit
+> mislabels them as liquid splits; the withdrawal commit 434673c30 states the
+> cause).  INCIDENT, recorded: a first `runTests --record` for batch 1 was
+> given an EMPTY case list (a shell filter that matched nothing) and began
+> re-recording the whole corpus; stopped by hand after 179 goldens, every one
+> restored from git (`git checkout`), two untracked goldens it had created
+> deleted and a tracked `expected.props` restored, all BEFORE any commit; the
+> recording now goes through a list that refuses unless it holds exactly the
+> batch's cases.  GRADES: 338
+> clean, 101 warning, 46 severe, 3 refused.  13 accepted fits split ONE
+> liquid inside their span (arm f) and stay case-local (water + furfural
+> among them; curate256 also splits and is refused on its grade).  PROMOTED
+> 472 (335 clean, 96 warning, 41 severe; 69 of the 70 unblocked pairs): public
+> NRTL pairs 64 -> 536.  465 of the 472 rest on ONE laboratory.  ONE
+> LABORATORY: the curation block gains `laboratories N;` (the studies that
+> keep a point after the discards -- an outlier rule can drop a whole study),
+> the reason line and the promoted header say "rests on ONE laboratory's
+> measurements" when N = 1, and check_regressed_pairs arm (j) recomputes N
+> from the declared datasets and discards.  NOT in the voiced line:
+> src/thermo/FitGrade.H says nothing for a clean grade, so carrying the fact
+> there means voicing clean single-laboratory pairs too -- a behaviour
+> change, put to Vitor, not taken.  TOOL: a new declaration is graded from the
+> start; `pairs --graded --run --jobs N` (cap 2: children, one per case, each
+> writing only its own case directory; promotion, shared records, commits
+> serial) -- one case run 0.38 s / 13.8 MB peak; five cases 11.6 s serial,
+> 7.4 s with 2 jobs, byte-identical outputs; batches 2-5 ran at about 1.4 s
+> per case against 3.8 s in the serial batch 1.  SIZE: the 488 cases add
+> 26.8 MB of tracked input to tutorials/ (32.8 -> 59.6 MB; UNIFAC tables 6.0,
+> sealed component copies 4.4, propsDict 4.0, records 2.8, goldens 2.6 MB) --
+> the GUI's tutorial glob inlines case inputs into the bundle, so the site
+> grows with it (finding for the laptop session).  No existing golden moved
+> (goldens recorded for the new cases only, by name).  VALIDATED: make all (no src/ change); `--scope` on curate04..19,
+> curate100..162 and the 488 new cases (PASS 565, FAIL 0; the five
+> conservation gates have no subject there); `--fast` (PASS 78, FAIL 0,
+> EXPECTED-FAIL 5); check_regressed_pairs OK, 564 records reproduced, 548
+> under arm (j) (357 clean, 119 warning, 66 severe, 6 refused), 533 catalogue
+> pairs one-liquid, 432 s wall (7.2 min) -- no sampling arm
+> proposed; the new `laboratories` arm sabotaged by hand (1 -> 2 on
+> 14Butanediol-diethyleneGlycol, caught); check_review_status,
+> check_caveat_surface, check_record_form, check_source_licence,
+> check_doc_references, check_glossary_bans OK; check_doctrine FAILS on the
+> base commit's DEV.md C288 quote (a commercial name), already fixed on main
+> by 052a0355e, not touched here; generated views regenerated (caseManifest,
+> releaseInventory: NRTL 64 -> 536, runnable cases 622 -> 1110;
+> tutorialsGuide-props.tex, propsGuide-operations.tex, interimReviewDossier)
+> and generated_artefacts --check OK; tutorials guide (1962 pages, 3.9 -> 6.9
+> MB) and props guide rebuilt with make -B and read back; gate_manifest
+> --check OK, claims re-observed with --only.  NOT run: --gui (no gui/
+> change), a full sweep (it would now run 1110 cases).  Table: docs/design/binary-pairs-from-open-measurements.md
+> section 11.5.
+
 > **C286 (Vitor, 2026-11-10: "Avanca pa!", on applying C285 to the pairs).
 > THE C284 PAIRS ARE GRADED LIKE THE VAPOUR PRESSURES.**  The sixty NRTL pairs
 > of C284 (curate100-162, bin/curate/pairs_c283.py) are judged by C285's graded

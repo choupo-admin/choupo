@@ -1082,5 +1082,585 @@ needs the same `fittedInCase` as well.
 
 **Readings, and what is NOT done.**  Twenty of the promoted pairs miss some
 laboratory by 2-4 K and say so on every run; that is the ruling, not an
-endorsement.  NOT done: the 431-pair queue, read-back against the articles,
+endorsement.  NOT done here: the 431-pair queue (run in section 11.5), read-back against the articles,
 freeing alpha, and a composition criterion (no fit here has one).
+
+### 11.5 The queue, run (2026-11-10, DEV.md 4c C290)
+
+Vitor: produce binaries in bulk, now.  The same pipeline (section 11.1),
+the graded acceptance (section 11.4), over every archive pair `pairs --list`
+offered that had no case yet.
+
+**What is counted.**  Of the 81 pairs C284 held waiting on C281, 12 still
+wait (glycerol, nPentylAcetate and triethanolamine keep an AmbroseWalton
+curve after C285); 70 not-yet-declared candidates have a member whose
+vapour pressure C285 promoted.  The queue was 500 pairs: 493 with one
+usable study, 6 with two, 1 with three, ranked by studies then points.
+
+**What changed in the tool.**  A new declaration carries the graded
+acceptance from the start (`write_case`; the C284 form is only ever
+re-declared by `--redeclare`).  The curation block gains `laboratories N;`
+-- the studies that keep at least one point after the outlier discards,
+because the rule can drop a whole study (section 11.3 on curate161) -- and a
+pair with N = 1 says "it rests on ONE laboratory's measurements" in its
+reason line and, once promoted, in its record header; arm (j) of
+check_regressed_pairs recomputes N from the declared datasets and the
+declared discards.  It is NOT in the voiced grade line: `FitGrade.H` says
+nothing for a clean grade (C285), so the fact could ride there only by
+voicing every clean single-laboratory pair -- a change of behaviour, left to
+Vitor.  `pairs --graded --run --jobs N` (cap 2, the coordinator's limit on a
+shared machine) runs each case as a child process of the same command,
+writing only inside its own case directory; a case that would regrade a
+catalogue record in place, promotion, commits and generated files stay
+serial.  Measured: one case run 0.38 s and 13.8 MB peak; five cases
+(curate259-263) 11.6 s serial against 7.4 s with two jobs, every file of the
+five byte-identical between the two runs; batch 1 (serial) took 3.8 s per
+case, batches 2-5 (two jobs) about 1.4 s.
+
+**Declared before it ran.**  492 declarations in five commits (96, 99, 100,
+100, 97), each before its batch's fits; 8 refused at declaration by the
+extraction rules (no usable study).  Four cases were WITHDRAWN after their
+batch (curate487, 496, 513, 515: an alcohol + mCresol; the outlier rule kept
+4, 12, 2 and 12 points, and the second start, (800, -400), returns rc 1, so
+the case does not run and the seal refuses).  They were not re-declared: a
+declaration is never rewritten after its result was seen.  A fit that keeps
+two points is a finding about the outlier rule on a series the model cannot
+follow at all, recorded rather than tuned.
+
+**Result.**  488 fitted (curate163-654).  Grades: 338 clean, 101 warning,
+46 severe, 3 refused.  13 accepted fits split ONE liquid inside their span
+and stay in their cases (curate256 splits too, refused on its grade).  472
+promoted (335 clean, 96 warning, 41 severe; 69 of the 70 unblocked pairs):
+public NRTL pairs 64 -> 536.  465 of the 472 rest on ONE laboratory.  No
+existing golden moved; the `expected` of each new case was recorded by name.
+
+**Size.**  The 488 cases add 26.8 MB of tracked input to `tutorials/`
+(32.8 -> 59.6 MB): UNIFAC tables 6.0, sealed component copies 4.4,
+propsDict 4.0, case-local records 2.8, goldens 2.6, seals 1.5 MB.  The
+catalogue's NRTL directory is 3.1 MB.  The GUI's tutorial glob
+(`gui/src/cases/tutorials.ts`) inlines case inputs into the bundle, so the
+site grows with these cases unless curation cases are excluded there -- a
+question for the GUI's owner, not taken here.
+
+**Validation.**  VALIDATED: make all (no src/ change); `--scope` on curate04..19,
+curate100..162 and the 488 new cases (PASS 565, FAIL 0; the five
+conservation gates have no subject there); `--fast` (PASS 78, FAIL 0,
+EXPECTED-FAIL 5); check_regressed_pairs OK, 564 records reproduced, 548
+under arm (j) (357 clean, 119 warning, 66 severe, 6 refused), 533 catalogue
+pairs one-liquid, 432 s wall (7.2 min) -- no sampling arm
+proposed; the new `laboratories` arm sabotaged by hand (1 -> 2 on
+14Butanediol-diethyleneGlycol, caught); check_review_status,
+check_caveat_surface, check_record_form, check_source_licence,
+check_doc_references, check_glossary_bans OK; check_doctrine FAILS on the
+base commit's DEV.md C288 quote (a commercial name), already fixed on main
+by 052a0355e, not touched here; generated views regenerated (caseManifest,
+releaseInventory: NRTL 64 -> 536, runnable cases 622 -> 1110;
+tutorialsGuide-props.tex, propsGuide-operations.tex, interimReviewDossier)
+and generated_artefacts --check OK; tutorials guide (1962 pages, 3.9 -> 6.9
+MB) and props guide rebuilt with make -B and read back; gate_manifest
+--check OK, claims re-observed with --only.  NOT run: --gui (no gui/
+change), a full sweep (it would now run 1110 cases).
+
+**Readings.**  A single-laboratory fit is easier to pass than a
+several-laboratory one (69 % clean here against 32 % in section 11.4): the
+grade measures agreement with one laboratory, not with the truth, and the
+record says so.  The splitting pairs are mostly methylFormate or methanol /
+ethanol with alkanes and aromatics, and water + furfural -- systems that do
+split, or nearly do, which a bubble-temperature fit cannot decide.  NOT
+done: read-back of any series against its article, freeing alpha, the 12
+pairs still waiting on C281.
+
+| case | pair | labs | max abs dT, K | grade | outcome |
+|---|---|---|---|---|---|
+| curate163 | ethylBenzene + dimethylSulfoxide | 3 | 3.254 | severe | promoted; unblocked by C285 |
+| curate164 | ethyleneGlycol + methylDiEthanolAmine | 2 | 2.367 | severe | promoted; unblocked by C285 |
+| curate165 | methanol + diEthylCarbonate | 2 | 2.065 | severe | promoted; unblocked by C285 |
+| curate166 | diethylamine + diethylethanolamine | 2 | 3.569 | severe | promoted; unblocked by C285 |
+| curate167 | methylDiEthanolAmine + water | 2 | 2.604 | severe | promoted; unblocked by C285 |
+| curate168 | acetonitrile + dimethylSulfoxide | 2 | 2.957 | severe | promoted; unblocked by C285 |
+| curate169 | toluene + dimethylSulfoxide | 2 | 1.904 | warning | promoted; unblocked by C285 |
+| curate170 | methanol + 1Propanol | 1 | 0.302 | clean | promoted |
+| curate171 | isopropylAcetate + ethanol | 1 | 0.983 | clean | promoted |
+| curate172 | methanol + diisopropylEther | 1 | 2.282 | severe | promoted |
+| curate173 | 1Hexanol + nHexylAcetate | 1 | 1.296 | warning | promoted; unblocked by C285 |
+| curate174 | Dichloroethane + nButanol | 1 | 1.504 | warning | promoted |
+| curate175 | nButylAcetate + cyclohexane | 1 | 1.588 | warning | promoted |
+| curate176 | 1Hexene + nHexane | 1 | 0.163 | clean | promoted |
+| curate177 | tertButylEthylEther + 1Propanol | 1 | 0.599 | clean | promoted |
+| curate178 | 2Butanol + methylTertPentylEther | 1 | 0.359 | clean | promoted; unblocked by C285 |
+| curate179 | 2Butanol + nHeptane | 1 | 0.497 | clean | promoted |
+| curate180 | ethanol + methylTertButylEther | 1 | 0.506 | clean | promoted |
+| curate181 | ethanol + methylTertPentylEther | 1 | 0.257 | clean | promoted; unblocked by C285 |
+| curate182 | nHeptane + methylTertPentylEther | 1 | 0.308 | clean | promoted; unblocked by C285 |
+| curate183 | nHeptane + nButanol | 1 | 1.312 | warning | promoted |
+| curate184 | nPropylAcetate + isopropylAcetate | 1 | 0.445 | clean | promoted |
+| curate185 | phenol + ethanol | 1 | 2.420 | severe | promoted |
+| curate186 | toluene + ethylBenzene | 1 | 0.318 | clean | promoted |
+| curate187 | 1Pentanol + propionicAcid | 1 | 0.828 | clean | promoted |
+| curate188 | nButylAcetate + nOctane | 1 | 0.196 | clean | promoted |
+| curate189 | nHeptane + 1Pentanol | 1 | 1.556 | warning | promoted |
+| curate190 | nNonane + anisole | 1 | 0.600 | clean | promoted |
+| curate191 | 1Heptanol + nUndecane | 1 | 1.694 | warning | promoted |
+| curate192 | 1Hexanol + nDecane | 1 | 1.315 | warning | promoted |
+| curate193 | methylPropionate + 2Methyl2Propanol | 1 | 0.500 | clean | promoted |
+| curate194 | methylPalmitate + methylStearate | 1 | 3.213 | severe | promoted |
+| curate195 | dimethylDisulfide + ethanol | 1 | 2.304 | severe | promoted |
+| curate196 | methylPropionate + nNonane | 1 | 0.807 | clean | promoted |
+| curate197 | 14Dioxane + cyclopentane | 1 | 0.600 | clean | promoted |
+| curate198 | nOctane + 4Heptanone | 1 | 0.549 | clean | promoted |
+| curate199 | methanol + diButylCarbonate | 1 | 1.368 | warning | promoted; unblocked by C285 |
+| curate200 | nButanol + diButylCarbonate | 1 | 0.874 | clean | promoted; unblocked by C285 |
+| curate201 | nButanol + diNButylEther | 1 | 0.898 | clean | promoted; unblocked by C285 |
+| curate202 | methylethanolamine + ethyleneGlycol | 1 | 0.484 | clean | promoted; unblocked by C285 |
+| curate203 | methylethanolamine + methylDiEthanolAmine | 1 | 1.227 | warning | promoted; unblocked by C285 |
+| curate204 | 14Butanediol + nButanol | 1 | 1.274 | warning | promoted |
+| curate205 | dimethylDisulfide + nButanol | 1 | 0.771 | clean | promoted |
+| curate206 | mXylene + styrene | 1 | 1.590 | warning | promoted |
+| curate207 | diNButylEther + 1Pentanol | 1 | 0.631 | clean | promoted; unblocked by C285 |
+| curate208 | 2Hexanone + anisole | 1 | 0.237 | clean | promoted |
+| curate209 | nPropylAcetate + nOctane | 1 | 0.605 | clean | promoted |
+| curate210 | 14Butanediol + diethyleneGlycol | 1 | 1.043 | warning | promoted |
+| curate211 | dimethylDisulfide + 1Propanol | 1 | 1.003 | warning | promoted |
+| curate212 | nNonane + 4Heptanone | 1 | 0.442 | clean | promoted |
+| curate213 | methylFormate + nPentane | 1 | 2.539 | severe | refused: splits one liquid (arm f) |
+| curate214 | pXylene + styrene | 1 | 1.692 | warning | promoted |
+| curate215 | nDecane + 3Heptanone | 1 | 1.715 | warning | promoted |
+| curate216 | acetone + diEthylCarbonate | 1 | 1.319 | warning | promoted; unblocked by C285 |
+| curate217 | ethyleneGlycol + diethyleneGlycol | 1 | 1.112 | warning | promoted |
+| curate218 | diethyleneGlycol + triethyleneGlycol | 1 | 0.656 | clean | promoted |
+| curate219 | dimethylDisulfide + methanol | 1 | 1.548 | warning | promoted |
+| curate220 | oXylene + styrene | 1 | 1.304 | warning | promoted |
+| curate221 | water + tetraethyleneGlycol | 1 | 1.193 | warning | promoted |
+| curate222 | ethyleneGlycol + 14Butanediol | 1 | 1.878 | warning | promoted |
+| curate223 | dimethylCarbonate + 2Pentanone | 1 | 0.145 | clean | promoted |
+| curate224 | dimethylCarbonate + nNonane | 1 | 1.977 | warning | promoted |
+| curate225 | methylFormate + 2Methyl2Propanol | 1 | 2.187 | severe | promoted |
+| curate226 | diNButylEther + nNonane | 1 | 0.388 | clean | promoted; unblocked by C285 |
+| curate227 | 14Dioxane + benzene | 1 | 0.420 | clean | promoted |
+| curate228 | nDecane + 2Heptanone | 1 | 1.887 | warning | promoted |
+| curate229 | nButylAcetate + 2Methyl2Propanol | 1 | 0.056 | clean | promoted |
+| curate230 | nPropylFormate + 2Methyl2Propanol | 1 | 0.401 | clean | promoted |
+| curate231 | 2Pentanone + diEthylCarbonate | 1 | 0.286 | clean | promoted; unblocked by C285 |
+| curate232 | nDecane + 4Heptanone | 1 | 2.592 | severe | promoted |
+| curate233 | methylPropionate + nPentane | 1 | 0.511 | clean | promoted |
+| curate234 | 1Propanol + nButanol | 1 | 1.558 | warning | promoted |
+| curate235 | nOctane + 2Heptanone | 1 | 1.443 | warning | promoted |
+| curate236 | ethylFormate + 2Methyl2Propanol | 1 | 0.253 | clean | promoted |
+| curate237 | nNonane + 3Heptanone | 1 | 0.605 | clean | promoted |
+| curate238 | acetone + dimethylCarbonate | 1 | 0.581 | clean | promoted |
+| curate239 | ethanol + diEthylCarbonate | 1 | 1.279 | warning | promoted; unblocked by C285 |
+| curate240 | methylEthylKetone + dimethylCarbonate | 1 | 0.071 | clean | promoted |
+| curate241 | nPropylAcetate + nHeptane | 1 | 0.410 | clean | promoted |
+| curate242 | methylAcetate + 2Methyl2Propanol | 1 | 0.174 | clean | promoted |
+| curate243 | nPropylAcetate + nDecane | 1 | 0.981 | clean | promoted |
+| curate244 | nPropylAcetate + nHexane | 1 | 0.426 | clean | promoted |
+| curate245 | nPropylAcetate + nNonane | 1 | 0.823 | clean | promoted |
+| curate246 | tetrahydrofuran + 14Butanediol | 1 | 6.056 | refused | refused: grade |
+| curate247 | ethylAcetate + 2Methyl2Propanol | 1 | 0.047 | clean | promoted |
+| curate248 | ethanol + diethylethanolamine | 1 | 1.509 | warning | promoted; unblocked by C285 |
+| curate249 | ethylFormate + nHexane | 1 | 0.314 | clean | promoted |
+| curate250 | toluene + monochlorobenzene | 1 | 0.226 | clean | promoted |
+| curate251 | nPropylAcetate + 2Methyl2Propanol | 1 | 0.397 | clean | promoted |
+| curate252 | methanol + diethylamine | 1 | 0.891 | clean | promoted |
+| curate253 | nNDimethylformamide + dimethylSulfoxide | 1 | 1.526 | warning | promoted; unblocked by C285 |
+| curate254 | ethylAcetate + nHeptane | 1 | 0.320 | clean | promoted |
+| curate255 | ethylFormate + nHeptane | 1 | 0.836 | clean | promoted |
+| curate256 | methylFormate + nOctane | 1 | 4.777 | refused | refused: grade (also splits) |
+| curate257 | methylTertButylEther + 1Propanol | 1 | 0.393 | clean | promoted |
+| curate258 | nNonane + 2Heptanone | 1 | 0.540 | clean | promoted |
+| curate259 | nOctane + 3Heptanone | 1 | 0.859 | clean | promoted |
+| curate260 | nButanol + diEthylCarbonate | 1 | 0.271 | clean | promoted; unblocked by C285 |
+| curate261 | ethanol + ethylTertPentylEther | 1 | 0.403 | clean | promoted |
+| curate262 | ethylFormate + nNonane | 1 | 2.864 | severe | promoted |
+| curate263 | methylEthylKetone + nHeptane | 1 | 0.824 | clean | promoted |
+| curate264 | styrene + sulfolane | 1 | 3.067 | severe | promoted |
+| curate265 | isopropylAcetate + 2Butanol | 1 | 0.232 | clean | promoted |
+| curate266 | 2Butanol + nNDimethylacetamide | 1 | 1.382 | warning | promoted |
+| curate267 | cyclohexene + cyclohexanol | 1 | 2.028 | severe | promoted |
+| curate268 | methylEthylKetone + diEthylCarbonate | 1 | 0.267 | clean | promoted; unblocked by C285 |
+| curate269 | ethanol + nButanol | 1 | 1.084 | warning | promoted |
+| curate270 | nPropylFormate + nHeptane | 1 | 0.670 | clean | promoted |
+| curate271 | nPropylFormate + nOctane | 1 | 0.878 | clean | promoted |
+| curate272 | 1Propanol + diEthylCarbonate | 1 | 0.477 | clean | promoted; unblocked by C285 |
+| curate273 | nPropylFormate + nNonane | 1 | 0.913 | clean | promoted |
+| curate274 | isopropylAcetate + 1Propanol | 1 | 0.203 | clean | promoted |
+| curate275 | 2Hexanone + cyclohexanol | 1 | 0.861 | clean | promoted |
+| curate276 | ethylAcetate + nOctane | 1 | 0.687 | clean | promoted |
+| curate277 | propanal + propionicAcid | 1 | 0.591 | clean | promoted |
+| curate278 | 14Dioxane + 2Methyl1Propanol | 1 | 0.463 | clean | promoted |
+| curate279 | diEthylCarbonate + 1Pentanol | 1 | 0.499 | clean | promoted; unblocked by C285 |
+| curate280 | isopropanol + 1Pentanol | 1 | 0.491 | clean | promoted |
+| curate281 | propanal + 1Propanol | 1 | 0.395 | clean | promoted |
+| curate282 | 224Trimethylpentane + nButanol | 1 | 1.327 | warning | promoted |
+| curate283 | methanol + 2Methyl2Butanol | 1 | 0.088 | clean | promoted |
+| curate284 | methylcyclohexane + diEthylCarbonate | 1 | 0.849 | clean | promoted; unblocked by C285 |
+| curate285 | diethylamine + ethanol | 1 | 1.532 | warning | promoted |
+| curate286 | ethylAcetate + nNonane | 1 | 0.651 | clean | promoted |
+| curate287 | ethylFormate + nPentane | 1 | 0.615 | clean | promoted |
+| curate288 | nNDimethylformamide + methylEthylKetone | 1 | 0.206 | clean | promoted |
+| curate289 | methylFormate + nNonane | 1 | 3.332 | severe | refused: splits one liquid (arm f) |
+| curate290 | nPropylFormate + nHexane | 1 | 0.131 | clean | promoted |
+| curate291 | mCresol + diisopropanolamine | 1 | 2.539 | severe | promoted |
+| curate292 | isobutylAcetate + dimethylSulfoxide | 1 | 2.190 | severe | promoted; unblocked by C285 |
+| curate293 | nNDimethylacetamide + dimethylSulfoxide | 1 | 0.663 | clean | promoted; unblocked by C285 |
+| curate294 | ethylAcetate + nPentane | 1 | 1.357 | warning | promoted |
+| curate295 | methylAcetate + nHeptane | 1 | 1.276 | warning | promoted |
+| curate296 | methylFormate + nHexane | 1 | 1.849 | warning | refused: splits one liquid (arm f) |
+| curate297 | nPropylAcetate + nPentane | 1 | 0.367 | clean | promoted |
+| curate298 | 2Methyl1Propanol + 1Hexanol | 1 | 0.506 | clean | promoted |
+| curate299 | nNDimethylformamide + anisole | 1 | 0.599 | clean | promoted |
+| curate300 | ethylAcetate + nHexane | 1 | 0.181 | clean | promoted |
+| curate301 | ethylFormate + nOctane | 1 | 0.594 | clean | promoted |
+| curate302 | pXylene + nNDimethylformamide | 1 | 0.477 | clean | promoted |
+| curate303 | nPropylFormate + nPentane | 1 | 1.404 | warning | promoted |
+| curate304 | ethylAcetate + 1Pentanol | 1 | 0.550 | clean | promoted |
+| curate305 | 1Propanol + 2Methyl1Butanol | 1 | 0.251 | clean | promoted |
+| curate306 | methanol + 2Methyl1Butanol | 1 | 0.808 | clean | promoted |
+| curate307 | 2Methyl1Propanol + dimethylSulfoxide | 1 | 0.519 | clean | promoted; unblocked by C285 |
+| curate308 | ethanol + 2Methyl1Propanol | 1 | 0.135 | clean | promoted |
+| curate309 | methylTertButylEther + 2Methyl2Butanol | 1 | 0.558 | clean | promoted |
+| curate310 | vinylAcetate + cumene | 1 | 0.437 | clean | promoted |
+| curate311 | diisopropylEther + nNDimethylacetamide | 1 | 1.600 | warning | promoted |
+| curate312 | isopropylAcetate + nButanol | 1 | 0.558 | clean | promoted |
+| curate313 | mXylene + nNDimethylformamide | 1 | 0.727 | clean | promoted |
+| curate314 | 1Propanol + dimethylSulfoxide | 1 | 1.152 | warning | promoted; unblocked by C285 |
+| curate315 | 2Butanol + dimethylSulfoxide | 1 | 1.681 | warning | promoted; unblocked by C285 |
+| curate316 | nButylAcetate + anisole | 1 | 0.306 | clean | promoted |
+| curate317 | ethylFormate + cumene | 1 | 1.042 | warning | promoted |
+| curate318 | cyclohexane + cyclohexanol | 1 | 1.904 | warning | promoted |
+| curate319 | cyclohexane + diEthylCarbonate | 1 | 0.841 | clean | promoted; unblocked by C285 |
+| curate320 | cyclohexene + diEthylCarbonate | 1 | 0.738 | clean | promoted; unblocked by C285 |
+| curate321 | diEthylCarbonate + ethylBenzene | 1 | 0.118 | clean | promoted; unblocked by C285 |
+| curate322 | diEthylCarbonate + mXylene | 1 | 0.183 | clean | promoted; unblocked by C285 |
+| curate323 | diEthylCarbonate + oXylene | 1 | 0.329 | clean | promoted; unblocked by C285 |
+| curate324 | methanol + diethylethanolamine | 1 | 2.564 | severe | promoted; unblocked by C285 |
+| curate325 | methylPhenylCarbonate + dimethylCarbonate | 1 | 2.648 | severe | promoted |
+| curate326 | ethanol + methylcyclohexane | 1 | 1.128 | warning | refused: splits one liquid (arm f) |
+| curate327 | ethylAcetate + propyleneCarbonate | 1 | 2.148 | severe | promoted |
+| curate328 | methanol + ethylTertPentylEther | 1 | 1.427 | warning | promoted |
+| curate329 | isopropanol + nButanol | 1 | 0.239 | clean | promoted |
+| curate330 | nNDimethylformamide + mCresol | 1 | 1.733 | warning | promoted |
+| curate331 | methylPhenylCarbonate + methanol | 1 | 2.983 | severe | refused: splits one liquid (arm f) |
+| curate332 | methanol + nHeptane | 1 | 1.234 | warning | refused: splits one liquid (arm f) |
+| curate333 | monochlorobenzene + nNDimethylformamide | 1 | 0.222 | clean | promoted |
+| curate334 | nButanol + nNDimethylacetamide | 1 | 0.675 | clean | promoted |
+| curate335 | nNDimethylformamide + pCresol | 1 | 1.298 | warning | promoted |
+| curate336 | nPropylMercaptan + toluene | 1 | 0.197 | clean | promoted |
+| curate337 | thiophene + toluene | 1 | 0.190 | clean | promoted |
+| curate338 | 1Heptanol + nitrobenzene | 1 | 0.966 | clean | promoted |
+| curate339 | isobutylAcetate + 1Hexanol | 1 | 0.222 | clean | promoted |
+| curate340 | 1Hexene + 2Pentanol | 1 | 0.455 | clean | promoted |
+| curate341 | 1Hexene + diEthylCarbonate | 1 | 0.690 | clean | promoted; unblocked by C285 |
+| curate342 | 1Hexene + methylIsobutylKetone | 1 | 0.855 | clean | promoted |
+| curate343 | 1Propanol + 1Pentanol | 1 | 0.720 | clean | promoted |
+| curate344 | nButanol + 1Pentanol | 1 | 0.328 | clean | promoted |
+| curate345 | 1Propanol + nNDimethylformamide | 1 | 0.479 | clean | promoted |
+| curate346 | acetone + 224Trimethylpentane | 1 | 0.693 | clean | promoted |
+| curate347 | methylEthylKetone + 224Trimethylpentane | 1 | 0.251 | clean | promoted |
+| curate348 | methylTertButylEther + 2Butanol | 1 | 0.298 | clean | promoted |
+| curate349 | 2Methyl1Propanol + 2Methyl1Butanol | 1 | 0.455 | clean | promoted |
+| curate350 | ethylAcetate + 2Methyl1Propanol | 1 | 0.302 | clean | promoted |
+| curate351 | isopropanol + 2Methyl2Butanol | 1 | 0.250 | clean | promoted |
+| curate352 | Dichloroethane + nNDimethylformamide | 1 | 0.579 | clean | promoted |
+| curate353 | Dichloroethane + nPropylAcetate | 1 | 0.293 | clean | promoted |
+| curate354 | acetone + hexamethyldisiloxane | 1 | 1.164 | warning | promoted |
+| curate355 | acrylonitrile + ethanol | 1 | 0.437 | clean | promoted |
+| curate356 | nButanol + aniline | 1 | 2.239 | severe | promoted |
+| curate357 | ethanol + benzene | 1 | 0.235 | clean | promoted |
+| curate358 | chloroform + methanol | 1 | 0.280 | clean | promoted |
+| curate359 | cyclohexane + methylIsobutylKetone | 1 | 0.640 | clean | promoted |
+| curate360 | cyclohexene + methylIsobutylKetone | 1 | 0.633 | clean | promoted |
+| curate361 | nHexane + diEthylCarbonate | 1 | 0.935 | clean | promoted; unblocked by C285 |
+| curate362 | diEthylCarbonate + pXylene | 1 | 0.085 | clean | promoted; unblocked by C285 |
+| curate363 | vinylAcetate + diEthylCarbonate | 1 | 1.547 | warning | promoted; unblocked by C285 |
+| curate364 | dimethylCarbonate + nDecane | 1 | 1.096 | warning | promoted |
+| curate365 | water + dimethylSulfoxide | 1 | 1.594 | warning | promoted; unblocked by C285 |
+| curate366 | ethanol + nNDimethylformamide | 1 | 1.863 | warning | promoted |
+| curate367 | hexamethyldisiloxane + ethylAcetate | 1 | 0.465 | clean | promoted |
+| curate368 | ethylAcetate + nDecane | 1 | 2.258 | severe | promoted |
+| curate369 | isobutylAcetate + nNDimethylformamide | 1 | 0.371 | clean | promoted |
+| curate370 | isopropanol + nNDimethylacetamide | 1 | 1.206 | warning | promoted |
+| curate371 | methylFormate + mXylene | 1 | 4.317 | refused | refused: grade |
+| curate372 | nButanol + mXylene | 1 | 0.721 | clean | promoted |
+| curate373 | nHexane + methylIsobutylKetone | 1 | 0.819 | clean | promoted |
+| curate374 | nNDimethylformamide + oCresol | 1 | 1.601 | warning | promoted |
+| curate375 | oXylene + nNDimethylformamide | 1 | 0.220 | clean | promoted |
+| curate376 | trichloroethylene + nNDimethylformamide | 1 | 0.302 | clean | promoted |
+| curate377 | 2Methyl1Propanol + 1Pentanol | 1 | 0.270 | clean | promoted |
+| curate378 | 2Methyl1Butanol + mXylene | 1 | 0.209 | clean | promoted |
+| curate379 | 2Methyl1Butanol + pXylene | 1 | 0.206 | clean | promoted |
+| curate380 | 2Methyl2Propanol + monochlorobenzene | 1 | 1.620 | warning | promoted |
+| curate381 | nHexane + 2Pentanol | 1 | 0.553 | clean | promoted |
+| curate382 | dimethylCarbonate + cyclohexanone | 1 | 0.334 | clean | promoted |
+| curate383 | isopropanol + dimethylSulfoxide | 1 | 2.021 | severe | promoted; unblocked by C285 |
+| curate384 | isopropylAcetate + dimethylSulfoxide | 1 | 2.034 | severe | promoted; unblocked by C285 |
+| curate385 | methylFormate + ethylBenzene | 1 | 3.543 | severe | promoted |
+| curate386 | nButanol + ethylBenzene | 1 | 0.756 | clean | promoted |
+| curate387 | methanol + propionicAcid | 1 | 0.732 | clean | promoted |
+| curate388 | vinylAcetate + pXylene | 1 | 1.644 | warning | promoted |
+| curate389 | nPropylAcetate + 1Heptanol | 1 | 1.006 | warning | promoted |
+| curate390 | nPropylAcetate + 1Hexanol | 1 | 0.898 | clean | promoted |
+| curate391 | nPropylAcetate + 1Pentanol | 1 | 0.515 | clean | promoted |
+| curate392 | diisopropylEther + 1Propanol | 1 | 0.165 | clean | promoted |
+| curate393 | 1Propanol + ethyleneGlycol | 1 | 2.611 | severe | promoted |
+| curate394 | methylTertPentylEther + 1Propanol | 1 | 0.209 | clean | promoted; unblocked by C285 |
+| curate395 | 224Trimethylpentane + diNButylEther | 1 | 0.349 | clean | promoted; unblocked by C285 |
+| curate396 | ethylAcetate + 2Methyl1Butanol | 1 | 0.691 | clean | promoted |
+| curate397 | nPropylAcetate + 2Methyl1Butanol | 1 | 0.464 | clean | promoted |
+| curate398 | nPropylAcetate + 2Pentanol | 1 | 0.320 | clean | promoted |
+| curate399 | acetone + furfural | 1 | 2.475 | severe | promoted; unblocked by C285 |
+| curate400 | acetonitrile + ethyleneGlycol | 1 | 0.573 | clean | promoted |
+| curate401 | cyclohexane + acrylicAcid | 1 | 0.417 | clean | promoted |
+| curate402 | toluene + acrylicAcid | 1 | 0.577 | clean | promoted |
+| curate403 | benzene + oXylene | 1 | 1.042 | warning | promoted |
+| curate404 | diEthylCarbonate + propyleneCarbonate | 1 | 0.860 | clean | promoted; unblocked by C285 |
+| curate405 | diethylSulfide + toluene | 1 | 0.173 | clean | promoted |
+| curate406 | diisopropylEther + ethanol | 1 | 0.170 | clean | promoted |
+| curate407 | ethanol + nHexane | 1 | 1.117 | warning | refused: splits one liquid (arm f) |
+| curate408 | hexamethyldisiloxane + isopropylAcetate | 1 | 0.225 | clean | promoted |
+| curate409 | methylAcetate + isopropylAcetate | 1 | 0.334 | clean | promoted |
+| curate410 | methylEthylKetone + isopropylAcetate | 1 | 0.111 | clean | promoted |
+| curate411 | nButanol + oXylene | 1 | 0.421 | clean | promoted |
+| curate412 | 2Methyl1Butanol + ethylBenzene | 1 | 0.544 | clean | promoted |
+| curate413 | 2Methyl1Butanol + oXylene | 1 | 0.299 | clean | promoted |
+| curate414 | cumene + nNDimethylacetamide | 1 | 1.271 | warning | promoted |
+| curate415 | ethylAcetate + dimethylSulfoxide | 1 | 1.708 | warning | promoted; unblocked by C285 |
+| curate416 | methanol + dimethylSulfoxide | 1 | 1.602 | warning | promoted; unblocked by C285 |
+| curate417 | nPropylAcetate + dimethylSulfoxide | 1 | 1.417 | warning | promoted; unblocked by C285 |
+| curate418 | methylFormate + pXylene | 1 | 1.513 | warning | refused: splits one liquid (arm f) |
+| curate419 | methylcyclohexane + pXylene | 1 | 0.234 | clean | promoted |
+| curate420 | nNDimethylformamide + nDecane | 1 | 0.468 | clean | promoted |
+| curate421 | 1Hexanol + 1Heptanol | 1 | 0.587 | clean | promoted |
+| curate422 | Dichloroethane + 1Hexanol | 1 | 0.225 | clean | promoted |
+| curate423 | 1Propanol + nPropylAcetate | 1 | 0.397 | clean | promoted |
+| curate424 | benzene + methylAcetate | 1 | 0.185 | clean | promoted |
+| curate425 | benzene + nButylAcetate | 1 | 0.290 | clean | promoted |
+| curate426 | nNonane + benzene | 1 | 0.559 | clean | promoted |
+| curate427 | nNDimethylformamide + diisopropylEther | 1 | 0.577 | clean | promoted |
+| curate428 | methylAcetate + dimethylSulfoxide | 1 | 2.602 | severe | promoted; unblocked by C285 |
+| curate429 | methylFormate + oXylene | 1 | 3.162 | severe | refused: splits one liquid (arm f) |
+| curate430 | methylIsobutylKetone + nNDimethylacetamide | 1 | 0.325 | clean | promoted |
+| curate431 | nDodecane + nButanol | 1 | 3.229 | severe | promoted |
+| curate432 | nPropylAcetate + propyleneCarbonate | 1 | 1.361 | warning | promoted |
+| curate433 | toluene + oXylene | 1 | 0.184 | clean | promoted |
+| curate434 | mEthyltoluene + 124Trimethylbenzene | 1 | 0.432 | clean | promoted |
+| curate435 | oEthyltoluene + 124Trimethylbenzene | 1 | 0.720 | clean | promoted |
+| curate436 | acrylonitrile + 1Heptanol | 1 | 1.252 | warning | promoted |
+| curate437 | ethylBenzene + 1Hexanol | 1 | 0.167 | clean | promoted |
+| curate438 | monochlorobenzene + 1Hexanol | 1 | 0.103 | clean | promoted |
+| curate439 | nNDimethylformamide + 1Hexanol | 1 | 0.766 | clean | promoted |
+| curate440 | 1Hexanol + nitrobenzene | 1 | 0.969 | clean | promoted |
+| curate441 | oXylene + 1Hexanol | 1 | 0.149 | clean | promoted |
+| curate442 | trichloroethylene + 1Hexanol | 1 | 0.384 | clean | promoted |
+| curate443 | cyclohexanone + 1Propanol | 1 | 0.628 | clean | promoted |
+| curate444 | acrylonitrile + Dichloroethane | 1 | 0.075 | clean | promoted |
+| curate445 | acetonitrile + anisole | 1 | 2.219 | severe | promoted |
+| curate446 | acetonitrile + bromobenzene | 1 | 0.655 | clean | promoted |
+| curate447 | methylTertButylEther + acetonitrile | 1 | 0.096 | clean | promoted |
+| curate448 | acrylonitrile + monochlorobenzene | 1 | 0.235 | clean | promoted |
+| curate449 | acrylonitrile + nitrobenzene | 1 | 0.464 | clean | promoted |
+| curate450 | nNDimethylformamide + bromobenzene | 1 | 0.210 | clean | promoted |
+| curate451 | cyclohexane + toluene | 1 | 0.403 | clean | promoted |
+| curate452 | cyclohexanone + ethanol | 1 | 0.818 | clean | promoted |
+| curate453 | cyclohexanone + isopropanol | 1 | 0.505 | clean | promoted |
+| curate454 | isopropylAcetate + diEthylCarbonate | 1 | 0.483 | clean | promoted; unblocked by C285 |
+| curate455 | diNButylEther + oXylene | 1 | 0.464 | clean | promoted; unblocked by C285 |
+| curate456 | methylFormate + dimethylCarbonate | 1 | 2.621 | severe | promoted |
+| curate457 | methylal + dimethylCarbonate | 1 | 1.486 | warning | promoted |
+| curate458 | ethylBenzene + oCresol | 1 | 0.107 | clean | promoted |
+| curate459 | ethylBenzene + pCresol | 1 | 0.506 | clean | promoted |
+| curate460 | isopropanol + nPropylAcetate | 1 | 0.502 | clean | promoted |
+| curate461 | methylFormate + methylal | 1 | 0.443 | clean | promoted |
+| curate462 | nNonane + nHeptane | 1 | 0.590 | clean | promoted |
+| curate463 | nOctane + pXylene | 1 | 0.225 | clean | promoted |
+| curate464 | pEthyltoluene + 124Trimethylbenzene | 1 | 0.459 | clean | promoted |
+| curate465 | acetonitrile + 1Hexanol | 1 | 1.667 | warning | promoted |
+| curate466 | acrylonitrile + 1Hexanol | 1 | 1.538 | warning | promoted |
+| curate467 | 1Hexanol + aniline | 1 | 0.233 | clean | promoted |
+| curate468 | 1Propanol + nitrobenzene | 1 | 0.436 | clean | promoted |
+| curate469 | acetonitrile + ethanol | 1 | 0.268 | clean | promoted |
+| curate470 | cyclohexanone + pXylene | 1 | 0.140 | clean | promoted |
+| curate471 | methylAcetate + diEthylCarbonate | 1 | 0.829 | clean | promoted; unblocked by C285 |
+| curate472 | nPropylAcetate + diEthylCarbonate | 1 | 0.558 | clean | promoted; unblocked by C285 |
+| curate473 | mCresol + diethanolamine | 1 | 0.187 | clean | promoted; unblocked by C285 |
+| curate474 | pCresol + diethanolamine | 1 | 0.301 | clean | promoted; unblocked by C285 |
+| curate475 | diisopropylEther + nButylAcetate | 1 | 1.063 | warning | promoted |
+| curate476 | dimethylCarbonate + isobutylAcetate | 1 | 0.371 | clean | promoted |
+| curate477 | ethanol + isobutylAcetate | 1 | 0.489 | clean | promoted |
+| curate478 | ethanol + nitrobenzene | 1 | 0.619 | clean | promoted |
+| curate479 | ethylAcetate + isopropanol | 1 | 0.171 | clean | promoted |
+| curate480 | isopropanol + nButylAcetate | 1 | 0.343 | clean | promoted |
+| curate481 | isopropanol + nitrobenzene | 1 | 1.416 | warning | promoted |
+| curate482 | nUndecane + mXylene | 1 | 0.237 | clean | promoted |
+| curate483 | methanol + nitrobenzene | 1 | 2.431 | severe | promoted |
+| curate484 | methylAcetate + pXylene | 1 | 2.853 | severe | promoted |
+| curate485 | nNonane + toluene | 1 | 0.970 | clean | promoted |
+| curate486 | nUndecane + oXylene | 1 | 0.260 | clean | promoted |
+| curate487 | 1Propanol + mCresol | - | - | - | withdrawn: fit_nrtl_start2 fails, the case does not run |
+| curate488 | 1Propanol + oCresol | 1 | 0.887 | clean | promoted |
+| curate489 | 2Butanol + mCresol | 1 | 1.535 | warning | promoted |
+| curate490 | 2Butanol + nitrobenzene | 1 | 1.081 | warning | promoted |
+| curate491 | 2Butanol + oCresol | 1 | 0.832 | clean | promoted |
+| curate492 | 2Methyl1Butanol + nNDimethylformamide | 1 | 0.366 | clean | promoted |
+| curate493 | 2Methyl1Propanol + mCresol | 1 | 0.384 | clean | promoted |
+| curate494 | 2Methyl1Propanol + nitrobenzene | 1 | 0.675 | clean | promoted |
+| curate495 | 2Methyl1Propanol + oCresol | 1 | 0.664 | clean | promoted |
+| curate496 | 2Methyl2Propanol + mCresol | - | - | - | withdrawn: fit_nrtl_start2 fails, the case does not run |
+| curate497 | 2Methyl2Propanol + monoethanolamine | 1 | 0.410 | clean | promoted; unblocked by C285 |
+| curate498 | 2Methyl2Propanol + nitrobenzene | 1 | 1.685 | warning | promoted |
+| curate499 | 2Methyl2Propanol + oCresol | 1 | 1.074 | warning | promoted |
+| curate500 | 3Pentanone + 2Pentanone | 1 | 0.206 | clean | promoted |
+| curate501 | Dichloroethane + oCresol | 1 | 0.405 | clean | promoted |
+| curate502 | Dichloroethane + toluene | 1 | 2.775 | severe | promoted |
+| curate503 | anisole + nButylbenzene | 1 | 0.703 | clean | promoted |
+| curate504 | cyclohexanone + benzene | 1 | 1.059 | warning | promoted |
+| curate505 | nHeptane + bromobenzene | 1 | 0.359 | clean | promoted |
+| curate506 | bromobenzene + nitrobenzene | 1 | 0.829 | clean | promoted |
+| curate507 | chloroform + nNDimethylformamide | 1 | 1.540 | warning | promoted |
+| curate508 | nNonane + cyclohexane | 1 | 1.492 | warning | promoted |
+| curate509 | cyclohexanone + toluene | 1 | 0.155 | clean | promoted |
+| curate510 | ethanol + mCresol | 1 | 0.442 | clean | promoted |
+| curate511 | ethylBenzene + oXylene | 1 | 0.318 | clean | promoted |
+| curate512 | methylAcetate + isobutylAcetate | 1 | 2.199 | severe | promoted |
+| curate513 | isopropanol + mCresol | - | - | - | withdrawn: fit_nrtl_start2 fails, the case does not run |
+| curate514 | isopropanol + oCresol | 1 | 0.260 | clean | promoted |
+| curate515 | methanol + mCresol | - | - | - | withdrawn: fit_nrtl_start2 fails, the case does not run |
+| curate516 | nButanol + mCresol | 1 | 2.573 | severe | promoted |
+| curate517 | mCresol + nitrobenzene | 1 | 0.099 | clean | promoted |
+| curate518 | nNonane + mXylene | 1 | 0.260 | clean | promoted |
+| curate519 | mXylene + oCresol | 1 | 0.320 | clean | promoted |
+| curate520 | methanol + oCresol | 1 | 0.868 | clean | promoted |
+| curate521 | nButanol + nitrobenzene | 1 | 0.452 | clean | promoted |
+| curate522 | nButanol + oCresol | 1 | 0.261 | clean | promoted |
+| curate523 | nHeptane + oCresol | 1 | 1.101 | warning | promoted |
+| curate524 | nHexane + oXylene | 1 | 1.141 | warning | promoted |
+| curate525 | nNDimethylformamide + nOctane | 1 | 1.839 | warning | promoted |
+| curate526 | nNDimethylformamide + nitrobenzene | 1 | 2.423 | severe | promoted |
+| curate527 | nUndecane + pXylene | 1 | 0.119 | clean | promoted |
+| curate528 | oCresol + nitrobenzene | 1 | 0.731 | clean | promoted |
+| curate529 | pCresol + nitrobenzene | 1 | 0.524 | clean | promoted |
+| curate530 | oXylene + oCresol | 1 | 0.660 | clean | promoted |
+| curate531 | pXylene + oCresol | 1 | 0.518 | clean | promoted |
+| curate532 | trichloroethylene + oCresol | 1 | 1.806 | warning | promoted |
+| curate533 | 1Pentanol + cyclohexane | 1 | 0.262 | clean | promoted |
+| curate534 | 1Pentanol + nHexane | 1 | 0.188 | clean | promoted |
+| curate535 | methylTertButylEther + 224Trimethylpentane | 1 | 0.061 | clean | promoted |
+| curate536 | acetone + anisole | 1 | 1.915 | warning | promoted |
+| curate537 | ethylAcetate + anisole | 1 | 0.290 | clean | promoted |
+| curate538 | ethylBenzene + anisole | 1 | 0.224 | clean | promoted |
+| curate539 | isopropanol + anisole | 1 | 0.721 | clean | promoted |
+| curate540 | isopropylAcetate + anisole | 1 | 0.495 | clean | promoted |
+| curate541 | mXylene + anisole | 1 | 0.222 | clean | promoted |
+| curate542 | methylAcetate + anisole | 1 | 0.273 | clean | promoted |
+| curate543 | nPropylAcetate + anisole | 1 | 0.296 | clean | promoted |
+| curate544 | oXylene + anisole | 1 | 0.188 | clean | promoted |
+| curate545 | pXylene + anisole | 1 | 0.179 | clean | promoted |
+| curate546 | toluene + anisole | 1 | 1.216 | warning | promoted |
+| curate547 | ethylAcetate + dimethylCarbonate | 1 | 0.073 | clean | promoted |
+| curate548 | ethylBenzene + dimethylCarbonate | 1 | 0.334 | clean | promoted |
+| curate549 | isopropylAcetate + dimethylCarbonate | 1 | 0.081 | clean | promoted |
+| curate550 | mXylene + dimethylCarbonate | 1 | 1.427 | warning | promoted |
+| curate551 | methylAcetate + dimethylCarbonate | 1 | 0.031 | clean | promoted |
+| curate552 | nButylAcetate + dimethylCarbonate | 1 | 0.147 | clean | promoted |
+| curate553 | nPropylAcetate + dimethylCarbonate | 1 | 0.076 | clean | promoted |
+| curate554 | ethylAcetate + nPropylAcetate | 1 | 0.156 | clean | promoted |
+| curate555 | ethylBenzene + mXylene | 1 | 0.143 | clean | promoted |
+| curate556 | ethylBenzene + pXylene | 1 | 0.103 | clean | promoted |
+| curate557 | ethyleneGlycol + ethyleneCarbonate | 1 | 1.712 | warning | promoted |
+| curate558 | methanol + ethyleneCarbonate | 1 | 1.337 | warning | promoted |
+| curate559 | water + furfural | 1 | 0.798 | clean | refused: splits one liquid (arm f); unblocked by C285 |
+| curate560 | nHexane + mXylene | 1 | 1.126 | warning | promoted |
+| curate561 | methanol + methylPropionate | 1 | 0.212 | clean | promoted |
+| curate562 | vinylAcetate + methanol | 1 | 0.289 | clean | promoted |
+| curate563 | tetrahydrofuran + nButanol | 1 | 0.900 | clean | promoted |
+| curate564 | nNonane + pXylene | 1 | 0.108 | clean | promoted |
+| curate565 | nDodecane + 1Propanol | 1 | 2.017 | severe | promoted |
+| curate566 | 1Propanol + pCresol | 1 | 0.971 | clean | promoted |
+| curate567 | methylal + 224Trimethylpentane | 1 | 0.262 | clean | promoted |
+| curate568 | 2Butanol + pCresol | 1 | 0.883 | clean | promoted |
+| curate569 | 2Methyl1Propanol + pCresol | 1 | 0.435 | clean | promoted |
+| curate570 | tetrahydrofuran + 2Methyl1Propanol | 1 | 1.552 | warning | promoted |
+| curate571 | 2Methyl2Propanol + pCresol | 1 | 0.059 | clean | promoted |
+| curate572 | Dichloroethane + pCresol | 1 | 0.246 | clean | promoted |
+| curate573 | methylal + benzene | 1 | 0.117 | clean | promoted |
+| curate574 | cumene + sulfolane | 1 | 1.771 | warning | promoted |
+| curate575 | methylal + cyclohexane | 1 | 0.147 | clean | promoted |
+| curate576 | isopropanol + diisopropylamine | 1 | 0.644 | clean | promoted |
+| curate577 | ethanol + pCresol | 1 | 0.730 | clean | promoted |
+| curate578 | methylal + isopropanol | 1 | 0.525 | clean | promoted |
+| curate579 | isopropanol + pCresol | 1 | 0.790 | clean | promoted |
+| curate580 | mXylene + pCresol | 1 | 0.621 | clean | promoted |
+| curate581 | methanol + pCresol | 1 | 1.494 | warning | promoted |
+| curate582 | methylal + methylTertButylEther | 1 | 0.115 | clean | promoted |
+| curate583 | nHeptane + monochlorobenzene | 1 | 0.136 | clean | promoted |
+| curate584 | nButanol + pCresol | 1 | 0.325 | clean | promoted |
+| curate585 | nHexane + nNDimethylformamide | 1 | 0.767 | clean | promoted |
+| curate586 | oXylene + pCresol | 1 | 0.067 | clean | promoted |
+| curate587 | pXylene + pCresol | 1 | 0.112 | clean | promoted |
+| curate588 | trichloroethylene + pCresol | 1 | 0.117 | clean | promoted |
+| curate589 | 1Propanol + 1Heptanol | 1 | 1.799 | warning | promoted |
+| curate590 | 2Methyl2Propanol + 1Heptanol | 1 | 0.591 | clean | promoted |
+| curate591 | methanol + 1Heptanol | 1 | 1.677 | warning | promoted |
+| curate592 | tetrahydrofuran + 2Butanol | 1 | 0.214 | clean | promoted |
+| curate593 | dimethylCarbonate + 2Methyl1Propanol | 1 | 0.197 | clean | promoted |
+| curate594 | nDodecane + 2Methyl1Propanol | 1 | 0.236 | clean | promoted |
+| curate595 | 2Methyl2Propanol + dimethylCarbonate | 1 | 0.098 | clean | promoted |
+| curate596 | Dichloroethane + nHeptane | 1 | 0.169 | clean | promoted |
+| curate597 | acetonitrile + nButanol | 1 | 0.343 | clean | promoted |
+| curate598 | acrylonitrile + cyclohexanone | 1 | 0.216 | clean | promoted |
+| curate599 | benzene + thiophene | 1 | 0.198 | clean | promoted |
+| curate600 | cyclohexane + cyclohexanone | 1 | 0.178 | clean | promoted |
+| curate601 | methylal + diisopropylEther | 1 | 0.069 | clean | promoted |
+| curate602 | dimethylCarbonate + ethyleneCarbonate | 1 | 1.139 | warning | promoted |
+| curate603 | dimethylCarbonate + ethyleneGlycol | 1 | 2.310 | severe | refused: splits one liquid (arm f) |
+| curate604 | oCresol + mCresol | 1 | 0.043 | clean | promoted |
+| curate605 | methylal + nHexane | 1 | 0.087 | clean | promoted |
+| curate606 | ethanol + 1Heptanol | 1 | 1.985 | warning | promoted |
+| curate607 | acetonitrile + 2Butanol | 1 | 0.401 | clean | promoted |
+| curate608 | acetonitrile + 2Methyl1Propanol | 1 | 0.551 | clean | promoted |
+| curate609 | acetonitrile + 2Methyl2Propanol | 1 | 0.067 | clean | promoted |
+| curate610 | Dichloroethane + dimethylSulfoxide | 1 | 0.145 | clean | promoted; unblocked by C285 |
+| curate611 | Dichloroethane + ethylBenzene | 1 | 0.360 | clean | promoted |
+| curate612 | tetrahydrofuran + Dichloroethane | 1 | 0.103 | clean | promoted |
+| curate613 | bromobenzene + dimethylSulfoxide | 1 | 0.384 | clean | promoted; unblocked by C285 |
+| curate614 | carbonTetrachloride + cyclohexanone | 1 | 0.271 | clean | promoted |
+| curate615 | chloroform + ethanol | 1 | 0.185 | clean | promoted |
+| curate616 | chloroform + isopropanol | 1 | 0.412 | clean | promoted |
+| curate617 | cyclohexanone + dimethylSulfoxide | 1 | 0.155 | clean | promoted; unblocked by C285 |
+| curate618 | methylEthylKetone + dimethylSulfoxide | 1 | 0.908 | clean | promoted; unblocked by C285 |
+| curate619 | methylIsobutylKetone + dimethylSulfoxide | 1 | 1.230 | warning | promoted; unblocked by C285 |
+| curate620 | monochlorobenzene + dimethylSulfoxide | 1 | 0.438 | clean | promoted; unblocked by C285 |
+| curate621 | nitrobenzene + dimethylSulfoxide | 1 | 0.466 | clean | promoted; unblocked by C285 |
+| curate622 | trichloroethylene + dimethylSulfoxide | 1 | 0.716 | clean | promoted; unblocked by C285 |
+| curate623 | tetrahydrofuran + ethanol | 1 | 0.102 | clean | promoted |
+| curate624 | trichloroethylene + ethylBenzene | 1 | 0.235 | clean | promoted |
+| curate625 | trichloroethylene + monochlorobenzene | 1 | 0.993 | clean | promoted |
+| curate626 | trichloroethylene + nHeptane | 1 | 0.638 | clean | promoted |
+| curate627 | 2Methyl2Propanol + 224Trimethylpentane | 1 | 0.072 | clean | promoted |
+| curate628 | Dichloroethane + 2Methyl1Butanol | 1 | 0.187 | clean | promoted |
+| curate629 | tetrahydrofuran + 2Methyl2Propanol | 1 | 0.091 | clean | promoted |
+| curate630 | Dichloroethane + monochlorobenzene | 1 | 0.475 | clean | promoted |
+| curate631 | Dichloroethane + nitrobenzene | 1 | 0.305 | clean | promoted |
+| curate632 | R32 + benzene | 1 | 2.623 | severe | promoted |
+| curate633 | R32 + mXylene | 1 | 2.875 | severe | promoted |
+| curate634 | R32 + mesitylene | 1 | 2.119 | severe | promoted |
+| curate635 | R32 + toluene | 1 | 1.677 | warning | promoted |
+| curate636 | ethylBenzene + nitrobenzene | 1 | 0.075 | clean | promoted |
+| curate637 | methylal + methanol | 1 | 1.256 | warning | promoted |
+| curate638 | trichloroethylene + nitrobenzene | 1 | 0.431 | clean | promoted |
+| curate639 | toluene + sulfolane | 1 | 1.666 | warning | promoted |
+| curate640 | tetrahydrofuran + trichloroethylene | 1 | 0.089 | clean | promoted |
+| curate641 | 1Pentanol + ethylBenzene | 1 | 0.573 | clean | refused: splits one liquid (arm f) |
+| curate642 | 224Trimethylpentane + mXylene | 1 | 0.579 | clean | promoted |
+| curate643 | 224Trimethylpentane + monochlorobenzene | 1 | 0.114 | clean | promoted |
+| curate644 | nHexane + 224Trimethylpentane | 1 | 0.610 | clean | promoted |
+| curate645 | 224Trimethylpentane + pXylene | 1 | 0.082 | clean | promoted |
+| curate646 | acrylonitrile + ethylBenzene | 1 | 0.472 | clean | promoted |
+| curate647 | cyclohexane + nNDimethylacetamide | 1 | 1.700 | warning | promoted |
+| curate648 | cyclohexane + nNDimethylformamide | 1 | 0.607 | clean | promoted |
+| curate649 | methylIsobutylKetone + ethylBenzene | 1 | 0.197 | clean | promoted |
+| curate650 | ethylBenzene + nNDimethylacetamide | 1 | 0.691 | clean | refused: splits one liquid (arm f) |
+| curate651 | vinylAcetate + nButanol | 1 | 1.073 | warning | promoted |
+| curate652 | tetrahydrofuran + nHeptane | 1 | 0.096 | clean | promoted |
+| curate653 | cyclohexanone + nDecane | 1 | 0.241 | clean | promoted |
+| curate654 | tetrahydrofuran + nDecane | 1 | 0.467 | clean | promoted |
