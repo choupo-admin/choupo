@@ -664,19 +664,16 @@ export function BatchMembraneTool(): JSX.Element {
 
         {lessonHead}
         {lessonStep(1)}
-        {lessonStep(2)}
-        {lessonStep(3)}
-        {lessonStep(4)}
 
         <Box>
           <Title order={5}>Now put the two side by side</Title>
           <Text size="sm" mt={4}>
             The solid curves are the run: each solute&apos;s retained fraction
             n/n_0 against the clock of the mode you selected. The dashed
-            curves are the constant-R law of step 4, evaluated at THIS
+            curves are the constant-R law of step 4 below, evaluated at this
             run&apos;s own initial rejection — nothing about them was
             declared. Flip the mode and the horizontal axis changes meaning,
-            which is the point of step 3; turn the film coefficient down and
+            which is the point of step 3 below; turn the film coefficient down and
             watch the two part sooner.
           </Text>
         </Box>
@@ -707,6 +704,10 @@ export function BatchMembraneTool(): JSX.Element {
           </Box>
         </Box>
 
+        {/* The run comes second (DEV.md 4c C277); steps 2-4 explain it. */}
+        {lessonStep(2)}
+        {lessonStep(3)}
+        {lessonStep(4)}
         {lessonStep(5)}
 
         <Box style={{ overflowX: "auto" }}>
@@ -733,7 +734,7 @@ export function BatchMembraneTool(): JSX.Element {
                 + "from the same R_0 and N: the two rows must agree, and where "
                 + "they do the page and the engine are quoting one law rather "
                 + "than two."
-              : "In concentration mode the engine publishes NO idealisation "
+              : "In concentration mode the engine publishes no idealisation "
                 + "(BatchDiafilter.cpp:651-655) — the washout law is not the "
                 + "law of this mode. The power-law row is therefore this "
                 + "page's own, from the engine's R_0 and VCF, and is labelled "
@@ -794,7 +795,7 @@ export function BatchMembraneTool(): JSX.Element {
             </Table.Tbody>
           </Table>
           <Text size="xs" c="dimmed" mt={4}>
-            The permeated volume is an integrated STATE, and the trapezoid
+            The permeated volume is an integrated state, and the trapezoid
             beside it is the same quantity re-quadratured over the written
             samples alone. The gap is the write mesh —
             BatchDiafilter.H:261-269 records why the state is the authority.
@@ -807,7 +808,7 @@ export function BatchMembraneTool(): JSX.Element {
         <Box>
           <Text size="sm">
             {vessel.fouling === null
-              ? "This run declares NO fouling block, so the permeance is the "
+              ? "This run declares no fouling block, so the permeance is the "
                 + "membrane record's clean value throughout and the flux "
                 + "moves only through the physics — osmotic pressure and "
                 + "polarisation. Switch the membrane toggle to run the twin "
@@ -826,7 +827,7 @@ export function BatchMembraneTool(): JSX.Element {
           <OriginMark of={["engine", "page"]} note="C and J_f from the run; their product, its maximum and the loss row computed on this page" />
           {view.scan === null ? (
             <Text size="sm" c="dimmed">
-              The flux–concentration trade needs a run that SWEEPS the
+              The flux–concentration trade needs a run that sweeps the
               concentration, and a constant-volume wash does not: it holds the
               volume, so the retained species barely moves. Set the mode knob
               to <Text span ff="monospace">Concentrate</Text> and the engine
@@ -872,28 +873,28 @@ export function BatchMembraneTool(): JSX.Element {
                 Retained species chosen from the run, as the solute with the
                 highest initial rejection: {view.retained ?? "—"}.{" "}
                 {view.scan.interior
-                  ? `The maximum is INSIDE the window this run swept: `
+                  ? `The maximum is inside the window this run swept: `
                     + `C = ${fmt(best === undefined ? null
                         : best.c * cScale, 4)} ${cUnit} `
                     + `(VCF = ${fmt(best?.vcf, 4)}), `
                     + `J_f = ${fmt(best?.J_LMH, 4)} L/(m²·h). `
                     + "Pre-concentrate to there, then wash."
-                  : "The largest point in this run sits at an END of the "
-                    + "window, so the run did NOT bracket an optimum — an "
+                  : "The largest point in this run sits at an end of the "
+                    + "window, so the run did not bracket an optimum — an "
                     + "endpoint is not a maximum. Lengthen the horizon (or "
                     + "shorten it) until the product turns over."}
               </Text>
               <Text size="xs" c="dimmed" mt={4}>
-                <Text span fw={600}>ONE BUFFER, NOT TWO.</Text>{" "}
+                <Text span fw={600}>One buffer, not two.</Text>{" "}
                 {view.dfOptimum === null || view.dfOptimum.bracketed
                   ? "Step 8's construction reads two flux curves and takes "
                     + "the lower of their two maxima."
-                  : `Step 8's construction reads TWO flux curves — the `
+                  : `Step 8's construction reads two flux curves — the `
                     + `product in its starting buffer and in the wash buffer `
                     + `— and takes the lower of their two maxima. This page `
                     + `has ${view.dfOptimum.candidates.length}: `
                     + `${view.dfOptimum.candidates[0]?.buffer ?? "—"}. The `
-                    + `mark above is that one curve's answer, NOT the `
+                    + `mark above is that one curve's answer, not the `
                     + `two-buffer construction: it is not bracketed, the `
                     + `second curve would give a second maximum with the `
                     + `true optimum between them, and the conservative rule `
@@ -922,7 +923,7 @@ export function BatchMembraneTool(): JSX.Element {
                 style={{ fontSize: 12 }} verticalSpacing={2}>
                 <Table.Tbody>
                   <Table.Tr>
-                    <Table.Td>one diavolume at the run&apos;s END state [s]</Table.Td>
+                    <Table.Td>one diavolume at the run&apos;s end state [s]</Table.Td>
                     <Table.Td>
                       {fmt(washTime(lastSample?.V ?? null,
                         lastSample?.J_LMH ?? null))}
@@ -992,7 +993,7 @@ export function BatchMembraneTool(): JSX.Element {
             The dotted family is drawn at the four retentions TB032&apos;s own
             figure uses, every value recomputed here from
             loss = 1 − exp((R − 1)G) — nothing is read off the source&apos;s
-            picture. The solid curve is THIS run&apos;s own initial rejection
+            picture. The solid curve is this run&apos;s own initial rejection
             for {view.retained ?? "—"}, and the diamond is where this run
             sits: G = ln({fmt(view.vcf, 4)}) + {fmt(view.N, 4)} ={" "}
             {fmt(runGroup, 4)}. Read the spacing of the curves rather than

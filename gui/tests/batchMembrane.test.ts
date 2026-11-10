@@ -618,6 +618,8 @@ describe("buildView -- what the page draws, assembled once", () => {
 
 // ---- The lesson and the registry --------------------------------------------
 
+//  DEV.md 4c C277: emphasis capitals in the lesson prose were lower-cased, so the
+//  phrases pinned below follow; the claims they pin are unchanged.
 describe("the batch membrane lesson", () => {
   it("has nine steps, numbered without a gap, and every formula is glossed", () => {
     expect(BATCH_MEMBRANE_STEPS.map((s) => s.n))
@@ -647,21 +649,21 @@ describe("the batch membrane lesson", () => {
     expect(s4.formula).toContain(String.raw`c/c_0 = \mathrm{VCF}^{R}`);
     //  The assumption every line spends is stated as the last move, not
     //  discovered later.
-    expect(s4.derivation!.some((d) => /PULLED R OUT OF THE INTEGRAL/.test(d.step)))
+    expect(s4.derivation!.some((d) => /pulled R out of the integral/i.test(d.step)))
       .toBe(true);
   });
 
   it("says the engine's idealisation is built from the run, not declared", () => {
     const s5 = BATCH_MEMBRANE_STEPS[4]!;
-    expect(s5.note).toMatch(/CANNOT HAVE BEEN ARRANGED/);
-    expect(s5.note).toMatch(/NO IDEAL AT ALL/);
+    expect(s5.note).toMatch(/cannot have been arranged/);
+    expect(s5.note).toMatch(/no ideal at all/);
     expect(s5.formula).toContain(String.raw`R_0 = R_\mathrm{obs} \text{ at } t = 0`);
   });
 
   it("treats a blocking law as a claim about a mechanism", () => {
     const s6 = BATCH_MEMBRANE_STEPS[5]!;
     expect(s6.formula).toContain(String.raw`\dfrac{1}{A_\mathrm{eff}} = \dfrac{1}{A_w} + r_f(v)`);
-    expect(s6.note).toMatch(/REFUSED BY NAME/);
+    expect(s6.note).toMatch(/refused by name/);
     expect(s6.note).toMatch(/written `reason`/);
   });
 
@@ -878,7 +880,7 @@ describe("the construction, and the group", () => {
     expect(eqs).toContain(String.raw`\mathrm{DFOP}(C) = C\, J_f(C)`);
     expect(s8.formula).toContain(String.raw`\min\left( C_\mathrm{opt,start}`);
     //  and it names the two buffers as the reason there are two curves.
-    expect(s8.body).toMatch(/TWICE/);
+    expect(s8.body).toMatch(/twice/);
     expect(s8.body).toMatch(/starts in/);
   });
 
@@ -893,13 +895,13 @@ describe("the construction, and the group", () => {
 
   it("step 8 names the practical limits on ACTING on the optimum", () => {
     expect(s8.note).toMatch(/minimum recirculation volume/);
-    expect(s8.note).toMatch(/STABLE/);
+    expect(s8.note).toMatch(/stable/);
     expect(s8.note).toMatch(/buffer/);
     expect(s8.note).toMatch(/area/);
   });
 
   it("step 8 names the missing second curve rather than implying it has it", () => {
-    expect(s8.note).toMatch(/ONE solution/);
+    expect(s8.note).toMatch(/one solution/);
     expect(s8.note).toMatch(/not bracketed/);
     const gap = BATCH_MEMBRANE_LIMITS.find((l) => l.id === "one-buffer-only");
     expect(gap).toBeDefined();
@@ -910,7 +912,7 @@ describe("the construction, and the group", () => {
   it("step 9 makes ln VCF + N one group, and gives the yield ceiling", () => {
     expect(s9.formula).toContain(String.raw`G = \ln \mathrm{VCF} + N`);
     expect(s9.formula).toContain(String.raw`G_\mathrm{max}`);
-    expect(s9.body).toMatch(/INTERCHANGEABLE/);
+    expect(s9.body).toMatch(/interchangeable/);
     //  The three-way trade, as the last move of the derivation.
     const last = (s9.derivation ?? []).slice(-1)[0];
     expect(last!.eq).toContain(String.raw`\mathrm{VCF} \downarrow`);
