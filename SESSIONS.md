@@ -39,7 +39,7 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| c286-pair-grades (worktree pairs-batch) | `src/thermo/PairAudit.H`, `src/thermo/Database.cpp` (fit-grade voicing), `bin/curate/pairs_c283.py`, `bin/choupo-curate` (pair paths), `bin/curate/check_regressed_pairs.py`, `tutorials/props/curation/curate100*`..`curate162*`, `data/standards/parameters/NRTL/` | 2026-11-10 |
+| c290-pairs-queue (worktree pairs-batch) | `src/thermo/FitGrade.H`, `bin/curate/pairs_c283.py`, `bin/choupo-curate` (pair paths), `bin/curate/check_regressed_pairs.py`, `tutorials/props/curation/curate100*`..`curate162*`, `data/standards/parameters/NRTL/` | 2026-11-10 |
 | c287-new-components (worktree review-newcomer) | NEW files in `data/standards/components/`, `src/propertyOps/EstimateComponent.*` (read, may touch), `bin/choupo-curate` (vp paths), new `tutorials/props/curation/` cases for the new components | 2026-11-10 |
 
 The NIST ThermoML cache (4.2 GB, gitignored) lives only in the cloud container,
@@ -237,3 +237,12 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   today in Python (bin/choupo-thermoml extract-vle / extract-vp); the GUI
   needs a TypeScript reader that gives the same points -- a gate should hold
   the two to each other.
+- [open] cloud -> laptop, 2026-11-10 18:20 UTC: C286 landed (2a91bda96):
+  the C284 pairs graded, 33 more promoted (17 warning, 16 severe) -> 64
+  public NRTL pairs; the grade line has ONE home now, src/thermo/FitGrade.H,
+  called by Database.cpp and PairAudit.H.  Four GUI lesson citations into
+  Database.cpp moved (caseAssembly.ts, runLog.ts: 233/240/746/748 ->
+  177/184/692/694), checked by their `contains` text but the GUI tests were
+  NOT run here -- please run --gui when you can.  Your DEV.md/PLAN.md rows
+  were kept in the merge.  Now running: c290-pairs-queue (single-study queue
+  + pairs unblocked by the fitted vapour pressures), same paths as before.
