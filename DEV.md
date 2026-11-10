@@ -3264,6 +3264,48 @@ accepts today, and that is a policy call.
 > NEXT (stays OPEN): cut the text and redraw the figure on ONE page, `thiele`, show
 > that screen to Vitor, then repeat.
 >
+> THE DESIGN, DECIDED 2026-11-10 (the architect's last block on the stronger model before
+> a week of execution on a smaller one; these are decisions, not suggestions, and the
+> executing session does not reopen them -- it reports a page where one cannot hold):
+>   1. THE TASK OF EVERY EDUTOOL SCREEN, in one sentence: a student moves one control and
+>      sees one physical quantity respond, then reads why.  The first screen at 1440x900
+>      therefore holds: the title, ONE sentence of question, the figure, and the controls.
+>      Nothing else above the fold.
+>   2. TEXT BUDGET.  Each step: at most 60 words of prose before its equation, one
+>      equation, at most 40 words after.  What exceeds it is not deleted: it moves into a
+>      disclosure under that step titled "Why" (derivation), "Limits" (validity, caveats)
+>      or "In the engine" (file:line citations).  No sentence of physics is lost and no
+>      citation is removed -- the gates that read lesson text (`check_lesson_symbols`,
+>      `check_lesson_references`, the citation tests) must stay green WITHOUT editing a
+>      gate; a test that pins a moved sentence follows the sentence, never the reverse.
+>   3. THE FIGURE IS THE PAGE.  At least 55 % of the content width and 420 px high on the
+>      first screen.  A figure made of several small panels (thiele's three pellets at
+>      130 px) becomes ONE large panel that the control changes, the alternatives chosen
+>      by a three-way toggle on the figure itself.  Axes carry units; the curve the
+>      control moves is drawn heavier than the references; the current value is printed
+>      ON the figure, not in a table below.
+>   4. CONTROLS: at most five visible; the rest under "More".  Each has a name, a unit and
+>      a value -- no sentence.  Its reason stays one click away (landed in the first pass).
+>   5. ADVISORIES from the engine are never printed raw in monospace.  They become one
+>      grey line "The engine noted N limits of this model" that opens the list; orange
+>      only when the current control values leave a model's validity window.
+>   6. NO CAPITALS FOR EMPHASIS, no `^` or `_` in running text (use the `Tex` component),
+>      numbers at the source's significant figures (three unless the source has more).
+>   7. WHAT IS NOT CHANGED: any number, any equation, any claim about the engine, the
+>      order of an honesty notice relative to what it qualifies (`process-safety`), and
+>      the ten economics/IP text pages, which are reading pages and get only rules 2 and 6.
+>   8. ORDER OF WORK: `thiele` alone first; its screen (before and after, 1440x900, the
+>      running app) is SENT TO VITOR and the session waits for his reading before the
+>      second page.  Then by student traffic: mccabe, psychro, wegstein, tear-streams,
+>      least-squares, pinch, then the rest by registry order.  One page per commit, each
+>      validated by `npx tsc --noEmit`, that page's own tests, and the gates naming its
+>      files; `bin/runTests --gui` once per batch of five pages before landing.
+>   9. A PAGE IS DONE when its first screen has been SEEN in the running app and matches
+>      rule 1 -- a metric (figure offset, capital count) is a search aid, never the verdict.
+>  10. Also open for the same week, small and decided: declared tables print the source's
+>      significant figures (column14 shows 0.669606 for a three-figure source); pool-fire
+>      legend capitals and `kW^(2/5)/m`.
+>
 > **C276 (Vitor, 2026-11-09 night: "Podes ver se isto e apelativo para um aluno?" on the
 > published `thiele` tool).**  READ on the live site at 1440x900, seven screens.  Verdict:
 > the content is good and the screen is not inviting.  (1) DEFECT: the first equation
