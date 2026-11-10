@@ -39,7 +39,7 @@ datasets
     }
     {
         file          "constant/archiveExtracts/furfural-vapourPressure-je060406c.dat";
-        role          validation;   // informational: the operation declares it
+        role          fit;   // informational: the operation declares it
         doi           "10.1021/je060406c";
         url           "https://trc.nist.gov/ThermoML/10.1021/je060406c.xml";
         page          "https://trc.nist.gov/ThermoML/10.1021/je060406c.json";
@@ -49,6 +49,23 @@ datasets
         inchiKey      "HYBBIBNJHNGZAN-UHFFFAOYSA-N";
         extract       "bin/choupo-thermoml extract-vp <article file> --inchikey HYBBIBNJHNGZAN-UHFFFAOYSA-N --into <dir>";
         sha256        "c95fe32c390a1fb26b3478a655d110be38967762a68c6b14d793bea212f1adaf";
+        identity
+        {
+            furfural       { cas "98-01-1"; inchiKey "HYBBIBNJHNGZAN-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/furfural-vapourPressure-je020117y.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je020117y";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je020117y.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je020117y.json";
+        articleFile   "je020117y.xml";
+        articleSha256 "d1021fbc89eeb52b6ec7aee907fde898c4fd8d431977e1449e0766c4dae85244";
+        extractor     vapourPressure;
+        inchiKey      "HYBBIBNJHNGZAN-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey HYBBIBNJHNGZAN-UHFFFAOYSA-N --into <dir>";
+        sha256        "bf10819e460ba40b1608c7e623624402290e40a8a4fab6ff18ae111e456b2499";
         identity
         {
             furfural       { cas "98-01-1"; inchiKey "HYBBIBNJHNGZAN-UHFFFAOYSA-N"; }
