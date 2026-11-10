@@ -637,8 +637,8 @@ export function EquilibriumLandscapesTool(): JSX.Element {
         <code>tutorials/{SRK_CONTRAST.witness}</code>, the Gibbs reactor on the
         same feed under SRK.  Ambient: the industrial reaction is favourable
         there too, and no rate law in this tree reaches that pressure.
-        Converter temperature at ambient pressure: the equilibrium the heat
-        spent (the route table above prices the same loss as a sign change of
+        Converter temperature at ambient pressure: the equilibrium the higher temperature
+        has pushed down (the route table above prices the same loss as a sign change of
         ΔG° between 298.15 K and 700 K).  Converter pressure: what the
         compressor buys back — and the ideal-to-SRK gap is the fugacity
         correction an approach would otherwise absorb.
@@ -701,7 +701,7 @@ export function EquilibriumLandscapesTool(): JSX.Element {
                 <Group gap="sm" wrap="nowrap" align="center" mb={6}>
                   <Loader size="xs" />
                   <Text size="xs" c="dimmed">
-                    one Gibbs minimisation per cell — seconds, not instant
+                    one Gibbs minimisation per cell — seconds, not instantly
                   </Text>
                 </Group>
               )}
