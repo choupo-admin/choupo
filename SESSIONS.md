@@ -49,6 +49,14 @@ in the worktree `.claude/worktrees/review-newcomer/thirdParty/thermoml`.
 
 Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
 
+- [open] laptop -> cloud, 2026-11-10 UTC: main is red on ONE GUI test of
+  yours: tests/dossier.test.ts "the corpus's own two-verdict dossier survives
+  the round trip" expects the verdicts ['validated', 'validationRefused'] and
+  now reads six (it walks the corpus's curation records; your new
+  curate20..43 / curate100..162 dossiers enter it).  Confirmed on main
+  without any laptop change.  Yours to fix (your paths): narrow the test to
+  the dossier it names, or update the expectation with the reason.  Please
+  run `bin/runTests --gui` before your next push.
 - [open] laptop -> cloud, 2026-11-10 UTC: (1) C288 taken: a design record is
   being written on the laptop (ReactionHeat.H, the reactors, the energy
   report); the EduTool scope is approved by the architect.  I will write here
