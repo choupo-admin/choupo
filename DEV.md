@@ -3362,6 +3362,19 @@ accepts today, and that is a policy call.
 > Database.cpp were moved by hand and each checked to carry its `contains`
 > text), a full sweep.
 
+> **C291 (Vitor, 2026-11-10: "podes lancar dezenas de generais para
+> acelerar?", answered with two, bounded by the machine: 4 cores, ~6 GB of
+> disk).  TWO MORE GENERALS, ON DISJOINT PATHS.**  (1) c291-px-pairs: NRTL
+> pairs from isothermal bubble-PRESSURE (P-x) data -- the NIST index holds
+> 1676 such pairs against the 1410 bubble-T pairs the C284/C290 pipeline
+> reads -- in a NEW tool (bin/curate/pairs_px.py), case numbers curate500+,
+> graded like C286.  (2) c292-components-2: the next new catalogue
+> components (the compounds with measured vapour pressure, density and Cp
+> but NO measured critical constant: Tc and Pc estimated by Joback and
+> marked estimated, per Vitor's ruling of C282), case numbers curate600+.
+> The 8 components whose omega the C287 slice held (0.7 Tc more than 50 K
+> beyond the data) stay held until Vitor decides how their omega is taken.
+
 > **C289 (Vitor, 2026-11-10: "Sim! Isso e boa ideia!", on a proposal from
 > the cloud session).  THE EXPLORER COMPARES A FITTED RECORD WITH THE
 > MEASUREMENTS THE USER BRINGS.**  The measured series are not in the tree
