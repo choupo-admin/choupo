@@ -193,7 +193,7 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the state is priced here}
       + "it is endothermic (GibbsReactor.cpp:68–161, `approachDirection`; "
       + "the isothermal reactor calls it at 375 and the gibbsMap at every "
       + "cell).  An adiabatic bed has no physical T to read at until it is "
-      + "solved, so the engine solves it once with NO approach and reads the "
+      + "solved, so the engine solves it once with no approach and reads the "
       + "thermicity at that dT = 0 outlet (GibbsReactor.cpp:572–583) — never "
       + "at the seed `operation.T`, which can sit on the wrong side of a "
       + "product-carrying feed's own equilibrium and would flip the sign "

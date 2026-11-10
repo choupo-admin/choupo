@@ -50,14 +50,14 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
     body: "Synthesis gas -- syngas -- is a mixture of carbon monoxide and "
       + "hydrogen, nearly always carrying some carbon dioxide, steam and "
       + "unconverted methane with it.  It is mostly made where it is used, "
-      + "and what matters here is its role: it is a PLATFORM: the form in which carbon, hydrogen and "
+      + "and what matters here is its role: it is a platform: the form in which carbon, hydrogen and "
       + "oxygen are handed to a catalyst that reassembles them into something "
       + "else.  From the same two molecules come methanol, the hydrocarbon "
       + "chains of Fischer-Tropsch fuels and waxes, aldehydes by "
       + "hydroformylation (the oxo process), and -- once the carbon monoxide "
       + "has been converted and removed -- the hydrogen of ammonia and of "
       + "refinery hydrotreating.  So the one question that decides what a "
-      + "given syngas is good for is its COMPOSITION, and two numbers carry "
+      + "given syngas is good for is its composition, and two numbers carry "
       + "most of it: the hydrogen-to-carbon-monoxide ratio, and the "
       + "stoichiometric module that a methanol designer uses because it "
       + "also counts the CO2.  Every exercise on this page reports both, "
@@ -83,15 +83,15 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
     n: 2,
     title: "Four ways to make it",
     body: "Syngas is made by taking a carbon source apart with steam, oxygen "
-      + "or CO2.  STEAM REFORMING passes methane and steam over a nickel "
+      + "or CO2.  Steam reforming passes methane and steam over a nickel "
       + "catalyst in tubes heated by a furnace: strongly endothermic, so the "
-      + "heat must be supplied through the tube walls.  PARTIAL OXIDATION "
+      + "heat must be supplied through the tube walls.  Partial oxidation "
       + "burns the methane with too little oxygen to make CO2 and water, so it "
-      + "stops at CO and hydrogen and pays for itself in heat.  AUTOTHERMAL "
+      + "stops at CO and hydrogen and pays for itself in heat.  Autothermal "
       + "reforming does both in one vessel: part of the methane burns, and "
       + "the heat it releases drives the reforming of the rest with the steam "
       + "added beside the oxygen -- no furnace, no heat through a wall.  "
-      + "GASIFICATION does the same to a solid: coal, petroleum coke or "
+      + "Gasification does the same to a solid: coal, petroleum coke or "
       + "biomass, with steam and oxygen, at a high temperature.  And methane "
       + "can be reformed with CO2 instead of steam, which turns a waste gas "
       + "into a reactant.  Each equation below is balanced in C, H and O.",
@@ -122,7 +122,7 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
       + "duty Q the reactor publishes is the enthalpy of what leaves minus "
       + "the enthalpy of what entered, both on the elements datum, so a "
       + "positive Q is heat the furnace must supply.  Try the three knobs of "
-      + "steam reforming below: temperature, pressure and steam-to-carbon "
+      + "steam reforming above: temperature, pressure and steam-to-carbon "
       + "ratio, and read H2/CO and the duty.",
     formula: String.raw`Q = H_\mathrm{out}(T) - H_\mathrm{in}(T_\mathrm{feed}), \qquad \mathrm{S/C} = \frac{n_{\ce{H2O}}}{n_{\ce{CH4}}}`,
     where: [
@@ -158,7 +158,7 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
     title: "Oxygen instead of a furnace",
     body: "The second exercise of this part compares the routes on the same "
       + "methane.  Partial oxidation and autothermal reforming are run "
-      + "ADIABATIC: no heat crosses the wall, so the engine is not told the "
+      + "Adiabatic: no heat crosses the wall, so the engine is not told the "
       + "temperature but finds it -- the outlet temperature at which the "
       + "enthalpy of the equilibrium gas equals the enthalpy of the feed.  "
       + "That temperature is the whole story of these routes.  Too little "
@@ -239,7 +239,7 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
       + "and the reason is downstream.  Every user of syngas wants it under "
       + "pressure -- in this corpus, the methanol screen feeds its synthesis "
       + "gas at 50 bar and the ammonia route screen feeds its synthesis at 150 "
-      + "bar -- and the reforming reaction DOUBLES the number of moles.  "
+      + "bar -- and the reforming reaction doubles the number of moles.  "
       + "Compressing a gas costs work in proportion to the moles compressed, "
       + "so it is far cheaper to compress the methane before the reformer "
       + "(the steam is raised from water already pumped as a liquid, which "
@@ -332,7 +332,7 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
         + "at the reactor temperature, published by the engine as Kp_wgs" },
       { sym: "y_{\\ce{CO2}}", means: "the mole fraction of CO2" },
     ],
-    note: "The shift reactors are equilibrium reactors told ONE reaction, "
+    note: "The shift reactors are equilibrium reactors told one reaction, "
       + "reactions ( wgs ); (EquilibriumReactor.cpp:104), so they cannot make "
       + "methane: which pathways a catalyst allows is the declared-pathways "
       + "page.  The constant is computed from the standard Gibbs energy of "
@@ -344,7 +344,7 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
       stepTitle: "why the shift reactor may not make methane",
       body: "Told every species, a Gibbs reactor at the low-temperature-shift "
         + "temperature would turn this gas into methane; the shift is the "
-        + "equilibrium over the ONE reaction its catalyst allows.  That "
+        + "equilibrium over the one reaction its catalyst allows.  That "
         + "distinction is taught there.",
     },
   },
@@ -352,10 +352,10 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
     n: 9,
     title: "Why two stages, when equilibrium needs only one",
     body: "Run the exercise's second move: a single stage at 480 K gives "
-      + "EXACTLY the outlet of the two stages, to the last digit.  Equilibrium "
+      + "exactly the outlet of the two stages, to the last digit.  Equilibrium "
       + "does not know the path -- only the final temperature.  So the two "
-      + "stages are not there for thermodynamics.  They are there for RATE "
-      + "and HEAT, which this model does not compute.  The shift is slow at "
+      + "stages are not there for thermodynamics.  They are there for rate "
+      + "and heat, which this model does not compute.  The shift is slow at "
       + "low temperature, where it would go furthest, and fast at high "
       + "temperature, where it stops early; so a robust catalyst does most of "
       + "the work hot and fast, and a more active one finishes the job cold.  "
@@ -401,18 +401,18 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
     body: "Here is the result that explains why each feedstock suits some "
       + "products and not others.  Write the element balances of a reformer "
       + "fed methane, CO2, oxygen, steam and hydrogen, and solve for the "
-      + "module: the steam CANCELS.  The shift moves H2/CO but cannot move the "
+      + "module: the steam cancels.  The shift moves H2/CO but cannot move the "
       + "module either -- it adds one hydrogen and one CO2 to the numerator "
       + "and swaps one CO for one CO2 in the denominator.  So once the methane "
       + "is converted, the module of any of these gases is fixed by what was "
-      + "FED, not by the temperature, the pressure or the shift: three for "
+      + "fed, not by the temperature, the pressure or the shift: three for "
       + "steam reforming whatever its conditions, two for partial oxidation "
       + "at half a mole of oxygen per carbon, less than two for autothermal "
       + "reforming.  Natural gas, four hydrogen per carbon, gives a "
       + "hydrogen-rich gas; coal, with far less hydrogen than carbon, gives a "
       + "gas much poorer in hydrogen.  Too much hydrogen for "
       + "methanol is corrected by adding CO2; too little, by shifting and "
-      + "REMOVING CO2 -- removal is the one operation here that moves the "
+      + "removing CO2 -- removal is the one operation here that moves the "
       + "module.  The engine confirms the identity: the module of the steam "
       + "reformer reads 3.000 on every guided move of parts 1, 2 and 4, "
       + "whatever the temperature, the pressure, the steam or the shift.",
@@ -449,7 +449,7 @@ a + c &= n_{\ce{CO}} + n_{\ce{CO2}}\\
     n: 12,
     title: "Cleaning the gas: sulfur, CO2 and the last impurities",
     body: "Raw syngas is not fed to a synthesis catalyst as it comes.  Sulfur "
-      + "is removed from the natural gas BEFORE the reformer, because it "
+      + "is removed from the natural gas before the reformer, because it "
       + "poisons the nickel.  CO2 is removed after the shift by absorption: "
       + "in a solvent that reacts with it (an amine) or that simply dissolves "
       + "more of it under pressure (a physical solvent), regenerated by "
@@ -496,7 +496,7 @@ a + c &= n_{\ce{CO}} + n_{\ce{CO2}}\\
       + "down to a higher pressure gives up less, so it holds less on the "
       + "next cycle, and methane and CO break into the product.  Now change "
       + "the purge -- a stream drawn from the product, sized as a fraction "
-      + "of the FEED (PSA.cpp:225), and sent back through the bed to sweep "
+      + "of the feed (PSA.cpp:225), and sent back through the bed to sweep "
       + "it clean -- and see what this model does with it: the recovery "
       + "moves and the purity does not.  In this equilibrium shortcut the "
       + "purge leaves at the product's own composition, so it can only cost "
@@ -520,13 +520,13 @@ a + c &= n_{\ce{CO}} + n_{\ce{CO2}}\\
   {
     n: 14,
     title: "Water gas, producer gas, town gas",
-    body: "Syngas is older than the word.  WATER GAS was made by blowing steam "
+    body: "Syngas is older than the word.  Water gas was made by blowing steam "
       + "through a bed of white-hot coke: carbon and steam give CO and "
       + "hydrogen, and because the reaction absorbs heat the bed cooled and "
       + "had to be reheated by blowing air through it, in alternating blows.  "
-      + "PRODUCER GAS was made by blowing air through coke continuously: CO "
+      + "Producer gas was made by blowing air through coke continuously: CO "
       + "diluted by all the nitrogen of the air, a weak fuel gas for furnaces "
-      + "and engines.  TOWN GAS, the gas piped to cities for lighting and "
+      + "and engines.  Town gas, the gas piped to cities for lighting and "
       + "cooking before natural gas replaced it, was mostly gas driven out of "
       + "coal by heating it without air -- rich in hydrogen and methane -- "
       + "often blended with water gas; its carbon monoxide made it poisonous.  "
@@ -548,7 +548,7 @@ a + c &= n_{\ce{CO}} + n_{\ce{CO2}}\\
       + "syngas.  For methanol nothing more is needed: one CO2 and three "
       + "hydrogen already have a module of exactly two, and CO2 hydrogenation "
       + "makes methanol directly.  For Fischer-Tropsch fuels the CO2 must "
-      + "first become CO, and that is the shift run BACKWARDS -- the reverse "
+      + "first become CO, and that is the shift run backwards -- the reverse "
       + "water-gas shift, which absorbs heat and is therefore run hot.  The "
       + "exercise feeds CO2 and hydrogen to the equilibrium reactor of part 4, "
       + "allowed the shift alone, at 1100 K: the module reads 2.000, as the "
@@ -602,7 +602,7 @@ export const SYNGAS_LIMITS: readonly LessonLimit[] = [
   { id: "deactivation", title: "No catalyst deactivation",
     body: "Sulfur poisoning, sintering and the slow loss of activity of a "
       + "real catalyst are not modelled.  Carbon is predicted as equilibrium "
-      + "graphite, which says whether the gas WANTS to deposit carbon; the "
+      + "graphite, which says whether the gas wants to deposit carbon; the "
       + "filamentary carbon that grows on nickel, and the rate at which it "
       + "grows, are not." },
   { id: "tubes", title: "No reformer tubes, no furnace",

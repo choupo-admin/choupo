@@ -347,7 +347,7 @@ export const LANDSCAPE_STEPS: readonly LessonStep[] = [
       + "reactor: the enzyme's rate is the thing an equilibrium reactor "
       + "cannot say, and the tree has no rate law for it.  What the engine "
       + "refuses, quoted rather than hidden.  The sugar route can be priced "
-      + "only at 298.15 K: glucose.dat carries a solid-rung datum and NO "
+      + "only at 298.15 K: glucose.dat carries a solid-rung datum and no "
       + "heat-capacity block on any rung (its own words: FLAGGED, NOT "
       + "FABRICATED), so asking that route at body temperature refuses by "
       + "name — measured on a copy of the witness: \"Component 'glucose': "

@@ -338,9 +338,11 @@ export function SyngasTool(): JSX.Element {
 
         <Title order={4}>Part 1 — where syngas comes from</Title>
         {step(1)}
+        {/* The first exercise comes second (DEV.md 4c C277): a student can move
+            the reformer's three knobs before reading how the engine solves it. */}
+        <Exercise part="reformer" title="the three knobs of a steam reformer" />
         {step(2)}
         {step(3)}
-        <Exercise part="reformer" title="the three knobs of a steam reformer" />
         {step(4)}
         <Exercise part="routes" title="four routes, one methane" />
 
