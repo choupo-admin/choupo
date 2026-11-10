@@ -62,7 +62,20 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 5.080368 - 2219.8942/(T +
+  -60.2571), in-sample R2 0.999971 over 157 kept points, 273.35-432.65 K
+  (10.1016/j.jct.2019.01.007 142/142 kept; 10.1016/j.jct.2016.07.024
+  15/15 kept). Relative error in P over the kept points: mean 0.9936 %,
+  max 2.8250 %; AmbroseWalton on the same points: mean 212.5415 %, max
+  349.6042 %. Outliers discarded: none. Its own normal boiling point
+  (101.325 kPa): 497.70 K. PROMOTED on 2026-11-10 into
+  data/standards/components/methylDecanoate.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade clean under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 2
+  studies, 157 points kept, 0 discarded as outliers; max relative error
+  2.825 % (mean 0.9936 %), grade clean (limits 5 / 10 / 20 %); no Tb
+  declared; AmbroseWalton on the same points mean 212.5 % / max 349.6 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

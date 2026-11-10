@@ -70,7 +70,24 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 4.653824 - 1459.1361/(T +
+  -90.5789), in-sample R2 0.999803 over 107 kept points, 335.85-445.98 K
+  (10.1021/je900812v 28/28 kept; 10.1021/je800298n 25/25 kept;
+  10.1016/j.fluid.2012.11.004 17/17 kept; 10.1016/j.jct.2009.04.009 17/17
+  kept; 10.1016/j.fluid.2010.06.020 15/15 kept; 10.1021/acs.jced.7b01128
+  5/5 kept). Relative error in P over the kept points: mean 1.0229 %, max
+  2.6098 %; AmbroseWalton on the same points: mean 57.4104 %, max
+  126.4945 %. Outliers discarded: none. Its own normal boiling point
+  (101.325 kPa): 404.50 K. PROMOTED on 2026-11-10 into
+  data/standards/components/3Methyl1Butanol.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade clean under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 6
+  studies, 107 points kept, 0 discarded as outliers; max relative error
+  2.61 % (mean 1.023 %), grade clean (limits 5 / 10 / 20 %); Tb inside
+  the kept points' range, normal boiling point 404.50 K, +0.30 K from the
+  record's Tb 404.2 K (reported, not a condition); AmbroseWalton on the
+  same points mean 57.41 % / max 126.5 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

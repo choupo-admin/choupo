@@ -69,7 +69,31 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 4.009380 - 1350.8320/(T +
+  -132.5414), in-sample R2 0.999499 over 153 kept points, 298.15-468.47 K
+  (10.1016/j.tca.2013.03.018 45/46 kept; 10.1021/je049600u 29/34 kept;
+  10.1016/j.fluid.2010.06.019 17/17 kept; 10.1021/acs.jced.7b00574 14/14
+  kept; 10.1021/acs.jced.8b00680 10/10 kept; 10.1016/j.fluid.2011.04.024
+  9/9 kept; 10.1021/je400951k 9/9 kept; 10.1016/j.tca.2014.09.011 8/8
+  kept; 10.1021/je030168a 6/8 kept; 10.1016/j.jct.2003.09.009 6/7 kept).
+  Relative error in P over the kept points: mean 4.5259 %, max 12.2694 %;
+  AmbroseWalton on the same points: mean 275.4942 %, max 1690.8596 %.
+  Outliers discarded: 10.1016/j.tca.2013.03.018 T=338.55 K P=197.3 Pa
+  err=44.98 %; 10.1021/je049600u T=298.15 K P=11 Pa err=-40.64 %;
+  10.1021/je049600u T=303.15 K P=17 Pa err=-32.17 %; 10.1021/je049600u
+  T=308.15 K P=27 Pa err=-27.08 %; 10.1021/je049600u T=313.15 K P=41 Pa
+  err=-20.48 %; 10.1021/je049600u T=318.15 K P=63 Pa err=-16.69 %;
+  10.1021/je030168a T=288.15 K P=1 Pa err=86.78 %; 10.1021/je030168a
+  T=293.15 K P=3 Pa err=18.79 %; 10.1016/j.jct.2003.09.009 T=293.15 K P=3
+  Pa err=18.79 %. Its own normal boiling point (101.325 kPa): 469.94 K.
+  PROMOTED on 2026-11-10 into data/standards/components/1Octanol.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: fit grade
+  severe under the DEFAULT graded acceptance of DEV.md 4c C285 (no
+  system/curationDict), 10 studies, 153 points kept, 9 discarded as
+  outliers; max relative error 12.27 % (mean 4.526 %), grade severe
+  (limits 5 / 10 / 20 %); no Tb declared; AmbroseWalton on the same
+  points mean 275.5 % / max 1691 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

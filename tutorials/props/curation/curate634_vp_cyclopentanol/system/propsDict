@@ -61,7 +61,22 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 5.014603 - 1711.8855/(T +
+  -71.4866), in-sample R2 0.999997 over 18 kept points, 279.84-413.4 K
+  (10.1021/acs.jced.6b00576 13/13 kept; 10.1021/acs.jced.8b00855 5/5
+  kept). Relative error in P over the kept points: mean 0.3852 %, max
+  0.6167 %; AmbroseWalton on the same points: mean 55.6523 %, max
+  100.3785 %. Outliers discarded: none. Its own normal boiling point
+  (101.325 kPa): 413.26 K. PROMOTED on 2026-11-10 into
+  data/standards/components/cyclopentanol.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade clean under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 2
+  studies, 18 points kept, 0 discarded as outliers; max relative error
+  0.6167 % (mean 0.3852 %), grade clean (limits 5 / 10 / 20 %); Tb inside
+  the kept points' range, normal boiling point 413.26 K, -0.12 K from the
+  record's Tb 413.38 K (reported, not a condition); AmbroseWalton on the
+  same points mean 55.65 % / max 100.4 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

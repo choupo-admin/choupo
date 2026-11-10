@@ -62,7 +62,24 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 4.716727 - 1630.0471/(T +
+  -64.8194), in-sample R2 0.998538 over 61 kept points, 276.2-432.4 K
+  (10.1016/j.jct.2015.08.023 39/41 kept; 10.1016/j.jct.2011.11.004 11/12
+  kept; 10.1021/je800290k 11/11 kept). Relative error in P over the kept
+  points: mean 7.2772 %, max 12.6749 %; AmbroseWalton on the same points:
+  mean 6.8283 %, max 30.6085 %. Outliers discarded:
+  10.1016/j.jct.2015.08.023 T=273 K P=89 Pa err=-17.85 %;
+  10.1016/j.jct.2015.08.023 T=273.15 K P=89 Pa err=-16.7 %;
+  10.1016/j.jct.2011.11.004 T=288.2 K P=228.69 Pa err=16.71 %. Its own
+  normal boiling point (101.325 kPa): 410.83 K. PROMOTED on 2026-11-10
+  into data/standards/components/NMethyl13Diaminopropane.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: fit grade
+  severe under the DEFAULT graded acceptance of DEV.md 4c C285 (no
+  system/curationDict), 3 studies, 61 points kept, 3 discarded as
+  outliers; max relative error 12.67 % (mean 7.277 %), grade severe
+  (limits 5 / 10 / 20 %); no Tb declared; AmbroseWalton on the same
+  points mean 6.828 % / max 30.61 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

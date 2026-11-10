@@ -67,7 +67,23 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 4.304361 - 1385.2532/(T +
+  -38.3360), in-sample R2 0.999877 over 55 kept points, 257.96-361.55 K
+  (10.1021/je201140q 16/16 kept; 10.1021/je700270d 13/13 kept;
+  10.1021/acs.jced.7b01091 10/10 kept; 10.1021/acs.jced.6b00576 9/9 kept;
+  10.1021/je800145h 7/7 kept). Relative error in P over the kept points:
+  mean 1.2337 %, max 2.5233 %; AmbroseWalton on the same points: mean
+  74.1327 %, max 91.5844 %. Outliers discarded: none. Its own normal
+  boiling point (101.325 kPa): 360.59 K. PROMOTED on 2026-11-10 into
+  data/standards/components/tetrahydropyran.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade clean under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 5
+  studies, 55 points kept, 0 discarded as outliers; max relative error
+  2.523 % (mean 1.234 %), grade clean (limits 5 / 10 / 20 %); Tb inside
+  the kept points' range, normal boiling point 360.59 K, -0.77 K from the
+  record's Tb 361.36 K (reported, not a condition); AmbroseWalton on the
+  same points mean 74.13 % / max 91.58 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

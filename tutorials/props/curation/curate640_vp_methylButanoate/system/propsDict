@@ -63,7 +63,21 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 4.105306 - 1260.1748/(T +
+  -66.9247), in-sample R2 0.999462 over 191 kept points, 274.3-412.83 K
+  (10.1021/je034290l 95/95 kept; 10.1021/je300799f 58/58 kept;
+  10.1016/j.fluid.2008.02.001 24/24 kept; 10.1016/j.jct.2011.10.001 14/14
+  kept). Relative error in P over the kept points: mean 2.9097 %, max
+  4.8925 %; AmbroseWalton on the same points: mean 16.9298 %, max 44.3167
+  %. Outliers discarded: none. Its own normal boiling point (101.325
+  kPa): 374.32 K. PROMOTED on 2026-11-10 into
+  data/standards/components/methylButanoate.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade clean under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 4
+  studies, 191 points kept, 0 discarded as outliers; max relative error
+  4.892 % (mean 2.91 %), grade clean (limits 5 / 10 / 20 %); no Tb
+  declared; AmbroseWalton on the same points mean 16.93 % / max 44.32 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

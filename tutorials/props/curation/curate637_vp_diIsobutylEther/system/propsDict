@@ -60,7 +60,19 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 4.009612 - 1329.4062/(T +
+  -63.8583), in-sample R2 1.000000 over 15 kept points, 330.897-395.145 K
+  (10.1021/je800998u 15/15 kept). Relative error in P over the kept
+  points: mean 0.0183 %, max 0.0288 %; AmbroseWalton on the same points:
+  mean 43.0978 %, max 52.6689 %. Outliers discarded: none. Its own normal
+  boiling point (101.325 kPa): 395.89 K. PROMOTED on 2026-11-10 into
+  data/standards/components/diIsobutylEther.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade clean under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 1
+  studies, 15 points kept, 0 discarded as outliers; max relative error
+  0.02875 % (mean 0.01835 %), grade clean (limits 5 / 10 / 20 %); no Tb
+  declared; AmbroseWalton on the same points mean 43.1 % / max 52.67 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

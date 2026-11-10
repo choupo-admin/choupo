@@ -62,7 +62,20 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 5.195102 - 2363.3137/(T +
+  -56.2534), in-sample R2 0.999844 over 29 kept points, 293.77-462.37 K
+  (10.1021/je200730m 12/12 kept; 10.1021/je301294a 9/9 kept;
+  10.1021/je900093h 8/8 kept). Relative error in P over the kept points:
+  mean 3.5333 %, max 6.2981 %; AmbroseWalton on the same points: mean
+  101.9513 %, max 235.7031 %. Outliers discarded: none. Its own normal
+  boiling point (101.325 kPa): 511.67 K. PROMOTED on 2026-11-10 into
+  data/standards/components/ethylDecanoate.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade warning under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 3
+  studies, 29 points kept, 0 discarded as outliers; max relative error
+  6.298 % (mean 3.533 %), grade warning (limits 5 / 10 / 20 %); no Tb
+  declared; AmbroseWalton on the same points mean 102 % / max 235.7 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

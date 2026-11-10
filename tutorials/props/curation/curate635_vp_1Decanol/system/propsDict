@@ -62,7 +62,21 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 2.621321 - 679.0945/(T +
+  -244.5980), in-sample R2 0.999480 over 13 kept points, 469.23-496.88 K
+  (10.1021/acs.jced.8b00680 13/13 kept). Relative error in P over the
+  kept points: mean 0.4773 %, max 0.8897 %; AmbroseWalton on the same
+  points: mean 48.8236 %, max 57.3613 %. Outliers discarded: none. Its
+  own normal boiling point (101.325 kPa): 504.23 K. PROMOTED on
+  2026-11-10 into data/standards/components/1Decanol.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade warning under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 1
+  studies, 13 points kept, 0 discarded as outliers; max relative error
+  0.8897 % (mean 0.4773 %), grade clean (limits 5 / 10 / 20 %); Tb
+  outside the kept points' range, normal boiling point 504.23 K, +1.28 K
+  from the record's Tb 502.95 K, grade warning (limits 1 / 2 / 4 K);
+  AmbroseWalton on the same points mean 48.82 % / max 57.36 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

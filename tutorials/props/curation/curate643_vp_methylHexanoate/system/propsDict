@@ -61,7 +61,20 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 4.596953 - 1685.6893/(T +
+  -55.0003), in-sample R2 0.999643 over 42 kept points, 262.64-422.29 K
+  (10.1016/j.fluid.2008.02.001 28/28 kept; 10.1016/j.jct.2016.07.024
+  14/14 kept). Relative error in P over the kept points: mean 2.7254 %,
+  max 5.9269 %; AmbroseWalton on the same points: mean 18.1372 %, max
+  27.7694 %. Outliers discarded: none. Its own normal boiling point
+  (101.325 kPa): 422.15 K. PROMOTED on 2026-11-10 into
+  data/standards/components/methylHexanoate.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade warning under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 2
+  studies, 42 points kept, 0 discarded as outliers; max relative error
+  5.927 % (mean 2.725 %), grade warning (limits 5 / 10 / 20 %); no Tb
+  declared; AmbroseWalton on the same points mean 18.14 % / max 27.77 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 
