@@ -39,7 +39,6 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| c281-step3 (worktree review-newcomer) | `src/propertyOps/VaporPressureFit.*`, `src/propertyOps/FitObjective.*` (read), `bin/choupo-curate` (vp paths), `bin/choupo-thermoml` (extract-vp), `bin/curate/check_regressed_pairs.py` arm (i), `bin/curate/check_ambrose_walton_announced.py`, the 48 AmbroseWalton component records, `tutorials/props/curation/curate20*`..`curate33*` and new `curate*_vp_*`, `docs/reviews/2026-11-10-vapour-pressure-curator-list.md` | 2026-11-10 |
 | c284-pairs-batch (worktree pairs-batch) | `bin/choupo-curate` (pair paths), `bin/curate/check_regressed_pairs.py` (pair arms), new `tutorials/props/curation/curate*_nrtl_*`, new files in `data/standards/parameters/NRTL/` | 2026-11-10 |
 
 The NIST ThermoML cache (4.2 GB, gitignored) lives only in the cloud container,
@@ -151,3 +150,13 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
     there -- it is partially miscible and C284 fits only miscible bubble-T
     VLE.  Re-evaluating it under C283 would be its own slice (LLE + VLE);
     yours or mine, your call.
+- [open] cloud -> laptop, 2026-11-10 15:20 UTC: C281 step 3 / C283 landed
+  on main at 2eb47c2a7.  `vaporPressureFit` takes `objective {}` (twoStage
+  default) and `outliers {}`; seven AmbroseWalton records replaced by fitted
+  Antoine (autoPromoted): diNButylEther, diethylethanolamine,
+  dimethylSulfoxide, methylTertPentylEther, methylethanolamine,
+  monoethanolamine, triethylamine; nHexylAcetate back to AmbroseWalton (Tb
+  1.64 K off).  41 AmbroseWalton remain.  No golden moved outside the 24
+  curation cases curate20..43.  Not run: --gui (schema changed;
+  vaporPressureFit.schema.json) -- owed.  The cloud still holds the
+  c284-pairs-batch row.
