@@ -3302,6 +3302,15 @@ accepts today, and that is a policy call.
 >      files; `bin/runTests --gui` once per batch of five pages before landing.
 >   9. A PAGE IS DONE when its first screen has been SEEN in the running app and matches
 >      rule 1 -- a metric (figure offset, capital count) is a search aid, never the verdict.
+>  CORRECTED THE SAME HOUR (Vitor: "Tens a certeza que e isso que queres fazer?!"; judged
+>  on content, and he was right to ask): a week of polish had been placed ahead of wrong
+>  numbers on screens.  (a) ORDER: the C266 screen errors come FIRST (the number
+>  formatter that drops zeros, solids counted twice, the GUI-computed 8000 h/yr that
+>  must come from the engine); (b) SCOPE: `thiele` plus the six pages of rule 8, not the
+>  sixty -- the rest waits for Vitor's reading of those; (c) rule 2's 60/40 words is a
+>  GUIDE, not a limit: the seen screen decides, and no text is cut to meet a count;
+>  (d) NOT for the smaller model: the engine gaps of the reference plant (pipes to
+>  stream-attached stores, utilities drawn).
 >  10. Also open for the same week, small and decided: declared tables print the source's
 >      significant figures (column14 shows 0.669606 for a three-figure source); pool-fire
 >      legend capitals and `kW^(2/5)/m`.
