@@ -55,6 +55,6 @@ describe("the page", () => {
     expect(body).not.toContain("would get zero");
     expect(body).toContain("off-diagonal terms of A C Aᵀ");
     expect(body).toContain("vanish only when every residual does");
-    expect(body).toContain("splits EXACTLY into one part per balance");
+    expect(body).toContain("splits exactly into one part per balance");
   });
 });
