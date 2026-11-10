@@ -36,7 +36,7 @@ export const RAYLEIGH_STEPS: readonly LessonStep[] = [
       + "a fixed rate, so the answer was a state.  A batch still has no feed: "
       + "you charge the pot, boil, and take the vapour away.  The liquid left "
       + "behind gets heavier as the light component leaves, so the "
-      + "composition you are separating CHANGES WHILE YOU SEPARATE IT.  The "
+      + "composition you are separating changes while you separate it.  The "
       + "answer is no longer a state but a history.",
   },
   {
@@ -54,14 +54,14 @@ export const RAYLEIGH_STEPS: readonly LessonStep[] = [
       { sym: "W_0", means: "moles charged to the pot at the start",
         unit: "mol" },
       { sym: "x", means: "mole fraction of the more volatile component in the "
-        + "pot, which FALLS as the still runs" },
+        + "pot, which falls as the still runs" },
       { sym: "x_0", means: "that composition at the start of the batch" },
       { sym: "x_W", means: "that composition at the end — the integration runs "
         + "from where you stopped back to where you started" },
-      { sym: "y^*(x)", means: "the vapour composition in EQUILIBRIUM with a "
+      { sym: "y^*(x)", means: "the vapour composition in equilibrium with a "
         + "pot at x — the star marks equilibrium, not an operating value" },
     ],
-    note: "The area under 1/(y* − x) between the two pot compositions IS "
+    note: "The area under 1/(y* − x) between the two pot compositions is "
       + "ln(W₀/W) — the logarithm of the charge over what is left in the "
       + "pot.  The tool shades that area "
       + "over the engine's own equilibrium points and compares it with the "
@@ -80,20 +80,20 @@ export const RAYLEIGH_STEPS: readonly LessonStep[] = [
       + "rectifying column above the pot and you get a McCabe staircase — "
       + "the same construction as a continuous column, with one difference "
       + "that is the whole point of this page.  In a column the staircase is "
-      + "FIXED and you count it once.  Here the pot depletes, so the "
+      + "fixed and you count it once.  Here the pot depletes, so the "
       + "distillate the same column can deliver gets leaner every minute, and "
       + "the staircase slides down the curve as you watch.",
     formula: String.raw`y = \frac{R}{R+1}\,x + \frac{x_D}{R+1} \qquad \text{anchored at } (x_D,\,x_D)`,
     where: [
       { sym: "R", means: "the reflux ratio, as in a continuous column" },
-      { sym: "x_D", means: "the INSTANTANEOUS distillate composition, which in "
+      { sym: "x_D", means: "the instantaneous distillate composition, which in "
         + "a batch still moves as the pot depletes" },
     ],
-    note: "There is no stripping section: the pot IS the reboiler and there "
+    note: "There is no stripping section: the pot is the reboiler and there "
       + "is nothing below it. So one operating line, anchored at the "
       + "distillate — and the walk down takes the trays plus ONE more step, "
       + "because the pot is itself an equilibrium stage.  And the integral "
-      + "of step 2 does NOT carry over as written: with a column, what "
+      + "of step 2 does not carry over as written: with a column, what "
       + "leaves the pot's envelope is the distillate x_D, not y*(x) of the "
       + "pot, so the balance integrates 1/(x_D − x) instead — and only "
       + "under the two assumptions listed below, a column holding no liquid "
@@ -102,10 +102,10 @@ export const RAYLEIGH_STEPS: readonly LessonStep[] = [
   {
     n: 4,
     title: "Two ways to run it, and they trade against each other",
-    body: "CONSTANT REFLUX is what the drawing above shows: hold R, and let "
+    body: "Constant reflux is what the drawing above shows: hold R, and let "
       + "the distillate drift down as the pot empties.  Simple to operate, "
-      + "and the product is a blend of everything that came over.  CONSTANT "
-      + "COMPOSITION is the other choice: hold x_D where you want it and "
+      + "and the product is a blend of everything that came over.  Constant "
+      + "composition is the other choice: hold x_D where you want it and "
       + "raise R to keep it there as the pot gets leaner — the operating line "
       + "steepens toward the diagonal until the reflux you would need is more "
       + "than the column can carry, and that moment is when the batch ends.",
@@ -119,14 +119,14 @@ export const RAYLEIGH_STEPS: readonly LessonStep[] = [
 export const RAYLEIGH_LIMITS: readonly { id: string; title: string; body: string }[] = [
   {
     id: "binary",
-    title: "BINARY, like every construction in this family.",
+    title: "Binary, like every construction in this family.",
     body: "The Rayleigh integral and the staircase both live in an x-y plane "
       + "that exists only for two components. Multicomponent batch "
       + "distillation is solved as equations, not drawn.",
   },
   {
     id: "holdup",
-    title: "The trays hold NO liquid in this construction.",
+    title: "The trays hold no liquid in this construction.",
     body: "A real column holds liquid on every tray and in the condenser, and "
       + "that inventory is composition the pot has already lost but the "
       + "receiver has not yet gained. Neglecting it is standard for teaching "
