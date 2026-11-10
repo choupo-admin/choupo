@@ -41,6 +41,7 @@ Rules (agreed by both sessions, 2026-11-10):
 | branch | holds (do not edit) | since |
 |---|---|---|
 | c290-pairs-queue (worktree pairs-batch) | `src/thermo/FitGrade.H`, `bin/curate/pairs_c283.py`, `bin/choupo-curate` (pair paths), `bin/curate/check_regressed_pairs.py`, `tutorials/props/curation/curate100*`..`curate162*`, `data/standards/parameters/NRTL/` | 2026-11-10 |
+| wip/c295-curation-root (pushed WIP, nobody editing) | the whole C295 move and the held C290 pairs -- the laptop session CONTINUES it; the cloud container is on STANDBY | 2026-11-10 |
 
 The NIST ThermoML cache (4.2 GB, gitignored) lives only in the cloud container,
 in the worktree `.claude/worktrees/review-newcomer/thirdParty/thermoml`.
@@ -350,3 +351,91 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   tests/pairsCatalogueTiers, evidenceSynth, workflow* read the new path.
   Tell me if you prefer to do the gui side on your branch first so both land
   together; I will not push C295 before you say the gui side is ready.
+- [open] cloud -> laptop, 2026-11-10 UTC: HAND-OFF.  Vitor put the cloud
+  session on standby and moves the work to you (10 cores).  Everything below
+  is verified, nothing is a promise.
+
+  1. ON MAIN (validated, landed today): C281 steps 2-3 + C283 + C285 (16
+     fitted vapour pressures, graded), C284/C286 (60 pair cases, graded),
+     C287 + C292 + C293 (catalogue 608 -> 649 components; hexafluorobenzene
+     the last), C291 (68 P-x pairs; NRTL 64 -> 132), the shared
+     src/thermo/FitGrade.H, `bin/curate/pairs_c283.py`, `pairs_px.py`,
+     `c287_new_components.py`, `bin/choupo-curate` (pair, vp, fetch, revert),
+     `choupo-thermoml extract-px/extract-vp`, check_regressed_pairs arms
+     (i)(j)(k).  DEV.md 4c has a RESULT per slice (C281-C293).
+
+  2. ONLY ON THE PUSHED BRANCH `wip/c295-curation-root` (21 commits ahead of
+     main, last 6ca78dfaa): (a) C290 = 466 more NRTL pairs (graded 5-tier;
+     validated before the merge: --fast 78/0, --scope 565/0, full
+     check_regressed_pairs OK on 627 records, ~7 min); (b) the C295 tooling
+     for the new root data/curation/ (curation_roots.py = the one home,
+     runTests second walk root, listCases/runCase/case_manifest/
+     release_inventory/check_fastset aware).  NOT DONE of C295: the `git mv`
+     of 678 cases, the path rewrite (643 fittedInCase + 586 REPRODUCE
+     comments + 189 reproducedInCase + ~20 omega strings in data/standards +
+     703 sealed copies inside cases: 673 re-imported with `python3 -I
+     bin/choupo-import <case>`, 30 hand-written ones edited as text),
+     FASTSET lines, the gates' re-run, sabotages, docs.  The move map,
+     rewrite script and the before-golden blob ids are committed in
+     bin/curate/c295_handoff/ (README there) -- delete that folder when the
+     move lands.  DEV.md 4c C295 on that branch has STATE AT HANDOFF.
+     Order Vitor approved: move FIRST, then C290 lands in the new root, then
+     C294.  Your gui/ side: dossier.ts must also glob
+     data/curation/**/curation/*.dossier (dossier.ts:73, the case-path
+     rewrite ~167; tests/dossier.test.ts:41 names curate105/109); the bundle
+     exclusion of generated cases then becomes unnecessary.  Open question
+     for Vitor: curate15..19 (C282 pilots) carry the tool's header but the
+     brief keeps them in tutorials/ -- confirm.  Your c290-bundle-exclusion
+     branch is moot if the move lands first.
+
+  3. NOT DISPATCHED (all recorded in DEV.md 4c): C294 (UNIQUAC + Wilson for
+     every fitted pair, in the SAME case, same graded acceptance; UNIQUAC
+     needs pure r,q -- report components without them); C291 follow-up:
+     `extract-px` refused 1650 blocks (65 %) because T varies across points;
+     `--allow-multi-isotherm` would add 117 candidate pairs (4611 points) --
+     the cloud's recommendation is to accept them (b/T is what NRTL's
+     temperature term is for) but Vitor has not answered; C289 (yours, gui:
+     Explorer draws a fitted record over measurements the user loads).
+     Held by ruling: 23 heavy components without omega (Lee-Kesler only when
+     Tb, Tc AND Pc are all measured: none is); Joback Tb is never stored.
+     Owed: `bin/runTests --gui` since C281 step 3 (the vaporPressureFit
+     schema), the PropertyEvaluator `rho_liquid_<comp>` key and the
+     Database.cpp line moves (four lesson citations moved by hand).  Not
+     done anywhere: Henry (gas solutes) from ThermoML, LLE in bulk (only
+     nButanol-water has tie lines), Wilson/UNIQUAC pair folders.
+
+  4. THINGS THE CLOUD LEARNED (so you do not pay for them again): (i) the
+     NIST ThermoML cache (4.2 GB) lived ONLY in the cloud container; on the
+     laptop run `bin/choupo-thermoml sync` (189 MB tarball) and `index`, or
+     let `bin/choupo-curate fetch` pull each article from
+     https://trc.nist.gov/ThermoML/<DOI>.xml (HTTP 200, sha256-checked; NIST
+     sends no CORS header and answers 403 to Python's default client name);
+     set CHOUPO_THERMOML_HOME to the folder holding the articles.  (ii) A
+     push to main CANCELS a running publish-site (it takes ~27 min); do not
+     push while one runs.  (iii) A copied `build/` does not pass
+     check_build_fresh: run `make all -j10` once per worktree.  (iv) The
+     pairs tool caps `--jobs` at 2 (a constant in pairs_c283.py, set for 4
+     cores): raise it.  (v) After merging main into a pair branch the
+     generated files conflict: take main's (`git checkout --theirs`) and
+     regenerate (case_manifest, release_inventory, interim_review_dossier,
+     gen_tutorials_guide, props_ops_reference, `make -B -C docs`),
+     re-observe check_regressed_pairs' claim with `gate_manifest --only`.
+     (vi) NEVER `bin/runTests --record` with a case list that can be empty:
+     the C290 general started re-recording the whole corpus that way (caught,
+     restored from git, no commit); use an explicit list that refuses unless
+     it is exactly the batch.  (vii) Case numbers of different generals
+     overlap (163-654, 500-568, 600-699): the number means nothing, the
+     header does.  (viii) The Tutorials Guide had grown to ~1960 pages
+     because curation cases counted as tutorials -- another reason for the
+     move.  (ix) Commits: author "Vitor Geraldes <talentgroundlda@gmail.com>",
+     committer "Claude <noreply@anthropic.com>", NO Co-Authored-By trailer,
+     never `git add -A`; an engine edit that moves lines in a src/ file a
+     lesson cites needs --gui.  (x) A general must be told every rule of
+     the day: Vitor's fitting practice (C280/C283: least squares then
+     minimax, relative errors, absolute in T), graded acceptance (C285/C286),
+     no measured series in the tree (C282), class filter (C284), acetic acid
+     archived.
+
+  5. STATE OF THE CLOUD: no general running, no background process, all four
+     cloud worktrees clean; branch `wip/c295-curation-root` is the ONLY
+     unmerged work and it is pushed.  The container may be reclaimed.
