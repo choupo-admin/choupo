@@ -1,0 +1,83 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  curate22_vp_diNButylEther -- the vapour pressure of diNButylEther, REFITTED to
+  measurements (DEV.md 4c C281 step 2).  Written by `bin/choupo-curate vp
+  diNButylEther`; everything above the RESULT paragraph is the DECLARATION, committed
+  before any fit ran, so it can be read against the result.
+
+  WHY.  The catalogue record carried `vaporPressure { model AmbroseWalton; }`,
+  a corresponding-states ESTIMATE from Tc, Pc and omega that never reads the
+  record's own Tb (C279 measured a median 19.6 % AAD over the 25 such records
+  with archive data).  Here a three-parameter Antoine is fitted to ONE
+  laboratory and held out on ANOTHER that shares no author with it.
+
+  STUDIES (one per article, extracted by `choupo-thermoml extract-vp`; ranked
+  by points, ties by DOI):
+      10.1016/j.fluid.2006.06.017      26 pts  346.03-413.67 K  Lladosa; Monton; Burguet; Munoz
+      10.1016/j.fluid.2015.05.002      14 pts  430.15-508.15 K  Liebergesell; Kaminski; Pauls; de Loos et al.
+      10.1016/j.fluid.2007.09.002      10 pts  263.15-343.15 K  Boukais-Belaribi; Belaribi; Lohmann; Jose
+      10.1021/je7007523                 7 pts  313.15-313.15 K  Alonso-Tristan; Villamanan; Chamorro; Segovia
+  SET ASIDE BY NAME:
+      10.1016/j.fluid.2005.06.017: 1 pressure point(s), fewer than 5
+      10.1016/j.fluid.2005.11.026: 3 pressure point(s), fewer than 5
+      10.1016/j.fluid.2012.01.008: 1 pressure point(s), fewer than 5
+      10.1021/acs.jced.7b00119: 1 pressure point(s), fewer than 5
+      10.1021/je060237w: 4 pressure point(s), fewer than 5
+      10.1021/je100019r: 3 pressure point(s), fewer than 5
+
+  PARTITION (the C16 rule, declared): FIT = the study with the most points,
+  doi 10.1016/j.fluid.2006.06.017 (26 pts, 346.03-413.67 K); HELD OUT =
+  the next largest sharing no author with it, doi 10.1016/j.fluid.2015.05.002 (14 pts,
+  430.15-508.15 K).
+
+  BAND: maxAAD 0.36 % (declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 14 points (0.171 to 0.629 %, mean 0.3574 %), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean).
+
+  NORMAL BOILING POINT: the record's Tb 415.35 K lies INSIDE the measured span 346.03-508.15 K: the held-out verdict is the test there, no further condition.
+
+  NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares both
+  series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates
+  them into constant/archiveExtracts/ (gitignored).
+
+  RESULT
+  @@RESULT-BEGIN@@
+  (filled in by bin/choupo-curate after the run)
+  @@RESULT-END@@
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name       fit_antoine;
+        type       vaporPressureFit;
+        component  diNButylEther;
+
+        evidence
+        (
+            {
+                dataset   "constant/archiveExtracts/diNButylEther-vapourPressure-j.fluid.2006.06.017.dat";
+                identity  { doi "10.1016/j.fluid.2006.06.017"; }
+                role      fit;
+            }
+            {
+                dataset   "constant/archiveExtracts/diNButylEther-vapourPressure-j.fluid.2015.05.002.dat";
+                identity  { doi "10.1016/j.fluid.2015.05.002"; }
+                role      validation;
+            }
+        );
+
+        acceptance
+        {
+            maxAAD  0.36 percent;
+            origin  "declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 14 points (0.171 to 0.629 %, mean 0.3574 %), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean";
+        }
+
+        output     { file fit_antoine.csv; }
+    }
+);
