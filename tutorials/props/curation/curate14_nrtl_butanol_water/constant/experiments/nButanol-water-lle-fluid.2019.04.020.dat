@@ -1,0 +1,51 @@
+/*--------------------------------------------------------------------------*\
+  MEASURED LIQUID-LIQUID EVIDENCE for water + 1-butanol, read from a ThermoML file by
+  a curator script (the binodal blocks of a mixed file are not reached by
+  bin/choupo-thermoml extract-vle; the script is not part of the tree).
+
+  system       nButanol + water   (x is nButanol's liquid mole fraction)
+  tie lines    1   (x_nButanol in the water-rich liquid = phase1, in the butanol-rich liquid = phase2)
+  pressure     about atmospheric (not a variable of the binodal)
+  The role this evidence plays -- fit or held-out validation -- is NOT set
+  here.  It is declared in the operation that consumes it, before any
+  fitting runs (src/propertyOps/EvidencePartition.H).
+
+  REDISTRIBUTION.  These are measured values reported in the article cited
+  below, located through the NIST/TRC ThermoML Archive (a finding aid;
+  thirdParty/thermoml/README.md).  The article is the source; the archive's
+  arrangement is not reproduced.  Nobody has read the numbers back against
+  the article: reviewStatus says so.
+\*--------------------------------------------------------------------------*/
+
+property     binaryLLE.binodal;
+system       ( nButanol water );
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Smirnov, Alexander; Sadaeva, Anna; Podryadova, Kristina; Toikka, Maria (2019). Quaternary liquid-liquid equilibrium, solubility and critical states: Acetic acid - n-butanol - n-butyl acetate - water at 318.15 K and atmospheric pressure. Fluid Phase Equilib.. doi:10.1016/j.fluid.2019.04.020";
+    archiveFile  "j.fluid.2019.04.020.xml";
+    archive      "ThermoML.v2020-09-30.tgz (NIST/TRC ThermoML Archive, doi:10.18434/mds2-2422)";
+    block        8;
+    doi          "10.1016/j.fluid.2019.04.020";
+    sha256       "ddd003b56e5c63429a69bed13597556ea4398ff8ef2e33013946326be7b1b239";
+    identity
+    {
+        nButanol       { cas "71-36-3"; inchiKey "LRHPLDYGYMQRHN-UHFFFAOYSA-N"; }
+        water          { cas "7732-18-5"; inchiKey "XLYOFNOQVPJJNP-UHFFFAOYSA-N"; }
+        rule           "the archive's standard InChIKey matched to the catalogue record's CAS through two resolvers that agree (PubChem PUG REST and NCI CACTUS), molecular formula checked -- never by name";
+    }
+}
+
+columns
+(
+    { name T;                    unit K;  }
+    { name x_nButanol_phase1;    unit -;  }
+    { name x_nButanol_phase2;    unit -;  }
+);
+
+data
+(
+      318.15  0.02100  0.46900
+);

@@ -1,0 +1,447 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+  curate14_nrtl_butanol_water -- THE REAL WATER + 1-BUTANOL PAIR: BUBBLE
+  TEMPERATURES AND MEASURED TIE LINES IN ONE FIT (DEV.md 4c C16, C225, C226).
+
+  The synthetic witness curate13 proves that the machinery recovers a pair it
+  was given.  This case runs the same machinery (`kind T_bubble+LLE`) on
+  MEASURED data from the NIST/TRC ThermoML Archive (doi 10.18434/mds2-2422,
+  the copy on the curator's machine, sha256-verified), and asks the one
+  question the synthetic case cannot: does a two-parameter NRTL pair hold the
+  gap the measurements show AND the boiling liquid, and does it predict
+  studies it was never handed?
+
+  WHAT THE ARCHIVE HOLDS FOR THIS PAIR (found by reading the XML, not by the
+  indexer).  No file of the archive is a pure binary water + 1-butanol study.
+  Every datum below is a BINARY BLOCK inside a ternary or quaternary study (the
+  authors report the binary edge of their system), so: (a) bin/choupo-thermoml
+  vle-index finds ONE usable isobaric bubble series (doi 10.1021/je700411p, 15
+  interior points) and the heteroazeotrope temperatures of two more; (b) the
+  liquid-liquid blocks are not reached by `extract-vle`, so the tie-line files
+  were written by a small curator script (kept out of the tree) that reads the
+  same XML, pairs the two liquids of each temperature, and converts mass
+  fractions to mole fractions (M 74.123 and 18.015 g/mol, said in the file).
+  Whether a given binary row was measured by its authors or taken from the
+  literature is not recorded in the archive; the files say `reviewStatus
+  transcribedNotCheckedAgainstArticle` and the run announces it.
+
+  THE PARTITION, DECLARED BEFORE THE FIRST FIT.
+    FIT      bubble temperatures: doi 10.1021/je700411p (15 points, 101.3 kPa);
+             tie lines: the five studies that report THREE OR MORE
+             temperatures -- 10.1021/je700411p (5), 10.1021/acs.jced.7b00302 (3),
+             10.1021/je5007218 (3), 10.1016/j.fluid.2007.12.003 (3),
+             10.1021/acs.jced.6b00941 (3): 17 tie lines, 288-362 K.
+    HELD OUT bubble temperatures: 10.1016/j.jct.2014.07.021 and
+             10.1016/j.jct.2016.04.013 (two heteroazeotrope temperatures each,
+             about 365.8 K); tie lines: the eighteen other studies, one or
+             two temperatures each (21 tie lines, 288-366 K).  No author name
+             of a held-out study appears in a fit study (the archive carries no
+             affiliations, so a shared author is the dependence the rule can
+             check).
+    BANDS    written in `acceptance` below with their origin (maxAAD 0.042 % of
+             T, maxLLE 0.01 in mole fraction).
+    TRIAGE   `loso_*` fit the pair with ONE tie-line study moved from fit to
+             held-out in turn, to see whether the verdict is the property of
+             the pair or of one study.
+
+  THE FIT.  NRTL with a_ij = a_ji = 0 and alpha = 0.30 fixed: TWO parameters
+  (b_ij, b_ji), i = nButanol, j = water.  Bubble rows are weighted by 1/U (each
+  point's own stated expanded uncertainty), tie-line mole fractions by 1/0.005.
+  The start (b_ij 0, b_ji 1000 K) splits the liquid at every measured tie line;
+  `fit_mixed_start2` starts elsewhere and must land on the same pair.
+
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).  NOT
+  VALIDATED, and not promoted: no record for the catalogue was written.
+    * fit_mixed: b_ij = -39.14 K, b_ji = 1178.21 K (curate13's synthetic
+      generating pair: 150 / 1050); fit_mixed_start2 lands on -39.14 / 1178.21
+      from another start.  Identifiable (cond JtJ 49, max|corr| 0.87).
+      In-sample: 49 rows (15 bubble + 17 tie lines x 2), reduced chi2 52.
+    * Bubble temperatures: every one of the 15 fit points is predicted 0.1-2.9
+      K HIGH (the heteroazeotrope region 1.9-2.2 K): the pair that holds the
+      gap cannot hold the boiling liquid.  HELD OUT (4 heteroazeotrope points,
+      two studies): AAD 1.72 K = 0.47 % against a band of 0.042 % -> MISS.
+    * Tie lines: all 21 held-out tie lines are predicted as TWO liquids (288-
+      366 K), the measured gap exists in the model.  Held-out AAD in mole
+      fraction 0.0165 against 0.01 (water-rich liquid 0.0126, butanol-rich
+      liquid 0.0203, recomputed outside the engine: same figures) -> MISS.
+      The model makes the butanol solubility in water RISE with T (0.019 at 288
+      K to 0.067 at 366 K); the measurements keep it flat (0.016-0.021, a
+      shallow minimum near 333 K), which an NRTL with a_ij = a_ji = 0 and one
+      alpha cannot draw; the butanol-rich liquid is 0.01-0.06 too rich in
+      butanol above 320 K.
+    * Leave-one-study-out (4 of the 5 tie-line fit studies; the fifth,
+      10.1021/je700411p, is the only bubble series and the engine refuses its
+      archive file in both roles): b_ij -35.2 .. -35.6 (-37.0), b_ji 1171-1175;
+      held-out LLE AAD 0.012-0.020; every verdict is the same MISS.  The miss
+      is the pair's form against these data, not one study's.
+    * The vapour model contributes: the catalogue's water Antoine sits 0.5-0.7
+      K low at 1 atm (C226 item 7); the declared bubble band is the strictest
+      reading of the C16 rule (no pure endpoint in the held-out sets), and it
+      would be missed by a perfect pair on this vapour model.  Nothing was
+      tuned to change either verdict.
+    * Independence: je700411p supplies the bubble series AND five tie lines of
+      the fit (the run announces "one publication, counted twice"); the five
+      held-out heteroazeotrope temperatures are three values (365.7-366.2 K).
+
+  WHAT IS NOT CLAIMED.  The pair lives in this frame: ideal-gas vapour, the
+  catalogue's Antoine records (water about 0.5 K low at 1 atm, C226 item 7),
+  one pressure for the bubble data (101.3 kPa), LLE data at about atmospheric
+  pressure.  Nothing here tests it at another pressure or with another vapour
+  model.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        fit_mixed;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji;  initial 1000;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            { dataset  "constant/experiments/nButanol-water-bubble-je700411p.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-je700411p.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-jced.7b00302.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-je5007218.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-fluid.2007.12.003.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-jced.6b00941.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-bubble-j.jct.2014.07.021.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-bubble-j.jct.2016.04.013.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-jct.2014.07.021.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-fluid.2007.07.011.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-jct.2018.03.024.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-fluid.2019.04.020.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-jct.2019.03.001.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-jct.2016.04.013.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-jct.2016.06.010.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-fluid.2004.12.004.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-jct.2015.10.003.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-jct.2012.04.017.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-jct.2015.11.002.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-fluid.2012.07.032.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-fluid.2017.12.023.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-je400501z.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-acs.jced.6b00725.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-fluid.2018.10.021.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-jct.2017.03.019.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-fluid.2014.07.011.dat";  role validation; }
+        );
+
+        acceptance
+        {
+            maxAAD  0.042 percent;
+            maxLLE  0.01;
+            origin  "declared before the fit, by the ONE rule of C16 for the bubble temperatures: the held-out bubble sets' largest stated expanded uncertainty (U95 = 0.15 K, both) plus the catalogue vapour-pressure model's error at those sets' pure endpoints (NONE: neither held-out set reports a pure-component bubble point, so the term is ZERO, the strictest reading) as a percentage of the held-out mean T (365.79 K) = 0.0410 %, rounded UP to two significant figures. For the binodal: twice the declared sigma of a tie-line mole fraction (0.005), a stated choice -- the same scale as the synthetic witness curate13, written down before the first run";
+        }
+
+        residual
+        {
+            kind        T_bubble+LLE;
+            components  ( nButanol water );
+            weighting   uncertainty;
+            liquidLiquid
+            {
+                sigma   0.005;
+                origin  "declared by this case before the first run: one standard uncertainty of a binodal mole fraction, 0.005, the scale at which 0.2 K of bubble temperature and a tie-line composition weigh alike for this pair (a stated choice; the stated uncertainties of the tie lines run from 0.0004 to 0.04)";
+            }
+        }
+
+        options
+        {
+            maxIter      120;
+            tolerance    1.0e-8;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_mixed_history.csv;
+            parity     fit_mixed_parity.csv;
+            proposal   nButanol-water.proposal.dat;
+        }
+    }
+    {
+        name        fit_mixed_start2;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij;  initial 400;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji;  initial 1400;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            { dataset  "constant/experiments/nButanol-water-bubble-je700411p.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-je700411p.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-jced.7b00302.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-je5007218.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-fluid.2007.12.003.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-jced.6b00941.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-bubble-j.jct.2014.07.021.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-bubble-j.jct.2016.04.013.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-jct.2014.07.021.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-fluid.2007.07.011.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-jct.2018.03.024.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-fluid.2019.04.020.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-jct.2019.03.001.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-jct.2016.04.013.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-jct.2016.06.010.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-fluid.2004.12.004.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-jct.2015.10.003.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-jct.2012.04.017.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-jct.2015.11.002.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-fluid.2012.07.032.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-fluid.2017.12.023.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-je400501z.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-acs.jced.6b00725.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-fluid.2018.10.021.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-jct.2017.03.019.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-fluid.2014.07.011.dat";  role validation; }
+        );
+
+        acceptance
+        {
+            maxAAD  0.042 percent;
+            maxLLE  0.01;
+            origin  "declared before the fit, by the ONE rule of C16 for the bubble temperatures: the held-out bubble sets' largest stated expanded uncertainty (U95 = 0.15 K, both) plus the catalogue vapour-pressure model's error at those sets' pure endpoints (NONE: neither held-out set reports a pure-component bubble point, so the term is ZERO, the strictest reading) as a percentage of the held-out mean T (365.79 K) = 0.0410 %, rounded UP to two significant figures. For the binodal: twice the declared sigma of a tie-line mole fraction (0.005), a stated choice -- the same scale as the synthetic witness curate13, written down before the first run";
+        }
+
+        residual
+        {
+            kind        T_bubble+LLE;
+            components  ( nButanol water );
+            weighting   uncertainty;
+            liquidLiquid
+            {
+                sigma   0.005;
+                origin  "declared by this case before the first run: one standard uncertainty of a binodal mole fraction, 0.005, the scale at which 0.2 K of bubble temperature and a tie-line composition weigh alike for this pair (a stated choice; the stated uncertainties of the tie lines run from 0.0004 to 0.04)";
+            }
+        }
+
+        options
+        {
+            maxIter      120;
+            tolerance    1.0e-8;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_mixed_start2_history.csv;
+            parity     fit_mixed_start2_parity.csv;
+            proposal   nButanol-water.proposal.dat;
+        }
+    }
+    {
+        name        loso_jced_7b00302;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji;  initial 1000;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            { dataset  "constant/experiments/nButanol-water-bubble-je700411p.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-je700411p.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-je5007218.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-fluid.2007.12.003.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-jced.6b00941.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-bubble-j.jct.2014.07.021.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-bubble-j.jct.2016.04.013.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-jced.7b00302.dat";  role validation; }
+        );
+
+        acceptance
+        {
+            maxAAD  0.042 percent;
+            maxLLE  0.01;
+            origin  "declared before the fit, by the ONE rule of C16 for the bubble temperatures: the held-out bubble sets' largest stated expanded uncertainty (U95 = 0.15 K, both) plus the catalogue vapour-pressure model's error at those sets' pure endpoints (NONE: neither held-out set reports a pure-component bubble point, so the term is ZERO, the strictest reading) as a percentage of the held-out mean T (365.79 K) = 0.0410 %, rounded UP to two significant figures. For the binodal: twice the declared sigma of a tie-line mole fraction (0.005), a stated choice -- the same scale as the synthetic witness curate13, written down before the first run";
+        }
+
+        residual
+        {
+            kind        T_bubble+LLE;
+            components  ( nButanol water );
+            weighting   uncertainty;
+            liquidLiquid
+            {
+                sigma   0.005;
+                origin  "declared by this case before the first run: one standard uncertainty of a binodal mole fraction, 0.005, the scale at which 0.2 K of bubble temperature and a tie-line composition weigh alike for this pair (a stated choice; the stated uncertainties of the tie lines run from 0.0004 to 0.04)";
+            }
+        }
+
+        options
+        {
+            maxIter      120;
+            tolerance    1.0e-8;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+    }
+    {
+        name        loso_je5007218;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji;  initial 1000;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            { dataset  "constant/experiments/nButanol-water-bubble-je700411p.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-je700411p.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-jced.7b00302.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-fluid.2007.12.003.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-jced.6b00941.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-bubble-j.jct.2014.07.021.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-bubble-j.jct.2016.04.013.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-je5007218.dat";  role validation; }
+        );
+
+        acceptance
+        {
+            maxAAD  0.042 percent;
+            maxLLE  0.01;
+            origin  "declared before the fit, by the ONE rule of C16 for the bubble temperatures: the held-out bubble sets' largest stated expanded uncertainty (U95 = 0.15 K, both) plus the catalogue vapour-pressure model's error at those sets' pure endpoints (NONE: neither held-out set reports a pure-component bubble point, so the term is ZERO, the strictest reading) as a percentage of the held-out mean T (365.79 K) = 0.0410 %, rounded UP to two significant figures. For the binodal: twice the declared sigma of a tie-line mole fraction (0.005), a stated choice -- the same scale as the synthetic witness curate13, written down before the first run";
+        }
+
+        residual
+        {
+            kind        T_bubble+LLE;
+            components  ( nButanol water );
+            weighting   uncertainty;
+            liquidLiquid
+            {
+                sigma   0.005;
+                origin  "declared by this case before the first run: one standard uncertainty of a binodal mole fraction, 0.005, the scale at which 0.2 K of bubble temperature and a tie-line composition weigh alike for this pair (a stated choice; the stated uncertainties of the tie lines run from 0.0004 to 0.04)";
+            }
+        }
+
+        options
+        {
+            maxIter      120;
+            tolerance    1.0e-8;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+    }
+    {
+        name        loso_fluid_2007_12_003;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji;  initial 1000;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            { dataset  "constant/experiments/nButanol-water-bubble-je700411p.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-je700411p.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-jced.7b00302.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-je5007218.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-jced.6b00941.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-bubble-j.jct.2014.07.021.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-bubble-j.jct.2016.04.013.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-fluid.2007.12.003.dat";  role validation; }
+        );
+
+        acceptance
+        {
+            maxAAD  0.042 percent;
+            maxLLE  0.01;
+            origin  "declared before the fit, by the ONE rule of C16 for the bubble temperatures: the held-out bubble sets' largest stated expanded uncertainty (U95 = 0.15 K, both) plus the catalogue vapour-pressure model's error at those sets' pure endpoints (NONE: neither held-out set reports a pure-component bubble point, so the term is ZERO, the strictest reading) as a percentage of the held-out mean T (365.79 K) = 0.0410 %, rounded UP to two significant figures. For the binodal: twice the declared sigma of a tie-line mole fraction (0.005), a stated choice -- the same scale as the synthetic witness curate13, written down before the first run";
+        }
+
+        residual
+        {
+            kind        T_bubble+LLE;
+            components  ( nButanol water );
+            weighting   uncertainty;
+            liquidLiquid
+            {
+                sigma   0.005;
+                origin  "declared by this case before the first run: one standard uncertainty of a binodal mole fraction, 0.005, the scale at which 0.2 K of bubble temperature and a tie-line composition weigh alike for this pair (a stated choice; the stated uncertainties of the tie lines run from 0.0004 to 0.04)";
+            }
+        }
+
+        options
+        {
+            maxIter      120;
+            tolerance    1.0e-8;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+    }
+    {
+        name        loso_jced_6b00941;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji;  initial 1000;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            { dataset  "constant/experiments/nButanol-water-bubble-je700411p.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-je700411p.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-jced.7b00302.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-je5007218.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-lle-fluid.2007.12.003.dat";  role fit; }
+            { dataset  "constant/experiments/nButanol-water-bubble-j.jct.2014.07.021.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-bubble-j.jct.2016.04.013.dat";  role validation; }
+            { dataset  "constant/experiments/nButanol-water-lle-jced.6b00941.dat";  role validation; }
+        );
+
+        acceptance
+        {
+            maxAAD  0.042 percent;
+            maxLLE  0.01;
+            origin  "declared before the fit, by the ONE rule of C16 for the bubble temperatures: the held-out bubble sets' largest stated expanded uncertainty (U95 = 0.15 K, both) plus the catalogue vapour-pressure model's error at those sets' pure endpoints (NONE: neither held-out set reports a pure-component bubble point, so the term is ZERO, the strictest reading) as a percentage of the held-out mean T (365.79 K) = 0.0410 %, rounded UP to two significant figures. For the binodal: twice the declared sigma of a tie-line mole fraction (0.005), a stated choice -- the same scale as the synthetic witness curate13, written down before the first run";
+        }
+
+        residual
+        {
+            kind        T_bubble+LLE;
+            components  ( nButanol water );
+            weighting   uncertainty;
+            liquidLiquid
+            {
+                sigma   0.005;
+                origin  "declared by this case before the first run: one standard uncertainty of a binodal mole fraction, 0.005, the scale at which 0.2 K of bubble temperature and a tie-line composition weigh alike for this pair (a stated choice; the stated uncertainties of the tie lines run from 0.0004 to 0.04)";
+            }
+        }
+
+        options
+        {
+            maxIter      120;
+            tolerance    1.0e-8;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+    }
+);

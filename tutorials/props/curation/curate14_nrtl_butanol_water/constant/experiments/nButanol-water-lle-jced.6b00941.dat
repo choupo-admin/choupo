@@ -1,0 +1,54 @@
+/*--------------------------------------------------------------------------*\
+  MEASURED LIQUID-LIQUID EVIDENCE for water + 1-butanol, read from a ThermoML file by
+  a curator script (the binodal blocks of a mixed file are not reached by
+  bin/choupo-thermoml extract-vle; the script is not part of the tree).
+
+  system       nButanol + water   (x is nButanol's liquid mole fraction)
+  tie lines    3   (x_nButanol in the water-rich liquid = phase1, in the butanol-rich liquid = phase2)
+  pressure     about atmospheric (not a variable of the binodal)
+  The role this evidence plays -- fit or held-out validation -- is NOT set
+  here.  It is declared in the operation that consumes it, before any
+  fitting runs (src/propertyOps/EvidencePartition.H).
+
+  REDISTRIBUTION.  These are measured values reported in the article cited
+  below, located through the NIST/TRC ThermoML Archive (a finding aid;
+  thirdParty/thermoml/README.md).  The article is the source; the archive's
+  arrangement is not reproduced.  Nobody has read the numbers back against
+  the article: reviewStatus says so.
+\*--------------------------------------------------------------------------*/
+
+property     binaryLLE.binodal;
+system       ( nButanol water );
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Yu, C.[Chao]; Wu, S.[Shutian]; Zhao, Y.[Yang]; Zeng, Z.-X.[Zuo-Xiang]; Xue, W.-L.[Wei-Lan] (2017). Liquid Liquid Equilibrium Data of Water + Butyric Acid + {Butanal or n-Butanol} Ternary Systems at 293.15, 308.15, and 323.15 K. J. Chem. Eng. Data. doi:10.1021/acs.jced.6b00941";
+    archiveFile  "acs.jced.6b00941.xml";
+    archive      "ThermoML.v2020-09-30.tgz (NIST/TRC ThermoML Archive, doi:10.18434/mds2-2422)";
+    block        12;
+    doi          "10.1021/acs.jced.6b00941";
+    sha256       "53461bfec35d34b294b8e558d714a11a2da32b648adeee0ca98609ebe1f6f5e2";
+    identity
+    {
+        nButanol       { cas "71-36-3"; inchiKey "LRHPLDYGYMQRHN-UHFFFAOYSA-N"; }
+        water          { cas "7732-18-5"; inchiKey "XLYOFNOQVPJJNP-UHFFFAOYSA-N"; }
+        rule           "the archive's standard InChIKey matched to the catalogue record's CAS through two resolvers that agree (PubChem PUG REST and NCI CACTUS), molecular formula checked -- never by name";
+    }
+    conversion   "reported as mass fractions; converted to mole fractions with M(1-butanol) 74.123 and M(water) 18.015 g/mol";
+}
+
+columns
+(
+    { name T;                    unit K;  }
+    { name x_nButanol_phase1;    unit -;  }
+    { name x_nButanol_phase2;    unit -;  }
+);
+
+data
+(
+      293.15  0.01767  0.51608
+      308.15  0.01589  0.47447
+      323.15  0.01576  0.44849
+);
