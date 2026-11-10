@@ -489,6 +489,9 @@
   "DatumAmendment": [
    "src/unitOperations/batch/BatchUnitOperation.H"
   ],
+  "DeclaredHeat": [
+   "src/unitOperations/reactor/ReactionHeat.H"
+  ],
   "Def": [
    "src/thermo/reaction/ExpressionRate.H"
   ],
@@ -923,6 +926,9 @@
   ],
   "HeatCapacityModel": [
    "src/thermo/heatCapacity/HeatCapacityModel.H"
+  ],
+  "HeatCorrection": [
+   "src/unitOperations/reactor/ReactionHeat.H"
   ],
   "HeatDutyPort": [
    "src/result/EnergyItems.H"
@@ -9591,6 +9597,7 @@
    "src/core/Identifiers.H",
    "src/core/InfeasibleTrial.H",
    "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
    "src/core/RegistryRefusal.H",
    "src/core/Types.H",
    "src/result/ClosureVariable.H",
@@ -9620,6 +9627,7 @@
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
+   "src/unitOperations/reactor/ReactionHeat.H",
    "src/unitOperations/saturation/BubblePoint.H",
    "src/unitOperations/saturation/DewPoint.H"
   ],
@@ -9674,6 +9682,7 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
    "src/core/RegistryRefusal.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
@@ -10932,6 +10941,7 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
    "src/core/Types.H",
    "src/result/ClosureVariable.H",
    "src/result/UnitProfile.H",
@@ -10952,6 +10962,7 @@
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/reactor/EquilibriumReactor.H",
    "src/unitOperations/reactor/PureSolidPhase.H",
+   "src/unitOperations/reactor/ReactionHeat.H",
    "src/unitOperations/reactor/ReactorOutlet.H",
    "src/unitOperations/reactor/TemperatureApproach.H"
   ],
@@ -10963,6 +10974,7 @@
    "src/core/Identifiers.H",
    "src/core/InfeasibleTrial.H",
    "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
    "src/core/Types.H",
    "src/result/ClosureVariable.H",
    "src/result/UnitProfile.H",
@@ -10983,6 +10995,7 @@
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/reactor/GibbsReactor.H",
    "src/unitOperations/reactor/PureSolidPhase.H",
+   "src/unitOperations/reactor/ReactionHeat.H",
    "src/unitOperations/reactor/TemperatureApproach.H",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H"
   ],
@@ -10994,6 +11007,7 @@
    "src/core/Formula.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
    "src/core/RegistryRefusal.H",
    "src/core/Types.H",
    "src/core/Units.H",
@@ -11060,6 +11074,7 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
@@ -14080,9 +14095,15 @@
    "src/unitOperations/batch/BatchStill.cpp",
    "src/unitOperations/batch/BatchUnitOperation.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp",
+   "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
+   "src/unitOperations/dynamic/DynamicCSTR.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
-   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp"
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp",
+   "src/unitOperations/reactor/EquilibriumReactor.cpp",
+   "src/unitOperations/reactor/GibbsReactor.cpp",
+   "src/unitOperations/reactor/PFR.cpp",
+   "src/unitOperations/reactor/ReactionHeat.cpp"
   ],
   "src/core/PublishedTable.H": [
    "src/applications/choupoProps/main.cpp",
@@ -20238,7 +20259,10 @@
   ],
   "src/unitOperations/reactor/ReactionHeat.H": [
    "src/unitOperations/batch/BatchReactor.cpp",
+   "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
+   "src/unitOperations/reactor/EquilibriumReactor.cpp",
+   "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/ReactionHeat.cpp"
   ],
