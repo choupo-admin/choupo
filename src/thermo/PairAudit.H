@@ -28,6 +28,7 @@
 #include "core/ThermoResolution.H"
 
 #include "core/Types.H"
+#include "FitGrade.H"
 
 #include <cmath>
 #include <iostream>
@@ -108,13 +109,18 @@ inline void fillPairAudit(PairResolution&    r,
             std::cerr << "[unreviewed] pair " << pairName
                       << ": reviewStatus autoPromoted -- this pair was promoted"
                          " into the catalogue AUTOMATICALLY by its fitting pipeline"
-                         " (held-out verdict validated against a band declared"
-                         " before the fit) and NO human has reviewed it"
+                         " (accepted by the acceptance its case declared before"
+                         " the fit) and NO human has reviewed it"
                          " (humanReviewed false).  Read its provenance{} block and"
-                         " the held-out verdict it records before the result is"
+                         " the verdict it records before the result is"
                          " cited; a curator who has read it back marks"
                          " `reviewStatus reviewed; humanReviewed true;`.\n";
     }
+    //  The GRADE the fit earned (DEV.md 4c C285, applied to pairs by C286):
+    //  `fitGrade clean|warning|severe;` beside the review status, with the
+    //  number that decided it.  The sentence has ONE home, shared with the
+    //  component loader (FitGrade.H); a clean grade says nothing more.
+    announceFitGrade("pair " + pairName, "", provDict);
 
     auto readRange = [&](const DictPtr& blk, const char* lo, const char* hi,
                          const Dimensions& dims) -> std::optional<Range>
