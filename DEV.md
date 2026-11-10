@@ -3492,6 +3492,45 @@ accepts today, and that is a policy call.
 > the guides.  The `gui/` readers (dossier.ts, evidence.ts, the bundle glob,
 > their tests) are the laptop's.  A fresh session note: the curation path is
 > `data/curation/<origin>/curateNN_<name>`.
+> STATE AT HANDOFF (cloud general, 2026-11-10, stopped on the coordinator's
+> order; branch c295-curation-root, commit adf7d5c33 + this note).  DONE and
+> committed: step 1's CLASSIFICATION (measured, not yet applied) and steps 3-4's
+> TOOLING -- `bin/curate/curation_roots.py` (the one home: data/curation/
+> {pairs,vp,components}, teaching root tutorials/props/curation,
+> `all_case_dirs`/`numbers`/`case_roots`), read by bin/choupo-curate,
+> pairs_c283.py, pairs_px.py, c287_new_components.py, vp_curator_list.py,
+> case_manifest.py (role `curationTrace`), release_inventory.py
+> (`curationTraces`), check_fastset.py, check_regressed_pairs.py (its
+> case-local NRTL scan); bin/runTests walks CURATION_ROOT as a second root;
+> listCases counts it; runCase refuses an old path naming the new one;
+> .gitignore carries the run-output rules to data/curation/.  Syntax-checked
+> only; no gate re-run after the edits.  BASELINE TAKEN: `bin/runTests
+> tutorials/props/curation` = PASS 697 / FAIL 0 before any move.  CLASSIFICATION:
+> 678 move (611 pairs: 542 `WRITTEN BY bin/choupo-curate` + 69 `WRITTEN BY
+> bin/curate/pairs_px.py`; 65 vp `Written by bin/choupo-curate vp`; 2
+> components, curate287_new_components "written by hand beside
+> c287_new_components.py" and curate699_new_components_estimated "written by
+> its companion script" -- the only two not mechanically generated, sent to
+> components/ as the traces of the C287/C292 records); 19 stay (curate01..19)
+> + fixtures/.  NOTE: curate15..19 ALSO carry `WRITTEN BY bin/choupo-curate`
+> (C282 pilots); they stay because this entry and the brief say 01..19 stay.
+> NOT STARTED: the git mv; the reference rewrite (643 fittedInCase + 586
+> REPRODUCE comments + 189 reproducedInCase + ~20 omega `method` strings in
+> data/standards, all of the exact form `tutorials/props/curation/<case>`;
+> 30 AUTHORED (manifest-unclaimed) case copies to edit by text; 673 IMPORTED
+> copies to be refreshed by `bin/choupo-import <case>` after the standards
+> edit, never edited by hand; DEV.md line naming
+> curate287_new_components by path); the reseal; generated views
+> (caseManifest, releaseInventory, tutorialsGuide-props, gateManifest,
+> vpCuratorList); FASTSET representatives for data/curation/{pairs,vp,
+> components} (check_fastset now demands them); extending the case-content
+> gates to `curation_roots.case_roots()` (check_dossier_grammar,
+> check_evidence_records, check_seal_drift, check_sealed_corpus,
+> check_props_order, check_schema_coverage, check_overlay_aad_pinned,
+> check_unread_keys, check_type_coverage, check_registry_scan,
+> check_campaign_closure, suite_timings -- to be decided by diffing claims
+> before/after); docs; sabotages; the C295 RESULT.  src/ needs NO edit
+> (ApproximationAuthorisation.cpp:79 points at the teaching cases, which stay).
 
 > **C294 (Vitor, 2026-11-10, on seeing only NRTL pair folders: "Mas esse
 > ajuste e rapido e devia ter sido feito! Eventualmente ate pode melhorar o
