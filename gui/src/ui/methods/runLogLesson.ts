@@ -36,7 +36,7 @@ export const RUN_LOG_STEPS: readonly LessonStep[] = [
     title: "A run talks, and the log is where it says what it did",
     body: "Every run prints what it did while it did it: what it found, how "
       + "each unit converged, what it wrote, and what it wants you to know "
-      + "about the answer. From a terminal, runCase sends ALL of it — both "
+      + "about the answer. From a terminal, runCase sends all of it — both "
       + "the standard output and the standard error — into one file beside "
       + "the case, log.choupoSolve (" + at("runCaseRedirect") + ", "
       + at("runCaseLog") + "), and shows you only a summary: the last 14 "
