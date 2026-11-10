@@ -211,7 +211,7 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
         + "convention: only enthalpy differences between two states on the "
         + "chart mean anything.", unit: "°C" },
       { sym: "\\mathrm{Le}",
-        means: "The lewis number: thermal diffusivity over mass "
+        means: "The Lewis number: thermal diffusivity over mass "
         + "diffusivity — how fast heat spreads compared with how fast the "
         + "vapour does.  It is the single number that separates the two "
         + "temperatures above, and Le ≈ 1 for air-water is why they are so "
