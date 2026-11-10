@@ -1,0 +1,15 @@
+# The two MINOR keys of Table 2 of K. T. Klemola and J. K. Ilme, Ind. Eng. Chem. Res. 35
+#   (1996) 4579-4586, doi:10.1021/ie960390r, as MASS FLOWS, by arithmetic on the numbers the
+#   table prints (klemola1996_table2.csv beside this file); nothing here is measured anew.
+#   basis = printed    wt % of the product times that product's flow rate:
+#                        n-butane overhead  0.2 % x  8115 kg/h =  16.2 kg/h
+#                        i-butane bottoms   0.3 % x 18119 kg/h =  54.4 kg/h
+#   basis = byBalance  the same quantity from the table's OTHER two streams (feed less the
+#                      other product), which a closed table would make equal to the first:
+#                        n-butane overhead  67.7 % x 26234 - 98.1 % x 18119 = -14.3 kg/h
+#                        i-butane bottoms   29.4 % x 26234 - 93.5 % x  8115 = 125.3 kg/h
+#   The two bases differ by 31 and 71 kg/h: that is the resolution the table's one-decimal
+#   wt % gives these two numbers, and the band a model can be held to on them.
+basis,nC4_top_kgph,iC4_bottoms_kgph
+printed,16.2,54.4
+byBalance,-14.3,125.3

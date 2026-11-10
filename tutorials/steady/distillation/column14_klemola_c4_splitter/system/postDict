@@ -39,6 +39,13 @@ references
         citation  "K. T. Klemola, J. K. Ilme, Distillation Efficiencies of an Industrial-Scale i-Butane/n-Butane Fractionator, Ind. Eng. Chem. Res. 35 (1996) 4579-4586, Table 2 (measured plant data), doi:10.1021/ie960390r";
         units     { feed_wt "%"; top_wt "%"; bottoms_wt "%"; flow_kgph "kg/h"; duty_MW "MW_power"; }
     }
+    {
+        name      klemolaMinor;
+        file      "constant/reference/klemola1996_table2_minorKeys.csv";
+        role      experiment;
+        citation  "K. T. Klemola, J. K. Ilme, Distillation Efficiencies of an Industrial-Scale i-Butane/n-Butane Fractionator, Ind. Eng. Chem. Res. 35 (1996) 4579-4586, Table 2 (measured plant data), doi:10.1021/ie960390r";
+        units     { nC4_top_kgph "kg/h"; iC4_bottoms_kgph "kg/h"; }
+    }
 );
 
 views
@@ -145,6 +152,48 @@ views
     }
 
     //  3. THE STAGE PROFILE -- what the model predicts inside; the paper measures none
+    {
+        name    table_minor_keys_kgph;
+        type    table;
+        title   "The two minor keys as mass flows, beside the resolution of Table 2 itself";
+        note    "The relative differences of the two minor keys in the table above are large because the numbers are small. In kg/h, on a 26234 kg/h feed: Table 2 gives each of them twice, once printed (wt % times the product flow) and once by its own balance (feed less the other product), and the two disagree by 31 and 71 kg/h. Choupo lies inside that band for both. The measured table cannot say more about these two numbers; nothing in the model is adjusted to them.";
+        columns
+        (
+            { name nC4_top; label "n-butane in the distillate"; unit "kg/h"; }
+            { name iC4_bot; label "i-butane in the bottoms";    unit "kg/h"; }
+        );
+        rows
+        (
+            {
+                name    printed;
+                label   "Table 2, printed (wt % x product flow)";
+                cells
+                {
+                    nC4_top { reference klemolaMinor; select { basis printed; } key nC4_top_kgph; }
+                    iC4_bot { reference klemolaMinor; select { basis printed; } key iC4_bottoms_kgph; }
+                }
+            }
+            {
+                name    byBalance;
+                label   "Table 2, by its own balance (feed - other product)";
+                cells
+                {
+                    nC4_top { reference klemolaMinor; select { basis byBalance; } key nC4_top_kgph; }
+                    iC4_bot { reference klemolaMinor; select { basis byBalance; } key iC4_bottoms_kgph; }
+                }
+            }
+            {
+                name    choupo;
+                label   "Choupo";
+                cells
+                {
+                    nC4_top { stream distillate; key m_nButane; }
+                    iC4_bot { stream bottoms;    key m_isoButane; }
+                }
+            }
+        );
+    }
+
     {
         name    profile_temperature;
         type    profile;
