@@ -316,7 +316,7 @@ N &= \frac{\int Q_d\, \mathrm{d}t}{V_0} &\qquad& \text{the wash clock}
         unit: "kmol/m³" },
       { sym: "R", means: "the rejection, held constant -- the assumption "
         + "every line here spends" },
-      { sym: "N", means: "the diavolumes of the wash, counted in vessel volumes of the retentate AS IT IS during the wash: V_0 for a wash of the initial charge (step 3's clock), V_0/VCF after a concentration -- the volume dN = Q_p dt / V divides by" },
+      { sym: "N", means: "the diavolumes of the wash, counted in vessel volumes of the retentate as it is during the wash: V_0 for a wash of the initial charge (step 3's clock), V_0/VCF after a concentration -- the volume dN = Q_p dt / V divides by" },
       { sym: "\\mathrm{d}N",
         means: "an element of the wash clock, Q_p dt / V" },
       { sym: "\\mathrm{VCF}",
@@ -470,7 +470,7 @@ c_m > c_b & \text{the wall is richer than the bulk}\\[8pt]
       + "the tool's witness toggle to put the two shipped cases side by side: "
       + "diafilter01 and diafilter02 are the same charge, area, pressure and "
       + "horizon, and the only difference between them is the fouling block, "
-      + "so the difference in the answer IS the fouling.  Read diafilter02's "
+      + "so the difference in the answer is the fouling.  Read diafilter02's "
       + "own header before believing its constant: a fully dissolved brine "
       + "has nothing to deposit, the value is declared hypothetical in the "
       + "case, and what the case demonstrates is the consequence of a decline "
@@ -479,8 +479,8 @@ c_m > c_b & \text{the wall is richer than the bulk}\\[8pt]
   {
     n: 7,
     title: "The trade you actually make: purity against product and time",
-    body: "Washing longer buys purity and costs two things.  It costs product "
-      + ", because no rejection is one and the exponent of step 4 never "
+    body: "Washing longer buys purity and costs two things.  It costs product, "
+      + "because no rejection is one and the exponent of step 4 never "
       + "stops running; and it costs time, because every diavolume is a "
       + "vessel volume of permeate that has to go through the membrane.  The "
       + "time is where the design decision lives.  For a fixed inventory of "
@@ -696,7 +696,7 @@ G_\mathrm{max} = \dfrac{\ln\!\left( 1 - \mathrm{loss}_\mathrm{goal} \right)}{R -
         + "the product loss can see" },
       { sym: "\\mathrm{VCF}",
         means: "the volume concentration factor of step 3" },
-      { sym: "N", means: "the diavolumes of the wash, counted in vessel volumes of the retentate AS IT IS during the wash: V_0 for a wash of the initial charge (step 3's clock), V_0/VCF after a concentration -- the volume dN = Q_p dt / V divides by" },
+      { sym: "N", means: "the diavolumes of the wash, counted in vessel volumes of the retentate as it is during the wash: V_0 for a wash of the initial charge (step 3's clock), V_0/VCF after a concentration -- the volume dN = Q_p dt / V divides by" },
       { sym: "R", means: "the retention of the product, held constant "
         + "through the whole process -- the same assumption step 4 spends, "
         + "and step 5 is about why it is not true" },
