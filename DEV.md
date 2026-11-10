@@ -3261,6 +3261,8 @@ accepts today, and that is a policy call.
 > (3) a `rho_liquid_<comp>` key in choupoProps, so a density audit need not
 > recompute the engine's route.  Each record correction moves goldens: list first.
 
+> **C280 RESULT.** C280 LANDED 11-10: `fitParameters` takes `objective { method twoStage|leastSquares|minimax; }` with relative binodal rows; the butanol-water pair is PROMOTED to `data/standards/parameters/NRTL/nButanol-water.dat` (b_ij 1894.04, b_ji -163.84, a_ij -4.7108, a_ji 4.0996, alpha 0.4459), fitted by least squares on 14 tie lines and the heteroazeotrope: held-out tie-line AAD 0.0056 (band 0.01), held-out heteroazeotrope 0.38 K, water-rich liquid 5 % mean (the laboratories' own scatter). NOT for homogeneous butanol-rich VLE at 1 atm: 2.2 K high on average, 3.2 K max, held out and written in the record. On this partition minimax follows one laboratory and twoStage misses the band, so least squares is the promoted method. Held by check_regressed_pairs (record reproduced from its case) and --scope on curate14; NOT run: --gui, schema-coverage and guide freshness gates, a full sweep.
+>
 > **C280 (Vitor, 2026-11-10, on the butanol-water fit: "Eu quando faco ajuste
 > comeco por minimizar os residuos quadraticos pra ter uma estimativa inicial.
 > Depois no final prefiro minimizar o erro maximo! Porque isso e que me da a
