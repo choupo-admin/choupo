@@ -3281,6 +3281,21 @@ accepts today, and that is a policy call.
 > before they boil).  STEP 2 (next, owes the protocol): fitted Antoine records
 > for the components with archive vapour-pressure data, fit on one laboratory,
 > held out on another, band declared before the fit.
+> **C281 STEP 1 LANDED (2026-11-10, cloud session).**  The model announces,
+> once per component per process, through AdvisoryLog into the caveat block
+> and the JSON advisories: that its pressure is a corresponding-states
+> estimate (with Tc, Pc, omega), and, where the curve's own normal boiling
+> point misses the record's Tb by more than 1.0 K, both temperatures and the
+> remedy -- 30 of the 48 records announce a gap (glycerol +82.90 K).
+> `Component.cpp` now hands Tb to the vapour-pressure dict (Antoine and Wagner
+> ignore it).  Gate `check_ambrose_walton_announced` (gap recomputed
+> independently to 0.01 K; probe; nine Psat values equal the parent build to
+> 1e-11; two by-hand sabotages caught).  Validated: --fast PASS 78 / FAIL 0;
+> check_wasm_dialect, check_caveat_surface, check_advisory_attribution,
+> check_psat_range, check_psat_continuity, gate_manifest --check OK; no golden
+> moved.  Corrections the general made to the brief: the `//` origin comment
+> did reach `componentProvenance` in the JSON (never an advisory), and the
+> model could not see Tb until this change.  STEP 2 not yet dispatched.
 
 > **C280 RESULT.** C280 LANDED 11-10: `fitParameters` takes `objective { method twoStage|leastSquares|minimax; }` with relative binodal rows; the butanol-water pair is PROMOTED to `data/standards/parameters/NRTL/nButanol-water.dat` (b_ij 1894.04, b_ji -163.84, a_ij -4.7108, a_ji 4.0996, alpha 0.4459), fitted by least squares on 14 tie lines and the heteroazeotrope: held-out tie-line AAD 0.0056 (band 0.01), held-out heteroazeotrope 0.38 K, water-rich liquid 5 % mean (the laboratories' own scatter). NOT for homogeneous butanol-rich VLE at 1 atm: 2.2 K high on average, 3.2 K max, held out and written in the record. On this partition minimax follows one laboratory and twoStage misses the band, so least squares is the promoted method. Held by check_regressed_pairs (record reproduced from its case) and --scope on curate14; NOT run: --gui, schema-coverage and guide freshness gates, a full sweep.
 >
