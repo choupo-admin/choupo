@@ -711,7 +711,7 @@ export function LevenspielTool(): JSX.Element {
             <Group gap={6} wrap="nowrap" align="center">
               <Loader size="xs" />
               <Text size="xs" c="dimmed">
-                re-solving both reactors — seconds, not instant
+                re-solving both reactors — seconds, not instantly
               </Text>
             </Group>
           )}
@@ -797,7 +797,7 @@ export function LevenspielTool(): JSX.Element {
             <Group gap="sm" wrap="nowrap" align="center">
               <Loader size="sm" />
               <Text size="sm" c="dimmed">
-                the engine is solving both reactors — seconds, not instant
+                the engine is solving both reactors — seconds, not instantly
               </Text>
             </Group>
           ) : (
@@ -953,7 +953,7 @@ export function LevenspielTool(): JSX.Element {
           Ordinate: 1/(−r_{limiting}) — an ordinate transform for display over
           the engine&apos;s published (X, −r) points [(m³·s)/mol].
           {" "}Shaded area: trapezoids over those same points from X ={" "}
-          {fmt(pfrView?.x0 ?? 0, 2)} to X_PFR — the authorized view geometry;
+          {fmt(pfrView?.x0 ?? 0, 2)} to X_PFR — this page's own view geometry;
           the RK4 that made the points is the engine&apos;s.
           {" "}Rectangle: X_out·1/(−r_out) from the CSTR&apos;s published
           KPIs.  Nothing here re-derives kinetics.

@@ -108,7 +108,7 @@ describe("the reactor-sizing lesson", () => {
     //  claiming the plot shows autocatalysis would be claiming a result the
     //  witnesses cannot produce.
     const note = prose(step(4).note!);
-    expect(note).toContain("neither witness below is autocatalytic");
+    expect(note).toContain("Neither witness below is autocatalytic");
     expect(note).toContain("described here, not demonstrated");
     //  What the engine CAN express is stated instead of implied.
     expect(note).toContain("declares its own `order`");
