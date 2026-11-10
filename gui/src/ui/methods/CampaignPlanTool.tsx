@@ -75,7 +75,7 @@ export function HalfBanner({ half, children }: {
   const toy = half === "toy";
   return (
     <Alert color={toy ? "orange" : "teal"} variant="light" mt="sm" data-half={half}
-      title={toy ? "THE TOY: recomputed in this page, by you" : "THE ENGINE: read from what Choupo published"}>
+      title={toy ? "The toy: recomputed in this page, by you" : "The engine: read from what Choupo published"}>
       <Text size="sm">{children}</Text>
     </Alert>
   );

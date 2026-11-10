@@ -79,7 +79,7 @@ export const DEMAND_STEPS: readonly LessonStep[] = [
       + "value tell you whether the data can distinguish the trend from "
       + "no trend at all, and with eight or ten years they often cannot. "
       + "The band around a future year is the prediction interval of a "
-      + "NEW observation: it is wider than the line's own uncertainty "
+      + "new observation: it is wider than the line's own uncertainty "
       + "because it includes a year's scatter, and it widens the further "
       + "the year is from the middle of the history. What the method "
       + "assumes, and no statistic tests, is that whatever made the "

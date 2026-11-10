@@ -266,10 +266,10 @@ export function RouteScreeningTool(): JSX.Element {
         <Table.Tr>
           <Table.Th>route</Table.Th>
           <Table.Th>1 · gross margin (€/kg)</Table.Th>
-          <Table.Th>2 · atom economy</Table.Th>
-          <Table.Th>3 · equilibrium conversion (K)</Table.Th>
+          <Table.Th>2 · atom economy (%)</Table.Th>
+          <Table.Th>3 · equilibrium conversion (fraction), and the constant K</Table.Th>
           <Table.Th>4 · heat per mol methanol (kJ)</Table.Th>
-          <Table.Th>5 · methanol, every species open</Table.Th>
+          <Table.Th>5 · methanol mole fraction, every species open</Table.Th>
         </Table.Tr>
       </Table.Thead>
       <Table.Tbody>

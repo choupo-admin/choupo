@@ -76,7 +76,7 @@ function GuardBox({ id }: { id: ClassId }): JSX.Element {
               style={{ flexShrink: 0 }}>{KIND_WORD[g.kind]}</Badge>
             <Text size="xs">
               {g.says}
-              {g.file !== "" && <> <code>{g.file}</code>{g.gate ? <> (gate <code>{g.gate}</code>)</> : null}.</>}
+              {g.file !== "" && <> <code>{g.file}</code>{g.gate ? <> (held by the check <code>{g.gate}</code>)</> : null}.</>}
             </Text>
           </Group>
         ))}

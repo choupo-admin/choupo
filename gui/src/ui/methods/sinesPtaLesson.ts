@@ -403,7 +403,7 @@ export const SINES_CHECKLIST: readonly string[] = [
     + "counterparties, the contracts and the guarantees; where the main "
     + "contracts are with related parties, look for concentration and for "
     + "risks that move together.",
-  "Commit capital after the due diligence of the gate, not while it runs "
+  "Commit capital after the due diligence that a stage gate calls for, not while it is still running "
     + "(the Front-End Loading page).",
   "Watch concentration: one lender, one customer and one feedstock source "
     + "are three single points of failure.",
@@ -740,8 +740,8 @@ export const SINES_RISKS: readonly RiskCard[] = [
       + "executed, \"tendo o valor da mesma sido alvo de uma desvalorização, "
       + "devido a problemas ambientais\" (its value having been written down, "
       + "owing to environmental problems; EY-final p. 154).",
-    concept: "Stage gates: capital is committed after the due diligence of "
-      + "the gate, not while it runs.",
+    concept: "Stage gates: capital is committed after the due diligence that a stage "
+      + "gate calls for, not while it is still running.",
   },
 ];
 

@@ -62,7 +62,7 @@ export const SCREEN_SECTIONS: readonly ScreenSection[] = [
     title: "The funnel: the cheapest filter first",
     body: "Nobody starts a new product by measuring rates.  The routes already "
       + "known from the literature and the patents are listed first, and "
-      + "then passed through filters in order of COST, cheapest first.  "
+      + "then passed through filters in order of cost, cheapest first.  "
       + "Arithmetic on the stoichiometry and a table of prices costs nothing.  "
       + "Thermodynamics costs a calculation from data the catalogue already "
       + "holds.  A laboratory screen of catalysts costs months, a rate law "
@@ -82,7 +82,7 @@ export const SCREEN_SECTIONS: readonly ScreenSection[] = [
       + "Multiply by prices and subtract from the product's price: that is the "
       + "stoichiometric gross margin, the first economic test of Douglas's "
       + "hierarchical design procedure (Conceptual Design of Chemical "
-      + "Processes, 1988).  It is an UPPER bound, because a real plant never "
+      + "Processes, 1988).  It is an upper bound, because a real plant never "
       + "reaches complete conversion and full selectivity, and it pays for "
       + "energy, equipment and people too.  Within the boundary this margin "
       + "draws — the one product and the raw materials named, no credit for "
@@ -151,7 +151,7 @@ export const SCREEN_SECTIONS: readonly ScreenSection[] = [
       + "exothermic.  A partial conversion is not a verdict.  It means a "
       + "recycle, and the recycle has a cost the next level of design will "
       + "price — in flow, compression and separation.  With the unreacted "
-      + "feed recycled, the OVERALL yield is set by the selectivity and the "
+      + "feed recycled, the overall yield is set by the selectivity and the "
       + "losses rather than by the conversion per pass, so a low conversion "
       + "per pass does not by itself mean much more raw material consumed.  A conversion of $10^{-6}$ would be a verdict.",
     eq: String.raw`K(T) = \exp\!\left(-\frac{\Delta G^\circ(T)}{R\,T}\right)
@@ -172,8 +172,9 @@ export const SCREEN_SECTIONS: readonly ScreenSection[] = [
     check: {
       q: "Why does raising the pressure help every route here?",
       a: "Each route has fewer moles of gas on the product side, so the "
-        + "product of (y P/P°)^ν carries a negative power of P.  At fixed K "
-        + "a higher P forces the mole fractions toward the products.",
+        + "exponents of the pressure terms sum to a negative number, so P "
+        + "enters with a net negative power.  At fixed K a higher P forces the "
+        + "mole fractions toward the products.",
     },
   },
   {
@@ -202,7 +203,7 @@ export const SCREEN_SECTIONS: readonly ScreenSection[] = [
     n: 6,
     id: "selectivity",
     title: "Filter 5 — is the product where the atoms want to go?",
-    body: "Filter 3 asked the route's OWN reaction, and route C passed it "
+    body: "Filter 3 asked the route's own reaction, and route C passed it "
       + "with the largest $K$ on the page.  Now give a Gibbs reactor the same "
       + "methane and oxygen and every species the case knows, and let it find "
       + "where the atoms end up when nothing stops them at methanol.  "
@@ -213,10 +214,10 @@ export const SCREEN_SECTIONS: readonly ScreenSection[] = [
       + "quarter (the conversion, 25 %) with the half in the outlet gas "
       + "(the mole fraction of methane, 50 %, which is large because the "
       + "methane was fed in excess and the unburned part is diluted only by "
-      + "the water and carbon dioxide formed).Methanol is favoured over methane and oxygen, but the "
+      + "the water and carbon dioxide formed).  Methanol is favoured over methane and oxygen, but the "
       + "combustion products are favoured far more, and methanol burns more "
       + "easily than the methane it came from.  So route C stands or falls on "
-      + "a catalyst that stops at methanol.  That is a question of RATES, and "
+      + "a catalyst that stops at methanol.  That is a question of rates, and "
       + "no paper screen can answer it.  Direct oxidation of methane to "
       + "methanol has been pursued for decades and is not how methanol is "
       + "made at scale.  Routes A and B have the same weakness, milder: on "
