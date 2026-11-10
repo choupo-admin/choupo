@@ -965,7 +965,7 @@ function McCabeTool({ catalogue, localUnifac, componentFiles }: {
   // curated pair is announced, never silently drawn as ideal.
   const idealLie = (activity === "NRTL" || activity === "Wilson") && pairOk
     && !hasPair(activity, compA, compB)
-    ? `No curated ${activity} pair covers ${compA}–${compB}, so this diagram assumes IDEAL mixing — `
+    ? `No curated ${activity} pair covers ${compA}–${compB}, so this diagram assumes ideal mixing — `
       + `it cannot show an azeotrope. Switch γ to UNIFAC (predictive, from the components' groups), `
       + `or curate a ${activity} pair for this system.`
     : null;
@@ -974,7 +974,7 @@ function McCabeTool({ catalogue, localUnifac, componentFiles }: {
   if (err) alerts.push(<Alert key="err" color="red" variant="light">{err}</Alert>);
   if (!pairOk) alerts.push(
     <Alert key="pair" color="yellow" variant="light" title="Pick a binary">
-      McCabe-Thiele needs two DIFFERENT VLE-able compounds.
+      McCabe-Thiele needs two different compounds that both have vapour-liquid equilibrium data.
     </Alert>);
   if (idealLie) alerts.push(
     <Alert key="ideal" color="orange" variant="light"
