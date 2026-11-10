@@ -436,7 +436,7 @@ c_m > c_b & \text{the wall is richer than the bulk}\\[8pt]
     where: [
       { sym: "V_\\mathrm{permeated}",
         means: "the cumulative permeate volume, an integrated state of the run",
-        unit: "m^3" },
+        unit: "m³" },
       { sym: "A_\\mathrm{eff}",
         means: "the effective water permeance the transport "
         + "law is handed -- what the membrane still has", unit: "m/(s·Pa)" },
