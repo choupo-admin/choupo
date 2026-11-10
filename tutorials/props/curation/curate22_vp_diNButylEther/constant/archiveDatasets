@@ -39,7 +39,7 @@ datasets
     }
     {
         file          "constant/archiveExtracts/diNButylEther-vapourPressure-j.fluid.2015.05.002.dat";
-        role          validation;   // informational: the operation declares it
+        role          fit;   // informational: the operation declares it
         doi           "10.1016/j.fluid.2015.05.002";
         url           "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2015.05.002.xml";
         page          "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2015.05.002.json";
@@ -49,6 +49,40 @@ datasets
         inchiKey      "DURPTKYDGMDSBL-UHFFFAOYSA-N";
         extract       "bin/choupo-thermoml extract-vp <article file> --inchikey DURPTKYDGMDSBL-UHFFFAOYSA-N --into <dir>";
         sha256        "124ebbc698f48f7a21e0549e9bb58603bb42b8b4b74bca7cff3f154172ecc99d";
+        identity
+        {
+            diNButylEther  { cas "142-96-1"; inchiKey "DURPTKYDGMDSBL-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/diNButylEther-vapourPressure-j.fluid.2007.09.002.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1016/j.fluid.2007.09.002";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2007.09.002.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2007.09.002.json";
+        articleFile   "j.fluid.2007.09.002.xml";
+        articleSha256 "cce7a8570600ee9f4df212272220749a2dffe27a9fab8d95983e498f104300ef";
+        extractor     vapourPressure;
+        inchiKey      "DURPTKYDGMDSBL-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey DURPTKYDGMDSBL-UHFFFAOYSA-N --into <dir>";
+        sha256        "01d2c5a07160c5f6c675fb1fbedc5e3192a88b2f7f003889ac024d256d9cd878";
+        identity
+        {
+            diNButylEther  { cas "142-96-1"; inchiKey "DURPTKYDGMDSBL-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/diNButylEther-vapourPressure-je7007523.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je7007523";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je7007523.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je7007523.json";
+        articleFile   "je7007523.xml";
+        articleSha256 "c9b5b693d7e2459732b084f6fdb52e9529dbcdb0cdedc23dccfe2307e37dc22c";
+        extractor     vapourPressure;
+        inchiKey      "DURPTKYDGMDSBL-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey DURPTKYDGMDSBL-UHFFFAOYSA-N --into <dir>";
+        sha256        "6311d071b34f4b05f37970b423dc682efd90aab055cdde35e162394b5af482d7";
         identity
         {
             diNButylEther  { cas "142-96-1"; inchiKey "DURPTKYDGMDSBL-UHFFFAOYSA-N"; }
