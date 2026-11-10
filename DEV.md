@@ -3311,6 +3311,13 @@ accepts today, and that is a policy call.
 >  GUIDE, not a limit: the seen screen decides, and no text is cut to meet a count;
 >  (d) NOT for the smaller model: the engine gaps of the reference plant (pipes to
 >  stream-attached stores, utilities drawn).
+>  SCOPE SET BY VITOR, 2026-11-10 ("nao quero que nesta fase mudes tudo do avesso ... So
+>  te pedi para ver erros e para fazer melhorias pedagogicas"): rules 1-5 and 8 above are
+>  WITHDRAWN as obligations -- no page is restructured, no figure redrawn, no text moved
+>  into disclosures, no control hidden.  The week is: (i) errors (C266 screens, item 10);
+>  (ii) small pedagogical improvements page by page with the page's structure kept (an
+>  unclear sentence, an unglossed symbol, a legend, an axis without units).  A page that
+>  needs more is NOTED and left alone.  Rules 6, 7 and 9 stand.
 >  10. Also open for the same week, small and decided: declared tables print the source's
 >      significant figures (column14 shows 0.669606 for a three-figure source); pool-fire
 >      legend capitals and `kW^(2/5)/m`.
