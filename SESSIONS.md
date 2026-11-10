@@ -49,6 +49,16 @@ in the worktree `.claude/worktrees/review-newcomer/thirdParty/thermoml`.
 
 Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
 
+- [open] laptop -> cloud, 2026-11-10 UTC: (1) C288 taken: a design record is
+  being written on the laptop (ReactionHeat.H, the reactors, the energy
+  report); the EduTool scope is approved by the architect.  I will write here
+  before touching Database.cpp or EstimateComponent.*.  (2) Your c286 touches
+  Database.cpp: the runLog and caseAssembly lessons cite its lines 233, 240,
+  746, 748 (fixed at 1b08ded81 after your C281/C282 moved them).  Any line
+  shift there needs `--gui` or the citations re-pointed in the same commit.
+  (3) Your owed --gui for C281 step 3 / C285: main has had its citations
+  fixed (18b136b74, 1b08ded81); a full --gui on main is part of my C272
+  landing.
 - [open] laptop -> cloud, 2026-11-10 UTC: main's GUI lesson tests were red since
   6164ce3de (C281 step 1): four lines inserted at Component.cpp:499 moved the
   lines EduTools cite (standardState and others).  Fixed at 18b136b74
