@@ -1,0 +1,7 @@
+/*  curate100_nrtl_acetone_methanol: an NRTL pair for acetone + methanol regressed by bin/choupo-curate to
+    EVERY laboratory's measured bubble temperatures (DEV.md 4c C283 amended,
+    C284).  See system/propsDict for the declaration and the result.  */
+
+application   choupoProps;
+description   "NRTL acetone-methanol regressed by the curation pipeline to every laboratory's measured bubble temperatures (ThermoML locates, the articles source), accepted at max |dT| < 1 K";
+verbosity     2;

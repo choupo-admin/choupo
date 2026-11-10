@@ -1,0 +1,137 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      nButanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-nButylAcetate.b_ij  535.925517173;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-nButylAcetate.b_ji  -226.74673571;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "3e01896e52b58c85";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nButanol-nButylAcetate-bubble-je700411p.dat";
+            doi       "10.1021/je700411p";
+            sha256    "32ed6e15958b58bc35d7eb647d3cb4b75e9d6232ffbe7608a87c9c4b09cc34b1";
+            provenance measured;
+            archiveFile "je700411p.xml";
+            system    "nButanol + nButylAcetate";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nButanol-nButylAcetate-bubble-je5000296.dat";
+            doi       "10.1021/je5000296";
+            sha256    "953de8b43e0b465c895e462df1b46a6644280c4b11a771b572581ae0065757da";
+            provenance measured;
+            archiveFile "je5000296.xml";
+            system    "nButanol + nButylAcetate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.058; max 0.97; n 28; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-nButylAcetate.b_ij  535.925521365;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-nButylAcetate.b_ji  -226.746738422;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "3e01896e52b58c85";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nButanol-nButylAcetate-bubble-je700411p.dat";
+            doi       "10.1021/je700411p";
+            sha256    "32ed6e15958b58bc35d7eb647d3cb4b75e9d6232ffbe7608a87c9c4b09cc34b1";
+            provenance measured;
+            archiveFile "je700411p.xml";
+            system    "nButanol + nButylAcetate";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nButanol-nButylAcetate-bubble-je5000296.dat";
+            doi       "10.1021/je5000296";
+            sha256    "953de8b43e0b465c895e462df1b46a6644280c4b11a771b572581ae0065757da";
+            provenance measured;
+            archiveFile "je5000296.xml";
+            system    "nButanol + nButylAcetate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.058; max 0.97; n 28; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

@@ -84,7 +84,11 @@ std::string fnv1a(const std::string& s)
 
 std::string identityOf(const EvidenceDataset& d)
 {
-    return d.role + "|" + d.path + "|" + d.series + "|" + d.doi + "|" + d.sha256;
+    std::string id = d.role + "|" + d.path + "|" + d.series + "|" + d.doi + "|" + d.sha256;
+    //  A declared discard is part of the frozen declaration; absent, the
+    //  identity (and every fingerprint) is unchanged.
+    for (const std::size_t r : d.discard) id += "|discard=" + std::to_string(r);
+    return id;
 }
 
 } // namespace
@@ -348,6 +352,24 @@ EvidencePartition EvidencePartition::read(const DictPtr& opDict,
         readOwnProvenance(d, opLabel);
 
         d.role = e->lookupWord("role");
+        //  `discard ( <row> ... );` -- data rows (1-based, as the file lists
+        //  them) set aside BY NAME: the outlier rule of DEV.md 4c C283
+        //  (amended) applied after a least-squares stage, written into the
+        //  declaration so the fit that follows reads the kept rows only.
+        if (e->found("discard"))
+        {
+            for (const scalar v : e->lookupList("discard"))
+            {
+                if (!(v >= 1.0) || v != std::floor(v))
+                    throw std::runtime_error(opLabel + ": evidence dataset '" + d.path
+                        + "' declares `discard` row " + std::to_string(v)
+                        + " -- a discarded row is named by its 1-based position"
+                          " in the file's `data` list.");
+                d.discard.push_back(static_cast<std::size_t>(v));
+            }
+            std::sort(d.discard.begin(), d.discard.end());
+            d.discard.erase(std::unique(d.discard.begin(), d.discard.end()), d.discard.end());
+        }
         if (d.role != "fit" && d.role != "validation")
             throw std::runtime_error(opLabel + ": evidence dataset '" + d.path
                 + "' declares `role " + d.role + ";` -- the only roles are"
@@ -473,6 +495,16 @@ void EvidencePartition::announce(const std::string& opLabel, int verbosity) cons
     };
     for (const auto& d : fit_)        line("FIT        ", d);
     for (const auto& d : validation_) line("HELD-OUT   ", d);
+    for (const auto* set : { &fit_, &validation_ })
+        for (const auto& d : *set)
+            if (!d.discard.empty())
+            {
+                std::cout << "      [outlier] " << d.path
+                          << (d.doi.empty() ? "" : " (doi " + d.doi + ")") << ": "
+                          << d.discard.size() << " row(s) DISCARDED by declaration --";
+                for (const std::size_t r : d.discard) std::cout << " " << r;
+                std::cout << "\n";
+            }
 
     //  A GENERATED DATASET SAYS SO IN THE RUN, not only in its header prose.
     //  curate01's two halves were synthetic from the day they were written and
@@ -641,8 +673,14 @@ EvidencePartition::loadColumns(const EvidenceDataset& ds,
     const std::size_t N = grid.size() / nc;
     std::vector<EvidencePoint> out;
     out.reserve(N);
+    for (const std::size_t r : ds.discard)
+        if (r > N)
+            throw std::runtime_error(where + ": `discard` names row "
+                + std::to_string(r) + " and the file lists " + std::to_string(N)
+                + " -- a discarded row must exist.");
     for (std::size_t r = 0; r < N; ++r)
     {
+        if (std::binary_search(ds.discard.begin(), ds.discard.end(), r + 1)) continue;
         EvidencePoint p;
         p.x = convUnit(grid[r * nc + cx], unit[cx], where);
         p.y = convUnit(grid[r * nc + cy], unit[cy], where);

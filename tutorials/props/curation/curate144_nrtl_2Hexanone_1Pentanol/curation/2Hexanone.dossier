@@ -1,0 +1,135 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      2Hexanone;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Hexanone-1Pentanol.b_ij  268.121838688;
+        equilibrium.liquid.activityModel.binaryParameters.2Hexanone-1Pentanol.b_ji  -141.603289037;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "0e6c1b4e5e6483d5";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Hexanone-1Pentanol-bubble-je0502905.dat";
+            doi       "10.1021/je0502905";
+            sha256    "e0f66d8a57bd22c3405c111e448b7e3752f0731d0f6cc122669b916fe93ac206";
+            provenance measured;
+            archiveFile "je0502905.xml";
+            system    "2Hexanone + 1Pentanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Hexanone-1Pentanol-bubble-je900058p.dat";
+            doi       "10.1021/je900058p";
+            sha256    "60ee278277a3b7dc9d96214f7d63ff569e6663b61875855e60bc38fea824b588";
+            provenance measured;
+            archiveFile "je900058p.xml";
+            system    "2Hexanone + 1Pentanol";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.151; max 0.9; n 27; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Hexanone-1Pentanol.b_ij  268.121841086;
+        equilibrium.liquid.activityModel.binaryParameters.2Hexanone-1Pentanol.b_ji  -141.603290793;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "0e6c1b4e5e6483d5";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Hexanone-1Pentanol-bubble-je0502905.dat";
+            doi       "10.1021/je0502905";
+            sha256    "e0f66d8a57bd22c3405c111e448b7e3752f0731d0f6cc122669b916fe93ac206";
+            provenance measured;
+            archiveFile "je0502905.xml";
+            system    "2Hexanone + 1Pentanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Hexanone-1Pentanol-bubble-je900058p.dat";
+            doi       "10.1021/je900058p";
+            sha256    "60ee278277a3b7dc9d96214f7d63ff569e6663b61875855e60bc38fea824b588";
+            provenance measured;
+            archiveFile "je900058p.xml";
+            system    "2Hexanone + 1Pentanol";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.151; max 0.9; n 27; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

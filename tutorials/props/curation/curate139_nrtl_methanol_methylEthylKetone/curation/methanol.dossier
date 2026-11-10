@@ -1,0 +1,137 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      methanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-methylEthylKetone.b_ij  242.978938795;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-methylEthylKetone.b_ji  22.7909571434;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1eafc143f4186fb2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-methylEthylKetone-bubble-j.fluid.2016.06.048.dat";
+            doi       "10.1016/j.fluid.2016.06.048";
+            sha256    "768dc654eeac83aed73676cd997961779eb0ac24ba6649a41d71f68786548cce";
+            provenance measured;
+            archiveFile "j.fluid.2016.06.048.xml";
+            system    "methanol + methylEthylKetone";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-methylEthylKetone-bubble-je301062g.dat";
+            doi       "10.1021/je301062g";
+            sha256    "e0dea04b2db6beb771543d99889945bc491afd7e8f2fba306d132c79cc206b0b";
+            provenance measured;
+            archiveFile "je301062g.xml";
+            system    "methanol + methylEthylKetone";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.039; max 0.976; n 36; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-methylEthylKetone.b_ij  242.978938753;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-methylEthylKetone.b_ji  22.7909571503;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1eafc143f4186fb2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-methylEthylKetone-bubble-j.fluid.2016.06.048.dat";
+            doi       "10.1016/j.fluid.2016.06.048";
+            sha256    "768dc654eeac83aed73676cd997961779eb0ac24ba6649a41d71f68786548cce";
+            provenance measured;
+            archiveFile "j.fluid.2016.06.048.xml";
+            system    "methanol + methylEthylKetone";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-methylEthylKetone-bubble-je301062g.dat";
+            doi       "10.1021/je301062g";
+            sha256    "e0dea04b2db6beb771543d99889945bc491afd7e8f2fba306d132c79cc206b0b";
+            provenance measured;
+            archiveFile "je301062g.xml";
+            system    "methanol + methylEthylKetone";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.039; max 0.976; n 36; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

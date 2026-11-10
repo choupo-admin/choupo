@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 562,
+  "cases": 622,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 15
@@ -1817,7 +1817,311 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/curation/curate100_nrtl_acetone_methanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate101_nrtl_ethanol_224Trimethylpentane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate102_nrtl_ethanol_dimethylCarbonate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate103_nrtl_diisopropylEther_isopropanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate104_nrtl_acetonitrile_methanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate105_nrtl_water_triethyleneGlycol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate106_nrtl_2Butanol_dimethylCarbonate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate107_nrtl_methanol_isopropanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate108_nrtl_1Pentanol_nNonane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate109_nrtl_water_ethyleneGlycol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/curation/curate10_nrtl_acetonitrile_water": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate110_nrtl_2Methyl2Propanol_water": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate111_nrtl_acetonitrile_1Propanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate112_nrtl_ethanol_methylEthylKetone": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate113_nrtl_isopropylAcetate_isopropanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate114_nrtl_pXylene_nDecane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate115_nrtl_ethylAcetate_acetonitrile": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate117_nrtl_nOctane_ethanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate118_nrtl_2Methyl2Propanol_14Dioxane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate119_nrtl_1Propanol_dimethylCarbonate": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -1849,7 +2153,327 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/curation/curate120_nrtl_ethanol_pXylene": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate121_nrtl_cyclohexane_cyclohexene": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate122_nrtl_1Pentanol_anisole": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate123_nrtl_ethylBenzene_styrene": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate124_nrtl_oCresol_ethanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate125_nrtl_ethanol_2Methyl1Butanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate126_nrtl_nButanol_dimethylCarbonate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate127_nrtl_methylPropionate_nHeptane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate128_nrtl_2Methyl1Propanol_isobutylAcetate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate129_nrtl_methylFormate_nHeptane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate130_nrtl_14Dioxane_cyclohexane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate131_nrtl_thiophene_nHeptane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate132_nrtl_1Propanol_propionicAcid": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate133_nrtl_methanol_2Butanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate134_nrtl_isopropanol_224Trimethylpentane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate135_nrtl_2Butanol_nNDimethylformamide": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate136_nrtl_ethylBenzene_sulfolane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate137_nrtl_2Methyl1Propanol_nNDimethylformamide": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate138_nrtl_ethanol_cyclohexane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate139_nrtl_methanol_methylEthylKetone": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -1879,6 +2503,150 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/curation/curate140_nrtl_nButanol_pXylene": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate141_nrtl_nNDimethylformamide_nNDimethylacetamide": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate142_nrtl_ethylAcetate_methanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate143_nrtl_ethylBenzene_monochlorobenzene": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate144_nrtl_2Hexanone_1Pentanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate145_nrtl_ethanol_ethyleneGlycol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate146_nrtl_2Methyl2Propanol_nNDimethylformamide": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate147_nrtl_dimethylCarbonate_oXylene": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate148_nrtl_nButanol_nButylAcetate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/curation/curate14_nrtl_butanol_water": {
    "application": "choupoProps",
    "ops": [
@@ -1893,7 +2661,199 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/curation/curate150_nrtl_acetonitrile_isopropanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate151_nrtl_nNDimethylformamide_aniline": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate152_nrtl_tetrahydrofuran_methanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate153_nrtl_diisopropylEther_224Trimethylpentane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate155_nrtl_dimethylCarbonate_pXylene": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate156_nrtl_cyclohexane_tetrahydrofuran": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate157_nrtl_nOctane_mXylene": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate158_nrtl_nOctane_oXylene": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate159_nrtl_benzene_methanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/curation/curate15_nrtl_methanol_dimethylCarbonate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate160_nrtl_cyclohexane_nHeptane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate161_nrtl_nDecane_mXylene": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate162_nrtl_nDecane_oXylene": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -8358,12 +9318,72 @@
     "tutorials/props/curation/curate07_nrtl_ethylacetate_ethanol",
     "tutorials/props/curation/curate08_nrtl_methylacetate_methanol",
     "tutorials/props/curation/curate09_nrtl_propanol_water",
+    "tutorials/props/curation/curate100_nrtl_acetone_methanol",
+    "tutorials/props/curation/curate101_nrtl_ethanol_224Trimethylpentane",
+    "tutorials/props/curation/curate102_nrtl_ethanol_dimethylCarbonate",
+    "tutorials/props/curation/curate103_nrtl_diisopropylEther_isopropanol",
+    "tutorials/props/curation/curate104_nrtl_acetonitrile_methanol",
+    "tutorials/props/curation/curate105_nrtl_water_triethyleneGlycol",
+    "tutorials/props/curation/curate106_nrtl_2Butanol_dimethylCarbonate",
+    "tutorials/props/curation/curate107_nrtl_methanol_isopropanol",
+    "tutorials/props/curation/curate108_nrtl_1Pentanol_nNonane",
+    "tutorials/props/curation/curate109_nrtl_water_ethyleneGlycol",
     "tutorials/props/curation/curate10_nrtl_acetonitrile_water",
+    "tutorials/props/curation/curate110_nrtl_2Methyl2Propanol_water",
+    "tutorials/props/curation/curate111_nrtl_acetonitrile_1Propanol",
+    "tutorials/props/curation/curate112_nrtl_ethanol_methylEthylKetone",
+    "tutorials/props/curation/curate113_nrtl_isopropylAcetate_isopropanol",
+    "tutorials/props/curation/curate114_nrtl_pXylene_nDecane",
+    "tutorials/props/curation/curate115_nrtl_ethylAcetate_acetonitrile",
+    "tutorials/props/curation/curate117_nrtl_nOctane_ethanol",
+    "tutorials/props/curation/curate118_nrtl_2Methyl2Propanol_14Dioxane",
+    "tutorials/props/curation/curate119_nrtl_1Propanol_dimethylCarbonate",
     "tutorials/props/curation/curate11_nrtl_acetone_ethanol",
+    "tutorials/props/curation/curate120_nrtl_ethanol_pXylene",
+    "tutorials/props/curation/curate121_nrtl_cyclohexane_cyclohexene",
+    "tutorials/props/curation/curate122_nrtl_1Pentanol_anisole",
+    "tutorials/props/curation/curate123_nrtl_ethylBenzene_styrene",
+    "tutorials/props/curation/curate124_nrtl_oCresol_ethanol",
+    "tutorials/props/curation/curate125_nrtl_ethanol_2Methyl1Butanol",
+    "tutorials/props/curation/curate126_nrtl_nButanol_dimethylCarbonate",
+    "tutorials/props/curation/curate127_nrtl_methylPropionate_nHeptane",
+    "tutorials/props/curation/curate128_nrtl_2Methyl1Propanol_isobutylAcetate",
+    "tutorials/props/curation/curate129_nrtl_methylFormate_nHeptane",
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
+    "tutorials/props/curation/curate130_nrtl_14Dioxane_cyclohexane",
+    "tutorials/props/curation/curate131_nrtl_thiophene_nHeptane",
+    "tutorials/props/curation/curate132_nrtl_1Propanol_propionicAcid",
+    "tutorials/props/curation/curate133_nrtl_methanol_2Butanol",
+    "tutorials/props/curation/curate134_nrtl_isopropanol_224Trimethylpentane",
+    "tutorials/props/curation/curate135_nrtl_2Butanol_nNDimethylformamide",
+    "tutorials/props/curation/curate136_nrtl_ethylBenzene_sulfolane",
+    "tutorials/props/curation/curate137_nrtl_2Methyl1Propanol_nNDimethylformamide",
+    "tutorials/props/curation/curate138_nrtl_ethanol_cyclohexane",
+    "tutorials/props/curation/curate139_nrtl_methanol_methylEthylKetone",
     "tutorials/props/curation/curate13_synthetic_lle_butanol_water",
+    "tutorials/props/curation/curate140_nrtl_nButanol_pXylene",
+    "tutorials/props/curation/curate141_nrtl_nNDimethylformamide_nNDimethylacetamide",
+    "tutorials/props/curation/curate142_nrtl_ethylAcetate_methanol",
+    "tutorials/props/curation/curate143_nrtl_ethylBenzene_monochlorobenzene",
+    "tutorials/props/curation/curate144_nrtl_2Hexanone_1Pentanol",
+    "tutorials/props/curation/curate145_nrtl_ethanol_ethyleneGlycol",
+    "tutorials/props/curation/curate146_nrtl_2Methyl2Propanol_nNDimethylformamide",
+    "tutorials/props/curation/curate147_nrtl_dimethylCarbonate_oXylene",
+    "tutorials/props/curation/curate148_nrtl_nButanol_nButylAcetate",
     "tutorials/props/curation/curate14_nrtl_butanol_water",
+    "tutorials/props/curation/curate150_nrtl_acetonitrile_isopropanol",
+    "tutorials/props/curation/curate151_nrtl_nNDimethylformamide_aniline",
+    "tutorials/props/curation/curate152_nrtl_tetrahydrofuran_methanol",
+    "tutorials/props/curation/curate153_nrtl_diisopropylEther_224Trimethylpentane",
+    "tutorials/props/curation/curate155_nrtl_dimethylCarbonate_pXylene",
+    "tutorials/props/curation/curate156_nrtl_cyclohexane_tetrahydrofuran",
+    "tutorials/props/curation/curate157_nrtl_nOctane_mXylene",
+    "tutorials/props/curation/curate158_nrtl_nOctane_oXylene",
+    "tutorials/props/curation/curate159_nrtl_benzene_methanol",
     "tutorials/props/curation/curate15_nrtl_methanol_dimethylCarbonate",
+    "tutorials/props/curation/curate160_nrtl_cyclohexane_nHeptane",
+    "tutorials/props/curation/curate161_nrtl_nDecane_mXylene",
+    "tutorials/props/curation/curate162_nrtl_nDecane_oXylene",
     "tutorials/props/curation/curate16_nrtl_ethanol_dimethylCarbonate",
     "tutorials/props/curation/curate17_nrtl_diisopropylEther_isopropanol",
     "tutorials/props/curation/curate18_nrtl_isopropanol_dimethylCarbonate",
@@ -9553,12 +10573,72 @@
     "tutorials/props/curation/curate07_nrtl_ethylacetate_ethanol",
     "tutorials/props/curation/curate08_nrtl_methylacetate_methanol",
     "tutorials/props/curation/curate09_nrtl_propanol_water",
+    "tutorials/props/curation/curate100_nrtl_acetone_methanol",
+    "tutorials/props/curation/curate101_nrtl_ethanol_224Trimethylpentane",
+    "tutorials/props/curation/curate102_nrtl_ethanol_dimethylCarbonate",
+    "tutorials/props/curation/curate103_nrtl_diisopropylEther_isopropanol",
+    "tutorials/props/curation/curate104_nrtl_acetonitrile_methanol",
+    "tutorials/props/curation/curate105_nrtl_water_triethyleneGlycol",
+    "tutorials/props/curation/curate106_nrtl_2Butanol_dimethylCarbonate",
+    "tutorials/props/curation/curate107_nrtl_methanol_isopropanol",
+    "tutorials/props/curation/curate108_nrtl_1Pentanol_nNonane",
+    "tutorials/props/curation/curate109_nrtl_water_ethyleneGlycol",
     "tutorials/props/curation/curate10_nrtl_acetonitrile_water",
+    "tutorials/props/curation/curate110_nrtl_2Methyl2Propanol_water",
+    "tutorials/props/curation/curate111_nrtl_acetonitrile_1Propanol",
+    "tutorials/props/curation/curate112_nrtl_ethanol_methylEthylKetone",
+    "tutorials/props/curation/curate113_nrtl_isopropylAcetate_isopropanol",
+    "tutorials/props/curation/curate114_nrtl_pXylene_nDecane",
+    "tutorials/props/curation/curate115_nrtl_ethylAcetate_acetonitrile",
+    "tutorials/props/curation/curate117_nrtl_nOctane_ethanol",
+    "tutorials/props/curation/curate118_nrtl_2Methyl2Propanol_14Dioxane",
+    "tutorials/props/curation/curate119_nrtl_1Propanol_dimethylCarbonate",
     "tutorials/props/curation/curate11_nrtl_acetone_ethanol",
+    "tutorials/props/curation/curate120_nrtl_ethanol_pXylene",
+    "tutorials/props/curation/curate121_nrtl_cyclohexane_cyclohexene",
+    "tutorials/props/curation/curate122_nrtl_1Pentanol_anisole",
+    "tutorials/props/curation/curate123_nrtl_ethylBenzene_styrene",
+    "tutorials/props/curation/curate124_nrtl_oCresol_ethanol",
+    "tutorials/props/curation/curate125_nrtl_ethanol_2Methyl1Butanol",
+    "tutorials/props/curation/curate126_nrtl_nButanol_dimethylCarbonate",
+    "tutorials/props/curation/curate127_nrtl_methylPropionate_nHeptane",
+    "tutorials/props/curation/curate128_nrtl_2Methyl1Propanol_isobutylAcetate",
+    "tutorials/props/curation/curate129_nrtl_methylFormate_nHeptane",
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
+    "tutorials/props/curation/curate130_nrtl_14Dioxane_cyclohexane",
+    "tutorials/props/curation/curate131_nrtl_thiophene_nHeptane",
+    "tutorials/props/curation/curate132_nrtl_1Propanol_propionicAcid",
+    "tutorials/props/curation/curate133_nrtl_methanol_2Butanol",
+    "tutorials/props/curation/curate134_nrtl_isopropanol_224Trimethylpentane",
+    "tutorials/props/curation/curate135_nrtl_2Butanol_nNDimethylformamide",
+    "tutorials/props/curation/curate136_nrtl_ethylBenzene_sulfolane",
+    "tutorials/props/curation/curate137_nrtl_2Methyl1Propanol_nNDimethylformamide",
+    "tutorials/props/curation/curate138_nrtl_ethanol_cyclohexane",
+    "tutorials/props/curation/curate139_nrtl_methanol_methylEthylKetone",
     "tutorials/props/curation/curate13_synthetic_lle_butanol_water",
+    "tutorials/props/curation/curate140_nrtl_nButanol_pXylene",
+    "tutorials/props/curation/curate141_nrtl_nNDimethylformamide_nNDimethylacetamide",
+    "tutorials/props/curation/curate142_nrtl_ethylAcetate_methanol",
+    "tutorials/props/curation/curate143_nrtl_ethylBenzene_monochlorobenzene",
+    "tutorials/props/curation/curate144_nrtl_2Hexanone_1Pentanol",
+    "tutorials/props/curation/curate145_nrtl_ethanol_ethyleneGlycol",
+    "tutorials/props/curation/curate146_nrtl_2Methyl2Propanol_nNDimethylformamide",
+    "tutorials/props/curation/curate147_nrtl_dimethylCarbonate_oXylene",
+    "tutorials/props/curation/curate148_nrtl_nButanol_nButylAcetate",
     "tutorials/props/curation/curate14_nrtl_butanol_water",
+    "tutorials/props/curation/curate150_nrtl_acetonitrile_isopropanol",
+    "tutorials/props/curation/curate151_nrtl_nNDimethylformamide_aniline",
+    "tutorials/props/curation/curate152_nrtl_tetrahydrofuran_methanol",
+    "tutorials/props/curation/curate153_nrtl_diisopropylEther_224Trimethylpentane",
+    "tutorials/props/curation/curate155_nrtl_dimethylCarbonate_pXylene",
+    "tutorials/props/curation/curate156_nrtl_cyclohexane_tetrahydrofuran",
+    "tutorials/props/curation/curate157_nrtl_nOctane_mXylene",
+    "tutorials/props/curation/curate158_nrtl_nOctane_oXylene",
+    "tutorials/props/curation/curate159_nrtl_benzene_methanol",
     "tutorials/props/curation/curate15_nrtl_methanol_dimethylCarbonate",
+    "tutorials/props/curation/curate160_nrtl_cyclohexane_nHeptane",
+    "tutorials/props/curation/curate161_nrtl_nDecane_mXylene",
+    "tutorials/props/curation/curate162_nrtl_nDecane_oXylene",
     "tutorials/props/curation/curate16_nrtl_ethanol_dimethylCarbonate",
     "tutorials/props/curation/curate17_nrtl_diisopropylEther_isopropanol",
     "tutorials/props/curation/curate18_nrtl_isopropanol_dimethylCarbonate",
@@ -9803,10 +10883,70 @@
     "tutorials/props/curation/curate07_nrtl_ethylacetate_ethanol",
     "tutorials/props/curation/curate08_nrtl_methylacetate_methanol",
     "tutorials/props/curation/curate09_nrtl_propanol_water",
+    "tutorials/props/curation/curate100_nrtl_acetone_methanol",
+    "tutorials/props/curation/curate101_nrtl_ethanol_224Trimethylpentane",
+    "tutorials/props/curation/curate102_nrtl_ethanol_dimethylCarbonate",
+    "tutorials/props/curation/curate103_nrtl_diisopropylEther_isopropanol",
+    "tutorials/props/curation/curate104_nrtl_acetonitrile_methanol",
+    "tutorials/props/curation/curate105_nrtl_water_triethyleneGlycol",
+    "tutorials/props/curation/curate106_nrtl_2Butanol_dimethylCarbonate",
+    "tutorials/props/curation/curate107_nrtl_methanol_isopropanol",
+    "tutorials/props/curation/curate108_nrtl_1Pentanol_nNonane",
+    "tutorials/props/curation/curate109_nrtl_water_ethyleneGlycol",
     "tutorials/props/curation/curate10_nrtl_acetonitrile_water",
+    "tutorials/props/curation/curate110_nrtl_2Methyl2Propanol_water",
+    "tutorials/props/curation/curate111_nrtl_acetonitrile_1Propanol",
+    "tutorials/props/curation/curate112_nrtl_ethanol_methylEthylKetone",
+    "tutorials/props/curation/curate113_nrtl_isopropylAcetate_isopropanol",
+    "tutorials/props/curation/curate114_nrtl_pXylene_nDecane",
+    "tutorials/props/curation/curate115_nrtl_ethylAcetate_acetonitrile",
+    "tutorials/props/curation/curate117_nrtl_nOctane_ethanol",
+    "tutorials/props/curation/curate118_nrtl_2Methyl2Propanol_14Dioxane",
+    "tutorials/props/curation/curate119_nrtl_1Propanol_dimethylCarbonate",
     "tutorials/props/curation/curate11_nrtl_acetone_ethanol",
+    "tutorials/props/curation/curate120_nrtl_ethanol_pXylene",
+    "tutorials/props/curation/curate121_nrtl_cyclohexane_cyclohexene",
+    "tutorials/props/curation/curate122_nrtl_1Pentanol_anisole",
+    "tutorials/props/curation/curate123_nrtl_ethylBenzene_styrene",
+    "tutorials/props/curation/curate124_nrtl_oCresol_ethanol",
+    "tutorials/props/curation/curate125_nrtl_ethanol_2Methyl1Butanol",
+    "tutorials/props/curation/curate126_nrtl_nButanol_dimethylCarbonate",
+    "tutorials/props/curation/curate127_nrtl_methylPropionate_nHeptane",
+    "tutorials/props/curation/curate128_nrtl_2Methyl1Propanol_isobutylAcetate",
+    "tutorials/props/curation/curate129_nrtl_methylFormate_nHeptane",
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
+    "tutorials/props/curation/curate130_nrtl_14Dioxane_cyclohexane",
+    "tutorials/props/curation/curate131_nrtl_thiophene_nHeptane",
+    "tutorials/props/curation/curate132_nrtl_1Propanol_propionicAcid",
+    "tutorials/props/curation/curate133_nrtl_methanol_2Butanol",
+    "tutorials/props/curation/curate134_nrtl_isopropanol_224Trimethylpentane",
+    "tutorials/props/curation/curate135_nrtl_2Butanol_nNDimethylformamide",
+    "tutorials/props/curation/curate136_nrtl_ethylBenzene_sulfolane",
+    "tutorials/props/curation/curate137_nrtl_2Methyl1Propanol_nNDimethylformamide",
+    "tutorials/props/curation/curate138_nrtl_ethanol_cyclohexane",
+    "tutorials/props/curation/curate139_nrtl_methanol_methylEthylKetone",
+    "tutorials/props/curation/curate140_nrtl_nButanol_pXylene",
+    "tutorials/props/curation/curate141_nrtl_nNDimethylformamide_nNDimethylacetamide",
+    "tutorials/props/curation/curate142_nrtl_ethylAcetate_methanol",
+    "tutorials/props/curation/curate143_nrtl_ethylBenzene_monochlorobenzene",
+    "tutorials/props/curation/curate144_nrtl_2Hexanone_1Pentanol",
+    "tutorials/props/curation/curate145_nrtl_ethanol_ethyleneGlycol",
+    "tutorials/props/curation/curate146_nrtl_2Methyl2Propanol_nNDimethylformamide",
+    "tutorials/props/curation/curate147_nrtl_dimethylCarbonate_oXylene",
+    "tutorials/props/curation/curate148_nrtl_nButanol_nButylAcetate",
+    "tutorials/props/curation/curate150_nrtl_acetonitrile_isopropanol",
+    "tutorials/props/curation/curate151_nrtl_nNDimethylformamide_aniline",
+    "tutorials/props/curation/curate152_nrtl_tetrahydrofuran_methanol",
+    "tutorials/props/curation/curate153_nrtl_diisopropylEther_224Trimethylpentane",
+    "tutorials/props/curation/curate155_nrtl_dimethylCarbonate_pXylene",
+    "tutorials/props/curation/curate156_nrtl_cyclohexane_tetrahydrofuran",
+    "tutorials/props/curation/curate157_nrtl_nOctane_mXylene",
+    "tutorials/props/curation/curate158_nrtl_nOctane_oXylene",
+    "tutorials/props/curation/curate159_nrtl_benzene_methanol",
     "tutorials/props/curation/curate15_nrtl_methanol_dimethylCarbonate",
+    "tutorials/props/curation/curate160_nrtl_cyclohexane_nHeptane",
+    "tutorials/props/curation/curate161_nrtl_nDecane_mXylene",
+    "tutorials/props/curation/curate162_nrtl_nDecane_oXylene",
     "tutorials/props/curation/curate16_nrtl_ethanol_dimethylCarbonate",
     "tutorials/props/curation/curate17_nrtl_diisopropylEther_isopropanol",
     "tutorials/props/curation/curate18_nrtl_isopropanol_dimethylCarbonate",
@@ -10182,12 +11322,72 @@
     "tutorials/props/curation/curate07_nrtl_ethylacetate_ethanol",
     "tutorials/props/curation/curate08_nrtl_methylacetate_methanol",
     "tutorials/props/curation/curate09_nrtl_propanol_water",
+    "tutorials/props/curation/curate100_nrtl_acetone_methanol",
+    "tutorials/props/curation/curate101_nrtl_ethanol_224Trimethylpentane",
+    "tutorials/props/curation/curate102_nrtl_ethanol_dimethylCarbonate",
+    "tutorials/props/curation/curate103_nrtl_diisopropylEther_isopropanol",
+    "tutorials/props/curation/curate104_nrtl_acetonitrile_methanol",
+    "tutorials/props/curation/curate105_nrtl_water_triethyleneGlycol",
+    "tutorials/props/curation/curate106_nrtl_2Butanol_dimethylCarbonate",
+    "tutorials/props/curation/curate107_nrtl_methanol_isopropanol",
+    "tutorials/props/curation/curate108_nrtl_1Pentanol_nNonane",
+    "tutorials/props/curation/curate109_nrtl_water_ethyleneGlycol",
     "tutorials/props/curation/curate10_nrtl_acetonitrile_water",
+    "tutorials/props/curation/curate110_nrtl_2Methyl2Propanol_water",
+    "tutorials/props/curation/curate111_nrtl_acetonitrile_1Propanol",
+    "tutorials/props/curation/curate112_nrtl_ethanol_methylEthylKetone",
+    "tutorials/props/curation/curate113_nrtl_isopropylAcetate_isopropanol",
+    "tutorials/props/curation/curate114_nrtl_pXylene_nDecane",
+    "tutorials/props/curation/curate115_nrtl_ethylAcetate_acetonitrile",
+    "tutorials/props/curation/curate117_nrtl_nOctane_ethanol",
+    "tutorials/props/curation/curate118_nrtl_2Methyl2Propanol_14Dioxane",
+    "tutorials/props/curation/curate119_nrtl_1Propanol_dimethylCarbonate",
     "tutorials/props/curation/curate11_nrtl_acetone_ethanol",
+    "tutorials/props/curation/curate120_nrtl_ethanol_pXylene",
+    "tutorials/props/curation/curate121_nrtl_cyclohexane_cyclohexene",
+    "tutorials/props/curation/curate122_nrtl_1Pentanol_anisole",
+    "tutorials/props/curation/curate123_nrtl_ethylBenzene_styrene",
+    "tutorials/props/curation/curate124_nrtl_oCresol_ethanol",
+    "tutorials/props/curation/curate125_nrtl_ethanol_2Methyl1Butanol",
+    "tutorials/props/curation/curate126_nrtl_nButanol_dimethylCarbonate",
+    "tutorials/props/curation/curate127_nrtl_methylPropionate_nHeptane",
+    "tutorials/props/curation/curate128_nrtl_2Methyl1Propanol_isobutylAcetate",
+    "tutorials/props/curation/curate129_nrtl_methylFormate_nHeptane",
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
+    "tutorials/props/curation/curate130_nrtl_14Dioxane_cyclohexane",
+    "tutorials/props/curation/curate131_nrtl_thiophene_nHeptane",
+    "tutorials/props/curation/curate132_nrtl_1Propanol_propionicAcid",
+    "tutorials/props/curation/curate133_nrtl_methanol_2Butanol",
+    "tutorials/props/curation/curate134_nrtl_isopropanol_224Trimethylpentane",
+    "tutorials/props/curation/curate135_nrtl_2Butanol_nNDimethylformamide",
+    "tutorials/props/curation/curate136_nrtl_ethylBenzene_sulfolane",
+    "tutorials/props/curation/curate137_nrtl_2Methyl1Propanol_nNDimethylformamide",
+    "tutorials/props/curation/curate138_nrtl_ethanol_cyclohexane",
+    "tutorials/props/curation/curate139_nrtl_methanol_methylEthylKetone",
     "tutorials/props/curation/curate13_synthetic_lle_butanol_water",
+    "tutorials/props/curation/curate140_nrtl_nButanol_pXylene",
+    "tutorials/props/curation/curate141_nrtl_nNDimethylformamide_nNDimethylacetamide",
+    "tutorials/props/curation/curate142_nrtl_ethylAcetate_methanol",
+    "tutorials/props/curation/curate143_nrtl_ethylBenzene_monochlorobenzene",
+    "tutorials/props/curation/curate144_nrtl_2Hexanone_1Pentanol",
+    "tutorials/props/curation/curate145_nrtl_ethanol_ethyleneGlycol",
+    "tutorials/props/curation/curate146_nrtl_2Methyl2Propanol_nNDimethylformamide",
+    "tutorials/props/curation/curate147_nrtl_dimethylCarbonate_oXylene",
+    "tutorials/props/curation/curate148_nrtl_nButanol_nButylAcetate",
     "tutorials/props/curation/curate14_nrtl_butanol_water",
+    "tutorials/props/curation/curate150_nrtl_acetonitrile_isopropanol",
+    "tutorials/props/curation/curate151_nrtl_nNDimethylformamide_aniline",
+    "tutorials/props/curation/curate152_nrtl_tetrahydrofuran_methanol",
+    "tutorials/props/curation/curate153_nrtl_diisopropylEther_224Trimethylpentane",
+    "tutorials/props/curation/curate155_nrtl_dimethylCarbonate_pXylene",
+    "tutorials/props/curation/curate156_nrtl_cyclohexane_tetrahydrofuran",
+    "tutorials/props/curation/curate157_nrtl_nOctane_mXylene",
+    "tutorials/props/curation/curate158_nrtl_nOctane_oXylene",
+    "tutorials/props/curation/curate159_nrtl_benzene_methanol",
     "tutorials/props/curation/curate15_nrtl_methanol_dimethylCarbonate",
+    "tutorials/props/curation/curate160_nrtl_cyclohexane_nHeptane",
+    "tutorials/props/curation/curate161_nrtl_nDecane_mXylene",
+    "tutorials/props/curation/curate162_nrtl_nDecane_oXylene",
     "tutorials/props/curation/curate16_nrtl_ethanol_dimethylCarbonate",
     "tutorials/props/curation/curate17_nrtl_diisopropylEther_isopropanol",
     "tutorials/props/curation/curate18_nrtl_isopropanol_dimethylCarbonate",
@@ -10317,10 +11517,70 @@
     "tutorials/props/curation/curate07_nrtl_ethylacetate_ethanol",
     "tutorials/props/curation/curate08_nrtl_methylacetate_methanol",
     "tutorials/props/curation/curate09_nrtl_propanol_water",
+    "tutorials/props/curation/curate100_nrtl_acetone_methanol",
+    "tutorials/props/curation/curate101_nrtl_ethanol_224Trimethylpentane",
+    "tutorials/props/curation/curate102_nrtl_ethanol_dimethylCarbonate",
+    "tutorials/props/curation/curate103_nrtl_diisopropylEther_isopropanol",
+    "tutorials/props/curation/curate104_nrtl_acetonitrile_methanol",
+    "tutorials/props/curation/curate105_nrtl_water_triethyleneGlycol",
+    "tutorials/props/curation/curate106_nrtl_2Butanol_dimethylCarbonate",
+    "tutorials/props/curation/curate107_nrtl_methanol_isopropanol",
+    "tutorials/props/curation/curate108_nrtl_1Pentanol_nNonane",
+    "tutorials/props/curation/curate109_nrtl_water_ethyleneGlycol",
     "tutorials/props/curation/curate10_nrtl_acetonitrile_water",
+    "tutorials/props/curation/curate110_nrtl_2Methyl2Propanol_water",
+    "tutorials/props/curation/curate111_nrtl_acetonitrile_1Propanol",
+    "tutorials/props/curation/curate112_nrtl_ethanol_methylEthylKetone",
+    "tutorials/props/curation/curate113_nrtl_isopropylAcetate_isopropanol",
+    "tutorials/props/curation/curate114_nrtl_pXylene_nDecane",
+    "tutorials/props/curation/curate115_nrtl_ethylAcetate_acetonitrile",
+    "tutorials/props/curation/curate117_nrtl_nOctane_ethanol",
+    "tutorials/props/curation/curate118_nrtl_2Methyl2Propanol_14Dioxane",
+    "tutorials/props/curation/curate119_nrtl_1Propanol_dimethylCarbonate",
     "tutorials/props/curation/curate11_nrtl_acetone_ethanol",
+    "tutorials/props/curation/curate120_nrtl_ethanol_pXylene",
+    "tutorials/props/curation/curate121_nrtl_cyclohexane_cyclohexene",
+    "tutorials/props/curation/curate122_nrtl_1Pentanol_anisole",
+    "tutorials/props/curation/curate123_nrtl_ethylBenzene_styrene",
+    "tutorials/props/curation/curate124_nrtl_oCresol_ethanol",
+    "tutorials/props/curation/curate125_nrtl_ethanol_2Methyl1Butanol",
+    "tutorials/props/curation/curate126_nrtl_nButanol_dimethylCarbonate",
+    "tutorials/props/curation/curate127_nrtl_methylPropionate_nHeptane",
+    "tutorials/props/curation/curate128_nrtl_2Methyl1Propanol_isobutylAcetate",
+    "tutorials/props/curation/curate129_nrtl_methylFormate_nHeptane",
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
+    "tutorials/props/curation/curate130_nrtl_14Dioxane_cyclohexane",
+    "tutorials/props/curation/curate131_nrtl_thiophene_nHeptane",
+    "tutorials/props/curation/curate132_nrtl_1Propanol_propionicAcid",
+    "tutorials/props/curation/curate133_nrtl_methanol_2Butanol",
+    "tutorials/props/curation/curate134_nrtl_isopropanol_224Trimethylpentane",
+    "tutorials/props/curation/curate135_nrtl_2Butanol_nNDimethylformamide",
+    "tutorials/props/curation/curate136_nrtl_ethylBenzene_sulfolane",
+    "tutorials/props/curation/curate137_nrtl_2Methyl1Propanol_nNDimethylformamide",
+    "tutorials/props/curation/curate138_nrtl_ethanol_cyclohexane",
+    "tutorials/props/curation/curate139_nrtl_methanol_methylEthylKetone",
+    "tutorials/props/curation/curate140_nrtl_nButanol_pXylene",
+    "tutorials/props/curation/curate141_nrtl_nNDimethylformamide_nNDimethylacetamide",
+    "tutorials/props/curation/curate142_nrtl_ethylAcetate_methanol",
+    "tutorials/props/curation/curate143_nrtl_ethylBenzene_monochlorobenzene",
+    "tutorials/props/curation/curate144_nrtl_2Hexanone_1Pentanol",
+    "tutorials/props/curation/curate145_nrtl_ethanol_ethyleneGlycol",
+    "tutorials/props/curation/curate146_nrtl_2Methyl2Propanol_nNDimethylformamide",
+    "tutorials/props/curation/curate147_nrtl_dimethylCarbonate_oXylene",
+    "tutorials/props/curation/curate148_nrtl_nButanol_nButylAcetate",
+    "tutorials/props/curation/curate150_nrtl_acetonitrile_isopropanol",
+    "tutorials/props/curation/curate151_nrtl_nNDimethylformamide_aniline",
+    "tutorials/props/curation/curate152_nrtl_tetrahydrofuran_methanol",
+    "tutorials/props/curation/curate153_nrtl_diisopropylEther_224Trimethylpentane",
+    "tutorials/props/curation/curate155_nrtl_dimethylCarbonate_pXylene",
+    "tutorials/props/curation/curate156_nrtl_cyclohexane_tetrahydrofuran",
+    "tutorials/props/curation/curate157_nrtl_nOctane_mXylene",
+    "tutorials/props/curation/curate158_nrtl_nOctane_oXylene",
+    "tutorials/props/curation/curate159_nrtl_benzene_methanol",
     "tutorials/props/curation/curate15_nrtl_methanol_dimethylCarbonate",
+    "tutorials/props/curation/curate160_nrtl_cyclohexane_nHeptane",
+    "tutorials/props/curation/curate161_nrtl_nDecane_mXylene",
+    "tutorials/props/curation/curate162_nrtl_nDecane_oXylene",
     "tutorials/props/curation/curate16_nrtl_ethanol_dimethylCarbonate",
     "tutorials/props/curation/curate17_nrtl_diisopropylEther_isopropanol",
     "tutorials/props/curation/curate18_nrtl_isopropanol_dimethylCarbonate",

@@ -844,3 +844,109 @@ severe); glycerol force-promoted as severe through a patched tool (caught:
 recomputed refused, on its -5.23 K gap); the P limits tightened to 5 / 6 / 7 %
 in the gate (five records caught as refused, the P branch); the loader's line
 suppressed (caught, 18 failures: nine records, console and JSON).
+
+## 11. Pairs in bulk, on every laboratory (2026-11-10, DEV.md 4c C283 amended, C284)
+
+### 11.1 The rule, as built
+
+`bin/choupo-curate pair A B` now runs `bin/curate/pairs_c283.py` (the C282
+chain stays reachable as `pair A B --rule c282`); `pairs --list | --declare |
+--run | --promote [--top N]` runs it in bulk.  Every helper is C282's,
+imported; what changed is the rule:
+
+- **Class (C284), read from the component records, never from names.**  An
+  NRTL pair is fitted only between two volatile molecular liquids: no `role
+  nonvolatile;`, no `role solute;`, no `dissociatesTo`, no declared charge, no
+  solid (`referenceState pureSolid` or `solidPhases {}`), a `vaporPressure {}`
+  model, and every measured temperature below both critical temperatures.
+  Anything else is refused by name with its class.  A component whose vapour
+  pressure is still `model AmbroseWalton` is not refused by class: its pair
+  waits on C281 (a pair fitted on an estimated curve absorbs the curve's
+  error).  Acetic acid is excluded by the coordinator's ruling (archived this
+  month, DEV.md 4c; `pairs_c283.ARCHIVED`).
+- **Every laboratory (C283 amended).**  Every usable bubble-temperature study
+  of the pair (isobaric, at or below 110 kPa, a stated per-point uncertainty,
+  at least five interior points, one block per article -- the C282 extraction
+  rules) is fitted; none is held out.  A study reporting the other member's
+  mole fraction is no longer set aside: `extract-vle --x-of <member>` writes
+  x = 1 - x' (exact for a binary) and says so in the file's header, and the
+  declaration carries `xOf` so `fetch` regenerates the same file.
+- **Outliers by name.**  A least-squares stage runs over every point; a point
+  with |T_model - T| > 3 K (or no bubble point) is written into the case as
+  `discard ( <row> ... );` on its evidence entry -- a new, optional key of the
+  `evidence` grammar (src/propertyOps/EvidencePartition), skipped by the one
+  loader and by the uncertainty weights, announced as `[outlier]` lines and
+  part of the fingerprint only when declared -- and listed in the case header
+  with DOI, row, x, P, T and residual.  The fit (objective twoStage, T_bubble
+  absolute) is then repeated once on the kept points.
+- **Acceptance.**  max |T_model - T| over the kept points below 1 K.  C283's
+  5 % relative clause judges compositions; a T_bubble fit has no composition
+  residual.  The record carries a `curation {}` block (rule, outlier limit,
+  points kept and dropped, max and mean |dT|, the acceptance, the verdict); its
+  engine-written `validation {}` block says `validationRefused` -- truthfully,
+  nothing was held out.  Promotion: `accepted` and one liquid across the
+  validity span (arm f), as autoPromoted / humanReviewed false (section 8).
+- **Gate.**  `check_regressed_pairs` arm (j): for a record whose curation rule
+  names C283, the catalogue verdict is `accepted`; max |dT| and points kept
+  equal the run's `bubble_max_fit` / `n_data`; the verdict follows the 1 K
+  limit; and the discards are re-derived -- the fit re-run with no discard and
+  least squares must put exactly the declared rows beyond 3 K.
+
+### 11.2 The run
+
+617 archive pairs of two catalogue components with a bubble-T block at or
+below 110 kPa: 15 already had a catalogue record; 8 refused by class (3
+`role nonvolatile` -- all acetaldehyde, a record finding in itself; 3
+supercritical in the data; 1 solid, H3PO4; 1 with no vapour-pressure model,
+HNO3); 81 wait on C281 (an AmbroseWalton vapour pressure); 21 excluded
+(acetic acid); 1 with no stated uncertainty.  Of the rest the sixty ranked
+highest (studies, then points) were declared in bulk -- one commit, before
+any fit -- and fitted as curate100-curate162 (four acetic-acid declarations
+withdrawn when the ruling reached the branch, curate116/149/154/159, and the
+next four in the ranking declared in their place).  The 431 not run all have
+ONE usable study each; they are the queue (`pairs --list`).
+
+19 accepted and promoted (public NRTL pairs 12 -> 31); 41 not accepted, every
+one on max |dT| >= 1 K; 6 of those 41 would also split one liquid (arm f).
+Promoted:
+
+| case | pair | studies | kept / dropped | max |dT| K | mean |dT| K |
+|---|---|---|---|---|---|
+| curate100 | acetone + methanol | 7 | 156 / 0 | 0.622 | 0.163 |
+| curate104 | acetonitrile + methanol | 4 | 51 / 0 | 0.991 | 0.452 |
+| curate112 | ethanol + methyl ethyl ketone | 3 | 53 / 0 | 0.155 | 0.056 |
+| curate113 | isopropyl acetate + isopropanol | 3 | 57 / 0 | 0.455 | 0.110 |
+| curate115 | ethyl acetate + acetonitrile | 3 | 30 / 0 | 0.304 | 0.152 |
+| curate122 | 1-pentanol + anisole | 2 | 68 / 0 | 0.884 | 0.197 |
+| curate125 | ethanol + 2-methyl-1-butanol | 2 | 59 / 0 | 0.719 | 0.264 |
+| curate131 | thiophene + n-heptane | 1 | 18 / 0 | 0.394 | 0.239 |
+| curate134 | isopropanol + isooctane | 2 | 38 / 0 | 0.507 | 0.174 |
+| curate139 | methanol + methyl ethyl ketone | 2 | 36 / 0 | 0.659 | 0.297 |
+| curate142 | ethyl acetate + methanol | 2 | 32 / 0 | 0.498 | 0.111 |
+| curate143 | ethylbenzene + chlorobenzene | 2 | 26 / 0 | 0.377 | 0.131 |
+| curate144 | 2-hexanone + 1-pentanol | 2 | 27 / 0 | 0.498 | 0.191 |
+| curate148 | n-butanol + n-butyl acetate | 2 | 28 / 0 | 0.581 | 0.235 |
+| curate152 | tetrahydrofuran + methanol | 2 | 29 / 0 | 0.496 | 0.207 |
+| curate156 | cyclohexane + tetrahydrofuran | 1 | 20 / 0 | 0.334 | 0.136 |
+| curate157 | n-octane + m-xylene | 2 | 24 / 0 | 0.635 | 0.200 |
+| curate160 | cyclohexane + n-heptane | 2 | 19 / 0 | 0.651 | 0.308 |
+| curate161 | n-decane + m-xylene | 2 | 12 / 5 | 0.107 | 0.064 |
+
+### 11.3 Readings, and what is NOT done
+
+- curate161's five discarded points are the WHOLE second study (5 points,
+  j.fluid.2004.10.027): the rule dropped a laboratory, and the pair rests on
+  one.  curate131 and curate156 had one usable study to begin with.  Under
+  C283 that is allowed; it is said here so a curator reads those three first.
+- curate104 passes at 0.991 K, 9 mK inside the limit.
+- In eight not-accepted cases the second start lands on a different pair;
+  none of the promoted ones.
+- The 41 not accepted stay in their cases (case-local, `interim`), held by arm
+  (j) like the promoted ones.  Most miss by 1-3 K: a two-parameter NRTL with
+  alpha fixed at 0.30, the catalogue's own vapour pressures and an ideal-gas
+  vapour do not reproduce every laboratory to 1 K.  Freeing alpha, or the
+  vapour-pressure records, are the next questions, not taken here.
+- NOT done: the 431-pair queue; read-back of any series against its article;
+  UNIQUAC/Wilson; the existing C282 pilot cases (curate15-19) were left as
+  they are (curate16/17/19's pairs are re-fitted under C283 as curate102,
+  curate103 and curate101, none accepted).

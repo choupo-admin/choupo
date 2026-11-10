@@ -1,0 +1,7 @@
+/*  curate146_nrtl_2Methyl2Propanol_nNDimethylformamide: an NRTL pair for 2Methyl2Propanol + nNDimethylformamide regressed by bin/choupo-curate to
+    EVERY laboratory's measured bubble temperatures (DEV.md 4c C283 amended,
+    C284).  See system/propsDict for the declaration and the result.  */
+
+application   choupoProps;
+description   "NRTL 2Methyl2Propanol-nNDimethylformamide regressed by the curation pipeline to every laboratory's measured bubble temperatures (ThermoML locates, the articles source), accepted at max |dT| < 1 K";
+verbosity     2;

@@ -1,0 +1,142 @@
+// [imported] origin "data/standards/parameters/NRTL/ethanol-methylEthylKetone.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- ethanol(i) + methylEthylKetone(j)
+
+  REGRESSED BY CHOUPO'S CURATION PIPELINE (bin/choupo-curate, DEV.md 4c C282;
+  record docs/design/binary-pairs-from-open-measurements.md) to measured
+  bubble temperatures.  The articles named under `evidence` are the
+  SOURCE of the measurements; the NIST/TRC ThermoML Archive located them.
+  NO MEASURED POINT IS IN THIS RECORD OR THIS TREE: the case regenerates
+  them from the DOIs and sha256 sums it declares (constant/archiveDatasets).
+  The PARAMETERS are Choupo's own work.
+
+  EQUATION: tau_ij = a_ij + b_ij / T [b in K], G_ij = exp(-alpha tau_ij),
+  Renon & Prausnitz direction (src/thermo/activityCoefficient/NRTL.cpp).
+  a_ij = a_ji = 0 and alpha = 0.30 FIXED, not fitted.
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
+  vapour-pressure records for both pure components.
+
+  reviewStatus autoPromoted; humanReviewed false: PROMOTED AUTOMATICALLY by
+  its fitting pipeline (every laboratory fitted, outliers beyond 3 K
+  discarded by name, max |T_model - T| over the kept points below 1 K --
+  DEV.md 4c C283 amended; one liquid across its validity span), and NO
+  HUMAN HAS REVIEWED IT.  The engine says so on every run that reads it.
+  Nothing was held out: the `validation {}` block says so, and the
+  acceptance is the `curation {}` block.  A curator who reads the series
+  back against the articles marks it `reviewStatus reviewed; humanReviewed
+  true;`.  Revert with `bin/choupo-curate revert ethanol-methylEthylKetone`.
+
+  REPRODUCE: run tutorials/props/curation/curate112_nrtl_ethanol_methylEthylKetone (after `bin/choupo-curate fetch` on it); its fit
+  writes ethanol-methylEthylKetone.proposal.dat, which bin/curate/check_regressed_pairs.py holds
+  equal to this record.
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i ethanol; j methylEthylKetone; }
+
+components  ( ethanol  methylEthylKetone );
+model       NRTL;
+
+parameters
+{
+    i           ethanol;
+    j           methylEthylKetone;
+    a_ij        0.00000000;
+    b_ij        159.61199755;
+    a_ji        0.00000000;
+    b_ji        82.47025313;
+    alpha       0.30000000;
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "tutorials/props/curation/curate112_nrtl_ethanol_methylEthylKetone";
+    reviewStatus  autoPromoted;
+    humanReviewed false;
+    promotedBy    "bin/choupo-curate pair --promote";
+    promotedDate  "2026-11-10";
+    reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+    fitDate       "2026-11-10";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-methylEthylKetone-bubble-j.fluid.2007.06.005.dat";
+            doi       "10.1016/j.fluid.2007.06.005";
+            sha256    "cc1f8832b57e5d44a79b79cda3c9425b77c19b96e2e6f4f9996363ea7de6f6fa";
+            provenance measured;
+            archiveFile "j.fluid.2007.06.005.xml";
+            system    "ethanol + methylEthylKetone";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-methylEthylKetone-bubble-j.fluid.2017.10.001.dat";
+            doi       "10.1016/j.fluid.2017.10.001";
+            sha256    "15a710a02ece8eeef43695f6a8e25a46514a741c0de795fc37172f2a0f9a104a";
+            provenance measured;
+            archiveFile "j.fluid.2017.10.001.xml";
+            system    "ethanol + methylEthylKetone";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-methylEthylKetone-bubble-acs.jced.7b00783.dat";
+            doi       "10.1021/acs.jced.7b00783";
+            sha256    "1788a3c6b6c6fe91233f67f68ec347cd7b141656cdb42879eb33133dc7b70ebc";
+            provenance measured;
+            archiveFile "acs.jced.7b00783.xml";
+            system    "ethanol + methylEthylKetone";
+            pressure  "101300.000000 Pa";
+        }
+    );
+    fingerprint "9ddb9620522830a9";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          20.61445301;
+    rms_K         0.06867826;
+    nDataPoints   53;
+    identifiable  true;
+    maxAbsCorr    0.99652937;
+
+    validity
+    {
+        temperature { min 347.48 K; max 351.89 K; }
+        pressure    { min 101300 Pa; max 101300 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validationRefused;
+
+    heldOut     none;   // every declared dataset carried `role fit`
+
+    acceptance  none;   // no band was declared before the fit, so no
+                        // pass/fail may be read out of the residual above
+}
+
+curation
+{
+    rule            "DEV.md 4c C283 (amended) + C284";
+    evidence        allLaboratories;   // every study fitted, none held out
+    objective       twoStage;
+    outlierLimit    3 K;   // |T_model - T| after the least-squares stage
+    outliersDropped 0;
+    pointsKept      53;
+    noBubblePoint   0;
+    maxAbsError     0.1546 K;
+    meanAbsError    0.0558 K;
+    acceptance      1 K;   // max |T_model - T| over the kept points
+    verdict         accepted;
+}

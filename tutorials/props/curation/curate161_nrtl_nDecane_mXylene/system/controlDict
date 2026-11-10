@@ -1,0 +1,7 @@
+/*  curate161_nrtl_nDecane_mXylene: an NRTL pair for nDecane + mXylene regressed by bin/choupo-curate to
+    EVERY laboratory's measured bubble temperatures (DEV.md 4c C283 amended,
+    C284).  See system/propsDict for the declaration and the result.  */
+
+application   choupoProps;
+description   "NRTL nDecane-mXylene regressed by the curation pipeline to every laboratory's measured bubble temperatures (ThermoML locates, the articles source), accepted at max |dT| < 1 K";
+verbosity     2;

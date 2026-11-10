@@ -1,0 +1,154 @@
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- ethanol(i) + 224Trimethylpentane(j)
+
+  REGRESSED BY CHOUPO'S CURATION PIPELINE (bin/choupo-curate, DEV.md 4c C282;
+  record docs/design/binary-pairs-from-open-measurements.md) to measured
+  bubble temperatures.  The articles named under `evidence` are the
+  SOURCE of the measurements; the NIST/TRC ThermoML Archive located them.
+  NO MEASURED POINT IS IN THIS RECORD OR THIS TREE: the case regenerates
+  them from the DOIs and sha256 sums it declares (constant/archiveDatasets).
+  The PARAMETERS are Choupo's own work.
+
+  EQUATION: tau_ij = a_ij + b_ij / T [b in K], G_ij = exp(-alpha tau_ij),
+  Renon & Prausnitz direction (src/thermo/activityCoefficient/NRTL.cpp).
+  a_ij = a_ji = 0 and alpha = 0.30 FIXED, not fitted.
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
+  vapour-pressure records for both pure components.
+
+  reviewStatus interim: a case-local record, regressed and not read back.  Fitted on EVERY laboratory (C283), so the
+  `validation {}` block below says, truthfully, that nothing
+  was held out; the acceptance is the `curation {}` block.
+  NOT PROMOTABLE: max |dT| 1.882 K over the 85 kept points is not below 1
+  K
+
+  REPRODUCE: run tutorials/props/curation/curate101_nrtl_ethanol_224Trimethylpentane (after `bin/choupo-curate fetch` on it); its fit
+  writes 224Trimethylpentane-ethanol.proposal.dat, which bin/curate/check_regressed_pairs.py holds
+  equal to this record.
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i ethanol; j 224Trimethylpentane; }
+
+components  ( ethanol  224Trimethylpentane );
+model       NRTL;
+
+parameters
+{
+    i           ethanol;
+    j           224Trimethylpentane;
+    a_ij        0.00000000;
+    b_ij        358.29188633;
+    a_ji        0.00000000;
+    b_ji        555.84417428;
+    alpha       0.30000000;
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "tutorials/props/curation/curate101_nrtl_ethanol_224Trimethylpentane";
+    reviewStatus  interim;
+    reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+    fitDate       "2026-11-10";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-224Trimethylpentane-bubble-je300847v.dat";
+            doi       "10.1021/je300847v";
+            sha256    "48cf0d1f1170b2e23d70db079156fd5843f03041852ed9db0fcb3b276e365ee3";
+            provenance measured;
+            archiveFile "je300847v.xml";
+            system    "ethanol + 224Trimethylpentane";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-224Trimethylpentane-bubble-acs.jced.8b00680.dat";
+            doi       "10.1021/acs.jced.8b00680";
+            sha256    "24e5d0a547f0ece199cef88e38a33059d446a79066ec16e532dde61242113b94";
+            provenance measured;
+            archiveFile "acs.jced.8b00680.xml";
+            system    "ethanol + 224Trimethylpentane";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-224Trimethylpentane-bubble-j.fluid.2005.01.007.dat";
+            doi       "10.1016/j.fluid.2005.01.007";
+            sha256    "f1acfe9dcd9476d848a167c0a3fe983e5b719138dd99807652ad914b3f29eb62";
+            provenance measured;
+            archiveFile "j.fluid.2005.01.007.xml";
+            system    "ethanol + 224Trimethylpentane";
+            pressure  "101320.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-224Trimethylpentane-bubble-j.fluid.2007.06.005.dat";
+            doi       "10.1016/j.fluid.2007.06.005";
+            sha256    "cc1f8832b57e5d44a79b79cda3c9425b77c19b96e2e6f4f9996363ea7de6f6fa";
+            provenance measured;
+            archiveFile "j.fluid.2007.06.005.xml";
+            system    "ethanol + 224Trimethylpentane";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-224Trimethylpentane-bubble-j.jct.2005.04.006.dat";
+            doi       "10.1016/j.jct.2005.04.006";
+            sha256    "e157abbd4d346d9ee5e79799e72fb16000d461970ab65ba327666624870901bc";
+            provenance measured;
+            archiveFile "j.jct.2005.04.006.xml";
+            system    "ethanol + 224Trimethylpentane";
+            pressure  "95800.000000 Pa";
+        }
+    );
+    fingerprint "4bfcfba355c16604";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          352.63557199;
+    rms_K         0.64144224;
+    nDataPoints   85;
+    identifiable  true;
+    maxAbsCorr    0.96159741;
+
+    validity
+    {
+        temperature { min 343.95 K; max 362.55 K; }
+        pressure    { min 95800 Pa; max 101320 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validationRefused;
+
+    heldOut     none;   // every declared dataset carried `role fit`
+
+    acceptance  none;   // no band was declared before the fit, so no
+                        // pass/fail may be read out of the residual above
+}
+
+curation
+{
+    rule            "DEV.md 4c C283 (amended) + C284";
+    evidence        allLaboratories;   // every study fitted, none held out
+    objective       twoStage;
+    outlierLimit    3 K;   // |T_model - T| after the least-squares stage
+    outliersDropped 2;
+    pointsKept      85;
+    noBubblePoint   0;
+    maxAbsError     1.8816 K;
+    meanAbsError    0.5160 K;
+    acceptance      1 K;   // max |T_model - T| over the kept points
+    verdict         notAccepted;
+}

@@ -1,0 +1,132 @@
+// [imported] origin "data/standards/parameters/NRTL/ethylAcetate-methanol.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- ethylAcetate(i) + methanol(j)
+
+  REGRESSED BY CHOUPO'S CURATION PIPELINE (bin/choupo-curate, DEV.md 4c C282;
+  record docs/design/binary-pairs-from-open-measurements.md) to measured
+  bubble temperatures.  The articles named under `evidence` are the
+  SOURCE of the measurements; the NIST/TRC ThermoML Archive located them.
+  NO MEASURED POINT IS IN THIS RECORD OR THIS TREE: the case regenerates
+  them from the DOIs and sha256 sums it declares (constant/archiveDatasets).
+  The PARAMETERS are Choupo's own work.
+
+  EQUATION: tau_ij = a_ij + b_ij / T [b in K], G_ij = exp(-alpha tau_ij),
+  Renon & Prausnitz direction (src/thermo/activityCoefficient/NRTL.cpp).
+  a_ij = a_ji = 0 and alpha = 0.30 FIXED, not fitted.
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
+  vapour-pressure records for both pure components.
+
+  reviewStatus autoPromoted; humanReviewed false: PROMOTED AUTOMATICALLY by
+  its fitting pipeline (every laboratory fitted, outliers beyond 3 K
+  discarded by name, max |T_model - T| over the kept points below 1 K --
+  DEV.md 4c C283 amended; one liquid across its validity span), and NO
+  HUMAN HAS REVIEWED IT.  The engine says so on every run that reads it.
+  Nothing was held out: the `validation {}` block says so, and the
+  acceptance is the `curation {}` block.  A curator who reads the series
+  back against the articles marks it `reviewStatus reviewed; humanReviewed
+  true;`.  Revert with `bin/choupo-curate revert ethylAcetate-methanol`.
+
+  REPRODUCE: run tutorials/props/curation/curate142_nrtl_ethylAcetate_methanol (after `bin/choupo-curate fetch` on it); its fit
+  writes ethylAcetate-methanol.proposal.dat, which bin/curate/check_regressed_pairs.py holds
+  equal to this record.
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i ethylAcetate; j methanol; }
+
+components  ( ethylAcetate  methanol );
+model       NRTL;
+
+parameters
+{
+    i           ethylAcetate;
+    j           methanol;
+    a_ij        0.00000000;
+    b_ij        202.46691506;
+    a_ji        0.00000000;
+    b_ji        173.64294531;
+    alpha       0.30000000;
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "tutorials/props/curation/curate142_nrtl_ethylAcetate_methanol";
+    reviewStatus  autoPromoted;
+    humanReviewed false;
+    promotedBy    "bin/choupo-curate pair --promote";
+    promotedDate  "2026-11-10";
+    reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+    fitDate       "2026-11-10";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylAcetate-methanol-bubble-acs.jced.5b00546.dat";
+            doi       "10.1021/acs.jced.5b00546";
+            sha256    "8014bd04306585333ad1df1105db6259e912c154174273839cb8fc72ee6e81a9";
+            provenance measured;
+            archiveFile "acs.jced.5b00546.xml";
+            system    "ethylAcetate + methanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylAcetate-methanol-bubble-acs.jced.8b00424.dat";
+            doi       "10.1021/acs.jced.8b00424";
+            sha256    "f8ab869ed3da4aa35bb7b069679db785340acd27df292872eb430fc150633e94";
+            provenance measured;
+            archiveFile "acs.jced.8b00424.xml";
+            system    "ethylAcetate + methanol";
+            pressure  "101300.000000 Pa";
+        }
+    );
+    fingerprint "60e301c3e8c4c390";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          0.52331862;
+    rms_K         0.18123318;
+    nDataPoints   32;
+    identifiable  true;
+    maxAbsCorr    0.98982738;
+
+    validity
+    {
+        temperature { min 335.45 K; max 348.74 K; }
+        pressure    { min 101300 Pa; max 101300 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validationRefused;
+
+    heldOut     none;   // every declared dataset carried `role fit`
+
+    acceptance  none;   // no band was declared before the fit, so no
+                        // pass/fail may be read out of the residual above
+}
+
+curation
+{
+    rule            "DEV.md 4c C283 (amended) + C284";
+    evidence        allLaboratories;   // every study fitted, none held out
+    objective       twoStage;
+    outlierLimit    3 K;   // |T_model - T| after the least-squares stage
+    outliersDropped 0;
+    pointsKept      32;
+    noBubblePoint   0;
+    maxAbsError     0.4976 K;
+    meanAbsError    0.1105 K;
+    acceptance      1 K;   // max |T_model - T| over the kept points
+    verdict         accepted;
+}

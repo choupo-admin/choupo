@@ -1,0 +1,135 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      nOctane;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethanol.b_ij  506.634760599;
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethanol.b_ji  442.062129102;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7cd0d3b7372ceded";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nOctane-ethanol-bubble-je400238j.dat";
+            doi       "10.1021/je400238j";
+            sha256    "b6cdd8126de68ebe83eed932f5c4bfc71f3bfdde95aa91ab3f43adc8a70d5fb3";
+            provenance measured;
+            archiveFile "je400238j.xml";
+            system    "nOctane + ethanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nOctane-ethanol-bubble-j.fluid.2018.07.013.dat";
+            doi       "10.1016/j.fluid.2018.07.013";
+            sha256    "bf89dc3bab99040fa861ace6d5ac84da32efae3e49783c85363a7686e5a8eac5";
+            provenance measured;
+            archiveFile "j.fluid.2018.07.013.xml";
+            system    "nOctane + ethanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.005; max 0.9542; n 99; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethanol.b_ij  506.634761481;
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethanol.b_ji  442.062128299;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7cd0d3b7372ceded";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nOctane-ethanol-bubble-je400238j.dat";
+            doi       "10.1021/je400238j";
+            sha256    "b6cdd8126de68ebe83eed932f5c4bfc71f3bfdde95aa91ab3f43adc8a70d5fb3";
+            provenance measured;
+            archiveFile "je400238j.xml";
+            system    "nOctane + ethanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nOctane-ethanol-bubble-j.fluid.2018.07.013.dat";
+            doi       "10.1016/j.fluid.2018.07.013";
+            sha256    "bf89dc3bab99040fa861ace6d5ac84da32efae3e49783c85363a7686e5a8eac5";
+            provenance measured;
+            archiveFile "j.fluid.2018.07.013.xml";
+            system    "nOctane + ethanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.005; max 0.9542; n 99; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

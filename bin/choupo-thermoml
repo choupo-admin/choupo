@@ -1560,6 +1560,26 @@ def cmd_extract_vle(a):
     ypts, yreason = (None, "not requested")
     if not a.no_vapour:
         ypts, yreason = _vapour_series(root, _find_block(root, rec, a.block), rec)
+    #  --x-of <component> (DEV.md 4c C284): the series is written in the
+    #  mole fraction of the NAMED member.  A binary has x2 = 1 - x1 exactly,
+    #  so this is a declared change of variable, not an edit of a value: the
+    #  header says which member the article reported, and a name that is not
+    #  a member REFUSES.
+    reoriented = None
+    xof = getattr(a, "x_of", None)
+    if xof is not None and xof != c1:
+        if xof != c2:
+            print("choupo-thermoml extract-vle: REFUSED\n"
+                  f"  --x-of {xof}: the system is {c1} + {c2}; the mole fraction "
+                  "can be written only for one of its members.")
+            return 1
+        reoriented = c1
+        c1, c2 = c2, c1
+        rec["system"] = [c1, c2]
+        identity = identity[::-1]
+        pts = [(1.0 - x, t) for x, t in pts]
+        if ypts:
+            ypts = [None if y is None else 1.0 - y for y in ypts]
     keep = list(range(len(pts)))
     dropped = []
     if a.interior_only:
@@ -1600,6 +1620,10 @@ def cmd_extract_vle(a):
         "  bin/choupo-thermoml extract-vle.",
         "",
         f"  system       {c1} + {c2}   (x is {c1}'s liquid mole fraction)",
+    ] + ([f"  orientation  the article reports x of {reoriented}; written here as",
+          f"               x[{c1}] = 1 - x[{reoriented}] by --x-of {c1} (a binary: exact)"]
+         if reoriented else []) + [
+
         pline,
         f"  points       {len(keep)}"
         + (f"   ({len(dropped)} pure-component endpoint(s) set aside -- see"
@@ -2136,6 +2160,10 @@ def main():
                          "`selection`, never deleted")
     ev.add_argument("--no-vapour", action="store_true",
                     help="do not join the companion vapour-composition block")
+    ev.add_argument("--x-of", default=None,
+                    help="write the series in the mole fraction of THIS member "
+                         "(x = 1 - the reported x when the article reports the "
+                         "other one; said in the file's header)")
     xv = sub.add_parser("extract-vp",
                         help="write ONE pure-component vapour-pressure dataset "
                              "from one article file, for one InChIKey")

@@ -1,0 +1,137 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      1Propanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-propionicAcid.b_ij  -384.772743565;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-propionicAcid.b_ji  632.433690322;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b5b29d5ad8bba770";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Propanol-propionicAcid-bubble-je100912t.dat";
+            doi       "10.1021/je100912t";
+            sha256    "9dd0d7c46ce840db7866a192b89ba927de74d3c18a20ff4b5353030aafa66d1b";
+            provenance measured;
+            archiveFile "je100912t.xml";
+            system    "1Propanol + propionicAcid";
+            pressure  "101325.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Propanol-propionicAcid-bubble-je101302p.dat";
+            doi       "10.1021/je101302p";
+            sha256    "bdc86ef24b356f9bfdd0ea861f4f3c7cabdceddf281b88c512e7e37c3758e967";
+            provenance measured;
+            archiveFile "je101302p.xml";
+            system    "1Propanol + propionicAcid";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0025; max 0.9643; n 42; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-propionicAcid.b_ij  -384.772741114;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-propionicAcid.b_ji  632.433685627;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b5b29d5ad8bba770";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Propanol-propionicAcid-bubble-je100912t.dat";
+            doi       "10.1021/je100912t";
+            sha256    "9dd0d7c46ce840db7866a192b89ba927de74d3c18a20ff4b5353030aafa66d1b";
+            provenance measured;
+            archiveFile "je100912t.xml";
+            system    "1Propanol + propionicAcid";
+            pressure  "101325.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Propanol-propionicAcid-bubble-je101302p.dat";
+            doi       "10.1021/je101302p";
+            sha256    "bdc86ef24b356f9bfdd0ea861f4f3c7cabdceddf281b88c512e7e37c3758e967";
+            provenance measured;
+            archiveFile "je101302p.xml";
+            system    "1Propanol + propionicAcid";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0025; max 0.9643; n 42; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

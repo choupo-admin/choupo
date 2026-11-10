@@ -131,6 +131,22 @@ case-local one that did not earn promotion):
       compound's CAS + InChIKey and one stated Psat uncertainty per row.
       NOT RUN (exit 2) where the series cannot be regenerated, as above.
 
+  (j) A PAIR FITTED ON EVERY LABORATORY (DEV.md 4c C283 amended, C284,
+      2026-11-10).  A record carrying a `curation {}` block whose `rule`
+      names C283 was fitted by `bin/choupo-curate pair` (bin/curate/
+      pairs_c283.py) on EVERY usable laboratory -- nothing held out, so its
+      `validation {}` block says `validationRefused`, truthfully -- and its
+      acceptance is the curation block.  Arm (c) then reads `verdict
+      accepted` there (not `validated`); arm (a) holds the record to its
+      case's run as before, AND: `maxAbsError` and `pointsKept` equal the
+      run's own `bubble_max_fit` and `n_data` of `fit_nrtl`; `verdict` is
+      `accepted` exactly when that maximum is below `acceptance` and no
+      point lacks a bubble point; and the OUTLIERS are RE-DERIVED -- the
+      case's fit is re-run with every `discard` removed and objective
+      leastSquares, and the rows whose |T_model - T| exceed `outlierLimit`
+      must be exactly the rows the case discards, by dataset and row.  A
+      discard list a human edited, or one the rule would not produce, fails.
+
 WHAT IT DOES NOT CHECK.  Whether the measurements are RIGHT -- each dataset
 says `reviewStatus transcribedNotCheckedAgainstArticle`, and reading them
 back against the articles is a curator's act.  Whether the band was the right
@@ -980,6 +996,63 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
 VP_GRADE_COUNT = {}
 
 
+def c283_failures(rec, cur, case, out, tag, fails):
+    """Arm (j): a pair fitted on every laboratory (C283) against its case."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import pairs_c283 as pc   # lazy: pairs_c283 loads choupo-curate, which imports this gate
+    m = re.search(r"<<<Choupo:result-begin>>>(.*?)<<<Choupo:result-end>>>", out, re.S)
+    try:
+        js = json.loads(m.group(1)) if m else {}
+    except json.JSONDecodeError:
+        js = {}
+    op = next((o for o in js.get("operationResults", []) if o.get("name") == "fit_nrtl"), {})
+    dg = op.get("diagnostics", {})
+    mx, nk = dg.get("bubble_max_fit"), dg.get("n_data")
+    rmx, rnk = num(cur, "maxAbsError"), num(cur, "pointsKept")
+    lim, olim = num(cur, "acceptance"), num(cur, "outlierLimit")
+    if mx is None or nk is None:
+        fails.append(f"{tag}: its case published no fit_nrtl bubble_max_fit / n_data -- "
+                     "arm (j) cannot hold the curation block to the run")
+        return
+    if rmx is None or abs(rmx - mx) > 5e-5 * max(1.0, mx) + 1e-4:
+        fails.append(f"{tag}: curation maxAbsError {rmx} K, the run's bubble_max_fit {mx:.6f} K")
+    if rnk != nk:
+        fails.append(f"{tag}: curation pointsKept {rnk}, the run fitted {nk} points")
+    nan = num(cur, "noBubblePoint") or 0
+    want = "accepted" if (lim is not None and mx < lim and nan == 0) else "notAccepted"
+    if word(cur, "verdict") != want:
+        fails.append(f"{tag}: curation verdict `{word(cur, 'verdict')}` but max |dT| "
+                     f"{mx:.4f} K against the acceptance {lim} K gives `{want}`")
+    if olim != pc.OUTLIER_K or lim != pc.ACCEPT_K:
+        fails.append(f"{tag}: curation outlierLimit {olim} K / acceptance {lim} K are not "
+                     f"the rule's ({pc.OUTLIER_K:g} K / {pc.ACCEPT_K:g} K, DEV.md 4c C283)")
+    #  The outliers, re-derived from the rule: the fit with no discard, least squares.
+    rc, o2, rows, _ = pc.fit_only(case, "leastSquares", keep_discards=False)
+    if rc != 0 or not rows:
+        fails.append(f"{tag}: the least-squares stage of {case.name} with no discard "
+                     f"exited {rc} -- the outliers cannot be re-derived")
+        return
+    files = pc.evidence_files(case)
+    try:
+        found, _ = pc.outliers_of(case, rows, files)
+    except pc.Refused as ex:
+        fails.append(f"{tag}: {ex}")
+        return
+    t = strip_comments((case / "system" / "propsDict").read_text())
+    op1 = t[t.index("fit_nrtl;"):t.index("fit_nrtl_start2;")]
+    declared = {}
+    for m in re.finditer(r'dataset\s+"([^"]+)"\s*;\s*role\s+fit\s*;\s*(discard\s*\(([^)]*)\))?', op1):
+        if m.group(3):
+            declared[Path(m.group(1)).name] = [int(v) for v in m.group(3).split()]
+    if {k: sorted(v) for k, v in found.items()} != declared:
+        fails.append(f"{tag}: the case discards {declared or 'nothing'} and the rule "
+                     f"(|dT| > {pc.OUTLIER_K:g} K after a least-squares stage over every "
+                     f"point) puts {found or 'nothing'} beyond it")
+    if int(num(cur, "outliersDropped") or 0) != sum(len(v) for v in declared.values()):
+        fails.append(f"{tag}: curation outliersDropped {num(cur, 'outliersDropped')} and "
+                     f"the case discards {sum(len(v) for v in declared.values())} row(s)")
+
+
 def main():
     if not PROPS.exists():
         print("check_regressed_pairs: FAILED\n  choupoProps is not built -- "
@@ -999,7 +1072,7 @@ def main():
     #  promotion.  Only the second kind is checked here on its own.
     std_names = {p.name for p in std}
     local = [p for p in local if p.name not in std_names]
-    fails, checked, stable_checked, ll_checked = [], [], [], []
+    fails, checked, stable_checked, ll_checked, c283_checked = [], [], [], [], []
     not_run, fetched = [], {}
     if len(std) < 7:
         fails.append(f"only {len(std)} regressed record(s) under {STD.relative_to(ROOT)} "
@@ -1027,7 +1100,13 @@ def main():
                 fails.append(f"{tag}: no `recordType binaryInteractionParameters;` "
                              "and `pair {}` -- the catalogue form")
             rf = facts(rec)
-            if in_std and rf["verdict"] != "validated":
+            cur = block(rec, "curation")
+            c283 = cur is not None and "C283" in (word(cur, "rule") or "")
+            if in_std and c283:
+                if word(cur, "verdict") != "accepted":
+                    fails.append(f"{tag}: curation verdict `{word(cur, 'verdict')}` in "
+                                 "the CATALOGUE -- only an accepted fit (C283) is promoted")
+            elif in_std and rf["verdict"] != "validated":
                 fails.append(f"{tag}: verdict `{rf['verdict']}` in the CATALOGUE -- "
                              "only a validated fit is promoted; a fit that missed its "
                              "band lives in its own case")
@@ -1090,6 +1169,9 @@ def main():
                     fails.append(f"{tag}: `{k}` = {rf[k]} in the record, {pf[k]} "
                                  "from its case -- the record has drifted from its "
                                  "evidence")
+            if c283:
+                c283_failures(rec, cur, case, out, tag, fails)
+                c283_checked.append(rec_path.stem)
             #  The loader names a pair in its OWN i-j order, which is not the
             #  file's alphabetical one (ethylAcetate-ethanol lives in
             #  ethanol-ethylAcetate.dat), so either spelling is the pair.
@@ -1155,6 +1237,10 @@ def main():
           f"{len(ll_checked)} catalogue pair(s) declare a liquid-liquid gap and are held to "
           f"the measured tie lines; arm (h) refused {ll_held} of 6 wrong gap declarations "
           "by name and passed the right one (arm f, amended); "
+          f"{len(c283_checked)} record(s) fitted on EVERY laboratory (C283/C284) hold "
+          "their curation block to the run -- max |dT| and kept points equal the run's, "
+          "the verdict follows the 1 K acceptance, and the discarded rows are exactly "
+          "those a least-squares stage with no discard puts beyond 3 K (arm j); "
           f"{len(vp_done)} catalogue vapour pressure(s) regressed by `choupo-curate vp` "
           f"({', '.join(vp_done) or 'none'}) reproduced by their cases -- Antoine "
           "coefficients under the declared twoStage objective, both curves' errors and the "

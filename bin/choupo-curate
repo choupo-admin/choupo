@@ -227,10 +227,13 @@ def read_dataset(path):
     }
 
 
-def extract(xml, block, into, fake_cache=None):
-    """Run extract-vle on ONE block; return (path, stdout) or (None, why)."""
+def extract(xml, block, into, fake_cache=None, x_of=None):
+    """Run extract-vle on ONE block; return (path, stdout) or (None, why).
+    `x_of` (C284): write the series in that member's mole fraction."""
     cmd = [sys.executable, "-I", str(THERMOML), "extract-vle", str(xml),
            "--block", str(block), "--interior-only", "--into", str(into)]
+    if x_of:
+        cmd += ["--x-of", x_of]
     e = env()
     if fake_cache:
         e["CHOUPO_THERMOML_HOME"] = str(fake_cache)
@@ -847,7 +850,7 @@ def parse_decl(case):
                     ident[im.group(1)] = (im.group(2), im.group(3))
                 out.append({k2: crp.word(d, k2) for k2 in
                             ("file", "doi", "url", "articleFile", "articleSha256",
-                             "block", "sha256", "role", "extractor", "inchiKey")} | {"identity": ident})
+                             "block", "sha256", "role", "extractor", "inchiKey", "xOf")} | {"identity": ident})
     return out
 
 
@@ -914,7 +917,8 @@ def fetch(case, quiet=False):
                 refuse(f"{case.name}: dataset of doi {d['doi']} declares extractor "
                        f"`{d['extractor']}`, which this tool does not know")
             else:
-                out, why = extract(src, d["block"], tmp / "x", fake_cache=fake)
+                out, why = extract(src, d["block"], tmp / "x", fake_cache=fake,
+                                   x_of=d.get("xOf"))
                 what = f"extract-vle refused doi {d['doi']} block {d['block']}"
             if out is None:
                 say(f"choupo-curate fetch: REFUSED -- {what}: {why}")
@@ -2432,6 +2436,18 @@ def compound_main(argv):
 
 
 if __name__ == "__main__":
+    #  `pair` and `pairs` run under DEV.md 4c C283 (amended) and C284
+    #  (bin/curate/pairs_c283.py); `pair ... --rule c282` keeps the pilot chain.
+    if len(sys.argv) > 1 and sys.argv[1] in ("pair", "pairs"):
+        if "--rule" in sys.argv:
+            k = sys.argv.index("--rule")
+            rule = sys.argv[k + 1] if k + 1 < len(sys.argv) else ""
+            del sys.argv[k:k + 2]
+            if rule != "c282":
+                refuse(f"--rule {rule}: the rules are c283 (the default) and c282")
+        else:
+            import pairs_c283
+            sys.exit(pairs_c283.main(sys.argv[1:]))
     if len(sys.argv) > 1 and sys.argv[1] not in ("pair", "vp", "fetch", "revert", "-h", "--help"):
         sys.exit(compound_main(sys.argv[1:]))
     sys.exit(main())

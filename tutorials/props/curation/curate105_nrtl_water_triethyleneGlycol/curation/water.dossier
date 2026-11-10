@@ -1,0 +1,153 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      water;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.water-triethyleneGlycol.b_ij  -928.551143824;
+        equilibrium.liquid.activityModel.binaryParameters.water-triethyleneGlycol.b_ji  609.027332256;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "fd80b6078779bf2e";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/water-triethyleneGlycol-bubble-j.fluid.2015.07.030.dat";
+            doi       "10.1016/j.fluid.2015.07.030";
+            sha256    "3c39e5f5d25ad4b398dc7527e15f6577b93a3d6ee322809bb0ba9a6a3edc6ac1";
+            provenance measured;
+            archiveFile "j.fluid.2015.07.030.xml";
+            system    "water + triethyleneGlycol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/water-triethyleneGlycol-bubble-acs.jced.7b00945.dat";
+            doi       "10.1021/acs.jced.7b00945";
+            sha256    "7a094d2fcbf64ff45ed75e2fb055cd819d00874e7fa16d6e6ff8eadce98e8526";
+            provenance measured;
+            archiveFile "acs.jced.7b00945.xml";
+            system    "water + triethyleneGlycol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/water-triethyleneGlycol-bubble-je800675u.dat";
+            doi       "10.1021/je800675u";
+            sha256    "e72d83523617f26bbb451945faa3c5b81253daf69988572eda61974efe64d028";
+            provenance measured;
+            archiveFile "je800675u.xml";
+            system    "water + triethyleneGlycol";
+            pressure  "85000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.099; max 0.987; n 96; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.water-triethyleneGlycol.b_ij  2999.99999401;
+        equilibrium.liquid.activityModel.binaryParameters.water-triethyleneGlycol.b_ji  -1057.17448129;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "fd80b6078779bf2e";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/water-triethyleneGlycol-bubble-j.fluid.2015.07.030.dat";
+            doi       "10.1016/j.fluid.2015.07.030";
+            sha256    "3c39e5f5d25ad4b398dc7527e15f6577b93a3d6ee322809bb0ba9a6a3edc6ac1";
+            provenance measured;
+            archiveFile "j.fluid.2015.07.030.xml";
+            system    "water + triethyleneGlycol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/water-triethyleneGlycol-bubble-acs.jced.7b00945.dat";
+            doi       "10.1021/acs.jced.7b00945";
+            sha256    "7a094d2fcbf64ff45ed75e2fb055cd819d00874e7fa16d6e6ff8eadce98e8526";
+            provenance measured;
+            archiveFile "acs.jced.7b00945.xml";
+            system    "water + triethyleneGlycol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/water-triethyleneGlycol-bubble-je800675u.dat";
+            doi       "10.1021/je800675u";
+            sha256    "e72d83523617f26bbb451945faa3c5b81253daf69988572eda61974efe64d028";
+            provenance measured;
+            archiveFile "je800675u.xml";
+            system    "water + triethyleneGlycol";
+            pressure  "85000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.099; max 0.987; n 96; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

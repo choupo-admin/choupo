@@ -1,0 +1,238 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  curate105_nrtl_water_triethyleneGlycol -- AN NRTL PAIR FROM EVERY LABORATORY'S MEASUREMENTS.
+
+  WRITTEN BY bin/choupo-curate pair water triethyleneGlycol (DEV.md 4c C284, the bulk run;
+  record docs/design/binary-pairs-from-open-measurements.md section 11).
+
+  THE DECLARATION -- WRITTEN AND COMMITTED BEFORE ANY FIT RAN (several
+  declarations of the bulk run share one commit).
+
+  IDENTITY.  water (CAS 7732-18-5, InChIKey XLYOFNOQVPJJNP-UHFFFAOYSA-N)
+  + triethyleneGlycol (CAS 112-27-6, InChIKey ZIBGPFATKBEMQZ-UHFFFAOYSA-N), joined
+  to the archive through identity.json -- never by name.  CLASS (C284): both
+  records are volatile molecular liquids (no role nonvolatile/solute, no
+  dissociatesTo, no charge, no solid, a vapour-pressure model), and every
+  measured temperature lies below both critical temperatures.
+
+  NO MEASURED SERIES IN THIS TREE.  constant/archiveDatasets names each
+  dataset (DOI, NIST URL, article sha256, extraction selector, extract
+  sha256); `bin/choupo-curate fetch` writes the points into
+  constant/archiveExtracts/, which is gitignored.
+
+  STUDIES: every bubble-temperature block of the pair at or below 110 kPa
+  with a declared uncertainty (3 block(s)).  FITTED, ALL OF THEM
+  (3):
+      10.1016/j.fluid.2015.07.030    block 6    52 pts  4 isobars 53.33-95.99 kPa  357.46-542.62 K  U 0.12-0.39 K
+      10.1021/acs.jced.7b00945       block 5    51 pts  3 isobars 50-100 kPa  355.04-420.64 K  U 2.03-2.13 K
+      10.1021/je800675u              block 0    18 pts  85 kPa  371.55-421.25 K  U 2.7-2.7 K
+  SET ASIDE BY THE EXTRACTION RULES, BY NAME:
+      (none)
+
+  THE RULE (DEV.md 4c C283 amended, C284).  Every laboratory above is
+  fitted; none is held out (the C16 partition and its band are retired as
+  the acceptance test).  NRTL, a_ij = a_ji = 0, alpha = 0.30 fixed: two
+  parameters (b_ij, b_ji); each point weighted by 1/U, U its own stated
+  expanded uncertainty.  Objective twoStage (least squares, then minimax;
+  T_bubble absolute, in K).  OUTLIERS: after a least-squares stage over every
+  point, a point with |T_model - T| > 3 K is discarded BY
+  NAME (`discard` on its evidence entry, listed below) and the fit repeated
+  without it.  ACCEPTED when max |T_model - T| over the KEPT points is below
+  1 K.  C283's 5 % relative clause judges composition; this fit has no
+  composition residual, so only the temperature clause applies.  A pair
+  that splits ONE liquid inside its validity span is not promoted (arm f).
+  Two starts: (0, 0) and (800, -400).
+
+  OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
+  @@OUTLIERS-BEGIN@@
+      25 point(s) of 121: doi 10.1016/j.fluid.2015.07.030 row 1: x
+      0.0500, P 53.330 kPa, T 511.31 K, dT -5.30 K; doi
+      10.1016/j.fluid.2015.07.030 row 2: x 0.0500, P 66.660 kPa, T 518.45
+      K, dT -4.13 K; doi 10.1016/j.fluid.2015.07.030 row 3: x 0.0500, P
+      79.990 kPa, T 529.77 K, dT -8.41 K; doi 10.1016/j.fluid.2015.07.030
+      row 4: x 0.0500, P 95.990 kPa, T 542.62 K, dT -13.97 K; doi
+      10.1016/j.fluid.2015.07.030 row 6: x 0.0990, P 66.660 kPa, T 492.68
+      K, dT -3.64 K; doi 10.1016/j.fluid.2015.07.030 row 8: x 0.0990, P
+      95.990 kPa, T 511.26 K, dT -8.27 K; doi 10.1016/j.fluid.2015.07.030
+      row 11: x 0.1510, P 79.990 kPa, T 468.35 K, dT +4.59 K; doi
+      10.1016/j.fluid.2015.07.030 row 15: x 0.2001, P 79.990 kPa, T
+      449.00 K, dT +5.88 K; doi 10.1016/j.fluid.2015.07.030 row 16: x
+      0.2001, P 95.990 kPa, T 456.67 K, dT +4.88 K; doi
+      10.1016/j.fluid.2015.07.030 row 19: x 0.3003, P 79.990 kPa, T
+      421.06 K, dT +5.86 K; doi 10.1016/j.fluid.2015.07.030 row 20: x
+      0.3003, P 95.990 kPa, T 426.62 K, dT +6.55 K; doi
+      10.1016/j.fluid.2015.07.030 row 23: x 0.4011, P 79.990 kPa, T
+      403.47 K, dT +4.13 K; doi 10.1016/j.fluid.2015.07.030 row 24: x
+      0.4011, P 95.990 kPa, T 408.98 K, dT +4.52 K; doi
+      10.1021/acs.jced.7b00945 row 1: x 0.3390, P 70.000 kPa, T 410.80 K,
+      dT +3.49 K; doi 10.1021/acs.jced.7b00945 row 3: x 0.3670, P 50.000
+      kPa, T 395.52 K, dT +3.16 K; doi 10.1021/je800675u row 1: x 0.1170,
+      P 85.000 kPa, T 421.25 K, dT +68.55 K; doi 10.1021/je800675u row 2:
+      x 0.1400, P 85.000 kPa, T 417.15 K, dT +62.59 K; doi
+      10.1021/je800675u row 3: x 0.1610, P 85.000 kPa, T 416.25 K, dT
+      +55.00 K; doi 10.1021/je800675u row 4: x 0.1760, P 85.000 kPa, T
+      414.75 K, dT +50.82 K; doi 10.1021/je800675u row 5: x 0.1820, P
+      85.000 kPa, T 413.65 K, dT +49.74 K; doi 10.1021/je800675u row 6: x
+      0.2420, P 85.000 kPa, T 413.25 K, dT +30.78 K; doi
+      10.1021/je800675u row 7: x 0.2510, P 85.000 kPa, T 412.55 K, dT
+      +28.93 K; doi 10.1021/je800675u row 8: x 0.3250, P 85.000 kPa, T
+      403.95 K, dT +19.58 K; doi 10.1021/je800675u row 9: x 0.3730, P
+      85.000 kPa, T 400.85 K, dT +13.41 K; doi 10.1021/je800675u row 10:
+      x 0.4100, P 85.000 kPa, T 397.95 K, dT +10.20 K
+  @@OUTLIERS-END@@
+
+  @@RESULT-BEGIN@@
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = -928.6 K, b_ji = 609.0 K over 96 kept points of 3
+  laboratories (25 discarded): max |dT| 3.833 K, mean 1.069 K against the
+  acceptance 1 K -> notAccepted. fit_nrtl_start2 lands on A DIFFERENT
+  pair (3000.0, -1057.2). NOT PROMOTABLE: max |dT| 3.833 K over the 96
+  kept points is not below 1 K
+  @@RESULT-END@@
+
+  WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
+  frame (ideal-gas vapour, the catalogue's own vapour-pressure records); the
+  measurements were transcribed by the archive and have NOT been read back
+  against the articles (the CHECKLIST that `fetch` writes is the aid).
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        fit_nrtl;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.water-triethyleneGlycol.b_ij;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.water-triethyleneGlycol.b_ji;  initial 0;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/water-triethyleneGlycol-bubble-j.fluid.2015.07.030.dat";
+                role     fit;
+                discard  ( 1 2 3 4 6 8 11 15 16 19 20 23 24 );   // C283 outliers, by name in the header
+            }
+            {
+                dataset  "constant/archiveExtracts/water-triethyleneGlycol-bubble-acs.jced.7b00945.dat";
+                role     fit;
+                discard  ( 1 3 );   // C283 outliers, by name in the header
+            }
+            {
+                dataset  "constant/archiveExtracts/water-triethyleneGlycol-bubble-je800675u.dat";
+                role     fit;
+                discard  ( 1 2 3 4 5 6 7 8 9 10 );   // C283 outliers, by name in the header
+            }
+        );
+
+        objective { method twoStage;  scale { T_bubble absolute; } }
+        residual
+        {
+            kind        T_bubble;
+            components  ( water triethyleneGlycol );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_history.csv;
+            parity     parity.csv;
+            proposal   triethyleneGlycol-water.proposal.dat;
+        }
+    }
+    {
+        name        fit_nrtl_start2;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.water-triethyleneGlycol.b_ij;  initial 800;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.water-triethyleneGlycol.b_ji;  initial -400;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/water-triethyleneGlycol-bubble-j.fluid.2015.07.030.dat";
+                role     fit;
+                discard  ( 1 2 3 4 6 8 11 15 16 19 20 23 24 );   // C283 outliers, by name in the header
+            }
+            {
+                dataset  "constant/archiveExtracts/water-triethyleneGlycol-bubble-acs.jced.7b00945.dat";
+                role     fit;
+                discard  ( 1 3 );   // C283 outliers, by name in the header
+            }
+            {
+                dataset  "constant/archiveExtracts/water-triethyleneGlycol-bubble-je800675u.dat";
+                role     fit;
+                discard  ( 1 2 3 4 5 6 7 8 9 10 );   // C283 outliers, by name in the header
+            }
+        );
+
+        objective { method twoStage;  scale { T_bubble absolute; } }
+        residual
+        {
+            kind        T_bubble;
+            components  ( water triethyleneGlycol );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            parity     parity_start2.csv;
+        }
+    }
+    {
+        name        txy_ideal;
+        type        propertyScan1D;
+        vary        { variable x[water];  from 0.0;  to 1.0;  n 101; }
+        state       { P 95.99 kPa;  composition { water 0.5;  triethyleneGlycol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model ideal; } } }
+        }
+        properties  ( T_bubble  y_eq_water );
+        output      { file txy_ideal.csv; }
+    }
+    {
+        name        txy_nrtl;
+        type        propertyScan1D;
+        vary        { variable x[water];  from 0.0;  to 1.0;  n 101; }
+        state       { P 95.99 kPa;  composition { water 0.5;  triethyleneGlycol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_water );
+        output      { file txy_nrtl.csv; }
+    }
+);
+
+experimental
+(
+);

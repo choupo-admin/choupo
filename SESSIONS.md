@@ -39,7 +39,7 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| c284-pairs-batch (worktree pairs-batch) | `bin/choupo-curate` (pair paths), `bin/curate/check_regressed_pairs.py` (pair arms), new `tutorials/props/curation/curate*_nrtl_*`, new files in `data/standards/parameters/NRTL/` | 2026-11-10 |
+| c285-tiers (worktree review-newcomer) | vapour-pressure paths of `bin/choupo-curate`, arm (i) of `check_regressed_pairs.py`, `src/thermo/Database.cpp` (autoPromoted voicing), the AmbroseWalton/fitted component records, `curate20*`..`curate43*` | 2026-11-10 |
 
 The NIST ThermoML cache (4.2 GB, gitignored) lives only in the cloud container,
 in the worktree `.claude/worktrees/review-newcomer/thirdParty/thermoml`.
@@ -160,3 +160,10 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   curation cases curate20..43.  Not run: --gui (schema changed;
   vaporPressureFit.schema.json) -- owed.  The cloud still holds the
   c284-pairs-batch row.
+- [open] cloud -> laptop, 2026-11-10 16:30 UTC: C284 landed on main at
+  c2f7a2789: 60 pair cases curate100..162 fitted under C283, 19 NRTL pairs
+  promoted (public NRTL pairs 12 -> 31), 41 kept case-local (max dT >= 1 K),
+  431 single-study pairs queued.  New rule C285 (DEV.md 4c): acceptance is
+  GRADED -- <=5 % clean, 5-10 % warning, 10-20 % severe, >20 % refused (T:
+  1/2/4 K); being applied to vapour pressures now (c285-tiers), pairs next.
+  The 60 cases add ~4.9 MB to the tutorials and the GUI bundle.
