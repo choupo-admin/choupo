@@ -48,16 +48,16 @@ export const TREE_STEPS: readonly LessonStep[] = [
       + "olefins, benzene, toluene, the xylenes, and synthesis gas with "
       + "methanol as its first derivative) and four inorganic ones (ammonia, "
       + "sulfuric acid, chlorine with caustic soda, and the nitric and "
-      + "phosphoric acids). This page draws that tree as ONE directed graph "
+      + "phosphoric acids). This page draws that tree as one directed graph "
       + "whose nodes are substances and whose edges are named production "
       + "routes, each with its balanced stoichiometry, a yield band and a "
-      + "citation, and lets you read it three ways: DEPTH (pick a product, "
+      + "citation, and lets you read it three ways: depth (pick a product, "
       + "walk back to its roots, with the mass of every input on every "
-      + "edge), CONVERGENCE (pick a root and see what hangs from it, and "
-      + "what a route makes whether anyone wants it or not), and the TREE OF "
+      + "edge), convergence (pick a root and see what hangs from it, and "
+      + "what a route makes whether anyone wants it or not), and the tree of "
       + "2050 (for each root, the incumbent route beside the transition "
       + "routes). The message the three views carry is one sentence: the "
-      + "sustainable transition replaces the ROOTS, not the leaves.",
+      + "sustainable transition replaces the roots, not the leaves.",
   },
   {
     n: 2,
@@ -67,10 +67,10 @@ export const TREE_STEPS: readonly LessonStep[] = [
       + "negative stoichiometric number and the products with a positive "
       + "one, and the equation is the statement that every element is "
       + "conserved. Every reaction in the records is checked this way by "
-      + "the gate bin/curate/check_chemistry_graph.py before it reaches "
+      + "the check bin/curate/check_chemistry_graph.py before it reaches "
       + "the page; the two equations its author got wrong while building "
       + "the graph (a phenol hydrogenation one H2 short, a yield written on "
-      + "the wrong element) were found by that gate and not by a reader. "
+      + "the wrong element) were found by that check and not by a reader. "
       + "The `target` of a route is the substance it is built to make. "
       + "Everything else on the right-hand side is a forced co-product, and "
       + "no record lists one: it is whatever the equation leaves over.",
@@ -83,8 +83,8 @@ export const TREE_STEPS: readonly LessonStep[] = [
     ],
     derivation: [
       { step: "Take one pass of the reaction as written. Species i then "
-          + "changes by nu_i moles, and each mole of it carries n(e,i) atoms "
-          + "of element e." },
+          + "changes by its stoichiometric number of moles, and each mole of it carries "
+          + "as many atoms of element e as one molecule of it holds." },
       { step: "Atoms of an element are neither made nor destroyed, so the "
           + "net change in atoms of e over all species is zero.",
         eq: String.raw`\sum_i \nu_i\,n_{e,i}=0` },
@@ -95,15 +95,16 @@ export const TREE_STEPS: readonly LessonStep[] = [
     title: "Mass of each input per kilogram of product",
     body: "What a student wants from a route is not moles but kilograms: how "
       + "much of each input goes into one kilogram of what the route is "
-      + "built for. Per mole of target the equation consumes |nu_i|/nu_t "
-      + "moles of input i; multiplying by molar masses gives kilograms, "
-      + "which is a fixed number for the route, its STOICHIOMETRIC floor. "
+      + "built for. Per mole of target the equation consumes, of input i, the "
+      + "magnitude of its stoichiometric number divided by the target's, in moles of "
+      + "input i; multiplying by molar masses gives kilograms, "
+      + "which is a fixed number for the route, its stoichiometric floor. "
       + "A real plant needs more, because part of the feed is lost to "
       + "other products: dividing by the route's yield y (the fraction of "
       + "the basis element that ends up in the target) gives the mass the "
-      + "route needs. The records carry ONE yield per route, on the basis "
+      + "route needs. The records carry one yield per route, on the basis "
       + "element the record names (carbon for most), and the page divides "
-      + "EVERY input's floor by it. That is exact for an input that carries "
+      + "every input's floor by it. That is exact for an input that carries "
       + "the basis element; for one that does not -- chlorine in a "
       + "chlorination, oxygen in an oxidation, hydrogen in a hydrogenation "
       + "-- it assumes that input is lost in the same proportion as the "
@@ -122,8 +123,8 @@ export const TREE_STEPS: readonly LessonStep[] = [
       { sym: "M_i", means: "molar mass of input i, read from its component record", unit: "kg/kmol" },
       { sym: "\\nu_t", means: "stoichiometric number of the target (a positive number)" },
       { sym: "M_t", means: "molar mass of the target", unit: "kg/kmol" },
-      { sym: "y", means: "the route's yield: the fraction of the basis element in the feed that ends up in the target, 0 < y <= 1" },
-      { sym: "b_i", means: "the stoichiometric floor |nu_i| M_i / (nu_t M_t), the same ratio at y = 1", unit: "kg/kg" },
+      { sym: "y", means: "the route's yield: the fraction of the basis element in the feed that ends up in the target, above 0 and at most 1" },
+      { sym: "b_i", means: "the stoichiometric floor: the mass of input i per kilogram of target at y = 1, from the equation alone", unit: "kg/kg" },
       { sym: "y_\\mathrm{lo}", means: "the lower end of the curator's yield band" },
       { sym: "y_\\mathrm{hi}", means: "the upper end of the curator's yield band" },
     ],
@@ -131,7 +132,7 @@ export const TREE_STEPS: readonly LessonStep[] = [
       { step: "Moles of input i per mole of target, at the stoichiometry:",
         eq: String.raw`\frac{|\nu_i|}{\nu_t}` },
       { step: "Convert both to kilograms with the molar masses; this is the "
-          + "floor, b(i):",
+          + "floor, b_i:",
         eq: String.raw`b_i=\frac{|\nu_i|\,M_i}{\nu_t\,M_t}` },
       { step: "Only the fraction y of the feed's basis element becomes "
           + "target, so the feed needed is the floor divided by y:",

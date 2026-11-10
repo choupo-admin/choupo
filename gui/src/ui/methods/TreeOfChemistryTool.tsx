@@ -708,7 +708,7 @@ function SourcesTable(): JSX.Element {
   return (
     <Box>
       <Title order={5}>Sources, with their licence and how well each is known</Title>
-      <OriginMark of="reference" note="the graph header's own list; a source nobody cites fails the gate" />
+      <OriginMark of="reference" note="the graph header's own list; a source nobody cites fails the check that reads it" />
       <PanTable>
         <Table.Thead>
           <Table.Tr>
