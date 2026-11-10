@@ -3221,6 +3221,50 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **C277 (Vitor, 2026-11-09 night, after C276: "Entao agora reve o resto dos EduTools com
+> calma e faz o mesmo.").**  Every tool in `gui/src/ui/methods/registry.ts` read on the
+> published site the way `thiele` was: measured first (equations that fail to render,
+> how far down the first figure sits, caveat text per control, advisories dumped raw,
+> capitals for emphasis), then the worst read by eye.  Defects fixed at once; the shell
+> redesign of C276 (2)-(5) drawn on one page and shown to Vitor before it is applied.  OPEN.
+> SUPERSEDED the same night (Vitor: "Ataca cada Edutool e altera logo cada um deles para
+> ficarem melhor"): no drawing waits for approval; each tool is changed at once, the
+> shared shell first (knob reasons one click away, the engine-note line grey unless a
+> model left its validity), then each tool by what its own screen shows.
+>
+> **C276 (Vitor, 2026-11-09 night: "Podes ver se isto e apelativo para um aluno?" on the
+> published `thiele` tool).**  READ on the live site at 1440x900, seven screens.  Verdict:
+> the content is good and the screen is not inviting.  (1) DEFECT: the first equation
+> shows a red KaTeX parse error (a Unicode root sign in `ThielePelletTool.tsx:135`) and
+> the second renders its words as run-together italics (`:169`).  (2) The picture, the
+> one thing a student would stay for, is a full screen below three sections of prose, and
+> the three pellets are thumbnails 130 px wide above a large line chart.  (3) Each of the
+> five controls carries a paragraph of caveats in grey 12 px, so the panel reads as a
+> wall; (4) the top of the page opens with an orange "engine flagged 1 caveat" and the
+> lesson ends in nine raw advisories in monospace.  (5) Capitals for emphasis throughout.
+> OPEN: fix (1) at once and sweep every lesson `formula:` for the same two patterns;
+> (2)-(5) are a redesign of the lesson shell (picture first, caveats behind a disclosure),
+> to be drawn and shown to Vitor before it is applied to the 60 lessons; joins C273.
+>
+> **C275 (Vitor, 2026-11-09 night, on the column14 figure: "21% de violacao de energia no
+> ebulidor?! e assobias para o lado?!").**  The figure showed the reboiler at 8.09 MW
+> against Klemola's measured 10.24 MW and the architect had listed it as a limitation
+> without doing the arithmetic.  The cause was a measured INPUT the engine could not
+> take: Table 2 gives the reflux at 18.5 C, 26 K below its bubble point, and the column
+> had no keyword for it, so the case ran 18 % less internal traffic than the plant.
+> BUILT AND LANDED the same night: `refluxTemperature` on the Wang-Henke path (total
+> condenser), L_int = R D (1 + phi), phi = sensible heat of the reflux / latent heat of
+> the overhead, re-solved until phi settles; refluxRatio stays external.  Result, nothing
+> fitted: Q_reboiler 9.77 MW (-4.6 %), reboiler's own envelope 10.46 MW (+2.1 %); the
+> measured value lies between the two CMO readings.  Cases without the key byte-identical
+> (column01/06/09).  WHAT GOT WORSE AND IS WRITTEN IN THE CASE: overhead n-butane 0.008
+> wt % against 0.2 measured (was 0.11), and column15 no longer brackets it; the earlier
+> reading of that bracket as support for the 119 % efficiency is withdrawn.  OPEN: the
+> key on `simultaneous` / full MESH (refused by name today); the overhead purity gap
+> (relative volatility near the top, or the paper's back-calculated efficiency).  RULE
+> TAKEN: a gap against a measurement is ARITHMETIC before it is a "limitation" -- the
+> hand estimate (1.7 MW) took two lines and named the missing input.
+>
 > **C274 (Vitor, 2026-11-09 night: "nao falta um caso que use o Cosmo ou outros modelos
 > mais sofisticados?").**  MEASURED (grep of every thermoPhysPropDict / propsDict):
 > COSMO-SAC 1 case, props bench only (`cosmoSAC01_water_ethanol`), no unit uses it;
