@@ -429,7 +429,7 @@ export const GMP_LAYOUT_STEPS: readonly LessonStep[] = [
       + "or stands closer to one than the separation, measured as the clear "
       + "distance between the two room volumes -- a geometric check of the "
       + "declaration, which does not show that an ignition source is "
-      + "protected against ignition.  It also announces a "
+      + "itself protected.  It also announces a "
       + "building that has both and declares no separation at all, rather "
       + "than pass it.  In the teaching building the electrical room above "
       + "the lobby is about 7.3 m from the suite; raise the separation past "
