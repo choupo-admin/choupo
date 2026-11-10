@@ -1407,6 +1407,13 @@ def vp_is_aw(text):
                      crp.strip_comments(text), re.M) is not None
 
 
+def vp_promoted_here(text):
+    """A vaporPressure this mode promoted: it may be refitted (redeclared) and
+    re-promoted, never a curve somebody else fitted or read."""
+    m = re.search(r"\n    vaporPressure\n    \{\n.*?\n    \}\n", text, re.S)
+    return bool(m) and crp.word(crp.strip_comments(m.group(0)), "promotedBy") == VP_PROMOTED_BY
+
+
 def record_Tb(text):
     m = re.search(r"^Tb\s+([0-9.eE+-]+)\s*;", crp.strip_comments(text), re.M)
     return float(m.group(1)) if m else None
@@ -1448,8 +1455,9 @@ def vp_plan(name, work):
     comp, cas, key = identity(name)
     rp = vp_record(comp)
     text = rp.read_text()
-    if not vp_is_aw(text):
-        refuse(f"{comp}: its vaporPressure is not `model AmbroseWalton` -- this mode "
+    if not vp_is_aw(text) and not vp_promoted_here(text):
+        refuse(f"{comp}: its vaporPressure is not `model AmbroseWalton` (nor a curve "
+               "this mode promoted) -- this mode "
                "replaces a corresponding-states estimate and never overwrites a curve "
                "somebody fitted or read")
     ix = json.loads((cache_root() / "index.json").read_text())
