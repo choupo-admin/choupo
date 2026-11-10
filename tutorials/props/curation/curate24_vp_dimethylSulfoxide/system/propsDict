@@ -8,9 +8,9 @@
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   curate24_vp_dimethylSulfoxide -- the vapour pressure of dimethylSulfoxide, REFITTED to
-  measurements (DEV.md 4c C281 step 2).  Written by `bin/choupo-curate vp
-  dimethylSulfoxide`; everything above the RESULT paragraph is the DECLARATION, committed
-  before any fit ran, so it can be read against the result.
+  measurements (DEV.md 4c C281 steps 2 and 3).  Written by `bin/choupo-curate
+  vp dimethylSulfoxide`; everything above the RESULT paragraph is the DECLARATION,
+  committed before any fit ran, so it can be read against the result.
 
   WHY.  The catalogue record carried `vaporPressure { model AmbroseWalton; }`,
   a corresponding-states ESTIMATE from Tc, Pc and omega that never reads the
@@ -41,19 +41,31 @@
 
   NORMAL BOILING POINT: the record's Tb 462.15 K lies INSIDE the measured span 293.15-463.45 K: the held-out verdict is the test there, no further condition.
 
-  NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares both
-  series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates
-  them into constant/archiveExtracts/ (gitignored).
+  OBJECTIVE (C281 step 3, declared): `objective { method twoStage; }` --
+  Vitor's fitting practice (DEV.md 4c C280): least squares in log10 P for a
+  first estimate, then the LARGEST relative error in P, (P_model - P)/P, over
+  the fit points minimised from it; both answers are kept in the result.  A
+  student who prefers another objective declares `leastSquares` or `minimax`.
 
-  RESULT
-  @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  EARLIER FIT, SUPERSEDED BY THIS DECLARATION
+  @@EARLIER-BEGIN@@
+  C281 step 2, objective leastSquares (log10 P), the same partition and
+  band: WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
   Antoine log10(Psat/bar) = 4.482417 - 1835.6725/(T + -56.0230),
   in-sample R2 0.999999 over 21 points, 293.15-308.16 K. HELD OUT: 19
   points, AAD 3.8716 % against the band 3.2 % -> notValidated. Its own
   normal boiling point (101.325 kPa): 466.07 K. NOT PROMOTED: held-out
   verdict notValidated (AAD 3.872 % against the band 3.2 % declared
   before the fit); the record keeps AmbroseWalton
+  @@EARLIER-END@@
+
+  NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares both
+  series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates
+  them into constant/archiveExtracts/ (gitignored).
+
+  RESULT
+  @@RESULT-BEGIN@@
+  (filled in by bin/choupo-curate after the run)
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 
@@ -83,6 +95,8 @@ operations
             maxAAD  3.2 percent;
             origin  "declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 19 points (1.02 to 6.54 %, mean 3.128 %), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean";
         }
+
+        objective  { method twoStage; }
 
         output     { file fit_antoine.csv; }
     }
