@@ -160,8 +160,8 @@ export const SITE_PROCESS_PRICE_STEPS: readonly LessonStep[] = [
     body: "What the patient pays is not what the plant receives. Between "
       + "them stand taxes, a pharmacy, a wholesaler and, in some markets, "
       + "fixed fees. Each stage takes its share in one of four ways, and "
-      + "the ways are not interchangeable: a share OF the price the stage "
-      + "sells at, a markup ON the price the stage pays, a tax ADDED on "
+      + "the ways are not interchangeable: a share of the price the stage "
+      + "sells at, a markup on the price the stage pays, a tax added on "
       + "top, or a fixed amount per pack. A margin of one fifth means two different "
       + "prices depending on which. Percentage stages commute, but a "
       + "fixed amount per pack does not: it is taken before or after a "
@@ -195,8 +195,8 @@ export const SITE_PROCESS_PRICE_STEPS: readonly LessonStep[] = [
       + "the page shows the check. A shelf price that comes out far above "
       + "the going price of competing products is a result, not a mistake: "
       + "it says the plant cannot pay with those margins. For the volume "
-      + "that price will sell see the demand forecast, and for the date "
-      + "from which generics lower it see the patent-expiry page.",
+      + "that price will sell, see the demand forecast, and for the date "
+      + "from which generics lower it, see the patent-expiry page.",
     formula: String.raw`P_k=\frac{P_{k+1}}{1-r_k}\quad\text{or}\quad P_{k+1}(1+r_k)\quad\text{or}\quad P_{k+1}+a_k`,
     where: [
       { sym: "P_k", means: "price entering stage k from above", unit: "currency per pack" },
