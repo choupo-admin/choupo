@@ -219,7 +219,7 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
     ],
     formula: String.raw`w = 1 - q \qquad q = \frac{s}{s - 1} \qquad w = \frac{1}{1 - s}`,
     where: [
-      { sym: "q", means: "Wegstein'S coefficient: the weight kept on the old "
+      { sym: "q", means: "Wegstein's coefficient: the weight kept on the old "
         + "guess; q = 0 is direct substitution, q = -1 a step twice as long "
         + "(clamped to the recycle's [qmin, qmax])" },
       { sym: "s", means: "the secant slope: the change in what the plant "
