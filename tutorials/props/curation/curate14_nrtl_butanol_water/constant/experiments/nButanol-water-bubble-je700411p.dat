@@ -1,0 +1,95 @@
+/*--------------------------------------------------------------------------*\
+  BINARY BUBBLE-POINT EVIDENCE, extracted from a ThermoML file by
+  bin/choupo-thermoml extract-vle.
+
+  system       nButanol + water   (x is nButanol's liquid mole fraction)
+  pressure     101.3 kPa   (CONSTANT across the series)
+  points       15   (2 pure-component endpoint(s) set aside -- see `selection`)
+  vapour       y joined from the companion block
+
+  ONE FILE, TWO READERS.  The column names are the ones the props
+  bench's `experimental {}` overlay draws against a propertyScan1D
+  (x[<component>], T_bubble, y_eq_<component>) AND the ones
+  fitParameters(T_bubble) reads -- so the points a pair is fitted to
+  and the points it is drawn against cannot be two transcriptions.
+
+  The role this evidence plays -- fit or held-out validation -- is NOT
+  set here.  It is declared in the operation that consumes it, before
+  any fitting runs (src/propertyOps/EvidencePartition.H).
+
+  REDISTRIBUTION.  These are measured values reported in the article
+  cited below, located through the NIST/TRC ThermoML Archive (a finding
+  aid; thirdParty/thermoml/README.md).  The article is the source; the
+  archive's arrangement is not reproduced.
+\*--------------------------------------------------------------------------*/
+
+property     binaryVLE.T_bubble;
+system       ( nButanol water );
+pressure     101.3 kPa;
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Lladosa, E.; Monton, J. B.; Burguet, M. C.; Munoz, R. (2008). Phase Equilibrium for the Esterification Reaction of Acetic Acid + Butan-1-ol at 101.3 kPa. J. Chem. Eng. Data. doi:10.1021/je700411p";
+    archiveFile  "je700411p.xml";
+    archive      "ThermoML.v2020-09-30.tgz (NIST/TRC ThermoML Archive, doi:10.18434/mds2-2422)";
+    block        11;
+    doi          "10.1021/je700411p";
+    sha256       "32ed6e15958b58bc35d7eb647d3cb4b75e9d6232ffbe7608a87c9c4b09cc34b1";
+    identity
+    {
+        nButanol       { cas "71-36-3"; inchiKey "LRHPLDYGYMQRHN-UHFFFAOYSA-N"; }
+        water          { cas "7732-18-5"; inchiKey "XLYOFNOQVPJJNP-UHFFFAOYSA-N"; }
+        rule           "the archive's standard InChIKey matched to the catalogue record's CAS through two resolvers that agree (PubChem PUG REST and NCI CACTUS), molecular formula checked -- never by name";
+    }
+}
+
+uncertainty
+{
+    T_bubble
+    {
+        kind    expandedCombined;   // ThermoML nCombExpandUncertValue
+        level   95;            // per cent confidence
+        unit    K;
+        values  ( 0.17 0.17 0.17 0.17 0.17 0.17 0.17 0.17 0.17 0.17 0.17 0.17 0.17 0.17 0.17 );   // per point, in `data` order
+    }
+}
+
+selection
+{
+    //  A bubble point on a PURE component measures the vapour-pressure
+    //  correlation, not the pair: the pair parameters have no effect
+    //  there.  Set aside, not deleted -- the values stay here.
+    pureEndpoints
+    (
+        { x 0; T_bubble 373.15 K; }
+        { x 1; T_bubble 390.46 K; }
+    );
+}
+
+columns
+(
+    { name x[nButanol];  unit -;  }
+    { name T_bubble;  unit K;  }
+    { name y_eq_nButanol;  unit -;  }
+);
+
+data
+(
+      0.0050  369.71  0.1200
+      0.0060  368.88  0.1480
+      0.0090  367.53  0.1910
+      0.5580  365.65  0.2480
+      0.5920  365.87  0.2530
+      0.6300  366.66  0.2710
+      0.6870  368.2  0.3040
+      0.7350  369.92  0.3420
+      0.7600  370.97  0.3660
+      0.8030  373.1  0.4160
+      0.8450  375.61  0.4800
+      0.8810  378.17  0.5500
+      0.9180  381.37  0.6450
+      0.9550  385.2  0.7730
+      0.9890  389.44  0.9330
+);
