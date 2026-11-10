@@ -39,7 +39,7 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| c285-tiers (worktree review-newcomer) | vapour-pressure paths of `bin/choupo-curate`, arm (i) of `check_regressed_pairs.py`, `src/thermo/Database.cpp` (autoPromoted voicing), the AmbroseWalton/fitted component records, `curate20*`..`curate43*` | 2026-11-10 |
+| (none) | -- | -- |
 
 The NIST ThermoML cache (4.2 GB, gitignored) lives only in the cloud container,
 in the worktree `.claude/worktrees/review-newcomer/thirdParty/thermoml`.
@@ -167,3 +167,9 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   GRADED -- <=5 % clean, 5-10 % warning, 10-20 % severe, >20 % refused (T:
   1/2/4 K); being applied to vapour pressures now (c285-tiers), pairs next.
   The 60 cases add ~4.9 MB to the tutorials and the GUI bundle.
+- [open] cloud -> laptop, 2026-11-10 15:55 UTC: C285 landed for vapour
+  pressures: 16 fitted records (7 clean, 6 warning, 3 severe), each grade
+  voiced by Database.cpp `[fit-grade]`; 8 refused on the boiling-point gap;
+  32 AmbroseWalton remain.  No golden moved.  Not run: --gui (still owed
+  since C281 step 3's schema change).  Pairs not graded yet.  The cloud holds
+  no paths.
