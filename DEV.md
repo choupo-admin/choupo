@@ -3298,6 +3298,47 @@ accepts today, and that is a policy call.
 > unreachable (no precedent), and whether curate04-14 drop their tracked
 > series.  Record: docs/design/binary-pairs-from-open-measurements.md section 8.
 
+> **C268 RESULT (2026-11-10).** C268 utilities block LANDED 11-10: cooling tower (19.7 MW, 471 kg/s), refrigeration package (20.6 MW at the chiller) and flare (747 kg/h normal vent) on greenAmmoniaPEQ's plot, each sized on the run's own numbers; 0 findings, 36/36 pipes, closures unchanged (mass 99.997 %, energy 0.002 %); utility pipes not routed (no grammar for a line between two items); check_bund_arithmetic now compares tank1's V_R as a number at 1e-9.  Not run: --gui, a full sweep; the flare separation rows are asserted, not sabotage-tested.
+>
+> **Acetic acid PARKED (architect, 2026-11-10, after Vitor: "Perdeste uma semana com essa merda antes!").**  The open acetic items (C201 (1) rest: dew-point distillate, Gibbs / three-phase / Txy readers, record identity; C174/C175 subcooled-feed q; column05's dimer in C239) get no work this month.  Reason: nothing the month delivers depends on them, aceticAcid02 runs with its balances gated (C258), and column05's ideal-vapour limit is already announced.  Reopened only if a case a student meets fails.
+>
+> **C284 (Vitor, 2026-11-10: "faz favor de acelerar e comecares a produzir
+> componentes e binarios! ... os componentes tem classificacoes e os binarios
+> so se devem fazer para compostos que os aceitem").  PRODUCE PAIRS IN BULK,
+> ONLY FOR COMPONENTS WHOSE CLASS ACCEPTS ONE.**  An activity-coefficient pair
+> (NRTL, from bubble-temperature VLE) is fitted only when BOTH components are
+> volatile molecular liquids: no `role nonvolatile` or `role solute` (Henry),
+> no `dissociatesTo` (electrolyte), not an ion or a solid, and the archive
+> data lie below each component's Tc.  Every other pair is refused BY NAME
+> with its class, never fitted.  `bin/choupo-curate pair` runs over every
+> archive pair that qualifies, under C283 (all laboratories, blatant outliers
+> dropped by name, accepted at max 5 % relative / under 1 K), autoPromoted
+> with humanReviewed false, and reports the counts.
+
+> **C283 (Vitor, 2026-11-10, on the vapour-pressure fits that failed their
+> held-out band: "isto nao e ciencia exata ... Por default um erro relativo de
+> 5% chega e sobra! E um erro inferior a 1 grau K tambem!").  THE DEFAULT
+> ACCEPTANCE OF A CURATION FIT.**  A fitted record is accepted by default when,
+> on the held-out measurements, its MAXIMUM relative error is at most 5 % in
+> every property judged relatively (pressure, composition, density, Cp,
+> viscosity), and its maximum absolute error is below 1 K in temperature.  A
+> case may declare another band (`acceptance {}`), with its reason; the
+> default is announced when used.  The band derived from the held-out
+> laboratory's own stated uncertainty is RETIRED as the acceptance test --
+> laboratories disagree with each other by more than they claim, so it
+> rejected curves far better than the estimates they would replace -- and is
+> kept as information only.  Applies to `bin/choupo-curate vp` and `pair` and
+> every fit-op acceptance default.  First applied in C281 step 3.
+> **C283 amended (Vitor, same hour: "Eu usaria os dados dos laboratorios
+> todos! Eventualmente descarto blatant outliers!").**  A curation fit uses
+> EVERY laboratory's measurements, not one study to fit and another held out.
+> Blatant outliers are discarded BY NAME and listed in the case (stated
+> default: after the least-squares stage, a point whose relative error exceeds
+> three times the 5 % band, i.e. 15 %, or 3 K in temperature; the fit is then
+> repeated without it); acceptance (5 % max relative, < 1 K) is judged on all
+> the points kept.  The one-study-fit / other-study-held-out partition of C16
+> is RETIRED as the default for these pipelines.
+
 > **C281 (Vitor, 2026-11-10, from the cloud session: "Ataca primeiro o
 > Ambrose-Walton").  THE AMBROSE-WALTON VAPOUR PRESSURES: SAY WHAT THEY ARE, THEN
 > REPLACE THEM WHERE MEASUREMENTS EXIST.**  MEASURED before dispatch: 48 catalogue

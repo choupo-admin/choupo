@@ -70,9 +70,13 @@
   EMERGENCY GATE at the east end of the tank-farm road, so the fire brigade
   has a second way in that reaches the tanks first.  The FENCE is the plot
   boundary; every pipe that enters or leaves the plant crosses it at a
-  labelled point.  Not drawn, said rather than invented: the cooling-water
-  circuit, the refrigeration package, the steam system, the electrolysers
-  and the air separation unit -- all outside this battery limit, and named
+  labelled point.  Drawn since 2026-11-10 (DEV.md 4c C268): the UTILITIES BLOCK -- cooling
+  tower, refrigeration package and flare, in the north-east corner, each
+  a non-process box sized on a number the run publishes (see `items`).
+  Not drawn, said rather than invented: the cooling-water, refrigerant
+  and flare-header PIPES (a utility is not a flowsheet stream, so the engine
+  routes nothing for it), the steam system, the electrolysers and the air
+  separation unit -- all outside this battery limit, and named
   as such where their streams cross the fence.
 
   THE STORES ARE ON THEIR STREAMS (2026-11-09, DEV.md 4c C268).  The ten
@@ -490,6 +494,63 @@ items
         source      "author-set assumption for this exercise; not a building design";
         reason      "the second way in, on the east fence at the end of the tank-farm road, normally locked: the fire brigade reaches the tanks first, and has a way in when the north gate is blocked";
     }
+
+    //  ---- the UTILITIES BLOCK (2026-11-10, DEV.md 4c C268) -----------------
+    //  Three utility facilities that the run's own utility ledger consumes
+    //  or serves, north-east of the loop, across the east road from it, in
+    //  the corner of the plot that held nothing.  None is a flowsheet unit
+    //  and none is sized by a correlation, so each is a NON-PROCESS item:
+    //  its box is declared and the NUMBER IT IS SIZED ON is the run's own
+    //  (read from reports/streams and the postDict `utility` block, quoted
+    //  in each `reason`).  The BOX ITSELF is drawn by eye against that
+    //  number: AUTHOR-SET, like every declared footprint in this file.
+    //  Outside this battery limit, as the flowsheet says: so none is
+    //  costed here -- their running cost is already in C_UT through the
+    //  utility prices, and no capital is invented for them (a `quotes` row
+    //  would need a vendor's price, which this case does not have).  Not
+    //  drawn: the cooling-water, refrigerant and flare-header PIPES -- the
+    //  engine routes a pipe for a STREAM of the flowsheet, and a utility
+    //  is not one (see the README).
+    {
+        nonProcess  "coolingTower";
+        kind        coolingTower;
+        x           125 m;
+        y           30 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 24 m; width 12 m; height 9 m; }   // author-set
+        source      "author-set box for this exercise, two cells drawn by eye; not a tower design.  Sized on the run's own cooling-water ledger: 19.7 MW rejected in N2Cooler 1.98 + Intercooler 5.18 + Aftercooler 5.48 + WaterCooler 7.07 MW, 471 kg/s circulated (25 to 35 C), read from the utility lines of the run";
+        reason      "the plant's cooling tower: it takes every cooling-water duty the four coolers publish.  It stands north-east of the loop, across the east road, outside every hazardous-area zone and 42 m from the nearest tank wall.  The refrigeration package's condenser rejects on top of this duty and is NOT in the 19.7 MW (the package is not modelled), so the tower is a lower bound";
+    }
+    {
+        nonProcess  "refrigerationPackage";
+        kind        refrigerationPackage;
+        x           112 m;
+        y           18 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 16 m; width 8 m; height 6 m; }   // author-set
+        source      "author-set box for this exercise, a compressor skid and its condenser drawn by eye; not a package design.  Sized on the run's own refrigerant line: 20.64 MW taken by the Chiller from the loop at -33.3 C (253.15 K process side), 15.06 kg/s of ammonia boiling at 1 atm, read from the utility lines of the run";
+        reason      "the ammonia refrigeration package that serves the Chiller (the postDict names it `refrigerationNH3`).  It stands across the east road from the loop's east end, 25 m from the storage flash -- a package with ammonia compressors is a release source of its own.  Its compressor shaft power is NOT computed by this case (the refrigerant cycle is a utility record, not a flowsheet), so the box is not sized on a power";
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "ammonia compressor seals, flanges and the condenser's relief valve";
+            zones   ( { zone 2; radius 6 m; height 7 m; } );
+        }
+    }
+    {
+        nonProcess  "flare";
+        kind        flare;
+        x           190 m;
+        y           46 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 4 m; width 4 m; height 30 m; }   // author-set
+        source      "author-set box for this exercise: the base of an elevated flare drawn by eye; not a flare design.  The NORMAL load is the run's own: the three gas streams that leave the plant for treatment -- Purge 89.0 + LetdownGas 126.7 + FlashGas 531.6 = 747 kg/h (0.21 kg/s), ammonia-bearing and hydrogen-rich.  The EMERGENCY relief load, which sizes a real flare, is NOT computed here";
+        reason      "the flare is the plant's last resort for those gases and for the relief valves: an IGNITION SOURCE, so it stands at the north-east corner of the plot, reached by its own spur of the tank-farm road, across the wind from the process (the wind blows from the north-west) and 60 m or more from every vessel, machine, exchanger, tank and building";
+        ignition    "a burning flame at the stack tip and the pilot: an ignition source";
+    }
 );
 
 separation
@@ -522,6 +583,15 @@ separation
             { between ( substation vessel );            distance 15 m; }
             { between ( substation shellTubeHX );       distance 15 m; }
             { between ( substation storageTank );       distance 60 m; }
+            //  The flare (2026-11-10): an ignition source held off every
+            //  vessel, machine, exchanger, tank and building by a round
+            //  number of the same kind as the rows above.
+            { between ( flare vessel );                 distance 60 m; }
+            { between ( flare compressor );             distance 60 m; }
+            { between ( flare shellTubeHX );            distance 60 m; }
+            { between ( flare storageTank );            distance 60 m; }
+            { between ( flare building );               distance 60 m; }
+            { between ( flare refrigerationPackage );   distance 60 m; }
         );
     }
 );
@@ -630,6 +700,12 @@ roads
             width     6 m;
             reason    "along the north side of the tank bund to the emergency gate, so a fire tender reaches both tanks from the road";
             waypoints ( { x 95 m; y 3 m; } { x 215 m; y 3 m; } );
+        }
+        {
+            road      "flareSpur";
+            width     6 m;
+            reason    "a spur north from the tank-farm road to the flare (2026-11-10), so a tender and a crane reach the stack's base and its pilot without crossing the process block";
+            waypoints ( { x 190 m; y 3 m; } { x 190 m; y 38 m; } );
         }
     );
 }
