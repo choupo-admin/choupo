@@ -1,0 +1,80 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  curate42_vp_triethanolamine -- the vapour pressure of triethanolamine, REFITTED to
+  measurements (DEV.md 4c C281 and C283).  Written by `bin/choupo-curate vp
+  triethanolamine`; everything above the RESULT paragraph is the DECLARATION,
+  committed before any fit ran, so it can be read against the result.
+
+  WHY.  The catalogue record carried `vaporPressure { model AmbroseWalton; }`,
+  a corresponding-states ESTIMATE from Tc, Pc and omega that never reads the
+  record's own Tb (C279 measured a median 19.6 % AAD over the 25 such records
+  with archive data).  Here a three-parameter Antoine is fitted to EVERY
+  usable laboratory's measurements of it.
+
+  STUDIES (one per article, extracted by `choupo-thermoml extract-vp`; ranked
+  by points, ties by DOI):
+      10.1016/j.tca.2018.05.007        55 pts  365-515 K  Zghal; Farjas; Camps; Dammak et al.
+  SET ASIDE BY NAME:
+      (none)
+
+  FIT AND ACCEPTANCE (DEV.md 4c C283, Vitor 2026-11-10, declared before the fit).
+  EVIDENCE: every study above is fitted; none is held out (C283 amended:
+  laboratories disagree with each other by more than they claim, so the
+  test is agreement across all of them, not one laboratory's claimed
+  precision).  OBJECTIVE: `objective { method twoStage; }` -- least
+  squares in log10 P for a first estimate, then the LARGEST relative error in
+  P, (P_model - P)/P, over the kept points minimised from it (Vitor's
+  practice, C280); both answers kept.  OUTLIERS: after the least-squares
+  stage a point with a relative P error above 15 % (three times
+  the acceptance) is DISCARDED BY NAME (its study DOI, T and P), listed in
+  the result and the record, and the fit repeated without it, once
+  (`outliers { maxRelativeError 15 percent; }`).  ACCEPTANCE,
+  the DEFAULT of C283: ACCEPTED and promoted (autoPromoted, humanReviewed
+  false) when the maximum relative P error over all kept points is at most
+  5 % and the normal-boiling-point condition below holds with an
+  absolute error below 1 K.  This case declares no
+  `system/curationDict`, so the default applies; a case that needs another
+  acceptance declares it there, with its reason.  The AmbroseWalton curve's
+  errors on the same points are reported beside the fit's, as information.
+
+  NORMAL BOILING POINT: the record's Tb 613 K is judged against the range of the KEPT points (all studies span 365-515 K before any outlier is discarded): if Tb lies OUTSIDE that range, the fitted Antoine's own normal boiling point (P = 101.325 kPa) must lie within the acceptance's temperature error of it, or the gap is announced and the fit is not promoted; inside it, the gap is reported and is not a condition.
+
+  NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares every
+  series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates
+  them into constant/archiveExtracts/ (gitignored).
+
+  RESULT
+  @@RESULT-BEGIN@@
+  (filled in by bin/choupo-curate after the run)
+  @@RESULT-END@@
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name       fit_antoine;
+        type       vaporPressureFit;
+        component  triethanolamine;
+
+        evidence
+        (
+            {
+                dataset   "constant/archiveExtracts/triethanolamine-vapourPressure-j.tca.2018.05.007.dat";
+                identity  { doi "10.1016/j.tca.2018.05.007"; }
+                role      fit;
+            }
+        );
+
+        objective  { method twoStage; }
+        outliers   { maxRelativeError 15 percent; }
+
+        output     { file fit_antoine.csv; }
+    }
+);
