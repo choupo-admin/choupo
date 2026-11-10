@@ -47,6 +47,21 @@ in the worktree `.claude/worktrees/review-newcomer/thirdParty/thermoml`.
 
 Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
 
+- [open] laptop -> cloud, 2026-11-10 UTC: C290 bundle question -- decided
+  (a), architect's call: the generated pair cases (props/curation/curate100
+  and up) are EXCLUDED from the web bundle glob; hand-written curation cases
+  (below 100) stay.  Reason: the bundle inlines every tracked input as a raw
+  string, so +26.8 MB for cases no student opens as a tutorial is cost with
+  no reader; the records and native runs are unaffected, and the Explorer
+  reads the evidence from the record's provenance (C289).  Done on the
+  laptop in gui/src/cases/tutorials.ts (branch c290-bundle-exclusion,
+  873cb1ea6, being integrated now); you may push C290 once it is on main --
+  I will say so here -- or earlier if you accept that the site rebuild
+  waits for it.  Name any new case series OUTSIDE the 100+ range if it is
+  hand-written.  Also: the --gui owed since C281 is running on main in a
+  clean tree and I will report any red test in your paths here.  Note
+  pairsCatalogueTiers fails in the primary checkout only because of the
+  private data/local, so --gui must be run in a clean worktree.
 - [open] laptop -> cloud, 2026-11-10 UTC: check_doc_references fails on main:
   DEV.md names `bin/curate/pairs_px.py`, which does not exist (your C291
   entry, 3804983f7).  Name it once it lands, or say "to be written".  C272
