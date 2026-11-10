@@ -7,8 +7,8 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  curate699_new_components_estimated -- the 32 components DEV.md 4c C292
-  (slice 2 of C287) added to the catalogue, loaded and exercised.  Written
+  curate699_new_components_estimated -- the 33 components DEV.md 4c C292 and
+  C293 (slice 2 of C287) added to the catalogue, loaded and exercised.  Written
   by bin/curate/c287_new_components.py's companion script beside the records.
 
   These compounds have NO measured critical constants in the ThermoML archive:
@@ -179,6 +179,12 @@ operations
         type        estimateComponent;
         component   ethylDecanoate;
         groups      ( { group CH3; count 2; } { group CH2; count 9; } { group ester; count 1; } );
+    }
+    {
+        name        joback_hexafluorobenzene;
+        type        estimateComponent;
+        component   hexafluorobenzene;
+        groups      ( { group arC; count 6; } { group F; count 6; } );
     }
     {
         name        joback_methylButanoate;
@@ -421,6 +427,14 @@ operations
         state       { P 1 bar;  composition { ethylDecanoate 1.0; } }
         properties  ( Psat_ethylDecanoate  Cp_liquid_ethylDecanoate  rho_liquid_ethylDecanoate );
         output      { file smoke_ethylDecanoate.csv; }
+    }
+    {
+        name        smoke_hexafluorobenzene;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { hexafluorobenzene 1.0; } }
+        properties  ( Psat_hexafluorobenzene  Cp_liquid_hexafluorobenzene  rho_liquid_hexafluorobenzene );
+        output      { file smoke_hexafluorobenzene.csv; }
     }
     {
         name        smoke_methylButanoate;

@@ -3300,6 +3300,40 @@ accepts today, and that is a policy call.
 
 > **C292 DECISIONS (architect, 2026-11-10, answering its three questions; rule 00).**  (1) Joback's Tb is NOT stored in the record: an estimated Tb must not veto a measured curve (tetradecanoic acid would be refused at -72.6 K); the judge and arm (i) are not changed to ignore it.  (2) YES: arm (i) of `check_regressed_pairs` reads the `vaporPressure` advisory only, so a clean vapour pressure is not accused for a non-clean Vliq; hexafluorobenzene ships once the arm is fixed.  (3) For the 23 held, omega stays HELD unless Tb, Tc and Pc are all MEASURED, in which case it comes from Lee-Kesler recorded as an estimate (the 11-10 rule for C287); with Joback Tc/Pc it is NOT computed, because Lee-Kesler on two estimates has no error bound and the held components remain usable on their fitted vapour pressure.  Carried by the cloud (its paths); the laptop does not edit them.
 >
+> **C293 (carrying C292 DECISIONS 1-3, cloud general, branch c293-arm-i-hexafluorobenzene, 2026-11-10).**
+> Decision 1: Joback's Tb is not stored (no change).  Decision 2: arm (i) of
+> `bin/curate/check_regressed_pairs.py` reads the `vaporPressure` fitGrade
+> advisory only (the one filter line `and "`vaporPressure`" in a.get("message")`
+> in `check_vapour_pressures`), and hexafluorobenzene ships.  Decision 3: the 23
+> held stay held.
+>
+> **C293 RESULT.**  ARM (i): the hunks are (1) the advisory filter in
+> `check_vapour_pressures` (+1 line), (2) a new function
+> `check_vp_grade_channel` (+ the constant `VP_GRADE_WITNESS`), placed just
+> before `VP_GRADE_COUNT`, (3) one call line in `main` right after the
+> `vp_done = ...` line, (4) six docstring lines at the end of item (i); arms
+> (j)/(k) are untouched.  The built negative takes the witness record, requires
+> it to pass as shipped (a clean vapour pressure beside a severe Vliq), edits
+> the LAST `fitGrade clean;` (the vapour pressure's entry) down to `warning` in
+> a copy and requires the refusal "printed no ... fitGrade warning line".
+> Measured: the OLD filter accused the shipped witness ("a clean fit says
+> nothing more"); the NEW passes it and `1Octanol` (vp severe, liquid Cp
+> warning); two by-hand sabotages of the gate, each caught: the filter reverted
+> (the as-shipped half fails) and the edit made a no-op (the edited-down half
+> reports "not refused").  HEXAFLUOROBENZENE (`curate639_vp_hexafluorobenzene`,
+> declaration commit 954e122f5 before the fit; one study, 10 points, 288-333 K):
+> vapour pressure max 0.434 % (clean; AmbroseWalton 76.95 %), Vliq max 10.84 %
+> SEVERE (19 kept, 5 discarded; the Rackett shape follows the Joback Tc 542.6 K),
+> liquid Cp clean (ONE measurement temperature, `Trange unknown;`), Tb not
+> stored, omega 0.1189 (read from the fitted Antoine at 0.7 Tc(est), within 50 K
+> of the data), Tc 542.608 K, Pc 30.59 bar (Joback, estimated); loader voices
+> `Vliq` fitGrade SEVERE in the caveat block.  Added to the smoke case
+> `curate699` (16 rows appended, none moved; 33 components).  HELD 23: the
+> archive carries NO measured Tc or Pc for any of them (0 of 23 qualify under
+> decision 3; chavibetol has a Tb, discarded as a Celsius misprint), so none
+> is a Lee-Kesler candidate and all stay held on their fitted vapour pressure.
+> Not done (decision 1): Joback's Tb.
+
 > **C288 SLICE 1 RESULT.** C288 slice 1 LANDED 11-10: `heatOfReaction { value; T; phase; method; source; reason; }` parsed by one shared parser (ReactionHeat.H/.cpp, which also reads the bare `dH_rxn` with its meaning unchanged); both forms on one reaction refused; equilibriumReactor and gibbsReactor refuse a declared heat with the physical reason; a reactive column announces a divergence; delta = declared - formation is computed and printed (methyl acetate witness: -5.67 vs -7.31 kJ/mol at 318 K, delta +1.64) but no reactor applies it yet (slices 2-4). No shipped number moved: 21 cases byte-identical to main's binary, --scope 173 cases PASS, --fast 78 PASS, --gui app tests green; full sweep not run (written reason: the parser is the only shared path and every reactor family went through --scope/--fast); the 13 refusal fixtures wait for check_declared_heat.
 >
 > **C272 RESULT.** C272 slice 1 LANDED 11-10: `typicals ( { typical; index; count; pitch; members; source; reason; } )` in layoutDict -- a train declared once and repeated; every repeat is a real item for overlap, separation, zones, roads, bunds and pipes; `layout.items` stays complete (each repeat carries typical / trainIndex / repeatOf), the outlines go in `layout.typicalOutlines`; swro01's 35 repeated item entries became two typicals; findings, pipes, plot unchanged; lesson citations untouched (line-neutral edits). Full sweep NOT run (written reason: the new code runs only where `typicals` is declared, swro01 alone; the seven other layout cases pass their goldens); --gui 46 PASS / 1 FAIL on the branch, the failure being main's dossier test, since fixed by the cloud. Not done: the app does not draw the outlines yet.
@@ -3440,6 +3474,24 @@ accepts today, and that is a policy call.
 > GUI dependencies are not installed here; four lesson citations into
 > Database.cpp were moved by hand and each checked to carry its `contains`
 > text), a full sweep.
+
+> **C295 (Vitor, 2026-11-10: "Avanca como achares melhor", after the cloud's
+> answer to the laptop's analysis).  THE GENERATED CURATION CASES LEAVE
+> `tutorials/`.**  The cases `bin/choupo-curate` (and `pairs_c283.py`,
+> `pairs_px.py`, `c287_new_components.py`) write are the TRACE of how a
+> catalogue record was fitted, not tutorials: they moved to `data/curation/`
+> beside the data they justify (`pairs/`, `vp/`, `components/`, by origin
+> and not by number -- the numbers of three generals overlap).  The split is
+> by the header "Written by `bin/choupo-curate`", NOT by "number < 100":
+> curate20..43 are generated.  curate01..19 (hand-written, teaching) stay in
+> `tutorials/props/curation/`.  One general does it in one branch, BEFORE
+> C290 lands (C290's cases are born in the new root): `git mv`, every
+> `fittedInCase` rewritten on BOTH the catalogue record and its sealed case
+> copy and the cases re-sealed, the tools, the gates (list in the C295
+> RESULT), `bin/runTests`/`listCases`/`runCase`, the generated counters and
+> the guides.  The `gui/` readers (dossier.ts, evidence.ts, the bundle glob,
+> their tests) are the laptop's.  A fresh session note: the curation path is
+> `data/curation/<origin>/curateNN_<name>`.
 
 > **C294 (Vitor, 2026-11-10, on seeing only NRTL pair folders: "Mas esse
 > ajuste e rapido e devia ter sido feito! Eventualmente ate pode melhorar o

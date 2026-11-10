@@ -631,6 +631,7 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `components/graphite.dat` -- **reviewStatus interim**
 * `components/heavyWater.dat` -- **reviewStatus reviewed**
 * `components/heptanal.dat` -- **reviewStatus interim**
+* `components/hexafluorobenzene.dat` -- **reviewStatus autoPromoted**
 * `components/hexamethyldisiloxane.dat` -- **reviewStatus interim**
 * `components/hexanal.dat` -- **reviewStatus interim**
 * `components/hfe143m.dat` -- **reviewStatus interim**
@@ -1464,4 +1465,4 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `species/SO4.dat` -- **reviewStatus interim**
 * `species/Sr.dat` -- **reviewStatus interim**
 
-Totals: 1138 record(s) with structured review metadata, 47 detected by text marker only (legacy fallback -- migrate on touch/review).
+Totals: 1139 record(s) with structured review metadata, 47 detected by text marker only (legacy fallback -- migrate on touch/review).

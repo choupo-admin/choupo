@@ -6,14 +6,14 @@
 |       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
-/*  The components DEV.md 4c C292 added (slice 2 of C287); an ideal liquid,
+/*  The components DEV.md 4c C292 and C293 added (slice 2 of C287); an ideal liquid,
     because every property this case asks is a pure-component one.  NOT
     sealed: the case exists to load the catalogue records as they stand.  */
 
 recordType    thermophysicalPropertySystem;
 schemaVersion 2;
 
-components       ( 12Butanediol  12Propanediol  13Dioxolane  1Chlorobutane  1Decanol  1HPerfluorooctane  1Octanol  1Pentanamine  1Propoxy2Propanol  2Butoxyethanol  2Chlorotoluene  2Methoxyethanol  2Methyltetrahydrofuran  2Propoxyethanol  3Methyl1Butanol  3Methyl2Butanol  3Pentanol  4Chlorotoluene  NMethyl13Diaminopropane  cyclopentanol  diIsobutylEther  diethyleneGlycolDibutylEther  diethyleneGlycolDiethylEther  diethyleneGlycolMonohexylEther  ethylDecanoate  methylButanoate  methylDecanoate  methylHeptanoate  methylHexanoate  methylOctanoate  tetradecanoicAcid  tetrahydropyran );
+components       ( 12Butanediol  12Propanediol  13Dioxolane  1Chlorobutane  1Decanol  1HPerfluorooctane  1Octanol  1Pentanamine  1Propoxy2Propanol  2Butoxyethanol  2Chlorotoluene  2Methoxyethanol  2Methyltetrahydrofuran  2Propoxyethanol  3Methyl1Butanol  3Methyl2Butanol  3Pentanol  4Chlorotoluene  NMethyl13Diaminopropane  cyclopentanol  diIsobutylEther  diethyleneGlycolDibutylEther  diethyleneGlycolDiethylEther  diethyleneGlycolMonohexylEther  ethylDecanoate  hexafluorobenzene  methylButanoate  methylDecanoate  methylHeptanoate  methylHexanoate  methylOctanoate  tetradecanoicAcid  tetrahydropyran );
 
 equilibrium
 {

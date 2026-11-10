@@ -57,7 +57,7 @@ level up.)
 <!-- AUTO-GENERATED below this line by bin/regen-llm-docs. -->
 <!-- Edit the .dat files in data/standards/components/, then re-run. -->
 
-## Components (648 entries)
+## Components (649 entries)
 
 ### Volatile (curated for VLE)
 
@@ -327,6 +327,7 @@ level up.)
 | `He` | 4.0026 | (volatile) | 2-5 | ✓ | — | ✓ | — | — | — | ✓ |   |
 | `heavyWater` | 20.027508 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | ✓ |   |
 | `heptanal` | 114.1855 | (volatile) | 364-535 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
+| `hexafluorobenzene` | 186.0540 | fit | 288-333 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `hexamethyldisiloxane` | 162.3775 | (volatile) | 233-508 | ✓ | ✓ | — | — | — | — | ✓ |   |
 | `hexanal` | 100.1589 | (volatile) | 352-512 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `hfe143m` | 100.0400 | (volatile) | 240-370 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |

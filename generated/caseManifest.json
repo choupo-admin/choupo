@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1215,
+  "cases": 1216,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 15
@@ -12239,6 +12239,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/curation/curate639_vp_hexafluorobenzene": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/curation/curate640_nrtl_tetrahydrofuran_trichloroethylene": {
    "application": "choupoProps",
    "ops": [
@@ -19318,6 +19332,7 @@
     "tutorials/props/curation/curate638_nrtl_trichloroethylene_nitrobenzene",
     "tutorials/props/curation/curate638_vp_ethylDecanoate",
     "tutorials/props/curation/curate639_nrtl_toluene_sulfolane",
+    "tutorials/props/curation/curate639_vp_hexafluorobenzene",
     "tutorials/props/curation/curate640_nrtl_tetrahydrofuran_trichloroethylene",
     "tutorials/props/curation/curate640_vp_methylButanoate",
     "tutorials/props/curation/curate641_nrtl_1Pentanol_ethylBenzene",
@@ -21956,6 +21971,7 @@
     "tutorials/props/curation/curate638_nrtl_trichloroethylene_nitrobenzene",
     "tutorials/props/curation/curate638_vp_ethylDecanoate",
     "tutorials/props/curation/curate639_nrtl_toluene_sulfolane",
+    "tutorials/props/curation/curate639_vp_hexafluorobenzene",
     "tutorials/props/curation/curate640_nrtl_tetrahydrofuran_trichloroethylene",
     "tutorials/props/curation/curate640_vp_methylButanoate",
     "tutorials/props/curation/curate641_nrtl_1Pentanol_ethylBenzene",
@@ -23831,6 +23847,7 @@
     "tutorials/props/curation/curate636_vp_diethyleneGlycolDiethylEther",
     "tutorials/props/curation/curate637_vp_diIsobutylEther",
     "tutorials/props/curation/curate638_vp_ethylDecanoate",
+    "tutorials/props/curation/curate639_vp_hexafluorobenzene",
     "tutorials/props/curation/curate640_vp_methylButanoate",
     "tutorials/props/curation/curate641_vp_methylDecanoate",
     "tutorials/props/curation/curate642_vp_methylHeptanoate",
