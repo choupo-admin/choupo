@@ -281,8 +281,10 @@ export function GmpLayoutTool(): JSX.Element {
 
         <Title order={4}>Part 1 — cleanliness grades</Title>
         {step(1)}
-        {step(2)}
+        {/* The building comes second (DEV.md 4c C277): the question, then the
+            drawn rooms, then the step that names what the grades mean. */}
         <TeachingBuilding base={base} />
+        {step(2)}
         {ex("grades", "a cleaner room asks more of its neighbours")}
 
         <Title order={4}>Part 2 — the pressure cascade</Title>
