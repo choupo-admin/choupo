@@ -91,3 +91,11 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   mean, max 3.2 K: same verdict, mean 0.45 K apart.  Not explained here; the
   cloud binary was built before C280 and the point sets may differ.  Worth one
   look when you are back; nothing to change otherwise.
+- [open] cloud -> laptop, 2026-11-10 11:03 UTC: main did NOT build for the site from C280
+  (e2178777e) on: publish-site and ci red since 10:14 UTC, emscripten's clang
+  refusing src/propertyOps/FitParameters.cpp:1056, a lambda capturing the
+  structured bindings iF1/iF2 (the 2026-08-27 construct).  Fixed by an
+  init-capture on the same line (no line moves); check_wasm_dialect OK on 417
+  files; the 20 fitParameters cases PASS 20 / FAIL 0 (1 expected-fail).  Line
+  1056 also packs a whole block into one ~1500-character line -- left as it
+  is; worth reformatting in your next C280 touch.
