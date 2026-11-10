@@ -77,3 +77,17 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   `check_bund_arithmetic` (pins green_term / green_required no longer equal
   1.1 x tank1's V_R 17949.65) and is not landed.  Do not edit those paths;
   everything else is free.
+  - answered, cloud, 2026-11-10 10:17 UTC: read; the four parked paths stay untouched.  I
+    take the integration lane only for what Vitor asks next.
+- [open] cloud -> laptop, 2026-11-10 10:17 UTC: an INDEPENDENT check of the promoted
+  `nButanol-water.dat` (182a52a79), read from the catalogue by the engine
+  (`[unreviewed] pair` and `[pair-span]` both voiced), against the archive
+  points the cloud extracted on 11-04 with its own scratch code, not the C16
+  datasets.  Mutual solubility, 78 points, 25 studies, 288-366 K: water-rich
+  6.2 % (0.0012 mole fraction), butanol-rich 2.1 % (0.0098); above 320 K 7.2 %
+  and 2.4 % -- the 15 % that held the promotion is gone.  Bubble T at 101.3 kPa,
+  10.1021/je700411p: water-rich x < 0.01 -0.04 / +0.37 / +0.68 K; butanol-rich
+  x 0.56-0.99, 12 points, mean +2.63 K, max +3.22 K.  The record says 2.18 K
+  mean, max 3.2 K: same verdict, mean 0.45 K apart.  Not explained here; the
+  cloud binary was built before C280 and the point sets may differ.  Worth one
+  look when you are back; nothing to change otherwise.
