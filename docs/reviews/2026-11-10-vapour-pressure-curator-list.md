@@ -68,6 +68,7 @@ disagrees with the others is the wrong one.
 | ethylOctanoate | clean | PROMOTED | 1 | 2.742 | no Tb |
 | furfural | severe | PROMOTED | 3 | 5.073 | -2.54 |
 | glycerol | refused | NOT PROMOTED | 4 | 8.69 | -5.23 |
+| hexafluorobenzene | clean | PROMOTED | 1 | 0.4338 | no Tb |
 | mNitrotoluene | refused | NOT PROMOTED | 1 | 2.934 | -22.24 |
 | methylButanoate | clean | PROMOTED | 4 | 4.892 | no Tb |
 | methylDecanoate | clean | PROMOTED | 2 | 2.825 | no Tb |
@@ -810,6 +811,20 @@ CAS 56-81-5; record Tb 563.15 K.  Fitted on 4 studies (every usable one); Antoin
 | `10.1021/je800070y` (Yan; Suppes) | fitted | 5 (5) | 463.15-543.15 | 4.18 / 6.43 | 98.36 / 99.57 |
 | `10.1016/j.jct.2013.09.046` (Zaoui-Djelloul-Daouadji; Negadi; Mokbel) | not fitted (< 5 pts) | 4 (4) | 333.15-363.15 | 9.65 / 26.81 | 100.00 / 100.00 |
 | `10.1021/acs.jced.5b01080` (Aniya; De; Singh) | not fitted (< 5 pts) | 3 (3) | 547.25-560.95 | 13.58 / 14.67 | 95.57 / 96.13 |
+
+## hexafluorobenzene
+
+CAS 392-56-3; declares no Tb.  Fitted on 1 study (every usable one); Antoine log10(P/bar) = 4.678195 - 1507.9435/(T + -30.0751); its normal boiling point 352.80 K.
+
+**Fit grade (DEV.md 4c C285):** clean
+
+**Tool decision:** PROMOTED (and since REVERTED by `choupo-curate revert`) on 2026-11-10 into data/standards/components/hexafluorobenzene.dat as reviewStatus autoPromoted, humanReviewed false, because: fit grade clean under the DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 1 studies, 10 points kept, 0 discarded as outliers; max relative error 0.4338 % (mean 0.2203 %), grade clean (limits 5 / 10 / 20 %); no Tb declared; AmbroseWalton on the same points mean 71.49 % / max 76.95 %
+
+**Discarded as outliers:** none
+
+| study | role | n (kept) | T range / K | fit mean / max % | AmbroseWalton mean / max % |
+|---|---|---|---|---|---|
+| `10.1021/je050056e` (Dias; Goncalves; Caco) | fitted | 10 (10) | 288.23-333.01 | 0.22 / 0.43 | 67.96 / 104.93 |
 
 ## mNitrotoluene
 
