@@ -897,7 +897,7 @@ export function ThielePelletTool(): JSX.Element {
                   ? runs[0]!.diag!.nodes : "—"} points
               </Badge>
               <Tooltip withArrow multiline w={430}
-                label={"The generalised Weisz modulus M_W = eta*phi^2 with phi "
+                label={"The generalised Weisz modulus (eta times phi squared) with phi "
                   + "built on Lambda = V/S, exactly as the engine publishes "
                   + "it.  For a sphere Lambda = R/3, so the conventional "
                   + "Weisz-Prater number on the radius is nine times this "
