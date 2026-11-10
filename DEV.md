@@ -3421,8 +3421,8 @@ accepts today, and that is a policy call.
 > passar as tarefas dela para aqui porque temos aqui mais cores!").  THE
 > CLOUD'S CURATION WORK CONTINUES ON THE LAPTOP.**  The cloud pushed
 > `wip/c295-curation-root` (21 commits: C290's 466 pairs and the C295
-> tooling for `data/curation/`; the move itself NOT done; scratch in
-> `bin/curate/c295_handoff/`) and a hand-off note in SESSIONS.md.  Its three
+> tooling for the new curation root (data, curation); the move itself NOT done; scratch in
+> the c295_handoff folder on the cloud branch) and a hand-off note in SESSIONS.md.  Its three
 > questions, DECIDED by the architect:
 >   1. curate15..19 MOVE with the rest.  The rule is the header ("Written
 >      by bin/choupo-curate"), and under C296 the number means nothing: a
@@ -3533,7 +3533,7 @@ accepts today, and that is a policy call.
 > answer to the laptop's analysis).  THE GENERATED CURATION CASES LEAVE
 > `tutorials/`.**  The cases `bin/choupo-curate` (and `pairs_c283.py`,
 > `pairs_px.py`, `c287_new_components.py`) write are the TRACE of how a
-> catalogue record was fitted, not tutorials: they moved to `data/curation/`
+> catalogue record was fitted, not tutorials: they moved to the new curation root
 > beside the data they justify (`pairs/`, `vp/`, `components/`, by origin
 > and not by number -- the numbers of three generals overlap).  The split is
 > by the header "Written by `bin/choupo-curate`", NOT by "number < 100":
