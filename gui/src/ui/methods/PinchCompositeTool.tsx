@@ -102,6 +102,8 @@ import {
 
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
+import { DEFAULT_PREFS, formatSig } from "../../state/displayUnits.js";
+import { pinchUnits, type PinchUnits } from "../../case/pinchUnits.js";
 import {
   KnobField, KnobNumber, PanelNote,
 } from "./knobPanel.js";
@@ -215,6 +217,7 @@ export function candidateFlag(m: CandidateMatch): "infeasible" | "cpRuleViolated
  *  way).  Pure: the engine decides, this only words it. */
 export function populationScope(
   kpis: { [key: string]: number } | undefined,
+  u: PinchUnits = pinchUnits(DEFAULT_PREFS),
 ): { label: string; partial: boolean } | null {
   if (!kpis) return null;
   const n = kpis["segments"], ex = kpis["duties_excluded"];
@@ -225,7 +228,7 @@ export function populationScope(
     return { partial: true,
       label: `targets of the ${seg}, not of the plant · ${ex} heat `
         + `dut${ex === 1 ? "y" : "ies"}`
-        + (typeof q === "number" ? ` (${fmt(q)} kW)` : "")
+        + (typeof q === "number" ? ` (${u.Q(q, 1)} ${u.qLabel})` : "")
         + " outside the population — reports/pinch/population.csv" };
   }
   return { partial: false,
@@ -244,8 +247,6 @@ const COLD = "#80deea";    // the kit's accent2 — heat sinks (being heated)
 const GCC = "#69db7c";     // PinchView's grand-composite green
 const PINCH = "#ffd43b";
 
-const fmt = (v: number | undefined, digits = 1) =>
-  v !== undefined && Number.isFinite(v) ? v.toFixed(digits) : "—";
 
 interface Frame {
   toX: (h: number) => number;
@@ -277,9 +278,11 @@ function polyline(frame: Frame, pts: CurvePoint[]): string {
     .join(" ");
 }
 
-function Axes({ frame, xLabel, yLabel }: {
-  frame: Frame; xLabel: string; yLabel: string;
+function Axes({ frame, xLabel, yLabel, u }: {
+  frame: Frame; xLabel: string; yLabel: string; u: PinchUnits;
 }): JSX.Element {
+  // kW keeps the integer ticks; another duty unit spans decades (MW: 0..40)
+  const hTickText = (h: number) => (u.qLabel === "kW" ? h.toFixed(0) : formatSig(h, 3));
   const hTicks = [0, 0.25, 0.5, 0.75, 1].map(
     (f) => frame.hLo + f * (frame.hHi - frame.hLo));
   const tTicks = [0, 0.25, 0.5, 0.75, 1].map(
@@ -291,7 +294,7 @@ function Axes({ frame, xLabel, yLabel }: {
           <line x1={frame.toX(h)} y1={Y0} x2={frame.toX(h)} y2={Y1}
             stroke={GRID} strokeWidth={0.6} />
           <text x={frame.toX(h)} y={Y1 + 16} textAnchor="middle"
-            fontSize={11} fill={INK}>{h.toFixed(0)}</text>
+            fontSize={11} fill={INK}>{hTickText(h)}</text>
         </g>
       ))}
       {tTicks.map((t) => (
@@ -314,11 +317,20 @@ function Axes({ frame, xLabel, yLabel }: {
  *  cold curve slid right by the published Q_C,min so the overlap is the heat
  *  the process can recover.  Annotated with the published quantities: the two
  *  utility intervals, the maximum recovery, and the dTmin gap at the pinch. */
-function CompositeSvg({ hot, cold, offset, qh, qc, qrec, pinch }: {
+function CompositeSvg({ hot: hotK, cold: coldK, offset: offsetK, qh: qhK, qc: qcK, qrec: qrecK, pinch: pinchK, u }: {
   hot: CurvePoint[]; cold: CurvePoint[];
   offset: number; qh?: number; qc?: number; qrec?: number;
   pinch?: { Thot: number; Tcold: number; H: number; dT: number };
+  u: PinchUnits;
 }): JSX.Element {
+  // The engine's K / kW, converted ONCE to the Units menu's temperature and
+  // duty (the fields keep their names; the values are display values).
+  const cv = (pts: CurvePoint[]) => pts.map((p) => ({ T_K: u.tNum(p.T_K), H_kW: u.qNum(p.H_kW) }));
+  const hot = cv(hotK), cold = cv(coldK);
+  const q = (v?: number) => (v === undefined ? undefined : u.qNum(v));
+  const offset = u.qNum(offsetK), qh = q(qhK), qc = q(qcK), qrec = q(qrecK);
+  const pinch = pinchK && { Thot: u.tNum(pinchK.Thot), Tcold: u.tNum(pinchK.Tcold),
+    H: u.qNum(pinchK.H), dT: pinchK.dT };
   const coldS = cold.map((p) => ({ T_K: p.T_K, H_kW: p.H_kW + offset }));
   const frame = makeFrame([...hot, ...coldS]);
   const hotEnd = hot[hot.length - 1]!.H_kW;
@@ -339,7 +351,7 @@ function CompositeSvg({ hot, cold, offset, qh, qc, qrec, pinch }: {
     <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="100%"
       preserveAspectRatio="xMidYMid meet"
       role="img" aria-label="hot and cold composite curves, cold curve slid by the cold-utility target">
-      <Axes frame={frame} xLabel="heat flow rate (kW), cold curve slid by Q_C,min" yLabel="T (K)" />
+      <Axes frame={frame} xLabel={`heat flow rate (${u.qLabel}), cold curve slid by Q_C,min`} yLabel={`T (${u.tLabel})`} u={u} />
       <polyline points={polyline(frame, hot)} fill="none"
         stroke={HOT} strokeWidth={2.2} />
       <polyline points={polyline(frame, coldS)} fill="none"
@@ -353,13 +365,13 @@ function CompositeSvg({ hot, cold, offset, qh, qc, qrec, pinch }: {
           <circle cx={frame.toX(pinch.H)} cy={frame.toY(pinch.Tcold)} r={3.5} fill={PINCH} />
           <text x={frame.toX(pinch.H) + 8} y={frame.toY((pinch.Thot + pinch.Tcold) / 2) + 4}
             fontSize={10} fill={PINCH}>
-            pinch: ΔTmin = {pinch.dT.toFixed(0)} K ({pinch.Tcold.toFixed(1)} / {pinch.Thot.toFixed(1)} K)
+            pinch: ΔTmin = {u.dT(pinch.dT, 0)} {u.tLabel} ({pinch.Tcold.toFixed(1)} / {pinch.Thot.toFixed(1)} {u.tLabel})
           </text>
         </g>
       )}
-      {qc !== undefined && qc > 0 && bracket(0, qc, `Q_C,min ${qc.toFixed(1)} kW (cold utility)`, COLD, 0)}
-      {qrec !== undefined && qrec > 0 && bracket(offset, hotEnd, `Q_recovery,max ${qrec.toFixed(1)} kW`, GCC, 1)}
-      {qh !== undefined && qh > 0 && bracket(hotEnd, hotEnd + qh, `Q_H,min ${qh.toFixed(1)} kW (hot utility)`, HOT, 0)}
+      {qc !== undefined && qc > 0 && bracket(0, qc, `Q_C,min ${u.Q(qcK!, 1)} ${u.qLabel} (cold utility)`, COLD, 0)}
+      {qrec !== undefined && qrec > 0 && bracket(offset, hotEnd, `Q_recovery,max ${u.Q(qrecK!, 1)} ${u.qLabel}`, GCC, 1)}
+      {qh !== undefined && qh > 0 && bracket(hotEnd, hotEnd + qh, `Q_H,min ${u.Q(qhK!, 1)} ${u.qLabel} (hot utility)`, HOT, 0)}
       <text x={X0 + 8} y={Y0 + 14} fontSize={11} fill={HOT}>hot composite (sources)</text>
       <text x={X0 + 8} y={Y0 + 28} fontSize={11} fill={COLD}>cold composite (sinks, slid)</text>
     </svg>
@@ -368,13 +380,15 @@ function CompositeSvg({ hot, cold, offset, qh, qc, qrec, pinch }: {
 
 /** The grand composite curve: the problem table's corrected cascade against
  *  the shifted T*, as the engine wrote it; a dot at every interior pinch. */
-function GccSvg({ gcc, pinchStars }: { gcc: CurvePoint[]; pinchStars: number[] }): JSX.Element {
+function GccSvg({ gcc: gccK, pinchStars: starsK, u }: { gcc: CurvePoint[]; pinchStars: number[]; u: PinchUnits }): JSX.Element {
+  const gcc = gccK.map((p) => ({ T_K: u.tNum(p.T_K), H_kW: u.qNum(p.H_kW) }));
+  const pinchStars = starsK.map((t) => u.tNum(t));
   const frame = makeFrame(gcc);
   return (
     <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="100%"
       preserveAspectRatio="xMidYMid meet"
       role="img" aria-label="grand composite curve">
-      <Axes frame={frame} xLabel="net heat flow, corrected cascade (kW)" yLabel="shifted T* (K)" />
+      <Axes frame={frame} xLabel={`net heat flow, corrected cascade (${u.qLabel})`} yLabel={`shifted T* (${u.tLabel})`} u={u} />
       <line x1={frame.toX(0)} y1={Y0} x2={frame.toX(0)} y2={Y1}
         stroke={INK} strokeWidth={1.1} />
       <polyline points={polyline(frame, gcc)} fill="none"
@@ -384,7 +398,7 @@ function GccSvg({ gcc, pinchStars }: { gcc: CurvePoint[]; pinchStars: number[] }
           <circle cx={frame.toX(0)} cy={frame.toY(t)} r={5}
             fill={PINCH} stroke="var(--mantine-color-body)" strokeWidth={1.5} />
           <text x={frame.toX(0) + 8} y={frame.toY(t) - 6}
-            fontSize={11} fill={PINCH}>pinch · T* = {t.toFixed(2)} K</text>
+            fontSize={11} fill={PINCH}>pinch · T* = {t.toFixed(2)} {u.tLabel}</text>
         </g>
       ))}
     </svg>
@@ -393,17 +407,15 @@ function GccSvg({ gcc, pinchStars }: { gcc: CurvePoint[]; pinchStars: number[] }
 
 // ---- The stream table and the worked cascade (the engine's files, drawn) ---
 
-const kw = (v: number, d = 1) => (Number.isFinite(v) ? v.toFixed(d) : "—");
-
-function StreamTable({ rows, dTmin }: { rows: StreamRow[]; dTmin?: number }): JSX.Element {
+function StreamTable({ rows, dTmin, u }: { rows: StreamRow[]; dTmin?: number; u: PinchUnits }): JSX.Element {
   return (
     <Box style={{ overflow: "auto" }}>
       <Table striped withTableBorder fz="xs">
         <Table.Thead>
           <Table.Tr>
             <Table.Th>stream</Table.Th><Table.Th>kind</Table.Th>
-            <Table.Th>T_in (K)</Table.Th><Table.Th>T_out (K)</Table.Th>
-            <Table.Th>|Q| (kW)</Table.Th><Table.Th>CP = |Q|/|ΔT| (kW/K)</Table.Th>
+            <Table.Th>T_in ({u.tLabel})</Table.Th><Table.Th>T_out ({u.tLabel})</Table.Th>
+            <Table.Th>|Q| ({u.qLabel})</Table.Th><Table.Th>CP = |Q|/|ΔT| ({u.cpLabel})</Table.Th>
             <Table.Th>role</Table.Th>
           </Table.Tr>
         </Table.Thead>
@@ -412,10 +424,10 @@ function StreamTable({ rows, dTmin }: { rows: StreamRow[]; dTmin?: number }): JS
             <Table.Tr key={i} style={r.role === "utility" ? { opacity: 0.6 } : undefined}>
               <Table.Td>{r.unit}</Table.Td>
               <Table.Td>{r.side}</Table.Td>
-              <Table.Td>{kw(r.Tin, 2)}</Table.Td>
-              <Table.Td>{kw(r.Tout, 2)}</Table.Td>
-              <Table.Td>{kw(Math.abs(r.Q_kW))}</Table.Td>
-              <Table.Td>{kw(r.CP, 3)}</Table.Td>
+              <Table.Td>{u.T(r.Tin, 2)}</Table.Td>
+              <Table.Td>{u.T(r.Tout, 2)}</Table.Td>
+              <Table.Td>{u.Q(Math.abs(r.Q_kW), 1)}</Table.Td>
+              <Table.Td>{u.CP(r.CP, 3)}</Table.Td>
               <Table.Td>{r.role === "utility"
                 ? "service side — not a process stream (left out)"
                 : r.role === "recovered" ? "heat already recovered (an exchanger side)"
@@ -428,24 +440,25 @@ function StreamTable({ rows, dTmin }: { rows: StreamRow[]; dTmin?: number }): JS
         The stream population the targets are taken from, as the engine
         extracted it (<code>{POPULATION_CSV_PATH}</code>).  A hot stream is
         cooled, a cold stream is heated; each is one straight segment of
-        constant CP.{dTmin !== undefined ? ` The approach is ΔTmin = ${dTmin} K.` : ""}
+        constant CP.{dTmin !== undefined ? ` The approach is ΔTmin = ${u.dT(dTmin, 0)} ${u.tLabel}.` : ""}
       </Text>
     </Box>
   );
 }
 
-function CascadeTable({ rows }: { rows: ProblemRow[] }): JSX.Element {
+function CascadeTable({ rows, u }: { rows: ProblemRow[]; u: PinchUnits }): JSX.Element {
+  const cpUnit = u.cpLabel === "kW/K" ? "" : ` (${u.cpLabel})`;
   return (
     <Box style={{ overflow: "auto" }}>
       <Table striped withTableBorder fz="xs">
         <Table.Thead>
           <Table.Tr>
             <Table.Th>interval</Table.Th>
-            <Table.Th>T*_hi → T*_lo (K)</Table.Th>
-            <Table.Th>ΣCP hot</Table.Th><Table.Th>ΣCP cold</Table.Th>
-            <Table.Th>ΔH (kW)</Table.Th>
-            <Table.Th>cascade (kW)</Table.Th>
-            <Table.Th>corrected (kW)</Table.Th>
+            <Table.Th>T*_hi → T*_lo ({u.tLabel})</Table.Th>
+            <Table.Th>ΣCP hot{cpUnit}</Table.Th><Table.Th>ΣCP cold{cpUnit}</Table.Th>
+            <Table.Th>ΔH ({u.qLabel})</Table.Th>
+            <Table.Th>cascade ({u.qLabel})</Table.Th>
+            <Table.Th>corrected ({u.qLabel})</Table.Th>
             <Table.Th>streams (hot | cold)</Table.Th>
           </Table.Tr>
         </Table.Thead>
@@ -453,13 +466,13 @@ function CascadeTable({ rows }: { rows: ProblemRow[] }): JSX.Element {
           {rows.map((r) => (
             <Table.Tr key={r.interval}>
               <Table.Td>{r.interval}</Table.Td>
-              <Table.Td>{kw(r.Thi, 2)} → {kw(r.Tlo, 2)}</Table.Td>
-              <Table.Td>{kw(r.cpHot, 3)}</Table.Td>
-              <Table.Td>{kw(r.cpCold, 3)}</Table.Td>
-              <Table.Td>{kw(r.dH)}</Table.Td>
-              <Table.Td>{kw(r.casOut)}</Table.Td>
+              <Table.Td>{u.T(r.Thi, 2)} → {u.T(r.Tlo, 2)}</Table.Td>
+              <Table.Td>{u.CP(r.cpHot, 3)}</Table.Td>
+              <Table.Td>{u.CP(r.cpCold, 3)}</Table.Td>
+              <Table.Td>{u.Q(r.dH, 1)}</Table.Td>
+              <Table.Td>{u.Q(r.casOut, 1)}</Table.Td>
               <Table.Td>
-                {kw(r.corOut)}
+                {u.Q(r.corOut, 1)}
                 {r.tag === "pinch" && <Badge ml={6} size="xs" color="yellow" variant="light">pinch</Badge>}
                 {r.tag === "bottomZero" && <Badge ml={6} size="xs" color="gray" variant="light">end of range</Badge>}
               </Table.Td>
@@ -482,7 +495,7 @@ function CascadeTable({ rows }: { rows: ProblemRow[] }): JSX.Element {
 
 // ---- The candidate-matches table --------------------------------------------
 
-function MatchesTable({ matches }: { matches: CandidateMatch[] }): JSX.Element {
+function MatchesTable({ matches, u }: { matches: CandidateMatch[]; u: PinchUnits }): JSX.Element {
   return (
     <Box style={{ overflow: "auto", height: "100%" }}>
       <Table stickyHeader striped withTableBorder fz="xs">
@@ -491,7 +504,7 @@ function MatchesTable({ matches }: { matches: CandidateMatch[] }): JSX.Element {
             <Table.Th>region</Table.Th>
             <Table.Th>hot</Table.Th>
             <Table.Th>cold</Table.Th>
-            <Table.Th>Q_max, this pair alone (kW)</Table.Th>
+            <Table.Th>Q_max, this pair alone ({u.qLabel})</Table.Th>
             <Table.Th>CP rule at the pinch (CP_hot ≤ CP_cold above, ≥ below)</Table.Th>
             <Table.Th>limiting reason</Table.Th>
             <Table.Th>engine&apos;s recommendation</Table.Th>
@@ -506,7 +519,7 @@ function MatchesTable({ matches }: { matches: CandidateMatch[] }): JSX.Element {
                 <Table.Td>{m.region}</Table.Td>
                 <Table.Td>{m.hotStream}</Table.Td>
                 <Table.Td>{m.coldStream}</Table.Td>
-                <Table.Td>{fmt(m.maximumCandidateDuty_kW)}</Table.Td>
+                <Table.Td>{u.Q(m.maximumCandidateDuty_kW, 1)}</Table.Td>
                 <Table.Td>
                   {flag ? (
                     <Badge variant="light" size="sm"
@@ -621,6 +634,12 @@ export function PinchCompositeTool(
     || appRun?.kpis?.["pinch"]);
 
   const [source, setSource] = useState<Source>(fixedSource ?? "classroom");
+  // The case's own run follows the Units menu (temperature, duty); the
+  // classroom witness keeps its own K / kW sliders and reads K / kW.
+  const dispPrefs = useStore((s) => s.displayPrefs);
+  const u = useMemo(
+    () => pinchUnits(source === "current" ? dispPrefs : DEFAULT_PREFS),
+    [source, dispPrefs]);
   const [pane, setPane] = useState<Pane>("composite");
 
   // ---- Classroom knobs (values are session state; collapse persists). ------
@@ -743,21 +762,21 @@ export function PinchCompositeTool(
         <Badge variant="light" color="gray" size="lg"
           styles={{ root: { textTransform: "none" } }}>
           {kpis
-            ? `engine targets · Q_H,min ${fmt(kpis["Q_H_min_kW"])} kW · `
-              + `Q_C,min ${fmt(kpis["Q_C_min_kW"])} kW · `
-              + (hasPinch ? `pinch T* ${fmt(kpis["T_pinch_K"], 2)} K · ` : "no pinch · ")
-              + `ΔTmin ${fmt(kpis["dTmin_K"], 0)} K`
+            ? `engine targets · Q_H,min ${u.Q(kpis["Q_H_min_kW"]!, 1)} ${u.qLabel} · `
+              + `Q_C,min ${u.Q(kpis["Q_C_min_kW"]!, 1)} ${u.qLabel} · `
+              + (hasPinch ? `pinch T* ${u.T(kpis["T_pinch_K"]!, 2)} ${u.tLabel} · ` : "no pinch · ")
+              + `ΔTmin ${u.dT(kpis["dTmin_K"]!, 0)} ${u.tLabel}`
             : "no pinch KPI row in this run — curves shown, targets unverified"}
         </Badge>
       )}
       {/*  WHAT THE TARGETS ARE THE TARGETS OF (C150 R16): the engine says
            how many segments it extracted and which heat duties it left out;
            a target of a partial population must not read as the plant's.  */}
-      {active && !emptyCurrentRun && populationScope(kpis) && (
+      {active && !emptyCurrentRun && populationScope(kpis, u) && (
         <Badge variant="light"
-          color={populationScope(kpis)!.partial ? "red" : "gray"} size="lg"
+          color={populationScope(kpis, u)!.partial ? "red" : "gray"} size="lg"
           styles={{ root: { textTransform: "none" } }}>
-          {populationScope(kpis)!.label}
+          {populationScope(kpis, u)!.label}
         </Badge>
       )}
       {/*  THE EXCESS, DECOMPOSED -- the one identity on this page a reader can
@@ -772,11 +791,11 @@ export function PinchCompositeTool(
         && kpis["violation_cool_above_pinch_kW"] != null && (
         <Badge variant="light" color="orange" size="lg"
           styles={{ root: { textTransform: "none" } }}>
-          {`excess over target · ${fmt(kpis["Q_heat_current_kW"])}`
-            + ` − ${fmt(kpis["Q_H_min_kW"])}`
-            + ` = ${fmt(kpis["Q_heat_current_kW"]! - kpis["Q_H_min_kW"]!)} kW`
-            + `  =  ${fmt(kpis["violation_heat_below_pinch_kW"])} heating below`
-            + ` + ${fmt(kpis["violation_cool_above_pinch_kW"])} cooling above`}
+          {`excess over target · ${u.Q(kpis["Q_heat_current_kW"]!, 1)}`
+            + ` − ${u.Q(kpis["Q_H_min_kW"]!, 1)}`
+            + ` = ${u.Q(kpis["Q_heat_current_kW"]! - kpis["Q_H_min_kW"]!, 1)} ${u.qLabel}`
+            + `  =  ${u.Q(kpis["violation_heat_below_pinch_kW"]!, 1)} heating below`
+            + ` + ${u.Q(kpis["violation_cool_above_pinch_kW"]!, 1)} cooling above`}
         </Badge>
       )}
       {classText && summary && (
@@ -788,9 +807,9 @@ export function PinchCompositeTool(
       {kpis && kpis["Q_recovery_max_kW"] != null && (
         <Badge variant="light" color="gray" size="lg"
           styles={{ root: { textTransform: "none" } }}>
-          {`Q_recovery,max ${fmt(kpis["Q_recovery_max_kW"])} kW`
-            + ` · Q_H,min − Q_C,min = ${fmt(kpis["Q_H_min_kW"]! - kpis["Q_C_min_kW"]!)} kW`
-            + ` = cold total − hot total (${fmt(kpis["Q_cold_total_kW"])} − ${fmt(kpis["Q_hot_total_kW"])})`}
+          {`Q_recovery,max ${u.Q(kpis["Q_recovery_max_kW"]!, 1)} ${u.qLabel}`
+            + ` · Q_H,min − Q_C,min = ${u.Q(kpis["Q_H_min_kW"]! - kpis["Q_C_min_kW"]!, 1)} ${u.qLabel}`
+            + ` = cold total − hot total (${u.Q(kpis["Q_cold_total_kW"]!, 1)} − ${u.Q(kpis["Q_hot_total_kW"]!, 1)})`}
         </Badge>
       )}
     </Group>
@@ -918,7 +937,7 @@ export function PinchCompositeTool(
               <CompositeSvg hot={hot} cold={cold}
                 offset={summary?.coldOffset ?? kpis?.["Q_C_min_kW"] ?? 0}
                 qh={kpis?.["Q_H_min_kW"]} qc={kpis?.["Q_C_min_kW"]}
-                qrec={kpis?.["Q_recovery_max_kW"]} pinch={pinchGeom} />
+                qrec={kpis?.["Q_recovery_max_kW"]} pinch={pinchGeom} u={u} />
             ) : (
               <Box p="xl">
                 <Text size="sm" c="dimmed">
@@ -937,7 +956,7 @@ export function PinchCompositeTool(
                   of the range when there is none.
                 </Text>
                 <Box style={{ flex: 1, minHeight: 0 }}>
-                  <GccSvg gcc={gcc} pinchStars={pinchStars} />
+                  <GccSvg gcc={gcc} pinchStars={pinchStars} u={u} />
                 </Box>
               </Stack>
             ) : (
@@ -949,7 +968,7 @@ export function PinchCompositeTool(
               </Box>
             ))}
                         {pane === "matches" && (matches.length > 0 ? (
-              <MatchesTable matches={matches} />
+              <MatchesTable matches={matches} u={u} />
             ) : (
               <Box p="xl">
                 <Text size="sm" c="dimmed">
@@ -980,14 +999,14 @@ export function PinchCompositeTool(
         {streamRows.length > 0 && (
           <Box>
             <Title order={5}>The streams</Title>
-            <StreamTable rows={streamRows} dTmin={kpis?.["dTmin_K"]} />
+            <StreamTable rows={streamRows} dTmin={kpis?.["dTmin_K"]} u={u} />
           </Box>
         )}
 
         {tableRows.length > 0 && (
           <Box>
             <Title order={5}>The worked cascade</Title>
-            <CascadeTable rows={tableRows} />
+            <CascadeTable rows={tableRows} u={u} />
           </Box>
         )}
 
