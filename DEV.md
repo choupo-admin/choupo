@@ -3358,7 +3358,7 @@ accepts today, and that is a policy call.
 > psat_range, psat_continuity, source_licence, doc_references, doctrine,
 > glossary_bans, schema_coverage; generated views regenerated (three were
 > stale, one already on main); tutorials and props guides rebuilt with make -B.
-> NOT run: --gui (gui/node_modules absent, so methodTools could not run
+> NOT run: --gui (the GUI dependencies are not installed here, so methodTools could not run
 > either), a full sweep.  Pairs are not graded in this slice.  Record:
 > docs/design/binary-pairs-from-open-measurements.md section 10.1.
 
