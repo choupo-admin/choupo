@@ -39,7 +39,7 @@ datasets
     }
     {
         file          "constant/archiveExtracts/monoethanolamine-vapourPressure-je800530u.dat";
-        role          validation;   // informational: the operation declares it
+        role          fit;   // informational: the operation declares it
         doi           "10.1021/je800530u";
         url           "https://trc.nist.gov/ThermoML/10.1021/je800530u.xml";
         page          "https://trc.nist.gov/ThermoML/10.1021/je800530u.json";
@@ -49,6 +49,74 @@ datasets
         inchiKey      "HZAXFHJVJLSVMW-UHFFFAOYSA-N";
         extract       "bin/choupo-thermoml extract-vp <article file> --inchikey HZAXFHJVJLSVMW-UHFFFAOYSA-N --into <dir>";
         sha256        "7e92bbb9b7f4c074b9fb0b473ad80413e32fa518e37a653cc9b59075f0db96ab";
+        identity
+        {
+            monoethanolamine { cas "141-43-5"; inchiKey "HZAXFHJVJLSVMW-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/monoethanolamine-vapourPressure-je800290k.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je800290k";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je800290k.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je800290k.json";
+        articleFile   "je800290k.xml";
+        articleSha256 "51baf217f8b5f257b4c5c26ec4713d84bc714c8775fffbd01af931591160e9c7";
+        extractor     vapourPressure;
+        inchiKey      "HZAXFHJVJLSVMW-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey HZAXFHJVJLSVMW-UHFFFAOYSA-N --into <dir>";
+        sha256        "4ac3391b4d88e7be2418cc0b0be41d1139b2a0c28642faddfb13d349e1258bf4";
+        identity
+        {
+            monoethanolamine { cas "141-43-5"; inchiKey "HZAXFHJVJLSVMW-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/monoethanolamine-vapourPressure-je049761y.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je049761y";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je049761y.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je049761y.json";
+        articleFile   "je049761y.xml";
+        articleSha256 "df002e21a6af81808fc0ab6df77965b06bff0babbf3a176469fe95f2234618c4";
+        extractor     vapourPressure;
+        inchiKey      "HZAXFHJVJLSVMW-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey HZAXFHJVJLSVMW-UHFFFAOYSA-N --into <dir>";
+        sha256        "fb99d82fecdc84ff4a5a78933e0c9f4be6a3cde700ad878810132bf8dbc6fb50";
+        identity
+        {
+            monoethanolamine { cas "141-43-5"; inchiKey "HZAXFHJVJLSVMW-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/monoethanolamine-vapourPressure-je101259r.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je101259r";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je101259r.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je101259r.json";
+        articleFile   "je101259r.xml";
+        articleSha256 "3963c4cf50d9b279a449dc923dd5a4301188be5d3ddeb2ee32ea2dd4eaecd626";
+        extractor     vapourPressure;
+        inchiKey      "HZAXFHJVJLSVMW-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey HZAXFHJVJLSVMW-UHFFFAOYSA-N --into <dir>";
+        sha256        "e3ef1f988e1d384c78c41ab1dbeb00c69d19af4c2b1ae4613fd67dcb597c57e4";
+        identity
+        {
+            monoethanolamine { cas "141-43-5"; inchiKey "HZAXFHJVJLSVMW-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/monoethanolamine-vapourPressure-je400885z.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je400885z";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je400885z.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je400885z.json";
+        articleFile   "je400885z.xml";
+        articleSha256 "952b467f5ae68dc2fe34f089f817c7d0b847bb356e15e4423d40a319b3965575";
+        extractor     vapourPressure;
+        inchiKey      "HZAXFHJVJLSVMW-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey HZAXFHJVJLSVMW-UHFFFAOYSA-N --into <dir>";
+        sha256        "52eb3eb4732be9e9c6c1bdcf8bae6aeac4810952f00a4197849bacde1882df78";
         identity
         {
             monoethanolamine { cas "141-43-5"; inchiKey "HZAXFHJVJLSVMW-UHFFFAOYSA-N"; }
