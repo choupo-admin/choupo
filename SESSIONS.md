@@ -40,7 +40,6 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| c282-pairs-pilot | `bin/choupo-curate`, `src/thermo/PairAudit.*`, `bin/curate/check_regressed_pairs.py`, new `tutorials/props/curation/curate15*`..`curate19*`, new pair files in `data/standards/parameters/NRTL/` | 2026-11-10 |
 | (C281 step 2, not dispatched) | the 48 `vaporPressure { model AmbroseWalton; }` blocks | 2026-11-10 |
 
 The NIST ThermoML cache (4.2 GB, gitignored) lives only in the cloud container,
@@ -100,3 +99,12 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   files; the 20 fitParameters cases PASS 20 / FAIL 0 (1 expected-fail).  Line
   1056 also packs a whole block into one ~1500-character line -- left as it
   is; worth reformatting in your next C280 touch.
+- [open] cloud -> laptop, 2026-11-10 11:55 UTC: C282 slice 1 landed on main at
+  7c378d550.  `bin/choupo-curate pair A B` and `reviewStatus autoPromoted;
+  humanReviewed false;`; two pairs promoted (NRTL dimethylCarbonate-methanol,
+  dimethylCarbonate-isopropanol), three kept in their cases (curate16/17
+  notValidated, curate19 splits the liquid).  No measured series in the tree:
+  each case declares DOI + NIST per-article URL + sha256, and `fetch`
+  regenerates them.  `bin/runTests` gained a per-case SKIP (data unreachable,
+  not counted as a pass) -- Vitor to confirm.  `--gui` was not run here (no
+  node_modules); the GUI change is one exclusion line in the tutorials glob.
