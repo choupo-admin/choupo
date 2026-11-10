@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of curate432_nrtl_nPropylAcetate_propyleneCarbonate
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/nPropylAcetate-propyleneCarbonate-bubble-acs.jced.7b01107.dat";
+        role          fit;   // C283: every laboratory is fitted
+        doi           "10.1021/acs.jced.7b01107";
+        url           "https://trc.nist.gov/ThermoML/10.1021/acs.jced.7b01107.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/acs.jced.7b01107.json";
+        articleFile   "acs.jced.7b01107.xml";
+        articleSha256 "a6e18cb8b37f596cb8f088046805b83c5689dfc7d5c22dd362248e341bdd4d10";
+        block         10;
+        filter        ( --interior-only );
+        extract       "bin/choupo-thermoml extract-vle <article file> --block 10 --interior-only --into <dir>";
+        sha256        "7c51977cbdf9b6b128646c485844619b26c9287676477917503c0dc2d0a39609";
+        identity
+        {
+            nPropylAcetate { cas "109-60-4"; inchiKey "YKYONYBAUNKHLG-UHFFFAOYSA-N"; }
+            propyleneCarbonate { cas "108-32-7"; inchiKey "RUOJZAUFBMNUDX-UHFFFAOYSA-N"; }
+        }
+    }
+);
