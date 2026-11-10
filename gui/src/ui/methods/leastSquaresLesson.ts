@@ -53,11 +53,11 @@ export const LS_STEPS: readonly LessonStep[] = [
     n: 1,
     title: "A different question from every other solver in this simulator",
     body: "Every solver you have met so far has the same shape: the model is "
-      + "given, and the unknown is a STATE that satisfies it. A flash finds "
+      + "given, and the unknown is a state that satisfies it. A flash finds "
       + "the split that balances fugacities; a bubble point finds the "
       + "temperature at which the pressures sum to one bar. Parameter "
-      + "estimation turns that round. Here the STATE is given — somebody "
-      + "measured it — and the unknown is the MODEL: which setting of the "
+      + "estimation turns that round. Here the state is given — somebody "
+      + "measured it — and the unknown is the model: which setting of the "
       + "adjustable coefficients makes the model reproduce what was measured. "
       + "Two things change with the question. There are more measurements "
       + "than coefficients, so no setting satisfies all of them and there is "
@@ -86,7 +86,7 @@ export const LS_STEPS: readonly LessonStep[] = [
       { sym: "i", means: "the index over the measurements the fitter was "
         + "handed, running from 1 to N" },
       { sym: "N", means: "the number of measurements the fitter is handed. "
-        + "NOT the number available — see step 8" },
+        + "Not the number available — see step 8" },
       { sym: "\\chi", means: "the sum of squared residuals, the single number "
         + "the search minimises", unit: "K^2 here" },
     ],
@@ -95,7 +95,7 @@ export const LS_STEPS: readonly LessonStep[] = [
       + "FitParameters.cpp:132), while the Theory Guide's chapter writes it "
       + "with a factor of one half in front. The minimiser is the same point "
       + "either way; only the number printed differs, by a factor of two.  "
-      + "And despite the name, this `chi2` is NOT the dimensionless "
+      + "And despite the name, this `chi2` is not the dimensionless "
       + "chi-square of statistics: it is unweighted and carries K², so its "
       + "size depends on the unit the temperatures are written in.  Only the "
       + "weighted sum of step 2, each residual divided by its own σ_i, is "
@@ -109,14 +109,14 @@ export const LS_STEPS: readonly LessonStep[] = [
       + "knowing what the choice buys and what it assumes. It buys "
       + "differentiability, which is what makes the gradient methods below "
       + "possible at all, and it buys a closed-form linear step. What it "
-      + "ASSUMES is an error structure: minimising the sum of squares is the "
+      + "assumes is an error structure: minimising the sum of squares is the "
       + "maximum-likelihood estimate exactly when the measurement errors are "
-      + "independent, NORMALLY distributed, have zero mean, and all have the "
-      + "SAME variance. That is "
+      + "independent, normally distributed, have zero mean, and all have the "
+      + "same variance. That is "
       + "a claim about the laboratory, not a law of mathematics. If some "
       + "points are more trustworthy than others you should weight them by "
       + "their own uncertainty; Choupo's bubble-temperature residual is "
-      + "UNWEIGHTED, so running it asserts that every point in the file "
+      + "unweighted, so running it asserts that every point in the file "
       + "deserves the same say. It also means one bad point costs the fit the "
       + "square of its badness, which is why an outlier drags a least-squares "
       + "answer so hard.",
@@ -135,10 +135,10 @@ export const LS_STEPS: readonly LessonStep[] = [
         + "measurement i. Choupo's bubble-temperature fit does not read one, "
         + "which is the same as declaring them all equal", unit: "K" },
     ],
-    note: "Choupo DOES carry a weighted least-squares solver, and you can "
+    note: "Choupo does carry a weighted least-squares solver, and you can "
       + "read it in the active-set QP lesson: a laboratory water analysis is "
       + "reconciled by minimising exactly the weighted form above, subject to "
-      + "conservation laws. That problem is CONSTRAINED and linear in its "
+      + "conservation laws. That problem is constrained and linear in its "
       + "unknowns; this one is unconstrained except for simple bounds, and "
       + "non-linear in the parameters. Same objective, different machinery.",
   },
@@ -150,11 +150,11 @@ export const LS_STEPS: readonly LessonStep[] = [
       + "minimised in one step. But near the current guess it very nearly is. "
       + "Linearise each residual about the current parameters, substitute the "
       + "linearisation into the sum of squares, and what is left is an "
-      + "ordinary quadratic in the STEP — which has exactly one minimum, "
+      + "ordinary quadratic in the step — which has exactly one minimum, "
       + "provided the Jacobian has full column rank (no parameter's effect is "
       + "a combination of the others'), and is found by one linear solve. "
       + "That is Gauss-Newton, and the matrix in it "
-      + "is the whole reason the method is cheap: it is built from FIRST "
+      + "is the whole reason the method is cheap: it is built from first "
       + "derivatives only.",
     derivation: [
       { step: "Linearise: each residual moves, to first order, by the "
@@ -166,16 +166,16 @@ export const LS_STEPS: readonly LessonStep[] = [
         eq: String.raw`\nabla \left( \tfrac{1}{2}\chi^2 \right) = J' r` },
       { step: "The exact Hessian has two terms. The second carries the "
           + "residuals themselves, so it is small whenever the fit is good — "
-          + "and dropping it is the ONE approximation Gauss-Newton makes.",
+          + "and dropping it is the one approximation Gauss-Newton makes.",
         eq: String.raw`\nabla^2 \left( \tfrac{1}{2}\chi^2 \right)
 = J' J + \sum_{i=1}^{N} r_i \nabla^2 r_i \ \approx \ J' J` },
       { step: "Set the gradient of the linearised objective to zero: the "
-          + "NORMAL EQUATIONS.",
+          + "normal equations.",
         eq: String.raw`J' J \,\delta = -J' r` },
     ],
     formula: String.raw`J' J \,\delta = -J' r`,
     where: [
-      { sym: "J", means: "the JACOBIAN: one row per measurement, one column "
+      { sym: "J", means: "the Jacobian: one row per measurement, one column "
         + "per parameter, holding how much that residual moves when that "
         + "parameter moves" },
       { sym: "J_{ij}", means: "the entry of J in row i, column j — the "
@@ -189,7 +189,7 @@ export const LS_STEPS: readonly LessonStep[] = [
         + "written twice it is the matrix of second derivatives" },
     ],
     note: "Notice what the dropped term means. Gauss-Newton is a good "
-      + "approximation when the residuals are SMALL or the model is nearly "
+      + "approximation when the residuals are small or the model is nearly "
       + "linear, and a bad one far from the answer or on a badly-fitting "
       + "model — which is exactly where the next step comes in.",
   },
@@ -203,14 +203,14 @@ export const LS_STEPS: readonly LessonStep[] = [
       + "Levenberg's fix is to add a positive number to the diagonal. Send "
       + "that number to zero and you have Gauss-Newton back; send it large and "
       + "the matrix is dominated by its diagonal, so the step shrinks and "
-      + "turns to point down the gradient. Marquardt's refinement is WHICH "
+      + "turns to point down the gradient. Marquardt's refinement is which "
       + "diagonal: not the identity, but the diagonal of the matrix itself, so "
       + "each parameter is damped in proportion to its own curvature.",
     derivation: [
       { step: "Levenberg's damped normal equations: add a multiple of the "
           + "identity and the system can never be singular.",
         eq: String.raw`\left( J' J + \lambda I \right) \delta = -J' r` },
-      { step: "Marquardt's scaling: damp by the matrix's OWN diagonal "
+      { step: "Marquardt's scaling: damp by the matrix's own diagonal "
           + "instead. This is what Choupo solves.",
         eq: String.raw`\left( J' J + \lambda\,\operatorname{diag}(J' J) \right) \delta = -J' r` },
       { step: "Which is the same as multiplying each diagonal entry by one "
@@ -224,7 +224,7 @@ export const LS_STEPS: readonly LessonStep[] = [
         + "dict as `lambda0` (read at FitParameters.cpp:671) and then moved "
         + "by the engine every iteration" },
       { sym: "I", means: "the identity matrix — Levenberg's unscaled damping, "
-        + "shown for contrast and NOT what Choupo does" },
+        + "shown for contrast and not what Choupo does" },
       { sym: "j", means: "an index over the parameters, so the last line is "
         + "one diagonal entry at a time" },
     ],
@@ -246,7 +246,7 @@ export const LS_STEPS: readonly LessonStep[] = [
     title: "Where lambda comes from: the engine reprices it, it does not line-search",
     body: "Nothing in the algebra says what lambda should be, and the honest "
       + "answer is that nobody knows in advance. So it is run as a trust "
-      + "rule: take the step, evaluate the objective, and if it went DOWN "
+      + "rule: take the step, evaluate the objective, and if it went down "
       + "accept the step and trust the linearisation a little more; if it did "
       + "not, throw the step away and trust it a good deal less. Choupo does "
       + "not backtrack along the step and does not evaluate a merit function "
@@ -273,15 +273,15 @@ export const LS_STEPS: readonly LessonStep[] = [
 \qquad \lambda > 10^{12} \Rightarrow \text{refuse}`,
     where: [
       { sym: "\\lambda", means: "the damping, carried from one iteration to "
-        + "the next — the value in the dict is only where it STARTS" },
+        + "the next — the value in the dict is only where it starts" },
     ],
     note: "Two more things happen to a step before it is judged. It is "
-      + "CLAMPED to the bounds each parameter declares in the dict "
+      + "clamped to the bounds each parameter declares in the dict "
       + "(FitParameters.cpp:1018), and the run publishes `params_at_bound` so "
       + "that a parameter pressed against a limit you invented is visible "
-      + "rather than silent. And convergence is declared on the RELATIVE fall "
+      + "rather than silent. And convergence is declared on the relative fall "
       + "in the objective, against the `tolerance` the dict declares "
-      + "(FitParameters.cpp:1038) — or, when a step is REJECTED and every "
+      + "(FitParameters.cpp:1038) — or, when a step is rejected and every "
       + "component of it is already below a thousandth of the "
       + "finite-difference step the Jacobian was built with, the search is "
       + "declared converged at that floor rather than inflating lambda to a "
@@ -310,7 +310,7 @@ export const LS_STEPS: readonly LessonStep[] = [
       { step: "The forward difference Choupo takes, one parameter at a time "
           + "(FitParameters.cpp:1006).",
         eq: String.raw`J_{ij} \approx \frac{r_i(p + h\,e_j) - r_i(p)}{h}` },
-      { step: "The step is RELATIVE where the parameter is large and absolute "
+      { step: "The step is relative where the parameter is large and absolute "
           + "where it is small, so one declared setting serves a coefficient "
           + "searched over plus or minus 15 and one searched over plus or "
           + "minus 5000 alike (FitParameters.cpp:1000).",
@@ -335,7 +335,7 @@ export const LS_STEPS: readonly LessonStep[] = [
         + "the same number — here it is the bubble-point solver's own "
         + "convergence tolerance, not machine precision" },
     ],
-    note: "A FORWARD difference, not a central one: the central difference is "
+    note: "A forward difference, not a central one: the central difference is "
       + "second-order accurate and costs twice as many model evaluations per "
       + "iteration. That is a real trade and the engine has taken one side of "
       + "it; nothing here claims it is the only defensible side.",
@@ -345,7 +345,7 @@ export const LS_STEPS: readonly LessonStep[] = [
     title: "Converged is not correct, and in-sample is not evidence",
     body: "Suppose the search finishes and the residuals are small. What have "
       + "you learnt? That the model can reproduce the points it was handed — "
-      + "which is a statement about the model's FLEXIBILITY at least as much "
+      + "which is a statement about the model's flexibility at least as much "
       + "as about its truth. Give any model enough adjustable coefficients "
       + "and it will pass through anything, including the measurement noise. "
       + "This is why Choupo labels the fit statistic IN-SAMPLE in the run's "
@@ -366,7 +366,7 @@ export const LS_STEPS: readonly LessonStep[] = [
     formula: String.raw`\chi^2_{\mathrm{red}} = \frac{\chi^2_{\mathrm{in}}}{N - m}
 \qquad \text{(still in-sample: a smaller number is not a better model)}`,
     where: [
-      { sym: "\\chi_{\\mathrm{in}}", means: "the IN-SAMPLE sum of squares, "
+      { sym: "\\chi_{\\mathrm{in}}", means: "the in-sample sum of squares, "
         + "over the fitted points only", unit: "K^2 here" },
       { sym: "\\mathrm{rms}", means: "the root-mean-square residual over the "
         + "fitted points, which is the in-sample number in the units a reader "
@@ -381,11 +381,11 @@ export const LS_STEPS: readonly LessonStep[] = [
     n: 8,
     title: "The order is band, partition, fit, verdict — and it is enforced by data flow",
     body: "A held-out test is only worth something if the withholding was "
-      + "decided BEFORE the fit, and the criterion was decided before the "
+      + "decided before the fit, and the criterion was decided before the "
       + "residual was seen. Otherwise both are chosen to be met, and the "
       + "whole exercise is decorative. So the case declares an acceptance "
-      + "band with a stated ORIGIN, and it declares which dataset is `role "
-      + "fit` and which is `role validation`, and Choupo parses and FREEZES "
+      + "band with a stated origin, and it declares which dataset is `role "
+      + "fit` and which is `role validation`, and Choupo parses and freezes "
       + "that declaration before any fitting code runs. The fitter is not "
       + "forbidden to peek at the held-out points; it is never handed them. "
       + "It obtains its data from one container and the held-out data lives "
@@ -398,7 +398,7 @@ export const LS_STEPS: readonly LessonStep[] = [
       { step: "The fitter reads `part.fit()`; the held-out evidence sits in "
           + "`part.validation()` and is never passed to it "
           + "(EvidencePartition.H:259-260)." },
-      { step: "After the search, the SAME residual routine is run on the "
+      { step: "After the search, the same residual routine is run on the "
           + "held-out points, so a difference between the two cannot be an "
           + "artefact of two evaluators.",
         eq: String.raw`\mathrm{AAD} = \frac{100}{M} \sum_{k=1}^{M}
@@ -412,7 +412,7 @@ export const LS_STEPS: readonly LessonStep[] = [
 \qquad \left[ \% \right]`,
     where: [
       { sym: "\\mathrm{AAD}", means: "the average absolute deviation over the "
-        + "HELD-OUT points, as a percentage of each measured temperature — "
+        + "held-out points, as a percentage of each measured temperature — "
         + "the quantity the acceptance band is declared in", unit: "%" },
       { sym: "M", means: "the number of held-out measurements — three on this "
         + "page" },
@@ -422,7 +422,7 @@ export const LS_STEPS: readonly LessonStep[] = [
         + "k", unit: "K" },
     ],
     note: "The band on this page's case is 0.1 % of the bubble temperature, "
-      + "about 0.36 K, and the case states WHY in its own dict: it is the "
+      + "about 0.36 K, and the case states why in its own dict: it is the "
       + "scatter of atmospheric bubble-point measurements in the compilation "
       + "the numbers were transcribed from. A limit with no stated origin "
       + "cannot be told apart from one chosen after the residuals were seen, "
@@ -431,7 +431,7 @@ export const LS_STEPS: readonly LessonStep[] = [
   },
   {
     n: 9,
-    title: "The verdict is a WORD, and the engine will not invent the band",
+    title: "The verdict is a word, and the engine will not invent the band",
     body: "The last step is the one that makes the rest worth doing. Choupo "
       + "does not publish the held-out residual and leave you to feel good "
       + "about it: it compares the residual with the declared band and "
@@ -439,7 +439,7 @@ export const LS_STEPS: readonly LessonStep[] = [
       + "every sink — the console, the curation dossier, the promotable "
       + "record and the result the browser reads — takes that one word rather "
       + "than deciding for itself. Read the ladder and notice what it "
-      + "refuses to do: with evidence held out but NO band declared, the "
+      + "refuses to do: with evidence held out but no band declared, the "
       + "engine reports that the test was performed and claims nothing. It "
       + "will not choose a threshold on your behalf, because deciding whether "
       + "a residual is small enough is a judgement and not a measurement.",
@@ -450,7 +450,7 @@ export const LS_STEPS: readonly LessonStep[] = [
       { step: "validationRefused — a partition was declared and nothing was "
           + "held out. The run must then label its statistic in-sample and "
           + "must not present it as an external validation." },
-      { step: "heldOutPerformed — evidence WAS held out and no acceptance "
+      { step: "heldOutPerformed — evidence was held out and no acceptance "
           + "band was declared. A completed experiment with no criterion to "
           + "judge it by." },
       { step: "notValidated / validated — a band was declared before the fit "
@@ -466,10 +466,10 @@ export const LS_STEPS: readonly LessonStep[] = [
         unit: "%" },
     ],
     note: "One home for the rule: src/propertyOps/CurationDossier.cpp:59-72, "
-      + "five lines you can read end to end. The verdict is taken ONCE in the "
+      + "five lines you can read end to end. The verdict is taken once in the "
       + "run (FitParameters.cpp:1575) and travels to every sink from there "
       + "through src/propertyOps/PropertyOperation.H:118, the channel that "
-      + "carries the CURATION axis as words — "
+      + "carries the curation axis as words — "
       + "it used to be recomputed at three call sites, one of them inside a "
       + "verbosity test, and a verdict that depends on how loudly the run was "
       + "asked to speak is not a verdict.",
@@ -525,7 +525,7 @@ export const LS_STEPS: readonly LessonStep[] = [
     ],
     note: "Choupo calls a fit identifiable only when the normal matrix "
       + "inverted, there are degrees of freedom left, the condition number is "
-      + "below 1e8, AND no pair is correlated past 0.999 "
+      + "below 1e8, and no pair is correlated past 0.999 "
       + "(FitParameters.cpp:1239). The naive test — did it invert? — passes "
       + "on exactly this case, which is why it is not the test.",
   },
@@ -541,7 +541,7 @@ export const LS_STEPS: readonly LessonStep[] = [
       + "the held-out deviation over the withheld points, the band with the "
       + "reason it was set where it was, the verdict — and, in the header "
       + "above everything, the warning that these coefficients are not "
-      + "individually identifiable. The record is written AFTER the held-out "
+      + "individually identifiable. The record is written after the held-out "
       + "pass, deliberately, because before it the verdict does not exist.",
     note: "This is the point of the whole page. A fitted parameter is not a "
       + "number; it is a number together with the evidence it rests on, the "
@@ -568,9 +568,9 @@ export const LS_LIMITS: readonly LessonLimit[] = [
   {
     id: "evidence-quality",
     title: "A fit is only as good as its evidence, and held out is not independent",
-    body: "The eleven points on this page come from ONE compilation, at ONE "
+    body: "The eleven points on this page come from one compilation, at one "
       + "pressure, transcribed within this repository. Splitting them into "
-      + "eight and three tests whether the model INTERPOLATES the same "
+      + "eight and three tests whether the model interpolates the same "
       + "experiment, which is a real and useful question and a much weaker "
       + "one than whether it agrees with somebody else's laboratory. Choupo "
       + "is explicit about how little it can settle here: it checks the one "
@@ -607,7 +607,7 @@ export const LS_LIMITS: readonly LessonLimit[] = [
   {
     id: "one-optimiser-one-start",
     title: "One algorithm, one starting guess, and no search for a second minimum",
-    body: "Levenberg-Marquardt is a LOCAL method: it walks downhill from "
+    body: "Levenberg-Marquardt is a local method: it walks downhill from "
       + "wherever it is put. The starting values are declared in the case, "
       + "and a different starting point may well land on a different set of "
       + "coefficients — the more so here, where a whole valley of parameter "

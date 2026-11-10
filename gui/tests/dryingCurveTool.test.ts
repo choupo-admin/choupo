@@ -300,7 +300,7 @@ describe("criticalTimeState — the OMITTED t_critical is information", () => {
     const s = criticalTimeState({ ...base, t_critical: 1027.73485145 });
     expect(s.present).toBe(true);
     expect(s.t).toBeCloseTo(1027.73485145, 6);
-    expect(s.note).toContain("OBSERVED");
+    expect(s.note).toContain("observed");
   });
 
   it("ABSENT + X_final still above X_c => the run ended inside the constant-rate period", () => {
@@ -312,7 +312,7 @@ describe("criticalTimeState — the OMITTED t_critical is information", () => {
     expect(s.t).not.toBe(0);
     if (s.present) throw new Error("unreachable: the state must be absent");
     expect(s.absence).toBe("endedInConstantRate");
-    expect(s.note).toContain("ENDED INSIDE the constant-rate period");
+    expect(s.note).toContain("ended inside the constant-rate period");
     expect(s.note).toContain("endTime");
     // It names both engine numbers it ordered to reach that conclusion.
     expect(s.note).toContain("0.16");

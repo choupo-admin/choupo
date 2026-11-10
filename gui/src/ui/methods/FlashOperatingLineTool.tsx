@@ -92,7 +92,7 @@ export const FLASH_STEPS: readonly {
       + "a non-ideal or multiphase mixture can have several states that "
       + "satisfy both, which is why an engine also tests the stability of "
       + "the phases it finds.",
-    formula: "F·z = L·x + V·y",
+    formula: "F\\,z = L\\,x + V\\,y",
   },
   {
     n: 3,
@@ -102,7 +102,7 @@ export const FLASH_STEPS: readonly {
       + "It passes through (z, z), a point ON THE DIAGONAL, no matter what ψ "
       + "is: the line PIVOTS about the feed.  And its slope is −L/V, the "
       + "phase ratio itself.",
-    formula: "y = −((1−ψ)/ψ)·x + z/ψ      through (z, z),  slope −L/V",
+    formula: "y = -\\frac{1-\\psi}{\\psi}\\,x + \\frac{z}{\\psi} \\qquad \\text{through } (z,\\,z),\\ \\text{slope } -L/V",
     note: "ψ → 0 turns it VERTICAL (nothing has boiled: the liquid is the "
       + "feed — the bubble point).  ψ → 1 turns it HORIZONTAL (everything has "
       + "boiled: the vapour is the feed — the dew point).  Between those two "
@@ -118,7 +118,7 @@ export const FLASH_STEPS: readonly {
       + "vapour.  And the feed pivot splits the segment between them in the "
       + "ratio of the two products — the LEVER RULE, which is the material "
       + "balance read as a length.",
-    formula: "V/F = (z − x) / (y − x)",
+    formula: "\\frac{V}{F} = \\frac{z - x}{y - x}",
     note: "That intersection is Rachford-Rice, solved with a ruler.  The "
       + "engine solves the same equation numerically and gets the same point "
       + "— which is what the check below compares.",

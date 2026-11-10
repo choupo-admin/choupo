@@ -103,7 +103,7 @@ export const SINES_STEPS: readonly LessonStep[] = [
       + "of PTA is indexed to the price of paraxylene; LSB-2012 p. 36).  A PTA "
       + "producer earns its revenue by selling PTA; when that price moves with "
       + "the feedstock, the product price, the feedstock cost and the "
-      + "conversion cost have to be analysed together, and the SPREAD between "
+      + "conversion cost have to be analysed together, and the spread between "
       + "the first two is the central measure of the margin.  Producers "
       + "publish it: Indorama Ventures (IVL) reports an \"industry spread\" "
       + "defined as \"Selling price less raw material consumption\", per "
@@ -139,7 +139,7 @@ export const SINES_STEPS: readonly LessonStep[] = [
   {
     n: 4,
     title: "Who buys the output: the plan, the contract and its limits",
-    body: "The investment assumed contracts for the purchase of the WHOLE "
+    body: "The investment assumed contracts for the purchase of the whole "
       + "output by LSB for its PET plants (CPI-2019 p. 288).  The "
       + "project-finance terms of November 2008 included a purchase contract "
       + "by LSB at a price allowing a minimum EBITDA (CPI-2019 p. 311).  The "
@@ -148,7 +148,7 @@ export const SINES_STEPS: readonly LessonStep[] = [
       + "\"puede ascender hasta 450.000 toneladas anuales\" (may reach up to "
       + "450 000 tonnes a year) while LSB is a shareholder, at variable prices "
       + "linked to a market index, to 2030 (LSB-2012 pp. 29, 183; LSB-2014 "
-      + "pp. 122-123).  The figure is a MAXIMUM, not a guaranteed purchase.  The "
+      + "pp. 122-123).  The figure is a maximum, not a guaranteed purchase.  The "
       + "same accounts say the contract \"no establece explícitamente "
       + "penalizaciones\" (does not explicitly set penalties) if LSB buys "
       + "less than the annual offer, and that it is subject to Portuguese "
@@ -177,7 +177,7 @@ export const SINES_STEPS: readonly LessonStep[] = [
         eq: String.raw`\varphi_\mathrm{m} = 1 - \frac{450}{700} = 0.357` },
       { step: "Against the whole need of the customer's PET plants instead:",
         eq: String.raw`\varphi_\mathrm{m} = 1 - \frac{470}{700} = 0.329` },
-      { step: "In the calculator below, production in year 2 is 90 % of "
+      { step: "In the calculator above, production in year 2 is 90 % of "
           + "capacity, 630 kt, so the same 450 kt leave a smaller share "
           + "(an assumption of the model, not a documented figure):",
         eq: String.raw`\varphi_\mathrm{m} = 1 - \frac{450}{630} = 0.286` },
@@ -186,14 +186,14 @@ export const SINES_STEPS: readonly LessonStep[] = [
   {
     n: 5,
     title: "A simplified appraisal for teaching",
-    body: "A simplified, PRE-TAX, UNFINANCED appraisal, simple enough to do by "
+    body: "A simplified, pre-tax, unfinanced appraisal, simple enough to do by "
       + "hand: the capital is spent during construction; each operating year "
       + "earns the spread less the conversion cost on every tonne, loses a "
       + "discount on every merchant tonne, pays its fixed costs, and is "
       + "discounted to the decision.  The captive customer may stop buying "
       + "after a year you choose, and then its tonnes are merchant tonnes too.  "
-      + "Two inputs are DOCUMENTED (the capacity, and the capital of the "
-      + "November 2008 proposal); every other one is an ASSUMPTION, labelled "
+      + "Two inputs are documented (the capacity, and the capital of the "
+      + "November 2008 proposal); every other one is an assumption, labelled "
       + "as such.  The calculator is not a reconstruction of the business "
       + "plan, which is not public, and not an estimate of the historical "
       + "project's value: being unfinanced, it cannot say whether the project "
@@ -270,14 +270,14 @@ export const SINES_STEPS: readonly LessonStep[] = [
   {
     n: 7,
     title: "The market: what was recorded at the decision, and what came later",
-    body: "AT THE DECISION, the documents record the risk in general terms.  "
+    body: "At the decision, the documents record the risk in general terms.  "
       + "In January 2008 the bank's risk department wrote that \"Previa-se "
       + "concorrência futura dos mercados asiáticos\" (future competition from "
       + "Asian markets was foreseen; CPI-2019 p. 303), and in November 2008 it "
       + "cited an increase of non-European competition, eased by an exchange "
       + "rate unfavourable to the euro, \"conforme referido pelo consultor do "
       + "projecto\" (as the project's consultant had stated; CPI-2019 p. 312).  "
-      + "LATER, IVL's annual reports describe what happened: supply added far "
+      + "Later, IVL's annual reports describe what happened: supply added far "
       + "beyond demand after the margins of 2010-2011, Asian spreads falling "
       + "\"below the cash cost of the large majority of the industry\" "
       + "(IVL-AR2013 p. 14), and Western spreads staying higher because "
@@ -330,10 +330,10 @@ export const SINES_STEPS: readonly LessonStep[] = [
       + "revitalisation process in 2014 whose refinancing agreement the court "
       + "approved in 2015 (LSB-2014 p. 13); and its assets were sold in "
       + "November 2017.  Four different prices and values follow, and they "
-      + "are not interchangeable.  The ASSET PRICE: EUR 28 M for the plant "
+      + "are not interchangeable.  The asset price: EUR 28 M for the plant "
       + "company's assets (CPI-2019 p. 322), EUR 42.5 M in the buyer's "
       + "accounts with the adjacent utility's assets (IVL-AR2017 PDF p. 224).  "
-      + "The buyer's ACCOUNTING VALUE: a provisional fair value of the net "
+      + "The buyer's accounting value: a provisional fair value of the net "
       + "assets acquired of THB 4 503.5 M against a consideration of THB "
       + "1 640.6 M, and so a gain on bargain purchase of THB 2 862.9 M, with "
       + "the independent appraiser's report not yet completed (IVL-AR2017 PDF "
@@ -343,8 +343,8 @@ export const SINES_STEPS: readonly LessonStep[] = [
       + "buyer with its own PTA and PET business -- the buyer wrote that it "
       + "expected the purchase to enhance its PTA leadership in Europe and "
       + "secure the plant's energy supply (IVL-AR2017 PDF p. 224) -- and the "
-      + "documents read do not decide it.  The IMPAIRMENT: the buyer impaired "
-      + "the assets in 2024.  The SHARE PRICE: in April 2025 it sold 100 % of "
+      + "documents read do not decide it.  The impairment: the buyer impaired "
+      + "the assets in 2024.  The share price: in April 2025 it sold 100 % of "
       + "the quotas of its own Portuguese subsidiary, which operated the "
       + "plant, for EUR 100 000, the purchaser assuming its future "
       + "obligations; the plant had ceased operation about two years before "
@@ -354,7 +354,7 @@ export const SINES_STEPS: readonly LessonStep[] = [
     n: 10,
     title: "How much was lost depends on what you measure",
     body: "The table below gives ten figures from the documents, each with "
-      + "what it measures and its status.  They OVERLAP and must not be added: "
+      + "what it measures and its status.  They overlap and must not be added: "
       + "the facilities of 2010 are inside the exposure of 2014, which was "
       + "restructured into the exposure of 2015, part of which was impaired; "
       + "the gross involvement adds equity and loans to two companies over the "

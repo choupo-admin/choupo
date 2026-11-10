@@ -212,10 +212,10 @@ export const POOL_STEPS: readonly LessonStep[] = [
       + "it is Hess's law on the formation enthalpies the engine's catalogue "
       + "carries for the fuel and for its products.  The fuel C_aH_bO_c burns "
       + "to a CO2 and b/2 H2O and takes a + b/4 - c/2 O2.  With the water "
-      + "left as VAPOUR the result is the lower heating value, the one fire "
+      + "left as vapour the result is the lower heating value, the one fire "
       + "work uses, because the water leaves a flame as steam.  The "
-      + "catalogue's formation enthalpies are those of the ideal GAS, so the "
-      + "sum is the heat of burning the fuel's vapour; a pool burns a LIQUID "
+      + "catalogue's formation enthalpies are those of the ideal gas, so the "
+      + "sum is the heat of burning the fuel's vapour; a pool burns a liquid "
       + "that must first be vaporised, so the latent heat at 25 C is taken "
       + "off -- by Watson's rule from the record's own boiling point, "
       + "critical temperature and latent heat at the boiling point, which is "
@@ -252,7 +252,7 @@ export const POOL_STEPS: readonly LessonStep[] = [
       { sym: "T_0", means: "the ambient temperature, 298.15 K on this page",
         unit: "K" },
       { sym: "\\Delta h_\\mathrm{c}", means: "the lower heating value of the "
-        + "LIQUID per kilogram", unit: "J/kg" },
+        + "liquid per kilogram", unit: "J/kg" },
       { sym: "M", means: "the molar mass, from the record", unit: "kg/mol" },
     ],
     derivation: [
@@ -282,14 +282,14 @@ export const POOL_STEPS: readonly LessonStep[] = [
       + "with the ratio of what a kilogram gives when it burns to what it "
       + "costs to evaporate it from ambient: the heat of combustion over the "
       + "heat to warm the liquid to its boiling point and vaporise it.  The "
-      + "constant is 0.001 kg/(m2 s).  That is the asymptote of a LARGE pool, "
+      + "constant is 0.001 kg/(m2 s).  That is the asymptote of a large pool, "
       + "where the flame is optically thick.  A small pool burns slower, "
       + "because its thin flame radiates less back to the surface, and the "
       + "approach to the asymptote is written as an exponential in the "
       + "diameter, with a product k beta that is a property of the fuel's "
       + "flame.  Tables of k beta exist, but the one everybody quotes is in a "
       + "handbook that grants no right to copy it, so this page does what a "
-      + "student can check: it takes ONE public-domain measurement -- the "
+      + "student can check: it takes one public-domain measurement -- the "
       + "30 cm pan fires NIST compiles -- and solves for the k beta that "
       + "makes the curve pass through it.  Then it holds the curve against a "
       + "measurement it did NOT use: NIST's 1 m methanol fire burns 16.3 "
@@ -348,7 +348,7 @@ export const POOL_STEPS: readonly LessonStep[] = [
       + "kilogram.  Two things are hidden in that product.  It assumes the "
       + "combustion is complete -- true for methanol and acetone in a pan "
       + "(NIST found no measurable CO), less true for a large, sooty "
-      + "hydrocarbon fire.  And it is the heat of burning the LIQUID: the "
+      + "hydrocarbon fire.  And it is the heat of burning the liquid: the "
       + "flame burns vapour and returns part of its heat to the pool to make "
       + "more, and that part goes round inside the fire rather than out of "
       + "it.  NIST's 1 m methanol fire released 256 kW by oxygen-consumption "
@@ -424,7 +424,7 @@ export const POOL_STEPS: readonly LessonStep[] = [
       + "radiated -- NIST measured 0.22 for its 1 m methanol fire, and its "
       + "compilation gives 0.27 for 30 cm acetone -- so the emissive power is that power over the "
       + "side's area, and it depends on the flame height chosen in step 5.  "
-      + "The second is Mudan and Croce's correlation for SOOTY hydrocarbon "
+      + "The second is Mudan and Croce's correlation for sooty hydrocarbon "
       + "flames: a clear flame radiates up to 140 kW/m2, but a large fire "
       + "makes black smoke that hides most of its luminous surface, so the "
       + "emissive power falls with the diameter towards the 20 kW/m2 of the "
@@ -488,14 +488,14 @@ export const POOL_STEPS: readonly LessonStep[] = [
       { sym: "z", means: "the receiver's height above the ground", unit: "m" },
     ],
     note: "Computed at poolFire.ts:355 (pointSourceFlux); x is measured from "
-      + "the pool's AXIS here, and from its edge in the tables.",
+      + "the pool's axis here, and from its edge in the tables.",
   },
   {
     n: 8,
     title: "The receiver, model 2: the flame's side seen through a view factor",
     body: "The solid-flame model keeps the cylinder.  A receiver sees the "
       + "flame's side under some solid angle, and the fraction of the "
-      + "emitted radiation that reaches it is the VIEW FACTOR, a pure "
+      + "emitted radiation that reaches it is the view factor, a pure "
       + "geometric number between 0 and 1 that depends on where the receiver "
       + "is and how it faces.  For a vertical receiver -- a wall, a person "
       + "standing -- level with the base of a vertical cylinder and facing "
@@ -614,14 +614,14 @@ export const POOL_STEPS: readonly LessonStep[] = [
       + "for a fire in an offsite consequence analysis, the dose its "
       + "guidance associates with second-degree burns, assuming a person "
       + "escapes within 40 s.  10 000 Btu/(h ft2), 31.5 kW/m2, is HUD's "
-      + "limit for a building.  Notice that a flux without a TIME is "
+      + "limit for a building.  Notice that a flux without a time is "
       + "incomplete for a person: harm follows a dose, which the EPA guidance "
       + "takes as time times the flux to the four-thirds, so halving the "
       + "flux buys 2.5 times as long for the same dose, not twice.  For each "
       + "threshold the page finds the distance at which each model's flux falls to it; the "
       + "point source has the closed form below, the solid flame is solved "
       + "numerically.  And a threshold above the flux at the flame's own "
-      + "surface is NEVER reached outside the fire.  With a dim methanol "
+      + "surface is never reached outside the fire.  With a dim methanol "
       + "flame, or with Mudan and Croce's smoke-averaged power for a very "
       + "wide pool (towards 20 kW/m2), that happens to the building limit, "
       + "and NISTIR 6546 warns against reading it as permission to build "
@@ -650,7 +650,7 @@ export const POOL_STEPS: readonly LessonStep[] = [
       + "poolFire.ts:457 (epaDoseTime, the dose rule above solved for t).  "
       + "Computed at poolFire.ts:467 (distanceTo, a bisection on the flux, "
       + "which falls with distance outside the pool for both models).  The "
-      + "thresholds and their conversions: poolFire.ts THRESHOLDS.",
+      + "thresholds and their conversions: poolFire.ts thresholds.",
   },
   {
     n: 12,
@@ -668,7 +668,7 @@ export const POOL_STEPS: readonly LessonStep[] = [
       + "models, and how far each threshold reaches.  A prescriptive table "
       + "answers once, for a class of equipment; this calculation answers for "
       + "one fire, with every assumption visible -- and changes when any "
-      + "one of them does.  What the bench prints is a CONSEQUENCE, in "
+      + "one of them does.  What the bench prints is a consequence, in "
       + "still air, of one pool on burning rates calibrated on pans a metre "
       + "or less across and extrapolated beyond them: it neither confirms "
       + "nor refutes the case's table, and no distance on it is a certified "
@@ -678,7 +678,7 @@ export const POOL_STEPS: readonly LessonStep[] = [
       + "(step 13).",
     formula: String.raw`s_\mathrm{e} = x - \frac{D}{2}`,
     where: [
-      { sym: "s_\\mathrm{e}", means: "the distance from the pool's EDGE, the way the "
+      { sym: "s_\\mathrm{e}", means: "the distance from the pool's edge, the way the "
         + "layout case measures (edgeToEdge)", unit: "m" },
     ],
     note: "The table is read from tutorials/plant/aceticAcid02_plant/system/"
@@ -704,7 +704,7 @@ export const POOL_STEPS: readonly LessonStep[] = [
       + "layout decision by itself.  A prescriptive spacing table encodes, "
       + "once and for a class of equipment, the judgement of many such "
       + "calculations and of experience; a quantitative risk assessment "
-      + "(QRA) instead adds the FREQUENCY of each fire to its consequence and "
+      + "(QRA) instead adds the frequency of each fire to its consequence and "
       + "asks whether the risk to each person is tolerable.  This page "
       + "teaches the consequence half of that, for one scenario.",
   },

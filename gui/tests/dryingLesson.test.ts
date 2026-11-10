@@ -73,14 +73,14 @@ describe("the lesson is complete and numbered", () => {
 describe("the two regimes, and what controls each", () => {
   it("step 1 says the control changes hands, and defines X on the DRY basis", () => {
     const s = step(1);
-    expect(prose(s.body)).toContain("the rate is set by the AIR");
-    expect(prose(s.body)).toContain("the rate is set by the SOLID");
+    expect(prose(s.body)).toContain("the rate is set by the air");
+    expect(prose(s.body)).toContain("the rate is set by the solid");
     expect(s.formula).toContain(String.raw`X = \frac{m_\mathrm{moisture}}{m_\mathrm{drySolid}}`);
   });
 
   it("step 2 puts the surface at the WET BULB and draws the safety consequence", () => {
     const s = step(2);
-    expect(prose(s.body)).toContain("WET-BULB");
+    expect(prose(s.body)).toContain("wet-bulb");
     //  The pedagogical point: cool while it dries, hence safe for a
     //  heat-sensitive product.  A page that gave the wet bulb as a number
     //  without this would have taught nothing.
@@ -96,14 +96,14 @@ describe("the two regimes, and what controls each", () => {
     //  correlation anywhere in this unit, so the page must not suggest one.
     const note = prose(step(2).note!);
     expect(note).toContain("Lewis = 1");
-    expect(note).toContain("DECLARED sample and equipment data");
+    expect(note).toContain("declared sample and equipment data");
     expect(note).toContain("not a correlation");
   });
 
   it("step 4 hands control to the solid and says the surface warms", () => {
     const s = step(4);
     expect(prose(s.body)).toContain("travel from inside the solid");
-    expect(prose(s.body)).toContain("DRY-BULB");
+    expect(prose(s.body)).toContain("dry-bulb");
   });
 });
 
@@ -111,7 +111,7 @@ describe("the honesty half — what is DECLARED versus what is COMPUTED", () => 
   it("step 3 says plainly that X_c is an input, not a prediction", () => {
     const s = step(3);
     const note = prose(s.note!);
-    expect(note).toContain("X_c IS AN INPUT");
+    expect(note).toContain("In this engine X_c is an input");
     expect(note).toContain("operation.criticalMoisture");
     //  And the corollary a student needs: reading the corner off the plot
     //  recovers the declaration, so it is not evidence of anything.
@@ -132,13 +132,13 @@ describe("the honesty half — what is DECLARED versus what is COMPUTED", () => 
     expect(note).toContain("two falling-rate periods");
     //  The sharpest one: the page describes a warm-up the model does not
     //  integrate, and must say so in the same breath.
-    expect(note).toContain("NOT computed");
+    expect(note).toContain("not computed");
     expect(note).toContain("temperature is not integrated");
     expect(note).toContain("cannot tell you how hot it gets");
   });
 
   it("step 5 keeps X_eq a RESULT and does not claim it was declared", () => {
-    expect(prose(step(5).note!)).toContain("X_eq here is a RESULT");
+    expect(prose(step(5).note!)).toContain("X_eq here is a result");
     expect(prose(step(5).note!)).toContain("GAB isotherm");
   });
 });
@@ -146,8 +146,8 @@ describe("the honesty half — what is DECLARED versus what is COMPUTED", () => 
 describe("the design consequences, which are the point of the page", () => {
   it("states the time/water split and the sizing error it causes", () => {
     const body = prose(step(5).body);
-    expect(body).toContain("most of the WATER");
-    expect(body).toContain("most of the TIME");
+    expect(body).toContain("most of the water");
+    expect(body).toContain("most of the time");
     expect(body).toContain("falling-rate");
     //  Named as an UNDER-estimate, and with the mechanism (pricing the whole
     //  job at the fastest rate it ever achieves).
@@ -157,7 +157,7 @@ describe("the design consequences, which are the point of the page", () => {
 
   it("states the equilibrium floor and what actually moves it", () => {
     const body = prose(step(5).body);
-    expect(body).toContain("X_eq is a FLOOR");
+    expect(body).toContain("X_eq is a floor");
     expect(body).toContain("no amount of extra time");
     expect(body).toContain("drier or hotter air, not a longer run");
   });
@@ -271,17 +271,20 @@ describe("the tool renders it as a scrolling lesson", () => {
     expect(SRC).not.toContain("MethodSetupRail");
   });
 
-  it("renders the definitions before the plot and the consequences after", () => {
+  it("poses the question, then draws the curve, then explains it", () => {
+    //  REVISED (DEV.md 4c C277): steps 2-4 used to sit above the plot; the
+    //  figure a student stays for was met below four sections of prose.  Step
+    //  1 still comes first, the plot second, steps 2-5 after it.
     //  Matched at the RENDER site (`<XversusTSvg`), never at a definition or
     //  an import: an index taken anywhere else would compare the steps
     //  against a line thousands of characters from where the plot appears.
     const plot = SRC.indexOf("<XversusTSvg t={view.t}");
     expect(plot).toBeGreaterThan(0);
-    for (const n of [1, 2, 3, 4])
-      expect(SRC.indexOf(`{lessonStep(${n})}`), `step ${n} is after the plot`)
-        .toBeLessThan(plot);
-    expect(SRC.indexOf("{lessonStep(5)}"),
-      "the consequences step is before the plot").toBeGreaterThan(plot);
+    expect(SRC.indexOf("{lessonStep(1)}"), "step 1 is after the plot")
+      .toBeLessThan(plot);
+    for (const n of [2, 3, 4, 5])
+      expect(SRC.indexOf(`{lessonStep(${n})}`), `step ${n} is before the plot`)
+        .toBeGreaterThan(plot);
     //  lastIndexOf, deliberately: the limits are rendered on BOTH returns,
     //  and the earlier occurrence is the no-data branch's.  It is the one in
     //  the branch that HAS a plot that has to sit after it.

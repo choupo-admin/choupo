@@ -106,8 +106,8 @@ export function HalfBanner({ half, children }: {
   const toy = half === "toy";
   return (
     <Alert color={toy ? "orange" : "teal"} variant="light" mt="sm" data-half={half}
-      title={toy ? "THE TOY: an emission rate you set, dispersion computed in this page"
-        : "THE ENGINE: the flue gas read from a run; dispersion still computed in this page"}>
+      title={toy ? "The toy: an emission rate you set, dispersion computed in this page"
+        : "The engine: the flue gas read from a run; dispersion still computed in this page"}>
       <Text size="sm">{children}</Text>
     </Alert>
   );
@@ -414,7 +414,7 @@ function PlanView({ s, d }: { s: Setup; d: Derived }): JSX.Element {
     { type: "scatter", mode: "markers", name: "stack", x: [0], y: [0],
       marker: { symbol: "x", size: 11, color: "#fff" } },
     { type: "scatter", mode: "markers",
-      name: `ground maximum, ${inside ? "INSIDE" : "OUTSIDE"} the fence`,
+      name: `ground maximum, ${inside ? "inside" : "outside"} the fence`,
       x: [d.activeMax.x], y: [0],
       marker: { symbol: "diamond", size: 13, color: inside ? "#74c0fc" : "#ff6b6b", line: { color: "#fff", width: 1 } } },
   ];
@@ -527,7 +527,9 @@ export function Toy({ s, set }: { s: Setup; set: (s: Setup) => void }): JSX.Elem
       <OriginMark of={["page", "reference", "assumption"]}
         note="dispersion, classes, rise and search are this page's arithmetic (stackDispersionMath.ts); the emission rate and the limit are yours" />
 
-      {step(2)}
+      {/* The plume comes before step 2 (DEV.md 4c C277): the student moves
+          the weather and the stack first; step 2 then names what the side view
+          shows. */}
       <Box mt="sm" style={KNOB_GRID}>
         <KnobSlider knob={KNOB_HS} value={k.hs} onChange={(v) => setK({ hs: v })} />
         <KnobSlider knob={KNOB_U} value={k.u} onChange={(v) => setK({ u: v })} />
@@ -543,6 +545,7 @@ export function Toy({ s, set }: { s: Setup; set: (s: Setup) => void }): JSX.Elem
         takes it all at once. Dashed below ground: the image source that makes the ground return the plume.
       </PanelNote>
 
+      {step(2)}
       {step(3)}
       <Picker s={s} set={set} d={d} />
 
@@ -550,7 +553,7 @@ export function Toy({ s, set }: { s: Setup; set: (s: Setup) => void }): JSX.Elem
       {step(5)}
       <PanelNote>
         Sigma set: {SIGMA_SETS[k.terrain].source}.
-        {SIGMA_SETS[k.terrain].verified === "unread" ? " UNREAD for this page." : " Read in the printed tables (see the sources)."}
+        {SIGMA_SETS[k.terrain].verified === "unread" ? " Unread for this page." : " Read in the printed tables (see the sources)."}
       </PanelNote>
 
       {step(6)}
@@ -693,7 +696,7 @@ export function StackDispersionTool(): JSX.Element {
             stack or the limit and the plume, the curves and the plan redraw.
           </Text>
           <Alert mt="sm" color="yellow" variant="light" title="Two halves, not one" data-halves="">
-            The sections marked THE TOY use an emission rate you set; the section marked THE ENGINE reads the
+            The sections marked “the toy” use an emission rate you set; the section marked “the engine” reads the
             flue gas of a Choupo run. In both, the dispersion is this page&apos;s own arithmetic: the engine
             has no dispersion model and no stack as a sized item. The page says which half you are in at the top of each.
           </Alert>

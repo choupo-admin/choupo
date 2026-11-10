@@ -57,7 +57,7 @@ License
   prefix Y, "Y.deltaP" (the pipe train's demand).
 
   The plane's standing rule is ZERO physics in TypeScript, and this tool
-  carries NO closed-form exception at all — no head/pressure conversion, no
+  carries no closed-form exception at all — no head/pressure conversion, no
   friction formula, no pump law.  The one computation here is method
   GEOMETRY, derived in view and labelled so: linear interpolation of the
   crossing of two engine-published columns between the two bracketing sweep
@@ -618,7 +618,7 @@ export function PumpSystemTool(): JSX.Element {
       <Title order={3}>The pump does not set the flow — two curves do</Title>
       <Text size="sm" c="dimmed" mt={4}>
         A pump curve, a system curve, and the flow where they agree.  The
-        pump curve here is a MODEL — a constant shaft power spread over the
+        pump curve here is a model — a constant shaft power spread over the
         flow — not a centrifugal pump's measured characteristic.
       </Text>
     </Box>
@@ -735,9 +735,10 @@ export function PumpSystemTool(): JSX.Element {
 
         {lessonHead}
         {lessonStep(1)}
-        {lessonStep(2)}
-        {lessonStep(3)}
 
+        {/* The two curves come second (DEV.md 4c C277): the question, the
+            engine's sweep under the student's hand, then steps 2-3 naming
+            what each curve is made of. */}
         <Box>
           <Title order={5}>Now read the two curves the engine drew</Title>
           <Text size="sm" mt={4}>
@@ -771,7 +772,7 @@ export function PumpSystemTool(): JSX.Element {
             ({sweep.pumpUnit}.dP) meets the pipe train&apos;s published demand
             ({sweep.systemUnit}.deltaP)
             {op && !onGridPoint && <> — {DERIVED_IN_VIEW_LABEL}</>}.  Every
-            other flow in the window is a hypothetical: the sweep IMPOSES the
+            other flow in the window is a hypothetical: the sweep imposes the
             feed flow at each point and asks both sides what they would want
             there, and only at the crossing do the two agree.
           </Text>
@@ -806,6 +807,8 @@ export function PumpSystemTool(): JSX.Element {
           </Box>
         )}
 
+        {lessonStep(2)}
+        {lessonStep(3)}
         {lessonStep(4)}
         {lessonStep(5)}
         {lessonLimits}

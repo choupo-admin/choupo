@@ -59,6 +59,8 @@ const all = (n: number): string => {
     ...(s.derivation ?? []).map((d) => d.step)].join(" "));
 };
 
+//  DEV.md 4c C277: emphasis capitals in the lesson prose were lower-cased, so the
+//  pinned phrases below follow; the claims they pin are unchanged.
 describe("the equilibrium-landscapes lesson", () => {
   it("has six steps, numbered without a gap", () => {
     expect(LANDSCAPE_STEPS).toHaveLength(6);
@@ -67,7 +69,7 @@ describe("the equilibrium-landscapes lesson", () => {
 
   it("opens on the kernel and the two permitted metrics, and names the ban", () => {
     const s = all(1);
-    expect(s).toContain("ELEMENT YIELD");
+    expect(s).toContain("element yield");
     expect(s).toContain("refused by name where the species is also produced");
     expect(s).toContain("GibbsMapOp.cpp:168–213");
     expect(prose(step(1).formula!)).toContain(String.raw`Y_E = \frac{a_{E,p}\, n_p}{b_E}`);
@@ -77,7 +79,7 @@ describe("the equilibrium-landscapes lesson", () => {
     const s = all(2);
     expect(s).toContain("Van 't Hoff");
     expect(s).toContain("mole-conserving");
-    expect(s).toContain("the three pressures give the SAME curve");
+    expect(s).toContain("the three pressures give the same curve");
     const f = prose(step(2).formula!);
     expect(f).toContain(String.raw`\frac{\Delta H_\mathrm{rxn}}{R\,T^{2}}`);
     expect(f).toContain(String.raw`^{-\Delta\nu}`);
@@ -88,17 +90,17 @@ describe("the equilibrium-landscapes lesson", () => {
 
   it("says the sign is decided PER CELL from the feed's overall thermicity", () => {
     const s = all(3);
-    expect(s).toContain("DIRECTION is decided per cell");
+    expect(s).toContain("direction is decided per cell");
     expect(s).toContain("GibbsReactor.cpp:67–161");
     expect(s).toContain("`deltaT_K` column");
-    expect(s).toContain("CROSSES a thermicity boundary");
+    expect(s).toContain("crosses a thermicity boundary");
     const f = prose(step(3).formula!);
     expect(f).toContain(String.raw`s = -\operatorname{sgn}\!\left(\Delta H_\mathrm{rxn}\right)`);
   });
 
   it("makes the local slope the reason one magnitude means different things", () => {
     const s = all(4);
-    expect(s).toContain("HORIZONTAL move along the equilibrium curve");
+    expect(s).toContain("horizontal move along the equilibrium curve");
     expect(s).toContain("nothing at all on a flat one");
     expect(s).toMatch(/exchange rate between them/);
   });
@@ -106,8 +108,8 @@ describe("the equilibrium-landscapes lesson", () => {
   it("draws the GLOBAL caveat on thermal NO and calls it a model limitation", () => {
     const s = all(5);
     expect(s).toContain("GibbsReactor.cpp:414–416");  // C259: was the reversed "413–412"
-    expect(s).toContain("reports MORE NO than the true equilibrium");
-    expect(s).toContain("LIMITATION OF THE SINGLE-NUMBER MODEL, NOT A FINDING ABOUT FLAMES");
+    expect(s).toContain("reports more NO than the true equilibrium");
+    expect(s).toContain("limitation of the single-number model, not a finding about flames");
     expect(prose(step(5).formula!)).toContain(String.raw`\ce{N2 + O2 <=> 2 NO}`);
   });
 
@@ -119,9 +121,9 @@ describe("the equilibrium-landscapes lesson", () => {
     //  C259: "no hydrogen" was true of the FEED and false of the enzyme,
     //  which evolves about one H2 per N2 as an obligatory by-product.  The
     //  pin now holds both halves: none fed, and the by-product named.
-    expect(s).toContain("No hydrogen is FED on the biological route");
+    expect(s).toContain("No hydrogen is fed on the biological route");
     expect(s).toContain("obligatory by-product, about one H₂ per N₂ fixed");
-    expect(s).toContain("PROTONS and ELECTRONS");
+    expect(s).toContain("protons and electrons");
     expect(s).toContain("balanced by electron count");
     const f = prose(step(6).formula!);
     expect(f).toContain(String.raw`\ce{C6H12O6(s) + 4 N2 + 6 H2O(l) -> 6 CO2 + 8 NH3}`);
@@ -132,8 +134,8 @@ describe("the equilibrium-landscapes lesson", () => {
   it("says what transfers to an enzyme and what does not", () => {
     const s = all(6);
     expect(s).toContain("has no meaning for an enzyme");
-    expect(s).toContain("EQUILIBRIUM LIMIT");
-    expect(s).toContain("EXTENT BOOKKEEPING");
+    expect(s).toContain("equilibrium limit");
+    expect(s).toContain("extent bookkeeping");
     expect(s).toContain("`batchReactor` or a `dynamicCSTR`");
     expect(s).toContain("never a Gibbs reactor");
   });
@@ -256,7 +258,7 @@ describe("the tool's arithmetic", () => {
 
   it("offers no negative magnitude, because the engine refuses one", () => {
     expect(LANDSCAPE_DT_KNOB.min).toBe(0);
-    expect(LANDSCAPE_DT_KNOB.label).toMatch(/MAGNITUDE/);
+    expect(LANDSCAPE_DT_KNOB.label).toMatch(/magnitude/);
   });
 
   it("keys the route table exactly as reactionGibbs names its diagnostics", () => {

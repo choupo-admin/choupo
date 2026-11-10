@@ -83,7 +83,7 @@ describe("the lesson is complete and numbered", () => {
 describe("the one idea the page exists for: the driving force is not a ΔT", () => {
   it("says the heat leaves by EVAPORATION, and prints the enthalpy potential", () => {
     const s1 = step(1);
-    expect(prose(s1.body)).toContain("EVAPORATES");
+    expect(prose(s1.body)).toContain("evaporates");
     expect(s1.formula).toContain(String.raw`h^*(T_\mathrm{water}) - h_\mathrm{air}`);
     //  The unit matters: the potential is per kg of DRY air, which is why the
     //  diagram's y-axis is not a temperature.
@@ -93,7 +93,7 @@ describe("the one idea the page exists for: the driving force is not a ΔT", () 
   it("names the lumping as an assumption where it is first used", () => {
     //  Overclaiming here would be the easy mistake: one potential in place of
     //  two transfer processes is a hypothesis, not a derivation.
-    expect(prose(step(1).note!)).toContain("ASSUMPTION");
+    expect(prose(step(1).note!)).toContain("assumption");
     expect(prose(step(1).note!)).toContain("Lewis factor of one");
   });
 });
@@ -101,7 +101,7 @@ describe("the one idea the page exists for: the driving force is not a ΔT", () 
 describe("the wet bulb is the floor, and the approach is the price", () => {
   it("says WET bulb, and says the dry bulb is not the floor", () => {
     const s2 = step(2);
-    expect(prose(s2.body)).toContain("WET-BULB temperature");
+    expect(prose(s2.body)).toContain("wet-bulb temperature");
     expect(s2.formula).toContain(String.raw`\text{approach} = T_\mathrm{water,out} - T_\mathrm{wb,in}`);
     expect(prose(s2.note!)).toContain("dry bulb is not the floor");
   });
@@ -140,12 +140,12 @@ describe("range belongs to the process, not to the tower", () => {
 
   it("names the engine's two spec modes and the either/or between them", () => {
     const note = prose(step(3).note!);
-    expect(note).toContain("RATING");
-    expect(note).toContain("DESIGN");
+    expect(note).toContain("rating");
+    expect(note).toContain("design");
     expect(note).toContain("exactly one may be declared");
     expect(ENGINE_CPP).toContain("specify EXACTLY ONE of");
     //  And the pinch, with the engine's own remedy rather than a vague one.
-    expect(note).toContain("PINCHED");
+    expect(note).toContain("pinched");
     expect(ENGINE_CPP).toContain("PINCHED at L/G");
   });
 });
@@ -185,10 +185,10 @@ describe("the Merkel integral, printed as the engine evaluates it", () => {
 describe("what Merkel assumes — the page states all of it, and only it", () => {
   it("names the three hypotheses the engine announces, plus the cp one", () => {
     const body = prose(step(5).body);
-    expect(body).toContain("LEWIS FACTOR AS ONE");
-    expect(body).toContain("WATER FLOW CONSTANT");
-    expect(body).toContain("EXIT AIR IS SATURATED");
-    expect(body).toContain("SPECIFIC HEATS ONCE");
+    expect(body).toContain("Lewis factor as one");
+    expect(body).toContain("water flow constant");
+    expect(body).toContain("exit air is saturated");
+    expect(body).toContain("specific heats once");
     expect(body).toContain("fixed 25 \u00b0C surrogate");
     //  Each is the engine's own, read back out of the unit that computes the
     //  answer.  A hypothesis the page invents, or one the engine makes and
@@ -232,9 +232,9 @@ describe("what Merkel assumes — the page states all of it, and only it", () =>
     //  and calls it T_wb; that is the air-water near-coincidence at a Lewis
     //  factor of one, not one definition of two things.
     const body = prose(step(2).body);
-    expect(body).toContain("ADIABATIC-SATURATION temperature");
+    expect(body).toContain("adiabatic-saturation temperature");
     expect(body).toContain("Lewis factor is near one");
-    expect(body).not.toMatch(/WET-BULB temperature — what a thermometer with a wetted wick reads, the temperature air reaches when it saturates itself/);
+    expect(body).not.toMatch(/wet-bulb temperature — what a thermometer with a wetted wick reads, the temperature air reaches when it saturates itself/);
   });
 
   it("does not let the mass correction stand for an energy check (C150 R15)", () => {
@@ -251,7 +251,7 @@ describe("what Merkel assumes — the page states all of it, and only it", () =>
     expect(note).toContain("H_closure_gap_kW");
     expect(note).toContain("−1.39 kW, 3.8 % of the duty");
     expect(prose(limit("constant-water-flow").body))
-      .toContain("does NOT close the energy balance");
+      .toContain("does not close the energy balance");
     expect(ENGINE_CPP).toContain('kpis_["H_closure_gap_kW"]');
     expect(ENGINE_CPP).toContain("boundary balance of the four published streams");
   });
@@ -274,7 +274,7 @@ describe("the limits carry the absences, each one checked against the engine", (
 
   it("says KaV/L is DECLARED, not predicted — and the engine agrees", () => {
     const l = limit("no-packing-model");
-    expect(l.title).toContain("DECLARED, not predicted");
+    expect(l.title).toContain("declared, not predicted");
     expect(prose(l.body)).toContain("no packing-characteristic correlation");
     //  The narrow, checkable half of that claim: the unit reads a Merkel
     //  number and a target temperature out of operation{}, and nothing about
@@ -299,11 +299,11 @@ describe("the limits carry the absences, each one checked against the engine", (
 
   it("says make-up here is evaporation ALONE, and calls it a lower bound", () => {
     const l = limit("water-losses");
-    expect(prose(l.title)).toContain("EVAPORATION only");
+    expect(prose(l.title)).toContain("evaporation only");
     const body = prose(l.body);
     expect(body).toContain("drift");
     expect(body).toContain("blowdown");
-    expect(body).toContain("LOWER BOUND");
+    expect(body).toContain("lower bound");
     //  The engine says the same thing in its own console line and its own
     //  comment; the page is repeating it, not inventing it.
     expect(ENGINE_CPP).toContain("drift/blowdown not modelled");
@@ -356,9 +356,13 @@ describe("the tool renders it as a scrolling lesson", () => {
     //  claim is about where the reader meets each thing.
     const plot = SRC.indexOf("<MerkelDiagram");
     expect(plot).toBeGreaterThan(0);
-    for (const n of [1, 2, 3, 4])
-      expect(SRC.indexOf(`{lessonStep(${n})}`), `step ${n} is after the diagram`)
-        .toBeLessThan(plot);
+    //  DEV.md 4c C277: the figure comes second -- step 1 opens the page and
+    //  steps 2-5 explain what the student has just watched.
+    expect(SRC.indexOf("{lessonStep(1)}"), "step 1 is after the diagram")
+      .toBeLessThan(plot);
+    for (const n of [2, 3, 4])
+      expect(SRC.indexOf(`{lessonStep(${n})}`), `step ${n} is before the diagram`)
+        .toBeGreaterThan(plot);
     expect(SRC.indexOf("{lessonStep(5)}"),
       "the assumptions step is before the diagram").toBeGreaterThan(plot);
     expect(SRC.lastIndexOf("{lessonLimits}"),

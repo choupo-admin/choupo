@@ -55,7 +55,7 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
       + "back. The plant is a function: you hand it the guess and it hands "
       + "you a stream. The answer is the stream that comes back unchanged. "
       + "Handing the returned stream straight back in as the next guess is "
-      + "DIRECT SUBSTITUTION, the simplest iteration there is. Whether it "
+      + "direct substitution, the simplest iteration there is. Whether it "
       + "works depends on one number: how much of a mistake in the guess "
       + "survives a trip round the loop. If less than all of it does, the "
       + "mistake shrinks every pass; if more, it grows.",
@@ -82,7 +82,7 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
         + "when it is zero" },
       { sym: "u_{k} \\,/\\, u_{k+1}", means: "the mistake after pass k, and after the "
         + "next pass" },
-      { sym: "a", means: "the LOOP GAIN, the slope of G at the answer: the "
+      { sym: "a", means: "the loop gain, the slope of G at the answer: the "
         + "fraction of a mistake that survives one trip round the loop" },
       { sym: "k", means: "the pass number: the count of full trips round the "
         + "recycle so far" },
@@ -97,7 +97,7 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
     title: "Relaxation: take only part of the step",
     body: "If the loop overshoots, do not go all the way to what the plant "
       + "returned. Go a fraction w of the way from the old guess toward the "
-      + "returned one. That is UNDER-RELAXATION, and w is the relaxation "
+      + "returned one. That is under-relaxation, and w is the relaxation "
       + "factor: w = 1 is direct substitution, w = 0.5 is the average of old "
       + "guess and new, w close to 0 hardly moves. It is the same iteration "
       + "as before on a different map, H(x) = (1 - w) x + w G(x), and that "
@@ -111,7 +111,7 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
           + "mistake and its image a u.",
         eq: String.raw`u_{k+1} = (1 - w)\,u_{k} + w\,a\,u_{k}`},
       { step: "Collect the terms: the relaxed iteration multiplies the "
-          + "mistake by an EFFECTIVE SLOPE, which is the loop gain "
+          + "mistake by an effective slope, which is the loop gain "
           + "pulled toward 1.",
         eq: String.raw`u_{k+1} = a_{\mathrm{eff}}\,u_{k}, \qquad a_{\mathrm{eff}} = 1 - w + w\,a`},
     ],
@@ -119,9 +119,9 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
     where: [
       { sym: "x_{k} \\,/\\, x_{k+1}", means: "the guess on pass k, and the guess "
         + "handed in on the next pass" },
-      { sym: "w", means: "the RELAXATION FACTOR: the fraction of the way to "
+      { sym: "w", means: "the relaxation factor: the fraction of the way to "
         + "the returned stream that is actually taken (dimensionless)" },
-      { sym: "a_{\\mathrm{eff}}", means: "the EFFECTIVE SLOPE of the relaxed "
+      { sym: "a_{\\mathrm{eff}}", means: "the effective slope of the relaxed "
         + "iteration: the factor by which each pass multiplies the mistake" },
     ],
     note: "Move the slider w in the first figure and watch the second line "
@@ -134,7 +134,7 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
     body: "Put the convergence condition |1 - w + w a| < 1 to work. For a "
       + "loop that overshoots wildly (a below -1) direct substitution "
       + "diverges, but a small enough w pulls the effective slope back "
-      + "inside (-1, 1): relaxation RESCUES it. For a loop whose gain is "
+      + "inside (-1, 1): relaxation rescues it. For a loop whose gain is "
       + "above 1 the mistake grows every pass without changing sign, and "
       + "no w between 0 and 1 helps: the effective slope 1 + w (a - 1) is "
       + "never below 1. A runaway loop is not a numerical problem a damping "
@@ -146,11 +146,11 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
           + "factor appears alone. It stays above -1 exactly when w is "
           + "smaller than 2 over 1 - a.",
         eq: String.raw`a_{\mathrm{eff}} = 1 - w\,(1 - a) \;>\; -1 \iff w < \frac{2}{1 - a}`},
-      { step: "For a gain of 1 or more and any POSITIVE w the product "
+      { step: "For a gain of 1 or more and any positive w the product "
           + "w (1 - a) is zero or negative, so the effective slope is at "
           + "least 1: there is no positive w that contracts.",
         eq: String.raw`a \ge 1,\ w > 0 \;\Rightarrow\; a_{\mathrm{eff}} = 1 + w\,(a - 1) \;\ge\; 1`},
-      { step: "A NEGATIVE factor is a different matter: for a > 1 it reverses "
+      { step: "A negative factor is a different matter: for a > 1 it reverses "
           + "the step, and w = 1/(1 - a) < 0 makes the effective slope zero "
           + "(a = 2, w = -1: a_eff = 0). That reversed step is what "
           + "Wegstein's q = 1 - w > 1 does, and what the recycle clamp "
@@ -169,7 +169,7 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
     body: "The smaller the effective slope in magnitude, the faster the "
       + "mistake dies. The best possible slope is zero, which kills the "
       + "mistake in a single pass. Set the effective slope to zero and solve "
-      + "for w. For a gain between 0 and 1 the answer is a factor ABOVE 1 -- "
+      + "for w. For a gain between 0 and 1 the answer is a factor above 1 -- "
       + "an over-relaxation, stepping further than the plant asked -- which "
       + "is the opposite of damping. That is what Wegstein finds by itself, "
       + "and why the engine's fixed factor stops at 1.",
@@ -182,7 +182,7 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
     ],
     formula: String.raw`w_{\mathrm{opt}} = \frac{1}{1 - a} \qquad\qquad w_{\mathrm{opt}} \le 1 \iff a \le 0`,
     where: [
-      { sym: "w_{\\mathrm{opt}}", means: "the OPTIMAL relaxation factor for a "
+      { sym: "w_{\\mathrm{opt}}", means: "the optimal relaxation factor for a "
         + "linear loop: the one that makes the effective slope zero, so the "
         + "answer is reached in one pass" },
     ],
@@ -219,10 +219,10 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
     ],
     formula: String.raw`w = 1 - q \qquad q = \frac{s}{s - 1} \qquad w = \frac{1}{1 - s}`,
     where: [
-      { sym: "q", means: "WEGSTEIN'S COEFFICIENT: the weight kept on the old "
+      { sym: "q", means: "Wegstein's coefficient: the weight kept on the old "
         + "guess; q = 0 is direct substitution, q = -1 a step twice as long "
         + "(clamped to the recycle's [qmin, qmax])" },
-      { sym: "s", means: "the SECANT SLOPE: the change in what the plant "
+      { sym: "s", means: "the secant slope: the change in what the plant "
         + "returned divided by the change in what was guessed, over the "
         + "last two passes; it estimates the loop gain a" },
     ],
@@ -245,13 +245,13 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
       + "toy that lands on the answer in one pass for any gain except 1. "
       + "In a real problem the slope is only a local model, and the full "
       + "step can overshoot. The cure is not a fixed factor: that would "
-      + "slow every step, including the many that are fine. A LINE SEARCH "
+      + "slow every step, including the many that are fine. A line search "
       + "tries the full step and shortens it only if the residual does not "
       + "fall enough (Armijo's rule), so the damping adapts to each "
       + "iterate. Choupo's Newton uses it "
       + "(src/solver/NewtonND.cpp:618, enabled for the tear loop at "
       + "src/unitOperations/flowsheet/Flowsheet.cpp:3639). What a user "
-      + "may legitimately tune is a STEP CAP: no unknown moves more than a "
+      + "may legitimately tune is a step cap: no unknown moves more than a "
       + "stated amount in one step, which limits damage without slowing "
       + "the good steps -- `recycleMaxStep` for the tear "
       + "(src/unitOperations/flowsheet/Flowsheet.cpp:3641-3659).",
@@ -268,7 +268,7 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
     where: [
       { sym: "r", means: "the tear residual G(x) - x: how far what comes back "
         + "is from what was guessed" },
-      { sym: "\\alpha_{k}", means: "the LINE-SEARCH FACTOR of pass k: "
+      { sym: "\\alpha_{k}", means: "the line-search factor of pass k: "
         + "1 when the full Newton step is accepted, smaller when it had to "
         + "be shortened; chosen by the search, not by the user" },
       { sym: "\\Delta x_{k}", means: "the full Newton step at pass k, before "
@@ -282,15 +282,15 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
     title: "Why CFD codes need a fixed factor and a flowsheet's unit does not",
     body: "If you have used OpenFOAM or another CFD code, you set "
       + "`relaxationFactors` for pressure and velocity. Those solvers are "
-      + "SEGREGATED: they solve one equation at a time, holding the others "
-      + "frozen, and sweep until the frozen values stop changing (SIMPLE and "
+      + "segregated: they solve one equation at a time, holding the others "
+      + "frozen, and sweep until the frozen values stop changing (simple and "
       + "its relatives). That outer sweep is a fixed-point iteration, "
       + "exactly like a recycle, and its gain is often above the safe "
       + "range -- so a fixed under-relaxation factor, typically 0.3 for "
       + "pressure and 0.7 for velocity, is the standard cure. A "
-      + "sequential-modular flowsheet's TEAR LOOP is the same kind of "
+      + "sequential-modular flowsheet's tear loop is the same kind of "
       + "problem, and that is why Choupo now offers `recycleRelaxation` "
-      + "there. A unit's own equations, by contrast, are solved COUPLED by "
+      + "there. A unit's own equations, by contrast, are solved coupled by "
       + "Newton with a line search, so a fixed factor on them would only "
       + "slow it.",
     note: "So the three rungs on the tear loop read: relaxation (a factor "

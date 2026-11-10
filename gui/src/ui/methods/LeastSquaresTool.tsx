@@ -119,7 +119,7 @@ const MAXITER: PanelKnob = {
 const BAND: PanelKnob = {
   id: "maxAAD", label: "acceptance band on the held-out deviation",
   min: 0.02, max: 0.5, step: 0.01, unit: "percent",
-  why: "The criterion the case declares BEFORE the fit, with the reason it "
+  why: "The criterion the case declares before the fit, with the reason it "
     + "was set where it was. Turning it here changes the published verdict "
     + "without moving the residual by a digit — which is the one thing this "
     + "page wants you to see, and the one thing a real curation must never "
@@ -340,17 +340,12 @@ export function LeastSquaresTool(): JSX.Element {
         </Box>
 
         {step(1)}
-        {step(2)}
-        {step(3)}
-        {step(4)}
-        {step(5)}
-        {step(6)}
 
         {/* ---------------- THE SEARCH ---------------- */}
         <Box style={{ borderLeft: `3px solid ${LAM}`, paddingLeft: 12 }}>
           <Title order={4}>The search, watched running</Title>
           <Text size="sm" mt={4}>
-            Everything from here down is one run of{" "}
+            The panels on this page are one run of{" "}
             <Text span ff="monospace" size="xs">
               tutorials/{LS_WITNESS}
             </Text>
@@ -409,7 +404,7 @@ export function LeastSquaresTool(): JSX.Element {
                   </Badge>
                 </Group>
                 <Text size="sm">
-                  Read the dashed line. Where it steps DOWN by a factor of 0.7
+                  Read the dashed line. Where it steps down by a factor of 0.7
                   the step was accepted and the linearisation earned a little
                   more trust; where it jumps UP by 2.5 the step made the
                   objective worse, was thrown away, and only the damping moved.
@@ -491,6 +486,14 @@ export function LeastSquaresTool(): JSX.Element {
           </Stack>
         )}
 
+        {/* THE figure comes second (DEV.md 4c C277): the question (step 1),
+            then the search running, then the steps that name what it did. */}
+        {step(2)}
+        {step(3)}
+        {step(4)}
+        {step(5)}
+        {step(6)}
+
         {step(7)}
         {step(8)}
         {step(9)}
@@ -504,7 +507,7 @@ export function LeastSquaresTool(): JSX.Element {
             The same run, asked the other question. The engine ran the finished
             parameters over the three withheld measurements, compared the
             deviation with the band the case declared, and published a word.
-            The band knob below is here to make ONE point and it is a point
+            The band knob below is here to make one point and it is a point
             about method, not about ethanol: turn it and the word changes while
             the deviation does not move at all. That is why a real curation
             declares the band before the fit and leaves it alone — and why the
@@ -596,12 +599,15 @@ export function LeastSquaresTool(): JSX.Element {
             ) : null}
 
             {evidence.length > 0 && (
-              <Box px="sm" py={6} style={{ borderLeft: `3px solid ${GRID}` }}>
-                <Text size="xs" c="dimmed" fw={700} tt="uppercase" mb={4}>
-                  what the run said about its own evidence
-                </Text>
+              <Box component="details" px="sm" py={6}
+                style={{ borderLeft: `3px solid ${GRID}` }}>
+                {/* Folded (DEV.md 4c C277): the engine's own evidence lines. */}
+                <Box component="summary" style={{ cursor: "pointer",
+                  fontSize: "var(--mantine-font-size-sm)" }}>
+                  What the run said about its own evidence (read it)
+                </Box>
                 {evidence.map((l, i) => (
-                  <Text key={i} size="xs" ff="monospace"
+                  <Text key={i} size="xs" ff="monospace" mt={4}
                     style={{ whiteSpace: "pre-wrap",
                       overflowWrap: "anywhere" }}>{l}</Text>
                 ))}
@@ -621,7 +627,7 @@ export function LeastSquaresTool(): JSX.Element {
                 color={(diag["identifiable"] ?? 0) > 0.5 ? "teal" : "orange"}>
                 {(diag["identifiable"] ?? 0) > 0.5
                   ? "parameters individually determined"
-                  : "NOT individually identifiable"}
+                  : "not individually identifiable"}
               </Badge>
               <Badge variant="outline">
                 {diag["n_data"] ?? "—"} fitted points, {nParams ?? "—"}{" "}
@@ -692,7 +698,7 @@ export function LeastSquaresTool(): JSX.Element {
             )}
             <Text size="sm">
               Read those two blocks together and then read the verdict again.
-              This model PREDICTS measurements it never saw, and its four
+              This model predicts measurements it never saw, and its four
               coefficients are not separately determined by the evidence it was
               given. Both are true, both come off the same run, and a reader
               who takes either one for the other has misread it.

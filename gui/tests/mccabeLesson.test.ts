@@ -61,7 +61,7 @@ describe("the lesson runs end to end", () => {
     //  A page that draws them straight and never says why has taught a
     //  procedure and hidden its condition.
     const s2 = MCCABE_STEPS.find((s) => s.n === 2)!;
-    expect(prose(s2.note!)).toContain("STRAIGHT, and that is an assumption");
+    expect(prose(s2.note!)).toContain("straight, and that is an assumption");
     const cmo = MCCABE_LIMITS.find((l) => l.id === "cmo")!;
     expect(cmo.body).toContain("Constant molal overflow");
   });
@@ -71,14 +71,14 @@ describe("the lesson runs end to end", () => {
     //  makes them useful.  A step that gave the limits without the range
     //  between them would be algebra with no decision in it.
     const s4 = MCCABE_STEPS.find((s) => s.n === 4)!;
-    expect(s4.body).toContain("TOTAL REFLUX");
-    expect(s4.body).toContain("MINIMUM REFLUX");
+    expect(s4.body).toContain("Total reflux");
+    expect(s4.body).toContain("Minimum reflux");
     expect(prose(s4.note!)).toContain("1.1 to 1.5");
   });
 
   it("explains the azeotrope as physics, not as a failure to converge", () => {
     const s5 = MCCABE_STEPS.find((s) => s.n === 5)!;
-    expect(s5.body).toContain("AZEOTROPE");
+    expect(s5.body).toContain("azeotrope");
     expect(prose(s5.body)).toContain("not a numerical problem");
   });
 
@@ -103,7 +103,7 @@ describe("the tool renders it as a scrolling lesson", () => {
       .not.toContain("MethodSetupRail");
   });
 
-  it("renders the definitions before the diagram and the limits after", () => {
+  it("renders step 1 before the diagram and the other steps after", () => {
     //  The interactive is EARNED by the paragraphs above it.  Read the render
     //  order, not where the constant is declared: the import sits at the top
     //  of the file and a declaration-order test would pass whatever the page
@@ -112,10 +112,11 @@ describe("the tool renders it as a scrolling lesson", () => {
     const fn = WS.slice(i, WS.indexOf("// ---- Psychrometric chart ---"));
     const plot = fn.indexOf("{plotPane}");
     expect(plot).toBeGreaterThan(0);
-    for (const n of [1, 2, 3])
+    //  DEV.md 4c C277: the figure follows step 1; steps 2-5 follow it.
+    for (const n of [1])
       expect(fn.indexOf(`{step(${n})}`), `step ${n} renders after the diagram`)
         .toBeLessThan(plot);
-    for (const n of [4, 5])
+    for (const n of [2, 3, 4, 5])
       expect(fn.indexOf(`{step(${n})}`), `step ${n} renders before the diagram`)
         .toBeGreaterThan(plot);
   });

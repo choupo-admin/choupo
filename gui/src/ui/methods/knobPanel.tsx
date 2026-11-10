@@ -92,8 +92,8 @@ License
   wins from then on, on the phone as on the desk.
 \*---------------------------------------------------------------------------*/
 
-import { useEffect } from "react";
-import { Box, Group, NumberInput, ScrollArea, Slider, Stack, Text, Tooltip } from "@mantine/core";
+import { useEffect, useState } from "react";
+import { Box, Group, NumberInput, ScrollArea, Slider, Stack, Text, Tooltip, UnstyledButton } from "@mantine/core";
 import { useReducedMotion } from "@mantine/hooks";
 
 import {
@@ -260,17 +260,31 @@ export function KnobField({ label, hint, children }: {
   hint?: React.ReactNode;
   children: React.ReactNode;
 }): JSX.Element {
+  //  The reason is ONE CLICK AWAY, not printed under every control.  Read on
+  //  the published page (DEV.md 4c C276/C277): eight knobs each carrying three
+  //  lines of grey caveat made the panel a wall of text in which the controls
+  //  themselves were hard to find, and a student met the caveats before the
+  //  figure they qualify.  A click and not a hover, because hover is not a
+  //  thing a finger has; the panel remembers nothing, so a page opens calm.
+  const [open, setOpen] = useState(false);
   return (
     <Box style={{ width: "100%", minWidth: 0 }}>
       <Text size="xs" c="dimmed" mb={2}
         style={{ whiteSpace: "normal", overflowWrap: "anywhere", lineHeight: 1.25 }}>
         {label}
+        {hint && (
+          <UnstyledButton ml={6} onClick={() => setOpen((o) => !o)}
+            aria-expanded={open} data-knob-why=""
+            style={{ fontSize: "inherit", color: "var(--mantine-color-anchor)" }}>
+            {open ? "hide" : "why?"}
+          </UnstyledButton>
+        )}
       </Text>
       {children}
-      {hint && (
-        <Text size="xs" c="dimmed" mt={2}
+      {hint && open && (
+        <Text size="xs" c="dimmed" mt={4}
           style={{ whiteSpace: "normal", overflowWrap: "anywhere",
-            lineHeight: 1.2, opacity: 0.75 }}>
+            lineHeight: 1.3 }}>
           {hint}
         </Text>
       )}

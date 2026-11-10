@@ -130,15 +130,19 @@ describe("the tool renders it as a scrolling lesson", () => {
     expect(SRC).not.toContain("MethodSetupRail");
   });
 
-  it("renders the definitions before the plot and the caveat after", () => {
+  it("renders step 1 before the plot and the derivations after it", () => {
     //  The RENDER site, not the lazy import at the top of the file -- which
     //  is what the first version matched, so it compared the steps against a
     //  line 15 000 characters above where the plot actually appears.
     const plot = SRC.indexOf("<KremserFanPlot");
     expect(plot).toBeGreaterThan(0);
-    for (const n of [1, 2, 3])
-      expect(SRC.indexOf(`{step(${n})}`), `step ${n} is after the plot`)
-        .toBeLessThan(plot);
+    //  DEV.md 4c C277: the figure comes second -- step 1 opens the page and
+    //  steps 2-3 explain what the student has just watched.
+    expect(SRC.indexOf("{step(1)}"), "step 1 is after the plot")
+      .toBeLessThan(plot);
+    for (const n of [2, 3])
+      expect(SRC.indexOf(`{step(${n})}`), `step ${n} is before the plot`)
+        .toBeGreaterThan(plot);
     expect(SRC.indexOf("{step(4)}"), "the caveat step is before the plot")
       .toBeGreaterThan(plot);
   });
@@ -168,8 +172,8 @@ describe("the symbols name what the ENGINE computes (audited 2026-08-31)", () =>
     for (const sym of ["L", "V"]) {
       const g = gloss(2, sym);
       expect(g, `${sym} still claims a solute-free basis`)
-        .not.toMatch(/SOLUTE-FREE basis/);
-      expect(g).toMatch(/whole stream|STREAM/);
+        .not.toMatch(/(?<!not a )solute-free basis/);  // C277: the page now says "not a solute-free basis" in lower case
+      expect(g).toMatch(/whole stream/);
     }
     //  the witness's own number, which is what makes the basis checkable
     expect(gloss(2, "V")).toContain("150/100");
@@ -186,13 +190,13 @@ describe("the symbols name what the ENGINE computes (audited 2026-08-31)", () =>
 
   it("the ratio framing does not claim the engine escapes constant flows", () => {
     const s1 = prose(KREMSER_STEPS[0]!.note ?? "");
-    expect(s1).toContain("mole FRACTIONS");
+    expect(s1).toContain("mole fractions");
     expect(s1).toContain("constant total L and V");
   });
 
   it("a curved equilibrium is refused, not silently solved", () => {
     const lim = KREMSER_LIMITS.find((l) => l.id === "straight-equilibrium")!;
-    expect(prose(lim.body)).toMatch(/REFUSES/);
+    expect(prose(lim.body)).toMatch(/refuses/);
     expect(prose(lim.body), "the old 'solves the stages regardless' is back")
       .not.toMatch(/solves the stages regardless/);
   });

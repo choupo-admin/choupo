@@ -298,7 +298,9 @@ describe("letdown: the numbers the prose states, recomputed from the goldens", (
     say(FF, 4); say(Pv / 1e5, 3); say(FF * Pv / 1e5, 2);    // 0.9238, 1.894, 1.75
     say(chokedLiquidDrop(P1, Pv, Pc, FL) / 1e5, 2);         // 14.78
     say(chokedLiquidOutletPressure(P1, Pv, Pc, FL) / 1e5, 2); // 5.22
-    expect(body).toMatch(/EXTRAPOLATION/);
+    //  Case-insensitive since the lesson stopped shouting (DEV.md 4c C277);
+    //  the claim, that the relation is an extrapolation, is unchanged.
+    expect(body).toMatch(/extrapolation/i);
     expect(body).toMatch(/nonphysical/);
     //  and the bench draws the choked dip at F_F Pv, not at the extrapolation
     const phys = physicalVenaContracta(P1, P2, Pv, Pc, FL);
@@ -484,6 +486,6 @@ describe("letdown: the lesson text", () => {
     for (const id of ["fluids", "iec-60534-2-1", "iec-60534-8", "eu-noise", "coolprop"])
       expect(ids).toContain(id);
     for (const id of ["iec-60534-2-1", "iec-60534-8", "isa-rp75-23"])
-      expect(LETDOWN_SOURCES.find((s) => s.id === id)!.used).toMatch(/NOT READ/);
+      expect(LETDOWN_SOURCES.find((s) => s.id === id)!.used).toMatch(/not read/i); // C277: no capitals for emphasis
   });
 });

@@ -77,7 +77,7 @@ export const LADDER_SECTIONS: readonly LadderSection[] = [
       + "reaches equilibrium at the end, as the limit of a very long reactor.  "
       + "A design runs the other way.  The first question is what the atoms "
       + "allow, the second is what thermodynamics allows, and only when a "
-      + "decision needs a VOLUME does anyone ask what the rate delivers.  "
+      + "decision needs a volume does anyone ask what the rate delivers.  "
       + "Each rung needs more information than the one below it, and the "
       + "information on the top rung is the most expensive to get: somebody "
       + "has to measure it.  So a design climbs only as far as the decision "
@@ -100,7 +100,7 @@ export const LADDER_SECTIONS: readonly LadderSection[] = [
       + "$0 \\le X \\le 1$ and that no outlet amount goes negative "
       + "(ConversionReactor.cpp:215–218 and 230–233).  The witness declares $X = 0.90$ "
       + "on purpose.  At 600 K that is above this feed's equilibrium, and the "
-      + "rung prints it without complaint.  The page below does complain: it "
+      + "rung prints it without complaint.  The page above does complain: it "
       + "puts the declared $X$ beside the equilibrium reactor's answer for "
       + "the same feed, temperature and pressure — two numbers the engine "
       + "publishes — and warns, in red, whenever the first exceeds the "
@@ -110,7 +110,7 @@ export const LADDER_SECTIONS: readonly LadderSection[] = [
 \qquad n_i = n_{i,0} + \nu_i\,\xi`,
     where: [
       { sym: "\\xi", means: "the extent of reaction", unit: "kmol/h" },
-      { sym: "X", means: "the DECLARED conversion of the limiting reactant, "
+      { sym: "X", means: "the declared conversion of the limiting reactant, "
         + "CO here — an input, not a result", unit: "–" },
       { sym: "n_{\\mathrm{CO},0}", means: "the CO fed", unit: "kmol/h" },
       { sym: "\\nu_{\\mathrm{CO}}", means: "the stoichiometric coefficient "
@@ -174,7 +174,7 @@ X_\mathrm{eq} = \frac{\sqrt{K}}{1+\sqrt{K}}`,
       { sym: "y_{\\mathrm{H_2O}}", means: "the outlet mole fraction of "
         + "water", unit: "–" },
       { sym: "X_\\mathrm{eq}", means: "the equilibrium conversion of CO — "
-        + "a RESULT here", unit: "–" },
+        + "a result here", unit: "–" },
     ],
     needs: "Formation data (already curated, so free) and a decision about "
       + "which reactions — or which species — are allowed.",
@@ -193,7 +193,7 @@ X_\mathrm{eq} = \frac{\sqrt{K}}{1+\sqrt{K}}`,
     body: "No real bed reaches the limit, because the last few per cent cost "
       + "most of the volume (rung 3 shows how much).  Before any rate law "
       + "exists, a designer states how far short of the limit the bed will "
-      + "sit, and states it as a TEMPERATURE: $K$ is evaluated at "
+      + "sit, and states it as a temperature: $K$ is evaluated at "
       + "$T + \\Delta T$ for a reaction that is exothermic as it runs, at "
       + "$T - \\Delta T$ for one that is endothermic.  You declare only the "
       + "magnitude and the engine picks the side from a probe solve at $T$ "
@@ -211,7 +211,7 @@ X_\mathrm{eq} = \frac{\sqrt{K}}{1+\sqrt{K}}`,
         + "temperature, as in rung 2", unit: "–" },
       { sym: "T", means: "the physical reactor temperature, which the outlet "
         + "keeps", unit: "K" },
-      { sym: "\\Delta T", means: "the declared approach, a MAGNITUDE",
+      { sym: "\\Delta T", means: "the declared approach, a magnitude",
         unit: "K" },
     ],
     needs: "One number from experience: how far from equilibrium beds of "
@@ -229,11 +229,11 @@ X_\mathrm{eq} = \frac{\sqrt{K}}{1+\sqrt{K}}`,
     rung: 3,
     title: "Rung 3 — what the rate delivers: a volume",
     body: "Only now does a volume appear.  The plug-flow reactor integrates "
-      + "the rate along the bed.  Its reverse term is built from the SAME "
+      + "the rate along the bed.  Its reverse term is built from the same "
       + "equilibrium constant, $k_r = k_f / K$ (PFR.cpp:178–186), so the net "
       + "rate vanishes exactly at the limit: the profile rises toward the "
       + "rung-2 line and cannot cross it, however long the bed.  That "
-      + "closure holds HERE for two reasons worth naming: the law's orders "
+      + "closure holds here for two reasons worth naming: the law's orders "
       + "are the stoichiometric coefficients (mass action), and the shift "
       + "has Δν = 0, so K on a concentration basis is the same number as "
       + "the dimensionless thermodynamic K.  For a reaction that changes "
@@ -280,7 +280,7 @@ k_f = A\,\exp\!\left(-\frac{E_a}{R\,T}\right)`,
       { sym: "E_a", means: "the activation energy", unit: "J/mol" },
       { sym: "R", means: "the gas constant", unit: "J/(mol·K)" },
     ],
-    needs: "A rate law somebody MEASURED, on this catalyst, over this range: "
+    needs: "A rate law somebody measured, on this catalyst, over this range: "
       + "the most expensive fact on the page.",
     check: {
       q: "Could a longer bed ever beat the equilibrium reactor's number?",
@@ -315,12 +315,12 @@ export const LADDER_LIMITS: readonly LadderLimit[] = [
   {
     id: "volume-is-a-shape",
     title: "The PFR's volume axis is a shape, not a size.",
-    body: "This kinetic reactor prices concentrations on a LIQUID molar volume "
+    body: "This kinetic reactor prices concentrations on a liquid molar volume "
       + "(PFR.cpp:675, \"liquid-basis volumetric flow\"), so on a gas at "
       + "10 bar the concentrations, and hence the volume, are not those of "
       + "the real gas.  The rate constant is pfr02's illustrative one, chosen "
       + "small for the same reason.  What the profile shows faithfully is its "
-      + "SHAPE and its ceiling.  Neither the axis nor the residence time is a "
+      + "shape and its ceiling.  Neither the axis nor the residence time is a "
       + "design number.",
   },
   {

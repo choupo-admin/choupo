@@ -681,10 +681,15 @@ describe("the lesson the page walks through", () => {
     expect(THIELE_STEPS.map((s) => s.n)).toEqual([1, 2, 3, 4, 5]);
   });
 
-  it("renders the definitions before the interactive and the consequences after", () => {
-    //  The drawing is EARNED by the paragraphs above it.  A student who meets
-    //  the pellet field before being told what a modulus is learns to read a
-    //  picture, not a concept -- which is what the panel version did.
+  it("poses the question, then draws, then names what was drawn", () => {
+    //  REVISED 2026-11-09 (DEV.md 4c C276).  This test used to hold steps 1-3
+    //  ABOVE the drawing, on the argument that a picture met before its
+    //  concept teaches a student to read a picture.  Read on the published
+    //  page, the cost was larger than the gain: the one thing a student would
+    //  stay for sat a full screen below three sections of prose.  So the
+    //  QUESTION (step 1) still comes first, the pellet comes second, and the
+    //  modulus and the effectiveness factor (steps 2-3) then name what the
+    //  student has just watched.
     //
     //  This reads the RENDER order (where the step calls sit in the JSX), not
     //  where THIELE_STEPS happens to be declared: the constant lives at the
@@ -692,10 +697,13 @@ describe("the lesson the page walks through", () => {
     //  the page were arranged and would prove nothing at all.
     const svg = SRC.indexOf("<svg viewBox");
     expect(svg).toBeGreaterThan(0);
-    for (const n of [1, 2, 3]) {
+    const first = SRC.indexOf("{step(1)}");
+    expect(first, "step 1 is not rendered").toBeGreaterThan(0);
+    expect(first, "the question comes before the drawing").toBeLessThan(svg);
+    for (const n of [2, 3]) {
       const at = SRC.indexOf(`{step(${n})}`);
       expect(at, `step ${n} is not rendered`).toBeGreaterThan(0);
-      expect(at, `step ${n} renders after the drawing`).toBeLessThan(svg);
+      expect(at, `step ${n} renders before the drawing`).toBeGreaterThan(svg);
     }
     for (const n of [4, 5]) {
       const at = SRC.indexOf(`{step(${n})}`);
@@ -703,17 +711,17 @@ describe("the lesson the page walks through", () => {
       expect(at, `step ${n} renders before the drawing`).toBeGreaterThan(svg);
     }
     //  And the formula really is a formula, in the glyphs a reader sees.
-    expect(SRC).toContain("φ_R = R");
+    expect(SRC).toContain("\\\\phi_R = R");
   });
 
   it("carries a formula for the modulus, the effectiveness and Weisz-Prater", () => {
     const f = THIELE_STEPS.filter((s) => s.formula).map((s) => s.formula!);
     expect(f).toHaveLength(3);
-    expect(f.join(" ")).toContain("D_eff");
+    expect(f.join(" ")).toContain("D_\\mathrm{eff}");
     //  Weisz-Prater must be built ONLY from observables -- that is the whole
     //  reason it exists, and a version of it carrying k would be useless.
     const wp = THIELE_STEPS.find((s) => s.n === 5)!;
-    expect(wp.formula).toContain("r_obs");
+    expect(wp.formula).toContain("r_\\mathrm{obs}");
     expect(wp.formula).not.toContain("k /");
   });
 
@@ -790,7 +798,7 @@ describe("first order has no dead core", () => {
     }
     expect((TOOL_SRC.match(/dead core/g) ?? []).length).toBe(1);
     expect(TOOL_SRC).toContain("A true dead core, c = 0 over a finite region");
-    expect(TOOL_SRC).toContain("STARVED, never dead");
+    expect(TOOL_SRC).toContain("starved, never dead");
   });
 
   it("shows the closed form really is positive at the centre", () => {
@@ -825,10 +833,10 @@ describe("the two moduli are never silently swapped", () => {
     //  The page taught phi = L*sqrt(k/D_eff) with L the radius, then showed a
     //  badge computed on Lambda = V/S.  For a sphere that is a factor of NINE
     //  between the formula a reader was given and the number they were shown.
-    expect(TOOL_SRC).toContain("φ_R = R");
-    expect(TOOL_SRC).toContain("φ_Λ");
+    expect(TOOL_SRC).toContain("\\\\phi_R = R");
+    expect(TOOL_SRC).toContain("\\\\phi_\\\\Lambda");
     expect(TOOL_SRC).toContain("M_W");
-    expect(TOOL_SRC).toContain("NINE TIMES SMALLER");
+    expect(TOOL_SRC).toContain("nine times smaller");
   });
 
   it("has the factor of nine right, for a sphere", () => {
@@ -839,7 +847,7 @@ describe("the two moduli are never silently swapped", () => {
   });
 
   it("does not present the screening value as a phase boundary", () => {
-    expect(TOOL_SRC).toContain("SCREENING value, not a");
+    expect(TOOL_SRC).toContain("screening value, not a");
     expect(TOOL_SRC).not.toContain("That crossing is the moment your flask");
   });
 });
@@ -885,7 +893,7 @@ describe("what the model does not contain is stated", () => {
 
   it("qualifies the halved activation energy", () => {
     const st = THIELE_STEPS.find((s) => s.n === 4)!;
-    expect(st.note).toContain("falls towards HALF");
+    expect(st.note).toContain("falls towards half");
     expect(st.note).toContain("negligible");
   });
 });

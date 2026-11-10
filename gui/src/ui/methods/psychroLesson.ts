@@ -51,10 +51,10 @@ export const PSYCHRO_STEPS: readonly LessonStep[] = [
   {
     n: 1,
     title: "Every point is a state of moist gas",
-    body: "This is a map, not a graph.  Across the bottom is the DRY-BULB "
+    body: "This is a map, not a graph.  Across the bottom is the dry-bulb "
       + "temperature — an ordinary thermometer held in the stream.  Up the "
-      + "side is the HUMIDITY RATIO Y, the mass of vapour carried per unit "
-      + "mass of DRY carrier gas.  Fix those two and the state of the moist "
+      + "side is the humidity ratio Y, the mass of vapour carried per unit "
+      + "mass of dry carrier gas.  Fix those two and the state of the moist "
       + "gas is fixed; everything else the chart shows you — relative "
       + "humidity, dew point, wet-bulb temperature, enthalpy — is a property "
       + "read off at that point, not a third coordinate you get to set.  The "
@@ -62,32 +62,32 @@ export const PSYCHRO_STEPS: readonly LessonStep[] = [
       + "mass is part of the answer and not a decoration.",
     formula: String.raw`Y = \frac{M_v}{M_c} \cdot \frac{p_v}{P - p_v} \qquad [\text{kg vapour / kg dry gas}]`,
     where: [
-      { sym: "Y", means: "The HUMIDITY RATIO: kg of condensable vapour carried "
-        + "by one kg of DRY carrier gas.  The dry-carrier denominator is not "
+      { sym: "Y", means: "The humidity ratio: kg of condensable vapour carried "
+        + "by one kg of dry carrier gas.  The dry-carrier denominator is not "
         + "a convention, it is the reason the chart works — a heater, a dryer "
         + "or a cooling coil leaves the dry carrier untouched, so per kg of "
         + "it every balance on this page is a subtraction between two points. "
-        + " (Kremser's Y is a solute MOLE ratio and the shortcut column's is "
+        + " (Kremser's Y is a solute mole ratio and the shortcut column's is "
         + "a reduced stage coordinate: three quantities, one letter, all "
         + "reachable from the same menu.)", unit: "kg vapour / kg dry gas" },
-      { sym: "M_v", means: "The molar mass of the CONDENSABLE, from its own "
+      { sym: "M_v", means: "The molar mass of the condensable, from its own "
         + "component record.", unit: "g/mol" },
-      { sym: "M_c", means: "The molar mass of the CARRIER.  This ratio is why "
-        + "the chart is COMPUTED rather than copied out of a book: swap "
+      { sym: "M_c", means: "The molar mass of the carrier.  This ratio is why "
+        + "the chart is computed rather than copied out of a book: swap "
         + "nitrogen for air and every humidity ratio on the page moves.",
         unit: "g/mol" },
-      { sym: "p_v", means: "The PARTIAL PRESSURE of the vapour in the moist "
+      { sym: "p_v", means: "The partial pressure of the vapour in the moist "
         + "gas — what fixes Y at a given total pressure.", unit: "Pa" },
-      { sym: "P", means: "The TOTAL pressure the whole chart is drawn at.  It "
-        + "appears in the definition of Y and on NEITHER axis, which is "
+      { sym: "P", means: "The total pressure the whole chart is drawn at.  It "
+        + "appears in the definition of Y and on neither axis, which is "
         + "exactly why a psychrometric chart is not portable between "
         + "pressures — step 5 is about that.", unit: "Pa" },
     ],
-    note: "The DRY basis is the whole trick.  The dry carrier is the one "
+    note: "The dry basis is the whole trick.  The dry carrier is the one "
       + "thing that passes through a heater, a dryer or a cooling coil "
-      + "UNCHANGED — nothing condenses it and nothing evaporates it — so per "
+      + "unchanged — nothing condenses it and nothing evaporates it — so per "
       + "kilogram of it every balance on this chart is a subtraction between "
-      + "two points.  Counted per kilogram of MOIST gas the denominator would "
+      + "two points.  Counted per kilogram of moist gas the denominator would "
       + "move as the gas took up vapour, and every balance would have to "
       + "solve for it as well.  Absorption makes the same move for the same "
       + "reason when it works in mole ratios per mole of solute-free carrier.",
@@ -98,10 +98,10 @@ export const PSYCHRO_STEPS: readonly LessonStep[] = [
     body: "At each temperature the gas can hold only so much vapour: the "
       + "vapour's partial pressure cannot exceed the condensable's saturation "
       + "pressure P_sat(T), which climbs steeply with temperature.  Converted "
-      + "to Y, that bound is the SATURATION CURVE, and it is the top edge of "
+      + "to Y, that bound is the saturation curve, and it is the top edge of "
       + "the habitable chart — a point above it is not a state of unsaturated "
       + "gas at all, it is gas plus a mist.  Relative humidity is how far up "
-      + "you are: φ = p_v/P_sat(T), a ratio of PRESSURES and not of "
+      + "you are: φ = p_v/P_sat(T), a ratio of pressures and not of "
       + "humidities, so each φ curve is the saturation curve scaled at every "
       + "temperature.",
     formula: String.raw`\begin{aligned}
@@ -111,26 +111,26 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
 \end{aligned}`,
     where: [
       { sym: "\\varphi",
-        means: "The RELATIVE HUMIDITY: the vapour's actual partial "
-        + "pressure over the saturation pressure at the SAME temperature.  A "
-        + "ratio of PRESSURES, not of humidity ratios — the two are close but "
+        means: "The relative humidity: the vapour's actual partial "
+        + "pressure over the saturation pressure at the same temperature.  A "
+        + "ratio of pressures, not of humidity ratios — the two are close but "
         + "not equal, and saturation is φ = 1.  Charts and dialogs usually "
         + "enter it as a percentage.", unit: "dimensionless" },
       { sym: "P_\\mathrm{sat}",
-        means: "The SATURATION vapour pressure of the pure "
+        means: "The saturation vapour pressure of the pure "
         + "condensable at T, from that component's own vapour-pressure model. "
         + " It is the ceiling the whole chart hangs from, a property of the "
-        + "condensable ALONE, and it does not move when the total pressure "
+        + "condensable alone, and it does not move when the total pressure "
         + "does.", unit: "Pa" },
-      { sym: "T", means: "The DRY-BULB temperature — what an ordinary "
+      { sym: "T", means: "The dry-bulb temperature — what an ordinary "
         + "thermometer in the stream reads, and the chart's abscissa.",
         unit: "°C on the axis (K internally)" },
     ],
     note: "Because P_sat(T) sits in the denominator, relative humidity moves "
-      + "when NOTHING is added or removed: heat the gas at constant Y and φ "
+      + "when nothing is added or removed: heat the gas at constant Y and φ "
       + "falls, purely because the ceiling rose.  That is why Y is the "
       + "variable you can do a mass balance in and φ is not.  It is also why "
-      + "the DEW POINT — where cooling at constant Y and constant P first "
+      + "the dew point — where cooling at constant Y and constant P first "
       + "meets the saturation curve — is a horizontal walk to the left, and "
       + "is a property of Y alone.  The curves stop before the condensable's "
       + "boiling point on purpose: as P_sat approaches P the gas becomes pure "
@@ -145,10 +145,10 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
     body: "Wrap a bulb in a wet wick and hold it in the stream.  Liquid "
       + "evaporates and takes latent heat out of the bulb; the gas, now the "
       + "warmer of the two, feeds sensible heat back in.  The reading settles "
-      + "where the two rates cancel, and that steady value is the WET-BULB "
+      + "where the two rates cancel, and that steady value is the wet-bulb "
       + "temperature.  It is not the temperature of the gas — it is the "
       + "temperature a free liquid surface reaches while sitting in that gas "
-      + "— and it is NOT, in general, the floor of adiabatic humidification: "
+      + "— and it is not, in general, the floor of adiabatic humidification: "
       + "that floor is the adiabatic-saturation temperature of the next "
       + "step, and the two coincide only when the Lewis number is close to "
       + "one, as it happens to be for air and water.  Enthalpy "
@@ -166,28 +166,28 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
 \end{aligned}`,
     where: [
       { sym: "T_\\mathrm{as}",
-        means: "The ADIABATIC-SATURATION temperature: what the "
+        means: "The adiabatic-saturation temperature: what the "
         + "gas would reach if it saturated itself by evaporating the "
         + "condensable into it with no heat crossing the boundary.  It comes "
-        + "from an ENERGY BALANCE on the gas, and it labels a whole FAMILY — "
+        + "from an energy balance on the gas, and it labels a whole family — "
         + "every state on that line has this adiabatic-saturation "
         + "temperature.", unit: "°C" },
       { sym: "T_\\mathrm{wb}",
-        means: "The TRUE WET-BULB temperature: what a wet wick "
+        means: "The true wet-bulb temperature: what a wet wick "
         + "in the stream settles at, where latent heat leaving the surface "
         + "and sensible heat arriving from the gas cancel.  It comes from the "
-        + "RATIO of heat transfer to mass transfer, so it carries the Lewis "
-        + "number.  IT IS A DIFFERENT QUANTITY FROM T_as and equals it only "
+        + "ratio of heat transfer to mass transfer, so it carries the Lewis "
+        + "number.  It is a different quantity from T_as and equals it only "
         + "when Le = 1 — a near-coincidence that air-water happens to "
         + "satisfy, which is why most textbooks conflate them.", unit: "°C" },
       { sym: "Y_\\mathrm{sat}",
-        means: "The humidity ratio ON the saturation curve: the "
+        means: "The humidity ratio on the saturation curve: the "
         + "most vapour the gas can carry at that temperature and pressure.  "
         + "It is the top edge of the habitable chart and the anchor point of "
         + "every adiabatic and wet-bulb line.",
         unit: "kg vapour / kg dry gas" },
-      { sym: "c_s", means: "The HUMID HEAT: the heat needed to raise one kg "
-        + "of DRY carrier gas AND the vapour riding with it by one kelvin.  "
+      { sym: "c_s", means: "The humid heat: the heat needed to raise one kg "
+        + "of dry carrier gas and the vapour riding with it by one kelvin.  "
         + "It is named on the same dry basis as Y, which is what makes it the "
         + "slope-setter of the adiabatic line.",
         unit: "J/(kg dry gas·K)" },
@@ -199,19 +199,19 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
         + "vapour — which is why it is multiplied by Y in the humid heat.",
         unit: "J/(kg·K)" },
       { sym: "\\lambda",
-        means: "The LATENT HEAT of vaporisation per kg, at the "
+        means: "The latent heat of vaporisation per kg, at the "
         + "anchor temperature.  It is the price of evaporation, and being in "
-        + "the denominator it is what makes the adiabatic line SHALLOW.",
+        + "the denominator it is what makes the adiabatic line shallow.",
         unit: "J/kg" },
-      { sym: "h", means: "The moist-gas ENTHALPY, per kg of dry gas — the "
+      { sym: "h", means: "The moist-gas enthalpy, per kg of dry gas — the "
         + "same basis again.  Its two terms are the sensible heat of the "
         + "mixture and the latent heat the vapour brought with it.",
         unit: "J/kg dry gas" },
-      { sym: "T_0", means: "The enthalpy DATUM temperature.  Its value is a "
-        + "convention: only enthalpy DIFFERENCES between two states on the "
+      { sym: "T_0", means: "The enthalpy datum temperature.  Its value is a "
+        + "convention: only enthalpy differences between two states on the "
         + "chart mean anything.", unit: "°C" },
       { sym: "\\mathrm{Le}",
-        means: "The LEWIS number: thermal diffusivity over mass "
+        means: "The Lewis number: thermal diffusivity over mass "
         + "diffusivity — how fast heat spreads compared with how fast the "
         + "vapour does.  It is the single number that separates the two "
         + "temperatures above, and Le ≈ 1 for air-water is why they are so "
@@ -222,15 +222,15 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
         means: "Diffusivity of the vapour in the carrier gas.",
         unit: "m²/s" },
     ],
-    note: "THE TWO TEMPERATURES ARE NOT THE SAME QUANTITY.  The "
+    note: "The two temperatures are not the same quantity.  The "
       + "adiabatic-saturation temperature comes from an energy balance on gas "
-      + "saturated to the end; the wet-bulb temperature comes from the RATIO "
+      + "saturated to the end; the wet-bulb temperature comes from the ratio "
       + "of heat transfer to mass transfer at a wet surface, and that ratio "
       + "brings in the Lewis number Le = α/D_AB.  They coincide when Le ≈ 1, "
       + "which air-water happens to satisfy — a near-coincidence of two "
       + "transport properties, not a law, and the reason a printed air-water "
       + "chart can label one set of lines with both names.  This chart draws "
-      + "them as SEPARATE families, dashed for adiabatic saturation and dotted "
+      + "them as separate families, dashed for adiabatic saturation and dotted "
       + "for the true wet bulb, so a pair with Le ≠ 1 shows the gap instead "
       + "of hiding it.  There is no enthalpy scale drawn: the expression "
       + "above is the reason the lines are straight, not a set of lines to "
@@ -239,18 +239,18 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
   {
     n: 4,
     title: "Four moves, and the common humid-gas processes are built from them",
-    body: "HEATING is horizontal to the right: nothing is added, Y is "
+    body: "Heating is horizontal to the right: nothing is added, Y is "
       + "unchanged, and relative humidity falls because the ceiling rose.  "
-      + "COOLING is horizontal to the left until the saturation curve — that "
+      + "Cooling is horizontal to the left until the saturation curve — that "
       + "meeting point is the dew point — and further cooling can only run "
-      + "DOWN the curve, the gas staying saturated at the surface "
+      + "down the curve, the gas staying saturated at the surface "
       + "temperature while the difference in Y drops out as liquid.  That is "
-      + "DEHUMIDIFICATION, and the chart gives the condensate directly: the "
-      + "vertical drop, in kg per kg of dry gas.  ADIABATIC HUMIDIFICATION "
+      + "dehumidification, and the chart gives the condensate directly: the "
+      + "vertical drop, in kg per kg of dry gas.  Adiabatic humidification "
       + "runs UP an adiabatic-saturation line towards saturation (for air "
       + "and water, practically a wet-bulb line) — liquid evaporates, Y "
       + "rises, and the gas pays the latent heat out of its own temperature.  "
-      + "MIXING two streams puts the mixed state on the straight segment "
+      + "Mixing two streams puts the mixed state on the straight segment "
       + "joining them, dividing it in the inverse ratio of the two dry-gas "
       + "flows.  These four cover heating, cooling coils, evaporative "
       + "coolers, dryers and mixing boxes; they are not every process -- "
@@ -264,33 +264,33 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
 \end{aligned}`,
     where: [
       { sym: "Y_\\mathrm{in}",
-        means: "The humidity ratio of the gas ENTERING the "
+        means: "The humidity ratio of the gas entering the "
         + "operation.", unit: "kg vapour / kg dry gas" },
       { sym: "T_\\mathrm{surface}",
-        means: "The temperature of the COIL surface the gas "
+        means: "The temperature of the coil surface the gas "
         + "touches — not the gas temperature.  Condensation is set by how "
         + "cold the metal is, which is why a coil can dehumidify air that is "
         + "nowhere near saturated in the bulk.", unit: "°C" },
-      { sym: "Y_m", means: "The humidity ratio of the MIXED stream: the "
+      { sym: "Y_m", means: "The humidity ratio of the mixed stream: the "
         + "dry-gas-weighted average of the two feeds, which is why the mixed "
-        + "state lands ON the straight segment joining them.  It is exact "
+        + "state lands on the straight segment joining them.  It is exact "
         + "precisely because the weighting basis — dry gas — is conserved "
         + "through the mixing.", unit: "kg vapour / kg dry gas" },
-      { sym: "G", means: "The DRY-GAS mass flow of a stream: the weight each "
+      { sym: "G", means: "The dry-gas mass flow of a stream: the weight each "
         + "feed carries in the lever rule.", unit: "kg dry gas/s" },
     ],
-    note: "The mixing rule is the LEVER RULE again — the same geometry as the "
+    note: "The mixing rule is the lever rule again — the same geometry as the "
       + "flash's tie line and the extraction triangle, and for the same "
       + "reason: Y and h are both averages weighted by the dry-gas flow.  It "
       + "is exact in Y and only very nearly right in T, because what mixes "
       + "linearly is enthalpy and the humid heat carries a Y·c_p,vapour term, "
       + "so the true point sits a little off the chord when the two streams "
       + "differ in both temperature and humidity.  Two moves compose into a "
-      + "DRYER: heat the gas (right), then pass it over the wet solid, where "
+      + "dryer: heat the gas (right), then pass it over the wet solid, where "
       + "it picks up moisture along an adiabatic-saturation line (up and "
       + "left) — the "
       + "heater is paying in sensible heat for the evaporation the dryer "
-      + "does.  Two more compose into a COOLING COIL: not all of the stream "
+      + "does.  Two more compose into a cooling coil: not all of the stream "
       + "reaches the cold surface, so the outlet sits on the mixing line "
       + "between saturated gas at the surface and feed that went through "
       + "untouched.",
@@ -310,9 +310,9 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
     formula: String.raw`Y = \frac{M_v}{M_c} \cdot \frac{p_v}{P - p_v} \quad \longrightarrow \quad Y \text{ rises as } P \text{ falls, at fixed } T \text{ and } \varphi`,
     note: "The remedy is not a correction factor: P is a knob here, so redraw "
       + "the chart at the pressure you actually have.  The same applies, far "
-      + "more strongly, to a pressurised or a vacuum dryer.  What does NOT "
+      + "more strongly, to a pressurised or a vacuum dryer.  What does not "
       + "move with total pressure is P_sat(T) itself — that is a property of "
-      + "the condensable alone — which is why the BOILING temperature falls "
+      + "the condensable alone — which is why the boiling temperature falls "
       + "with pressure while the vapour pressure at a given temperature does "
       + "not.",
   },
@@ -321,7 +321,7 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
 export const PSYCHRO_LIMITS: readonly { id: string; title: string; body: string }[] = [
   {
     id: "one-pressure",
-    title: "Every curve is drawn at ONE total pressure.",
+    title: "Every curve is drawn at one total pressure.",
     body: "The pressure you set enters every humidity ratio on the page and "
       + "appears on neither axis, so a chart is not portable between "
       + "pressures. Nothing here warns you when you read a state off a chart "
@@ -330,7 +330,7 @@ export const PSYCHRO_LIMITS: readonly { id: string; title: string; body: string 
   },
   {
     id: "ideal-gas",
-    title: "Y comes from Dalton's law and the IDEAL gas.",
+    title: "Y comes from Dalton's law and the ideal gas.",
     body: "The humidity ratio (M_v/M_c)·p_v/(P − p_v) assumes carrier and "
       + "vapour both behave ideally and mix without interacting. At ambient "
       + "conditions the error is small; at elevated pressure it is not, and "
@@ -339,7 +339,7 @@ export const PSYCHRO_LIMITS: readonly { id: string; title: string; body: string 
   },
   {
     id: "pure-condensable",
-    title: "The ceiling is the PURE condensable's vapour pressure.",
+    title: "The ceiling is the pure condensable's vapour pressure.",
     body: "The saturation curve is P_sat(T) of the condensable on its own. A "
       + "liquid that is not pure — a brine, a sugar solution, moisture bound "
       + "in a porous solid — has a lower vapour pressure and comes to "
@@ -350,12 +350,12 @@ export const PSYCHRO_LIMITS: readonly { id: string; title: string; body: string 
   },
   {
     id: "wetbulb-needs-transport",
-    title: "The TRUE wet-bulb family is drawn only if the transport data exist.",
+    title: "The true wet-bulb family is drawn only if the transport data exist.",
     body: "It needs a gas diffusivity (Fuller) and a thermal conductivity "
       + "(Eucken) to form the Lewis number; a component whose record carries "
-      + "no diffusion volume simply yields no wet-bulb lines. Their ABSENCE "
+      + "no diffusion volume simply yields no wet-bulb lines. Their absence "
       + "means the data was missing, never that Le = 1 and the two families "
-      + "coincide — and since 2026-08-28 the run SAYS which of those it is, "
+      + "coincide — and since 2026-08-28 the run says which of those it is, "
       + "naming the reason no line was drawn, because for most of this "
       + "chart's life the transport block was written in a dialect the "
       + "builder dropped and the family was silently missing from every "
@@ -373,7 +373,7 @@ export const PSYCHRO_LIMITS: readonly { id: string; title: string; body: string 
   },
   {
     id: "no-process-paths",
-    title: "It is a state MAP; it does not run your process.",
+    title: "It is a state map; it does not run your process.",
     body: "The four moves are constructions you draw on it. Nothing here "
       + "integrates a dryer, sizes a coil, or checks that the condensate you "
       + "read off actually leaves. Choupo's own unit operations do the "
@@ -382,11 +382,11 @@ export const PSYCHRO_LIMITS: readonly { id: string; title: string; body: string 
   },
   {
     id: "carrier-is-not-air",
-    title: "The default carrier is NITROGEN, not air.",
+    title: "The default carrier is nitrogen, not air.",
     body: "Y is proportional to M_v/M_c, so the carrier's molar mass scales "
       + "the whole chart: nitrogen at 28.013 against air at 28.96 puts every "
       + "humidity ratio about 3 % above a printed air chart.  Nitrogen is "
-      + "only the DEFAULT: the carrier list offers every component whose "
+      + "only the default: the carrier list offers every component whose "
       + "record declares `noncondensable true;`, and the catalogue's air "
       + "record has declared it since 2026-08-29 (with the ideal-gas Cp the "
       + "adiabatic and wet-bulb families need grafted on 2026-08-31).  Pick "

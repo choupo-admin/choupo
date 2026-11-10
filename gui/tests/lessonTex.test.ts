@@ -158,6 +158,33 @@ describe("every EduTool lesson equation is LaTeX that parses", () => {
     expect(broken.join("\n  ")).toBe("");
   }, 180_000);
 
+  //  The two pages with a private step type (ThielePelletTool,
+  //  FlashOperatingLineTool) were outside every arm above, and both shipped
+  //  equations KaTeX refused or mangled: a Unicode root sign drawn as a red
+  //  failure box, and plain words in math mode drawn as one run of italics
+  //  (found by reading the published page, DEV.md 4c C276).  Importing a
+  //  Tool.tsx dies on plotly, so the formulas are read from the SOURCE: any
+  //  single-line `formula: "..."` literal in any Tool.tsx must parse, and
+  //  must carry no bare prose in math mode.
+  it("every formula literal declared in a Tool.tsx parses and holds no bare words", () => {
+    const broken: string[] = [];
+    let n = 0;
+    for (const p of Object.keys(MODULES).filter((q) => q.endsWith("Tool.tsx")).sort()) {
+      const src = readFileSync(fileURLToPath(new URL(p, import.meta.url)), "utf8");
+      for (const m of src.matchAll(/\n\s*formula:\s*("(?:[^"\\\n]|\\.)*"),?\n/g)) {
+        const tex = JSON.parse(m[1] as string) as string;
+        n += 1;
+        const r = renderTex(tex, "display");
+        if (!r.ok) broken.push(`${p}: ${r.message}\n      ${tex}`);
+        const bare = tex.replace(/\\[a-zA-Z]+\{[^{}]*\}/g, "").replace(/\\[a-zA-Z]+/g, "");
+        if (/[A-Za-z]{3,} [A-Za-z]{3,}/.test(bare))
+          broken.push(`${p}: words in math mode (wrap them in \\text{})\n      ${tex}`);
+      }
+    }
+    expect(n).toBeGreaterThanOrEqual(5);
+    expect(broken.join("\n  ")).toBe("");
+  });
+
   //  A step that glosses one symbol twice is a content defect AND a render
   //  defect: the glossary is keyed on `sym`, so React warns of a duplicate key
   //  (bin/checkGui reported it as a PAGE ERROR on the Wegstein page, where a

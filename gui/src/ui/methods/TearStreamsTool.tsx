@@ -119,7 +119,7 @@ function OrderDiagram({ g, order, marks, onToggle }: {
   return (
     <Box>
       {/*  A phone shows no scrollbar until the box is touched, so the reader is
-           TOLD the row continues; otherwise the units cut off at the edge read
+           told the row continues; otherwise the units cut off at the edge read
            as the end of the flowsheet.  */}
       {narrow && (
         <Text size="xs" c="dimmed" mb={4}>
@@ -183,7 +183,7 @@ function OrderDiagram({ g, order, marks, onToggle }: {
                     x2={inlet ? cx(u) - BOX_W / 2 : x} y1={y} y2={y}
                     stroke={ink} strokeWidth={fault ? 2 : 1.2}
                     strokeDasharray={fault ? "5 3" : ""} />
-                  {/*  AWAY from the box.  An inlet's stub sits to the LEFT of
+                  {/*  away from the box.  An inlet's stub sits to the left of
                        its unit, so its label must be anchored at its right end
                        and run leftwards into the margin; an outlet is the
                        mirror.  Written the other way round -- which is how it
@@ -192,7 +192,7 @@ function OrderDiagram({ g, order, marks, onToggle }: {
                        the collision was unreadable.  */}
                   <text x={x} y={y - 5} textAnchor={anchor}
                     fontSize={8.5} fill={fault ? ink : INK}>{e.name}</text>
-                  {/*  The refusal word goes on its OWN line rather than beside
+                  {/*  The refusal word goes on its own line rather than beside
                        the name.  A stub has only the page margin to write in,
                        and "freshFeed  (UNCONSUMED TEAR)" on one line is wider
                        than any margin that leaves the boxes readable.  */}
@@ -338,27 +338,24 @@ export function TearStreamsTool(): JSX.Element {
         </Box>
 
         {step(1)}
-        {step(2)}
-        {step(3)}
-        {step(4)}
 
-        {/* ---------------- THE CONSTRUCTION ---------------- */}
+        {/* ---------------- the construction ---------------- */}
         <Box style={{ borderLeft: `3px solid ${TEAR}`, paddingLeft: 12 }}>
           <Title order={4}>
             Write the declaration yourself, and get it wrong on purpose
           </Title>
           <Text size="sm" mt={4}>
-            Everything below this line is graph theory drawn in your browser
-            over three TEACHING FLOWSHEETS — named boxes and named arrows
+            Everything in this section is graph theory drawn in your browser
+            over three teaching flowsheets — named boxes and named arrows
             declared in{" "}
             <Text span ff="monospace" size="xs">tearMath.ts</Text>, with no
             thermodynamics in them and no Choupo case read to build them. The
             units are drawn in the order the solver would walk them. An arc
-            ABOVE the row runs forward and needs no cut; an arc BELOW it
+            above the row runs forward and needs no cut; an arc below it
             arrives at a unit that has already run, and needs one.
           </Text>
           <Text size="sm" mt={8}>
-            CLICK ANY STREAM to put it in the{" "}
+            Click any stream to put it in the{" "}
             <Text span ff="monospace" size="xs">tearStreams ( … );</Text> list
             or take it out, and move the units with the arrows. The panel then
             judges your declaration the way the engine does — the same two
@@ -372,7 +369,7 @@ export function TearStreamsTool(): JSX.Element {
           </Text>
         </Box>
 
-        {/*  STACKED ON A PHONE: three labels of 25-30 characters do not fit
+        {/*  stacked on a phone: three labels of 25-30 characters do not fit
              side by side in 358 px, and a segment cut off at the screen's
              edge is a teaching graph the reader cannot choose.  */}
         <SegmentedControl size="xs" fullWidth value={graphId}
@@ -455,8 +452,8 @@ export function TearStreamsTool(): JSX.Element {
 
           <Stack gap={10}>
             <OriginMark of="page" note="this page's reasoning over the teaching graph (tearMath.ts); it reads no Choupo case -- the engine's own contract is run below" />
-            {/*  THE ENGINE'S OWN SENTENCES, not a paraphrase of them.  This
-                 block used to restate ONE of the seven refusals in friendlier
+            {/*  The engine's own sentences, not a paraphrase of them.  This
+                 block used to restate one of the seven refusals in friendlier
                  words; a reader who met the real thing would not recognise
                  it, and the other six had no home on the page at all.  */}
             {call.findings.length > 0 && (
@@ -564,11 +561,16 @@ export function TearStreamsTool(): JSX.Element {
           </Stack>
         </Box>
 
+        {/* The construction comes second (DEV.md 4c C277): the question, the
+            flowsheet to cut, then steps 2-7 naming what the student did. */}
+        {step(2)}
+        {step(3)}
+        {step(4)}
         {step(5)}
         {step(6)}
         {step(7)}
 
-        {/* ---------------- THE ENGINE ---------------- */}
+        {/* ---------------- the engine ---------------- */}
         <Box style={{ borderLeft: `3px solid ${MEASURED}`, paddingLeft: 12 }}>
           <Title order={4}>
             Measured: what Choupo says, in Choupo&apos;s own words
@@ -618,18 +620,21 @@ export function TearStreamsTool(): JSX.Element {
           )}
 
           {announcements.length > 0 && (
-            <Box px="sm" py={6} style={{ borderLeft: `3px solid ${GRID}` }}>
-              <Text size="xs" c="dimmed" fw={700} tt="uppercase" mb={4}>
-                a valid plan announcing its own cut
-              </Text>
+            <Box component="details" px="sm" py={6}
+              style={{ borderLeft: `3px solid ${GRID}` }}>
+              {/* Folded (DEV.md 4c C277): the engine's raw log lines. */}
+              <Box component="summary" style={{ cursor: "pointer",
+                fontSize: "var(--mantine-font-size-sm)" }}>
+                A valid plan announcing its own cut (read it)
+              </Box>
               {announcements.map((a, i) => (
-                <Text key={i} size="xs" ff="monospace"
+                <Text key={i} size="xs" ff="monospace" mt={4}
                   style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
                   {a}
                 </Text>
               ))}
               <Text size="sm" mt={6}>
-                A valid recycle SHOWS its cuts rather than leaving them
+                A valid recycle shows its cuts rather than leaving them
                 implicit. The same run then solves the tear and reports the
                 answer; how it does that is the Wegstein EduTool&apos;s
                 subject.
@@ -659,7 +664,7 @@ export function TearStreamsTool(): JSX.Element {
           )}
 
           <PanelNote>
-            The withdrawal is a KEY RENAME, not a deletion: the list stays in
+            The withdrawal is a key rename, not a deletion: the list stays in
             the file and the engine stops reading it, which is exactly the
             state a case is in when its author forgot to declare the cut. A
             knob on this page may not add, delete or re-nest a dict block — a

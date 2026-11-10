@@ -415,7 +415,7 @@ function CoolingFailureBench(
           <KnobNumber label="MTT, declared [K]" value={mttDeclared} min={300}
             max={500} step={1} decimals={2} onChange={setMttDeclared} />
         )}
-        <KnobNumber label="T_D24, ASSUMED [K]" value={td24} min={300} max={600}
+        <KnobNumber label="T_D24, assumed [K]" value={td24} min={300} max={600}
           step={5} decimals={1} onChange={setTd24} />
       </Box>
       <Box mt={8}>
@@ -542,7 +542,8 @@ function CoolingFailureBench(
           useResizeHandler style={{ width: "100%", height: "100%" }} />
       </Box>
 
-      <Title order={6} mt={10}>The margin along the run: MTT(t) − T_cf(t)</Title>
+      <Title order={6} mt={10}>The margin along the run:{" "}
+        <Tex mode="inline" src={"\\mathrm{MTT}(t) - T_\\mathrm{cf}(t)"} /></Title>
       <Text size="xs" c="dimmed">
         MTT is {mttWord}; T_cf is the engine&apos;s where it has run that
         instant, the estimate otherwise (said in the column); the class uses
@@ -762,9 +763,10 @@ function DosingVesselBench(
           </Table.Tbody>
         </Table>
       </Box>
-      <Text size="xs" c="dimmed" mt={4}>
-        The estimate is T_p + (n_B in the reactor + n_B in the vessel)/n_B,total
-        × ΔT_ad × M_f/(M_reactor + M_vessel), from each design&apos;s
+      <Text size="xs" c="dimmed" mt={4}>The estimate is</Text>
+      <Tex mode="display" src={"T_\\mathrm{p} + \\frac{n_{\\mathrm{B,reactor}} + n_{\\mathrm{B,vessel}}}{n_{\\mathrm{B,total}}}\\,\\Delta T_\\mathrm{ad}\\,\\frac{M_\\mathrm{f}}{M_\\mathrm{reactor}+M_\\mathrm{vessel}}"} />
+      <Text size="xs" c="dimmed">
+        from each design&apos;s
         normal-operation run.  MTT is the bubble point at {BUBBLE_P_BAR} bar of
         the reactor contents with the vessel&apos;s added, before they react;
         T_D24 is the assumed {f1(td24)} K.  These are compound scenarios -- a

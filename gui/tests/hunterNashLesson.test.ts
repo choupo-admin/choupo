@@ -49,7 +49,7 @@ describe("the extraction lesson", () => {
   it("says tie lines are NOT parallel and shrink at the plait point", () => {
     //  The habit carried over from VLE is the mistake here.
     const s3 = HUNTER_NASH_STEPS.find((s) => s.n === 3)!;
-    expect(prose(s3.body)).toContain("SHRINK TO A POINT");
+    expect(prose(s3.body)).toContain("shrink to a point");
     expect(prose(s3.body)).toContain("plait point");
   });
 
@@ -59,8 +59,8 @@ describe("the extraction lesson", () => {
     //  would leave the alarm in place.
     const s4 = HUNTER_NASH_STEPS.find((s) => s.n === 4)!;
     expect(s4.formula).toContain(String.raw`\Delta = F - E_1 = R_N - S`);
-    expect(prose(s4.note!)).toContain("OUTSIDE THE TRIANGLE");
-    expect(prose(s4.note!)).toContain("DIFFERENCE of flows, not a mixture");
+    expect(prose(s4.note!)).toContain("outside the triangle");
+    expect(prose(s4.note!)).toContain("difference of flows, not a mixture");
   });
 
   it("closes by naming the alternation the reader already knows", () => {

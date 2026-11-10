@@ -42,7 +42,7 @@ export const VAN_HEERDEN_STEPS: readonly LessonStep[] = [
       + "the material balance, which fixes how far the reaction goes, and the "
       + "energy balance, which fixes the temperature.  For this witness's "
       + "rate law — positive orders on reactants only, so the rate can only "
-      + "fall as the extent grows — the material balance at a FIXED "
+      + "fall as the extent grows — the material balance at a fixed "
       + "temperature is monotone in the extent and has one root.  That is "
       + "a property of the law, not of every chemistry: an autocatalytic or "
       + "substrate-inhibited rate can have several roots at one "
@@ -52,10 +52,10 @@ export const VAN_HEERDEN_STEPS: readonly LessonStep[] = [
       + "temperature and announces every root it holds, with its stability "
       + "(CSTR.cpp:703–714), and the single-reaction path checks "
       + "the declared orders and refuses a law that breaks it "
-      + "(CSTR.cpp:316–327).  Eliminate it, and what is left is ONE equation in "
+      + "(CSTR.cpp:316–327).  Eliminate it, and what is left is one equation in "
       + "the temperature alone.  Choupo scans that equation and bisects every root it finds.  "
       + "The Van Heerden picture is the same equation split in two, by adding "
-      + "and subtracting the outlet's enthalpy at the FEED temperature: what "
+      + "and subtracting the outlet's enthalpy at the feed temperature: what "
       + "the chemistry released, drawn against what the reactor carried away.",
     formula: String.raw`\begin{aligned}
 \varphi(T) &= H_\mathrm{out}(T) - H_\mathrm{in} - Q_\mathrm{ext}(T) = 0\\
@@ -65,13 +65,13 @@ R(T) &= H(T, x(T)) - H(T_\mathrm{in}, x(T)) - Q_\mathrm{ext}(T) && \text{heat re
 \end{aligned}`,
     where: [
       { sym: "H",
-        means: "the stream ENTHALPY function: H(T, x) is what the mixture carries at "
+        means: "the stream enthalpy function: H(T, x) is what the mixture carries at "
         + "that temperature and that conversion, on the elements datum",
         unit: "W" },
-      { sym: "T", means: "The REACTOR temperature — one temperature for the "
+      { sym: "T", means: "The reactor temperature — one temperature for the "
         + "whole perfectly-mixed vessel, and also the outlet's.  In an "
         + "adiabatic or jacketed run it is not something you declare: it is "
-        + "the UNKNOWN the energy balance solves for, and the axis every "
+        + "the unknown the energy balance solves for, and the axis every "
         + "curve on this page is drawn against.", unit: "K" },
       { sym: "H_\\mathrm{out}",
         means: "The enthalpy flow leaving with the product, on "
@@ -81,44 +81,44 @@ R(T) &= H(T, x(T)) - H(T_\mathrm{in}, x(T)) - Q_\mathrm{ext}(T) && \text{heat re
         + "already inside this one number.", unit: "W" },
       { sym: "H_\\mathrm{in}",
         means: "The enthalpy flow entering with the feed, on the "
-        + "same datum, priced at the FEED temperature and composition.  It is "
+        + "same datum, priced at the feed temperature and composition.  It is "
         + "a constant along the whole scan — only H_out moves.", unit: "W" },
       { sym: "Q_\\mathrm{ext}",
         means: "The rate of heat crossing the boundary from "
-        + "OUTSIDE (the jacket's UA·(T_coolant − T)).  Its sign convention is "
-        + "heat INTO the reactor: positive when the jacket is hotter than the "
+        + "outside (the jacket's UA·(T_coolant − T)).  Its sign convention is "
+        + "heat into the reactor: positive when the jacket is hotter than the "
         + "contents.  It is identically zero in an adiabatic case, which is "
         + "why this page's witness has no coolant knob.", unit: "W" },
-      { sym: "\\varphi", means: "The energy-balance RESIDUAL: what the solver "
+      { sym: "\\varphi", means: "The energy-balance residual: what the solver "
         + "drives to zero.  A steady state is a temperature at which it "
         + "vanishes, so counting the states is counting this function's "
         + "roots.", unit: "W" },
-      { sym: "G", means: "The heat GENERATION curve: the enthalpy the "
-        + "chemistry releases, evaluated ALL AT THE FEED TEMPERATURE so that "
+      { sym: "G", means: "The heat generation curve: the enthalpy the "
+        + "chemistry releases, evaluated all at the feed temperature so that "
         + "it is pure chemistry with the sensible heat held out of it.  Note "
         + "this is not the G of the cooling-tower page (an air mass flow) — "
         + "same letter, different quantity.", unit: "W (plotted in kW)" },
-      { sym: "R", means: "The heat REMOVAL curve: sensible heat carried out "
+      { sym: "R", means: "The heat removal curve: sensible heat carried out "
         + "by the product plus whatever the exchanger takes.  Here R is a "
-        + "curve of watts against temperature — it is NOT the reflux ratio a "
+        + "curve of watts against temperature — it is not the reflux ratio a "
         + "distillation page calls R, not the gas constant, and not the "
         + "retention factor the adsorption page writes R_f.",
         unit: "W (plotted in kW)" },
-      { sym: "x", means: "The outlet COMPOSITION at temperature T.  It is "
+      { sym: "x", means: "The outlet composition at temperature T.  It is "
         + "written as a function of T because it is one: hotter means more "
         + "converted, which is exactly why G bends.", unit: "mole fractions" },
       { sym: "\\mathrm{W}",
         means: "The watt — the unit every quantity on the vertical "
-        + "axis carries.  Worth pausing on: these are RATES of energy, not "
+        + "axis carries.  Worth pausing on: these are rates of energy, not "
         + "amounts of it.  Both curves are power, so their crossing is a "
         + "steady state and not an energy total.", unit: "W = J/s" },
       { sym: "T_\\mathrm{in}",
-        means: "The FEED temperature, declared in the stream and "
+        means: "The feed temperature, declared in the stream and "
         + "constant across the whole diagram.  It is both what H_in is priced "
         + "at and the reference the generation curve is evaluated at.",
         unit: "K" },
     ],
-    note: "On the elements datum this split is an IDENTITY, not a second "
+    note: "On the elements datum this split is an identity, not a second "
       + "model: R − G reproduces phi exactly, point for point, which is what "
       + "makes the picture a view of the engine's own equation rather than a "
       + "parallel calculation drawn beside it.  Notice also that there is no "
@@ -129,18 +129,18 @@ R(T) &= H(T, x(T)) - H(T_\mathrm{in}, x(T)) - Q_\mathrm{ext}(T) && \text{heat re
   {
     n: 2,
     title: "Generation is a sigmoid, removal is a line",
-    body: "In this example, heat GENERATED rises steeply with temperature "
+    body: "In this example, heat generated rises steeply with temperature "
       + "because the rate constant does — the Arrhenius factor is "
       + "exponential — and then it stops rising, because the limiting "
       + "reactant runs out and there is no more chemical energy left to "
-      + "release.  That is the sigmoid: the shape of ONE irreversible "
+      + "release.  That is the sigmoid: the shape of one irreversible "
       + "exothermic reaction.  It is not the shape of every chemistry — a "
       + "reversible exotherm's generation falls again at high temperature "
       + "as its equilibrium recedes, and several reactions or an inhibited "
       + "rate give other curves, with other numbers of crossings.  Heat "
-      + "REMOVED is the sensible heat that leaves with the product, plus "
+      + "removed is the sensible heat that leaves with the product, plus "
       + "whatever an exchanger takes; both terms are proportional to a "
-      + "temperature difference, so removal is a STRAIGHT LINE in T.  And a "
+      + "temperature difference, so removal is a straight line in T.  And a "
       + "straight line can cut a sigmoid once, twice or three times.  That is "
       + "the entire content of the diagram.",
     formula: String.raw`\begin{aligned}
@@ -156,10 +156,10 @@ R(T) &= F c_p (T - T_\mathrm{in}) + \mathrm{UA}\,(T - T_\mathrm{coolant})
         + "only cross-checked, and a disagreement is warned aloud.",
         unit: "J per mole of extent" },
       { sym: "\\xi",
-        means: "The reaction EXTENT — moles of reaction turned over "
-        + "per second, an ABSOLUTE amount, which is why every species' flow "
-        + "follows from it as F_i,out = F_i,in + νᵢ·ξ.  It is NOT conversion: "
-        + "conversion is a dimensionless fraction of ONE nominated reactant, "
+        means: "The reaction extent — moles of reaction turned over "
+        + "per second, an absolute amount, which is why every species' flow "
+        + "follows from it as F_i,out = F_i,in + νᵢ·ξ.  It is not conversion: "
+        + "conversion is a dimensionless fraction of one nominated reactant, "
         + "so one extent gives you every species at once while a conversion "
         + "is always about a single named one.", unit: "mol/s" },
       { sym: "\\xi_j", means: "The extent of reaction j when several run at "
@@ -167,27 +167,27 @@ R(T) &= F c_p (T - T_\mathrm{in}) + \mathrm{UA}\,(T - T_\mathrm{coolant})
         + "the sum over all of them.", unit: "mol/s" },
       { sym: "F", means: "The total molar flow through the reactor.  Careful: "
         + "in the textbook removal line this is one number, whereas the "
-        + "engine prices H_out on the OUTLET total, which equals the feed's "
+        + "engine prices H_out on the outlet total, which equals the feed's "
         + "only when the stoichiometry conserves moles.", unit: "mol/s" },
       { sym: "c_p", means: "Molar heat capacity — the constant that makes the "
-        + "textbook removal line STRAIGHT.  THE ENGINE NEVER USES IT HERE: it "
+        + "textbook removal line straight.  The engine never uses it here: it "
         + "computes the exact enthalpy difference instead, which is precisely "
         + "why the drawn removal curve bends where the textbook line does "
         + "not.", unit: "J/(mol·K)" },
       { sym: "\\mathrm{UA}",
         means: "The overall heat-transfer coefficient times the "
         + "exchange area — one lumped number, the jacket's ability to move "
-        + "heat per kelvin of difference.  It TILTS the removal line: more "
+        + "heat per kelvin of difference.  It tilts the removal line: more "
         + "cooling capacity, steeper line, and stability is a statement about "
         + "slopes.", unit: "W/K" },
       { sym: "T_\\mathrm{coolant}",
         means: "The temperature of the medium in the "
         + "jacket, read only when a heat-exchange mode is declared.  It "
-        + "enters the INTERCEPT — it slides the line without tilting it.  "
+        + "enters the intercept — it slides the line without tilting it.  "
         + "This page's witness is adiabatic and declares none.", unit: "K" },
     ],
     note: "The removal line is straight in the textbook idealisation of a "
-      + "CONSTANT heat capacity.  What the engine publishes is the exact "
+      + "constant heat capacity.  What the engine publishes is the exact "
       + "enthalpy difference, so the drawn curve bends a little: the heat "
       + "capacity being integrated depends on temperature, and on an outlet "
       + "composition that itself changes along the scan.  Straight enough to "
@@ -199,13 +199,13 @@ R(T) &= F c_p (T - T_\mathrm{in}) + \mathrm{UA}\,(T - T_\mathrm{coolant})
     title: "Which crossings the reactor can hold: compare the slopes",
     body: "Every crossing is a steady state.  The equations are satisfied "
       + "there and a steady-state solver will sit on it happily.  Whether the "
-      + "reactor can HOLD it is a different question, and the diagram answers "
+      + "reactor can hold it is a different question, and the diagram answers "
       + "it by comparing slopes.  Nudge the temperature up a little at a "
       + "crossing: if generation grows faster than removal, the surplus heat "
       + "pushes the temperature further up and the reactor leaves; if removal "
       + "grows faster, the extra removal pulls it back.  So a steady state "
-      + "CANNOT be stable unless the REMOVAL LINE IS STEEPER than the "
-      + "generation curve where they meet.  That is a NECESSARY condition, "
+      + "cannot be stable unless the removal line is steeper than the "
+      + "generation curve where they meet.  That is a necessary condition, "
       + "not a sufficient one: the limits below say why passing it proves "
       + "nothing on its own.",
     formula: String.raw`\begin{aligned}
@@ -221,9 +221,9 @@ R(T) &= F c_p (T - T_\mathrm{in}) + \mathrm{UA}\,(T - T_\mathrm{coolant})
         means: "The same generation curve step 1 called G.",
         unit: "W" },
       { sym: "\\mathrm{d}R/\\mathrm{d}T",
-        means: "The SLOPE of the removal curve at the crossing — "
+        means: "The slope of the removal curve at the crossing — "
         + "how much extra heat you get rid of for one more kelvin.  The "
-        + "STATIC half of stability is a contest between this and dG/dT: if a "
+        + "static half of stability is a contest between this and dG/dT: if a "
         + "small warm excursion removes more than it generates, the "
         + "temperature is pushed back — though the composition can still "
         + "move the other way, which is the half this test does not see.",
@@ -233,12 +233,12 @@ R(T) &= F c_p (T - T_\mathrm{in}) + \mathrm{UA}\,(T - T_\mathrm{coolant})
         + "extra heat one more kelvin of chemistry releases.", unit: "W/K" },
     ],
     note: "With a sigmoid and a line, where there are three crossings the "
-      + "MIDDLE one fails this test — the generation curve is cutting upward "
+      + "middle one fails this test — the generation curve is cutting upward "
       + "through the line there — which is why the reactor left to itself "
       + "cannot sit there.  That follows from the two shapes, not from the "
       + "root being in the middle: with other curves it is the slopes at "
       + "each crossing that decide, never its position in the list.  Feedback "
-      + "control CAN hold it (a temperature loop on the coolant does exactly "
+      + "control can hold it (a temperature loop on the coolant does exactly "
       + "that), but the open-loop plant cannot. "
       + " \"The solver converged\" and \"the plant can run there\" are "
       + "different claims, and this is the cleanest place in the corpus to see "
@@ -249,12 +249,12 @@ R(T) &= F c_p (T - T_\mathrm{in}) + \mathrm{UA}\,(T - T_\mathrm{coolant})
     title: "Ignition, extinction, and why they are not mirror images",
     body: "Now move something.  As a parameter changes, two of the crossings "
       + "slide toward each other, touch, and disappear — and at the moment "
-      + "they touch the two curves are TANGENT, which is where a steady state "
+      + "they touch the two curves are tangent, which is where a steady state "
       + "stops existing rather than merely becoming unstable.  If the reactor "
       + "was sitting on one of the two that vanished, it now has nowhere to "
       + "be: the only steady state left is the far crossing, and the "
-      + "classical account has it move there — IGNITION when the cold pair "
-      + "disappears, EXTINCTION when the hot pair does.  Whether it gets "
+      + "classical account has it move there — ignition when the cold pair "
+      + "disappears, extinction when the hot pair does.  Whether it gets "
       + "there smoothly, overshoots or settles into an oscillation is a "
       + "dynamic question this static picture does not answer (the first "
       + "limit below).  How far it "
@@ -264,9 +264,9 @@ R(T) &= F c_p (T - T_\mathrm{in}) + \mathrm{UA}\,(T - T_\mathrm{coolant})
 \text{at ignition / extinction:}\quad & G(T) = R(T) \quad \text{and} \quad \frac{\mathrm{d}G}{\mathrm{d}T} = \frac{\mathrm{d}R}{\mathrm{d}T}\\
 & \text{(the curves are tangent: the two roots merge)}
 \end{aligned}`,
-    note: "THE CONSEQUENCE IS HYSTERESIS, and it is why a runaway is not the "
+    note: "The consequence is hysteresis, and it is why a runaway is not the "
       + "mirror image of a shutdown.  The cold pair and the hot pair disappear "
-      + "at DIFFERENT parameter values, so the setting that ignites the "
+      + "at different parameter values, so the setting that ignites the "
       + "reactor is not the setting that puts it out: back the parameter off "
       + "to where it was and the reactor stays hot.  Getting out of a runaway "
       + "means going well past the point that caused it, not undoing it.",
@@ -276,9 +276,9 @@ R(T) &= F c_p (T - T_\mathrm{in}) + \mathrm{UA}\,(T - T_\mathrm{coolant})
     title: "What actually moves the removal line",
     body: "The generation curve belongs to the chemistry; the removal line is "
       + "the part an operator holds.  Write it as a slope and an intercept and "
-      + "the handles are visible.  Coolant temperature enters the INTERCEPT "
+      + "the handles are visible.  Coolant temperature enters the intercept "
       + "only — it slides the line sideways without tilting it.  UA and the "
-      + "total flow enter the SLOPE: more area, a better coefficient or a "
+      + "total flow enter the slope: more area, a better coefficient or a "
       + "higher throughput all tilt the line steeper, and a steeper line cuts "
       + "the sigmoid fewer times, which is why a well-cooled reactor can have "
       + "one steady state where the adiabatic version of the same chemistry "
@@ -288,13 +288,13 @@ R(T) &= (F c_p + \mathrm{UA})\, T - (F c_p T_\mathrm{in} + \mathrm{UA}\, T_\math
 \text{slope} &= F c_p + \mathrm{UA} && \text{flow and cooling tilt it}\\
 \text{intercept} &= -(F c_p T_\mathrm{in} + \mathrm{UA}\, T_\mathrm{coolant}) && \text{feed and coolant slide it}
 \end{aligned}`,
-    note: "This page's witness is ADIABATIC: UA is zero and there is no "
+    note: "This page's witness is adiabatic: UA is zero and there is no "
       + "coolant to move, so the handles here are the feed temperature, the "
       + "feed flows and the reactor volume.  It is propylene-oxide hydration "
       + "with the rate law Furusawa, Nishimura and Miyauchi measured in 1969 "
       + "(tutorials/steady/reactors/cstr08_furusawa_bistable), and at their "
       + "first condition the engine finds three crossings: 292.2 K, 303.0 K "
-      + "and 336.5 K.  Whether a reaction CAN show three is decided before "
+      + "and 336.5 K.  Whether a reaction can show three is decided before "
       + "any curve is drawn, by the adiabatic rise measured in units of the "
       + "Arrhenius steepness, B = Ea ΔT_ad / (R T_in²): for one first-order "
       + "reaction three crossings need B above 4γ/(γ − 4), with γ = Ea / "
@@ -306,9 +306,9 @@ R(T) &= (F c_p + \mathrm{UA})\, T - (F c_p T_\mathrm{in} + \mathrm{UA}\, T_\math
       + "tutorials/steady/reactors/cstr06_jacketed, which declares "
       + "thermalMode heatExchange with UA and T_coolant, shows you a removal "
       + "line with a jacket in it (run it and switch the source to "
-      + "\"Current run\"), and ONE steady state, for that reason.  "
+      + "\"Current run\"), and one steady state, for that reason.  "
       + "And watch the feed-flow knobs: raising a feed steepens the removal "
-      + "line AND lifts the generation curve's plateau, so what happens to the "
+      + "line and lifts the generation curve's plateau, so what happens to the "
       + "number of crossings cannot be read off either curve alone.",
   },
 ];
@@ -316,7 +316,7 @@ R(T) &= (F c_p + \mathrm{UA})\, T - (F c_p T_\mathrm{in} + \mathrm{UA}\, T_\math
 export const VAN_HEERDEN_LIMITS: readonly { id: string; title: string; body: string }[] = [
   {
     id: "steady-state-only",
-    title: "It says which states EXIST, not how the reactor reaches one.",
+    title: "It says which states exist, not how the reactor reaches one.",
     body: "Nothing on this page is integrated in time. There is no thermal "
       + "inertia, no time constant, no ignition delay, no overshoot past the "
       + "hot crossing, and no answer to how long any of it takes — a vessel "
@@ -328,7 +328,7 @@ export const VAN_HEERDEN_LIMITS: readonly { id: string; title: string; body: str
   {
     id: "static-criterion",
     title: "The slope test is necessary, not sufficient.",
-    body: "dR/dT > dG/dT rules a steady state OUT when it fails. Passing it "
+    body: "dR/dT > dG/dT rules a steady state out when it fails. Passing it "
       + "does not prove the reactor is stable there: that verdict needs the "
       + "full dynamic equations, material and energy together, and a state "
       + "that passes the slope comparison can still be dynamically unstable "
@@ -337,7 +337,7 @@ export const VAN_HEERDEN_LIMITS: readonly { id: string; title: string; body: str
   },
   {
     id: "ordering-not-analysis",
-    title: "The tool's unstable flag is an ORDERING, not a measurement.",
+    title: "The tool's unstable flag is an ordering, not a measurement.",
     body: "With exactly three roots the tool marks the middle one, which is "
       + "arithmetic on the engine's own list of root temperatures — it "
       + "evaluates dG/dT and dR/dT nowhere. With any other root count it makes "
@@ -346,7 +346,7 @@ export const VAN_HEERDEN_LIMITS: readonly { id: string; title: string; body: str
   },
   {
     id: "lumped-cstr",
-    title: "ONE temperature and ONE composition, perfectly mixed.",
+    title: "One temperature and one composition, perfectly mixed.",
     body: "The unit is a lumped CSTR: no spatial gradients, no hot spot, no "
       + "mixing time, no wall or jacket dynamics. UA, in a case that declares "
       + "one, is a single overall conductance with no film, no fouling and no "
@@ -356,7 +356,7 @@ export const VAN_HEERDEN_LIMITS: readonly { id: string; title: string; body: str
   },
   {
     id: "one-reaction-here",
-    title: "The witness carries a SINGLE reaction, and its heat is not the measured one.",
+    title: "The witness carries a single reaction, and its heat is not the measured one.",
     body: "The construction generalises — G sums over the extents when there "
       + "are several, and the engine scans the same way — but this page's "
       + "witness has one reaction, propylene-oxide hydration, with the rate "

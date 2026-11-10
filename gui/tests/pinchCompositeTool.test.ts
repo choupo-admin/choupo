@@ -363,7 +363,7 @@ describe("populationScope words the engine's population, never computes it", () 
   it("a partial population says NOT the plant's, with the excluded kW", () => {
     const s = populationScope({ segments: 2, duties_excluded: 1, Q_excluded_kW: 1.8795 })!;
     expect(s.partial).toBe(true);
-    expect(s.label).toContain("NOT of the plant");
+    expect(s.label).toContain("not of the plant");
     expect(s.label).toContain("1 heat duty (1.9 kW)");
     expect(s.label).toContain("reports/pinch/population.csv");
   });

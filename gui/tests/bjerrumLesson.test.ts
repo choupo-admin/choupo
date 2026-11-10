@@ -45,7 +45,7 @@ describe("the steps", () => {
   it("says the pH is a choice here, names the cost, and does not overstate", () => {
     const s = BJERRUM_STEPS[1];
     const body = prose(s?.body ?? "");
-    expect(prose(s?.title ?? "")).toMatch(/NOT a knob here/i);
+    expect(prose(s?.title ?? "")).toMatch(/not a knob here/i);
     expect(body).toMatch(/pH 7\.8;|legal declaration/i);   // the mode exists
     expect(body).toMatch(/electroneutrality/i);            // and what it costs
     expect(body).toMatch(/pH solve;/);                     // what this case picked
@@ -63,7 +63,7 @@ describe("the steps", () => {
   it("declares the stoichiometric basis and why the analysis check is wrong here", () => {
     const n = prose(BJERRUM_STEPS[2]?.note ?? "");
     expect(n).toContain("totalsBasis stoichiometric");
-    expect(n).toMatch(/imbalance IS the titrant/i);
+    expect(n).toMatch(/imbalance is the titrant/i);
   });
 
   it("attributes the closure shortfall to the ion pair, not to round-off", () => {
@@ -79,13 +79,13 @@ describe("the steps", () => {
 
   it("separates the two ways the diagram moves", () => {
     const s = BJERRUM_STEPS[5];
-    expect(prose(s?.body ?? "")).toMatch(/pK's THEMSELVES move/);
+    expect(prose(s?.body ?? "")).toMatch(/pK's themselves move/);
     expect(prose(s?.body ?? "")).toMatch(/do not move at all/);
   });
 
   it("says plainly that the background knob is not built", () => {
     const n = prose(BJERRUM_STEPS[5]?.note ?? "");
-    expect(n).toMatch(/NOT built/);
+    expect(n).toMatch(/not built/);
     //  C259: the note used to quote a first crossover of 6.177 beside a
     //  carbonate gamma of 0.289.  Under Davies, at one ionic strength the
     //  univalent gamma is the fourth root of the divalent one, so 0.289
@@ -115,7 +115,7 @@ describe("the limits", () => {
 
   it("refuses the word validation for what is only self-consistency", () => {
     const l = BJERRUM_LIMITS.find((x) => x.id === "not-validated");
-    expect(prose(l?.body ?? "")).toMatch(/INTERNAL consistency check/);
+    expect(prose(l?.body ?? "")).toMatch(/internal consistency check/);
     expect(prose(l?.body ?? "")).toMatch(/not agreement with an experiment/);
   });
 
@@ -252,10 +252,13 @@ describe("the registry", () => {
     expect(tool).not.toContain("MethodSetupRail");
   });
 
-  it("puts the definitions before the drawing and the consequences after", () => {
+  it("puts step 1 before the drawing and the derivations after it", () => {
     const tool = src("BjerrumTool.tsx");
     const plot = tool.indexOf("<BjerrumPlot");
-    expect(plot).toBeGreaterThan(tool.indexOf("{step(3)}"));
+    //  DEV.md 4c C277: the figure comes second -- steps 2-3 follow it.
+    expect(plot).toBeGreaterThan(tool.indexOf("{step(1)}"));
+    expect(plot).toBeLessThan(tool.indexOf("{step(2)}"));
+    expect(plot).toBeLessThan(tool.indexOf("{step(3)}"));
     expect(plot).toBeLessThan(tool.indexOf("{step(4)}"));
   });
 });

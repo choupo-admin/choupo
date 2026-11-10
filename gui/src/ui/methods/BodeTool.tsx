@@ -54,7 +54,7 @@ import {
   Alert, Badge, Box, Group, Loader, SegmentedControl, Stack, Text, Title,
 } from "@mantine/core";
 
-import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences, Tex, TexText } from "./lessonStep.js";
 import { BODE_LIMITS, BODE_STEPS } from "./bodeLesson.js";
 import { KnobSlider, PanelNote, type PanelKnob } from "./knobPanel.js";
 import { useEngineSeries } from "../../case/engineSeries.js";
@@ -180,7 +180,7 @@ const TAU_KNOB: PanelKnob = {
   unit: "s",
   why: "Scales the witness tank's authored holdup, so the residence time N/F "
     + "moves and every flow stays where it was.  The measured points slide "
-    + "along the frequency axis; the curve's SHAPE cannot change, because a "
+    + "along the frequency axis; the curve's shape cannot change, because a "
     + "first-order lag depends on ω and τ only through their product.",
 };
 
@@ -459,9 +459,6 @@ export function BodeTool(): JSX.Element {
         </Box>
 
         {step(1)}
-        {step(2)}
-        {step(3)}
-        {step(4)}
 
         {/* -------------------- PLANE A: MEASURED -------------------- */}
         <Box style={{ borderLeft: `3px solid ${MEASURED}`, paddingLeft: 12 }}>
@@ -469,7 +466,7 @@ export function BodeTool(): JSX.Element {
           <Text size="sm" mt={4}>
             Choupo has no transfer function anywhere in it. What it has is a
             tank and a time integrator — so a frequency response here is an
-            EXPERIMENT, and this is it, run in your browser. Each point below
+            experiment, and this is it, run in your browser. Each point below
             is one complete run of{" "}
             <Text span ff="monospace" size="xs">
               tutorials/ctrl/{BODE_WITNESS}
@@ -477,7 +474,7 @@ export function BodeTool(): JSX.Element {
             with the drive frequency changed: the tracer feed swings
             sinusoidally, the engine integrates until the start-up transient
             has decayed, and then least-squares fits{" "}
-            <Text span ff="monospace" size="xs">a + b·sin(ω·t) + c·cos(ω·t)</Text>{" "}
+            <Tex mode="inline" src={String.raw`a + b\sin(\omega t) + c\cos(\omega t)`} />{" "}
             to the outlet. The amplitude is{" "}
             <Text span ff="monospace" size="xs">hypot(b, c)</Text> and the
             phase is <Text span ff="monospace" size="xs">atan2(c, b)</Text>{" "}
@@ -485,7 +482,7 @@ export function BodeTool(): JSX.Element {
           </Text>
           <Text size="sm" mt={6}>
             The line through them is the first-order closed form derived in
-            step 3, at the same τ. It is drawn by this page, not by the
+            step 3 (below the figure), at the same τ. It is drawn by this page, not by the
             engine — and the points are how you know it is right.
           </Text>
         </Box>
@@ -549,7 +546,7 @@ export function BodeTool(): JSX.Element {
         <Box>
           <OriginMark of="page" note="the comparison of the engine's points with the closed form, computed on this page" />
           <Title order={5}>What the comparison says, as numbers</Title>
-          {/*  NO RUNS IS NOT PERFECT AGREEMENT.  With nothing measured the
+          {/*  No runs is not perfect agreement.  With nothing measured the
                three worst-case figures are all zero, and printing them would
                report a flawless comparison over an empty set — the exact
                shape of silent falsehood this page exists to avoid.  */}
@@ -576,13 +573,13 @@ export function BodeTool(): JSX.Element {
           )}
           <Text size="sm" mt={6}>
             The phase gap is not noise and it is not the construction being
-            wrong: it is the MEASUREMENT&apos;s own lag. The engine holds the
+            wrong: it is the measurement&apos;s own lag. The engine holds the
             sine drive constant across each step of length Δt (a zero-order
             hold), and a held sinusoid trails the continuous one by half a
-            step, so the fitted phase carries exactly −ω·Δt/2. This
+            step, so the fitted phase carries exactly <Tex mode="inline" src={String.raw`-\omega\,\Delta t/2`} />. This
             sweep sets Δt to the drive period over {STEPS_PER_PERIOD}, so that
             bias is the same at every point:{" "}
-            −π/{STEPS_PER_PERIOD} = {fmtExp(SAMPLING_PHASE_BIAS_RAD, 3)} rad ={" "}
+            <Tex mode="inline" src={`-\\pi/${STEPS_PER_PERIOD}`} /> = {fmtExp(SAMPLING_PHASE_BIAS_RAD, 3)} rad ={" "}
             {fmt(Math.abs(toDeg(SAMPLING_PHASE_BIAS_RAD)), 3)}°. It is shown,
             not removed.
           </Text>
@@ -594,6 +591,12 @@ export function BodeTool(): JSX.Element {
             {STEPS_PER_PERIOD} accepted steps per period.
           </Text>
         </Box>
+
+        {/* The measured figure comes second (DEV.md 4c C277); steps 2-4 then
+            name what the sweep just showed. */}
+        {step(2)}
+        {step(3)}
+        {step(4)}
 
         {/* -------------------- PLANE B: CONSTRUCTED -------------------- */}
         {step(5)}
@@ -695,19 +698,19 @@ export function BodeTool(): JSX.Element {
           </Group>
           <Text size="sm" mt={8}>
             {beyond
-              ? "The open loop is ALREADY beyond −180° at the lowest "
-                + "frequency drawn, so the simple margin reading does not "
-                + "apply and the margins above read nothing.  With the "
-                + "integrator and integral action the low-frequency phase is "
-                + "−180° + ω(τ_I − τ − θ), below −180° whenever τ_I is at or "
-                + "below τ + θ"
+              ? <TexText text={String.raw`The open loop is already beyond \(-180^\circ\) at the lowest `
+                + String.raw`frequency drawn, so the simple margin reading does not `
+                + String.raw`apply and the margins above read nothing.  With the `
+                + String.raw`integrator and integral action the low-frequency phase is `
+                + String.raw`\(-180^\circ + \omega(\tau_I - \tau - \theta)\), below \(-180^\circ\) whenever \(\tau_I\) is at or `
+                + String.raw`below \(\tau + \theta\)`
                 + (mode === "PI"
                   ? "; under PI it then never climbs back, and the loop is "
-                    + "unstable at EVERY gain.  "
+                    + "unstable at every gain.  "
                   : ".  ")
-                + "Raise τ_I above τ + θ before reading a margin — and note "
+                + String.raw`Raise \(\tau_I\) above \(\tau + \theta\) before reading a margin — and note `
                 + "that the integrator's pole at the origin already breaks "
-                + "step 8's open-loop-stable assumption."
+                + "step 8's open-loop-stable assumption."} />
               : !m.gain.found && !m.phase.found
               ? "Neither curve crosses its line inside the window drawn, so "
                 + "neither margin exists to be read.  That is the honest "

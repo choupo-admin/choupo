@@ -74,7 +74,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
-import { lessonStepper } from "./lessonStep.js";
+import { lessonStepper, Tex } from "./lessonStep.js";
 import {
   Alert, Badge, Box, Group, Loader, NumberInput, SegmentedControl, Slider,
   Stack, Text, Title, Tooltip,
@@ -120,7 +120,7 @@ export const THIELE_STEPS: readonly {
       + "bed can come out too small — at the conditions of this page's "
       + "pellet, by about a factor of five — and "
       + "nothing in the arithmetic looks wrong.  What went wrong is "
-      + "geographical: the reaction happens on pore walls INSIDE the pellet, "
+      + "geographical: the reaction happens on pore walls inside the pellet, "
       + "and the reagent has to get there.",
   },
   {
@@ -132,10 +132,10 @@ export const THIELE_STEPS: readonly {
       + "centre is from the surface.  Neither speed means anything alone: "
       + "double both and the pellet behaves identically.  The Thiele modulus "
       + "is that ratio, made dimensionless.",
-    formula: "φ_R = R · √(k / D_eff)      φ_Λ = (V/S) · √(k / D_eff)",
-    note: "TWO LENGTHS differing by a factor of THREE — and nine in anything "
+    formula: "\\phi_R = R\\,\\sqrt{\\frac{k}{D_\\mathrm{eff}}} \\qquad \\phi_\\Lambda = \\frac{V}{S}\\,\\sqrt{\\frac{k}{D_\\mathrm{eff}}}",
+    note: "Two lengths differing by a factor of three — and nine in anything "
       + "built on φ².  φ_R uses the sphere's radius (the slab's "
-      + "HALF-thickness) and is what the radial solution is written in; φ_Λ "
+      + "half-thickness) and is what the radial solution is written in; φ_Λ "
       + "uses Λ = V/S, which for a sphere is R/3, and is what makes "
       + "different shapes comparable.  This page shows both, always "
       + "subscripted, because a threshold quoted for one and applied to the "
@@ -143,7 +143,7 @@ export const THIELE_STEPS: readonly {
       + "the whole pellet "
       + "sees surface concentration.  φ large: reaction wins, the reagent is "
       + "eaten near the surface and the interior is starved.  Note that it "
-      + "is STARVED, never dead: for a first-order rate with c_s > 0 the "
+      + "is starved, never dead: for a first-order rate with c_s > 0 the "
       + "solution is cosh, I₀ or sinh — strictly positive everywhere, so "
       + "the centre can be a thousandth of the surface value and is still "
       + "reacting.  A true dead core, c = 0 over a finite region, needs an "
@@ -153,34 +153,34 @@ export const THIELE_STEPS: readonly {
     n: 3,
     title: "η is the answer to “how much of my pellet is working?”",
     body: "The effectiveness factor is the honest bookkeeping: the rate the "
-      + "pellet ACTUALLY delivers, divided by the rate it would deliver if "
+      + "pellet actually delivers, divided by the rate it would deliver if "
       + "every pore saw surface concentration.  It is what your flask "
       + "constant must be multiplied by before it describes a pellet at "
-      + "THESE surface conditions.  Along a real bed the surface "
+      + "these surface conditions.  Along a real bed the surface "
       + "concentration and temperature change, and for any law but an "
       + "isothermal first-order one η changes with them — so one pellet's "
       + "η at one state is an estimate for the bed, not a fixed multiplier "
       + "of its volume.  "
       + "η = 1 means no internal gradient at all.  η = 0.19 means the "
       + "pellet delivers 19 % of the rate it would deliver without one — "
-      + "which is NOT the same as 81 % of the catalyst sitting idle.  η is "
+      + "which is not the same as 81 % of the catalyst sitting idle.  η is "
       + "a ratio of rates, not a fraction of mass: at first order every "
       + "gram is reacting, most of it just at a much lower concentration.",
-    formula: "η = (actual rate) / (rate at surface conditions)",
+    formula: "\\eta = \\frac{\\text{actual rate}}{\\text{rate at surface conditions}}",
   },
   {
     n: 4,
     title: "Two regimes, and they demand opposite things of you",
-    body: "At small φ you are KINETICALLY controlled: η ≈ 1, and the way "
+    body: "At small φ you are kinetically controlled: η ≈ 1, and the way "
       + "to more conversion is more catalyst activity or more temperature.  "
-      + "At large φ you are DIFFUSION controlled: η → 3/φ_R for a sphere — "
-      + "and, note, η → 1/φ_Λ for EVERY shape, which is exactly why Λ makes "
+      + "At large φ you are diffusion controlled: η → 3/φ_R for a sphere — "
+      + "and, note, η → 1/φ_Λ for every shape, which is exactly why Λ makes "
       + "them collapse.  So η·k → √(k·D_eff)/Λ: the observed rate depends on "
-      + "the SQUARE ROOT of k.  Doubling your catalyst's activity buys you "
+      + "the square root of k.  Doubling your catalyst's activity buys you "
       + "41 %, not 100 %.  Halving the pellet size buys you the full factor "
       + "of two.  Knowing which regime you are in tells you which lever to "
       + "pull, and pulling the wrong one is expensive.",
-    note: "The apparent activation energy falls towards HALF the intrinsic "
+    note: "The apparent activation energy falls towards half the intrinsic "
       + "one for the same reason — exactly half only if the diffusivity's own "
       + "temperature dependence is negligible, which here it is not (D_eff "
       + "comes from Fuller and rises with T).  Still the classic diagnostic: "
@@ -192,17 +192,17 @@ export const THIELE_STEPS: readonly {
     title: "You cannot measure φ. You can measure η·φ².",
     body: "To compute φ you need k and D_eff — the two things you were "
       + "trying to establish.  This is circular, and the way out is the "
-      + "WEISZ-PRATER criterion, which replaces the intrinsic k by what you "
+      + "Weisz-Prater criterion, which replaces the intrinsic k by what you "
       + "can actually observe: the rate the pellet is delivering right now, "
       + "its size, and the surface concentration.  It still needs D_eff — "
-      + "an ESTIMATE, from the pellet's porosity and tortuosity, not from "
+      + "an estimate, from the pellet's porosity and tortuosity, not from "
       + "the reaction — so it is a judgement under that estimate's "
       + "uncertainty, not a measurement.  Well below 1 and you are "
       + "kinetically controlled; well above 1 and you are not.  It answers "
       + "the design question without ever asking for the intrinsic rate.",
-    formula: "M_W = η·φ_Λ²  =  (r_obs · Λ²) / (D_eff · c_s),   Λ = V/S",
-    note: "READ THE SUBSCRIPT.  This is the GENERALISED Weisz modulus, built "
-      + "on Λ = V/S — for a sphere Λ = R/3, so it is NINE TIMES SMALLER than "
+    formula: "M_W = \\eta\\,\\phi_\\Lambda^2 = \\frac{r_\\mathrm{obs}\\,\\Lambda^2}{D_\\mathrm{eff}\\,c_s}, \\qquad \\Lambda = \\frac{V}{S}",
+    note: "Read the subscript.  This is the generalised Weisz modulus, built "
+      + "on Λ = V/S — for a sphere Λ = R/3, so it is nine times smaller than "
       + "the conventional Weisz-Prater number C_WP = r_obs·R²/(D_eff·c_s) "
       + "built on the radius.  Both conventions are in the literature and "
       + "neither is wrong; quoting a threshold from one while computing the "
@@ -771,16 +771,22 @@ export function ThielePelletTool(): JSX.Element {
    *  beside the provenance at the foot of the lesson rather than in front of
    *  the paragraph that introduces the pellet.  */
   const advisoryAlert = advisories.length === 0 ? null : (
-    <Alert color="yellow" variant="light"
-      title={`The engine qualifies its own answer: ${advisories.length} `
-        + `advisor${advisories.length === 1 ? "y" : "ies"}`}>
+    <Box component="details" data-engine-advisories={advisories.length}>
+      {/* Folded: nine lines of the engine's own log closing a lesson read as
+          an error dump (C276).  They stay one click away, in the engine's
+          words, because they qualify numbers this page draws. */}
+      <Box component="summary" style={{ cursor: "pointer",
+        fontSize: "var(--mantine-font-size-sm)" }}>
+        The engine qualifies its own answer: {advisories.length}{" "}
+        advisor{advisories.length === 1 ? "y" : "ies"} (read them)
+      </Box>
       {advisories.map((a) => (
-        <Text key={a.message} size="xs" ff="monospace" mt={2}
-          style={{ whiteSpace: "pre-wrap" }}>
-          [{a.severity}] {a.locus}: {a.message}
+        <Text key={a.message} size="xs" mt={4}
+          style={{ whiteSpace: "normal", overflowWrap: "anywhere" }}>
+          <Text span fw={600}>{a.locus}:</Text> {a.message}
         </Text>
       ))}
-    </Alert>);
+    </Box>);
 
   const knobRail = (
     <>
@@ -833,11 +839,13 @@ export function ThielePelletTool(): JSX.Element {
         {alerts}
 
         {step(1)}
-        {step(2)}
-        {step(3)}
 
+        {/* THE FIGURE COMES SECOND, not fifth (DEV.md 4c C276): a student who
+            opens this page should have the pellet under their hand before
+            the algebra, and the two steps that follow then explain what they
+            have just watched. */}
         <Box>
-          <Title order={5}>Now watch it happen</Title>
+          <Title order={5}>Watch it happen first</Title>
           <Text size="sm" mt={4}>
             Three shapes, the same length, the same chemistry, solved in your
             browser.  <strong>Drag the rate constant</strong> and watch the
@@ -889,10 +897,10 @@ export function ThielePelletTool(): JSX.Element {
                   ? runs[0]!.diag!.nodes : "—"} points
               </Badge>
               <Tooltip withArrow multiline w={430}
-                label={"The GENERALISED Weisz modulus M_W = eta*phi^2 with phi "
+                label={"The generalised Weisz modulus M_W = eta*phi^2 with phi "
                   + "built on Lambda = V/S, exactly as the engine publishes "
                   + "it.  For a sphere Lambda = R/3, so the conventional "
-                  + "Weisz-Prater number on the radius is NINE TIMES this "
+                  + "Weisz-Prater number on the radius is nine times this "
                   + "value.  Quote the convention with the number."}>
                 <Badge variant="light" color="orange" tt="none"
                   styles={{ root: { cursor: "help" } }}>
@@ -948,17 +956,20 @@ export function ThielePelletTool(): JSX.Element {
           </Box>
         </Box>
 
+        {step(2)}
+        {step(3)}
+
         <Alert variant="light"
           title="Why the three shapes are not three problems">
           <Text size="sm">
             A slab, a cylinder and a sphere give three different η at the same
             φ — you can see the gap on the chart.  But switch to the{" "}
             <strong>η(φ) family</strong> view and they very nearly collapse
-            onto ONE curve.  The trick is the characteristic length: measure φ
+            onto one curve.  The trick is the characteristic length: measure φ
             on Λ = V/S, the volume the reaction happens in divided by the area
             the reagent enters through, and the geometry mostly cancels.  That
             is why a designer can carry one curve instead of a catalogue of
-            shapes — and why comparing shapes at the same RADIUS, as the strip
+            shapes — and why comparing shapes at the same radius, as the strip
             above does, is a deliberate choice and not a law.
           </Text>
         </Alert>
@@ -979,11 +990,11 @@ export function ThielePelletTool(): JSX.Element {
             </strong>.  Same pellet, same physics, two conventions, and a
             threshold borrowed across them is off by an order of magnitude.  Turn the rate
             constant up and watch it cross 1 while the pellet on screen grows
-            its starved interior.  Treat 1 as a SCREENING value, not a
+            its starved interior.  Treat 1 as a screening value, not a
             phase boundary: nothing happens abruptly there, the diffusion
             limitation grows smoothly, and conventional practice often uses a
             tighter figure (of order 0.3) before calling internal diffusion
-            negligible — and that figure, too, belongs to ONE of the two
+            negligible — and that figure, too, belongs to one of the two
             conventions above, which whoever quotes it must name before it is
             compared with either number.  What the crossing marks is that your flask constant
             has stopped describing your bed by a margin you can no longer
@@ -1007,10 +1018,8 @@ export function ThielePelletTool(): JSX.Element {
             </Text>
             <Box my={8} px="sm" py={6}
               style={{ borderLeft: `3px solid ${GRID}` }}>
-              <Text size="sm" ff="monospace">
-                T − T_s = β · T_s · (1 − c/c_s),{"   "}
-                β = (−ΔH)·D_eff·c_s / (k_eff·T_s)
-              </Text>
+              <Tex mode="display" src={"T - T_s = \\beta\\,T_s\\left(1 - \\frac{c}{c_s}\\right), "
+                + "\\qquad \\beta = \\frac{(-\\Delta H)\\,D_\\mathrm{eff}\\,c_s}{k_\\mathrm{eff}\\,T_s}"} />
             </Box>
             <Text size="sm">
               <strong>And now the honest half.</strong>  “Exact” means exact{" "}
@@ -1021,7 +1030,7 @@ export function ThielePelletTool(): JSX.Element {
               across a pellet whose centre is tens of kelvin hotter.
             </Text>
             <Text size="sm" mt={6}>
-              And it is NOT the coupled non-isothermal pellet: the rate
+              And it is not the coupled non-isothermal pellet: the rate
               constant on this screen does not rise where the pellet is
               hotter.  The real coupled problem can have three steady states
               at one modulus and η above 1, and nothing here solves it — β is
@@ -1032,7 +1041,7 @@ export function ThielePelletTool(): JSX.Element {
               One more absence, easy to miss because the picture looks
               complete: <strong>T<sub>s</sub> is prescribed, not
               computed.</strong>  There is no heat-transfer coefficient
-              between pellet and gas here, so the EXTERNAL temperature drop —
+              between pellet and gas here, so the external temperature drop —
               often larger than the internal one for a strongly exothermic
               reaction — is in no number on this screen.
             </Text>
@@ -1049,7 +1058,7 @@ export function ThielePelletTool(): JSX.Element {
             <b>Engine output:</b> every band and every solid curve is the{" "}
             <code>c_over_cs</code> column of <code>{FIELD_CSV}</code> against
             its own <code>xi</code>; every dashed curve is{" "}
-            <code>c_over_cs_closedForm</code> from the SAME row. η, φ,
+            <code>c_over_cs_closedForm</code> from the same row. η, φ,
             φ_char, c(centre) and the deviations are the operation’s own
             published diagnostics.
             {view === "family" && family && family.read.ok && (
@@ -1061,7 +1070,7 @@ export function ThielePelletTool(): JSX.Element {
           <Text size="xs" c={INK} mt={2}>
             <b>Drawn by this view:</b> the shapes; the stride that reduces the
             field to about {MAX_BANDS} piecewise-constant bands (published rows
-            are DROPPED, never averaged); the colour ramp; and, on the family
+            are dropped, never averaged); the colour ramp; and, on the family
             chart only, a log10 abscissa.  Nothing else.  No modulus, no
             effectiveness factor, no profile and no deviation is computed in
             the browser.
@@ -1082,13 +1091,13 @@ export function ThielePelletTool(): JSX.Element {
 
         <Box>
           <PanelNote>
-            Runs tutorials/{THIELE_WITNESS} THREE times in your browser — once
+            Runs tutorials/{THIELE_WITNESS} three times in your browser — once
             per shape — with your parameters written into its own dicts.  The
             species is {WITNESS_SPECIES} counter-diffusing against{" "}
             {WITNESS_CARRIER} in the {WITNESS_CATALYST} record.
           </PanelNote>
           <PanelNote>
-            There is no ORDER knob and no film-coefficient knob: the operation
+            There is no order knob and no film-coefficient knob: the operation
             models neither, and a knob that changed nothing would be worse than
             its absence.
           </PanelNote>

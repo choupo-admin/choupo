@@ -31,7 +31,7 @@
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
-import { lessonStepper, LessonReferences } from "./lessonStep.js";
+import { lessonStepper, LessonReferences, Tex } from "./lessonStep.js";
 import { Alert, Box, Group, Slider, Stack, Text, Title } from "@mantine/core";
 
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
@@ -260,7 +260,7 @@ export function BjerrumTool(): JSX.Element {
           <Text size="sm" c={INK} mt={4}>
             The diagram every textbook draws — and the one thing about it no
             textbook can show, because a book puts pH on the axis and this
-            case declines to.  The engine WILL take a given pH
+            case declines to.  The engine will take a given pH
             (<Text span ff="monospace">pH 7.8;</Text>); what that costs is
             the electroneutrality row, so each point stops being a beaker
             anyone could pour.  Here every pH is solved, not set.
@@ -276,8 +276,6 @@ export function BjerrumTool(): JSX.Element {
         )}
 
         {step(1)}
-        {step(2)}
-        {step(3)}
 
         <Box style={{ display: "grid", gap: 14,
           gridTemplateColumns: "minmax(200px, 240px) 1fr" }}>
@@ -331,15 +329,18 @@ export function BjerrumTool(): JSX.Element {
           </Text>
         </Box>
 
+        {/* The figure comes second (DEV.md 4c C277): steps 2-3 now explain what
+            the student has just watched. */}
+        {step(2)}
+        {step(3)}
+
         {step(4)}
         {step(5)}
 
         {Number.isFinite(worstClosure) && (
           <Box px="sm" py={6} style={{ borderLeft: `3px solid ${GRID}` }}>
-            <Text size="sm" ff="monospace">
-              three drawn species / all carbon-bearing species, at worst:{" "}
-              {worstClosure.toFixed(5)}
-            </Text>
+            <Tex mode="display" src={"\\frac{\\text{three drawn species}}{\\text{all carbon-bearing species}}\\bigg|_{\\text{worst}} = "
+              + worstClosure.toFixed(5)} />
           </Box>
         )}
 

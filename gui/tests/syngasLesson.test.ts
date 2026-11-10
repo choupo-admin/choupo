@@ -194,7 +194,7 @@ describe("syngas: what the lesson says the runs show", () => {
     const co2 = readout(two, BENCH_STAGES.shift[2]!, "CO_kmol_h");
     const co1 = readout(one, BENCH_STAGES.shift[1]!, "CO_kmol_h");
     expect(Math.abs(co1 - co2) / co2).toBeLessThan(1e-9);
-    expect(all).toContain("EXACTLY the outlet of the two stages, to the last digit");
+    expect(all).toContain("exactly the outlet of the two stages, to the last digit");
   }, 60_000);
   it("the reverse shift runs backwards: its extent is negative, and K is near one", () => {
     const d = run(START.future);

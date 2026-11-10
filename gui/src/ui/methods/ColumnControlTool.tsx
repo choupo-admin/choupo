@@ -92,7 +92,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useCallback, useMemo, useState } from "react";
-import { lessonStepper, LessonReferences } from "./lessonStep.js";
+import { lessonStepper, LessonReferences, TexText } from "./lessonStep.js";
 import {
   Alert, Badge, Box, Group, Loader, ScrollArea, SegmentedControl, Stack, Text,
   Title, Tooltip,
@@ -438,15 +438,15 @@ export function perturbedOverrides(
 export const HANDLE_TEXT: { [k in Handle]: { label: string; means: string } } = {
   reflux: {
     label: "reflux L",
-    means: "R is raised with D held: L rises and V rises with it (V = L + D), "
+    means: "R is raised with D held: L rises and V rises with it (\\(V = L + D\\)), "
       + "while D and B stay put — the internal-flow move that sharpens the "
       + "separation.  It is not LV's open-loop move, L at constant V, which "
       + "would lower D by as much as L rose.",
   },
   distillate: {
     label: "distillate D",
-    means: "D is raised and R lowered together so that L = R·D is unchanged: "
-      + "V rises with D (V = L + D) and B falls (B = F − D) — the "
+    means: "D is raised and R lowered together so that \\(L = R\\,D\\) is unchanged: "
+      + "V rises with D (\\(V = L + D\\)) and B falls (\\(B = F - D\\)) — the "
       + "material-balance move that shifts the whole profile.  It is not "
       + "DV's open-loop move, D at constant V, which would lower L instead.",
   },
@@ -467,7 +467,7 @@ export function qualityLoopFor(
 // ---- The provenance line ----------------------------------------------------
 
 const PROVENANCE =
-  `Runs tutorials/${COLUMN_CONTROL_WITNESS} TWICE with your parameters, in `
+  `Runs tutorials/${COLUMN_CONTROL_WITNESS} twice with your parameters, in `
   + "your browser (choupoSolve WASM): once as declared, once with the "
   + "manipulated variable moved.  Every temperature is the column's own "
   + "published stage profile; this file takes differences of them and draws "
@@ -789,7 +789,7 @@ function ColumnSection(
             y={trayPoint(sensorStage, nStages, condenser).y + 17} fontSize={9}
             fill={WARN}>
             a {sectionOf(sensorStage, feedStage) === "strippingTray"
-              ? "STRIPPING tray, below the feed" : "RECTIFYING tray, above the feed"}
+              ? "stripping tray, below the feed" : "rectifying tray, above the feed"}
             {" "}— see the note below
           </text>
         )}
@@ -799,7 +799,7 @@ function ColumnSection(
             see the note below
           </text>
         )}
-        {/* A LOOP THIS TABLE CANNOT PLACE IS REPORTED, NOT SKIPPED.  The
+        {/* A loop this table cannot place IS reported, not skipped.  The
             catalogue may introduce a measurement point or a valve the layout
             has no coordinates for; drawing four loops of five in silence would
             be a structure the reader believes they have seen. */}
@@ -924,10 +924,10 @@ function TrayChart(
         )}
         <text x={mid} y={CY1 + 18} textAnchor="middle" fontSize={9} fill={INK}>
           bars are scaled to each criterion&apos;s own maximum — the two are
-          not comparable in size, only in WHICH stage they pick
+          not comparable in size, only in which stage they pick
         </text>
         <text x={DX1} y={CY1 + 32} textAnchor="end" fontSize={9} fill={WARN}>
-          a red bar is a NEGATIVE gain: the temperature falls when the handle
+          a red bar is a negative gain: the temperature falls when the handle
           rises
         </text>
       </svg>
@@ -1108,7 +1108,7 @@ export function ColumnControlTool(): JSX.Element {
           data={[{ label: "reflux L", value: "reflux" },
             { label: "distillate D", value: "distillate" }]} />
         <Text size="xs" c="dimmed" mt={3} style={{ lineHeight: 1.25 }}>
-          {HANDLE_TEXT[handle].means}
+          <TexText text={HANDLE_TEXT[handle].means} />
         </Text>
       </Box>
       {src === "classroom" && (
@@ -1129,7 +1129,7 @@ export function ColumnControlTool(): JSX.Element {
             knob={{ id: "step", label: "perturbation for the sensitivity",
               min: 0.25, max: 5, step: 0.25, unit: "% of the handle",
               why: "the sensitivity criterion is a finite difference, so it has "
-                + "a step size; move it and watch the SELECTED stage stay put "
+                + "a step size; move it and watch the selected stage stay put "
                 + "while the magnitude drifts — that is what tells you the "
                 + "answer is not an artefact of the step" }}
             value={stepPct} onChange={setStepPct} showWhy />
@@ -1138,7 +1138,7 @@ export function ColumnControlTool(): JSX.Element {
       )}
       {src === "current" && (
         <PanelNote>
-          Reading the app&apos;s current run. Only the SLOPE criterion is
+          Reading the app&apos;s current run. Only the slope criterion is
           available on it: the sensitivity criterion needs a second solve with
           the manipulated variable moved, and a finished run is one operating
           point.
@@ -1247,10 +1247,10 @@ export function ColumnControlTool(): JSX.Element {
           + (condenser === "partial"
             ? "(stage 1 is the partial condenser and the last stage the "
               + "reboiler, so neither can carry a tray thermocouple).  "
-            : "(with the default total condenser stage 1 is the TOP TRAY — "
+            : "(with the default total condenser stage 1 is the top tray — "
               + "the condenser is not a stage — and the last stage is the "
               + "reboiler, which carries no tray thermocouple).  ")
-          + "Read off ONE solved "
+          + "Read off one solved "
           + "profile — the criterion a student can apply with a ruler."}>
         <Badge variant="light" color="cyan" tt="none"
           styles={{ root: { cursor: "help" } }}>
@@ -1262,7 +1262,7 @@ export function ColumnControlTool(): JSX.Element {
       </Tooltip>
       <Tooltip withArrow multiline w={440}
         label={"The largest |ΔT| per 1 % move of the manipulated variable, "
-          + "from a SECOND solve of the same column.  This is the number a "
+          + "from a second solve of the same column.  This is the number a "
           + "published table cannot give you: it belongs to this column at "
           + "these settings with this handle."}>
         <Badge variant="light" color="violet" tt="none"
@@ -1277,11 +1277,11 @@ export function ColumnControlTool(): JSX.Element {
       </Tooltip>
       {view0?.drum && (
         <Tooltip withArrow multiline w={450}
-          label={"Choupo's Design Guide says to hold a level with the LARGER "
+          label={"Choupo's Design Guide says to hold a level with the larger "
             + "stream leaving that drum, and both streams are on this run's "
             + "KPI row (L_rect and D), so the rule has a number here: "
-            + `L/D = ${fmt(view0.drum.ratio, 4)}.  What the rule does NOT `
-            + "ship is a THRESHOLD — the published forms disagree about "
+            + `L/D = ${fmt(view0.drum.ratio, 4)}.  What the rule does not `
+            + "ship is a threshold — the published forms disagree about "
             + "where 'larger' starts to matter, none could be pinned to a "
             + "checked page, and so this chip says which is larger and stops "
             + "there."}>
@@ -1299,7 +1299,7 @@ export function ColumnControlTool(): JSX.Element {
             ? "green" : "orange"}>
           {view0.slopePick.stage === view0.sensPick.stage
             ? "the two criteria agree"
-            : `the two criteria DISAGREE — ${view0.slopePick.stage} against `
+            : `the two criteria disagree — ${view0.slopePick.stage} against `
               + `${view0.sensPick.stage}`}
         </Badge>
       )}
@@ -1314,9 +1314,9 @@ export function ColumnControlTool(): JSX.Element {
         {alerts}
 
         {lessonStep(1)}
-        {lessonStep(2)}
-        {lessonStep(3)}
 
+        {/* The column comes second (DEV.md 4c C277): the question, a solved
+            column to wire, then steps 2-3 naming what the student just did. */}
         <Box>
           <Title order={5}>Now wire one of them onto a solved column</Title>
           <Text size="sm" mt={4}>
@@ -1434,7 +1434,7 @@ export function ColumnControlTool(): JSX.Element {
           )}
           {view0 && view0.crossings.length > 0 && (
             <Text size="xs" c="dimmed">
-              The response to {HANDLE_TEXT[handle].label} changes SIGN between
+              The response to {HANDLE_TEXT[handle].label} changes sign between
               stage {view0.crossings[0]!.below} and{" "}
               {view0.crossings[0]!.above}: a sensor there has almost no gain,
               whatever the profile looks like. The slope criterion cannot see
@@ -1448,8 +1448,8 @@ export function ColumnControlTool(): JSX.Element {
             <Text size="xs" c="dimmed">
               Stage {sensorStage} is a{" "}
               {sectionOf(sensorStage, feedStage) === "strippingTray"
-                ? "STRIPPING tray, at or below the feed"
-                : "RECTIFYING tray, above the feed"}{" "}
+                ? "stripping tray, at or below the feed"
+                : "rectifying tray, above the feed"}{" "}
               (stage {feedStage}), yet it carries the sensor of the{" "}
               {sensorLoop.measuredAt === "rectifyingTray" ? "top" : "bottom"}
               {" "}loop. The criterion ranks every tray in either section, and
@@ -1469,6 +1469,8 @@ export function ColumnControlTool(): JSX.Element {
           </Text>
         </Box>
 
+        {lessonStep(2)}
+        {lessonStep(3)}
         {lessonStep(4)}
         {lessonStep(5)}
 

@@ -345,11 +345,15 @@ describe("data-reconciliation: Bayes is visible and central (C137)", () => {
 
   it("names prior, likelihood and posterior in step 1, before any other step", () => {
     const s1 = DR_STEPS.find((s) => s.n === 1)!;
-    for (const w of ["PRIOR", "LIKELIHOOD", "POSTERIOR", "DISTRIBUTION"]) expect(s1.body).toContain(w);
+    //  Lower case since the lesson stopped setting words in capitals for
+    //  emphasis (DEV.md 4c C277); the four words are the same.
+    for (const w of ["prior", "likelihood", "posterior", "distribution"]) expect(s1.body).toContain(w);
     expect(s1.formula).toContain(String.raw`p(x \,|\, m) \;\propto\; p(m \,|\, x)\; p(x)`);
     expect(s1.body).toContain("Bayes is not merely a different way of calculating the same result");
     expect(CENTRAL_IDEA).toContain("It is a way of representing, and updating, what we know about the state of a process.");
-    expect(tree(TOOL)).toMatch(/\{step\(1\)\}\s*\{step\(2\)\}/);
+    //  C277: step 1 (the idea) is followed by the plant drawing, and step 2
+    //  by what the drawing showed -- the figure comes second, not third.
+    expect(tree(TOOL)).toMatch(/\{step\(1\)\}\s*\{\/\*[\s\S]*?\*\/\}\s*<PlantDiagram/);
   });
 
   it("the word frequentist stands wherever the chi-square does", () => {
@@ -358,7 +362,7 @@ describe("data-reconciliation: Bayes is visible and central (C137)", () => {
     for (const s of withChi) expect(s.body, `step ${s.n}`).toMatch(/frequentist/i);
     const s11 = DR_STEPS.find((s) => s.n === 11)!;
     expect(s11.title).toContain("global test");
-    expect(s11.body).toContain("FREQUENTIST");
+    expect(s11.body).toContain("frequentist"); // C277: lower case, DEV.md 4c C277
     expect(DR_STEPS.find((s) => s.n === 12)!.body).toContain("Frequentist");
     expect(DR_STEPS.find((s) => s.n === 14)!.formula).toContain(String.raw`\mathrm{Pr}(H_j \,|\, m)`);
   });
@@ -371,7 +375,7 @@ describe("data-reconciliation: Bayes is visible and central (C137)", () => {
     for (const e of entries)
       expect([...e[2]!.matchAll(/(\w+)\s+[-0-9.]+/g)].map((m) => m[1])).toEqual(["value", "sigma"]);
     //  The page says so, and says the engine has no evolution term.
-    expect(DR_STEPS.find((s) => s.n === 17)!.body).toContain("ONE number per flow");
+    expect(DR_STEPS.find((s) => s.n === 17)!.body).toContain("one number per flow"); // C277: lower case, DEV.md 4c C277
     const s18 = DR_STEPS.find((s) => s.n === 18)!;
     expect(s18.body).toContain("the engine has no term for q of its own");
     expect(s18.formula).toContain("q_j^2");
