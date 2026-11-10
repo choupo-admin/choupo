@@ -150,17 +150,17 @@ export const EXERGY_META = [
     line: "b_{\\mathrm{ph}} = (h - h_0) - T_0\\,(s - s_0)",
     question: "What is this state worth, in work?",
     cite: "src/propertyOps/Exergy.cpp · Exergy::run",
-    note: "Every term is the engine's own H_real / S_real at the SAME "
+    note: "Every term is the engine's own H_real / S_real at the same "
       + "composition — the op subtracts and publishes both legs, nothing "
       + "more.",
   },
   {
     name: "dead state",
     line: "\\text{deadState}\\ \\{\\,T_0;\\ P_0;\\,\\}",
-    question: "Against WHICH environment?",
+    question: "Against which environment?",
     cite: "src/propertyOps/Exergy.cpp · the missing-deadState refusal",
-    note: "An exergy is a statement about a state AND an environment.  The "
-      + "engine REFUSES to assume one — a silently defaulted 25 °C would "
+    note: "An exergy is a statement about a state and an environment.  The "
+      + "engine refuses to assume one — a silently defaulted 25 °C would "
       + "hand a plant in another climate the wrong number with nothing to "
       + "see.  The block declares the reference temperature and pressure "
       + "the physical-exergy op needs — two numbers do not define a "
@@ -171,11 +171,11 @@ export const EXERGY_META = [
     line: "b_{\\mathrm{ph}}(T_0, P_0, x) = 0",
     question: "Where does the price hit zero?",
     cite: "tutorials/props/molecular/exergy01_air_dead_state · b_dead",
-    note: "The witness's second row evaluates $(T_0, P_0)$ at the SAME "
+    note: "The witness's second row evaluates $(T_0, P_0)$ at the same "
       + "composition: both legs are exactly zero, by construction — an "
-      + "algebraic identity the golden pins, necessary but not a "
+      + "algebraic identity the recorded run pins, necessary but not a "
       + "validation.  No thermo-mechanical work potential is left there; "
-      + "the stream may still differ CHEMICALLY from the environment, and "
+      + "the stream may still differ chemically from the environment, and "
       + "that part is refused, never silently zeroed.",
   },
   {
@@ -183,11 +183,11 @@ export const EXERGY_META = [
     line: "\\text{datum-independence}",
     question: "Why doesn't the reference zero matter?",
     cite: "src/propertyOps/Exergy.cpp · the differencing comment",
-    note: "Only DIFFERENCES at fixed composition enter, so additive "
+    note: "Only differences at fixed composition enter, so additive "
       + "reference offsets common to both states — the enthalpy datum, the "
       + "$s^\\circ_{298}$ anchors, the ideal-mixing line (composition-only, "
       + "identical in both states), the 1 bar reference-pressure convention "
-      + "— all drop out.  Datum-independent is NOT model-independent: "
+      + "— all drop out.  Datum-independent is not model-independent: "
       + "different models predict different $\\Delta h$ and $\\Delta s$, and "
       + "that difference is physics, not bookkeeping.",
   },
@@ -197,7 +197,7 @@ export const EXERGY_META = [
     question: "What does an irreversibility cost?",
     cite: "src/unitOperations/rotating/IsentropicCore.cpp · dS_gen KPI",
     note: "Every compressor and turbine already publishes dS_gen — and for "
-      + "these ADIABATIC machines the stream's entropy rise IS the "
+      + "these adiabatic machines the stream's entropy rise is the "
       + "generation (a unit with heat transfer would need the boundary "
       + "term too).  Multiply by $T_0$ and the entropy the machine "
       + "generated becomes the exergy it destroyed (Gouy–Stodola).",
@@ -347,7 +347,7 @@ function GouyStodolaKnob() {
   return (
     <Box my={8} px="sm" py={8} style={{ border: `1px solid ${GRID}`,
       borderRadius: 6 }}>
-      <OriginMark of={["engine", "page", "assumption"]} note="dS_gen is the recorded run (golden) of compressor01_air; T0 is yours; the product is this page's" />
+      <OriginMark of={["engine", "page", "assumption"]} note="dS_gen is the recorded run of compressor01_air; T0 is yours; the product is this page's" />
       <Text size="xs" c={INK} fw={700} tt="uppercase">
         what this compressor’s dS_gen costs, under your finger
       </Text>
@@ -365,9 +365,9 @@ function GouyStodolaKnob() {
       <Text size="xs" c={INK} mt={4}>
         That <M t="s_{\mathrm{gen}}" /> is not a round number chosen to look
         like one: it is {MACHINE.what} in this corpus —
-        {" "}<Text span ff="monospace">{MACHINE.case_}</Text> — whose golden
-        pins <Text span ff="monospace">dS_gen = {MACHINE.dS_gen}</Text>
-        {" "}J/(mol·K), re-verified by every regression run.  For a FIXED
+        {" "}<Text span ff="monospace">{MACHINE.case_}</Text> — whose recorded
+        run gives <Text span ff="monospace">dS_gen = {MACHINE.dS_gen}</Text>
+        {" "}J/(mol·K), re-checked by every regression run.  For a fixed
         entropy generation, a higher declared <M t="T_0" /> assigns a larger
         exergy destruction to the same irreversibility.  Moving this slider
         does not change the compressor: it re-prices the entropy the
@@ -466,7 +466,7 @@ export function WhatIsExergyTool(): JSX.Element {
             is worth more work in winter than in summer.  This simulator
             refuses to run the exergy operation without a
             {" "}<Text span ff="monospace">deadState {"{"} T0; P0; {"}"}</Text>
-            {" "}block, because an exergy is a statement about a state AND an
+            {" "}block, because an exergy is a statement about a state and an
             environment, and your environment is your fact, not the
             engine’s.  Two numbers do not define a complete environmental
             dead state, which would also need chemical equilibrium with a
@@ -492,9 +492,9 @@ export function WhatIsExergyTool(): JSX.Element {
             <Tex mode="display"
               src="b_{\mathrm{ph}} = (h - h_0) - T_0\,(s - s_0)" />
             <Text size="xs" c={INK} mt={4}>
-              <M t="b" />, <M t="h" /> and <M t="s" /> on ONE basis (molar
+              <M t="b" />, <M t="h" /> and <M t="s" /> on one basis (molar
               here: J/mol and J/(mol·K)); <M t="h_0" /> and <M t="s_0" /> at
-              {" "}<M t="(T_0, P_0)" /> with the stream’s OWN composition
+              {" "}<M t="(T_0, P_0)" /> with the stream’s own composition
             </Text>
           </Box>
           <Text size="sm">
@@ -537,7 +537,7 @@ export function WhatIsExergyTool(): JSX.Element {
             relative to the declared environment.  Every compressor and
             turbine in this simulator publishes the entropy its declared
             inefficiency generated, and for these adiabatic machines the
-            stream’s entropy rise IS the generation.  Here the environment
+            stream’s entropy rise is the generation.  Here the environment
             moves and the machine does not:
           </Text>
           <GouyStodolaKnob />
@@ -596,9 +596,9 @@ export function WhatIsExergyTool(): JSX.Element {
           {lg && <ExergyTable lg={lg} />}
           {lg && (
             <Text size="sm">
-              Here the entropy leg is positive: hot and above
-              {" "}<M t="P_0" />, the stream would reject heat on its way down,
-              so <M t="b_{\mathrm{ph}}" /> is smaller than
+              Here the entropy leg is positive: the stream’s temperature rise
+              raises its entropy by more than the pressure rise lowers it:
+              the stream would reject heat on its way down, so <M t="b_{\mathrm{ph}}" /> is smaller than
               {" "}<M t="h - h_0" />.  Compare the compressed gas at
               {" "}<M t="T_0" /> in part A, where the same leg was negative.
             </Text>
@@ -614,7 +614,7 @@ export function WhatIsExergyTool(): JSX.Element {
               wrong formula also returns zero when it subtracts a state from
               itself.  At <M t="(T_0, P_0)" />, with the composition held
               fixed, no thermo-mechanical work potential remains; any
-              CHEMICAL difference from the environment is neither computed
+              chemical difference from the environment is neither computed
               nor hidden — the op refuses it.
             </Text>
           )}
@@ -650,9 +650,9 @@ export function WhatIsExergyTool(): JSX.Element {
             ))}
           </Box>
           <Text size="xs" c={INK} mt={6}>
-            What this engine deliberately does NOT compute, and says so by
-            name: CHEMICAL exergy — the work available from a composition
-            differing from the environment’s — refuses in the op itself,
+            What this engine deliberately does not compute, and says so by
+            name: chemical exergy — the work available from a composition
+            differing from the environment’s — is refused in the op itself,
             because it needs a standard-environment model (Szargut’s
             reference substances, or another) that is a curated,
             primary-cited data decision, not a formula to transcribe.  And
