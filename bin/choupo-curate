@@ -1711,7 +1711,7 @@ def vp_run(case):
         ds = read_vp_dataset(case / x["file"])
         kT, kP, nd = [], [], 0
         for t, pk in zip(ds["T"], ds["P"]):
-            if (x["doi"], round(t, 6), round(pk * 1e3, 3)) in dropped:
+            if (x["doi"], round(t, 3), round(math.log10(pk * 1e3), 5)) in dropped:
                 nd += 1
                 continue
             kT.append(t); kP.append(pk)
@@ -1743,7 +1743,8 @@ def vp_dropped(txt):
     for item in (txt or "").split(";"):
         m = re.match(r"\s*(\S+) T=([0-9.eE+-]+) K P=([0-9.eE+-]+) Pa", item)
         if m:
-            out.add((m.group(1), round(float(m.group(2)), 6), round(float(m.group(3)), 3)))
+            out.add((m.group(1), round(float(m.group(2)), 3),
+                     round(math.log10(float(m.group(3))), 5)))
     return out
 
 
