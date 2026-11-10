@@ -352,7 +352,7 @@ export function criticalTimeState(k: DryingKpis): CriticalTimeState {
   if (k.t_critical !== null) {
     return {
       present: true, t: k.t_critical,
-      note: "the engine OBSERVED the crossing of X_c between two accepted "
+      note: "the engine observed the crossing of X_c between two accepted "
         + "states and interpolated it; dX/dt is exactly constant on that leg, "
         + "so the interpolation smooths nothing.",
     };
@@ -361,7 +361,7 @@ export function criticalTimeState(k: DryingKpis): CriticalTimeState {
   if (Xc !== null && k.X_initial !== null && k.X_initial <= Xc) {
     return {
       present: false, t: null, absence: "startedAtOrBelowXc",
-      note: `no break time: the tray STARTED at X_0 = ${fmt(k.X_initial)} `
+      note: `no break time: the tray started at X_0 = ${fmt(k.X_initial)} `
         + `kg/kg, at or below X_c = ${fmt(Xc)} kg/kg, so there was no `
         + "constant-rate period for the run to leave.",
     };
@@ -369,7 +369,7 @@ export function criticalTimeState(k: DryingKpis): CriticalTimeState {
   if (Xc !== null && k.X_final !== null && k.X_final > Xc) {
     return {
       present: false, t: null, absence: "endedInConstantRate",
-      note: `the run ENDED INSIDE the constant-rate period -- it stopped at `
+      note: `the run ended inside the constant-rate period -- it stopped at `
         + `X_final = ${fmt(k.X_final)} kg/kg, still above X_c = ${fmt(Xc)} `
         + "kg/kg, so the crossing never happened and the engine omits the "
         + "t_critical KPI entirely rather than faking a sentinel.  Raise "
@@ -488,7 +488,7 @@ export const DRYING_KNOBS: readonly DryingKnob[] = [
   { id: "airY", label: String.raw`air humidity \(Y\) (kg/kg dry)`,
     file: FLOWSHEET, key: "Y",
     def: 0.010, min: 0.001, max: 0.04, step: 0.001, unit: "",
-    why: "the air's humidity ratio: it is BOTH ends of the drying problem -- "
+    why: "the air's humidity ratio: it is both ends of the drying problem -- "
       + String.raw`the mass-transfer driving force \(Y_\mathrm{sat}(T_\mathrm{wb}) - Y\) `
       + "and, through the air's water activity, the GAB equilibrium moisture "
       + String.raw`\(X_\mathrm{eq}\) the tail aims at` },
@@ -502,7 +502,7 @@ export const DRYING_KNOBS: readonly DryingKnob[] = [
   { id: "criticalMoisture", label: String.raw`critical moisture \(X_c\) (kg/kg)`,
     file: FLOWSHEET, key: "criticalMoisture",
     def: 0.12, min: 0.02, max: 0.28, step: 0.005, unit: "",
-    why: "the MEASURED break between the two periods -- drag it and watch "
+    why: "the measured break between the two periods -- drag it and watch "
       + String.raw`the corner in \(R(X)\) move to exactly where you put it, `
       + String.raw`because in this model \(X_c\) is an input, not a result` },
   // `exponent  1.0;` inside operation.dryingCurve -- the witness declares
@@ -512,11 +512,11 @@ export const DRYING_KNOBS: readonly DryingKnob[] = [
     label: String.raw`drying-curve exponent \(n\) in \(f = \Phi^{n}\)`,
     file: FLOWSHEET, key: "exponent",
     def: 1, min: 0.3, max: 3, step: 0.1, unit: "",
-    why: String.raw`the SHAPE of the falling-rate period, \(f = R/R_c = \Phi^{n}\) `
+    why: String.raw`the shape of the falling-rate period, \(f = R/R_c = \Phi^{n}\) `
       + String.raw`with \(\Phi = (X - X_\mathrm{eq})/(X_c - X_\mathrm{eq})\): `
       + String.raw`\(n = 1\) is the linear law and its exponential tail; `
       + String.raw`\(n < 1\) keeps the rate high and reaches \(X_\mathrm{eq}\) in `
-      + String.raw`FINITE time; \(n > 1\) drops the rate early and leaves an `
+      + String.raw`Finite time; \(n > 1\) drops the rate early and leaves an `
       + String.raw`algebraic tail slower than the exponential.  The corner at `
       + String.raw`\(X_c\) and the whole constant-rate period do not move -- the `
       + "curve is a property of the material's internal transport, not of "
@@ -526,7 +526,7 @@ export const DRYING_KNOBS: readonly DryingKnob[] = [
     file: CONTROL, key: "endTime",
     def: 3000, min: 500, max: 20000, step: 100, unit: "",
     why: "the run's horizon.  Below the break time (~1030 s at the authored "
-      + "settings) the run ENDS inside the constant-rate period, the engine "
+      + "settings) the run ends inside the constant-rate period, the engine "
       + String.raw`omits the t_critical KPI entirely, and this tool says which `
       + "absence that is instead of drawing a zero" },
 ];
@@ -572,19 +572,19 @@ export const DRYING_ABSENCES: readonly DryingAbsence[] = [
   { id: "initialMoisture", file: "0/internalStates/dryer", key: "water",
     kind: "inlineOneLineBlock", resolves: false,
     why: "X_0 lives in `molarComposition { sucrose 0.14924928;  water "
-      + "0.85075072; }` -- an inline ONE-LINE block, so `water` is not at "
+      + "0.85075072; }` -- an inline one-line block, so `water` is not at "
       + "the start of its line and the anchored grammar cannot address it.  "
       + "Two fractions constrained to sum to 1 are not one scalar knob "
       + "anyway (the BreakthroughTool feed-composition precedent)." },
   { id: "carrier", file: FLOWSHEET, key: "carrier", kind: "word",
     resolves: false,
-    why: "`carrier  N2;` is a WORD.  The override replaces the NUMBER of a "
+    why: "`carrier  N2;` is a word.  The override replaces the number of a "
       + "declared scalar, so this key does not resolve at all -- the "
       + "VanHeerden `thermalMode adiabatic;` precedent." },
   { id: "totalMoles", file: "0/internalStates/dryer", key: "totalMoles",
     kind: "addressableButDeclined", resolves: true,
     why: "addressable, and deliberately not a knob: it scales the dry solid "
-      + "and its moisture in the SAME proportion, so X_0 -- the quantity "
+      + "and its moisture in the same proportion, so X_0 -- the quantity "
       + "both diagrams are drawn against -- does not move at all.  What it "
       + "would move is the charge, and with it the hand estimate the "
       + "witness prints in its own header; a knob that silently invalidates "
@@ -593,7 +593,7 @@ export const DRYING_ABSENCES: readonly DryingAbsence[] = [
   { id: "deltaT", file: CONTROL, key: "deltaT",
     kind: "addressableButDeclined", resolves: true,
     why: "addressable, and deliberately not a knob: the RK4 step is a "
-      + "NUMERICS choice the case header argues for (far inside the "
+      + "numerics choice the case header argues for (far inside the "
       + "falling-rate stability bound).  Exposing it would let a student "
       + "move the answer without moving the question." },
 ];
@@ -856,7 +856,7 @@ function RversusXSvg({ X, R, segments, k, busyOverlay }: RxInput): JSX.Element {
           constant-rate line, the corner at the engine's critical moisture,
           and the falling-rate segment heading for the equilibrium moisture">
         <Axes frame={frame}
-          xLabel="moisture X (kg water / kg dry solid) — the run moves RIGHT to LEFT"
+          xLabel="moisture X (kg water / kg dry solid) — the run moves right to left"
           yLabel="drying flux R (kg / m² s)" />
 
         {/* R = 0: where the declared falling-rate law sends the flux, and the
@@ -1053,7 +1053,7 @@ export function DryingCurveTool(): JSX.Element {
                     : "This run publishes no drying surface"}
                   {" "}— the two diagrams activate when a choupoBatch unit
                   emits the trajectory columns <b>{X_COLUMN_SUFFIX}</b> and{" "}
-                  <b>{R_COLUMN_SUFFIX}</b> AND the matching KPIs (
+                  <b>{R_COLUMN_SUFFIX}</b> and the matching KPIs (
                   {REQUIRED_DRYING_KPIS.join(", ")}), which is what a{" "}
                   <code>batchDryer</code> publishes.  A batch run of any other
                   kind has no drying curve to draw — run{" "}
@@ -1074,8 +1074,8 @@ export function DryingCurveTool(): JSX.Element {
     <Group gap="sm" wrap="wrap" align="center">
       <Tooltip withArrow multiline w={430}
         label={"The engine's KPI `T_wb`: the wet-bulb temperature of the "
-          + "DECLARED air, found by bisecting the adiabatic-saturation "
-          + "equation at Lewis = 1.  While X > X_c the model HOLDS the "
+          + "declared air, found by bisecting the adiabatic-saturation "
+          + "equation at Lewis = 1.  While X > X_c the model holds the "
           + "surface there — which is why the flux is flat.  The solid's "
           + "own temperature is a named gap: this model does not "
           + "integrate it."}>
@@ -1097,12 +1097,12 @@ export function DryingCurveTool(): JSX.Element {
       </Tooltip>
 
       <Tooltip withArrow multiline w={450}
-        label={"The engine's KPI `X_critical` — and it is a DECLARED INPUT "
+        label={"The engine's KPI `X_critical` — and it is a declared input "
           + "echoed back, not a result: the case measures it "
           + "(operation.criticalMoisture).  So the corner in R(X) sits at "
-          + "X_c BY CONSTRUCTION of the declared two-period law; reading "
+          + "X_c by construction of the declared two-period law; reading "
           + "X_c off the plot recovers what was put in.  What the run "
-          + "decides is WHEN the curve reaches it — that is t_critical."}>
+          + "decides is when the curve reaches it — that is t_critical."}>
         <Badge variant="light" color="red" tt="none"
           styles={{ root: { cursor: "help" } }}>
           X_c = {fmt(k.X_critical)} kg/kg (declared input)
@@ -1125,8 +1125,8 @@ export function DryingCurveTool(): JSX.Element {
       <Tooltip withArrow multiline w={450}
         label={"The engine's KPIs `latentDuty_kW` (the load at the "
           + "constant rate, R_c A λ(T_wb)) and `latentEnergy_kJ` (what the "
-          + "whole evaporation took).  Both are the AIR's: the drying heat "
-          + "comes from a declared environment OUTSIDE the campaign "
+          + "whole evaporation took).  Both are the air's: the drying heat "
+          + "comes from a declared environment outside the campaign "
           + "boundary, so the engine publishes them as KPIs and refuses to "
           + "ledger them as a duty.  That is also why this case's campaign "
           + "energy balance reports UNAVAILABLE rather than a number."}>
@@ -1163,9 +1163,6 @@ export function DryingCurveTool(): JSX.Element {
         {alerts}
 
         {lessonStep(1)}
-        {lessonStep(2)}
-        {lessonStep(3)}
-        {lessonStep(4)}
 
         <Box>
           <Title order={5}>Now read the curve the engine integrated</Title>
@@ -1202,7 +1199,7 @@ export function DryingCurveTool(): JSX.Element {
             <Text size="xs" c="dimmed">
               X(t) is the dryer&apos;s published column{" "}
               <b>{view.unit}.{X_COLUMN_SUFFIX}</b> against the driver&apos;s
-              own t.  The colour split is the ONE thing computed here: each
+              own t.  The colour split is the one thing computed here: each
               emitted sample is compared with the engine&apos;s X_c using the
               engine&apos;s own strict inequality (X &gt; X_c is constant
               rate), so a sample sitting exactly on X_c is falling-rate here
@@ -1212,8 +1209,8 @@ export function DryingCurveTool(): JSX.Element {
             <Text size="xs" c="dimmed">
               R(X) is the published column <b>{view.unit}.{R_COLUMN_SUFFIX}</b>
               {" "}plotted against <b>{view.unit}.{X_COLUMN_SUFFIX}</b> — the
-              same two engine series, one against the other.  Time runs RIGHT
-              to LEFT (the tray dries).  The flat stretch sits at R_c; the
+              same two engine series, one against the other.  Time runs right
+              to left (the tray dries).  The flat stretch sits at R_c; the
               corner is at X_c; the sloping segment heads for R = 0 at X_eq,
               which is where the declared law puts it.
             </Text>
@@ -1236,6 +1233,10 @@ export function DryingCurveTool(): JSX.Element {
           </Text>
         </Box>
 
+        {/* The curve comes second (DEV.md 4c C277); steps 2-5 explain it. */}
+        {lessonStep(2)}
+        {lessonStep(3)}
+        {lessonStep(4)}
         {lessonStep(5)}
 
         {lessonLimits}

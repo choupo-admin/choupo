@@ -149,8 +149,6 @@ export function ReactionEnthalpyTool(): JSX.Element {
         </Box>
 
         {step(1)}
-        {step(2)}
-        {step(3)}
 
         <Box>
           <Title order={5}>The engine&apos;s numbers, and a straight line</Title>
@@ -158,7 +156,7 @@ export function ReactionEnthalpyTool(): JSX.Element {
             Blue: the standard reaction enthalpy per mole of ammonia at seven
             temperatures, from a live run of the witness. Red: the base
             data&apos;s value, which is the 25 °C one. Orange: Kirchhoff with a
-            CONSTANT reaction heat capacity, which you set — start at the slope
+            constant reaction heat capacity, which you set — start at the slope
             the engine&apos;s first two points give, then try to make the line
             pass through all seven.
           </Text>
@@ -216,6 +214,10 @@ export function ReactionEnthalpyTool(): JSX.Element {
           </Box>
         </Box>
 
+        {/* The figure comes second (DEV.md 4c C277): steps 2-3 then explain
+            what the student has just moved. */}
+        {step(2)}
+        {step(3)}
         {step(4)}
         {step(5)}
         {step(6)}

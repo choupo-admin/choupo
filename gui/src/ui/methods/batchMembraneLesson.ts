@@ -99,7 +99,7 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
   {
     n: 1,
     title: "A batch membrane run is a history, not an operating point",
-    body: "A spiral-wound module at steady state has ONE answer: a feed goes "
+    body: "A spiral-wound module at steady state has one answer: a feed goes "
       + "in, a permeate and a retentate come out, and the numbers do not "
       + "move.  A laboratory or pilot rig is not like that.  You charge a "
       + "vessel, put a pressure across the membrane and let it run, and every "
@@ -108,7 +108,7 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
       + "it, the water flux through the membrane, and the rejection the "
       + "membrane appears to have.  That is how ultrafiltration and "
       + "nanofiltration are actually run at bench and pilot scale, and it is "
-      + "how they are taught, so the thing to read is a TRAJECTORY.  What "
+      + "how they are taught, so the thing to read is a trajectory.  What "
       + "makes the page worth scrolling is that the classical results you "
       + "were taught for this rig are all integrals of that trajectory taken "
       + "with one of its quantities held still.",
@@ -118,22 +118,22 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
 \end{aligned}`,
     where: [
       { sym: "V", means: "the volume of liquid still in the vessel -- the "
-        + "RETENTATE, what is left behind the membrane", unit: "m³" },
+        + "retentate, what is left behind the membrane", unit: "m³" },
       { sym: "t", means: "time since the pressure was applied to a charged "
         + "vessel", unit: "s" },
       { sym: "c_i", means: "the bulk concentration of solute i in the "
         + "vessel", unit: "kmol/m³" },
       { sym: "i", means: "an index over the solutes the case declares -- "
         + "this page makes no assumption about how many there are" },
-      { sym: "J_w", means: "the WATER FLUX through the membrane, volume of "
+      { sym: "J_w", means: "the water flux through the membrane, volume of "
         + "permeate per unit area per unit time.  The engine computes it in "
         + "m/s and publishes it as L/(m²·h), the unit a membrane rig is read "
         + "in (BatchDiafilter.cpp:567)", unit: "L/(m²·h)" },
-      { sym: "R_i", means: "the OBSERVED rejection of solute i: how much of "
+      { sym: "R_i", means: "the observed rejection of solute i: how much of "
         + "what reaches the membrane it keeps back, measured against the "
         + "bulk.  Step 5 is about why it moves" },
     ],
-    note: "The engine's vessel is WELL MIXED, so there is one bulk "
+    note: "The engine's vessel is well mixed, so there is one bulk "
       + "composition and the local flux law is evaluated at it "
       + "(BatchDiafilter.H:45-46).  That is a real assumption and it is the "
       + "right one for a stirred cell or a fast recirculation loop; it is the "
@@ -148,11 +148,11 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
       + "with the same balances.  (Practice has more: diafiltration at "
       + "variable volume, with clean solvent added at a rate other than the "
       + "permeate's, is common, and the diafiltrate rate here is only ever "
-      + "zero or the permeate rate.)  In CONCENTRATION mode you "
+      + "zero or the permeate rate.)  In concentration mode you "
       + "add nothing: permeate leaves, the vessel shrinks, and everything the "
-      + "membrane keeps gets more concentrated.  In CONSTANT-VOLUME "
+      + "membrane keeps gets more concentrated.  In constant-volume "
       + "diafiltration you add clean solvent exactly as fast as permeate "
-      + "leaves: the volume is held, and everything the membrane does NOT "
+      + "leaves: the volume is held, and everything the membrane does not "
       + "keep is washed out.  The two are not different models.  They are the "
       + "same solute balance under two different volume balances, and in the "
       + "code the difference is a single line -- the diafiltrate rate is "
@@ -161,7 +161,7 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
       + "(BatchDiafilter.cpp:202-210).",
     formula: String.raw`\begin{array}{ll}
 \text{solutes} & \dfrac{\mathrm{d}n_i}{\mathrm{d}t} = -J_\mathrm{s,i}\, A + Q_d\, c_\mathrm{d,i}\\[8pt]
-\text{solvent} & \text{the permeate's mass, closed on the SAME solution density } \rho\\
+\text{solvent} & \text{the permeate's mass, closed on the same solution density } \rho\\
 & \text{the concentrations were built from (BatchDiafilter.cpp:445-452)}\\[8pt]
 \text{concentration} & Q_d = 0 \qquad \text{the vessel shrinks}\\
 \text{constantVolume} & Q_d = Q_p \qquad \text{the volume is held}
@@ -176,35 +176,35 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
         + "(SolutionDiffusion.cpp:181)", unit: "kmol/(m²·s)" },
       { sym: "A", means: "the membrane area the case declares "
         + "(BatchDiafilter.cpp:118)", unit: "m²" },
-      { sym: "Q_d", means: "the DIAFILTRATE rate: clean solvent added to the "
+      { sym: "Q_d", means: "the diafiltrate rate: clean solvent added to the "
         + "vessel.  This is the whole difference between the two modes",
         unit: "m³/s" },
-      { sym: "Q_p", means: "the PERMEATE rate, A J_w -- what leaves through "
+      { sym: "Q_p", means: "the permeate rate, A J_w -- what leaves through "
         + "the membrane", unit: "m³/s" },
       { sym: "c_\\mathrm{d,i}", means: "the concentration of solute i in the "
         + "diafiltrate.  A clean wash carries none, which is the only case "
         + "this unit supports", unit: "kmol/m³" },
       { sym: "\\rho", means: "the solution mass density every concentration in "
         + "the vessel is closed on.  The case declares it; when it does not, "
-        + "the engine takes 1000 kg/m³ and ANNOUNCES that it did "
+        + "the engine takes 1000 kg/m³ and announces that it did "
         + "(BatchDiafilter.cpp:140-158)", unit: "kg/m³" },
       { sym: "B_\\mathrm{s,i}",
         means: "the membrane's solute permeability for i, read "
         + "from the membrane record", unit: "m/s" },
       { sym: "c_\\mathrm{m,i}",
-        means: "the concentration of i at the membrane WALL -- "
+        means: "the concentration of i at the membrane wall -- "
         + "step 5", unit: "kmol/m³" },
       { sym: "c_\\mathrm{p,i}", means: "the concentration of i in the permeate",
         unit: "kmol/m³" },
     ],
-    note: "WHY THE SOLVENT LINE IS WRITTEN IN WORDS ABOVE AND NOT AS AN "
-      + "EQUATION: because the equation is a closure, not a flux.  The "
-      + "permeate's water is taken as the permeate's MASS less the solute "
+    note: "Why the solvent line is written in words above and not as an "
+      + "equation: because the equation is a closure, not a flux.  The "
+      + "permeate's water is taken as the permeate's mass less the solute "
       + "mass it carries, both on the one solution density, rather than as a "
       + "pure-water concentration times a flow -- the second reads like the "
       + "obvious thing to write and leaks about one per cent of the vessel's "
       + "mass across a run (BatchDiafilter.H:56-64).  A third mode a reader "
-      + "will look for is NOT here, and the limits at the foot of this page "
+      + "will look for is not here, and the limits at the foot of this page "
       + "say where it lives rather than leaving it to be discovered: a "
       + "feed-and-bleed membrane loop is not a mode of this unit.",
   },
@@ -213,12 +213,12 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
     title: "Each mode has its own clock, and neither of them is time",
     body: "Ask how far a batch run has gone and the answer is never seconds.  "
       + "A concentration is measured by how much smaller the vessel is than "
-      + "it started -- the VOLUME CONCENTRATION FACTOR -- and a wash is "
+      + "it started -- the volume concentration factor -- and a wash is "
       + "measured by how many vessel volumes of clean solvent have been "
-      + "pushed through it, the DIAVOLUMES.  Both are dimensionless, both "
+      + "pushed through it, the diavolumes.  Both are dimensionless, both "
       + "start at their own natural origin, and both make runs at different "
       + "areas and pressures comparable, which seconds do not.  The engine "
-      + "publishes each of them, and publishes the diavolume count ONLY in "
+      + "publishes each of them, and publishes the diavolume count only in "
       + "constant-volume mode, because outside it the number would be "
       + "counting a wash that is not happening (BatchDiafilter.H:268-269).",
     formula: String.raw`\begin{aligned}
@@ -227,16 +227,16 @@ N &= \frac{\int Q_d\, \mathrm{d}t}{V_0} &\qquad& \text{the wash clock}
 \end{aligned}`,
     where: [
       { sym: "\\mathrm{VCF}",
-        means: "the VOLUME CONCENTRATION FACTOR, how many times "
+        means: "the volume concentration factor, how many times "
         + "smaller the vessel is than its charge.  VCF = 1 at the start; the "
         + "engine publishes it as `concentrationFactor` "
         + "(BatchDiafilter.cpp:594)" },
       { sym: "V_0", means: "the volume of the initial charge, published as "
         + "`V_initial_m3`", unit: "m³" },
       { sym: "V", means: "the volume in the vessel now", unit: "m³" },
-      { sym: "N", means: "the DIAVOLUMES: vessel volumes of clean solvent "
+      { sym: "N", means: "the diavolumes: vessel volumes of clean solvent "
         + "pushed through.  N = 0 at the start, and the engine derives it "
-        + "from the permeated volume it integrated as a STATE, so the count "
+        + "from the permeated volume it integrated as a state, so the count "
         + "and the trajectory cannot disagree (BatchDiafilter.H:261-269)" },
       { sym: "Q_d", means: "the diafiltrate rate of step 2, equal to the "
         + "permeate rate in constant-volume mode", unit: "m³/s" },
@@ -244,13 +244,13 @@ N &= \frac{\int Q_d\, \mathrm{d}t}{V_0} &\qquad& \text{the wash clock}
         means: "the element of time the diafiltrate flow is "
         + "integrated over", unit: "s" },
     ],
-    note: "THE PAGE PUTS THE RUN'S OWN CLOCK ON THE AXIS, so flipping the "
-      + "mode knob changes what the horizontal axis MEANS, not just the "
+    note: "The page puts the run's own clock on the axis, so flipping the "
+      + "mode knob changes what the horizontal axis means, not just the "
       + "curve.  That is the point rather than a convenience: the two modes "
       + "are two different questions, and a student who plots both against "
       + "seconds will read neither.  The tool also re-integrates the "
       + "permeate flow over the written samples by the trapezoid rule and "
-      + "prints it beside the volume the adaptive integrator ACCEPTED.  The "
+      + "prints it beside the volume the adaptive integrator accepted.  The "
       + "gap between the two is the write mesh and nothing else, and the "
       + "engine's own header says why the state is the authority "
       + "(BatchDiafilter.H:261-269): a ledger built by re-quadrature "
@@ -260,7 +260,7 @@ N &= \frac{\int Q_d\, \mathrm{d}t}{V_0} &\qquad& \text{the wash clock}
     n: 4,
     title: "The classical results, and the assumption every one of them spends",
     body: "These are the formulae a student meets before ever opening a "
-      + "simulator, and they are worth knowing because they say what MUST "
+      + "simulator, and they are worth knowing because they say what must "
       + "happen: washing removes a poorly-rejected solute exponentially in "
       + "diavolumes, concentrating enriches a well-rejected one as a power of "
       + "the volume factor, and doing both in sequence costs product by the "
@@ -269,20 +269,20 @@ N &= \frac{\int Q_d\, \mathrm{d}t}{V_0} &\qquad& \text{the wash clock}
       + "assumption to get there: that the rejection can be taken outside the "
       + "integral.",
     derivation: [
-      { step: "Write the solute balance.  By the DEFINITION of the observed "
+      { step: "Write the solute balance.  By the definition of the observed "
           + "rejection the permeate carries c_p = (1 − R) c, so the solute "
           + "leaves in proportion to what is in the vessel.",
         eq: String.raw`\frac{\mathrm{d}n}{\mathrm{d}t} = -Q_p c_p = -Q_p (1 - R)\, c`},
       { step: "Write the volume balance.  This is the only line that knows "
           + "which mode you are running.",
         eq: String.raw`\frac{\mathrm{d}V}{\mathrm{d}t} = Q_d - Q_p`},
-      { step: "CONSTANT VOLUME: Q_d = Q_p, so V never moves and c = n/V.  "
+      { step: "Constant volume: Q_d = Q_p, so V never moves and c = n/V.  "
           + "Divide through and the natural variable is the wash clock.",
         eq: String.raw`\begin{aligned}
 \frac{\mathrm{d}n}{n} &= -(1 - R)\, \frac{Q_p\, \mathrm{d}t}{V} = -(1 - R)\, \mathrm{d}N\\[4pt]
 \frac{n}{n_0} &= \exp(-(1 - R) N)
 \end{aligned}`},
-      { step: "CONCENTRATION: Q_d = 0, so dV/dt = −Q_p and the volume is the "
+      { step: "Concentration: Q_d = 0, so dV/dt = −Q_p and the volume is the "
           + "clock.  Divide the two balances and time cancels entirely -- "
           + "which is why the answer holds whatever the flux does.",
         eq: String.raw`\begin{aligned}
@@ -293,10 +293,10 @@ N &= \frac{\int Q_d\, \mathrm{d}t}{V_0} &\qquad& \text{the wash clock}
           + "volume they now sit in.",
         eq: String.raw`\frac{c}{c_0} = \frac{n}{n_0} \cdot \frac{V_0}{V} = \mathrm{VCF}^{R}`},
       { step: "A concentration and then a wash are two retained fractions "
-          + "multiplied, so their exponents ADD -- concentrating by VCF costs "
+          + "multiplied, so their exponents add -- concentrating by VCF costs "
           + "exactly what washing ln(VCF) diavolumes costs.",
         eq: String.raw`\frac{n}{n_0} = \exp\!\left( (R - 1)(\ln \mathrm{VCF} + N) \right)`},
-      { step: "EVERY LINE ABOVE PULLED R OUT OF THE INTEGRAL.  That is the "
+      { step: "Every line above pulled R out of the integral.  That is the "
           + "whole of what the rest of this page is about." },
     ],
     formula: String.raw`\begin{array}{lll}
@@ -314,7 +314,7 @@ N &= \frac{\int Q_d\, \mathrm{d}t}{V_0} &\qquad& \text{the wash clock}
         unit: "kmol/m³" },
       { sym: "c_p", means: "its concentration in the permeate",
         unit: "kmol/m³" },
-      { sym: "R", means: "the rejection, HELD CONSTANT -- the assumption "
+      { sym: "R", means: "the rejection, held constant -- the assumption "
         + "every line here spends" },
       { sym: "N", means: "the diavolumes of the wash, counted in vessel volumes of the retentate AS IT IS during the wash: V_0 for a wash of the initial charge (step 3's clock), V_0/VCF after a concentration -- the volume dN = Q_p dt / V divides by" },
       { sym: "\\mathrm{d}N",
@@ -329,10 +329,10 @@ N &= \frac{\int Q_d\, \mathrm{d}t}{V_0} &\qquad& \text{the wash clock}
       { sym: "Q_p", means: "the permeate rate", unit: "m³/s" },
       { sym: "Q_d", means: "the diafiltrate rate", unit: "m³/s" },
       { sym: "\\mathrm{loss}",
-        means: "the fraction of the solute NOT left in the "
+        means: "the fraction of the solute not left in the "
         + "vessel at the end of a concentration followed by a wash" },
     ],
-    note: "READ THE TWO EXTREMES AND THE FORMULAE STOP BEING SYMBOLS.  At "
+    note: "Read the two extremes and the formulae stop being symbols.  At "
       + "R = 1 the membrane keeps everything: the wash removes nothing "
       + "(n/n_0 = 1) and concentrating multiplies the concentration by the "
       + "volume factor exactly (c/c_0 = VCF).  At R = 0 the solute goes "
@@ -344,47 +344,47 @@ N &= \frac{\int Q_d\, \mathrm{d}t}{V_0} &\qquad& \text{the wash clock}
   {
     n: 5,
     title: "Why the rejection is not constant, and how to see it",
-    body: "The rejection in those formulae is the OBSERVED one -- what a "
+    body: "The rejection in those formulae is the observed one -- what a "
       + "sample of permeate and a sample of the bulk tell you -- and it is "
       + "not a property of the membrane.  Follow the chain the engine "
-      + "actually solves.  The flux is fixed by the applied pressure LESS the "
+      + "actually solves.  The flux is fixed by the applied pressure less the "
       + "osmotic pressure difference across the membrane, which is a Newton "
       + "solve because the flux appears on both sides "
       + "(SolutionDiffusion.cpp:133).  The osmotic term is evaluated at the "
-      + "membrane WALL, not in the bulk (SolutionDiffusion.cpp:106-119), and "
+      + "membrane wall, not in the bulk (SolutionDiffusion.cpp:106-119), and "
       + "the wall is richer than the bulk by a polarisation factor that grows "
       + "with the flux (Polarisation.H:41-46).  The solute flux is driven by "
       + "the wall-to-permeate difference (SolutionDiffusion.cpp:181).  Now "
       + "run the vessel: the composition changes, so the osmotic pressure "
       + "changes, so the flux changes, so the wall changes, so the permeate "
-      + "changes -- and the rejection you would MEASURE moves although the "
+      + "changes -- and the rejection you would measure moves although the "
       + "membrane has not changed at all.",
     formula: String.raw`\begin{array}{ll}
-R_\mathrm{obs} = 1 - \dfrac{c_p}{c_b} & \text{measured against the BULK}\\[8pt]
+R_\mathrm{obs} = 1 - \dfrac{c_p}{c_b} & \text{measured against the bulk}\\[8pt]
 c_m > c_b & \text{the wall is richer than the bulk}\\[8pt]
 \mathrm{washoutActual} = n/n_0 \text{ from the run}\\
 \mathrm{washoutIdeal} = \exp(-(1 - R_0) N), & R_0 = R_\mathrm{obs} \text{ at } t = 0
 \end{array}`,
     where: [
       { sym: "\\mathrm{washoutActual}",
-        means: "the solute fraction REMAINING at the end of this run, read off the "
+        means: "the solute fraction remaining at the end of this run, read off the "
         + "integrated inventory" },
       { sym: "\\mathrm{washoutIdeal}",
         means: "what the constant-rejection law predicts for the same wash, "
-        + "evaluated from THIS run's own initial rejection.  The gap between "
+        + "evaluated from this run's own initial rejection.  The gap between "
         + "the two is the lesson" },
       { sym: "R_\\mathrm{obs}",
-        means: "the OBSERVED rejection the run publishes at "
+        means: "the observed rejection the run publishes at "
         + "every instant as `R_obs_<solute>` (BatchDiafilter.cpp:580-583)" },
       { sym: "c_b", means: "the solute's concentration in the well-mixed "
-        + "BULK of the vessel, published as `c_b_<solute>`",
+        + "bulk of the vessel, published as `c_b_<solute>`",
         unit: "kmol/m³" },
       { sym: "c_p", means: "its concentration in the permeate, published as "
         + "`c_p_<solute>`", unit: "kmol/m³" },
-      { sym: "c_m", means: "its concentration at the membrane WALL, which no "
+      { sym: "c_m", means: "its concentration at the membrane wall, which no "
         + "sample of the vessel can reach and which is what the physics "
         + "answers to", unit: "kmol/m³" },
-      { sym: "R_0", means: "the observed rejection at the FIRST instant of "
+      { sym: "R_0", means: "the observed rejection at the first instant of "
         + "this run, which the engine takes from the run itself rather than "
         + "from any declaration (BatchDiafilter.cpp:282-284)" },
       { sym: "n", means: "moles of the solute left in the vessel",
@@ -393,19 +393,19 @@ c_m > c_b & \text{the wall is richer than the bulk}\\[8pt]
       { sym: "N", means: "diavolumes" },
       { sym: "t", means: "time", unit: "s" },
     ],
-    note: "THE COMPARISON CANNOT HAVE BEEN ARRANGED, and that is why it is "
-      + "worth looking at.  In constant-volume mode the unit publishes BOTH "
+    note: "The comparison cannot have been arranged, and that is why it is "
+      + "worth looking at.  In constant-volume mode the unit publishes both "
       + "`washoutActual_<solute>` -- what the vessel did -- and "
-      + "`washoutIdeal_<solute>`, the constant-R law evaluated at THIS run's "
+      + "`washoutIdeal_<solute>`, the constant-R law evaluated at this run's "
       + "own initial rejection and its own diavolume count "
       + "(BatchDiafilter.cpp:651-661).  No case declares either number.  Read "
-      + "the SIGN of the gap against the rejection trajectory beside it: a "
-      + "rejection that ROSE means less solute passed than the law predicted, "
-      + "so more was retained than the ideal; a rejection that FELL means the "
+      + "the sign of the gap against the rejection trajectory beside it: a "
+      + "rejection that rose means less solute passed than the law predicted, "
+      + "so more was retained than the ideal; a rejection that fell means the "
       + "opposite.  Both signs occur in the shipped witnesses, which is the "
       + "cleanest evidence that the constant-R assumption is not conservative "
-      + "in either direction.  IN CONCENTRATION MODE THE ENGINE PUBLISHES NO "
-      + "IDEAL AT ALL, deliberately -- the washout law is not the law of that "
+      + "in either direction.  In concentration mode the engine publishes no "
+      + "ideal at all, deliberately -- the washout law is not the law of that "
       + "mode and quoting it there would be a category error "
       + "(BatchDiafilter.cpp:651-655) -- so the power law on that branch is "
       + "computed by this page, from the engine's own R_0 and VCF, and is "
@@ -414,7 +414,7 @@ c_m > c_b & \text{the wall is richer than the bulk}\\[8pt]
   {
     n: 6,
     title: "Fouling: a claim about a mechanism, not a fitted exponent",
-    body: "Everything so far makes the flux RISE during a wash: the salt "
+    body: "Everything so far makes the flux rise during a wash: the salt "
       + "leaves, the osmotic pressure falls, the driving force grows.  That "
       + "is what the model has, and a rig can do the opposite.  On real "
       + "equipment the flux can fall during a run, for three reasons: the "
@@ -423,8 +423,8 @@ c_m > c_b & \text{the wall is richer than the bulk}\\[8pt]
       + "(it does not), and material accumulates on or in the membrane, "
       + "which is fouling.  Fouling is the one this step adds, and schedules "
       + "are commonly sized on the decline.  The engine offers it as a resistance in series on the permeance it "
-      + "hands the transport law -- applied where the transport CONTEXT is "
-      + "assembled, so solution-diffusion and DSPM-DE are served alike and "
+      + "hands the transport law -- applied where the transport context is "
+      + "assembled, so solution-diffusion and dspm-de are served alike and "
       + "neither law is modified (BatchDiafilter.cpp:341-358).  The "
       + "resistance grows with the volume filtered per unit area, by one of "
       + "Hermia's blocking laws.",
@@ -435,53 +435,53 @@ c_m > c_b & \text{the wall is richer than the bulk}\\[8pt]
 \end{array}`,
     where: [
       { sym: "V_\\mathrm{permeated}",
-        means: "the cumulative permeate VOLUME, an integrated state of the run",
+        means: "the cumulative permeate volume, an integrated state of the run",
         unit: "m^3" },
       { sym: "A_\\mathrm{eff}",
-        means: "the EFFECTIVE water permeance the transport "
+        means: "the effective water permeance the transport "
         + "law is handed -- what the membrane still has", unit: "m/(s·Pa)" },
-      { sym: "A_w", means: "the CLEAN water permeance, the membrane record's "
+      { sym: "A_w", means: "the clean water permeance, the membrane record's "
         + "own datum", unit: "m/(s·Pa)" },
       { sym: "r_f", means: "the fouling resistance, in series with the "
         + "membrane's own", unit: "s·Pa/m" },
       { sym: "v", means: "the volume filtered per unit of membrane area -- "
         + "the natural clock of a fouling layer, not time", unit: "m" },
       { sym: "A", means: "the membrane area", unit: "m²" },
-      { sym: "k", means: "the blocking constant.  It belongs to a RIG AND A "
-        + "MATERIAL, so the case declares it and no catalogue record is "
+      { sym: "k", means: "the blocking constant.  It belongs to a rig and a "
+        + "material, so the case declares it and no catalogue record is "
         + "touched" },
     ],
-    note: "TWO LAWS, NOT FOUR, AND THE BLOCK REQUIRES A REASON.  `standard` "
+    note: "Two laws, not four, and the block requires a reason.  `standard` "
       + "(pore walls narrowing inside the membrane) and `complete` (pores "
       + "sealed at their entrances, each particle closing one) are not "
-      + "implemented, so they are REFUSED BY "
-      + "NAME rather than approximated by a neighbour that would fit the data "
+      + "implemented, so they are refused by "
+      + "name rather than approximated by a neighbour that would fit the data "
       + "and mean something else (BatchDiafilter.cpp:161-182).  And because a "
-      + "blocking law asserts a MECHANISM -- cake says a layer was deposited, "
+      + "blocking law asserts a mechanism -- cake says a layer was deposited, "
       + "intermediate says pores were covered -- and nothing in the engine "
       + "can tell which describes your feed, the `fouling {}` block will not "
       + "run without a written `reason` (BatchDiafilter.cpp:191-199).  A "
       + "good fit does not settle it either: more than one blocking law can "
       + "follow the same flux decline over a limited range, so a law that "
-      + "fits a curve is a HYPOTHESIS about the mechanism, to be backed by "
+      + "fits a curve is a hypothesis about the mechanism, to be backed by "
       + "other evidence (how the decline responds to pressure or crossflow, "
       + "to cleaning, what the feed carries) over the range you operate "
       + "in, never a diagnosis read off the fit.  Use "
       + "the tool's witness toggle to put the two shipped cases side by side: "
-      + "diafilter01 and diafilter02 are the SAME charge, area, pressure and "
+      + "diafilter01 and diafilter02 are the same charge, area, pressure and "
       + "horizon, and the only difference between them is the fouling block, "
       + "so the difference in the answer IS the fouling.  Read diafilter02's "
       + "own header before believing its constant: a fully dissolved brine "
       + "has nothing to deposit, the value is declared hypothetical in the "
-      + "case, and what the case demonstrates is the CONSEQUENCE of a decline "
+      + "case, and what the case demonstrates is the consequence of a decline "
       + "rather than this feed's fouling.",
   },
   {
     n: 7,
     title: "The trade you actually make: purity against product and time",
-    body: "Washing longer buys purity and costs two things.  It costs PRODUCT "
+    body: "Washing longer buys purity and costs two things.  It costs product "
       + ", because no rejection is one and the exponent of step 4 never "
-      + "stops running; and it costs TIME, because every diavolume is a "
+      + "stops running; and it costs time, because every diavolume is a "
       + "vessel volume of permeate that has to go through the membrane.  The "
       + "time is where the design decision lives.  For a fixed inventory of "
       + "the thing you are keeping, a smaller vessel means a more "
@@ -491,9 +491,9 @@ c_m > c_b & \text{the wall is richer than the bulk}\\[8pt]
       + "so there is a concentration at which the wash takes the least "
       + "time, and the classical statement of it is that it is where the "
       + "product of flux and concentration is largest.  Be exact about the "
-      + "objective: it is the TIME OF THE DIAFILTRATION STEP, at a fixed "
+      + "objective: it is the time of the diafiltration step, at a fixed "
       + "inventory, a fixed number of diavolumes and a fixed area.  That is "
-      + "not automatically the best CAMPAIGN, which also pays for the "
+      + "not automatically the best campaign, which also pays for the "
       + "concentration and reconcentration steps, the product lost, the "
       + "buffer used and the cleaning — a different objective can put the "
       + "optimum somewhere else.",
@@ -511,33 +511,33 @@ V &\propto \frac{1}{c} \text{ at fixed inventory} &\Rightarrow\quad& t_\mathrm{D
       { sym: "V", means: "the volume being washed", unit: "m³" },
       { sym: "A", means: "the membrane area", unit: "m²" },
       { sym: "J_w", means: "the water flux at that volume", unit: "m/s" },
-      { sym: "c", means: "the concentration of the RETAINED species -- the "
+      { sym: "c", means: "the concentration of the retained species -- the "
         + "one whose inventory fixes how small the vessel can be",
         unit: "kmol/m³" },
     ],
-    note: "THE CLASSICAL OPTIMUM AND WHAT THIS PAGE DOES WITH IT.  The result "
+    note: "The classical optimum and what this page does with it.  The result "
       + "is Ng, Lundblad & Mitra, \"Optimization of Solute Separation by "
       + "Diafiltration\", Separation Science 11(5) (1976) 499-502 "
       + "(doi:10.1080/01496397608085339): wash where the product of flux and "
       + "retained concentration is greatest.  The familiar closed form that "
       + "goes with it -- wash at the gel concentration divided by e -- does "
-      + "NOT follow from the criterion alone; it follows from the "
-      + "GEL-POLARISED flux law of ultrafiltration, and the run on this page "
+      + "not follow from the criterion alone; it follows from the "
+      + "gel-polarised flux law of ultrafiltration, and the run on this page "
       + "does not carry that law: its flux comes from an applied pressure "
       + "less an osmotic pressure through the declared solution-diffusion "
       + "model (the engine has the gel law as `transport gelPolarisation`, "
       + "witness membrane19_uf_gel_polarisation, but this diafiltration does "
       + "not declare it).  So the page "
-      + "applies the criterion and NOT the closed form: it reads the product "
+      + "applies the criterion and not the closed form: it reads the product "
       + "off the engine's own concentration-mode trajectory, marks the "
       + "maximum, and says whether the maximum was inside the window the run "
       + "swept or sitting on one of its ends -- because an endpoint is not an "
-      + "UNCONSTRAINED optimum: either the run did not bracket one, or the "
+      + "unconstrained optimum: either the run did not bracket one, or the "
       + "real limit is a constraint at that end (a minimum working volume, "
       + "a stability ceiling), which the curve cannot tell apart.  Nothing "
       + "here borrows "
       + "a constant from a model that is not running.  And the curve is a "
-      + "CONCENTRATION run's: every solute concentrates together, the "
+      + "concentration run's: every solute concentrates together, the "
       + "permeating salts included, and their osmotic pressure lowers the "
       + "flux.  During a wash those salts drain away, so the wash flux at the "
       + "same retained concentration is higher, and the maximum can move -- "
@@ -545,23 +545,23 @@ V &\propto \frac{1}{c} \text{ at fixed inventory} &\Rightarrow\quad& t_\mathrm{D
   },
   {
     n: 8,
-    title: "How an engineer actually ARRIVES at that concentration",
+    title: "How an engineer actually arrives at that concentration",
     body: "Step 7 says where the optimum is.  It does not say how anybody "
       + "finds it, and a criterion you cannot execute is a slogan.  The "
       + "method industry uses is graphical and takes an afternoon on a "
       + "bench rig.  Measure the filtrate flux at several product "
-      + "concentrations and plot it against the LOGARITHM of concentration, "
+      + "concentrations and plot it against the logarithm of concentration, "
       + "where the decay is close to a straight line and is therefore "
-      + "readable.  Do it TWICE: once with the product in the buffer it "
+      + "readable.  Do it twice: once with the product in the buffer it "
       + "starts in and once in the buffer you will wash with, because a "
       + "change of buffer moves the whole flux curve and the wash crosses "
       + "from one to the other.  Then form the product of concentration and "
-      + "flux at points along each curve, plot THAT against concentration, "
+      + "flux at points along each curve, plot that against concentration, "
       + "and read off where it turns over.  Two curves give two maxima, and "
       + "where they differ materially you take the lower of them.",
     derivation: [
       { step: "Measure the flux against product concentration, in the "
-          + "STARTING buffer and again in the DIAFILTRATION buffer.  The log "
+          + "starting buffer and again in the diafiltration buffer.  The log "
           + "axis is not decoration: it is what makes the decay straight "
           + "enough to interpolate between measured points.",
         eq: String.raw`J_f = J_f(\log C) \qquad \text{two buffers, two curves}`},
@@ -573,12 +573,12 @@ V &\propto \frac{1}{c} \text{ at fixed inventory} &\Rightarrow\quad& t_\mathrm{D
         eq: String.raw`\mathrm{DFOP}(C) = C\, J_f(C)`},
       { step: "Plot that product against concentration and read where it "
           + "turns over.  Each buffer curve gives its own maximum, and the "
-          + "turn is what an UNCONSTRAINED optimum is -- a value at the end of "
+          + "turn is what an unconstrained optimum is -- a value at the end of "
           + "the range you measured is either a range that was too short or "
           + "a constrained optimum sitting on a limit of the rig or the "
           + "product, as the note below explains.",
         eq: String.raw`C_\mathrm{opt,start} \text{ and } C_\mathrm{opt,DF}: \quad \mathrm{DFOP} \text{ at its maximum on each curve}`},
-      { step: "Where the two differ materially, take the LOWER.  The true "
+      { step: "Where the two differ materially, take the lower.  The true "
           + "optimum lies between the curves, because the product is "
           + "exchanged from the starting buffer into the wash buffer as the "
           + "diavolumes go through; the lower choice errs toward more buffer "
@@ -586,7 +586,7 @@ V &\propto \frac{1}{c} \text{ at fixed inventory} &\Rightarrow\quad& t_\mathrm{D
           + "may not survive.",
         eq: String.raw`C_\mathrm{opt} = \min\left( C_\mathrm{opt,start},\; C_\mathrm{opt,DF} \right)`},
       { step: "The rule you were probably taught -- wash at the gel "
-          + "concentration divided by e -- is an APPROXIMATION of this "
+          + "concentration divided by e -- is an approximation of this "
           + "construction, and the industrial source of the construction is "
           + "the one that says so: it holds where the flux decay follows a "
           + "well-defined standard curve, and the construction above holds "
@@ -600,26 +600,26 @@ C_\mathrm{opt} \approx c_g/e & \text{the classical shortcut, and an approximatio
 \end{array}`,
     where: [
       { sym: "\\mathrm{DFOP}",
-        means: "the DIAFILTRATION OPTIMISATION PARAMETER: the product of the "
+        means: "the diafiltration optimisation parameter: the product of the "
         + "concentration and the flux at a point on a flux curve.  It is the "
         + "same quantity step 7 calls J_w c, named the way the bench method "
         + "names it", unit: "g/(m²·h)" },
-      { sym: "C", means: "the product concentration -- the RETAINED species, "
+      { sym: "C", means: "the product concentration -- the retained species, "
         + "the one whose inventory fixes how small the vessel can be",
         unit: "g/L" },
-      { sym: "J_f", means: "the FILTRATE flux at that concentration, measured "
+      { sym: "J_f", means: "the filtrate flux at that concentration, measured "
         + "on the rig.  It is step 1's J_w read off an experiment instead of "
         + "computed", unit: "L/(m²·h)" },
       { sym: "C_\\mathrm{opt,start}",
         means: "the concentration at which DFOP is largest on the curve "
-        + "measured in the STARTING buffer", unit: "g/L" },
+        + "measured in the starting buffer", unit: "g/L" },
       { sym: "C_\\mathrm{opt,DF}",
-        means: "the same, on the curve measured in the DIAFILTRATION buffer",
+        means: "the same, on the curve measured in the diafiltration buffer",
         unit: "g/L" },
       { sym: "C_\\mathrm{opt}",
         means: "the concentration to pre-concentrate to before washing: the "
-        + "LOWER of the two, which is the conservative choice", unit: "g/L" },
-      { sym: "c_g", means: "the GEL concentration of the classical "
+        + "lower of the two, which is the conservative choice", unit: "g/L" },
+      { sym: "c_g", means: "the gel concentration of the classical "
         + "ultrafiltration flux law -- the concentration at which its flux "
         + "extrapolates to zero.  The run on this page declares no such law; "
         + "membrane19_uf_gel_polarisation is the case that does", unit: "g/L" },
@@ -629,16 +629,16 @@ C_\mathrm{opt} \approx c_g/e & \text{the classical shortcut, and an approximatio
       { sym: "\\min", means: "the smaller of the two values, which is the "
         + "conservative rule being applied" },
     ],
-    note: "THREE REASONS YOU MIGHT NOT BE ABLE TO USE THE ANSWER, and they "
-      + "are practical rather than thermodynamic.  The optimum may sit BELOW "
+    note: "Three reasons you might not be able to use the answer, and they "
+      + "are practical rather than thermodynamic.  The optimum may sit below "
       + "the rig's minimum recirculation volume -- a vessel and a loop have "
       + "a smallest working charge and no optimum overrides it.  The product "
-      + "may not be STABLE that concentrated.  Either way you work at a lower "
+      + "may not be stable that concentrated.  Either way you work at a lower "
       + "concentration and pay for it in buffer, in membrane area and in "
       + "time.  The trade runs the other way too: if buffer is the scarce "
-      + "thing, work HIGHER than the optimum and pay in area or in "
-      + "processing time instead.  WHAT THIS PAGE CANNOT DO, said before you "
-      + "look at the plot: Choupo sweeps ONE solution.  The construction "
+      + "thing, work higher than the optimum and pay in area or in "
+      + "processing time instead.  What this page cannot do, said before you "
+      + "look at the plot: Choupo sweeps one solution.  The construction "
       + "above wants the flux curve in the diafiltration buffer as well, and "
       + "no case in the corpus declares a second buffer's flux behaviour, so "
       + "the figure below draws the curve the engine has and marks its "
@@ -654,17 +654,17 @@ C_\mathrm{opt} \approx c_g/e & \text{the classical shortcut, and an approximatio
   },
   {
     n: 9,
-    title: "ln VCF + N is ONE number, and it decides the yield",
+    title: "ln VCF + N is one number, and it decides the yield",
     body: "Look again at the composite loss of step 4.  The concentration "
       + "factor and the diavolumes do not appear in it separately -- they "
       + "appear only through their sum once the concentration factor has "
       + "been logged.  Call that sum the governing group.  Two consequences "
       + "follow immediately and both are design decisions.  First, VCF and N "
-      + "are INTERCHANGEABLE as far as product yield is concerned: "
+      + "are interchangeable as far as product yield is concerned: "
       + "concentrating twenty-fold costs exactly what washing ln(20) = 3 "
       + "diavolumes costs, and a process may trade one against the other "
       + "freely without changing what it loses.  Second, a yield goal is a "
-      + "CEILING ON THE GROUP, so it can be met in three ways and only one "
+      + "ceiling on the group, so it can be met in three ways and only one "
       + "of them leaves the separation alone.",
     derivation: [
       { step: "Take the composite loss of step 4 exactly as it was derived "
@@ -674,30 +674,30 @@ C_\mathrm{opt} \approx c_g/e & \text{the classical shortcut, and an approximatio
           + "combination and the loss becomes a curve in one variable, which "
           + "is the figure this step draws.",
         eq: String.raw`G = \ln \mathrm{VCF} + N \qquad \mathrm{loss} = 1 - \exp\!\left( (R - 1) G \right)`},
-      { step: "Invert it.  A yield goal fixes the LARGEST group a given "
+      { step: "Invert it.  A yield goal fixes the largest group a given "
           + "retention can spend -- this is the number a design is checked "
           + "against, and it needs no iteration.",
         eq: String.raw`G_\mathrm{max} = \frac{\ln\!\left( 1 - \mathrm{loss}_\mathrm{goal} \right)}{R - 1}`},
       { step: "A process outside that ceiling has three ways back inside, "
           + "and they are not equivalent: concentrating less leaves the wash "
-          + "intact but enlarges the vessel, washing less cuts the BUFFER "
-          + "EXCHANGE the wash existed to achieve, and a membrane that "
+          + "intact but enlarges the vessel, washing less cuts the buffer "
+          + "exchange the wash existed to achieve, and a membrane that "
           + "retains better meets the goal without touching either.",
         eq: String.raw`\mathrm{VCF} \downarrow \qquad N \downarrow \qquad R \uparrow`},
     ],
     formula: String.raw`\begin{array}{ll}
-G = \ln \mathrm{VCF} + N & \text{the concentration and the wash enter ONLY here}\\[6pt]
+G = \ln \mathrm{VCF} + N & \text{the concentration and the wash enter only here}\\[6pt]
 \mathrm{loss} = 1 - \exp\!\left( (R - 1) G \right) & \text{so they are interchangeable in the yield}\\[6pt]
 G_\mathrm{max} = \dfrac{\ln\!\left( 1 - \mathrm{loss}_\mathrm{goal} \right)}{R - 1} & \text{the group a yield goal can afford}
 \end{array}`,
     where: [
-      { sym: "G", means: "the GOVERNING GROUP, ln VCF + N -- the only "
+      { sym: "G", means: "the governing group, ln VCF + N -- the only "
         + "combination of the concentration factor and the diavolumes that "
         + "the product loss can see" },
       { sym: "\\mathrm{VCF}",
         means: "the volume concentration factor of step 3" },
       { sym: "N", means: "the diavolumes of the wash, counted in vessel volumes of the retentate AS IT IS during the wash: V_0 for a wash of the initial charge (step 3's clock), V_0/VCF after a concentration -- the volume dN = Q_p dt / V divides by" },
-      { sym: "R", means: "the retention of the product, HELD CONSTANT "
+      { sym: "R", means: "the retention of the product, held constant "
         + "through the whole process -- the same assumption step 4 spends, "
         + "and step 5 is about why it is not true" },
       { sym: "\\mathrm{loss}",
@@ -710,7 +710,7 @@ G_\mathrm{max} = \dfrac{\ln\!\left( 1 - \mathrm{loss}_\mathrm{goal} \right)}{R -
         means: "the largest governing group that retention can spend and "
         + "still meet the goal" },
     ],
-    note: "THE WORKED EXAMPLE, RECOMPUTED.  Millipore Technical Brief TB032 "
+    note: "The worked example, recomputed.  Millipore Technical Brief TB032 "
       + "(Rev. C, 06/03, 03-117) p. 6 makes this concrete: concentrate "
       + "twenty-fold, then wash seven diavolumes, and keep more than 93 % of "
       + "the product.  The group is ln(20) + 7 = 9.9957 (the source rounds "
@@ -718,7 +718,7 @@ G_\mathrm{max} = \dfrac{\ln\!\left( 1 - \mathrm{loss}_\mathrm{goal} \right)}{R -
       + "its figures can differ in the third decimal).  At a retention of "
       + "0.99 the loss is 9.51 %, and the goal is missed.  Cutting the wash "
       + "to 4.3 diavolumes brings the group to 7.2957 and the loss to "
-      + "7.04 %, which is MARGINALLY OVER a goal of less than 7 % -- it "
+      + "7.04 %, which is marginally over a goal of less than 7 % -- it "
       + "meets the goal only at the one decimal a graph is read to, and "
       + "the wash that exactly meets it is 4.2613 diavolumes.  That "
       + "difference is small and it is the whole argument for doing this "
@@ -729,7 +729,7 @@ G_\mathrm{max} = \dfrac{\ln\!\left( 1 - \mathrm{loss}_\mathrm{goal} \right)}{R -
       + "diavolumes instead of 7 leaves exp(7 - 4.3) = 14.9 times as much of "
       + "the old buffer in the vessel.  Raising the retention "
       + "to 0.999 instead leaves VCF, N and the buffer exchange exactly "
-      + "where they were and drops the loss to 0.99 %.  THAT is the reason "
+      + "where they were and drops the loss to 0.99 %.  That is the reason "
       + "the membrane choice is the first decision and not the last.  The "
       + "table below carries those numbers as this page computes them from "
       + "the formula above; nothing in it is transcribed.",
@@ -742,7 +742,7 @@ export const BATCH_MEMBRANE_LIMITS: readonly LessonLimit[] = [
     title: "The feed-and-bleed membrane loop is not a mode of this unit.",
     body: "A reader who knows how pilot and production plants are actually "
       + "run will look for a third mode, and it is not a mode of this unit: "
-      + "a feed-and-bleed loop is a STEADY module inside a recirculating "
+      + "a feed-and-bleed loop is a steady module inside a recirculating "
       + "tank, so Choupo builds it as a FLOWSHEET -- at steady state as a "
       + "steady recycle (tutorials/steady/membranes/membrane18_nf_feed_and_"
       + "bleed), and in time under choupoSemiContinuous, the module wrapped "
@@ -759,23 +759,23 @@ export const BATCH_MEMBRANE_LIMITS: readonly LessonLimit[] = [
       + "what failed, and the rejection trajectory beside them says how.  "
       + "Nothing on this page adjusts either number to close the gap, and "
       + "nothing here judges the engine's answer to be right -- the goldens "
-      + "of the two witnesses pin what this MODEL gives, and neither case is "
+      + "of the two witnesses pin what this model gives, and neither case is "
       + "validated against a measured diafiltration.",
   },
   {
     id: "one-buffer-only",
-    title: "The two-buffer optimum construction is HALF done here, and the "
+    title: "The two-buffer optimum construction is half done here, and the "
       + "missing half is the one that brackets the answer.",
     body: "Step 8's construction reads the flux curve in the product's "
-      + "STARTING buffer and again in the DIAFILTRATION buffer, takes the "
+      + "starting buffer and again in the diafiltration buffer, takes the "
       + "maximum of concentration times flux on each, and works at the lower "
-      + "of the two.  Choupo sweeps ONE solution.  The only fact the unit holds "
-      + "about the wash buffer is its DENSITY (`rho_diafiltrate`, which "
+      + "of the two.  Choupo sweeps one solution.  The only fact the unit holds "
+      + "about the wash buffer is its density (`rho_diafiltrate`, which "
       + "closes the solvent mass balance and enters no flux law), and it "
       + "carries no solute at all -- so there is nothing from which a "
       + "second flux curve could be built, and no case in the corpus even "
       + "declares that density.  So the "
-      + "figure on this page is ONE curve and its maximum is ONE buffer's "
+      + "figure on this page is one curve and its maximum is one buffer's "
       + "answer.  What the second curve would change: it would give a second "
       + "maximum, the true optimum would lie between the two, and the "
       + "conservative rule would send you to the lower of them -- so the "
@@ -786,36 +786,36 @@ export const BATCH_MEMBRANE_LIMITS: readonly LessonLimit[] = [
   {
     id: "no-measured-fouling",
     title: "The tree carries no measured fouling data at all.",
-    body: "diafilter02's blocking constant is declared HYPOTHETICAL in its "
+    body: "diafilter02's blocking constant is declared hypothetical in its "
       + "own header: a fully dissolved brine has nothing to deposit, so cake "
       + "is not a mechanism that feed can claim, and the constant was chosen "
       + "to make the consequence of a decline visible against its clean twin. "
       + " Critical flux, gel layers, cleaning and backwash cycles, and any "
-      + "PREDICTION of the blocking constant are all outside the engine.",
+      + "prediction of the blocking constant are all outside the engine.",
   },
   {
     id: "k-film-is-declared",
     title: "The polarisation coefficient is declared, never correlated.",
     body: "The unit is told a transmembrane pressure and an area, not a "
-      + "stirrer speed or a channel, so it REFUSES to run without `k_film` "
+      + "stirrer speed or a channel, so it refuses to run without `k_film` "
       + "rather than inventing a correlation for a geometry nobody described "
       + "(BatchDiafilter.cpp:129-137).  A spacer-filled crossflow channel is "
       + "one geometry for which Choupo carries a correlation (Schock & "
       + "Miquel's spacer fit, Desalination 64 (1987) 339, "
       + "massTransfer/SchockMiquel.H:37).  Correlations for stirred cells "
-      + "exist in the membrane literature too; what is true is that THIS "
+      + "exist in the membrane literature too; what is true is that this "
       + "unit is declared a pressure and an area, with no geometry or "
       + "stirrer speed to feed any correlation, so the coefficient has to be "
       + "declared.  Turn the knob down and watch the polarisation bite.",
   },
   {
     id: "no-energy",
-    title: "The campaign's first law is UNAVAILABLE, and says so.",
+    title: "The campaign's first law is unavailable, and says so.",
     body: "The pump work driving the filtration is not ledgered: the unit is "
       + "declared a pressure, not a pump, so there is no flow and no "
       + "efficiency to price it with, and the batch ledger's shaft-work kind "
       + "is reserved and unimplemented.  The material and the vessel enthalpy "
-      + "ARE priced, and the campaign energy balance reports UNAVAILABLE "
+      + "are priced, and the campaign energy balance reports unavailable "
       + "rather than closing with a term quietly set to zero "
       + "(BatchDiafilter.cpp:670-686).",
   },

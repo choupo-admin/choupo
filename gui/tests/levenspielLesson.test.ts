@@ -53,7 +53,7 @@ describe("the reactor-sizing lesson", () => {
 
   it("builds on the one idea: the area under the curve IS the volume", () => {
     const s1 = step(1);
-    expect(prose(s1.body)).toContain("AREA IS VOLUME");
+    expect(prose(s1.body)).toContain("Area is volume");
     //  Both design equations, printed side by side — the integral and the
     //  product — because the whole page is the difference between them.
     expect(prose(s1.formula!)).toContain(String.raw`V = F_{A0} \displaystyle\int_0^X \frac{\mathrm{d}X}{-r_A}`);
@@ -67,7 +67,7 @@ describe("the reactor-sizing lesson", () => {
     //  Not "the CSTR equation happens to be a product" — the reason, which is
     //  that a perfectly mixed vessel has no gradient to integrate over.
     const s2 = step(2);
-    expect(prose(s2.body)).toContain("OUTLET composition everywhere");
+    expect(prose(s2.body)).toContain("outlet composition everywhere");
     expect(prose(s2.body)).toContain("converted at the exit rate");
     expect(prose(s2.formula!))
       .toContain(String.raw`V_\mathrm{CSTR} &= \frac{F_{A0}\, X_\mathrm{exit}}{\left.(-r_A)\right|_\mathrm{exit}}`);
@@ -77,7 +77,7 @@ describe("the reactor-sizing lesson", () => {
 
   it("states the ordinary result AS a consequence of the shape", () => {
     const s3 = step(3);
-    expect(prose(s3.body)).toContain("1/(−r_A) RISES with X");
+    expect(prose(s3.body)).toContain("1/(−r_A) rises with X");
     expect(prose(s3.body)).toContain("contains the entire area");
     expect(prose(s3.formula!)).toContain(String.raw`V_\mathrm{PFR} &\le V_\mathrm{CSTR}`);
     //  Tanks in series and the PFR limit fall straight out of the same
@@ -91,9 +91,9 @@ describe("the reactor-sizing lesson", () => {
     //  The result students remember wrongly.  It must be stated as a
     //  consequence of the curve falling, not as a fact about autocatalysis.
     const s4 = step(4);
-    expect(prose(s4.body)).toContain("Any rate that IMPROVES with conversion");
+    expect(prose(s4.body)).toContain("Any rate that improves with conversion");
     expect(prose(s4.body)).toContain("autocatalysis");
-    expect(prose(s4.body)).toContain("the rectangle sits UNDER the");
+    expect(prose(s4.body)).toContain("the rectangle sits under the");
     expect(prose(s4.body)).toContain("the stirred tank is the smaller reactor");
     //  And the consequence at X = 0 with no uncatalysed path, which a plug-flow
     //  reactor fed no product cannot start from (a seed or a recycle is
@@ -108,7 +108,7 @@ describe("the reactor-sizing lesson", () => {
     //  claiming the plot shows autocatalysis would be claiming a result the
     //  witnesses cannot produce.
     const note = prose(step(4).note!);
-    expect(note).toContain("NEITHER witness below is autocatalytic");
+    expect(note).toContain("neither witness below is autocatalytic");
     expect(note).toContain("described here, not demonstrated");
     //  What the engine CAN express is stated instead of implied.
     expect(note).toContain("declares its own `order`");
@@ -116,13 +116,13 @@ describe("the reactor-sizing lesson", () => {
 
   it("closes on the series arrangement, and locates the cut exactly", () => {
     const s5 = step(5);
-    expect(prose(s5.body)).toContain("MINIMUM of 1/(−r_A)");
+    expect(prose(s5.body)).toContain("minimum of 1/(−r_A)");
     expect(prose(s5.body)).toContain("followed by a PFR that takes the rest");
     //  The optimum is where the curve is flat — a derivative, not a rule of
     //  thumb, and the note does the derivative rather than asserting it.
-    expect(prose(s5.formula!)).toContain(String.raw`X^* \text{ at the curve's MINIMUM}`);
+    expect(prose(s5.formula!)).toContain(String.raw`X^* \text{ at the curve's minimum}`);
     expect(prose(s5.note!)).toContain("the two ordinate terms cancel");
-    expect(prose(s5.note!)).toContain("where the curve is FLAT");
+    expect(prose(s5.note!)).toContain("where the curve is flat");
     //  The degenerate case, so the rule does not read as new physics for the
     //  ordinary curve the reader has just been shown.
     expect(prose(s5.body)).toContain("the minimum sits at X = 0");
@@ -159,7 +159,7 @@ describe("the honest half", () => {
     const l = LEVENSPIEL_LIMITS.find((x) => x.id === "bulk-rate")!;
     expect(prose(l.body)).toContain("effectiveness factor is taken as one");
     //  Which way the error goes is the part a reader can act on.
-    expect(prose(l.body)).toContain("UNDERSTATES the volume");
+    expect(prose(l.body)).toContain("understates the volume");
     expect(prose(l.body)).toContain("Catalyst decay");
   });
 
@@ -197,14 +197,16 @@ describe("the tool renders it as a scrolling lesson", () => {
     expect(empty, "the empty state drops the limits").toContain("{lessonLimits}");
   });
 
-  it("puts the definitions before the plot and the consequences after", () => {
+  it("poses the question, then draws, then names what was drawn", () => {
+    //  REVISED (DEV.md 4c C277): steps 2-3 used to sit above the plot, and the
+    //  figure a student stays for was met below prose.  Step 1 still comes
+    //  first; the plot is second; steps 2-5 explain what has just been moved.
     //  The RENDER site, never an import at the top of the file.
     const plot = SRC.indexOf("<LevenspielSvg");
     expect(plot).toBeGreaterThan(0);
-    for (const n of [1, 2, 3])
-      expect(SRC.indexOf(`{lessonStep(${n})}`), `step ${n} is after the plot`)
-        .toBeLessThan(plot);
-    for (const n of [4, 5])
+    expect(SRC.lastIndexOf("{lessonStep(1)}"), "step 1 is before the plot")
+      .toBeLessThan(plot);
+    for (const n of [2, 3, 4, 5])
       expect(SRC.lastIndexOf(`{lessonStep(${n})}`),
         `step ${n} is before the plot`).toBeGreaterThan(plot);
     expect(SRC.lastIndexOf("{lessonLimits}")).toBeGreaterThan(plot);

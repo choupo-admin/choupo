@@ -350,7 +350,7 @@ export const VAN_HEERDEN_KNOBS: readonly VanHeerdenKnob[] = [
   { id: "T_guess", label: "T_guess (K) — which branch is reported",
     file: "system/flowsheetDict", key: "T_guess",
     def: 340, min: 280, max: 360, step: 1, unit: "",
-    why: "the engine reports the root NEAREST this temperature — the same "
+    why: "the engine reports the root nearest this temperature — the same "
       + "equipment and feed, a different answer; watch the reported marker "
       + "jump" },
   { id: "feedT", label: "feed T", file: "0/feed", key: "T",
@@ -872,7 +872,7 @@ export function VanHeerdenTool(): JSX.Element {
                       : "This run publishes no Van Heerden surface"}
                     {" "}— the diagram activates when a solved unit publishes a
                     profile carrying both <b>{G_COLUMN}</b> and <b>{R_COLUMN}</b>
-                    {" "}columns, which is what a NON-ISOTHERMAL{" "}
+                    {" "}columns, which is what a non-isothermal{" "}
                     <code>cstr</code> emits over its steady-state scan.  An
                     isothermal CSTR has no such scan and no such profile — run{" "}
                     <code>tutorials/{VAN_HEERDEN_WITNESS}</code> and return
@@ -913,7 +913,7 @@ export function VanHeerdenTool(): JSX.Element {
         </Tooltip>
 
         <Tooltip withArrow multiline w={430}
-          label={"The branch this run REPORTS, from the KPIs T_out and "
+          label={"The branch this run reports, from the KPIs T_out and "
             + "dT_rise — the root nearest T_guess"
             + (typeof T_guess === "number" ? ` = ${fmt(T_guess, 5)} K` : "")
             + ".  dT_rise is the engine's own T_out − T_feed.  Move T_guess "
@@ -932,7 +932,7 @@ export function VanHeerdenTool(): JSX.Element {
         {view.states.length === 3 && view.span !== null && (
           <Tooltip withArrow multiline w={450}
             label={"Ignited minus extinguished: the difference of the "
-              + "highest and lowest root temperatures the ENGINE published "
+              + "highest and lowest root temperatures the engine published "
               + "as markers — arithmetic on two of its numbers, no model of "
               + "its own.  This is the practical meaning of multiplicity: "
               + "the jump the reactor makes when it lights, and the drop it "
@@ -964,7 +964,7 @@ export function VanHeerdenTool(): JSX.Element {
           columns {G_COLUMN} / {R_COLUMN} / {PHI_COLUMN} on the engine&apos;s
           own scan grid, and phi = R − G is an identity there, not a second
           model.  The crossings are the engine&apos;s {view.states.length}
-          {" "}markers, verbatim; this file only ORDERS them by temperature,
+          {" "}markers, verbatim; this file only orders them by temperature,
           reads the &quot;(reported)&quot; suffix off the label the engine
           wrote, and — with exactly three — marks the middle one.  Nothing
           here re-detects a root or judges a branch&apos;s stability.
@@ -989,18 +989,16 @@ export function VanHeerdenTool(): JSX.Element {
         {alerts}
 
         {lessonStep(1)}
-        {lessonStep(2)}
-        {lessonStep(3)}
 
         <Box>
           <Title order={5}>Now read the diagram the engine scanned</Title>
           <Text size="sm" mt={4}>
-            Below are the two curves, drawn from the reactor&apos;s own
+            Here are the two curves, drawn from the reactor&apos;s own
             published columns, with a vertical line at every root the engine
             bisected.  Read the slopes where they cross: at the outer
             crossings the removal line is the steeper of the two, and at the
             middle one it is not.  Then move <code>T_guess</code> and watch
-            which crossing the run REPORTS change without the diagram moving
+            which crossing the run reports change without the diagram moving
             at all — same equipment, same feed, a different answer, decided by
             where you started.
           </Text>
@@ -1023,6 +1021,9 @@ export function VanHeerdenTool(): JSX.Element {
           </Stack>
         </Box>
 
+        {/* The diagram comes second (DEV.md 4c C277); steps 2-3 explain it. */}
+        {lessonStep(2)}
+        {lessonStep(3)}
         {lessonStep(4)}
         {lessonStep(5)}
 

@@ -98,7 +98,7 @@ export const LADDER_COLUMNS: readonly LadderColumn[] = [
   { unit: "gibbs", stream: "outGibbs", rung: 2, label: "Gibbs reactor",
     told: "elements and four species, no reaction", kpi: null },
   { unit: "kinetic", stream: "outKinetic", rung: 3, label: "plug flow (PFR)",
-    told: "the reaction AND a measured rate law", kpi: "X_limiting" },
+    told: "the reaction and a measured rate law", kpi: "X_limiting" },
 ];
 
 export const LADDER_SPECIES: readonly string[] = ["CO", "water", "CO2", "H2"];
@@ -129,7 +129,7 @@ export const T_KNOB: PanelKnob = {
 };
 
 export const DT_KNOB: PanelKnob = {
-  id: "dT", label: "approach |ΔT| on the approach reactor — a MAGNITUDE",
+  id: "dT", label: "approach |ΔT| on the approach reactor — a magnitude",
   min: 0, max: 50, step: 5, unit: "K",
   why: "How far short of the limit the design is placed, declared as a "
     + "temperature.  The engine picks the side: the shift is exothermic, so "
@@ -375,9 +375,6 @@ export function ReactorLadderTool(): JSX.Element {
         </Box>
 
         {sec("order")}
-        {sec("rung1")}
-        {sec("rung2")}
-        {sec("approach")}
 
         <Box>
           <Title order={5}>Now run it</Title>
@@ -469,6 +466,11 @@ export function ReactorLadderTool(): JSX.Element {
           </Text>
         </Box>
 
+        {/* The run comes second (DEV.md 4c C277); the rungs then explain the
+            table the student has just read. */}
+        {sec("rung1")}
+        {sec("rung2")}
+        {sec("approach")}
         {sec("rung3")}
         {sec("phases")}
 

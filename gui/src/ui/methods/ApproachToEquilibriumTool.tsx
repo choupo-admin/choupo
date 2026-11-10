@@ -231,13 +231,13 @@ export function engineSignOf(
  *  `temperatureApproach` is refused by name (GibbsReactor.cpp:337-348), so a
  *  slider that offered one would teach a declaration the engine rejects. */
 export const DT_KNOB: PanelKnob = {
-  id: "dT", label: "approach |ΔT| — a MAGNITUDE; the engine picks the direction",
+  id: "dT", label: "approach |ΔT| — a magnitude; the engine picks the direction",
   min: 0, max: 100, step: 5, unit: "K",
-  why: "You declare only how FAR from equilibrium the outlet sits.  The "
+  why: "You declare only how far from equilibrium the outlet sits.  The "
     + "engine reads the thermicity of your feed's transformation at the "
     + "physical T and moves the chemistry the way that under-predicts it: "
     + "T + |ΔT| for exothermic, T − |ΔT| for endothermic.  The readout says "
-    + "which it chose; the switch below lets you SEE the other direction, "
+    + "which it chose; the switch below lets you see the other direction, "
     + "which the engine never takes.",
 };
 
@@ -349,7 +349,7 @@ export function ApproachToEquilibriumTool(): JSX.Element {
       <OriginMark of="assumption" note="T and |ΔT| you choose" />
       <KnobSlider
         knob={{
-          id: "T", label: "reactor temperature T — the PHYSICAL one",
+          id: "T", label: "reactor temperature T — the physical one",
           min: w.Tmin, max: w.Tmax, step: 10, unit: "K",
           why: "The temperature the outlet stream actually leaves at, and the "
             + "one the enthalpy is priced at.  A declared approach never "
@@ -370,9 +370,9 @@ export function ApproachToEquilibriumTool(): JSX.Element {
         T ± |ΔT|, the sign read off the first run&apos;s isothermal duty
         exactly as the engine reads it off its own probe.
         Nothing here writes <code>temperatureApproach</code> into a dict;
-        on this witness the shifted run&apos;s COMPOSITION is the same
+        on this witness the shifted run&apos;s composition is the same
         computation, and its temperature and duty are not; the Q_kW shown
-        is the unshifted run&apos;s, read for its SIGN only, because the duty
+        is the unshifted run&apos;s, read for its sign only, because the duty
         of a declared approach prices the shifted composition at the
         physical T.  {w.conditions}.
       </PanelNote>
@@ -409,13 +409,13 @@ export function ApproachToEquilibriumTool(): JSX.Element {
                 : (
                   <>
                     , so heat must be{" "}
-                    <b>{Q_kW !== null && Q_kW < 0 ? "REMOVED" : "ADDED"}</b>
+                    <b>{Q_kW !== null && Q_kW < 0 ? "removed" : "added"}</b>
                     {" "}to hold T: this transformation is <b>{thermicity}</b>
                     {engineSign
                       ? <> — so the engine assigns{" "}
                           <b>T {engineSign === "positive" ? "+" : "−"} |ΔT|</b>
                           {shown === "other"
-                            ? <>; you are looking at the OTHER direction.</>
+                            ? <>; you are looking at the other direction.</>
                             : "."}</>
                       : "."}
                   </>
@@ -430,10 +430,10 @@ export function ApproachToEquilibriumTool(): JSX.Element {
             ? "ΔT = 0: the two runs are the same question, and the answer is "
               + "true equilibrium."
             : verdict === "short"
-              ? "This ΔT puts the reported outlet SHORT of the equilibrium at "
+              ? "This ΔT puts the reported outlet short of the equilibrium at "
                 + "the physical T — which is what a real bed does, and what "
                 + "the parameter is for."
-              : "This direction reports an outlet BEYOND the equilibrium the "
+              : "This direction reports an outlet beyond the equilibrium the "
                 + "same model just computed at the physical T.  Both witnesses "
                 + "here are fed on the reactant side, so for a single "
                 + "dominant reaction that is thermodynamically impossible."}
@@ -441,7 +441,7 @@ export function ApproachToEquilibriumTool(): JSX.Element {
       {verdict === "beyond" && (
         <Alert color="yellow" variant="light" mt={8}
           title="This is the direction the engine never takes">
-          Since 2026-09-26 the author declares only a MAGNITUDE and the engine
+          Since 2026-09-26 the author declares only a magnitude and the engine
           assigns the sign from the thermicity you see above; a negative
           <code>temperatureApproach</code> is refused by name
           (<code>GibbsReactor.cpp:337–343</code>). A Gibbs reactor is told no
@@ -466,16 +466,14 @@ export function ApproachToEquilibriumTool(): JSX.Element {
           <Text size="sm" c="dimmed" mt={4}>
             A reactor that is told no reactions, and the one calibrated number
             that stops it from handing the flowsheet a conversion no real
-            converter achieves. Read the four steps, then move |ΔT| and watch
+            converter achieves. Read the first step, move |ΔT| and watch
             which way the engine points it — and, on request, the other way,
-            which takes the model somewhere no reactor can be.
+            which takes the model somewhere no reactor can be.  The steps
+            after the figure explain what you have just watched.
           </Text>
         </Box>
 
         {step(1)}
-        {step(2)}
-        {step(3)}
-        {step(4)}
 
         <Box>
           <Title order={5}>Now move it</Title>
@@ -483,7 +481,7 @@ export function ApproachToEquilibriumTool(): JSX.Element {
             Two runs of the same case: the equilibrium at the physical
             temperature, and the equilibrium at the temperature the chemistry
             is asked. The two witnesses are different chemistries — they are
-            here because their reaction enthalpies have opposite SIGNS, and
+            here because their reaction enthalpies have opposite signs, and
             the one slider, the one verdict rule and the one comparison are
             identical for both, so the only thing that changes between them
             is which way the engine points ΔT.
@@ -531,13 +529,17 @@ export function ApproachToEquilibriumTool(): JSX.Element {
           </Text>
         </Box>
 
+        {/* The figure comes second (DEV.md 4c C277); steps 2-6 explain it. */}
+        {step(2)}
+        {step(3)}
+        {step(4)}
         {step(5)}
         {step(6)}
 
         <LessonLimits limits={APPROACH_LIMITS} />
 
         <Text size="sm">
-          What the reformer on this page is FOR -- the gas it makes, the ratio each
+          What the reformer on this page is for -- the gas it makes, the ratio each
           product asks of it, the shift that adjusts that ratio -- is the page{" "}
           <Anchor component="button" type="button"
             onClick={() => setActiveMethodTool("syngas")}>

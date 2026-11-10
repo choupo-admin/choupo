@@ -415,7 +415,7 @@ export function knobOverridesFor(
 
 // The provenance lines, always visible in classroom mode.
 const PROVENANCE_RUNS =
-  `Runs tutorials/${PFR_WITNESS} AND tutorials/${CSTR_WITNESS} with your `
+  `Runs tutorials/${PFR_WITNESS} and tutorials/${CSTR_WITNESS} with your `
   + "parameters, in your browser (choupoSolve WASM).";
 const PROVENANCE_TWINS =
   "The two witnesses are twins — byte-identical 0/feed, constant/reactions "
@@ -758,7 +758,7 @@ export function LevenspielTool(): JSX.Element {
 
   const lessonHead = (
     <Box>
-      <Title order={3}>Sizing a reactor, where the area IS the volume</Title>
+      <Title order={3}>Sizing a reactor, where the area is the volume</Title>
       <Text size="sm" c="dimmed" mt={4}>
         One curve, two shapes under it — and the shape of the curve decides
         which reactor you should build.
@@ -827,13 +827,11 @@ export function LevenspielTool(): JSX.Element {
       {lessonHead}
       {alerts}
       {lessonStep(1)}
-      {lessonStep(2)}
-      {lessonStep(3)}
 
       <Box>
         <Title order={5}>Now read the two reactors the engine solved</Title>
         <Text size="sm" mt={4}>
-          Below, the same duty done twice.  The shaded area is the PFR&apos;s
+          Here, the same duty done twice.  The shaded area is the PFR&apos;s
           volume and the outlined rectangle is the CSTR&apos;s, both drawn from
           the engines&apos; own published points — the twins share a feed, a
           reaction file and a thermophysical system, so the only difference on
@@ -857,7 +855,7 @@ export function LevenspielTool(): JSX.Element {
               + "engine's published minus_r column at its own RK4 points; "
               + "F_lim,in is the profile's own inlet F_"
               + `${pfrView.limiting} sample (${fmt(pfrView.FlimIn)} mol/s).  `
-              + "Agreement means the graphical construction REPRODUCES the "
+              + "Agreement means the graphical construction reproduces the "
               + "engine's integration — the residual is trapezoid-vs-RK4 "
               + "truncation on the same grid — never evidence the model is "
               + "right."}>
@@ -911,7 +909,7 @@ export function LevenspielTool(): JSX.Element {
               + "0/feed, same constant/reactions — pinned by the test "
               + "suite) and the knobs write the same T and feed into both.  "
               + `At the CSTR's own X = ${fmt(cstrView.rect.X)}, the `
-              + "rectangle circumscribes the area because 1/(−r) RISES with "
+              + "rectangle circumscribes the area because 1/(−r) rises with "
               + "X for positive-order kinetics: the CSTR does its entire "
               + "duty at the outlet's lowest rate, the PFR only its last "
               + "sliver.  Both operands are F_A0-normalized (m³·s/mol), "
@@ -965,7 +963,7 @@ export function LevenspielTool(): JSX.Element {
             {pfrView.curve.excludedCount} published point
             {pfrView.curve.excludedCount === 1 ? "" : "s"} where the rate
             vanishes (−r ≤ 0) excluded from the 1/(−r) view — reported here
-            and annotated on the chart, never silently dropped.  WHY it
+            and annotated on the chart, never silently dropped.  Why it
             vanishes is not decided here: equilibrium is one reason, a
             consumed limiting reactant and a rate law asked a question
             outside its window are others.
@@ -975,6 +973,9 @@ export function LevenspielTool(): JSX.Element {
         </Box>
       </Box>
 
+      {/* The chart comes second (DEV.md 4c C277); steps 2-3 explain it. */}
+      {lessonStep(2)}
+      {lessonStep(3)}
       {lessonStep(4)}
       {lessonStep(5)}
       {lessonLimits}

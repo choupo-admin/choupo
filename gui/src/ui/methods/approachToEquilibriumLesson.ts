@@ -49,7 +49,7 @@ export const APPROACH_STEPS: readonly LessonStep[] = [
     title: "A reactor that is told no reactions at all",
     body: "Every other reactor in a flowsheet is handed a mechanism: a "
       + "stoichiometry, a conversion, a rate law.  A Gibbs reactor is handed "
-      + "none.  It is given the ELEMENTS, a list of candidate SPECIES with "
+      + "none.  It is given the elements, a list of candidate species with "
       + "their atom counts, and a temperature and pressure — and it returns "
       + "the composition that minimises the mixture's Gibbs energy while "
       + "conserving every atom that came in.  Whatever reactions would have "
@@ -64,7 +64,7 @@ export const APPROACH_STEPS: readonly LessonStep[] = [
         + "quantity being minimised, and the only thing this reactor is "
         + "trying to do", unit: "J/s" },
       { sym: "n", means: "the vector of outlet molar flows, one entry per "
-        + "declared candidate species: the UNKNOWN", unit: "mol/s" },
+        + "declared candidate species: the unknown", unit: "mol/s" },
       { sym: "n_i",
         means: "the outlet molar flow of species i, one component of n",
         unit: "mol/s" },
@@ -73,27 +73,27 @@ export const APPROACH_STEPS: readonly LessonStep[] = [
         + "for an ideal gas it is the pure-species standard Gibbs energy plus "
         + "RT ln(y_i P / P0), and for a real gas a fugacity coefficient is "
         + "added to it", unit: "J/mol" },
-      { sym: "T", means: "the PHYSICAL temperature of the reactor and of the "
+      { sym: "T", means: "the physical temperature of the reactor and of the "
         + "stream that leaves it — the one this page is about keeping apart "
         + "from the temperature the chemistry is asked at", unit: "K" },
       { sym: "P", means: "the reactor pressure, which enters through the "
         + "partial pressures and, in a real-gas package, through the fugacity "
         + "coefficients", unit: "Pa" },
-      { sym: "A", means: "the ATOM MATRIX: one row per element, one column "
+      { sym: "A", means: "the atom matrix: one row per element, one column "
         + "per species, each entry the count of that element in that species. "
         + "It is exactly the `atoms ( ... )` list the case declares beside "
         + "each species", unit: "atoms per molecule" },
-      { sym: "b", means: "the atom inventory of the FEED, element by element. "
+      { sym: "b", means: "the atom inventory of the feed, element by element. "
         + "Choupo computes it as A n_feed rather than reading it — the "
         + "conservation law is built from the feed, never declared",
         unit: "mol/s of atoms" },
     ],
-    note: "THE POWER AND THE TRAP ARE THE SAME SENTENCE.  A reactor that needs "
+    note: "The power and the trap are the same sentence.  A reactor that needs "
       + "no mechanism also cannot be told one it should respect.  There is no "
       + "way to say \"this reaction is fast and that one does not happen at "
       + "all\": if a species is in the list it is available to the minimisation, "
       + "and if it is not, it cannot form no matter how favourable it is.  The "
-      + "species list is therefore a MODELLING DECISION disguised as an "
+      + "species list is therefore a modelling decision disguised as an "
       + "inventory, and it is the only kinetic statement a Gibbs reactor lets "
       + "you make.  The companion page \"The allotrope nobody declared\" works "
       + "one case through this in full.",
@@ -104,7 +104,7 @@ export const APPROACH_STEPS: readonly LessonStep[] = [
     body: "The usual story is a ladder climbed by project stage: a yield "
       + "reactor for the first sketch, a Gibbs reactor for the concept, a "
       + "kinetic packed bed for the final design.  The ladder is real, but "
-      + "the thing that moves you up it is DATA AVAILABILITY, not the date.  "
+      + "the thing that moves you up it is data availability, not the date.  "
       + "A Gibbs reactor is used early because nobody has the kinetics yet — "
       + "they belong to the licensor, or they have not been measured.  A "
       + "company that owns its own kinetics from day one, as a licensor does "
@@ -113,9 +113,9 @@ export const APPROACH_STEPS: readonly LessonStep[] = [
       + "same point the other way round: the Gibbs reactor is what you reach "
       + "for when \"the user does not possess any data pertinent to the "
       + "reaction\".",
-    note: "AND THERE IS A STEP IN BETWEEN, which is what the rest of this page "
+    note: "And there is a step in between, which is what the rest of this page "
       + "is about.  Real practice does not jump from \"equilibrium\" to "
-      + "\"packed bed\".  It inserts an equilibrium reactor DETUNED by one "
+      + "\"packed bed\".  It inserts an equilibrium reactor detuned by one "
       + "calibrated number, so that every unit downstream is sized against a "
       + "realistic outlet long before anyone has a rate law.  A Gibbs reactor "
       + "run at true equilibrium hands the flowsheet a conversion no real "
@@ -128,15 +128,15 @@ export const APPROACH_STEPS: readonly LessonStep[] = [
     n: 3,
     title: "One number, and the separation the engine refuses to blur",
     body: "The device is blunt and it is what industry uses: do not touch the "
-      + "reactor, move the THERMOMETER THE CHEMISTRY READS.  Ask for the "
+      + "reactor, move the thermometer the chemistry reads.  Ask for the "
       + "equilibrium composition at T + ΔT, and then hand that composition to "
       + "a stream that is still at T.  For an exothermic reaction the "
       + "equilibrium conversion falls as temperature rises, so a bed that "
       + "falls short of equilibrium at T reaches the conversion equilibrium "
-      + "would have given at some HIGHER temperature; ΔT is that distance, in "
+      + "would have given at some higher temperature; ΔT is that distance, in "
       + "kelvin.  Johnson Matthey's field definition is the same construction "
       + "read backwards from a plant: take the measured outlet composition, "
-      + "ask at what temperature it WOULD be the equilibrium composition, and "
+      + "ask at what temperature it would be the equilibrium composition, and "
       + "the gap to the real outlet temperature is the approach to "
       + "equilibrium.  Their worked steam-reforming example: a tube outlet at "
       + "808 °C with 4.60 mol% methane slip, a slip whose equilibrium "
@@ -146,12 +146,12 @@ export const APPROACH_STEPS: readonly LessonStep[] = [
       + "docs/design/how-a-process-design-is-staged.md §3.1, which is where "
       + "the quotations on this page come from.)",
     formula: String.raw`\begin{aligned}
-n &= n_\mathrm{eq}(T + \Delta T,\; P) && \text{the CHEMISTRY is asked here}\\
-H &= \sum_i n_i\, h_i(T,\, P) && \text{the STATE is priced here}
+n &= n_\mathrm{eq}(T + \Delta T,\; P) && \text{the chemistry is asked here}\\
+H &= \sum_i n_i\, h_i(T,\, P) && \text{the state is priced here}
 \end{aligned}`,
     where: [
       { sym: "\\Delta T",
-        means: "the TEMPERATURE APPROACH to equilibrium: a single calibrated "
+        means: "the temperature approach to equilibrium: a single calibrated "
         + "number, declared as `temperatureApproach` in the reactor's "
         + "`operation` block.  Zero means true equilibrium, and zero is the "
         + "default", unit: "K" },
@@ -164,10 +164,10 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the STATE is priced here}
         + "balance and every downstream exchanger see", unit: "J/s" },
       { sym: "h_i",
         means: "the partial molar enthalpy of species i, evaluated at the "
-        + "PHYSICAL temperature and pressure and never at the shifted one",
+        + "physical temperature and pressure and never at the shifted one",
         unit: "J/mol" },
     ],
-    note: "THIS IS THE SINGLE MOST TEACHABLE LINE IN THE ENGINE, and it is "
+    note: "This is the single most teachable line in the engine, and it is "
       + "worth reading in the source.  `temperatureApproach` is added to the "
       + "argument of the standard Gibbs energy alone — "
       + "`g_pure_ig(T + p.dTapproach)` at ElementPotential.cpp:47–48, with the "
@@ -176,7 +176,7 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the STATE is priced here}
       + "out loud: \"REACTION equilibrium evaluated at T + ΔT; enthalpy, Psat "
       + "and the energy balance stay at the physical T\" "
       + "(GibbsReactor.cpp:407–410).  The outlet is therefore a legitimate "
-      + "NON-EQUILIBRIUM state: its composition belongs to one temperature and "
+      + "non-equilibrium state: its composition belongs to one temperature and "
       + "its enthalpy to another, its affinity at T is not zero, and that "
       + "nonzero affinity IS the distance from equilibrium rather than a bug.",
   },
@@ -184,45 +184,45 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the STATE is priced here}
     n: 4,
     title: "The sign, which is the engine's to assign",
     body: "You never choose it.  `temperatureApproach` is declared as a "
-      + "MAGNITUDE — a negative value is refused by name "
-      + "(GibbsReactor.cpp:337–343) — and the ENGINE assigns the direction: "
+      + "magnitude — a negative value is refused by name "
+      + "(GibbsReactor.cpp:337–343) — and the engine assigns the direction: "
       + "it solves the true equilibrium from your feed at the physical T once "
       + "more, reads the isothermal enthalpy change between the feed and that "
       + "equilibrium on the package's own surface, and evaluates the reaction "
       + "at T + ΔT when that transformation is exothermic and at T − ΔT when "
       + "it is endothermic (GibbsReactor.cpp:68–161, `approachDirection`; "
       + "the isothermal reactor calls it at 375 and the gibbsMap at every "
-      + "cell).  An ADIABATIC bed has no physical T to read at until it is "
-      + "solved, so the engine solves it once with NO approach and reads the "
+      + "cell).  An adiabatic bed has no physical T to read at until it is "
+      + "solved, so the engine solves it once with no approach and reads the "
       + "thermicity at that dT = 0 outlet (GibbsReactor.cpp:572–583) — never "
       + "at the seed `operation.T`, which can sit on the wrong side of a "
       + "product-carrying feed's own equilibrium and would flip the sign "
       + "(witness gibbs13_adiabatic_approach_direction).  It "
       + "prints which way it went and the number it read, and logs the same "
       + "sentence as an advisory, so a copied dict cannot carry a direction "
-      + "nobody was told about.  WHY THAT DIRECTION is not a convention to "
+      + "nobody was told about.  Why that direction is not a convention to "
       + "memorise; it follows from the thermicity through van 't Hoff.  An "
       + "exothermic equilibrium loses ground as it heats, so asking the "
-      + "chemistry a HIGHER temperature under-predicts it: ammonia, methanol, "
+      + "chemistry a higher temperature under-predicts it: ammonia, methanol, "
       + "the shift converters get T + ΔT.  An endothermic one gains ground as "
-      + "it heats, so under-predicting it means asking a LOWER temperature: "
+      + "it heats, so under-predicting it means asking a lower temperature: "
       + "steam reforming gets T − ΔT, and nobody types a minus.  Say it "
-      + "plainly, because the half-memory is worse than no memory: POSITIVE IS "
-      + "CONSERVATIVE ONLY FOR AN EXOTHERMIC REACTION — which is exactly why "
+      + "plainly, because the half-memory is worse than no memory: Positive is "
+      + "conservative only for an exothermic reaction — which is exactly why "
       + "the sign was taken away from the author (ruled 2026-09-26): put the "
       + "sign that flatters ammonia on a reformer and the model does not "
       + "merely flatter it, it reports a conversion above the equilibrium the "
-      + "same model just computed.  Why the engine reads the DUTY-FREE number: "
-      + "the published `Q_kW` is H_out − H_in with the feed at ITS temperature, "
+      + "same model just computed.  Why the engine reads the duty-free number: "
+      + "the published `Q_kW` is H_out − H_in with the feed at its temperature, "
       + "so with a cold feed its sign carries sensible heat and stops being "
       + "the thermicity (measured: the shift reactor at 1200 K with an 800 K "
-      + "feed reports +2.04 kW and is exothermic).  ONE QUALIFIER, announced by "
+      + "feed reports +2.04 kW and is exothermic).  One qualifier, announced by "
       + "the engine and never judged: \"above equilibrium is impossible\" "
-      + "holds for a reactor whose FEED is on the reactant side of equilibrium "
+      + "holds for a reactor whose feed is on the reactant side of equilibrium "
       + "at the physical T, which is the ordinary case and the case on both "
       + "witnesses here.  Feed an exothermic bed a gas that was already "
-      + "equilibrated COLDER and it arrives past the hot equilibrium; the "
-      + "transformation then runs backward, the engine reads THAT "
+      + "equilibrated colder and it arrives past the hot equilibrium; the "
+      + "transformation then runs backward, the engine reads that "
       + "transformation's enthalpy (the only extent a stoichiometry-free "
       + "reactor has is the one from its own feed), and the approach lands on "
       + "the feed's side — where a real quench bed's outlet sits.  Which side "
@@ -239,9 +239,9 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the STATE is priced here}
         means: "the enthalpy change of the overall transformation from the "
         + "feed to its equilibrium at the physical T — negative when it "
         + "releases heat.  A Gibbs reactor never sees this as an input, "
-        + "because it is told no reactions; the engine READS it, isothermally "
+        + "because it is told no reactions; the engine reads it, isothermally "
         + "and on the package's surface, to assign the direction "
-        + "(`approachDirection`, GibbsReactor.cpp:68–161).  An ISOTHERMAL run "
+        + "(`approachDirection`, GibbsReactor.cpp:68–161).  An isothermal run "
         + "with feed and reactor at one temperature also publishes its sign as "
         + "the duty the surroundings must supply to hold T (`Q_kW`, "
         + "GibbsReactor.cpp:754)",
@@ -255,7 +255,7 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the STATE is priced here}
         + "minimises G instead — but van 't Hoff is the shortest route to the "
         + "sign, and the sign is what this step is for",
         unit: "— (activity based)" },
-      { sym: "R", means: "the GAS CONSTANT.  Not the heat-removal rate the "
+      { sym: "R", means: "the gas constant.  Not the heat-removal rate the "
         + "ignition/extinction page calls R, and not the reflux ratio of the "
         + "distillation pages", unit: "J/(mol·K)" },
     ],
@@ -267,15 +267,15 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the STATE is priced here}
           = \frac{\Delta H_\mathrm{rxn}}{R\,T^{2}}` },
       { step: "So an exothermic K falls with temperature, an endothermic K "
           + "rises, and the equilibrium conversion follows K." },
-      { step: "A real reactor falls SHORT of equilibrium.  To make the model "
+      { step: "A real reactor falls short of equilibrium.  To make the model "
           + "fall short the evaluation temperature must move in whichever "
-          + "direction makes the equilibrium WORSE — up for exothermic, down "
-          + "for endothermic.  The ENGINE makes that move from the thermicity "
+          + "direction makes the equilibrium worse — up for exothermic, down "
+          + "for endothermic.  The engine makes that move from the thermicity "
           + "it reads; the author supplies only how far." },
     ],
-    note: "ONE MORE GLOSS, because the letters are overloaded across these "
+    note: "One more gloss, because the letters are overloaded across these "
       + "pages: K here is the equilibrium constant and R is the gas constant. "
-      + "On the ignition/extinction page R is a heat-removal RATE in watts, "
+      + "On the ignition/extinction page R is a heat-removal rate in watts, "
       + "and on the distillation pages it is a reflux ratio.",
   },
   {
@@ -283,22 +283,22 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the STATE is priced here}
     title: "The three caveats the engine prints on its own",
     body: "A run that declares an approach prints them every time "
       + "(GibbsReactor.cpp:412–417), and each of the three is a lesson rather "
-      + "than a disclaimer.  FIRST, it is EMPIRICAL — calibrated, never "
+      + "than a disclaimer.  First, it is empirical — calibrated, never "
       + "predicted.  It lumps catalyst activity, bed geometry, transport and "
       + "age into one number you fit against a plant measurement, which also "
       + "means it is a statement about a particular catalyst charge at a "
       + "particular point in its life: Johnson Matthey note that the approach "
       + "is small at start-of-run and grows steadily as a catalyst "
       + "deactivates, so an approach declared in a design case is usually an "
-      + "END-OF-RUN claim.  SECOND, it is GLOBAL.  There is ONE number for the "
+      + "end-of-run claim.  Second, it is global.  There is one number for the "
       + "whole reactor, and it cannot express different approaches for "
       + "different reactions — which is most damaging exactly where a Gibbs "
       + "reactor is most attractive.  A reformer runs methane reforming "
       + "(endothermic) and the water–gas shift (exothermic) on the same "
-      + "catalyst: their wanted signs are OPPOSITE, so any single ΔT moves one "
-      + "of them the wrong way.  THIRD, and this is the one to be afraid of: "
-      + "AT HIGH PRESSURE IT WILL ABSORB MISSING FUGACITY CORRECTIONS.",
-    note: "WHY THE THIRD ONE IS THE DANGEROUS ONE.  Calibrating a ΔT against "
+      + "catalyst: their wanted signs are opposite, so any single ΔT moves one "
+      + "of them the wrong way.  Third, and this is the one to be afraid of: "
+      + "at high pressure it will absorb missing fugacity corrections.",
+    note: "Why the third one is the dangerous one.  Calibrating a ΔT against "
       + "plant data asks the parameter to close whatever gap is left between "
       + "the model and the measurement — and it has no way to know what that "
       + "gap is made of.  On a 200 bar ammonia converter the non-ideality is "
@@ -316,42 +316,42 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the STATE is priced here}
   },
   {
     n: 6,
-    title: "What Choupo does NOT have here, said rather than implied",
-    body: "TWO THINGS, and both matter to a reader who has just learned the "
-      + "first one.  (i) There is a SECOND quantity also called \"approach to "
-      + "equilibrium\", and it is not this one: the FRACTIONAL or extent "
+    title: "What Choupo does not have here, said rather than implied",
+    body: "Two things, and both matter to a reader who has just learned the "
+      + "first one.  (i) There is a second quantity also called \"approach to "
+      + "equilibrium\", and it is not this one: the fractional or extent "
       + "approach, the achieved conversion divided by the equilibrium "
-      + "conversion at the SAME temperature and pressure.  Nadiri and "
+      + "conversion at the same temperature and pressure.  Nadiri and "
       + "co-workers use exactly that, calling it efficiency (S. Nadiri et al., "
       + "ChemCatChem 2024, e202400890, doi:10.1002/cctc.202400890).  The two "
       + "are not "
-      + "interchangeable — the temperature approach is a HORIZONTAL distance "
+      + "interchangeable — the temperature approach is a horizontal distance "
       + "on a conversion-versus-temperature plot and the fractional one a "
-      + "VERTICAL distance, and converting between them needs the local slope "
+      + "vertical distance, and converting between them needs the local slope "
       + "of the equilibrium curve, which depends on the reaction enthalpy, the "
       + "pressure and the composition.  Since |δX| ≈ |dX_eq/dT|·ΔT, for a "
-      + "steep equilibrium a 10 K approach is a LARGE shortfall in "
+      + "steep equilibrium a 10 K approach is a large shortfall in "
       + "conversion; for a flat one it is a small one.  "
       + "Choupo implements only the temperature form, in three places — the "
       + "`gibbsReactor` unit, the `gibbsMap` property operation and, since "
-      + "2026-09-27, `equilibriumReactor`, which takes a DECLARED reaction "
-      + "list and reads the approach PER REACTION on the same sign rule "
+      + "2026-09-27, `equilibriumReactor`, which takes a declared reaction "
+      + "list and reads the approach per reaction on the same sign rule "
       + "(EquilibriumReactor.cpp:720–818; the EduTool `declared-pathways` "
       + "is its page) — so a case that declares an approach should say "
-      + "which definition it means and can only mean this one.  (ii) The PELLET EFFECTIVENESS FACTOR is absent and announced "
+      + "which definition it means and can only mean this one.  (ii) The pellet effectiveness factor is absent and announced "
       + "as absent: Choupo's kinetic reactors evaluate the rate at bulk "
       + "conditions, which is η taken as 1, and they say so without judging it "
       + "(CatalystPellet.cpp:50–54).  It is not a Gibbs-reactor parameter at "
       + "all — but it is the next rung of the same ladder, and it is the rung "
       + "that turns an assumed approach into a predicted one.",
     formula: String.raw`\eta_\mathrm{eq} = \frac{X}{X_\mathrm{eq}(T,\,P)}
-\qquad \text{the FRACTIONAL approach, which Choupo does not implement}`,
+\qquad \text{the fractional approach, which Choupo does not implement}`,
     where: [
       { sym: "\\eta_\\mathrm{eq}",
         means: "the fractional approach, or efficiency: how far along the way "
         + "to equilibrium the real reactor got, as a fraction of the way "
         + "there.  1 is equilibrium", unit: "—" },
-      { sym: "X", means: "the ACHIEVED conversion (or product mole fraction) "
+      { sym: "X", means: "the achieved conversion (or product mole fraction) "
         + "at the real outlet", unit: "mole fraction, or fractional conversion" },
     ],
     note: "The symbol η is doing double duty across this page and that is the "
@@ -363,22 +363,22 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the STATE is priced here}
   },
   {
     n: 7,
-    title: "Three Gibbs beds in series are ONE Gibbs reactor",
+    title: "Three Gibbs beds in series are one Gibbs reactor",
     body: "A real ammonia converter has three catalyst beds with coolers between "
       + "them, and the tempting model is one Gibbs reactor per bed.  It is a "
       + "mistake, and this project made it on 2026-10-01 in its own green "
       + "ammonia case.  A Gibbs reactor has no volume and no path: it returns "
-      + "the equilibrium of the ATOMS that enter (step 1), at the temperature "
+      + "the equilibrium of the atoms that enter (step 1), at the temperature "
       + "and pressure it is given.  A cooler changes the temperature and moves "
       + "no atom, so every bed sees the same atom inventory b, and the last "
-      + "bed returns the equilibrium of b at ITS temperature — exactly what one "
+      + "bed returns the equilibrium of b at its temperature — exactly what one "
       + "Gibbs reactor at that temperature returns.  Measured on that case "
       + "(150 bar, SRK, 5 K approach): three adiabatic beds with two "
       + "waste-heat boilers leave at 736.48 K with an ammonia mole fraction of "
       + "0.191745443741; one isothermal Gibbs reactor at 736.48 K, fed the "
       + "same gas, gives 0.191745443739.  Its duty, −30 058 kW, is the two boilers' "
       + "−30 062 kW to 0.01 %, because enthalpy is a state function and the "
-      + "beds were adiabatic.  What the three beds ADDED were the two "
+      + "beds were adiabatic.  What the three beds added were the two "
       + "intermediate temperatures, and those are artefacts: each bed was "
       + "assumed to reach equilibrium, so bed 1 \"left at 532 °C\", above the "
       + "catalyst's 520 °C limit — a number about the model, not the plant.",
@@ -393,11 +393,11 @@ n_N &= n_\mathrm{eq}\big(T_N + \Delta T,\; P;\; b\big)
       { sym: "n_\\mathrm{feed}", means: "the molar flows entering the first "
         + "bed", unit: "mol/s" },
       { sym: "b", means: "the atom inventory, element by element.  Neither a "
-        + "bed nor a cooler changes it, so it is the SAME at every bed", unit:
+        + "bed nor a cooler changes it, so it is the same at every bed", unit:
         "mol/s of atoms" },
       { sym: "k", means: "the bed index", unit: "—" },
       { sym: "N", means: "the number of beds", unit: "—" },
-      { sym: "n_N", means: "the molar flows leaving the LAST bed — the "
+      { sym: "n_N", means: "the molar flows leaving the last bed — the "
         + "converter outlet", unit: "mol/s" },
       { sym: "n_\\mathrm{eq}", means: "the equilibrium composition function of "
         + "step 3, here written with the atom inventory it conserves", unit:
@@ -408,11 +408,11 @@ n_N &= n_\mathrm{eq}\big(T_N + \Delta T,\; P;\; b\big)
         "K" },
       { sym: "P", means: "the converter pressure", unit: "Pa" },
     ],
-    note: "THE PRACTICE THAT FOLLOWS.  In the first pass model the converter as "
-      + "ONE Gibbs reactor at its OUTLET temperature, with an approach; its "
+    note: "The practice that follows.  In the first pass model the converter as "
+      + "one Gibbs reactor at its outlet temperature, with an approach; its "
       + "duty is the heat the intercoolers must remove.  The number of beds, "
       + "their inlet temperatures against the catalyst's limit and their "
-      + "catalyst volumes are questions about RATE, and a rate needs a "
+      + "catalyst volumes are questions about rate, and a rate needs a "
       + "kinetic plug-flow reactor: in Choupo, `tutorials/plant/"
       + "ammoniaReactor04_kineticSizing`.  Three Gibbs beds can never answer them, "
       + "however many you draw.",
@@ -426,13 +426,13 @@ n_N &= n_\mathrm{eq}\big(T_N + \Delta T,\; P;\; b\big)
       + "catalyst bed is 0 C. to 30 C. and preferably 1 C. to 10 C.\", with "
       + "5 °C called \"typical and optimum in many commercial process "
       + "designs\" (US 5,352,428, M. L. Bhakta and B. J. Grotz, C F Braun & "
-      + "Co, 1994).  STEAM METHANE REFORMING: \"between 1 and 60° C., more "
+      + "Co, 1994).  Steam methane reforming: \"between 1 and 60° C., more "
       + "preferably between 5 and 30° C., most preferably between 5 and 20° "
       + "C.\" (US 11,591,215 B2, Topsoe A/S, 2023), and Johnson Matthey's "
-      + "worked example in step 3 is 12 °C.  WATER–GAS SHIFT: \"a 50 F. "
+      + "worked example in step 3 is 12 °C.  Water–gas shift: \"a 50 F. "
       + "approach to the apparent equilibrium temperature is a reasonable "
       + "design value\" (US 3,666,682, J. R. Muenger, Texaco Inc., 1972) — "
-      + "about 28 K.  METHANOL SYNTHESIS: no value is given here, because no "
+      + "about 28 K.  Methanol synthesis: no value is given here, because no "
       + "source that could be read back to its words was found; a number "
       + "without one would be invented.  All of these were read online on "
       + "2026-10-02.",
@@ -442,17 +442,17 @@ n_N &= n_\mathrm{eq}\big(T_N + \Delta T,\; P;\; b\big)
         + "Choupo assigns its direction from the reaction's thermicity "
         + "(step 4)", unit: "K" },
       { sym: "T_\\mathrm{eq}", means: "the temperature at which the measured "
-        + "outlet composition WOULD be the equilibrium composition — how a "
+        + "outlet composition would be the equilibrium composition — how a "
         + "plant reads its own approach (step 3)", unit: "K" },
       { sym: "y_\\mathrm{out}", means: "the outlet mole fractions", unit: "—" },
       { sym: "T", means: "the real outlet temperature", unit: "K" },
     ],
-    note: "HOW TO USE THEM.  Take the low end for fresh catalyst and the high end "
+    note: "How to use them.  Take the low end for fresh catalyst and the high end "
       + "for end-of-run (step 5: the approach grows as the catalyst ages), and "
-      + "say which one the design is for.  The ammonia figure is quoted PER "
-      + "BED; in the single-reactor model of step 7 it applies at the "
+      + "say which one the design is for.  The ammonia figure is quoted per "
+      + "bed; in the single-reactor model of step 7 it applies at the "
       + "converter outlet, which is where Choupo's green ammonia case declares "
-      + "its 5 K.  And a value from this list is still UNCALIBRATED for your "
+      + "its 5 K.  And a value from this list is still uncalibrated for your "
       + "catalyst — the last limit below says so.",
   },
 ];
@@ -460,29 +460,29 @@ n_N &= n_\mathrm{eq}\big(T_N + \Delta T,\; P;\; b\big)
 export const APPROACH_LIMITS: readonly LessonLimit[] = [
   {
     id: "two-runs-not-one",
-    title: "The panel runs the case TWICE; it does not declare an approach.",
+    title: "The panel runs the case twice; it does not declare an approach.",
     body: "Nothing on this page writes `temperatureApproach` into a dict.  The "
       + "two runs are the same case at T and at T + ΔT, and the second run's "
-      + "COMPOSITION is what a declared approach would report.  Its "
-      + "temperature, its enthalpy and its duty are NOT — those belong to the "
+      + "composition is what a declared approach would report.  Its "
+      + "temperature, its enthalpy and its duty are not — those belong to the "
       + "physical T, which is exactly the separation step 3 is about.  What "
       + "the engine does with a declared approach is to solve the equilibrium "
-      + "on the shifted Kp and then price the outlet at the PHYSICAL "
-      + "temperature with that SHIFTED composition: Q = H_out(T, shifted "
+      + "on the shifted Kp and then price the outlet at the physical "
+      + "temperature with that shifted composition: Q = H_out(T, shifted "
       + "composition) − H_in (EquilibriumReactor.cpp:874, 937–941, 948; for "
       + "the isothermal gibbsReactor, GibbsReactor.cpp:748–754).  So carry "
       + "from the shifted run the composition and whatever depends on "
       + "composition alone (conversion, selectivity); carry from the "
       + "unshifted run only the temperature, the pressure and the feed; and "
-      + "RECOMPUTE the enthalpy and the duty, because neither run reports "
-      + "them: the unshifted run's duty belongs to the UNSHIFTED composition "
+      + "recompute the enthalpy and the duty, because neither run reports "
+      + "them: the unshifted run's duty belongs to the unshifted composition "
       + "(this page reads it only for its sign), and the shifted run's to "
       + "its composition at T + ΔT.  A declared `temperatureApproach` "
       + "reports the right duty directly.",
   },
   {
     id: "exact-only-for-an-ideal-gas",
-    title: "That equivalence is exact HERE, and it is not exact everywhere.",
+    title: "That equivalence is exact here, and it is not exact everywhere.",
     body: "The outlet composition depends on the evaluation temperature only "
       + "through the standard Gibbs energies and, in a real-gas package, "
       + "through the fugacity coefficients (GibbsMethod.cpp:64–94 — the "
@@ -491,8 +491,8 @@ export const APPROACH_LIMITS: readonly LessonLimit[] = [
       + "ideal).  Both "
       + "witnesses on this page run at 1 bar with `fugacityModel idealGas`, so "
       + "the coefficients are 1 and the two constructions agree to every digit "
-      + "the engine prints.  Under a real equation of state they do NOT: the "
-      + "fugacity coefficients are evaluated at the PHYSICAL temperature by a "
+      + "the engine prints.  Under a real equation of state they do not: the "
+      + "fugacity coefficients are evaluated at the physical temperature by a "
       + "declared approach and at the shifted one by a shifted run.  The "
       + "temperature sliders are bounded to keep both runs single-phase gas "
       + "for the same reason — condensation is decided at the physical "
@@ -503,7 +503,7 @@ export const APPROACH_LIMITS: readonly LessonLimit[] = [
     title: "One ΔT for the whole reactor, including the reformer.",
     body: "The reforming witness carries methane reforming and the water–gas "
       + "shift at once, with opposite thermicity.  The single ΔT you drag "
-      + "applies to both, which is the engine's own GLOBAL caveat made "
+      + "applies to both, which is the engine's own global caveat made "
       + "visible.  A number that de-tunes one of them flatters the other, and "
       + "no reading of this panel can separate them.",
   },
@@ -514,7 +514,7 @@ export const APPROACH_LIMITS: readonly LessonLimit[] = [
       + "recommendation.  A real approach comes from a plant measurement on a "
       + "specific catalyst at a specific point in its life; there is no "
       + "measurement anywhere in this tool.  The corpus cases that declare "
-      + "an approach declare an UNCALIBRATED one: `ammoniaReactor03_equilibriumApproach` "
+      + "an approach declare an uncalibrated one: `ammoniaReactor03_equilibriumApproach` "
       + "carries a magnitude chosen for the reactor-model ladder, "
       + "`greenAmmoniaPEQ_baseCase` takes the patent's 5 K at its converter "
       + "outlet (step 8), and the five "

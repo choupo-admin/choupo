@@ -186,7 +186,7 @@ const THERMAL_NO: LandscapeWitness = {
   metricLabel: "equilibrium NO mole fraction (log axis)",
   moreIsMoreConverted: true, logAxis: true,
   predicted: { thermicity: "exothermic",
-    moles: "the OVERALL feed is combustion; NO formation is 2 → 2" },
+    moles: "the overall feed is combustion; NO formation is 2 → 2" },
 };
 
 export const LANDSCAPE_WITNESSES: readonly LandscapeWitness[] =
@@ -245,13 +245,13 @@ export function approachOverride(dT: number): DictOverride[] {
 /** The magnitude knob: floor 0 because the engine's is (GibbsMapOp.cpp:
  *  109–118 refuses a negative magnitude by name). */
 export const LANDSCAPE_DT_KNOB: PanelKnob = {
-  id: "dT", label: "approach |ΔT| — a MAGNITUDE; the engine assigns the sign per cell",
+  id: "dT", label: "approach |ΔT| — a magnitude; the engine assigns the sign per cell",
   min: 0, max: 100, step: 5, unit: "K",
   why: "Zero draws the true equilibrium.  Above zero the witness runs a "
     + "second time with this magnitude written into its declared "
     + "`temperatureApproach`, the engine decides the sign at every cell from "
     + "the thermicity of the overall transformation there, and the dashed "
-    + "curves are what the model then REPORTS at each physical T.",
+    + "curves are what the model then reports at each physical T.",
 };
 
 // ---- the arithmetic, all of it ---------------------------------------------
@@ -493,13 +493,13 @@ export function EquilibriumLandscapesTool(): JSX.Element {
                 endothermic (T − |ΔT|), <b>{tally.undetermined}</b> undetermined
                 (T + |ΔT| by announced default).
                 {word === "mixed"
-                  ? <> The map CROSSES a thermicity boundary, so no single signed
+                  ? <> The map crosses a thermicity boundary, so no single signed
                       value describes it; the CSV carries each cell&apos;s own.</>
                   : word
                     ? <> The run is unanimously <b>{word}</b>
                         {word === w.predicted.thermicity
                           ? ", as step 2 predicts for this feed."
-                          : " — which is NOT what the lesson predicted; read "
+                          : " — which is not what the lesson predicted; read "
                             + "the engine, not the page."}</>
                     : null}
               </>
@@ -517,8 +517,8 @@ export function EquilibriumLandscapesTool(): JSX.Element {
               ({s.delta > 0 ? "+" : ""}{fmtMetric(s.delta, w.logAxis)}
               {" "}in the metric
               {w.moreIsMoreConverted
-                ? (s.delta < 0 ? ", short of equilibrium" : ", BEYOND the equilibrium at T")
-                : (s.delta > 0 ? ", short of equilibrium" : ", BEYOND the equilibrium at T")})
+                ? (s.delta < 0 ? ", short of equilibrium" : ", beyond the equilibrium at T")
+                : (s.delta > 0 ? ", short of equilibrium" : ", beyond the equilibrium at T")})
             </span>
           ))}
           .
@@ -526,10 +526,10 @@ export function EquilibriumLandscapesTool(): JSX.Element {
       )}
       {dT > 0 && w.id === THERMAL_NO.id && shifts.some((s) => s.delta > 0) && (
         <Alert color="yellow" variant="light" mt={8}
-          title="A minor product moved the wrong way: the GLOBAL caveat">
+          title="A minor product moved the wrong way: the global caveat">
           The engine read the overall transformation of this feed —
           combustion, exothermic — and took T + |ΔT| at every cell.  NO
-          formation is endothermic, so at T + |ΔT| the model reports MORE NO
+          formation is endothermic, so at T + |ΔT| the model reports more NO
           than the true equilibrium at the physical temperature.  One number
           per feed cannot resolve a product whose thermicity opposes the
           feed&apos;s; the engine says so on every run (GibbsReactor.cpp:414–416).
@@ -584,7 +584,7 @@ export function EquilibriumLandscapesTool(): JSX.Element {
       </Box>
       <Text size="xs" c="dimmed" mt={6}>
         Diagnostics of <code>tutorials/{FIXATION_WITNESS}</code>: every species
-        on its DECLARED standard state (the sugar on its solid rung, water as a
+        on its declared standard state (the sugar on its solid rung, water as a
         pure liquid by the vaporisation crossing, the gases on theirs), the
         datum the elements/formation convention at 298.15 K.  A row that is
         not in this table is a refusal the lesson quotes: the sugar route
@@ -671,14 +671,13 @@ export function EquilibriumLandscapesTool(): JSX.Element {
         </Box>
 
         {step(1)}
-        {step(2)}
 
         <Box>
           <Title order={5}>Now survey it</Title>
           <Text size="sm" mt={4}>
             Pick a system.  The solid curves are the true equilibrium at 1, 10
             and 100 bar; move |ΔT| and the dashed curves are what the model
-            with that approach REPORTS at each physical temperature, the sign
+            with that approach reports at each physical temperature, the sign
             decided by the engine at every cell.
           </Text>
           <SegmentedControl mt={8} fullWidth value={witnessId} onChange={onWitness}
@@ -712,6 +711,8 @@ export function EquilibriumLandscapesTool(): JSX.Element {
           </Box>
         </Box>
 
+        {/* The survey comes second (DEV.md 4c C277); step 2 explains it. */}
+        {step(2)}
         {step(3)}
         {step(4)}
         {step(5)}
@@ -722,7 +723,7 @@ export function EquilibriumLandscapesTool(): JSX.Element {
         <LessonLimits limits={LANDSCAPE_LIMITS} />
 
         <Text size="sm">
-          The level above this one — where you declare the REACTIONS a
+          The level above this one — where you declare the reactions a
           catalyst runs, leave the kinetically frozen ones off the list, and
           give each declared reaction its own approach — is the page{" "}
           <Anchor component="button" type="button"

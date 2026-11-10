@@ -56,8 +56,8 @@ export const LANDSCAPE_STEPS: readonly LessonStep[] = [
       + "standard-state term).  It writes one row per cell to a CSV with the "
       + "signed approach it used, a converged flag, the metric and every "
       + "species' gas mole fraction (GibbsMapOp.cpp:220 and 242–244), and the page "
-      + "reads that file.  The METRIC is one of two the design forum allowed: "
-      + "a product's mole fraction, or an ELEMENT YIELD -- the atoms of one "
+      + "reads that file.  The metric is one of two the design forum allowed: "
+      + "a product's mole fraction, or an element yield -- the atoms of one "
       + "element that leave in one product, divided by the atoms of that "
       + "element fed (GibbsMapOp.cpp:168–213).  A species \"conversion\" is "
       + "refused by name where the species is also produced, because water in "
@@ -82,7 +82,7 @@ export const LANDSCAPE_STEPS: readonly LessonStep[] = [
         + "of product p -- the entry of the atom matrix the case declares in "
         + "its `atoms ( ... )` list", unit: "atoms per molecule" },
       { sym: "n_p", means: "the equilibrium molar amount of product p in the "
-        + "GAS phase at that cell (GibbsMapOp.cpp:204–213 reads the gas "
+        + "gas phase at that cell (GibbsMapOp.cpp:204–213 reads the gas "
         + "amounts; a condensed liquid is not in it), or, for a product whose "
         + "record declares a pure solid, its deposit", unit: "mol" },
       { sym: "b_E", means: "the atoms of element E in the feed, computed from "
@@ -94,22 +94,22 @@ export const LANDSCAPE_STEPS: readonly LessonStep[] = [
         + "species i in the gas phase; the sum runs over every declared "
         + "species", unit: "mol" },
     ],
-    note: "THE SPECIES LIST IS THE ONLY KINETIC STATEMENT, on this page as on "
+    note: "The species list is the only kinetic statement, on this page as on "
       + "the companion one.  The combustion landscape has no NO in it and the "
       + "thermal-NO landscape has the same feed with NO added: the difference "
       + "between the two curves you can select is one line in a dictionary, "
       + "and nothing in the minimisation knows which of them is the truer "
       + "flame.  A species that is not listed cannot form, however "
       + "favourable; a species that is listed will form wherever the "
-      + "minimisation finds it lower.  THERE IS A SECOND LEVEL, and it has "
+      + "minimisation finds it lower.  There is a second level, and it has "
       + "its own page, the EduTool `declared-pathways`: "
-      + "`equilibriumReactor` takes a DECLARED reaction list from "
+      + "`equilibriumReactor` takes a declared reaction list from "
       + "constant/reactions and drives only those to equilibrium "
       + "(EquilibriumReactor.cpp:96–119; witnesses `equil01_reforming`, "
       + "`reactions ( smr wgs )`, and `equil02_methanol_declared_pathways`), "
       + "so an empirical exclusion — a reaction known to be kinetically "
       + "irrelevant, left off the list — can be declared.  It reads the "
-      + "approach temperature PER REACTION since 2026-09-27 and runs "
+      + "approach temperature per reaction since 2026-09-27 and runs "
       + "isothermally only.",
   },
   {
@@ -127,7 +127,7 @@ export const LANDSCAPE_STEPS: readonly LessonStep[] = [
       + "the table.  Ammonia is exothermic and mole-reducing: the curve falls "
       + "with T and the 100 bar curve sits above the 1 bar one.  The shift "
       + "is exothermic and mole-conserving: the three pressures give the "
-      + "SAME curve, and the witness header records that the three columns "
+      + "same curve, and the witness header records that the three columns "
       + "of its own CSV agree to every printed digit.  Reforming is "
       + "endothermic and mole-increasing: the methane left rises with "
       + "pressure and falls with temperature, which is why the reformer runs "
@@ -163,9 +163,9 @@ export const LANDSCAPE_STEPS: readonly LessonStep[] = [
         + "zero for the shift and for NO formation, positive for reforming",
         unit: "—" },
     ],
-    note: "ONE THING ON THE AMMONIA CURVE IS NOT CHEMISTRY.  The kernel checks "
+    note: "One thing on the ammonia curve is not chemistry.  The kernel checks "
       + "every condensable species against its vapour pressure at the "
-      + "PHYSICAL temperature and, where one is supersaturated, condenses it "
+      + "physical temperature and, where one is supersaturated, condenses it "
       + "and reports the gas that remains (ElementPotential.cpp:54–65, the "
       + "two-phase branch below it).  On the ammonia witness that happens on "
       + "the 100 bar curve at its cold end: the reported mole fraction there "
@@ -181,14 +181,14 @@ export const LANDSCAPE_STEPS: readonly LessonStep[] = [
     body: "Declare a magnitude and the map re-evaluates the chemistry at a "
       + "shifted temperature while everything physical stays at T -- the "
       + "companion page's separation, unchanged.  What the map adds is that "
-      + "the DIRECTION is decided per cell: `temperatureApproach` is refused "
+      + "the direction is decided per cell: `temperatureApproach` is refused "
       + "if negative (GibbsMapOp.cpp:135–144), and at every (T, P) the op "
       + "calls the one home of the sign rule, `GibbsReactor::"
       + "approachDirection` (GibbsMapOp.cpp:159–165; GibbsReactor.cpp:67–161), "
       + "which solves the true equilibrium from the feed at that cell's T, "
       + "reads the isothermal enthalpy change over that transformation, and "
       + "returns +1 for exothermic and −1 for endothermic (the rule's one "
-      + "home, TemperatureApproach.H:93).  The CSV carries the SIGNED value each cell was solved with "
+      + "home, TemperatureApproach.H:93).  The CSV carries the signed value each cell was solved with "
       + "in its `deltaT_K` column, and the run publishes a tally -- how many "
       + "solves went exothermic, how many endothermic, how many were "
       + "undetermined and took the announced default -- as diagnostics "
@@ -197,7 +197,7 @@ export const LANDSCAPE_STEPS: readonly LessonStep[] = [
       + "not this page's.  Across the five witnesses the tally reads the way "
       + "step 2 predicts: ammonia, the shift, combustion and the NO feed are "
       + "exothermic at every cell and take T + |ΔT|; reforming is endothermic "
-      + "at every cell and takes T − |ΔT|.  The map also says when it CROSSES "
+      + "at every cell and takes T − |ΔT|.  The map also says when it crosses "
       + "a thermicity boundary, because then no single signed number "
       + "describes the run and only the column does.",
     formula: String.raw`X_\mathrm{reported}(T,P) = X_\mathrm{eq}\!\left(T + s\,|\Delta T|,\; P\right),
@@ -209,17 +209,17 @@ export const LANDSCAPE_STEPS: readonly LessonStep[] = [
       { sym: "X_\\mathrm{eq}", means: "the true equilibrium metric as a "
         + "function of temperature and pressure -- the curve drawn at "
         + "|ΔT| = 0", unit: "— (the metric)" },
-      { sym: "s", means: "the sign the ENGINE assigns at that cell: +1 when "
+      { sym: "s", means: "the sign the engine assigns at that cell: +1 when "
         + "the overall transformation from the feed is exothermic, −1 when "
         + "endothermic.  Never declared", unit: "—" },
-      { sym: "|\\Delta T|", means: "the declared MAGNITUDE of the approach, "
+      { sym: "|\\Delta T|", means: "the declared magnitude of the approach, "
         + "the slider on this page", unit: "K" },
       { sym: "\\operatorname{sgn}", means: "the sign function: +1 for a "
         + "positive argument, −1 for a negative one", unit: "—" },
     ],
-    note: "WHY IT IS DECIDED PER CELL AND NOT PER MAP.  The thermicity the "
-      + "engine reads is that of the transformation FROM THIS FEED to the "
-      + "equilibrium AT THIS T, and a feed on the reactant side of an "
+    note: "Why it is decided per cell and not per map.  The thermicity the "
+      + "engine reads is that of the transformation from this feed to the "
+      + "equilibrium at this T, and a feed on the reactant side of an "
       + "exothermic equilibrium stays exothermic at every temperature of the "
       + "map for as long as the reaction enthalpy keeps its sign over it "
       + "(it does on these witnesses) -- so on four of the five witnesses "
@@ -232,7 +232,7 @@ export const LANDSCAPE_STEPS: readonly LessonStep[] = [
   {
     n: 4,
     title: "Where |ΔT| matters and where it is indifferent: the local slope",
-    body: "A temperature approach is a HORIZONTAL move along the equilibrium "
+    body: "A temperature approach is a horizontal move along the equilibrium "
       + "curve.  How much it changes the answer is therefore the slope of the "
       + "curve where you are, times the distance you moved -- to first order, "
       + "and the plot shows the exact difference rather than the estimate.  "
@@ -259,8 +259,8 @@ export const LANDSCAPE_STEPS: readonly LessonStep[] = [
         + "magnitude means different things on different systems",
         unit: "1/K" },
     ],
-    note: "THIS IS ALSO WHY THE TWO DEFINITIONS OF \"APPROACH\" ARE NOT "
-      + "INTERCHANGEABLE, which the companion page states and this page "
+    note: "This is also why the two definitions of \"approach\" are not "
+      + "interchangeable, which the companion page states and this page "
       + "lets you see: a temperature approach is a horizontal distance, a "
       + "fractional approach is a vertical one, and the local slope is the "
       + "exchange rate between them.  It is different at every point of every "
@@ -268,22 +268,22 @@ export const LANDSCAPE_STEPS: readonly LessonStep[] = [
   },
   {
     n: 5,
-    title: "The GLOBAL caveat, drawn: thermal NO inside a flame",
+    title: "The global caveat, drawn: thermal NO inside a flame",
     body: "The engine prints, on every run that declares an approach, that "
-      + "the parameter is GLOBAL and cannot resolve per-reaction approaches "
+      + "the parameter is global and cannot resolve per-reaction approaches "
       + "(GibbsReactor.cpp:414–416; the map's own line at GibbsMapOp.cpp:"
       + "149–157).  The thermal-NO witness makes the sentence into a curve.  "
       + "NO formation from N₂ and O₂ is endothermic: its equilibrium mole "
-      + "fraction RISES with temperature over many decades, which is why the page draws it on a log axis.  "
+      + "fraction rises with temperature over many decades, which is why the page draws it on a log axis.  "
       + "But it rides inside a feed -- methane in air -- whose overall "
       + "transformation is combustion, which is exothermic, and the "
       + "direction is read from the overall transformation "
       + "(GibbsReactor.cpp:155–160 says so in the announcement itself: the "
-      + "reading is GLOBAL, a reaction of the other thermicity riding inside "
+      + "reading is global, a reaction of the other thermicity riding inside "
       + "it is not resolved).  So every cell takes T + |ΔT|.  For the "
       + "combustion that is the conservative direction.  For the NO riding "
-      + "inside it, T + |ΔT| sits HIGHER on a rising curve: the model with an "
-      + "approach declared reports MORE NO than the true equilibrium at the "
+      + "inside it, T + |ΔT| sits higher on a rising curve: the model with an "
+      + "approach declared reports more NO than the true equilibrium at the "
       + "physical temperature -- an outlet beyond equilibrium, for the minor "
       + "product, from a parameter whose whole purpose is to fall short.  "
       + "Move the slider on that witness and watch the dashed curve sit "
@@ -293,12 +293,12 @@ export const LANDSCAPE_STEPS: readonly LessonStep[] = [
 \ce{CH4 + 2 O2 -> CO2 + 2 H2O}\quad (\Delta H_\mathrm{rxn} < 0)`,
     where: [
       { sym: "\\Delta H_\\mathrm{rxn}", means: "the enthalpy change of each "
-        + "reaction as written; the engine reads only the OVERALL one, from "
+        + "reaction as written; the engine reads only the overall one, from "
         + "the feed to the equilibrium, and it is dominated by the "
         + "combustion", unit: "J/mol" },
     ],
-    note: "THIS IS A LIMITATION OF THE SINGLE-NUMBER MODEL, NOT A FINDING "
-      + "ABOUT FLAMES.  Thermal NO in a real furnace is a kinetic quantity "
+    note: "This is a limitation of the single-number model, not a finding "
+      + "about flames.  Thermal NO in a real furnace is a kinetic quantity "
       + "-- the corpus carries a Zeldovich post-flame case for exactly that "
       + "reason -- and no equilibrium map with or without an approach "
       + "predicts a stack concentration.  What the witness shows is narrower "
@@ -312,42 +312,42 @@ export const LANDSCAPE_STEPS: readonly LessonStep[] = [
     n: 6,
     title: "The contrast: three overall routes to fixed nitrogen, priced on one surface",
     body: "Nitrogenase does not run the Haber–Bosch reaction cold.  No "
-      + "hydrogen is FED on the biological route: the enzyme reduces N₂ with "
-      + "PROTONS and ELECTRONS, and the electrons come from the organism's "
+      + "hydrogen is fed on the biological route: the enzyme reduces N₂ with "
+      + "protons and electrons, and the electrons come from the organism's "
       + "substrate — a sugar it respires, or, in a phototroph, water it "
-      + "oxidises with light.  (The real enzyme also EVOLVES H₂ as an "
+      + "oxidises with light.  (The real enzyme also evolves H₂ as an "
       + "obligatory by-product, about one H₂ per N₂ fixed; the overall "
       + "reactions below leave it out and price the minimum, six electrons "
       + "per N₂.)  So the thermodynamics the engine can attack is "
-      + "the OVERALL reaction with the real electron donor, balanced by "
+      + "the overall reaction with the real electron donor, balanced by "
       + "electron count: a fully oxidised glucose gives up 24 electrons and "
       + "a reduced N₂ takes 6, so one sugar fixes four nitrogens; a water "
       + "oxidised to O₂ gives up 2, so three waters fix one.  The panel "
       + "beside this step prices both routes, and the industrial one, with "
       + "the `reactionGibbs` operation on the sixth witness: every species on "
-      + "a DECLARED standard state — the sugar on its own solid rung, water "
+      + "a declared standard state — the sugar on its own solid rung, water "
       + "as a pure liquid reached by the vaporisation crossing from its "
       + "ideal-gas datum, the gases on theirs — and the run names the route "
       + "each potential took (ReactionGibbs.cpp, `price`).  Read the signs "
       + "off the panel, not off this paragraph: the sugar route is "
-      + "EXERGONIC, because respiration pays for the fixation inside the same "
-      + "overall reaction; the water route is ENDERGONIC, and light pays; the "
+      + "exergonic, because respiration pays for the fixation inside the same "
+      + "overall reaction; the water route is endergonic, and light pays; the "
       + "industrial route is exergonic at the datum temperature and is not "
       + "at the converter's, which is the whole reason a converter needs its "
-      + "pressure — the landscape above draws that loss.  WHAT DOES NOT "
+      + "pressure — the landscape above draws that loss.  What does not "
       + "TRANSFER.  The temperature approach of step 3 has no meaning for an "
       + "enzyme: `T + ΔT` is a statement about a catalyst bed whose "
       + "shortfall can be expressed as a temperature, and nothing about a "
       + "cell at body temperature in water is that.  What transfers is the "
-      + "EQUILIBRIUM LIMIT — the sign and size of ΔG the panel shows, the "
-      + "ceiling no enzyme lifts — and the EXTENT BOOKKEEPING: atoms and "
+      + "equilibrium limit — the sign and size of ΔG the panel shows, the "
+      + "ceiling no enzyme lifts — and the extent bookkeeping: atoms and "
       + "electrons conserved, one extent per overall reaction.  A "
       + "bioreactor in Choupo would be a `batchReactor` or a `dynamicCSTR` "
-      + "with DECLARED kinetics and a declared rate law, never a Gibbs "
+      + "with declared kinetics and a declared rate law, never a Gibbs "
       + "reactor: the enzyme's rate is the thing an equilibrium reactor "
-      + "cannot say, and the tree has no rate law for it.  WHAT THE ENGINE "
-      + "REFUSES, quoted rather than hidden.  The sugar route can be priced "
-      + "only at 298.15 K: glucose.dat carries a solid-rung datum and NO "
+      + "cannot say, and the tree has no rate law for it.  What the engine "
+      + "refuses, quoted rather than hidden.  The sugar route can be priced "
+      + "only at 298.15 K: glucose.dat carries a solid-rung datum and no "
       + "heat-capacity block on any rung (its own words: FLAGGED, NOT "
       + "FABRICATED), so asking that route at body temperature refuses by "
       + "name — measured on a copy of the witness: \"Component 'glucose': "
@@ -397,7 +397,7 @@ export const LANDSCAPE_STEPS: readonly LessonStep[] = [
         + "in it, a gas's is its partial pressure over 1 bar", unit: "—" },
       { sym: "R", means: "the gas constant", unit: "J/(mol·K)" },
     ],
-    note: "WHY THE THREE NUMBERS ARE ON ONE SURFACE, and why that had to be "
+    note: "Why the three numbers are on one surface, and why that had to be "
       + "built.  The engine's one route to a reaction's Gibbs energy before "
       + "this page, `Reaction::equilibrium` (Reaction.cpp:136–149), prices "
       + "every species with `g_pure_ig` — the ideal-gas rung — and that rung "
@@ -433,15 +433,15 @@ export const LANDSCAPE_LIMITS: readonly LessonLimit[] = [
   },
   {
     id: "gas-phase-metric",
-    title: "The metric is the GAS phase, and one condensable species is all the kernel handles.",
+    title: "The metric is the gas phase, and one condensable species is all the kernel handles.",
     body: "Mole fractions and element yields are formed over the gas amounts "
       + "(GibbsMapOp.cpp:204–213).  Where one condensable species is "
       + "supersaturated the kernel condenses it and the reported gas is "
       + "saturated -- the ammonia witness's cold 100 bar leg -- and where "
-      + "MORE than one is supersaturated the kernel returns the gas-only "
+      + "more than one is supersaturated the kernel returns the gas-only "
       + "solution, which is not the equilibrium (ElementPotential.cpp:71): "
       + "the reactor refuses such a state, and the map, which keeps its "
-      + "other cells, writes the cell as computed and COUNTS it — the run "
+      + "other cells, writes the cell as computed and counts it — the run "
       + "announces how many cells and the first one, and publishes "
       + "n_supersaturated_not_condensed (until 2026-10-25 it was converged "
       + "and unannounced).  On these five witnesses no cell reaches that second "
@@ -463,7 +463,7 @@ export const LANDSCAPE_LIMITS: readonly LessonLimit[] = [
       + "bench (`ammoniaRate01_dyson_simon`) and the staged kinetic converter "
       + "(`ammoniaReactor04_kineticSizing`), both inside that law's own window; a "
       + "student who wants a bioreactor has `batchReactor` and `dynamicCSTR`, "
-      + "which take a DECLARED rate law and are the right door.",
+      + "which take a declared rate law and are the right door.",
   },
   {
     id: "biological-routes-at-the-datum-only",
@@ -505,7 +505,7 @@ export const LANDSCAPE_LIMITS: readonly LessonLimit[] = [
     body: "The corpus carries more `gibbsReactor` units than this page draws.  "
       + "The adiabatic ones -- the Claus furnace, the flame cases, the "
       + "power-cycle burners -- were left out on purpose: their physical "
-      + "temperature is the ANSWER of the energy balance, not a knob, so a "
+      + "temperature is the answer of the energy balance, not a knob, so a "
       + "landscape drawn at fixed T is not the question those cases ask; "
       + "the Claus furnace also depends on records the catalogue does not "
       + "carry, and has a page of its own.  The ammonia plants share "
