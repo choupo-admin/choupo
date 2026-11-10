@@ -39,6 +39,7 @@ License
 #include <cmath>
 #include <sstream>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -52,6 +53,7 @@ int VaporPressureFit::run(const DictPtr& dict,
                           int verbosity)
 {
     diag_.clear();
+    curation_.clear();
     const std::string comp = dict->lookupWordOrDefault("component", "");
 
     // -- THE EVIDENCE PARTITION, frozen before a single point is fitted ----
@@ -90,7 +92,39 @@ int VaporPressureFit::run(const DictPtr& dict,
     };
 
     std::vector<scalar> T, y;                                 // y = log10(Psat[bar])
-    admissible(EvidencePartition::loadAll(part.fit(), xN, yN, label), T, y);
+    std::vector<std::string> src;                             // each fit point's dataset (its DOI, else its path)
+    for (const auto& ds : part.fit())
+    {
+        const std::size_t n0 = T.size();
+        admissible(EvidencePartition::loadAll(std::vector<EvidenceDataset>{ ds }, xN, yN, label), T, y);
+        for (std::size_t k = n0; k < T.size(); ++k) src.push_back(ds.doi.empty() ? ds.path : ds.doi);
+    }
+
+    //  OUTLIERS (DEV.md 4c C283, amended): `outliers { maxRelativeError <x>
+    //  percent; }` -- after the least-squares stage, a fit point whose
+    //  relative pressure error exceeds x is DISCARDED BY NAME (its dataset, T
+    //  and P, printed and published) and the fit is REPEATED without it, once.
+    //  Absent, no point is discarded.  A declared rule, never a silent filter.
+    scalar outlierRel = -1.0;
+    if (dict->found("outliers"))
+    {
+        auto od = dict->subDict("outliers");
+        for (const auto& k : od->keys())
+            if (k != "maxRelativeError")
+                throw std::runtime_error(label + ": `outliers` has no entry `" + k
+                    + "`; the entry is maxRelativeError <x> percent;");
+        if (!od->found("maxRelativeError") || od->unitWordOf("maxRelativeError") != "percent")
+            throw std::runtime_error(label + ": `outliers` declares `maxRelativeError"
+                " <x> percent;` -- the relative pressure error beyond which a fit point"
+                " is discarded, with its unit.");
+        outlierRel = od->lookupScalar("maxRelativeError");          // a fraction
+        if (!(outlierRel > 0.0))
+            throw std::runtime_error(label + ": `outliers.maxRelativeError` must be > 0.");
+        if (verbosity >= 1)
+            std::cout << "  Outliers:    a fit point with |P_model - P|/P > " << 100.0 * outlierRel
+                      << " % after the least-squares stage is discarded by name, and the fit"
+                         " repeated without it (once)\n";
+    }
 
     std::vector<scalar> Tv, yv;                               // held-out
     admissible(EvidencePartition::loadAll(part.validation(), xN, yN, label), Tv, yv);
@@ -100,42 +134,87 @@ int VaporPressureFit::run(const DictPtr& dict,
         throw std::runtime_error(label + ": need >= 3 admissible (T, Psat)"
             " fitting points; got " + std::to_string(T.size()) + ".");
 
-    scalar Tmin = 1e30, Tmax = 0.0;
-    for (scalar t : T) { Tmin = std::min(Tmin, t); Tmax = std::max(Tmax, t); }
+    scalar Tmin = 1e30, Tmax = 0.0, Clo = 0.0, Chi = 300.0, A = 0, B = 0, C = 0;
 
     // -- fit log10(P) = A − B/(T+C): linear (A,B) for fixed C, golden-section C -
-    auto solveAtC = [&](scalar C, scalar& A, scalar& B) -> scalar
+    auto solveAtC = [&](scalar Cc, scalar& Aa, scalar& Bb) -> scalar
     {
         scalar su = 0, sy = 0, suu = 0, suy = 0; const scalar n = static_cast<scalar>(T.size());
         for (std::size_t i = 0; i < T.size(); ++i)
         {
-            const scalar u = 1.0 / (T[i] + C);
+            const scalar u = 1.0 / (T[i] + Cc);
             su += u; sy += y[i]; suu += u * u; suy += u * y[i];
         }
         const scalar denom = suu - su * su / n;
         const scalar m = (denom != 0.0) ? (suy - su * sy / n) / denom : 0.0;  // slope y vs u = -B
-        B = -m; A = sy / n - m * su / n;
+        Bb = -m; Aa = sy / n - m * su / n;
         scalar sse = 0.0;
         for (std::size_t i = 0; i < T.size(); ++i)
         {
-            const scalar yh = A - B / (T[i] + C);
+            const scalar yh = Aa - Bb / (T[i] + Cc);
             sse += (y[i] - yh) * (y[i] - yh);
         }
         return sse;
     };
-    // C must keep (T+C) > 0 for every point; search below Tmin.
-    scalar Clo = -(Tmin) + 5.0, Chi = 300.0;
-    const scalar gr = 0.6180339887498949;
-    scalar a = Clo, b = Chi, A1 = 0, B1 = 0, A2 = 0, B2 = 0;
-    scalar c1 = b - gr * (b - a), d1 = a + gr * (b - a);
-    scalar f1 = solveAtC(c1, A1, B1), f2 = solveAtC(d1, A2, B2);
-    for (int it = 0; it < 120; ++it)
+    auto lsFit = [&]()
     {
-        if (f1 < f2) { b = d1; d1 = c1; f2 = f1; c1 = b - gr * (b - a); f1 = solveAtC(c1, A1, B1); }
-        else         { a = c1; c1 = d1; f1 = f2; d1 = a + gr * (b - a); f2 = solveAtC(d1, A2, B2); }
+        Tmin = 1e30; Tmax = 0.0;
+        for (scalar t : T) { Tmin = std::min(Tmin, t); Tmax = std::max(Tmax, t); }
+        // C must keep (T+C) > 0 for every point; search below Tmin.
+        Clo = -(Tmin) + 5.0; Chi = 300.0;
+        const scalar gr = 0.6180339887498949;
+        scalar a = Clo, b = Chi, A1 = 0, B1 = 0, A2 = 0, B2 = 0;
+        scalar c1 = b - gr * (b - a), d1 = a + gr * (b - a);
+        scalar f1 = solveAtC(c1, A1, B1), f2 = solveAtC(d1, A2, B2);
+        for (int it = 0; it < 120; ++it)
+        {
+            if (f1 < f2) { b = d1; d1 = c1; f2 = f1; c1 = b - gr * (b - a); f1 = solveAtC(c1, A1, B1); }
+            else         { a = c1; c1 = d1; f1 = f2; d1 = a + gr * (b - a); f2 = solveAtC(d1, A2, B2); }
+        }
+        C = 0.5 * (a + b);
+        solveAtC(C, A, B);
+    };
+    lsFit();
+
+    std::string dropped;                       // "<dataset> T=<K> P=<Pa> err=<%>; ..."
+    std::size_t nDropped = 0;
+    if (outlierRel > 0.0)
+    {
+        std::vector<scalar> T2, y2; std::vector<std::string> s2;
+        for (std::size_t i = 0; i < T.size(); ++i)
+        {
+            const scalar r = std::pow(10.0, (A - B / (T[i] + C)) - y[i]) - 1.0;
+            if (std::abs(r) > outlierRel)
+            {
+                std::ostringstream os;
+                os << src[i] << " T=" << std::setprecision(8) << T[i] << " K P="
+                   << std::pow(10.0, y[i]) * units::bar_to_Pa << " Pa err="
+                   << std::setprecision(4) << 100.0 * r << " %";
+                dropped += (dropped.empty() ? "" : "; ") + os.str();
+                ++nDropped;
+                if (verbosity >= 1)
+                    std::cout << "    [outlier] DISCARDED " << os.str() << "\n";
+            }
+            else { T2.push_back(T[i]); y2.push_back(y[i]); s2.push_back(src[i]); }
+        }
+        if (nDropped > 0)
+        {
+            T = T2; y = y2; src = s2;
+            if (T.size() < 3)
+                throw std::runtime_error(label + ": " + std::to_string(nDropped)
+                    + " outlier(s) discarded leave " + std::to_string(T.size())
+                    + " fit points; need >= 3.");
+            if (verbosity >= 1)
+                std::cout << "    [outlier] " << nDropped << " point(s) discarded; the"
+                             " least-squares stage is REPEATED on the " << T.size()
+                          << " kept\n";
+            lsFit();
+        }
+        else if (verbosity >= 1)
+            std::cout << "    [outlier] no point beyond the declared limit; nothing discarded\n";
     }
-    scalar C = 0.5 * (a + b), A = 0, B = 0;
-    solveAtC(C, A, B);
+    diag_["n_outliers_dropped"] = static_cast<scalar>(nDropped);
+    if (outlierRel > 0.0) curation_["outliersDropped"] = dropped.empty() ? "none" : dropped;
 
     //  relative pressure residual of a curve at one point, (P_model - P)/P
     auto relAt = [](scalar Aa, scalar Bb, scalar Cc, scalar t, scalar ylog)

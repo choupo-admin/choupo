@@ -1315,8 +1315,21 @@ def revert(stem):
 #       fit; no measured series in the tree (constant/archiveDatasets, as
 #       `pair`).  Not sealed: the fit reads no catalogue record, and the
 #       run must read the CATALOGUE record so it can voice its status.
-#    7. PROMOTION (`--promote`) only when the verdict is `validated` and the
-#       Tb rule holds: the AmbroseWalton block is REPLACED by the fitted
+#    7. PROMOTION (`--promote`) -- THE RULE OF C281 STEP 3 (Vitor, 2026-11-10,
+#       rejecting the step-2 outcome: "this is not exact science"; it
+#       REPLACES the band rule of items 4-5 as the promotion test).  The band
+#       measures whether a curve agrees with the held-out laboratory to that
+#       laboratory's claimed precision; laboratories disagree with each other
+#       by more than they claim, so almost nothing passed.  Now a fit is
+#       promoted when its held-out mean AND maximum relative error are BOTH
+#       below the AmbroseWalton curve's on the same held-out points (the
+#       estimate it replaces, from the record's own Tc, Pc, omega), and,
+#       where the record's Tb lies OUTSIDE the FIT study's range, its normal
+#       boiling point lies within VP_TB_TOL_K of Tb; inside the fit range the
+#       gap is ANNOUNCED and refuses nothing.  The band verdict is kept as
+#       INFORMATION (`bandVerdict` in the case result and the record), and
+#       both errors (fitted and AmbroseWalton, mean and max) are written in
+#       the record's provenance.  When it holds: the AmbroseWalton block is REPLACED by the fitted
 #       Antoine (Trange = the fit's own span; outside it the engine announces
 #       the extrapolation, as for every Antoine), the per-value provenance
 #       entry names the DOIs, the case and the verdict, and is marked
@@ -1331,7 +1344,9 @@ def revert(stem):
 #  src/propertyOps/VaporPressureFit.cpp; read the articles back.
 # ==========================================================================
 VP_PROMOTED_BY = "bin/choupo-curate vp --promote"
-TB_TOL_K = 2.0
+TB_TOL_K = 2.0      # step 2's normal-boiling-point tolerance (superseded)
+VP_TB_TOL_K = 5.0   # C281 step 3: the promotion rule's
+VP_RULE_MARK = "PROMOTION RULE (C281 step 3"
 STD_COMP = ROOT / "data" / "standards" / "components"
 AW_BLOCK = ("vaporPressure\n{\n    model AmbroseWalton;  "
             "// [origin=estimated method=Ambrose-Walton]\n}\n")
@@ -1342,6 +1357,24 @@ AW_PROV = ("    vaporPressure\n    {\n        origin        predictive;\n"
            '        methodVersion "choupo-aw-1989";\n'
            '        uncertainty   "not quantified; validate against saturation data";\n'
            '        notes         "computed from ChemSep Tc/Pc/omega";\n    }\n')
+
+
+def aw_psat_kPa(T, rec_text):
+    """The AmbroseWalton curve the record declares, from its own Tc, Pc and
+    omega, through check_ambrose_walton_announced's independent Python
+    (which that gate holds to the engine's own Psat to 1e-11)."""
+    import importlib.machinery
+    import importlib.util
+    global _AW
+    if "_AW" not in globals():
+        path = ROOT / "bin" / "curate" / "check_ambrose_walton_announced.py"
+        ld = importlib.machinery.SourceFileLoader("check_aw", str(path))
+        sp_ = importlib.util.spec_from_loader("check_aw", ld)
+        _AW = importlib.util.module_from_spec(sp_)
+        ld.exec_module(_AW)
+    t = crp.strip_comments(rec_text)
+    g = lambda k: float(re.search(r"^%s\s+([-+0-9.eE]+)" % k, t, re.M).group(1))
+    return _AW.psat(T, g("Tc"), g("Pc") * 1e5, g("omega")) / 1e3
 
 
 def vp_record(comp):
@@ -1453,15 +1486,17 @@ def vp_plan(name, work):
     hi = max(fit["Tmax"], held["Tmax"])
     pl["span"] = (lo, hi)
     Tb = pl["Tb"]
+    flo, fhi = fit["Tmin"], fit["Tmax"]
     pl["tb_rule"] = (
         "no Tb declared in the record: no normal-boiling-point condition" if Tb is None else
-        f"the record's Tb {Tb:g} K lies INSIDE the measured span {lo:g}-{hi:g} K: the "
-        "held-out verdict is the test there, no further condition" if lo <= Tb <= hi else
-        f"the record's Tb {Tb:g} K lies OUTSIDE the measured span {lo:g}-{hi:g} K: the "
-        f"fitted Antoine's own normal boiling point (P = 101.325 kPa) must lie within "
-        f"{TB_TOL_K:g} K of it, or the fit is NOT promoted (an extrapolation that misses "
-        "the record's own boiling point)")
-    pl["tb_applies"] = Tb is not None and not (lo <= Tb <= hi)
+        f"the record's Tb {Tb:g} K lies INSIDE the fit study's range {flo:g}-{fhi:g} K: "
+        "the gap between the fitted Antoine's own normal boiling point (P = 101.325 "
+        "kPa) and Tb is ANNOUNCED in the result and refuses nothing" if flo <= Tb <= fhi else
+        f"the record's Tb {Tb:g} K lies OUTSIDE the fit study's range {flo:g}-{fhi:g} K: "
+        f"the fitted Antoine's own normal boiling point (P = 101.325 kPa) must lie within "
+        f"{VP_TB_TOL_K:g} K of it, or the fit is NOT promoted (an extrapolation that "
+        "misses the record's own boiling point)")
+    pl["tb_applies"] = Tb is not None and not (flo <= Tb <= fhi)
     return pl
 
 
@@ -1563,7 +1598,14 @@ def vp_props_text(pl, case_name, earlier=None):
   the next largest sharing no author with it, doi {held['doi']} ({held['n']} pts,
   {held['Tmin']:g}-{held['Tmax']:g} K).
 
-  BAND: maxAAD {pl['band_txt']} % ({pl['origin']}).
+  BAND (INFORMATION since C281 step 3, reported as `bandVerdict`, not the
+  promotion test): maxAAD {pl['band_txt']} % ({pl['origin']}).
+
+  {VP_RULE_MARK}, Vitor 2026-11-10, declared before the fit): PROMOTED
+  (autoPromoted, humanReviewed false) when the fitted curve's held-out mean
+  AND maximum relative error in P are BOTH below those of the record's
+  AmbroseWalton curve (its own Tc, Pc, omega) on the same held-out points,
+  and the normal-boiling-point condition below holds.
 
   NORMAL BOILING POINT: {pl['tb_rule']}.
 
@@ -1690,7 +1732,12 @@ def vp_run(case):
     decl = parse_decl(case)
     fitd = next(x for x in decl if x.get("role") == "fit")
     fitds = read_vp_dataset(case / fitd["file"])
-    return {"A": d.get("A"), "B": d.get("B"), "C": d.get("C"), "R2": d.get("R2"),
+    held = next(x for x in decl if x.get("role") == "validation")
+    hds = read_vp_dataset(case / held["file"])
+    rec = vp_record(case.name.split("_vp_")[1]).read_text()
+    awr = [abs(aw_psat_kPa(t, rec) / p - 1.0) for t, p in zip(hds["T"], hds["P"])]
+    return {"aw_aad": 100.0 * sum(awr) / len(awr), "aw_max": 100.0 * max(awr),
+            "Tb": record_Tb(rec),"A": d.get("A"), "B": d.get("B"), "C": d.get("C"), "R2": d.get("R2"),
             "n": d.get("n_points"), "n_heldout": d.get("n_heldout"),
             "aad_pct": d.get("aad_heldout_pct"), "verdict": cu.get("verdict"),
             "max_pct": d.get("relErr_max_heldout_pct"),
@@ -1703,32 +1750,36 @@ def vp_run(case):
 
 
 def vp_judge(case, rf):
-    """(promotable, reason) by the declared rules, from the declaration."""
+    """(promotable, reason) by the promotion rule the case DECLARES (C281
+    step 3); a declaration that predates the rule is not judged by it."""
     decl = (case / "system" / "propsDict").read_text()
-    m = re.search(r"NORMAL BOILING POINT: (.*?)\.\n\n", decl, re.S)
-    tb_rule = " ".join(m.group(1).split()) if m else ""
+    if VP_RULE_MARK not in decl:
+        refuse(f"{case.name} does not declare the C281 step-3 promotion rule -- "
+               f"`bin/choupo-curate vp <c> --redeclare` first")
     Tnb = antoine_Tnb(rf["A"], rf["B"], rf["C"])
     rf["Tnb"] = Tnb
-    tbm = re.search(r"record's Tb ([0-9.]+) K lies OUTSIDE", tb_rule)
-    if rf["verdict"] != "validated":
-        return False, (f"NOT PROMOTED: held-out verdict {rf['verdict']} (AAD "
-                       f"{rf['aad_pct']:.4g} % against the band {rf['maxAAD']:g} % "
-                       "declared before the fit); the record keeps AmbroseWalton")
-    if tbm:
-        Tb = float(tbm.group(1))
-        if abs(Tnb - Tb) > TB_TOL_K:
-            return False, (f"NOT PROMOTED: validated, but the fitted Antoine's normal "
-                           f"boiling point {Tnb:.2f} K misses the record's Tb {Tb:g} K by "
-                           f"{Tnb - Tb:+.2f} K, outside the declared {TB_TOL_K:g} K -- an "
-                           "extrapolation that contradicts the record; the record keeps "
-                           "AmbroseWalton")
-        return True, (f"PROMOTABLE by `bin/choupo-curate vp {case.name.split('_vp_')[1]} "
-                      f"--promote`: verdict validated, normal boiling point {Tnb:.2f} K "
-                      f"within {TB_TOL_K:g} K of the record's Tb {Tb:g} K")
-    return True, (f"PROMOTABLE by `bin/choupo-curate vp {case.name.split('_vp_')[1]} "
-                  f"--promote`: verdict validated (the record's Tb is inside the "
-                  f"measured span or not declared; the fit's own normal boiling point "
-                  f"is {Tnb:.2f} K)")
+    Tb = rf.get("Tb")
+    band = f"band verdict {rf['verdict']} (information)"
+    errs = (f"held-out mean {rf['aad_pct']:.4g} % / max {rf['max_pct']:.4g} % against "
+            f"AmbroseWalton's {rf['aw_aad']:.4g} % / {rf['aw_max']:.4g} % on the same "
+            "points")
+    if not (rf["aad_pct"] < rf["aw_aad"] and rf["max_pct"] < rf["aw_max"]):
+        return False, (f"NOT PROMOTED: {errs} -- not both below; {band}; the record "
+                       "keeps AmbroseWalton")
+    gap = "" if Tb is None else f"normal boiling point {Tnb:.2f} K, {Tnb - Tb:+.2f} K from Tb {Tb:g} K"
+    comp = case.name.split("_vp_")[1]
+    if Tb is not None and not (rf["Tmin"] <= Tb <= rf["Tmax"]):
+        if abs(Tnb - Tb) > VP_TB_TOL_K:
+            return False, (f"NOT PROMOTED: {errs}, both below, but Tb lies outside the "
+                           f"fit range and the {gap} is outside the declared "
+                           f"{VP_TB_TOL_K:g} K; {band}; the record keeps AmbroseWalton")
+        return True, (f"PROMOTABLE by `bin/choupo-curate vp {comp} --promote`: {errs}, "
+                      f"both below; Tb outside the fit range, {gap} (within "
+                      f"{VP_TB_TOL_K:g} K); {band}")
+    return True, (f"PROMOTABLE by `bin/choupo-curate vp {comp} --promote`: {errs}, both "
+                  f"below; " + (f"Tb inside the fit range, {gap} ANNOUNCED, not a "
+                                "condition; " if Tb is not None else "no Tb declared; ")
+                  + band)
 
 
 def vp_fill_result(case, rf, reason):
@@ -1738,7 +1789,9 @@ def vp_fill_result(case, rf, reason):
            f"{rf['C']:.4f}), in-sample R2 {rf['R2']:.6f} over {int(rf['n'])} points, "
            f"{rf['Tmin']:g}-{rf['Tmax']:g} K.  HELD OUT: {int(rf['n_heldout'])} points, "
            f"AAD {rf['aad_pct']:.4f} % (max {rf['max_pct']:.4f} %) against the band "
-           f"{rf['maxAAD']:g} % -> {rf['verdict']}"
+           f"{rf['maxAAD']:g} % -> band verdict {rf['verdict']} (information); "
+           f"AmbroseWalton on the same points: AAD {rf['aw_aad']:.4f} %, max "
+           f"{rf['aw_max']:.4f} %"
            + (f"; the stage-1 least-squares answer on the same points: AAD "
               f"{rf['aad_ls']:.4f} %, max {rf['max_ls']:.4f} %" if rf.get("aad_ls") is not None else "")
            + f".  Its own normal boiling point (101.325 kPa): "
@@ -1767,8 +1820,8 @@ def vp_redeclare(pl, no_commit):
         refuse("--redeclare: no case for this component -- run `vp` first")
     pd = case / "system" / "propsDict"
     old = pd.read_text()
-    if re.search(r"^\s*objective\s*\{", crp.strip_comments(old), re.M):
-        refuse(f"--redeclare: {case.name} already declares an objective")
+    if VP_RULE_MARK in old:
+        refuse(f"--redeclare: {case.name} already declares the step-3 promotion rule")
     if (case / DECL).read_text() != vp_decl_text(pl, case.relative_to(ROOT).as_posix()):
         refuse(f"--redeclare: {case.name}'s archiveDatasets differ from the ones the "
                "rules give now -- the evidence would change, which is not a redeclaration")
@@ -1781,8 +1834,13 @@ def vp_redeclare(pl, no_commit):
         refuse(f"--redeclare: {case.name}'s band is not maxAAD {pl['band_txt']} % -- refused")
     m = re.search(r"@@RESULT-BEGIN@@(.*?)@@RESULT-END@@", old, re.S)
     prev = " ".join(m.group(1).split()) if m else "(no result recorded)"
-    earlier = ("C281 step 2, objective leastSquares (log10 P), the same partition "
-               "and band: " + prev)
+    before = earlier_of(case)
+    if before:
+        earlier = (before + "  THEN C281 step 3, objective twoStage, judged by the "
+                   "band (since superseded as the promotion test): " + prev)
+    else:
+        earlier = ("C281 step 2, objective leastSquares (log10 P), the same partition "
+                   "and band: " + prev)
     pd.write_text(vp_props_text(pl, case.name, earlier))
     if not no_commit:
         git(["add", "--", str(pd)])
@@ -1792,7 +1850,9 @@ def vp_redeclare(pl, no_commit):
              f"(fit doi {pl['fit']['doi']}, held out doi {pl['held']['doi']}) and "
              f"band (maxAAD {pl['band_txt']} %) as step 2, re-derived by the same "
              f"rules; `objective {{ method {VP_OBJECTIVE}; }}` declared (DEV.md 4c "
-             "C280 practice); the step-2 result kept in the header."])
+             "C280 practice); the promotion rule of C281 step 3 (held-out mean and "
+             "max both below AmbroseWalton's, Tb within 5 K outside the fit range) "
+             "declared; the earlier results kept in the header."])
         say(f"  committed the new declaration: {git(['rev-parse', '--short', 'HEAD']).strip()}")
     return case
 
@@ -1899,9 +1959,13 @@ def vp_prov(rf, case, decl, origin):
             '        replaces      "model AmbroseWalton (a corresponding-states estimate from Tc, Pc, omega); `bin/choupo-curate revert <component>` restores it";\n'
             "        evidence\n        (\n" + ev + "        );\n"
             "        validation\n        {\n"
-            f"            verdict     {rf['verdict']};\n"
+            '            promotionRule "held-out mean AND max relative error in P both below the AmbroseWalton curve\'s on the same points; Tnb within 5 K of Tb where Tb lies outside the fit range (DEV.md 4c C281 step 3)";\n'
             f"            points      {int(rf['n_heldout'])};\n"
-            f"            aad_pct     {rf['aad_pct']:.6f};\n"
+            f"            aad_pct     {rf['aad_pct']:.6f};   // held out, the fitted Antoine\n"
+            f"            max_pct     {rf['max_pct']:.6f};\n"
+            f"            awAad_pct   {rf['aw_aad']:.6f};   // held out, the AmbroseWalton curve it replaces\n"
+            f"            awMax_pct   {rf['aw_max']:.6f};\n"
+            f"            bandVerdict {rf['verdict']};   // information: the band below, declared before the fit\n"
             f"            maxAAD      {rf['maxAAD']:g};   // per cent, declared before the fit\n"
             f'            origin      "{origin}";\n'
             f"            Tnb_fit     {rf['Tnb']:.4f};   // K, the fitted curve at 101.325 kPa\n"
