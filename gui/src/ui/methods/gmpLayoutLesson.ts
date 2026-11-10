@@ -425,7 +425,7 @@ export const GMP_LAYOUT_STEPS: readonly LessonStep[] = [
       + "room is an input the case declares.  The case declares the zone "
       + "of each room with its source, which rooms are ignition sources with "
       + "the reason, and the separation between them; the engine announces "
-      + "an ATEX room that IS an ignition room, opens on one through a door, "
+      + "an ATEX room that is an ignition room, opens on one through a door, "
       + "or stands closer to one than the separation, measured as the clear "
       + "distance between the two room volumes -- a geometric check of the "
       + "declaration, which does not show that an ignition source is "

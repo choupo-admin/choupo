@@ -149,7 +149,7 @@ export const FEL_STEPS: readonly LessonStep[] = [
       + "specifications and datasheets.  At Class 5 neither exists.  At "
       + "Class 4 both are only started.  At Class 3 both are preliminary to "
       + "complete.  A heat and material balance is what a process "
-      + "simulation IS, so the simulation and the equipment datasheets "
+      + "simulation is, so the simulation and the equipment datasheets "
       + "mature together, one class at a time, and neither is finished "
       + "before the other.  The table on this page is that matrix, for six "
       + "of its rows.",

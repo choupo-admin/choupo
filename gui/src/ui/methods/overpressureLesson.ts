@@ -357,7 +357,7 @@ export const OVERPRESSURE_STEPS: readonly LessonStep[] = [
       + "pressure needs a larger area), or a declared round number for the "
       + "acetone drum.  The set pressure is where the device starts to "
       + "open; with one device it may not exceed the MAWP, and here it is "
-      + "taken AT the MAWP.  Above the set pressure the device "
+      + "taken at the MAWP.  Above the set pressure the device "
       + "needs some overpressure to open fully and pass its rated flow, so "
       + "the vessel is allowed a short accumulation above its MAWP while it "
       + "relieves: 10 % (or 3 psi, whichever is larger) with one device; "
