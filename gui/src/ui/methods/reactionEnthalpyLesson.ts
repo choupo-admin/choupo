@@ -51,14 +51,14 @@ export const ENTHALPY_STEPS: readonly LessonStep[] = [
     body: "A table gives the standard reaction enthalpy of ammonia synthesis as "
       + "about −46 kJ per mole of ammonia, and it is tempting to read the "
       + "degree sign as \"at 25 °C\".  It does not mean that.  The degree sign "
-      + "fixes the STANDARD STATE: the standard pressure, 1 bar, and each "
+      + "fixes the standard state: the standard pressure, 1 bar, and each "
       + "species in its reference phase (here, the ideal gas).  It says "
       + "nothing about temperature.  In the words IUPAC's 1982 notation "
       + "recommendations are summarised by, \"strictly speaking, temperature "
       + "is not part of the definition of a standard state\" (Wikipedia, "
       + "\"Standard state\", citing Pure Appl. Chem. 54 (1982) 1239, read "
       + "2026-10-02).  Tables are printed at 298.15 K because a table must be "
-      + "printed at SOME temperature.  So there is a standard reaction "
+      + "printed at some temperature.  So there is a standard reaction "
       + "enthalpy at every temperature, and the one in the table is only the "
       + "one at 298.15 K.",
     formula: String.raw`\Delta_r H^\circ(T) = \sum_i \nu_i\, h_i^\circ(T)`,
@@ -83,7 +83,7 @@ export const ENTHALPY_STEPS: readonly LessonStep[] = [
     title: "Kirchhoff's law: the reaction enthalpy moves with the heat capacities",
     body: "Each species' standard enthalpy changes with temperature by its own "
       + "heat capacity.  Sum them with the stoichiometric coefficients and "
-      + "the reaction enthalpy changes by the DIFFERENCE between the heat "
+      + "the reaction enthalpy changes by the difference between the heat "
       + "capacity of the products and that of the reactants.  If the products "
       + "can store more heat than the reactants, heating the system makes the "
       + "reaction more endothermic; if they store less, more exothermic.  "
@@ -114,7 +114,7 @@ export const ENTHALPY_STEPS: readonly LessonStep[] = [
       { step: "The first sum is the tabulated reaction enthalpy, and the sum "
           + "under the integral is the reaction heat capacity." },
     ],
-    note: "THE LAW HOLDS ALONG ONE PHASE.  If a species changes phase between "
+    note: "The law holds along one phase.  If a species changes phase between "
       + "298.15 K and T — water condensing, a salt melting — its enthalpy "
       + "jumps by the latent heat on the way, and the integral alone misses it.",
     //  DEV.md 4c C43 (Vítor, 2026-10-07): a pointer to where the chain
@@ -144,14 +144,14 @@ K(T)`,
       + "enthalpy of N₂ + 3 H₂ → 2 NH₃ at seven temperatures, every species an "
       + "ideal gas at 1 bar, on the same formation surface every Choupo "
       + "reactor uses.  Per mole of ammonia it gives −45.94 kJ at 298.15 K, "
-      + "−52.68 kJ at 700 K and −53.44 kJ at 773.15 K (the panel below draws "
-      + "all seven, from a live run).  The magnitude GROWS with temperature, "
+      + "−52.68 kJ at 700 K and −53.44 kJ at 773.15 K (the figure above draws "
+      + "all seven, from a live run).  The magnitude grows with temperature, "
       + "so by step 2 the reaction heat capacity is negative: four moles of "
       + "gas become two, and the two can store less heat than the four.  The "
       + "PEQ 2026-27 base data give −46.1 kJ per mole of ammonia (section "
       + "2.4) — the 25 °C value.  At a converter's 450–500 °C the reaction "
       + "releases about 16 % more heat per mole of ammonia than that.",
-    note: "THE NUMBERS ARE THE WITNESS'S GOLDEN, rounded: "
+    note: "The numbers are the witness's golden, rounded: "
       + "tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff, operation "
       + "`haberT`.  Its 298.15 K row reproduces "
       + "landscape06_nitrogen_fixation_routes' own Haber-Bosch row to the "
@@ -162,17 +162,17 @@ K(T)`,
     title: "What the 25 °C value gets wrong in a design — and when it does not",
     body: "One example, closed two ways.  Take the ammonia converter at "
       + "773.15 K with the feed and the product both at 773.15 K (an "
-      + "isothermal balance), per mole of ammonia made.  PATH 1, on the "
+      + "isothermal balance), per mole of ammonia made.  Path 1, on the "
       + "298.15 K datum: cool the reactants (one half of N₂, one and a half "
       + "of H₂) from 773.15 K to 298.15 K, which gives back 27.98 kJ; react "
       + "at 298.15 K, −45.94 kJ; heat the ammonia to 773.15 K, which takes "
-      + "20.48 kJ.  The sum is −27.98 − 45.94 + 20.48 = −53.44 kJ.  PATH 2: "
+      + "20.48 kJ.  The sum is −27.98 − 45.94 + 20.48 = −53.44 kJ.  Path 2: "
       + "react at the reactor temperature, ΔᵣH°(773.15 K) = −53.44 kJ.  The "
       + "two paths give the same duty, because Kirchhoff's law is exactly "
       + "the statement that the sensible terms of path 1 add up to "
       + "ΔᵣH°(773.15 K) − ΔᵣH°(298.15 K) = −7.50 kJ.  So using the 298.15 K "
-      + "value is NOT an error when its sensible terms travel with it.  It "
-      + "is an error when the 298.15 K value is used ALONE as the heat "
+      + "value is not an error when its sensible terms travel with it.  It "
+      + "is an error when the 298.15 K value is used alone as the heat "
       + "released at 773.15 K: in this isothermal balance, and only in a "
       + "balance whose feed and products are both at the reactor "
       + "temperature, that omits the −7.50 kJ and under-states the heat "
@@ -180,9 +180,9 @@ K(T)`,
       + "balance; it is not a rule for the steam or the temperature rise.  "
       + "For a bed with no heat exchange the balance is H_in(T_in) = "
       + "H_out(T_out), which fixes the outlet temperature.  Written as a "
-      + "rise it takes the reaction enthalpy at the INLET temperature "
+      + "rise it takes the reaction enthalpy at the inlet temperature "
       + "(react first at T_in, then heat the outlet mixture to T_out) and "
-      + "the mean heat capacity of the OUTLET mixture.  Putting the 298.15 K "
+      + "the mean heat capacity of the outlet mixture.  Putting the 298.15 K "
       + "value there instead is wrong by the relative difference between "
       + "ΔᵣH° at 298.15 K and at T_in, which depends on T_in (4 % at "
       + "T_in = 400 K: 45.94 against 48.07 kJ per mole of ammonia) and is "
@@ -202,9 +202,9 @@ K(T)`,
       { sym: "\\dot{F}", means: "the total molar flow leaving the bed", unit:
         "mol/s" },
       { sym: "\\bar{c}_p", means: "the mean molar heat capacity of the "
-        + "OUTLET mixture between T_in and T_out", unit: "J/(mol·K)" },
+        + "outlet mixture between T_in and T_out", unit: "J/(mol·K)" },
     ],
-    note: "THE ESTIMATE IS AN ESTIMATE.  The heat capacity of the gas also "
+    note: "The estimate is an estimate.  The heat capacity of the gas also "
       + "changes along the bed, and the composition changes as it reacts; "
       + "the formula is the order of magnitude a student checks a simulator "
       + "against, not a design equation.  The 27.98, 20.48 and −7.50 kJ are "
@@ -216,7 +216,7 @@ K(T)`,
     n: 5,
     title: "The energy balance that never needs a reaction enthalpy",
     body: "There is a way to write the energy balance of a reactor in which the "
-      + "reaction enthalpy never appears: price every stream on the ELEMENTS "
+      + "reaction enthalpy never appears: price every stream on the elements "
       + "datum, with each species' enthalpy including its formation enthalpy, "
       + "and balance the outlet against the inlet, each at its own "
       + "temperature.  The reaction heat at whatever temperature the reactor "
@@ -255,9 +255,9 @@ K(T)`,
       + "give about −21 J per kelvin per mole of ammonia between 298 and "
       + "400 K, and 475 K of distance makes that about −10 kJ against −46: "
       + "far too large to ignore.  The same check also shows the limit of a "
-      + "CONSTANT reaction heat capacity — carried to 773 K it predicts −55.9 "
+      + "constant reaction heat capacity — carried to 773 K it predicts −55.9 "
       + "kJ against the engine's −53.4, because the heat capacities "
-      + "themselves change with temperature.  The panel lets you see both.",
+      + "themselves change with temperature.  The figure lets you see both.",
     formula: String.raw`\left|\Delta_r c_p^\circ\right|\,\left|T - T_0\right| \ll \left|\Delta_r H^\circ(T_0)\right|`,
     where: [],
   },
@@ -267,7 +267,7 @@ export const ENTHALPY_LIMITS: readonly LessonLimit[] = [
   {
     id: "standard-pressure",
     title: "Standard means 1 bar, and a converter runs at 150.",
-    body: "Everything on this page is the STANDARD reaction enthalpy: each gas "
+    body: "Everything on this page is the standard reaction enthalpy: each gas "
       + "ideal, at 1 bar.  At a loop pressure of 150 bar the real gases depart "
       + "from that, and the enthalpy of the real mixture carries a residual "
       + "term the standard one does not.  A Choupo case at that pressure "
