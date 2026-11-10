@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/isopropanol-isopropylAcetate.dat"
         {
             type          imported;
-            sha256        "0f47d699dd7b2d28a9321e6719420cee0f39031406266addf559fa854024bc69";
-            computationalSha256 "3972f60a8fefa1716b7ae58bd5c902521f8b7763c58b05f7a32a3a242a3c9f1d";
+            sha256        "57d52a39bcf9870cf7fe0e268168f360cc6f8ced2694630759395e0d9b4f4509";
+            computationalSha256 "e923308d277f207901e94160ade4301e2d24e5c2817287a63034c2acef29fa0e";
             origin        "data/standards/parameters/NRTL/isopropanol-isopropylAcetate.dat";
-            originSha256  "b00617c69028d800fa451c493e8d0ab4fd00f30b5f94fcfa5faf4271b14ff875";
+            originSha256  "ae1d25b1d9fc9c4cffefbba96b39196af5bcac6811b350509061bd8f066e1623";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

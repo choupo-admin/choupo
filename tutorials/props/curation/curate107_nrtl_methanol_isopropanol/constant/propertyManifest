@@ -43,6 +43,15 @@ propertyManifest
             originSha256  "8cedd68cbab3194cfb72728ae31e42118e256931e9e166b4c53ace9dbbe27376";
             release       Choupo-2608;
         }
+        "parameters/NRTL/isopropanol-methanol.dat"
+        {
+            type          imported;
+            sha256        "bb7162e8d6bdc9485c25be1215a84a9d9631a8cf0122ecbe8466d566ced9c22e";
+            computationalSha256 "56caa6dfc5f23cf1bef6137c84f33bf896886f773567f79bad80c75b06e35b13";
+            origin        "data/standards/parameters/NRTL/isopropanol-methanol.dat";
+            originSha256  "ed26621a7b184e282e18864f01de703521962667e7adfc9014fc096a97a73248";
+            release       Choupo-2608;
+        }
         "parameters/UNIFAC/groups.dat"
         {
             type          imported;

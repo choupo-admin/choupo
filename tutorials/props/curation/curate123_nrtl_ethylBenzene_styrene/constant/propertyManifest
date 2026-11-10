@@ -43,5 +43,14 @@ propertyManifest
             originSha256  "2441f916e798e03532c8bc1333258b28b4ba60352a8be5441576afe1f062ebfa";
             release       Choupo-2608;
         }
+        "parameters/NRTL/ethylBenzene-styrene.dat"
+        {
+            type          imported;
+            sha256        "be9b5d87a026defb56edd8d488148d637bd199dde4a5c588cb6468c0bedc49f9";
+            computationalSha256 "bdf343a55619ff38a1cf840d90c5f6185b2142c952f55cd1d1d7f3e46c0dfcd3";
+            origin        "data/standards/parameters/NRTL/ethylBenzene-styrene.dat";
+            originSha256  "29dd60cbffe710c5f593001cc7073c1b762c7afee457c8344adbc8a69815b959";
+            release       Choupo-2608;
+        }
     }
 }

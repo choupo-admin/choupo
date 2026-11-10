@@ -43,5 +43,14 @@ propertyManifest
             originSha256  "adb8c7d917c6094738a2f22df356534cac882fae333945f33a71a850ad233381";
             release       Choupo-2608;
         }
+        "parameters/NRTL/1Propanol-acetonitrile.dat"
+        {
+            type          imported;
+            sha256        "b6d0dcf3f3bd3d4b06c5f9b71f0800879d9a2808874e6906c1b31e92fb81b85a";
+            computationalSha256 "503e7ba70058818820c7538b940e7df6e9b95f46c153f1ee2863f7f9946318f2";
+            origin        "data/standards/parameters/NRTL/1Propanol-acetonitrile.dat";
+            originSha256  "43c90e4db2abf04ccfa860fac3660d08b1b92f0db4d2ab488d615270ced2a376";
+            release       Choupo-2608;
+        }
     }
 }

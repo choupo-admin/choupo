@@ -43,6 +43,15 @@ propertyManifest
             originSha256  "225442e6d92c7f5d9f6cd96593a5d8d958d8b0f65227d2eee965eac6e04747b2";
             release       Choupo-2608;
         }
+        "parameters/NRTL/14Dioxane-2Methyl2Propanol.dat"
+        {
+            type          imported;
+            sha256        "2f147d4aef22683841e95a426e5144f6902fe6404e6267b1d8b69baba08bff87";
+            computationalSha256 "2ae7fe95e920a27af59514eba50056a2c5e0f60cae3dd490c5c50a54434ba768";
+            origin        "data/standards/parameters/NRTL/14Dioxane-2Methyl2Propanol.dat";
+            originSha256  "9e86452f3241fcd799a36a77f062c00163226baf1d465bdf86f29791fae866fb";
+            release       Choupo-2608;
+        }
         "parameters/UNIFAC/groups.dat"
         {
             type          imported;

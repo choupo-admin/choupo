@@ -43,5 +43,14 @@ propertyManifest
             originSha256  "3723b03d86ab148fd084c01f9fc3cce1bb4398a3dc6b6914e0336c40d4ade16d";
             release       Choupo-2608;
         }
+        "parameters/NRTL/triethyleneGlycol-water.dat"
+        {
+            type          imported;
+            sha256        "e0c6ea40ea1d983f04572bbacfdd99f3a7177d1cf3094a2c453da22124c47b1a";
+            computationalSha256 "654700db69912cff045821f7c4f60d84121693fd9297ffbfbb4b2df221719460";
+            origin        "data/standards/parameters/NRTL/triethyleneGlycol-water.dat";
+            originSha256  "b7ec469a5a85df66eb6bb9964d5ff6f5ede317a9134cce011135c644f6605944";
+            release       Choupo-2608;
+        }
     }
 }

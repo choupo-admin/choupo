@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/ethylBenzene-monochlorobenzene.dat"
         {
             type          imported;
-            sha256        "9255b1076d495be22ef550a37209cb9ca5a52ec96fdb58244708155dba6d2a10";
-            computationalSha256 "f6a663877c14e5164dbb07ebdbbc662185ea11c3abfbcf960627d9abe9a5a8df";
+            sha256        "639ff90d65bba35c5efbba90ca81e60a154f91c4bd1ca46e3f09cfb53033d6b3";
+            computationalSha256 "747876a50f44b1b19c9f28459000c268bb90ba3fef3fa17d68edf44af4f763c4";
             origin        "data/standards/parameters/NRTL/ethylBenzene-monochlorobenzene.dat";
-            originSha256  "dd60cf0b1ed9710ea84634c0e5bb893cd76143f55db99abafa282bdacce4b1cd";
+            originSha256  "c428b792823b1ede16a2e08ab851d817ee7179b5a0e85336bedd034c5e68a72d";
             release       Choupo-2608;
         }
     }

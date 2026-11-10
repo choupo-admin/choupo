@@ -43,5 +43,14 @@ propertyManifest
             originSha256  "4364b5ed2f6a4ccf01a7fe01b0939072b8747fbf150e92362a4030c825ea8eba";
             release       Choupo-2608;
         }
+        "parameters/NRTL/1Propanol-dimethylCarbonate.dat"
+        {
+            type          imported;
+            sha256        "064147df7837794115be766ecafc934e2c1d3b200e6e9675f26b63694ca6d1f5";
+            computationalSha256 "5d41982111511182f9e38e9d88b84661c5db930585a89ceb20e8aad2481e5b24";
+            origin        "data/standards/parameters/NRTL/1Propanol-dimethylCarbonate.dat";
+            originSha256  "25a6c1f93c3e7dda25ac4883f88920f0516c54d42ecc3def4cb594b1721c4cb6";
+            release       Choupo-2608;
+        }
     }
 }

@@ -29,6 +29,7 @@ License
 #include "Database.H"
 
 #include "core/Advisory.H"
+#include "FitGrade.H"
 #include "RecordResolver.H"
 #include "ThermoAnnounce.H"
 
@@ -47,63 +48,6 @@ License
 namespace Choupo {
 
 namespace fs = std::filesystem;
-
-namespace
-{
-
-//  A FITTED VALUE SAYS HOW WELL IT FITS (DEV.md 4c C285, 2026-11-10).
-//  The acceptance of a curation fit is GRADED: `bin/choupo-curate` writes
-//  `fitGrade clean|warning|severe;` into the value's per-value provenance
-//  entry with the numbers that decided it -- the largest relative error over
-//  the kept measurements (`fitGradeMaxRelativeError_pct`) and, where a
-//  temperature criterion applied, the gap at the normal boiling point
-//  (`fitGradeBoilingPointGap_K`).  A clean fit says nothing more; a warning
-//  or a severe grade is VOICED on every run that loads the record, once per
-//  component and value per process, into the caveat block and the result
-//  JSON advisories.  Generic over the provenance key: the property is named
-//  by the entry, never hard-coded here.  A grade word this loader does not
-//  know REFUSES by name -- `refused` included, because a refused fit is not
-//  a catalogue value.
-void announceFitGrade(const std::string& name, const std::string& key,
-                      const DictPtr& entry)
-{
-    if (!entry->found("fitGrade")) return;
-    const std::string grade = entry->lookupWordOrDefault("fitGrade", "");
-    if (grade == "clean") return;
-    if (grade != "warning" && grade != "severe")
-        throw std::runtime_error(
-            "component '" + name + "': provenance." + key + " declares `fitGrade "
-            + grade + ";` -- the grades a catalogue value may carry are clean, "
-            "warning and severe (DEV.md 4c C285); a refused fit is not promoted");
-    std::ostringstream miss;
-    miss.precision(4);
-    const bool hasP = entry->found("fitGradeMaxRelativeError_pct");
-    const bool hasT = entry->found("fitGradeBoilingPointGap_K");
-    if (hasP)
-        miss << "misses some of its measurements by up to "
-             << entry->lookupScalar("fitGradeMaxRelativeError_pct") << " %";
-    if (hasT)
-        miss << (hasP ? ", and " : "") << "places its normal boiling point "
-             << std::showpos << entry->lookupScalar("fitGradeBoilingPointGap_K")
-             << std::noshowpos << " K from the record's Tb";
-    if (!hasP && !hasT)
-        miss << "records no deciding number";
-    const bool severe = (grade == "severe");
-    const std::string msg = std::string("`") + key + "` fitGrade "
-        + (severe ? "SEVERE" : "warning") + " -- the fitted curve "
-        + miss.str()
-        + (severe ? "; it is WEAK and was accepted only with a SEVERE warning"
-                  : "; it was accepted with a WARNING");
-    if (AdvisoryLog::instance().addAnnouncedOnce(
-            "fitGrade:" + name + ":" + key, "provenance", "warning",
-            "component '" + name + "'", msg))
-        std::cerr << "[fit-grade] component '" << name << "': " << msg
-                  << (severe ? ".  Check a result that depends on it against"
-                               " the measurements before it is cited.\n"
-                             : ".\n");
-}
-
-}   // namespace
 
 std::string Database::resolveRoot(const std::string& explicitRoot) const
 {
@@ -700,7 +644,9 @@ DictPtr Database::componentDict(const std::string& name) const
         {
             if (!std::holds_alternative<DictPtr>(prov->entryValue(key))) continue;
             const DictPtr entry = prov->subDict(key);
-            announceFitGrade(name, key, entry);
+            //  The grade a curation fit earned (DEV.md 4c C285): ONE home,
+            //  shared with the pair loaders (FitGrade.H).
+            announceFitGrade("component '" + name + "'", key, entry);
             if (entry->lookupWordOrDefault("reviewStatus", "") != "autoPromoted")
                 continue;
             const std::string where =

@@ -43,5 +43,14 @@ propertyManifest
             originSha256  "7c6b2bedb149e1165145d6bedce8fb5588519bb6b1d575caca76236a0d809074";
             release       Choupo-2608;
         }
+        "parameters/NRTL/dimethylCarbonate-ethanol.dat"
+        {
+            type          imported;
+            sha256        "94380d75e9905a14fef6b54885b8692a3ddf07143984cfb01031a2974bec3cf3";
+            computationalSha256 "5230a49276dd560ea1bda09b013eb5d862f3fa22cc6dee7380882e4221e6a164";
+            origin        "data/standards/parameters/NRTL/dimethylCarbonate-ethanol.dat";
+            originSha256  "39d65c9fdea35bf6f17ae0cb3b22f47c1cc6ffba900885ae1317f0094e5eb22b";
+            release       Choupo-2608;
+        }
     }
 }

@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/224Trimethylpentane-isopropanol.dat"
         {
             type          imported;
-            sha256        "ad83cfe758c3735f35a5a8510828b6615c7394108ee4dc5774be96015a1aee79";
-            computationalSha256 "a4385a8211c285a6c9e989e746b751225464f9a3b7f0304af82ff02182235114";
+            sha256        "30b1e888e652fc7c43adf2fd1ac3f65f5287e7d18548e2fd61bcafdcdac4f906";
+            computationalSha256 "80d1d3f5ec9f78f953e7c06a232327334e64a15330222db6bb7d722f7f957481";
             origin        "data/standards/parameters/NRTL/224Trimethylpentane-isopropanol.dat";
-            originSha256  "a05109a7783aa53ce0afec4cf0188f744d4d92012435fb3e7f5dc93685226b96";
+            originSha256  "14b2d99c345fe777d277da7a1d98cbc29f472d16acd32c9912c96b0326ec737b";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

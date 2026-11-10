@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/cyclohexane-nHeptane.dat"
         {
             type          imported;
-            sha256        "02b6ee85d75b082001cf0f34836b8fa0f7324c091a8227e121c822030ee1a48f";
-            computationalSha256 "dac9f5c8240e04d93224169eeebf1a223981f3d4a7e9ee32709fad6b24ae1ae5";
+            sha256        "9088cfd3247d7831897579555cefb7219afd5fbb01460f2561715778f4277d0b";
+            computationalSha256 "09696c413dff424a600cc6c1f600b96897d65f752a9d2f26e8fcdda1778c2a08";
             origin        "data/standards/parameters/NRTL/cyclohexane-nHeptane.dat";
-            originSha256  "1191eb1705e3d89a414a5d3a47fb689c5af2d282543a6b0907d295869ff094dd";
+            originSha256  "1b8d8a3fe41ee8cac0baa02a2bc5b7c2265b3c0a33e646d4dc73a922be852a39";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

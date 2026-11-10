@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/ethanol-methylEthylKetone.dat"
         {
             type          imported;
-            sha256        "a8b2e9c81134de0abba6ecd94dc03d21568a91a21e4e1b1621a28a85d0300374";
-            computationalSha256 "444cd2e0bdc9e5923be898a05cd72302080e2a07cf1e74d8b9ea2eeeb229999a";
+            sha256        "46ecb470057f05528f4e723b3f6b2160968cd3eb3b430f66e78156be7af633c6";
+            computationalSha256 "f1f28e937338f59ab8b8cd8ef0092b70467f0a839cf50a5b57c4659aed31f589";
             origin        "data/standards/parameters/NRTL/ethanol-methylEthylKetone.dat";
-            originSha256  "43d20e16f76dc436d986343b3af660e6917ac5012b139b434b021558eee68048";
+            originSha256  "00a4e04f8eabbbb8d408b0890f879294a835ee4424d699ac31dad13c4ca8770d";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

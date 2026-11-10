@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/ethylAcetate-methanol.dat"
         {
             type          imported;
-            sha256        "4a28708a51e33af30874017f185aef1cc0911bfae9b9b44a7c5a82ea4638ec59";
-            computationalSha256 "d2432101cc4fafefedd39e816b481be34df21ff502397f53d6ed394453a3eef3";
+            sha256        "efcde60303ff928613bfc117e5f5ac5e23e3c4bd0667a3744263213b37df10ad";
+            computationalSha256 "a33c20a458bf90ae555bb8b1b106166b98e8b07fc710fedcf8291bd98fb927ef";
             origin        "data/standards/parameters/NRTL/ethylAcetate-methanol.dat";
-            originSha256  "468058f4192e38661a5dcac2f5d629e1bb3d04085dc58b4a42d0572c8ddec61d";
+            originSha256  "2e62e076439e99eaaba0437b34bccf605783de5affc097fbbe442e81ed44a0b7";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

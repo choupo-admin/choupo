@@ -43,6 +43,15 @@ propertyManifest
             originSha256  "c17d37ff35f43849e846d3f6a974ab7f2312085a349d1169494ad2374fd90d23";
             release       Choupo-2608;
         }
+        "parameters/NRTL/14Dioxane-cyclohexane.dat"
+        {
+            type          imported;
+            sha256        "f60478a3d89eb9335cd32aad9c107360a3c4480b8a9181a5240a08646873d886";
+            computationalSha256 "1c65a51efa60a5e35cba849dd5bfdfb5b26f94833ca39d796f5c8c6c60ee6cd9";
+            origin        "data/standards/parameters/NRTL/14Dioxane-cyclohexane.dat";
+            originSha256  "2e145b370554fa9367c06566ebf5e7aa89ba08adfebed13c146e55d846ad7e53";
+            release       Choupo-2608;
+        }
         "parameters/UNIFAC/groups.dat"
         {
             type          imported;

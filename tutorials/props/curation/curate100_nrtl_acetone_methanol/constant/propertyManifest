@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/acetone-methanol.dat"
         {
             type          imported;
-            sha256        "6fe1b52e758ad3c30e2041c092fd058dc81374ec0f0dd3f731f83bc828c8f268";
-            computationalSha256 "34a661723834f9008fdf0369fc92e03733365c03c77194653c05af24f6299d74";
+            sha256        "43da1ecc8d201ef14c50000ad7d91658a5a96141cc520f63da0082a34f958cb7";
+            computationalSha256 "ae466bc8195ea9127f3b339b67c6ad6e6cec801b9188d8f33d5acbd4edc9e7f8";
             origin        "data/standards/parameters/NRTL/acetone-methanol.dat";
-            originSha256  "c4c30fe73292e46f616f5281fbcbacac4e2b5cc16eea491d05772e9279705311";
+            originSha256  "7a94bafd8bca9e9998b58450defe6edd4308ed7b6c18eceb443045ff39805ca4";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

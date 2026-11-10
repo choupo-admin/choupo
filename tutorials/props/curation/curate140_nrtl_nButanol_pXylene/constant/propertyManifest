@@ -43,6 +43,15 @@ propertyManifest
             originSha256  "c84be1d773e7fda137a6721e882622f7cd66ba63f6278257a98da939fe724bfc";
             release       Choupo-2608;
         }
+        "parameters/NRTL/nButanol-pXylene.dat"
+        {
+            type          imported;
+            sha256        "bc46c1cdc7a0fc673b98da0e7356f7434960a9c96fa7b494782c29853d648c47";
+            computationalSha256 "8ff570139f0e6f7f1e6a426fd7b67968002221377bd80db790a7d9a3f9777ae5";
+            origin        "data/standards/parameters/NRTL/nButanol-pXylene.dat";
+            originSha256  "a720ccc6c82616175b2a0a6e58226a44a7a056d8375607577bf5093e540ce426";
+            release       Choupo-2608;
+        }
         "parameters/UNIFAC/groups.dat"
         {
             type          imported;

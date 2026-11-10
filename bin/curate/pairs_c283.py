@@ -75,6 +75,49 @@ RULE = "DEV.md 4c C283 (amended) + C284"
 MARK = "THE RULE (DEV.md 4c C283 amended, C284)"
 COMP = ROOT / "data" / "standards" / "components"
 
+#  THE GRADED ACCEPTANCE (DEV.md 4c C285, Vitor 2026-11-10: "mete mesmo as que
+#  estao acima de 5%. Mas acima de 5% - 10% mete um warning, e entre 10 a 20%
+#  poe um warning mais severo. Acima de 20% descarta"), applied to pairs by
+#  C286 ("Avanca pa!").  The temperature limits are C285's stated default,
+#  the same factors: max |T_model - T| over the kept points up to 1 K clean,
+#  2 K warning, 4 K severe, refused above; a point with no bubble point
+#  refuses.  C283's relative clause, graded 5 / 10 / 20 %, judges composition;
+#  a T_bubble fit has no composition residual, so it is declared and unused.
+GRADES = ("clean", "warning", "severe", "refused")
+GRADE_K = (1.0, 2.0, 4.0)
+GRADE_PCT = (5.0, 10.0, 20.0)
+GMARK = "THE GRADED ACCEPTANCE (DEV.md 4c C285, applied to pairs by C286)"
+RULE_GRADED = "DEV.md 4c C283 (amended) + C284, graded by C285 (C286)"
+GRADED_TEXT = (
+    GMARK + ": max |T_model - T| over the KEPT points is GRADED -- clean up to "
+    f"{GRADE_K[0]:g} K, warning up to {GRADE_K[1]:g} K, severe up to {GRADE_K[2]:g} K, "
+    "refused above; a point with no bubble point refuses.  C283's relative clause "
+    f"({GRADE_PCT[0]:g} / {GRADE_PCT[1]:g} / {GRADE_PCT[2]:g} %) judges composition; "
+    "this fit has no composition residual, so only the temperature clause applies.  "
+    "Every grade but refused is accepted and promoted (autoPromoted, humanReviewed "
+    "false) with `fitGrade` and its max |dT| in the record's provenance; the engine "
+    "voices a warning or a severe grade on every run that reads the pair.  A pair "
+    "that splits ONE liquid inside its validity span is not promoted, whatever its "
+    "grade (arm f).")
+#  The C283/C284 acceptance sentence a graded declaration replaces, as
+#  props_text writes it (a re-declaration is checked against it, so the
+#  only words that change are the acceptance's).
+OLD_ACC = ("without it.  ACCEPTED when max |T_model - T| over the KEPT points is below\n"
+           f"  {ACCEPT_K:g} K.  C283's 5 % relative clause judges composition; this fit has no\n"
+           "  composition residual, so only the temperature clause applies.  A pair\n"
+           "  that splits ONE liquid inside its validity span is not promoted (arm f).")
+
+
+def grade_of(mx, nan=0):
+    """clean / warning / severe / refused: the first upper limit max |dT|
+    stays within; a point with no bubble point refuses."""
+    if nan or mx != mx:
+        return "refused"
+    for g, lim in zip(GRADES, GRADE_K):
+        if mx <= lim:
+            return g
+    return GRADES[-1]
+
 
 #  Components ARCHIVED by a coordinator's ruling: no pair containing one is
 #  fitted, promoted or started (DEV.md 4c, the coordinator session,
@@ -212,9 +255,12 @@ def plan(a, b, pmax, work):
                    "AmbroseWalton`, an estimate; a pair fitted on it would absorb its "
                    "error and break when C281 replaces it")
     have = cc.existing_records(a, b)
-    if have:
+    mine = case_of(a, b)
+    if have and not (mine is not None and own_promotion(
+            a, b, mine.relative_to(ROOT).as_posix()) is not None):
         refuse(f"PRESENT: the pair {a} + {b} already has a catalogue record: "
-               f"{', '.join(have)} -- never overwritten")
+               f"{', '.join(have)} -- never overwritten (only a record this pipeline "
+               "promoted from the pair's own case is regraded, under C286)")
     blocks = cc.blocks_for((ca[2], cb[2]), pmax)
     if not blocks:
         refuse(f"no isobaric bubble-temperature block for {a} + {b} at or below "
@@ -370,7 +416,8 @@ def fit_op(name, c1, c2, studies, start, method, discards=None, proposal=None,
 """
 
 
-def props_text(pl, case_name, stem, unifac, discards=None, outlier_txt=None):
+def props_text(pl, case_name, stem, unifac, discards=None, outlier_txt=None,
+               graded=False, earlier=None):
     c1, c2, st = pl["c1"], pl["c2"], pl["studies"]
     aside = "\n".join(cc.wrap(f"- {t}: {w}", indent="      ") for t, w in pl["aside"]) \
         or "      (none)"
@@ -452,6 +499,16 @@ def props_text(pl, case_name, stem, unifac, discards=None, outlier_txt=None):
 operations
 (
 """
+    if graded:
+        if OLD_ACC not in hdr:
+            refuse(f"{case_name}: the C283 acceptance sentence is not where the "
+                   "template puts it -- the graded declaration cannot be derived")
+        hdr = hdr.replace(OLD_ACC, "without it.\n" + cc.wrap(GRADED_TEXT), 1)
+        if earlier:
+            hdr = hdr.replace(
+                "  @@RESULT-END@@\n",
+                "  @@RESULT-END@@\n\n  EARLIER FITS, SUPERSEDED BY THIS DECLARATION\n"
+                "  @@EARLIER-BEGIN@@\n" + cc.wrap(earlier) + "\n  @@EARLIER-END@@\n", 1)
     body = fit_op("fit_nrtl", c1, c2, st, (0, 0), "twoStage", discards,
                   proposal=f"{stem}.proposal.dat", parity="parity.csv",
                   log="fit_history.csv")
@@ -546,6 +603,25 @@ def is_c283(case):
     return MARK in (case / "system" / "propsDict").read_text()
 
 
+def is_graded(case):
+    return GMARK in (case / "system" / "propsDict").read_text()
+
+
+def own_promotion(c1, c2, case_rel):
+    """The catalogue record THIS pipeline promoted from THIS case, or None.
+    A graded re-run regrades it in place; any other record of the pair is
+    never overwritten."""
+    have = cc.existing_records(c1, c2)
+    if len(have) != 1:
+        return None
+    p = ROOT / have[0]
+    t = crp.strip_comments(p.read_text())
+    if crp.word(t, "promotedBy") == cc.PROMOTED_BY and crp.word(t, "fittedInCase") == case_rel \
+            and crp.word(t, "reviewStatus") == "autoPromoted":
+        return p
+    return None
+
+
 def normalise(t):
     t = re.sub(r"@@RESULT-BEGIN@@.*?@@RESULT-END@@", "", t, flags=re.S)
     t = re.sub(r"@@OUTLIERS-BEGIN@@.*?@@OUTLIERS-END@@", "", t, flags=re.S)
@@ -629,9 +705,22 @@ def stats(rows):
             len(r), nan)
 
 
-def curation_block(verdict, n_kept, n_drop, mx, mean, nan):
+def curation_block(verdict, n_kept, n_drop, mx, mean, nan, grade=None, one_liquid=None):
+    if grade is not None:
+        acc = ("    acceptance      graded;   // max |T_model - T| over the kept points, "
+               "DEV.md 4c C285 (C286)\n"
+               f"    gradeLimits_K   ({GRADE_K[0]:g} {GRADE_K[1]:g} {GRADE_K[2]:g});   "
+               "// upper limits of clean / warning / severe; above, refused\n"
+               f"    grade           {grade};\n"
+               f"    oneLiquid       {'true' if one_liquid else 'false'};   // arm (f) over the "
+               "validity span; a pair that splits ONE liquid is never promoted, whatever "
+               "its grade\n")
+        rule = RULE_GRADED
+    else:
+        acc = (f"    acceptance      {ACCEPT_K:g} K;   // max |T_model - T| over the kept points\n")
+        rule = RULE
     return (f"curation\n{{\n"
-            f'    rule            "{RULE}";\n'
+            f'    rule            "{rule}";\n'
             f"    evidence        allLaboratories;   // every study fitted, none held out\n"
             f"    objective       twoStage;\n"
             f"    outlierLimit    {OUTLIER_K:g} K;   // |T_model - T| after the least-squares stage\n"
@@ -640,7 +729,7 @@ def curation_block(verdict, n_kept, n_drop, mx, mean, nan):
             f"    noBubblePoint   {nan};\n"
             f"    maxAbsError     {mx:.4f} K;\n"
             f"    meanAbsError    {mean:.4f} K;\n"
-            f"    acceptance      {ACCEPT_K:g} K;   // max |T_model - T| over the kept points\n"
+            + acc +
             f"    verdict         {verdict};\n}}\n")
 
 
@@ -648,6 +737,8 @@ def run(case, pl, commit):
     c1, c2 = pl["c1"], pl["c2"]
     stem = "-".join(sorted((c1, c2)))
     case_rel = case.relative_to(ROOT).as_posix()
+    graded = is_graded(case)
+    earlier = cc.earlier_of(case) if graded else None
     rc = cc.fetch(case, quiet=True)
     if rc:
         refuse(f"fetch of {case_rel} returned {rc}")
@@ -667,7 +758,8 @@ def run(case, pl, commit):
         f"none: every one of the {len(rows)} points lies within {OUTLIER_K:g} K after the least-squares stage."
     pd = case / "system" / "propsDict"
     unifac = cc.has_unifac(c1) and cc.has_unifac(c2)
-    new = props_text(pl, case.name, stem, unifac, discards=found, outlier_txt=otxt)
+    new = props_text(pl, case.name, stem, unifac, discards=found, outlier_txt=otxt,
+                     graded=graded, earlier=earlier)
     if normalise(new) != normalise(pd.read_text()):
         refuse(f"{case.name}: the declaration on disk differs from the one the rules "
                "give -- a declaration is never rewritten after it was committed")
@@ -677,15 +769,26 @@ def run(case, pl, commit):
     if rc != 0 or ptext is None:
         refuse(f"the fit of {case_rel} exited {rc} / wrote no proposal: {out[-600:]}")
     mx, mean, n_kept, nan = stats(rows)
-    accepted = nan == 0 and mx < ACCEPT_K
     rf, split = cc.stability(ptext, stem)
+    grade = grade_of(mx, nan) if graded else None
+    accepted = (grade != "refused") if graded else (nan == 0 and mx < ACCEPT_K)
     verdict = "accepted" if accepted else "notAccepted"
+    nb = f" ({nan} point(s) with no bubble point)" if nan else ""
     if not accepted:
-        reason = (f"NOT PROMOTABLE: max |dT| {mx:.3f} K over the {n_kept} kept points "
-                  f"is not below {ACCEPT_K:g} K" + (f" ({nan} point(s) with no bubble point)" if nan else ""))
+        reason = ((f"NOT PROMOTABLE: fit grade refused -- max |dT| {mx:.3f} K over the "
+                   f"{n_kept} kept points is above {GRADE_K[-1]:g} K{nb}") if graded else
+                  (f"NOT PROMOTABLE: max |dT| {mx:.3f} K over the {n_kept} kept points "
+                   f"is not below {ACCEPT_K:g} K{nb}"))
     elif split:
-        reason = ("NOT PROMOTABLE: the pair splits ONE liquid inside its own validity "
+        reason = ((f"NOT PROMOTABLE (fit grade {grade}, max |dT| {mx:.3f} K): " if graded
+                   else "NOT PROMOTABLE: ")
+                  + "the pair splits ONE liquid inside its own validity "
                   "span (check_regressed_pairs arm f) -- " + split[0].split(": ", 1)[1])
+    elif graded:
+        reason = (f"PROMOTABLE by `bin/choupo-curate pair ... --promote`: fit grade "
+                  f"{grade} -- max |dT| {mx:.3f} K over the {n_kept} kept points "
+                  f"(limits {GRADE_K[0]:g} / {GRADE_K[1]:g} / {GRADE_K[2]:g} K), one "
+                  "liquid across the validity span")
     else:
         reason = (f"PROMOTABLE by `bin/choupo-curate pair ... --promote`: max |dT| "
                   f"{mx:.3f} K < {ACCEPT_K:g} K over the {n_kept} kept points, one "
@@ -699,11 +802,32 @@ def run(case, pl, commit):
     hdr = hdr.replace("The two articles named under `evidence` are the",
                       "The articles named under `evidence` are the")
     rec = cc.record_from_proposal(ptext, hdr, cc.case_record_fields(case_rel))
-    rec = rec.rstrip("\n") + "\n\n" + curation_block(verdict, n_kept, n_drop, mx, mean, nan)
+    rec = rec.rstrip("\n") + "\n\n" + curation_block(verdict, n_kept, n_drop, mx, mean,
+                                                        nan, grade, not split)
     rp = case / "constant" / "parameters" / "NRTL" / f"{stem}.dat"
-    rp.parent.mkdir(parents=True, exist_ok=True)
-    rp.write_text(rec)
-    cc.seal(case)
+    own = own_promotion(c1, c2, case_rel) if graded else None
+    promoted_now = None
+    if own is not None:
+        #  THIS pipeline promoted the pair from THIS case before the graded
+        #  declaration: it is regraded IN PLACE.  The case carries the
+        #  catalogue's sealed copy, never an authored record of its own.
+        if not accepted or split:
+            refuse(f"{case.name}: the catalogue record {own.relative_to(ROOT)} was "
+                   f"promoted from this case and now {reason} -- revert it by hand "
+                   f"(`bin/choupo-curate revert {own.stem}`); never regraded in place")
+        old = own.read_text()
+        own.write_text(promoted_text(rec, case, stem, rf["i"], rf["j"]))
+        try:
+            cc.seal(case)
+        except (SystemExit, Refused):
+            own.write_text(old)
+            cc.seal(case)
+            raise
+        promoted_now = own
+    else:
+        rp.parent.mkdir(parents=True, exist_ok=True)
+        rp.write_text(rec)
+        cc.seal(case)
     rc, out, js = cc.run_props(case)
     if rc != 0:
         refuse(f"the sealed case {case_rel} exited {rc}: {out[-600:]}")
@@ -714,25 +838,82 @@ def run(case, pl, commit):
     b1 = [d1[k] for k in keys]
     b2 = [d2.get(k) for k in keys]
     same = all(x is not None and abs(x - y) <= 1e-2 * max(1, abs(y)) for x, y in zip(b2, b1))
+    judged = (f"graded {grade} (limits {GRADE_K[0]:g} / {GRADE_K[1]:g} / {GRADE_K[2]:g} K)"
+              if graded else f"against the acceptance {ACCEPT_K:g} K")
+    tail = reason
+    if promoted_now is not None:
+        tail = (f"PROMOTED on {date.today().isoformat()} into "
+                f"{promoted_now.relative_to(ROOT).as_posix()} as reviewStatus "
+                "autoPromoted, humanReviewed false, regraded in place by the C286 "
+                "re-run, because: " + reason.split(": ", 1)[1])
     txt = (f"WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).  "
            f"fit_nrtl: b_ij = {b1[0]:.1f} K, b_ji = {b1[1]:.1f} K over {n_kept} kept "
            f"points of {len(pl['studies'])} laboratories ({n_drop} discarded): max |dT| "
-           f"{mx:.3f} K, mean {mean:.3f} K against the acceptance {ACCEPT_K:g} K -> "
+           f"{mx:.3f} K, mean {mean:.3f} K, {judged} -> "
            f"{verdict}.  fit_nrtl_start2 lands on "
            f"{'the same pair' if same else 'A DIFFERENT pair'} "
-           f"({b2[0]:.1f}, {b2[1]:.1f}).  {reason}")
+           f"({b2[0]:.1f}, {b2[1]:.1f}).  {tail}")
     t = pd.read_text()
     t = re.sub(r"@@RESULT-BEGIN@@.*?@@RESULT-END@@",
                "@@RESULT-BEGIN@@\n" + cc.wrap(txt) + "\n  @@RESULT-END@@", t, flags=re.S)
     pd.write_text(t)
     return {"verdict": verdict, "split": bool(split), "max": mx, "mean": mean,
             "kept": n_kept, "dropped": n_drop, "studies": len(pl["studies"]),
-            "reason": reason, "same": same, "b": b1, "case": case.name, "nan": nan}
+            "reason": reason, "same": same, "b": b1, "case": case.name, "nan": nan,
+            "grade": grade, "regraded": promoted_now is not None}
 
 
 # --------------------------------------------------------------------------
 #  promotion
 # --------------------------------------------------------------------------
+def promoted_text(text, case, stem, i, j):
+    """The catalogue form of an accepted case-local record: autoPromoted,
+    humanReviewed false, and -- under the graded acceptance -- the grade and
+    the number that decided it in the record's provenance (DEV.md 4c C286)."""
+    case_rel = case.relative_to(ROOT).as_posix()
+    cur = crp.block(crp.strip_comments(text), "curation") or ""
+    grade = crp.word(cur, "grade")
+    mx = crp.num(cur, "maxAbsError")
+    if grade:
+        if grade not in GRADES[:3]:
+            refuse(f"{stem}: curation grade `{grade}` -- a refused fit is not promoted")
+        rule_txt = (f"  its fitting pipeline (every laboratory fitted, outliers beyond 3 K\n"
+                    f"  discarded by name, max |T_model - T| over the kept points GRADED\n"
+                    f"  clean / warning / severe at {GRADE_K[0]:g} / {GRADE_K[1]:g} / "
+                    f"{GRADE_K[2]:g} K -- DEV.md 4c C283\n"
+                    f"  amended, C285, C286; THIS fit: {grade}, {mx:.4f} K; one liquid\n"
+                    "  across its validity span), and NO HUMAN HAS REVIEWED IT.  The\n"
+                    "  engine says so on every run that reads it, and voices a warning\n"
+                    "  or a severe grade beside it.\n")
+    else:
+        rule_txt = ("  its fitting pipeline (every laboratory fitted, outliers beyond 3 K\n"
+                    "  discarded by name, max |T_model - T| over the kept points below 1 K --\n"
+                    "  DEV.md 4c C283 amended; one liquid across its validity span), and NO\n"
+                    "  HUMAN HAS REVIEWED IT.  The engine says so on every run that reads it.\n")
+    hdr = cc.record_header(
+        stem, i, j, case_rel,
+        "reviewStatus autoPromoted; humanReviewed false: PROMOTED AUTOMATICALLY by\n"
+        + rule_txt +
+        "  Nothing was held out: the `validation {}` block says so, and the\n"
+        "  acceptance is the `curation {}` block.  A curator who reads the series\n"
+        "  back against the articles marks it `reviewStatus reviewed; humanReviewed\n"
+        f"  true;`.  Revert with `bin/choupo-curate revert {stem}`.")
+    hdr = hdr.replace("The two articles named under `evidence` are the",
+                      "The articles named under `evidence` are the")
+    body = cc.body_of(text)
+    gl = ""
+    if grade:
+        gl = (f"    fitGrade      {grade};   // DEV.md 4c C285 (C286): max |T_model - T| over "
+              f"the kept points, graded {GRADE_K[0]:g} / {GRADE_K[1]:g} / {GRADE_K[2]:g} K\n"
+              f"    fitGradeMaxTemperatureError_K {mx:.4f};\n")
+    body = re.sub(r"(\n    reviewStatus\s+)interim;",
+                  r"\1autoPromoted;\n    humanReviewed false;\n"
+                  + gl.replace("\\", "\\\\") +
+                  f'    promotedBy    "{cc.PROMOTED_BY}";\n'
+                  f'    promotedDate  "{date.today().isoformat()}";', body, count=1)
+    return hdr + body
+
+
 def promote(a, b):
     a, b = cc.identity(a)[0], cc.identity(b)[0]
     for c in (a, b):
@@ -753,32 +934,16 @@ def promote(a, b):
     if crp.word(cur, "verdict") != "accepted":
         refuse(f"{rp.stem}: curation verdict `{crp.word(cur, 'verdict')}` -- only an "
                "accepted fit is promoted (C283)")
+    if is_graded(case) and not crp.word(cur, "grade"):
+        refuse(f"{rp.stem}: its case declares the graded acceptance (C286) and the record "
+               "carries no curation grade -- re-run the case first")
     rf, split = cc.stability(text, rp.stem)
     if split:
         refuse(f"{rp.stem}: " + split[0])
-    case_rel = case.relative_to(ROOT).as_posix()
-    hdr = cc.record_header(
-        rp.stem, rf["i"], rf["j"], case_rel,
-        "reviewStatus autoPromoted; humanReviewed false: PROMOTED AUTOMATICALLY by\n"
-        "  its fitting pipeline (every laboratory fitted, outliers beyond 3 K\n"
-        "  discarded by name, max |T_model - T| over the kept points below 1 K --\n"
-        "  DEV.md 4c C283 amended; one liquid across its validity span), and NO\n"
-        "  HUMAN HAS REVIEWED IT.  The engine says so on every run that reads it.\n"
-        "  Nothing was held out: the `validation {}` block says so, and the\n"
-        "  acceptance is the `curation {}` block.  A curator who reads the series\n"
-        "  back against the articles marks it `reviewStatus reviewed; humanReviewed\n"
-        f"  true;`.  Revert with `bin/choupo-curate revert {rp.stem}`.")
-    hdr = hdr.replace("The two articles named under `evidence` are the",
-                      "The articles named under `evidence` are the")
-    body = cc.body_of(text)
-    body = re.sub(r"(\n    reviewStatus\s+)interim;",
-                  r"\1autoPromoted;\n    humanReviewed false;\n"
-                  f'    promotedBy    "{cc.PROMOTED_BY}";\n'
-                  f'    promotedDate  "{date.today().isoformat()}";', body, count=1)
     dest = cc.STD_NRTL / f"{rp.stem}.dat"
     if dest.exists():
         refuse(f"{dest.relative_to(ROOT)} exists -- never overwritten")
-    dest.write_text(hdr + body)
+    dest.write_text(promoted_text(text, case, rp.stem, rf["i"], rf["j"]))
     rp.unlink()
     try:
         cc.seal(case)
@@ -792,8 +957,78 @@ def promote(a, b):
                    f"{dest.relative_to(ROOT).as_posix()} as reviewStatus autoPromoted, "
                    "humanReviewed false, because:")
     cc.say(f"choupo-curate: PROMOTED {dest.relative_to(ROOT)} (autoPromoted, "
-           "humanReviewed false)")
+           "humanReviewed false" + (f", fitGrade {crp.word(cur, 'grade')}"
+                                    if crp.word(cur, "grade") else "") + ")")
     return 0
+
+
+# --------------------------------------------------------------------------
+#  C286: the graded acceptance, declared again over the same evidence
+# --------------------------------------------------------------------------
+def c283_cases():
+    """Every case this module wrote (curate100 on), with its pair as the name
+    spells it, in number order."""
+    out = []
+    for p in sorted(cc.CURATION.iterdir(), key=lambda q: q.name):
+        m = re.match(r"curate(\d+)_nrtl_([^_]+)_([^_]+)$", p.name)
+        if m and int(m.group(1)) >= FIRST_NUMBER and (p / cc.DECL).exists() and is_c283(p):
+            out.append((int(m.group(1)), p, m.group(2), m.group(3)))
+    return [(p, a, b) for _, p, a, b in sorted(out)]
+
+
+def declared_discards(case):
+    t = crp.strip_comments((case / "system" / "propsDict").read_text())
+    op = t[t.index("fit_nrtl;"):t.index("fit_nrtl_start2;")]
+    out = {}
+    for m in re.finditer(r'dataset\s+"([^"]+)"\s*;\s*role\s+fit\s*;\s*'
+                         r'(discard\s*\(([^)]*)\))?', op):
+        if m.group(3):
+            out[Path(m.group(1)).name] = [int(v) for v in m.group(3).split()]
+    return out
+
+
+def redeclare(case, pl):
+    """DEV.md 4c C286: a NEW declaration for a C283/C284 case -- the SAME
+    studies (the archiveDatasets the extraction rules give now must be the
+    ones already declared: never a re-partition after a result was seen),
+    the SAME outlier rule and the SAME discards; only the ACCEPTANCE changes,
+    to C285's graded one.  The earlier result is kept in the header.  The
+    caller commits it before the case is run again."""
+    case_rel = case.relative_to(ROOT).as_posix()
+    if is_graded(case):
+        refuse(f"--redeclare: {case.name} already declares the graded acceptance")
+    if normalise((case / cc.DECL).read_text()) != normalise(decl_text(pl, case_rel)):
+        refuse(f"--redeclare: {case.name}'s dataset declaration differs from the one the "
+               "extraction rules give now -- C286 changes the acceptance only; the "
+               "evidence is never re-partitioned")
+    pd = case / "system" / "propsDict"
+    old = pd.read_text()
+    c1, c2 = pl["c1"], pl["c2"]
+    stem = "-".join(sorted((c1, c2)))
+    unifac = cc.has_unifac(c1) and cc.has_unifac(c2)
+    disc = declared_discards(case)
+    m = re.search(r"@@OUTLIERS-BEGIN@@(.*?)@@OUTLIERS-END@@", old, re.S)
+    otxt = " ".join(m.group(1).split()) if m else None
+    if normalise(props_text(pl, case.name, stem, unifac, discards=disc,
+                            outlier_txt=otxt)) != normalise(old):
+        refuse(f"--redeclare: {case.name}'s declaration on disk is not the one the C283 "
+               "rules give for these studies -- refused rather than rewritten")
+    r = re.search(r"@@RESULT-BEGIN@@(.*?)@@RESULT-END@@", old, re.S)
+    prev = " ".join(r.group(1).split()) if r else "(no result recorded)"
+    earlier = ("C283 amended + C284, the bulk run of 2026-11-10: every laboratory "
+               f"fitted, outliers beyond {OUTLIER_K:g} K discarded by name, accepted only "
+               f"below {ACCEPT_K:g} K (superseded by the graded acceptance of C285, applied "
+               "to pairs by C286; this declaration keeps the same studies, the same "
+               "outlier rule and the same discards -- nothing re-partitioned): " + prev)
+    new = props_text(pl, case.name, stem, unifac, discards=disc, outlier_txt=otxt,
+                     graded=True, earlier=earlier)
+    pd.write_text(new)
+    cd = case / "system" / "controlDict"
+    ct = cd.read_text()
+    ct = ct.replace("accepted at max |dT| < 1 K\";",
+                    "graded by max |dT| (clean 1 K, warning 2 K, severe 4 K, refused above; C285, C286)\";")
+    cd.write_text(ct)
+    return [pd, cd]
 
 
 # --------------------------------------------------------------------------
@@ -856,6 +1091,14 @@ def main(argv):
     q.add_argument("--declare", action="store_true")
     q.add_argument("--run", action="store_true")
     q.add_argument("--promote", action="store_true")
+    q.add_argument("--redeclare", action="store_true",
+                   help="C286: declare the graded acceptance on every C283 case, "
+                        "same evidence, one commit before any re-run")
+    q.add_argument("--graded", action="store_true",
+                   help="with --run/--promote: walk the C283 cases themselves "
+                        "(promoted ones included) instead of the ranked queue")
+    q.add_argument("--only", nargs="*", help="with --graded: these case numbers only")
+    q.add_argument("--no-commit", action="store_true")
     q.add_argument("--top", type=int, default=60)
     q.add_argument("--pmax", type=float, default=110.0)
     q.add_argument("--json", help="write the batch outcome here")
@@ -884,6 +1127,8 @@ def main(argv):
 
 
 def batch(a):
+    if a.redeclare or a.graded:
+        return batch_graded(a)
     allc = candidates(a.pmax)
     cand = [e for e in allc if e["status"] == "candidate"]
     if a.list:
@@ -958,6 +1203,90 @@ def batch(a):
         out.append(rec)
         if a.json:
             Path(a.json).write_text(json.dumps(out, indent=1, default=str))
+    return 0
+
+
+def batch_graded(a):
+    """C286 over the cases this module wrote: --redeclare (every case, one
+    commit), then --graded --run (each re-run on its committed declaration;
+    a pair this pipeline promoted is regraded in place), then --graded
+    --promote (each newly accepted pair)."""
+    cases = c283_cases()
+    if a.only:
+        want = {int(x) for x in a.only}
+        cases = [c for c in cases if int(re.match(r"curate(\d+)_", c[0].name).group(1)) in want]
+    out, touched = [], []
+    for case, x, y in cases:
+        rec = {"case": case.name, "pair": [x, y]}
+        work = Path(tempfile.mkdtemp(prefix="choupo-curate-"))
+        try:
+            if a.redeclare:
+                if is_graded(case):
+                    rec["outcome"] = "graded already"
+                else:
+                    pl = plan(x, y, a.pmax, work)
+                    touched += redeclare(case, pl)
+                    rec["outcome"] = "redeclared"
+            elif a.run:
+                rps = list((case / "constant" / "parameters" / "NRTL").glob("*.dat"))
+                cur = crp.block(crp.strip_comments(rps[0].read_text()), "curation") if rps else None
+                if not is_graded(case):
+                    rec["outcome"] = "not redeclared"
+                elif cur is not None and crp.word(cur, "grade"):
+                    rec["outcome"] = "ran already"
+                else:
+                    pl = plan(x, y, a.pmax, work)
+                    if normalise((case / cc.DECL).read_text()) != normalise(
+                            decl_text(pl, case.relative_to(ROOT).as_posix())):
+                        refuse(f"{case.name}'s dataset declaration differs from the one "
+                               "the rules give now")
+                    for s in pl["studies"]:
+                        (case / cc.EXTRACTS).mkdir(parents=True, exist_ok=True)
+                        shutil.copy(s["path"], case / cc.EXTRACTS / s["path"].name)
+                    rec.update(run(case, pl, False))
+                    rec["outcome"] = "regraded in place" if rec["regraded"] else "ran"
+            elif a.promote:
+                rps = list((case / "constant" / "parameters" / "NRTL").glob("*.dat"))
+                cur = crp.block(crp.strip_comments(rps[0].read_text()), "curation") if rps else None
+                if own_promotion(x, y, case.relative_to(ROOT).as_posix()) is not None:
+                    rec["outcome"] = "promoted already"
+                elif not rps or cur is None:
+                    rec["outcome"] = "not run"
+                elif crp.word(cur, "verdict") != "accepted":
+                    rec["outcome"] = f"notAccepted (grade {crp.word(cur, 'grade')})"
+                else:
+                    try:
+                        promote(x, y)
+                        rec["outcome"] = f"promoted (grade {crp.word(cur, 'grade')})"
+                    except (Refused, SystemExit) as ex:
+                        rec["outcome"] = f"not promoted: {ex}"
+        except Refused as ex:
+            rec["outcome"] = "refused: " + str(ex)
+        except SystemExit as ex:
+            rec["outcome"] = f"refused (exit {ex.code})"
+        except Exception as ex:   # noqa: BLE001 -- one failure never stops the batch
+            rec["outcome"] = f"error: {type(ex).__name__}: {ex}"
+        finally:
+            shutil.rmtree(work, ignore_errors=True)
+        cc.say(f"[{case.name}] {rec['outcome'][:300]}"
+               + (f"  {rec['verdict']} grade {rec['grade']} max {rec['max']:.3f} K"
+                  f"{' SPLITS' if rec.get('split') else ''}" if "verdict" in rec else ""))
+        out.append(rec)
+        if a.json:
+            Path(a.json).write_text(json.dumps(out, indent=1, default=str))
+    if a.redeclare and touched and not a.no_commit:
+        cc.git(["add", "--"] + [str(p) for p in touched])
+        cc.git(["commit", "-q", "-m",
+                f"C286: {len(touched) // 2} pair declarations re-declared under the graded "
+                "acceptance, before any re-run\n\n"
+                "bin/choupo-curate pairs --redeclare (DEV.md 4c C286, applying C285 to the "
+                "C284 pairs): the same studies (re-derived by the extraction rules and "
+                "refused if they differ -- no re-partition), the same outlier rule (3 K "
+                "after a least-squares stage) and the same discards; only the acceptance "
+                "changes, max |T_model - T| over the kept points graded clean / warning / "
+                "severe at 1 / 2 / 4 K, refused above.  The C284 result is kept in each "
+                "header as EARLIER."])
+        cc.say(f"committed the declarations: {cc.git(['rev-parse', '--short', 'HEAD']).strip()}")
     return 0
 
 

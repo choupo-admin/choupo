@@ -43,5 +43,14 @@ propertyManifest
             originSha256  "9c683ee45a5fcc273e4186865d45184b187b080ff179cec4f0ac16d72933fc21";
             release       Choupo-2608;
         }
+        "parameters/NRTL/2Methyl2Propanol-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "53c8bbef255de90375ec9db6b5f15b322b3e96529a88640d7b0f5f9c23699009";
+            computationalSha256 "b8c2b54824556a941afa0a4be4e200b57795dae3f42d35d4031ff108c4dafa8b";
+            origin        "data/standards/parameters/NRTL/2Methyl2Propanol-nNDimethylformamide.dat";
+            originSha256  "57a0c250933364930ba9167087e01f4e487e19a3720d480ef5ca552d4c4f0aa9";
+            release       Choupo-2608;
+        }
     }
 }

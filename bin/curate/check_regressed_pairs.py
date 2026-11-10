@@ -146,6 +146,19 @@ case-local one that did not earn promotion):
       leastSquares, and the rows whose |T_model - T| exceed `outlierLimit`
       must be exactly the rows the case discards, by dataset and row.  A
       discard list a human edited, or one the rule would not produce, fails.
+      GRADED SINCE DEV.md 4c C286 (C285 applied to pairs): every such record
+      declares `acceptance graded;` with `gradeLimits_K (1 2 4);`; the gate
+      RECOMPUTES the grade from the run's own max |dT| (clean / warning /
+      severe at 1 / 2 / 4 K, refused above or where a point has no bubble
+      point) and requires the record's `grade` to be it, `verdict accepted`
+      exactly when it is not refused, and `oneLiquid` to be arm (f)'s answer
+      on the record's own parameters.  A CATALOGUE record must further carry
+      `fitGrade` equal to that grade -- never refused -- and
+      `fitGradeMaxTemperatureError_K` equal to the run's max |dT|, its curation
+      must say `oneLiquid true`, and its case's run must VOICE a warning or a
+      severe grade through the pair loader (`[fit-grade] pair <i>-<j>:
+      fitGrade warning|SEVERE` on the console AND in the result JSON
+      advisories); a clean grade, or a case-local record, voices nothing.
 
 WHAT IT DOES NOT CHECK.  Whether the measurements are RIGHT -- each dataset
 says `reviewStatus transcribedNotCheckedAgainstArticle`, and reading them
@@ -996,7 +1009,10 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
 VP_GRADE_COUNT = {}
 
 
-def c283_failures(rec, cur, case, out, tag, fails):
+C286_GRADE_COUNT = {}
+
+
+def c283_failures(rec, cur, case, out, tag, fails, in_std=False):
     """Arm (j): a pair fitted on every laboratory (C283) against its case."""
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     import pairs_c283 as pc   # lazy: pairs_c283 loads choupo-curate, which imports this gate
@@ -1019,13 +1035,67 @@ def c283_failures(rec, cur, case, out, tag, fails):
     if rnk != nk:
         fails.append(f"{tag}: curation pointsKept {rnk}, the run fitted {nk} points")
     nan = num(cur, "noBubblePoint") or 0
-    want = "accepted" if (lim is not None and mx < lim and nan == 0) else "notAccepted"
+    if olim != pc.OUTLIER_K:
+        fails.append(f"{tag}: curation outlierLimit {olim} K is not the rule's "
+                     f"({pc.OUTLIER_K:g} K, DEV.md 4c C283)")
+    #  THE GRADE (DEV.md 4c C286, C285 applied to pairs).  Recomputed from the
+    #  run's max |dT|; the record must carry it and the numbers that decided it.
+    if word(cur, "acceptance") != "graded":
+        fails.append(f"{tag}: curation `acceptance {word(cur, 'acceptance')}` -- every "
+                     "C283 pair declares the graded acceptance since C286 (`bin/choupo-curate "
+                     "pairs --redeclare`)")
+        return
+    lims = re.search(r"gradeLimits_K\s*\(\s*([0-9.eE+-]+)\s+([0-9.eE+-]+)\s+([0-9.eE+-]+)\s*\)", cur)
+    if not lims or tuple(float(x) for x in lims.groups()) != pc.GRADE_K:
+        fails.append(f"{tag}: curation gradeLimits_K {lims.groups() if lims else None} are not "
+                     f"the rule's {pc.GRADE_K} K (C285's temperature limits)")
+    grade = pc.grade_of(mx, nan)
+    C286_GRADE_COUNT[grade] = C286_GRADE_COUNT.get(grade, 0) + 1
+    if word(cur, "grade") != grade:
+        fails.append(f"{tag}: curation grade `{word(cur, 'grade')}`, recomputed `{grade}` "
+                     f"from the run's max |dT| {mx:.4f} K (limits {pc.GRADE_K} K"
+                     + (f", {nan:g} point(s) with no bubble point" if nan else "") + ")")
+    want = "accepted" if grade != "refused" else "notAccepted"
     if word(cur, "verdict") != want:
-        fails.append(f"{tag}: curation verdict `{word(cur, 'verdict')}` but max |dT| "
-                     f"{mx:.4f} K against the acceptance {lim} K gives `{want}`")
-    if olim != pc.OUTLIER_K or lim != pc.ACCEPT_K:
-        fails.append(f"{tag}: curation outlierLimit {olim} K / acceptance {lim} K are not "
-                     f"the rule's ({pc.OUTLIER_K:g} K / {pc.ACCEPT_K:g} K, DEV.md 4c C283)")
+        fails.append(f"{tag}: curation verdict `{word(cur, 'verdict')}` but grade `{grade}` "
+                     f"(max |dT| {mx:.4f} K) gives `{want}`")
+    split = one_liquid_failures(facts(rec), tag)
+    if word(cur, "oneLiquid") != ("false" if split else "true"):
+        fails.append(f"{tag}: curation oneLiquid `{word(cur, 'oneLiquid')}`, arm (f) on the "
+                     f"record's own parameters says {'it SPLITS' if split else 'one liquid'}")
+    prov = block(rec, "provenance") or ""
+    if in_std:
+        if grade == "refused":
+            fails.append(f"{tag}: recomputed grade REFUSED (max |dT| {mx:.4f} K) -- promoted "
+                         "anyway")
+        if word(prov, "fitGrade") != grade:
+            fails.append(f"{tag}: provenance fitGrade `{word(prov, 'fitGrade')}`, recomputed "
+                         f"`{grade}` (max |dT| {mx:.4f} K)")
+        g_mx = num(prov, "fitGradeMaxTemperatureError_K")
+        if g_mx is None or abs(g_mx - mx) > 5e-5 * max(1.0, mx) + 1e-4:
+            fails.append(f"{tag}: provenance fitGradeMaxTemperatureError_K {g_mx}, the run's "
+                         f"max |dT| {mx:.6f} K")
+        rf = facts(rec)
+        gword = {"warning": "warning", "severe": "SEVERE"}.get(grade)
+        names = (f"{rf['i']}-{rf['j']}", f"{rf['j']}-{rf['i']}")
+        said = [f"[fit-grade] pair {n}: fitGrade " for n in names]
+        adv = [a for a in js.get("advisories", [])
+               if a.get("locus") in {f"pair {n}" for n in names}
+               and "fitGrade" in a.get("message", "")]
+        if gword:
+            if not any(s + gword in out for s in said):
+                fails.append(f"{tag}: fitGrade {grade} and its case printed no "
+                             f"`{said[0]}{gword}` line -- the pair loader does not voice it")
+            if not any(f"fitGrade {gword}" in a.get("message", "") for a in adv):
+                fails.append(f"{tag}: the fitGrade {gword} line is not in the result JSON "
+                             "advisories (the end-of-run caveat block)")
+        elif any(s in out for s in said) or adv:
+            fails.append(f"{tag}: fitGrade {grade} and the engine voiced a grade -- a clean "
+                         "fit says nothing more")
+    elif word(prov, "fitGrade"):
+        fails.append(f"{tag}: a case-local record declares provenance fitGrade "
+                     f"`{word(prov, 'fitGrade')}` -- the grade enters the provenance at "
+                     "promotion; the case-local record carries it in `curation {}`")
     #  The outliers, re-derived from the rule: the fit with no discard, least squares.
     rc, o2, rows, _ = pc.fit_only(case, "leastSquares", keep_discards=False)
     if rc != 0 or not rows:
@@ -1070,8 +1140,13 @@ def main():
     #  A case-local record is either a SEALED COPY of a catalogue record
     #  (checked through that record) or an AUTHORED record that did not earn
     #  promotion.  Only the second kind is checked here on its own.
-    std_names = {p.name for p in std}
-    local = [p for p in local if p.name not in std_names]
+    #  A sealed copy is the SAME record: same file name AND the same
+    #  `fittedInCase`.  By name alone, a C282 pilot's own case-local record
+    #  (curate16/17) of a pair a later C284/C286 case promoted would be taken
+    #  for a copy and left unchecked (2026-11-10, C286).
+    std_names = {p.name: word(strip_comments(p.read_text()), "fittedInCase") for p in std}
+    local = [p for p in local
+             if std_names.get(p.name, "\0") != word(strip_comments(p.read_text()), "fittedInCase")]
     fails, checked, stable_checked, ll_checked, c283_checked = [], [], [], [], []
     not_run, fetched = [], {}
     if len(std) < 7:
@@ -1170,7 +1245,7 @@ def main():
                                  "from its case -- the record has drifted from its "
                                  "evidence")
             if c283:
-                c283_failures(rec, cur, case, out, tag, fails)
+                c283_failures(rec, cur, case, out, tag, fails, in_std)
                 c283_checked.append(rec_path.stem)
             #  The loader names a pair in its OWN i-j order, which is not the
             #  file's alphabetical one (ethylAcetate-ethanol lives in
@@ -1239,7 +1314,11 @@ def main():
           "by name and passed the right one (arm f, amended); "
           f"{len(c283_checked)} record(s) fitted on EVERY laboratory (C283/C284) hold "
           "their curation block to the run -- max |dT| and kept points equal the run's, "
-          "the verdict follows the 1 K acceptance, and the discarded rows are exactly "
+          "the C285 grade recomputed at 1 / 2 / 4 K ("
+          + ", ".join(f"{C286_GRADE_COUNT.get(g, 0)} {g}" for g in VP_GRADES)
+          + ") with the verdict, oneLiquid and -- in the catalogue -- fitGrade and its "
+          "max |dT| equal to it and a warning or SEVERE grade voiced by the pair loader "
+          "into the caveat block, and the discarded rows are exactly "
           "those a least-squares stage with no discard puts beyond 3 K (arm j); "
           f"{len(vp_done)} catalogue vapour pressure(s) regressed by `choupo-curate vp` "
           f"({', '.join(vp_done) or 'none'}) reproduced by their cases -- Antoine "

@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/1Pentanol-anisole.dat"
         {
             type          imported;
-            sha256        "150fc2aa61fa47f872396ea9afe04931cd851524ff27cf26a5f6b6d7d27dcdd7";
-            computationalSha256 "3535e771293eb6cb73aee294ba4d80d6f82c4a32023f0d3c4bb1eafdb6a2b0f8";
+            sha256        "4227ad319e0c8820c64a4f5e352fed580429cd06ef646dfccd32342f16d69d65";
+            computationalSha256 "ac72db035f2513afe2d5dff7c929958e93114c565f208c66603cf2746e9dbf4c";
             origin        "data/standards/parameters/NRTL/1Pentanol-anisole.dat";
-            originSha256  "6780a7c982d534fa353311d124cd155a48b6153f66aee0469c6f304e3121cb85";
+            originSha256  "cd9b8a07407b8c0ff580e1e3a8b74a3306e26897b9a4af357cc58700922c2a53";
             release       Choupo-2608;
         }
     }

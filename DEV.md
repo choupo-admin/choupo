@@ -3302,6 +3302,94 @@ accepts today, and that is a policy call.
 >
 > **Acetic acid PARKED (architect, 2026-11-10, after Vitor: "Perdeste uma semana com essa merda antes!").**  The open acetic items (C201 (1) rest: dew-point distillate, Gibbs / three-phase / Txy readers, record identity; C174/C175 subcooled-feed q; column05's dimer in C239) get no work this month.  Reason: nothing the month delivers depends on them, aceticAcid02 runs with its balances gated (C258), and column05's ideal-vapour limit is already announced.  Reopened only if a case a student meets fails.
 >
+> **C286 (Vitor, 2026-11-10: "Avanca pa!", on applying C285 to the pairs).
+> THE C284 PAIRS ARE GRADED LIKE THE VAPOUR PRESSURES.**  The sixty NRTL pairs
+> of C284 (curate100-162, bin/curate/pairs_c283.py) are judged by C285's graded
+> acceptance on the temperature criterion: max |T_model - T| over the kept
+> points up to 1 K clean, 1-2 K warning, 2-4 K severe, above 4 K refused; a
+> composition criterion, if any, 5 / 10 / 20 %.  A pair that predicts two
+> liquids inside its span (arm f) stays refused whatever its grade.  Every case
+> re-declared before it is re-run (no re-partition, the same studies and
+> discards rule); every newly accepted pair promoted autoPromoted /
+> humanReviewed false with `fitGrade` and its number in the record; the pair
+> loader voices the grade through the component loader's home, not a second
+> wording; check_regressed_pairs arm (j) recomputes it.  Re-recording
+> curate100-162 is accepted by the ruling; any other golden that moves stops
+> the slice.
+>
+> **C286 RESULT (2026-11-10, cloud general, branch c286-pair-grades).**
+> TOOL: `bin/choupo-curate pairs --redeclare` (the acceptance paragraph only;
+> studies re-derived and refused if they differ, discards carried and
+> re-derived, the C284 result kept as EARLIER; the sixty committed in one
+> commit before any re-run), `pairs --graded --run` (a pair this pipeline
+> promoted from its own case is regraded IN PLACE, never another record) and
+> `pairs --graded --promote`.  Records: `curation { acceptance graded;
+> gradeLimits_K (1 2 4); grade; oneLiquid; verdict; }`; in the catalogue also
+> `fitGrade` and `fitGradeMaxTemperatureError_K` in provenance.  No fitted
+> number moved and NO golden moved (no re-record).  19 clean (the C284
+> nineteen, regraded), 18 warning, 20 severe, 3 refused (curate124
+> oCresol-ethanol 4.030 K, curate147 dimethylCarbonate-oXylene 4.241 K,
+> curate129 methylFormate-nHeptane 5.372 K, which also splits); 5 accepted fits
+> split one liquid and stay case-local (curate101 warning; 110, 117, 136, 138
+> severe).  PROMOTED 33 (17 warning, 16 severe): public NRTL pairs 31 -> 64.
+> ENGINE: `announceFitGrade` moved verbatim to src/thermo/FitGrade.H with a
+> subject and an optional key and a new deciding number
+> `fitGradeMaxTemperatureError_K` ("misses some of its measurements by up to X
+> K"); Database.cpp and fillPairAudit (PairAudit.H) both call it, once per pair
+> per process, caveat block + JSON advisories, clean silent; the pair
+> autoPromoted line no longer claims a held-out verdict.  Lesson citations into
+> Database.cpp moved by -56 (233, 240, 746, 748 -> 177, 184, 692, 694).  GATE:
+> check_regressed_pairs arm (j) recomputes the grade from the run's max |dT|
+> and requires curation grade, verdict and oneLiquid, the catalogue fitGrade
+> and its number, and the voiced severity word (sabotages: grade edited down,
+> a 4.03 K pair dressed as promoted, the loader call removed -- all caught).
+> Table, voiced lines and validation: docs/design/binary-pairs-from-open-measurements.md
+> section 11.4.  Also fixed in the gate: a case-local record was taken for a sealed copy by
+> file name alone, so the C282 pilots curate16/17 (case-local records of pairs
+> now promoted from curate102/103) went unchecked; a copy now needs the same
+> `fittedInCase` too (76 records reproduced).  VALIDATED: make all; --scope on
+> curate04..19 and curate100..162 (77 PASS, 0 FAIL -- no golden moved; no
+> open tutorial loads a newly promoted pair: the only cases naming both members
+> are sealed curation cases); --fast (78 PASS, 0 FAIL, 5 EXPECTED-FAIL);
+> wasm_dialect, regressed_pairs, review_status, caveat_surface,
+> advisory_attribution, record_form, source_licence, doc_references,
+> doctrine, glossary_bans, schema_coverage; generated views regenerated
+> (releaseInventory 31 -> 64 NRTL pairs, codeMap, interimReviewDossier,
+> tutorialsGuide-props); tutorials guide rebuilt with make -B and read back;
+> gate_manifest --check and six claims re-observed with --only
+> (record_form marks no claim -- pre-existing, left).  NOT run: --gui (the
+> GUI dependencies are not installed here; four lesson citations into
+> Database.cpp were moved by hand and each checked to carry its `contains`
+> text), a full sweep.
+
+> **C289 (Vitor, 2026-11-10: "Sim! Isso e boa ideia!", on a proposal from
+> the cloud session).  THE EXPLORER COMPARES A FITTED RECORD WITH THE
+> MEASUREMENTS THE USER BRINGS.**  The measured series are not in the tree
+> (C282) and the NIST server sends no CORS header (measured 2026-11-10), so
+> the browser cannot fetch them.  For every fitted record (pair or
+> vapour-pressure curve with `evidence` DOIs) the Explorer shows, per article:
+> the NIST per-article link with a "download the data" button, and a "load
+> file" control; the user downloads the ThermoML file and loads it, the GUI
+> checks its sha256 against the record, extracts the declared block with the
+> same selector the case uses, and draws the model over the points, study by
+> study, with the dropped outliers marked and the fit grade shown.  Nothing is
+> stored, uploaded or redistributed.  Owner: the laptop session (gui/).
+
+> **C288 (Vitor, 2026-11-10, after the discussion of reaction heats on the
+> ideal-gas formation route: "e melhor fazer como o aspen faz e ate criar um
+> EduTools a explicar esta questao!").  A MEASURED HEAT OF REACTION MAY
+> CORRECT THE DUTY, AND THE CORRECTION IS A NAMED TERM.**  Vitor's decision
+> amends the 2026-06-27 heat-of-reaction contract (CLAUDE.md section 5): a
+> reaction may declare a MEASURED heat of reaction (value, temperature, phase,
+> source); the reactor's duty is then corrected by extent x (declared -
+> computed from formation data at the same conditions), the stream
+> enthalpies stay on the formation datum, and the correction is published
+> beside the duty and as its own line in the energy report (never hidden in
+> the duty).  The formation route stays the default; the mismatch is always
+> printed.  An EduTool explains why a computed reaction heat on the
+> ideal-gas route can be unreliable in the liquid phase and what the
+> correction does.  The EduTool scope is put to Vitor before it is built.
+
 > **C285 (Vitor, 2026-11-10, on the nine vapour pressures above 5 %: "mete
 > mesmo as que estao acima de 5%. Mas acima de 5% - 10% mete um warning, e
 > entre 10 a 20% poe um warning mais severo. Acima de 20% descarta").  THE

@@ -43,5 +43,14 @@ propertyManifest
             originSha256  "409fc26748c4dd89998c0398c5023a4cc7143aeb481d53e119933d0d86b235d7";
             release       Choupo-2608;
         }
+        "parameters/NRTL/ethanol-ethyleneGlycol.dat"
+        {
+            type          imported;
+            sha256        "2dabf71797450f390bc44d2775274f0897885155b054537eab4f8a5d5a38966e";
+            computationalSha256 "95c7f65ca061c531deeaf8095c39e20fe47cd2d54004cb0abb4238f900c620a1";
+            origin        "data/standards/parameters/NRTL/ethanol-ethyleneGlycol.dat";
+            originSha256  "68bb09601b45336b94d8380254dd64e6e2985f2aed6c4f2970d9989a97a1bf66";
+            release       Choupo-2608;
+        }
     }
 }

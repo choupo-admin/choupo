@@ -43,6 +43,15 @@ propertyManifest
             originSha256  "c84be1d773e7fda137a6721e882622f7cd66ba63f6278257a98da939fe724bfc";
             release       Choupo-2608;
         }
+        "parameters/NRTL/ethanol-pXylene.dat"
+        {
+            type          imported;
+            sha256        "fd16fe941d31276e96bb46d4fcd718de152fd46382f547b6abef5337d042f014";
+            computationalSha256 "0a12326cb78beb9eaf0da799a5c0616e3b8fb12876d8c79d87979e9062cc338a";
+            origin        "data/standards/parameters/NRTL/ethanol-pXylene.dat";
+            originSha256  "2e1c18340e90580e156f55c3ab6cd909e243e0b0d2dc46d90391d9e727663cc3";
+            release       Choupo-2608;
+        }
         "parameters/UNIFAC/groups.dat"
         {
             type          imported;

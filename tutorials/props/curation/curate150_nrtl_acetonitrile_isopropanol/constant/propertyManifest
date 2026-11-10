@@ -43,5 +43,14 @@ propertyManifest
             originSha256  "510b474f696cf7952c89a27d0a48623266b8a79f3026cc348a934361bd763e07";
             release       Choupo-2608;
         }
+        "parameters/NRTL/acetonitrile-isopropanol.dat"
+        {
+            type          imported;
+            sha256        "0670dbe657e3ad8c4a7be0ffec2a1af6f1bf5c124be373917b5ec837da64471a";
+            computationalSha256 "fc5643f6be2bd8bafd92a52998c30fa7a48e81e17b8b245b282818e662df93d3";
+            origin        "data/standards/parameters/NRTL/acetonitrile-isopropanol.dat";
+            originSha256  "4f0c8da68a05c29cf0b07042f9a32fbeee4f874700919e11313707b41d9366e1";
+            release       Choupo-2608;
+        }
     }
 }

@@ -950,3 +950,137 @@ Promoted:
   UNIQUAC/Wilson; the existing C282 pilot cases (curate15-19) were left as
   they are (curate16/17/19's pairs are re-fitted under C283 as curate102,
   curate103 and curate101, none accepted).
+
+### 11.4 The pairs are graded too (2026-11-10, DEV.md 4c C286)
+
+Vitor ("Avanca pa!") on applying C285 to the pairs of section 11.  The
+C283/C284 acceptance -- max |T_model - T| over the kept points below 1 K --
+became C285's four grades on the temperature criterion (its stated default,
+the same factors): up to 1 K `clean`, up to 2 K `warning`, up to 4 K
+`severe`, above `refused`; a point with no bubble point refuses.  C283's
+relative clause, graded 5 / 10 / 20 %, would judge composition; a
+bubble-temperature fit has no composition residual, so it is declared and
+unused.  A pair that predicts two liquids inside its validity span (arm f)
+stays refused whatever its grade.
+
+**Declared before it ran.**  `bin/choupo-curate pairs --redeclare` rewrote
+the acceptance paragraph of every C284 case (all sixty, the nineteen promoted
+ones included) and nothing else: the studies are re-derived by the extraction
+rules and refused if they differ from the declared `archiveDatasets` (no
+re-partition), the discards and the outlier rule are carried over and
+re-derived again by the run, and the C284 result is kept in the header as
+EARLIER.  The sixty declarations were committed in one commit before any
+re-run.  `pairs --graded --run` then re-ran each case; a pair this pipeline
+had promoted from its own case is regraded IN PLACE (its catalogue record
+gains the grade; any other record of a pair is never overwritten), and
+`pairs --graded --promote` promoted each newly accepted one-liquid pair.
+
+**Where the grade lives.**  Every record: `curation { acceptance graded;
+gradeLimits_K (1 2 4); grade <g>; oneLiquid true|false; verdict ...; }`.  A
+catalogue record also: `fitGrade <g>;` and `fitGradeMaxTemperatureError_K`
+in its provenance, beside `reviewStatus autoPromoted;`.  The engine voices
+it through ONE home shared with the component loader,
+`src/thermo/FitGrade.H` (moved verbatim from Database.cpp's
+`announceFitGrade`, given a subject and an optional key and the new
+deciding number in K); the pair loaders call it from `fillPairAudit`
+(`src/thermo/PairAudit.H`), once per pair per process, into the caveat
+block and the JSON advisories; clean says nothing more.  As printed:
+
+    [fit-grade] pair 2Butanol-dimethylCarbonate: fitGrade warning -- the fitted curve misses some of its measurements by up to 1.377 K; it was accepted with a WARNING.
+    [fit-grade] pair water-triethyleneGlycol: fitGrade SEVERE -- the fitted curve misses some of its measurements by up to 3.833 K; it is WEAK and was accepted only with a SEVERE warning.  Check a result that depends on it against the measurements before it is cited.
+
+The pair's `autoPromoted` line no longer claims a held-out verdict (C283
+pairs hold nothing out), as C285 did for the component line.
+
+**Result.**  No fitted number moved.  19 clean (the C284 nineteen), 18
+warning, 20 severe, 3 refused; five accepted fits split one liquid and stay
+case-local (curate129, refused on its grade, splits too).  33 newly promoted
+(17 warning, 16 severe): public NRTL pairs 31 -> 64.
+
+| case | pair | max abs dT, K | grade | outcome |
+|---|---|---|---|---|
+| curate100 | acetone + methanol | 0.622 | clean | in the catalogue since C284 (regraded) |
+| curate101 | ethanol + 224Trimethylpentane | 1.882 | warning | refused: splits one liquid (arm f) |
+| curate102 | ethanol + dimethylCarbonate | 2.600 | severe | promoted |
+| curate103 | diisopropylEther + isopropanol | 2.337 | severe | promoted |
+| curate104 | acetonitrile + methanol | 0.991 | clean | in the catalogue since C284 (regraded) |
+| curate105 | water + triethyleneGlycol | 3.833 | severe | promoted |
+| curate106 | 2Butanol + dimethylCarbonate | 1.377 | warning | promoted |
+| curate107 | methanol + isopropanol | 1.736 | warning | promoted |
+| curate108 | 1Pentanol + nNonane | 2.122 | severe | promoted |
+| curate109 | water + ethyleneGlycol | 2.584 | severe | promoted |
+| curate110 | 2Methyl2Propanol + water | 2.191 | severe | refused: splits one liquid (arm f) |
+| curate111 | acetonitrile + 1Propanol | 1.320 | warning | promoted |
+| curate112 | ethanol + methylEthylKetone | 0.155 | clean | in the catalogue since C284 (regraded) |
+| curate113 | isopropylAcetate + isopropanol | 0.455 | clean | in the catalogue since C284 (regraded) |
+| curate114 | pXylene + nDecane | 1.424 | warning | promoted |
+| curate115 | ethylAcetate + acetonitrile | 0.304 | clean | in the catalogue since C284 (regraded) |
+| curate117 | nOctane + ethanol | 3.047 | severe | refused: splits one liquid (arm f) |
+| curate118 | 2Methyl2Propanol + 14Dioxane | 1.987 | warning | promoted |
+| curate119 | 1Propanol + dimethylCarbonate | 1.955 | warning | promoted |
+| curate120 | ethanol + pXylene | 3.080 | severe | promoted |
+| curate121 | cyclohexane + cyclohexene | 1.624 | warning | promoted |
+| curate122 | 1Pentanol + anisole | 0.884 | clean | in the catalogue since C284 (regraded) |
+| curate123 | ethylBenzene + styrene | 1.919 | warning | promoted |
+| curate124 | oCresol + ethanol | 4.030 | refused | refused: grade |
+| curate125 | ethanol + 2Methyl1Butanol | 0.719 | clean | in the catalogue since C284 (regraded) |
+| curate126 | nButanol + dimethylCarbonate | 2.151 | severe | promoted |
+| curate127 | methylPropionate + nHeptane | 1.849 | warning | promoted |
+| curate128 | 2Methyl1Propanol + isobutylAcetate | 1.317 | warning | promoted |
+| curate129 | methylFormate + nHeptane | 5.372 | refused | refused: grade (also splits) |
+| curate130 | 14Dioxane + cyclohexane | 2.016 | severe | promoted |
+| curate131 | thiophene + nHeptane | 0.394 | clean | in the catalogue since C284 (regraded) |
+| curate132 | 1Propanol + propionicAcid | 2.916 | severe | promoted |
+| curate133 | methanol + 2Butanol | 1.087 | warning | promoted |
+| curate134 | isopropanol + 224Trimethylpentane | 0.507 | clean | in the catalogue since C284 (regraded) |
+| curate135 | 2Butanol + nNDimethylformamide | 2.566 | severe | promoted |
+| curate136 | ethylBenzene + sulfolane | 3.584 | severe | refused: splits one liquid (arm f) |
+| curate137 | 2Methyl1Propanol + nNDimethylformamide | 2.043 | severe | promoted |
+| curate138 | ethanol + cyclohexane | 2.682 | severe | refused: splits one liquid (arm f) |
+| curate139 | methanol + methylEthylKetone | 0.659 | clean | in the catalogue since C284 (regraded) |
+| curate140 | nButanol + pXylene | 2.060 | severe | promoted |
+| curate141 | nNDimethylformamide + nNDimethylacetamide | 1.437 | warning | promoted |
+| curate142 | ethylAcetate + methanol | 0.498 | clean | in the catalogue since C284 (regraded) |
+| curate143 | ethylBenzene + monochlorobenzene | 0.377 | clean | in the catalogue since C284 (regraded) |
+| curate144 | 2Hexanone + 1Pentanol | 0.498 | clean | in the catalogue since C284 (regraded) |
+| curate145 | ethanol + ethyleneGlycol | 1.434 | warning | promoted |
+| curate146 | 2Methyl2Propanol + nNDimethylformamide | 2.570 | severe | promoted |
+| curate147 | dimethylCarbonate + oXylene | 4.241 | refused | refused: grade |
+| curate148 | nButanol + nButylAcetate | 0.581 | clean | in the catalogue since C284 (regraded) |
+| curate150 | acetonitrile + isopropanol | 2.597 | severe | promoted |
+| curate151 | nNDimethylformamide + aniline | 1.993 | warning | promoted |
+| curate152 | tetrahydrofuran + methanol | 0.496 | clean | in the catalogue since C284 (regraded) |
+| curate153 | diisopropylEther + 224Trimethylpentane | 1.714 | warning | promoted |
+| curate155 | dimethylCarbonate + pXylene | 3.093 | severe | promoted |
+| curate156 | cyclohexane + tetrahydrofuran | 0.334 | clean | in the catalogue since C284 (regraded) |
+| curate157 | nOctane + mXylene | 0.635 | clean | in the catalogue since C284 (regraded) |
+| curate158 | nOctane + oXylene | 1.130 | warning | promoted |
+| curate159 | benzene + methanol | 1.305 | warning | promoted |
+| curate160 | cyclohexane + nHeptane | 0.651 | clean | in the catalogue since C284 (regraded) |
+| curate161 | nDecane + mXylene | 0.107 | clean | in the catalogue since C284 (regraded) |
+| curate162 | nDecane + oXylene | 2.699 | severe | promoted |
+
+**Gate.**  `check_regressed_pairs` arm (j), extended: every C283 record
+declares the graded acceptance; the grade is recomputed from the run's own
+max |dT|; `grade`, `verdict` and `oneLiquid` (arm f on the record's own
+parameters) must equal it; a catalogue record's `fitGrade` and
+`fitGradeMaxTemperatureError_K` must equal the recomputed grade and max
+|dT|, never refused, and a warning or severe grade must be voiced on the
+console and in the advisories (a clean one voices nothing); a case-local
+record carries no provenance `fitGrade`.  Sabotages, by hand (arm (j) run alone on one record):
+water-triethyleneGlycol's grade edited severe -> warning in curation and
+provenance (caught twice: recomputed severe); curate124's refused fit
+(4.030 K) dressed as a promoted severe catalogue record (caught four ways:
+recomputed refused, verdict, promoted-anyway, fitGrade); the
+`announceFitGrade` call in `fillPairAudit` commented out and the engine
+rebuilt (caught on 2Butanol-dimethylCarbonate: no console line, no
+advisory); restored and rebuilt, the arm holds again.  Found on the way and fixed: the gate took a
+case-local record for a sealed copy of a catalogue record by file name alone,
+so the C282 pilots curate16 and curate17 (their own case-local records of
+pairs now promoted from curate102 and curate103) went unchecked; a copy now
+needs the same `fittedInCase` as well.
+
+**Readings, and what is NOT done.**  Twenty of the promoted pairs miss some
+laboratory by 2-4 K and say so on every run; that is the ruling, not an
+endorsement.  NOT done: the 431-pair queue, read-back against the articles,
+freeing alpha, and a composition criterion (no fit here has one).

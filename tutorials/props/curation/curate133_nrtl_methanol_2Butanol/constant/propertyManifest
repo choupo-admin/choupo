@@ -43,6 +43,15 @@ propertyManifest
             originSha256  "8cedd68cbab3194cfb72728ae31e42118e256931e9e166b4c53ace9dbbe27376";
             release       Choupo-2608;
         }
+        "parameters/NRTL/2Butanol-methanol.dat"
+        {
+            type          imported;
+            sha256        "6b63673e641429edaebe29700e101687aec9057c72775076bbb477bc97d21a9a";
+            computationalSha256 "ae6bdd3dc4372f4f8df0a17316f4546f7c151ebfc8a25b92e9cb8970e0be571e";
+            origin        "data/standards/parameters/NRTL/2Butanol-methanol.dat";
+            originSha256  "6198a6b8ec686afb1d764cdfc363bc69dce62889da357d83c1f9c99799e69b5c";
+            release       Choupo-2608;
+        }
         "parameters/UNIFAC/groups.dat"
         {
             type          imported;
