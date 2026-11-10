@@ -146,7 +146,7 @@ export const COLUMN_CONTROL_STEPS: readonly LessonStep[] = [
       { sym: "T_\\mathrm{top}",
         means: "The controlled temperature standing in for the "
         + "top composition — a tray temperature in the rectifying section.  "
-        + "IT IS A proxy, exact only for a binary at fixed pressure: with "
+        + "It is a proxy, exact only for a binary at fixed pressure: with "
         + "more than two components many compositions share a bubble point, "
         + "and a pressure move shifts the temperature with no composition "
         + "change at all.  And read the subscript against the output: the "
