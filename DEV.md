@@ -3402,6 +3402,59 @@ accepts today, and that is a policy call.
 > Database.cpp were moved by hand and each checked to carry its `contains`
 > text), a full sweep.
 
+> **C296 (Vitor, 2026-11-10: "Tu nao achas que o ideal seria ter uma pasta
+> por cada composto?  La ficavam os binarios todos ... pode-se fazer um
+> symbolic link"; then "Lanca varios generais Fable em paralelo cada um a
+> ver se esta opcao e boa, do ponto de vista de aluno, professor, engenheiro
+> de sistemas").  THE SHAPE OF THE CURATION TREE: THE KEY IS THE PAIR, THE
+> COMPOUND IS A VIEW.**  Five read-only reviewers (student, professor,
+> systems engineer, process engineer, data curator) each judged compound
+> folders with symlinks against pair folders with a generated compound
+> index; all five chose the pair folder, four of them narrowed the same
+> way.  DECIDED (the architect; this AMENDS C295's `curateNN_<name>`):
+>   1. The records the engine reads do NOT move:
+>      `data/standards/parameters/<MODEL>/<a>-<b>.dat`.  The path rule is in
+>      the engine (NRTL.cpp:62, UNIQUAC.cpp:59, Wilson.cpp:59,
+>      ThermoPackageBuilder.cpp:1780) and mirrored in every sealed case.
+>   2. The generated cases are named by what they fit, with NO number:
+>      `data/curation/pairs/<a>-<b>/` (stem identical to the record's, byte
+>      order as the engine sorts; one case fits NRTL, UNIQUAC and Wilson,
+>      C294) and `data/curation/components/<name>/`.  Direction (i, j) lives
+>      inside the file, never in the name.
+>   3. No symbolic link under `data/` (gate).  Reasons measured: zero are
+>      tracked today; `make/wasm.mk:173` hashes with `find -type f`, so a
+>      link would leave a stale bundle; `check_regressed_pairs.py:1308` and
+>      the Vite globs would see every pair twice.  Git-on-Windows and zip
+>      behaviour were recalled by the reviewers, not tested.
+>   4. "Everything about ethanol" is a GENERATED view, on disk as well as
+>      in the Explorer (the student who downloads a zip never opens the
+>      app): one generated index (per compound: its own fits and every pair
+>      it takes part in, per model, with grade, max error, points,
+>      laboratories, temperatures, humanReviewed, DOIs), a global review
+>      ledger, freshness gate, non-zero floor per model.
+>   5. The mixture question is a TOOL, not a folder: for N components, the
+>      N(N-1)/2 matrix per model with tier, grade, validity span and missing
+>      cells, without solving (CLI, and the grade added to the coverage
+>      matrix the app already draws).
+>   Why not compound folders: a pair has no owner; about a third of
+>   `parameters/` is not keyed by two compounds at all (Pitzer ion pairs and
+>   triples, EdwardsPitzer, eNRTL, UNIFAC tables, adsorbent/adsorbate); a
+>   withdrawal or re-fit would touch two folders.
+>   FOUND BY THE REVIEWERS, OPEN, and heavier than the layout (each to be
+>   measured again before it is acted on): of 132 NRTL records none is
+>   humanReviewed, 120 are `validationRefused` with no held-out points, 64
+>   rest on one laboratory and 64 on one temperature yet may grade "clean"
+>   (the grade is in-sample and must say so); 17 "severe" pairs sit in the
+>   default catalogue; `ethanol-water.dat` carries no points, grade or DOI
+>   and does not name curate02; three pairs have two live cases; each case
+>   seals its own copy of the UNIFAC tables (144 KB a case, 20 MB today);
+>   the case path is written twice in each record (header prose and
+>   `fittedInCase`); `choupo-curate revert` knows NRTL only; there is no
+>   rename tool and no convention for a withdrawn record; the pair-name
+>   rules (component names `[A-Za-z0-9]+`, byte order, no case collisions)
+>   hold today and are gated by nothing.  Nothing has been sent to the
+>   cloud session yet; the order of work is agreed with Vitor first.
+
 > **C295 (Vitor, 2026-11-10: "Avanca como achares melhor", after the cloud's
 > answer to the laptop's analysis).  THE GENERATED CURATION CASES LEAVE
 > `tutorials/`.**  The cases `bin/choupo-curate` (and `pairs_c283.py`,
