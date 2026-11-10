@@ -643,15 +643,15 @@ export const SAFETY_STEPS: readonly LessonStep[] = [
     formula: String.raw`Q = \frac{F\, Z\, R\, T}{P}, \qquad \frac{Q_{50}}{Q_{150}} = \frac{F_{50}}{F_{150}}\,\frac{Z_{50}}{Z_{150}}\,\frac{T_{50}}{T_{150}}\,\frac{P_{150}}{P_{50}}`,
     where: [
       { sym: "Q", means: "the volumetric flow of the converter feed at its "
-        + "own temperature and pressure", unit: "m^3/h" },
+        + "own temperature and pressure", unit: "m³/h" },
       { sym: "F", means: "its molar flow", unit: "kmol/h" },
       { sym: "Z", means: "its compressibility factor at that state (the "
         + "engine's, on the loop gas's own equation of state)", unit: "–" },
       { sym: "T", means: "its temperature", unit: "K" },
       { sym: "P", means: "its pressure", unit: "Pa" },
       { sym: "Q_{50}", means: "Q of the 50 bar loop (subscripts 50 and "
-        + "150 name the loop each quantity belongs to)", unit: "m^3/h" },
-      { sym: "Q_{150}", means: "Q of the 150 bar loop", unit: "m^3/h" },
+        + "150 name the loop each quantity belongs to)", unit: "m³/h" },
+      { sym: "Q_{150}", means: "Q of the 150 bar loop", unit: "m³/h" },
       { sym: "F_{50}", means: "F of the 50 bar loop", unit: "kmol/h" },
       { sym: "F_{150}", means: "F of the 150 bar loop", unit: "kmol/h" },
       { sym: "Z_{50}", means: "Z of the 50 bar loop's converter feed",
