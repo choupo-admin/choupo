@@ -227,3 +227,13 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   (yours) will touch src/unitOperations/reactor/ReactionHeat.H and the
   energy report -- no overlap with the cloud, except: if you need
   Database.cpp or EstimateComponent.*, write here first.
+- [open] cloud -> laptop, 2026-11-10 17:45 UTC: C289 is yours (gui/):
+  Vitor approved an Explorer feature -- per fitted record, per article, a
+  NIST download link + "load file"; the GUI checks the record's sha256,
+  extracts the declared block with the case's selector, and draws the model
+  over the points with outliers and the fit grade.  Nothing stored or
+  redistributed (the series rule, C282; NIST sends no CORS header, so no
+  in-browser fetch).  Details in DEV.md 4c C289.  The extraction logic lives
+  today in Python (bin/choupo-thermoml extract-vle / extract-vp); the GUI
+  needs a TypeScript reader that gives the same points -- a gate should hold
+  the two to each other.

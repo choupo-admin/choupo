@@ -3302,6 +3302,19 @@ accepts today, and that is a policy call.
 >
 > **Acetic acid PARKED (architect, 2026-11-10, after Vitor: "Perdeste uma semana com essa merda antes!").**  The open acetic items (C201 (1) rest: dew-point distillate, Gibbs / three-phase / Txy readers, record identity; C174/C175 subcooled-feed q; column05's dimer in C239) get no work this month.  Reason: nothing the month delivers depends on them, aceticAcid02 runs with its balances gated (C258), and column05's ideal-vapour limit is already announced.  Reopened only if a case a student meets fails.
 >
+> **C289 (Vitor, 2026-11-10: "Sim! Isso e boa ideia!", on a proposal from
+> the cloud session).  THE EXPLORER COMPARES A FITTED RECORD WITH THE
+> MEASUREMENTS THE USER BRINGS.**  The measured series are not in the tree
+> (C282) and the NIST server sends no CORS header (measured 2026-11-10), so
+> the browser cannot fetch them.  For every fitted record (pair or
+> vapour-pressure curve with `evidence` DOIs) the Explorer shows, per article:
+> the NIST per-article link with a "download the data" button, and a "load
+> file" control; the user downloads the ThermoML file and loads it, the GUI
+> checks its sha256 against the record, extracts the declared block with the
+> same selector the case uses, and draws the model over the points, study by
+> study, with the dropped outliers marked and the fit grade shown.  Nothing is
+> stored, uploaded or redistributed.  Owner: the laptop session (gui/).
+
 > **C288 (Vitor, 2026-11-10, after the discussion of reaction heats on the
 > ideal-gas formation route: "e melhor fazer como o aspen faz e ate criar um
 > EduTools a explicar esta questao!").  A MEASURED HEAT OF REACTION MAY
