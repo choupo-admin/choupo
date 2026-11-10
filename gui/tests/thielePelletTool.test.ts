@@ -798,7 +798,7 @@ describe("first order has no dead core", () => {
     }
     expect((TOOL_SRC.match(/dead core/g) ?? []).length).toBe(1);
     expect(TOOL_SRC).toContain("A true dead core, c = 0 over a finite region");
-    expect(TOOL_SRC).toContain("STARVED, never dead");
+    expect(TOOL_SRC).toContain("starved, never dead");
   });
 
   it("shows the closed form really is positive at the centre", () => {
@@ -836,7 +836,7 @@ describe("the two moduli are never silently swapped", () => {
     expect(TOOL_SRC).toContain("\\\\phi_R = R");
     expect(TOOL_SRC).toContain("\\\\phi_\\\\Lambda");
     expect(TOOL_SRC).toContain("M_W");
-    expect(TOOL_SRC).toContain("NINE TIMES SMALLER");
+    expect(TOOL_SRC).toContain("nine times smaller");
   });
 
   it("has the factor of nine right, for a sphere", () => {
@@ -847,7 +847,7 @@ describe("the two moduli are never silently swapped", () => {
   });
 
   it("does not present the screening value as a phase boundary", () => {
-    expect(TOOL_SRC).toContain("SCREENING value, not a");
+    expect(TOOL_SRC).toContain("screening value, not a");
     expect(TOOL_SRC).not.toContain("That crossing is the moment your flask");
   });
 });
@@ -893,7 +893,7 @@ describe("what the model does not contain is stated", () => {
 
   it("qualifies the halved activation energy", () => {
     const st = THIELE_STEPS.find((s) => s.n === 4)!;
-    expect(st.note).toContain("falls towards HALF");
+    expect(st.note).toContain("falls towards half");
     expect(st.note).toContain("negligible");
   });
 });
