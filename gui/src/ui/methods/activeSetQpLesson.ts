@@ -42,7 +42,7 @@ export const QP_STEPS: readonly LessonStep[] = [
     n: 1,
     title: "The problem, and why this shape is worth a method of its own",
     body: "A quadratic objective and linear constraints. It is worth a method "
-      + "of its own for two reasons. First, in EXACT arithmetic it is "
+      + "of its own for two reasons. First, in exact arithmetic it is "
       + "solvable exactly: unlike a general non-linear programme, a strictly "
       + "convex QP (B positive definite) is finished by an active-set method "
       + "in a finite number of steps, barring degenerate steps (step 5), "
@@ -55,7 +55,7 @@ export const QP_STEPS: readonly LessonStep[] = [
       + "(src/solver/ActiveSetQP.cpp:144-145 and :327), a row tolerance "
       + "scaled to each row's own terms, and an LICQ recovery — and an "
       + "answer is checked by its residuals: \"KKT satisfied\" is declared "
-      + "only once EVERY row, active or not, is feasible, and a QP whose "
+      + "only once every row, active or not, is feasible, and a QP whose "
       + "rows cannot all hold is reported infeasible, never certified. "
       + "Second, it is the "
       + "inner problem of the general case — an SQP method builds a quadratic "
@@ -63,7 +63,7 @@ export const QP_STEPS: readonly LessonStep[] = [
       + "exactly this to decide where to go next, over and over.",
     derivation: [
       { step: "The objective. B is symmetric and positive definite, which is "
-          + "what makes the problem CONVEX: there is one minimum, and a "
+          + "what makes the problem convex: there is one minimum, and a "
           + "local answer is the global one.",
         eq: String.raw`\min\ \tfrac{1}{2} d' B d + g' d`},
       { step: "The constraints, both written so that satisfied means the "
@@ -80,8 +80,8 @@ export const QP_STEPS: readonly LessonStep[] = [
 \end{aligned}`,
     where: [
       { sym: "d", means: "the unknown — the vector being chosen. Called d "
-        + "because in an SQP method it is a STEP away from the current point" },
-      { sym: "B", means: "the HESSIAN of the objective: symmetric and "
+        + "because in an SQP method it is a step away from the current point" },
+      { sym: "B", means: "the Hessian of the objective: symmetric and "
         + "positive definite, so the contours are nested ellipsoids and there "
         + "is exactly one minimum" },
       { sym: "g", means: "the linear part of the objective — the gradient at "
@@ -110,7 +110,7 @@ export const QP_STEPS: readonly LessonStep[] = [
       + "be pressed against. But suppose someone told you. Then every tight "
       + "one is an equality, every slack one can be ignored, and the whole "
       + "problem collapses to the easy case. The active-set method is a "
-      + "search for that list, and the list is called the WORKING SET.",
+      + "search for that list, and the list is called the working set.",
     derivation: [
       { step: "Guess a working set W — the equality rows, which are always "
           + "in it, plus a guess at which inequalities are tight." },
@@ -121,20 +121,20 @@ export const QP_STEPS: readonly LessonStep[] = [
 \begin{bmatrix} p \\ \lambda \end{bmatrix}
 = \begin{bmatrix} -\mathrm{grad} \\ -c_W \end{bmatrix}`},
       { step: "Then ask the two questions that can tell you the guess was "
-          + "wrong: did the step run into a constraint that was NOT in W, "
+          + "wrong: did the step run into a constraint that was not in W, "
           + "and does any constraint in W want to be released?" },
     ],
     formula: String.raw`\begin{bmatrix} B & A_W' \\ A_W & 0 \end{bmatrix}
 \begin{bmatrix} p \\ \lambda \end{bmatrix}
 = \begin{bmatrix} -\mathrm{grad} \\ -c_W \end{bmatrix}`,
     where: [
-      { sym: "W", means: "the WORKING SET: the constraints currently being "
+      { sym: "W", means: "the working set: the constraints currently being "
         + "treated as equalities — every equality row, plus the inequality "
         + "rows guessed to be tight" },
       { sym: "A_W", means: "the coefficient rows of the working set, stacked" },
       { sym: "p", means: "the step this system proposes, from the current "
         + "point, staying on every working-set constraint" },
-      { sym: "\\lambda", means: "the LAGRANGE MULTIPLIER of each working-set "
+      { sym: "\\lambda", means: "the Lagrange multiplier of each working-set "
         + "row: how hard that constraint is pushing back" },
       { sym: "\\mathrm{grad}",
         means: "the gradient of the objective at the current "
@@ -155,7 +155,7 @@ export const QP_STEPS: readonly LessonStep[] = [
       + "equality like any other.",
     derivation: [
       { step: "A constraint outside W only matters if the step is moving "
-          + "TOWARDS it: the row's value must be increasing along p.",
+          + "towards it: the row's value must be increasing along p.",
         eq: String.raw`\mathrm{slope}_k = a_k \cdot p > 0`},
       { step: "Then the fraction at which its value reaches zero is its "
           + "current value divided by that slope, negated. N&W eq. 16.41.",
@@ -185,36 +185,36 @@ export const QP_STEPS: readonly LessonStep[] = [
         + "taken: 1 when nothing is in the way, less when something is" },
     ],
     note: "Choupo keeps a running point starting at zero and solves each KKT "
-      + "system for a SUB-STEP from wherever it is, rather than re-solving "
-      + "the whole problem each time — so the picture below is a path, and "
-      + "each segment is one of these steps.  A PRIMAL active-set method "
-      + "like this one needs its starting point to be FEASIBLE for the "
+      + "system for a sub-step from wherever it is, rather than re-solving "
+      + "the whole problem each time — so the picture above is a path, and "
+      + "each segment is one of these steps.  A primal active-set method "
+      + "like this one needs its starting point to be feasible for the "
       + "inequalities, and zero need not be (an SQP iterate that violates a "
       + "constraint hands the solver exactly such a start).  Until "
       + "2026-10-27 the solver did not check, and certified min ½x² with "
-      + "x ≥ 1 at x = 0.  Now, before each solve, the MOST violated row "
+      + "x ≥ 1 at x = 0.  Now, before each solve, the most violated row "
       + "joins the working set, so the KKT solve drives it onto its bound "
-      + "as it does an equality — shown on this page as an ADMIT step.",
+      + "as it does an equality — shown on this page as an admit step.",
   },
   {
     n: 4,
     title: "Dropping a constraint: a negative multiplier is a constraint asking to leave",
     body: "The other way to be wrong is to hold a constraint that the answer "
-      + "does not want. It shows up when the proposed step is ZERO: the "
+      + "does not want. It shows up when the proposed step is zero: the "
       + "current point already minimises the objective over the current "
       + "working set, so if this is not the answer, the working set must be "
       + "wrong. The multipliers say which one. A multiplier is the price of "
       + "the constraint — how much the objective would improve if it were "
-      + "relaxed — and for an inequality written as at most zero, a NEGATIVE "
-      + "multiplier means the objective would improve by moving OFF the "
+      + "relaxed — and for an inequality written as at most zero, a negative "
+      + "multiplier means the objective would improve by moving off the "
       + "bound, into the feasible interior. That constraint is not holding "
       + "the answer in; it is in the way. Drop the most negative one and "
       + "continue.",
     derivation: [
-      { step: "The step over W came out zero, so this point is optimal FOR W. "
+      { step: "The step over W came out zero, so this point is optimal for W. "
           + "The only remaining question is whether W is right.",
         eq: String.raw`p = 0`},
-      { step: "Read the multipliers of the working-set INEQUALITIES. The "
+      { step: "Read the multipliers of the working-set inequalities. The "
           + "equalities' multipliers are unconstrained in sign — an equality "
           + "may push either way and is never dropped." },
       { step: "If every one is non-negative, the KKT conditions hold and this "
@@ -226,7 +226,7 @@ export const QP_STEPS: readonly LessonStep[] = [
     ],
     formula: String.raw`\begin{aligned}
 p = 0 \ \text{ and all } \lambda_k \ge 0 \quad &\Rightarrow \quad \text{OPTIMAL}\\
-p = 0 \ \text{ and some } \lambda_k < 0 \quad &\Rightarrow \quad \text{DROP the most negative}
+p = 0 \ \text{ and some } \lambda_k < 0 \quad &\Rightarrow \quad \text{drop the most negative}
 \end{aligned}`,
     where: [
       { sym: "\\lambda_k",
@@ -241,7 +241,7 @@ p = 0 \ \text{ and some } \lambda_k < 0 \quad &\Rightarrow \quad \text{DROP the 
     body: "Every step of non-zero length strictly reduces the objective, "
       + "because B is positive definite and the sub-problem over each "
       + "working set has a unique minimum. There are finitely many working "
-      + "sets. So, provided no step is DEGENERATE, the method finishes — in "
+      + "sets. So, provided no step is degenerate, the method finishes — in "
       + "exact arithmetic, in a finite number of steps, with no convergence "
       + "tolerance on the answer. A degenerate step is one blocked at the "
       + "very point it starts from (α = 0): the working set changes and the "
@@ -255,13 +255,13 @@ p = 0 \ \text{ and some } \lambda_k < 0 \quad &\Rightarrow \quad \text{DROP the 
       + "singular — an LICQ failure — and Choupo recovers by dropping the "
       + "dependent inequality and forbidding it re-entering that solve, "
       + "which is what breaks the add-drop cycle two nearly parallel "
-      + "constraints would otherwise form.  The dependence is found BEFORE "
+      + "constraints would otherwise form.  The dependence is found before "
       + "the solve, by orthogonalising the working-set rows, because an "
       + "elimination on a singular matrix need not fail loudly: round-off can "
       + "leave a tiny pivot and a nonsense step.  A row the recovery forbade "
       + "is still checked at the end — if it is violated the QP is reported "
       + "infeasible. And if the working-set changes "
-      + "exceed their cap it ABORTS LOUDLY rather than spinning, because a "
+      + "exceed their cap it aborts loudly rather than spinning, because a "
       + "solver that quietly returns its last iterate has reported an answer "
       + "to a problem it did not solve.",
   },
@@ -280,7 +280,7 @@ p = 0 \ \text{ and some } \lambda_k < 0 \quad &\Rightarrow \quad \text{DROP the 
           + "is cheap: a chi-squared in standard deviations, so a precise "
           + "analyte is expensive to move and a loose one is cheap.",
         eq: String.raw`\min\ \sum_r \left( \frac{x_r - m_r}{\sigma_r} \right)^{\!2}`},
-      { step: "Subject to the laws the case DECLARES it wants enforced: "
+      { step: "Subject to the laws the case declares it wants enforced: "
           + "charge balance, elemental conservation.",
         eq: String.raw`C x = t`},
       { step: "And subject to the one constraint nobody declares because it "
@@ -297,9 +297,9 @@ p = 0 \ \text{ and some } \lambda_k < 0 \quad &\Rightarrow \quad \text{DROP the 
     where: [
       { sym: "\\sum_r", means: "a sum over every measured quantity on the "
         + "laboratory sheet" },
-      { sym: "x_r", means: "the RECONCILED value of measured quantity r — "
+      { sym: "x_r", means: "the reconciled value of measured quantity r — "
         + "what the equilibrium is actually fed" },
-      { sym: "m_r", means: "what the laboratory REPORTED for quantity r" },
+      { sym: "m_r", means: "what the laboratory reported for quantity r" },
       { sym: "\\sigma_r", means: "the declared standard uncertainty of that "
         + "measurement, in its own units. It is the weight, and it is why "
         + "the correction lands where it does" },
@@ -318,7 +318,7 @@ p = 0 \ \text{ and some } \lambda_k < 0 \quad &\Rightarrow \quad \text{DROP the 
     title: "The multiplier is a price, and here it is a number of standard deviations",
     body: "This is the part worth carrying away. Write the stationarity "
       + "condition of the reconciliation in sigma units and it says that each "
-      + "row's total correction is a SUM of per-law parts, one per enforced "
+      + "row's total correction is a sum of per-law parts, one per enforced "
       + "law, each of which is that law's multiplier times that law's "
       + "coefficient in that row. The parts add up to the whole with no "
       + "residue, because it is an identity and not an attribution scheme. So "
@@ -340,14 +340,14 @@ p = 0 \ \text{ and some } \lambda_k < 0 \quad &\Rightarrow \quad \text{DROP the 
           + "multipliers is zero.",
         eq: String.raw`u + \tilde{C}' \lambda + A_\mathrm{in}' \mu = 0`},
       { step: "Read off one row of it. Every term on the right is a genuine "
-          + "part of an identity, and Choupo ASSERTS that they reconstruct "
+          + "part of an identity, and Choupo asserts that they reconstruct "
           + "the correction before it publishes them.",
         eq: String.raw`u_r = -\sum_k \lambda_k\, \tilde{C}_{kr} + \mu_r`},
     ],
     formula: String.raw`u_r = -\sum_k \lambda_k\, \tilde{C}_{kr} + \mu_r`,
     where: [
       { sym: "u",
-        means: "the vector of SCALED residuals, one per measurement: the gradient of "
+        means: "the vector of scaled residuals, one per measurement: the gradient of "
         + "the objective in the scaled variables" },
       { sym: "u_r", means: "the correction to row r, in units of its own "
         + "standard uncertainty — the number the report publishes" },
@@ -356,7 +356,7 @@ p = 0 \ \text{ and some } \lambda_k < 0 \quad &\Rightarrow \quad \text{DROP the 
         means: "the coefficient of measured quantity r in law k, as the "
         + "case declares it" },
       { sym: "\\tilde{C}_{kr} \\,/\\, \\tilde{C}",
-        means: "the same coefficient in the engine's NORMALISED form — "
+        means: "the same coefficient in the engine's normalised form — "
         + "times σ_r, the law then scaled to unit length — and the matrix of "
         + "them.  The multipliers λ the report publishes belong to these "
         + "rows, not to the raw C" },
@@ -386,7 +386,7 @@ export const QP_LIMITS: readonly LessonLimit[] = [
     body: "The drawing works because there are two unknowns, so the objective "
       + "is a set of circles and a constraint is a line. The reconciliation "
       + "below has four unknowns and three constraint families, and the SQP "
-      + "driver's inner QP has one unknown per design variable. The METHOD is "
+      + "driver's inner QP has one unknown per design variable. The method is "
       + "identical — the same working set, the same blocking step, the same "
       + "negative multiplier — and only the picture stops working.",
   },
@@ -394,7 +394,7 @@ export const QP_LIMITS: readonly LessonLimit[] = [
     id: "transcription",
     title: "The path is recomputed here; the answer is the engine's",
     body: "Choupo returns the solution and the final active set. It does not "
-      + "publish the SEQUENCE of working sets, which is the thing worth "
+      + "publish the sequence of working sets, which is the thing worth "
       + "watching, so the sequence above is recomputed by a transcription of "
       + "the engine's own loop, including its running-point formulation, its "
       + "two tolerances and its LICQ recovery. The anchor is that the engine "
@@ -415,7 +415,7 @@ export const QP_LIMITS: readonly LessonLimit[] = [
   {
     id: "reconciliation-is-not-chemistry",
     title: "Nothing in the reconciliation panel is a chemistry result",
-    body: "Every number in it is a MEASUREMENT, or the distance a measurement "
+    body: "Every number in it is a measurement, or the distance a measurement "
       + "had to be moved to obtain a physically admissible inlet. The "
       + "chemistry that composition resolves to — the ions, the solved pH, "
       + "the phase split — is a separate layer computed afterwards, and the "
@@ -423,7 +423,7 @@ export const QP_LIMITS: readonly LessonLimit[] = [
       + "carries the value the laboratory reported, corrections are quoted in "
       + "sigma, and the two use different key spaces. The arrow runs one way "
       + "only, analysis to reconciliation to equilibrium, and the "
-      + "reconciler's own translation unit cannot even NAME the equilibrium "
+      + "reconciler's own translation unit cannot even name the equilibrium "
       + "surface.",
   },
   {
@@ -431,7 +431,7 @@ export const QP_LIMITS: readonly LessonLimit[] = [
     title: "Convex only — and that is a real restriction",
     body: "Everything above rests on B being positive definite: one minimum "
       + "on a non-empty feasible region, finite termination, a local answer "
-      + "that is the global one.  A positive SEMI-definite B is still "
+      + "that is the global one.  A positive semi-definite B is still "
       + "convex, but its minimum need not be unique — a whole edge or face "
       + "can tie.  An indefinite Hessian does not by itself rule out a "
       + "constrained minimum, but it changes the problem: a local minimum "

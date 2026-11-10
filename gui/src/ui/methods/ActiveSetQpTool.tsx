@@ -52,7 +52,7 @@ import {
   Title,
 } from "@mantine/core";
 
-import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences, Tex } from "./lessonStep.js";
 import { useNarrowViewport } from "./methodsChrome.js";
 import { QP_LIMITS, QP_STEPS } from "./activeSetQpLesson.js";
 import { KnobSlider, PanelNote, type PanelKnob } from "./knobPanel.js";
@@ -106,7 +106,7 @@ const BUDGET: PanelKnob = {
 const SIGMA: PanelKnob = {
   id: "sigma", label: "declared uncertainty of the alkalinity titration",
   min: 0.5, max: 20, step: 0.5, unit: "percent",
-  why: "The QP's WEIGHT on that one measurement. The objective is a sum of "
+  why: "The QP's weight on that one measurement. The objective is a sum of "
     + "squared corrections measured in each row's own sigma, so a row "
     + "declared precise is expensive to move and a loose one is cheap. Widen "
     + "this and watch the charge correction migrate onto alkalinity.",
@@ -288,15 +288,17 @@ export function ActiveSetQpTool(): JSX.Element {
         </Box>
 
         {step(1)}
-        {step(2)}
 
-        {/* ---------------- THE CONSTRUCTION ---------------- */}
+        {/* ---------------- THE construction ---------------- */}
         <Box style={{ borderLeft: `3px solid ${ACTIVE}`, paddingLeft: 12 }}>
           <Title order={4}>The working set, watched changing</Title>
           <Text size="sm" mt={4}>
             The problem drawn below is the engine&apos;s own self-check
-            problem, unchanged: minimise ½(d₁² + d₂²) − d₁ − 2d₂ subject to
-            d₁ + d₂ ≤ 1, d₁ ≥ 0, d₂ ≥ 0. Choupo solves exactly this and
+            problem, unchanged:
+          </Text>
+          <Tex mode="display" src={String.raw`\min\ \tfrac{1}{2}\left(d_1^2 + d_2^2\right) - d_1 - 2\,d_2 \qquad \text{subject to} \qquad d_1 + d_2 \le 1, \quad d_1 \ge 0, \quad d_2 \ge 0`} />
+          <Text size="sm">
+            Choupo solves exactly this and
             asserts the answer against a hand-worked solution to 1e-9 before
             every constrained optimisation it runs — and if it cannot, it
             throws with the words{" "}
@@ -330,7 +332,7 @@ export function ActiveSetQpTool(): JSX.Element {
               The warm start is how the SQP driver actually calls this: the
               previous iteration&apos;s active set is a good guess at the next
               one&apos;s. Choose it here and the first thing that happens is a
-              DROP — the origin is on both bounds, both multipliers come out
+              drop — the origin is on both bounds, both multipliers come out
               negative, and the method has to release them one at a time.
             </PanelNote>
             <PanelNote>
@@ -432,7 +434,7 @@ export function ActiveSetQpTool(): JSX.Element {
                 disagreement is{" "}
                 <Text span ff="monospace">
                   {anchor.worst.toExponential(2)}
-                </Text>. Note that d₁ = 0 sits exactly ON its own bound with a
+                </Text>. Note that <Tex mode="inline" src="d_1 = 0" /> sits exactly on its own bound with a
                 multiplier of zero — a degenerate vertex, which is a good thing
                 to have in an anchor and a bad thing to meet by surprise.
               </Text>
@@ -457,13 +459,16 @@ export function ActiveSetQpTool(): JSX.Element {
           </Stack>
         </Box>
 
+        {/* The working set comes second (DEV.md 4c C277): the question, the
+            path watched, then steps 2-7 naming what changed and why. */}
+        {step(2)}
         {step(3)}
         {step(4)}
         {step(5)}
         {step(6)}
         {step(7)}
 
-        {/* ---------------- THE ENGINE ---------------- */}
+        {/* ---------------- THE engine ---------------- */}
         <Box style={{ borderLeft: `3px solid ${PATH}`, paddingLeft: 12 }}>
           <Title order={4}>
             Measured: a water analysis that does not balance, reconciled
@@ -515,7 +520,7 @@ export function ActiveSetQpTool(): JSX.Element {
                 <Group gap="xs" wrap="wrap">
                   <Badge variant="light">method {rec.method}</Badge>
                   <Badge variant="outline">
-                    Σ((x−m)/σ)² = {fmt(rec.objective, 4)}
+                    <Tex mode="inline" src={String.raw`\sum \left(\frac{x-m}{\sigma}\right)^2`} /> = {fmt(rec.objective, 4)}
                   </Badge>
                   <Badge variant="outline">
                     {rec.workingSetChanges} working-set change
@@ -574,7 +579,7 @@ export function ActiveSetQpTool(): JSX.Element {
                 <Text size="sm">
                   Read the last column. Those parts are not attributed shares —
                   they are the terms of the stationarity identity of step 7,
-                  and they sum EXACTLY to the correction beside them. The
+                  and they sum exactly to the correction beside them. The
                   engine asserts that before it publishes them, because a
                   published attribution that does not add up is worse than
                   none.
@@ -601,12 +606,15 @@ export function ActiveSetQpTool(): JSX.Element {
             ) : null}
 
             {lines.length > 0 && (
-              <Box px="sm" py={6} style={{ borderLeft: `3px solid ${GRID}` }}>
-                <Text size="xs" c="dimmed" fw={700} tt="uppercase" mb={4}>
-                  what the run said on the console
-                </Text>
+              <Box component="details" px="sm" py={6}
+                style={{ borderLeft: `3px solid ${GRID}` }}>
+                {/* Folded (DEV.md 4c C277): the engine's console lines. */}
+                <Box component="summary" style={{ cursor: "pointer",
+                  fontSize: "var(--mantine-font-size-sm)" }}>
+                  What the run said on the console (read it)
+                </Box>
                 {lines.map((l, i) => (
-                  <Text key={i} size="xs" ff="monospace"
+                  <Text key={i} size="xs" ff="monospace" mt={4}
                     style={{ whiteSpace: "pre-wrap",
                       overflowWrap: "anywhere" }}>{l}</Text>
                 ))}
