@@ -1,0 +1,81 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  curate31_vp_monoethanolamine -- the vapour pressure of monoethanolamine, REFITTED to
+  measurements (DEV.md 4c C281 step 2).  Written by `bin/choupo-curate vp
+  monoethanolamine`; everything above the RESULT paragraph is the DECLARATION, committed
+  before any fit ran, so it can be read against the result.
+
+  WHY.  The catalogue record carried `vaporPressure { model AmbroseWalton; }`,
+  a corresponding-states ESTIMATE from Tc, Pc and omega that never reads the
+  record's own Tb (C279 measured a median 19.6 % AAD over the 25 such records
+  with archive data).  Here a three-parameter Antoine is fitted to ONE
+  laboratory and held out on ANOTHER that shares no author with it.
+
+  STUDIES (one per article, extracted by `choupo-thermoml extract-vp`; ranked
+  by points, ties by DOI):
+      10.1016/j.fluid.2015.06.045      38 pts  273.65-303.16 K  Ruzicka; Fulem; Mahnel; Cervinka
+      10.1021/je800530u                26 pts  283.15-363.15 K  Belabbaci; Razzouk; Mokbel; Jose et al.
+      10.1021/je800290k                16 pts  357.46-435.61 K  Kim; Svendsen; Borresen
+      10.1021/je049761y                13 pts  279-324.5 K  Kapteina; Slovik; Verevkin; Heintz
+      10.1021/je101259r                 7 pts  358.6-441.9 K  Klepacova; Huttenhuis; Derks; Versteeg
+      10.1021/je400885z                 6 pts  373.15-423.15 K  McDougal; Jasperson; Wilson
+  SET ASIDE BY NAME:
+      10.1021/je3002078: 1 pressure point(s), fewer than 5
+      10.1021/je7001336: 1 pressure point(s), fewer than 5
+
+  PARTITION (the C16 rule, declared): FIT = the study with the most points,
+  doi 10.1016/j.fluid.2015.06.045 (38 pts, 273.65-303.16 K); HELD OUT =
+  the next largest sharing no author with it, doi 10.1021/je800530u (26 pts,
+  283.15-363.15 K).
+
+  BAND: maxAAD 5.4 % (declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 26 points (0.773 to 12 %, mean 5.314 %), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean).
+
+  NORMAL BOILING POINT: the record's Tb 444.15 K lies OUTSIDE the measured span 273.65-363.15 K: the fitted Antoine's own normal boiling point (P = 101.325 kPa) must lie within 2 K of it, or the fit is NOT promoted (an extrapolation that misses the record's own boiling point).
+
+  NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares both
+  series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates
+  them into constant/archiveExtracts/ (gitignored).
+
+  RESULT
+  @@RESULT-BEGIN@@
+  (filled in by bin/choupo-curate after the run)
+  @@RESULT-END@@
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name       fit_antoine;
+        type       vaporPressureFit;
+        component  monoethanolamine;
+
+        evidence
+        (
+            {
+                dataset   "constant/archiveExtracts/monoethanolamine-vapourPressure-j.fluid.2015.06.045.dat";
+                identity  { doi "10.1016/j.fluid.2015.06.045"; }
+                role      fit;
+            }
+            {
+                dataset   "constant/archiveExtracts/monoethanolamine-vapourPressure-je800530u.dat";
+                identity  { doi "10.1021/je800530u"; }
+                role      validation;
+            }
+        );
+
+        acceptance
+        {
+            maxAAD  5.4 percent;
+            origin  "declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 26 points (0.773 to 12 %, mean 5.314 %), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean";
+        }
+
+        output     { file fit_antoine.csv; }
+    }
+);
