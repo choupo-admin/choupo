@@ -142,6 +142,24 @@ tutorials/**/constant/components/*.estimated.dat
 # CONTRACT is pinned by check_promoted_pair_record, which rebuilds it.
 tutorials/**/*.proposal.dat
 
+# THE CURATION TRACES (DEV.md 4c C295): the cases bin/choupo-curate writes
+# live under data/curation/<origin>/, not tutorials/, and leave the same run
+# outputs -- so the same rules, for the same reasons, on the second case root
+# (the one home of the root's name is bin/curate/curation_roots.py).
+data/curation/**/constant/archiveExtracts/
+data/curation/**/reports/
+data/curation/**/design/
+data/curation/**/*.csv
+!data/curation/**/constant/experimental/*.csv
+!data/curation/**/constant/reference/*.csv
+data/curation/**/balanceTrajectory.meta
+data/curation/**/constant/parameters/*/*.fit-*.dat
+data/curation/**/constant/components/*.estimate-*.dat
+data/curation/**/constant/components/*.estimated.dat
+data/curation/**/*.proposal.dat
+data/curation/**/log.choupo*
+data/curation/**/.tmp_*/
+
 # ------ LaTeX intermediate files (PDFs are tracked) --------------------
 docs/*.aux
 docs/*.log

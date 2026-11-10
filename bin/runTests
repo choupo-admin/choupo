@@ -542,6 +542,10 @@ gate_claim() {          # gate_claim <gate-script-stem> <captured-output-file>
 #  implementation in bash is how two rules drift into disagreeing.
 python3 "$ROOT/bin/curate/destructive_session.py" --assert "runTests" || exit 1
 cd "$ROOT"
+#  The curation traces' walk root (DEV.md 4c C295) -- ONE home,
+#  bin/curate/curation_roots.py; repository-relative, like tutorials/.
+CURATION_ROOT="$(python3 "$ROOT/bin/curate/curation_roots.py")" \
+    || { echo "ERROR: bin/curate/curation_roots.py did not name the curation root"; exit 1; }
 
 # --- per-item wall clock (2026-09-05, task #84) -------------------------------
 #  Vitor's question, relayed from Henry Werner: is an exhaustive 590-case walk
@@ -1699,6 +1703,18 @@ else
             #  check; a case that ships one is in the walk, sectored or flat.
             CASES+=("$pdir")
         done < <(find "tutorials/plant" -path '*/system/controlDict' 2>/dev/null | sort)
+    fi
+    # THE CURATION TRACES (DEV.md 4c C295): the cases bin/choupo-curate and its
+    # companions WRITE are the trace of how a catalogue record was fitted, not
+    # tutorials, so they live beside the data they justify -- and a golden is
+    # a promise to check wherever its case lives.  The SECOND walk root; its
+    # one home is bin/curate/curation_roots.py, read here, never restated.
+    if [ -d "$CURATION_ROOT" ]; then
+        while IFS= read -r cd; do
+            case_dir="$(dirname "$(dirname "$cd")")"
+            [ -f "$(dirname "$case_dir")/system/controlDict" ] && continue
+            CASES+=("$case_dir")
+        done < <(find "$CURATION_ROOT" -path '*/system/controlDict' 2>/dev/null | sort)
     fi
 fi
 

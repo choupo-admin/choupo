@@ -1306,7 +1306,9 @@ def main():
               "scan over nothing is not a clean catalogue")
         return 1
     std = [p for p in sorted(STD.glob("*.dat")) if "fittedInCase" in p.read_text()]
-    local = [p for p in sorted((ROOT / "tutorials").rglob("constant/parameters/NRTL/*.dat"))
+    import curation_roots   # both case roots: a curation trace is a case (C295)
+    local = [p for r in curation_roots.case_roots()
+             for p in sorted(r.rglob("constant/parameters/NRTL/*.dat"))
              if "fittedInCase" in p.read_text()
              and "/constant/parameters/NRTL/" in p.as_posix()
              and "propertyManifest" not in p.name]

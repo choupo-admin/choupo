@@ -106,3 +106,18 @@ done
 #  is standing when they need it.
 printf 'New here?  %s reads nine of these in order,\n' "docs/start-here.md"
 printf '           each introducing one idea and resting on the one before.\n\n'
+# THE CURATION TRACES (DEV.md 4c C295) are cases too, but not tutorials: the
+# trace of how a catalogue record was fitted, written by bin/choupo-curate and
+# its companions, under the root bin/curate/curation_roots.py names.  They are
+# COUNTED here, not listed (hundreds of generated declarations are not a
+# learning surface); `runCase <root>/<origin>/<case>` runs any of them.
+CUR="$(python3 "$ROOT/bin/curate/curation_roots.py" 2>/dev/null || true)"
+if [ -n "$CUR" ] && [ -d "$ROOT/$CUR" ]; then
+    printf 'Curation traces (not tutorials) in %s:\n' "$ROOT/$CUR"
+    for od in "$ROOT/$CUR"/*/; do
+        [ -d "$od" ] || continue
+        n=$(find "$od" -mindepth 3 -maxdepth 3 -path '*/system/controlDict' 2>/dev/null | wc -l)
+        printf '    %-12s %4d case(s)\n' "$(basename "$od")/" "$n"
+    done
+    printf '\n'
+fi
