@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/14Butanediol.dat"
+        {
+            type          imported;
+            sha256        "f1d3db89f6ed2fd01c4db5eda70d05beeaebca417537ef29015fde3268bc8567";
+            computationalSha256 "8b0a5b70ce6a9accb08332a66c87bbad838887de572f570583bedc27149e020b";
+            origin        "data/standards/components/14Butanediol.dat";
+            originSha256  "9306dd597dae0d6f8dcadd7679df4f14e82a8b263e73ed588f838a13287f7e2f";
+            release       Choupo-2608;
+        }
+        "components/diethyleneGlycol.dat"
+        {
+            type          imported;
+            sha256        "9537715f31f8f1c404df103f66bd83471db0bf562e4fd35d3b32c006d6cc874c";
+            computationalSha256 "65b20b32f79e9771eca74958f83263dedbe162c6d287e4142a3a1b1af5c6bf88";
+            origin        "data/standards/components/diethyleneGlycol.dat";
+            originSha256  "2993c2e89cd1b6a4e69435db74af069f5802809a0dd9bacaaca232cae4dd4a4e";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/14Butanediol-diethyleneGlycol.dat"
+        {
+            type          imported;
+            sha256        "e9c252346a05f4602c64f37adf64e046b5a16066382dfcba20a1d3b50798749f";
+            computationalSha256 "b4271ae1fc14d75683c5871c747a7407598fa9b45dd24f45604cfc6c62d28b55";
+            origin        "data/standards/parameters/NRTL/14Butanediol-diethyleneGlycol.dat";
+            originSha256  "e7e569dfe0baca8160e19c71ac10b9d7479bc057ae5b861cad5032fcb10726f6";
+            release       Choupo-2608;
+        }
+    }
+}

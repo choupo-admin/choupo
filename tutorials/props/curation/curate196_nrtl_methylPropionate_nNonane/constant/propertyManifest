@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/methylPropionate.dat"
+        {
+            type          imported;
+            sha256        "41613388a85a5469dcd2376b46f23428fb1583519649183e2b8372454e1db821";
+            computationalSha256 "edc7f90b9a51bac773ff7bc54e6da2f0cc7bfe2da6dd72d25dc1eccd854baf9a";
+            origin        "data/standards/components/methylPropionate.dat";
+            originSha256  "722ccf1e204caa59b18a305a23ad78385a3ae01c09868a8bfa65ecfd878d52f4";
+            release       Choupo-2608;
+        }
+        "components/nNonane.dat"
+        {
+            type          imported;
+            sha256        "c6e230c3962584501169ad403a0503445df26695175139b9b9aa7f375908ce02";
+            computationalSha256 "e30086a65f8408a79d0e7437a9a7659bd8e52db983973fcb9ae84c4022c09606";
+            origin        "data/standards/components/nNonane.dat";
+            originSha256  "04a2c2a72fb0170f6e58dca0a4ced5760f40fbde24d6f7bdd0ffab546944f9f8";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/methylPropionate-nNonane.dat"
+        {
+            type          imported;
+            sha256        "209496c00d22c2c8c537788da3b35944fbb0a377932483f740abec5abcb865c3";
+            computationalSha256 "a5a433e6e34b260d179074855fabc3a3ddf39e04517e84dbc749ce25fd21a629";
+            origin        "data/standards/parameters/NRTL/methylPropionate-nNonane.dat";
+            originSha256  "ad7d8c57ce327e5a433812f846da4632ee9137fb179a2e1f2de7ac2cd1052936";
+            release       Choupo-2608;
+        }
+    }
+}

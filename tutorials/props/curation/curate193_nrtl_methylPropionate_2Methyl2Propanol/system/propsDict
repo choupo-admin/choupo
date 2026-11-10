@@ -58,11 +58,22 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      none: every one of the 46 points lies within 3 K after the
+      least-squares stage.
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 718.2 K, b_ji = -304.4 K over 46 kept points of 1
+  laboratories (0 discarded): max |dT| 0.500 K, mean 0.304 K, graded
+  clean (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (718.2, -304.4). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/2Methyl2Propanol-methylPropionate.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: fit grade
+  clean -- max |dT| 0.500 K over the 46 kept points (limits 1 / 2 / 4 K),
+  one liquid across the validity span -- it rests on ONE laboratory's
+  measurements (doi 10.1021/je034290l); nothing here tells its systematic
+  error from the model's (DEV.md 4c C290)
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

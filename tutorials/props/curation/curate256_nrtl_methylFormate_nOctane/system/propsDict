@@ -58,11 +58,28 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      7 point(s) of 29: doi 10.1016/j.fluid.2015.05.031 row 1: x 0.0160,
+      P 101.320 kPa, T 380.17 K, dT +12.39 K; doi
+      10.1016/j.fluid.2015.05.031 row 2: x 0.0260, P 101.320 kPa, T
+      371.94 K, dT +16.28 K; doi 10.1016/j.fluid.2015.05.031 row 3: x
+      0.0390, P 101.320 kPa, T 363.25 K, dT +18.92 K; doi
+      10.1016/j.fluid.2015.05.031 row 4: x 0.0510, P 101.320 kPa, T
+      356.28 K, dT +20.14 K; doi 10.1016/j.fluid.2015.05.031 row 5: x
+      0.0620, P 101.320 kPa, T 352.40 K, dT +18.76 K; doi
+      10.1016/j.fluid.2015.05.031 row 6: x 0.1300, P 101.320 kPa, T
+      332.26 K, dT +11.59 K; doi 10.1016/j.fluid.2015.05.031 row 7: x
+      0.1940, P 101.320 kPa, T 323.04 K, dT +4.92 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 793.2 K, b_ji = 108.9 K over 22 kept points of 1
+  laboratories (7 discarded): max |dT| 4.777 K, mean 1.331 K, graded
+  refused (limits 1 / 2 / 4 K) -> notAccepted. fit_nrtl_start2 lands on
+  the same pair (793.2, 108.9). NOT PROMOTABLE: fit grade refused -- max
+  |dT| 4.777 K over the 22 kept points is above 4 K -- it rests on ONE
+  laboratory's measurements (doi 10.1016/j.fluid.2015.05.031); nothing
+  here tells its systematic error from the model's (DEV.md 4c C290)
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -88,6 +105,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/methylFormate-nOctane-bubble-j.fluid.2015.05.031.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 6 7 );   // C283 outliers, by name in the header
             }
         );
 
@@ -129,6 +147,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/methylFormate-nOctane-bubble-j.fluid.2015.05.031.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 6 7 );   // C283 outliers, by name in the header
             }
         );
 

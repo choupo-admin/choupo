@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/14Dioxane.dat"
+        {
+            type          imported;
+            sha256        "55e99ece5e7f6d5bf69a2d4f7218f83ebf6070a68087486f5e8ee96cf53a8e32";
+            computationalSha256 "96829d3d9c4056a0b1dd3c02af6b592d638a6c502a67d3e1d5553815d98482d8";
+            origin        "data/standards/components/14Dioxane.dat";
+            originSha256  "0c8715c4094dfad7895f6120e6b964dc5961da0bb1f60ebc25d38d09824afe29";
+            release       Choupo-2608;
+        }
+        "components/cyclopentane.dat"
+        {
+            type          imported;
+            sha256        "8b00bd5d74443b17543ef067dc6d3e5da74adf3849d200bb988e29be4a3c5134";
+            computationalSha256 "99757cf1b83171045aa6ac7f72c93cf506292d994a596ab5cac478566b689b0e";
+            origin        "data/standards/components/cyclopentane.dat";
+            originSha256  "e4318adfb34ee46c65c13ade1d4a39e33f9c3b868e488387621c3af84c276aa9";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/14Dioxane-cyclopentane.dat"
+        {
+            type          imported;
+            sha256        "1b29df5d8336df9948b3a5386b282b310ade4c52c3623df31f8dc78ed82115ed";
+            computationalSha256 "53b16b11e8ee778e3a4c07adfdce41a8ca12e181885c7bfcffdce6ec50f933eb";
+            origin        "data/standards/parameters/NRTL/14Dioxane-cyclopentane.dat";
+            originSha256  "cf64b9d0305f4c349d2a24149f45b1887131666a0d1eca4b05c8c5a24c29a888";
+            release       Choupo-2608;
+        }
+    }
+}

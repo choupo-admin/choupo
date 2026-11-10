@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/2Pentanone.dat"
+        {
+            type          imported;
+            sha256        "0cb57d0aff3965552eca548644fa2c53134b58fd97911941a1e06eee49e6f83e";
+            computationalSha256 "8e32c39ee4a4b3347fd919ba8fe621bad5af2816899d004afe8462c6a3fe8ee9";
+            origin        "data/standards/components/2Pentanone.dat";
+            originSha256  "bb5b2da20af3c2f47d04965cddfabc4e32d3bcc3aedad822e14df4497158c120";
+            release       Choupo-2608;
+        }
+        "components/dimethylCarbonate.dat"
+        {
+            type          imported;
+            sha256        "82aaa1f6328a7ed9424fae60b37cae2ff1bafb8753132f84e5c7466d4287c6c2";
+            computationalSha256 "4e75d782f46cb42b368ec6e5e09250045bd4349540011fbc882cfeb3e7a27e8d";
+            origin        "data/standards/components/dimethylCarbonate.dat";
+            originSha256  "4364b5ed2f6a4ccf01a7fe01b0939072b8747fbf150e92362a4030c825ea8eba";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Pentanone-dimethylCarbonate.dat"
+        {
+            type          imported;
+            sha256        "870fbf5366ed500b6ee7719f4f56513e55ba505987cad159239e3fe27f7ddaa7";
+            computationalSha256 "61e054abf3ee98a9fa0262dd3a68ce6510d1626ebe00a44904816b247ab923b7";
+            origin        "data/standards/parameters/NRTL/2Pentanone-dimethylCarbonate.dat";
+            originSha256  "5bc528b2c373dd625ece650c9c23c94a76af414d0c1a964d11aed486b819ca2a";
+            release       Choupo-2608;
+        }
+    }
+}

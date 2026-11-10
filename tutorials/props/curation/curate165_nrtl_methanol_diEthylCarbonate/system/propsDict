@@ -59,11 +59,24 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      4 point(s) of 54: doi 10.1021/je049544x row 1: x 0.0260, P 101.300
+      kPa, T 379.20 K, dT +7.23 K; doi 10.1021/je049544x row 2: x 0.0400,
+      P 101.300 kPa, T 374.00 K, dT +7.33 K; doi 10.1021/je049544x row 3:
+      x 0.0650, P 101.300 kPa, T 368.50 K, dT +5.90 K; doi
+      10.1021/je049544x row 4: x 0.0970, P 101.300 kPa, T 364.90 K, dT
+      +3.19 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 254.2 K, b_ji = 149.5 K over 50 kept points of 2
+  laboratories (4 discarded): max |dT| 2.065 K, mean 0.540 K, graded
+  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (254.2, 149.5). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/diEthylCarbonate-methanol.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: fit grade
+  severe -- max |dT| 2.065 K over the 50 kept points (limits 1 / 2 / 4
+  K), one liquid across the validity span
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -93,6 +106,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/methanol-diEthylCarbonate-bubble-je049544x.dat";
                 role     fit;
+                discard  ( 1 2 3 4 );   // C283 outliers, by name in the header
             }
         );
 
@@ -138,6 +152,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/methanol-diEthylCarbonate-bubble-je049544x.dat";
                 role     fit;
+                discard  ( 1 2 3 4 );   // C283 outliers, by name in the header
             }
         );
 

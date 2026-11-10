@@ -58,11 +58,31 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      10 point(s) of 28: doi 10.1021/acs.jced.7b00584 row 1: x 0.0040, P
+      50.000 kPa, T 465.25 K, dT +3.98 K; doi 10.1021/acs.jced.7b00584
+      row 2: x 0.0045, P 70.000 kPa, T 475.35 K, dT +4.31 K; doi
+      10.1021/acs.jced.7b00584 row 3: x 0.0075, P 50.000 kPa, T 454.75 K,
+      dT +6.20 K; doi 10.1021/acs.jced.7b00584 row 4: x 0.0082, P 70.000
+      kPa, T 465.10 K, dT +7.03 K; doi 10.1021/acs.jced.7b00584 row 5: x
+      0.0095, P 50.000 kPa, T 449.09 K, dT +7.32 K; doi
+      10.1021/acs.jced.7b00584 row 6: x 0.0144, P 50.000 kPa, T 436.45 K,
+      dT +9.62 K; doi 10.1021/acs.jced.7b00584 row 7: x 0.0149, P 70.000
+      kPa, T 449.37 K, dT +10.10 K; doi 10.1021/acs.jced.7b00584 row 8: x
+      0.0239, P 50.000 kPa, T 420.52 K, dT +9.03 K; doi
+      10.1021/acs.jced.7b00584 row 9: x 0.0242, P 70.000 kPa, T 432.73 K,
+      dT +11.84 K; doi 10.1021/acs.jced.7b00584 row 10: x 0.0332, P
+      50.000 kPa, T 410.80 K, dT +6.63 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = -355.6 K, b_ji = 715.6 K over 18 kept points of 1
+  laboratories (10 discarded): max |dT| 6.056 K, mean 1.917 K, graded
+  refused (limits 1 / 2 / 4 K) -> notAccepted. fit_nrtl_start2 lands on
+  the same pair (-355.6, 715.6). NOT PROMOTABLE: fit grade refused -- max
+  |dT| 6.056 K over the 18 kept points is above 4 K -- it rests on ONE
+  laboratory's measurements (doi 10.1021/acs.jced.7b00584); nothing here
+  tells its systematic error from the model's (DEV.md 4c C290)
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -88,6 +108,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/tetrahydrofuran-14Butanediol-bubble-acs.jced.7b00584.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 6 7 8 9 10 );   // C283 outliers, by name in the header
             }
         );
 
@@ -129,6 +150,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/tetrahydrofuran-14Butanediol-bubble-acs.jced.7b00584.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 6 7 8 9 10 );   // C283 outliers, by name in the header
             }
         );
 

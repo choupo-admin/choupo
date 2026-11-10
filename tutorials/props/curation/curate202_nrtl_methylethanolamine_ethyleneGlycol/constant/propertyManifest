@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/ethyleneGlycol.dat"
+        {
+            type          imported;
+            sha256        "90ccbaaf3bce924c24126424206ef523e3a6377b4bac7bae6a4f55038ac55d7d";
+            computationalSha256 "535ebabab2b99be2309ed449cdea0a342ca26b3d0ae9cb5e0cc224f53589bb9c";
+            origin        "data/standards/components/ethyleneGlycol.dat";
+            originSha256  "409fc26748c4dd89998c0398c5023a4cc7143aeb481d53e119933d0d86b235d7";
+            release       Choupo-2608;
+        }
+        "components/methylethanolamine.dat"
+        {
+            type          imported;
+            sha256        "20142ad4c09932d4420b62ff4569fc37de93e488f7c9c45b5007257502265272";
+            computationalSha256 "33ccaf19e0c46cf3765b9707201b75b86937c29e13febff6fdd821875267d12c";
+            origin        "data/standards/components/methylethanolamine.dat";
+            originSha256  "48a61f704de2e60793c51b91c34cec0969202ef48ef3d429341fcfa7e12657d0";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/ethyleneGlycol-methylethanolamine.dat"
+        {
+            type          imported;
+            sha256        "19e74c44271e708fe7927858bd4da07c2b40f030206812696b17406822bdf7af";
+            computationalSha256 "c1f10b8b9bb925e91d1711734043244b023b0641c4aff01a4120d766c58e01d9";
+            origin        "data/standards/parameters/NRTL/ethyleneGlycol-methylethanolamine.dat";
+            originSha256  "fe32ff8c7c9c8cc1af3c8b60d585e6a228844482ac3d7ce6d76118661debf179";
+            release       Choupo-2608;
+        }
+    }
+}

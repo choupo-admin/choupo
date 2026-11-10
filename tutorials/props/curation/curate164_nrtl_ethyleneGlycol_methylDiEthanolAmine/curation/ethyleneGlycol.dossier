@@ -1,0 +1,133 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      ethyleneGlycol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-methylDiEthanolAmine.b_ij  -397.820020976;
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-methylDiEthanolAmine.b_ji  301.246806727;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7d22702ff3413d84";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethyleneGlycol-methylDiEthanolAmine-bubble-je400373d.dat";
+            doi       "10.1021/je400373d";
+            sha256    "5fd41a9baa3403e420dbd131ccdfe658a984d48b0965881982e740966f424eda";
+            provenance measured;
+            archiveFile "je400373d.xml";
+            system    "ethyleneGlycol + methylDiEthanolAmine";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethyleneGlycol-methylDiEthanolAmine-bubble-acs.jced.8b00054.dat";
+            doi       "10.1021/acs.jced.8b00054";
+            sha256    "87fdfe4ce4455970e1a0d55c274cb156e01b4f7f3922db74ae4e4ff88b26f625";
+            provenance measured;
+            archiveFile "acs.jced.8b00054.xml";
+            system    "ethyleneGlycol + methylDiEthanolAmine";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.075; max 0.969; n 64; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-methylDiEthanolAmine.b_ij  1026.71530577;
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-methylDiEthanolAmine.b_ji  -709.97480217;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7d22702ff3413d84";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethyleneGlycol-methylDiEthanolAmine-bubble-je400373d.dat";
+            doi       "10.1021/je400373d";
+            sha256    "5fd41a9baa3403e420dbd131ccdfe658a984d48b0965881982e740966f424eda";
+            provenance measured;
+            archiveFile "je400373d.xml";
+            system    "ethyleneGlycol + methylDiEthanolAmine";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethyleneGlycol-methylDiEthanolAmine-bubble-acs.jced.8b00054.dat";
+            doi       "10.1021/acs.jced.8b00054";
+            sha256    "87fdfe4ce4455970e1a0d55c274cb156e01b4f7f3922db74ae4e4ff88b26f625";
+            provenance measured;
+            archiveFile "acs.jced.8b00054.xml";
+            system    "ethyleneGlycol + methylDiEthanolAmine";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.075; max 0.969; n 64; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

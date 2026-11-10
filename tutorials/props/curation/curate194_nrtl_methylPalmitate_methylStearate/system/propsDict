@@ -58,11 +58,27 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      5 point(s) of 37: doi 10.1021/je3003699 row 5: x 0.1750, P 10.000
+      kPa, T 526.15 K, dT -4.43 K; doi 10.1021/je3003699 row 10: x
+      0.3233, P 10.000 kPa, T 523.15 K, dT -3.55 K; doi 10.1021/je3003699
+      row 29: x 0.7811, P 0.100 kPa, T 410.88 K, dT -3.60 K; doi
+      10.1021/je3003699 row 33: x 0.8714, P 0.100 kPa, T 409.35 K, dT
+      -3.22 K; doi 10.1021/je3003699 row 37: x 0.9621, P 0.100 kPa, T
+      408.66 K, dT -3.63 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = -331.1 K, b_ji = 1172.3 K over 32 kept points of 1
+  laboratories (5 discarded): max |dT| 3.213 K, mean 1.440 K, graded
+  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (-331.1, 1172.3). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/methylPalmitate-methylStearate.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: fit grade
+  severe -- max |dT| 3.213 K over the 32 kept points (limits 1 / 2 / 4
+  K), one liquid across the validity span -- it rests on ONE laboratory's
+  measurements (doi 10.1021/je3003699); nothing here tells its systematic
+  error from the model's (DEV.md 4c C290)
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -88,6 +104,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/methylPalmitate-methylStearate-bubble-je3003699.dat";
                 role     fit;
+                discard  ( 5 10 29 33 37 );   // C283 outliers, by name in the header
             }
         );
 
@@ -129,6 +146,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/methylPalmitate-methylStearate-bubble-je3003699.dat";
                 role     fit;
+                discard  ( 5 10 29 33 37 );   // C283 outliers, by name in the header
             }
         );
 

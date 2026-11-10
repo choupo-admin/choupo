@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/ethanol.dat"
+        {
+            type          imported;
+            sha256        "380a2ae743c8e8e75eb80075f85fb2ac90dc479a6ff9e062e674aeaa366334b3";
+            computationalSha256 "f2710ae8622b1abc118f9a68c47702e2e2324453ed27c71e0760eb23d799c481";
+            origin        "data/standards/components/ethanol.dat";
+            originSha256  "7c6b2bedb149e1165145d6bedce8fb5588519bb6b1d575caca76236a0d809074";
+            release       Choupo-2608;
+        }
+        "components/phenol.dat"
+        {
+            type          imported;
+            sha256        "26137570566e824d19c324ef95ab30bff8f65b36ce4cba745eef6573a62c1bf2";
+            computationalSha256 "0a14c5739f42f3c0769c88c805d3664ea6da2697f4fab089f70604795e226ef3";
+            origin        "data/standards/components/phenol.dat";
+            originSha256  "8f4616184896b127d6389a88e4b43ec4d8b35bb10e87d282844794627ae408af";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/ethanol-phenol.dat"
+        {
+            type          imported;
+            sha256        "3f9fff4c850239a5e40dd0e6f508067312e03b7bd2a412b485a9f0f7006eb154";
+            computationalSha256 "a9b5c130b1265002121800516e6cc29c4dfbdcb5e92d90c97da2afb73f278289";
+            origin        "data/standards/parameters/NRTL/ethanol-phenol.dat";
+            originSha256  "8df2689752bf5118888b365f07bba1df57fd0382dbf89b57c1a1b99c6a69a7db";
+            release       Choupo-2608;
+        }
+    }
+}

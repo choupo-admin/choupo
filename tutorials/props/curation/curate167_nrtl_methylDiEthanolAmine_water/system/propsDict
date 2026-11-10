@@ -60,11 +60,36 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      13 point(s) of 42: doi 10.1021/acs.jced.8b00054 row 17: x 0.8250, P
+      40.000 kPa, T 398.56 K, dT +3.12 K; doi 10.1021/acs.jced.8b00054
+      row 21: x 0.8800, P 40.000 kPa, T 409.65 K, dT +4.39 K; doi
+      10.1021/acs.jced.8b00054 row 22: x 0.9120, P 20.000 kPa, T 397.56
+      K, dT +4.27 K; doi 10.1021/acs.jced.8b00054 row 23: x 0.9120, P
+      40.000 kPa, T 418.65 K, dT +5.36 K; doi 10.1021/acs.jced.8b00054
+      row 25: x 0.9280, P 40.000 kPa, T 425.32 K, dT +4.99 K; doi
+      10.1021/acs.jced.8b00054 row 26: x 0.9390, P 40.000 kPa, T 430.65
+      K, dT +4.73 K; doi 10.1021/acs.jced.8b00054 row 27: x 0.9500, P
+      40.000 kPa, T 435.92 K, dT +5.33 K; doi 10.1021/acs.jced.8b00054
+      row 28: x 0.9550, P 20.000 kPa, T 414.80 K, dT +5.88 K; doi
+      10.1021/acs.jced.8b00054 row 29: x 0.9650, P 10.000 kPa, T 400.89
+      K, dT +4.67 K; doi 10.1021/acs.jced.8b00054 row 30: x 0.9660, P
+      40.000 kPa, T 447.59 K, dT +4.20 K; doi 10.1021/acs.jced.8b00054
+      row 31: x 0.9800, P 20.000 kPa, T 432.60 K, dT +7.11 K; doi
+      10.1021/acs.jced.8b00054 row 32: x 0.9800, P 40.000 kPa, T 458.69
+      K, dT +5.26 K; doi 10.1021/acs.jced.8b00054 row 33: x 0.9910, P
+      10.000 kPa, T 425.54 K, dT +4.93 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 338.2 K, b_ji = -363.3 K over 29 kept points of 2
+  laboratories (13 discarded): max |dT| 2.604 K, mean 0.874 K, graded
+  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (338.2, -363.3). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/methylDiEthanolAmine-water.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: fit grade
+  severe -- max |dT| 2.604 K over the 29 kept points (limits 1 / 2 / 4
+  K), one liquid across the validity span
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -90,6 +115,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/methylDiEthanolAmine-water-bubble-acs.jced.8b00054.dat";
                 role     fit;
+                discard  ( 17 21 22 23 25 26 27 28 29 30 31 32 33 );   // C283 outliers, by name in the header
             }
             {
                 dataset  "constant/archiveExtracts/methylDiEthanolAmine-water-bubble-je060396f.dat";
@@ -135,6 +161,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/methylDiEthanolAmine-water-bubble-acs.jced.8b00054.dat";
                 role     fit;
+                discard  ( 17 21 22 23 25 26 27 28 29 30 31 32 33 );   // C283 outliers, by name in the header
             }
             {
                 dataset  "constant/archiveExtracts/methylDiEthanolAmine-water-bubble-je060396f.dat";

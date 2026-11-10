@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/tetraethyleneGlycol.dat"
+        {
+            type          imported;
+            sha256        "d7c04b6f867ed2b47f906e4bff7fda0dc08e3618252e9f66d47e2b71a595240c";
+            computationalSha256 "7923b9ca547f0b3a2086fe2ef621258d0d9984d961b56f1bd50d2ea0927f5672";
+            origin        "data/standards/components/tetraethyleneGlycol.dat";
+            originSha256  "4c5782324b4d041ea597c97e5b108eef671c9ebe4dc3a1f58ec5b86c977bad1c";
+            release       Choupo-2608;
+        }
+        "components/water.dat"
+        {
+            type          imported;
+            sha256        "434214d874e17a076ce391a9d1dbca47321b4285429660688db4e64237ee0b2a";
+            computationalSha256 "ce55eca4e8c4f234b2633edec3fb54de5e630256ace48491a44357db2aaacf5c";
+            origin        "data/standards/components/water.dat";
+            originSha256  "3723b03d86ab148fd084c01f9fc3cce1bb4398a3dc6b6914e0336c40d4ade16d";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/tetraethyleneGlycol-water.dat"
+        {
+            type          imported;
+            sha256        "17067f2c98c2f1d65496d68f935f400e25852da686d0846821951809d18dd06b";
+            computationalSha256 "bab190e1a937168a422a94394fc71e02464ab6c209ad1ec038378483b05601d9";
+            origin        "data/standards/parameters/NRTL/tetraethyleneGlycol-water.dat";
+            originSha256  "51182b2bd83e199c878a64042955bddfd59db2621a196030c3e7aaa6d6e7b9af";
+            release       Choupo-2608;
+        }
+    }
+}

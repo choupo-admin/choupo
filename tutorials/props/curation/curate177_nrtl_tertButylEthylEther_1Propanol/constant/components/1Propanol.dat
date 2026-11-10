@@ -1,0 +1,151 @@
+// [imported] origin "data/standards/components/1Propanol.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1Propanol  (CAS 71-23-8)
+  PROPOSAL TIER -- UNVERIFIED. Imported from ChemSep v8.3
+  pure-component data under Artistic License 2.0.
+  Critical constants are source data; Psat is an explicitly
+  estimated Ambrose-Walton corresponding-states closure.
+\*---------------------------------------------------------------------------*/
+
+name        1Propanol;
+CAS         71-23-8;
+formula     C3H8O;      // counted from the ChemSep v8.3 structure formula "CH3(CH2)2OH" (derived 2026-09-03; reproduces MW to 0.002 %)
+reviewStatus interim;
+MW          60.09502;      // kg/kmol [origin=ChemSep v8.3]
+Tc          536.78;      // K [origin=ChemSep v8.3]
+Pc          51.75;      // bar; source Pa / 1e5 [origin=ChemSep v8.3]
+omega       0.629;      // [-] [origin=ChemSep v8.3]
+Tb          370.93;      // K [origin=ChemSep v8.3]
+
+standardThermochemistry
+{
+    dHf_298   -255200;        // J/mol   [ChemSep v8.3, ideal gas]
+    s_298     322.47;        // J/(mol.K)  third-law absolute
+}
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)
+    // converted EXACTLY from ChemSep eqno 10, Psat[Pa] = exp(a - b/(T+c))
+    coefficients  (4.602250995  1289.15974  -89.944);
+    Trange        (323.15  482.63);
+}
+
+Vliq        7.50308e-05;      // m3/mol at 25 C  [ChemSep eqno 105]
+HvapTb      41139.4;      // J/mol at Tb  [ChemSep eqno 106]
+
+idealGasHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    // ChemSep states J/(kmol.K); A and the exp are scaled to per-mole here.
+    coefficients  (56.681  -627.22  5.471244721  0.00012228  -5.0293e-08);
+    Trange        (150  1500);
+}
+
+liquidHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    coefficients  (100.52  125.3  -2.188355279  0.024513  -1.9669e-05);
+    Trange        (146.95  400);
+}
+
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     -98.08798;
+        B     4904.749;
+        C     13.57131;
+        D     -2.19968e-05;
+        E     2;
+        Tmin  146.95;
+        Tmax  523;
+    }
+}
+
+liquidThermalConductivity
+{
+    chemsepEq16
+    {
+        A     0.076645;
+        B     -189.91;
+        C     -0.13475;
+        D     -0.0069283;
+        E     3.3645e-06;
+        Tmin  164.06;
+        Tmax  380.35;
+    }
+}
+
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group OH; count 1; } );
+}
+solubilityParameter 24450;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
+
+source
+{
+    database      "ChemSep pure-component data v8.3";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "chemsep1.xml";
+    sourceSha256  "78b3e0c6408ff35f3b75fb71a1fdd70bb8e967d8996b49452a4a9fa2dd567c76";
+    sourceRecord  "1-propanol";
+    importedBy    "chemsep_to_choupo";
+    review        { state pending; reviewer unassigned; }
+}
+
+provenance
+{
+    MW
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Pc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    omega
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tb
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    vaporPressure
+    {
+        origin        predictive;
+        method        "Ambrose-Walton corresponding states";
+        methodVersion "choupo-aw-1989";
+        uncertainty   "not quantified; validate against saturation data";
+        notes         "computed from ChemSep Tc/Pc/omega";
+    }
+}
