@@ -3402,6 +3402,37 @@ accepts today, and that is a policy call.
 > Database.cpp were moved by hand and each checked to carry its `contains`
 > text), a full sweep.
 
+> **C297 (Vitor, 2026-11-10, agreeing to C296 "excepto na questao da
+> revisao": "ja ninguem tem tempo para andar a curar humanamente tudo!  Eu
+> sugiro que se diga se e validado por humano, ou por um dado modelo LLM").
+> A RECORD SAYS WHO REVIEWED IT, AND WHAT WAS CHECKED.**  Adopted, with
+> three conditions that make a model's review worth reading.  DECIDED:
+>   1. `humanReviewed true|false` (a yes/no nobody will ever turn to yes at
+>      this scale) is replaced by a `review {}` block: `by human|model|none;
+>      reviewer "<name or model id>"; date; checked ( ... ); verdict
+>      accepted|flagged|rejected; note "...";`.  `by none` is said in words
+>      ("unreviewed"), never hidden.  The old key is still READ (backwards
+>      compatibility): `humanReviewed true` = `by human`, false = `by none`.
+>   2. A model review is a CHECKLIST, not an opinion, and `checked` names
+>      the items it ran: the cited source opened and the points read
+>      against it; units and composition basis; i/j direction; the dropped
+>      points and the reason; the fit redrawn against a second laboratory
+>      where one exists; no false liquid split inside the stated span; the
+>      azeotrope (presence, T, x) against a measured one where one exists.
+>   3. The reviewer is NOT the session that fitted the record (the fitter
+>      grading itself is the in-sample problem again), and the model id and
+>      date are written, because two models are two reviewers.
+>   4. Review is not validation.  What a reviewer cannot change stays in
+>      its own measured fields and is shown beside the review: held-out
+>      points or none, number of laboratories, number of temperatures,
+>      in-sample grade.  A single-temperature fit reviewed by anyone is
+>      still a single-temperature fit.
+>   5. The engine's announcement (Database.cpp:665, PairAudit.H:114) says
+>      who reviewed, in the same line it now says "no human has reviewed".
+>   6. A human sample keeps the model honest: a small random draw of
+>      model-reviewed records read by a person, the disagreement rate
+>      written in the review ledger.  Size and cadence not decided here.
+
 > **C296 (Vitor, 2026-11-10: "Tu nao achas que o ideal seria ter uma pasta
 > por cada composto?  La ficavam os binarios todos ... pode-se fazer um
 > symbolic link"; then "Lanca varios generais Fable em paralelo cada um a

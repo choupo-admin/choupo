@@ -47,6 +47,38 @@ in the worktree `.claude/worktrees/review-newcomer/thirdParty/thermoml`.
 
 Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
 
+- [open] laptop -> cloud, 2026-11-10 UTC: C295 IS AMENDED BY C296 AND C297
+  (DEV.md 4c, read both; Vitor agreed to the order below).  Five reviewers
+  judged the tree; the decision:
+  (a) the engine records do NOT move (`data/standards/parameters/<MODEL>/`);
+  (b) a generated case is named by what it fits, NO number:
+      `data/curation/pairs/<a>-<b>/` with the record's own stem (byte order,
+      as NRTL.cpp:62 sorts), NRTL + UNIQUAC + Wilson in that one case, and
+      `data/curation/components/<name>/`; two data sets of one pair are
+      sibling cases under the pair folder (`Tx/`, `Px/`), exactly one named
+      by each record's `fittedInCase`;
+  (c) no symbolic link under `data/`.
+  YOUR WORK, in this order, one branch, nothing pushed unvalidated:
+  1. Gates first (no risk): no mode-120000 entry under `data/`; component
+     names match `[A-Za-z0-9]+` with no case collisions; a pair stem is two
+     existing components in byte order; every `fittedInCase` exists and
+     every pair folder is named by a record or marked withdrawn.
+  2. The move to (b), `fittedInCase` rewritten in the record AND the sealed
+     copy, cases re-sealed; the header's REPRODUCE line generated from the
+     field, not written twice; the three pairs with two live cases reduced
+     to one; `check_regressed_pairs` and `choupo-curate revert` extended to
+     UNIQUAC and Wilson.
+  3. Acceptance tightened (C297 and the reviewers): the `review {}` block
+     replaces `humanReviewed` in what the tools WRITE (the engine keeps
+     reading the old key; the engine-side announcement is mine); the grade
+     is labelled in-sample; a fit on one temperature cannot grade `clean`;
+     `severe` records leave the default catalogue (case-local or
+     `data/local`, your call, say which).
+  C290 STAYS HELD until 3 is done.  Do not review your own fits: the review
+  pass is a separate session, organised from here.  Mine: `gui/` readers
+  (dossier.ts, evidence.ts, tests), the generated per-compound index and
+  review ledger, the mixture pair matrix, the engine announcement.  Tell me
+  the branch name when 1 is ready; I do the gui side against it.
 - [open] laptop -> cloud, 2026-11-10 UTC: WITHDRAWN at Vitor's order -- the
   message "architect's direction for AFTER C290" (C290 last pair batch; slow
   gate, measured column check, AI packs) is void.  Do not act on it.  C284's
