@@ -2,9 +2,8 @@
   Component: methylDiEthanolAmine  (CAS 105-59-9)
   PROPOSAL TIER -- UNVERIFIED. Imported from ChemSep v8.3
   pure-component data under Artistic License 2.0.
-  Critical constants are source data.  Psat is an Antoine FITTED by
-  bin/choupo-curate vp to measured vapour pressures (DEV.md 4c C281;
-  provenance.vaporPressure): reviewStatus autoPromoted, NOT human-reviewed.
+  Critical constants are source data; Psat is an explicitly
+  estimated Ambrose-Walton corresponding-states closure.
 \*---------------------------------------------------------------------------*/
 
 name        methylDiEthanolAmine;
@@ -25,11 +24,7 @@ standardThermochemistry
 
 vaporPressure
 {
-    model         Antoine;
-    // log10(Psat [bar]) = A - B / (T[K] + C), FITTED by bin/choupo-curate vp to
-    // measured vapour pressures -- see provenance.vaporPressure
-    coefficients  (4.639497235  1925.876596  -105.5834181);
-    Trange        (519.7  738.4);   // the fit's own span; outside it the engine announces the extrapolation
+    model AmbroseWalton;  // [origin=estimated method=Ambrose-Walton]
 }
 
 Vliq        0.000115301;      // m3/mol at 25 C  [ChemSep eqno 105]
@@ -129,45 +124,10 @@ provenance
     }
     vaporPressure
     {
-        origin        fitted;
-        method        "vaporPressureFit (three-parameter Antoine; objective twoStage: least squares in log10 P, then the largest relative error in P minimised from it)";
-        methodVersion "choupoProps Choupo-dev";
-        fittedInCase  "tutorials/props/curation/curate28_vp_methylDiEthanolAmine";
-        reviewStatus  autoPromoted;
-        humanReviewed false;
-        promotedBy    "bin/choupo-curate vp --promote";
-        promotedDate  "2026-11-10";
-        reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
-        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
-        uncertainty   "the held-out AAD below, against an independent study";
-        replaces      "model AmbroseWalton (a corresponding-states estimate from Tc, Pc, omega); `bin/choupo-curate revert <component>` restores it";
-        evidence
-        (
-            {
-                role      fit;
-                dataset   "constant/archiveExtracts/methylDiEthanolAmine-vapourPressure-je060269j.dat";
-                doi       "10.1021/je060269j";
-                sha256    "1688aa651c3e2584446c1b489ab66224f85e29ada8fef0a3079e844208533387";
-                articleSha256 "02c8cb4d842126b8f3f721cab2b12b266f42b2da0534cbb9ac3acc39d86a0acf";
-                provenance measured;
-            }
-            {
-                role      validation;
-                dataset   "constant/archiveExtracts/methylDiEthanolAmine-vapourPressure-je400373d.dat";
-                doi       "10.1021/je400373d";
-                sha256    "96b6382b0584e1ba4769fb2285facda33c134c4d7055d1013efe30d02fe4788a";
-                articleSha256 "5fd41a9baa3403e420dbd131ccdfe658a984d48b0965881982e740966f424eda";
-                provenance measured;
-            }
-        );
-        validation
-        {
-            verdict     validated;
-            points      7;
-            aad_pct     2.257126;
-            maxAAD      2.3;   // per cent, declared before the fit
-            origin      "declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 7 points (1.97 to 2.5 %, mean 2.239 %), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean";
-            Tnb_fit     521.2001;   // K, the fitted curve at 101.325 kPa
-        }
+        origin        predictive;
+        method        "Ambrose-Walton corresponding states";
+        methodVersion "choupo-aw-1989";
+        uncertainty   "not quantified; validate against saturation data";
+        notes         "computed from ChemSep Tc/Pc/omega";
     }
 }

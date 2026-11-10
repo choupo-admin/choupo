@@ -2,9 +2,8 @@
   Component: dimethylSulfoxide  (CAS 67-68-5)
   PROPOSAL TIER -- UNVERIFIED. Imported from ChemSep v8.3
   pure-component data under Artistic License 2.0.
-  Critical constants are source data.  Psat is an Antoine FITTED by
-  bin/choupo-curate vp to measured vapour pressures (DEV.md 4c C281;
-  provenance.vaporPressure): reviewStatus autoPromoted, NOT human-reviewed.
+  Critical constants are source data; Psat is an explicitly
+  estimated Ambrose-Walton corresponding-states closure.
 \*---------------------------------------------------------------------------*/
 
 name        dimethylSulfoxide;
@@ -25,11 +24,7 @@ standardThermochemistry
 
 vaporPressure
 {
-    model         Antoine;
-    // log10(Psat [bar]) = A - B / (T[K] + C), FITTED by bin/choupo-curate vp to
-    // measured vapour pressures -- see provenance.vaporPressure
-    coefficients  (4.515638509  1850.825013  -55.08929772);
-    Trange        (293.15  308.16);   // the fit's own span; outside it the engine announces the extrapolation
+    model AmbroseWalton;  // [origin=estimated method=Ambrose-Walton]
 }
 
 Vliq        7.12818e-05;      // m3/mol at 25 C  [ChemSep eqno 105]
@@ -137,45 +132,10 @@ provenance
     }
     vaporPressure
     {
-        origin        fitted;
-        method        "vaporPressureFit (three-parameter Antoine; objective twoStage: least squares in log10 P, then the largest relative error in P minimised from it)";
-        methodVersion "choupoProps Choupo-dev";
-        fittedInCase  "tutorials/props/curation/curate24_vp_dimethylSulfoxide";
-        reviewStatus  autoPromoted;
-        humanReviewed false;
-        promotedBy    "bin/choupo-curate vp --promote";
-        promotedDate  "2026-11-10";
-        reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
-        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
-        uncertainty   "the held-out AAD below, against an independent study";
-        replaces      "model AmbroseWalton (a corresponding-states estimate from Tc, Pc, omega); `bin/choupo-curate revert <component>` restores it";
-        evidence
-        (
-            {
-                role      fit;
-                dataset   "constant/archiveExtracts/dimethylSulfoxide-vapourPressure-j.fluid.2011.02.002.dat";
-                doi       "10.1016/j.fluid.2011.02.002";
-                sha256    "1126f272e459e8c42b3ca6a54ace995cab24cb8b48a133db3255eeecf09f4bb7";
-                articleSha256 "9bf78a3180df28aa81da573dba0a9b22d46c4f5191a2ceb451e13b17047b7a29";
-                provenance measured;
-            }
-            {
-                role      validation;
-                dataset   "constant/archiveExtracts/dimethylSulfoxide-vapourPressure-je400531a.dat";
-                doi       "10.1021/je400531a";
-                sha256    "4be8e0e21ad1200873dd09d0323e76631015a77d22059632afb192ab4ca79854";
-                articleSha256 "edd47a0f561183a4e83930823356df31104086f2203e1fce79bd027d5848225e";
-                provenance measured;
-            }
-        );
-        validation
-        {
-            verdict     validated;
-            points      19;
-            aad_pct     2.731232;
-            maxAAD      3.2;   // per cent, declared before the fit
-            origin      "declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 19 points (1.02 to 6.54 %, mean 3.128 %), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean";
-            Tnb_fit     465.4789;   // K, the fitted curve at 101.325 kPa
-        }
+        origin        predictive;
+        method        "Ambrose-Walton corresponding states";
+        methodVersion "choupo-aw-1989";
+        uncertainty   "not quantified; validate against saturation data";
+        notes         "computed from ChemSep Tc/Pc/omega";
     }
 }
