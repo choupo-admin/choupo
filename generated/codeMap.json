@@ -906,6 +906,9 @@
   "GridSweepDriver": [
    "src/outerDriver/GridSweepDriver.H"
   ],
+  "Group": [
+   "src/postProcessing/layout/TypicalTrain.H"
+  ],
   "HConsistency": [
    "src/propertyOps/HConsistency.H"
   ],
@@ -1121,6 +1124,9 @@
    "src/core/ResultRecords.H"
   ],
   "LayoutTurningArea": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutTypical": [
    "src/core/ResultRecords.H"
   ],
   "LayoutWind": [
@@ -3516,6 +3522,7 @@
    "src/postProcessing/PostProcessor.H",
    "src/postProcessing/layout/BuildingLayout.H",
    "src/postProcessing/layout/PlantLayout.H",
+   "src/postProcessing/layout/TypicalTrain.H",
    "src/postProcessing/views/RunPublications.H",
    "src/postProcessing/views/Views.H",
    "src/reporting/Report.H",
@@ -4643,7 +4650,8 @@
    "src/core/RegistryRefusal.H",
    "src/core/ResultRecords.H",
    "src/core/Types.H",
-   "src/postProcessing/layout/BuildingLayout.H"
+   "src/postProcessing/layout/BuildingLayout.H",
+   "src/postProcessing/layout/TypicalTrain.H"
   ],
   "src/postProcessing/layout/PlantLayout.cpp": [
    "src/core/Advisory.H",
@@ -4663,6 +4671,7 @@
    "src/postProcessing/layout/BuildingLayout.H",
    "src/postProcessing/layout/BundArithmetic.H",
    "src/postProcessing/layout/PlantLayout.H",
+   "src/postProcessing/layout/TypicalTrain.H",
    "src/result/ClosureVariable.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
@@ -4675,6 +4684,12 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H"
+  ],
+  "src/postProcessing/layout/TypicalTrain.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/postProcessing/layout/TypicalTrain.H"
   ],
   "src/postProcessing/sizing/CatalystBedSize.cpp": [
    "src/core/Advisory.H",
@@ -12545,6 +12560,7 @@
    "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/layout/BuildingLayout.cpp",
    "src/postProcessing/layout/PlantLayout.cpp",
+   "src/postProcessing/layout/TypicalTrain.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -12920,6 +12936,7 @@
    "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/layout/BuildingLayout.cpp",
    "src/postProcessing/layout/PlantLayout.cpp",
+   "src/postProcessing/layout/TypicalTrain.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -14437,6 +14454,7 @@
    "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/layout/BuildingLayout.cpp",
    "src/postProcessing/layout/PlantLayout.cpp",
+   "src/postProcessing/layout/TypicalTrain.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -15033,6 +15051,12 @@
   "src/postProcessing/layout/PlantLayout.H": [
    "src/applications/choupoSolve/main.cpp",
    "src/postProcessing/layout/PlantLayout.cpp"
+  ],
+  "src/postProcessing/layout/TypicalTrain.H": [
+   "src/applications/choupoSolve/main.cpp",
+   "src/postProcessing/layout/BuildingLayout.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp",
+   "src/postProcessing/layout/TypicalTrain.cpp"
   ],
   "src/postProcessing/sizing/CatalystBedSize.H": [
    "src/postProcessing/sizing/CatalystBedSize.cpp",
