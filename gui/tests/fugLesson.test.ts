@@ -62,7 +62,7 @@ describe("the lesson runs end to end", () => {
     //  limits ARE two McCabe pictures.
     const s1 = prose(step(1).body);
     expect(s1).toContain("McCabe-Thiele");
-    expect(s1).toContain("BINARY");
+    expect(s1).toContain("binary");
     const n1 = prose(step(1).note!);
     expect(n1).toContain("45°");
     expect(n1).toContain("pinch");
@@ -77,7 +77,7 @@ describe("the lesson runs end to end", () => {
     expect(f1).toContain(String.raw`\alpha_{i,\mathrm{HK}} &= \frac{K_i}{K_\mathrm{HK}}`);
     expect(f1).toContain("recoveryLK");
     expect(f1).toContain("recoveryHK");
-    expect(f1).toContain("DISTILLATE");
+    expect(f1).toContain("distillate");
     expect(f1).not.toContain("to the bottoms");
   });
 });
@@ -92,7 +92,7 @@ describe("Fenske: the minimum-stages limit, and the assumption under it", () => 
   it("says it is a LIMIT and not an operating point", () => {
     const b = prose(step(2).body);
     expect(b).toContain("total reflux");
-    expect(b).toContain("LIMIT rather than a design");
+    expect(b).toContain("limit rather than a design");
     //  The design consequence, not just the algebra: at total reflux the
     //  column makes no product, so nobody runs there.
     expect(b).toContain("makes no product");
@@ -104,9 +104,9 @@ describe("Fenske: the minimum-stages limit, and the assumption under it", () => 
     //  goes missing: α is one frozen number standing in for something that
     //  varies down the column.
     const n = prose(step(2).note!);
-    expect(n).toContain("α is CONSTANT here");
+    expect(n).toContain("α is constant here");
     expect(n).toContain("that is an assumption, not a fact");
-    expect(n).toContain("feed bubble point".toUpperCase());
+    expect(n).toContain("feed bubble point");
     //  And it does not pretend Choupo's frozen α is the textbook α_avg.
     expect(n).toContain("α_avg");
     expect(n).toContain("geometric mean");
@@ -133,8 +133,8 @@ describe("Underwood: the minimum-reflux limit and the root that is fiddly", () =
     //  a pole.  If the page loses this, the reader has no way to know that a
     //  root from another branch looks exactly as plausible.
     const n = prose(step(3).note!);
-    expect(n).toContain("asymptote at EVERY component volatility");
-    expect(n).toContain("BETWEEN THE TWO KEY VOLATILITIES");
+    expect(n).toContain("asymptote at every component volatility");
+    expect(n).toContain("between the two key volatilities");
     expect(n).toContain("θ ∈ (α_HK, α_LK)");
     expect(n).toContain("(1, α_LK)");
     expect(n).toContain("bisection");
@@ -150,15 +150,15 @@ describe("Gilliland: the honesty point this page exists to make", () => {
     //  The most important sentence on the page.  It must be in the step's own
     //  body, not only in a limits box further down.
     const b = prose(step(4).body);
-    expect(b).toContain("FITTED THROUGH A SCATTER");
+    expect(b).toContain("fitted through a scatter");
     //  The attribution used to be forbidden here because it had never been
     //  checked against a primary source.  It now has been (2026-11-09, C259:
     //  Gilliland, Ind. Eng. Chem. 32 (1940) 1220-1223, read; p. 1221 says the
     //  points are stepwise CALCULATED results), so the page may cite it, and
     //  what this pins is the kind of data the fit rests on: calculations, not
     //  plant measurements (the audit's PLAUSIBLE item, settled).
-    expect(b).toContain("fitted through a scatter".toUpperCase());
-    expect(b).toContain("CALCULATED");
+    expect(b).toContain("fitted through a scatter");
+    expect(b).toContain("calculated");
     expect(b).toContain("not plant measurements");
     expect(b).not.toContain("plant and simulation");
     expect(b).toContain(
@@ -190,14 +190,14 @@ describe("Gilliland: the honesty point this page exists to make", () => {
 describe("what the shortcut buys and what it cannot tell you", () => {
   it("states the purchase — a first size, in seconds, before a column exists", () => {
     const b = prose(step(5).body);
-    expect(b).toContain("FIRST SIZE");
+    expect(b).toContain("first size");
     expect(b).toContain("before any column exists");
   });
 
   it("names each thing it cannot tell you, and why", () => {
     const b = prose(step(5).body);
     //  No profiles: it returns a count, not a column.
-    expect(b).toContain("no composition or temperature PROFILES");
+    expect(b).toContain("no composition or temperature profiles");
     expect(b).toContain("a count, not a column");
     //  The feed stage is empirical, and it is named.
     expect(b).toContain("Kirkbride");
@@ -258,16 +258,20 @@ describe("the tool renders it as a scrolling lesson", () => {
     expect(SRC).not.toContain("MethodSetupRail");
   });
 
-  it("renders the definitions before the plot and the consequences after", () => {
+  it("renders step 1 before the plot and the derivations after it", () => {
     //  The RENDER site, not the lazy import at the top of the file -- the
     //  plot pane is declared as a lazy module hundreds of lines above where
     //  it actually appears, and matching the declaration would compare the
     //  steps against the wrong line entirely.
     const plot = SRC.indexOf("<StagesVsRefluxPlot");
     expect(plot).toBeGreaterThan(0);
-    for (const n of [1, 2, 3, 4])
-      expect(SRC.indexOf(`{lessonStep(${n})}`), `step ${n} is not before the plot`)
-        .toBeLessThan(plot);
+    //  DEV.md 4c C277: the figure comes second -- step 1 opens the page, the
+    //  plot follows, and steps 2-4 explain what the student has just watched.
+    expect(SRC.indexOf("{lessonStep(1)}"), "step 1 is not before the plot")
+      .toBeLessThan(plot);
+    for (const n of [2, 3, 4])
+      expect(SRC.indexOf(`{lessonStep(${n})}`), `step ${n} is not after the plot`)
+        .toBeGreaterThan(plot);
     expect(SRC.indexOf("{lessonStep(5)}"),
       "the consequences step must come after the plot")
       .toBeGreaterThan(plot);

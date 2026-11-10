@@ -114,7 +114,7 @@ const RECOVERY_KNOB: PanelKnob = {
     + "tied to it (r_HK = 1 - r_LK): on this 50/50 feed that pins the "
     + "distillate rate at 50 kmol/h, which is what the rigorous column "
     + "declares, so the two are solving one problem and the shortcut's "
-    + "recovery target IS the rigorous column's distillate purity.",
+    + "recovery target is the rigorous column's distillate purity.",
 };
 
 const REFLUX_KNOB: PanelKnob = {
@@ -658,7 +658,7 @@ export function FugShortcutTool(): JSX.Element {
         <Alert color="orange" variant="light"
           title="The ladder's lowest rung already met the separation">
           <Text size="xs">
-            {crossing.nStages} stages is the SMALLEST count that was tried, so
+            {crossing.nStages} stages is the smallest count that was tried, so
             the true crossing may be lower. Raise &quot;stage counts
             below&quot; to find it.
           </Text>
@@ -673,18 +673,15 @@ export function FugShortcutTool(): JSX.Element {
 
         {lessonHead}
         {lessonStep(1)}
-        {lessonStep(2)}
-        {lessonStep(3)}
-        {lessonStep(4)}
 
         <Box>
-          <Title order={5}>Now read the two limits off a solved column</Title>
+          <Title order={5}>Watch the two limits on a solved column</Title>
           <Text size="sm" mt={4}>
-            Everything below is an engine answer, not an illustration. The
+            Everything here is an engine answer, not an illustration; the steps that follow derive each limit. The
             first pane draws N against R: the horizontal dashed line is
             Fenske&apos;s N_min, the vertical dashed line is Underwood&apos;s
             R_min, and the curve between them is Gilliland — one solve of the
-            shortcut column per point. The second pane runs the RIGOROUS MESH
+            shortcut column per point. The second pane runs the rigorous MESH
             column on the same separation, one solve per stage count, and asks
             the only question that settles the comparison: how many stages does
             it actually take to reach the products the shortcut designed for?
@@ -741,7 +738,7 @@ export function FugShortcutTool(): JSX.Element {
                   <code>N_theoretical</code>, <code>R</code>,{" "}
                   <code>alpha_LK_HK</code>, <code>x_D_LK</code> and{" "}
                   <code>D</code> in one unit's KPIs.  (<code>feed_stage</code>{" "}
-                  is NOT required: the engine withholds it when Kirkbride
+                  is not required: the engine withholds it when Kirkbride
                   cannot be formed, and the construction falls back to a
                   mid-column feed rather than disappearing.)
                 </Text>
@@ -751,6 +748,12 @@ export function FugShortcutTool(): JSX.Element {
         </Box>
 
         {provenance}
+
+        {/* The figure comes second (DEV.md 4c C277): steps 2-4 now explain what
+            the student has just watched. */}
+        {lessonStep(2)}
+        {lessonStep(3)}
+        {lessonStep(4)}
 
         {lessonStep(5)}
 
@@ -769,7 +772,7 @@ export function FugShortcutTool(): JSX.Element {
           a <strong>stage count, not a design</strong> — no tray spacing, no
           diameter, no hydraulics, no real trays at a Murphree efficiency.
           And the Gilliland step is a <strong>correlation fitted to data</strong>,
-          not a derivation: it interpolates between two limits that ARE derived
+          not a derivation: it interpolates between two limits that are derived
           (Fenske at total reflux, Underwood at minimum reflux) and carries the
           scatter of the plate-to-plate calculations it was fitted to
           (Gilliland 1940: calculated results, not plant measurements).
@@ -779,7 +782,7 @@ export function FugShortcutTool(): JSX.Element {
               + ` ${crossing.nStages}; the gap is what the assumptions above`
               + ` cost on this separation, and it is not a constant — take`
               + ` the reflux up and Gilliland's contribution shrinks towards`
-              + ` Fenske's N_min.  Whether the two counts then MEET is not`
+              + ` Fenske's N_min.  Whether the two counts then meet is not`
               + ` shown here: this ladder stops at 8x R_min, the frozen`
               + ` alpha's error has not been separated from Gilliland's`
               + ` scatter on this separation, and the ladder reports an`
