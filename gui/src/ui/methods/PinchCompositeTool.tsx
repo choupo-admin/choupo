@@ -223,7 +223,7 @@ export function populationScope(
   if (ex > 0) {
     const q = kpis["Q_excluded_kW"];
     return { partial: true,
-      label: `targets of the ${seg}, NOT of the plant · ${ex} heat `
+      label: `targets of the ${seg}, not of the plant · ${ex} heat `
         + `dut${ex === 1 ? "y" : "ies"}`
         + (typeof q === "number" ? ` (${fmt(q)} kW)` : "")
         + " outside the population — reports/pinch/population.csv" };
@@ -529,7 +529,7 @@ function MatchesTable({ matches }: { matches: CandidateMatch[] }): JSX.Element {
       </Table>
       <Text size="xs" c="dimmed" p="xs">
         A feasibility assessment of each hot × cold pair on its own, in the
-        engine&apos;s words.  Each Q_max is the limit of THAT pair; the column
+        engine&apos;s words.  Each Q_max is the limit of that pair; the column
         is not additive, because a stream can serve only its own duty once.
         The CP rule compares CP_hot with CP_cold at the pinch only.  Every
         feasible row is a thermodynamically admissible candidate — the table
@@ -842,25 +842,8 @@ export function PinchCompositeTool(
         {lessonHead}
 
         {lessonStep(1)}
-        {lessonStep(2)}
-        {lessonStep(3)}
-
-        {streamRows.length > 0 && (
-          <Box>
-            <Title order={5}>The streams</Title>
-            <StreamTable rows={streamRows} dTmin={kpis?.["dTmin_K"]} />
-          </Box>
-        )}
-
-        {tableRows.length > 0 && (
-          <Box>
-            <Title order={5}>The worked cascade</Title>
-            <CascadeTable rows={tableRows} />
-          </Box>
-        )}
-
         <Box>
-          <Title order={5}>Now read the curves the engine published</Title>
+          <Title order={5}>Watch the curves the engine published</Title>
           <Text size="sm" mt={4}>
             The two composites below are the engine&apos;s own, straight off{" "}
             <code>{COMPOSITE_CURVES_CSV_PATH}</code>: the horizontal gap
@@ -872,8 +855,8 @@ export function PinchCompositeTool(
             a heat flow rate in kW, and a stream of constant CP is a straight
             line of slope 1/CP on it.  The yellow bar is the pinch, where the
             curves are ΔTmin apart.  The grand composite is the corrected
-            cascade of the table above plotted against the shifted temperature:
-            it touches zero AT a pinch and only at an end of the range when
+            cascade of the worked-cascade table below plotted against the shifted temperature:
+            it touches zero at a pinch and only at an end of the range when
             there is none.  The candidate table is the engine&apos;s
             feasibility assessment of each hot × cold pair, in its own words.
           </Text>
@@ -988,6 +971,25 @@ export function PinchCompositeTool(
             )}
           </Box>
         </Box>
+
+        {/* The figure comes second (DEV.md 4c C277): the steps, the stream
+            table and the worked cascade now explain what has just been drawn. */}
+        {lessonStep(2)}
+        {lessonStep(3)}
+
+        {streamRows.length > 0 && (
+          <Box>
+            <Title order={5}>The streams</Title>
+            <StreamTable rows={streamRows} dTmin={kpis?.["dTmin_K"]} />
+          </Box>
+        )}
+
+        {tableRows.length > 0 && (
+          <Box>
+            <Title order={5}>The worked cascade</Title>
+            <CascadeTable rows={tableRows} />
+          </Box>
+        )}
 
         <Text size="xs" c="dimmed">
           Every target here is the engine&apos;s (PinchPass, whose problem table

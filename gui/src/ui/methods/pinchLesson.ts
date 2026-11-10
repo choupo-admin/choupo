@@ -43,28 +43,28 @@ export const PINCH_STEPS: readonly LessonStep[] = [
     body: "This is the reason pinch analysis is worth a lecture.  From the "
       + "process streams alone — what has to be cooled, what has to be "
       + "heated, and between which temperatures — you can compute the "
-      + "MINIMUM hot utility and the MINIMUM cold utility the whole plant "
+      + "minimum hot utility and the minimum cold utility the whole plant "
       + "can possibly need, before a single exchanger has been drawn or a "
       + "single match chosen.  Nothing about the network is assumed to get "
       + "there.  A stream, for this purpose, is not a pipe: it is a duty "
       + "with two temperatures, and its heat-capacity flow rate CP is the "
       + "only other thing the method wants.",
     formula: String.raw`\begin{array}{ll}
-\text{hot stream:} & \text{must be COOLED}, \quad T_\mathrm{supply} > T_\mathrm{target}\\
-\text{cold stream:} & \text{must be HEATED}, \quad T_\mathrm{supply} < T_\mathrm{target}\\[6pt]
+\text{hot stream:} & \text{must be cooled}, \quad T_\mathrm{supply} > T_\mathrm{target}\\
+\text{cold stream:} & \text{must be heated}, \quad T_\mathrm{supply} < T_\mathrm{target}\\[6pt]
 \mathrm{CP} = \dfrac{\lvert Q \rvert}{\lvert T_\mathrm{target} - T_\mathrm{supply} \rvert} & [\text{kW/K}]
 \end{array}`,
     where: [
       { sym: "T_\\mathrm{supply}",
         means: "The temperature at which a stream is "
-        + "AVAILABLE — the process-side inlet of the unit that carries the "
+        + "available — the process-side inlet of the unit that carries the "
         + "duty.  A unit with no process-side inlet contributes no segment at "
         + "all.", unit: "K" },
       { sym: "T_\\mathrm{target}",
         means: "The temperature the stream must be brought "
-        + "TO — the process-side outlet of the same unit.  The pair "
+        + "to — the process-side outlet of the same unit.  The pair "
         + "(T_supply, T_target) is what decides the stream's kind: target "
-        + "below supply means it is being cooled, so it is a heat SOURCE.",
+        + "below supply means it is being cooled, so it is a heat source.",
         unit: "K" },
       { sym: "Q", means: "The duty of one unit, taken from its converged run; "
         + "only its magnitude |Q| enters CP, the sign says hot or cold. "
@@ -72,14 +72,14 @@ export const PINCH_STEPS: readonly LessonStep[] = [
         + "duty is essentially zero is skipped, and each retained unit "
         + "becomes exactly one straight segment.", unit: "kW as printed" },
       { sym: "\\mathrm{CP}",
-        means: "The heat-capacity FLOW RATE — mass flow times "
-        + "specific heat.  Read the units: kW/K, not kJ/(kg·K).  It is NOT a "
+        means: "The heat-capacity flow rate — mass flow times "
+        + "specific heat.  Read the units: kW/K, not kJ/(kg·K).  It is not a "
         + "heat capacity, and this is the single commonest confusion in the "
-        + "whole method.  Here it is obtained by DIVISION from the duty and "
+        + "whole method.  Here it is obtained by division from the duty and "
         + "the two terminal temperatures and held constant across the "
         + "segment.", unit: "kW/K" },
     ],
-    note: "CP is a heat-capacity FLOW (mass flow × cp), not a heat capacity, "
+    note: "CP is a heat-capacity flow (mass flow × cp), not a heat capacity, "
       + "so on a temperature against heat-flow diagram a constant-CP stream is a "
       + "straight line whose slope dT/dQ is 1/CP (the horizontal axis is a "
       + "power in kW, not an enthalpy per kilogram).  Choupo builds one such segment per "
@@ -88,14 +88,14 @@ export const PINCH_STEPS: readonly LessonStep[] = [
   },
   {
     n: 2,
-    title: "All the hot streams as ONE curve, all the cold streams as one",
+    title: "All the hot streams as one curve, all the cold streams as one",
     body: "Inside a temperature interval where several hot streams are "
       + "present, they behave exactly like one hot stream whose CP is their "
       + "sum: heat is heat, and the diagram only needs enthalpy against "
       + "temperature.  Add the interval enthalpies up from the cold end and "
-      + "you have the HOT COMPOSITE CURVE — one line carrying every heat "
+      + "you have the hot composite curve — one line carrying every heat "
       + "source in the plant.  Do the same for everything that needs heating "
-      + "and you have the COLD COMPOSITE.  Two lines now stand for the whole "
+      + "and you have the cold composite.  Two lines now stand for the whole "
       + "process, and the individual streams stop mattering.",
     formula: String.raw`\begin{aligned}
 \text{in an interval:}\quad \mathrm{CP}_\mathrm{total} &= \sum_i \mathrm{CP}_i \quad \text{(streams present there)}\\
@@ -104,17 +104,17 @@ H(T) &= \sum \Delta H, \text{ accumulated from the cold end}
 \end{aligned}`,
     where: [
       { sym: "\\mathrm{CP}_i",
-        means: "The heat-capacity flow rate of ONE stream i — "
+        means: "The heat-capacity flow rate of one stream i — "
         + "the slope it contributes on the temperature-enthalpy diagram.",
         unit: "kW/K" },
       { sym: "\\mathrm{CP}_\\mathrm{total}",
         means: "The sum of the CP_i of every stream present "
         + "in one temperature interval, formed separately for the hot and the "
         + "cold populations.  Inside an interval the several streams behave "
-        + "as ONE stream of this combined slope — which is exactly what lets "
+        + "as one stream of this combined slope — which is exactly what lets "
         + "a composite curve exist at all.", unit: "kW/K" },
       { sym: "\\sum",
-        means: "A sum over the streams PRESENT IN THAT INTERVAL — "
+        means: "A sum over the streams present in that interval — "
         + "not over all streams.  Which streams are present changes at every "
         + "interval boundary, and that is why the composite curve is a "
         + "polyline and not a straight line.", unit: "none" },
@@ -125,23 +125,23 @@ H(T) &= \sum \Delta H, \text{ accumulated from the cold end}
         means: "The width of the interval on the temperature axis.",
         unit: "K" },
       { sym: "H", means: "The accumulated enthalpy, built up from the cold "
-        + "end.  Its ZERO is arbitrary — which is the freedom the next step "
+        + "end.  Its zero is arbitrary — which is the freedom the next step "
         + "uses when it slides the curves horizontally.", unit: "kW" },
       { sym: "T", means: "Temperature: the vertical axis of both composite "
         + "curves, and the quantity the interval boundaries are cut on.",
         unit: "K" },
     ],
-    note: "Only enthalpy DIFFERENCES carry meaning, so either curve may be "
+    note: "Only enthalpy differences carry meaning, so either curve may be "
       + "slid horizontally without changing a single stream.  That freedom "
       + "is the whole method: what you choose when you slide is how much "
       + "heat the process is allowed to exchange with itself.",
   },
   {
     n: 3,
-    title: "Overlap is recovery; the two overhangs ARE the targets",
+    title: "Overlap is recovery; the two overhangs are the targets",
     body: "Slide the cold composite towards the hot one until the two curves "
       + "are nowhere closer, vertically, than ΔT_min.  Now read the "
-      + "horizontal axis.  Where the curves OVERLAP there is a hot stream "
+      + "horizontal axis.  Where the curves overlap there is a hot stream "
       + "above a cold stream that wants heat at every temperature in the "
       + "overlap, so that enthalpy can be exchanged process to process.  "
       + "What sticks out cannot be: the cold overhang at the hot end has no "
@@ -157,17 +157,17 @@ Q_\mathrm{C,min} &= \sum \Delta H_\mathrm{hot} - Q_\mathrm{recovery}\\
     where: [
       { sym: "Q_\\mathrm{recovery}",
         means: "The heat exchanged between process streams "
-        + "rather than with utilities — the horizontal OVERLAP of the two "
+        + "rather than with utilities — the horizontal overlap of the two "
         + "composite curves.  Every kilowatt here is a kilowatt you do not "
         + "buy and do not throw away.", unit: "kW" },
       { sym: "Q_\\mathrm{H,min}",
         means: "The minimum HOT-utility target: the least "
         + "external heating this stream population admits at this approach.  "
-        + "It is a TARGET, not the duty of any equipment that exists — the "
+        + "It is a target, not the duty of any equipment that exists — the "
         + "analysis reports it beside the current heating duty for comparison "
         + "and writes nothing into the flowsheet.", unit: "kW" },
       { sym: "Q_\\mathrm{C,min}",
-        means: "The minimum COLD-utility target: the heat "
+        means: "The minimum cold-utility target: the heat "
         + "that must leave at the bottom.  Like its hot twin it says what is "
         + "achievable, never that the network in front of you achieves it.",
         unit: "kW" },
@@ -176,13 +176,13 @@ Q_\mathrm{C,min} &= \sum \Delta H_\mathrm{hot} - Q_\mathrm{recovery}\\
         + "the full horizontal span of the cold composite.", unit: "kW" },
       { sym: "\\Delta H_\\mathrm{hot}",
         means: "The total enthalpy the hot streams have to "
-        + "give up.  Note the identity on the third line: the DIFFERENCE of "
+        + "give up.  Note the identity on the third line: the difference of "
         + "the two targets is fixed by the streams alone and does not move "
         + "when you change the approach.  Only their common level does.",
         unit: "kW" },
     ],
     note: "That last line is a first-law identity and has no ΔT_min in it: "
-      + "changing the approach moves BOTH targets by the same amount, never "
+      + "changing the approach moves both targets by the same amount, never "
       + "one alone.  Choupo does not slide curves — the engine runs the "
       + "Linnhoff-Flower problem table, which is the same construction done "
       + "in arithmetic, and prints its cascade row by row in the run log.",
@@ -190,11 +190,11 @@ Q_\mathrm{C,min} &= \sum \Delta H_\mathrm{hot} - Q_\mathrm{recovery}\\
   {
     n: 4,
     title: "The pinch, and why ΔT_min is a choice and not a constant",
-    body: "The place where the two curves come closest is the PINCH.  It is "
+    body: "The place where the two curves come closest is the pinch.  It is "
       + "where the process is nearest to running out of driving force, and "
       + "it cuts the plant in two: above the pinch the process is a net heat "
-      + "SINK, served by hot utility and needing no cooling; below it the "
-      + "process is a net heat SOURCE, needing no heating.  Where the pinch "
+      + "sink, served by hot utility and needing no cooling; below it the "
+      + "process is a net heat source, needing no heating.  Where the pinch "
       + "sits is not a property of the fluids alone — you fixed it when you "
       + "picked ΔT_min.  A smaller ΔT_min lets the curves overlap further: "
       + "more recovery, less utility, a smaller energy bill.  But every "
@@ -203,12 +203,12 @@ Q_\mathrm{C,min} &= \sum \Delta H_\mathrm{hot} - Q_\mathrm{recovery}\\
       + "a capital-against-energy trade you make deliberately.",
     formula: String.raw`\begin{aligned}
 \text{shifted scale:}\quad T^* &= T_\mathrm{hot} - \tfrac{1}{2}\Delta T_\mathrm{min} = T_\mathrm{cold} + \tfrac{1}{2}\Delta T_\mathrm{min}\\
-&\text{on that scale the composites TOUCH at the pinch,}\\
+&\text{on that scale the composites touch at the pinch,}\\
 &\text{and the cascade's net heat flow there is exactly } 0\\[4pt]
 \text{exchanger area:}\quad A &= \frac{Q}{U \cdot \Delta T_\mathrm{lm}}
 \end{aligned}`,
     where: [
-      { sym: "T^*", means: "The SHIFTED temperature — hot streams moved down "
+      { sym: "T^*", means: "The shifted temperature — hot streams moved down "
         + "by half the approach, cold streams moved up by half.  On this "
         + "scale, adjacency in the table already guarantees a real driving "
         + "force of at least ΔT_min, which is what makes the cascade "
@@ -218,23 +218,23 @@ Q_\mathrm{C,min} &= \sum \Delta H_\mathrm{hot} - Q_\mathrm{recovery}\\
         + "(unshifted) scale — what a thermometer in that stream reads.",
         unit: "K" },
       { sym: "T_\\mathrm{cold}",
-        means: "The same interval read on the COLD streams' "
+        means: "The same interval read on the cold streams' "
         + "scale.  At the pinch, T_hot − T_cold is exactly ΔT_min: that is "
         + "what 'the curves come closest here' means in arithmetic.",
         unit: "K" },
       { sym: "\\Delta T_\\mathrm{min}",
         means: "The minimum approach you are willing to "
-        + "accept — the one number you CHOOSE in this whole method.  Smaller "
+        + "accept — the one number you choose in this whole method.  Smaller "
         + "means less utility and more surface; it is an economic decision, "
         + "not a thermodynamic one.", unit: "K" },
       { sym: "A", means: "Exchanger area — the capital side of the approach "
         + "trade.", unit: "m²" },
-      { sym: "Q", means: "The exchanger's duty.  In THIS formula it must be "
+      { sym: "Q", means: "The exchanger's duty.  In this formula it must be "
         + "in watts to give m² with U in W/(m²·K); the duties elsewhere on "
         + "the page are printed in kW, so multiply by 1000 first.",
         unit: "W" },
-      { sym: "U", means: "The overall heat-transfer coefficient.  IT APPEARS "
-        + "HERE ONLY TO NAME THE MECHANISM by which a smaller approach buys "
+      { sym: "U", means: "The overall heat-transfer coefficient.  It appears "
+        + "here only to name the mechanism by which a smaller approach buys "
         + "surface.  This analysis computes no U, no area and no cost — the "
         + "area and costing stage of the pinch programme is deliberately not "
         + "built, so no number on this page carries one.",
@@ -245,12 +245,12 @@ Q_\mathrm{C,min} &= \sum \Delta H_\mathrm{hot} - Q_\mathrm{recovery}\\
         + "here.", unit: "K" },
     ],
     note: "Turn the ΔT_min knob and watch both targets move together while "
-      + "the pinch temperature moves with them.  The AREA side of that trade "
+      + "the pinch temperature moves with them.  The area side of that trade "
       + "is not computed anywhere in this tool: Choupo's pinch pass reports "
       + "energy targets only, so what you are shown is one half of the "
       + "trade-off, said plainly rather than left to look like a balance "
       + "somebody struck.  And not every problem has a pinch: lower ΔT_min "
-      + "far enough and one of the two targets reaches zero — a THRESHOLD "
+      + "far enough and one of the two targets reaches zero — a threshold "
       + "problem, with no interior point of closest approach at all.  The "
       + "engine classifies the problem from the whole cascade, interior zeros "
       + "included: one interior zero is a pinch, several are several pinches "
@@ -264,12 +264,12 @@ Q_\mathrm{C,min} &= \sum \Delta H_\mathrm{hot} - Q_\mathrm{recovery}\\
     n: 5,
     title: "The three rules — which are one rule wearing three faces",
     body: "This is the part you are examined on.  Do not transfer heat "
-      + "ACROSS the pinch.  Do not use hot utility BELOW the pinch.  Do not "
-      + "use cold utility ABOVE the pinch.  They cost the same thing for the "
+      + "across the pinch.  Do not use hot utility below the pinch.  Do not "
+      + "use cold utility above the pinch.  They cost the same thing for the "
       + "same reason.  Move Q across the pinch, from the region above to the "
       + "region below: the region above has lost Q that it needed, so the "
       + "hot utility must replace it, and the region below has gained Q it "
-      + "did not need, so the cold utility must reject it.  BOTH utility "
+      + "did not need, so the cold utility must reject it.  Both utility "
       + "duties rise above their targets by Q — the targets themselves do "
       + "not move — so a cross-pinch transfer of Q is paid for twice, and that "
       + "is the sentence worth remembering.  A heater below the pinch is "
@@ -286,11 +286,11 @@ Q_\mathrm{C,min} &= \sum \Delta H_\mathrm{hot} - Q_\mathrm{recovery}\\
 \end{aligned}`,
     where: [
       { sym: "Q_H", means: "The hot-utility duty the network in front of you "
-        + "ACTUALLY uses — as opposed to Q_H,min, which is what it could use. "
+        + "actually uses — as opposed to Q_H,min, which is what it could use. "
         + " The gap between them is the whole point of the exercise.",
         unit: "kW" },
       { sym: "Q_C", means: "The cold-utility duty actually used.  Note that "
-        + "cross-pinch transfer raises BOTH by the same amount: heat sent "
+        + "cross-pinch transfer raises both by the same amount: heat sent "
         + "across the pinch has to be replaced above it and removed below.",
         unit: "kW" },
     ],
@@ -350,7 +350,7 @@ export const PINCH_LIMITS: readonly { id: string; title: string; body: string }[
     body: "The population is each unit's generic Q KPI paired with its first "
       + "non-utility inlet/outlet stream — which only heaters, coolers, "
       + "phase changers, flash drums and two-stream exchangers publish. Every "
-      + "other heat duty is NOT in it: a column's reboiler and condenser, a "
+      + "other heat duty is not in it: a column's reboiler and condenser, a "
       + "reactor's duty, a crystalliser's cooling. The pass lists each duty "
       + "it leaves out, with its kW, beside the targets (and in "
       + "reports/pinch/population.csv), and says that the targets are then "
@@ -358,7 +358,7 @@ export const PINCH_LIMITS: readonly { id: string; title: string; body: string }[
       + "implementation, separating a column's two duties or placing a "
       + "reactor's heat at a temperature is a modelling choice nobody has "
       + "made yet, so they are named rather than guessed. A two-stream "
-      + "exchanger is heat ALREADY recovered: it enters as both of its "
+      + "exchanger is heat already recovered: it enters as both of its "
       + "sides, and its duty is counted in neither current-utility total, so "
       + "it can never be offered back as a further saving.",
   },
