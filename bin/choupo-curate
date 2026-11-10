@@ -1323,10 +1323,19 @@ def revert(stem):
 #       measurements is <= 5 %, and -- where the record's Tb lies OUTSIDE the
 #       FIT study's range -- its normal boiling point is within 1 K of Tb
 #       (absolute); outside either the gap is announced and the fit is not
-#       promoted.  A case may declare another acceptance in
-#       `system/curationDict` (`acceptance { maxRelativeError <x> percent;
-#       maxTemperatureError <y> K; reason "..."; }`, a reason REQUIRED); with
-#       none the default is used and SAID so in the run and the result.  The
+#       promoted.  GRADED SINCE DEV.md 4c C285 (Vitor, 2026-11-10: "mete
+#       mesmo as que estao acima de 5%"): the max relative P error over the
+#       kept points is clean <= 5 %, warning <= 10 %, severe <= 20 %, refused
+#       above; where Tb lies outside the kept range, |Tnb - Tb| is clean
+#       <= 1 K, warning <= 2 K, severe <= 4 K, refused above; the grade is
+#       the WORSE of the two, every grade but refused is promoted, and the
+#       record carries `fitGrade <grade>;` with the deciding numbers
+#       (`fitGradeMaxRelativeError_pct`, `fitGradeBoilingPointGap_K`), which
+#       the component loader voices.  A case may declare another acceptance
+#       in `system/curationDict` (`acceptance { maxRelativeError (<clean>
+#       <warning> <severe>) percent; maxTemperatureError (<c> <w> <s>) K;
+#       reason "..."; }`, a reason REQUIRED); with none the default is used
+#       and SAID so in the run and the result.  The
 #       band of item 4 is kept as INFORMATION (`bandVerdict`); both errors
 #       (the fit and the AmbroseWalton curve it replaces, mean and max, on the
 #       held-out points) are written in the record's provenance.  When it holds: the AmbroseWalton block is REPLACED by the fitted
@@ -1345,9 +1354,16 @@ def revert(stem):
 # ==========================================================================
 VP_PROMOTED_BY = "bin/choupo-curate vp --promote"
 TB_TOL_K = 2.0      # step 2's normal-boiling-point tolerance (superseded)
-VP_ACCEPT_DEFAULT = {"maxRel": 5.0, "maxT": 1.0, "reason": None}   # DEV.md 4c C283
+#  THE GRADED ACCEPTANCE (DEV.md 4c C285, Vitor 2026-11-10: "mete mesmo as que
+#  estao acima de 5%. Mas acima de 5% - 10% mete um warning, e entre 10 a 20%
+#  poe um warning mais severo. Acima de 20% descarta").  Each list is the
+#  upper limit of clean, warning and severe; above the last, refused.  The
+#  temperature limits are the stated default "same factors" of the ruling.
+VP_ACCEPT_DEFAULT = {"maxRel": (5.0, 10.0, 20.0), "maxT": (1.0, 2.0, 4.0), "reason": None}
+VP_GRADES = ("clean", "warning", "severe", "refused")
 VP_CURATION_DICT = "system/curationDict"
-VP_RULE_MARK = "FIT AND ACCEPTANCE (DEV.md 4c C283"
+VP_RULE_MARK = "FIT AND GRADED ACCEPTANCE (DEV.md 4c C285"
+VP_RULE_MARK_C283 = "FIT AND ACCEPTANCE (DEV.md 4c C283"   # the superseded declaration
 VP_OUTLIER_PCT = 15.0   # C283 amended: three times the 5 % acceptance
 STD_COMP = ROOT / "data" / "standards" / "components"
 AW_BLOCK = ("vaporPressure\n{\n    model AmbroseWalton;  "
@@ -1476,9 +1492,8 @@ def vp_plan(name, work):
         f"the record's Tb {Tb:g} K is judged against the range of the KEPT points "
         f"(all studies span {lo:g}-{hi:g} K before any outlier is discarded): if Tb lies "
         "OUTSIDE that range, the fitted Antoine's own normal boiling point (P = 101.325 "
-        "kPa) must lie within the acceptance's temperature error of it, or the gap is "
-        "announced and the fit is not promoted; inside it, the gap is reported and is "
-        "not a condition")
+        "kPa) is GRADED by its absolute gap to it (the temperature limits of the "
+        "acceptance below); inside it, the gap is reported and is not a condition")
     return pl
 
 
@@ -1581,7 +1596,8 @@ def vp_props_text(pl, case_name, earlier=None):
   SET ASIDE BY NAME:
 {aside}
 
-  {VP_RULE_MARK}, Vitor 2026-11-10, declared before the fit).
+  {VP_RULE_MARK}, Vitor 2026-11-10; the evidence,
+  objective and outliers of C283; declared before the fit).
   EVIDENCE: every study above is fitted; none is held out (C283 amended:
   laboratories disagree with each other by more than they claim, so the
   test is agreement across all of them, not one laboratory's claimed
@@ -1593,13 +1609,20 @@ def vp_props_text(pl, case_name, earlier=None):
   the acceptance) is DISCARDED BY NAME (its study DOI, T and P), listed in
   the result and the record, and the fit repeated without it, once
   (`outliers {{ maxRelativeError {VP_OUTLIER_PCT:g} percent; }}`).  ACCEPTANCE,
-  the DEFAULT of C283: ACCEPTED and promoted (autoPromoted, humanReviewed
-  false) when the maximum relative P error over all kept points is at most
-  {VP_ACCEPT_DEFAULT['maxRel']:g} % and the normal-boiling-point condition below holds with an
-  absolute error below {VP_ACCEPT_DEFAULT['maxT']:g} K.  This case declares no
-  `{VP_CURATION_DICT}`, so the default applies; a case that needs another
-  acceptance declares it there, with its reason.  The AmbroseWalton curve's
-  errors on the same points are reported beside the fit's, as information.
+  GRADED, the DEFAULT of C285: the maximum relative P error over all kept
+  points is graded clean up to {VP_ACCEPT_DEFAULT['maxRel'][0]:g} %, warning up to
+  {VP_ACCEPT_DEFAULT['maxRel'][1]:g} %, severe up to {VP_ACCEPT_DEFAULT['maxRel'][2]:g} % and refused above; where the
+  normal-boiling-point condition below applies, the absolute gap is graded
+  clean up to {VP_ACCEPT_DEFAULT['maxT'][0]:g} K, warning up to {VP_ACCEPT_DEFAULT['maxT'][1]:g} K, severe up to
+  {VP_ACCEPT_DEFAULT['maxT'][2]:g} K and refused above.  The fit's grade is the WORSE of the
+  two.  A clean, warning or severe fit is ACCEPTED and promoted (autoPromoted,
+  humanReviewed false) with `fitGrade <grade>;` and the deciding numbers in
+  its provenance entry, which the component loader voices on every run that
+  uses it (a warning or a severe grade); a refused one is not promoted.  This
+  case declares no `{VP_CURATION_DICT}`, so the default applies; a case
+  that needs another acceptance declares it there, with its reason.  The
+  AmbroseWalton curve's errors on the same points are reported beside the
+  fit's, as information.
 
   NORMAL BOILING POINT: {pl['tb_rule']}.
 {earlier_par}
@@ -1749,8 +1772,9 @@ def vp_dropped(txt):
 
 
 def vp_acceptance(case):
-    """The acceptance the case DECLARES (system/curationDict), else the C283
-    default -- (dict, declared?)."""
+    """The graded acceptance the case DECLARES (system/curationDict), else the
+    C285 default -- (dict, declared?).  A declared acceptance gives the three
+    upper limits of each grade (clean, warning, severe), with its reason."""
     p = case / VP_CURATION_DICT
     if not p.exists():
         return dict(VP_ACCEPT_DEFAULT), False
@@ -1758,58 +1782,85 @@ def vp_acceptance(case):
     b = crp.block(t, "acceptance")
     if b is None:
         refuse(f"{p.relative_to(ROOT)}: no `acceptance {{}}` block")
-    mr = re.search(r"maxRelativeError\s+([0-9.eE+-]+)\s+percent\s*;", b)
-    mt = re.search(r"maxTemperatureError\s+([0-9.eE+-]+)\s+K\s*;", b)
+    lim = lambda unit, key: re.search(
+        r"%s\s*\(\s*([0-9.eE+-]+)\s+([0-9.eE+-]+)\s+([0-9.eE+-]+)\s*\)\s+%s\s*;"
+        % (key, unit), b)
+    mr = lim("percent", "maxRelativeError")
+    mt = lim("K", "maxTemperatureError")
     rs = re.search(r'reason\s+"([^"]+)"\s*;', b)
     if not (mr and mt):
-        refuse(f"{p.relative_to(ROOT)}: `acceptance` declares `maxRelativeError <x> "
-               "percent;` and `maxTemperatureError <y> K;`, both with their units")
+        refuse(f"{p.relative_to(ROOT)}: a graded acceptance (DEV.md 4c C285) declares "
+               "`maxRelativeError (<clean> <warning> <severe>) percent;` and "
+               "`maxTemperatureError (<clean> <warning> <severe>) K;` -- the upper "
+               "limit of each grade, with their units")
+    r_ = tuple(float(x) for x in mr.groups())
+    t_ = tuple(float(x) for x in mt.groups())
+    if list(r_) != sorted(r_) or list(t_) != sorted(t_):
+        refuse(f"{p.relative_to(ROOT)}: the grade limits must not decrease")
     if not rs:
-        refuse(f"{p.relative_to(ROOT)}: an acceptance other than the C283 default "
+        refuse(f"{p.relative_to(ROOT)}: an acceptance other than the C285 default "
                "carries its `reason \"...\";` -- none is declared")
-    return {"maxRel": float(mr.group(1)), "maxT": float(mt.group(1)),
-            "reason": rs.group(1)}, True
+    return {"maxRel": r_, "maxT": t_, "reason": rs.group(1)}, True
+
+
+def vp_grade(x, limits):
+    """clean / warning / severe / refused: the first upper limit x stays within."""
+    for g, lim in zip(VP_GRADES, limits):
+        if x <= lim:
+            return g
+    return VP_GRADES[-1]
+
+
+def vp_worse(a, b):
+    return a if VP_GRADES.index(a) >= VP_GRADES.index(b) else b
 
 
 def vp_judge(case, rf):
-    """(promotable, reason) by the acceptance the case declares (C283's
+    """(promotable, reason) by the graded acceptance the case declares (C285's
     default unless system/curationDict says otherwise); a declaration that
-    predates the rule is not judged by it."""
+    predates the rule is not judged by it.  Sets rf['grade'] and the numbers
+    that decided it."""
     decl = (case / "system" / "propsDict").read_text()
     if VP_RULE_MARK not in decl:
-        refuse(f"{case.name} does not declare the C281 step-3 acceptance -- "
+        refuse(f"{case.name} does not declare the C285 graded acceptance -- "
                f"`bin/choupo-curate vp <c> --redeclare` first")
     acc, declared = vp_acceptance(case)
     rf["acceptance"] = acc
     rf["acceptance_declared"] = declared
-    who = (f"the acceptance declared in {VP_CURATION_DICT} ({acc['reason']})" if declared
-           else "the DEFAULT acceptance of DEV.md 4c C283 (no system/curationDict)")
+    who = (f"the graded acceptance declared in {VP_CURATION_DICT} ({acc['reason']})"
+           if declared else
+           "the DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict)")
     Tnb = antoine_Tnb(rf["A"], rf["B"], rf["C"])
     rf["Tnb"] = Tnb
     Tb = rf.get("Tb")
     info = (f"AmbroseWalton on the same points mean {rf['aw_aad']:.4g} % / max "
             f"{rf['aw_max']:.4g} %")
+    gP = vp_grade(rf["max_pct"], acc["maxRel"])
     errs = (f"{len(rf['studies'])} studies, {int(rf['n'])} points kept, "
             f"{rf['n_dropped']} discarded as outliers; max relative error "
-            f"{rf['max_pct']:.4g} % (mean {rf['aad_pct']:.4g} %) against {acc['maxRel']:g} %")
+            f"{rf['max_pct']:.4g} % (mean {rf['aad_pct']:.4g} %), grade {gP} (limits "
+            + " / ".join(f"{x:g}" for x in acc["maxRel"]) + " %)")
     comp = case.name.split("_vp_")[1]
     gap = None if Tb is None else Tnb - Tb
     gtxt = "" if Tb is None else (f"normal boiling point {Tnb:.2f} K, {gap:+.2f} K from "
                                   f"the record's Tb {Tb:g} K")
-    if rf["max_pct"] > acc["maxRel"]:
-        return False, (f"NOT PROMOTED by {who}: {errs}; {info}; the record keeps "
-                       "AmbroseWalton")
     if Tb is not None and not (rf["Tmin"] <= Tb <= rf["Tmax"]):
-        if not abs(gap) < acc["maxT"]:
-            return False, (f"NOT PROMOTED by {who}: {errs} passes, but Tb lies outside "
-                           f"the kept points' range and the {gtxt} is not within "
-                           f"{acc['maxT']:g} K -- the gap is announced; {info}; the "
-                           "record keeps AmbroseWalton")
-        tb = f"Tb outside the kept points' range, {gtxt} (within {acc['maxT']:g} K)"
+        gT = vp_grade(abs(gap), acc["maxT"])
+        rf["tb_gap"] = gap
+        tb = (f"Tb outside the kept points' range, {gtxt}, grade {gT} (limits "
+              + " / ".join(f"{x:g}" for x in acc["maxT"]) + " K)")
     else:
+        gT = "clean"
+        rf["tb_gap"] = None
         tb = (f"Tb inside the kept points' range, {gtxt} (reported, not a condition)"
               if Tb is not None else "no Tb declared")
-    return True, (f"PROMOTABLE by `bin/choupo-curate vp {comp} --promote`: under {who}, "
+    grade = vp_worse(gP, gT)
+    rf["grade"], rf["grade_P"], rf["grade_T"] = grade, gP, gT
+    if grade == "refused":
+        return False, (f"NOT PROMOTED by {who}: fit grade refused -- {errs}; {tb}; "
+                       f"{info}; the record keeps AmbroseWalton")
+    return True, (f"PROMOTABLE by `bin/choupo-curate vp {comp} --promote`: fit grade "
+                  f"{grade} under {who}, "
                   f"{errs}; {tb}; {info}")
 
 
@@ -1849,14 +1900,30 @@ def vp_redeclare(pl, no_commit):
     pd = case / "system" / "propsDict"
     old = pd.read_text()
     if VP_RULE_MARK in old:
-        refuse(f"--redeclare: {case.name} already declares the step-3 promotion rule")
+        refuse(f"--redeclare: {case.name} already declares the C285 graded acceptance")
+    c283 = VP_RULE_MARK_C283 in old
+    if c283:
+        #  C285 changes the ACCEPTANCE only: the evidence is never re-partitioned
+        #  after a result was seen.  The studies the same extraction rules give
+        #  now must be exactly the ones the case already declares.
+        have = {(d["doi"], d["sha256"]) for d in (parse_decl(case) or [])}
+        now = {(s["doi"], sha_file(s["path"])) for s in pl["studies"]}
+        if have != now:
+            refuse(f"--redeclare: {case.name} declares the studies {sorted(have)} and the "
+                   f"extraction rules give {sorted(now)} now -- C285 changes the "
+                   "acceptance only; the evidence is never re-partitioned")
     #  C283 (amended) changes the EVIDENCE by ruling: every usable study is
     #  fitted, none held out.  The studies are re-derived by the same
     #  extraction rules; the archiveDatasets are rewritten with them.
     m = re.search(r"@@RESULT-BEGIN@@(.*?)@@RESULT-END@@", old, re.S)
     prev = " ".join(m.group(1).split()) if m else "(no result recorded)"
     before = earlier_of(case)
-    if before:
+    if c283:
+        earlier = ((before.rstrip(". ") + ".  THEN " if before else "")
+                   + "C283, every usable study fitted and none held out, accepted only "
+                   "at max relative error <= 5 % and Tnb within 1 K (superseded by the "
+                   "graded acceptance of C285): " + prev)
+    elif before:
         earlier = (before + "  THEN C281 step 3, objective twoStage, one study fitted "
                    "and one held out, judged by the band (superseded by C283): " + prev)
     else:
@@ -1873,14 +1940,15 @@ def vp_redeclare(pl, no_commit):
     if not no_commit:
         git(["add", "--", str(pd), str(case / DECL)])
         git(["commit", "-q", "-m",
-             f"C281 step 3: {case.name} -- the new declaration, before the fit\n\n"
-             f"bin/choupo-curate vp {pl['comp']} --redeclare (DEV.md 4c C283, "
-             f"amended): every usable study fitted ({len(pl['studies'])}), none held "
-             f"out; objective {VP_OBJECTIVE}; outliers above {VP_OUTLIER_PCT:g} % "
-             "discarded by name and the fit repeated; the default acceptance (max "
-             "relative error over the kept points <= 5 %, Tnb within 1 K where Tb "
-             "lies outside their range) declared; the earlier results kept in the "
-             "header."])
+             f"C285: {case.name} -- the new declaration, before the fit\n\n"
+             f"bin/choupo-curate vp {pl['comp']} --redeclare (DEV.md 4c C285): the "
+             f"same {len(pl['studies'])} studies (every usable one, none held out, "
+             f"not re-partitioned); objective {VP_OBJECTIVE}; outliers above "
+             f"{VP_OUTLIER_PCT:g} % discarded by name and the fit repeated; the "
+             "GRADED acceptance declared (max relative error over the kept points "
+             "5 / 10 / 20 % for clean / warning / severe, |Tnb - Tb| 1 / 2 / 4 K where "
+             "Tb lies outside their range, the worse of the two; refused above); the "
+             "earlier results kept in the header."])
         say(f"  committed the new declaration: {git(['rev-parse', '--short', 'HEAD']).strip()}")
     return case
 
@@ -1925,13 +1993,13 @@ def vp_main(a):
                          and EXTRACTS not in p.relative_to(case).as_posix()]
                 git(["add", "--"] + [str(p) for p in files])
                 git(["commit", "-q", "-m",
-                     f"C283: {case.name} -- the declaration, before any fit\n\n"
+                     f"C285: {case.name} -- the declaration, before any fit\n\n"
                      f"bin/choupo-curate vp {pl['comp']}: every usable study "
                      f"({len(pl['studies'])}) fitted, objective {VP_OBJECTIVE}, "
                      f"outliers above {VP_OUTLIER_PCT:g} % discarded by name, the "
-                     "default acceptance (max relative error <= 5 %, Tnb within 1 K) "
-                     "written before the fit runs, so they can be read against the "
-                     "result."])
+                     "default GRADED acceptance of C285 (max relative error 5 / 10 / 20 "
+                     "%, |Tnb - Tb| 1 / 2 / 4 K) written before the fit runs, so they "
+                     "can be read against the result."])
                 say(f"  committed the declaration: "
                     f"{git(['rev-parse', '--short', 'HEAD']).strip()}")
         say(f"  case     {case.relative_to(ROOT)}")
@@ -1975,11 +2043,20 @@ def vp_prov(rf, case, decl):
                "                provenance measured;\n"
                "            }\n")
     acc = rf["acceptance"]
-    acc_txt = ("the default of DEV.md 4c C283: max relative error in P over the kept points "
-               "<= 5 %; Tnb within 1 K of Tb where Tb lies outside their range"
-               if not rf.get("acceptance_declared") else
-               f"declared in {VP_CURATION_DICT}: max relative error <= {acc['maxRel']:g} %, "
-               f"Tnb within {acc['maxT']:g} K; reason: {acc['reason']}")
+    lims = lambda v, u: " / ".join(f"{x:g}" for x in v) + f" {u}"
+    acc_txt = ((f"the default of DEV.md 4c C285 (graded): " if not rf.get("acceptance_declared")
+                else f"declared in {VP_CURATION_DICT} (reason: {acc['reason']}): ")
+               + f"max relative error in P over the kept points {lims(acc['maxRel'], '%')}, "
+               f"and |Tnb - Tb| {lims(acc['maxT'], 'K')} where Tb lies outside their range, "
+               "are the upper limits of clean / warning / severe; above, refused; the "
+               "grade is the worse of the two")
+    gap = rf.get("tb_gap")
+    grade_lines = (
+        f"        fitGrade      {rf['grade']};   // DEV.md 4c C285: the worse of the grades below\n"
+        f"        fitGradeMaxRelativeError_pct {rf['max_pct']:.6f};   // grade {rf['grade_P']}\n"
+        + ("" if gap is None else
+           f"        fitGradeBoilingPointGap_K    {gap:.4f};   // grade {rf['grade_T']} "
+           "(Tb outside the kept points' range)\n"))
     return ("    vaporPressure\n    {\n"
             "        origin        fitted;\n"
             f'        method        "vaporPressureFit (three-parameter Antoine; objective {rf["objective"]}: {VP_OBJ_WORDS.get(rf["objective"], "unstated")}; every usable study fitted, outliers above {VP_OUTLIER_PCT:g} % discarded by name)";\n'
@@ -1987,6 +2064,7 @@ def vp_prov(rf, case, decl):
             f'        fittedInCase  "{case_rel}";\n'
             "        reviewStatus  autoPromoted;\n"
             "        humanReviewed false;\n"
+            + grade_lines +
             f'        promotedBy    "{VP_PROMOTED_BY}";\n'
             f'        promotedDate  "{date.today().isoformat()}";\n'
             '        reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";\n'
@@ -2041,7 +2119,8 @@ def vp_promote(name):
                 f"{rp.relative_to(ROOT).as_posix()} as reviewStatus autoPromoted, "
                 "humanReviewed false, because:")
     say(f"choupo-curate: PROMOTED the vapour pressure of {comp} into "
-        f"{rp.relative_to(ROOT)} (autoPromoted, humanReviewed false)")
+        f"{rp.relative_to(ROOT)} (autoPromoted, humanReviewed false, fitGrade "
+        f"{rf['grade']})")
     return 0
 
 
