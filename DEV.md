@@ -3333,6 +3333,18 @@ accepts today, and that is a policy call.
 > moved.  Corrections the general made to the brief: the `//` origin comment
 > did reach `componentProvenance` in the JSON (never an advisory), and the
 > model could not see Tb until this change.  STEP 2 not yet dispatched.
+>
+> **C281 STEP 2 DISPATCHED (Vitor, 2026-11-10 12:2x UTC: "avanca").**  In the
+> form C282 settled the same day: NO measured series in the tree -- each fit
+> case declares its datasets by DOI, NIST per-article URL and sha256, and
+> `bin/choupo-curate fetch` regenerates them.  For each of the 48 records with
+> archive vapour-pressure data from at least two independent laboratories: an
+> Antoine (or the catalogue's existing extended form) fitted on one study,
+> held out on another, band declared before the fit; a validated fit REPLACES
+> the AmbroseWalton block, marked `autoPromoted; humanReviewed false;`; the
+> rest keep AmbroseWalton and its step-1 announcement.  No golden moves (the
+> one tutorial using these records is sealed); any that does is shown to
+> Vitor before a re-record.
 
 > **C280 RESULT.** C280 LANDED 11-10: `fitParameters` takes `objective { method twoStage|leastSquares|minimax; }` with relative binodal rows; the butanol-water pair is PROMOTED to `data/standards/parameters/NRTL/nButanol-water.dat` (b_ij 1894.04, b_ji -163.84, a_ij -4.7108, a_ji 4.0996, alpha 0.4459), fitted by least squares on 14 tie lines and the heteroazeotrope: held-out tie-line AAD 0.0056 (band 0.01), held-out heteroazeotrope 0.38 K, water-rich liquid 5 % mean (the laboratories' own scatter). NOT for homogeneous butanol-rich VLE at 1 atm: 2.2 K high on average, 3.2 K max, held out and written in the record. On this partition minimax follows one laboratory and twoStage misses the band, so least squares is the promoted method. Held by check_regressed_pairs (record reproduced from its case) and --scope on curate14; NOT run: --gui, schema-coverage and guide freshness gates, a full sweep.
 >

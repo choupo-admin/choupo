@@ -40,7 +40,7 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| (C281 step 2, not dispatched) | the 48 `vaporPressure { model AmbroseWalton; }` blocks | 2026-11-10 |
+| c281-step2 | the 48 `vaporPressure { model AmbroseWalton; }` blocks in `data/standards/components/`, new `tutorials/props/curation/curate2*` | 2026-11-10 |
 
 The NIST ThermoML cache (4.2 GB, gitignored) lives only in the cloud container,
 in the worktree `.claude/worktrees/review-newcomer/thirdParty/thermoml`.
