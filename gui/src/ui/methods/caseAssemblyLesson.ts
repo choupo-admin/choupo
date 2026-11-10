@@ -35,7 +35,7 @@ export const CASE_ASSEMBLY_STEPS: readonly LessonStep[] = [
     n: 1,
     title: "A case is a folder, and its three folders answer three questions",
     body: "Choupo has no project file and no hidden database of cases. A case "
-      + "IS a folder of plain-text files, and the engine is pointed at the "
+      + "is a folder of plain-text files, and the engine is pointed at the "
       + "folder: runCase tutorials/steady/flash/flash01_benzene_toluene. "
       + "Inside, three folders divide the case by the question each one "
       + "answers. system/ says HOW to run it: which program, how much to "
@@ -102,7 +102,7 @@ export const CASE_ASSEMBLY_STEPS: readonly LessonStep[] = [
   {
     n: 3,
     title: "The order the engine assembles them in",
-    body: "Before any physics, bin/runCase reads ONE word — `application` "
+    body: "Before any physics, bin/runCase reads one word — `application` "
       + "in system/controlDict — to know which of the five programs to "
       + "start. The program then registers every unit type it knows, by "
       + "name, in an explicit list you can read (" + at("registerUnits")
@@ -145,7 +145,7 @@ export const CASE_ASSEMBLY_STEPS: readonly LessonStep[] = [
       + at("completeness") + "). An outlet is counted too: 0/liquid and "
       + "0/vapor are starting values the flash replaces, and they must exist "
       + "all the same (bin/choupo-init0 writes them for you). Then each file "
-      + "has to FIX its stream, which takes exactly as many numbers as the "
+      + "has to fix its stream, which takes exactly as many numbers as the "
       + "stream has degrees of freedom: one flow per component, and two "
       + "intensive variables.",
     derivation: [
