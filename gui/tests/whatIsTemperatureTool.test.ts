@@ -315,7 +315,7 @@ describe("claims kept inside what the evidence supports", () => {
     //  take the page's word for.  Corrected 2026-08-31: the figure is
     //  marked invented AT THE POINT OF USE, and the bullet claims only what
     //  is true.
-    expect(prose(SRC)).toContain("that ± is INVENTED here");
+    expect(prose(SRC)).toContain("that ± is invented here");
     expect(prose(SRC)).toContain("No uncertainty is quoted here as if it had"
       + " been measured");
     expect(prose(SRC), "the self-satisfying absolute is back")
