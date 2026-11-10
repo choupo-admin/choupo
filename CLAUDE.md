@@ -163,6 +163,9 @@ it.  The rules below; the corollaries that make them concrete are in §10.
    the defect Vítor sees first.  `ROADMAP.md` is the months-and-years
    direction that feeds the last column; it is not the CML plan (DEV.md 4c
    C193 records the two-way confusion of 2026-10-31/11-01).
+   **`SESSIONS.md` is read with it** (2026-11-10): when more than one
+   session works on the tree, it says who holds which paths now and carries
+   the messages between sessions; it is coordination, never a register.
 
 ## 1. What this project is
 

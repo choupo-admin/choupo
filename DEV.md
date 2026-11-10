@@ -3244,6 +3244,22 @@ accepts today, and that is a policy call.
 > compounds, binaries (they wait on C16's liquid-liquid residual).  STATUS:
 > DISPATCHED 2026-11-10 from the cloud session; integration by the cloud session
 > only after the laptop session is told, so two commanders do not push at once.
+> **C279 DONE (2026-11-10, cloud session).**  Report
+> `docs/reviews/2026-11-10-component-audit-thermoml.md`, tool
+> `bin/curate/audit_components_thermoml.py` (reads only the gitignored cache;
+> writes its point CSV outside the tree).  282 components, 49 451 points, 3 078
+> studies.  Positive control passes: water boils 0.614 K low over 71 studies.
+> Checked by the commander by hand: glycerol's AmbroseWalton curve, from its own
+> Tc/Pc/omega, boils at 646 K against the record's own Tb 563.15 K; propane's
+> Vliq 8.42e-5 m3/mol is 523.7 kg/m3, +6.3 % on the saturated liquid at 25 C.
+> DECISIONS OWED (Vitor's; nothing changed): (1) the AmbroseWalton estimated
+> vapour pressures -- median 19.6 % AAD, 21 of 25 above 5 %, no Trange so no run
+> warns, and the model reads Tc/Pc/omega only and ignores the record's Tb
+> (src/thermo/vaporPressure/AmbroseWalton.cpp:44-46): announce, anchor on Tb, or
+> replace by fitted records; (2) propane and n-butane Vliq (liquid at ~276 K and
+> ~270 K, not 25 C) and the fatty-acid methyl esters with no Vliq (23-34 %);
+> (3) a `rho_liquid_<comp>` key in choupoProps, so a density audit need not
+> recompute the engine's route.  Each record correction moves goldens: list first.
 
 > **C280 (Vitor, 2026-11-10, on the butanol-water fit: "Eu quando faco ajuste
 > comeco por minimizar os residuos quadraticos pra ter uma estimativa inicial.
