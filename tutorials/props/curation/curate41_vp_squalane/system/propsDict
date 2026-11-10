@@ -24,7 +24,8 @@
   SET ASIDE BY NAME:
       (none)
 
-  FIT AND ACCEPTANCE (DEV.md 4c C283, Vitor 2026-11-10, declared before the fit).
+  FIT AND GRADED ACCEPTANCE (DEV.md 4c C285, Vitor 2026-11-10; the evidence,
+  objective and outliers of C283; declared before the fit).
   EVIDENCE: every study above is fitted; none is held out (C283 amended:
   laboratories disagree with each other by more than they claim, so the
   test is agreement across all of them, not one laboratory's claimed
@@ -36,15 +37,40 @@
   the acceptance) is DISCARDED BY NAME (its study DOI, T and P), listed in
   the result and the record, and the fit repeated without it, once
   (`outliers { maxRelativeError 15 percent; }`).  ACCEPTANCE,
-  the DEFAULT of C283: ACCEPTED and promoted (autoPromoted, humanReviewed
-  false) when the maximum relative P error over all kept points is at most
-  5 % and the normal-boiling-point condition below holds with an
-  absolute error below 1 K.  This case declares no
-  `system/curationDict`, so the default applies; a case that needs another
-  acceptance declares it there, with its reason.  The AmbroseWalton curve's
-  errors on the same points are reported beside the fit's, as information.
+  GRADED, the DEFAULT of C285: the maximum relative P error over all kept
+  points is graded clean up to 5 %, warning up to
+  10 %, severe up to 20 % and refused above; where the
+  normal-boiling-point condition below applies, the absolute gap is graded
+  clean up to 1 K, warning up to 2 K, severe up to
+  4 K and refused above.  The fit's grade is the WORSE of the
+  two.  A clean, warning or severe fit is ACCEPTED and promoted (autoPromoted,
+  humanReviewed false) with `fitGrade <grade>;` and the deciding numbers in
+  its provenance entry, which the component loader voices on every run that
+  uses it (a warning or a severe grade); a refused one is not promoted.  This
+  case declares no `system/curationDict`, so the default applies; a case
+  that needs another acceptance declares it there, with its reason.  The
+  AmbroseWalton curve's errors on the same points are reported beside the
+  fit's, as information.
 
-  NORMAL BOILING POINT: the record's Tb 623.15 K is judged against the range of the KEPT points (all studies span 298.15-686.4 K before any outlier is discarded): if Tb lies OUTSIDE that range, the fitted Antoine's own normal boiling point (P = 101.325 kPa) must lie within the acceptance's temperature error of it, or the gap is announced and the fit is not promoted; inside it, the gap is reported and is not a condition.
+  NORMAL BOILING POINT: the record's Tb 623.15 K is judged against the range of the KEPT points (all studies span 298.15-686.4 K before any outlier is discarded): if Tb lies OUTSIDE that range, the fitted Antoine's own normal boiling point (P = 101.325 kPa) is GRADED by its absolute gap to it (the temperature limits of the acceptance below); inside it, the gap is reported and is not a condition.
+
+  EARLIER FITS, SUPERSEDED BY THIS DECLARATION
+  @@EARLIER-BEGIN@@
+  C283, every usable study fitted and none held out, accepted only at max
+  relative error <= 5 % and Tnb within 1 K (superseded by the graded
+  acceptance of C285): WHAT THE RUN FOUND (pinned in `expected`;
+  measured, not argued). Objective twoStage. Antoine log10(Psat/bar) =
+  5.524774 - 3196.0462/(T + -103.1706), in-sample R2 0.999906 over 32
+  kept points, 298.15-686.4 K (10.1016/j.jct.2019.03.032 32/32 kept).
+  Relative error in P over the kept points: mean 5.4320 %, max 9.4322 %;
+  AmbroseWalton on the same points: mean 69.1733 %, max 446.1594 %.
+  Outliers discarded: none. Its own normal boiling point (101.325 kPa):
+  682.26 K. NOT PROMOTED by the DEFAULT acceptance of DEV.md 4c C283 (no
+  system/curationDict): 1 studies, 32 points kept, 0 discarded as
+  outliers; max relative error 9.432 % (mean 5.432 %) against 5 %;
+  AmbroseWalton on the same points mean 69.17 % / max 446.2 %; the record
+  keeps AmbroseWalton
+  @@EARLIER-END@@
 
   NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares every
   series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates
@@ -52,17 +78,7 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
-  Objective twoStage. Antoine log10(Psat/bar) = 5.524774 - 3196.0462/(T +
-  -103.1706), in-sample R2 0.999906 over 32 kept points, 298.15-686.4 K
-  (10.1016/j.jct.2019.03.032 32/32 kept). Relative error in P over the
-  kept points: mean 5.4320 %, max 9.4322 %; AmbroseWalton on the same
-  points: mean 69.1733 %, max 446.1594 %. Outliers discarded: none. Its
-  own normal boiling point (101.325 kPa): 682.26 K. NOT PROMOTED by the
-  DEFAULT acceptance of DEV.md 4c C283 (no system/curationDict): 1
-  studies, 32 points kept, 0 discarded as outliers; max relative error
-  9.432 % (mean 5.432 %) against 5 %; AmbroseWalton on the same points
-  mean 69.17 % / max 446.2 %; the record keeps AmbroseWalton
+  (filled in by bin/choupo-curate after the run)
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 
