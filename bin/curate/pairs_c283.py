@@ -1118,6 +1118,9 @@ def main(argv):
                    help="with --run/--promote: walk the C283 cases themselves "
                         "(promoted ones included) instead of the ranked queue")
     q.add_argument("--only", nargs="*", help="with --graded: these case numbers only")
+    q.add_argument("--jobs", type=int, default=1,
+                   help="with --graded --run: run up to N cases at once (cap 2), each a "
+                        "separate process writing only inside its own case directory")
     q.add_argument("--no-commit", action="store_true")
     q.add_argument("--top", type=int, default=60)
     q.add_argument("--pmax", type=float, default=110.0)
@@ -1226,6 +1229,56 @@ def batch(a):
     return 0
 
 
+JOBS_CAP = 2   # three generals share four cores (coordinator, 2026-11-10)
+
+
+def run_parallel(a, cases):
+    """`--graded --run --jobs N`: each case is run by a CHILD process of this
+    very command (`--only <n> --jobs 1`), at most N at once; a child writes
+    only inside its own case directory (fetch, the two fit stages, its
+    case-local record, the seal).  A case whose pair this pipeline already
+    promoted would be regraded IN PLACE -- a shared catalogue record -- so it
+    is left to the serial loop, as are promotion, commits and generated
+    files, which never run here.  Returns (outcomes, cases left for the
+    serial loop)."""
+    import concurrent.futures as cf
+    jobs = min(a.jobs, JOBS_CAP)
+    if a.jobs > JOBS_CAP:
+        cc.say(f"--jobs {a.jobs} capped at {JOBS_CAP}")
+    safe, serial = [], []
+    for c in cases:
+        (serial if own_promotion(c[1], c[2], c[0].relative_to(ROOT).as_posix()) is not None
+         else safe).append(c)
+    tmp = Path(tempfile.mkdtemp(prefix="choupo-curate-jobs-"))
+
+    def child(c):
+        n = re.match(r"curate(\d+)_", c[0].name).group(1)
+        js = tmp / f"{n}.json"
+        p = subprocess.run([sys.executable, str(ROOT / "bin" / "choupo-curate"), "pairs",
+                            "--graded", "--run", "--only", n, "--no-commit", "--jobs", "1",
+                            "--pmax", str(a.pmax), "--json", str(js)],
+                           capture_output=True, text=True)
+        try:
+            rec = json.loads(js.read_text())[0]
+        except (OSError, ValueError, IndexError):
+            rec = {"case": c[0].name, "pair": [c[1], c[2]],
+                   "outcome": f"error: child exited {p.returncode}: {(p.stdout + p.stderr)[-300:]}"}
+        return rec, p.stdout
+
+    out = []
+    try:
+        with cf.ThreadPoolExecutor(max_workers=jobs) as ex:
+            for rec, txt in ex.map(child, safe):    # in case order
+                sys.stdout.write("".join(l + "\n" for l in txt.splitlines()
+                                         if l.startswith("[curate")))
+                out.append(rec)
+                if a.json:
+                    Path(a.json).write_text(json.dumps(out, indent=1, default=str))
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+    return out, serial
+
+
 def batch_graded(a):
     """C286 over the cases this module wrote: --redeclare (every case, one
     commit), then --graded --run (each re-run on its committed declaration;
@@ -1236,6 +1289,8 @@ def batch_graded(a):
         want = {int(x) for x in a.only}
         cases = [c for c in cases if int(re.match(r"curate(\d+)_", c[0].name).group(1)) in want]
     out, touched = [], []
+    if a.run and a.jobs > 1:
+        out, cases = run_parallel(a, cases)
     for case, x, y in cases:
         rec = {"case": case.name, "pair": [x, y]}
         work = Path(tempfile.mkdtemp(prefix="choupo-curate-"))
