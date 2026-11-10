@@ -3221,6 +3221,20 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **C278 (Vitor, 2026-11-10, on column14 in the app after C275: the purity predictions
+> "ficaram uma merda", can it be made to match better).**  MEASURED the same turn, nothing
+> changed: the two product purities are 93.90 vs 93.5 wt % and 97.98 vs 98.1 wt %; what
+> reads badly is the RELATIVE error of two traces (-95.9 %, +37 %).  In kg/h: overhead
+> n-butane 0.7 computed vs 16 printed; bottoms i-butane 74 computed vs 54 printed vs 125
+> from the paper's own feed minus distillate; Table 2 closes to about 30 kg/h.  Variants
+> run: feed tray 34/38/42 moves the overhead trace 0.3-1.3 kg/h and nothing else; ideal
+> trays 6.1 kg/h; saturated reflux 9.1 kg/h (and the boiler back at -21 %).  No lever
+> short of a fitted one reaches 16 kg/h, and none is taken (Vitor's rule: no tuning to
+> hide an uninvestigated gap).  DECIDED: the subcooled reflux stays (measured fact); the
+> declared view gains the minor keys in kg/h beside the table's own closure error, so
+> the screen stops showing a percentage of a number the source cannot resolve.  Physics
+> lever still open and unfitted: a declared stage pressure profile (A2).  OPEN.
+>
 > **C277 (Vitor, 2026-11-09 night, after C276: "Entao agora reve o resto dos EduTools com
 > calma e faz o mesmo.").**  Every tool in `gui/src/ui/methods/registry.ts` read on the
 > published site the way `thiele` was: measured first (equations that fail to render,
