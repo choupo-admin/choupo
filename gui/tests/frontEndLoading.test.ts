@@ -113,7 +113,8 @@ describe("what the lesson says about the table is computed from it", () => {
   });
 
   it("step 6: separated bands are SUFFICIENT, not NECESSARY (C112 point 9)", () => {
-    expect(step(6)).toContain("SUFFICIENT to decide, not NECESSARY");
+    //  Emphasis capitals lowered (DEV.md 4c C277); the claim is unchanged.
+    expect(step(6)).toContain("sufficient to decide, not necessary");
     expect(step(6)).toContain("is not a probability distribution");
     expect(step(6)).toContain("the difference is known better than either total");
     expect(step(6)).toContain("expected cost and risk");

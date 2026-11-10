@@ -86,7 +86,7 @@ export const FEL_STEPS: readonly LessonStep[] = [
     title: "An estimate class is defined by what has been drawn",
     body: "The cost estimate at each gate is classified by AACE International "
       + "Recommended Practice 18R-97, written for the process industries.  "
-      + "A class is defined by the MATURITY of the project's definition, "
+      + "A class is defined by the maturity of the project's definition, "
       + "measured on its engineering deliverables (the flow diagrams, the "
       + "heat and material balances, the equipment lists, the datasheets), "
       + "and it carries an end usage, a typical estimating method and an "
@@ -116,8 +116,8 @@ export const FEL_STEPS: readonly LessonStep[] = [
   {
     n: 4,
     title: "It is a range of ranges, and the bands overlap",
-    body: "A Class 4 estimate does NOT have 'the accuracy -30/+50'.  The "
-      + "standard gives each class a RANGE of low ranges and a range of high "
+    body: "A Class 4 estimate does not have 'the accuracy -30/+50'.  The "
+      + "standard gives each class a range of low ranges and a range of high "
       + "ranges, and the phrase \"range of ranges\" is its own: Class 4's "
       + "low side lies somewhere in -15 to -30 %, its high side somewhere "
       + "in +20 to +50 %.  Where a project lands in that box is a property "
@@ -128,14 +128,14 @@ export const FEL_STEPS: readonly LessonStep[] = [
       + "through risk analysis of the specific project and should never be "
       + "pre-determined\", and that for weak project systems or risky "
       + "projects \"the high ranges may be two to three times the high range "
-      + "indicated\".  And the bands OVERLAP across classes: \"a Class 5 "
+      + "indicated\".  And the bands overlap across classes: \"a Class 5 "
       + "estimate for a particular project may be as accurate as a Class 3 "
       + "estimate for a different project\".  Read the table and the overlap "
       + "is exact: Class 5 at its optimistic end is the same band as Class 3 "
       + "at its pessimistic end, and Class 4 at its best is Class 2 at its "
       + "worst.  A ranking of classes is not a ranking of projects.  "
       + "Choupo's economics pass, when a case declares no band, uses the "
-      + "class's PESSIMISTIC corner and announces that it did "
+      + "class's pessimistic corner and announces that it did "
       + "(src/postProcessing/EstimateClass.H:45-52), because understating an "
       + "interval of confidence is the one error that is not conservative.",
   },
@@ -158,20 +158,20 @@ export const FEL_STEPS: readonly LessonStep[] = [
     n: 6,
     title: "When can an estimate choose between two options?",
     body: "This is the reason the front end is loaded at all.  Two options, "
-      + "A cheaper than B on their point estimates.  If the HIGH end of the "
-      + "cheaper one lies below the LOW end of the dearer one, the bands do "
+      + "A cheaper than B on their point estimates.  If the high end of the "
+      + "cheaper one lies below the low end of the dearer one, the bands do "
       + "not overlap and the range ends alone decide: wherever inside its "
       + "band each option's true cost turns out to be, A is cheaper.  "
       + "Rearranged, the cost ratio must exceed a number that belongs to the "
       + "class alone.  At Class 4's pessimistic corner that number is "
       + "1.5/0.7, so B must cost more than twice A before the range ends "
       + "can say which is cheaper; at Class 3's optimistic corner it is "
-      + "1.1/0.9.  Those ends are the class's GENERIC corners, not a "
+      + "1.1/0.9.  Those ends are the class's generic corners, not a "
       + "confidence interval calibrated for your project — step 4's standard "
       + "says that one comes from a risk analysis of the project itself.  "
-      + "Read that test for what it is, a CONSERVATIVE separation of the "
+      + "Read that test for what it is, a conservative separation of the "
       + "bands: non-overlapping ranges are "
-      + "SUFFICIENT to decide, not NECESSARY.  Overlapping bands do not make "
+      + "sufficient to decide, not necessary.  Overlapping bands do not make "
       + "two options indistinguishable, for three reasons.  First, a class "
       + "range is not a probability distribution: it states roughly where a "
       + "confidence interval ends, and says nothing of the shape inside it, "
@@ -179,7 +179,7 @@ export const FEL_STEPS: readonly LessonStep[] = [
       + "cheaper.  Second, the two errors are rarely independent: options "
       + "estimated by the same team, on the same basis, with the same prices "
       + "and the same method share much of their error, and what is shared "
-      + "cancels in the DIFFERENCE, so the difference is known better than "
+      + "cancels in the difference, so the difference is known better than "
       + "either total — estimating it directly, item by item where the "
       + "options differ, is often far more informative than comparing two "
       + "totals.  Third, a decision guaranteed by the range ends is one that "
@@ -209,7 +209,7 @@ export const FEL_STEPS: readonly LessonStep[] = [
       { sym: "L", means: "the low-range fraction of the class (negative)",
         unit: "–" },
       { sym: "\\sigma_D", means: "the standard uncertainty of the "
-        + "DIFFERENCE C_B − C_A", unit: "M€" },
+        + "difference C_B − C_A", unit: "M€" },
       { sym: "\\sigma_A", means: "the standard uncertainty of option "
         + "A's total", unit: "M€" },
       { sym: "\\sigma_B", means: "the standard uncertainty of option "
@@ -243,7 +243,7 @@ export const FEL_STEPS: readonly LessonStep[] = [
       + "converter from a declared space velocity at 20.84 m³, and the "
       + "kinetic stage solves a bed of 8.20 m³ on the Dyson and Simon rate "
       + "law, the volume at which its outlet is 5 K short of equilibrium.  "
-      + "The kinetic model did not FIRST size "
+      + "The kinetic model did not first size "
       + "the reactor; it checked and refined a size a space velocity had "
       + "already produced.",
   },
@@ -257,7 +257,7 @@ export const FEL_STEPS: readonly LessonStep[] = [
       + "and below that it serves part of each stage, and the table says "
       + "which part.  Be precise about the last row a student is likely to "
       + "reach.  A kinetic bed whose volume the engine solved, and exchangers "
-      + "designed tube by tube, are FEED-level PROCESS work.  The cost beside "
+      + "designed tube by tube, are FEED-level process work.  The cost beside "
       + "them is still factored from an equipment list, which is Class 4's "
       + "method.  So Choupo may solve individual process items at FEED-like "
       + "fidelity, but that does not make the project definition FEED: its "
@@ -276,7 +276,7 @@ export const FEL_LIMITS: readonly LessonLimit[] = [
     title: "The two options are drawn as if their errors were independent.",
     body: "Two options estimated by the same team, on the same basis and "
       + "with the same method, share much of their error, so their "
-      + "DIFFERENCE can be known better than either total.  Comparing their "
+      + "difference can be known better than either total.  Comparing their "
       + "bands is the cautious reading; a real study estimates the "
       + "difference directly.",
   },
@@ -371,7 +371,7 @@ export const FEL_QUIZ: readonly QuizQuestion[] = [
     correct: 0,
     feedback: "A class range is not a distribution; two options estimated on "
       + "the same basis share much of their error, which cancels in the "
-      + "DIFFERENCE (at a correlation of 0.9 the difference is known to "
+      + "difference (at a correlation of 0.9 the difference is known to "
       + "0.45 σ, the page's arithmetic); and most real decisions rest on "
       + "expected cost and risk.  Separated bands guarantee the answer for "
       + "every value in both; they are not the only way to reach one (step 6).",
