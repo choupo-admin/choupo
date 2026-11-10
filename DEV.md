@@ -3402,6 +3402,21 @@ accepts today, and that is a policy call.
 > Database.cpp were moved by hand and each checked to carry its `contains`
 > text), a full sweep.
 
+> **C299 (Vitor, 2026-11-10, a screenshot of the Pinch page of
+> `plant/ammonia02_full_plant` on www.choupo.org: "nao consigo mudar de
+> unidades na tool do menu!").**  Measured the same turn:
+> `gui/src/ui/PinchView.tsx` writes K and kW as literals (line 93 and the
+> axis/table labels) and never reads the Units menu preferences
+> (`gui/src/state/displayUnits.ts` converts temperature, pressure, flow, time;
+> there is NO power or heat-duty unit in it at all).  So the temperature menu
+> is ignored on this page and a duty unit does not exist to choose.  Slice:
+> add a duty unit (kW / MW / kJ/h / GJ/h / kcal/h) to the Units menu and
+> `displayUnits.ts`, and make every number and axis label of the Pinch page
+> (composites, grand composite, candidates, grid, streams table, status line)
+> follow temperature and duty preferences; the other pages that print kW
+> (check by grep) are listed, not silently left.  Status: recorded, general to
+> be dispatched (gui only; `--gui` is its validation).  Owner: architect.
+
 > **C298 (Vitor, 2026-11-10: "A outra sessao para ja esta parada!  Eu vou
 > passar as tarefas dela para aqui porque temos aqui mais cores!").  THE
 > CLOUD'S CURATION WORK CONTINUES ON THE LAPTOP.**  The cloud pushed

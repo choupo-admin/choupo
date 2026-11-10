@@ -109,6 +109,7 @@ before the UNIFAC matrix.  UNIFAC itself: 52x on column19 from one string-keyed 
 
 | status | what | ref |
 |---|---|---|
+| recorded 11-10, general to be dispatched | C299 (Vitor, from the app): the Pinch page ignores the Units menu (K and kW are literals) and there is no duty unit at all; add one and make the whole page follow temperature and duty | C299 |
 | done | C251 (Vitor, 11-08 night): EduTools get a way in -- a home (what they are, the guided sequences as cards, the shelves), no tool opens by default, "Path" becomes "Guided sequence" with step and why visible; GUI general, lands with the PIF batch | C251 |
 | done | C248 (Vitor, 11-08 night): PIF readiness for the 11-09 tutorial -- a Fable general walks the two tablet cases as a student, fixes the cheap blockers, writes the readiness review (docs/reviews/) and the student path page (docs/); site republished after it lands | C248 |
 | running (slices 1-4, 5a landed; next 5b and 6) | C245 kernel numerical audit: slices 1, 2, 3, 4, part of 11 and the adsorber hot spots LANDED (6bceec76d; slice 2 in the merge after 43c60cd15: tear Newton, simultaneous MESH and CSTR declare bounds, infeasible trials instead of clips; 17 closure rows re-recorded); slice 3 in the night batch (residual purity; `newton legacy;` declared); next 5 (vapour-pressure continuity), 6 (flash), then 7-10, 12 | C245 |
