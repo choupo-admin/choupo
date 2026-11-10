@@ -88,7 +88,7 @@ export const LS_STEPS: readonly LessonStep[] = [
       { sym: "N", means: "the number of measurements the fitter is handed. "
         + "Not the number available — see step 8" },
       { sym: "\\chi", means: "the sum of squared residuals, the single number "
-        + "the search minimises", unit: "K^2 here" },
+        + "the search minimises", unit: "K² here" },
     ],
     note: "One notational warning, because you will meet both. Choupo's "
       + "`chi2` diagnostic is the plain sum of squares (src/propertyOps/"
@@ -367,7 +367,7 @@ export const LS_STEPS: readonly LessonStep[] = [
 \qquad \text{(still in-sample: a smaller number is not a better model)}`,
     where: [
       { sym: "\\chi_{\\mathrm{in}}", means: "the in-sample sum of squares, "
-        + "over the fitted points only", unit: "K^2 here" },
+        + "over the fitted points only", unit: "K² here" },
       { sym: "\\mathrm{rms}", means: "the root-mean-square residual over the "
         + "fitted points, which is the in-sample number in the units a reader "
         + "thinks in", unit: "K" },
