@@ -40,9 +40,9 @@ export const CASE_ASSEMBLY_STEPS: readonly LessonStep[] = [
       + "Inside, three folders divide the case by the question each one "
       + "answers. system/ says HOW to run it: which program, how much to "
       + "print, which units in which order, with which numerical options. "
-      + "constant/ says WITH WHAT: the substances and the thermodynamic "
+      + "constant/ says with what: the substances and the thermodynamic "
       + "models the run may use — data that does not change while the case "
-      + "runs. 0/ says FROM WHERE: the state of every stream before the "
+      + "runs. 0/ says from where: the state of every stream before the "
       + "solve, one file per stream. The layout follows OpenFOAM's, where 0/ "
       + "is the state at time zero.",
     note: "The empty flash01_benzene_toluene.cho beside them is the GUI's "
@@ -66,7 +66,7 @@ export const CASE_ASSEMBLY_STEPS: readonly LessonStep[] = [
       + "line, or `/* ... */` — are skipped (" + at("dictComment") + "). A "
       + "value is a word, a number, or a number followed by its unit, and "
       + "the unit is converted to SI the moment the file is read ("
-      + at("unitToSI") + "). The parser also remembers WHAT KIND of quantity "
+      + at("unitToSI") + "). The parser also remembers what kind of quantity "
       + "the unit named, so when the flash later asks for its pressure "
       + "(" + at("flashPressureDims") + ") and finds a temperature, it "
       + "refuses rather than guessing (" + at("dimsCheck") + ").",
@@ -136,7 +136,7 @@ export const CASE_ASSEMBLY_STEPS: readonly LessonStep[] = [
   {
     n: 4,
     title: "Topology is not state",
-    body: "The flowsheetDict NAMES the streams — `in feed;`, `outputs ( "
+    body: "The flowsheetDict names the streams — `in feed;`, `outputs ( "
       + "liquid vapor );` — and gives none of them a value. The values live "
       + "in 0/, one file per stream. The engine holds both halves: a "
       + "flowsheetDict carrying a `streams {}` block of values is refused ("
@@ -167,7 +167,7 @@ export const CASE_ASSEMBLY_STEPS: readonly LessonStep[] = [
       + "redundant (it agrees with the (T, P) flash) or a contradiction (it "
       + "does not), and Choupo refuses it rather than choosing which to "
       + "believe (" + at("overSpecified") + "). The one exception is kept on "
-      + "purpose: a PURE component in two phases sits on its saturation "
+      + "purpose: a pure component in two phases sits on its saturation "
       + "curve, where T and P are not independent, so it keeps "
       + "`vaporFraction q;`.",
   },
@@ -204,7 +204,7 @@ export const CASE_ASSEMBLY_STEPS: readonly LessonStep[] = [
   {
     n: 6,
     title: "Break it, and read the refusal",
-    body: "Each button below damages a COPY of flash01 held in this page's "
+    body: "Each button below damages a copy of flash01 held in this page's "
       + "memory — the case files themselves are never touched — and runs "
       + "that copy with the same engine, compiled for the browser. What "
       + "appears is what the engine printed, lifted out of the run's own "
