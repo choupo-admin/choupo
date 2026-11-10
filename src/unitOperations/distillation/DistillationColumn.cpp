@@ -43,7 +43,7 @@ License
 #include "thermo/SaturationCurves.H"
 #include "thermo/reaction/ReactionRate.H"
 #include "thermo/reaction/Reaction.H"   // Reaction::forwardOrder -- the ONE home of the forward order
-
+#include "unitOperations/reactor/ReactionHeat.H"
 #include <algorithm>
 #include <atomic>
 #include <cmath>
@@ -2745,7 +2745,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     scalar kfA = 0.0, kfEa = 0.0, krA = 0.0, krEa = 0.0, mCatPerStage = 0.0;
     sVector Kads(n, 0.0);                           // adsorption equilibrium constants
     sVector order(n, 0.0);                          // FORWARD order (kinetic mode only)
-    const bool reactive = dict->found("reaction");
+    const bool reactive = dict->found("reaction"); if (reactive) announceDeclaredHeatDivergence(*dict->subDict("reaction"), "DistillationColumn '" + dict->name() + "'");
     if (reactive)
     {
         auto rx = dict->subDict("reaction");
