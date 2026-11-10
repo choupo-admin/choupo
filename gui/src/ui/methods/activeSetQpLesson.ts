@@ -80,7 +80,7 @@ export const QP_STEPS: readonly LessonStep[] = [
 \end{aligned}`,
     where: [
       { sym: "d", means: "the unknown — the vector being chosen. Called d "
-        + "because in an SQP method it is a step away from the current point" },
+        + "because in an SQP method it is a step away from the current point.  A prime, as in d', marks the transpose" },
       { sym: "B", means: "the Hessian of the objective: symmetric and "
         + "positive definite, so the contours are nested ellipsoids and there "
         + "is exactly one minimum" },
@@ -225,7 +225,7 @@ export const QP_STEPS: readonly LessonStep[] = [
           + "objective; step 5 says when a step can be zero instead." },
     ],
     formula: String.raw`\begin{aligned}
-p = 0 \ \text{ and all } \lambda_k \ge 0 \quad &\Rightarrow \quad \text{OPTIMAL}\\
+p = 0 \ \text{ and all } \lambda_k \ge 0 \quad &\Rightarrow \quad \text{optimal}\\
 p = 0 \ \text{ and some } \lambda_k < 0 \quad &\Rightarrow \quad \text{drop the most negative}
 \end{aligned}`,
     where: [
