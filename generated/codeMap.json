@@ -1759,6 +1759,9 @@
    "src/unitOperations/saturation/BubblePoint.H",
    "src/unitOperations/saturation/DewPoint.H"
   ],
+  "ReviewRecord": [
+   "src/thermo/ReviewRecord.H"
+  ],
   "ReynoldsGrid": [
    "src/propertyOps/ReynoldsSweep.H"
   ],
@@ -7824,6 +7827,7 @@
    "src/thermo/Database.H",
    "src/thermo/FitGrade.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoAnnounce.H"
   ],
   "src/thermo/ElementComposition.cpp": [
@@ -7863,6 +7867,13 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H"
+  ],
+  "src/thermo/ReviewRecord.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/thermo/ReviewRecord.H"
   ],
   "src/thermo/SaturationCurves.cpp": [
    "src/core/Constants.H",
@@ -7928,6 +7939,7 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/SurfaceTensionModel.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
@@ -7983,6 +7995,7 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/SystemClassifier.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
@@ -8020,6 +8033,7 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
@@ -8094,6 +8108,7 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
@@ -8130,6 +8145,7 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
@@ -8149,6 +8165,7 @@
    "src/thermo/Database.H",
    "src/thermo/FitGrade.H",
    "src/thermo/PairAudit.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/activityCoefficient/Wilson.H"
   ],
@@ -8592,6 +8609,7 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
@@ -11957,6 +11975,7 @@
    "src/thermo/ApproximationAuthorisation.cpp",
    "src/thermo/Component.cpp",
    "src/thermo/Database.cpp",
+   "src/thermo/ReviewRecord.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/ThermoPackageBuilder.cpp",
    "src/thermo/activityCoefficient/ActivityModel.cpp",
@@ -12699,6 +12718,7 @@
    "src/thermo/ElementComposition.cpp",
    "src/thermo/PackageAudit.cpp",
    "src/thermo/PricedDensity.cpp",
+   "src/thermo/ReviewRecord.cpp",
    "src/thermo/SaturationCurves.cpp",
    "src/thermo/SealCheck.cpp",
    "src/thermo/SurfaceTensionModel.cpp",
@@ -13075,6 +13095,7 @@
    "src/thermo/ElementComposition.cpp",
    "src/thermo/PackageAudit.cpp",
    "src/thermo/PricedDensity.cpp",
+   "src/thermo/ReviewRecord.cpp",
    "src/thermo/SaturationCurves.cpp",
    "src/thermo/SealCheck.cpp",
    "src/thermo/SurfaceTensionModel.cpp",
@@ -14617,6 +14638,7 @@
    "src/thermo/ElementComposition.cpp",
    "src/thermo/PackageAudit.cpp",
    "src/thermo/PricedDensity.cpp",
+   "src/thermo/ReviewRecord.cpp",
    "src/thermo/SaturationCurves.cpp",
    "src/thermo/SealCheck.cpp",
    "src/thermo/SurfaceTensionModel.cpp",
@@ -17874,6 +17896,17 @@
    "src/unitOperations/separation/TSATwinBed.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
+  ],
+  "src/thermo/ReviewRecord.H": [
+   "src/thermo/Database.cpp",
+   "src/thermo/ReviewRecord.cpp",
+   "src/thermo/ThermoPackage.cpp",
+   "src/thermo/ThermoPackageBuilder.cpp",
+   "src/thermo/activityCoefficient/ActivityModel.cpp",
+   "src/thermo/activityCoefficient/NRTL.cpp",
+   "src/thermo/activityCoefficient/UNIQUAC.cpp",
+   "src/thermo/activityCoefficient/Wilson.cpp",
+   "src/thermo/phase/LiquidPhase.cpp"
   ],
   "src/thermo/SaturationCurves.H": [
    "src/applications/choupoBatch/main.cpp",
