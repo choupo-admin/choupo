@@ -1,0 +1,250 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  curate16_nrtl_ethanol_dimethylCarbonate -- AN NRTL PAIR FROM PUBLISHED MEASUREMENTS, BY THE PIPELINE.
+
+  WRITTEN BY bin/choupo-curate pair ethanol dimethylCarbonate (DEV.md 4c C282; record
+  docs/design/binary-pairs-from-open-measurements.md section 8).  Every rule
+  below was decided before this tool existed (C16, C225, C226); the tool
+  applies them and decides nothing.
+
+  THE DECLARATION -- WRITTEN AND COMMITTED BEFORE ANY FIT RAN.
+  (C16 slice 2: so the declaration can be read against the result.)
+
+  IDENTITY.  ethanol (CAS 64-17-5, InChIKey LFQSCWFLJHTTHZ-UHFFFAOYSA-N)
+  + dimethylCarbonate (CAS 616-38-6, InChIKey IEJIGPNLZYLLBP-UHFFFAOYSA-N), joined
+  to the archive through identity.json -- never by name.
+
+  NO MEASURED SERIES IN THIS TREE.  constant/archiveDatasets names each
+  dataset (DOI, NIST URL, article sha256, extraction selector, extract
+  sha256); `bin/choupo-curate fetch` writes the points into
+  constant/archiveExtracts/, which is gitignored.
+
+  STUDIES CONSIDERED: every bubble-temperature block of the pair at or below
+  110 kPa with a declared uncertainty (4 block(s)).
+  USABLE after the screens: 2.  SET ASIDE, BY NAME:
+      - doi 10.1021/je0601309 block 9: TRIAGE: disagrees with the other
+      studies beyond their stated uncertainties (leave-one-study-out,
+      below)
+      - doi 10.1016/j.fluid.2018.05.024 block 0: TRIAGE: disagrees with
+      the other studies beyond their stated uncertainties
+      (leave-one-study-out, below)
+
+  TRIAGE (C226 item 3, leave one study out, fitted by the engine; a study
+  whose held-out AAD exceeds its own largest stated U plus the others'
+  largest stated U disagrees with them beyond their stated uncertainties):
+      10.1021/je0601309: AAD 0.896 K against the limit 0.800 K ->
+      DISAGREES -- set aside; 10.1021/acs.jced.9b00414: AAD 0.704 K
+      against the limit 0.830 K -> agrees; 10.1016/j.fluid.2018.05.024:
+      AAD 0.945 K against the limit 0.750 K -> DISAGREES -- set aside;
+      10.1021/je030131q: AAD 0.673 K against the limit 0.830 K -> agrees
+
+  PARTITION (the declared rule of C16 slice 2): the FIT set is the usable
+  study with the most interior points; the HELD-OUT set is the next largest
+  that shares NO author with it and was measured at one pressure.
+    FIT       doi 10.1021/acs.jced.9b00414 (20 interior points, 101.3 kPa)
+              authors: Liu, K.[Kai]; Xu, X.[Xin]; Zhang, Y.[Yi]; Xu, D.[Dongmei]; Gao, J.[Jun]; Zhang, L.[Lianzheng]
+    HELD OUT  doi 10.1021/je030131q (9 interior points, 95.8 kPa)
+              authors: Vittal Prasad, T. E.; Prashanth, P. R.; Kumar, D. S.; Prasad, D.H.L.
+
+  BAND: maxAAD 0.24 % of the held-out mean T.
+      declared before the fit by bin/choupo-curate, the ONE rule of C16:
+      the held-out set's largest stated expanded uncertainty (U95 = 0.32
+      K) plus the catalogue vapour-pressure model's own error at that
+      set's pure endpoints (dimethylCarbonate +0.504 K; measured with no
+      pair involved), as a percentage of the held-out mean T (347.42 K) =
+      0.2371 %, rounded UP to two significant figures
+
+  THE FIT.  NRTL with a_ij = a_ji = 0 and alpha = 0.30 fixed: TWO parameters
+  (b_ij, b_ji), the C16 frame (bubble temperatures over these ranges do not
+  identify more).  Each point weighted by 1/U, U its own stated expanded
+  uncertainty.  Two starts: (0, 0) and (800, -400).
+
+  @@RESULT-BEGIN@@
+  WHAT THE RUN FOUND: not yet run.
+  @@RESULT-END@@
+
+  WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
+  frame (ideal-gas vapour, the catalogue's own vapour-pressure records); the
+  measurements were transcribed by the archive and have NOT been read back
+  against the articles (the CHECKLIST that `fetch` writes beside the extracts
+  is the aid for that reading).
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        fit_nrtl;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-dimethylCarbonate.b_ij;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-dimethylCarbonate.b_ji;  initial 0;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/ethanol-dimethylCarbonate-bubble-acs.jced.9b00414.dat";
+                role     fit;
+            }
+            {
+                dataset  "constant/archiveExtracts/ethanol-dimethylCarbonate-bubble-je030131q.dat";
+                role     validation;
+            }
+        );
+
+        acceptance
+        {
+            maxAAD  0.24 percent;
+            origin  "declared before the fit by bin/choupo-curate, the ONE rule of C16: the held-out set's largest stated expanded uncertainty (U95 = 0.32 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (dimethylCarbonate +0.504 K; measured with no pair involved), as a percentage of the held-out mean T (347.42 K) = 0.2371 %, rounded UP to two significant figures";
+        }
+
+        objective { method leastSquares; }
+        residual
+        {
+            kind        T_bubble;
+            components  ( ethanol dimethylCarbonate );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_history.csv;
+            parity     parity.csv;
+            proposal   dimethylCarbonate-ethanol.proposal.dat;
+        }
+    }
+    {
+        name        fit_nrtl_start2;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-dimethylCarbonate.b_ij;  initial 800;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-dimethylCarbonate.b_ji;  initial -400;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/ethanol-dimethylCarbonate-bubble-acs.jced.9b00414.dat";
+                role     fit;
+            }
+            {
+                dataset  "constant/archiveExtracts/ethanol-dimethylCarbonate-bubble-je030131q.dat";
+                role     validation;
+            }
+        );
+
+        acceptance
+        {
+            maxAAD  0.24 percent;
+            origin  "declared before the fit by bin/choupo-curate, the ONE rule of C16: the held-out set's largest stated expanded uncertainty (U95 = 0.32 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (dimethylCarbonate +0.504 K; measured with no pair involved), as a percentage of the held-out mean T (347.42 K) = 0.2371 %, rounded UP to two significant figures";
+        }
+
+        objective { method leastSquares; }
+        residual
+        {
+            kind        T_bubble;
+            components  ( ethanol dimethylCarbonate );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            parity     parity_start2.csv;
+        }
+    }
+    {
+        name        txy_ideal;
+        type        propertyScan1D;
+        vary        { variable x[ethanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 95.8 kPa;  composition { ethanol 0.5;  dimethylCarbonate 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model ideal; } } }
+        }
+        properties  ( T_bubble  y_eq_ethanol );
+        output      { file txy_ideal.csv; }
+    }
+    {
+        name        txy_nrtl;
+        type        propertyScan1D;
+        vary        { variable x[ethanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 95.8 kPa;  composition { ethanol 0.5;  dimethylCarbonate 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_ethanol );
+        output      { file txy_nrtl.csv; }
+    }
+    {
+        name        txy_ideal_fitP;
+        type        propertyScan1D;
+        vary        { variable x[ethanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { ethanol 0.5;  dimethylCarbonate 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model ideal; } } }
+        }
+        properties  ( T_bubble  y_eq_ethanol );
+        output      { file txy_ideal_fitP.csv; }
+    }
+    {
+        name        txy_nrtl_fitP;
+        type        propertyScan1D;
+        vary        { variable x[ethanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { ethanol 0.5;  dimethylCarbonate 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_ethanol );
+        output      { file txy_nrtl_fitP.csv; }
+    }
+);
+
+experimental
+(
+    {
+        name      heldout;
+        component ethanol;
+        kind      txy;
+        models    ( txy_ideal  txy_nrtl );
+        dataset   "constant/archiveExtracts/ethanol-dimethylCarbonate-bubble-je030131q.dat";
+        source    "held out: doi 10.1021/je030131q";
+    }
+    {
+        name      fitset;
+        component ethanol;
+        kind      txy;
+        models    ( txy_ideal_fitP  txy_nrtl_fitP );
+        dataset   "constant/archiveExtracts/ethanol-dimethylCarbonate-bubble-acs.jced.9b00414.dat";
+        source    "IN-SAMPLE (the fit set): doi 10.1021/acs.jced.9b00414";
+    }
+);
