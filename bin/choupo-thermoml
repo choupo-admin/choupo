@@ -1752,6 +1752,336 @@ def cmd_extract_vle(a):
     return 0
 
 
+#  ---------------------------------------------------------------------------
+#  extract-px (DEV.md 4c C291): ONE binary BUBBLE-PRESSURE series -- a liquid
+#  mole fraction and the measured pressure at a STATED temperature.  The
+#  mirror of the bubble-temperature reader above, and it refuses by name:
+#  no stated per-point uncertainty, a temperature that varies across the
+#  points (unless --allow-multi-isotherm, which writes it as a column), a
+#  vapour composition reported with no liquid one, anything not a binary.
+#  ---------------------------------------------------------------------------
+BUBBLEP_SUPPORTED = ("isothermal binary bubble-pressure evidence (a stated "
+                     "temperature, liquid mole fraction x1, bubble pressure P, "
+                     "a stated uncertainty on every point)")
+
+
+def _var_phase(v):
+    return find_text(v, "eVarPhase")
+
+
+def _one_bubbleP_block(root, pom, comps, doi, multi=False):
+    members = [find_text(c, "nOrgNum") for c in find_all(pom, "Component")]
+    if len(members) != 2:
+        raise BubbleRefusal(f"this dataset declares {len(members)} component(s).  "
+                            "Only BINARY systems are interpreted.")
+    props = {}
+    for pr in find_all(pom, "Property"):
+        num, name = find_text(pr, "nPropNumber"), find_text(pr, "ePropName")
+        if num and name:
+            props[num] = name
+    if len(props) != 1:
+        raise BubbleRefusal(f"this dataset declares {len(props)} properties "
+                            f"({', '.join(sorted(props.values())) or 'none'}); a "
+                            "bubble-pressure series carries exactly one: the pressure.")
+    pnum, pname = next(iter(props.items()))
+    if not pname.lower().startswith("vapor or sublimation pressure"):
+        raise BubbleRefusal(f"the measured property is '{pname}', not a pressure.")
+    if "kpa" not in pname.lower():
+        raise BubbleRefusal(f"the pressure is declared in '{pname}'; only kPa is read "
+                            "(a conversion here would be a silent one).")
+    kinds = {}
+    for v in find_all(pom, "Variable"):
+        num = find_text(v, "nVarNumber")
+        if num:
+            kinds[num] = _var_kind(v) + (_var_phase(v),)
+    comp_vars = [n for n, k in kinds.items() if k[0] == "composition"]
+    liq = [n for n in comp_vars if kinds[n][3] == "Liquid"]
+    if not liq:
+        if comp_vars:
+            raise BubbleRefusal("REPORTS y BUT NO x: the only composition variable is "
+                                "the vapour (Gas) mole fraction; a bubble-pressure "
+                                "pair fit needs the liquid composition.")
+        raise BubbleRefusal("no liquid mole fraction among the variables.")
+    if len(liq) != 1 or len(comp_vars) != 1:
+        raise BubbleRefusal("more than one composition variable; choosing among "
+                            "them would be guessing.")
+    xvar = liq[0]
+    xorg = kinds[xvar][2]
+    if xorg and xorg != members[0]:
+        members = [members[1], members[0]]
+    if any(k[0] == "pressure" for k in kinds.values()):
+        raise BubbleRefusal("a pressure is declared as a VARIABLE although the "
+                            "pressure is the measured property.")
+    tvars = [n for n, k in kinds.items() if k[0] == "temperature"]
+    others = [n for n, k in kinds.items() if k[0] not in ("composition", "temperature")]
+    if others:
+        raise BubbleRefusal("an unrecognised variable is declared; this reader "
+                            "takes only the liquid composition and the temperature.")
+    Tconst = None
+    for c in find_all(pom, "Constraint"):
+        unit = ""
+        for e in c.iter():
+            if local(e.tag) == "eTemperature" and e.text:
+                unit = e.text.strip()
+        if unit:
+            if "k" != unit.split(",")[-1].strip().lower():
+                raise BubbleRefusal(f"the held temperature is declared in '{unit}'; "
+                                    "only K is read.")
+            if Tconst is not None or tvars:
+                raise BubbleRefusal("the temperature is declared more than once.")
+            try:
+                Tconst = float(find_text(c, "nConstraintValue"))
+            except ValueError:
+                raise BubbleRefusal("the held temperature is not a number.")
+    if Tconst is None and len(tvars) != 1:
+        raise BubbleRefusal("NO STATED TEMPERATURE: neither a temperature constraint "
+                            "nor exactly one temperature variable.")
+    tvar = tvars[0] if tvars else None
+    if tvar is not None and "k" != kinds[tvar][1].split(",")[-1].strip().lower():
+        raise BubbleRefusal(f"the temperature variable is in '{kinds[tvar][1]}'; "
+                            "only K is read.")
+    pts, uncert = [], []
+    for nv in find_all(pom, "NumValues"):
+        xs = {find_text(x, "nVarNumber"): find_text(x, "nVarValue")
+              for x in find_all(nv, "VariableValue")}
+        if xvar not in xs or (tvar is not None and tvar not in xs):
+            raise BubbleRefusal("a data point lacks the composition or the "
+                                "temperature -- not a bubble-pressure curve.")
+        pval, uval = "", ""
+        for pv in find_all(nv, "PropertyValue"):
+            if find_text(pv, "nPropNumber") == pnum:
+                pval = find_text(pv, "nPropValue")
+                uval = find_text(pv, "nCombExpandUncertValue")
+        if not pval:
+            continue
+        T = float(xs[tvar]) if tvar is not None else Tconst
+        pts.append((float(xs[xvar]), T, float(pval)))
+        uncert.append(float(uval) if uval else None)
+    if len(pts) < 2:
+        raise BubbleRefusal("fewer than two usable points")
+    if any(u is None for u in uncert):
+        raise BubbleRefusal("NO STATED UNCERTAINTY: "
+                            f"{sum(u is None for u in uncert)} of {len(pts)} points "
+                            "carry no expanded uncertainty on the pressure.")
+    Ts = sorted({round(t, 6) for _, t, _ in pts})
+    if len(Ts) > 1 and not multi:
+        raise BubbleRefusal(f"THE TEMPERATURE VARIES ACROSS THE POINTS "
+                            f"({len(Ts)} values, {Ts[0]} .. {Ts[-1]} K); this "
+                            "reader takes one isotherm per block (a ruling is "
+                            "needed to read a multi-isotherm block).")
+    seen, dup = set(), []
+    for x, t, p in pts:
+        k = (x, round(t, 6), p)
+        if k in seen:
+            dup.append(k)
+        seen.add(k)
+    if dup:
+        raise BubbleRefusal(f"{len(dup)} of {len(pts)} (x, T, P) rows repeat an "
+                            "earlier row exactly; read the article before choosing "
+                            "one copy.")
+    by_org = {}
+    for c, org in zip(comps, [find_text(x, "nOrgNum") for x in find_all(root, "Compound")]):
+        if org:
+            by_org[org] = c["name"]
+    names = [by_org.get(m, "") for m in members]
+    if not all(names):
+        raise BubbleRefusal("a component could not be resolved to a compound name "
+                            "by its RegNum; the axis of x1 would be a guess.")
+    level = ""
+    for pr in find_all(pom, "Property"):
+        if find_text(pr, "nPropNumber") == pnum:
+            level = find_text(pr, "nCombUncertLevOfConfid")
+    order = sorted(range(len(pts)), key=lambda k: (pts[k][1], pts[k][0]))
+    rec = {"system": names[:2], "members": members[:2], "doi": doi,
+           "points": [(pts[k][0], pts[k][1], pts[k][2]) for k in order],
+           "uP": [uncert[k] for k in order], "uP_level": level}
+    if len(Ts) == 1:
+        rec["T_K"] = Ts[0]
+    else:
+        rec["isotherms"] = Ts
+    return rec
+
+
+def extract_binary_bubbleP(root, path, block=None, multi=False):
+    comps = compounds_published(root)
+    doi = find_text(root, "sDOI")
+    poms = find_all(root, "PureOrMixtureData")
+    if not poms:
+        raise BubbleRefusal("the file declares no <PureOrMixtureData> block")
+    if block is not None:
+        if not 0 <= block < len(poms):
+            raise BubbleRefusal(f"--block {block} is out of range (0..{len(poms) - 1})")
+        poms = [poms[block]]
+    ok, refusals = [], []
+    for idx, pom in enumerate(poms):
+        i = block if block is not None else idx
+        try:
+            ok.append((i, _one_bubbleP_block(root, pom, comps, doi, multi)))
+        except BubbleRefusal as ex:
+            refusals.append((i, str(ex)))
+    if len(ok) == 1:
+        ok[0][1]["block"] = ok[0][0]
+        return ok[0][1]
+    if len(ok) > 1:
+        raise BubbleRefusal(f"this file carries {len(ok)} interpretable bubble-pressure "
+                            "datasets; name one with `--block N`: "
+                            + ", ".join(str(i) for i, _ in ok))
+    raise BubbleRefusal(f"none of this file's {len(refusals)} block(s) is an "
+                        "isothermal bubble-pressure series:\n" + "\n".join(
+                            f"      block {i}: {why}" for i, why in refusals))
+
+
+def cmd_extract_px(a):
+    """Write ONE Choupo dataset from a binary bubble-pressure block."""
+    src = pathlib.Path(a.file)
+    if not src.is_file():
+        print(f"choupo-thermoml extract-px: no such file: {src}")
+        return 1
+    try:
+        root = ET.parse(src).getroot()
+    except ET.ParseError as ex:
+        print(f"choupo-thermoml extract-px: {src.name} is not parseable XML: {ex}")
+        return 1
+    if detect_dialect(root) != "published":
+        print(f"choupo-thermoml extract-px: REFUSED\n  {src.name} is not the published "
+              "archive dialect.")
+        return 1
+    try:
+        rec = extract_binary_bubbleP(root, src, block=a.block,
+                                     multi=a.allow_multi_isotherm)
+    except BubbleRefusal as ex:
+        print(f"choupo-thermoml extract-px: REFUSED\n  This extractor supports "
+              f"{BUBBLEP_SUPPORTED}.\n  {src.name}: {ex}\n  Nothing was written.")
+        return 1
+    ident = _identity_map()
+    if ident is None:
+        print("choupo-thermoml extract-px: REFUSED\n  no identity.json in the cache; "
+              "run `choupo-thermoml identity` first (InChIKey join, never by name).")
+        return 1
+    orgs = {find_text(c, "nOrgNum"): c for c in find_all(root, "Compound")}
+    names, identity = [], []
+    for org, arch_name in zip(rec["members"], rec["system"]):
+        key = find_text(orgs[org], "sStandardInChIKey") if org in orgs else ""
+        hit = ident.get(key)
+        if not hit:
+            print("choupo-thermoml extract-px: REFUSED\n  the archive compound "
+                  f"'{arch_name}' (InChIKey {key or 'none declared'}) resolves to NO "
+                  "catalogue component through the identity bridge.")
+            return 1
+        names.append(hit[0])
+        identity.append((hit[0], hit[1], key))
+    c1, c2 = names
+    pts, uP = rec["points"], rec["uP"]
+    reoriented = None
+    xof = getattr(a, "x_of", None)
+    if xof is not None and xof != c1:
+        if xof != c2:
+            print(f"choupo-thermoml extract-px: REFUSED\n  --x-of {xof}: the system is "
+                  f"{c1} + {c2}.")
+            return 1
+        reoriented = c1
+        c1, c2 = c2, c1
+        identity = identity[::-1]
+        pts = [(1.0 - x, t, p) for x, t, p in pts]
+    keep = [k for k in range(len(pts)) if 0.0 < pts[k][0] < 1.0]
+    dropped = [k for k in range(len(pts)) if k not in keep]
+    if len(keep) < 2:
+        print("choupo-thermoml extract-px: REFUSED\n  fewer than two interior points "
+              "remain after setting the pure-component endpoints aside.")
+        return 1
+    dest = pathlib.Path(a.into)
+    dest.mkdir(parents=True, exist_ok=True)
+    sha = hashlib.sha256(src.read_bytes()).hexdigest()
+    out = dest / f"{c1}-{c2}-bubbleP-{src.stem}-b{rec['block']}.dat".replace(" ", "_")
+    varying = "isotherms" in rec
+    doi = rec["doi"] or "none-declared"
+    authors = [e.text.strip() for e in find_all(root, "sAuthor") if e.text and e.text.strip()]
+    journal, year = find_text(root, "sPubName"), find_text(root, "yrPubYr")
+    au = "; ".join(x.split("[")[0].strip() for x in authors[:6])
+    if len(authors) > 6:
+        au += " et al."
+    citation = f"{au} ({year}). {find_text(root, 'sTitle')}. {journal}. doi:{doi}".replace('"', "'")
+    tline = (f"  temperature  {len(rec['isotherms'])} isotherms, {rec['isotherms'][0]} .. "
+             f"{rec['isotherms'][-1]} K   (a COLUMN: each point at its own)" if varying
+             else f"  temperature  {rec['T_K']} K   (CONSTANT across the series)")
+    lines = [
+        "/*--------------------------------------------------------------------------*\\",
+        "  BINARY BUBBLE-PRESSURE EVIDENCE, extracted from a ThermoML file by",
+        "  bin/choupo-thermoml extract-px (DEV.md 4c C291).",
+        "",
+        f"  system       {c1} + {c2}   (x is {c1}'s liquid mole fraction)",
+    ] + ([f"  orientation  the article reports x of {reoriented}; written here as",
+          f"               x[{c1}] = 1 - x[{reoriented}] by --x-of {c1} (a binary: exact)"]
+         if reoriented else []) + [
+        tline,
+        f"  points       {len(keep)}"
+        + (f"   ({len(dropped)} pure-component endpoint(s) set aside -- see `selection`)"
+           if dropped else ""),
+        "",
+        "  The measured property is the bubble PRESSURE; fitParameters(P_bubble)",
+        "  reads it at the stated temperature and judges it RELATIVELY.",
+        "",
+        "  REDISTRIBUTION.  These are measured values reported in the article cited",
+        "  below, located through the NIST/TRC ThermoML Archive (a finding aid;",
+        "  thirdParty/thermoml/README.md).  The article is the source.",
+        "\\*--------------------------------------------------------------------------*/",
+        "",
+        "property     binaryVLE.P_bubble;",
+        f"system       ( {c1} {c2} );",
+    ]
+    if not varying:
+        lines.append(f"temperature  {rec['T_K']} K;")
+    lines += ["", "provenance", "{", "    source       measured;",
+              "    reviewStatus transcribedNotCheckedAgainstArticle;",
+              f'    citation     "{citation}";',
+              f'    archiveFile  "{src.name}";',
+              f'    archive      "{SYNC_TARBALL} (NIST/TRC ThermoML Archive, doi:{ARCHIVE_DOI})";',
+              f"    block        {rec['block']};",
+              f'    doi          "{doi}";',
+              f'    sha256       "{sha}";',
+              "    identity", "    {"]
+    for comp, cas, key in identity:
+        lines.append(f'        {comp:<14} {{ cas "{cas}"; inchiKey "{key}"; }}')
+    lines += [f'        rule           "{IDENTITY_RULE}";', "    }", "}", ""]
+    u = [uP[k] for k in keep]
+    lines += ["uncertainty", "{", "    P_bubble", "    {",
+              "        kind    expandedCombined;   // ThermoML nCombExpandUncertValue",
+              f"        level   {rec['uP_level'] or 'undeclared'};"
+              + ("            // per cent confidence" if rec["uP_level"] else ""),
+              "        unit    kPa;",
+              "        values  ( " + " ".join(f"{v:g}" for v in u) + " );"
+              "   // per point, in `data` order", "    }", "}", ""]
+    if dropped:
+        lines += ["selection", "{",
+                  "    //  A bubble point on a PURE component measures the vapour-pressure",
+                  "    //  correlation, not the pair.  Set aside, not deleted.",
+                  "    pureEndpoints", "    ("]
+        for k in dropped:
+            lines.append(f"        {{ x {pts[k][0]:g}; T {pts[k][1]:g} K; P_bubble {pts[k][2]:g} kPa; }}")
+        lines += ["    );", "}", ""]
+    lines += ["columns", "(", f"    {{ name x[{c1}];  unit -;  }}"]
+    if varying:
+        lines.append("    { name T;  unit K; }")
+    lines.append("    { name Pressure;  unit kPa;  }")
+    lines += [");", "", "data", "("]
+    for k in keep:
+        x, t, p = pts[k]
+        row = f"    {x:8.4f}"
+        if varying:
+            row += f"  {t:10.4f}"
+        row += f"  {p:.6g}"
+        lines.append(row)
+    lines += [");", ""]
+    out.write_text("\n".join(lines))
+    print(f"choupo-thermoml extract-px: {out}  ({len(keep)} points)")
+    print(f"  system    {c1} + {c2}")
+    for comp, cas, key in identity:
+        print(f"  identity  {comp:<14} CAS {cas}  InChIKey {key}")
+    print(f"  {tline.strip()}")
+    print(f"  doi       {rec['doi'] or '(none declared)'}")
+    return 0
+
+
 def _find_block(root, rec, block):
     """The <PureOrMixtureData> element `rec` was read from."""
     poms = find_all(root, "PureOrMixtureData")
@@ -2164,6 +2494,17 @@ def main():
                     help="write the series in the mole fraction of THIS member "
                          "(x = 1 - the reported x when the article reports the "
                          "other one; said in the file's header)")
+    ep = sub.add_parser("extract-px",
+                        help="write ONE dataset from a binary bubble-PRESSURE block "
+                             "(DEV.md 4c C291)")
+    ep.add_argument("file", help="the ThermoML .xml to read")
+    ep.add_argument("--block", type=int, default=None)
+    ep.add_argument("--into", required=True, help="destination directory")
+    ep.add_argument("--x-of", default=None,
+                    help="write the series in the mole fraction of THIS member")
+    ep.add_argument("--allow-multi-isotherm", action="store_true",
+                    help="read a block whose temperature takes several stated "
+                         "values (written as a T column); off by default")
     xv = sub.add_parser("extract-vp",
                         help="write ONE pure-component vapour-pressure dataset "
                              "from one article file, for one InChIKey")
@@ -2201,7 +2542,7 @@ def main():
                               or getattr(a, "raw_query", "")):
         return cmd_search_online(a)
     return {"sync": cmd_sync, "index": cmd_index, "search": cmd_search,
-            "extract": cmd_extract, "extract-vle": cmd_extract_vle,
+            "extract": cmd_extract, "extract-vle": cmd_extract_vle, "extract-px": cmd_extract_px,
             "extract-vp": cmd_extract_vp,
             "identity": cmd_identity, "vle-index": cmd_vle_index,
             "vle-search": cmd_vle_search}[a.cmd](a)
