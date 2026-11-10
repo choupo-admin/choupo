@@ -111,7 +111,8 @@ export const PUMP_STEPS: readonly LessonStep[] = [
     body: "Split the demand in two, because the halves behave completely "
       + "differently.  The static head is the part that does not care how "
       + "fast you push: lifting the liquid through an elevation, and pushing "
-      + "it into a vessel held at a different pressure.  Stop the flow "
+      + "it into a vessel held at a different pressure (this model carries "
+      + "the elevation only).  Stop the flow "
       + "entirely and it is still there.  The friction head is everything "
       + "the moving liquid rubs away — the pipe wall along the run, plus the "
       + "elbows, bends and valves — and it grows roughly as the square of "
@@ -182,7 +183,7 @@ export const PUMP_STEPS: readonly LessonStep[] = [
       + "the volume passing through.  Twice the flow, half the rise.",
     formula: String.raw`\Delta p_\mathrm{pump} = \frac{\eta\, W_\mathrm{shaft}}{Q} \qquad (Q = \text{volumetric flow})`,
     where: [
-      { sym: "\\eta", means: "Pump EFFICIENCY — a declared constant, read once "
+      { sym: "\\eta", means: "Pump efficiency — a declared constant, read once "
         + "and applied at every flow.  It is not a curve and not a function "
         + "of Q, so this model has no best-efficiency point and no "
         + "efficiency-versus-flow reading exists.  It splits the shaft work: "
