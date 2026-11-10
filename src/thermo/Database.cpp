@@ -39,6 +39,7 @@ License
 #include <cctype>
 #include <algorithm>
 #include <vector>
+#include <variant>
 #include <fstream>
 #include <stdexcept>
 
@@ -619,6 +620,52 @@ DictPtr Database::componentDict(const std::string& name) const
                          " and mark `reviewStatus reviewed;` before the result"
                          " is cited.\n";
         }
+
+    //  A PROPERTY A PIPELINE PROMOTED SAYS SO AT RUN TIME (DEV.md 4c C281
+    //  step 2, 2026-11-10).  `bin/choupo-curate vp` replaces a record's
+    //  estimated vapour-pressure curve with an Antoine fitted to archive
+    //  measurements and marks THAT VALUE -- not the record -- `reviewStatus
+    //  autoPromoted; humanReviewed false;` in its per-value provenance entry
+    //  (`provenance { vaporPressure { ... } }`).  The record-level status
+    //  above says whether the FILE was read back; this says that one of its
+    //  values was put there by a machine and no human has read it.  Same
+    //  tag, same once-per-process channel and the same sentence shape as the
+    //  pair loader's autoPromoted line (src/thermo/PairAudit.H), so a reader
+    //  meets one convention whatever kind of record carries it.  Generic over
+    //  the provenance entries: the property is named by the entry, never
+    //  hard-coded here.
+    if (dict->found("provenance")
+        && std::holds_alternative<DictPtr>(dict->entryValue("provenance")))
+    {
+        const DictPtr prov = dict->subDict("provenance");
+        for (const std::string& key : prov->keys())
+        {
+            if (!std::holds_alternative<DictPtr>(prov->entryValue(key))) continue;
+            const DictPtr entry = prov->subDict(key);
+            if (entry->lookupWordOrDefault("reviewStatus", "") != "autoPromoted")
+                continue;
+            const std::string where =
+                entry->lookupWordOrDefault("fittedInCase", "");
+            if (AdvisoryLog::instance().addAnnouncedOnce(
+                    "autoPromoted:" + name + ":" + key,
+                    "provenance", "warning", "component '" + name + "'",
+                    "`" + key + "` reviewStatus autoPromoted -- promoted"
+                    " AUTOMATICALLY by its fitting pipeline; NO human has"
+                    " reviewed it"))
+                std::cerr << "[unreviewed] component '" << name << "': `"
+                          << key << "` reviewStatus autoPromoted -- this value"
+                             " was promoted into the catalogue AUTOMATICALLY by"
+                             " its fitting pipeline (held-out verdict validated"
+                             " against a band declared before the fit) and NO"
+                             " human has reviewed it (humanReviewed false)"
+                          << (where.empty() ? std::string()
+                                            : "; its fit is reproduced by "
+                                              + where)
+                          << ".  Read its provenance entry before the result is"
+                             " cited; a curator who has read it back marks"
+                             " `reviewStatus reviewed; humanReviewed true;`.\n";
+        }
+    }
 
     //  CONSOLE ONLY, AND THE REASON IS WORTH KEEPING.  The first version put
     //  this on the AdvisoryLog like its `interim` sibling, and the corpus

@@ -100,6 +100,22 @@ case-local one that did not earn promotion):
       the gate exits 2 -- never a pass (a check that cannot run must not
       pass) and never a silent skip.
 
+  (i) A REGRESSED VAPOUR PRESSURE (DEV.md 4c C281 step 2, 2026-11-10).  A
+      component whose `provenance { vaporPressure { ... } }` entry names a
+      `fittedInCase` (or claims `autoPromoted` / `humanReviewed`) was refitted
+      by `bin/choupo-curate vp` from an AmbroseWalton estimate to an Antoine:
+      its case is fetched and run, and the record's coefficients (to 1e-8
+      relative), its Trange (the FIT dataset's own span), its evidence (role,
+      DOI, extract sha256 against the case's archiveDatasets), its verdict,
+      held-out points, AAD and band must equal the run's; only `validated`
+      is in the catalogue; the entry is `reviewStatus autoPromoted;
+      humanReviewed false;` with `promotedBy`; and the case's run prints the
+      component loader's `[unreviewed] component '<c>': `vaporPressure`
+      reviewStatus autoPromoted` line AND carries it in the result JSON
+      advisories.  Each dataset carries its DOI, archive sha256, citation, the
+      compound's CAS + InChIKey and one stated Psat uncertainty per row.
+      NOT RUN (exit 2) where the series cannot be regenerated, as above.
+
 WHAT IT DOES NOT CHECK.  Whether the measurements are RIGHT -- each dataset
 says `reviewStatus transcribedNotCheckedAgainstArticle`, and reading them
 back against the articles is a curator's act.  Whether the band was the right
@@ -598,6 +614,195 @@ def check_ll_arm(tmp, fails):
     return held
 
 
+#  Arm (i): a VAPOUR PRESSURE Choupo regressed (DEV.md 4c C281 step 2).
+#  `bin/choupo-curate vp <component> --promote` replaces a component's
+#  AmbroseWalton estimate by an Antoine fitted to one study and held out on
+#  another, and marks the per-value provenance entry `provenance {
+#  vaporPressure { ... reviewStatus autoPromoted; humanReviewed false;
+#  fittedInCase ...; } }`.  The same promise as a pair record, so the same
+#  arms, extended rather than duplicated: the record is reproduced by its case
+#  (coefficients, Trange = the fit's own span, evidence identity, verdict,
+#  held-out points and AAD, band), only a `validated` fit is in the
+#  catalogue, `autoPromoted` carries `humanReviewed false` and `promotedBy`,
+#  and the case's own run VOICES the status through the component loader.
+STD_COMP = ROOT / "data" / "standards" / "components"
+VP_FLOOR = 0      # SET AT LANDING to the number promoted (see main): a
+                  # collapsed scan surface must not read as a clean catalogue
+
+
+def vp_entry(text):
+    """The per-value provenance entry of `vaporPressure`, comment-stripped."""
+    prov = block(strip_comments(text), "provenance") or ""
+    return block(prov, "vaporPressure")
+
+
+def vp_facts(text):
+    t = strip_comments(text)
+    vb = None
+    m = re.search(r"^vaporPressure\s*\{", t, re.M)
+    if m:
+        vb = block(t[m.start():], "vaporPressure")
+    ent = vp_entry(text) or ""
+    val = block(ent, "validation") or ""
+    co = re.search(r"coefficients\s*\(([^)]*)\)", vb or "")
+    tr = re.search(r"Trange\s*\(([^)]*)\)", vb or "")
+    ev = set()
+    for mm in re.finditer(r"\{([^{}]*)\}", block(ent, "evidence") or ent):
+        b = mm.group(1)
+        if "role" in b and "doi" in b:
+            ev.add((word(b, "role"), word(b, "doi"), word(b, "sha256")))
+    return {
+        "model": word(vb or "", "model"),
+        "coef": [float(x) for x in co.group(1).split()] if co else None,
+        "Trange": [float(x) for x in tr.group(1).split()] if tr else None,
+        "evidence": ev,
+        "verdict": word(val, "verdict"), "points": num(val, "points"),
+        "aad_pct": num(val, "aad_pct"), "maxAAD": num(val, "maxAAD"),
+    }
+
+
+def check_vp_dataset(path, comp, fails, tag):
+    t = path.read_text()
+    prov = block(t, "provenance") or ""
+    for k in ("doi", "sha256", "archiveFile", "citation"):
+        if not word(prov, k):
+            fails.append(f"{tag}: {path.name} declares no provenance `{k}`")
+    ident = block(prov, "identity") or ""
+    if len(re.findall(r"inchiKey\s+\"[A-Z]{14}-[A-Z]{10}-[A-Z]\"", ident)) != 1 \
+            or len(re.findall(r"cas\s+\"\d+-\d\d-\d\"", ident)) != 1 \
+            or not re.search(r"(^|\s)%s\s*\{" % re.escape(comp), ident):
+        fails.append(f"{tag}: {path.name} does not carry the CAS and InChIKey of "
+                     f"{comp} under provenance.identity")
+    u = block(block(t, "uncertainty") or "", "Psat") or ""
+    m = re.search(r"values\s*\(([^)]*)\)", u)
+    d = t[t.index("\ndata"):] if "\ndata" in t else ""
+    rows = [l for l in d.splitlines()[2:] if l.strip() and l.strip()[0].isdigit()]
+    if not m or len(m.group(1).split()) != len(rows):
+        fails.append(f"{tag}: {path.name} -- per-point Psat uncertainties missing "
+                     f"or not one per data row ({len(rows)} rows)")
+    return [float(l.split()[0]) for l in rows]
+
+
+def check_vapour_pressures(tmp, fails, not_run, fetched):
+    """Arm (i).  Returns the list of records reproduced."""
+    done = []
+    recs = []
+    for p in sorted(STD_COMP.glob("*.dat")):
+        ent = vp_entry(p.read_text())
+        if ent is None:
+            continue
+        if word(ent, "fittedInCase") or word(ent, "reviewStatus") == "autoPromoted" \
+                or word(ent, "humanReviewed"):
+            recs.append(p)
+    if len(recs) < VP_FLOOR:
+        fails.append(f"arm (i): only {len(recs)} regressed vapour-pressure record(s) "
+                     f"under {STD_COMP.relative_to(ROOT)} -- {VP_FLOOR} were promoted "
+                     "at landing (C281 step 2); the scan surface has collapsed or the "
+                     "records lost their `fittedInCase`")
+    for p in recs:
+        comp, text = p.stem, p.read_text()
+        tag = f"arm (i) {p.relative_to(ROOT).as_posix()}"
+        ent = vp_entry(text)
+        rf = vp_facts(text)
+        for k in ("fittedInCase", "reviewStatus", "reviewReason", "reuse",
+                  "promotedBy", "origin"):
+            if not word(ent, k):
+                fails.append(f"{tag}: provenance.vaporPressure has no `{k}` -- a "
+                             "proposal moved, not promoted")
+        if word(ent, "reviewStatus") != "autoPromoted" or \
+                word(ent, "humanReviewed") != "false":
+            fails.append(f"{tag}: provenance.vaporPressure reads reviewStatus "
+                         f"{word(ent, 'reviewStatus')!r}, humanReviewed "
+                         f"{word(ent, 'humanReviewed')!r} -- a value a machine "
+                         "promoted is `autoPromoted` with `humanReviewed false`")
+        if rf["model"] != "Antoine" or not rf["coef"] or len(rf["coef"]) != 3 \
+                or not rf["Trange"]:
+            fails.append(f"{tag}: the vaporPressure block is not a fitted Antoine "
+                         "with coefficients and a Trange")
+            continue
+        if rf["verdict"] != "validated":
+            fails.append(f"{tag}: verdict `{rf['verdict']}` in the CATALOGUE -- only "
+                         "a validated fit is promoted")
+        case_rel = word(ent, "fittedInCase")
+        case = ROOT / case_rel if case_rel else None
+        if case is None or not (case / "system" / "propsDict").exists() \
+                or not (case / ARCHIVE_DECL).exists():
+            fails.append(f"{tag}: fittedInCase `{case_rel}` is not a case declaring "
+                         f"{ARCHIVE_DECL}")
+            continue
+        if case_rel not in fetched:
+            fetched[case_rel] = fetch_case(case)
+        code, msg = fetched[case_rel]
+        if code == 2:
+            not_run.append(f"{tag}: {msg.splitlines()[-1] if msg else 'fetch could not run'}")
+            continue
+        if code != 0:
+            fails.append(f"{tag}: its case's declared datasets could not be "
+                         f"regenerated: {msg[-400:]}")
+            continue
+        decl = (case / ARCHIVE_DECL).read_text()
+        fit_T = []
+        for ds in sorted((case / "constant" / "archiveExtracts").glob("*.dat")):
+            T = check_vp_dataset(ds, comp, fails, tag)
+            if re.search(r'file\s+"constant/archiveExtracts/%s";\s*role\s+fit;'
+                         % re.escape(ds.name), strip_comments(decl)):
+                fit_T = T
+        work = tmp / ("vp-" + case.name)
+        shutil.copytree(case, work)
+        pr = subprocess.run([str(PROPS), "."], cwd=str(work), capture_output=True,
+                            text=True, timeout=900, env=dict(os.environ, CHOUPO_HOME=str(ROOT)))
+        out = pr.stdout + pr.stderr
+        js = result_of(pr.stdout)
+        op = next((o for o in (js or {}).get("operationResults", [])
+                   if o.get("name") == "fit_antoine"), None)
+        if pr.returncode != 0 or op is None:
+            fails.append(f"{tag}: its case {case.name} exited {pr.returncode} / "
+                         "published no `fit_antoine` result")
+            continue
+        d, cu = op.get("diagnostics", {}), op.get("curation", {})
+        run = {"coef": [d.get("A"), d.get("B"), d.get("C")],
+               "verdict": cu.get("verdict"), "points": d.get("n_heldout"),
+               "aad_pct": d.get("aad_heldout_pct"),
+               "maxAAD": float(cu.get("acceptanceMaxAADPct", "nan"))}
+        for k, (x, y) in zip("ABC", zip(rf["coef"], run["coef"])):
+            if not close(x, y, rel=1e-8):
+                fails.append(f"{tag}: Antoine {k} = {x} in the record, {y} from its "
+                             "case -- the record has drifted from its evidence")
+        for k in ("points", "aad_pct", "maxAAD"):
+            if not close(rf[k], run[k]):
+                fails.append(f"{tag}: `{k}` = {rf[k]} in the record, {run[k]} from "
+                             "its case")
+        if rf["verdict"] != run["verdict"]:
+            fails.append(f"{tag}: verdict {rf['verdict']!r} in the record, "
+                         f"{run['verdict']!r} from its case")
+        if not fit_T or not close(rf["Trange"][0], min(fit_T)) \
+                or not close(rf["Trange"][1], max(fit_T)):
+            fails.append(f"{tag}: Trange {rf['Trange']} is not the fit's own span "
+                         f"({(min(fit_T), max(fit_T)) if fit_T else 'no fit dataset'})")
+        want = set()
+        for m in re.finditer(r"\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}",
+                             (re.search(r"datasets\s*\((.*)\)\s*;",
+                                        strip_comments(decl), re.S) or re.match("", "")).group(1)
+                             if "datasets" in decl else ""):
+            b = re.sub(r"identity\s*\{.*", "", m.group(1), flags=re.S)
+            want.add((word(b, "role"), word(b, "doi"), word(b, "sha256")))
+        if rf["evidence"] != want:
+            fails.append(f"{tag}: evidence {sorted(rf['evidence'])} differs from its "
+                         f"case's declaration {sorted(want)}")
+        said = f"[unreviewed] component '{comp}': `vaporPressure` reviewStatus autoPromoted"
+        if said not in out:
+            fails.append(f"{tag}: marked autoPromoted and its case printed no "
+                         f"`{said}` line -- the engine does not voice it")
+        adv = [a for a in (js or {}).get("advisories", [])
+               if a.get("locus") == f"component '{comp}'"
+               and "autoPromoted" in a.get("message", "")]
+        if not adv:
+            fails.append(f"{tag}: the autoPromoted status is not in the result JSON "
+                         "advisories (the end-of-run caveat block)")
+        done.append(comp)
+    return done
+
+
 def main():
     if not PROPS.exists():
         print("check_regressed_pairs: FAILED\n  choupoProps is not built -- "
@@ -739,6 +944,7 @@ def main():
             where = ("catalogue" if in_std
                      else "case-local in " + rec_path.parents[3].name)
             checked.append(f"{rec_path.stem} ({where}, {rf['verdict']})")
+        vp_done = check_vapour_pressures(tmp, fails, not_run, fetched)
         span_held = check_span_announcement(tmp, fails)
         ll_held = check_ll_arm(tmp, fails)
     finally:
@@ -771,6 +977,11 @@ def main():
           f"{len(ll_checked)} catalogue pair(s) declare a liquid-liquid gap and are held to "
           f"the measured tie lines; arm (h) refused {ll_held} of 6 wrong gap declarations "
           "by name and passed the right one (arm f, amended); "
+          f"{len(vp_done)} catalogue vapour pressure(s) regressed by `choupo-curate vp` "
+          f"({', '.join(vp_done) or 'none'}) reproduced by their cases -- Antoine "
+          "coefficients, Trange = the fit's span, evidence, held-out verdict -- "
+          "autoPromoted with humanReviewed false and voiced by the component "
+          "loader into the caveat block (arm i); "
           f"{span_held} water pair(s) used BELOW their span announce it once "
           "per run, into the caveat block, say nothing inside it, and publish "
           "the same gammas as a span-less inline twin (arm g).  NOT "

@@ -847,7 +847,7 @@ def parse_decl(case):
                     ident[im.group(1)] = (im.group(2), im.group(3))
                 out.append({k2: crp.word(d, k2) for k2 in
                             ("file", "doi", "url", "articleFile", "articleSha256",
-                             "block", "sha256")} | {"identity": ident})
+                             "block", "sha256", "role", "extractor", "inchiKey")} | {"identity": ident})
     return out
 
 
@@ -903,10 +903,21 @@ def fetch(case, quiet=False):
                  "byInchiKey": {r["inchiKey"]: [r["component"]] for r in recs}}))
             if src.name != d["articleFile"]:
                 refuse(f"article file name {src.name} != {d['articleFile']}")
-            out, why = extract(src, d["block"], tmp / "x", fake_cache=fake)
+            #  WHICH EXTRACTOR is declared, never guessed: a pure-component
+            #  vapour-pressure dataset (C281) names `extractor vapourPressure`
+            #  and the InChIKey it is joined on; a binary bubble-point dataset
+            #  (C282) declares none and its block.
+            if d.get("extractor") == "vapourPressure":
+                out, why = extract_vp(src, d["inchiKey"], tmp / "x", fake_cache=fake)
+                what = f"extract-vp refused doi {d['doi']} ({d['inchiKey']})"
+            elif d.get("extractor"):
+                refuse(f"{case.name}: dataset of doi {d['doi']} declares extractor "
+                       f"`{d['extractor']}`, which this tool does not know")
+            else:
+                out, why = extract(src, d["block"], tmp / "x", fake_cache=fake)
+                what = f"extract-vle refused doi {d['doi']} block {d['block']}"
             if out is None:
-                say(f"choupo-curate fetch: REFUSED -- extract-vle refused doi {d['doi']} "
-                    f"block {d['block']}: {why}")
+                say(f"choupo-curate fetch: REFUSED -- {what}: {why}")
                 return 1
             got = sha_file(out)
             if got != d["sha256"]:
@@ -935,7 +946,7 @@ def write_checklist(case, decl):
         p = case / d["file"]
         t = p.read_text()
         cit = crp.word(crp.block(t, "provenance") or "", "citation") or ""
-        lines += ["=" * 74, f"doi {d['doi']}   block {d['block']}",
+        lines += ["=" * 74, f"doi {d['doi']}" + (f"   block {d['block']}" if d.get('block') else ""),
                   f"article  https://doi.org/{d['doi']}", f"citation {cit}",
                   f"NIST     {d['url']}", "-" * 74]
         dd = t[t.index("\ncolumns"):]
@@ -1263,6 +1274,623 @@ def revert(stem):
 
 
 # --------------------------------------------------------------------------
+
+# ==========================================================================
+#  THE PURE-COMPONENT VAPOUR-PRESSURE MODE (DEV.md 4c C281 step 2)
+#
+#      choupo-curate vp <component> [--plan] [--number N] [--no-commit] [--resume]
+#      choupo-curate vp <component> --promote
+#      choupo-curate revert <component>     (a vapour pressure this mode promoted)
+#
+#  The same decided rules as `pair`, applied to ONE compound's vapour
+#  pressure, and nothing new decided:
+#
+#    1. IDENTITY by InChIKey (identity.json), never by name.  Only a record
+#       whose vaporPressure is `model AmbroseWalton` is a candidate: this
+#       mode replaces a corresponding-states ESTIMATE and never overwrites a
+#       curve somebody fitted or read.
+#    2. STUDIES: one per ARTICLE (the archive's file), each extracted by
+#       `choupo-thermoml extract-vp` (the C279 audit's reading of a pure
+#       liquid-gas vapour-pressure point).  SET ASIDE BY NAME: an article with
+#       no pressure row, one whose pressure rows do not ALL state an
+#       uncertainty, one with fewer than MIN_INTERIOR points.
+#    3. PARTITION (C16 slice 2, declared rule): FIT = the study with the most
+#       points (ties by DOI); HELD OUT = the next largest sharing NO author
+#       with it.  None -> no fit, and the record keeps AmbroseWalton.
+#    4. BAND: the held-out study's own stated relative expanded uncertainty
+#       U95(P)/P AVERAGED over its points, in per cent, rounded UP to two
+#       significant figures.  NOT the largest (C16's rule for a pair): a
+#       pair's U is in kelvin and nearly uniform along a series, a vapour
+#       pressure's RELATIVE U spans orders of magnitude along one (the
+#       lowest-pressure point sets the maximum and says nothing about the
+#       rest), and the statistic it is held to -- the held-out AAD -- is a
+#       mean.  Nothing else enters it: there is no pair and no endpoint.
+#    5. THE NORMAL BOILING POINT (rule 4 of the commission): where the
+#       record's Tb lies OUTSIDE every measured temperature (fit and held
+#       out), the fitted Antoine is an extrapolation there, and it is
+#       promoted only if its own normal boiling point (P = 101.325 kPa) lies
+#       within TB_TOL_K of the record's Tb.  Inside the measured span the
+#       held-out verdict is the test.  Declared in the case before the fit.
+#    6. CASE curateNN_vp_<component>, the declaration COMMITTED before any
+#       fit; no measured series in the tree (constant/archiveDatasets, as
+#       `pair`).  Not sealed: the fit reads no catalogue record, and the
+#       run must read the CATALOGUE record so it can voice its status.
+#    7. PROMOTION (`--promote`) only when the verdict is `validated` and the
+#       Tb rule holds: the AmbroseWalton block is REPLACED by the fitted
+#       Antoine (Trange = the fit's own span; outside it the engine announces
+#       the extrapolation, as for every Antoine), the per-value provenance
+#       entry names the DOIs, the case and the verdict, and is marked
+#       `reviewStatus autoPromoted; humanReviewed false;` -- voiced on every
+#       run by the component loader (src/thermo/Database.cpp).  `revert
+#       <component>` puts the AmbroseWalton block back, and only on a record
+#       this mode promoted.
+#
+#  WHAT IT DOES NOT DO: a study triage (C226 item 3 is the PAIR pipeline's;
+#  here a disagreeing held-out study simply fails the verdict and nothing is
+#  promoted); fit any form but the three-parameter Antoine of
+#  src/propertyOps/VaporPressureFit.cpp; read the articles back.
+# ==========================================================================
+VP_PROMOTED_BY = "bin/choupo-curate vp --promote"
+TB_TOL_K = 2.0
+STD_COMP = ROOT / "data" / "standards" / "components"
+AW_BLOCK = ("vaporPressure\n{\n    model AmbroseWalton;  "
+            "// [origin=estimated method=Ambrose-Walton]\n}\n")
+AW_BANNER = ("  Critical constants are source data; Psat is an explicitly\n"
+             "  estimated Ambrose-Walton corresponding-states closure.\n")
+AW_PROV = ("    vaporPressure\n    {\n        origin        predictive;\n"
+           '        method        "Ambrose-Walton corresponding states";\n'
+           '        methodVersion "choupo-aw-1989";\n'
+           '        uncertainty   "not quantified; validate against saturation data";\n'
+           '        notes         "computed from ChemSep Tc/Pc/omega";\n    }\n')
+
+
+def vp_record(comp):
+    p = STD_COMP / f"{comp}.dat"
+    if not p.exists():
+        refuse(f"no catalogue record {p.relative_to(ROOT)}")
+    return p
+
+
+def vp_is_aw(text):
+    return re.search(r"^vaporPressure\s*\{[^}]*\bmodel\s+AmbroseWalton\s*;",
+                     crp.strip_comments(text), re.M) is not None
+
+
+def record_Tb(text):
+    m = re.search(r"^Tb\s+([0-9.eE+-]+)\s*;", crp.strip_comments(text), re.M)
+    return float(m.group(1)) if m else None
+
+
+def read_vp_dataset(path):
+    t = path.read_text()
+    d = t[t.index("\ndata"):]
+    rows = [l.split() for l in d.splitlines() if l.strip() and l.strip()[0].isdigit()]
+    u = re.search(r"Psat\s*\{[^}]*values\s*\(([^)]*)\)", t, re.S)
+    U = [float(v) for v in u.group(1).split()] if u else []
+    T = [float(r[0]) for r in rows]
+    P = [float(r[1]) for r in rows]
+    return {"n": len(rows), "T": T, "P": P, "U": U}
+
+
+def extract_vp(xml, key, into, fake_cache=None):
+    cmd = [sys.executable, "-I", str(THERMOML), "extract-vp", str(xml),
+           "--inchikey", key, "--into", str(into)]
+    e = env()
+    if fake_cache:
+        e["CHOUPO_THERMOML_HOME"] = str(fake_cache)
+    p = subprocess.run(cmd, capture_output=True, text=True, env=e)
+    m = re.search(r"extract-vp: (\S+\.dat)\s+\(", p.stdout)
+    if p.returncode != 0 or not m:
+        return None, " ".join(l.strip() for l in p.stdout.splitlines()[1:3]) or p.stderr[-300:]
+    return Path(m.group(1)), p.stdout
+
+
+def antoine_P_kPa(A, B, C, T):
+    return 100.0 * 10.0 ** (A - B / (T + C))
+
+
+def antoine_Tnb(A, B, C, P_kPa=101.325):
+    return B / (A - math.log10(P_kPa / 100.0)) - C
+
+
+def vp_plan(name, work):
+    comp, cas, key = identity(name)
+    rp = vp_record(comp)
+    text = rp.read_text()
+    if not vp_is_aw(text):
+        refuse(f"{comp}: its vaporPressure is not `model AmbroseWalton` -- this mode "
+               "replaces a corresponding-states estimate and never overwrites a curve "
+               "somebody fitted or read")
+    ix = json.loads((cache_root() / "index.json").read_text())
+    arts = sorted({e["doi"]: e for e in ix["entries"]
+                   if any(c.get("inchikey") == key for c in e.get("compounds", []))}.values(),
+                  key=lambda e: e["doi"])
+    studies, aside = [], []
+    for e in arts:
+        xml = cache_root() / (e["doi"] + ".xml")
+        if not xml.exists():
+            aside.append((e["doi"], "the article file is not in the local cache"))
+            continue
+        out, why = extract_vp(xml, key, work / "ex")
+        if out is None:
+            if "carries no pure" not in why:
+                aside.append((e["doi"], why))
+            continue
+        ds = read_vp_dataset(out)
+        if ds["n"] < MIN_INTERIOR:
+            aside.append((e["doi"], f"{ds['n']} pressure point(s), fewer than {MIN_INTERIOR}"))
+            continue
+        studies.append(dict(ds, doi=e["doi"], path=out, xml=xml,
+                            authors=e.get("authors", []),
+                            Tmin=min(ds["T"]), Tmax=max(ds["T"])))
+    studies.sort(key=lambda s: (-s["n"], s["doi"]))
+    pl = {"comp": comp, "cas": cas, "key": key, "studies": studies, "aside": aside,
+          "Tb": record_Tb(text), "fit": None, "held": None}
+    if not studies:
+        pl["why"] = "no usable study"
+        return pl
+    fit = studies[0]
+    fa = surnames(fit["authors"])
+    held = next((s for s in studies[1:] if not (surnames(s["authors"]) & fa)), None)
+    pl["fit"] = fit
+    if held is None:
+        pl["why"] = ("no second study sharing no author with the fit study "
+                     f"({fit['doi']}): fewer than two independent studies")
+        return pl
+    pl["held"] = held
+    rel = [Ui / Pi for Ui, Pi in zip(held["U"], held["P"])]
+    u = sum(rel) / len(rel)
+    band = round_up_2sf(100.0 * u)
+    pl["band"] = band
+    pl["band_txt"] = fmt_band(band)
+    pl["origin"] = (
+        "declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out "
+        "study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its "
+        f"{held['n']} points ({100.0 * min(rel):.3g} to {100.0 * max(rel):.3g} %, mean "
+        f"{100.0 * u:.4g} %), rounded UP to two significant figures -- a mean held "
+        "against the held-out AAD, which is a mean")
+    lo = min(fit["Tmin"], held["Tmin"])
+    hi = max(fit["Tmax"], held["Tmax"])
+    pl["span"] = (lo, hi)
+    Tb = pl["Tb"]
+    pl["tb_rule"] = (
+        "no Tb declared in the record: no normal-boiling-point condition" if Tb is None else
+        f"the record's Tb {Tb:g} K lies INSIDE the measured span {lo:g}-{hi:g} K: the "
+        "held-out verdict is the test there, no further condition" if lo <= Tb <= hi else
+        f"the record's Tb {Tb:g} K lies OUTSIDE the measured span {lo:g}-{hi:g} K: the "
+        f"fitted Antoine's own normal boiling point (P = 101.325 kPa) must lie within "
+        f"{TB_TOL_K:g} K of it, or the fit is NOT promoted (an extrapolation that misses "
+        "the record's own boiling point)")
+    pl["tb_applies"] = Tb is not None and not (lo <= Tb <= hi)
+    return pl
+
+
+def vp_decl_text(pl, case_rel):
+    lines = [
+        "/*--------------------------------*- Choupo -*--------------------------------*\\",
+        f"  constant/archiveDatasets -- WHERE the measurements of {case_rel.split('/')[-1]}",
+        "  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE",
+        "  (Vitor, 2026-11-10: the measured series are not copied; only the fitted",
+        "  parameters are kept).  `bin/choupo-curate fetch <case>` writes each",
+        f"  dataset into {EXTRACTS}/ (gitignored): the article file is taken from",
+        "  the local ThermoML cache when it holds it, else from the NIST URL below,",
+        "  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable",
+        "  NIST is reported NOT RUN, never a pass.",
+        "\\*-----------------------------------------------------------------------------*/",
+        "",
+        "recordType    archiveDatasets;",
+        "",
+        "archive",
+        "{",
+        f'    tarball   "{ARCHIVE}";',
+        f'    doi       "{ARCHIVE_DOI}";',
+        '    note      "the finding aid; each article file is also served one by one at the NIST URL";',
+        "}",
+        "",
+        "datasets",
+        "(",
+    ]
+    for role, s in (("fit", pl["fit"]), ("validation", pl["held"])):
+        lines += [
+            "    {",
+            f'        file          "{EXTRACTS}/{s["path"].name}";',
+            f"        role          {role};   // informational: the operation declares it",
+            f'        doi           "{s["doi"]}";',
+            f'        url           "{NIST.format(doi=s["doi"], ext="xml")}";',
+            f'        page          "{NIST.format(doi=s["doi"], ext="json")}";',
+            f'        articleFile   "{Path(s["xml"]).name}";',
+            f'        articleSha256 "{sha_file(s["xml"])}";',
+            "        extractor     vapourPressure;",
+            f'        inchiKey      "{pl["key"]}";',
+            f'        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey {pl["key"]} --into <dir>";',
+            f'        sha256        "{sha_file(s["path"])}";',
+            "        identity",
+            "        {",
+            f'            {pl["comp"]:<14} {{ cas "{pl["cas"]}"; inchiKey "{pl["key"]}"; }}',
+            "        }",
+            "    }",
+        ]
+    lines += [");", ""]
+    return "\n".join(lines)
+
+
+def vp_props_text(pl, case_name):
+    comp, fit, held = pl["comp"], pl["fit"], pl["held"]
+    ranked = "\n".join(
+        f"      {s['doi']:<30} {s['n']:>4} pts  {s['Tmin']:g}-{s['Tmax']:g} K  "
+        + "; ".join(a.split(",")[0] for a in s["authors"][:4])
+        + (" et al." if len(s["authors"]) > 4 else "")
+        for s in pl["studies"])
+    aside = "\n".join(f"      {d}: {w}" for d, w in pl["aside"]) or "      (none)"
+    return f"""/*--------------------------------*- Choupo -*--------------------------------*\\
+|       \\|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\\\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\\\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\\\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \\|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\\
+  {case_name} -- the vapour pressure of {comp}, REFITTED to
+  measurements (DEV.md 4c C281 step 2).  Written by `bin/choupo-curate vp
+  {comp}`; everything above the RESULT paragraph is the DECLARATION, committed
+  before any fit ran, so it can be read against the result.
+
+  WHY.  The catalogue record carried `vaporPressure {{ model AmbroseWalton; }}`,
+  a corresponding-states ESTIMATE from Tc, Pc and omega that never reads the
+  record's own Tb (C279 measured a median 19.6 % AAD over the 25 such records
+  with archive data).  Here a three-parameter Antoine is fitted to ONE
+  laboratory and held out on ANOTHER that shares no author with it.
+
+  STUDIES (one per article, extracted by `choupo-thermoml extract-vp`; ranked
+  by points, ties by DOI):
+{ranked}
+  SET ASIDE BY NAME:
+{aside}
+
+  PARTITION (the C16 rule, declared): FIT = the study with the most points,
+  doi {fit['doi']} ({fit['n']} pts, {fit['Tmin']:g}-{fit['Tmax']:g} K); HELD OUT =
+  the next largest sharing no author with it, doi {held['doi']} ({held['n']} pts,
+  {held['Tmin']:g}-{held['Tmax']:g} K).
+
+  BAND: maxAAD {pl['band_txt']} % ({pl['origin']}).
+
+  NORMAL BOILING POINT: {pl['tb_rule']}.
+
+  NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares both
+  series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates
+  them into constant/archiveExtracts/ (gitignored).
+
+  RESULT
+  @@RESULT-BEGIN@@
+  (filled in by bin/choupo-curate after the run)
+  @@RESULT-END@@
+\\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {{
+        name       fit_antoine;
+        type       vaporPressureFit;
+        component  {comp};
+
+        evidence
+        (
+            {{
+                dataset   "{EXTRACTS}/{fit['path'].name}";
+                identity  {{ doi "{fit['doi']}"; }}
+                role      fit;
+            }}
+            {{
+                dataset   "{EXTRACTS}/{held['path'].name}";
+                identity  {{ doi "{held['doi']}"; }}
+                role      validation;
+            }}
+        );
+
+        acceptance
+        {{
+            maxAAD  {pl['band_txt']} percent;
+            origin  "{pl['origin']}";
+        }}
+
+        output     {{ file fit_antoine.csv; }}
+    }}
+);
+"""
+
+
+def vp_case_dir(comp):
+    for p in sorted(CURATION.iterdir()):
+        if re.match(rf"curate\d+_vp_{re.escape(comp)}$", p.name) and (p / DECL).exists():
+            return p
+    return None
+
+
+def vp_write_case(pl, number):
+    comp = pl["comp"]
+    name = f"curate{number:02d}_vp_{comp}"
+    case = CURATION / name
+    if case.exists():
+        refuse(f"{case.relative_to(ROOT)} exists -- a declaration is never rewritten")
+    case_rel = case.relative_to(ROOT).as_posix()
+    (case / "system").mkdir(parents=True)
+    (case / "constant").mkdir()
+    (case / f"{name}.cho").write_text("")
+    (case / "system" / "controlDict").write_text(
+        f"""/*  {name}: the vapour pressure of {comp} refitted as an Antoine to MEASURED
+    vapour pressures from one article and scored on another it never saw
+    (DEV.md 4c C281 step 2).  See system/propsDict for the declaration and
+    the result.  */
+
+application   choupoProps;
+description   "Antoine vapour pressure of {comp} fitted by the curation pipeline to measured vapour pressures (ThermoML locates, the article sources), held out against an independent study";
+verbosity     2;
+""")
+    (case / "constant" / "thermoPhysPropDict").write_text(
+        f"""/*  {name}: the component whose vapour pressure is fitted.  The fit reads
+    only its evidence; the catalogue record is loaded so the run voices what
+    it is (the AmbroseWalton estimate before promotion, the autoPromoted
+    Antoine after).  NOT sealed, for that reason.  */
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( {comp} );
+
+equilibrium
+{{
+    formulation gammaPhi;
+    liquid {{ activityModel {{ model ideal; }} }}
+    vapour {{ fugacityModel idealGas; }}
+}}
+""")
+    (case / DECL).write_text(vp_decl_text(pl, case_rel))
+    (case / "system" / "propsDict").write_text(vp_props_text(pl, name))
+    for s in (pl["fit"], pl["held"]):
+        (case / EXTRACTS).mkdir(parents=True, exist_ok=True)
+        shutil.copy(s["path"], case / EXTRACTS / s["path"].name)
+    return case
+
+
+def vp_run(case):
+    """Run the case on a scratch copy; (result facts, console)."""
+    rc = fetch(case, quiet=True)
+    if rc:
+        return None, f"fetch of {case.relative_to(ROOT)} returned {rc}"
+    work = Path(tempfile.mkdtemp(prefix="choupo-curate-vp-"))
+    try:
+        sc = work / case.name
+        shutil.copytree(case, sc)
+        rc, out, js = run_props(sc)
+        if rc != 0 or js is None:
+            return None, f"{case.name} exited {rc}: {out[-600:]}"
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+    op = op_result(js, "fit_antoine") or {}
+    d, cu = op.get("diagnostics", {}), op.get("curation", {})
+    decl = parse_decl(case)
+    fitd = next(x for x in decl if x.get("role") == "fit")
+    fitds = read_vp_dataset(case / fitd["file"])
+    return {"A": d.get("A"), "B": d.get("B"), "C": d.get("C"), "R2": d.get("R2"),
+            "n": d.get("n_points"), "n_heldout": d.get("n_heldout"),
+            "aad_pct": d.get("aad_heldout_pct"), "verdict": cu.get("verdict"),
+            "maxAAD": float(cu.get("acceptanceMaxAADPct", "nan")),
+            "Tmin": min(fitds["T"]), "Tmax": max(fitds["T"])}, out
+
+
+def vp_judge(case, rf):
+    """(promotable, reason) by the declared rules, from the declaration."""
+    decl = (case / "system" / "propsDict").read_text()
+    m = re.search(r"NORMAL BOILING POINT: (.*?)\.\n\n", decl, re.S)
+    tb_rule = " ".join(m.group(1).split()) if m else ""
+    Tnb = antoine_Tnb(rf["A"], rf["B"], rf["C"])
+    rf["Tnb"] = Tnb
+    tbm = re.search(r"record's Tb ([0-9.]+) K lies OUTSIDE", tb_rule)
+    if rf["verdict"] != "validated":
+        return False, (f"NOT PROMOTED: held-out verdict {rf['verdict']} (AAD "
+                       f"{rf['aad_pct']:.4g} % against the band {rf['maxAAD']:g} % "
+                       "declared before the fit); the record keeps AmbroseWalton")
+    if tbm:
+        Tb = float(tbm.group(1))
+        if abs(Tnb - Tb) > TB_TOL_K:
+            return False, (f"NOT PROMOTED: validated, but the fitted Antoine's normal "
+                           f"boiling point {Tnb:.2f} K misses the record's Tb {Tb:g} K by "
+                           f"{Tnb - Tb:+.2f} K, outside the declared {TB_TOL_K:g} K -- an "
+                           "extrapolation that contradicts the record; the record keeps "
+                           "AmbroseWalton")
+        return True, (f"PROMOTABLE by `bin/choupo-curate vp {case.name.split('_vp_')[1]} "
+                      f"--promote`: verdict validated, normal boiling point {Tnb:.2f} K "
+                      f"within {TB_TOL_K:g} K of the record's Tb {Tb:g} K")
+    return True, (f"PROMOTABLE by `bin/choupo-curate vp {case.name.split('_vp_')[1]} "
+                  f"--promote`: verdict validated (the record's Tb is inside the "
+                  f"measured span or not declared; the fit's own normal boiling point "
+                  f"is {Tnb:.2f} K)")
+
+
+def vp_fill_result(case, rf, reason):
+    txt = (f"WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).  "
+           f"Antoine log10(Psat/bar) = {rf['A']:.6f} - {rf['B']:.4f}/(T + "
+           f"{rf['C']:.4f}), in-sample R2 {rf['R2']:.6f} over {int(rf['n'])} points, "
+           f"{rf['Tmin']:g}-{rf['Tmax']:g} K.  HELD OUT: {int(rf['n_heldout'])} points, "
+           f"AAD {rf['aad_pct']:.4f} % against the band {rf['maxAAD']:g} % -> "
+           f"{rf['verdict']}.  Its own normal boiling point (101.325 kPa): "
+           f"{rf['Tnb']:.2f} K.  {reason}")
+    p = case / "system" / "propsDict"
+    t = p.read_text()
+    t = re.sub(r"@@RESULT-BEGIN@@.*?@@RESULT-END@@",
+               "@@RESULT-BEGIN@@\n" + wrap(txt) + "\n  @@RESULT-END@@", t, flags=re.S)
+    p.write_text(t)
+
+
+def vp_main(a):
+    if a.promote:
+        return vp_promote(a.component)
+    work = Path(tempfile.mkdtemp(prefix="choupo-curate-vp-"))
+    try:
+        pl = vp_plan(a.component, work)
+        say(f"choupo-curate vp {pl['comp']}  (InChIKey {pl['key']})")
+        say(f"  usable studies {len(pl['studies'])}; set aside {len(pl['aside'])}")
+        for d, w in pl["aside"]:
+            say(f"    aside  {d}: {w}")
+        for s in pl["studies"]:
+            say(f"    study  {s['doi']} ({s['n']} pts, {s['Tmin']:g}-{s['Tmax']:g} K)")
+        if pl["held"] is None:
+            say(f"  NO FIT: {pl['why']} -- the record keeps AmbroseWalton")
+            return 3
+        fit, held = pl["fit"], pl["held"]
+        say(f"  FIT      doi {fit['doi']} ({fit['n']} pts)")
+        say(f"  HELD OUT doi {held['doi']} ({held['n']} pts)")
+        say(f"  band     {pl['band_txt']} %  ({pl['origin']})")
+        say(f"  Tb       {pl['tb_rule']}")
+        if a.plan:
+            return 0
+        if a.resume:
+            case = vp_case_dir(pl["comp"])
+            if case is None:
+                refuse("--resume: no case for this component")
+            norm = lambda s: re.sub(r"@@RESULT-BEGIN@@.*?@@RESULT-END@@", "", s, flags=re.S)
+            if (case / DECL).read_text() != vp_decl_text(pl, case.relative_to(ROOT).as_posix()) \
+                    or norm((case / "system" / "propsDict").read_text()) != \
+                    norm(vp_props_text(pl, case.name)):
+                refuse(f"--resume: {case.name}'s declaration differs from the one the "
+                       "rules give now -- a declaration is never rewritten after it "
+                       "was committed")
+        else:
+            case = vp_write_case(pl, a.number or next_number())
+            if not a.no_commit:
+                files = [p for p in case.rglob("*") if p.is_file()
+                         and EXTRACTS not in p.relative_to(case).as_posix()]
+                git(["add", "--"] + [str(p) for p in files])
+                git(["commit", "-q", "-m",
+                     f"C281: {case.name} -- the declaration, before any fit\n\n"
+                     f"bin/choupo-curate vp {pl['comp']}: partition (fit doi "
+                     f"{fit['doi']}, held out doi {held['doi']}), band maxAAD "
+                     f"{pl['band_txt']} % and the normal-boiling-point condition "
+                     "written before the fit runs, so they can be read against the "
+                     "result (C16 slice 2)."])
+                say(f"  committed the declaration: "
+                    f"{git(['rev-parse', '--short', 'HEAD']).strip()}")
+        say(f"  case     {case.relative_to(ROOT)}")
+        rf, out = vp_run(case)
+        if rf is None:
+            refuse(out)
+        ok, reason = vp_judge(case, rf)
+        vp_fill_result(case, rf, reason)
+        say(f"  verdict  {rf['verdict']}  (held-out AAD {rf['aad_pct']:.4g} %, band "
+            f"{rf['maxAAD']:g} %); normal boiling point {rf['Tnb']:.2f} K, record Tb "
+            f"{pl['Tb']}")
+        say(f"  {reason}")
+        return 0
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+
+
+def vp_block(rf):
+    return ("vaporPressure\n{\n    model         Antoine;\n"
+            "    // log10(Psat [bar]) = A - B / (T[K] + C), FITTED by bin/choupo-curate vp to\n"
+            "    // measured vapour pressures -- see provenance.vaporPressure\n"
+            f"    coefficients  ({rf['A']:.10g}  {rf['B']:.10g}  {rf['C']:.10g});\n"
+            f"    Trange        ({rf['Tmin']:g}  {rf['Tmax']:g});   // the fit's own span; "
+            "outside it the engine announces the extrapolation\n}\n")
+
+
+def vp_prov(rf, case, decl, origin):
+    case_rel = case.relative_to(ROOT).as_posix()
+    ev = ""
+    for d in decl:
+        ev += ("            {\n"
+               f"                role      {d['role']};\n"
+               f'                dataset   "{d["file"]}";\n'
+               f'                doi       "{d["doi"]}";\n'
+               f'                sha256    "{d["sha256"]}";\n'
+               f'                articleSha256 "{d["articleSha256"]}";\n'
+               "                provenance measured;\n"
+               "            }\n")
+    return ("    vaporPressure\n    {\n"
+            "        origin        fitted;\n"
+            '        method        "vaporPressureFit (three-parameter Antoine, least squares in log10 P)";\n'
+            '        methodVersion "choupoProps Choupo-dev";\n'
+            f'        fittedInCase  "{case_rel}";\n'
+            "        reviewStatus  autoPromoted;\n"
+            "        humanReviewed false;\n"
+            f'        promotedBy    "{VP_PROMOTED_BY}";\n'
+            f'        promotedDate  "{date.today().isoformat()}";\n'
+            '        reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";\n'
+            '        reuse         "Choupo\'s own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";\n'
+            '        uncertainty   "the held-out AAD below, against an independent study";\n'
+            '        replaces      "model AmbroseWalton (a corresponding-states estimate from Tc, Pc, omega); `bin/choupo-curate revert <component>` restores it";\n'
+            "        evidence\n        (\n" + ev + "        );\n"
+            "        validation\n        {\n"
+            f"            verdict     {rf['verdict']};\n"
+            f"            points      {int(rf['n_heldout'])};\n"
+            f"            aad_pct     {rf['aad_pct']:.6f};\n"
+            f"            maxAAD      {rf['maxAAD']:g};   // per cent, declared before the fit\n"
+            f'            origin      "{origin}";\n'
+            f"            Tnb_fit     {rf['Tnb']:.4f};   // K, the fitted curve at 101.325 kPa\n"
+            "        }\n    }\n")
+
+
+def vp_promote(name):
+    comp = identity(name)[0]
+    case = vp_case_dir(comp)
+    if case is None:
+        refuse(f"no case written by this tool for {comp} -- run "
+               f"`bin/choupo-curate vp {comp}` first")
+    rp = vp_record(comp)
+    text = rp.read_text()
+    if not vp_is_aw(text) or AW_BLOCK not in text or AW_PROV not in text:
+        refuse(f"{rp.relative_to(ROOT)}: its vaporPressure is not the AmbroseWalton "
+               "block this mode replaces (or its provenance entry is not the one it "
+               "expects) -- never overwritten")
+    rf, out = vp_run(case)
+    if rf is None:
+        refuse(out)
+    ok, reason = vp_judge(case, rf)
+    if not ok:
+        refuse(f"{comp}: {reason}")
+    decl = parse_decl(case)
+    pd = (case / "system" / "propsDict").read_text()
+    origin = re.search(r'origin\s+"([^"]+)";', crp.block(pd, "acceptance")).group(1)
+    new = text.replace(AW_BLOCK, vp_block(rf), 1)
+    new = new.replace(AW_PROV, vp_prov(rf, case, decl, origin), 1)
+    new = new.replace(AW_BANNER,
+                      "  Critical constants are source data.  Psat is an Antoine FITTED by\n"
+                      "  bin/choupo-curate vp to measured vapour pressures (DEV.md 4c C281;\n"
+                      "  provenance.vaporPressure): reviewStatus autoPromoted, NOT human-reviewed.\n",
+                      1)
+    rp.write_text(new)
+    mark_result(case, f"PROMOTABLE by `bin/choupo-curate vp {comp} --promote`:",
+                f"PROMOTED on {date.today().isoformat()} into "
+                f"{rp.relative_to(ROOT).as_posix()} as reviewStatus autoPromoted, "
+                "humanReviewed false, because:")
+    say(f"choupo-curate: PROMOTED the vapour pressure of {comp} into "
+        f"{rp.relative_to(ROOT)} (autoPromoted, humanReviewed false)")
+    return 0
+
+
+def vp_revert(comp):
+    rp = vp_record(comp)
+    text = rp.read_text()
+    m = re.search(r"\n    vaporPressure\n    \{\n.*?\n    \}\n", text, re.S)
+    ent = m.group(0)[1:] if m else ""
+    if crp.word(crp.strip_comments(ent), "promotedBy") != VP_PROMOTED_BY:
+        refuse(f"{rp.relative_to(ROOT)}: its vapour pressure was not promoted by this "
+               "mode -- revert restores ONLY what `vp --promote` replaced")
+    case = ROOT / crp.word(crp.strip_comments(ent), "fittedInCase")
+    new = re.sub(r"^vaporPressure\n\{\n.*?\n\}\n", lambda _: AW_BLOCK, text,
+                 count=1, flags=re.S | re.M)
+    new = new.replace(ent, AW_PROV, 1)
+    new = re.sub(r"  Critical constants are source data\.  Psat is an Antoine FITTED by\n.*?"
+                 r"NOT human-reviewed\.\n", lambda _: AW_BANNER, new, count=1, flags=re.S)
+    rp.write_text(new)
+    if case.exists():
+        mark_result(case, "PROMOTED on", "PROMOTED (and since REVERTED by `choupo-curate "
+                    "revert`) on")
+    say(f"choupo-curate: REVERTED the vapour pressure of {comp} to AmbroseWalton")
+    return 0
+
+
 def main():
     ap = argparse.ArgumentParser(prog="choupo-curate", description=__doc__.split("\n")[0])
     sp = ap.add_subparsers(dest="cmd", required=True)
@@ -1277,11 +1905,22 @@ def main():
     p.add_argument("--resume", action="store_true",
                    help="the case exists (its declaration committed): verify the "
                         "declaration is unchanged and run it")
+    v = sp.add_parser("vp", help="refit ONE compound's estimated vapour pressure (C281)")
+    v.add_argument("component")
+    v.add_argument("--number", type=int)
+    v.add_argument("--plan", action="store_true", help="print the declaration, write nothing")
+    v.add_argument("--no-commit", action="store_true")
+    v.add_argument("--promote", action="store_true")
+    v.add_argument("--resume", action="store_true")
     f = sp.add_parser("fetch", help="regenerate a case's extracts")
     f.add_argument("case")
     r = sp.add_parser("revert", help="remove a record this tool promoted")
     r.add_argument("stem")
     a = ap.parse_args()
+    if a.cmd == "vp":
+        return vp_main(a)
+    if a.cmd == "revert" and (STD_COMP / f"{a.stem}.dat").exists():
+        return vp_revert(a.stem)
     if a.cmd == "fetch":
         return fetch(Path(a.case).resolve())
     if a.cmd == "revert":
@@ -1526,6 +2165,6 @@ def compound_main(argv):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1 and sys.argv[1] not in ("pair", "fetch", "revert", "-h", "--help"):
+    if len(sys.argv) > 1 and sys.argv[1] not in ("pair", "vp", "fetch", "revert", "-h", "--help"):
         sys.exit(compound_main(sys.argv[1:]))
     sys.exit(main())

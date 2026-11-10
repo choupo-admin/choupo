@@ -876,6 +876,167 @@ def cmd_extract(a):
 
 
 
+# ===========================================================================
+#  THE PURE-COMPONENT VAPOUR-PRESSURE READER (DEV.md 4c C281 step 2)
+# ===========================================================================
+#
+#  ONE DATASET PER ARTICLE AND COMPOUND, joined by InChIKey.  WHAT counts as
+#  a pure liquid-gas vapour-pressure point is NOT decided here: it is the
+#  C279 audit's reading (bin/curate/audit_components_thermoml.py
+#  `extract_file` -- single-component blocks only; a property or block phase
+#  naming a crystal, a solid or sublimation is excluded; temperature and
+#  pressure the only variables), imported, so the audit that measured the
+#  catalogue and the curation that refits it cannot read two different sets
+#  of points out of one article.
+#
+#  Two kinds of row are SET ASIDE BY NAME and kept in `selection`, never
+#  deleted: a "boiling temperature at pressure P" row (its measured quantity
+#  is T and its stated uncertainty is in kelvin, so it cannot join a series
+#  whose uncertainty is a pressure), and the whole article when ANY of its
+#  pressure rows carries no stated uncertainty (the band of a held-out study
+#  is its own stated uncertainty; a series with gaps in it has none).
+def cmd_extract_vp(a):
+    """Write ONE Choupo vapour-pressure dataset from one article file."""
+    src = pathlib.Path(a.file)
+    if not src.is_file():
+        print(f"choupo-thermoml extract-vp: no such file: {src}")
+        return 1
+    sys.path.insert(0, str(ROOT / "bin" / "curate"))
+    import audit_components_thermoml as audit  # noqa: E402  (ONE reading of a vp point)
+    try:
+        root = ET.parse(src).getroot()
+    except ET.ParseError as ex:
+        print(f"choupo-thermoml extract-vp: {src.name} is not parseable XML: {ex}")
+        return 1
+    if detect_dialect(root) != "published":
+        print(f"choupo-thermoml extract-vp: REFUSED\n  {src.name} is not the "
+              "published archive dialect.")
+        return 1
+    key = a.inchikey.strip()
+    ident = _identity_map()
+    if ident is None or key not in ident:
+        print("choupo-thermoml extract-vp: REFUSED\n"
+              f"  the InChIKey {key} resolves to NO catalogue component through "
+              "the identity bridge (identity.json).  A measured dataset is "
+              "joined by InChIKey, never by the archive's compound name.")
+        return 1
+    comp, cas = ident[key]
+    rows, _rej = audit.extract_file((str(src), {key}))
+    vp = [r for r in rows if r[0] == key and r[1] == "vp" and r[5] == "P_kPa"
+          and r[3] > 0]
+    bt = [r for r in rows if r[0] == key and r[1] == "vp" and r[5] == "T_K"]
+    if not vp:
+        print(f"choupo-thermoml extract-vp: REFUSED\n  {src.name} carries no pure "
+              f"liquid-gas vapour-pressure row for {comp} ({key})"
+              + (f" ({len(bt)} boiling-temperature row(s) only)" if bt else ""))
+        return 1
+    if any(r[4] is None for r in vp):
+        print(f"choupo-thermoml extract-vp: REFUSED\n  {src.name}: "
+              f"{sum(1 for r in vp if r[4] is None)} of {len(vp)} pressure rows of "
+              f"{comp} declare no stated uncertainty -- a partial uncertainty is "
+              "no uncertainty for a held-out band.  Nothing was written.")
+        return 1
+    vp.sort(key=lambda r: (r[2], r[3], r[4]))
+    doi = find_text(root, "sDOI") or "none-declared"
+    authors = [e.text.strip() for e in find_all(root, "sAuthor")
+               if e.text and e.text.strip()]
+    journal, year = find_text(root, "sPubName"), find_text(root, "yrPubYr")
+    title = find_text(root, "sTitle")
+    au = "; ".join(x.split("[")[0].strip() for x in authors[:6])
+    if len(authors) > 6:
+        au += " et al."
+    citation = f"{au} ({year}). {title}. {journal}. doi:{doi}".replace('"', "'")
+    sha = hashlib.sha256(src.read_bytes()).hexdigest()
+    dest = pathlib.Path(a.into)
+    dest.mkdir(parents=True, exist_ok=True)
+    out = dest / f"{comp}-vapourPressure-{src.stem}.dat"
+    g = lambda v: f"{v:.10g}"
+    lines = [
+        "/*--------------------------------------------------------------------------*\\",
+        "  PURE-COMPONENT VAPOUR-PRESSURE EVIDENCE, extracted from a ThermoML file",
+        "  by bin/choupo-thermoml extract-vp.",
+        "",
+        f"  compound     {comp}   (InChIKey {key}, CAS {cas})",
+        f"  points       {len(vp)}   ({len(bt)} boiling-temperature row(s) set aside"
+        " -- see `selection`)",
+        "",
+        "  WHICH ROWS ARE VAPOUR PRESSURES is the C279 audit's reading",
+        "  (bin/curate/audit_components_thermoml.py extract_file): single-component",
+        "  blocks, liquid-gas equilibrium only (no crystal, solid or sublimation",
+        "  phase), temperature and pressure the only variables.",
+        "",
+        "  The role this evidence plays -- fit or held-out validation -- is NOT",
+        "  set here.  It is declared in the operation that consumes it, before",
+        "  any fitting runs (src/propertyOps/EvidencePartition.H).",
+        "",
+        "  REDISTRIBUTION.  These are measured values reported in the article",
+        "  cited below, located through the NIST/TRC ThermoML Archive (a finding",
+        "  aid; thirdParty/thermoml/README.md).  The article is the source; the",
+        "  archive's arrangement is not reproduced.  NOT TRACKED: regenerated by",
+        "  `bin/choupo-curate fetch` from the DOI and sha256 a case declares.",
+        "\\*--------------------------------------------------------------------------*/",
+        "",
+        "property     vapourPressure;",
+        f"compound     {comp};",
+        f"system       ( {comp} );",
+        "",
+        "provenance",
+        "{",
+        "    source       measured;",
+        "    reviewStatus transcribedNotCheckedAgainstArticle;",
+        f'    citation     "{citation}";',
+        f'    archiveFile  "{src.name}";',
+        f'    archive      "{SYNC_TARBALL} (NIST/TRC ThermoML Archive, doi:{ARCHIVE_DOI})";',
+        f'    doi          "{doi}";',
+        f'    sha256       "{sha}";',
+        "    identity",
+        "    {",
+        f'        {comp:<14} {{ cas "{cas}"; inchiKey "{key}"; }}',
+        f'        rule           "{IDENTITY_RULE}";',
+        "    }",
+        "}",
+        "",
+        "uncertainty",
+        "{",
+        "    Psat",
+        "    {",
+        "        kind    expandedCombined;   // ThermoML nCombExpandUncertValue",
+        "        level   95;            // per cent confidence",
+        "        unit    kPa;",
+        "        values  ( " + " ".join(g(r[4]) for r in vp) + " );   // per point, in `data` order",
+        "    }",
+        "}",
+        "",
+        "selection",
+        "{",
+        "    //  A boiling temperature measured at a set pressure: its quantity is",
+        "    //  T and its uncertainty is in K.  Set aside, not deleted.",
+        "    boilingTemperatureRows",
+        "    (",
+    ]
+    for r in sorted(bt, key=lambda r: (r[3], r[2])):
+        lines.append(f"        {{ P {g(r[3])} kPa; T {g(r[2])} K; }}")
+    lines += [
+        "    );",
+        "}",
+        "",
+        "columns",
+        "(",
+        "    { name T;     unit K;   }",
+        "    { name Psat;  unit kPa; }",
+        ");",
+        "",
+        "data",
+        "(",
+    ]
+    for r in vp:
+        lines.append(f"    {g(r[2])}  {g(r[3])}")
+    lines += [");", ""]
+    out.write_text("\n".join(lines))
+    print(f"choupo-thermoml extract-vp: {out}  ({len(vp)} points)")
+    return 0
+
+
 #  ---------------------------------------------------------------------------
 #  IDENTITY: ARCHIVE COMPOUND -> CHOUPO COMPONENT, BY IDENTIFIER (2026-09-28).
 #
@@ -1975,6 +2136,13 @@ def main():
                          "`selection`, never deleted")
     ev.add_argument("--no-vapour", action="store_true",
                     help="do not join the companion vapour-composition block")
+    xv = sub.add_parser("extract-vp",
+                        help="write ONE pure-component vapour-pressure dataset "
+                             "from one article file, for one InChIKey")
+    xv.add_argument("file", help="the ThermoML .xml to read")
+    xv.add_argument("--inchikey", required=True,
+                    help="the compound, by its standard InChIKey (never a name)")
+    xv.add_argument("--into", required=True, help="destination directory")
     idn = sub.add_parser("identity",
                          help="build the CAS -> InChIKey bridge for the catalogue "
                               "(network; PubChem + NCI CACTUS must agree)")
@@ -2006,6 +2174,7 @@ def main():
         return cmd_search_online(a)
     return {"sync": cmd_sync, "index": cmd_index, "search": cmd_search,
             "extract": cmd_extract, "extract-vle": cmd_extract_vle,
+            "extract-vp": cmd_extract_vp,
             "identity": cmd_identity, "vle-index": cmd_vle_index,
             "vle-search": cmd_vle_search}[a.cmd](a)
 
