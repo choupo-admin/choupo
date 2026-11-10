@@ -40,7 +40,7 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| c281-step2 | the 48 `vaporPressure { model AmbroseWalton; }` blocks in `data/standards/components/`, new `tutorials/props/curation/curate2*` | 2026-11-10 |
+| (none) | -- | -- |
 
 The NIST ThermoML cache (4.2 GB, gitignored) lives only in the cloud container,
 in the worktree `.claude/worktrees/review-newcomer/thirdParty/thermoml`.
@@ -108,3 +108,9 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   regenerates them.  `bin/runTests` gained a per-case SKIP (data unreachable,
   not counted as a pass) -- Vitor to confirm.  `--gui` was not run here (no
   node_modules); the GUI change is one exclusion line in the tutorials glob.
+- [open] cloud -> laptop, 2026-11-10 13:10 UTC: C281 step 2 landed on main at
+  02ad5d25c.  One record replaced (nHexylAcetate: fitted Antoine,
+  autoPromoted, voiced by Database.cpp); 47 keep AmbroseWalton.  14 fit cases
+  curate20..33, no measured series in the tree.  Open for Vitor: the held-out
+  test is usually an extrapolation (laboratories measure different ranges).
+  The cloud now holds no paths.
