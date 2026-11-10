@@ -237,7 +237,9 @@ export function FourWaysMixtureTool(): JSX.Element {
             cannot exist.  Four activity models will now price the same
             binary against one measured dataset, and two more rungs —
             COSMO-SAC and PC-SAFT — are shown from their own witnesses, not
-            on that table.  By the end of this page each one should come with a reflex
+            on that table.  The ladder below has five rungs, not six:
+            Wilson and NRTL share one, because both knew the same thing.
+            By the end of this page each one should come with a reflex
             question attached: <strong>what did it know about this pair
             before it answered?</strong>
           </Text>

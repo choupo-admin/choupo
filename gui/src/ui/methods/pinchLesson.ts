@@ -281,7 +281,7 @@ Q_\mathrm{C,min} &= \sum \Delta H_\mathrm{hot} - Q_\mathrm{recovery}\\
     formula: String.raw`\begin{aligned}
 &\text{cross-pinch transfer of } Q:\\
 &\qquad Q_H = Q_\mathrm{H,min} + Q \qquad Q_C = Q_\mathrm{C,min} + Q\\[4pt]
-&\text{excess over target}\\
+&Q_H - Q_\mathrm{H,min} \;=\; Q_C - Q_\mathrm{C,min}\\
 &\qquad = \text{cross-pinch transfer} + \text{heating below} + \text{cooling above}
 \end{aligned}`,
     where: [

@@ -692,7 +692,10 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "not a verdict, this simulator is glass-box so you can falsify it in "
       + "an afternoon, and anything that could touch safety follows the "
       + "named standard instead.",
-    theory: "ch:gibbs-reactor",
+    //  The Theory Guide derives no heuristic, so Help lands on its MAP
+    //  (which chapter derives what) -- an index for an index.  It used to
+    //  carry "ch:gibbs-reactor", copied from the entry above (C277).
+    theory: "ch:theory-map",
   },
   {
     //  FIRST among the constructions, deliberately.  Until this existed the
