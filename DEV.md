@@ -3298,6 +3298,21 @@ accepts today, and that is a policy call.
 > unreachable (no precedent), and whether curate04-14 drop their tracked
 > series.  Record: docs/design/binary-pairs-from-open-measurements.md section 8.
 
+> **C283 (Vitor, 2026-11-10, on the vapour-pressure fits that failed their
+> held-out band: "isto nao e ciencia exata ... Por default um erro relativo de
+> 5% chega e sobra! E um erro inferior a 1 grau K tambem!").  THE DEFAULT
+> ACCEPTANCE OF A CURATION FIT.**  A fitted record is accepted by default when,
+> on the held-out measurements, its MAXIMUM relative error is at most 5 % in
+> every property judged relatively (pressure, composition, density, Cp,
+> viscosity), and its maximum absolute error is below 1 K in temperature.  A
+> case may declare another band (`acceptance {}`), with its reason; the
+> default is announced when used.  The band derived from the held-out
+> laboratory's own stated uncertainty is RETIRED as the acceptance test --
+> laboratories disagree with each other by more than they claim, so it
+> rejected curves far better than the estimates they would replace -- and is
+> kept as information only.  Applies to `bin/choupo-curate vp` and `pair` and
+> every fit-op acceptance default.  First applied in C281 step 3.
+
 > **C281 (Vitor, 2026-11-10, from the cloud session: "Ataca primeiro o
 > Ambrose-Walton").  THE AMBROSE-WALTON VAPOUR PRESSURES: SAY WHAT THEY ARE, THEN
 > REPLACE THEM WHERE MEASUREMENTS EXIST.**  MEASURED before dispatch: 48 catalogue
