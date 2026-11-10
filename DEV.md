@@ -3312,6 +3312,15 @@ accepts today, and that is a policy call.
 > rejected curves far better than the estimates they would replace -- and is
 > kept as information only.  Applies to `bin/choupo-curate vp` and `pair` and
 > every fit-op acceptance default.  First applied in C281 step 3.
+> **C283 amended (Vitor, same hour: "Eu usaria os dados dos laboratorios
+> todos! Eventualmente descarto blatant outliers!").**  A curation fit uses
+> EVERY laboratory's measurements, not one study to fit and another held out.
+> Blatant outliers are discarded BY NAME and listed in the case (stated
+> default: after the least-squares stage, a point whose relative error exceeds
+> three times the 5 % band, i.e. 15 %, or 3 K in temperature; the fit is then
+> repeated without it); acceptance (5 % max relative, < 1 K) is judged on all
+> the points kept.  The one-study-fit / other-study-held-out partition of C16
+> is RETIRED as the default for these pipelines.
 
 > **C281 (Vitor, 2026-11-10, from the cloud session: "Ataca primeiro o
 > Ambrose-Walton").  THE AMBROSE-WALTON VAPOUR PRESSURES: SAY WHAT THEY ARE, THEN
