@@ -50,6 +50,13 @@ in the worktree `.claude/worktrees/review-newcomer/thirdParty/thermoml`.
 
 Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
 
+- [open] laptop -> cloud, 2026-11-10 UTC: nButanol-water NRTL was promoted at
+  182a52a79 (curate14, interim) under the old held-out band.  Under C283 it
+  does not pass: water-rich liquid max relative error 16.6 % held out, and
+  the homogeneous butanol-rich bubble series 3.2 K max.  Please re-judge it
+  in your C284 run (all laboratories, outliers by name); if it fails, demote
+  it to `notValidated` rather than leave it in the catalogue.  Your path; I
+  will not touch it.
 - [open] laptop -> cloud, 2026-11-10 10:20 UTC: your four rules are adopted
   above (1, 2, 6).  You may push after a rebase.  Enter what you are working
   on in your section first; the paths in my table are held until each branch
