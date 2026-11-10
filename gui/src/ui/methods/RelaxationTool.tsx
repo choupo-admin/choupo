@@ -37,7 +37,7 @@ import {
   Alert, Badge, Box, Group, Loader, SegmentedControl, Stack, Text, Title,
 } from "@mantine/core";
 
-import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences, Tex } from "./lessonStep.js";
 import { RELAXATION_LIMITS, RELAXATION_STEPS } from "./relaxationLesson.js";
 import { GainMap, RELAXED, SlopeCobweb } from "./RelaxationFigures.js";
 import { DIRECT, ErrorPlot, MEASURED, NEWTON, WEGSTEIN } from "./WegsteinTool.js";
@@ -152,9 +152,8 @@ export function RelaxationTool(): JSX.Element {
         </Box>
 
         {step(1)}
-        {step(2)}
 
-        {/* ---------------- THE TOY ---------------- */}
+        {/* ---------------- the toy ---------------- */}
         <Box style={{ borderLeft: `3px solid ${RELAXED}`, paddingLeft: 12 }}>
           <Title order={4}>Three figures on one toy loop</Title>
           <Text size="sm" mt={4}>
@@ -186,7 +185,7 @@ export function RelaxationTool(): JSX.Element {
             <Title order={5}>1. The cobweb: where each pass lands</Title>
             <SlopeCobweb a={a} w={w} onGain={setA} />
             <Text size="xs" c="dimmed">
-              Red solid line: what the plant returns, y = a x. Green dashed
+              Red solid line: what the plant returns, <Tex mode="inline" src="y = a\,x" />. Green dashed
               line: the relaxed map, whose slope is the effective slope.
               Dotted red staircase: direct substitution. Solid green
               staircase: relaxation. The answer is where a line meets the
@@ -195,6 +194,9 @@ export function RelaxationTool(): JSX.Element {
           </Stack>
         </Box>
 
+        {/* The cobweb comes second (DEV.md 4c C277): the question, the toy
+            loop under the student's hand, then step 2 naming what it shows. */}
+        {step(2)}
         {step(3)}
 
         <Stack gap={6}>
@@ -232,7 +234,7 @@ export function RelaxationTool(): JSX.Element {
           <Title order={5}>3. The map: which factors converge for which gain</Title>
           <GainMap a={a} w={w} onPoint={(aa, ww) => { setA(aa); setW(ww); }} />
           <Text size="xs" c="dimmed">
-            Green band: |1 − w + w a| &lt; 1, the iteration contracts. Green
+            Green band: <Tex mode="inline" src={String.raw`\lvert 1 - w + w\,a \rvert < 1`} />, the iteration contracts. Green
             curve: the optimal factor, the one that makes the effective slope
             zero. Red region on the right: the gain is above 1 and no factor
             helps. Orange strip: w above 1, which Wegstein reaches by itself
@@ -246,7 +248,7 @@ export function RelaxationTool(): JSX.Element {
         {step(7)}
         {step(8)}
 
-        {/* ---------------- THE ENGINE ---------------- */}
+        {/* ---------------- the engine ---------------- */}
         <Box style={{ borderLeft: `3px solid ${MEASURED}`, paddingLeft: 12 }}>
           <Title order={4}>4. Measured: a real recycle, relaxed in your browser</Title>
           <Text size="sm" mt={4}>
