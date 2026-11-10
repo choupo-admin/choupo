@@ -435,8 +435,8 @@ export function CampaignPlanTool(): JSX.Element {
             published for two real cases.
           </Text>
           <Alert mt="sm" color="yellow" variant="light" title="Two halves, not one" data-halves="">
-            The sections marked THE TOY are recomputed in this page and every number in them is an
-            illustration. The sections marked THE ENGINE run a Choupo case in the browser and
+            The sections marked "The toy" are recomputed in this page and every number in them is an
+            illustration. The sections marked "The engine" run a Choupo case in the browser and
             draw the plan it published, with the same bars. The page says which one you are in
             at the top of each.
           </Alert>

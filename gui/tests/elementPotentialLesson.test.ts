@@ -401,7 +401,7 @@ describe("the witnesses", () => {
 describe("the one-condensable limit says the engine refuses", () => {
   const l = EP_LIMITS.find((x) => x.id === "one-condensable")!;
   it("states the refusal and its remedy", () => {
-    expect(l.body).toMatch(/REFUSES the run/);
+    expect(l.body).toMatch(/refuses the run/);
     expect(l.body).toMatch(/directMin/);
     expect(l.body).not.toMatch(/does not\s+announce it/);
   });

@@ -457,8 +457,8 @@ describe("the page", () => {
   it("names both halves at their heads", () => {
     expect((tool.match(/data-half="toy"/g) ?? []).length).toBe(2);
     expect((tool.match(/data-half="engine"/g) ?? []).length).toBe(2);
-    expect(tool).toContain("THE TOY");
-    expect(tool).toContain("THE ENGINE");
+    expect(tool).toContain("The toy");
+    expect(tool).toContain("The engine");
   });
   it("draws the live Gantt of both toys with the engine's drawing", () => {
     expect((tool.match(/data-batch-gantt=""/g) ?? []).length).toBe(2);
@@ -509,8 +509,8 @@ describe("the page", () => {
     expect(m).toContain("campaign");
   });
   it("HalfBanner names its half", () => {
-    expect(html(createElement(HalfBanner, { half: "toy", children: "x" }))).toContain("THE TOY");
-    expect(html(createElement(HalfBanner, { half: "engine", children: "x" }))).toContain("THE ENGINE");
+    expect(html(createElement(HalfBanner, { half: "toy", children: "x" }))).toContain("The toy");
+    expect(html(createElement(HalfBanner, { half: "engine", children: "x" }))).toContain("The engine");
   });
   it("the page names the 880.2 h and 2079 h of the engine half", () => {
     expect(tool).toContain("880.2 h and 2079 h");

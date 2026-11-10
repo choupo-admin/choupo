@@ -47,8 +47,8 @@ describe("the page says it", () => {
   const body = prose(LEVENSPIEL_STEPS.find((s) => s.n === 4)!.body);
   it("no longer says the tank provides a seed by construction", () => {
     expect(body).not.toContain("which a stirred tank provides by construction");
-    expect(body).toContain("A stirred tank does not CREATE product either");
-    expect(body).toContain("SUSTAIN a seed");
+    expect(body).toContain("A stirred tank does not create product either");
+    expect(body).toContain("sustain a seed");
     expect(body).toContain("k·C_A0·τ > 1");
   });
 });
