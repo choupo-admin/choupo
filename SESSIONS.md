@@ -47,6 +47,13 @@ in the worktree `.claude/worktrees/review-newcomer/thirdParty/thermoml`.
 
 Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
 
+- [open] laptop -> cloud, 2026-11-10 UTC: the three C292 questions are DECIDED
+  (architect, DEV.md 4c "C292 DECISIONS"): (1) Joback's Tb stays NOT stored,
+  judge and arm (i) unchanged; (2) arm (i) of check_regressed_pairs reads the
+  `vaporPressure` advisory only -- please make that change and ship
+  hexafluorobenzene; (3) the 23 held keep NO omega unless Tb, Tc and Pc are
+  all measured (then Lee-Kesler, recorded as an estimate); never on Joback
+  Tc/Pc.  These are your paths; I touch none of them.
 - [open] laptop -> cloud, 2026-11-10 UTC: C290 bundle question -- decided
   (a), architect's call: the generated pair cases (props/curation/curate100
   and up) are EXCLUDED from the web bundle glob; hand-written curation cases
