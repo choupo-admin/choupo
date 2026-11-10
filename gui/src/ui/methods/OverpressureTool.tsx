@@ -49,7 +49,7 @@ import { useMethodRun, type MethodRunState } from "../../case/methodRun.js";
 import { tutorialByName } from "../../cases/tutorials.js";
 import { guideUrl, openGuide } from "../../help/guideLinks.js";
 import { KnobField, KnobNumber, PanelNote } from "./knobPanel.js";
-import { LessonLimits, LessonStepView, LessonReferences } from "./lessonStep.js";
+import { LessonLimits, LessonStepView, LessonReferences, Tex } from "./lessonStep.js";
 import {
   OVERPRESSURE_LIMITS, OVERPRESSURE_SOURCES, OVERPRESSURE_STEPS,
 } from "./overpressureLesson.js";
@@ -447,7 +447,7 @@ function FireBench({ mawpBarg, setMawp, onOutcome }: {
           <Table.Tr><Table.Td>relieving temperature [K]</Table.Td><Table.Td>{atState ? fx(Tb, 2) : "—"}</Table.Td><Table.Td>engine, T_bubble</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>latent heat [kJ/mol]</Table.Td><Table.Td>{atState ? fx((pt?.Hvap ?? NaN) / 1000, 3) : "—"}</Table.Td><Table.Td>engine, Hvap_{FIRE_COMPONENT}</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>latent heat λ [kJ/kg]</Table.Td><Table.Td>{fx(lambda / 1000, 1)}</Table.Td><Table.Td>÷ M = {fx(M, 3)} kg/kmol (record)</Table.Td></Table.Tr>
-          <Table.Tr><Table.Td>fire heat input Q [kW]</Table.Td><Table.Td>{fx(Q / 1000, 1)}</Table.Td><Table.Td>{fx(fireCoefficientSI(adequate) / 1000, 2)} kW × F × A^0.82</Table.Td></Table.Tr>
+          <Table.Tr><Table.Td>fire heat input Q [kW]</Table.Td><Table.Td>{fx(Q / 1000, 1)}</Table.Td><Table.Td>{fx(fireCoefficientSI(adequate) / 1000, 2)} kW × F × <Tex mode="inline" src={"A^{0.82}"} /></Table.Td></Table.Tr>
           <Table.Tr><Table.Td>vapour to relieve W [kg/h]</Table.Td><Table.Td>{fx(W, 0)}</Table.Td><Table.Td>Q / λ</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>Z</Table.Td><Table.Td>{atState ? fx(pt?.Z, 4) : "—"}</Table.Td><Table.Td>engine, SRK vapour root</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>k = Cp/Cv</Table.Td><Table.Td>{atState ? fx(pt?.k, 4) : "—"}</Table.Td><Table.Td>engine, ideal gas</Table.Td></Table.Tr>

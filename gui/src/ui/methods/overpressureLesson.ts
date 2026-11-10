@@ -251,7 +251,7 @@ export const OVERPRESSURE_STEPS: readonly LessonStep[] = [
       { sym: "Q", means: "the heat the fire puts into the liquid", unit: "W" },
       { sym: "C", means: "the API 521 coefficient: 21 000 or 34 500 in "
         + "Btu/h with A in ft2 (43 190 or 70 960 in W with A in m2)",
-        unit: "W/m^1.64" },
+        unit: "W/m to the power 1.64" },
       { sym: "F", means: "the environment factor: 1 for a bare vessel",
         unit: "–" },
       { sym: "A_\\mathrm{wet}", means: "the wetted surface the fire can "
