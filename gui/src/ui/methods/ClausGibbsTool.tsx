@@ -66,20 +66,20 @@ export const CLAUS_STEPS = [
       + "refinery stream and hands you a concentrated acid gas.  You cannot "
       + "vent it and you cannot burn it to SO₂, so you make elemental "
       + "sulfur.  The route is two reactions and they are not independent: "
-      + "burn ONE THIRD of the H₂S to SO₂, then let the SO₂ oxidise the "
+      + "burn one third of the H₂S to SO₂, then let the SO₂ oxidise the "
       + "rest.",
     eq: "H₂S + 3/2 O₂  →  SO₂ + H₂O            (the burner)\n"
       + "2 H₂S + SO₂   →  3/x S_x + 2 H₂O      (the Claus reaction)",
     after: "Add them in the ratio 1 : 1 and the oxygen is exactly enough — "
       + "which is where the one third comes from, and why the air rate is "
       + "the only real knob on a Claus furnace.  Now try to write the "
-      + "stream table.  The ATOM balance closes for any x — 3/x molecules of "
-      + "S_x carry three sulfur atoms whatever x is — but the MOLE count does "
+      + "stream table.  The atom balance closes for any x — 3/x molecules of "
+      + "S_x carry three sulfur atoms whatever x is — but the mole count does "
       + "not, and x is the number of sulfur atoms in the molecule that "
       + "actually forms.  Sulfur "
       + "vapour is S₂ when it is hot and S₈ when it is cool, with everything "
       + "in between at the temperatures a Claus plant works at.  A hand "
-      + "calculation must ASSUME a value for x before it can proceed, and "
+      + "calculation must assume a value for x before it can proceed, and "
       + "the assumption changes the mole count of every stream downstream.",
     where: [
       { sym: "x", means: "atoms of sulfur in the allotrope that forms — the unknown", unit: "—" },
@@ -91,7 +91,7 @@ export const CLAUS_STEPS = [
   {
     n: 2,
     title: "Stop writing reactions",
-    body: "The way out is to stop specifying WHICH reactions happen.  "
+    body: "The way out is to stop specifying which reactions happen.  "
       + "Equilibrium does not care how the atoms got rearranged; it is the "
       + "composition that minimises the Gibbs energy subject to the atoms "
       + "you started with.  So declare the atoms and the candidate species, "
@@ -106,6 +106,7 @@ export const CLAUS_STEPS = [
       + "brought in.  Note what has disappeared: there is no reaction, no "
       + "stoichiometric coefficient, no conversion, and no x.",
     where: [
+      { sym: "G", means: "total Gibbs energy of the gas mixture", unit: "J" },
       { sym: "n_i", means: "moles of species i at equilibrium (the unknowns)", unit: "mol" },
       { sym: "μ_i", means: "chemical potential of species i in the mixture", unit: "J/mol" },
       { sym: "y_i", means: "mole fraction of species i in the gas", unit: "—" },
@@ -129,7 +130,7 @@ export const CLAUS_STEPS = [
       + "condition gives every mole number in closed form:",
     eq: "n_i = exp( ln n_t − ln(P/P°) − g°_i(T)/RT + Σ_k π_k A_ki )",
     after: "This is worth staring at.  N unknowns have collapsed into M + 1 "
-      + "— one π per ELEMENT plus the total n_t — and there are five elements "
+      + "— one π per element plus the total n_t — and there are five elements "
       + "here whatever the species count.  Substituting back into the "
       + "constraints leaves M + 1 equations for M + 1 unknowns, which is "
       + "what the engine actually solves with a finite-difference Newton.",
@@ -145,7 +146,7 @@ export const CLAUS_STEPS = [
       { sym: "n_t", means: "total moles of gas at equilibrium (the extra "
         + "unknown beside the π's); not N, which counts species", unit: "mol" },
     ],
-    assumes: "Ideal gas at the 1 bar reference, φ_i = 1, so μ_i = g°_i(T) + "
+    assumes: "Ideal gas at the 1 bar reference (fugacity coefficient φ_i = 1), so μ_i = g°_i(T) + "
       + "RT ln(y_i P/P°).  At 1.5 bar and 1500 K that is a very good "
       + "approximation and the engine says so rather than hiding it.",
     cites: "GibbsMethod.cpp:78-82, GibbsMethod.cpp:85-92",
@@ -161,7 +162,7 @@ export const CLAUS_STEPS = [
     after: "This is not a formality.  The catalogue's carbonyl sulfide "
       + "record carries a molecular weight, critical constants, an Antoine "
       + "fit and a heat capacity, and states in its own header that "
-      + "formation properties were NOT available from its source, so it "
+      + "formation properties were not available from its source, so it "
       + "omits them rather than inventing any.  That omission is honest and "
       + "it is disqualifying: COS could not enter this reactor at all.  "
       + "Step 8 is what the case does about it.",
@@ -209,7 +210,7 @@ export const CLAUS_STEPS = [
       + "the x from step 1, answered — twice, differently, correctly both "
       + "times.",
     where: [],
-    assumes: "Both units are the gas phase alone.  Real sulfur CONDENSES "
+    assumes: "Both units are the gas phase alone.  Real sulfur condenses "
       + "near 600 K and this package has no liquid sulfur — see the box "
       + "below.",
     cites: "tutorials/steady/gibbs/claus01_thermal_stage/expected",
@@ -221,21 +222,21 @@ export const CLAUS_STEPS = [
       + "of 1.999270.  A conventional Claus plant is controlled to keep "
       + "that ratio at 2 : 1 (some tail-gas variants deliberately run an "
       + "excess of H₂S instead), because it is the stoichiometry the catalytic "
-      + "beds need — and it is controlled with the AIR RATE, which is "
+      + "beds need — and it is controlled with the air rate, which is "
       + "exactly what fixed it here.  The ratio was never entered as a "
       + "ratio, but it did not fall out of the minimisation either: with "
       + "the air declared to burn one third of the H₂S, the O and H "
-      + "balances FORCE H₂S = 2 SO₂ whenever the hydrogen sits only in H₂S "
-      + "and H₂O.  What the minimisation decided is everything else — how "
+      + "balances force H₂S = 2 SO₂ whenever the hydrogen sits only in H₂S "
+      + "and H₂O and the carbon stays in CO₂.  What the minimisation decided is everything else — how "
       + "much H₂ and CO there are, and so how far the ratio strays from two.",
-    after: "In the FURNACE the same ratio is 1.04, and the explanation is "
-      + "two columns over on the same line: 2.85 % H₂ and 0.80 % CO.  At "
-      + "1500 K hydrogen sulfide also CRACKS (H₂S → H₂ + ½ S₂), which "
+    after: "In the furnace the same ratio is 1.04, and the explanation is "
+      + "in the table below: 2.85 % H₂ and 0.80 % CO.  At "
+      + "1500 K hydrogen sulfide also cracks (H₂S → H₂ + ½ S₂), which "
       + "consumes H₂S without consuming any SO₂ and pulls the ratio below "
       + "two.  Hydrogen in Claus tail gas is a real and well-documented "
       + "nuisance.  Here it is not a correction bolted on afterwards — it "
-      + "is a consequence of the same minimisation, and it explains a "
-      + "number on the line above it.",
+      + "is a consequence of the same minimisation, and it explains the "
+      + "1.04.",
     where: [],
     assumes: "Equilibrium.  See the last box: this is not conversion.",
     cites: "tutorials/steady/gibbs/claus01_thermal_stage/expected",
@@ -247,9 +248,9 @@ export const CLAUS_STEPS = [
       + "catalogue in usable form, and they are missing in two different "
       + "ways — which is why the case carries both.",
     after: "S₈ is absent outright: no record, anywhere.  Carbonyl sulfide is "
-      + "PRESENT but incomplete, missing exactly the formation block step 4 "
+      + "present but incomplete, missing exactly the formation block step 4 "
       + "needs.  So the case writes two files into its own "
-      + "constant/components/: a NEW record for S₈, and an OVERLAY for COS "
+      + "constant/components/: a new record for S₈, and an overlay for COS "
       + "that adds the missing block and nothing else — the catalogue still "
       + "supplies its molecular weight, its criticals and its Cp, and there "
       + "is no second carbonyl sulfide anywhere in the tree.  Neither file "
@@ -331,9 +332,9 @@ export function ClausGibbsTool(): JSX.Element {
 
       <Box>
         <Title order={5}>The two answers, side by side</Title>
-        <OriginMark of="engine" note="the recorded run (golden) of claus01_thermal_stage, not re-run on this page" />
+        <OriginMark of="engine" note="the recorded run of claus01_thermal_stage, not re-run on this page" />
         <Text size="sm" mt={4} mb={8}>
-          Same fourteen species, same five elements, same method.  900 K apart.
+          Same fourteen species, same five elements, same method.  More than 900 K apart.
         </Text>
         <Table withTableBorder withColumnBorders striped>
           <Table.Thead>
@@ -374,7 +375,7 @@ export function ClausGibbsTool(): JSX.Element {
           <strong>Sulfur condenses near 600 K and this package has no liquid
           sulfur.</strong>  S₂, S₈, S and SO are declared{" "}
           <Code>role nonvolatile;</Code> and the run announces on every pass
-          that their volatility is UNKNOWN rather than established.  So the
+          that their volatility is unknown rather than established.  So the
           boiler's outlet is the composition of the GAS, not of a condenser
           with liquid running out of the bottom.  The 3.44 % S₈ is what a
           condenser would be handed, not what leaves it.
