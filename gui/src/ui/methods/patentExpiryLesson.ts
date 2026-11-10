@@ -41,7 +41,7 @@ export const PATENT_NOT_ADVICE =
   + "supplementary protection certificates, data and market exclusivity and "
   + "litigation in each country, and only a patent attorney's reading of the "
   + "claims can say.  The apalutamide dossier itself lists the European "
-  + "counterparts and their certificates as NOT verified (section 3.6).";
+  + "counterparts and their certificates as not verified (section 3.6).";
 
 export const PATENT_STEPS: readonly LessonStep[] = [
   {
@@ -61,7 +61,7 @@ export const PATENT_STEPS: readonly LessonStep[] = [
       + "12,303,493 B2 with an anticipated expiry on 3 December 2035 (an "
       + "assumption by Google Patents, not a legal conclusion), and the "
       + "European counterparts and their certificates were not verified. "
-      + "The 2035 date is the FORMULATION family's: loss of exclusivity "
+      + "The 2035 date is the formulation family's: loss of exclusivity "
       + "for a generic is set by the compound patent with its extensions "
       + "(PTE in the US, SPC in the EU) and by regulatory data and market "
       + "protection, which may end earlier or later, and a generic that "
@@ -123,12 +123,12 @@ export const PATENT_STEPS: readonly LessonStep[] = [
     title: "Price erosion is a curve, and there are two ways to index it",
     body: "A generic enters below the originator's price and falls further "
       + "as rivals arrive. The page offers two published readings and "
-      + "lets you pick one. The first indexes the price by the NUMBER of "
+      + "lets you pick one. The first indexes the price by the number of "
       + "generic producers: the United States FDA's median generic price "
       + "was 39 % below the brand's pre-entry price with one producer, 54 "
       + "% with two, 79 % with four and more than 95 % with six or more "
       + "(Conrad and Lutter 2019, p. 2; US, manufacturer-level AMP and invoice prices of retail-channel drugs, 2015-2017 entries). The "
-      + "second indexes it by TIME since the first generic entry: in the "
+      + "second indexes it by time since the first generic entry: in the "
       + "European Commission's sector inquiry generics entered about 25 % "
       + "below the originator's price and were 40 % below it after two "
       + "years (EC 2009, p. 1; an average over medicines, 2000-2007). The "
@@ -151,7 +151,7 @@ export const PATENT_STEPS: readonly LessonStep[] = [
     body: "The generics' share of the molecule's volume grows after the "
       + "first entry: about 30 % at the end of the first year and 45 % "
       + "after two (EC 2009, p. 2). The curve is cumulative, read at the "
-      + "END of each year, so the share during year k is the mean of its "
+      + "end of each year, so the share during year k is the mean of its "
       + "two ends. The study stops there for what this page read, so the "
       + "points after year two are an illustration the page chose and are "
       + "marked `assumed`. The generic share is shared among the producers "
@@ -163,7 +163,7 @@ export const PATENT_STEPS: readonly LessonStep[] = [
     formula: String.raw`g_k=\frac{G(k-1)+G(k)}{2}\qquad N_j=\min\!\big(V_0\,g_k\,w(n_k),\;Q\big)`,
     where: [
       { sym: "g_k", means: "generic share of the molecule's volume, averaged over market year k" },
-      { sym: "G", means: "cumulative generic share at the END of a market year (the curve)" },
+      { sym: "G", means: "cumulative generic share at the end of a market year (the curve)" },
       { sym: "k", means: "market year: years since the first generic entry, 1 for the first twelve months" },
       { sym: "w", means: "the newcomer's share of the generic volume, a curve of the number of producers" },
       { sym: "n_k", means: "generic producers on the market in year k, the newcomer included" },
@@ -205,7 +205,7 @@ export const PATENT_STEPS: readonly LessonStep[] = [
       + "with it, and the working capital does not follow it). The one "
       + "price must reproduce the revenue the falling price would have "
       + "earned, in present value, so it is the discounted-volume-weighted "
-      + "average price. It is NOT the volume-weighted average of the "
+      + "average price. It is not the volume-weighted average of the "
       + "yearly prices: the early years, when the price is highest, are "
       + "discounted least, so they weigh more here than there. It is the right constant only for the "
       + "discount rate you gave it. Paste both, run the case, and compare its revenue "
@@ -347,7 +347,7 @@ export const PATENT_LIMITS: readonly LessonLimit[] = [
       + "patients to a new formulation; the page models none of that. "
       + "The originator's price also falls after entry (EC 2009 says so "
       + "without a figure), which is why the generic's price ratio is "
-      + "taken against the originator's price BEFORE loss of exclusivity.",
+      + "taken against the originator's price before loss of exclusivity.",
   },
   {
     id: "grammar",
