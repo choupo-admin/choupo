@@ -625,13 +625,13 @@ export const MATERIALS_STEPS: readonly LessonStep[] = [
     body: "A material is finally chosen against its price, and in a "
       + "bare-module estimate the material enters as one factor on part of "
       + "the purchased cost (src/postProcessing/costing/Turton.cpp:752-754).  "
-      + "Two things in the form are easy to miss.  F_M multiplies only the "
+      + "Two things in the form are easy to miss.  \\(F_M\\) multiplies only the "
       + "B_2 part: the installation that B_1 stands for -- foundations, "
       + "piping, instruments, labour -- costs the same whatever the shell is "
-      + "made of.  And the material enters twice: through F_M, and through "
+      + "made of.  And the material enters twice: through \\(F_M\\), and through "
       + "the pressure factor, which for a vessel is the engine's own wall "
       + "formula over a reference thickness (Turton.cpp:323-328), so a "
-      + "weaker material raises F_P as well.  The cheapest material is the "
+      + "weaker material raises \\(F_P\\) as well.  The cheapest material is the "
       + "one whose total cost over the plant's life is lowest, which can be "
       + "a dearer alloy installed once rather than carbon steel replaced "
       + "twice; the engine prices what is bought, not what is replaced.",
@@ -657,7 +657,7 @@ export const MATERIALS_STEPS: readonly LessonStep[] = [
       + "the reference minimum thickness of the textbook correlation, as "
       + "the engine writes them at Turton.cpp:328; S and P_g are in the same "
       + "unit there (bar).  The wall on the design sheet and the wall inside "
-      + "F_P are different numbers on purpose: one is the shell the case "
+      + "\\(F_P\\) are different numbers on purpose: one is the shell the case "
       + "declared, the other the correlation's own reference.",
   },
 
@@ -758,10 +758,10 @@ export const MATERIALS_STEPS: readonly LessonStep[] = [
       + "C.  The density gives the shell's weight, which the design sheet "
       + "publishes; the vessel's cost correlation, though, is sized on its "
       + "volume (the size key V_R, src/postProcessing/costing/Turton.cpp:80), "
-      + "so the weight -- and the density with it -- moves no euro.  F_M "
+      + "so the weight -- and the density with it -- moves no euro.  \\(F_M\\) "
       + "multiplies the cost "
       + "(src/postProcessing/costing/Turton.cpp:752-754), and sigma_y "
-      + "enters the cost again through F_P.  maxP is compared with the "
+      + "enters the cost again through \\(F_P\\).  maxP is compared with the "
       + "design pressure by the vessel sizers "
       + "(src/postProcessing/sizing/MaterialLimits.cpp:41), and maxT, read "
       + "by the loader (src/materials/MaterialRegistry.cpp:58), with the "
@@ -781,8 +781,8 @@ export const MATERIALS_STEPS: readonly LessonStep[] = [
       + "limit or a compatibility with any fluid.  What is sourced is said "
       + "by each record: carbonSteel's own header calls its six numbers "
       + "unsourced design assertions (AP6, 2026-08-05); SS304's and SS316's "
-      + "F_M cite Turton's Appendix A and the rest of their numbers say "
-      + "primary re-citation pending; aluminium's F_M is of the same "
+      + "\\(F_M\\) cite Turton's Appendix A and the rest of their numbers say "
+      + "primary re-citation pending; aluminium's \\(F_M\\) is of the same "
       + "lineage and pending re-citation too.  So the engine does with a "
       + "material exactly two things -- it sizes the wall and it prices the "
       + "metal -- and the choosing, which is everything else on this page, "
@@ -808,10 +808,10 @@ export const MATERIALS_STEPS: readonly LessonStep[] = [
       + "at 200 bar whose postDict sizes three vessels -- with one vessel's "
       + "material word changed, once for each construction-material record "
       + "in the tree.  Everything in its table is what the engine published "
-      + "for that vessel: the wall, the weight, F_M, F_P and the cost, with "
+      + "for that vessel: the wall, the weight, \\(F_M\\), \\(F_P\\) and the cost, with "
       + "every warning it raised, verbatim.  Things to look for.  SS304 "
       + "and SS316 give the same wall, because both records declare the same "
-      + "sigma_y; only the price differs, through F_M.  Aluminium needs a "
+      + "sigma_y; only the price differs, through \\(F_M\\).  Aluminium needs a "
       + "thicker wall, because its allowable stress is lower, yet the "
       + "shell weighs less, because its density is about a third of "
       + "steel's -- and the weight changes no price, because a vessel is "
@@ -851,7 +851,7 @@ export const MATERIALS_LIMITS: readonly LessonLimit[] = [
       + "record." },
   { id: "one-factor",
     title: "One material factor for every kind of item",
-    body: "The record carries one F_M, used for whatever item names it.  "
+    body: "The record carries one \\(F_M\\), used for whatever item names it.  "
       + "The textbook the factors come from tabulates them by kind of "
       + "equipment and by solid versus clad construction; the records have "
       + "no field for either, and clad plate cannot be declared." },
@@ -876,7 +876,7 @@ export const MATERIALS_LIMITS: readonly LessonLimit[] = [
       + "duplex, nickel alloy, titanium, copper alloy or non-metallic has a "
       + "record, so the families of Part 2 beyond these cannot be costed.  "
       + "carbonSteel's numbers are unsourced design assertions by its own "
-      + "header, and only two F_M values cite a source." },
+      + "header, and only two \\(F_M\\) values cite a source." },
   { id: "no-seals",
     title: "No seals, gaskets or elastomers",
     body: "Nothing in the engine models a flange, a gasket, a packing or a "
