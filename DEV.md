@@ -3298,6 +3298,8 @@ accepts today, and that is a policy call.
 > unreachable (no precedent), and whether curate04-14 drop their tracked
 > series.  Record: docs/design/binary-pairs-from-open-measurements.md section 8.
 
+> **C292 DECISIONS (architect, 2026-11-10, answering its three questions; rule 00).**  (1) Joback's Tb is NOT stored in the record: an estimated Tb must not veto a measured curve (tetradecanoic acid would be refused at -72.6 K); the judge and arm (i) are not changed to ignore it.  (2) YES: arm (i) of `check_regressed_pairs` reads the `vaporPressure` advisory only, so a clean vapour pressure is not accused for a non-clean Vliq; hexafluorobenzene ships once the arm is fixed.  (3) For the 23 held, omega stays HELD unless Tb, Tc and Pc are all MEASURED, in which case it comes from Lee-Kesler recorded as an estimate (the 11-10 rule for C287); with Joback Tc/Pc it is NOT computed, because Lee-Kesler on two estimates has no error bound and the held components remain usable on their fitted vapour pressure.  Carried by the cloud (its paths); the laptop does not edit them.
+>
 > **C288 SLICE 1 RESULT.** C288 slice 1 LANDED 11-10: `heatOfReaction { value; T; phase; method; source; reason; }` parsed by one shared parser (ReactionHeat.H/.cpp, which also reads the bare `dH_rxn` with its meaning unchanged); both forms on one reaction refused; equilibriumReactor and gibbsReactor refuse a declared heat with the physical reason; a reactive column announces a divergence; delta = declared - formation is computed and printed (methyl acetate witness: -5.67 vs -7.31 kJ/mol at 318 K, delta +1.64) but no reactor applies it yet (slices 2-4). No shipped number moved: 21 cases byte-identical to main's binary, --scope 173 cases PASS, --fast 78 PASS, --gui app tests green; full sweep not run (written reason: the parser is the only shared path and every reactor family went through --scope/--fast); the 13 refusal fixtures wait for check_declared_heat.
 >
 > **C272 RESULT.** C272 slice 1 LANDED 11-10: `typicals ( { typical; index; count; pitch; members; source; reason; } )` in layoutDict -- a train declared once and repeated; every repeat is a real item for overlap, separation, zones, roads, bunds and pipes; `layout.items` stays complete (each repeat carries typical / trainIndex / repeatOf), the outlines go in `layout.typicalOutlines`; swro01's 35 repeated item entries became two typicals; findings, pipes, plot unchanged; lesson citations untouched (line-neutral edits). Full sweep NOT run (written reason: the new code runs only where `typicals` is declared, swro01 alone; the seven other layout cases pass their goldens); --gui 46 PASS / 1 FAIL on the branch, the failure being main's dossier test, since fixed by the cloud. Not done: the app does not draw the outlines yet.
@@ -3438,6 +3440,21 @@ accepts today, and that is a policy call.
 > GUI dependencies are not installed here; four lesson citations into
 > Database.cpp were moved by hand and each checked to carry its `contains`
 > text), a full sweep.
+
+> **C294 (Vitor, 2026-11-10, on seeing only NRTL pair folders: "Mas esse
+> ajuste e rapido e devia ter sido feito! Eventualmente ate pode melhorar o
+> ajuste!").  EVERY FITTED PAIR GETS THE OTHER ACTIVITY MODELS TOO.**  The
+> pairs fitted since C284 (NRTL) are fitted ALSO with UNIQUAC and Wilson on
+> the SAME evidence, in the SAME case (the case gains the extra
+> `fitParameters` operations and their case-local records; no new case per
+> model, so tutorials/ does not grow by a case per pair), with the same
+> graded acceptance (C286: max |dT| 1/2/4 K; C291: max relative P 5/10/20 %),
+> the same arm-(f) one-liquid refusal per model, promoted autoPromoted /
+> humanReviewed false into data/standards/parameters/UNIQUAC/ and
+> .../Wilson/.  The Explorer can then set the models side by side per pair.
+> The residuals of the three models on the same points are published, never
+> used to choose one for the student.  UNIQUAC needs pure-component r and q;
+> a component without them is reported, not estimated silently.
 
 > **C291 (Vitor, 2026-11-10: "podes lancar dezenas de generais para
 > acelerar?", answered with two, bounded by the machine: 4 cores, ~6 GB of
