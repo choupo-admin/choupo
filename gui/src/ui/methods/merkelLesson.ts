@@ -76,7 +76,7 @@ export const MERKEL_STEPS: readonly LessonStep[] = [
   },
   {
     n: 2,
-    title: "The floor is the WET bulb, and the approach is what you pay for",
+    title: "The floor is the wet bulb, and the approach is what you pay for",
     body: "Ask how cold a tower can make water and the usual answer is the "
       + "air temperature.  It is not: it is the incoming air's wet-bulb "
       + "temperature.  Two definitions meet here and they are not the same "
@@ -173,7 +173,7 @@ Q &= L\, \mathrm{cp}_L\, \text{range} &\qquad \text{range} &= T_\mathrm{water,in
         + "molar flow (that page defines it on the total stream, not on a "
         + "solute-free basis).  "
         + "Same letter, different quantity, different units.", unit: "kg/s" },
-      { sym: "G", means: "The DRY-air mass flow: the carrier component alone, "
+      { sym: "G", means: "The dry-air mass flow: the carrier component alone, "
         + "deliberately excluding the water vapour the air already carries "
         + "and the water it is about to pick up.  That exclusion is what "
         + "makes G constant down the packing.", unit: "kg/s dry air" },
@@ -241,7 +241,7 @@ Q &= L\, \mathrm{cp}_L\, \text{range} &\qquad \text{range} &= T_\mathrm{water,in
         + "spelling is the one the classical integral is written with.",
         unit: "K" },
       { sym: "T_\\mathrm{in}",
-        means: "The upper limit: the HOT-water inlet (step 3's "
+        means: "The upper limit: the hot-water inlet (step 3's "
         + "T_water,in).  Both limits are the water's temperatures — the air "
         + "never appears in the limits, only in the driving force.",
         unit: "K" },

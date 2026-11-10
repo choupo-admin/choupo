@@ -220,7 +220,7 @@ export const MERKEL_KNOBS: readonly MerkelKnob[] = [
       + "towards the saturation curve, and eventually pinches the tower." },
   { id: "airT", label: "air in T", file: "0/air", key: "T",
     def: 298.15, min: 273.15, max: 313.15, step: 0.5, unit: "K",
-    why: "The air's DRY bulb.  It is not the floor: watch how much less the "
+    why: "The air's dry bulb.  It is not the floor: watch how much less the "
       + "engine's T_wb moves than this knob does." },
   { id: "airMoisture", label: "air moisture (humidity)", file: "0/air", key: "water",
     def: 1.3, min: 0, max: 5, step: 0.1, unit: "kmol/h",
@@ -493,7 +493,7 @@ export function MerkelTool(): JSX.Element {
           )}
           {active?.kpis?.["T_air_out"] !== undefined && (
             <Badge variant="light" color="gray" tt="none">
-              air out {fmt(active.kpis["T_air_out"])} K, assumed SATURATED
+              air out {fmt(active.kpis["T_air_out"])} K, assumed saturated
               {" "}· Y {fmt(active.kpis["Y_in"], 3)} → {fmt(active.kpis["Y_out"], 3)} kg/kg dry
             </Badge>
           )}
