@@ -214,7 +214,7 @@ before the UNIFAC matrix.  UNIFAC itself: 52x on column19 from one string-keyed 
 | done (11-09) | Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771-2783, doi:10.1016/0016-7037(86)90226-7 (Crossref-checked 11-09; the seawater boron Pitzer parameters' primary): in ~/Choupo-Literature as felmy1986-borate-mineral-equilibria-pitzer.pdf; unblocks C198 Stage 2 (seawater boron on Pitzer) | C198 |
 | waits-Vitor | Open swro01_campoDalias in the browser: does the 3D start, are the 2D drawings legible? | C199 |
 | waits-Vitor | JOSS: ORCIDs, DOI; whether Pedro Mendes agrees to enter CITATION.cff | C168 (3), C171 |
-| waits-Vitor | Was the reply to Tim (MionTec) sent? | C171 |
+| done | The reply to Tim (MionTec) WAS sent: 2026-10-26 (Técnico account) and 2026-10-27 (Gmail); he answered 10-27 that MionTec would set Choupo up and send feedback; no message from him since (checked 11-10) | C171 |
 
 ## Done (kept for one week, then removed)
 
