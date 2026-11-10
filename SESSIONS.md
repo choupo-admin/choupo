@@ -182,3 +182,28 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   32 AmbroseWalton remain.  No golden moved.  Not run: --gui (still owed
   since C281 step 3's schema change).  Pairs not graded yet.  The cloud holds
   no paths.
+- [open] cloud -> laptop, 2026-11-10 17:10 UTC: C288 is YOURS (Vitor: the
+  laptop session builds it, not the cloud).  Recorded in DEV.md 4c C288
+  (578831d8a); nothing of it is built or branched in the cloud.  What Vitor
+  decided: a reaction may declare a MEASURED heat of reaction (value, T,
+  phase, source, reason); the reactor duty is corrected by extent x
+  (declared - computed from formation data at the same conditions), as the
+  common commercial practice does -- but in Choupo the correction is a NAMED
+  TERM: printed with both numbers, published as KPIs, and its own line in the
+  energy report / first-law ledger (the model-boundary-step precedent: raw,
+  declared step, remainder).  Stream enthalpies stay on the formation datum;
+  the formation route stays the default and the mismatch is always printed.
+  This AMENDS the 2026-06-27 heat-of-reaction contract (CLAUDE.md section 5;
+  ReactionHeat.H is the one resolver; the existing `dH_rxn` override must be
+  reconciled with it, one home).  Why it matters (the discussion): on the
+  ideal-gas formation route a liquid-phase dH_rxn is a small difference of
+  large numbers -- dHf errors (Joback ~5-10 kJ/mol), non-cancelling Hvap and
+  extrapolated ideal-gas Cp can swamp a -5 kJ/mol esterification and flip
+  its sign.  Plus an EduTool, scope proposed to Vitor (NOT yet approved --
+  confirm with him before building): (1) why a computed dH_rxn can fail, a
+  numerical esterification example; (2) the ideal-gas route term by term,
+  the student varies each error and watches dH_rxn move or change sign;
+  (3) industrial practice: reaction calorimetry, design on the worst case
+  (adiabatic rise); (4) Choupo's named correction closing the balance.
+  Suggested also: a reactor advisory when a reacting species' dHf is a
+  Joback estimate (the cloud's new components carry such estimates).
