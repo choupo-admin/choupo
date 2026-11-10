@@ -210,11 +210,11 @@ u &= \frac{4\,Q}{\pi D^2}
 \end{aligned}`,
     where: [
       { sym: "Q", means: "the volumetric flow, liquid and vapour together "
-        + "and moving together (no slip)", unit: "m3/s" },
+        + "and moving together (no slip)", unit: "m³/s" },
       { sym: "m_L", means: "the mass flow of the liquid", unit: "kg/s" },
       { sym: "m_V", means: "the mass flow of the vapour", unit: "kg/s" },
-      { sym: "\\rho_L", means: "the liquid density", unit: "kg/m3" },
-      { sym: "\\rho_V", means: "the vapour density", unit: "kg/m3" },
+      { sym: "\\rho_L", means: "the liquid density", unit: "kg/m³" },
+      { sym: "\\rho_V", means: "the vapour density", unit: "kg/m³" },
       { sym: "u", means: "the mean velocity in the line", unit: "m/s" },
       { sym: "D", means: "the bore of the line", unit: "m" },
       { sym: "\\pi", means: "the ratio of a circle's circumference to its "
@@ -326,10 +326,10 @@ Y &= 1 - \frac{x_\mathrm{eff}}{3\,F_\gamma\, x_T}, \qquad W \propto Y \sqrt{x_\m
     formula: String.raw`\frac{Q_2}{Q_1} = \frac{\rho_1}{\rho_2}`,
     where: [
       { sym: "Q_1", means: "the volumetric flow entering the valve", unit:
-        "m3/s" },
-      { sym: "Q_2", means: "the volumetric flow leaving it", unit: "m3/s" },
-      { sym: "\\rho_1", means: "the density entering", unit: "kg/m3" },
-      { sym: "\\rho_2", means: "the density leaving", unit: "kg/m3" },
+        "m³/s" },
+      { sym: "Q_2", means: "the volumetric flow leaving it", unit: "m³/s" },
+      { sym: "\\rho_1", means: "the density entering", unit: "kg/m³" },
+      { sym: "\\rho_2", means: "the density leaving", unit: "kg/m³" },
     ],
     note: "Both ends of the valve are priced by flashState::priceState "
       + "(src/unitOperations/flash/StreamEquilibrium.H:862), the same call "
@@ -565,7 +565,7 @@ P_{2,\mathrm{ch}} &= P_1 - \Delta P_\mathrm{max}
     where: [
       { sym: "\\dot{W}_\\mathrm{liq}", means: "the shaft power a liquid "
         + "turbine delivers", unit: "W" },
-      { sym: "\\eta", means: "the turbine's efficiency: YOURS on this page",
+      { sym: "\\eta", means: "the turbine's efficiency: yours on this page",
         unit: "–" },
       { sym: "\\dot{W}_\\mathrm{gas}", means: "the shaft power of an ideal "
         + "isentropic gas expansion", unit: "W" },
