@@ -512,7 +512,7 @@ export function LubScaleupTool(): JSX.Element {
             <Text size="xs" c="orange">
               INCOMPLETE DATA: {incomplete.map((a) => `${a.label} curve ends at `
                 + `c_out/c_in = ${fmt(a.stoich.fEnd, 4)} (t = ${fmt(a.stoich.tEnd)} s)`)
-                .join("; ")} — below 0.95, so its t_st is a LOWER BOUND: LUB
+                .join("; ")} — below 0.95, so its t_st is a lower bound: LUB
               comes out low, while L_es, which divides by t_st, comes out
               too long, and so does L_full when t_req exceeds the laboratory
               breakthrough time.  Do not size from it; extend the horizon
@@ -629,7 +629,7 @@ function LabColumnNote({ lab }: { lab: LabColumn }): JSX.Element {
       {lab.adsorbent && lab.rhoBSource ? `, adsorbent ${lab.adsorbent})` : lab.rhoBSource ? ")" : ""}.
       {lab.missing.length > 0 && (
         <>
-          {" "}UNAVAILABLE, never defaulted:{" "}
+          {" "}unavailable, never defaulted:{" "}
           {lab.missing.map((m) => m).join("; ")}.
         </>
       )}
