@@ -74,7 +74,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
-import { lessonStepper } from "./lessonStep.js";
+import { lessonStepper, Tex } from "./lessonStep.js";
 import {
   Alert, Badge, Box, Group, Loader, NumberInput, SegmentedControl, Slider,
   Stack, Text, Title, Tooltip,
@@ -132,7 +132,7 @@ export const THIELE_STEPS: readonly {
       + "centre is from the surface.  Neither speed means anything alone: "
       + "double both and the pellet behaves identically.  The Thiele modulus "
       + "is that ratio, made dimensionless.",
-    formula: "φ_R = R · √(k / D_eff)      φ_Λ = (V/S) · √(k / D_eff)",
+    formula: "\\phi_R = R\\,\\sqrt{\\frac{k}{D_\\mathrm{eff}}} \\qquad \\phi_\\Lambda = \\frac{V}{S}\\,\\sqrt{\\frac{k}{D_\\mathrm{eff}}}",
     note: "TWO LENGTHS differing by a factor of THREE — and nine in anything "
       + "built on φ².  φ_R uses the sphere's radius (the slab's "
       + "HALF-thickness) and is what the radial solution is written in; φ_Λ "
@@ -166,7 +166,7 @@ export const THIELE_STEPS: readonly {
       + "which is NOT the same as 81 % of the catalyst sitting idle.  η is "
       + "a ratio of rates, not a fraction of mass: at first order every "
       + "gram is reacting, most of it just at a much lower concentration.",
-    formula: "η = (actual rate) / (rate at surface conditions)",
+    formula: "\\eta = \\frac{\\text{actual rate}}{\\text{rate at surface conditions}}",
   },
   {
     n: 4,
@@ -200,7 +200,7 @@ export const THIELE_STEPS: readonly {
       + "uncertainty, not a measurement.  Well below 1 and you are "
       + "kinetically controlled; well above 1 and you are not.  It answers "
       + "the design question without ever asking for the intrinsic rate.",
-    formula: "M_W = η·φ_Λ²  =  (r_obs · Λ²) / (D_eff · c_s),   Λ = V/S",
+    formula: "M_W = \\eta\\,\\phi_\\Lambda^2 = \\frac{r_\\mathrm{obs}\\,\\Lambda^2}{D_\\mathrm{eff}\\,c_s}, \\qquad \\Lambda = \\frac{V}{S}",
     note: "READ THE SUBSCRIPT.  This is the GENERALISED Weisz modulus, built "
       + "on Λ = V/S — for a sphere Λ = R/3, so it is NINE TIMES SMALLER than "
       + "the conventional Weisz-Prater number C_WP = r_obs·R²/(D_eff·c_s) "
@@ -771,16 +771,22 @@ export function ThielePelletTool(): JSX.Element {
    *  beside the provenance at the foot of the lesson rather than in front of
    *  the paragraph that introduces the pellet.  */
   const advisoryAlert = advisories.length === 0 ? null : (
-    <Alert color="yellow" variant="light"
-      title={`The engine qualifies its own answer: ${advisories.length} `
-        + `advisor${advisories.length === 1 ? "y" : "ies"}`}>
+    <Box component="details" data-engine-advisories={advisories.length}>
+      {/* Folded: nine lines of the engine's own log closing a lesson read as
+          an error dump (C276).  They stay one click away, in the engine's
+          words, because they qualify numbers this page draws. */}
+      <Box component="summary" style={{ cursor: "pointer",
+        fontSize: "var(--mantine-font-size-sm)" }}>
+        The engine qualifies its own answer: {advisories.length}{" "}
+        advisor{advisories.length === 1 ? "y" : "ies"} (read them)
+      </Box>
       {advisories.map((a) => (
-        <Text key={a.message} size="xs" ff="monospace" mt={2}
-          style={{ whiteSpace: "pre-wrap" }}>
-          [{a.severity}] {a.locus}: {a.message}
+        <Text key={a.message} size="xs" mt={4}
+          style={{ whiteSpace: "normal", overflowWrap: "anywhere" }}>
+          <Text span fw={600}>{a.locus}:</Text> {a.message}
         </Text>
       ))}
-    </Alert>);
+    </Box>);
 
   const knobRail = (
     <>
@@ -833,11 +839,13 @@ export function ThielePelletTool(): JSX.Element {
         {alerts}
 
         {step(1)}
-        {step(2)}
-        {step(3)}
 
+        {/* THE FIGURE COMES SECOND, not fifth (DEV.md 4c C276): a student who
+            opens this page should have the pellet under their hand before
+            the algebra, and the two steps that follow then explain what they
+            have just watched. */}
         <Box>
-          <Title order={5}>Now watch it happen</Title>
+          <Title order={5}>Watch it happen first</Title>
           <Text size="sm" mt={4}>
             Three shapes, the same length, the same chemistry, solved in your
             browser.  <strong>Drag the rate constant</strong> and watch the
@@ -948,6 +956,9 @@ export function ThielePelletTool(): JSX.Element {
           </Box>
         </Box>
 
+        {step(2)}
+        {step(3)}
+
         <Alert variant="light"
           title="Why the three shapes are not three problems">
           <Text size="sm">
@@ -1007,10 +1018,8 @@ export function ThielePelletTool(): JSX.Element {
             </Text>
             <Box my={8} px="sm" py={6}
               style={{ borderLeft: `3px solid ${GRID}` }}>
-              <Text size="sm" ff="monospace">
-                T − T_s = β · T_s · (1 − c/c_s),{"   "}
-                β = (−ΔH)·D_eff·c_s / (k_eff·T_s)
-              </Text>
+              <Tex mode="display" src={"T - T_s = \\beta\\,T_s\\left(1 - \\frac{c}{c_s}\\right), "
+                + "\\qquad \\beta = \\frac{(-\\Delta H)\\,D_\\mathrm{eff}\\,c_s}{k_\\mathrm{eff}\\,T_s}"} />
             </Box>
             <Text size="sm">
               <strong>And now the honest half.</strong>  “Exact” means exact{" "}

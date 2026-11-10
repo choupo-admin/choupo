@@ -52,11 +52,22 @@ export function EngineCaveats(): JSX.Element | null {
   return (
     <Box px={12} pb={4} style={{ flexShrink: 0 }} data-engine-caveats={caveats.length}>
       <Group gap={6} wrap="wrap" align="center">
-        <Text size="xs" c="yellow.8" fw={600}>
-          The engine flagged {caveats.length} caveat{caveats.length === 1 ? "" : "s"}
-          {validity > 0 ? ` (${validity} about a model used outside its validity)` : ""}
-          {" "}on the runs behind this page.
-        </Text>
+        {/* Coloured only when a model ran OUTSIDE ITS VALIDITY: that is the one
+            kind a reader must not miss.  Any other note is said in the page's
+            ordinary grey -- a lesson that opens on an orange warning about its
+            own witness reads as broken before it has said anything (C277). */}
+        {validity > 0 ? (
+          <Text size="xs" c="yellow.8" fw={600}>
+            The engine flagged {caveats.length} caveat{caveats.length === 1 ? "" : "s"}
+            {` (${validity} about a model used outside its validity)`}
+            {" "}on the runs behind this page.
+          </Text>
+        ) : (
+          <Text size="xs" c="dimmed">
+            {caveats.length} engine note{caveats.length === 1 ? "" : "s"} on
+            the runs behind this page.
+          </Text>
+        )}
         <UnstyledButton onClick={() => setOpen((o) => !o)} aria-expanded={open}
           style={{ fontSize: "var(--mantine-font-size-xs)",
             color: "var(--mantine-color-anchor)", textDecoration: "underline" }}>
