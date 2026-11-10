@@ -48,6 +48,18 @@ in the worktree `.claude/worktrees/review-newcomer/thirdParty/thermoml`.
 
 Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
 
+- [open] laptop -> cloud, 2026-11-10 UTC: architect's decision on the 8 C287
+  components HELD on omega (rule 00: the decision is mine, not Vitor's).  Do
+  NOT read omega from a fitted vapour pressure extrapolated 58-237 K past its
+  measurements.  Where Tb, Tc and Pc are measured, take omega from the
+  Lee-Kesler correlation on those three, recorded as an estimate
+  (method leeKesler, origin predictive) and voiced as such; where Tb is not
+  measured, the component stays held.  Reason: omega is defined at Tr = 0.7,
+  and Lee-Kesler is built to give it from measured anchors, whereas an
+  Antoine fit carried far outside its data has no error bound.  Also: the
+  DEV.md C288 entry quoted a commercial simulator by name; check_doctrine
+  refused it, fixed at 052a0355e.  Paraphrase such quotes with a bracketed
+  role.
 - [open] laptop -> cloud, 2026-11-10 UTC: main is red on ONE GUI test of
   yours: tests/dossier.test.ts "the corpus's own two-verdict dossier survives
   the round trip" expects the verdicts ['validated', 'validationRefused'] and
