@@ -3261,6 +3261,27 @@ accepts today, and that is a policy call.
 > (3) a `rho_liquid_<comp>` key in choupoProps, so a density audit need not
 > recompute the engine's route.  Each record correction moves goldens: list first.
 
+> **C281 (Vitor, 2026-11-10, from the cloud session: "Ataca primeiro o
+> Ambrose-Walton").  THE AMBROSE-WALTON VAPOUR PRESSURES: SAY WHAT THEY ARE, THEN
+> REPLACE THEM WHERE MEASUREMENTS EXIST.**  MEASURED before dispatch: 48 catalogue
+> components declare `vaporPressure { model AmbroseWalton; }`, the estimate marked
+> only in a `//` comment the engine cannot read.  Evaluated from each record's own
+> Tc, Pc and omega, 26 of the 48 curves miss the record's own Tb by more than 2 K
+> and 14 by more than 10 K (maleicAcid +154 K, squalane +87 K, glycerol +83 K,
+> phthalicAcid +56 K); C279 measured a median 19.6 % AAD on the 25 with archive
+> data.  The model reads Tc, Pc, omega only
+> (src/thermo/vaporPressure/AmbroseWalton.cpp:44-46).  Reach: one tutorial,
+> temperature02_engineers_ladder (glycerol), which carries a sealed case-local
+> copy, so a catalogue change moves no golden.  STEP 1 (dispatched, stated
+> default): the model ANNOUNCES on every run that its pressures are a
+> corresponding-states estimate, and, where the record declares Tb, the gap
+> between the curve's own normal boiling point and that Tb; no number moves.
+> NOT done in step 1, and why: anchoring on Tb (several of these Tb are
+> themselves estimates -- maleic, phthalic and terephthalic acids decompose
+> before they boil).  STEP 2 (next, owes the protocol): fitted Antoine records
+> for the components with archive vapour-pressure data, fit on one laboratory,
+> held out on another, band declared before the fit.
+
 > **C280 RESULT.** C280 LANDED 11-10: `fitParameters` takes `objective { method twoStage|leastSquares|minimax; }` with relative binodal rows; the butanol-water pair is PROMOTED to `data/standards/parameters/NRTL/nButanol-water.dat` (b_ij 1894.04, b_ji -163.84, a_ij -4.7108, a_ji 4.0996, alpha 0.4459), fitted by least squares on 14 tie lines and the heteroazeotrope: held-out tie-line AAD 0.0056 (band 0.01), held-out heteroazeotrope 0.38 K, water-rich liquid 5 % mean (the laboratories' own scatter). NOT for homogeneous butanol-rich VLE at 1 atm: 2.2 K high on average, 3.2 K max, held out and written in the record. On this partition minimax follows one laboratory and twoStage misses the band, so least squares is the promoted method. Held by check_regressed_pairs (record reproduced from its case) and --scope on curate14; NOT run: --gui, schema-coverage and guide freshness gates, a full sweep.
 >
 > **C280 (Vitor, 2026-11-10, on the butanol-water fit: "Eu quando faco ajuste
