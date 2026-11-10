@@ -422,7 +422,7 @@ function Bench({ cat, fuel, onFuel }: {
           title="Outside what the model was measured on">
           {flame === "heskestad" && !hgInside && (
             <Text size="sm">
-              Heskestad&apos;s group here is {fx(hg, 1)} kW^(2/5)/m, outside
+              Heskestad&apos;s group here is {fx(hg, 1)} <Tex mode="inline" src={"\\mathrm{kW}^{2/5}/\\mathrm{m}"} />, outside
               the {HESKESTAD_RANGE[0]}–{HESKESTAD_RANGE[1]} his flame height was
               tested on: the height, and every flux the solid flame draws
               from it, is an extrapolation.
@@ -460,8 +460,8 @@ function Bench({ cat, fuel, onFuel }: {
       )}
       {plot && (
         <Text size="xs" c="dimmed" mt={4}>
-          Each dotted line is a FLUX.  For a person, harm follows a dose -- the
-          flux AND how long it lasts -- so where a curve crosses a line is not
+          Each dotted line is a flux.  For a person, harm follows a dose -- the
+          flux and how long it lasts -- so where a curve crosses a line is not
           a boundary between safe and harmed; the table below gives the
           exposure each source attaches, and the building line is not about
           people.
@@ -476,7 +476,7 @@ function Bench({ cat, fuel, onFuel }: {
           <Table.Tr><Table.Td>ṁ″_∞ / ṁ″ at D [g/(m2 s)]</Table.Td><Table.Td>{fx(fire.mInf * 1000, 2)} / {fx(fire.m * 1000, 2)}</Table.Td><Table.Td>3</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>heat release Q [MW]</Table.Td><Table.Td>{fx(fire.Q / 1e6, 3)}</Table.Td><Table.Td>4</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>flame height L, Thomas / Heskestad [m]</Table.Td><Table.Td>{fx(fire.L_thomas, 2)} / {fx(fire.L_heskestad, 2)}</Table.Td><Table.Td>5</Table.Td></Table.Tr>
-          <Table.Tr><Table.Td>Heskestad&apos;s group Q^(2/5)/D [kW^(2/5)/m]</Table.Td><Table.Td>{fx(hg, 1)}</Table.Td><Table.Td>5: {hgInside ? "inside" : "outside"} the tested {HESKESTAD_RANGE[0]}–{HESKESTAD_RANGE[1]}</Table.Td></Table.Tr>
+          <Table.Tr><Table.Td>Heskestad&apos;s group <Tex mode="inline" src={"Q^{2/5}/D"} /> [<Tex mode="inline" src={"\\mathrm{kW}^{2/5}/\\mathrm{m}"} />]</Table.Td><Table.Td>{fx(hg, 1)}</Table.Td><Table.Td>5: {hgInside ? "inside" : "outside"} the tested {HESKESTAD_RANGE[0]}–{HESKESTAD_RANGE[1]}</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>emissive power E, energy / Mudan &amp; Croce [kW/m2]</Table.Td><Table.Td>{kW(fire.E_energy, 1)} / {kW(fire.E_mudan, 1)}</Table.Td><Table.Td>6</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>radiative fraction the solid flame implies, χ_E</Table.Td><Table.Td>{fx(fire.chiImplied, 3)}</Table.Td><Table.Td>10</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>far-field ratio solid / point (1000 D away)</Table.Td><Table.Td>{fx(ratioFar, 3)}</Table.Td><Table.Td>10: <Tex mode="inline" src={"\\frac{4}{\\pi}\\,\\chi_\\mathrm{E}/\\chi_\\mathrm{r}"} /> = {fx(4 / Math.PI * fire.chiImplied / chiR, 3)}</Table.Td></Table.Tr>

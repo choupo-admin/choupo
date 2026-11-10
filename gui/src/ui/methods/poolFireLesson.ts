@@ -383,8 +383,8 @@ export const POOL_STEPS: readonly LessonStep[] = [
       + "plus-or-minus 0.16 m by which that flame's height scatters.  A "
       + "methanol flame is nearly invisible and short for its heat, and a "
       + "wood-crib correlation over-predicts it.  Each correlation also has a "
-      + "domain: Heskestad's was tested for Q^(2/5)/D between 7 and 700 "
-      + "kW^(2/5)/m, and a wide methanol pool falls below it -- at 40 m its "
+      + "domain: Heskestad's was tested for the group Q to the 2/5 power over D between 7 and 700, "
+      + "with Q in kW and D in m, and a wide methanol pool falls below it -- at 40 m its "
       + "height goes to zero, which is the correlation failing, not the "
       + "flame vanishing.  The bench lets you take either, shows both, and "
       + "says when Heskestad is outside the range it was tested on.",
