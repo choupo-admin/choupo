@@ -49,9 +49,10 @@ Description
     the size from THAT item's own sizing, and puts it in the room the building
     lists for train 1's item.  Every repeated item takes part in EVERY check
     and in the pipe router as if the case had declared it (overlap, separation,
-    zones, roads, bunds, headers: a branch per train); the result PUBLISHES
-    train 1's items in full and, for trains 2..N, an OUTLINE per room (the
-    plan box that holds the train's items in it) marked `typicalOf` train 1.
+    zones, roads, bunds, headers: a branch per train); the result keeps
+    every item in `items` (a repeat carries `repeatOf`) and adds, apart, an
+    OUTLINE per repeated train and room (`typicalOutlines`: the plan box that
+    holds the train's items in it).
     One group has one pitch: a plant whose equipment does not repeat on one
     pitch declares one group per pitch.
 
@@ -96,6 +97,10 @@ std::string idOf(const Group& g, const std::string& member, int k);
 //- The ids that repeat `id` in trains 2..N (empty when `id` is no member).
 std::vector<std::string> copiesOf(const Dictionary& layoutDict,
                                   const std::string& id);
+
+//- `ids` followed by the repeats of every member among them.
+std::vector<std::string> withCopies(const Dictionary& layoutDict,
+                                    const std::vector<std::string>& ids);
 
 } // namespace typical
 } // namespace plantLayout

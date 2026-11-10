@@ -254,7 +254,7 @@ Description
     A TYPICAL TRAIN (2026-11-10, DEV.md 4c C272): `typicals ( ... )` declares
     train 1's sized items once and repeats them N times at a pitch
     (TypicalTrain.H).  The repeats are items to every check and to the pipe
-    router; the result publishes them as one outline per train and room.
+    router; the result keeps them in items and adds one outline per train and room.
 
     SECONDARY CONTAINMENT (2026-10-21, DEV.md 4c C134).  A case may declare
     `bunds ( { name; kind bund|impounding; items ( ... ); region { xMin;
@@ -296,9 +296,14 @@ Description
 
 #include "core/Dictionary.H"
 #include "core/ResultRecords.H"
+#include "postProcessing/layout/BuildingLayout.H"
+#include "postProcessing/layout/TypicalTrain.H"
 #include "result/SimulationResult.H"
 
+#include <map>
+#include <set>
 #include <string>
+#include <vector>
 
 namespace Choupo
 {
@@ -341,6 +346,16 @@ PlantLayoutRecord evaluate(const Dictionary& layoutDict,
 //  one line, one area per sector, the case's own separation table, wind and
 //  hazard declarations carried from `previous` when given.  Returns the text.
 std::string draft(const SimulationResult& r, const Dictionary* previous);
+
+namespace typical
+{
+//- Repeat train 1's members of every `typicals` group (TypicalTrain.H): the
+//  repeats join `rec.items`, and the outlines and group records are filled.
+void expandTypicals(const Dictionary& layoutDict, const SimulationResult& r,
+                    PlantLayoutRecord& rec, std::set<std::string>& placed,
+                    const std::map<std::string, buildingLayout::IndoorPlace>& indoor,
+                    std::vector<std::vector<std::string>>& refusedItems);
+} // namespace typical
 
 } // namespace plantLayout
 } // namespace Choupo

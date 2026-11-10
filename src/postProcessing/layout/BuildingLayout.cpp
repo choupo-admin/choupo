@@ -28,7 +28,6 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "postProcessing/layout/BuildingLayout.H"
-#include "postProcessing/layout/TypicalTrain.H"
 
 #include "core/Advisory.H"
 #include "core/Dimensions.H"
@@ -316,16 +315,7 @@ std::map<std::string, IndoorPlace> indoorPlaces(const Dictionary& layoutDict)
         const std::string name = e->lookupWord("room");
         const std::string w = "room `" + name + "`";
         const std::size_t fi = floorOf(*e, w, floorIdx, floors);
-        //  A member of a typical train (DEV.md 4c C272) brings its repeats
-        //  into the room it is listed in.
-        std::vector<std::string> ids;
-        for (const auto& id : e->lookupWordList("equipment"))
-        {
-            ids.push_back(id);
-            for (const auto& c : plantLayout::typical::copiesOf(layoutDict, id))
-                ids.push_back(c);
-        }
-        for (const auto& id : ids)
+        for (const auto& id : plantLayout::typical::withCopies(layoutDict, e->lookupWordList("equipment")))
         {
             const auto ins = out.emplace(id, IndoorPlace{ name, floors[fi].name,
                                                           floors[fi].elevation });
@@ -487,13 +477,7 @@ BuildingRecord evaluate(const Dictionary& layoutDict,
             r.occupancy = static_cast<int>(std::lround(o));
             rec.occupancy += r.occupancy;
         }
-        if (e->found("equipment"))
-            for (const auto& id : e->lookupWordList("equipment"))
-            {
-                r.equipment.push_back(id);
-                for (const auto& c : plantLayout::typical::copiesOf(layoutDict, id))
-                    r.equipment.push_back(c);   // C272: a typical's repeats
-            }
+        if (e->found("equipment")) r.equipment = plantLayout::typical::withCopies(layoutDict, e->lookupWordList("equipment"));
         if (e->found("source") != e->found("reason"))
             refuse(w + ": declare both `source` and `reason`, or neither");
         if (e->found("source"))

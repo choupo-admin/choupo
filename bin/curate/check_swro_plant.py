@@ -343,15 +343,8 @@ def arm_d(tmp):
     return n
 
 
-def placed_items(L):
-    """Every placed item: train 1 in full, plus the items a `typicals` entry
-    repeated (C272, published apart as `typicalItems`); the outlines drawn for
-    trains 2..N are not items."""
-    return [i for i in L["items"] if not i.get("outline")] + L.get("typicalItems", [])
-
-
 def rects(L):
-    return {i["id"]: (i["x"] - i["dx"] / 2.0, i["x"] + i["dx"] / 2.0, i["y"] - i["dy"] / 2.0, i["y"] + i["dy"] / 2.0, i["dz"]) for i in placed_items(L)}
+    return {i["id"]: (i["x"] - i["dx"] / 2.0, i["x"] + i["dx"] / 2.0, i["y"] - i["dy"] / 2.0, i["y"] + i["dy"] / 2.0, i["dz"]) for i in L["items"]}
 
 
 def arm_e(res):
@@ -361,7 +354,7 @@ def arm_e(res):
         return
     R = rects(L)
     ids = sorted(R)
-    ITEM = {i["id"]: i for i in placed_items(L)}
+    ITEM = {i["id"]: i for i in L["items"]}
     for a in range(len(ids)):
         for b in range(a + 1, len(ids)):
             A, B = R[ids[a]], R[ids[b]]
@@ -590,7 +583,7 @@ def arm_i(res):
     clearance and the bank's envelope recomputed from the dicts, and the plan's
     box equals the published envelope."""
     U, post, flow = by_unit(res), post_text(), flow_text()
-    L = {i["id"]: i for i in placed_items(res["layout"])}
+    L = {i["id"]: i for i in res["layout"]["items"]}
     n = 0
     for u in ("RO1", "RO2a", "RO2b"):
         fb = re.search(r"name\s+%s;.*?module\s+([\w-]+);.*?vessels\s+(\d+);\s*elements\s+(\d+);" % u, flow, re.S)
@@ -648,7 +641,7 @@ def arm_j(res):
     rooms = {r["name"]: r for r in B["rooms"]}
     want = {"RO1": "ro1Hall", "RO2a": "ro2Hall", "RO2b": "ro2Hall", "HPpump": "pumpHall",
             "Booster": "pumpHall", "Pass2Pump": "pumpHall", "PX": "pxHall"}
-    L = {i["id"]: i for i in placed_items(res["layout"])}
+    L = {i["id"]: i for i in res["layout"]["items"]}
     n = 0
     for u, room in want.items():
         for k in range(1, SKIDS + 1):

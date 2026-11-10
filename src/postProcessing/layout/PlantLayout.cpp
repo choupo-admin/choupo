@@ -29,13 +29,11 @@ License
 #include "postProcessing/layout/PlantLayout.H"
 #include "postProcessing/layout/BuildingLayout.H"
 #include "postProcessing/layout/BundArithmetic.H"
-#include "postProcessing/layout/TypicalTrain.H"
 #include "core/Advisory.H"
 #include "core/Dimensions.H"
 #include "core/RegistryRefusal.H"
 
 #include <algorithm>
-#include <array>
 #include <cmath>
 #include <cstddef>
 #include <functional>
@@ -5148,129 +5146,7 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
         readParking(*e, it, where, rec);   // C96
         rec.items.push_back(it);
     }
-
-    //  ---- the typical trains (DEV.md 4c C272) -----------------------------
-    //  Train 1's members are placed above like any item; trains 2..N are
-    //  REPEATED here -- moved by the pitch, sized from their own sizing,
-    //  put in the room the building lists -- and then take part in every
-    //  check below and in the pipe router as items.  The result publishes
-    //  them as one outline per train and room (`outlines`), not as items.
-    for (const auto& g : typical::read(d))
-    {
-        LayoutTypical pub;
-        pub.name = g.name; pub.index = g.index; pub.count = g.count;
-        pub.pitchX = g.px; pub.pitchY = g.py; pub.members = g.members;
-        pub.source = g.source; pub.reason = g.reason;
-        const std::string w = "typical `" + g.name + "`";
-        //  the box of train k in each room: x0 x1 y0 y1 z0 z1
-        std::map<std::pair<int, std::string>, std::array<scalar, 6>> box;
-        auto grow = [&](int k, const LayoutItem& c)
-        {
-            const std::array<scalar, 6> b = { c.x - 0.5 * c.dx, c.x + 0.5 * c.dx,
-                                              c.y - 0.5 * c.dy, c.y + 0.5 * c.dy,
-                                              c.z, c.z + c.dz };
-            auto ins = box.emplace(std::make_pair(k, c.room), b);
-            if (ins.second) return;
-            auto& a = ins.first->second;
-            a[0] = std::min(a[0], b[0]); a[1] = std::max(a[1], b[1]);
-            a[2] = std::min(a[2], b[2]); a[3] = std::max(a[3], b[3]);
-            a[4] = std::min(a[4], b[4]); a[5] = std::max(a[5], b[5]);
-        };
-        std::vector<LayoutItem> repeats;
-        for (const auto& m : g.members)
-        {
-            LayoutItem* base = nullptr;
-            for (auto& i : rec.items) if (i.id == m) base = &i;
-            if (!base)
-            {
-                //  its sizer refused (announced below, as for any item)
-                if (refusedSizingOf(r, m)) continue;
-                refuse(w + ": member `" + m + "` is not placed -- declare train"
-                       " 1's item in `items ( ... )` (its x, y, orientation);"
-                       " the engine repeats it, it does not invent it");
-            }
-            if (base->nonProcess)
-                refuse(w + ": member `" + m + "` is a non-process item -- a"
-                       " typical train repeats SIZED items");
-            base->typical = g.name; base->trainIndex = 1;
-            grow(1, *base);
-            for (int k = 2; k <= g.count; ++k)
-            {
-                LayoutItem c = *base;
-                c.id = typical::idOf(g, m, k);
-                const std::string wc = w + ": train " + std::to_string(k)
-                                       + "'s item `" + c.id + "`";
-                if (!placed.insert(c.id).second)
-                    refuse(wc + " is also declared in `items` -- a typical"
-                           " repeats train 1's item, delete the entry");
-                c.x += (k - 1) * g.px;
-                c.y += (k - 1) * g.py;
-                c.typical = g.name; c.trainIndex = k; c.typicalCopy = true;
-                auto s = r.sizings.find(c.id);
-                if (s == r.sizings.end())
-                {
-                    if (const auto* refusedBy = refusedSizingOf(r, c.id))
-                    {
-                        refusedItems.push_back({ c.id, refusedBy->first,
-                                                 refusedBy->second });
-                        continue;
-                    }
-                    refuse(wc + " names no sized item of this run -- the"
-                           " sizing pass has no train " + std::to_string(k)
-                           + " (a typical repeats what the sizing pass"
-                           " produced: check `count`)");
-                }
-                c.kind   = s->second.equipmentType;
-                c.sector = s->second.sector;
-                const Footprint f = publishedFootprint(s->second);
-                if ((base->footprintFrom == "published") != f.known)
-                    refuse(wc + ": its sizer " + (f.known ? "publishes a size"
-                           : "publishes no size") + ", train 1's item "
-                           + (f.known ? "declares a footprint" : "reads its own")
-                           + " -- the trains are not alike");
-                if (f.known)
-                {
-                    if (f.box) setExtents(c, f.L, f.W, f.Hbox, wc);
-                    else       setExtents(c, f.D, f.L, 0.0, wc);
-                }
-                const auto in = indoor.find(c.id);
-                if (base->room.empty() != (in == indoor.end()))
-                    refuse(wc + ": train 1's item " + (base->room.empty()
-                           ? "stands in the open, this one in a room"
-                           : "stands in a room, this one is in no room")
-                           + " -- list train 1's item in its room (the repeats"
-                             " follow it)");
-                if (in != indoor.end()) { c.room = in->second.room;
-                                          c.z = in->second.elevation; }
-                grow(k, c);
-                repeats.push_back(c);
-            }
-        }
-        for (const auto& c : repeats) rec.items.push_back(c);
-        pub.repeated = static_cast<int>(repeats.size());
-        for (int k = 2; k <= g.count; ++k)
-            for (const auto& kb : box)
-            {
-                if (kb.first.first != k) continue;
-                const auto& b = kb.second;
-                LayoutItem o;
-                o.nonProcess = true;
-                o.kind = "typicalOutline";
-                o.id = g.name + "#" + std::to_string(k)
-                       + (kb.first.second.empty() ? "" : "@" + kb.first.second);
-                o.shape = "box"; o.orientation = "alongX";
-                o.footprintFrom = "typical";
-                o.x = 0.5 * (b[0] + b[1]); o.y = 0.5 * (b[2] + b[3]);
-                o.dx = b[1] - b[0]; o.dy = b[3] - b[2];
-                o.z = b[4]; o.dz = b[5] - b[4];
-                o.room = kb.first.second;
-                o.source = g.source; o.reason = g.reason;
-                o.typical = g.name; o.trainIndex = k;
-                rec.outlines.push_back(o);
-            }
-        rec.typicals.push_back(pub);
-    }
-
+    typical::expandTypicals(d, r, rec, placed, indoor, refusedItems);
     //  ---- overlap: REFUSED ------------------------------------------------
     for (std::size_t i = 0; i < rec.items.size(); ++i)
         for (std::size_t j = i + 1; j < rec.items.size(); ++j)
@@ -6273,6 +6149,143 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
     o << "\n// ************************************************************************* //\n";
     return o.str();
 }
+
+//  ---- the typical trains (DEV.md 4c C272) ---------------------------------
+//  Defined after everything else in the file so that the line numbers the
+//  lessons cite stay where they were.
+namespace typical
+{
+
+void expandTypicals(const Dictionary& d, const SimulationResult& r,
+                    PlantLayoutRecord& rec, std::set<std::string>& placed,
+                    const std::map<std::string, buildingLayout::IndoorPlace>& indoor,
+                    std::vector<std::vector<std::string>>& refusedItems)
+{
+    //  ---- the typical trains (DEV.md 4c C272) -----------------------------
+    //  Train 1's members are placed above like any item; trains 2..N are
+    //  REPEATED here -- moved by the pitch, sized from their own sizing,
+    //  put in the room the building lists -- and then take part in every
+    //  check below and in the pipe router as items.  The result publishes
+    //  them as one outline per train and room (`outlines`), not as items.
+    for (const auto& g : typical::read(d))
+    {
+        LayoutTypical pub;
+        pub.name = g.name; pub.index = g.index; pub.count = g.count;
+        pub.pitchX = g.px; pub.pitchY = g.py; pub.members = g.members;
+        pub.source = g.source; pub.reason = g.reason;
+        const std::string w = "typical `" + g.name + "`";
+        //  the box of train k in each room: x0 x1 y0 y1 z0 z1
+        std::map<std::pair<int, std::string>, std::vector<scalar>> box;
+        auto grow = [&](int k, const LayoutItem& c)
+        {
+            const std::vector<scalar> b = { c.x - 0.5 * c.dx, c.x + 0.5 * c.dx,
+                                              c.y - 0.5 * c.dy, c.y + 0.5 * c.dy,
+                                              c.z, c.z + c.dz };
+            auto ins = box.emplace(std::make_pair(k, c.room), b);
+            if (ins.second) return;
+            auto& a = ins.first->second;
+            a[0] = std::min(a[0], b[0]); a[1] = std::max(a[1], b[1]);
+            a[2] = std::min(a[2], b[2]); a[3] = std::max(a[3], b[3]);
+            a[4] = std::min(a[4], b[4]); a[5] = std::max(a[5], b[5]);
+        };
+        std::vector<LayoutItem> repeats;
+        for (const auto& m : g.members)
+        {
+            LayoutItem* base = nullptr;
+            for (auto& i : rec.items) if (i.id == m) base = &i;
+            if (!base)
+            {
+                //  its sizer refused (announced below, as for any item)
+                if (refusedSizingOf(r, m)) continue;
+                refuse(w + ": member `" + m + "` is not placed -- declare train"
+                       " 1's item in `items ( ... )` (its x, y, orientation);"
+                       " the engine repeats it, it does not invent it");
+            }
+            if (base->nonProcess)
+                refuse(w + ": member `" + m + "` is a non-process item -- a"
+                       " typical train repeats SIZED items");
+            base->typical = g.name; base->trainIndex = 1;
+            grow(1, *base);
+            for (int k = 2; k <= g.count; ++k)
+            {
+                LayoutItem c = *base;
+                c.id = typical::idOf(g, m, k);
+                const std::string wc = w + ": train " + std::to_string(k)
+                                       + "'s item `" + c.id + "`";
+                if (!placed.insert(c.id).second)
+                    refuse(wc + " is also declared in `items` -- a typical"
+                           " repeats train 1's item, delete the entry");
+                c.x += (k - 1) * g.px;
+                c.y += (k - 1) * g.py;
+                c.typical = g.name; c.trainIndex = k; c.typicalCopy = true;
+                c.repeatOf = m;
+                auto s = r.sizings.find(c.id);
+                if (s == r.sizings.end())
+                {
+                    if (const auto* refusedBy = refusedSizingOf(r, c.id))
+                    {
+                        refusedItems.push_back({ c.id, refusedBy->first,
+                                                 refusedBy->second });
+                        continue;
+                    }
+                    refuse(wc + " names no sized item of this run -- the"
+                           " sizing pass has no train " + std::to_string(k)
+                           + " (a typical repeats what the sizing pass"
+                           " produced: check `count`)");
+                }
+                c.kind   = s->second.equipmentType;
+                c.sector = s->second.sector;
+                const Footprint f = publishedFootprint(s->second);
+                if ((base->footprintFrom == "published") != f.known)
+                    refuse(wc + ": its sizer " + (f.known ? "publishes a size"
+                           : "publishes no size") + ", train 1's item "
+                           + (f.known ? "declares a footprint" : "reads its own")
+                           + " -- the trains are not alike");
+                if (f.known)
+                {
+                    if (f.box) setExtents(c, f.L, f.W, f.Hbox, wc);
+                    else       setExtents(c, f.D, f.L, 0.0, wc);
+                }
+                const auto in = indoor.find(c.id);
+                if (base->room.empty() != (in == indoor.end()))
+                    refuse(wc + ": train 1's item " + (base->room.empty()
+                           ? "stands in the open, this one in a room"
+                           : "stands in a room, this one is in no room")
+                           + " -- list train 1's item in its room (the repeats"
+                             " follow it)");
+                if (in != indoor.end()) { c.room = in->second.room;
+                                          c.z = in->second.elevation; }
+                grow(k, c);
+                repeats.push_back(c);
+            }
+        }
+        for (const auto& c : repeats) rec.items.push_back(c);
+        pub.repeated = static_cast<int>(repeats.size());
+        for (int k = 2; k <= g.count; ++k)
+            for (const auto& kb : box)
+            {
+                if (kb.first.first != k) continue;
+                const auto& b = kb.second;
+                LayoutItem o;
+                o.nonProcess = true;
+                o.kind = "typicalOutline";
+                o.id = g.name + "#" + std::to_string(k)
+                       + (kb.first.second.empty() ? "" : "@" + kb.first.second);
+                o.shape = "box"; o.orientation = "alongX";
+                o.footprintFrom = "typical";
+                o.x = 0.5 * (b[0] + b[1]); o.y = 0.5 * (b[2] + b[3]);
+                o.dx = b[1] - b[0]; o.dy = b[3] - b[2];
+                o.z = b[4]; o.dz = b[5] - b[4];
+                o.room = kb.first.second;
+                o.source = g.source; o.reason = g.reason;
+                o.typical = g.name; o.trainIndex = k;
+                rec.outlines.push_back(o);
+            }
+        rec.typicals.push_back(pub);
+    }
+}
+
+} // namespace typical
 
 } // namespace plantLayout
 } // namespace Choupo

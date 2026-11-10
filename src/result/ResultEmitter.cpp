@@ -1515,14 +1515,13 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
     {
         const auto& L = r.layout;
         os << ",\n  \"layout\": {\n    \"items\": [";
-        //  C272: the items a typical train REPEATED are checked and piped as
-        //  items but published apart (`typicalItems`, below), and `items`
-        //  carries train 1 in full plus one OUTLINE per repeated train and
-        //  room, so the plan draws train 1 in full and the others as a repeat.
-        std::vector<const LayoutItem*> shown, repeated;
-        for (const auto& it : L.items)
-            (it.typicalCopy ? repeated : shown).push_back(&it);
-        for (const auto& it : L.outlines) shown.push_back(&it);
+        //  C272: `items` stays COMPLETE -- every real item, the repeats of a
+        //  typical train included (each carries `repeatOf`) -- because the
+        //  hall plan and the 3D bank model read it; the outlines drawn for
+        //  the repeated trains are published apart (`typicalOutlines`).
+        std::vector<const LayoutItem*> shown, outlines;
+        for (const auto& it : L.items) shown.push_back(&it);
+        for (const auto& it : L.outlines) outlines.push_back(&it);
         auto emitItems = [&](const std::vector<const LayoutItem*>& list)
         {
         for (std::size_t i = 0; i < list.size(); ++i)
@@ -1546,10 +1545,12 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
             //  C272: only an item of a typical train, so every other item
             //  publishes what it always did.
             if (!it.typical.empty())
+            {
                 os << ", \"typical\": " << esc(it.typical)
-                   << ", \"trainIndex\": " << it.trainIndex
-                   << ", \"outline\": "
-                   << (it.footprintFrom == "typical" ? "true" : "false");
+                   << ", \"trainIndex\": " << it.trainIndex;
+                if (!it.repeatOf.empty())
+                    os << ", \"repeatOf\": " << esc(it.repeatOf);
+            }
             if (!it.ignition.empty())
                 os << ", \"ignition\": " << esc(it.ignition);
             if (!it.source.empty())
@@ -1590,10 +1591,9 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                    << ", \"reason\": " << esc(t.reason) << " }";
             }
             os << "\n    ]";
-            //  The repeated items, one record each like an item: pinned by
-            //  the same golden rows, and the plan does not draw them.
-            os << ",\n    \"typicalItems\": [";
-            emitItems(repeated);
+            //  One OUTLINE per repeated train and room (a plan box).
+            os << ",\n    \"typicalOutlines\": [";
+            emitItems(outlines);
             os << "\n    ]";
         }
         os << ",\n    \"areas\": [";

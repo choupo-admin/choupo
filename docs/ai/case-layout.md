@@ -1607,11 +1607,13 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   repeated item takes part in EVERY check (overlap, separation, zones, roads,
   bunds, area, pipe clash) and in the pipe router (a header gets a branch per
   train) exactly as if you had declared it, so an outline cannot hide a
-  clash.  What is PUBLISHED: train 1's items in full (`typical`, `trainIndex 1`)
-  and, for trains 2..N, one OUTLINE per train and room -- id
-  `<typical>#<k>[@<room>]`, kind `typicalOutline`, `outline true`, the plan
-  box that holds the train's items in that room -- never the repeated items
-  themselves (they are listed in `layout.typicalItems`, one record each, and pinned like items); `layout.typicals` lists each group (count, pitch, members, items
+  clash.  What is PUBLISHED: `layout.items` stays complete -- every real item,
+  the repeats included, each of a typical carrying `typical` and `trainIndex`
+  and each repeat `repeatOf` (train 1's id) -- and, apart, `layout.typicalOutlines`:
+  one OUTLINE per repeated train and room (id `<typical>#<k>[@<room>]`, kind
+  `typicalOutline`; the plan box that holds the train's items in that room),
+  which a plan may draw dashed as "typical of train 1".  `layout.typicals`
+  lists each group (count, pitch, members, items
   repeated).  One group has one pitch: equipment that steps differently
   (swro01's energy-recovery arrays stack along y while its pumps and racks
   step along x) is a second group.  REFUSED: a member not placed in `items`,

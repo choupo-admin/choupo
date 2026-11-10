@@ -959,6 +959,7 @@ struct LayoutItem
     std::string             typical;
     int                     trainIndex = 0;
     bool                    typicalCopy = false;
+    std::string             repeatOf;     // train 1's id, on a repeat
 };
 
 //  One declared group of repeated trains (DEV.md 4c C272), as published.

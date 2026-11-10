@@ -126,6 +126,18 @@ std::vector<std::string> copiesOf(const Dictionary& layoutDict,
     return out;
 }
 
+std::vector<std::string> withCopies(const Dictionary& layoutDict,
+                                    const std::vector<std::string>& ids)
+{
+    std::vector<std::string> out;
+    for (const auto& id : ids)
+    {
+        out.push_back(id);
+        for (const auto& c : copiesOf(layoutDict, id)) out.push_back(c);
+    }
+    return out;
+}
+
 } // namespace typical
 } // namespace plantLayout
 } // namespace Choupo
