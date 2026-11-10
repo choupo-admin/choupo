@@ -105,7 +105,9 @@ describe("the lesson runs end to end", () => {
     expect(s2.formula).toContain(String.raw`\left( \frac{f L}{D} + \sum K \right) \frac{\rho\, v^2}{2}`);
     //  The two halves must be told apart by BEHAVIOUR, not only by name.
     expect(prose(s2.body)).toContain("does not care how fast you push");
-    expect(prose(s2.body)).toContain("grows roughly as the SQUARE of the flow");
+    //  Compared in lower case: the lesson no longer sets words in capitals for
+    //  emphasis (DEV.md 4c C277); the claim is the same.
+    expect(prose(s2.body).toLowerCase()).toContain("grows roughly as the square of the flow");
   });
 
   it("gives the pump curve of the model this page actually runs", () => {
@@ -113,7 +115,9 @@ describe("the lesson runs end to end", () => {
     expect(s3.formula).toContain(String.raw`\Delta p_\mathrm{pump} = \frac{\eta\, W_\mathrm{shaft}}{Q}`);
     //  A real machine's curve is measured; this one is derived.  Saying so is
     //  the difference between a teaching page and a wrong claim.
-    expect(prose(s3.body)).toContain("MEASURED on a test");
+    //  Compared in lower case: the lesson no longer sets words in capitals for
+    //  emphasis (DEV.md 4c C277); the claim is the same.
+    expect(prose(s3.body).toLowerCase()).toContain("measured on a test");
     expect(prose(s3.note!)).toContain("never a manufacturer's tested H(Q) curve");
     expect(prose(s3.note!)).toContain("no best-efficiency point");
   });
@@ -125,7 +129,9 @@ describe("the consequences an engineer acts on", () => {
   it("throttling: steepens the system curve, moves the point left, wastes head", () => {
     const s4 = PUMP_STEPS.find((s) => s.n === 4)!;
     expect(prose(s4.body)).toContain("raises ΣK");
-    expect(prose(s4.body)).toContain("slides LEFT to a lower flow");
+    //  Compared in lower case: the lesson no longer sets words in capitals for
+    //  emphasis (DEV.md 4c C277); the claim is the same.
+    expect(prose(s4.body).toLowerCase()).toContain("slides left to a lower flow");
     //  The cost, not just the movement: the throttled head is destroyed.
     expect(prose(s4.body)).toContain("dissipated as heat");
     expect(s4.formula).toContain(String.raw`\sum K \uparrow`);
@@ -136,7 +142,9 @@ describe("the consequences an engineer acts on", () => {
     expect(s4.formula).toContain(String.raw`Q \propto N`);
     expect(s4.formula).toContain(String.raw`H \propto N^2`);
     expect(s4.formula).toContain(String.raw`P \propto N^3`);
-    expect(prose(s4.body)).toContain("follows its CUBE");
+    //  Compared in lower case: the lesson no longer sets words in capitals for
+    //  emphasis (DEV.md 4c C277); the claim is the same.
+    expect(prose(s4.body).toLowerCase()).toContain("follows its cube");
   });
 
   it("does NOT claim the page computes either move", () => {
@@ -144,21 +152,29 @@ describe("the consequences an engineer acts on", () => {
     //  reader think the plot showed an affinity-law result would be claiming
     //  a capability that does not exist.
     const s4 = PUMP_STEPS.find((s) => s.n === 4)!;
-    expect(prose(s4.note!)).toContain("NEITHER move is computed on this page");
+    //  Compared in lower case: the lesson no longer sets words in capitals for
+    //  emphasis (DEV.md 4c C277); the claim is the same.
+    expect(prose(s4.note!).toLowerCase()).toContain("neither move is computed on this page");
     expect(prose(s4.note!)).toContain("no valve knob");
-    expect(prose(s4.note!)).toContain("this pump model has NO SPEED");
+    //  Compared in lower case: the lesson no longer sets words in capitals for
+    //  emphasis (DEV.md 4c C277); the claim is the same.
+    expect(prose(s4.note!).toLowerCase()).toContain("this pump model has no speed");
     //  And the sharper half: the cube is a relation between homologous points
     //  on the pump's curves, not a promise about the operating point of an
     //  installation that carries a static head.
-    expect(prose(s4.note!)).toContain("HOMOLOGOUS points");
+    //  Compared in lower case: the lesson no longer sets words in capitals for
+    //  emphasis (DEV.md 4c C277); the claim is the same.
+    expect(prose(s4.note!).toLowerCase()).toContain("homologous points");
     expect(prose(s4.note!)).toContain("all friction, no static head");
   });
 
   it("NPSH: the separate question, and the falling/rising pair that decides it", () => {
     const s5 = PUMP_STEPS.find((s) => s.n === 5)!;
-    expect(prose(s5.body)).toContain("SUCTION side");
-    expect(prose(s5.body)).toContain("FALLS as flow rises");
-    expect(prose(s5.body)).toContain("RISES with flow");
+    //  Compared in lower case: the lesson no longer sets words in capitals for
+    //  emphasis (DEV.md 4c C277); the claim is the same.
+    expect(prose(s5.body).toLowerCase()).toContain("suction side");
+    expect(prose(s5.body).toLowerCase()).toContain("falls as flow rises");
+    expect(prose(s5.body).toLowerCase()).toContain("rises with flow");
     expect(s5.formula).toContain(String.raw`\mathrm{NPSH}_a`);
     expect(s5.formula).toContain(String.raw`\mathrm{NPSH}_r`);
     //  C112 point 5: NPSH required is usually NPSH3, a point where the head
@@ -172,9 +188,13 @@ describe("the consequences an engineer acts on", () => {
     expect(s5.formula).toContain(String.raw`\text{minimum:}\quad \mathrm{NPSH}_a &> \mathrm{NPSH}_r`);
     expect(s5.formula).toContain(String.raw`\mathrm{NPSH}_a \ge \mathrm{NPSH}_r + \Delta\mathrm{NPSH}_\mathrm{m}`);
     const b = prose(s5.body);
-    expect(b).toContain("has ALREADY fallen by 3 per cent");
+    //  Compared in lower case: the lesson no longer sets words in capitals for
+    //  emphasis (DEV.md 4c C277); the claim is the same.
+    expect(b.toLowerCase()).toContain("has already fallen by 3 per cent");
     expect(b).toContain("incipient cavitation");
-    expect(b).toContain("MINIMUM, indicative condition, never the design criterion");
+    //  Compared in lower case: the lesson no longer sets words in capitals for
+    //  emphasis (DEV.md 4c C277); the claim is the same.
+    expect(b.toLowerCase()).toContain("minimum, indicative condition, never the design criterion");
     expect(b).toContain("ANSI/HI 9.6.1");
     //  Every NPSH symbol the formula uses is glossed, and the margin's gloss
     //  gives no value (the guideline's table is not copied).
@@ -201,7 +221,9 @@ describe("the claims are true of the run the page draws", () => {
     //  C112 point 8.  The page may claim one crossing only for its own pair
     //  of curves, and must say why it cannot show two.
     const s1 = PUMP_STEPS[0]!;
-    expect(prose(s1.body)).toContain("In THIS example one curve only rises");
+    //  Compared in lower case: the lesson no longer sets words in capitals for
+    //  emphasis (DEV.md 4c C277); the claim is the same.
+    expect(prose(s1.body).toLowerCase()).toContain("in this example one curve only rises");
     expect(prose(s1.body)).toContain("not of pumps");
     expect(prose(s1.body)).toContain("cross twice or more");
     expect(prose(s1.body)).toContain("is unstable");
@@ -389,15 +411,18 @@ describe("the tool renders it as a scrolling lesson", () => {
     expect(SRC).not.toContain("MethodSetupRail");
   });
 
-  it("renders the definitions before the plot and the consequences after", () => {
+  it("poses the question, then draws the curves, then names what they are made of", () => {
+    //  REVISED (DEV.md 4c C277): this test used to hold steps 1-3 above the
+    //  plot.  The two curves are the one thing a student stays for, so step 1
+    //  (the question) stays first, the plot comes second, and steps 2-3 (what
+    //  each curve is made of) now explain what has just been drawn.
     //  The RENDER site, never an import at the top of the file: the point is
     //  where the chart APPEARS on the page.
     const plot = SRC.indexOf("<PumpSystemChart");
     expect(plot).toBeGreaterThan(0);
-    for (const n of [1, 2, 3])
-      expect(SRC.indexOf(`{lessonStep(${n})}`), `step ${n} is after the plot`)
-        .toBeLessThan(plot);
-    for (const n of [4, 5])
+    expect(SRC.indexOf("{lessonStep(1)}"), "step 1 is after the plot")
+      .toBeLessThan(plot);
+    for (const n of [2, 3, 4, 5])
       expect(SRC.indexOf(`{lessonStep(${n})}`), `step ${n} is before the plot`)
         .toBeGreaterThan(plot);
     expect(SRC.indexOf("{lessonLimits}")).toBeGreaterThan(plot);

@@ -61,7 +61,7 @@ import {
 
 import { useMethodRun, type MethodRunState } from "../../case/methodRun.js";
 import type { OperationResult } from "../../adapters/SolverAdapter.js";
-import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences, Tex } from "./lessonStep.js";
 import { LessonQuiz } from "./lessonQuiz.js";
 import {
   CENTRAL_IDEA, DR_LIMITS, DR_QUIZ, DR_STEPS, THREE_INGREDIENTS,
@@ -439,7 +439,8 @@ export function WhyPage({ honest }: { honest: OpResult }): JSX.Element {
   return (
     <Stack gap="md">
       {step(1)}
-      {step(2)}
+      {/* The plant comes second (DEV.md 4c C277): the question, the plant with
+          its readings, then step 2 naming what the student has just seen. */}
       <PlantDiagram rows={rows} label={(r) => `${fmt(r.reading, 1)} ± ${fmt(r.sigma, 1)}`} />
       <Box style={{ overflowX: "auto" }}>
         <Table striped withTableBorder fz="xs" miw={480}>
@@ -468,6 +469,7 @@ export function WhyPage({ honest }: { honest: OpResult }): JSX.Element {
           </Table.Tbody>
         </Table>
       </Box>
+      {step(2)}
       {step(3)}
       {step(4)}
       <BalanceTable rows={honest.balances!} />
@@ -486,8 +488,8 @@ function ReconciliationTable({ t, showTruth = true }: { t: StreamTable; showTrut
             <Table.Th>stream</Table.Th>
             <Table.Th ta="right">m</Table.Th>
             <Table.Th ta="right">x̂</Table.Th>
-            <Table.Th ta="right">x̂ − m</Table.Th>
-            <Table.Th ta="right">(x̂ − m)/σ</Table.Th>
+            <Table.Th ta="right"><Tex mode="inline" src={String.raw`\hat{x} - m`} /></Table.Th>
+            <Table.Th ta="right"><Tex mode="inline" src={String.raw`\frac{\hat{x} - m}{\sigma}`} /></Table.Th>
             {t.balances.map((b) => <Table.Th key={b} ta="right">by {b}</Table.Th>)}
             {showTruth && <Table.Th ta="right">error m, in σ</Table.Th>}
             {showTruth && <Table.Th ta="right">error x̂, in σ</Table.Th>}
@@ -568,15 +570,15 @@ export function BayesPage({ honest }: { honest: OpResult }): JSX.Element {
   return (
     <Stack gap="md">
       {step(5)}
-      {step(6)}
       <PlantDiagram rows={t.rows} label={(r) => `${fmt(r.reconciled, 2)}  (read ${fmt(r.reading, 1)})`} />
       <Text size="sm">
         The engine's answer on the honest snapshot: the objective at the answer is{" "}
         <b>{fmt(d.objective, 3)}</b>, and every balance now closes (the column &ldquo;after&rdquo;).
         The &ldquo;by&rdquo; columns split each adjustment, in meter sigmas, into the part each
-        balance caused; they add up to (x̂ − m)/σ on every row.
+        balance caused; they add up to <Tex mode="inline" src={String.raw`\frac{\hat{x} - m}{\sigma}`} /> on every row.
       </Text>
       <ReconciliationTable t={t} />
+      {step(6)}
       {step(7)}
       <PosteriorNarrowing rows={t.rows} nBalances={t.balances.length} />
       <IntervalPlot rows={t.rows} series={PAGE2_SERIES}
@@ -950,7 +952,7 @@ export function CentralIdea(): JSX.Element {
         ))}
       </Group>
       <Text size="xs" c="dimmed" mt={6}>
-        posterior ∝ likelihood × prior, always under the exact balances (page 1, step 1)
+        <Tex mode="inline" src={String.raw`\text{posterior} \propto \text{likelihood} \times \text{prior}`} />, always under the exact balances (page 1, step 1)
       </Text>
     </Box>
   );

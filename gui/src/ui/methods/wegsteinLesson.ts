@@ -46,7 +46,7 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
     title: "A recycle makes the flowsheet a fixed-point problem",
     body: "Cut the recycle, and the plant becomes a chain you can walk "
       + "through once: every unit's feed is known by the time you reach it. "
-      + "But the cut stream is an INPUT to the chain and an OUTPUT of it, "
+      + "But the cut stream is an input to the chain and an output of it, "
       + "and those two are not the same number until you have finished. So "
       + "you guess the cut stream, run the whole chain once, and look at "
       + "what came back round. The sweep is a function: you handed it a "
@@ -69,19 +69,19 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
     ],
     formula: String.raw`x = G(x) \qquad \text{equivalently} \qquad r(x) = G(x) - x = 0`,
     where: [
-      { sym: "x", means: "the TEAR VECTOR — the assumed state of the cut "
+      { sym: "x", means: "the tear vector — the assumed state of the cut "
         + "stream, one number per independent coordinate of it" },
-      { sym: "G", means: "ONE complete pass through the flowsheet in "
+      { sym: "G", means: "One complete pass through the flowsheet in "
         + "declared order: the function that turns the assumed tear into "
         + "what the plant sends back" },
-      { sym: "r", means: "the TEAR RESIDUAL, how far the returned stream is "
+      { sym: "r", means: "the tear residual, how far the returned stream is "
         + "from the assumed one. Zero at the answer" },
       { sym: "x_\\mathrm{assumed}",
         means: "the same tear vector, written out where the "
-        + "point is that it is an ASSUMPTION being handed to the plant rather "
+        + "point is that it is an assumption being handed to the plant rather "
         + "than an answer" },
     ],
-    note: "Choupo executes the flattened units in DECLARED ORDER and never "
+    note: "Choupo executes the flattened units in declared order and never "
       + "topologically sorts them, so the sweep is exactly the walk you read "
       + "in the flowsheetDict. Which stream is cut is the author's "
       + "declaration; see the tear-streams EduTool for why the engine will "
@@ -100,7 +100,7 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
       + "the difference is worth knowing because it is the first place a "
       + "reader's mental model can go wrong.",
     derivation: [
-      { step: "The WEGSTEIN branch packs the total flow, every mole "
+      { step: "The wegstein branch packs the total flow, every mole "
           + "fraction, the temperature and the pressure — per torn stream "
           + "(src/unitOperations/flowsheet/Flowsheet.cpp:1787-1805; the "
           + "pressure, in bar, at Flowsheet.cpp:1802).",
@@ -111,7 +111,7 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
           + "renormalises the fractions back onto the simplex every "
           + "iteration (Flowsheet.cpp:1841).",
         eq: String.raw`z_1 + z_2 + \ldots + z_{N_c} = 1`},
-      { step: "The NEWTON branch avoids the redundancy by tearing on "
+      { step: "The newton branch avoids the redundancy by tearing on "
           + "component molar flows instead, which are mutually independent, "
           + "followed by the temperature and the pressure "
           + "(Flowsheet.cpp:3522-3531, the pressure at Flowsheet.cpp:3529). "
@@ -146,7 +146,7 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
     title: "Direct substitution, and why it can crawl",
     body: "The obvious thing to do with x = G(x) is to accept what comes "
       + "back and go round again. It converges when each pass shrinks the "
-      + "error — and the factor by which it shrinks is the LOOP GAIN, the "
+      + "error — and the factor by which it shrinks is the loop gain, the "
       + "slope of G at the answer. A loop that recycles a little converges "
       + "in a handful of passes. A loop that recycles most of what it makes "
       + "has a gain near one, and then the error shrinks by a few percent "
@@ -167,13 +167,13 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
         means: "the error — how far the "
         + "current assumption is from the fixed point. Written e_k at sweep "
         + "k, e_next one sweep on, and e_0 at the author's first guess" },
-      { sym: "a", means: "the LOOP GAIN in this direction: the slope of G at "
+      { sym: "a", means: "the loop gain in this direction: the slope of G at "
         + "the answer. Below 1 in magnitude the loop contracts; at 1 it does "
         + "not converge at all" },
       { sym: "k", means: "the sweep counter — each k is one complete pass "
         + "through every unit of the plant" },
       { sym: "x_\\mathrm{next}",
-        means: "the assumption the NEXT sweep will be handed. "
+        means: "the assumption the next sweep will be handed. "
         + "How it is formed from the current one is the whole difference "
         + "between the three solvers on this page" },
     ],
@@ -186,12 +186,12 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
     title: "Wegstein: two points make a line, and a line has a fixed point you can solve",
     body: "After two passes you do not have one point on the curve y = G(x), "
       + "you have two. Two points define a straight line. Treat that line as "
-      + "if it WERE G, and the fixed-point equation becomes linear — one you "
+      + "if it were G, and the fixed-point equation becomes linear — one you "
       + "can solve exactly instead of iterating. Take the answer as the next "
       + "guess. That is the whole method.",
     derivation: [
       { step: "The secant slope through the last two passes. Both the "
-          + "numerator and the denominator are differences in the SAME "
+          + "numerator and the denominator are differences in the same "
           + "quantity, so this ratio is dimensionless "
           + "(src/solver/Wegstein.cpp:78).",
         eq: String.raw`s = \frac{G(x_k) - G(x_\mathrm{prev})}{x_k - x_\mathrm{prev}}`},
@@ -204,15 +204,15 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
     ],
     formula: String.raw`x_\mathrm{next} = q x + (1 - q) G(x) \qquad q = \frac{s}{s - 1}`,
     where: [
-      { sym: "s", means: "the SECANT SLOPE through the last two passes — the "
+      { sym: "s", means: "the secant slope through the last two passes — the "
         + "method's estimate of how much of a change in the assumption "
         + "survives one trip round the loop. Dimensionless" },
-      { sym: "q", means: "the Wegstein COEFFICIENT: how the next guess mixes "
+      { sym: "q", means: "the Wegstein coefficient: how the next guess mixes "
         + "the current assumption with its image. q = 0 is direct "
         + "substitution; q = -1 is a step twice as long; q below -1 is "
         + "stronger extrapolation" },
       { sym: "x_\\mathrm{prev}",
-        means: "the assumption used on the PREVIOUS pass — the "
+        means: "the assumption used on the previous pass — the "
         + "second point the secant needs" },
       { sym: "x_k", means: "the assumption used on the current pass" },
     ],
@@ -222,7 +222,7 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
       + "Comm. ACM 1(6), 9-13. Step 1 of the previous page, Relaxation, "
       + "shows that this update is a relaxation x+ = (1 - w) x + w G(x) with "
       + "w = 1 - q. Note where q lives: between 0 and minus infinity for a "
-      + "MONOTONICALLY contracting direction (0 < s < 1). An oscillating but "
+      + "monotonically contracting direction (0 < s < 1). An oscillating but "
       + "contracting one (-1 < s < 0) asks for a small positive q, between "
       + "0 and 1/2, which is a damping; a slope above 1 asks for q above 1. "
       + "A slope s of 0.9 gives q = -9, a step ten "
@@ -234,8 +234,8 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
     title: "The question a student asks next: how can one accelerator serve a flow and a temperature?",
     body: "It never compares them. Here is the thing that is easy to assume "
       + "and wrong: Wegstein does "
-      + "NOT form a step direction in the tear vector and scale it. It runs "
-      + "the scalar recursion of step 4 SEPARATELY on every entry of the "
+      + "not form a step direction in the tear vector and scale it. It runs "
+      + "the scalar recursion of step 4 separately on every entry of the "
       + "vector: the total flow gets its own secant and its own coefficient, "
       + "each mole fraction gets its own, the temperature and the pressure "
       + "get their own. The "
@@ -265,7 +265,7 @@ x_{i,\mathrm{next}} &= q_i x_i + (1 - q_i) g_i(x) \qquad \text{one } i \text{ at
 \end{aligned}`,
     where: [
       { sym: "i",
-        means: "the COMPONENT index: which entry of the tear vector is meant" },
+        means: "the component index: which entry of the tear vector is meant" },
       { sym: "x_{i,k} \\,/\\, x_{i,\\mathrm{prev}} \\,/\\, x_{i,\\mathrm{next}}",
         means: "entry i of the tear vector at the current step, at the previous one, "
         + "and in the estimate being built: the same three states as x_k, "
@@ -295,7 +295,7 @@ x_{i,\mathrm{next}} &= q_i x_i + (1 - q_i) g_i(x) \qquad \text{one } i \text{ at
     title: "The clamp, and the two degenerate cases the code handles by name",
     body: "The secant is an estimate, and a bad estimate makes a dangerous "
       + "step. If the slope comes out above 1 the linear model says the "
-      + "fixed point REPELS direct substitution, and the coefficient turns "
+      + "fixed point repels direct substitution, and the coefficient turns "
       + "positive, above 1: the Wegstein step then reverses the direction "
       + "direct substitution would take, and on a loop that really is linear "
       + "it lands exactly on the answer (G(x) = 2x - 2 from x = 5: direct "
@@ -347,8 +347,8 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
         + "image, and no reversed step away from it" },
     ],
     note: "The defaults are worth reading carefully, because there are two "
-      + "of them and they are not the same number. The Wegstein CLASS "
-      + "defaults to [-5, 0] (src/solver/Wegstein.H:73-74); the RECYCLE loop "
+      + "of them and they are not the same number. The Wegstein class "
+      + "defaults to [-5, 0] (src/solver/Wegstein.H:73-74); the recycle loop "
       + "constructs it with [-1, 0] "
       + "(src/unitOperations/flowsheet/Flowsheet.cpp:3332-3333). A Choupo "
       + "recycle that declares nothing therefore runs at the gentler clamp.",
@@ -359,7 +359,7 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
     body: "Independence is what makes the method immune to units. It is also "
       + "exactly what it does not know. Each secant measures how variable i "
       + "responds to a change in variable i — but along the path the "
-      + "iteration happened to take, in which every OTHER variable was "
+      + "iteration happened to take, in which every other variable was "
       + "moving too. So a slope that looks like a partial derivative is "
       + "really a directional one, and the coupling contaminates it. Newton "
       + "does not have this problem because it builds the whole matrix of "
@@ -371,7 +371,7 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
       { step: "What Newton has: every cross-term, so a step accounts for a "
           + "change in one variable feeding back through another.",
         eq: String.raw`J = \frac{\mathrm{d}G}{\mathrm{d}x} - I, \qquad J\, \mathrm{d}x = -r`},
-      { step: "And what it costs. Choupo builds that matrix by CENTRAL "
+      { step: "And what it costs. Choupo builds that matrix by central "
           + "finite differences: perturb one tear variable up and down and "
           + "run a complete flowsheet sweep at each, over the N_c + 2 "
           + "numbers of step 2 for each torn stream (a variable pressed "
@@ -383,7 +383,7 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
     ],
     formula: String.raw`J = \frac{\mathrm{d}G}{\mathrm{d}x} - I \qquad J\, \mathrm{d}x = -r`,
     where: [
-      { sym: "J", means: "the JACOBIAN of the tear residual — the full matrix "
+      { sym: "J", means: "the Jacobian of the tear residual — the full matrix "
         + "of how every returned variable responds to every assumed one" },
       { sym: "\\mathrm{d}G/\\mathrm{d}x",
         means: "the matrix of partial derivatives of the sweep: "
@@ -404,7 +404,7 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
   {
     n: 8,
     title: "What the stopping test does, which is a different question",
-    body: "The step is scale-free. The TEST is not, and the two are not the "
+    body: "The step is scale-free. The test is not, and the two are not the "
       + "same decision. The Wegstein branch stops when the plain Euclidean "
       + "norm of the change in the packed tear vector falls below the "
       + "declared tolerance — a flow in kmol/s, a handful of mole fractions, "
@@ -421,7 +421,7 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
       { step: "The Wegstein branch's measure: one unscaled norm over the "
           + "mixed vector.",
         eq: String.raw`\lvert G(x) - x \rvert \ \text{ compared with } \ \mathrm{recycleTol}`},
-      { step: "The Newton branch of the same function does NOT do this. It "
+      { step: "The Newton branch of the same function does not do this. It "
           + "divides each residual by a characteristic scale — the tear's "
           + "own total flow for a flow entry, the temperature itself for the "
           + "temperature entry, the pressure itself for the pressure entry "
@@ -430,7 +430,7 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
       { step: "The engine's own comment on that scaling names what its "
           + "absence costs, in those words: the latent under-convergence the "
           + "old Wegstein default also had (Flowsheet.cpp:3589-3590)." },
-      { step: "And for the CONVERGENCE PLOT the engine publishes neither "
+      { step: "And for the convergence plot the engine publishes neither "
           + "norm. It computes two physical residuals instead — the recycle "
           + "mass imbalance and the recycle energy imbalance, each divided "
           + "by what enters the plant — because the solver's own figure "
@@ -497,7 +497,7 @@ export const WEGSTEIN_LIMITS: readonly LessonLimit[] = [
     title: "The clamp is driven on the toy and not on the engine, and here is why",
     body: "recycleWegsteinQmin and recycleWegsteinQmax are real engine keys "
       + "read from the case's solverDict, but a knob on this page can only "
-      + "replace a value a case already DECLARES — it cannot add a key. "
+      + "replace a value a case already declares — it cannot add a key. "
       + "Measured across the corpus on 2026-09-12: ten cases select "
       + "recycleSolver Wegstein, eight of them carry the two clamp keys "
       + "commented out, and of the two that declare them live one converges "
@@ -518,7 +518,7 @@ export const WEGSTEIN_LIMITS: readonly LessonLimit[] = [
       + "comment at Flowsheet.cpp:1797 says so in capitals — because a loop "
       + "whose units lower the pressure has no steady state unless the "
       + "pressure that comes back is the one handed in. The phase split is "
-      + "NOT torn: the vapour fraction sitting on the torn stream is whatever "
+      + "not torn: the vapour fraction sitting on the torn stream is whatever "
       + "the previous sweep left there — the engine says so in its own words "
       + "on the Newton side, calling it the phase proxy "
       + "(src/unitOperations/flowsheet/Flowsheet.cpp:3710-3711). So the state "
@@ -530,10 +530,10 @@ export const WEGSTEIN_LIMITS: readonly LessonLimit[] = [
   },
   {
     id: "not-selection",
-    title: "Nothing here chooses WHICH stream to cut",
+    title: "Nothing here chooses which stream to cut",
     body: "This page is about closing a tear once it has been declared. "
       + "Choosing it is a separate decision with a separate contract: the "
-      + "engine DETECTS every cycle and refuses an undeclared one, and "
+      + "engine detects every cycle and refuses an undeclared one, and "
       + "deliberately does not choose the cut for you. The tear-streams "
       + "EduTool is about that half.",
   },

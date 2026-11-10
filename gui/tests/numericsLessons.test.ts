@@ -172,7 +172,7 @@ describe("each page SAYS the engine fact it rests on", () => {
 
   it("tear: DECLARED ORDER, not a topological sort, is stated up front", () => {
     expect(TEAR_STEPS[0]!.body + (TEAR_STEPS[0]!.note ?? ""))
-      .toMatch(/DECLARED ORDER/);
+      .toMatch(/declared order/i); // C277: lesson no longer shouts (DEV.md 4c C277)
     expect(tear).toMatch(/does not topologically sort|never topologically/i);
   });
 
@@ -235,7 +235,8 @@ describe("each page SAYS the engine fact it rests on", () => {
     //  EXACTLY on the fixed point (wegsteinMath.test.ts pins it); the clamp's
     //  reason is distrust of the secant on a non-linear sweep.
     expect(weg).not.toMatch(/away from the answer|wrong direction/i);
-    expect(weg).toMatch(/REPELS direct substitution/);
+    //  Case-insensitive: the lesson no longer shouts (DEV.md 4c C277).
+    expect(weg).toMatch(/repels direct substitution/i);
     expect(weg).toMatch(/non-linear/);
   });
 

@@ -247,12 +247,13 @@ describe("the honest half — what the tool cannot do is said, not implied", () 
 
   it("says the two tray criteria disagree and calls that the lesson", () => {
     const s4 = prose(step(4).body);
-    expect(s4).toContain("DIFFERENT trays");
+    //  C277: lower case, the lesson no longer shouts (DEV.md 4c C277).
+    expect(s4).toContain("different trays");
     expect(s4).toContain("rather than a defect");
     //  Both criteria, and the price of each: one solve against two.
     expect(step(4).formula!).toContain("one solve");
     expect(step(4).formula!).toContain("two solves");
-    expect(step(4).formula!).toContain(String.raw`u \text{ must be NAMED:}`);
+    expect(step(4).formula!).toContain(String.raw`u \text{ must be named:}`);
   });
 
   it("keeps every limit, by id", () => {
@@ -303,15 +304,19 @@ describe("the tool renders it as a scrolling lesson", () => {
     expect(empty).toContain('overflowY: "auto"');
   });
 
-  it("puts the definitions before the interactive and the rest after", () => {
+  it("poses the question, then draws the column, then names what was drawn", () => {
+    //  REVISED (DEV.md 4c C277): this test used to hold steps 1-3 above the
+    //  drawing.  The wired column is what a student stays for, so step 1 (the
+    //  question) is first, the drawing second, and steps 2-5 follow it.  The
+    //  empty-state branch (no structure to draw) keeps its own order, held by
+    //  the test above.
     //  The RENDER site, never an import: the drawing is <ColumnSection ...>,
     //  and the component's own definition sits hundreds of lines above it.
     const drawing = SRC.indexOf("<ColumnSection");
     expect(drawing).toBeGreaterThan(0);
-    for (const n of [1, 2, 3])
-      expect(SRC.indexOf(`{lessonStep(${n})}`), `step ${n} is after the drawing`)
-        .toBeLessThan(drawing);
-    for (const n of [4, 5])
+    expect(SRC.indexOf("{lessonStep(1)}"), "step 1 is after the drawing")
+      .toBeLessThan(drawing);
+    for (const n of [2, 3, 4, 5])
       expect(SRC.indexOf(`{lessonStep(${n})}`), `step ${n} is before the drawing`)
         .toBeGreaterThan(drawing);
     expect(SRC.lastIndexOf("{lessonLimits}"),

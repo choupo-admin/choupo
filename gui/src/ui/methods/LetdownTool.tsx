@@ -55,7 +55,7 @@ import {
 } from "./letdownDrawings.js";
 import { LETDOWN_LIMITS, LETDOWN_SOURCES, LETDOWN_STEPS } from "./letdownLesson.js";
 import { KnobSlider, PanelNote } from "./knobPanel.js";
-import { LessonLimits, LessonStepView, LessonReferences } from "./lessonStep.js";
+import { LessonLimits, LessonStepView, LessonReferences, TexText } from "./lessonStep.js";
 import { setActiveMethodTool } from "./registry.js";
 import { OriginMark } from "./origin.js";
 
@@ -193,7 +193,7 @@ function LetdownBench({ run, P2, setP2, D, setD }: {
             </Table.Tr>
           ))}
           <Table.Tr>
-            <Table.Td>hand estimate of the flash, c_p,L (T1 − T2)/λ</Table.Td>
+            <Table.Td><TexText text={String.raw`hand estimate of the flash, \(c_{p,L}\,(T_1 - T_2)/\lambda\)`} /></Table.Td>
             <Table.Td>—</Table.Td>
             <Table.Td>{fx(est, 5)}</Table.Td>
           </Table.Tr>
@@ -339,9 +339,9 @@ function LiquidBench({ run, props, P2, setP2, FL, setFL }: {
           <Table.Tr><Table.Td>vena contracta P_vc, single-phase relation [bar]</Table.Td><Table.Td>{phys?.choked ? `${bar(Pvc)} -- an extrapolation, nonphysical: the flow is choked first` : bar(Pvc)}</Table.Td><Table.Td>step 7</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>cavitation index σ</Table.Td><Table.Td>{ok ? fx(cavitationIndex(P1, P2, Pv), 3) : "—"}</Table.Td><Table.Td>step 8</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>critical pressure of NH3, Pc [bar]</Table.Td><Table.Td>{bar(Pc)}</Table.Td><Table.Td>NH3 record</Table.Td></Table.Tr>
-          <Table.Tr><Table.Td>F_F = 0.96 − 0.28 √(Pv/Pc)</Table.Td><Table.Td>{okPc ? fx(FF, 4) : "—"}</Table.Td><Table.Td>step 10</Table.Td></Table.Tr>
+          <Table.Tr><Table.Td><TexText text={String.raw`\(F_F = 0.96 - 0.28\,\sqrt{P_v/P_c}\)`} /></Table.Td><Table.Td>{okPc ? fx(FF, 4) : "—"}</Table.Td><Table.Td>step 10</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>F_F Pv, the vena contracta at the choke [bar]</Table.Td><Table.Td>{okPc ? bar(FF * Pv) : "—"}</Table.Td><Table.Td>step 10</Table.Td></Table.Tr>
-          <Table.Tr><Table.Td>largest effective drop ΔP_max [bar], against P1 − P2</Table.Td><Table.Td>{okPc ? `${bar(chokedLiquidDrop(P1, Pv, Pc, FL))} vs ${bar(P1 - P2)}` : "—"}</Table.Td><Table.Td>step 10</Table.Td></Table.Tr>
+          <Table.Tr><Table.Td><TexText text={String.raw`largest effective drop \(\Delta P_\mathrm{max}\) [bar], against \(P_1 - P_2\)`} /></Table.Td><Table.Td>{okPc ? `${bar(chokedLiquidDrop(P1, Pv, Pc, FL))} vs ${bar(P1 - P2)}` : "—"}</Table.Td><Table.Td>step 10</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>choked once P2 falls below [bar]</Table.Td><Table.Td>{okPc ? `${bar(chokedLiquidOutletPressure(P1, Pv, Pc, FL))}${phys?.choked ? " -- choked here" : " -- not choked here"}` : "—"}</Table.Td><Table.Td>step 10</Table.Td></Table.Tr>
           <Table.Tr><Table.Td><b>regime</b></Table.Td><Table.Td><b>{regime === "neither" ? "neither cavitation nor flashing" : regime ?? "—"}</b></Table.Td><Table.Td>steps 8, 9</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>engine: vapour, molar fraction out</Table.Td><Table.Td>{fx(lp?.vf, 5)}</Table.Td><Table.Td>dissolved gas included (step 9)</Table.Td></Table.Tr>
@@ -351,7 +351,7 @@ function LiquidBench({ run, props, P2, setP2, FL, setFL }: {
         The F_L default, {FL_DEFAULT}, is the open fluids library&apos;s keyword
         default; a real valve&apos;s F_L is its maker&apos;s, and falls as the
         valve opens.  The vapour pressure is the NH3 record&apos;s Antoine curve
-        at the temperature the first throttle left the liquid at -- the PURE
+        at the temperature the first throttle left the liquid at -- the pure
         ammonia&apos;s, so classifying this liquid, which holds dissolved
         H2, N2 and Ar, by it is a didactic approximation, and the
         standard&apos;s liquid relations are not meant for a mixture that
@@ -442,7 +442,7 @@ function RecoveryBench({ run, props }: { run: MethodRunState; props: MethodRunSt
         <KnobSlider knob={{ id: "eta", label: "turbine efficiency η", min: 0.3, max: 0.95, step: 0.01 }}
           value={eta} onChange={setEta} />
       </Box>
-      <Figure caption={<>The first ammonia throttle&apos;s hydraulic power, Q1 (P1 − P2)
+      <Figure caption={<>The first ammonia throttle&apos;s hydraulic power, <TexText text={String.raw`\(Q_1 (P_1 - P_2)\)`} />
         from the run -- the power the drop could ideally deliver in the
         incompressible limit -- taken by a valve (top: all of it dissipated;
         the stream&apos;s enthalpy is unchanged and the availability is
@@ -452,7 +452,7 @@ function RecoveryBench({ run, props }: { run: MethodRunState; props: MethodRunSt
       </Figure>
       <PanTable>
         <Table.Thead>
-          <Table.Tr><Table.Th>stream</Table.Th><Table.Th>Q1 (P1 − P2), ideal [kW]</Table.Th><Table.Th>at the shaft, η [kW]</Table.Th></Table.Tr>
+          <Table.Tr><Table.Th>stream</Table.Th><Table.Th><TexText text={String.raw`\(Q_1 (P_1 - P_2)\), ideal [kW]`} /></Table.Th><Table.Th>at the shaft, η [kW]</Table.Th></Table.Tr>
         </Table.Thead>
         <Table.Tbody>
           <Table.Tr><Table.Td>ammonia, first throttle</Table.Td><Table.Td>{fx(pHP / 1000, 1)}</Table.Td><Table.Td>{fx(eta * pHP / 1000, 1)}</Table.Td></Table.Tr>
@@ -465,7 +465,7 @@ function RecoveryBench({ run, props }: { run: MethodRunState; props: MethodRunSt
         The liquid rows are the incompressible limit, on the run&apos;s inlet
         volumetric flow; the gas row is an ideal gas with the engine&apos;s Cp and
         k, molar flow from the run.  The expander&apos;s outlet temperature is
-        a FORMAL estimate -- constant Cp and k, below the range the
+        a formal estimate -- constant Cp and k, below the range the
         records&apos; correlations were fitted over, and low enough that part
         of the purge may condense; a real design solves an isentropic
         equilibrium flash.  What it shows stands: an expander produces far
@@ -511,9 +511,9 @@ function NoiseBench({ run, props }: { run: MethodRunState; props: MethodRunState
         </Table.Tbody>
       </PanTable>
       <PanelNote>
-        For the liquids the power is Q1 (P1 − P2); for the gas it is the work
+        For the liquids the power is <TexText text={String.raw`\(Q_1 (P_1 - P_2)\)`} />; for the gas it is the work
         an ideal expander would have taken from the same drop (the bench
-        above).  The decibel column is an estimate of the RATIO and nothing
+        above).  The decibel column is an estimate of the ratio and nothing
         more, labelled as one: it
         assumes the same fraction of each valve&apos;s dissipated power becomes
         sound, and that fraction -- which differs between a gas and a liquid,
@@ -570,9 +570,11 @@ export function LetdownTool(): JSX.Element {
 
         <Title order={4}>Part 1 — one letdown, with the engine running</Title>
         {step(1)}
+        {/* The bench comes second (DEV.md 4c C277): the question, the engine
+            running, then the two steps that name what it just did. */}
+        <LetdownBench run={run} P2={P2} setP2={setP2} D={D} setD={setD} />
         {step(2)}
         {step(3)}
-        <LetdownBench run={run} P2={P2} setP2={setP2} D={D} setD={setD} />
 
         <Title order={4}>Part 2 — gas: choked flow</Title>
         {step(4)}

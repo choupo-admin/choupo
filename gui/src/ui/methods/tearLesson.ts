@@ -21,7 +21,7 @@
   they are declared.  A cycle has no first unit, so something must be guessed;
   the guessed stream is the tear.  Everything else follows from that one
   sentence — why a cut is needed, which edges may be cut, what a cut costs,
-  and why the count of cuts is a property of the ORDER rather than of the
+  and why the count of cuts is a property of the order rather than of the
   loops.
 
   THE DIVISION OF LABOUR, which is the reason the page exists rather than a
@@ -41,7 +41,7 @@ export const TEAR_STEPS: readonly LessonStep[] = [
     title: "A sequential solver walks the units once, in the order you wrote them",
     body: "This is the whole premise, and it is worth being precise about "
       + "because everything below is a consequence. Choupo takes the "
-      + "flattened unit list and executes it IN DECLARED ORDER. It does not "
+      + "flattened unit list and executes it IN declared order. It does not "
       + "topologically sort it for you, and it does not decide for itself "
       + "which unit is ready. When it reaches a unit it reads that unit's "
       + "inlet streams out of the registry and solves it — so if a unit's "
@@ -49,7 +49,7 @@ export const TEAR_STEPS: readonly LessonStep[] = [
       + "the case's 0/ directory and give a wrong answer with a successful "
       + "exit code. Choupo does not let that happen today: before any unit "
       + "runs, it checks that every inlet is a feed, the output of an "
-      + "EARLIER unit, or a declared tear, and refuses the plan by name "
+      + "earlier unit, or a declared tear, and refuses the plan by name "
       + "otherwise (step 7).",
     note: "That failure used to be silent, which is why step 7 exists. The "
       + "0/ completeness contract pre-seeds every stream, so the historical "
@@ -68,15 +68,15 @@ export const TEAR_STEPS: readonly LessonStep[] = [
       + "outlet, the recycle comes from the splitter, the splitter needs the "
       + "separator, the separator needs the reactor, the reactor needs the "
       + "mixer. There is no unit you can start at whose feeds are all known. "
-      + "The only way to walk the list once is to ASSUME one of those "
+      + "The only way to walk the list once is to assume one of those "
       + "streams, walk, and compare what comes back with what you assumed. "
-      + "That stream is the TEAR, and the comparison is the fixed-point "
+      + "That stream is the tear, and the comparison is the fixed-point "
       + "problem the Wegstein EduTool is about.",
     derivation: [
       { step: "Cut one edge of the cycle. What is left is a chain that can "
           + "be walked from one end to the other." },
-      { step: "The cut leaves the stream with two roles: an assumed INPUT at "
-          + "the top of the chain, and a computed OUTPUT at the bottom.",
+      { step: "The cut leaves the stream with two roles: an assumed input at "
+          + "the top of the chain, and a computed output at the bottom.",
         eq: String.raw`x_\mathrm{assumed} \;\longrightarrow\; \text{walk the chain} \;\longrightarrow\; G(x_\mathrm{assumed})`},
       { step: "Iterate until the two agree. Choupo does this by Newton on "
           + "the tear residual by default, or by Wegstein if the case asks.",
@@ -84,14 +84,14 @@ export const TEAR_STEPS: readonly LessonStep[] = [
     ],
     formula: String.raw`x = G(x)`,
     where: [
-      { sym: "x", means: "the TEAR VECTOR — the assumed state of the cut "
+      { sym: "x", means: "the tear vector — the assumed state of the cut "
         + "stream: its total flow, its composition, its temperature and its "
         + "pressure" },
       { sym: "G", means: "one complete pass through the flowsheet in declared "
         + "order, starting from that assumption" },
       { sym: "x_\\mathrm{assumed}",
         means: "the same tear vector, written out where the "
-        + "point is that it is an ASSUMPTION being handed to the plant rather "
+        + "point is that it is an assumption being handed to the plant rather "
         + "than an answer" },
     ],
     note: "Nothing here is special to chemical engineering. It is the "
@@ -100,19 +100,19 @@ export const TEAR_STEPS: readonly LessonStep[] = [
   },
   {
     n: 3,
-    title: "Which edges MAY be cut: the ones that point backwards",
+    title: "Which edges may be cut: the ones that point backwards",
     body: "Here is the part that is easy to get wrong, and it is the reason "
       + "this page exists as well as the chapter. A tear is not any edge of a "
-      + "cycle. Because the solver walks the DECLARED order, an edge only "
+      + "cycle. Because the solver walks the declared order, an edge only "
       + "needs a cut if it arrives at a unit that has already run — that is, "
-      + "if it points BACKWARDS in that order. An edge that points forwards "
-      + "needs no cut, and Choupo REFUSES to accept one as a tear, in those "
+      + "if it points backwards in that order. An edge that points forwards "
+      + "needs no cut, and Choupo refuses to accept one as a tear, in those "
       + "words: a forward stream needs no cut; remove it from tearStreams.",
     derivation: [
       { step: "Write the units in the order they are declared and give each "
           + "a position. An edge runs from its producer's position to its "
           + "consumer's." },
-      { step: "The edge is BACKWARD when the consumer sits at or before the "
+      { step: "The edge is backward when the consumer sits at or before the "
           + "producer. At the same position means a unit consuming its own "
           + "output, which is a genuine one-unit cycle.",
         eq: String.raw`\text{backward} \iff \mathrm{pos}(\text{consumer}) \le \mathrm{pos}(\text{producer})`},
@@ -126,7 +126,7 @@ export const TEAR_STEPS: readonly LessonStep[] = [
         means: "the position of a unit in the declared list — "
         + "first unit is 0, and the solver reaches them in that order" },
     ],
-    note: "The panel below marks each edge forward or backward as you reorder "
+    note: "The panel above marks each edge forward or backward as you reorder "
       + "the units, and names the tears that follow.",
   },
   {
@@ -147,13 +147,13 @@ export const TEAR_STEPS: readonly LessonStep[] = [
       + "its 0/ seed.",
     derivation: [
       { step: "Take the backward edge from producer P to consumer C. Ask "
-          + "whether C can reach P by following the plant's edges — ALL of "
+          + "whether C can reach P by following the plant's edges — all of "
           + "them, forward and backward, as the engine does: a loop may "
           + "close through another backward edge." },
       { step: "If it can, the edge closes a cycle and is a real recycle. "
-          + "This is a TEAR." },
+          + "This is a tear." },
       { step: "If it cannot, there is no loop: the producer is simply "
-          + "declared too late. This is an ORDER MISTAKE, and the fix is to "
+          + "declared too late. This is an order mistake, and the fix is to "
           + "move the unit, not to add a tear." },
     ],
     note: "Choupo makes exactly this test and names the two outcomes "
@@ -172,7 +172,7 @@ export const TEAR_STEPS: readonly LessonStep[] = [
       + "component flows, the temperature and the pressure, which is one "
       + "fewer because it avoids the "
       + "redundancy of fractions that must sum to one. That difference is "
-      + "small. The difference that is not small is what a STEP costs: "
+      + "small. The difference that is not small is what a step costs: "
       + "Newton builds its Jacobian by central finite differences, which is "
       + "two complete flowsheet sweeps per tear variable, while a Wegstein "
       + "step costs one sweep however long the vector is.",
@@ -205,11 +205,11 @@ n_W &= N_t (N_c + 3) &\qquad n_N &= N_t (N_c + 2)\\[4pt]
     note: "So a second tear on a five-component plant costs Newton fourteen "
       + "extra sweeps per step, 2 x (5 + 2). That is the arithmetic behind the standing "
       + "advice to cut as few streams as you can — and the next step is "
-      + "about the fact that HOW FEW is not decided by the loops.",
+      + "about the fact that how few is not decided by the loops.",
   },
   {
     n: 6,
-    title: "Fewest tears is a property of the ORDER, not of the number of loops",
+    title: "Fewest tears is a property of the order, not of the number of loops",
     body: "Count the loops and cut one edge of each, and you will often cut "
       + "more than you need: two cycles that share an edge can both be "
       + "opened by cutting it once. But in Choupo you cannot simply nominate "
@@ -217,7 +217,7 @@ n_W &= N_t (N_c + 3) &\qquad n_N &= N_t (N_c + 2)\\[4pt]
       + "shared edge may point forwards in the order you wrote. Reorder the "
       + "units and it points backwards, and now one cut does the work of "
       + "two. That is the real decision: in a sequential-modular simulator, "
-      + "CHOOSING THE TEARS IS CHOOSING THE ORDER.",
+      + "choosing the tears IS choosing the order.",
     derivation: [
       { step: "Fix an order. The tears are then forced: the backward edges "
           + "that close cycles." },
@@ -225,7 +225,7 @@ n_W &= N_t (N_c + 3) &\qquad n_N &= N_t (N_c + 2)\\[4pt]
           + "tear sets become reachable — and some orders are not valid at "
           + "all, because they leave a backward edge on no cycle." },
       { step: "The fewest tears this flowsheet can be solved with is "
-          + "therefore a minimum over valid orders, and the panel below "
+          + "therefore a minimum over valid orders, and the panel above "
           + "searches all of them exhaustively rather than guessing." },
     ],
     note: "Fewest is not the same as best, and the page does not pretend "
@@ -243,7 +243,7 @@ n_W &= N_t (N_c + 3) &\qquad n_N &= N_t (N_c + 2)\\[4pt]
       + "(src/unitOperations/flowsheet/Flowsheet.cpp:2201 reads 0/, "
       + "Flowsheet.cpp:2586 validates the plan) — so an invalid plan refuses "
       + "with every stream still at its 0/ value, and writes no converged/. "
-      + "The findings are COLLECTED and reported as one list, "
+      + "The findings are collected and reported as one list, "
       + "each carrying its own remedy — a lint tool describes the whole "
       + "state of a case, not the first defect it meets — and each refusal "
       + "names what it found rather than saying that something is wrong. "
@@ -269,7 +269,7 @@ export const TEAR_LIMITS: readonly LessonLimit[] = [
     body: "They are named boxes and named arrows declared in tearMath.ts. "
       + "Nothing in them is thermodynamic and no Choupo case is read to draw "
       + "them, so the verdicts beside them are graph theory rather than "
-      + "engine output. The engine's OWN contract is exercised in the second "
+      + "engine output. The engine's own contract is exercised in the second "
       + "panel, on a real case, and what it prints there is quoted verbatim. "
       + "If the two ever disagree, the engine is right.",
   },

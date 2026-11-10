@@ -52,7 +52,7 @@ import {
   Table, Text, Title,
 } from "@mantine/core";
 
-import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences, Tex } from "./lessonStep.js";
 import { WegsteinCobweb } from "./WegsteinCobweb.js";
 import { SlopeHandle } from "./RelaxationFigures.js";
 import { useNarrowViewport } from "./methodsChrome.js";
@@ -181,13 +181,13 @@ export function ErrorPlot({ traces }: {
 // ---- Knobs ------------------------------------------------------------------
 
 const GAIN_F: PanelKnob = {
-  id: "a", label: "loop gain on the FLOW", min: 0, max: 0.98, step: 0.01,
+  id: "a", label: "loop gain on the flow", min: 0, max: 0.98, step: 0.01,
   why: "How much of a disturbance in the assumed recycle flow survives one "
     + "pass round the loop. Near 1 is a plant that recycles most of what it "
     + "makes, and it is what makes direct substitution crawl.",
 };
 const GAIN_T: PanelKnob = {
-  id: "b", label: "loop gain on the TEMPERATURE", min: 0, max: 0.98, step: 0.01,
+  id: "b", label: "loop gain on the temperature", min: 0, max: 0.98, step: 0.01,
   why: "The same, for the temperature direction. The two are independent "
     + "until the coupling below is turned up — which is the whole point of "
     + "the panel.",
@@ -222,7 +222,7 @@ const TOL: PanelKnob = {
 };
 const MAXIT: PanelKnob = {
   id: "maxit", label: "recycleMaxIter", min: 2, max: 120, step: 1,
-  why: "The cap. Exceeding it is a FAILED solve in Choupo, not a warning: "
+  why: "The cap. Exceeding it is a failed solve in Choupo, not a warning: "
     + "the run returns a non-zero exit code and converged/ is not written, "
     + "because the name of that directory is a contract.",
 };
@@ -393,16 +393,13 @@ export function WegsteinTool(): JSX.Element {
         </Box>
 
         {step(1)}
-        {step(2)}
-        {step(3)}
-        {step(4)}
 
-        {/* ---------------- THE RECURSION ---------------- */}
+        {/* ---------------- the recursion ---------------- */}
         <Box style={{ borderLeft: `3px solid ${WEGSTEIN}`, paddingLeft: 12 }}>
           <Title order={4}>The recursion, with the coefficients on screen</Title>
           <Text size="sm" mt={4}>
-            Everything below this line is arithmetic drawn in your browser,
-            and the map it runs on is a TOY: two variables, a straight line
+            Everything in this section is arithmetic drawn in your browser,
+            and the map it runs on is a toy: two variables, a straight line
             with a coupling knob, declared in full in{" "}
             <Text span ff="monospace" size="xs">wegsteinMath.ts</Text>. It is
             not a reactor and no number in it came from one. What IS the
@@ -459,8 +456,8 @@ export function WegsteinTool(): JSX.Element {
             {!contracting && (
               <Alert color="orange" title="This loop is no longer a contraction">
                 The larger eigenvalue of the map is {fmt(Math.max(Math.abs(e1),
-                  Math.abs(e2)), 3)}, which is at or above 1. DIRECT
-                SUBSTITUTION diverges here too, so what you are watching is
+                  Math.abs(e2)), 3)}, which is at or above 1. Direct
+                substitution diverges here too, so what you are watching is
                 the problem and not the accelerator. Turn the coupling or a
                 loop gain back down.
               </Alert>
@@ -494,7 +491,7 @@ export function WegsteinTool(): JSX.Element {
               </Badge>
             </Group>
             <Text size="sm">
-              On a LINEAR map Newton lands on the fixed point in a single step
+              On a linear map Newton lands on the fixed point in a single step
               whatever the coupling, because its Jacobian is exact. Every
               sweep Wegstein spends past the first is therefore the price of
               two scalar secants where Newton has the whole matrix — and a
@@ -503,6 +500,12 @@ export function WegsteinTool(): JSX.Element {
             </Text>
           </Stack>
         </Box>
+
+        {/* The recursion comes second (DEV.md 4c C277): the question, the
+            accelerator running on screen, then steps 2-4 naming what it did. */}
+        {step(2)}
+        {step(3)}
+        {step(4)}
 
         {step(5)}
 
@@ -548,11 +551,11 @@ export function WegsteinTool(): JSX.Element {
             also a place on a drawing, and the drawing is exact rather than
             suggestive: draw the straight line through the last two points the
             sweep visited, and where that line meets{" "}
-            <Text span ff="monospace" size="xs">g = x</Text> is precisely where
+            <Tex mode="inline" src="g = x" /> is precisely where
             Wegstein goes next. Substituting{" "}
-            <Text span ff="monospace" size="xs">q = s/(s−1)</Text> into{" "}
-            <Text span ff="monospace" size="xs">x&apos; = q·x + (1−q)·g</Text>{" "}
-            gives <Text span ff="monospace" size="xs">(g − s·x)/(1 − s)</Text>,
+            <Tex mode="inline" src={String.raw`q = \frac{s}{s-1}`} /> into{" "}
+            <Tex mode="inline" src={String.raw`x^{\prime} = q\,x + (1-q)\,g`} />{" "}
+            gives <Tex mode="inline" src={String.raw`\frac{g - s\,x}{1 - s}`} />,
             which is the crossing. Direct substitution would instead go
             straight to <Text span ff="monospace" size="xs">g</Text>; the gap
             between the two on the picture is the acceleration.
@@ -631,7 +634,7 @@ export function WegsteinTool(): JSX.Element {
         {step(7)}
         {step(8)}
 
-        {/* ---------------- THE ENGINE ---------------- */}
+        {/* ---------------- the engine ---------------- */}
         <Box style={{ borderLeft: `3px solid ${MEASURED}`, paddingLeft: 12 }}>
           <Title order={4}>Measured: a real recycle, solved in your browser</Title>
           <Text size="sm" mt={4}>
@@ -687,7 +690,7 @@ export function WegsteinTool(): JSX.Element {
                   <Text size="sm" mt={6}>
                     With the cap this low that is the expected answer, and it
                     is the honest one: a recycle that exhausts its iterations
-                    without meeting its declared tolerance is a FAILED solve
+                    without meeting its declared tolerance is a failed solve
                     in Choupo — non-zero exit, and{" "}
                     <Text span ff="monospace" size="xs">converged/</Text> is
                     not written, because the name of that directory is a
@@ -697,12 +700,14 @@ export function WegsteinTool(): JSX.Element {
               </Alert>
             )}
             {planLine && (
-              <Box px="sm" py={6}
+              <Box component="details" px="sm" py={6}
                 style={{ borderLeft: `3px solid ${GRID}` }}>
-                <Text size="xs" c="dimmed" fw={700} tt="uppercase" mb={4}>
-                  the engine announcing its own cut
-                </Text>
-                <Text size="xs" ff="monospace"
+                {/* Folded (DEV.md 4c C277): the engine's raw log line. */}
+                <Box component="summary" style={{ cursor: "pointer",
+                  fontSize: "var(--mantine-font-size-sm)" }}>
+                  The engine announcing its own cut (read it)
+                </Box>
+                <Text size="xs" ff="monospace" mt={4}
                   style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
                   {planLine}
                 </Text>
@@ -719,7 +724,7 @@ export function WegsteinTool(): JSX.Element {
                 ]} />
                 <Text size="sm">
                   These are the engine&apos;s own curves and this page computes
-                  neither. They are PHYSICAL residuals — the recycle mass and
+                  neither. They are physical residuals — the recycle mass and
                   energy mismatch divided by what enters the plant — published
                   precisely because the solver&apos;s own convergence figure
                   mixes flows and temperatures into one dimensionless number

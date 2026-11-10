@@ -54,9 +54,9 @@ export const PUMP_STEPS: readonly LessonStep[] = [
     body: "This is the thing to get right first, because everything else "
       + "follows from it.  A pump is not a flow meter with a motor attached: "
       + "install the same pump on two different pipe runs and you get two "
-      + "different flows.  The flow is decided by TWO curves at once — what "
-      + "the pipework DEMANDS at each flow, and what the machine can DELIVER "
-      + "at each flow.  In THIS example one curve only rises and the other "
+      + "different flows.  The flow is decided by two curves at once — what "
+      + "the pipework demands at each flow, and what the machine can deliver "
+      + "at each flow.  In this example one curve only rises and the other "
       + "only falls, so they meet at exactly one place, and that crossing is "
       + "the operating point: the only flow this installation can run at.  "
       + "That uniqueness is a property of these two curves, not of pumps.  "
@@ -69,7 +69,7 @@ export const PUMP_STEPS: readonly LessonStep[] = [
     formula: String.raw`\Delta p_\mathrm{pump}(Q^*) = \Delta p_\mathrm{system}(Q^*) \quad \longrightarrow \quad Q^*, \text{ the operating point}`,
     where: [
       { sym: "\\Delta p_\\mathrm{pump}",
-        means: "The pressure RISE the pump delivers at a given "
+        means: "The pressure rise the pump delivers at a given "
         + "flow.  In this model it is a closed form, not a machine "
         + "characteristic: a fixed shaft power times a fixed efficiency, "
         + "divided by the volume passing through.  The curve falls simply "
@@ -77,27 +77,27 @@ export const PUMP_STEPS: readonly LessonStep[] = [
         + "speed, no impeller diameter and no measured curve behind it.",
         unit: "Pa" },
       { sym: "\\Delta p_\\mathrm{system}",
-        means: "The pressure the PIPEWORK demands at that "
+        means: "The pressure the pipework demands at that "
         + "flow — exactly three terms: distributed friction, minor losses, "
         + "and static elevation.  There is no fourth: no terminal-vessel "
         + "pressure difference is modelled anywhere in the sum.",
         unit: "Pa" },
       { sym: "Q", means: "Volumetric flow through the system.  It is never "
-        + "CHOSEN by the pump: the feed's molar flow sets it, and the sweep "
+        + "chosen by the pump: the feed's molar flow sets it, and the sweep "
         + "imposes that point by point.", unit: "m³/s" },
-      { sym: "Q^*", means: "The OPERATING POINT — the one flow at which the "
+      { sym: "Q^*", means: "The operating point — the one flow at which the "
         + "two curves agree.  It is not a setting: it is where the "
         + "installation ends up, which is the whole lesson of the page.",
         unit: "m³/s" },
     ],
-    note: "The single crossing on this page also rests on the MODEL'S "
+    note: "The single crossing on this page also rests on the model's "
       + "curve: Choupo's pump is the constant-power hyperbola of step 3, not "
       + "a measured centrifugal H(Q), and a hyperbola can never droop.  So "
       + "the page can show one operating point and cannot show two, or an "
       + "unstable one: that is a limit of the model, not a reassurance about "
       + "real machines.  Read the plot below as two answers to the same "
       + "question.  The "
-      + "sweep behind it IMPOSES a flow at each of its points and asks each "
+      + "sweep behind it imposes a flow at each of its points and asks each "
       + "side what pressure it would want there; at every flow but one the "
       + "two answers differ, and the difference has nowhere to go.  The "
       + "system curve in this case carries no terminal-pressure term, so the "
@@ -109,12 +109,12 @@ export const PUMP_STEPS: readonly LessonStep[] = [
     n: 2,
     title: "The system curve: what the pipework demands",
     body: "Split the demand in two, because the halves behave completely "
-      + "differently.  The STATIC head is the part that does not care how "
+      + "differently.  The static head is the part that does not care how "
       + "fast you push: lifting the liquid through an elevation, and pushing "
       + "it into a vessel held at a different pressure.  Stop the flow "
-      + "entirely and it is still there.  The FRICTION head is everything "
+      + "entirely and it is still there.  The friction head is everything "
       + "the moving liquid rubs away — the pipe wall along the run, plus the "
-      + "elbows, bends and valves — and it grows roughly as the SQUARE of "
+      + "elbows, bends and valves — and it grows roughly as the square of "
       + "the flow, because it is driven by the velocity head ρv²/2.",
     formula: String.raw`\begin{aligned}
 \Delta p_\mathrm{system} &= \rho\, g\, \Delta z &&\text{(static: flat in } Q)\\
@@ -125,15 +125,15 @@ export const PUMP_STEPS: readonly LessonStep[] = [
       { sym: "\\rho", means: "Liquid density — and both curves on this diagram "
         + "now use the same one.  The pump builds ρ from the component "
         + "record's constant liquid volume; the pipe asks the thermo "
-        + "package, which since 2026-08-29 ANCHORS the Rackett correlation "
+        + "package, which since 2026-08-29 anchors the Rackett correlation "
         + "on that same declared value, V(T) = Vliq·Rackett(T)/Rackett(298 "
         + "K).  On this case they agree to 2e-5 (996.95 kg/m³ on both "
-        + "sides), so pressures AND heads may be compared across the "
+        + "sides), so pressures and heads may be compared across the "
         + "crossing.  Until then the pipe ran bare Rackett, about 12 % low "
         + "for water, and the two sides read 997 against 877 — worth "
         + "knowing, because that is the shape of the mistake: a head is a "
         + "pressure divided by a density, so two densities silently make "
-        + "two different metres.  What still differs is the TEMPERATURE "
+        + "two different metres.  What still differs is the temperature "
         + "dependence — the pump's molar volume is constant in T and the "
         + "pipe's is not, so they drift apart away from 25 °C.",
         unit: "kg/m³" },
@@ -141,21 +141,21 @@ export const PUMP_STEPS: readonly LessonStep[] = [
         unit: "m/s²" },
       { sym: "\\Delta z",
         means: "Elevation change from pipe inlet to outlet — and "
-        + "the WHOLE of the static term, the only flow-independent "
+        + "the whole of the static term, the only flow-independent "
         + "contribution.  Elevation only: an installation discharging into a "
         + "pressurised header has static head this curve does not contain.",
         unit: "m" },
       { sym: "f", means: "The Darcy friction factor — the one term here that "
         + "is not constant: it falls slowly as the Reynolds number rises, "
-        + "which is why the friction curve is only ROUGHLY quadratic.",
+        + "which is why the friction curve is only roughly quadratic.",
         unit: "dimensionless" },
-      { sym: "L", means: "Straight pipe LENGTH, entering only through the "
+      { sym: "L", means: "Straight pipe length, entering only through the "
         + "ratio L/D.  Fittings are counted separately and carry no length.",
         unit: "m" },
       { sym: "D", means: "Internal pipe diameter.", unit: "m" },
       { sym: "\\sum K", means: "The sum of minor-loss coefficients over the "
         + "declared fittings.  It multiplies the velocity head directly, so "
-        + "this term is EXACTLY quadratic in Q — unlike the distributed "
+        + "this term is exactly quadratic in Q — unlike the distributed "
         + "friction, whose f drifts.", unit: "dimensionless" },
       { sym: "v", means: "Mean velocity in the pipe.", unit: "m/s" },
       { sym: "A", means: "The pipe's internal cross-sectional area.",
@@ -172,9 +172,9 @@ export const PUMP_STEPS: readonly LessonStep[] = [
   },
   {
     n: 3,
-    title: "The pump curve: what THIS model delivers",
+    title: "The pump curve: what this model delivers",
     body: "A real centrifugal pump's curve falls as flow rises — that shape "
-      + "is the impeller's own characteristic, and it is MEASURED on a test "
+      + "is the impeller's own characteristic, and it is measured on a test "
       + "rig, not derived.  The curve on this page falls too, but for a "
       + "different reason, and the difference matters: the pump model here "
       + "is given a fixed shaft power and a fixed efficiency, so the "
@@ -189,32 +189,32 @@ export const PUMP_STEPS: readonly LessonStep[] = [
         + "the η fraction becomes pressure, the rest heats the liquid.",
         unit: "dimensionless" },
       { sym: "W_\\mathrm{shaft}",
-        means: "Shaft POWER supplied to the pump — one of "
+        means: "Shaft power supplied to the pump — one of "
         + "three mutually exclusive specifications.  Note it is power, not "
         + "rotational speed: nothing in this model converts between the two.",
         unit: "W" },
     ],
-    note: "So the falling line below is a constant-shaft-power hyperbola of "
-      + "the MODEL, never a manufacturer's tested H(Q) curve, and the plot "
+    note: "So the falling line above is a constant-shaft-power hyperbola of "
+      + "the model, never a manufacturer's tested H(Q) curve, and the plot "
       + "says so beside itself.  Because η is a declared constant here and "
       + "not a curve, there is no best-efficiency point on this diagram "
       + "either: a real pump is efficient over a band and poor outside it, "
       + "and choosing an operating point is partly about landing in that "
       + "band.  If the case had specified the pump by P_out or dP instead, "
-      + "the line would come out FLAT — a specification echoed back rather "
+      + "the line would come out flat — a specification echoed back rather "
       + "than a characteristic — and the tool greys it and says that too.",
   },
   {
     n: 4,
     title: "Moving the operating point: throttle the system, or change the machine",
     body: "There are two places to push, and they cost wildly different "
-      + "amounts.  THROTTLING closes a valve, which raises ΣK: the system "
-      + "curve steepens, the crossing slides LEFT to a lower flow at a "
+      + "amounts.  Throttling closes a valve, which raises ΣK: the system "
+      + "curve steepens, the crossing slides left to a lower flow at a "
       + "higher pressure, and the head the valve eats is destroyed — "
       + "dissipated as heat in the liquid.  You still pay the pump for it.  "
-      + "CHANGING SPEED moves the PUMP curve instead, and the affinity "
+      + "Changing speed moves the pump curve instead, and the affinity "
       + "laws relate one speed to another: the flow follows the speed, the "
-      + "head follows its square, and the power follows its CUBE.  That "
+      + "head follows its square, and the power follows its cube.  That "
       + "cube is the whole argument for variable-speed drives — head a "
       + "throttle destroys is head the pump never has to produce in the "
       + "first place.",
@@ -223,16 +223,16 @@ export const PUMP_STEPS: readonly LessonStep[] = [
 \text{affinity:}\quad & Q \propto N \qquad H \propto N^2 \qquad P \propto N^3
 \end{aligned}`,
     where: [
-      { sym: "N", means: "Rotational SPEED, in the affinity laws.  NOT "
-        + "COMPUTED BY THIS ENGINE — the pump model has no speed and no "
+      { sym: "N", means: "Rotational speed, in the affinity laws.  Not "
+        + "computed by this engine — the pump model has no speed and no "
         + "impeller diameter, only a shaft power and an efficiency.  Turning "
-        + "the shaft power down is a DIFFERENT experiment from slowing the "
+        + "the shaft power down is a different experiment from slowing the "
         + "pump, and no affinity relation is evaluated anywhere on this "
         + "page.", unit: "rev/s (nominal)" },
-      { sym: "H", means: "Pump HEAD — the pressure rise expressed as a height "
+      { sym: "H", means: "Pump head — the pressure rise expressed as a height "
         + "of the liquid.  See the ρ warning in step 2 before converting "
         + "either curve to head.", unit: "m" },
-      { sym: "P", means: "Pump POWER in the affinity law.  The engine has the "
+      { sym: "P", means: "Pump power in the affinity law.  The engine has the "
         + "quantity (it is the shaft power) but never scales it with a speed, "
         + "because there is no speed to scale by.  The cube relation also "
         + "holds only between homologous points, and carries over to an "
@@ -240,17 +240,17 @@ export const PUMP_STEPS: readonly LessonStep[] = [
         + "through the origin — which one with a static lift does not.",
         unit: "W" },
     ],
-    note: "NEITHER move is computed on this page, and the difference is "
+    note: "Neither move is computed on this page, and the difference is "
       + "worth being precise about.  There is no valve knob: a throttle "
       + "raises ΣK, and although the classroom case declares a globe valve, "
       + "no knob "
       + "reaches its K — the panel steepens the system curve by shrinking D "
       + "or lengthening L instead, which moves the crossing the same way "
-      + "through a different mechanism.  And this pump model has NO SPEED "
+      + "through a different mechanism.  And this pump model has no speed "
       + "at all — W_shaft is shaft power, not rpm — so the affinity laws "
       + "above are stated and never evaluated.  Nothing you see on the plot "
       + "is an affinity-law prediction.  Be careful with the cube even away "
-      + "from this page: it relates HOMOLOGOUS points on the pump's own "
+      + "from this page: it relates homologous points on the pump's own "
       + "curves, and it carries over to the installation's operating point "
       + "only when the system curve passes through the origin — all "
       + "friction, no static head.  With a static lift the crossing does "
@@ -261,21 +261,21 @@ export const PUMP_STEPS: readonly LessonStep[] = [
     n: 5,
     title: "NPSH: the separate question that can stop the whole thing",
     body: "A good operating point is not enough, because cavitation is "
-      + "decided somewhere else entirely — on the SUCTION side, before the "
-      + "impeller.  The NPSH AVAILABLE is how much head the liquid arrives "
-      + "with above its own vapour pressure, and it FALLS as flow rises, "
+      + "decided somewhere else entirely — on the suction side, before the "
+      + "impeller.  The NPSH available is how much head the liquid arrives "
+      + "with above its own vapour pressure, and it falls as flow rises, "
       + "because the suction line's friction grows with flow.  The NPSH "
-      + "REQUIRED is the pump's own property, measured by its maker, and it "
-      + "RISES with flow over most of the range.  Read the datasheet's "
+      + "required is the pump's own property, measured by its maker, and it "
+      + "rises with flow over most of the range.  Read the datasheet's "
       + "number for what it is: the NPSH required is usually NPSH3, the "
-      + "suction head at which the pump's total head has ALREADY fallen by "
+      + "suction head at which the pump's total head has already fallen by "
       + "3 per cent in a test.  So at NPSH3 the pump is not on the edge of "
       + "cavitation — it is cavitating hard enough to lose head.  The first "
       + "bubbles appear earlier, at a higher suction head called incipient "
       + "cavitation, and between the two the pump can erode with no visible "
       + "loss of head at all.  That is why NPSH available greater than NPSH "
-      + "required is a MINIMUM, indicative condition, never the design "
-      + "criterion: a pump is selected with a MARGIN above NPSH required, "
+      + "required is a minimum, indicative condition, never the design "
+      + "criterion: a pump is selected with a margin above NPSH required, "
       + "and how much margin depends on the liquid, the energy level of the "
       + "pump and the service — the manufacturer states it, and the "
       + "Hydraulic Institute's guideline on NPSH margin (ANSI/HI 9.6.1) is "
@@ -289,15 +289,15 @@ export const PUMP_STEPS: readonly LessonStep[] = [
 \end{aligned}`,
     where: [
       { sym: "\\mathrm{NPSH}_a",
-        means: "Net positive suction head AVAILABLE — how much "
+        means: "Net positive suction head available — how much "
         + "head the liquid arrives with above its own vapour pressure, "
-        + "falling as flow rises.  NOT COMPUTED BY THIS ENGINE: no unit "
+        + "falling as flow rises.  Not computed by this engine: no unit "
         + "publishes an NPSH of either kind and the pump carries no suction "
         + "geometry.", unit: "m" },
       { sym: "\\mathrm{NPSH}_r",
-        means: "Net positive suction head REQUIRED — the "
+        means: "Net positive suction head required — the "
         + "pump's own property, measured by its maker, rising with flow over "
-        + "most of the range.  NOT COMPUTED, and could not be: it is measured "
+        + "most of the range.  Not computed, and could not be: it is measured "
         + "machine data, and this model carries no measured data of any "
         + "kind.", unit: "m" },
       { sym: "\\mathrm{NPSH}_3",
@@ -306,17 +306,17 @@ export const PUMP_STEPS: readonly LessonStep[] = [
         + "speed — the usual definition behind a datasheet's NPSH required.  "
         + "At this point the pump is already cavitating.", unit: "m" },
       { sym: "\\mathrm{NPSH}_i",
-        means: "The INCIPIENT-cavitation NPSH: the suction head "
+        means: "The incipient-cavitation NPSH: the suction head "
         + "at which the first vapour bubbles appear.  It lies above NPSH3, "
         + "often well above it, and is seldom on a datasheet.", unit: "m" },
       { sym: "\\Delta\\mathrm{NPSH}_\\mathrm{m}",
-        means: "The NPSH MARGIN a selection keeps above NPSH "
+        means: "The NPSH margin a selection keeps above NPSH "
         + "required (sometimes stated as a ratio instead of a difference).  "
         + "Its size is the manufacturer's, or the Hydraulic Institute "
         + "guideline's for that service; this page gives no value.",
         unit: "m" },
       { sym: "P_\\mathrm{source}",
-        means: "Absolute pressure on the liquid SURFACE of the "
+        means: "Absolute pressure on the liquid surface of the "
         + "vessel the pump draws from.  Not the pressure at the pump's "
         + "suction flange: that one already contains the static head and "
         + "the suction-line friction, so putting it here would count both "
@@ -331,12 +331,12 @@ export const PUMP_STEPS: readonly LessonStep[] = [
         means: "Static head of liquid above (or below) the "
         + "pump centreline on the suction side.", unit: "m" },
       { sym: "h_\\mathrm{f,suction}",
-        means: "Friction head lost in the SUCTION line "
+        means: "Friction head lost in the suction line "
         + "alone — which is why a long or throttled suction is the classic "
         + "way to cavitate a pump that is otherwise sized correctly.",
         unit: "m" },
     ],
-    note: "Choupo computes NONE of this, and the page will not pretend "
+    note: "Choupo computes none of this, and the page will not pretend "
       + "otherwise: no unit in the engine publishes an NPSH of either kind, "
       + "the pump model carries no suction geometry, and it never checks its "
       + "inlet against the liquid's vapour pressure.  The lines above are a "
@@ -350,12 +350,12 @@ export const PUMP_STEPS: readonly LessonStep[] = [
 export const PUMP_LIMITS: readonly { id: string; title: string; body: string }[] = [
   {
     id: "not-a-manufacturer-curve",
-    title: "The pump curve is a MODEL, not a datasheet.",
+    title: "The pump curve is a model, not a datasheet.",
     body: "Δp = η·W_shaft/Q is the constant-shaft-power characteristic of "
       + "Choupo's pump model. A real machine's H(Q) is measured on a test "
       + "rig and has its own shape; the two agree only in falling. Nothing "
       + "here is fitted to, or checked against, a tested curve.  The model "
-      + "curve also DIVERGES as Q → 0: a constant-power hyperbola has no "
+      + "curve also diverges as Q → 0: a constant-power hyperbola has no "
       + "shut-off head, so its left end describes no machine at all.  Do "
       + "not select a pump from this diagram.",
   },
@@ -407,7 +407,7 @@ export const PUMP_LIMITS: readonly { id: string; title: string; body: string }[]
   {
     id: "fixed-sweep-window",
     title: "The swept flow window is fixed, and the view never extrapolates.",
-    body: "The witness's outerDict declares its flow range as a LIST, which "
+    body: "The witness's outerDict declares its flow range as a list, which "
       + "the scalar-override channel the knobs ride cannot rewrite (v1). "
       + "Push the knobs far enough and the crossing leaves the window: the "
       + "tool then says there is no crossing inside it rather than "
