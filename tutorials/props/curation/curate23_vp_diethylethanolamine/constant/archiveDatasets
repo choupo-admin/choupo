@@ -39,7 +39,7 @@ datasets
     }
     {
         file          "constant/archiveExtracts/diethylethanolamine-vapourPressure-j.fluid.2018.05.032.dat";
-        role          validation;   // informational: the operation declares it
+        role          fit;   // informational: the operation declares it
         doi           "10.1016/j.fluid.2018.05.032";
         url           "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2018.05.032.xml";
         page          "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2018.05.032.json";
@@ -49,6 +49,23 @@ datasets
         inchiKey      "BFSVOASYOCHEOV-UHFFFAOYSA-N";
         extract       "bin/choupo-thermoml extract-vp <article file> --inchikey BFSVOASYOCHEOV-UHFFFAOYSA-N --into <dir>";
         sha256        "626aeec0c3e424073d51c3fe7e8cde9681bf9ce7ebd6bed07dc438577a82f8a7";
+        identity
+        {
+            diethylethanolamine { cas "100-37-8"; inchiKey "BFSVOASYOCHEOV-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/diethylethanolamine-vapourPressure-je101259r.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je101259r";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je101259r.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je101259r.json";
+        articleFile   "je101259r.xml";
+        articleSha256 "3963c4cf50d9b279a449dc923dd5a4301188be5d3ddeb2ee32ea2dd4eaecd626";
+        extractor     vapourPressure;
+        inchiKey      "BFSVOASYOCHEOV-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey BFSVOASYOCHEOV-UHFFFAOYSA-N --into <dir>";
+        sha256        "ea0e9b35afbaa974687282e46192b0e3c351352471d68ea7ede45ce1c9b329cc";
         identity
         {
             diethylethanolamine { cas "100-37-8"; inchiKey "BFSVOASYOCHEOV-UHFFFAOYSA-N"; }
