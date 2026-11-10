@@ -226,7 +226,7 @@ describe("the honest half", () => {
     //  pass does: every other duty is listed as excluded, and an exchanger's
     //  recovered heat is never offered back as a saving.
     const pop = prose(limit("stream-population").body);
-    expect(pop).not.toContain("NET duty");
+    expect(pop).not.toContain("net duty");
     expect(pop).toContain("Every other heat duty is not in it");
     expect(pop).toContain("reports/pinch/population.csv");
     expect(pop).toContain("counted in neither current-utility total");

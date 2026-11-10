@@ -161,7 +161,7 @@ Q_\mathrm{C,min} &= \sum \Delta H_\mathrm{hot} - Q_\mathrm{recovery}\\
         + "composite curves.  Every kilowatt here is a kilowatt you do not "
         + "buy and do not throw away.", unit: "kW" },
       { sym: "Q_\\mathrm{H,min}",
-        means: "The minimum HOT-utility target: the least "
+        means: "The minimum hot-utility target: the least "
         + "external heating this stream population admits at this approach.  "
         + "It is a target, not the duty of any equipment that exists — the "
         + "analysis reports it beside the current heating duty for comparison "
@@ -214,7 +214,7 @@ Q_\mathrm{C,min} &= \sum \Delta H_\mathrm{hot} - Q_\mathrm{recovery}\\
         + "force of at least ΔT_min, which is what makes the cascade "
         + "arithmetic legitimate.", unit: "K" },
       { sym: "T_\\mathrm{hot}",
-        means: "A temperature read on the HOT streams' own "
+        means: "A temperature read on the hot streams' own "
         + "(unshifted) scale — what a thermometer in that stream reads.",
         unit: "K" },
       { sym: "T_\\mathrm{cold}",
