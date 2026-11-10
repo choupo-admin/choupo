@@ -219,6 +219,7 @@ int VaporPressureFit::run(const DictPtr& dict,
     {
         //  both answers kept (fit.<i>.value_leastSquares / value_minimax, i = A, B, C)
         fitobj::publish(diag_, objSpec, lsV, sVector{ A, B, C }, obj2);
+        diag_.erase("objective_binodal_relative");   // a tie-line word; this op has none
         scalar m = 0.0, x = 0.0;
         relStats(A, B, C, T, y, m, x);
         diag_["relErr_mean_fit_pct"] = 100.0 * m;
