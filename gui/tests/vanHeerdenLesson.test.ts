@@ -56,7 +56,7 @@ describe("the ignition / extinction lesson", () => {
     const s1 = step(1);
     expect(prose(s1.formula!)).toContain(String.raw`\varphi(T) &= H_\mathrm{out}(T) - H_\mathrm{in} - Q_\mathrm{ext}(T) = 0`);
     expect(prose(s1.formula!)).toContain(String.raw`\varphi(T) &= R(T) - G(T)`);
-    expect(prose(s1.note!)).toContain("IDENTITY");
+    expect(prose(s1.note!)).toContain("identity");
     expect(prose(s1.note!)).toContain("R − G reproduces phi exactly");
   });
 
@@ -67,7 +67,7 @@ describe("the ignition / extinction lesson", () => {
     //  composition vary — the step says which of the two the reader is
     //  looking at.
     const s2 = step(2);
-    expect(prose(s2.body)).toContain("STRAIGHT LINE in T");
+    expect(prose(s2.body)).toContain("straight line in T");
     expect(prose(s2.body)).toContain("cut a sigmoid once, twice or three times");
     expect(prose(s2.formula!)).toContain(String.raw`R(T) &= F c_p (T - T_\mathrm{in}) + \mathrm{UA}\,(T - T_\mathrm{coolant})`);
     expect(prose(s2.note!)).toContain("not straight by construction");
@@ -80,10 +80,10 @@ describe("the ignition / extinction lesson", () => {
     const s3 = step(3);
     expect(prose(s3.formula!)).toContain(String.raw`\frac{\mathrm{d}Q_\mathrm{rem}}{\mathrm{d}T} &> \frac{\mathrm{d}Q_\mathrm{gen}}{\mathrm{d}T}`);
     expect(prose(s3.formula!)).toContain(String.raw`\frac{\mathrm{d}R}{\mathrm{d}T} &> \frac{\mathrm{d}G}{\mathrm{d}T}`);
-    expect(prose(s3.body)).toContain("REMOVAL LINE IS STEEPER");
-    expect(prose(s3.body)).toContain("NECESSARY condition");
+    expect(prose(s3.body)).toContain("removal line is steeper");
+    expect(prose(s3.body)).toContain("necessary condition");
     expect(prose(s3.formula!)).not.toContain(String.raw`\longrightarrow \quad \text{stable}`);
-    expect(prose(s3.note!)).toContain("MIDDLE one fails this test");
+    expect(prose(s3.note!)).toContain("middle one fails this test");
     //  And the distinction the criterion exists to draw.
     expect(prose(s3.note!))
       .toContain("\"The solver converged\" and \"the plant can run there\" are different claims");
@@ -96,8 +96,8 @@ describe("the ignition / extinction lesson", () => {
     const s4 = step(4);
     expect(prose(s4.formula!)).toContain(String.raw`\frac{\mathrm{d}G}{\mathrm{d}T} = \frac{\mathrm{d}R}{\mathrm{d}T}`);
     expect(prose(s4.formula!)).toContain("the two roots merge");
-    expect(prose(s4.body)).toContain("TANGENT");
-    expect(prose(s4.note!)).toContain("HYSTERESIS");
+    expect(prose(s4.body)).toContain("tangent");
+    expect(prose(s4.note!)).toContain("hysteresis");
     expect(prose(s4.note!))
       .toContain("why a runaway is not the mirror image of a shutdown");
     expect(prose(s4.note!)).toContain("back the parameter off");
@@ -109,8 +109,8 @@ describe("the ignition / extinction lesson", () => {
     const s5 = step(5);
     expect(prose(s5.formula!))
       .toContain(String.raw`R(T) &= (F c_p + \mathrm{UA})\, T - (F c_p T_\mathrm{in} + \mathrm{UA}\, T_\mathrm{coolant})`);
-    expect(prose(s5.body)).toContain("Coolant temperature enters the INTERCEPT");
-    expect(prose(s5.body)).toContain("UA and the total flow enter the SLOPE");
+    expect(prose(s5.body)).toContain("Coolant temperature enters the intercept");
+    expect(prose(s5.body)).toContain("UA and the total flow enter the slope");
   });
 
   it("says the witness is ADIABATIC rather than implying a coolant knob", () => {
@@ -118,7 +118,7 @@ describe("the ignition / extinction lesson", () => {
     //  or T_coolant key, so no knob on this page can move a coolant.  The
     //  jacketed case is named instead of the gap being left silent.
     const s5 = step(5);
-    expect(prose(s5.note!)).toContain("witness is ADIABATIC");
+    expect(prose(s5.note!)).toContain("witness is adiabatic");
     expect(prose(s5.note!))
       .toContain("tutorials/steady/reactors/cstr06_jacketed");
     //  Measured on the shipped witness: doubling a feed flow steepens R AND
@@ -182,7 +182,7 @@ describe("the limits keep this from reading as a safety argument", () => {
     //  Passing dR/dT > dG/dT does not prove dynamic stability; an oscillation
     //  is available to a state that passes it.
     const l = limit("static-criterion");
-    expect(prose(l.body)).toContain("rules a steady state OUT when it fails");
+    expect(prose(l.body)).toContain("rules a steady state out when it fails");
     expect(prose(l.body)).toContain("sustained oscillation");
   });
 
@@ -240,7 +240,7 @@ describe("the tool renders it as a scrolling lesson", () => {
     expect(empty, "the empty state drops the limits").toContain("{lessonLimits}");
   });
 
-  it("puts the definitions BEFORE the plot and the consequences AFTER", () => {
+  it("puts the question first, the plot second, and the explanation after", () => {
     //  Anchored on the RENDER SITE of the chart, not on an import: what
     //  matters is where the picture is drawn relative to the argument.
     const main = SRC.lastIndexOf("{lessonHead}");
@@ -251,8 +251,10 @@ describe("the tool renders it as a scrolling lesson", () => {
     };
     const plot = at("<VanHeerdenSvg");
     expect(at("{lessonStep(1)}")).toBeLessThan(plot);
-    expect(at("{lessonStep(2)}")).toBeLessThan(plot);
-    expect(at("{lessonStep(3)}")).toBeLessThan(plot);
+    //  DEV.md 4c C277: steps 2-3 moved BELOW the diagram, so the student has
+    //  the curves under their hand before the algebra that explains them.
+    expect(at("{lessonStep(2)}")).toBeGreaterThan(plot);
+    expect(at("{lessonStep(3)}")).toBeGreaterThan(plot);
     expect(at("{lessonStep(4)}")).toBeGreaterThan(plot);
     expect(at("{lessonStep(5)}")).toBeGreaterThan(plot);
     expect(at("{lessonLimits}")).toBeGreaterThan(at("{lessonStep(5)}"));
