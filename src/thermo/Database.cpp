@@ -30,11 +30,11 @@ License
 
 #include "core/Advisory.H"
 #include "FitGrade.H"
+#include "ReviewRecord.H"
 #include "RecordResolver.H"
 #include "ThermoAnnounce.H"
 
 #include <iostream>
-
 #include <cstdlib>
 #include <filesystem>
 #include <cctype>
@@ -647,8 +647,8 @@ DictPtr Database::componentDict(const std::string& name) const
             //  The grade a curation fit earned (DEV.md 4c C285): ONE home,
             //  shared with the pair loaders (FitGrade.H).
             announceFitGrade("component '" + name + "'", key, entry);
-            if (entry->lookupWordOrDefault("reviewStatus", "") != "autoPromoted")
-                continue;
+            if (entry->lookupWordOrDefault("reviewStatus", "") != "autoPromoted"
+                || announceReviewBlock("component '" + name + "'", "component:" + name + ":" + key, key, entry)) continue;
             const std::string where =
                 entry->lookupWordOrDefault("fittedInCase", "");
             if (AdvisoryLog::instance().addAnnouncedOnce(

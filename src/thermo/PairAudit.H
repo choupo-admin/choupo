@@ -29,6 +29,7 @@
 
 #include "core/Types.H"
 #include "FitGrade.H"
+#include "ReviewRecord.H"
 
 #include <cmath>
 #include <iostream>
@@ -100,7 +101,8 @@ inline void fillPairAudit(PairResolution&    r,
     //  must be able to tell "fitted by a machine" from "fitted, not yet read
     //  back", and neither from a reviewed record.  Any other word is, as
     //  before, read and not announced.
-    else if (provDict->lookupWordOrDefault("reviewStatus", "") == "autoPromoted")
+    else if (provDict->lookupWordOrDefault("reviewStatus", "") == "autoPromoted"
+             && !announceReviewBlock("pair " + pairName, "pair:" + pairName, "", provDict))
     {
         if (AdvisoryLog::instance().addAnnouncedOnce("autoPromoted:pair:" + pairName,
                 "provenance", "warning", "pair " + pairName,
