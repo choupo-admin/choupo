@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/Dichloroethane.dat"
+        {
+            type          imported;
+            sha256        "ccec8ed54dd89e5ada83fa9b95a1f1d6890306d0905c6f66d536b79262e6322c";
+            computationalSha256 "0f7fe4aedc3796a98e2c137ff1a0d520463954f8d6acd1d81e2233fc1cae86c7";
+            origin        "data/standards/components/Dichloroethane.dat";
+            originSha256  "8c4cad78bb756f1c81f8d50caf255bf5efd657a5f5c36d1ad767f265cc93e142";
+            release       Choupo-2608;
+        }
+        "components/acrylonitrile.dat"
+        {
+            type          imported;
+            sha256        "50e9a20506c0ca18d986e44002eda5712bc1d0b8dfda9a257cfe2af11d00fe3b";
+            computationalSha256 "08b73c7103c69084e44f5bc297fc2291b50066151b272bac0cc408ec87033cf2";
+            origin        "data/standards/components/acrylonitrile.dat";
+            originSha256  "cef27738a98dab0b4330d9a932721281388e126fa6223cd168b2298b1bce6648";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/Dichloroethane-acrylonitrile.dat"
+        {
+            type          imported;
+            sha256        "d91feb7b75af5750b601c4a30e5a67208c308d25222cd27dc3c49922b434972e";
+            computationalSha256 "de61dcc126ffdb788c2b27585e16d32b204f5e571c004a728d3d69f0647d2566";
+            origin        "data/standards/parameters/NRTL/Dichloroethane-acrylonitrile.dat";
+            originSha256  "f5a7f0c43cb8fbe1fa3c51484157037c097ed54392f9ab3aa25ff0141f5c88ab";
+            release       Choupo-2608;
+        }
+    }
+}

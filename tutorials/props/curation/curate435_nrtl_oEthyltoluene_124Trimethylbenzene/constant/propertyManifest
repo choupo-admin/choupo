@@ -1,0 +1,74 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/124Trimethylbenzene.dat"
+        {
+            type          imported;
+            sha256        "a610b89ab2e979191a60401b152ecd1256a9c20f6ecb1b9779104c81322992eb";
+            computationalSha256 "17d2955022e14e5718a502c8d6f37ee07ac5f8b0ede4ae27fd963a2e9fe57989";
+            origin        "data/standards/components/124Trimethylbenzene.dat";
+            originSha256  "e2241b6ba6289ae25581787306519e47b0d32884a595e53bbe4872350a59c36f";
+            release       Choupo-2608;
+        }
+        "components/oEthyltoluene.dat"
+        {
+            type          imported;
+            sha256        "1b1deff771cb0d5dafe4db05d6e45bf8e6fbb7caef2d2ecc049c501ee9da74cc";
+            computationalSha256 "24833d0b0276edb7a66f36b73dc368e1e36f3345488d73382be636699bd78c4b";
+            origin        "data/standards/components/oEthyltoluene.dat";
+            originSha256  "2b1df476e94be360dd9b3c840f8e2759c1ab05070dff9df9a596097e555afee8";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/124Trimethylbenzene-oEthyltoluene.dat"
+        {
+            type          imported;
+            sha256        "22e09c17345b6299e75a3cec3864777ca52764ce3945da0ddda9219a0e41450e";
+            computationalSha256 "ee561323cd3e61b0d24fdd520f3c2fc27608c652105a3bbe348007cd6fd9ef86";
+            origin        "data/standards/parameters/NRTL/124Trimethylbenzene-oEthyltoluene.dat";
+            originSha256  "463826f3d6b230c91c9d5de266c50a109926a973281209d605837d00acbcfed4";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+    }
+}

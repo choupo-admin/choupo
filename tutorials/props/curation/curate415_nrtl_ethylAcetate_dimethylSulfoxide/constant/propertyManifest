@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/dimethylSulfoxide.dat"
+        {
+            type          imported;
+            sha256        "d0645447457ce82ab3cc1c5c9b24ade9e1a72fd7e63d1f97cb76d3de6edc3843";
+            computationalSha256 "d408f92d38a1dba4d9c8342a49863025a4a67d27900239d913d6f6e8da72f82e";
+            origin        "data/standards/components/dimethylSulfoxide.dat";
+            originSha256  "f96e96de368f808f5f982ca5a1267fd09ae9823c507446568adb26e438fc8583";
+            release       Choupo-2608;
+        }
+        "components/ethylAcetate.dat"
+        {
+            type          imported;
+            sha256        "beb6e50741e964e6d1479f0f1e66284a50fee1aa86fd5d014b8cb0c886b66e1c";
+            computationalSha256 "4faa49d150d41d6e24527cf3a028f1705068d903407d67194fe6caa4731b4d1c";
+            origin        "data/standards/components/ethylAcetate.dat";
+            originSha256  "9efe0bbeca4073450e352d99c60035ffd0f7cdabc8c708c372c9932cb5f95ba9";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/dimethylSulfoxide-ethylAcetate.dat"
+        {
+            type          imported;
+            sha256        "6cb6aa76396e96cabe1059e510ff8a74ab320fda613d9e4a718711cb1dca99bd";
+            computationalSha256 "01cf26a05786bb58d6946d956e40f6a6629de76b4f5a17f571b316728f714f5b";
+            origin        "data/standards/parameters/NRTL/dimethylSulfoxide-ethylAcetate.dat";
+            originSha256  "d33a1c2a4b70364b28d2cf55b7912a1907f144ae61abffe2b6e8a9d6208a6ef2";
+            release       Choupo-2608;
+        }
+    }
+}

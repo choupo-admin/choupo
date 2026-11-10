@@ -1,0 +1,74 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/methylIsobutylKetone.dat"
+        {
+            type          imported;
+            sha256        "883dca67acc7aabffa681e76e5b38194a93fc68f78d4a3433df849a68718372f";
+            computationalSha256 "3b343b8cff791a127701ce6eadd23f8a9a7b015e0678246d7007a3416d2d7c49";
+            origin        "data/standards/components/methylIsobutylKetone.dat";
+            originSha256  "8e66af3abd6102965d13c7772247cf28d37eeb7439927a2af07c69a09dae2718";
+            release       Choupo-2608;
+        }
+        "components/nHexane.dat"
+        {
+            type          imported;
+            sha256        "7a4f2c4ed3cbd1b5ba81e8385b99102ef376db27d62150a59fa1e3176fab1cfb";
+            computationalSha256 "43880946bf7394379147ea46119961e161682f5f265cb5e74b04a645fa24b3f0";
+            origin        "data/standards/components/nHexane.dat";
+            originSha256  "37329be508de9ee60a05046cde1b405990560ec6c629c8c75294cce5bdf022fd";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/methylIsobutylKetone-nHexane.dat"
+        {
+            type          imported;
+            sha256        "15356f63c303a90a796a988b8a331628a4ac879a64d7e7fcfcaf6e63cdaef984";
+            computationalSha256 "f60c10b7f0bea88a4fbbfc67de181a1c387cda45ffa02f62a9014e2e6d5c1975";
+            origin        "data/standards/parameters/NRTL/methylIsobutylKetone-nHexane.dat";
+            originSha256  "61c7f769980327c833f2cdae6b8927dfbab6bb299aed2b7089ad5f16def6436d";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+    }
+}

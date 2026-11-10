@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/bromobenzene.dat"
+        {
+            type          imported;
+            sha256        "8d8e43c717aa31fdb4403bcd2e38d46f524a024a1a0c56479fe8a144ee6141bc";
+            computationalSha256 "7d69e484b1c8756232842894b0caa6002e1bc13eaf049cbc1c7dac2798f2bfae";
+            origin        "data/standards/components/bromobenzene.dat";
+            originSha256  "17a58a4a0975d8f4654b1f2b33bc22fcc48ffa58921e1b36ea868f256b442a6b";
+            release       Choupo-2608;
+        }
+        "components/nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "5dc5e624ec26f7584374f1c24564d0750fe6035d6d04806c118cacafdbb9a9cf";
+            computationalSha256 "a54dfb01aa4f8ccf4cd36ebaaa39c04ad37254ae34c4fd4f112690de9f1d0425";
+            origin        "data/standards/components/nNDimethylformamide.dat";
+            originSha256  "9c683ee45a5fcc273e4186865d45184b187b080ff179cec4f0ac16d72933fc21";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/bromobenzene-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "56f5588faa0b974e0261d55f83dc658f5e7a7ecfee2bc8ddb0acce2b70faeb5a";
+            computationalSha256 "f6719c3efb243ac8d665ba92230c1a00fdca4ec4fe62e44a84abdf5538a192c8";
+            origin        "data/standards/parameters/NRTL/bromobenzene-nNDimethylformamide.dat";
+            originSha256  "cacae62f4d734058a4aa99f21a8c0bf1b30f703d2b6f4c3e2302efb158012e21";
+            release       Choupo-2608;
+        }
+    }
+}

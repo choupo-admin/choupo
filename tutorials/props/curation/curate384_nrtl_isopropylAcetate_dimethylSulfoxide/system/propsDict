@@ -58,11 +58,22 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      1 point(s) of 18: doi 10.1021/acs.jced.6b00040 row 2: x 0.0266, P
+      101.300 kPa, T 444.02 K, dT -3.49 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 288.0 K, b_ji = 184.2 K over 17 kept points of 1
+  laboratories (1 discarded): max |dT| 2.034 K, mean 0.434 K, graded
+  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (288.0, 184.2). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/dimethylSulfoxide-isopropylAcetate.dat
+  as reviewStatus autoPromoted, humanReviewed false, because: fit grade
+  severe -- max |dT| 2.034 K over the 17 kept points (limits 1 / 2 / 4
+  K), one liquid across the validity span -- it rests on ONE laboratory's
+  measurements (doi 10.1021/acs.jced.6b00040); nothing here tells its
+  systematic error from the model's (DEV.md 4c C290)
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -88,6 +99,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/isopropylAcetate-dimethylSulfoxide-bubble-acs.jced.6b00040.dat";
                 role     fit;
+                discard  ( 2 );   // C283 outliers, by name in the header
             }
         );
 
@@ -129,6 +141,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/isopropylAcetate-dimethylSulfoxide-bubble-acs.jced.6b00040.dat";
                 role     fit;
+                discard  ( 2 );   // C283 outliers, by name in the header
             }
         );
 

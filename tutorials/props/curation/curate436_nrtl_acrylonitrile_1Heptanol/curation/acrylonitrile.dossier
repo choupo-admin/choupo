@@ -1,0 +1,117 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      acrylonitrile;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-1Heptanol.b_ij  254.88691087;
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-1Heptanol.b_ji  -255.999541197;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2c91d73eb1aafdc2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acrylonitrile-1Heptanol-bubble-je400214b.dat";
+            doi       "10.1021/je400214b";
+            sha256    "ba46b5fce4db8fa0fc793f35656c837297e7f6c2a0fc8c44d082e5b3c7e176e1";
+            provenance measured;
+            archiveFile "je400214b.xml";
+            system    "acrylonitrile + 1Heptanol";
+            pressure  "96500.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1; max 0.966; n 14; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-1Heptanol.b_ij  257.012683566;
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-1Heptanol.b_ji  -257.434858476;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2c91d73eb1aafdc2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acrylonitrile-1Heptanol-bubble-je400214b.dat";
+            doi       "10.1021/je400214b";
+            sha256    "ba46b5fce4db8fa0fc793f35656c837297e7f6c2a0fc8c44d082e5b3c7e176e1";
+            provenance measured;
+            archiveFile "je400214b.xml";
+            system    "acrylonitrile + 1Heptanol";
+            pressure  "96500.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1; max 0.966; n 14; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

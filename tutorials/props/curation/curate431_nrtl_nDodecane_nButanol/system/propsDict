@@ -58,11 +58,25 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      3 point(s) of 15: doi 10.1021/je500237g row 13: x 0.9340, P 40.000
+      kPa, T 408.20 K, dT -5.39 K; doi 10.1021/je500237g row 14: x
+      0.9530, P 40.000 kPa, T 423.50 K, dT -13.13 K; doi
+      10.1021/je500237g row 15: x 0.9570, P 40.000 kPa, T 426.60 K, dT
+      -14.26 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 139.6 K, b_ji = 562.6 K over 12 kept points of 1
+  laboratories (3 discarded): max |dT| 3.229 K, mean 0.938 K, graded
+  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (139.6, 562.6). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/nButanol-nDodecane.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade severe -- max
+  |dT| 3.229 K over the 12 kept points (limits 1 / 2 / 4 K), one liquid
+  across the validity span -- it rests on ONE laboratory's measurements
+  (doi 10.1021/je500237g); nothing here tells its systematic error from
+  the model's (DEV.md 4c C290)
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -88,6 +102,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/nDodecane-nButanol-bubble-je500237g.dat";
                 role     fit;
+                discard  ( 13 14 15 );   // C283 outliers, by name in the header
             }
         );
 
@@ -129,6 +144,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/nDodecane-nButanol-bubble-je500237g.dat";
                 role     fit;
+                discard  ( 13 14 15 );   // C283 outliers, by name in the header
             }
         );
 

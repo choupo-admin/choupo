@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/1Heptanol.dat"
+        {
+            type          imported;
+            sha256        "79fea1d323853bb2da8eac24d7824ee6194b141dd25d506f0071d5c7edca5457";
+            computationalSha256 "1195914da54fb5d51f6b730ea618434706056c761b7ebce979daa28274ce9bdf";
+            origin        "data/standards/components/1Heptanol.dat";
+            originSha256  "e2732fbe0aa55f2e557ebbbef1695df6211c1dbfc27e1bcd718c2fbc5e0c1867";
+            release       Choupo-2608;
+        }
+        "components/acrylonitrile.dat"
+        {
+            type          imported;
+            sha256        "50e9a20506c0ca18d986e44002eda5712bc1d0b8dfda9a257cfe2af11d00fe3b";
+            computationalSha256 "08b73c7103c69084e44f5bc297fc2291b50066151b272bac0cc408ec87033cf2";
+            origin        "data/standards/components/acrylonitrile.dat";
+            originSha256  "cef27738a98dab0b4330d9a932721281388e126fa6223cd168b2298b1bce6648";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1Heptanol-acrylonitrile.dat"
+        {
+            type          imported;
+            sha256        "862006452caffa6bdb5578b090f71e79498ec4268ec27c5913029aad53a55846";
+            computationalSha256 "fadd3fb556e73ddb3e725279e1c6e35505da8c8e30431e918294c68d77030a00";
+            origin        "data/standards/parameters/NRTL/1Heptanol-acrylonitrile.dat";
+            originSha256  "28c69606372d17e2f065ea3ef0d70669196abd951d34b20b5f5f3d2efe771c5c";
+            release       Choupo-2608;
+        }
+    }
+}

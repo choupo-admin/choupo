@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/isopropanol.dat"
+        {
+            type          imported;
+            sha256        "c206190bf473636ab8661c95a2126b9088fc6a1b5013c5e1325470f8133691b0";
+            computationalSha256 "4ca8dc74e7851f893506b84d7a8e03b629f1794fd0132eed65e92c65cac2e9f9";
+            origin        "data/standards/components/isopropanol.dat";
+            originSha256  "510b474f696cf7952c89a27d0a48623266b8a79f3026cc348a934361bd763e07";
+            release       Choupo-2608;
+        }
+        "components/nNDimethylacetamide.dat"
+        {
+            type          imported;
+            sha256        "c610724a79017122d5b8ee214aaa0439491c94e996204e3ce77fbff026a2675a";
+            computationalSha256 "c32ec745ee8d52d0388d6f4e5acf76045c4d55407159f3b402f5b6452419abfb";
+            origin        "data/standards/components/nNDimethylacetamide.dat";
+            originSha256  "7d63d9306b1db1a59b071610a145ef0761ad5ee2c6c84ab204e164d6a9004c68";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/isopropanol-nNDimethylacetamide.dat"
+        {
+            type          imported;
+            sha256        "ba526850fbf17f4ede6213f14a900583d585d00d234f3a5abbe082d98e13b5c6";
+            computationalSha256 "b4e0251caa7cc2d9fc535d3d69db08de80c360a70066bd9b1795899ae9a120a3";
+            origin        "data/standards/parameters/NRTL/isopropanol-nNDimethylacetamide.dat";
+            originSha256  "9a16dde183bbeeabda8505e20bd894060d9e8feb3533088d4f843cb16d685fcb";
+            release       Choupo-2608;
+        }
+    }
+}

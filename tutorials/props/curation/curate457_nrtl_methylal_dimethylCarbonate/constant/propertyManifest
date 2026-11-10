@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/dimethylCarbonate.dat"
+        {
+            type          imported;
+            sha256        "82aaa1f6328a7ed9424fae60b37cae2ff1bafb8753132f84e5c7466d4287c6c2";
+            computationalSha256 "4e75d782f46cb42b368ec6e5e09250045bd4349540011fbc882cfeb3e7a27e8d";
+            origin        "data/standards/components/dimethylCarbonate.dat";
+            originSha256  "4364b5ed2f6a4ccf01a7fe01b0939072b8747fbf150e92362a4030c825ea8eba";
+            release       Choupo-2608;
+        }
+        "components/methylal.dat"
+        {
+            type          imported;
+            sha256        "fbdb96d75a57ee188d05ac1ac195896a65ee14695b565d4994b7acd8590b493e";
+            computationalSha256 "df2b77bd422abfabe26846550054b99c444393f5a8498b4003ffd4913a78b73f";
+            origin        "data/standards/components/methylal.dat";
+            originSha256  "10ac8d72145f06bc16bb46213fc74296d6f1c69a99bfeab6bf6e44a020fc2b51";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/dimethylCarbonate-methylal.dat"
+        {
+            type          imported;
+            sha256        "1d89f4de7fd6e0f7820f9f3f0e0312715d1f432fc3adb106aff42f1ff23e8a81";
+            computationalSha256 "25eb4689b94947955bac6dcff50984a3192c5f91f57fc4a603b7bd7f1fe7d153";
+            origin        "data/standards/parameters/NRTL/dimethylCarbonate-methylal.dat";
+            originSha256  "461005ef3c73879747d0fd56bcbc94b0287f2f324d8153f85b2c84189911ff6b";
+            release       Choupo-2608;
+        }
+    }
+}

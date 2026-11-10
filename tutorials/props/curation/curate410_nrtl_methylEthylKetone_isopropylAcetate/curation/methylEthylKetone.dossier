@@ -1,0 +1,117 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      methylEthylKetone;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-isopropylAcetate.b_ij  -226.017929594;
+        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-isopropylAcetate.b_ji  339.003799142;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "edc6d4b255e5027c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylEthylKetone-isopropylAcetate-bubble-j.fluid.2009.03.008.dat";
+            doi       "10.1016/j.fluid.2009.03.008";
+            sha256    "3282b4738ffe231e7d083b0adb435c808bffa6f9df2efc2f30cb5de8fc7781fd";
+            provenance measured;
+            archiveFile "j.fluid.2009.03.008.xml";
+            system    "methylEthylKetone + isopropylAcetate";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0814; max 0.9471; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-isopropylAcetate.b_ij  -226.017929232;
+        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-isopropylAcetate.b_ji  339.003798593;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "edc6d4b255e5027c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylEthylKetone-isopropylAcetate-bubble-j.fluid.2009.03.008.dat";
+            doi       "10.1016/j.fluid.2009.03.008";
+            sha256    "3282b4738ffe231e7d083b0adb435c808bffa6f9df2efc2f30cb5de8fc7781fd";
+            provenance measured;
+            archiveFile "j.fluid.2009.03.008.xml";
+            system    "methylEthylKetone + isopropylAcetate";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0814; max 0.9471; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

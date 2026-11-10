@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/nPropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "bae5d694a37bfbe03d15627f0cb30337bf2fe4f53e411fd6241bbf08663bd720";
+            computationalSha256 "2c7f9840afa05762f6ea54030ca0f63c06c5a145138a3a1fc66405d5d64ecb1f";
+            origin        "data/standards/components/nPropylAcetate.dat";
+            originSha256  "d6441f89d965c47899449c155ee12a811238c3650307cbed703a2259c65126a9";
+            release       Choupo-2608;
+        }
+        "components/propyleneCarbonate.dat"
+        {
+            type          imported;
+            sha256        "dff290f5f0a67412204102e13e6df1c294db9a32393911daddd541e7da60a016";
+            computationalSha256 "e9a88afe48fdd87c256bf3d916c367093364e965988f8b978dc57197d1755551";
+            origin        "data/standards/components/propyleneCarbonate.dat";
+            originSha256  "03d8dd4c781629ba8231f4463db44bbd3407945ab353f8f6fdc6db4fca8c36e0";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/nPropylAcetate-propyleneCarbonate.dat"
+        {
+            type          imported;
+            sha256        "4b544832719a3e332b3530dbb58ae997d3db2fee852233bddb3e962411d41686";
+            computationalSha256 "d9b84d7f6943057bd10b428c5f540c23f074f6648386f5cc1d9dc3c7f5199af6";
+            origin        "data/standards/parameters/NRTL/nPropylAcetate-propyleneCarbonate.dat";
+            originSha256  "22e24a69c33f7411a51a942750f4f01d42337280d8e0f37ca47e2675eba24f0b";
+            release       Choupo-2608;
+        }
+    }
+}

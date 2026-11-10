@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/acetonitrile.dat"
+        {
+            type          imported;
+            sha256        "82f930c3a7f7b34ce170c7f8f26afbca4fa1b04a23eb603e1a8dd30074ace302";
+            computationalSha256 "6ab3ef667c9f265ab09fdf84c4f111a6ddb8ed8cdfc6fa4bb18b17e801f51492";
+            origin        "data/standards/components/acetonitrile.dat";
+            originSha256  "adb8c7d917c6094738a2f22df356534cac882fae333945f33a71a850ad233381";
+            release       Choupo-2608;
+        }
+        "components/methylTertButylEther.dat"
+        {
+            type          imported;
+            sha256        "3ab4fc9f9327983ed432deddaaf6061975e40ac5921def969bbda74ee79584d8";
+            computationalSha256 "b1298108ed625d2ded4bbb653cacef55bab384b4f0fbcebe9718c8c3de5d157a";
+            origin        "data/standards/components/methylTertButylEther.dat";
+            originSha256  "956b9c6cdfcb9eeaa8430150111c3743638477d7171c7b4271a1881802b0f0d5";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/acetonitrile-methylTertButylEther.dat"
+        {
+            type          imported;
+            sha256        "912ec55c1f185bc7504ff4b4e1b447b462f840075824c6b2c6053618324487d0";
+            computationalSha256 "090175ff8965e0cf76f70d20d4c24689ac5d2652780752d30503d632f296e323";
+            origin        "data/standards/parameters/NRTL/acetonitrile-methylTertButylEther.dat";
+            originSha256  "2b6a3d2ee6137ba4b942c7b512b2feeb14e0028dc6d8f57bd292733ed5f7c070";
+            release       Choupo-2608;
+        }
+    }
+}

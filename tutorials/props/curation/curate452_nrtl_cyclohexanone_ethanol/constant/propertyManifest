@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/cyclohexanone.dat"
+        {
+            type          imported;
+            sha256        "1e4519245193afda7f728ddb14e9c75b5343ec8dddb2ae5565bb3e8d950cb1ba";
+            computationalSha256 "1f1657ea5d3f8ae7b10ea461e51a4f60f1304246c02321065d6d4c49a2e2318d";
+            origin        "data/standards/components/cyclohexanone.dat";
+            originSha256  "ed667b1045fd29921c9522455ff03f16a024f7ddf487373d277c7db9bb80b621";
+            release       Choupo-2608;
+        }
+        "components/ethanol.dat"
+        {
+            type          imported;
+            sha256        "380a2ae743c8e8e75eb80075f85fb2ac90dc479a6ff9e062e674aeaa366334b3";
+            computationalSha256 "f2710ae8622b1abc118f9a68c47702e2e2324453ed27c71e0760eb23d799c481";
+            origin        "data/standards/components/ethanol.dat";
+            originSha256  "7c6b2bedb149e1165145d6bedce8fb5588519bb6b1d575caca76236a0d809074";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/cyclohexanone-ethanol.dat"
+        {
+            type          imported;
+            sha256        "6eff56487021d490e5f4e25c212acf2821cd30c006bbae63f883793205d230d6";
+            computationalSha256 "64d112c3a11601e52621a50f569931869f05884161bde0b69f0386ac05c3bd7a";
+            origin        "data/standards/parameters/NRTL/cyclohexanone-ethanol.dat";
+            originSha256  "da4a22fc9a50cb1b19b3f1a158e7b63ceb37229174187fa7a9cc20c230b65d48";
+            release       Choupo-2608;
+        }
+    }
+}

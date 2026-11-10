@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/1Hexanol.dat"
+        {
+            type          imported;
+            sha256        "ff92f5582d2dd1ba667f3d466054ce752b793a12050556496d6521f08fef7c91";
+            computationalSha256 "6363abe381b95dabcba93eb20cca67bd715fbcf43e6d5b0fb6a78766b1500711";
+            origin        "data/standards/components/1Hexanol.dat";
+            originSha256  "ab4dc5089f2f1bec42920a8f7b7301da49a9ac935c439900666185ba0de805c4";
+            release       Choupo-2608;
+        }
+        "components/Dichloroethane.dat"
+        {
+            type          imported;
+            sha256        "ccec8ed54dd89e5ada83fa9b95a1f1d6890306d0905c6f66d536b79262e6322c";
+            computationalSha256 "0f7fe4aedc3796a98e2c137ff1a0d520463954f8d6acd1d81e2233fc1cae86c7";
+            origin        "data/standards/components/Dichloroethane.dat";
+            originSha256  "8c4cad78bb756f1c81f8d50caf255bf5efd657a5f5c36d1ad767f265cc93e142";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1Hexanol-Dichloroethane.dat"
+        {
+            type          imported;
+            sha256        "c56dfa5ddc3ab79842db16dfd89d94ed180e9cf31f81761eb3ecd3ea37add85c";
+            computationalSha256 "8b0516972ff4cc712bd527564b9a55851fe813db6af0b836cc2ea1a5833d7ec4";
+            origin        "data/standards/parameters/NRTL/1Hexanol-Dichloroethane.dat";
+            originSha256  "9e02ed183d416003b82fb1d66a261403260a2d32923ef7a99cd71698164673b9";
+            release       Choupo-2608;
+        }
+    }
+}

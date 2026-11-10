@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/ethylAcetate.dat"
+        {
+            type          imported;
+            sha256        "beb6e50741e964e6d1479f0f1e66284a50fee1aa86fd5d014b8cb0c886b66e1c";
+            computationalSha256 "4faa49d150d41d6e24527cf3a028f1705068d903407d67194fe6caa4731b4d1c";
+            origin        "data/standards/components/ethylAcetate.dat";
+            originSha256  "9efe0bbeca4073450e352d99c60035ffd0f7cdabc8c708c372c9932cb5f95ba9";
+            release       Choupo-2608;
+        }
+        "components/hexamethyldisiloxane.dat"
+        {
+            type          imported;
+            sha256        "848d231159a9e55e4c0da85c95a3219bfcdd20d69473115a414b0429da875244";
+            computationalSha256 "3ea2cec08b2f005b9214aa5f26d589bab5c1be262417097bdb32e7ad5816bfd4";
+            origin        "data/standards/components/hexamethyldisiloxane.dat";
+            originSha256  "b5fb88ce86b040f5639d22a6e80fa5a03f08736437d60f80ddcdf9a96e5e0072";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/ethylAcetate-hexamethyldisiloxane.dat"
+        {
+            type          imported;
+            sha256        "19c62626e767eedcfc25a41c1555bbecce5336033acc2f156cf459043fb14b73";
+            computationalSha256 "7a1fbc28f1fe2f135a79dc36dc9a9d12843a7496f279fc1614931144041eae51";
+            origin        "data/standards/parameters/NRTL/ethylAcetate-hexamethyldisiloxane.dat";
+            originSha256  "f84ccbdd33e0e3ea8986b3388aceaf1fa698f3f6eb3e54f73a35d7f5f6e3bfe3";
+            release       Choupo-2608;
+        }
+    }
+}
