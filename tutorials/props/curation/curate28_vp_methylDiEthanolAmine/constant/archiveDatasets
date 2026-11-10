@@ -39,7 +39,7 @@ datasets
     }
     {
         file          "constant/archiveExtracts/methylDiEthanolAmine-vapourPressure-je400373d.dat";
-        role          validation;   // informational: the operation declares it
+        role          fit;   // informational: the operation declares it
         doi           "10.1021/je400373d";
         url           "https://trc.nist.gov/ThermoML/10.1021/je400373d.xml";
         page          "https://trc.nist.gov/ThermoML/10.1021/je400373d.json";
@@ -49,6 +49,40 @@ datasets
         inchiKey      "CRVGTESFCCXCTH-UHFFFAOYSA-N";
         extract       "bin/choupo-thermoml extract-vp <article file> --inchikey CRVGTESFCCXCTH-UHFFFAOYSA-N --into <dir>";
         sha256        "96b6382b0584e1ba4769fb2285facda33c134c4d7055d1013efe30d02fe4788a";
+        identity
+        {
+            methylDiEthanolAmine { cas "105-59-9"; inchiKey "CRVGTESFCCXCTH-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/methylDiEthanolAmine-vapourPressure-je800290k.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je800290k";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je800290k.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je800290k.json";
+        articleFile   "je800290k.xml";
+        articleSha256 "51baf217f8b5f257b4c5c26ec4713d84bc714c8775fffbd01af931591160e9c7";
+        extractor     vapourPressure;
+        inchiKey      "CRVGTESFCCXCTH-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey CRVGTESFCCXCTH-UHFFFAOYSA-N --into <dir>";
+        sha256        "23232f61ed7439a6c12077ed004a5dbda504cc20efaa070a5af2a09793bb6e75";
+        identity
+        {
+            methylDiEthanolAmine { cas "105-59-9"; inchiKey "CRVGTESFCCXCTH-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/methylDiEthanolAmine-vapourPressure-acs.jced.8b00054.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/acs.jced.8b00054";
+        url           "https://trc.nist.gov/ThermoML/10.1021/acs.jced.8b00054.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/acs.jced.8b00054.json";
+        articleFile   "acs.jced.8b00054.xml";
+        articleSha256 "87fdfe4ce4455970e1a0d55c274cb156e01b4f7f3922db74ae4e4ff88b26f625";
+        extractor     vapourPressure;
+        inchiKey      "CRVGTESFCCXCTH-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey CRVGTESFCCXCTH-UHFFFAOYSA-N --into <dir>";
+        sha256        "60c6f233c94be2ff7408a3091bc59df40b5d90373329758b98961e6645200525";
         identity
         {
             methylDiEthanolAmine { cas "105-59-9"; inchiKey "CRVGTESFCCXCTH-UHFFFAOYSA-N"; }
