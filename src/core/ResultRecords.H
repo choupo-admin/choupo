@@ -951,6 +951,27 @@ struct LayoutItem
     //  from that room's floor (BuildingLayout.H `indoorPlaces`, one home),
     //  and the building, not the item, faces the site.
     std::string             room;
+    //  A TYPICAL TRAIN (DEV.md 4c C272): the group this item belongs to, its
+    //  train number (1 = the typical, drawn in full), and `typicalCopy` for
+    //  the items the engine repeated from train 1 (checked and piped like any
+    //  item, published as an outline, never as an item).  Empty / 0 / false
+    //  on every item of a case with no `typicals`.
+    std::string             typical;
+    int                     trainIndex = 0;
+    bool                    typicalCopy = false;
+    std::string             repeatOf;     // train 1's id, on a repeat
+};
+
+//  One declared group of repeated trains (DEV.md 4c C272), as published.
+struct LayoutTypical
+{
+    std::string              name;
+    std::string              index;
+    int                      count = 0;
+    scalar                   pitchX = 0, pitchY = 0;
+    std::vector<std::string> members;   // train 1's item ids
+    int                      repeated = 0;   // items the engine repeated
+    std::string              source, reason;
 };
 
 struct LayoutArea
@@ -1412,6 +1433,11 @@ struct LayoutBund
 struct PlantLayoutRecord
 {
     std::vector<LayoutItem>            items;
+    //  C272: the repeated trains' OUTLINES (one box per train 2..N and room),
+    //  published beside `items` and kept out of every check, which read the
+    //  repeated items themselves.
+    std::vector<LayoutItem>            outlines;
+    std::vector<LayoutTypical>         typicals;
     std::vector<LayoutArea>            areas;
     std::vector<LayoutSeparationTable> separation;
     LayoutWind                         wind;

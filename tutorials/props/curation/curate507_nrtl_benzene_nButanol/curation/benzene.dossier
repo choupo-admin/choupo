@@ -1,0 +1,133 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      benzene;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.benzene-nButanol.b_ij  466.285687224;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-nButanol.b_ji  115.342286182;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "286b7b533a89656b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/benzene-nButanol-bubbleP-j.jct.2005.07.004-b4.dat";
+            doi       "10.1016/j.jct.2005.07.004";
+            sha256    "2a1993b096a24879ffe37939a4b0df227a87217f5ee55caf7b37f1f753b56527";
+            provenance measured;
+            archiveFile "j.jct.2005.07.004.xml";
+            system    "benzene + nButanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/benzene-nButanol-bubbleP-j.jct.2004.01.001-b18.dat";
+            doi       "10.1016/j.jct.2004.01.001";
+            sha256    "c36869b5255205e6fc68ce6d0363667c9aa8b7994ca9e1040ea169089fe65a21";
+            provenance measured;
+            archiveFile "j.jct.2004.01.001.xml";
+            system    "benzene + nButanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.059; max 0.9547; n 37; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.benzene-nButanol.b_ij  466.285685788;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-nButanol.b_ji  115.342286757;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "286b7b533a89656b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/benzene-nButanol-bubbleP-j.jct.2005.07.004-b4.dat";
+            doi       "10.1016/j.jct.2005.07.004";
+            sha256    "2a1993b096a24879ffe37939a4b0df227a87217f5ee55caf7b37f1f753b56527";
+            provenance measured;
+            archiveFile "j.jct.2005.07.004.xml";
+            system    "benzene + nButanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/benzene-nButanol-bubbleP-j.jct.2004.01.001-b18.dat";
+            doi       "10.1016/j.jct.2004.01.001";
+            sha256    "c36869b5255205e6fc68ce6d0363667c9aa8b7994ca9e1040ea169089fe65a21";
+            provenance measured;
+            archiveFile "j.jct.2004.01.001.xml";
+            system    "benzene + nButanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.059; max 0.9547; n 37; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

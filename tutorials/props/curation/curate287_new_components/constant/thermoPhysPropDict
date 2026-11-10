@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  The eight components DEV.md 4c C287 added; an ideal liquid, because
+    every property this case asks is a pure-component one.  NOT sealed:
+    the case exists to load the catalogue records as they stand.  */
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( 2Ethoxyethanol  ethylOctanoate  13Propanediol  13Butanediol  16Hexanediol  allylAlcohol  33Oxydipropanol  methylLevulinate );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid { activityModel { model ideal; } }
+    vapour { fugacityModel idealGas; }
+}

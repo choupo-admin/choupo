@@ -151,6 +151,7 @@ Description
 #include "core/BuildingRecords.H"
 #include "core/Dictionary.H"
 #include "core/ResultRecords.H"
+#include "postProcessing/layout/TypicalTrain.H"
 
 #include <map>
 #include <string>

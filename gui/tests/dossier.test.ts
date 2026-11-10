@@ -37,7 +37,10 @@ describe("dossiersFor — the corpus's own curation records", () => {
     //  curate01 curates vapourPressure TWICE with opposite verdicts.  Keyed by
     //  the property name the second would replace the first, and the half that
     //  disappears is `validationRefused` — the one a reader most needs to see.
-    const w = dossiersFor("water");
+    //  Narrowed to curate01, the case this test names: the pair-curation
+    //  cases (curate105, curate109, ...) carry their own water dossiers.
+    const w = dossiersFor("water").filter((d) =>
+      d.caseName === "curate01_water_evidence_partition");
     expect(w.map((d) => d.verdict).sort())
       .toEqual(["validated", "validationRefused"]);
   });

@@ -245,6 +245,24 @@ def extract(xml, block, into, fake_cache=None, x_of=None):
     return Path(m.group(1)), p.stdout
 
 
+def extract_px(xml, block, into, fake_cache=None, x_of=None):
+    """Run extract-px (C291, a bubble-PRESSURE block) on ONE block; return
+    (path, stdout) or (None, why).  The same contract as `extract`."""
+    cmd = [sys.executable, "-I", str(THERMOML), "extract-px", str(xml),
+           "--block", str(block), "--into", str(into)]
+    if x_of:
+        cmd += ["--x-of", x_of]
+    e = env()
+    if fake_cache:
+        e["CHOUPO_THERMOML_HOME"] = str(fake_cache)
+    p = subprocess.run(cmd, capture_output=True, text=True, env=e)
+    m = re.search(r"extract-px: (\S+\.dat)\s+\(", p.stdout)
+    if p.returncode != 0 or not m:
+        why = " ".join(l.strip() for l in p.stdout.splitlines()[1:3]) or p.stderr[-300:]
+        return None, why
+    return Path(m.group(1)), p.stdout
+
+
 # --------------------------------------------------------------------------
 #  engine runs (scratch cases)
 # --------------------------------------------------------------------------
@@ -913,6 +931,10 @@ def fetch(case, quiet=False):
             if d.get("extractor") == "vapourPressure":
                 out, why = extract_vp(src, d["inchiKey"], tmp / "x", fake_cache=fake)
                 what = f"extract-vp refused doi {d['doi']} ({d['inchiKey']})"
+            elif d.get("extractor") == "bubblePressure":
+                out, why = extract_px(src, d["block"], tmp / "x", fake_cache=fake,
+                                      x_of=d.get("xOf"))
+                what = f"extract-px refused doi {d['doi']} block {d['block']}"
             elif d.get("extractor"):
                 refuse(f"{case.name}: dataset of doi {d['doi']} declares extractor "
                        f"`{d['extractor']}`, which this tool does not know")

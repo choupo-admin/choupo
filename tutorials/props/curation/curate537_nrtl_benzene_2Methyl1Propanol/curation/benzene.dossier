@@ -1,0 +1,115 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      benzene;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.benzene-2Methyl1Propanol.b_ij  535.309889097;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-2Methyl1Propanol.b_ji  62.8334330616;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "971ed41bcd1e9e87";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/benzene-2Methyl1Propanol-bubbleP-j.fluid.2005.11.017-b4.dat";
+            doi       "10.1016/j.fluid.2005.11.017";
+            sha256    "bdd27e2405e1e270a7e173d7d14fefbc5cd0ac0bf877faac4fac8fd7614d13a5";
+            provenance measured;
+            archiveFile "j.fluid.2005.11.017.xml";
+            system    "benzene + 2Methyl1Propanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0584; max 0.9518; n 24; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.benzene-2Methyl1Propanol.b_ij  535.309888479;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-2Methyl1Propanol.b_ji  62.8334333815;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "971ed41bcd1e9e87";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/benzene-2Methyl1Propanol-bubbleP-j.fluid.2005.11.017-b4.dat";
+            doi       "10.1016/j.fluid.2005.11.017";
+            sha256    "bdd27e2405e1e270a7e173d7d14fefbc5cd0ac0bf877faac4fac8fd7614d13a5";
+            provenance measured;
+            archiveFile "j.fluid.2005.11.017.xml";
+            system    "benzene + 2Methyl1Propanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0584; max 0.9518; n 24; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

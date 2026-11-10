@@ -1,0 +1,145 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  curate287_new_components -- the eight components DEV.md 4c C287 added to
+  the catalogue from measurements the ThermoML archive locates, loaded and
+  exercised (written by hand beside bin/curate/c287_new_components.py).
+
+  1. REPRODUCTION.  One `estimateComponent` per component with the Joback
+     groups its record declares (groups.joback): the run prints the
+     ideal-gas Cp polynomial, dHf_298 and dGf_298 the record carries as
+     ESTIMATES (s_298 = (dHf - dGf)/298.15 + the elements' CODATA standard
+     entropies, provenance.s_298).  The run also prints Joback's Tc, Pc,
+     Tb and omega; the records do NOT use them -- their Tc and Pc are
+     measured, their omega comes from the fitted vapour pressure.
+
+  2. SMOKE TEST.  One `propertyScan1D` per component, 300-340 K at 1 bar:
+     the vapour pressure (the Antoine its vp case promoted), the liquid
+     heat capacity (fitted polynomial) and the liquid density (the
+     record's fitted Vliq through ThermoPackage::density, liquid branch).
+     Every value must evaluate; outside a fitted range the engine
+     announces the extrapolation, and every autoPromoted value and every
+     warning-graded fit is voiced on the console and in the caveat block.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        joback_2Ethoxyethanol;
+        type        estimateComponent;
+        component   2Ethoxyethanol;
+        groups      ( { group CH3; count 1; } { group CH2; count 3; } { group ether; count 1; } { group OH; count 1; } );
+    }
+    {
+        name        joback_ethylOctanoate;
+        type        estimateComponent;
+        component   ethylOctanoate;
+        groups      ( { group CH3; count 2; } { group CH2; count 7; } { group ester; count 1; } );
+    }
+    {
+        name        joback_13Propanediol;
+        type        estimateComponent;
+        component   13Propanediol;
+        groups      ( { group CH2; count 3; } { group OH; count 2; } );
+    }
+    {
+        name        joback_13Butanediol;
+        type        estimateComponent;
+        component   13Butanediol;
+        groups      ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group OH; count 2; } );
+    }
+    {
+        name        joback_16Hexanediol;
+        type        estimateComponent;
+        component   16Hexanediol;
+        groups      ( { group CH2; count 6; } { group OH; count 2; } );
+    }
+    {
+        name        joback_allylAlcohol;
+        type        estimateComponent;
+        component   allylAlcohol;
+        groups      ( { group eCH2; count 1; } { group eCH; count 1; } { group CH2; count 1; } { group OH; count 1; } );
+    }
+    {
+        name        joback_33Oxydipropanol;
+        type        estimateComponent;
+        component   33Oxydipropanol;
+        groups      ( { group CH2; count 6; } { group ether; count 1; } { group OH; count 2; } );
+    }
+    {
+        name        joback_methylLevulinate;
+        type        estimateComponent;
+        component   methylLevulinate;
+        groups      ( { group CH3; count 2; } { group CH2; count 2; } { group ketone; count 1; } { group ester; count 1; } );
+    }
+    {
+        name        smoke_2Ethoxyethanol;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { 2Ethoxyethanol 1.0; } }
+        properties  ( Psat_2Ethoxyethanol  Cp_liquid_2Ethoxyethanol  rho_liquid_2Ethoxyethanol );
+        output      { file smoke_2Ethoxyethanol.csv; }
+    }
+    {
+        name        smoke_ethylOctanoate;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { ethylOctanoate 1.0; } }
+        properties  ( Psat_ethylOctanoate  Cp_liquid_ethylOctanoate  rho_liquid_ethylOctanoate );
+        output      { file smoke_ethylOctanoate.csv; }
+    }
+    {
+        name        smoke_13Propanediol;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { 13Propanediol 1.0; } }
+        properties  ( Psat_13Propanediol  Cp_liquid_13Propanediol  rho_liquid_13Propanediol );
+        output      { file smoke_13Propanediol.csv; }
+    }
+    {
+        name        smoke_13Butanediol;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { 13Butanediol 1.0; } }
+        properties  ( Psat_13Butanediol  Cp_liquid_13Butanediol  rho_liquid_13Butanediol );
+        output      { file smoke_13Butanediol.csv; }
+    }
+    {
+        name        smoke_16Hexanediol;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { 16Hexanediol 1.0; } }
+        properties  ( Psat_16Hexanediol  Cp_liquid_16Hexanediol  rho_liquid_16Hexanediol );
+        output      { file smoke_16Hexanediol.csv; }
+    }
+    {
+        name        smoke_allylAlcohol;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { allylAlcohol 1.0; } }
+        properties  ( Psat_allylAlcohol  Cp_liquid_allylAlcohol  rho_liquid_allylAlcohol );
+        output      { file smoke_allylAlcohol.csv; }
+    }
+    {
+        name        smoke_33Oxydipropanol;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { 33Oxydipropanol 1.0; } }
+        properties  ( Psat_33Oxydipropanol  Cp_liquid_33Oxydipropanol  rho_liquid_33Oxydipropanol );
+        output      { file smoke_33Oxydipropanol.csv; }
+    }
+    {
+        name        smoke_methylLevulinate;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { methylLevulinate 1.0; } }
+        properties  ( Psat_methylLevulinate  Cp_liquid_methylLevulinate  rho_liquid_methylLevulinate );
+        output      { file smoke_methylLevulinate.csv; }
+    }
+);

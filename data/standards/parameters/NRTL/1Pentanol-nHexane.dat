@@ -3,7 +3,7 @@
 
   REGRESSED BY CHOUPO'S CURATION PIPELINE (bin/choupo-curate, DEV.md 4c C282;
   record docs/design/binary-pairs-from-open-measurements.md) to measured
-  bubble temperatures.  The articles named under `evidence` are the
+  bubble PRESSURES at stated temperatures (P-x, DEV.md 4c C291).  The articles named under `evidence` are the
   SOURCE of the measurements; the NIST/TRC ThermoML Archive located them.
   NO MEASURED POINT IS IN THIS RECORD OR THIS TREE: the case regenerates
   them from the DOIs and sha256 sums it declares (constant/archiveDatasets).
@@ -16,21 +16,19 @@
   vapour-pressure records for both pure components.
 
   reviewStatus autoPromoted; humanReviewed false: PROMOTED AUTOMATICALLY by
-  its fitting pipeline (every laboratory fitted, outliers beyond 3 K
-  discarded by name, max |T_model - T| over the kept points GRADED
-  clean / warning / severe at 1 / 2 / 4 K -- DEV.md 4c C283
-  amended, C285, C286; THIS fit: clean, 0.1877 K; one liquid
-  across its validity span), and NO HUMAN HAS REVIEWED IT.  The
-  pair rests on ONE laboratory's measurements (curation
-  `laboratories 1;`, DEV.md 4c C290).  The
-  engine says so on every run that reads it, and voices a warning
-  or a severe grade beside it.
-  Nothing was held out: the `validation {}` block says so, and the
-  acceptance is the `curation {}` block.  A curator who reads the series
-  back against the articles marks it `reviewStatus reviewed; humanReviewed
-  true;`.  Revert with `bin/choupo-curate revert 1Pentanol-nHexane`.
+  its fitting pipeline (every laboratory fitted to the bubble pressure, outliers beyond
+  20 % discarded by name, max |P_model - P|/P over the kept points GRADED
+  clean / warning / severe at 5 / 10 / 20 % -- DEV.md 4c C283 amended, C285, C291;
+  THIS fit: clean, 2.6390 %; one liquid across its validity span), and NO
+  HUMAN HAS REVIEWED IT.  The engine says so on every run that reads it, and
+  voices a warning or a severe grade beside it.
+  CAUTION: this record rests on ONE temperature and ONE laboratory.
+  Nothing was held out: the `validation {}` block says so, and the acceptance
+  is the `curation {}` block.  A curator who reads the series back against the
+  articles marks it `reviewStatus reviewed; humanReviewed true;`.  Revert with
+  `bin/choupo-curate revert 1Pentanol-nHexane`.
 
-  REPRODUCE: run tutorials/props/curation/curate534_nrtl_1Pentanol_nHexane (after `bin/choupo-curate fetch` on it); its fit
+  REPRODUCE: run tutorials/props/curation/curate528_nrtl_1Pentanol_nHexane (after `bin/choupo-curate fetch` on it); its fit
   writes 1Pentanol-nHexane.proposal.dat, which bin/curate/check_regressed_pairs.py holds
   equal to this record.
 \*---------------------------------------------------------------------------*/
@@ -48,23 +46,23 @@ parameters
     i           1Pentanol;
     j           nHexane;
     a_ij        0.00000000;
-    b_ij        -339.94643270;
+    b_ij        53.15030152;
     a_ji        0.00000000;
-    b_ji        1224.37643438;
+    b_ji        660.36427091;
     alpha       0.30000000;
 }
 
 provenance
 {
     origin        fitted;
-    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    method        "fitParameters(P_bubble), Levenberg-Marquardt";
     methodVersion "choupoProps Choupo-dev";
-    fittedInCase  "tutorials/props/curation/curate534_nrtl_1Pentanol_nHexane";
+    fittedInCase  "tutorials/props/curation/curate528_nrtl_1Pentanol_nHexane";
     reviewStatus  autoPromoted;
     humanReviewed false;
-    fitGrade      clean;   // DEV.md 4c C285 (C286): max |T_model - T| over the kept points, graded 1 / 2 / 4 K
-    fitGradeMaxTemperatureError_K 0.1877;
-    promotedBy    "bin/choupo-curate pair --promote";
+    fitGrade      clean;   // DEV.md 4c C285 (C291): max |P_model - P|/P over the kept points, graded 5 / 10 / 20 %
+    fitGradeMaxRelativeError_pct 2.6390;
+    promotedBy    "bin/curate/pairs_px.py promote";
     promotedDate  "2026-11-10";
     reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
     reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
@@ -74,30 +72,29 @@ provenance
     (
         {
             role      fit;
-            dataset   "constant/archiveExtracts/1Pentanol-nHexane-bubble-je700285j.dat";
-            doi       "10.1021/je700285j";
-            sha256    "79d77a9d794bd2fad71ac48bc7089f086aab1a048066bb9a73d390c5ca614722";
+            dataset   "constant/archiveExtracts/1Pentanol-nHexane-bubbleP-j.fluid.2016.05.031-b4.dat";
+            doi       "10.1016/j.fluid.2016.05.031";
+            sha256    "b881692f8c394565784e487706d24274b0017ab22a2defb6a2db53f38d261087";
             provenance measured;
-            archiveFile "je700285j.xml";
+            archiveFile "j.fluid.2016.05.031.xml";
             system    "1Pentanol + nHexane";
-            pressure  "101300.000000 Pa";
         }
     );
-    fingerprint "258c5df86799c973";   // of the declaration, frozen before the fit
+    fingerprint "5441074d4ca4ad39";   // of the declaration, frozen before the fit
 
     //  IN-SAMPLE: the model reproducing the very points it was
     //  fitted to.  It is NOT a validation; see the block below.
-    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
-    chi2          2.79670077;
-    rms_K         0.13914659;
-    nDataPoints   13;
+    weighting     equal;   // chi2 is sum ((P_model - P_exp)/P_exp)^2, dimensionless
+    chi2          0.00782792;
+    rms_rel       0.01806000;
+    nDataPoints   24;
     identifiable  true;
-    maxAbsCorr    0.99687804;
+    maxAbsCorr    0.89251092;
 
     validity
     {
-        temperature { min 341.90 K; max 342.90 K; }
-        pressure    { min 101300 Pa; max 101300 Pa; }
+        temperature { min 313.15 K; max 313.15 K; }
+        pressure    { min 7474 Pa; max 36627 Pa; }
         note        "the span of the FIT evidence; outside it the pair is an extrapolation";
     }
 }
@@ -114,19 +111,24 @@ validation
 
 curation
 {
-    rule            "DEV.md 4c C283 (amended) + C284, graded by C285 (C286)";
-    evidence        allLaboratories;   // every study fitted, none held out
+    rule            "DEV.md 4c C291 (bubble-pressure pairs; every laboratory, graded by C285)";
+    evidence        allLaboratories;   // every block fitted, none held out
     objective       twoStage;
-    outlierLimit    3 K;   // |T_model - T| after the least-squares stage
+    residual        P_bubble;
+    residualScale   relative;   // (P_model - P)/P at each point's stated T
+    outlierLimit_pct 20;   // |P_model - P|/P after the least-squares stage
     outliersDropped 0;
-    pointsKept      13;
+    pointsKept      24;
     noBubblePoint   0;
-    maxAbsError     0.1877 K;
-    meanAbsError    0.1266 K;
-    acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
-    gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
+    maxRelError_pct 2.6390;
+    meanRelError_pct 1.6101;
+    acceptance      graded;   // max relative pressure error over the kept points, DEV.md 4c C285 (C291)
+    gradeLimits_pct (5 10 20);   // upper limits of clean / warning / severe; above, refused
     grade           clean;
-    oneLiquid       true;   // arm (f) over the validity span; a pair that splits ONE liquid is never promoted, whatever its grade
-    laboratories    1;   // studies with a kept point; the pair rests on ONE laboratory's measurements (DEV.md 4c C290)
+    oneLiquid       true;   // arm (f) over the validity span; a pair that splits ONE liquid is never promoted
+    temperatures    1;   // distinct stated temperatures in the evidence
+    laboratories    1;   // distinct articles in the evidence
+    singleTemperature true;   // true: b/T was fitted at ONE temperature
+    singleLaboratory  true;   // true: ONE laboratory's data, nothing to cross-check it
     verdict         accepted;
 }

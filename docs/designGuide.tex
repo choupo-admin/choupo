@@ -2129,6 +2129,19 @@ and the run says how many branches each header carries. A declared
 \texttt{pipes} route and a header cannot both hold (the engine refuses
 the pair); a branch's port on one item is moved with \texttt{ports}.
 
+A plant of identical trains is declared the way a drawing office draws
+it: one train in full and a repeat. \texttt{typicals ( \{ typical
+"train"; index "train"; count 6; pitch \{ x 19 m; y 0 m; \} members (
+... ); source "..."; reason "..."; \} );} repeats the sized items of
+train~1 (placed in \texttt{items} as usual) at the pitch, each sized from
+its own train's sizing and standing in the room the building lists for
+train~1's item. The repeated items are checked and piped as if declared
+--- overlap, separations, zones, roads, and a branch per train on every
+header --- so an outline cannot hide a clash; the result keeps every item
+and adds one \emph{outline} per repeated train and room, marked as typical
+of train~1, which a plan may draw as a dashed box.
+Equipment that steps on a different pitch is a second group.
+
 \hypertarget{blocks-roads-fence-and-battery-limits}{%
 \subsection{Blocks, roads, fence and battery
 limits}\label{blocks-roads-fence-and-battery-limits}}

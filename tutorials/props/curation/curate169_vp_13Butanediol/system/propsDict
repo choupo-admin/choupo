@@ -1,0 +1,113 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  curate169_vp_13Butanediol -- the vapour pressure of 13Butanediol, REFITTED to
+  measurements (DEV.md 4c C281 and C283).  Written by `bin/choupo-curate vp
+  13Butanediol`; everything above the RESULT paragraph is the DECLARATION,
+  committed before any fit ran, so it can be read against the result.
+
+  WHY.  The catalogue record carried `vaporPressure { model AmbroseWalton; }`,
+  a corresponding-states ESTIMATE from Tc, Pc and omega that never reads the
+  record's own Tb (C279 measured a median 19.6 % AAD over the 25 such records
+  with archive data).  Here a three-parameter Antoine is fitted to EVERY
+  usable laboratory's measurements of it.
+
+  STUDIES (one per article, extracted by `choupo-thermoml extract-vp`; ranked
+  by points, ties by DOI):
+      10.1021/je400082c                22 pts  387.75-453.1 K  Zhang; Wu; Sun; Li et al.
+      10.1021/je060419q                13 pts  288.3-332.3 K  Verevkin
+      10.1021/je060269j                 9 pts  481.4-688.2 K  VonNiederhausern; Wilson; Giles
+  SET ASIDE BY NAME:
+      (none)
+
+  FIT AND GRADED ACCEPTANCE (DEV.md 4c C285, Vitor 2026-11-10; the evidence,
+  objective and outliers of C283; declared before the fit).
+  EVIDENCE: every study above is fitted; none is held out (C283 amended:
+  laboratories disagree with each other by more than they claim, so the
+  test is agreement across all of them, not one laboratory's claimed
+  precision).  OBJECTIVE: `objective { method twoStage; }` -- least
+  squares in log10 P for a first estimate, then the LARGEST relative error in
+  P, (P_model - P)/P, over the kept points minimised from it (Vitor's
+  practice, C280); both answers kept.  OUTLIERS: after the least-squares
+  stage a point with a relative P error above 15 % (three times
+  the acceptance) is DISCARDED BY NAME (its study DOI, T and P), listed in
+  the result and the record, and the fit repeated without it, once
+  (`outliers { maxRelativeError 15 percent; }`).  ACCEPTANCE,
+  GRADED, the DEFAULT of C285: the maximum relative P error over all kept
+  points is graded clean up to 5 %, warning up to
+  10 %, severe up to 20 % and refused above; where the
+  normal-boiling-point condition below applies, the absolute gap is graded
+  clean up to 1 K, warning up to 2 K, severe up to
+  4 K and refused above.  The fit's grade is the WORSE of the
+  two.  A clean, warning or severe fit is ACCEPTED and promoted (autoPromoted,
+  humanReviewed false) with `fitGrade <grade>;` and the deciding numbers in
+  its provenance entry, which the component loader voices on every run that
+  uses it (a warning or a severe grade); a refused one is not promoted.  This
+  case declares no `system/curationDict`, so the default applies; a case
+  that needs another acceptance declares it there, with its reason.  The
+  AmbroseWalton curve's errors on the same points are reported beside the
+  fit's, as information.
+
+  NORMAL BOILING POINT: no Tb declared in the record: no normal-boiling-point condition.
+
+  NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares every
+  series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates
+  them into constant/archiveExtracts/ (gitignored).
+
+  RESULT
+  @@RESULT-BEGIN@@
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 5.022835 - 1987.1123/(T +
+  -87.7092), in-sample R2 0.999850 over 44 kept points, 288.3-688.2 K
+  (10.1021/je400082c 22/22 kept; 10.1021/je060419q 13/13 kept;
+  10.1021/je060269j 9/9 kept). Relative error in P over the kept points:
+  mean 4.7097 %, max 7.1995 %; AmbroseWalton on the same points: mean
+  4.9765 %, max 10.8320 %. Outliers discarded: none. Its own normal
+  boiling point (101.325 kPa): 483.78 K. PROMOTED on 2026-11-10 into
+  data/standards/components/13Butanediol.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade warning under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 3
+  studies, 44 points kept, 0 discarded as outliers; max relative error
+  7.199 % (mean 4.71 %), grade warning (limits 5 / 10 / 20 %); no Tb
+  declared; AmbroseWalton on the same points mean 4.977 % / max 10.83 %
+  @@RESULT-END@@
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name       fit_antoine;
+        type       vaporPressureFit;
+        component  13Butanediol;
+
+        evidence
+        (
+            {
+                dataset   "constant/archiveExtracts/13Butanediol-vapourPressure-je400082c.dat";
+                identity  { doi "10.1021/je400082c"; }
+                role      fit;
+            }
+            {
+                dataset   "constant/archiveExtracts/13Butanediol-vapourPressure-je060419q.dat";
+                identity  { doi "10.1021/je060419q"; }
+                role      fit;
+            }
+            {
+                dataset   "constant/archiveExtracts/13Butanediol-vapourPressure-je060269j.dat";
+                identity  { doi "10.1021/je060269j"; }
+                role      fit;
+            }
+        );
+
+        objective  { method twoStage; }
+        outliers   { maxRelativeError 15 percent; }
+
+        output     { file fit_antoine.csv; }
+    }
+);

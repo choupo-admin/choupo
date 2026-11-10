@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/diNButylEther.dat"
+        {
+            type          imported;
+            sha256        "520f34bcf4b2cc40b800bf56197b0bf3e46b2d3595820e8ae5bd3109e51992f7";
+            computationalSha256 "347e70ac545721e0773f566a1a104896e643893d1b7a02119a01e1be0faf0585";
+            origin        "data/standards/components/diNButylEther.dat";
+            originSha256  "67cbc82448b0e10b7f1128add532b91c5697f0711a0e16ee17e0570b0b1ba731";
+            release       Choupo-2608;
+        }
+        "components/nNDimethylacetamide.dat"
+        {
+            type          imported;
+            sha256        "c610724a79017122d5b8ee214aaa0439491c94e996204e3ce77fbff026a2675a";
+            computationalSha256 "c32ec745ee8d52d0388d6f4e5acf76045c4d55407159f3b402f5b6452419abfb";
+            origin        "data/standards/components/nNDimethylacetamide.dat";
+            originSha256  "7d63d9306b1db1a59b071610a145ef0761ad5ee2c6c84ab204e164d6a9004c68";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/diNButylEther-nNDimethylacetamide.dat"
+        {
+            type          imported;
+            sha256        "df2f03afc7c2dcfcf7f496919609a0808785d35ede12b23afa252866757684c4";
+            computationalSha256 "22369b23d7f790d2752fc1098710011e9616de59d143681ef003da1ce188ff01";
+            origin        "data/standards/parameters/NRTL/diNButylEther-nNDimethylacetamide.dat";
+            originSha256  "9f4af2bafa2469424cbcc053e36ffaa2de2f8045441ab4ead254b908313c53b3";
+            release       Choupo-2608;
+        }
+    }
+}

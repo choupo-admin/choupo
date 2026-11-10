@@ -241,6 +241,19 @@ scalar evaluateProperty(const std::string& propKey,
         return thermo.comp(i).cpLiquid().Cp(T);
     }
 
+    // rho_liquid_<comp>: PURE-component LIQUID mass density [kg/m3] at the
+    // scan T and P, through the ONE liquid-density route the units use
+    // (ThermoPackage::density, liquid branch: the record's Vliq at 25 C with
+    // Rackett supplying the temperature dependence, or bare Rackett, each
+    // announced there).  Composition-independent, like Cp_liquid_<comp>
+    // (DEV.md 4c C287: the smoke test of the new components reads it).
+    if (matchPerComp("rho_liquid", i))
+    {
+        sVector zi(thermo.n(), 0.0);
+        zi[i] = 1.0;
+        return thermo.density(T, P_Pa, zi, DensityPhase::Liquid);
+    }
+
     if (propKey == "T")        return T;
     if (propKey == "P")        return P_Pa;
     if (propKey == "Cp_ig")    return thermo.Cp_ig(T, xLiquid);
@@ -346,6 +359,7 @@ std::string propertyUnit(const std::string& k)
     if (perComp("gamma") || perComp("y_eq"))              return "-";
     if (perComp("Hvap") || perComp("h_ig"))               return "J/mol";
     if (perComp("s_ig") || perComp("Cp_liquid"))          return "J/(mol*K)";
+    if (perComp("rho_liquid"))                            return "kg/m3";
     if (k == "T" || k == "T_bubble")                      return "K";
     if (k == "P")                                         return "Pa";
     if (k == "H_ig" || k == "H_R" || k == "H_real")       return "J/mol";

@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/diethylSulfide.dat"
+        {
+            type          imported;
+            sha256        "c2b028ac04adad2c1a9b429ad12e3cedc3f1b4957fdb58df726b04a73b9f51ef";
+            computationalSha256 "fba6742fe298a11d5776c204278064d22800cc8ad31eedd28569109fe265e286";
+            origin        "data/standards/components/diethylSulfide.dat";
+            originSha256  "097f5e24a6caee9aca396e728dd1e95fc469b47533b7ab352dab5a5528b533ab";
+            release       Choupo-2608;
+        }
+        "components/nPropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "bae5d694a37bfbe03d15627f0cb30337bf2fe4f53e411fd6241bbf08663bd720";
+            computationalSha256 "2c7f9840afa05762f6ea54030ca0f63c06c5a145138a3a1fc66405d5d64ecb1f";
+            origin        "data/standards/components/nPropylAcetate.dat";
+            originSha256  "d6441f89d965c47899449c155ee12a811238c3650307cbed703a2259c65126a9";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/diethylSulfide-nPropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "f4fb23ff4155ee14bd0fd9ff753567c56cd3f7696771063438701d094989f4a7";
+            computationalSha256 "96e347b129c8bd73fcecfd6006e5b394162e00437881632bfc28b6fc1dd9b6aa";
+            origin        "data/standards/parameters/NRTL/diethylSulfide-nPropylAcetate.dat";
+            originSha256  "75c711cb15528538f3eac5c4f7e2654409c97002d7ae42f297436cb145dd6ad4";
+            release       Choupo-2608;
+        }
+    }
+}

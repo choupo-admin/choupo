@@ -60,9 +60,12 @@ Function
 #pragma once
 
 #include "core/Types.H"
+#include "core/Dictionary.H"
+#include "core/ProblemDivergence.H"
 
 #include <cstddef>
 #include <optional>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -85,5 +88,56 @@ scalar reactionHeat(const ThermoPackage&            thermo,
                     const std::string&              context,
                     int                             verbosity,
                     std::string&                    sourceOut);
+
+//  ---- C288: a MEASURED heat of reaction, declared by the case -------------
+//  `heatOfReaction { value; T; phase; method; source; reason; }` on a reaction
+//  entry.  The bare `dH_rxn X;` key keeps exactly its meaning (the heat when
+//  formation data is missing, a cross-check warning otherwise) and is read by
+//  the SAME parser as the shorthand of a block with no provenance (`bare`).
+struct DeclaredHeat
+{
+    scalar      value_J_per_mol = 0.0;   // per mole of extent, nu as written
+    bool        bare   = false;          // true: the `dH_rxn` key, no provenance
+    scalar      T_K    = 0.0;            // block only
+    std::string phase;                   // block only: liquid | gas
+    std::string method;                  // block only: calorimetry | vantHoff
+    std::string source;                  // block only, non-empty
+    std::string reason;                  // block only, non-empty
+};
+
+struct HeatCorrection
+{
+    bool         active    = false;      // a measured block AND full formation data
+    scalar       declared  = 0.0;        // J/mol at T_K, phase
+    scalar       formation = 0.0;        // J/mol, reactionHeat at the SAME T_K, phase
+    scalar       delta     = 0.0;        // declared - formation (J/mol of extent)
+    // What to hand reactionHeat() as its `dictOverride`: the value for the
+    // bare key (unchanged behaviour) or for a block whose species lack
+    // formation data (it is then the heat itself); nullopt when a block is
+    // active (the formation route stays the heat, `delta` is the correction).
+    std::optional<scalar> overrideForResolver;
+    DeclaredHeat decl;
+};
+
+// Reads `heatOfReaction {}` and/or `dH_rxn` from a reaction dict.  Refuses by
+// name: both present; a block with a missing/empty field; a bad phase/method.
+std::optional<DeclaredHeat> parseDeclaredHeat(const Dictionary& rxn,
+                                              const std::string& context);
+
+// delta = declared - formation at the declared T and phase.  Computed and
+// announced only; NO reactor applies it yet (C288 slices 2-4).
+HeatCorrection resolveDeclaredHeat(const ThermoPackage&            thermo,
+                                   const std::vector<std::size_t>& comps,
+                                   const std::vector<scalar>&      nu,
+                                   const std::optional<DeclaredHeat>& decl,
+                                   const std::string&              context,
+                                   int                             verbosity);
+
+// equilibriumReactor / gibbsReactor: throws if `rxn` declares `heatOfReaction`.
+void refuseDeclaredHeat(const Dictionary& rxn, const std::string& unitType,
+                        const std::string& physicalReason);
+
+// reactive column: prints one divergence line if `rxn` declares `heatOfReaction`.
+void announceDeclaredHeatDivergence(const Dictionary& rxn, const std::string& context);
 
 } // namespace Choupo

@@ -1,0 +1,80 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      33Oxydipropanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        A  4.84325496907;
+        B  2057.06515624;
+        C  -81.5526761907;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "fbb361c079fbbf49";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/33Oxydipropanol-vapourPressure-je4009014.dat";
+            doi       "10.1021/je4009014";
+            sha256    "c5eac6f0f8b3da19f310f0c314d5b14644ef12d512a2a392befc5ce3d4f727af";
+            provenance measured;
+            archiveFile "je4009014.xml";
+            system    "33Oxydipropanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/33Oxydipropanol-vapourPressure-je060269j.dat";
+            doi       "10.1021/je060269j";
+            sha256    "02c8cb4d842126b8f3f721cab2b12b266f42b2da0534cbb9ac3acc39d86a0acf";
+            provenance measured;
+            archiveFile "je060269j.xml";
+            system    "33Oxydipropanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 365.15; max 703.4; n 21; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.999922439834;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

@@ -1515,9 +1515,18 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
     {
         const auto& L = r.layout;
         os << ",\n  \"layout\": {\n    \"items\": [";
-        for (std::size_t i = 0; i < L.items.size(); ++i)
+        //  C272: `items` stays COMPLETE -- every real item, the repeats of a
+        //  typical train included (each carries `repeatOf`) -- because the
+        //  hall plan and the 3D bank model read it; the outlines drawn for
+        //  the repeated trains are published apart (`typicalOutlines`).
+        std::vector<const LayoutItem*> shown, outlines;
+        for (const auto& it : L.items) shown.push_back(&it);
+        for (const auto& it : L.outlines) outlines.push_back(&it);
+        auto emitItems = [&](const std::vector<const LayoutItem*>& list)
         {
-            const auto& it = L.items[i];
+        for (std::size_t i = 0; i < list.size(); ++i)
+        {
+            const auto& it = *list[i];
             os << (i ? ",\n" : "\n") << "      { \"id\": " << esc(it.id)
                << ", \"nonProcess\": " << (it.nonProcess ? "true" : "false")
                << ", \"kind\": " << esc(it.kind)
@@ -1533,6 +1542,15 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
             //  indoors, so an item in the open publishes what it always did.
             if (!it.room.empty())
                 os << ", \"room\": " << esc(it.room);
+            //  C272: only an item of a typical train, so every other item
+            //  publishes what it always did.
+            if (!it.typical.empty())
+            {
+                os << ", \"typical\": " << esc(it.typical)
+                   << ", \"trainIndex\": " << it.trainIndex;
+                if (!it.repeatOf.empty())
+                    os << ", \"repeatOf\": " << esc(it.repeatOf);
+            }
             if (!it.ignition.empty())
                 os << ", \"ignition\": " << esc(it.ignition);
             if (!it.source.empty())
@@ -1551,7 +1569,34 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
             }
             os << " }";
         }
-        os << "\n    ],\n    \"areas\": [";
+        };
+        emitItems(shown);
+        os << "\n    ]";
+        if (!L.typicals.empty())
+        {
+            os << ",\n    \"typicals\": [";
+            for (std::size_t i = 0; i < L.typicals.size(); ++i)
+            {
+                const auto& t = L.typicals[i];
+                os << (i ? ",\n" : "\n") << "      { \"id\": "
+                   << esc("typical:" + t.name)
+                   << ", \"count\": " << t.count
+                   << ", \"pitchX\": " << num(t.pitchX)
+                   << ", \"pitchY\": " << num(t.pitchY)
+                   << ", \"repeated\": " << t.repeated
+                   << ", \"members\": [";
+                for (std::size_t m = 0; m < t.members.size(); ++m)
+                    os << (m ? ", " : " ") << esc(t.members[m]);
+                os << " ], \"source\": " << esc(t.source)
+                   << ", \"reason\": " << esc(t.reason) << " }";
+            }
+            os << "\n    ]";
+            //  One OUTLINE per repeated train and room (a plan box).
+            os << ",\n    \"typicalOutlines\": [";
+            emitItems(outlines);
+            os << "\n    ]";
+        }
+        os << ",\n    \"areas\": [";
         for (std::size_t i = 0; i < L.areas.size(); ++i)
         {
             const auto& a = L.areas[i];

@@ -1,0 +1,218 @@
+// [imported] origin "data/standards/components/methylTertPentylEther.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methylTertPentylEther  (CAS 994-05-8)
+  PROPOSAL TIER -- UNVERIFIED. Imported from ChemSep v8.3
+  pure-component data under Artistic License 2.0.
+  Critical constants are source data.  Psat is an Antoine FITTED by
+  bin/choupo-curate vp to measured vapour pressures (DEV.md 4c C281;
+  provenance.vaporPressure): reviewStatus autoPromoted, NOT human-reviewed.
+\*---------------------------------------------------------------------------*/
+
+name        methylTertPentylEther;
+CAS         994-05-8;
+formula     C6H14O;      // counted from the ChemSep v8.3 structure formula "CH3OC(CH3)2CH2CH3" (derived 2026-09-03; reproduces MW to 0.002 %)
+reviewStatus interim;
+MW          102.1748;      // kg/kmol [origin=ChemSep v8.3]
+Tc          534;      // K [origin=ChemSep v8.3]
+Pc          30.4;      // bar; source Pa / 1e5 [origin=ChemSep v8.3]
+omega       0.298071;      // [-] [origin=ChemSep v8.3]
+Tb          359.51;      // K [origin=ChemSep v8.3]
+
+standardThermochemistry
+{
+    dHf_298   -305400;        // J/mol   [ChemSep v8.3, ideal gas]
+    s_298     408;        // J/(mol.K)  third-law absolute
+}
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C), FITTED by bin/choupo-curate vp to
+    // measured vapour pressures -- see provenance.vaporPressure
+    coefficients  (3.697091662  1055.886097  -74.05918831);
+    Trange        (274.2  359.95);   // the fit's own span; outside it the engine announces the extrapolation
+}
+
+Vliq        0.000133433;      // m3/mol at 25 C  [ChemSep eqno 105]
+HvapTb      30840.8;      // J/mol at Tb  [ChemSep eqno 106]
+
+idealGasHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    // ChemSep states J/(kmol.K); A and the exp are scaled to per-mole here.
+    coefficients  (86.134  -503.3  5.920244721  0.00026316  -9.3404e-08);
+    Trange        (273  1500);
+}
+
+liquidHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    coefficients  (96.936  -844.6  10.51824472  -0.01423  1.4683e-05);
+    Trange        (267  500);
+}
+
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     -11.271;
+        B     991.37;
+        C     -0.019082;
+        D     -2.1664e-08;
+        E     2;
+        Tmin  160;
+        Tmax  427.2;
+    }
+}
+
+liquidThermalConductivity
+{
+    chemsepEq16
+    {
+        A     -0.10613;
+        B     12.391;
+        C     -1.3082;
+        D     -0.00026248;
+        E     -1.3654e-06;
+        Tmin  160;
+        Tmax  425;
+    }
+}
+
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group CH3O; count 1; } );
+}
+solubilityParameter 15480;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
+
+source
+{
+    database      "ChemSep pure-component data v8.3";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "chemsep1.xml";
+    sourceSha256  "78b3e0c6408ff35f3b75fb71a1fdd70bb8e967d8996b49452a4a9fa2dd567c76";
+    sourceRecord  "Methyl tert-pentyl ether";
+    importedBy    "chemsep_to_choupo";
+    review        { state pending; reviewer unassigned; }
+}
+
+provenance
+{
+    MW
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Pc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    omega
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tb
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    vaporPressure
+    {
+        origin        fitted;
+        method        "vaporPressureFit (three-parameter Antoine; objective twoStage: least squares in log10 P, then the largest relative error in P minimised from it; every usable study fitted, outliers above 15 % discarded by name)";
+        methodVersion "choupoProps Choupo-dev";
+        fittedInCase  "tutorials/props/curation/curate29_vp_methylTertPentylEther";
+        reviewStatus  autoPromoted;
+        humanReviewed false;
+        fitGrade      clean;   // DEV.md 4c C285: the worse of the grades below
+        fitGradeMaxRelativeError_pct 3.951711;   // grade clean
+        promotedBy    "bin/choupo-curate vp --promote";
+        promotedDate  "2026-11-10";
+        reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+        uncertainty   "the fit's maximum relative error over every kept measurement, below";
+        replaces      "model AmbroseWalton (a corresponding-states estimate from Tc, Pc, omega); `bin/choupo-curate revert <component>` restores it";
+        evidence
+        (
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/methylTertPentylEther-vapourPressure-je101250d.dat";
+                doi       "10.1021/je101250d";
+                sha256    "076e4ca5ddc1bd3cd80df3bf31cb999a82ac6ddae568221334b1b03411305a85";
+                articleSha256 "6669b12035e317cc29bb9ffe16bf70870f3d4766ed9b0dc05b0b6709dcfbc736";
+                pointsKept    21;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/methylTertPentylEther-vapourPressure-je0255980.dat";
+                doi       "10.1021/je0255980";
+                sha256    "380efd7b934334f817710e2f9511634f5dee52b1034e1f3cf27b6c1636374ac7";
+                articleSha256 "cd80b80e5c63806e1b87ed419e16a7cd8f082489ff69e7f530a00711ac27c1db";
+                pointsKept    11;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/methylTertPentylEther-vapourPressure-je049867t.dat";
+                doi       "10.1021/je049867t";
+                sha256    "251496fa21f557fb1517e432bc834a7be3aa46666c4431ddd993cad7d6d511e6";
+                articleSha256 "f2d0b00f3253e92e83c431ab1312c345acac156cdb8de31cc2dcad573cf25bc2";
+                pointsKept    11;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/methylTertPentylEther-vapourPressure-je901026b.dat";
+                doi       "10.1021/je901026b";
+                sha256    "df102c56711a862fef3b69810d4a85ee9f5134c4a06d90c3e8bd84f7c4d3e984";
+                articleSha256 "d12c1801ff61ff6206aef6443aaa300487f62b237c312c474378902e58613bc4";
+                pointsKept    5;
+                pointsDropped 0;
+                provenance measured;
+            }
+        );
+        acceptance
+        {
+            rule        "the default of DEV.md 4c C285 (graded): max relative error in P over the kept points 5 / 10 / 20 %, and |Tnb - Tb| 1 / 2 / 4 K where Tb lies outside their range, are the upper limits of clean / warning / severe; above, refused; the grade is the worse of the two";
+            verdict     accepted;
+            studies     4;
+            pointsKept  48;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     1.875467;   // the fitted Antoine, every kept point
+            max_pct     3.951711;
+            awAad_pct   3.098268;   // the AmbroseWalton curve it replaces, the same points
+            awMax_pct   14.039679;
+            Tnb_fit     360.1006;   // K, the fitted curve at 101.325 kPa
+        }
+    }
+}

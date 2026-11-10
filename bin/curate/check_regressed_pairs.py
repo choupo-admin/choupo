@@ -452,12 +452,12 @@ def check_dataset(path, fails, tag):
     #  holds them to the record.  The per-point arm below is for bubble sets.
     if re.search(r"^\s*property\s+binaryLLE\.binodal\s*;", t, re.M):
         return
-    u = block(block(t, "uncertainty") or "", "T_bubble") or ""
+    u = block(block(t, "uncertainty") or "", "T_bubble") or block(block(t, "uncertainty") or "", "P_bubble") or ""
     m = re.search(r"values\s*\(([^)]*)\)", u)
     d = t[t.index("\ndata"):] if "\ndata" in t else ""
     rows = [l for l in d.splitlines()[2:] if l.strip() and l.strip()[0].isdigit()]
     if not m or len(m.group(1).split()) != len(rows):
-        fails.append(f"{tag}: {path.name} -- per-point T_bubble uncertainties "
+        fails.append(f"{tag}: {path.name} -- per-point T_bubble / P_bubble uncertainties "
                      f"missing or not one per data row ({len(rows)} rows)")
 
 
@@ -1132,6 +1132,123 @@ def c283_failures(rec, cur, case, out, tag, fails, in_std=False):
                      f"the case discards {sum(len(v) for v in declared.values())} row(s)")
 
 
+C291_GRADE_COUNT = {}
+
+
+def c291_failures(rec, cur, case, out, tag, fails, in_std=False):
+    """Arm (k): a pair fitted to bubble PRESSURES on every laboratory (DEV.md
+    4c C291) against its case.  The grade is RECOMPUTED from the run's own max
+    relative pressure error and the record must carry it, its limits, its
+    verdict and oneLiquid, the single-temperature / single-laboratory flags
+    recomputed from the case's datasets, the discards the rule re-derives, and
+    -- in the catalogue -- fitGrade and its number, voiced by the pair loader."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import pairs_px as px   # lazy: loads pairs_c283 -> choupo-curate, which imports this gate
+    m = re.search(r"<<<Choupo:result-begin>>>(.*?)<<<Choupo:result-end>>>", out, re.S)
+    try:
+        js = json.loads(m.group(1)) if m else {}
+    except json.JSONDecodeError:
+        js = {}
+    op = next((o for o in js.get("operationResults", []) if o.get("name") == "fit_nrtl"), {})
+    dg = op.get("diagnostics", {})
+    mx_rel, nk = dg.get("bubble_max_fit"), dg.get("n_data")
+    if mx_rel is None or nk is None:
+        fails.append(f"{tag}: its case published no fit_nrtl bubble_max_fit / n_data -- "
+                     "arm (k) cannot hold the curation block to the run")
+        return
+    mx = 100.0 * mx_rel
+    rmx, rnk = num(cur, "maxRelError_pct"), num(cur, "pointsKept")
+    if rmx is None or abs(rmx - mx) > 5e-5 * max(1.0, mx) + 1e-4:
+        fails.append(f"{tag}: curation maxRelError_pct {rmx}, the run's bubble_max_fit {mx:.6f} %")
+    if rnk != nk:
+        fails.append(f"{tag}: curation pointsKept {rnk}, the run fitted {nk} points")
+    if num(cur, "outlierLimit_pct") != px.OUTLIER_PCT:
+        fails.append(f"{tag}: curation outlierLimit_pct {num(cur, 'outlierLimit_pct')} is not the "
+                     f"rule's {px.OUTLIER_PCT:g} % (DEV.md 4c C291)")
+    if word(cur, "acceptance") != "graded":
+        fails.append(f"{tag}: curation `acceptance {word(cur, 'acceptance')}` -- a C291 pair "
+                     "declares the graded acceptance")
+        return
+    lims = re.search(r"gradeLimits_pct\s*\(\s*([0-9.eE+-]+)\s+([0-9.eE+-]+)\s+([0-9.eE+-]+)\s*\)", cur)
+    if not lims or tuple(float(x) for x in lims.groups()) != px.GRADE_PCT:
+        fails.append(f"{tag}: curation gradeLimits_pct {lims.groups() if lims else None} are not "
+                     f"the rule's {px.GRADE_PCT} % (C285's factors)")
+    nan = num(cur, "noBubblePoint") or 0
+    grade = px.grade_of(mx, nan)
+    C291_GRADE_COUNT[grade] = C291_GRADE_COUNT.get(grade, 0) + 1
+    if word(cur, "grade") != grade:
+        fails.append(f"{tag}: curation grade `{word(cur, 'grade')}`, recomputed `{grade}` from "
+                     f"the run's max |dP|/P {mx:.4f} % (limits {px.GRADE_PCT} %"
+                     + (f", {nan:g} point(s) with no bubble pressure" if nan else "") + ")")
+    want = "accepted" if grade != "refused" else "notAccepted"
+    if word(cur, "verdict") != want:
+        fails.append(f"{tag}: curation verdict `{word(cur, 'verdict')}` but grade `{grade}` "
+                     f"(max |dP|/P {mx:.4f} %) gives `{want}`")
+    split = one_liquid_failures(facts(rec), tag)
+    if word(cur, "oneLiquid") != ("false" if split else "true"):
+        fails.append(f"{tag}: curation oneLiquid `{word(cur, 'oneLiquid')}`, arm (f) on the "
+                     f"record's own parameters says {'it SPLITS' if split else 'one liquid'}")
+    #  the single-temperature / single-laboratory flags, recomputed from the datasets
+    live = px.contributing(case)   # a study discarded whole is not evidence the pair rests on
+    temps = {T for _, T in live}
+    labs = {doi for doi, _ in live}
+    for key, n, flag in (("temperatures", len(temps), "singleTemperature"),
+                         ("laboratories", len(labs), "singleLaboratory")):
+        if num(cur, key) != n:
+            fails.append(f"{tag}: curation {key} {num(cur, key)}, the case's datasets give {n}")
+        if word(cur, flag) != ("true" if n == 1 else "false"):
+            fails.append(f"{tag}: curation {flag} `{word(cur, flag)}` with {n} {key} in the evidence"
+                         " -- a record resting on one temperature or one laboratory must say so")
+    prov = block(rec, "provenance") or ""
+    if in_std:
+        if grade == "refused":
+            fails.append(f"{tag}: recomputed grade REFUSED (max |dP|/P {mx:.4f} %) -- promoted anyway")
+        if word(prov, "fitGrade") != grade:
+            fails.append(f"{tag}: provenance fitGrade `{word(prov, 'fitGrade')}`, recomputed `{grade}` "
+                         f"(max |dP|/P {mx:.4f} %)")
+        g_mx = num(prov, "fitGradeMaxRelativeError_pct")
+        if g_mx is None or abs(g_mx - mx) > 5e-5 * max(1.0, mx) + 1e-4:
+            fails.append(f"{tag}: provenance fitGradeMaxRelativeError_pct {g_mx}, the run's {mx:.6f} %")
+        rf = facts(rec)
+        gword = {"warning": "warning", "severe": "SEVERE"}.get(grade)
+        names = (f"{rf['i']}-{rf['j']}", f"{rf['j']}-{rf['i']}")
+        said = [f"[fit-grade] pair {n}: fitGrade " for n in names]
+        adv = [a for a in js.get("advisories", [])
+               if a.get("locus") in {f"pair {n}" for n in names}
+               and "fitGrade" in a.get("message", "")]
+        if gword:
+            if not any(s + gword in out for s in said):
+                fails.append(f"{tag}: fitGrade {grade} and its case printed no `{said[0]}{gword}` "
+                             "line -- the pair loader does not voice it")
+            if not any(f"fitGrade {gword}" in a.get("message", "") for a in adv):
+                fails.append(f"{tag}: the fitGrade {gword} line is not in the result JSON advisories")
+        elif any(s in out for s in said) or adv:
+            fails.append(f"{tag}: fitGrade {grade} and the engine voiced a grade -- a clean fit "
+                         "says nothing more")
+    elif word(prov, "fitGrade"):
+        fails.append(f"{tag}: a case-local record declares provenance fitGrade "
+                     f"`{word(prov, 'fitGrade')}` -- the grade enters the provenance at promotion")
+    #  the outliers, re-derived from the rule
+    rc, o2, rows, _ = px.pc.fit_only(case, "leastSquares", keep_discards=False)
+    if rc != 0 or not rows:
+        fails.append(f"{tag}: the least-squares stage of {case.name} with no discard exited {rc} "
+                     "-- the outliers cannot be re-derived")
+        return
+    try:
+        found, _ = px.outliers_of(case, rows, px.pc.evidence_files(case))
+    except px.Refused as ex:
+        fails.append(f"{tag}: {ex}")
+        return
+    declared = px.declared_discards(case)
+    if {k: sorted(v) for k, v in found.items()} != declared:
+        fails.append(f"{tag}: the case discards {declared or 'nothing'} and the rule (> "
+                     f"{px.OUTLIER_PCT:g} % after a least-squares stage over every point; a study "
+                     f"with more than half of them beyond it, whole) puts {found or 'nothing'} out")
+    if int(num(cur, "outliersDropped") or 0) != sum(len(v) for v in declared.values()):
+        fails.append(f"{tag}: curation outliersDropped {num(cur, 'outliersDropped')} and the case "
+                     f"discards {sum(len(v) for v in declared.values())} row(s)")
+
+
 def main():
     if not PROPS.exists():
         print("check_regressed_pairs: FAILED\n  choupoProps is not built -- "
@@ -1157,6 +1274,7 @@ def main():
     local = [p for p in local
              if std_names.get(p.name, "\0") != word(strip_comments(p.read_text()), "fittedInCase")]
     fails, checked, stable_checked, ll_checked, c283_checked = [], [], [], [], []
+    c291_checked = []
     not_run, fetched = [], {}
     if len(std) < 7:
         fails.append(f"only {len(std)} regressed record(s) under {STD.relative_to(ROOT)} "
@@ -1186,7 +1304,8 @@ def main():
             rf = facts(rec)
             cur = block(rec, "curation")
             c283 = cur is not None and "C283" in (word(cur, "rule") or "")
-            if in_std and c283:
+            c291 = cur is not None and "C291" in (word(cur, "rule") or "")
+            if in_std and (c283 or c291):
                 if word(cur, "verdict") != "accepted":
                     fails.append(f"{tag}: curation verdict `{word(cur, 'verdict')}` in "
                                  "the CATALOGUE -- only an accepted fit (C283) is promoted")
@@ -1253,7 +1372,10 @@ def main():
                     fails.append(f"{tag}: `{k}` = {rf[k]} in the record, {pf[k]} "
                                  "from its case -- the record has drifted from its "
                                  "evidence")
-            if c283:
+            if c291:
+                c291_failures(rec, cur, case, out, tag, fails, in_std)
+                c291_checked.append(rec_path.stem)
+            elif c283:
                 c283_failures(rec, cur, case, out, tag, fails, in_std)
                 c283_checked.append(rec_path.stem)
             #  The loader names a pair in its OWN i-j order, which is not the
@@ -1329,6 +1451,14 @@ def main():
           "max |dT| equal to it and a warning or SEVERE grade voiced by the pair loader "
           "into the caveat block, and the discarded rows are exactly "
           "those a least-squares stage with no discard puts beyond 3 K (arm j); "
+          f"{len(c291_checked)} record(s) fitted to bubble PRESSURES on every laboratory (C291) hold "
+          "their curation block to the run -- max relative |dP|/P and kept points equal the run's, "
+          "the C285 grade recomputed at 5 / 10 / 20 % ("
+          + ", ".join(f"{C291_GRADE_COUNT.get(g, 0)} {g}" for g in VP_GRADES)
+          + ") with the verdict, oneLiquid, the single-temperature / single-laboratory flags and "
+          "-- in the catalogue -- fitGrade and its number equal to it and a warning or SEVERE grade "
+          "voiced by the pair loader, and the discarded rows exactly those the C291 rule re-derives "
+          "(arm k); "
           f"{len(vp_done)} catalogue vapour pressure(s) regressed by `choupo-curate vp` "
           f"({', '.join(vp_done) or 'none'}) reproduced by their cases -- Antoine "
           "coefficients under the declared twoStage objective, both curves' errors and the "

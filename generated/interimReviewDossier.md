@@ -257,11 +257,20 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `components/124Trichlorobenzene.dat` -- **reviewStatus interim**
 * `components/124Trimethylbenzene.dat` -- **reviewStatus interim**
 * `components/12Butadiene.dat` -- **reviewStatus interim**
+* `components/12Butanediol.dat` -- **reviewStatus autoPromoted**
+* `components/12Propanediol.dat` -- **reviewStatus autoPromoted**
 * `components/12PropyleneOxide.dat` -- **reviewStatus interim**
 * `components/13Butadiene.dat` -- **reviewStatus interim**
+* `components/13Butanediol.dat` -- **reviewStatus autoPromoted**
+* `components/13Dioxolane.dat` -- **reviewStatus autoPromoted**
+* `components/13Propanediol.dat` -- **reviewStatus autoPromoted**
 * `components/14Butanediol.dat` -- **reviewStatus interim**
 * `components/14Dioxane.dat` -- **reviewStatus interim**
+* `components/16Hexanediol.dat` -- **reviewStatus autoPromoted**
 * `components/1Butene.dat` -- **reviewStatus interim**
+* `components/1Chlorobutane.dat` -- **reviewStatus autoPromoted**
+* `components/1Decanol.dat` -- **reviewStatus autoPromoted**
+* `components/1HPerfluorooctane.dat` -- **reviewStatus autoPromoted**
 * `components/1Heptanol.dat` -- **reviewStatus interim**
 * `components/1Heptene.dat` -- **reviewStatus interim**
 * `components/1Hexanol.dat` -- **reviewStatus interim**
@@ -274,11 +283,14 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `components/1Nitrobutane.dat` -- **reviewStatus interim**
 * `components/1Nitropropane.dat` -- **reviewStatus interim**
 * `components/1Nonene.dat` -- **reviewStatus interim**
+* `components/1Octanol.dat` -- **reviewStatus autoPromoted**
 * `components/1Octene.dat` -- **reviewStatus interim**
+* `components/1Pentanamine.dat` -- **reviewStatus autoPromoted**
 * `components/1Pentanol.dat` -- **reviewStatus interim**
 * `components/1Pentene.dat` -- **reviewStatus interim**
 * `components/1Phenylnaphthalene.dat` -- **reviewStatus interim**
 * `components/1Propanol.dat` -- **reviewStatus interim**
+* `components/1Propoxy2Propanol.dat` -- **reviewStatus autoPromoted**
 * `components/1Undecene.dat` -- **reviewStatus interim**
 * `components/2233Tetramethylbutane.dat` -- **reviewStatus interim**
 * `components/2233Tetramethylpentane.dat` -- **reviewStatus interim**
@@ -309,11 +321,15 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `components/25Dinitrotoluene.dat` -- **reviewStatus interim**
 * `components/26Dinitrotoluene.dat` -- **reviewStatus interim**
 * `components/2Butanol.dat` -- **reviewStatus interim**
+* `components/2Butoxyethanol.dat` -- **reviewStatus autoPromoted**
+* `components/2Chlorotoluene.dat` -- **reviewStatus autoPromoted**
+* `components/2Ethoxyethanol.dat` -- **reviewStatus autoPromoted**
 * `components/2EthylMXylene.dat` -- **reviewStatus interim**
 * `components/2EthylPXylene.dat` -- **reviewStatus interim**
 * `components/2Heptanone.dat` -- **reviewStatus interim**
 * `components/2Hexanone.dat` -- **reviewStatus interim**
 * `components/2Methoxy2MethylHeptane.dat` -- **reviewStatus interim**
+* `components/2Methoxyethanol.dat` -- **reviewStatus autoPromoted**
 * `components/2Methyl1Butanol.dat` -- **reviewStatus interim**
 * `components/2Methyl1Butene.dat` -- **reviewStatus interim**
 * `components/2Methyl1Heptene.dat` -- **reviewStatus interim**
@@ -331,14 +347,17 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `components/2Methylnonane.dat` -- **reviewStatus interim**
 * `components/2Methyloctane.dat` -- **reviewStatus interim**
 * `components/2Methylpropanal.dat` -- **reviewStatus interim**
+* `components/2Methyltetrahydrofuran.dat` -- **reviewStatus autoPromoted**
 * `components/2Nitropropane.dat` -- **reviewStatus interim**
 * `components/2Pentanol.dat` -- **reviewStatus interim**
 * `components/2Pentanone.dat` -- **reviewStatus interim**
+* `components/2Propoxyethanol.dat` -- **reviewStatus autoPromoted**
 * `components/335Trimethylheptane.dat` -- **reviewStatus interim**
 * `components/33Diethylpentane.dat` -- **reviewStatus interim**
 * `components/33Dimethyl2Butanone.dat` -- **reviewStatus interim**
 * `components/33Dimethylhexane.dat` -- **reviewStatus interim**
 * `components/33Dimethylpentane.dat` -- **reviewStatus interim**
+* `components/33Oxydipropanol.dat` -- **reviewStatus autoPromoted**
 * `components/34Dimethylhexane.dat` -- **reviewStatus interim**
 * `components/34Dinitrotoluene.dat` -- **reviewStatus interim**
 * `components/35Dinitrotoluene.dat` -- **reviewStatus interim**
@@ -347,14 +366,18 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `components/3Ethylpentane.dat` -- **reviewStatus interim**
 * `components/3Heptanone.dat` -- **reviewStatus interim**
 * `components/3Hexanone.dat` -- **reviewStatus interim**
+* `components/3Methyl1Butanol.dat` -- **reviewStatus autoPromoted**
 * `components/3Methyl1Butene.dat` -- **reviewStatus interim**
+* `components/3Methyl2Butanol.dat` -- **reviewStatus autoPromoted**
 * `components/3Methyl3Ethylpentane.dat` -- **reviewStatus interim**
 * `components/3Methylheptane.dat` -- **reviewStatus interim**
 * `components/3Methylhexane.dat` -- **reviewStatus interim**
 * `components/3Methylnonane.dat` -- **reviewStatus interim**
 * `components/3Methyloctane.dat` -- **reviewStatus interim**
 * `components/3Methylpentane.dat` -- **reviewStatus interim**
+* `components/3Pentanol.dat` -- **reviewStatus autoPromoted**
 * `components/3Pentanone.dat` -- **reviewStatus interim**
+* `components/4Chlorotoluene.dat` -- **reviewStatus autoPromoted**
 * `components/4EthylMXylene.dat` -- **reviewStatus interim**
 * `components/4EthylOXylene.dat` -- **reviewStatus interim**
 * `components/4Heptanone.dat` -- **reviewStatus interim**
@@ -439,6 +462,7 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `components/NH3.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L15: literature value, primary re-citation pending (IST review);
     * L99: vaporPressure  "individual literature value -- primary re-citation pending (IST review)";
+* `components/NMethyl13Diaminopropane.dat` -- **reviewStatus autoPromoted**
 * `components/NO.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L9: individual literature values, primary re-citation pending (IST review).
     * L40: // distribution; INTERIM pending primary review (Vitor))
@@ -495,6 +519,7 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `components/acrylonitrile.dat` -- **reviewStatus interim**
 * `components/adipicAcid.dat` -- **reviewStatus interim**
 * `components/air.dat` -- **reviewStatus interim**
+* `components/allylAlcohol.dat` -- **reviewStatus autoPromoted**
 * `components/aniline.dat` -- **reviewStatus interim**
 * `components/anisole.dat` -- **reviewStatus interim**
 * `components/benzene.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
@@ -530,10 +555,12 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `components/cyclohexene.dat` -- **reviewStatus interim**
 * `components/cyclopentane.dat` -- **reviewStatus interim**
     * L67: s_298     292.9;      // J/(mol*K) third-law absolute (TRC class; primary re-citation pending IST review)
+* `components/cyclopentanol.dat` -- **reviewStatus autoPromoted**
 * `components/cyclopropane.dat` -- **reviewStatus interim**
     * L60: s_298     237.45;      // J/(mol*K) third-law absolute (TRC class; primary re-citation pending IST review)
 * `components/diButylCarbonate.dat` -- **reviewStatus interim**
 * `components/diEthylCarbonate.dat` -- **reviewStatus interim**
+* `components/diIsobutylEther.dat` -- **reviewStatus autoPromoted**
 * `components/diNButylEther.dat` -- **reviewStatus interim**
 * `components/diNPropylDisulfide.dat` -- **reviewStatus interim**
 * `components/diNPropylSulfide.dat` -- **reviewStatus interim**
@@ -549,6 +576,9 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `components/diethylSulfide.dat` -- **reviewStatus interim**
 * `components/diethylamine.dat` -- **reviewStatus interim**
 * `components/diethyleneGlycol.dat` -- **reviewStatus interim**
+* `components/diethyleneGlycolDibutylEther.dat` -- **reviewStatus autoPromoted**
+* `components/diethyleneGlycolDiethylEther.dat` -- **reviewStatus autoPromoted**
+* `components/diethyleneGlycolMonohexylEther.dat` -- **reviewStatus autoPromoted**
 * `components/diethylenetriamine.dat` -- **reviewStatus interim**
 * `components/diethylethanolamine.dat` -- **reviewStatus interim**
 * `components/diisobutylKetone.dat` -- **reviewStatus interim**
@@ -574,9 +604,11 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
     * L37: // distribution; INTERIM pending primary review (Vitor)). The old set's A
 * `components/ethylBenzene.dat` -- **reviewStatus interim**
 * `components/ethylChloride.dat` -- **reviewStatus interim**
+* `components/ethylDecanoate.dat` -- **reviewStatus autoPromoted**
 * `components/ethylFormate.dat` -- **reviewStatus interim**
 * `components/ethylMercaptan.dat` -- **reviewStatus interim**
 * `components/ethylMethylDisulfide.dat` -- **reviewStatus interim**
+* `components/ethylOctanoate.dat` -- **reviewStatus autoPromoted**
 * `components/ethylPhenylCarbonate.dat` -- **reviewStatus interim**
 * `components/ethylPropylDisulfide.dat` -- **reviewStatus interim**
 * `components/ethylTertPentylEther.dat` -- **reviewStatus interim**
@@ -634,24 +666,30 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `components/methacrylonitrile.dat` -- **reviewStatus interim**
 * `components/methanol.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L6: values -- primary re-citation pending (IST review).  Viscosity:
+* `components/methylButanoate.dat` -- **reviewStatus autoPromoted**
 * `components/methylChloride.dat` -- **reviewStatus interim**
+* `components/methylDecanoate.dat` -- **reviewStatus autoPromoted**
 * `components/methylDiEthanolAmine.dat` -- **reviewStatus interim**
 * `components/methylEthylCarbonate.dat` -- **reviewStatus interim**
 * `components/methylEthylEther.dat` -- **reviewStatus interim**
 * `components/methylEthylKetone.dat` -- **reviewStatus interim**
 * `components/methylEthylSulfide.dat` -- **reviewStatus interim**
 * `components/methylFormate.dat` -- **reviewStatus interim**
+* `components/methylHeptanoate.dat` -- **reviewStatus autoPromoted**
+* `components/methylHexanoate.dat` -- **reviewStatus autoPromoted**
 * `components/methylIodide.dat` -- **reviewStatus interim**
 * `components/methylIsobutylEther.dat` -- **reviewStatus interim**
 * `components/methylIsobutylKetone.dat` -- **reviewStatus interim**
 * `components/methylIsopropylEther.dat` -- **reviewStatus interim**
 * `components/methylIsopropylKetone.dat` -- **reviewStatus interim**
+* `components/methylLevulinate.dat` -- **reviewStatus autoPromoted**
 * `components/methylLinoleate.dat` -- **reviewStatus interim**
 * `components/methylLinolenate.dat` -- **reviewStatus interim**
 * `components/methylMercaptan.dat` -- **reviewStatus interim**
 * `components/methylMethacrylate.dat` -- **reviewStatus interim**
 * `components/methylNPropylEther.dat` -- **reviewStatus interim**
 * `components/methylNPropylSulfide.dat` -- **reviewStatus interim**
+* `components/methylOctanoate.dat` -- **reviewStatus autoPromoted**
 * `components/methylOleate.dat` -- **reviewStatus interim**
 * `components/methylPalmitate.dat` -- **reviewStatus interim**
 * `components/methylPhenylCarbonate.dat` -- **reviewStatus interim**
@@ -777,8 +815,10 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `components/tertButylMercaptan.dat` -- **reviewStatus interim**
 * `components/tertButylbenzene.dat` -- **reviewStatus interim**
 * `components/tertButylcyclohexane.dat` -- **reviewStatus interim**
+* `components/tetradecanoicAcid.dat` -- **reviewStatus autoPromoted**
 * `components/tetraethyleneGlycol.dat` -- **reviewStatus interim**
 * `components/tetrahydrofuran.dat` -- **reviewStatus interim**
+* `components/tetrahydropyran.dat` -- **reviewStatus autoPromoted**
 * `components/thiophene.dat` -- **reviewStatus interim**
 * `components/toluene.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L6: values -- primary re-citation pending (IST review).  Viscosity:
@@ -804,6 +844,7 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
     * L21: values -- primary re-citation pending (IST review).  K_b/K_f
     * L110: // Reference: individual literature values -- primary re-citation pending (IST review).
 * `conventions/MilleroConventional-v1.dat` -- **reviewStatus interim**
+* `parameters/NRTL/124Trimethylbenzene-2Pentanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/124Trimethylbenzene-mEthyltoluene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/124Trimethylbenzene-oEthyltoluene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/124Trimethylbenzene-pEthyltoluene.dat` -- **reviewStatus autoPromoted**
@@ -815,6 +856,7 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `parameters/NRTL/14Dioxane-benzene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/14Dioxane-cyclohexane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/14Dioxane-cyclopentane.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/14Dioxane-nButanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Heptanol-1Hexanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Heptanol-1Propanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Heptanol-2Methyl2Propanol.dat` -- **reviewStatus autoPromoted**
@@ -832,6 +874,8 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `parameters/NRTL/1Hexanol-ethylBenzene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Hexanol-isobutylAcetate.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Hexanol-monochlorobenzene.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/1Hexanol-nButanol.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/1Hexanol-nButylAcetate.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Hexanol-nDecane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Hexanol-nHexylAcetate.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Hexanol-nNDimethylformamide.dat` -- **reviewStatus autoPromoted**
@@ -839,11 +883,17 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `parameters/NRTL/1Hexanol-nitrobenzene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Hexanol-oXylene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Hexanol-trichloroethylene.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/1Hexene-1Pentanol.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/1Hexene-2Butanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Hexene-2Pentanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Hexene-diEthylCarbonate.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/1Hexene-diNButylEther.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Hexene-methylIsobutylKetone.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/1Hexene-nButanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Hexene-nHexane.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/1Hexene-tertButylEthylEther.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Pentanol-1Propanol.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/1Pentanol-224Trimethylpentane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Pentanol-2Hexanone.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Pentanol-2Methyl1Propanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Pentanol-anisole.dat` -- **reviewStatus autoPromoted**
@@ -858,10 +908,15 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `parameters/NRTL/1Pentanol-nNonane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Pentanol-nPropylAcetate.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Pentanol-propionicAcid.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/1Pentanol-toluene.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/1Propanol-224Trimethylpentane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Propanol-2Methyl1Butanol.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/1Propanol-Dichloroethane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Propanol-acetonitrile.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/1Propanol-benzene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Propanol-cyclohexanone.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Propanol-diEthylCarbonate.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/1Propanol-diethylSulfide.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Propanol-diisopropylEther.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Propanol-dimethylCarbonate.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Propanol-dimethylDisulfide.dat` -- **reviewStatus autoPromoted**
@@ -882,20 +937,29 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `parameters/NRTL/1Propanol-propionicAcid.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Propanol-tertButylEthylEther.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/1Propanol-water.dat` -- **reviewStatus interim**
+* `parameters/NRTL/224Trimethylpentane-2Butanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/224Trimethylpentane-2Methyl2Propanol.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/224Trimethylpentane-2Pentanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/224Trimethylpentane-acetone.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/224Trimethylpentane-diNButylEther.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/224Trimethylpentane-diethylDisulfide.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/224Trimethylpentane-diisopropylEther.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/224Trimethylpentane-dimethylDisulfide.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/224Trimethylpentane-isopropanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/224Trimethylpentane-mXylene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/224Trimethylpentane-methylEthylKetone.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/224Trimethylpentane-methylTertButylEther.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/224Trimethylpentane-methylTertPentylEther.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/224Trimethylpentane-methylal.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/224Trimethylpentane-monochlorobenzene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/224Trimethylpentane-nButanol.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/224Trimethylpentane-nHeptane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/224Trimethylpentane-nHexane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/224Trimethylpentane-pXylene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Butanol-acetonitrile.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/2Butanol-benzene.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/2Butanol-cyclohexane.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/2Butanol-diisopropylEther.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Butanol-dimethylCarbonate.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Butanol-dimethylSulfoxide.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Butanol-isopropylAcetate.dat` -- **reviewStatus autoPromoted**
@@ -903,13 +967,16 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `parameters/NRTL/2Butanol-methanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Butanol-methylTertButylEther.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Butanol-methylTertPentylEther.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/2Butanol-nDodecane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Butanol-nHeptane.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/2Butanol-nHexane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Butanol-nNDimethylacetamide.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Butanol-nNDimethylformamide.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Butanol-nitrobenzene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Butanol-oCresol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Butanol-pCresol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Butanol-tetrahydrofuran.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/2Butanol-toluene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Heptanone-nDecane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Heptanone-nNonane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Heptanone-nOctane.dat` -- **reviewStatus autoPromoted**
@@ -927,6 +994,8 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `parameters/NRTL/2Methyl1Butanol-oXylene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Methyl1Butanol-pXylene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Methyl1Propanol-acetonitrile.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/2Methyl1Propanol-benzene.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/2Methyl1Propanol-diisopropylEther.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Methyl1Propanol-dimethylCarbonate.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Methyl1Propanol-dimethylSulfoxide.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Methyl1Propanol-ethanol.dat` -- **reviewStatus autoPromoted**
@@ -959,8 +1028,11 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `parameters/NRTL/2Methyl2Propanol-oCresol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Methyl2Propanol-pCresol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Methyl2Propanol-tetrahydrofuran.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/2Pentanol-cyclohexane.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/2Pentanol-nHeptane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Pentanol-nHexane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Pentanol-nPropylAcetate.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/2Pentanol-toluene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Pentanone-3Pentanone.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Pentanone-diEthylCarbonate.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/2Pentanone-dimethylCarbonate.dat` -- **reviewStatus autoPromoted**
@@ -972,6 +1044,7 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `parameters/NRTL/4Heptanone-nOctane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/Dichloroethane-acrylonitrile.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/Dichloroethane-dimethylSulfoxide.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/Dichloroethane-ethylAcetate.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/Dichloroethane-ethylBenzene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/Dichloroethane-monochlorobenzene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/Dichloroethane-nButanol.dat` -- **reviewStatus autoPromoted**
@@ -1014,6 +1087,7 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `parameters/NRTL/acrylonitrile-nitrobenzene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/aniline-nButanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/aniline-nNDimethylformamide.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/aniline-nOctane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/anisole-ethylAcetate.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/anisole-ethylBenzene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/anisole-isopropanol.dat` -- **reviewStatus autoPromoted**
@@ -1022,6 +1096,7 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `parameters/NRTL/anisole-methylAcetate.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/anisole-nButylAcetate.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/anisole-nButylbenzene.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/anisole-nHexane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/anisole-nNDimethylformamide.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/anisole-nNonane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/anisole-nPropylAcetate.dat` -- **reviewStatus autoPromoted**
@@ -1029,11 +1104,15 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `parameters/NRTL/anisole-pXylene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/anisole-toluene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/benzene-cyclohexanone.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/benzene-diisopropylEther.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/benzene-ethanol.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/benzene-isopropanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/benzene-methanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/benzene-methylAcetate.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/benzene-methylal.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/benzene-nButanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/benzene-nButylAcetate.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/benzene-nNDimethylacetamide.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/benzene-nNonane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/benzene-oXylene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/benzene-thiophene.dat` -- **reviewStatus autoPromoted**
@@ -1045,6 +1124,9 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `parameters/NRTL/chloroform-ethanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/chloroform-isopropanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/chloroform-methanol.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/chloroform-methylEthylKetone.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/chloroform-methylIsobutylKetone.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/chloroform-methylTertButylEther.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/chloroform-nNDimethylformamide.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/cumene-ethylFormate.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/cumene-nNDimethylacetamide.dat` -- **reviewStatus autoPromoted**
@@ -1054,13 +1136,16 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `parameters/NRTL/cyclohexane-cyclohexanone.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/cyclohexane-cyclohexene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/cyclohexane-diEthylCarbonate.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/cyclohexane-diNButylEther.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/cyclohexane-methylIsobutylKetone.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/cyclohexane-methylal.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/cyclohexane-nButanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/cyclohexane-nButylAcetate.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/cyclohexane-nHeptane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/cyclohexane-nNDimethylacetamide.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/cyclohexane-nNDimethylformamide.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/cyclohexane-nNonane.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/cyclohexane-tertButylEthylEther.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/cyclohexane-tetrahydrofuran.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/cyclohexane-toluene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/cyclohexanol-cyclohexene.dat` -- **reviewStatus autoPromoted**
@@ -1091,10 +1176,15 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `parameters/NRTL/diEthylCarbonate-propyleneCarbonate.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/diEthylCarbonate-vinylAcetate.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/diNButylEther-nButanol.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/diNButylEther-nHeptane.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/diNButylEther-nNDimethylacetamide.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/diNButylEther-nNonane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/diNButylEther-oXylene.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/diNButylEther-toluene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/diethanolamine-mCresol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/diethanolamine-pCresol.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/diethylSulfide-ethanol.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/diethylSulfide-nPropylAcetate.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/diethylSulfide-toluene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/diethylamine-diethylethanolamine.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/diethylamine-ethanol.dat` -- **reviewStatus autoPromoted**
@@ -1108,6 +1198,7 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `parameters/NRTL/diisopropylEther-isopropanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/diisopropylEther-methanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/diisopropylEther-methylal.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/diisopropylEther-nButanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/diisopropylEther-nButylAcetate.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/diisopropylEther-nNDimethylacetamide.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/diisopropylEther-nNDimethylformamide.dat` -- **reviewStatus autoPromoted**
@@ -1135,6 +1226,8 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `parameters/NRTL/dimethylDisulfide-ethanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/dimethylDisulfide-methanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/dimethylDisulfide-nButanol.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/dimethylDisulfide-tertButylEthylEther.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/dimethylDisulfide-toluene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/dimethylSulfoxide-ethylAcetate.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/dimethylSulfoxide-ethylBenzene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/dimethylSulfoxide-isobutylAcetate.dat` -- **reviewStatus autoPromoted**
@@ -1162,6 +1255,7 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `parameters/NRTL/ethanol-methylTertButylEther.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/ethanol-methylTertPentylEther.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/ethanol-nButanol.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/ethanol-nNDimethylacetamide.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/ethanol-nNDimethylformamide.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/ethanol-nitrobenzene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/ethanol-pCresol.dat` -- **reviewStatus autoPromoted**
@@ -1261,6 +1355,7 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `parameters/NRTL/methylPropionate-nPentane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/methylTertButylEther-methylal.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/methylTertPentylEther-nHeptane.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/methylTertPentylEther-toluene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/methylal-nHexane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/methylcyclohexane-pXylene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/monochlorobenzene-nHeptane.dat` -- **reviewStatus autoPromoted**
@@ -1277,6 +1372,7 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `parameters/NRTL/nButanol-pCresol.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/nButanol-pXylene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/nButanol-tetrahydrofuran.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/nButanol-toluene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/nButanol-vinylAcetate.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/nButanol-water.dat` -- **reviewStatus interim**
 * `parameters/NRTL/nButylAcetate-nOctane.dat` -- **reviewStatus autoPromoted**
@@ -1285,18 +1381,23 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `parameters/NRTL/nDecane-oXylene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/nDecane-pXylene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/nDecane-tetrahydrofuran.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/nHeptane-nNDimethylacetamide.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/nHeptane-nNonane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/nHeptane-nPropylAcetate.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/nHeptane-nPropylFormate.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/nHeptane-oCresol.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/nHeptane-tertButylEthylEther.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/nHeptane-tetrahydrofuran.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/nHeptane-thiophene.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/nHeptane-toluene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/nHeptane-trichloroethylene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/nHexane-nNDimethylformamide.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/nHexane-nPropylAcetate.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/nHexane-nPropylFormate.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/nHexane-oXylene.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/nHexane-toluene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/nNDimethylacetamide-nNDimethylformamide.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/nNDimethylacetamide-toluene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/nNDimethylformamide-nOctane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/nNDimethylformamide-nitrobenzene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/nNDimethylformamide-oCresol.dat` -- **reviewStatus autoPromoted**
@@ -1334,6 +1435,7 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `parameters/NRTL/propanal-propionicAcid.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/styrene-sulfolane.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/sulfolane-toluene.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/tertButylEthylEther-toluene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/tetraethyleneGlycol-water.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/tetrahydrofuran-trichloroethylene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/thiophene-toluene.dat` -- **reviewStatus autoPromoted**
@@ -1362,4 +1464,4 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `species/SO4.dat` -- **reviewStatus interim**
 * `species/Sr.dat` -- **reviewStatus interim**
 
-Totals: 1036 record(s) with structured review metadata, 47 detected by text marker only (legacy fallback -- migrate on touch/review).
+Totals: 1138 record(s) with structured review metadata, 47 detected by text marker only (legacy fallback -- migrate on touch/review).

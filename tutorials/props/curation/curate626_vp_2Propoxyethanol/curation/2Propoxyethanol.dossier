@@ -1,0 +1,80 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      2Propoxyethanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        A  4.44871023051;
+        B  1546.384466;
+        C  -75.4140478644;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "90ade6473129590b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Propoxyethanol-vapourPressure-je3002255.dat";
+            doi       "10.1021/je3002255";
+            sha256    "e3a6af8e9ed8830d2c8bc638459c0d5dc7896abc726819b98f05422052b5d452";
+            provenance measured;
+            archiveFile "je3002255.xml";
+            system    "2Propoxyethanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Propoxyethanol-vapourPressure-j.jct.2008.07.024.dat";
+            doi       "10.1016/j.jct.2008.07.024";
+            sha256    "abaaa839aba5db949d7b3aecfe74e1047aabc8edfc763873b04308eafd0ed9d5";
+            provenance measured;
+            archiveFile "j.jct.2008.07.024.xml";
+            system    "2Propoxyethanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 303.15; max 422.75; n 11; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.999978452486;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

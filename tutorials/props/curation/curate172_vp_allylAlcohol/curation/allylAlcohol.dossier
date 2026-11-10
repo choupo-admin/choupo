@@ -1,0 +1,89 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      allylAlcohol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        A  4.70434351854;
+        B  1398.82103022;
+        C  -72.7854693401;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "0a27ad837b6c4250";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/allylAlcohol-vapourPressure-je0499519.dat";
+            doi       "10.1021/je0499519";
+            sha256    "c18c70e2c9b2192d9bc8e3aaecbd58f28488e696d68234b77615db19e48121ab";
+            provenance measured;
+            archiveFile "je0499519.xml";
+            system    "allylAlcohol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/allylAlcohol-vapourPressure-je060088h.dat";
+            doi       "10.1021/je060088h";
+            sha256    "05351c8ef327e099415ebee17ed712adb667436548fbc031286abb4a3110d08a";
+            provenance measured;
+            archiveFile "je060088h.xml";
+            system    "allylAlcohol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/allylAlcohol-vapourPressure-je400885z.dat";
+            doi       "10.1021/je400885z";
+            sha256    "952b467f5ae68dc2fe34f089f817c7d0b847bb356e15e4423d40a319b3965575";
+            provenance measured;
+            archiveFile "je400885z.xml";
+            system    "allylAlcohol";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 311.42; max 546.5; n 29; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.999985397148;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);
