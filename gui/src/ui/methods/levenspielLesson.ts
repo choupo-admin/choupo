@@ -36,49 +36,49 @@ export const LEVENSPIEL_STEPS: readonly LessonStep[] = [
     title: "The plot that turns a rate into a volume",
     body: "Both continuous-reactor design equations are built from the same "
       + "quantity: dX divided by the rate at which the limiting reactant is "
-      + "consumed.  So plot the RECIPROCAL rate, 1/(−r_A), against conversion "
-      + "X, and the integral you would otherwise do by hand becomes an AREA "
+      + "consumed.  So plot the reciprocal rate, 1/(−r_A), against conversion "
+      + "X, and the integral you would otherwise do by hand becomes an area "
       + "you can see.  Multiply that area by F_A0, the molar feed rate of the "
-      + "limiting reactant, and it is a volume in m³.  AREA IS VOLUME — that "
+      + "limiting reactant, and it is a volume in m³.  Area is volume — that "
       + "is the whole method, and everything below is geometry on this one "
       + "picture.",
     formula: String.raw`\begin{array}{lll}
-\text{PFR:} & V = F_{A0} \displaystyle\int_0^X \frac{\mathrm{d}X}{-r_A} & \text{the AREA under the curve}\\[8pt]
-\text{CSTR:} & V = F_{A0}\, \dfrac{X}{\left.(-r_A)\right|_\mathrm{exit}} & \text{a RECTANGLE of that height}
+\text{PFR:} & V = F_{A0} \displaystyle\int_0^X \frac{\mathrm{d}X}{-r_A} & \text{the area under the curve}\\[8pt]
+\text{CSTR:} & V = F_{A0}\, \dfrac{X}{\left.(-r_A)\right|_\mathrm{exit}} & \text{a rectangle of that height}
 \end{array}`,
     where: [
-      { sym: "V", means: "The reactor VOLUME — the quantity this whole "
+      { sym: "V", means: "The reactor volume — the quantity this whole "
         + "construction exists to produce.  Note the direction of travel: in "
-        + "the engine the volume is an INPUT and the conversion is the "
+        + "the engine the volume is an input and the conversion is the "
         + "result; this diagram reads the same equation backwards, sizing a "
         + "reactor for a conversion you want.", unit: "m³" },
-      { sym: "F_{A0}", means: "The molar feed rate of the LIMITING reactant A: "
+      { sym: "F_{A0}", means: "The molar feed rate of the limiting reactant A: "
         + "its inlet mole fraction times the total inlet molar flow, fixed "
         + "once and used as the reference for every conversion on the page.  "
         + "It is what turns an area into a volume.", unit: "mol/s" },
-      { sym: "X", means: "CONVERSION of the limiting reactant — the fraction "
+      { sym: "X", means: "Conversion of the limiting reactant — the fraction "
         + "of A fed that has been consumed.  In this corpus the letter X "
-        + "carries three OTHER meanings you will meet on neighbouring pages: "
+        + "carries three other meanings you will meet on neighbouring pages: "
         + "dry-basis moisture content in drying, a solute mole ratio in "
         + "Kremser, and the Gilliland abscissa in the shortcut-column page.  "
         + "Here it is conversion and nothing else.", unit: "dimensionless" },
       { sym: "\\mathrm{d}X",
         means: "A differential slice of conversion — the width of "
         + "one strip under the curve.  The engine does not march in X: it "
-        + "integrates the mole balance in reactor VOLUME and computes X at "
+        + "integrates the mole balance in reactor volume and computes X at "
         + "each stored point.  The two are the same equation with the "
         + "variable changed, which is why a strip's area is a slice of volume "
         + "per mole of feed.", unit: "dimensionless" },
       { sym: "r_A", means: "The rate of reaction OF A per unit volume.  Since "
         + "A is a reactant its stoichiometric coefficient is negative, so "
-        + "r_A itself is NEGATIVE while the reaction runs forward.  That is "
+        + "r_A itself is negative while the reaction runs forward.  That is "
         + "why the minus sign in −r_A is written explicitly: it makes the "
         + "plotted quantity a positive rate of CONSUMPTION.  On a reversible "
         + "law it goes negative past equilibrium — the sign is information, "
         + "not an error.", unit: "mol/(m³·s)" },
     ],
     note: "Read the ordinate as a price: a slow reaction is a small −r_A, "
-      + "hence a TALL ordinate, hence an expensive reactor.  Where the curve "
+      + "hence a tall ordinate, hence an expensive reactor.  Where the curve "
       + "is high, conversion is dear; where it is low, it is cheap.  The "
       + "construction needs one condition to mean anything — that −r_A be a "
       + "function of X alone.  Both reactors on this page satisfy it the "
@@ -91,7 +91,7 @@ export const LEVENSPIEL_STEPS: readonly LessonStep[] = [
     body: "A tubular reactor changes composition along its length: each slice "
       + "works at its own local conversion, so the reactor accumulates the "
       + "whole area from 0 up to the outlet X.  A perfectly mixed tank has no "
-      + "such gradient.  The vessel is at its OUTLET composition everywhere, "
+      + "such gradient.  The vessel is at its outlet composition everywhere, "
       + "so every mole of feed is converted at the exit rate — one rate, for "
       + "the entire job.  That is why its volume is a conversion divided by a "
       + "single number, and why on this plot it is a rectangle: width X_exit, "
@@ -107,7 +107,7 @@ V_\mathrm{CSTR} &= \frac{F_{A0}\, X_\mathrm{exit}}{\left.(-r_A)\right|_\mathrm{e
         + "mole balance of an ideal CSTR, drawn instead of solved.",
         unit: "m³" },
       { sym: "X_\\mathrm{exit}",
-        means: "The conversion at the tank's outlet — ONE "
+        means: "The conversion at the tank's outlet — one "
         + "number, not a profile, because a perfectly mixed vessel has no "
         + "gradient: the whole vessel sits at its exit state.  That is also "
         + "why the rectangle's height is read at the exit and not anywhere "
@@ -123,9 +123,9 @@ V_\mathrm{CSTR} &= \frac{F_{A0}\, X_\mathrm{exit}}{\left.(-r_A)\right|_\mathrm{e
     n: 3,
     title: "Ordinary kinetics: the rectangle swallows the area",
     body: "For a rate that falls as the reactant is consumed — any positive "
-      + "order in that reactant at a FIXED temperature, which is most of what "
+      + "order in that reactant at a fixed temperature, which is most of what "
       + "you meet (an adiabatic exothermic reactor heats up as it converts, "
-      + "and its rate can rise instead) — 1/(−r_A) RISES with X.  The exit ordinate is then the highest one on the "
+      + "and its rate can rise instead) — 1/(−r_A) rises with X.  The exit ordinate is then the highest one on the "
       + "whole interval, so the rectangle drawn at that height contains the "
       + "entire area beneath the curve.  Same feed, same chemistry, same "
       + "conversion: the stirred tank needs the larger volume, and the "
@@ -137,11 +137,11 @@ V_\mathrm{CSTR} &= \frac{F_{A0}\, X_\mathrm{exit}}{\left.(-r_A)\right|_\mathrm{e
 \end{aligned}`,
     where: [
       { sym: "V_\\mathrm{PFR}",
-        means: "The volume of the tubular reactor — the AREA "
+        means: "The volume of the tubular reactor — the area "
         + "under the curve.  The inequality on this line is the whole reason "
         + "a plug-flow reactor is smaller than a tank for the same job "
         + "whenever the ordinate rises with conversion: the tank pays the "
-        + "EXIT price for every mole, the tube pays each mole its own price.",
+        + "exit price for every mole, the tube pays each mole its own price.",
         unit: "m³" },
     ],
     note: "The same reading explains tanks in SERIES.  Each tank is its own "
@@ -156,19 +156,19 @@ V_\mathrm{CSTR} &= \frac{F_{A0}\, X_\mathrm{exit}}{\left.(-r_A)\right|_\mathrm{e
     title: "The surprise: when the curve falls, the CSTR wins",
     body: "Nothing in that geometry cared which way the curve ran — the "
       + "rising came from the kinetics, not from the method.  Any rate that "
-      + "IMPROVES with conversion turns the picture over.  The classical case "
+      + "improves with conversion turns the picture over.  The classical case "
       + "is autocatalysis, where a product accelerates the reaction: at zero "
       + "conversion there is almost nothing to catalyse it, so 1/(−r_A) "
       + "starts high, falls as the product builds up, and climbs again only "
       + "once the reactant runs short.  On that falling branch the exit "
-      + "ordinate is the LOWEST on the interval, the rectangle sits UNDER the "
+      + "ordinate is the lowest on the interval, the rectangle sits under the "
       + "curve, and the stirred tank is the smaller reactor.  A mixed tank "
       + "delivers fresh reactant straight into a product-rich environment; a "
       + "tubular reactor has to crawl through the slow inlet region first.  "
       + "If the law has no uncatalysed path at all, the rate at X = 0 is "
       + "exactly zero, the ordinate is unbounded, and a plug-flow reactor "
       + "cannot start when it is fed no product — it needs a seed of product in the "
-      + "feed, or a recycle.  A stirred tank does not CREATE product "
+      + "feed, or a recycle.  A stirred tank does not create product "
       + "either.  With no product in the feed or in the initial charge, "
       + "the product balance dC_P/dt = −C_P/τ + k·C_A·C_P is zero at C_P = "
       + "0, so the washout state (no product, reactant leaving as it "
@@ -176,7 +176,7 @@ V_\mathrm{CSTR} &= \frac{F_{A0}\, X_\mathrm{exit}}{\left.(-r_A)\right|_\mathrm{e
       + "state exists beside it only when k·C_A0·τ > 1 (C_A0 the inlet "
       + "concentration of A, τ the residence time), and the tank reaches it "
       + "only if product is present at some moment: an initial charge, an "
-      + "inoculum, an initiation step.  What the tank does is SUSTAIN a "
+      + "inoculum, an initiation step.  What the tank does is sustain a "
       + "seed, by back-mixing: product already inside is carried straight "
       + "into the fresh feed, which a plug-flow reactor does not do without "
       + "a recycle.  Whether a steady state exists and whether a start-up "
@@ -186,13 +186,13 @@ V_\mathrm{CSTR} &= \frac{F_{A0}\, X_\mathrm{exit}}{\left.(-r_A)\right|_\mathrm{e
 C_P = 0 \text{ at } X = 0 \;&\Rightarrow\; -r_A = 0 \;\Rightarrow\; \frac{1}{-r_A} \text{ unbounded there}
 \end{aligned}`,
     where: [
-      { sym: "C_A", means: "The molar CONCENTRATION of A that the rate law "
+      { sym: "C_A", means: "The molar concentration of A that the rate law "
         + "sees — a molar flow divided by a volumetric flow.  The volumetric "
-        + "flow is evaluated once at the INLET composition and held constant "
+        + "flow is evaluated once at the inlet composition and held constant "
         + "through the reactor, which is the ordinary constant-density "
         + "reading and what makes a single residence time well defined.",
         unit: "mol/m³" },
-      { sym: "C_P", means: "The concentration of a PRODUCT, formed the same "
+      { sym: "C_P", means: "The concentration of a product, formed the same "
         + "way — there is no separate product path in the engine.  A product "
         + "enters the forward rate only if its stoichiometry entry declares "
         + "its own reaction ORDER; an undeclared product contributes nothing. "
@@ -206,12 +206,12 @@ C_P = 0 \text{ at } X = 0 \;&\Rightarrow\; -r_A = 0 \;\Rightarrow\; \frac{1}{-r_
     note: "Read this off the plot rather than memorising which reactor wins: "
       + "whichever way the curve runs, compare the rectangle at the exit "
       + "height against the area, and the smaller one is the smaller reactor.  "
-      + "NEITHER witness below is autocatalytic — both are pseudo-first-order "
+      + "neither witness below is autocatalytic — both are pseudo-first-order "
       + "in ethanol, so both curves rise — so the falling branch is described "
-      + "here, not demonstrated.  Choupo can express one — but note WHERE: a "
-      + "PRODUCT that declares its own `order` in the stoichiometry list "
+      + "here, not demonstrated.  Choupo can express one — but note where: a "
+      + "product that declares its own `order` in the stoichiometry list "
       + "enters the forward rate like any other species, and the PFR simply "
-      + "integrates it.  The SINGLE-reaction CSTR grammar refuses it by "
+      + "integrates it.  The single-reaction CSTR grammar refuses it by "
       + "name: its extent Newton claims the residual is monotone in the "
       + "extent, which a forward order on a product breaks, so it points you "
       + "at the multi-reaction `reactions ( ... )` grammar instead.  The "
@@ -223,7 +223,7 @@ C_P = 0 \text{ at } X = 0 \;&\Rightarrow\; -r_A = 0 \;\Rightarrow\; \frac{1}{-r_
     title: "Two reactors beat one, and the picture says which two",
     body: "When 1/(−r_A) falls and then rises, neither single reactor is the "
       + "best answer, and the best arrangement is read straight off the "
-      + "curve: a CSTR carried as far as the MINIMUM of 1/(−r_A) — the "
+      + "curve: a CSTR carried as far as the minimum of 1/(−r_A) — the "
       + "cheapest ordinate there is, where its rectangle is at its shallowest "
       + "— followed by a PFR that takes the rest, collecting only the area on "
       + "the rising branch that nothing can avoid.  Each reactor is used "
@@ -233,7 +233,7 @@ C_P = 0 \text{ at } X = 0 \;&\Rightarrow\; -r_A = 0 \;\Rightarrow\; \frac{1}{-r_
     formula: String.raw`\begin{aligned}
 \frac{V_\mathrm{total}}{F_{A0}} &= \frac{X^*}{\left.(-r_A)\right|_{X^*}} + \int_{X^*}^{X_f} \frac{\mathrm{d}X}{-r_A}\\[4pt]
 \frac{\mathrm{d}}{\mathrm{d}X^*} \text{ of that total} &= X^* \frac{\mathrm{d}}{\mathrm{d}X}\!\left[\frac{1}{-r_A}\right] = 0
-\;\Rightarrow\; X^* \text{ at the curve's MINIMUM}
+\;\Rightarrow\; X^* \text{ at the curve's minimum}
 \end{aligned}`,
     where: [
       { sym: "V_\\mathrm{total}",
@@ -248,7 +248,7 @@ C_P = 0 \text{ at } X = 0 \;&\Rightarrow\; -r_A = 0 \;\Rightarrow\; \frac{1}{-r_
         + "in the second line is why: at the minimum the extra volume of "
         + "widening the rectangle exactly matches the strip the tube would "
         + "have cost.", unit: "dimensionless" },
-      { sym: "X_f", means: "The FINAL conversion demanded of the train — the "
+      { sym: "X_f", means: "The final conversion demanded of the train — the "
         + "specification, the thing you were told to achieve.",
         unit: "dimensionless" },
     ],
@@ -256,7 +256,7 @@ C_P = 0 \text{ at } X = 0 \;&\Rightarrow\; -r_A = 0 \;\Rightarrow\; \frac{1}{-r_
       + "gives 1/(−r_A) + X*·d[1/(−r_A)]/dX, and extending the CSTR by dX "
       + "removes exactly 1/(−r_A) of integral from the PFR, so the two "
       + "ordinate terms cancel and only X*·d[1/(−r_A)]/dX is left.  The "
-      + "optimum is where the curve is FLAT — not where the two reactors are "
+      + "optimum is where the curve is flat — not where the two reactors are "
       + "equal in size, and not at any conversion a rule of thumb supplies.",
   },
 ];
@@ -267,7 +267,7 @@ export const LEVENSPIEL_LIMITS: readonly {
   {
     id: "single-reaction",
     title: "One reaction, one ordinate — selectivity is not on this plot.",
-    body: "The curve is drawn for ONE limiting reactant consumed by ONE "
+    body: "The curve is drawn for one limiting reactant consumed by one "
       + "reaction, which is what both witnesses declare. Where reactions run "
       + "in parallel or in series, the reactor with the smaller volume is "
       + "routinely not the one with the better yield of what you wanted: a "
@@ -282,7 +282,7 @@ export const LEVENSPIEL_LIMITS: readonly {
     body: "Both reactors here run isothermal at the feed temperature; "
       + "Choupo's PFR also offers adiabatic and jacketed modes, and this "
       + "construction is not drawn for them. The ordinate only means "
-      + "something if a given conversion implies a given rate in BOTH "
+      + "something if a given conversion implies a given rate in both "
       + "reactors. An adiabatic pair nearly satisfies that, because the "
       + "energy balance ties T to X the same way in each; a cooled reactor or "
       + "an imposed temperature profile along a tube does not, and then two "
@@ -301,13 +301,13 @@ export const LEVENSPIEL_LIMITS: readonly {
   },
   {
     id: "bulk-rate",
-    title: "Rates are evaluated at BULK conditions — η = 1, and no decay.",
+    title: "Rates are evaluated at bulk conditions — η = 1, and no decay.",
     body: "Where a case declares a catalyst loading, the reactors convert a "
       + "per-mass rate constant into a volumetric one and then evaluate the "
       + "rate at the bulk composition and temperature: the effectiveness "
       + "factor is taken as one, which the engine announces rather than "
       + "assumes silently. A real pellet with internal diffusion resistance "
-      + "has η < 1, so an area drawn from bulk rates UNDERSTATES the volume. "
+      + "has η < 1, so an area drawn from bulk rates understates the volume. "
       + "Catalyst decay with time on stream is not modelled at all, and a "
       + "steady plot has no axis to show it on.",
   },
