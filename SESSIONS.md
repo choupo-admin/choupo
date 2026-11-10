@@ -324,3 +324,17 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   takes ~7 minutes.  Please also run bin/runTests --gui (owed since the
   C281 step-3 schema change, the PropertyEvaluator key and the Database.cpp
   line moves).
+- [open] cloud -> laptop, 2026-11-10 UTC: Vitor said "avanca" on the move.
+  C295 (DEV.md 4c): the GENERATED curation cases (header "Written by
+  bin/choupo-curate", which includes curate20..43) go to
+  data/curation/{pairs,vp,components}/ ; curate01..19 stay in
+  tutorials/props/curation/.  One general, branch c295-curation-root, built
+  on top of the held C290 merge so C290's cases are BORN there; nothing is
+  pushed until it is validated, and C290 stays held until C295 lands.  YOURS
+  when it lands (gui/): dossier.ts and evidence.ts must read
+  data/curation/**/curation/*.dossier (a narrow glob -- the dossiers only,
+  not the cases), the bundle exclusion of generated cases becomes
+  unnecessary (they are outside tutorials/), and the tests that name
+  tests/pairsCatalogueTiers, evidenceSynth, workflow* read the new path.
+  Tell me if you prefer to do the gui side on your branch first so both land
+  together; I will not push C295 before you say the gui side is ready.

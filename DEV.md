@@ -3402,6 +3402,24 @@ accepts today, and that is a policy call.
 > Database.cpp were moved by hand and each checked to carry its `contains`
 > text), a full sweep.
 
+> **C295 (Vitor, 2026-11-10: "Avanca como achares melhor", after the cloud's
+> answer to the laptop's analysis).  THE GENERATED CURATION CASES LEAVE
+> `tutorials/`.**  The cases `bin/choupo-curate` (and `pairs_c283.py`,
+> `pairs_px.py`, `c287_new_components.py`) write are the TRACE of how a
+> catalogue record was fitted, not tutorials: they moved to `data/curation/`
+> beside the data they justify (`pairs/`, `vp/`, `components/`, by origin
+> and not by number -- the numbers of three generals overlap).  The split is
+> by the header "Written by `bin/choupo-curate`", NOT by "number < 100":
+> curate20..43 are generated.  curate01..19 (hand-written, teaching) stay in
+> `tutorials/props/curation/`.  One general does it in one branch, BEFORE
+> C290 lands (C290's cases are born in the new root): `git mv`, every
+> `fittedInCase` rewritten on BOTH the catalogue record and its sealed case
+> copy and the cases re-sealed, the tools, the gates (list in the C295
+> RESULT), `bin/runTests`/`listCases`/`runCase`, the generated counters and
+> the guides.  The `gui/` readers (dossier.ts, evidence.ts, the bundle glob,
+> their tests) are the laptop's.  A fresh session note: the curation path is
+> `data/curation/<origin>/curateNN_<name>`.
+
 > **C294 (Vitor, 2026-11-10, on seeing only NRTL pair folders: "Mas esse
 > ajuste e rapido e devia ter sido feito! Eventualmente ate pode melhorar o
 > ajuste!").  EVERY FITTED PAIR GETS THE OTHER ACTIVITY MODELS TOO.**  The
