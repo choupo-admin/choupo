@@ -3298,6 +3298,19 @@ accepts today, and that is a policy call.
 > unreachable (no precedent), and whether curate04-14 drop their tracked
 > series.  Record: docs/design/binary-pairs-from-open-measurements.md section 8.
 
+> **C284 (Vitor, 2026-11-10: "faz favor de acelerar e comecares a produzir
+> componentes e binarios! ... os componentes tem classificacoes e os binarios
+> so se devem fazer para compostos que os aceitem").  PRODUCE PAIRS IN BULK,
+> ONLY FOR COMPONENTS WHOSE CLASS ACCEPTS ONE.**  An activity-coefficient pair
+> (NRTL, from bubble-temperature VLE) is fitted only when BOTH components are
+> volatile molecular liquids: no `role nonvolatile` or `role solute` (Henry),
+> no `dissociatesTo` (electrolyte), not an ion or a solid, and the archive
+> data lie below each component's Tc.  Every other pair is refused BY NAME
+> with its class, never fitted.  `bin/choupo-curate pair` runs over every
+> archive pair that qualifies, under C283 (all laboratories, blatant outliers
+> dropped by name, accepted at max 5 % relative / under 1 K), autoPromoted
+> with humanReviewed false, and reports the counts.
+
 > **C283 (Vitor, 2026-11-10, on the vapour-pressure fits that failed their
 > held-out band: "isto nao e ciencia exata ... Por default um erro relativo de
 > 5% chega e sobra! E um erro inferior a 1 grau K tambem!").  THE DEFAULT
