@@ -42,31 +42,31 @@ export const SOLVENT_STEPS: readonly LessonStep[] = [
     n: 1,
     title: "Which solvent, for what, at what temperature",
     body: "A formulator does not ask what a solvent's parameters are; she "
-      + "asks which solvent, or which blend, will take up THIS substance -- a "
+      + "asks which solvent, or which blend, will take up this substance -- a "
       + "polymer to be coated, a resin to be thinned, a dye to be carried -- "
       + "at the temperature the process runs at.  Hansen's answer (The Three "
       + "Dimensional Solubility Parameter and Solvent Diffusion Coefficient, "
       + "1967) is geometric.  Every liquid gets three numbers, the dispersion, "
       + "polar and hydrogen-bonding parts of its cohesive energy density, "
       + "which add in quadrature to the single Hildebrand parameter of the "
-      + "solubility-parameter lesson.  A SOLUTE gets the same three numbers "
+      + "solubility-parameter lesson.  A solute gets the same three numbers "
       + "plus a fourth: the centre of the cloud of solvents observed to "
       + "dissolve it, and the radius of that cloud.  Choupo reads the triple "
-      + "from a hansen block on each record, and REQUIRES the temperature the "
+      + "from a hansen block on each record, and requires the temperature the "
       + "placement was made at beside it (Component.cpp:247): a triple with "
       + "no temperature is a number from an unstated state.  The radius is "
       + "optional, because a solvent has none (Component.cpp:263).",
     formula: String.raw`\delta^2 = \delta_d^2 + \delta_p^2 + \delta_h^2`,
     where: [
-      { sym: "\\delta", means: "the Hildebrand solubility parameter, the square root of the cohesive energy density", unit: "MPa^1/2" },
-      { sym: "\\delta_d", means: "its dispersion (London) part", unit: "MPa^1/2" },
-      { sym: "\\delta_p", means: "its permanent-dipole (polar) part", unit: "MPa^1/2" },
-      { sym: "\\delta_h", means: "its hydrogen-bonding part", unit: "MPa^1/2" },
+      { sym: "\\delta", means: "the Hildebrand solubility parameter, the square root of the cohesive energy density", unit: "MPa½" },
+      { sym: "\\delta_d", means: "its dispersion (London) part", unit: "MPa½" },
+      { sym: "\\delta_p", means: "its permanent-dipole (polar) part", unit: "MPa½" },
+      { sym: "\\delta_h", means: "its hydrogen-bonding part", unit: "MPa½" },
     ],
-    note: "The thesis prints its parameters in (cal/cm3)^1/2; the records "
-      + "convert to the engine's Pa^1/2 by the square root of 4.184e6 and "
+    note: "The thesis prints its parameters in (cal/cm3)½; the records "
+      + "convert to the engine's Pa½ by the square root of 4.184e6 and "
       + "keep the thesis's own digits in a comment beside each value.  The "
-      + "temperature is NOT decorative: no correction exists in this engine, "
+      + "temperature is not decorative: no correction exists in this engine, "
       + "so the parameters are held constant at their reference temperature "
       + "as an approximation and the run says so (HansenMixture.cpp:279); "
       + "the declared T decides one thing only, the phase check of page 3.",
@@ -86,12 +86,12 @@ export const SOLVENT_STEPS: readonly LessonStep[] = [
       + "not measure would be an invented one.",
     formula: String.raw`R_a^2 = 4\,(\delta_d - \delta_{d0})^2 + (\delta_p - \delta_{p0})^2 + (\delta_h - \delta_{h0})^2, \qquad \mathrm{RED} = \frac{R_a}{R_0}`,
     where: [
-      { sym: "R_a", means: "the Hansen distance from the solvent (or blend) to the solute's centre", unit: "MPa^1/2" },
-      { sym: "\\delta_{d0}", means: "the solute's dispersion parameter, the centre of its sphere", unit: "MPa^1/2" },
-      { sym: "\\delta_{p0}", means: "the solute's polar parameter", unit: "MPa^1/2" },
-      { sym: "\\delta_{h0}", means: "the solute's hydrogen-bonding parameter", unit: "MPa^1/2" },
+      { sym: "R_a", means: "the Hansen distance from the solvent (or blend) to the solute's centre", unit: "MPa½" },
+      { sym: "\\delta_{d0}", means: "the solute's dispersion parameter, the centre of its sphere", unit: "MPa½" },
+      { sym: "\\delta_{p0}", means: "the solute's polar parameter", unit: "MPa½" },
+      { sym: "\\delta_{h0}", means: "the solute's hydrogen-bonding parameter", unit: "MPa½" },
       { sym: "\\mathrm{RED}", means: "the relative energy difference: inside the sphere below 1, outside above 1", unit: "-" },
-      { sym: "R_0", means: "the solute's interaction radius, the radius of its sphere -- a measured fit, declared on its record or absent", unit: "MPa^1/2" },
+      { sym: "R_0", means: "the solute's interaction radius, the radius of its sphere -- a measured fit, declared on its record or absent", unit: "MPa½" },
     ],
   },
   // ---- Page 2: predict first -------------------------------------------------
@@ -106,22 +106,22 @@ export const SOLVENT_STEPS: readonly LessonStep[] = [
       + "theorem.  It assumes that each solvent keeps its own split of "
       + "cohesive energy when mixed, and that the mixture's volume is the "
       + "sum of the parts.  It is also the rule Hansen checked his placements "
-      + "against: two NON-solvents lying on opposite sides of a solute's "
+      + "against: two non-solvents lying on opposite sides of a solute's "
       + "sphere give a blend that lies inside it, and he reports that this "
       + "was always found to be the case, with a very few boundary "
       + "exceptions (thesis, Section 2.5).  Before the engine shows you the "
-      + "curve, PREDICT: at which volume fraction of the second solvent is "
+      + "curve, predict: at which volume fraction of the second solvent is "
       + "the blend closest to the target?  Set your guess below and commit "
       + "it; the curve stays hidden until you do.",
     formula: String.raw`\delta_{k,\mathrm{mix}} = \sum_i \phi_i\, \delta_{k,i}, \qquad k = d,\, p,\, h`,
     where: [
-      { sym: "\\delta_{k,\\mathrm{mix}}", means: "the blend's parameter of kind k", unit: "MPa^1/2" },
+      { sym: "\\delta_{k,\\mathrm{mix}}", means: "the blend's parameter of kind k", unit: "MPa½" },
       { sym: "k", means: "which of the three parts: dispersion, polar or hydrogen bonding", unit: "-" },
       { sym: "d", means: "the dispersion part, as an index", unit: "-" },
       { sym: "p", means: "the polar part, as an index", unit: "-" },
       { sym: "h", means: "the hydrogen-bonding part, as an index", unit: "-" },
       { sym: "\\phi_i", means: "the volume fraction of solvent i in the blend", unit: "-" },
-      { sym: "\\delta_{k,i}", means: "solvent i's parameter of kind k", unit: "MPa^1/2" },
+      { sym: "\\delta_{k,i}", means: "solvent i's parameter of kind k", unit: "MPa½" },
       { sym: "i", means: "a solvent of the blend", unit: "-" },
     ],
     note: "A composition declared by mass or by mole is converted to volume "
@@ -155,7 +155,7 @@ export const SOLVENT_STEPS: readonly LessonStep[] = [
       { sym: "f_p", means: "the Teas polar fraction", unit: "-" },
       { sym: "f_h", means: "the Teas hydrogen-bonding fraction; the three sum to one", unit: "-" },
     ],
-    note: "The triangle NORMALISES THE MAGNITUDE AWAY: two solvents with the "
+    note: "The triangle normalises the magnitude away: two solvents with the "
       + "same balance of forces and very different cohesive strength plot at "
       + "the same point, so the triangle shows the character of the "
       + "interaction and never its strength.  Read it beside the Ra curve, "
@@ -164,18 +164,18 @@ export const SOLVENT_STEPS: readonly LessonStep[] = [
   {
     n: 5,
     title: "Is the blend one liquid?  Three answers",
-    body: "The mixture rule describes ONE liquid.  At every blend point the "
+    body: "The mixture rule describes one liquid.  At every blend point the "
       + "engine asks the case's own activity model whether the solvent pair "
       + "is stable as one liquid, through Michelsen's tangent-plane test -- "
       + "the same test the flash's phaseSet auto runs "
       + "(HansenMixture.cpp:407-409; a negative minimum tangent-plane "
       + "distance means a second liquid, StabilityTest.cpp:221) -- and "
-      + "publishes a word.  HOMOGENEOUS: one liquid, the rule applies with "
-      + "its assumptions.  TWO-PHASE: a second liquid; the engine REFUSES to "
+      + "publishes a word.  Homogeneous: one liquid, the rule applies with "
+      + "its assumptions.  Two-phase: a second liquid; the engine refuses to "
       + "represent the pair as one homogeneous solvent there -- no averaged "
       + "triple, no Ra, no RED for that point (HansenMixture.cpp:412).  A "
       + "two-phase pair is not useless, it may serve an extraction; it is "
-      + "only not one solvent.  NOT VERIFIED: nothing in the case can "
+      + "only not one solvent.  Not verified: nothing in the case can "
       + "decide -- an ideal liquid has no excess Gibbs energy and can never "
       + "demix, so its answer would be homogeneous for every pair ever "
       + "asked (HansenMixture.cpp:346).  The synthetic example runs on an "
@@ -187,7 +187,7 @@ export const SOLVENT_STEPS: readonly LessonStep[] = [
       { sym: "y", means: "a trial composition the test probes, y = Y / sum of Y", unit: "-" },
       { sym: "Y", means: "the trial as a vector of unnormalised mole numbers, the variable tm is minimised over", unit: "-" },
       { sym: "Y_i", means: "the unnormalised mole numbers of the trial, component i", unit: "-" },
-      { sym: "\\gamma_i(y)", means: "the activity coefficient of component i at the TRIAL composition y; this is the term that lets a non-ideal liquid fail the test (StabilityTest.cpp:69)", unit: "-" },
+      { sym: "\\gamma_i(y)", means: "the activity coefficient of component i at the trial composition y; this is the term that lets a non-ideal liquid fail the test (StabilityTest.cpp:69)", unit: "-" },
       { sym: "h_i", means: "the logarithm of component i's activity at the blend's own composition, the reference the plane is drawn from", unit: "-" },
       { sym: "\\mathrm{tm}_{\\min}", means: "the smallest tangent-plane distance found over the probes", unit: "-" },
     ],
@@ -210,7 +210,7 @@ export const SOLVENT_STEPS: readonly LessonStep[] = [
     formula: String.raw`\mathrm{RED}(\phi) = \frac{R_a(\phi)}{R_0} < 1 \quad \text{inside the sphere}`,
     where: [
       { sym: "\\phi", means: "the volume fraction of the second solvent along the blend line", unit: "-" },
-      { sym: "R_a(\\phi)", means: "the Hansen distance of the blend at that fraction", unit: "MPa^1/2" },
+      { sym: "R_a(\\phi)", means: "the Hansen distance of the blend at that fraction", unit: "MPa½" },
     ],
     note: "The parameters of this page were placed in 1967 and are decades "
       + "old; the records cite the thesis page and row for each one.  The "
@@ -233,7 +233,7 @@ export const SOLVENT_STEPS: readonly LessonStep[] = [
       + "lie outside it: no blend of these two dissolves polystyrene.  The "
       + "averaged number would have been the best on the line, and it "
       + "describes a solvent that does not exist.  This composition is "
-      + "declared by MOLE, so the page also shows the conversion to volume "
+      + "declared by mole, so the page also shows the conversion to volume "
       + "fractions the engine printed.",
     formula: String.raw`x_i \;\to\; \phi_i = \frac{x_i\, V_i}{\sum_j x_j\, V_j}`,
     where: [
@@ -253,7 +253,7 @@ export const SOLVENT_STEPS: readonly LessonStep[] = [
       + "for that solvent in its Table 2.3 (1 soluble ... 6 no visible "
       + "effect), kept in the case's constant/experimental with the citation "
       + "on every row.  Said plainly: Hansen's sphere for this polymer was "
-      + "DRAWN THROUGH these very observations, so agreement shows that the "
+      + "drawn through these very observations, so agreement shows that the "
       + "transcription and the distance arithmetic reproduce his placement; "
       + "it is a check of the method on its own training set, not an "
       + "independent prediction.  The thesis states its residual itself: "
@@ -273,7 +273,7 @@ export const SOLVENT_STEPS: readonly LessonStep[] = [
     body: "Ra is a distance in a space that was fitted to dissolves / "
       + "does-not-dissolve observations.  A small Ra, or a RED below one, "
       + "says the solvent lies in the region where the substance was "
-      + "OBSERVED to dissolve or swell -- a compatibility indicator in this "
+      + "observed to dissolve or swell -- a compatibility indicator in this "
       + "approach.  No saturation concentration in grams per litre follows "
       + "from it: the engine publishes none and says so on every run "
       + "(HansenMixture.cpp:546).  Nor does the distance know how fast "
@@ -283,7 +283,7 @@ export const SOLVENT_STEPS: readonly LessonStep[] = [
       + "of the blends the geometry allows.",
     formula: String.raw`R_a \;\text{small does not mean}\; c_{\mathrm{sat}} \;\text{large}`,
     where: [
-      { sym: "R_a", means: "the Hansen distance of the solvent or blend from the solute", unit: "MPa^1/2" },
+      { sym: "R_a", means: "the Hansen distance of the solvent or blend from the solute", unit: "MPa½" },
       { sym: "c_{\\mathrm{sat}}", means: "a saturation concentration, which this method does not give", unit: "g/L" },
     ],
   },
