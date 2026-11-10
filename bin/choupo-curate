@@ -42,7 +42,7 @@ the decided rules and decides nothing new:
      (the larger of the two, measured with no pair, by the engine), as a % of
      the held-out mean T, rounded UP to two significant figures; the Antoine
      term is ZERO when the study reports no pure endpoint.
-  6. CASE.  tutorials/props/curation/curateNN_nrtl_<A>_<B> on the shape of
+  6. CASE.  data/curation/pairs/curateNN_nrtl_<A>_<B> on the shape of
      curate06/curate09: two fits from two starts, ideal/UNIFAC/NRTL overlays.
      The declaration (partition, triage, band and its origin sentence) is
      WRITTEN and COMMITTED before any fit runs, so it can be read against the
@@ -91,11 +91,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "bin" / "curate"))
 import check_regressed_pairs as crp  # noqa: E402  (arm f and the record reader: ONE home)
+import curation_roots  # noqa: E402  (where a curation case lives: ONE home, DEV.md 4c C295)
 
 PROPS = ROOT / "choupoProps"
 THERMOML = ROOT / "bin" / "choupo-thermoml"
 IMPORT = ROOT / "bin" / "choupo-import"
-CURATION = ROOT / "tutorials" / "props" / "curation"
+CURATION = curation_roots.PAIRS        # a pair case is born here (C295)
+VP_CURATION = curation_roots.VP        # a vapour-pressure case is born here
 STD_PARAMS = ROOT / "data" / "standards" / "parameters"
 STD_NRTL = STD_PARAMS / "NRTL"
 DECL = "constant/archiveDatasets"
@@ -594,10 +596,14 @@ def triage_text(triage):
 # --------------------------------------------------------------------------
 #  6. the case
 # --------------------------------------------------------------------------
+def curation_case_dirs():
+    """Every curateNN case in every curation root (C295: the roots are
+    curation_roots' to name; a scan for a case looks in all of them)."""
+    return curation_roots.all_case_dirs()
+
+
 def next_number():
-    n = [int(m.group(1)) for p in CURATION.iterdir()
-         if (m := re.match(r"curate(\d+)_", p.name))]
-    return max(n) + 1
+    return max(curation_roots.numbers()) + 1
 
 
 def has_unifac(comp):
@@ -1161,7 +1167,7 @@ def git(args):
 #  9. promotion and its revert
 # --------------------------------------------------------------------------
 def find_case(c1, c2):
-    for p in sorted(CURATION.iterdir()):
+    for p in curation_case_dirs():
         if re.match(rf"curate\d+_nrtl_({re.escape(c1)}_{re.escape(c2)}|"
                     rf"{re.escape(c2)}_{re.escape(c1)})$", p.name) \
                 and (p / DECL).exists():
@@ -1691,7 +1697,7 @@ operations
 
 
 def vp_case_dir(comp):
-    for p in sorted(CURATION.iterdir()):
+    for p in curation_case_dirs():
         if re.match(rf"curate\d+_vp_{re.escape(comp)}$", p.name) and (p / DECL).exists():
             return p
     return None
@@ -1700,7 +1706,7 @@ def vp_case_dir(comp):
 def vp_write_case(pl, number):
     comp = pl["comp"]
     name = f"curate{number:02d}_vp_{comp}"
-    case = CURATION / name
+    case = VP_CURATION / name
     if case.exists():
         refuse(f"{case.relative_to(ROOT)} exists -- a declaration is never rewritten")
     case_rel = case.relative_to(ROOT).as_posix()

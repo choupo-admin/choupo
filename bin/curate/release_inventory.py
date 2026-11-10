@@ -154,6 +154,28 @@ def count_cases_by_tier() -> dict:
     return tiers
 
 
+def count_curation_traces() -> dict:
+    """THE CURATION TRACES (DEV.md 4c C295), counted APART from the tutorials:
+    the cases bin/choupo-curate and its companions write are the trace of how
+    a catalogue record was fitted, not a learning surface.  By origin (the
+    roots bin/curate/curation_roots.py names), with the goldens they ship."""
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import curation_roots
+    by_origin, golden = {}, 0
+    for o in curation_roots.ORIGINS:
+        d = ROOT / curation_roots.CURATION_REL / o
+        n = 0
+        if d.is_dir():
+            for cd in d.glob("*/system/controlDict"):
+                if re.search(r"^\s*application\b", cd.read_text(), re.M):
+                    n += 1
+                    golden += (cd.parent.parent / "expected").is_file()
+        by_origin[o] = n
+    return {"cases": sum(by_origin.values()), "regressionChecks": golden,
+            "byOrigin": by_origin}
+
+
 def released_at() -> str:
     """The release date, from the CHANGELOG header `## [Choupo-XXXX] — YYYY-MM-DD`."""
     ch = (ROOT / "CHANGELOG.md").read_text()
@@ -223,6 +245,9 @@ def build() -> dict:
             #  surface, and these three are.
             "byTier":            count_cases_by_tier(),
         },
+        #  NOT tutorials (DEV.md 4c C295): the generated curation cases, beside
+        #  the data they justify.  Walked and checked by bin/runTests all the same.
+        "curationTraces":        count_curation_traces(),
     }
     c = inv["catalogue"]
     inv["totals"] = {

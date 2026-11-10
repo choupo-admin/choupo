@@ -109,6 +109,17 @@ def walked():
             case = cd.parent.parent
             if (case / ".known-broken").is_file() or (case / "expected").is_file():
                 out.append(case)
+    #  The SECOND walk root (DEV.md 4c C295): the curation traces, any depth,
+    #  exactly as bin/runTests gathers them; the root's one home is
+    #  curation_roots.py.  Its origin folders are families like any other.
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import curation_roots
+    c = ROOT / curation_roots.CURATION_REL
+    if c.is_dir():
+        for cd in sorted(c.glob("**/system/controlDict")):
+            case = cd.parent.parent
+            if not (case.parent / "system" / "controlDict").is_file():
+                out.append(case)
     return [c.relative_to(ROOT).as_posix() for c in out]
 
 

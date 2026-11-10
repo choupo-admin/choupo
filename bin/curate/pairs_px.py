@@ -170,12 +170,10 @@ def other_claims():
             parts = p.stem.split("-")
             if len(parts) >= 2:
                 out.add(frozenset(parts[-2:]))
-        cur = base / "tutorials" / "props" / "curation"
-        if cur.is_dir():
-            for p in cur.iterdir():
-                m = re.match(r"curate\d+_nrtl_([^_]+)_([^_]+)$", p.name)
-                if m:
-                    out.add(frozenset(m.groups()))
+        for p in cc.curation_roots.all_case_dirs(base):   # every root, old and new (C295)
+            m = re.match(r"curate\d+_nrtl_([^_]+)_([^_]+)$", p.name)
+            if m:
+                out.add(frozenset(m.groups()))
     return out
 
 
@@ -323,7 +321,7 @@ def plan(a, b, pmax, work):
 #  the case
 # --------------------------------------------------------------------------
 def next_number():
-    n = [int(m.group(1)) for p in cc.CURATION.iterdir()
+    n = [int(m.group(1)) for p in cc.curation_case_dirs()
          if (m := re.match(r"curate(\d+)_", p.name))]
     return max([FIRST_NUMBER - 1] + [v for v in n if v >= FIRST_NUMBER]) + 1
 
@@ -555,7 +553,7 @@ verbosity     2;
 
 def px_cases():
     out = []
-    for p in sorted(cc.CURATION.iterdir(), key=lambda q: q.name):
+    for p in cc.curation_case_dirs():
         m = re.match(r"curate(\d+)_nrtl_([^_]+)_([^_]+)$", p.name)
         if m and int(m.group(1)) >= FIRST_NUMBER and (p / cc.DECL).exists() \
                 and MARK in (p / "system" / "propsDict").read_text():

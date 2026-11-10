@@ -327,7 +327,7 @@ def plan(a, b, pmax, work):
 #  the case
 # --------------------------------------------------------------------------
 def next_number():
-    n = [int(m.group(1)) for p in cc.CURATION.iterdir()
+    n = [int(m.group(1)) for p in cc.curation_case_dirs()
          if (m := re.match(r"curate(\d+)_", p.name))]
     return max([FIRST_NUMBER - 1] + n) + 1
 
@@ -594,7 +594,7 @@ verbosity     2;
 def case_of(c1, c2):
     """The C283 case of the pair (a C282 pilot case of the same pair is not
     it: it stays as the pilot wrote it)."""
-    for p in sorted(cc.CURATION.iterdir()):
+    for p in cc.curation_case_dirs():
         if re.match(rf"curate\d+_nrtl_({re.escape(c1)}_{re.escape(c2)}|"
                     rf"{re.escape(c2)}_{re.escape(c1)})$", p.name) \
                 and (p / cc.DECL).exists() and is_c283(p):
@@ -989,7 +989,7 @@ def c283_cases():
     """Every case this module wrote (curate100 on), with its pair as the name
     spells it, in number order."""
     out = []
-    for p in sorted(cc.CURATION.iterdir(), key=lambda q: q.name):
+    for p in cc.curation_case_dirs():
         m = re.match(r"curate(\d+)_nrtl_([^_]+)_([^_]+)$", p.name)
         if m and int(m.group(1)) >= FIRST_NUMBER and (p / cc.DECL).exists() and is_c283(p):
             out.append((int(m.group(1)), p, m.group(2), m.group(3)))

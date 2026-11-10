@@ -55,7 +55,7 @@ AND critical constants, it writes data/standards/components/<name>.dat:
   * idealGasHeatCapacity, standardThermochemistry  ESTIMATED by Joback
                (data/standards/parameters/Joback.dat, the table the engine's
                estimateComponent reads; the case
-               tutorials/props/curation/curate287_new_components reproduces
+               data/curation/components/curate287_new_components reproduces
                every number); s_298 DERIVED as (dHf - dGf)/298.15 plus the
                elements' standard entropies (CODATA Key Values).  The archive
                carries no enthalpy of formation or combustion block for any
@@ -91,9 +91,10 @@ CACHE = (Path(os.environ["CHOUPO_THERMOML_HOME"]) if os.environ.get("CHOUPO_THER
          else ROOT / "thirdParty" / "thermoml")
 STD = ROOT / "data" / "standards" / "components"
 JOBACK = ROOT / "data" / "standards" / "parameters" / "Joback.dat"
-CURATION = ROOT / "tutorials" / "props" / "curation"
-REPRO_CASE = "tutorials/props/curation/curate287_new_components"
-REPRO_CASE2 = "tutorials/props/curation/curate699_new_components_estimated"
+sys.path.insert(0, str(ROOT / "bin" / "curate"))
+import curation_roots  # noqa: E402  (where a curation case lives: ONE home, DEV.md 4c C295)
+REPRO_CASE = f"{curation_roots.CURATION_REL}/components/curate287_new_components"
+REPRO_CASE2 = f"{curation_roots.CURATION_REL}/components/curate699_new_components_estimated"
 TOOL = "bin/curate/c287_new_components.py"
 
 #  name, InChIKey, formula, CAS (PubChem by InChIKey; the identity bridge
@@ -611,8 +612,9 @@ def joback(groups):
 #  omega from the pipeline's fitted Antoine
 # --------------------------------------------------------------------------
 def vp_case(name):
-    for p in sorted(CURATION.glob(f"curate*_vp_{name}")):
-        return p
+    for p in curation_roots.all_case_dirs():
+        if re.fullmatch(rf"curate\d+_vp_{re.escape(name)}", p.name):
+            return p
     return None
 
 
