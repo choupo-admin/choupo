@@ -516,7 +516,7 @@ export const DRYING_KNOBS: readonly DryingKnob[] = [
       + String.raw`with \(\Phi = (X - X_\mathrm{eq})/(X_c - X_\mathrm{eq})\): `
       + String.raw`\(n = 1\) is the linear law and its exponential tail; `
       + String.raw`\(n < 1\) keeps the rate high and reaches \(X_\mathrm{eq}\) in `
-      + String.raw`Finite time; \(n > 1\) drops the rate early and leaves an `
+      + String.raw`finite time; \(n > 1\) drops the rate early and leaves an `
       + String.raw`algebraic tail slower than the exponential.  The corner at `
       + String.raw`\(X_c\) and the whole constant-rate period do not move -- the `
       + "curve is a property of the material's internal transport, not of "
@@ -622,7 +622,7 @@ export function knobOverrides(values: DryingKnobValues): ScalarOverride[] {
 // The provenance line, always visible in classroom mode.
 const PROVENANCE =
   `Runs tutorials/${DRYING_WITNESS} (2.0 kg dry sucrose wet to `
-  + String.raw`\(X_0 = 0.30\) kg/kg, 0.5 m2 exposed to declared 60 C air at `
+  + String.raw`\(X_0 = 0.30\) kg/kg, 0.5 m² exposed to declared 60 C air at `
   + String.raw`\(Y = 0.010\)) with your parameters, in your browser `
   + String.raw`(choupoBatch WASM).  \(X\) and \(R\) are the dryer's own `
   + String.raw`trajectory columns; \(X_c\), \(X_\mathrm{eq}\), `
@@ -973,7 +973,7 @@ export function DryingCurveTool(): JSX.Element {
             <Group gap={6} wrap="nowrap" align="center">
               <Loader size="xs" />
               <Text size="xs" c="dimmed">
-                re-integrating the tray — seconds, not instant
+                re-integrating the tray — seconds, not instantly
               </Text>
             </Group>
           )}
@@ -1042,7 +1042,7 @@ export function DryingCurveTool(): JSX.Element {
                 <Group gap="sm" wrap="nowrap" align="center">
                   <Loader size="sm" />
                   <Text size="sm" c="dimmed">
-                    the engine is integrating the tray — seconds, not instant
+                    the engine is integrating the tray — seconds, not instantly
                   </Text>
                 </Group>
               ) : (
