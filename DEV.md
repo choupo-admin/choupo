@@ -3323,6 +3323,35 @@ accepts today, and that is a policy call.
 >  is the error-and-pedagogy pass over all 80 registry ids, four builders in worktrees,
 >  one brief (errors; small improvements; structure kept; unproved physics reported, not
 >  edited); the architect integrates and reads the diffs.
+>  PASS LANDED 2026-11-10 (integ of `c277-pass`, 128 files, +1099/-1092; four builders over
+>  the 76 live ids, each diff read by the architect).  ERRORS FIXED, the ones a student
+>  would have met: exergy (compression LOWERS the entropy term; the temperature rise
+>  outweighs it), bjerrum ("neither pK was an input" contradicted step 4; defaults
+>  298.15 K and 1 mmol/kg named), fug (a hard-coded 10.07 now the run's own N_min),
+>  mccabe (R = L/D), claus-gibbs (a pointer to a line the page does not have; the 2:1
+>  condition gains "the carbon stays in CO2"; G and phi_i glossed), ponchon (sign of Q_C),
+>  property-origins (omega to three decimals), pump-system (no valve knob exists),
+>  declared-pathways (slider STARTS at 525 K), merkel, vanheerden, reaction-enthalpy,
+>  wegstein, relaxation, bode, units added to tables, project history removed from
+>  student prose on four pages.  SHARED: `lessonStep.tsx` draws step body, note and
+>  leadsTo through KaTeX, so C_BM, F_M, F_P lose their underscores (plant-cost,
+>  materials).  Emphasis capitals lowered throughout.
+>  HELD BY: ten gates named by the diff (lesson symbols and references, edutool form,
+>  bjerrum and process prose, pinch P1, relief valve, rules of thumb, method tools,
+>  curator parity) and `--gui` 47 PASS, 7341 tests.  The first integration failed on
+>  three tests that pinned capitals; they follow the text, no numeric assertion moved.
+>  NOT HELD: the physics of a reworded sentence is the architect's reading, no gate.
+>  LEFT ALONE, NOTED (scope: no restructuring): underscores in quiz text, `where[].means`
+>  and tool tables; plain-text math in prose (Re^(-1/4), dT_lm); monospace equations on
+>  cosmo-sac, local-composition, unifac, claus, sour-water; pinch step 5 "excess over
+>  target = cross-pinch + heating below + cooling above" is loose; `rules-of-thumb`
+>  registry `theory: ch:gibbs-reactor` looks like a copy error; four-ways-mixture has
+>  five rungs; sour-water table prints pH to 7 decimals; gmp-layout findings table
+>  units; repo paths in student prose; long paragraphs (front-end-loading 6,
+>  overpressure 1 and 10, process-safety 2 and 13, approach 4, levenspiel 4, merkel,
+>  rayleigh); two claims nobody could check (front-end-loading step 3 confidence
+>  percentages, overpressure step 1 "fifteen times the mass flow"); the Tool.tsx text of
+>  the control/optimisation group was scanned, not read line by line.
 >  10. Also open for the same week, small and decided: declared tables print the source's
 >      significant figures (column14 shows 0.669606 for a three-figure source); pool-fire
 >      legend capitals and `kW^(2/5)/m`.
