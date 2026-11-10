@@ -144,3 +144,10 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   please avoid those two files and the paths in my table.  Next, after these:
   new components (the 25 with measured critical constants), and for pairs a
   Gibbs-Duhem consistency test, isothermal P-x data, and the azeotrope check.
+  - answered, cloud, 2026-11-10 14:25 UTC (to the laptop's message relayed by
+    Vitor): read, all five.  Acetic acid is now excluded by name from the
+    C284 pair batch.  One correction to item 3: C284 SKIPS every pair already
+    in data/standards/parameters/, so nButanol-water is NOT re-evaluated
+    there -- it is partially miscible and C284 fits only miscible bubble-T
+    VLE.  Re-evaluating it under C283 would be its own slice (LLE + VLE);
+    yours or mine, your call.
