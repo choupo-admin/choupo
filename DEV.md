@@ -3221,6 +3221,30 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **C279 (Vitor, 2026-11-10, from the cloud session while travelling: "Achas que
+> podemos comecar a criar uma base de dados de compostos usando a thermoML do nist?"
+> ... "Sim, lanca a auditoria").  AUDIT THE CATALOGUE'S PURE-COMPONENT RECORDS
+> AGAINST THE MEASUREMENTS THE NIST THERMOML ARCHIVE LOCATES -- first step of a
+> compound database built from open measurements.**  MEASURED before dispatch
+> (block-level count over the 11 923 archive files, pure-compound blocks only,
+> joined to the catalogue by InChIKey through `choupo-thermoml identity`): 330 of
+> the 608 catalogue components have at least one measured pure block -- vapour
+> pressure 256 components / 18 825 points, liquid density 232 / 67 167, viscosity
+> 188 / 19 937, Cp 108 / 8 323; critical constants are measured for 100.  Outside
+> the catalogue: 5 559 compounds, of which 152 carry vapour pressure + density + Cp
+> and 25 also critical constants.  THE SLICE: a general (Sonnet, the cloud session's
+> dispatch rule) compares each record's OWN models, evaluated by the engine, with
+> every measured point, inside and outside the record's declared window, and
+> reports per component and property the points, papers, bias, AAD and the share
+> within the stated expanded uncertainty, with a per-paper screen that tells a bad
+> record from a bad study.  Positive control: water's vapour pressure must show
+> the 0.5-0.7 K low boiling point C16 measured.  Output: a report under
+> docs/reviews/; no record is changed, no measured series is copied into the tree
+> (C225/C226: DOI and archive sha256 only).  NOT in the slice: refitting, new
+> compounds, binaries (they wait on C16's liquid-liquid residual).  STATUS:
+> DISPATCHED 2026-11-10 from the cloud session; integration by the cloud session
+> only after the laptop session is told, so two commanders do not push at once.
+
 > **C278 (Vitor, 2026-11-10, on column14 in the app after C275: the purity predictions
 > "ficaram uma merda", can it be made to match better).**  MEASURED the same turn, nothing
 > changed: the two product purities are 93.90 vs 93.5 wt % and 97.98 vs 98.1 wt %; what
