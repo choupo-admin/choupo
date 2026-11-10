@@ -100,6 +100,7 @@ function values(text: string, key: string): number[] {
   return [...text.matchAll(re)].map((m) => Number(m[1]));
 }
 
+//  Emphasis capitals in the lesson text lowered (DEV.md 4c C277); the claims they carried are unchanged.
 describe("overpressure: the shelf, the kind and the links", () => {
   it("is a live construction on the Process safety shelf", () => {
     const t = METHOD_TOOLS.find((m) => m.id === "overpressure");
@@ -471,18 +472,19 @@ describe("overpressure (C112 point 2): operating, design, MAWP and set are four 
   });
   it("step 6 keeps them apart and certifies nothing", () => {
     const t = stepText(6);
-    expect(t).toMatch(/PRELIMINARY design pressure and nothing more/);
+    expect(t).toMatch(/preliminary design pressure and nothing more/i);
     expect(t).toMatch(/No rule of thumb gives a MAWP/);
-    expect(t).toMatch(/ASSUME a MAWP/);
+    expect(t).toMatch(/assume a MAWP/i);
     expect(t).not.toMatch(/used on the loop below, is the larger of 10 %/);
     expect(tree("src/postProcessing/sizing/VesselMechanics.H"))
       .toMatch(/t_wall = P_g D \/ \(2 sigma_allow E - 1\.2 P_g\)/);
     expect(t).toContain("src/postProcessing/sizing/VesselMechanics.H");
     expect(OVERPRESSURE_SOURCES.find((s) => s.id === "design-guide")!.used)
-      .toMatch(/preliminary design pressure.*ASSUMED, never derived/);
+      .toMatch(/preliminary design pressure.*assumed, never derived/i);
     const tool = tree("gui/src/ui/methods/OverpressureTool.tsx");
     expect(tool).not.toContain("MAWP (rule of thumb)");
-    expect(tool).toContain("MAWP — ASSUMED");
+    //  Emphasis capital lowered (DEV.md 4c C277); the label still says assumed.
+  expect(tool).toContain("MAWP — assumed");
   });
 });
 
@@ -508,9 +510,9 @@ describe("overpressure (C112 point 3): a liquid chokes at the vena contracta, as
   it("step 10 no longer says a liquid does not choke, and names the four cases", () => {
     const t = stepText(10);
     expect(t).not.toMatch(/A liquid does not choke/);
-    for (const w of ["SINGLE-PHASE LIQUID", "CAVITATION WITH RECOVERY", "FLASHING",
-      "CHOKED LIQUID FLOW"])
-      expect(t).toContain(w);
+    for (const w of ["single-phase liquid", "cavitation with recovery", "flashing",
+      "choked liquid flow"])
+      expect(t.toLowerCase()).toContain(w);
     expect(t).toMatch(/NOT universal/);
     expect(step(10).formula).toMatch(/P_\\mathrm\{vc\} > P_v/);
   });
@@ -563,14 +565,14 @@ describe("overpressure (C112 point 4): an accumulated ENERGY is not a released P
     expect(step(14).formula).not.toMatch(/\\propto/);
     expect(step(14).formula).toMatch(/E_\\mathrm\{ac\}.*\\int Q_\\mathrm\{r\}/);
     const t14 = stepText(14);
-    expect(t14).toMatch(/ENERGY, in joules/);
-    expect(t14).toMatch(/POWER, in watts/);
+    expect(t14).toMatch(/energy, in joules/i);
+    expect(t14).toMatch(/power, in watts/i);
     expect(t14).toMatch(/peak power cannot be read off the accumulation/);
     const t13 = stepText(13);
     expect(t13).toMatch(/not DIERS sizing/);
-    expect(t13).toMatch(/ENTHALPY out/);
-    expect(t13).toMatch(/FLASHES/);
-    expect(step(13).where!.find((w) => w.sym === "Q_\\mathrm{r}")!.means).toMatch(/POWER/);
+    expect(t13).toMatch(/enthalpy out/i);
+    expect(t13).toMatch(/flashes/i);
+    expect(step(13).where!.find((w) => w.sym === "Q_\\mathrm{r}")!.means).toMatch(/power/i);
   });
   it("the accumulation means what the Process-safety page says it means", () => {
     const ours = step(14).where!.find((w) => w.sym === "X_\\mathrm{ac}")!.means;
@@ -589,14 +591,14 @@ describe("overpressure (C112 points 10, 11): disposal, and the compressor's flow
   it("the disposal inequality is necessary, not sufficient", () => {
     expect(step(12).formula).toMatch(/necessary, not sufficient/);
     const t = stepText(12);
-    expect(t).toMatch(/NECESSARY, and nowhere near sufficient/);
+    expect(t).toMatch(/necessary, and nowhere near sufficient/i);
     for (const w of ["knock-out drum", "flare", "scrubber", "back pressure"])
       expect(t).toContain(w);
   });
   it("the blocked-outlet compressor's nominal flow is a declared hypothesis", () => {
     const t = stepText(2);
-    expect(t).toMatch(/DIDACTIC HYPOTHESIS/);
-    expect(t).toMatch(/NOMINAL flow/);
+    expect(t).toMatch(/didactic hypothesis/i);
+    expect(t).toMatch(/nominal flow/i);
     for (const w of ["curve", "antisurge", "trips", "topology"]) expect(t).toContain(w);
     expect(tree("gui/src/ui/methods/OverpressureTool.tsx"))
       .toContain("HYPOTHESIS: the compressor&apos;s nominal flow");

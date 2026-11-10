@@ -205,7 +205,7 @@ function LadderBench(): JSX.Element {
           <Table.Tbody>
             <Table.Tr><Table.Td>operating</Table.Td><Table.Td>{bar(opG)}</Table.Td><Table.Td>{bar(opG + P_ATM_PA)}</Table.Td></Table.Tr>
             <Table.Tr><Table.Td>design pressure, preliminary (rule of thumb)</Table.Td><Table.Td>{bar(design)}</Table.Td><Table.Td>{bar(design + P_ATM_PA)}</Table.Td></Table.Tr>
-            <Table.Tr><Table.Td>MAWP — ASSUMED, {fx(mawp / design, 2)} × design (not certified)</Table.Td><Table.Td>{bar(mawp)}</Table.Td><Table.Td>{bar(mawp + P_ATM_PA)}</Table.Td></Table.Tr>
+            <Table.Tr><Table.Td>MAWP — assumed, {fx(mawp / design, 2)} × design (not certified)</Table.Td><Table.Td>{bar(mawp)}</Table.Td><Table.Td>{bar(mawp + P_ATM_PA)}</Table.Td></Table.Tr>
             <Table.Tr><Table.Td>set, first device — taken at the MAWP</Table.Td><Table.Td>{bar(ladder.set)}</Table.Td><Table.Td>{bar(ladder.set + P_ATM_PA)}</Table.Td></Table.Tr>
             {c === "multiple" && (
               <Table.Tr><Table.Td>highest set, additional devices</Table.Td><Table.Td>{bar(SET_LIMITS.additional * mawp)}</Table.Td><Table.Td>{bar(SET_LIMITS.additional * mawp + P_ATM_PA)}</Table.Td></Table.Tr>
@@ -221,7 +221,7 @@ function LadderBench(): JSX.Element {
         No engine run: this is the arithmetic of step 6 on your numbers.  The
         design pressure is the Design Guide&apos;s rule of thumb, max(1.1 ×
         operating, operating + 1.7 bar), here {design > 1.1 * opG + 1 ? "the +1.7 bar floor" : "the 10 %"};
-        it is a preliminary design pressure and no more.  The MAWP is YOUR
+        it is a preliminary design pressure and no more.  The MAWP is your
         assumption about the built vessel, at least the design pressure (a
         ratio of 1 is the lowest it can be); a real one comes from the
         vessel&apos;s mechanical design and its code stamp, and nothing here
@@ -246,7 +246,7 @@ function LoopBench(): JSX.Element {
     const out = {} as Record<LoopOp, number>;
     for (const op of LOOP_OPS) {
       const opG = LOOP_OPERATING[op].P_Pa - P_ATM_PA;
-      //  The MAWP ASSUMED equal to the preliminary design pressure (step 6).
+      //  The MAWP assumed equal to the preliminary design pressure (step 6).
       out[op] = relievingPressureAbs(preliminaryLadder(opG).mawp, c);
     }
     return out;
@@ -306,7 +306,7 @@ function LoopBench(): JSX.Element {
         </Table.Thead>
         <Table.Tbody>
           <Table.Tr><Table.Td>operating pressure [bar abs]</Table.Td>{cell((r) => bar(LOOP_OPERATING[r.op].P_Pa))}</Table.Tr>
-          <Table.Tr><Table.Td>MAWP, ASSUMED = preliminary design pressure [barg]</Table.Td>{cell((r) => bar(preliminaryLadder(LOOP_OPERATING[r.op].P_Pa - P_ATM_PA).mawp))}</Table.Tr>
+          <Table.Tr><Table.Td>MAWP, assumed = preliminary design pressure [barg]</Table.Td>{cell((r) => bar(preliminaryLadder(LOOP_OPERATING[r.op].P_Pa - P_ATM_PA).mawp))}</Table.Tr>
           <Table.Tr><Table.Td>relieving pressure P1 [bar abs]</Table.Td>{cell((r) => bar(P1[r.op]))}</Table.Tr>
           <Table.Tr><Table.Td>relieving temperature T [K]</Table.Td>{cell((r) => fx(r.pt?.T, 2))}</Table.Tr>
           <Table.Tr><Table.Td>relieving rate W [kg/h] — HYPOTHESIS: the compressor&apos;s nominal flow (the converter feed) whatever the back pressure</Table.Td>{cell((r) => fx(r.g?.W_kg_h, 0))}</Table.Tr>
@@ -345,7 +345,7 @@ function LoopBench(): JSX.Element {
         whatever the pressure it pushes against.  A real compressor&apos;s
         delivery into a blocked outlet is set by its curve, its antisurge
         recycle, its trips and the loop&apos;s topology, none of which is
-        modelled here.  The MAWP is ASSUMED equal to the Design Guide&apos;s
+        modelled here.  The MAWP is assumed equal to the Design Guide&apos;s
         preliminary design pressure (step 6).  Kd 0.975 and Kc 0.9 are API
         520&apos;s preliminary values as the open fluids implementation
         carries them; Kb is yours.
@@ -556,7 +556,7 @@ function GoverningBench({ fire, liquid, mawpBarg }: {
   const verdict = (id: string): string =>
     gov.unsized.includes(id) ? "two-phase: needs a method this page lacks"
       : !ready ? "—"
-      : id === gov.byArea ? "GOVERNS (largest area)"
+      : id === gov.byArea ? "Governs (largest area)"
       : "";
   return (
     <Box>
@@ -676,6 +676,10 @@ export function OverpressureTool(): JSX.Element {
 
         <Title order={4}>Part 1 — the cause decides the rate</Title>
         {step(1)}
+        {/* The ladder bench comes second (DEV.md 4c C277): the question, then
+            the vessel under the student's hand, then the causes and step 6
+            that name what the ladder shows. */}
+        <LadderBench />
         {step(2)}
         {step(3)}
         {step(4)}
@@ -683,7 +687,6 @@ export function OverpressureTool(): JSX.Element {
 
         <Title order={4}>Part 2 — the devices and the pressure ladder</Title>
         {step(6)}
-        <LadderBench />
         {step(7)}
 
         <Title order={4}>Part 3 — sizing</Title>
