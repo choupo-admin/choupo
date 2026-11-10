@@ -1,0 +1,76 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  curate20_vp_diButylCarbonate -- the vapour pressure of diButylCarbonate, REFITTED to
+  measurements (DEV.md 4c C281 step 2).  Written by `bin/choupo-curate vp
+  diButylCarbonate`; everything above the RESULT paragraph is the DECLARATION, committed
+  before any fit ran, so it can be read against the result.
+
+  WHY.  The catalogue record carried `vaporPressure { model AmbroseWalton; }`,
+  a corresponding-states ESTIMATE from Tc, Pc and omega that never reads the
+  record's own Tb (C279 measured a median 19.6 % AAD over the 25 such records
+  with archive data).  Here a three-parameter Antoine is fitted to ONE
+  laboratory and held out on ANOTHER that shares no author with it.
+
+  STUDIES (one per article, extracted by `choupo-thermoml extract-vp`; ranked
+  by points, ties by DOI):
+      10.1021/acs.jced.6b00517         23 pts  383.16-478.18 K  Yang; Xu; Yang
+      10.1016/j.jct.2008.02.012        21 pts  287.1-329.1 K  Kozlova; Emel'yanenko; Georgieva; Verevkin et al.
+  SET ASIDE BY NAME:
+      (none)
+
+  PARTITION (the C16 rule, declared): FIT = the study with the most points,
+  doi 10.1021/acs.jced.6b00517 (23 pts, 383.16-478.18 K); HELD OUT =
+  the next largest sharing no author with it, doi 10.1016/j.jct.2008.02.012 (21 pts,
+  287.1-329.1 K).
+
+  BAND: maxAAD 5.3 % (declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 21 points (5.1 to 5.5 %, mean 5.264 %), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean).
+
+  NORMAL BOILING POINT: the record's Tb 480.6 K lies OUTSIDE the measured span 287.1-478.18 K: the fitted Antoine's own normal boiling point (P = 101.325 kPa) must lie within 2 K of it, or the fit is NOT promoted (an extrapolation that misses the record's own boiling point).
+
+  NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares both
+  series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates
+  them into constant/archiveExtracts/ (gitignored).
+
+  RESULT
+  @@RESULT-BEGIN@@
+  (filled in by bin/choupo-curate after the run)
+  @@RESULT-END@@
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name       fit_antoine;
+        type       vaporPressureFit;
+        component  diButylCarbonate;
+
+        evidence
+        (
+            {
+                dataset   "constant/archiveExtracts/diButylCarbonate-vapourPressure-acs.jced.6b00517.dat";
+                identity  { doi "10.1021/acs.jced.6b00517"; }
+                role      fit;
+            }
+            {
+                dataset   "constant/archiveExtracts/diButylCarbonate-vapourPressure-j.jct.2008.02.012.dat";
+                identity  { doi "10.1016/j.jct.2008.02.012"; }
+                role      validation;
+            }
+        );
+
+        acceptance
+        {
+            maxAAD  5.3 percent;
+            origin  "declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 21 points (5.1 to 5.5 %, mean 5.264 %), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean";
+        }
+
+        output     { file fit_antoine.csv; }
+    }
+);
