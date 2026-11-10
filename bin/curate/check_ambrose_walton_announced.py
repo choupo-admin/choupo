@@ -5,9 +5,9 @@ when its curve contradicts the record it was built from -- and moves no number.
     bin/curate/check_ambrose_walton_announced.py
 
 WHY THIS EXISTS (2026-11-10, DEV.md 4c C281 step 1).  48 catalogue components
-declared `vaporPressure { model AmbroseWalton; }` (46 since C281 step 3, which
-replaced dimethylSulfoxide's and methylDiEthanolAmine's by Antoines fitted to
-measurements and restored nHexylAcetate's; arm (e)).  The model reads Tc, Pc and
+declared `vaporPressure { model AmbroseWalton; }` (41 since C281 step 3, which
+replaced seven by Antoines fitted to every laboratory's measurements under
+DEV.md 4c C283 and restored nHexylAcetate's; arm (e)).  The model reads Tc, Pc and
 omega only and never the record's Tb; evaluated from each record's own
 constants, the curve's normal boiling point (P = 101325 Pa) misses the record's
 Tb by more than 2 K for 26 of the 48 and by more than 10 K for 14 (maleic acid
@@ -77,8 +77,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 EXE = ROOT / "choupoProps"
 THRESHOLD_K = 1.0            # the engine's tbGapAnnounce_K (stated default)
-AW_MAX = 46                  # arm (e): 48 at step 1, 47 after C281 step 2, 46 after step 3
-                             # (dimethylSulfoxide + methylDiEthanolAmine promoted, nHexylAcetate reverted)
+AW_MAX = 41                  # arm (e): 48 at step 1, 47 after C281 step 2, 41 after step 3 (C283)
+                             # (seven promoted under DEV.md 4c C283; nHexylAcetate reverted)
 
 # Parent-commit (19933c63f) values, printed by its build before the change.
 PARENT = [
@@ -88,9 +88,14 @@ PARENT = [
     ("maleicAcid", 400.0, 67.624607047),
     ("maleicAcid", 500.0, 12196.1455868),
     ("maleicAcid", 600.0, 244278.819412),
-    ("diethylethanolamine", 350.0, 1144.20352187),
-    ("diethylethanolamine", 400.0, 13567.5956801),
-    ("diethylethanolamine", 450.0, 80215.6522645),
+    #  diethylethanolamine was the third component until C281 step 3 promoted
+    #  its fitted Antoine (DEV.md 4c C283); diButylCarbonate, still
+    #  AmbroseWalton, takes its place.  Its three values are this build's: the
+    #  AmbroseWalton source is unchanged since the parent commit, and the arm
+    #  also holds them to the published equations at 1e-9.
+    ("diButylCarbonate", 350.0, 741.759824700),
+    ("diButylCarbonate", 400.0, 7458.01823054),
+    ("diButylCarbonate", 450.0, 40148.0840846),
 ]
 
 C = {

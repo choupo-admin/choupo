@@ -628,8 +628,29 @@ def check_ll_arm(tmp, fails):
 #  catalogue, `autoPromoted` carries `humanReviewed false` and `promotedBy`,
 #  and the case's own run VOICES the status through the component loader.
 STD_COMP = ROOT / "data" / "standards" / "components"
-VP_FLOOR = 2      # promoted at C281 step 3 (dimethylSulfoxide,
-                  # methylDiEthanolAmine; step 2's nHexylAcetate reverted): a
+
+
+def _load_aw():
+    import importlib.machinery
+    import importlib.util
+    path = ROOT / "bin" / "curate" / "check_ambrose_walton_announced.py"
+    ld = importlib.machinery.SourceFileLoader("check_aw_for_regressed", str(path))
+    sp_ = importlib.util.spec_from_loader(ld.name, ld)
+    mod = importlib.util.module_from_spec(sp_)
+    ld.exec_module(mod)
+    return mod
+
+
+AW = _load_aw()     # the AmbroseWalton curve, the gate that holds it to the engine
+
+
+def AW_ARGS(rec_text):
+    t = strip_comments(rec_text)
+    return (num(t, "Tc"), num(t, "Pc") * 1e5, num(t, "omega"))
+
+
+VP_FLOOR = 7      # promoted at C281 step 3 under DEV.md 4c C283 (step 2's
+                  # nHexylAcetate reverted): a
                   # collapsed scan surface must not read as a clean catalogue
 VP_OBJECTIVE = "twoStage"   # C281 step 3: the declared objective of every regression
 
@@ -647,7 +668,7 @@ def vp_facts(text):
     if m:
         vb = block(t[m.start():], "vaporPressure")
     ent = vp_entry(text) or ""
-    val = block(ent, "validation") or ""
+    val = block(ent, "acceptance") or ""
     co = re.search(r"coefficients\s*\(([^)]*)\)", vb or "")
     tr = re.search(r"Trange\s*\(([^)]*)\)", vb or "")
     ev = set()
@@ -660,8 +681,12 @@ def vp_facts(text):
         "coef": [float(x) for x in co.group(1).split()] if co else None,
         "Trange": [float(x) for x in tr.group(1).split()] if tr else None,
         "evidence": ev,
-        "verdict": word(val, "verdict"), "points": num(val, "points"),
-        "aad_pct": num(val, "aad_pct"), "maxAAD": num(val, "maxAAD"),
+        "verdict": word(val, "verdict"), "pointsKept": num(val, "pointsKept"),
+        "pointsDropped": num(val, "pointsDropped"), "studies": num(val, "studies"),
+        "dropped": (re.search(r'dropped\s+"([^"]*)"', val) or [None, None])[1],
+        "aad_pct": num(val, "aad_pct"), "max_pct": num(val, "max_pct"),
+        "awAad_pct": num(val, "awAad_pct"), "awMax_pct": num(val, "awMax_pct"),
+        "Tnb_fit": num(val, "Tnb_fit"),
     }
 
 
@@ -684,7 +709,7 @@ def check_vp_dataset(path, comp, fails, tag):
     if not m or len(m.group(1).split()) != len(rows):
         fails.append(f"{tag}: {path.name} -- per-point Psat uncertainties missing "
                      f"or not one per data row ({len(rows)} rows)")
-    return [float(l.split()[0]) for l in rows]
+    return [(float(l.split()[0]), float(l.split()[1])) for l in rows]   # (K, kPa)
 
 
 def check_vapour_pressures(tmp, fails, not_run, fetched):
@@ -724,9 +749,9 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
             fails.append(f"{tag}: the vaporPressure block is not a fitted Antoine "
                          "with coefficients and a Trange")
             continue
-        if rf["verdict"] != "validated":
-            fails.append(f"{tag}: verdict `{rf['verdict']}` in the CATALOGUE -- only "
-                         "a validated fit is promoted")
+        if rf["verdict"] != "accepted":
+            fails.append(f"{tag}: acceptance.verdict `{rf['verdict']}` in the CATALOGUE "
+                         "-- only an accepted fit is promoted (DEV.md 4c C283)")
         case_rel = word(ent, "fittedInCase")
         case = ROOT / case_rel if case_rel else None
         if case is None or not (case / "system" / "propsDict").exists() \
@@ -745,12 +770,14 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
                          f"regenerated: {msg[-400:]}")
             continue
         decl = (case / ARCHIVE_DECL).read_text()
-        fit_T = []
+        pts = []            # (doi, T K, P kPa) of every declared fit dataset
         for ds in sorted((case / "constant" / "archiveExtracts").glob("*.dat")):
-            T = check_vp_dataset(ds, comp, fails, tag)
-            if re.search(r'file\s+"constant/archiveExtracts/%s";\s*role\s+fit;'
-                         % re.escape(ds.name), strip_comments(decl)):
-                fit_T = T
+            rows = check_vp_dataset(ds, comp, fails, tag)
+            mdoi = re.search(r'file\s+"constant/archiveExtracts/%s";\s*role\s+fit;'
+                             r'[^}]*?doi\s+"([^"]+)"' % re.escape(ds.name),
+                             strip_comments(decl), re.S)
+            if mdoi:
+                pts += [(mdoi.group(1), t, pk) for t, pk in rows]
         work = tmp / ("vp-" + case.name)
         shutil.copytree(case, work)
         pr = subprocess.run([str(PROPS), "."], cwd=str(work), capture_output=True,
@@ -766,25 +793,68 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
                          "published no `fit_antoine` result")
             continue
         d, cu = op.get("diagnostics", {}), op.get("curation", {})
-        run = {"coef": [d.get("A"), d.get("B"), d.get("C")],
-               "verdict": cu.get("verdict"), "points": d.get("n_heldout"),
-               "aad_pct": d.get("aad_heldout_pct"),
-               "maxAAD": float(cu.get("acceptanceMaxAADPct", "nan"))}
+        run = {"coef": [d.get("A"), d.get("B"), d.get("C")]}
         for k, (x, y) in zip("ABC", zip(rf["coef"], run["coef"])):
             if not close(x, y, rel=1e-8):
                 fails.append(f"{tag}: Antoine {k} = {x} in the record, {y} from its "
                              "case -- the record has drifted from its evidence")
-        for k in ("points", "aad_pct", "maxAAD"):
-            if not close(rf[k], run[k]):
-                fails.append(f"{tag}: `{k}` = {rf[k]} in the record, {run[k]} from "
-                             "its case")
-        if rf["verdict"] != run["verdict"]:
-            fails.append(f"{tag}: verdict {rf['verdict']!r} in the record, "
-                         f"{run['verdict']!r} from its case")
-        if not fit_T or not close(rf["Trange"][0], min(fit_T)) \
-                or not close(rf["Trange"][1], max(fit_T)):
-            fails.append(f"{tag}: Trange {rf['Trange']} is not the fit's own span "
-                         f"({(min(fit_T), max(fit_T)) if fit_T else 'no fit dataset'})")
+        #  C283 (amended): every study fitted, outliers discarded BY NAME, the
+        #  acceptance on the KEPT points.  Recomputed here from the record's
+        #  own coefficients, the case's datasets and the run's list of
+        #  discarded points -- never read back from the tool.
+        pd_text = strip_comments((case / "system" / "propsDict").read_text())
+        if not re.search(r"^\s*outliers\s*\{\s*maxRelativeError\s+15\s+percent\s*;",
+                         pd_text, re.M):
+            fails.append(f"{tag}: its case does not declare `outliers {{ maxRelativeError "
+                         "15 percent; }` (the C283 default)")
+        drop = set()
+        for item in (cu.get("outliersDropped") or "").split(";"):
+            mm = re.match(r"\s*(\S+) T=([0-9.eE+-]+) K P=([0-9.eE+-]+) Pa", item)
+            if mm:
+                drop.add((mm.group(1), round(float(mm.group(2)), 3),
+                          round(math.log10(float(mm.group(3))), 5)))
+        kept = [(t, pk) for doi, t, pk in pts
+                if (doi, round(t, 3), round(math.log10(pk * 1e3), 5)) not in drop]
+        if len(kept) != int(d.get("n_points", -1)) or not kept:
+            fails.append(f"{tag}: {len(kept)} kept points by the run's outlier list, the "
+                         f"run fitted {d.get('n_points')}")
+            continue
+        A_, B_, C_ = rf["coef"]
+        rel = [abs(100.0 * 10 ** (A_ - B_ / (t + C_)) / pk - 1.0) for t, pk in kept]
+        aw = [abs(AW.psat(t, *AW_ARGS(text)) / 1e3 / pk - 1.0) for t, pk in kept]
+        want_n = {"pointsKept": len(kept), "pointsDropped": len(drop),
+                  "aad_pct": 100.0 * sum(rel) / len(rel), "max_pct": 100.0 * max(rel),
+                  "awAad_pct": 100.0 * sum(aw) / len(aw), "awMax_pct": 100.0 * max(aw)}
+        for k, v in want_n.items():
+            if rf[k] is None or not close(rf[k], v, rel=1e-5):
+                fails.append(f"{tag}: `acceptance.{k}` = {rf[k]} in the record, {v:.6g} "
+                             "recomputed from its case")
+        if (rf["dropped"] or "none") != (cu.get("outliersDropped") or "none"):
+            fails.append(f"{tag}: the record's discarded points differ from its case's run")
+        acc_max, acc_T = 5.0, 1.0
+        cdict = case / "system" / "curationDict"
+        if cdict.exists():
+            ct = strip_comments(cdict.read_text())
+            mr = re.search(r"maxRelativeError\s+([0-9.eE+-]+)\s+percent", ct)
+            mt = re.search(r"maxTemperatureError\s+([0-9.eE+-]+)\s+K", ct)
+            if not (mr and mt and re.search(r'reason\s+"[^"]+"', ct)):
+                fails.append(f"{tag}: system/curationDict declares no complete acceptance "
+                             "with a reason")
+            else:
+                acc_max, acc_T = float(mr.group(1)), float(mt.group(1))
+        if not 100.0 * max(rel) <= acc_max:
+            fails.append(f"{tag}: max relative error {100.0 * max(rel):.4g} % over the kept "
+                         f"points exceeds the acceptance {acc_max:g} % -- promoted anyway")
+        Tb = num(strip_comments(text), "Tb")
+        Tnb = B_ / (A_ - math.log10(1.01325)) - C_
+        lo, hi = min(t for t, _ in kept), max(t for t, _ in kept)
+        if Tb is not None and not (lo <= Tb <= hi) and not abs(Tnb - Tb) < acc_T:
+            fails.append(f"{tag}: Tb {Tb} K lies outside the kept points' range and the fit's "
+                         f"normal boiling point {Tnb:.3f} K misses it by {Tnb - Tb:+.3f} K "
+                         f"(acceptance {acc_T:g} K) -- promoted anyway")
+        if not close(rf["Trange"][0], lo) or not close(rf["Trange"][1], hi):
+            fails.append(f"{tag}: Trange {rf['Trange']} is not the kept points' span "
+                         f"({lo}, {hi})")
         want = set()
         body = strip_comments(decl)
         body = body[body.find("datasets"):]
