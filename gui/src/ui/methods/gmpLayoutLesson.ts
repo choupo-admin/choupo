@@ -198,7 +198,7 @@ export const GMP_LAYOUT_STEPS: readonly LessonStep[] = [
     where: [
       { sym: "p_i", means: "room i's pressure above outside, as the engine "
         + "resolves it", unit: "Pa" },
-      { sym: "p_{\\mathrm{ref}(i)}", means: "the pressure of the room room i is "
+      { sym: "p_{\\mathrm{ref}(i)}", means: "the pressure of the room that room i is "
         + "declared against (relativeTo); zero for outside", unit: "Pa" },
       { sym: "\\Delta p_i", means: "the difference room i declares against it "
         + "(pressure)", unit: "Pa" },
@@ -429,7 +429,7 @@ export const GMP_LAYOUT_STEPS: readonly LessonStep[] = [
       + "or stands closer to one than the separation, measured as the clear "
       + "distance between the two room volumes -- a geometric check of the "
       + "declaration, which does not show that an ignition source is "
-      + "protected against.  It also announces a "
+      + "protected against ignition.  It also announces a "
       + "building that has both and declares no separation at all, rather "
       + "than pass it.  In the teaching building the electrical room above "
       + "the lobby is about 7.3 m from the suite; raise the separation past "
