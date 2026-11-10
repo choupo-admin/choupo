@@ -111,7 +111,7 @@ before the UNIFAC matrix.  UNIFAC itself: 52x on column19 from one string-keyed 
 | done | C230 LANDED (`e29bc7d34`): the pinch of `ammonia02_full_plant` is right -- the engine leaves a utility-served side out of the population (cooling water is not a process stream), the GUI Pinch tab draws the engine's artefacts and computes nothing; Q_H,min 0, Q_C,min 95454 kW, NO pinch (a threshold problem). Open for the Saturday review: a misleading 'heater below the pinch' line in a threshold problem, and the rule on other plants | C230 |
 | done | C229 LANDED in the Saturday batch (f468736fd): ports, pipes on the right nozzle, the generated 3D tour; 52 layout rows re-recorded with causes. Browser check after `make wasm-gui` | C229 |
 | done | C214 W1 (`46bf7f942`): a GENERAL flash specification -- (P,H), (P,S), (T,V/F), (P,V/F) from one home `flashState::specifiedFlash`, with the props op `flashSpec`; the wet steam expansion matches the IF97 table (quality 0.8103 against 0.8102); a new liquid and mixture entropy surface paired with the enthalpy; `adiabaticFlash`, `valve`, `compressor`, `turbine` NOT migrated (byte-identical rule), listed in the record | C214 |
-| todo | Acetic acid, the rest: the column's dew-point distillate, the Gibbs / three-phase / binaryTxy readers, the record's identity; one moved-row list; the seven exotherm tutorials to Vitor | C201 (1) |
+| parked (architect, 11-10: no work on acetic acid this month; the plant runs and its balances are gated; reopened only if a case a student meets fails) | Acetic acid, the rest: the column's dew-point distillate, the Gibbs / three-phase / binaryTxy readers, the record's identity; one moved-row list; the seven exotherm tutorials to Vitor | C201 (1) |
 | todo | The replacement for the seven exotherm tutorials (their honest repair is in the integration branch): a genuinely exothermic reaction -- the ethylene-oxide hydration to ethylene glycol, data already in the catalogue -- giving runaway, multiplicity (three steady states) and jacket control back; the Van Heerden EduTool still names `cstr05_multiplicity` as its witness and will draw ONE root: re-point it to the new case | C201 |
 | todo | Document set S3 (line list per routed pipe, declared window, declared fittings, pressure deficit and the pump it needs) and S4 (the instrument and loop declaration, the instrument index), both after S1 lands; then S5 the P&ID and S6 the control narrative | C207, C203, C204, C210 |
 
@@ -182,7 +182,7 @@ before the UNIFAC matrix.  UNIFAC itself: 52x on column19 from one string-keyed 
 | todo | A cumene case (the graph's three cumene routes link nothing) | C191 |
 | todo | Verify and fix the Gibbs review's three open items and the SpeciationSolver outer convergence | C187 (1)(2) |
 | todo | Distillation P0 (step contract, singular-Jacobian diagnostic); re-run and classify Vítor's DME plant | C184 |
-| todo | aceticAcid02: the subcooled-feed q in the simultaneous column branch | C174, C175 |
+| parked (architect, 11-10: no work on acetic acid this month; the plant runs and its balances are gated; reopened only if a case a student meets fails) | aceticAcid02: the subcooled-feed q in the simultaneous column branch | C174, C175 |
 | todo | Seeded crystallisation, cake filtration and washing, a linear chromatography column (pedagogical scope first) | C190 |
 | todo | Views for choupoSolve cases; parallel runs | C187 (5)(6) |
 | todo | Show a props run's `postProcessing/` in the GUI case tree | C183 (1) |

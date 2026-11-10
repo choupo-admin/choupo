@@ -3298,6 +3298,8 @@ accepts today, and that is a policy call.
 > unreachable (no precedent), and whether curate04-14 drop their tracked
 > series.  Record: docs/design/binary-pairs-from-open-measurements.md section 8.
 
+> **Acetic acid PARKED (architect, 2026-11-10, after Vitor: "Perdeste uma semana com essa merda antes!").**  The open acetic items (C201 (1) rest: dew-point distillate, Gibbs / three-phase / Txy readers, record identity; C174/C175 subcooled-feed q; column05's dimer in C239) get no work this month.  Reason: nothing the month delivers depends on them, aceticAcid02 runs with its balances gated (C258), and column05's ideal-vapour limit is already announced.  Reopened only if a case a student meets fails.
+>
 > **C284 (Vitor, 2026-11-10: "faz favor de acelerar e comecares a produzir
 > componentes e binarios! ... os componentes tem classificacoes e os binarios
 > so se devem fazer para compostos que os aceitem").  PRODUCE PAIRS IN BULK,
