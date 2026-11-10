@@ -161,7 +161,7 @@ export const EP_STEPS: readonly LessonStep[] = [
       + ":926–937).  It stops when "
       + "|F| < 10⁻⁸ mol/s, within 80 iterations (GibbsMethod.cpp:128–129).  "
       + "It starts from a least-squares fit of the potentials that pretends "
-      + "the FEED is already the answer (GibbsMethod.cpp:100–124).  On the "
+      + "the feed is already the answer (GibbsMethod.cpp:100–124).  On the "
       + `shift reactor at 800 K that seed puts CO at ln n = ${Q.shiftSeedLnnCO}: `
       + "about 1.4 × 10⁻⁴ mol/s against 0.139 fed, so every balance is "
       + `short and |F| = ${Q.shiftSeedNormF} mol/s.  The full Newton step `
@@ -256,7 +256,7 @@ export const EP_STEPS: readonly LessonStep[] = [
       + "the liquid amount L, solves the gas on the atoms that remain, and "
       + "bisects L until the gas leaves exactly saturated "
       + `(ElementPotential.cpp:79–114): ${Q.liquidSolves} gas solves, `
-      + `L = ${Q.liquidL} mol/s.  The SOLID, on the witness's steam-lean `
+      + `L = ${Q.liquidL} mol/s.  The solid, on the witness's steam-lean `
       + "reformer at 1000 K: graphite has no mole fraction — it is its own "
       + "phase at activity one — so the test is its activity in the "
       + "graphite-free gas (GibbsSolidPhase.cpp:105, :231): "
@@ -329,8 +329,8 @@ export const EP_STEPS: readonly LessonStep[] = [
       + "whether the point the Newton starts from can see its own answer.  "
       + "Move the temperature knob up and read the route table: above a "
       + "certain temperature the least-squares seed converges on its own, "
-      + "below it the re-seed answers.  The answer is the same Newton's "
-      + "either way, on the same residual, to the same tolerance.",
+      + "below it the re-seed answers.  The answer is the same "
+      + "either way: the same residual, to the same tolerance.",
   },
 ];
 

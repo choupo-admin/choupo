@@ -127,7 +127,7 @@ function NewtonTable({ recs, stage, elements, species, showLnn }: {
           : end.converged
             ? `Converged at iteration ${end.iteration}: |F| under 10⁻⁸ mol/s.`
             : `STOPPED at iteration ${end.iteration}, not converged.`}
-        {" "}α is the fraction of the Newton step taken FROM that iterate;
+        {" "}α is the fraction of the Newton step taken from that iterate;
         the last row takes none.
       </Text>
     </Box>
