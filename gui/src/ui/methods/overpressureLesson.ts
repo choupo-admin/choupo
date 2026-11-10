@@ -790,7 +790,7 @@ export const OVERPRESSURE_LIMITS: readonly LessonLimit[] = [
       + "temperature, the latent heat).  This page's arithmetic is its own, "
       + "and the engine's reliefValve sizer (a sizing-pass item, worked in "
       + "the green-ammonia basic design) carries the same equations, held to "
-      + "the same published examples by a gate.  No flowsheet case relieves, "
+      + "the same published examples by an automated check.  No flowsheet case relieves, "
       + "and no balance ever sees a relief stream." },
   { id: "ideal-k",
     title: "k is the ideal-gas ratio",
