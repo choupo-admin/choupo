@@ -1166,7 +1166,7 @@ function PsychroTool({ catalogue, componentFiles }: {
   if (err) alerts.push(<Alert key="err" color="red" variant="light">{err}</Alert>);
   if (!pairOk) alerts.push(
     <Alert key="pair" color="yellow" variant="light" title="Pick a humid-gas pair">
-      The chart needs a carrier gas plus a DIFFERENT condensable with a vapour-pressure model.
+      The chart needs a carrier gas plus a different condensable with a vapour-pressure model.
     </Alert>);
   if (advisories.length > 0) alerts.push(
     <Alert key="adv" color="yellow" variant="light" title="Solver advisory">
