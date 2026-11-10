@@ -234,7 +234,7 @@ export const MERKEL_KNOBS: readonly MerkelKnob[] = [
       + "properties are nitrogen's, not those of a full air mixture." },
   { id: "merkelNumber", label: "Merkel number KaV/L", file: "system/flowsheetDict",
     key: "merkelNumber", def: 1.5, min: 0.2, max: 5, step: 0.05, unit: "",
-    why: "The packing you declare you have (RATING mode): the cold-water "
+    why: "The packing you declare you have (rating mode): the cold-water "
       + "temperature is then the engine's result, not yours." },
 ];
 
@@ -446,12 +446,9 @@ export function MerkelTool(): JSX.Element {
         {lessonHead}
 
         {lessonStep(1)}
-        {lessonStep(2)}
-        {lessonStep(3)}
-        {lessonStep(4)}
 
         <Box>
-          <Title order={5}>Now read the tower the engine solved</Title>
+          <Title order={5}>Watch the tower the engine solved</Title>
           <Text size="sm" mt={4}>
             Both curves below are the engine&apos;s published profile
             {nPoints > 0 ? ` (${nPoints} points)` : ""}: the saturation curve
@@ -526,10 +523,16 @@ export function MerkelTool(): JSX.Element {
         <Text size="xs" c="dimmed">
           {METHOD_HYPOTHESES}{" "}
           The °C axis is unit scaling of the engine&apos;s Kelvin, nothing
-          more.  The evaporation above is what the tower COSTS in water, and
+          more.  The evaporation above is what the tower costs in water, and
           the engine reports it as the make-up: drift and blowdown are not
           modelled, so a real circuit consumes more.
         </Text>
+
+        {/* The figure comes second (DEV.md 4c C277): steps 2-4 now explain what
+            the student has just watched. */}
+        {lessonStep(2)}
+        {lessonStep(3)}
+        {lessonStep(4)}
 
         {lessonStep(5)}
 
