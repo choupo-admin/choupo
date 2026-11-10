@@ -3314,6 +3314,53 @@ accepts today, and that is a policy call.
 > criterion (the normal boiling point against Tb): up to 1 K clean, 1-2 K
 > warning, 2-4 K severe, above 4 K refused.  Supersedes the single 5 % / 1 K
 > threshold of C283; everything else in C283 stands.
+>
+> **C285 RESULT, vapour pressures (2026-11-10, cloud general, branch
+> c285-tiers).**  TOOL: `bin/choupo-curate vp` grades the fit (max relative P
+> error over the kept points 5 / 10 / 20 %; |Tnb - Tb| 1 / 2 / 4 K where Tb lies
+> outside the kept range; the worse of the two), declared before the fit
+> (`--redeclare` moved the 24 C283 cases and refuses a re-partition of their
+> studies; each declaration committed before its run), and `--promote` writes
+> `fitGrade` with `fitGradeMaxRelativeError_pct` and, where the temperature
+> criterion applied, `fitGradeBoilingPointGap_K` into the provenance entry; a
+> `curationDict` acceptance now declares the three limits of each criterion.
+> No fitted number and NO golden row moved (curate20..43 pass unchanged; no
+> re-record).  PROMOTED 16: clean diNButylEther 3.99 %, diethylethanolamine
+> 3.47, dimethylSulfoxide 0.79, methylTertPentylEther 3.95,
+> methylethanolamine 4.36, monoethanolamine 4.53 (Tb gap -0.19 K),
+> triethylamine 0.26 (-0.47 K); warning diEthylCarbonate 7.54 % (-0.05 K),
+> dimethylethanolamine 8.51 %, nHexylAcetate 3.30 % / -1.64 K, diethanolamine
+> 0.33 % / -1.75 K, nAminoethylEthanolamine 4.47 % / +1.88 K, squalane 9.43 %
+> (Tb inside the range, its curve's Tnb 59 K above Tb -- not a condition by the
+> rule; the curator list shows it); severe diButylCarbonate 8.82 % / -3.76 K,
+> furfural 5.07 % / -2.54 K, methylDiEthanolAmine 11.08 %.  REFUSED 8, all on
+> the boiling point: glycerol -5.23 K, triethanolamine -6.63 K (12.15 %),
+> pyrene -8.16, nPentylAcetate -16.60, nEicosane -16.83, phenanthrene -17.01,
+> mNitrotoluene -22.24, nAminoethylPiperazine -27.46.  No fit exceeds 20 %.
+> AmbroseWalton count 41 -> 32.  ENGINE: the component loader
+> (src/thermo/Database.cpp `announceFitGrade`, generic over the provenance
+> key) prints `[fit-grade] ... fitGrade warning|SEVERE -- the fitted curve
+> misses some of its measurements by up to X %[, and places its normal boiling
+> point Y K from the record's Tb]` into the caveat block and the JSON
+> advisories, once per component and value per process; clean says nothing
+> more; an unknown grade word (refused included) refuses by name; the
+> autoPromoted line no longer claims a held-out verdict.  GATES:
+> check_regressed_pairs arm (i) recomputes the grade and requires the record's
+> grade, numbers and the voiced severity word (sabotages: severe -> warning,
+> a refused fit force-promoted, the P limits tightened, the loader line
+> suppressed -- all caught); check_ambrose_walton_announced pin 32, arm (c)'s
+> diButylCarbonate replaced by mNitrotoluene.  Curator list shows the grade.
+> Validated: make all; --scope curate01, curate20..43, psat01,
+> compare_psat_ambrose_walton, esterification2sector, temperature02 (34 PASS,
+> 0 FAIL); --fast (78 PASS, 0 FAIL); wasm_dialect, regressed_pairs (after
+> merging origin/main's C284), ambrose_walton_announced, review_status,
+> caveat_surface, advisory_attribution, record_form, validity_windows,
+> psat_range, psat_continuity, source_licence, doc_references, doctrine,
+> glossary_bans, schema_coverage; generated views regenerated (three were
+> stale, one already on main); tutorials and props guides rebuilt with make -B.
+> NOT run: --gui (gui/node_modules absent, so methodTools could not run
+> either), a full sweep.  Pairs are not graded in this slice.  Record:
+> docs/design/binary-pairs-from-open-measurements.md section 10.1.
 
 > **C284 (Vitor, 2026-11-10: "faz favor de acelerar e comecares a produzir
 > componentes e binarios! ... os componentes tem classificacoes e os binarios
