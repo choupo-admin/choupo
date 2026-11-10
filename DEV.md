@@ -3318,6 +3318,11 @@ accepts today, and that is a policy call.
 >  (ii) small pedagogical improvements page by page with the page's structure kept (an
 >  unclear sentence, an unglossed symbol, a legend, an axis without units).  A page that
 >  needs more is NOTED and left alone.  Rules 6, 7 and 9 stand.
+>  TODAY, NOT THE WEEK (Vitor, 2026-11-10: "Quero que facas isso hoje!").  Measured first:
+>  the C266 screen errors are already on main (C264 c3fb7c170, C269 478eb6690).  So today
+>  is the error-and-pedagogy pass over all 80 registry ids, four builders in worktrees,
+>  one brief (errors; small improvements; structure kept; unproved physics reported, not
+>  edited); the architect integrates and reads the diffs.
 >  10. Also open for the same week, small and decided: declared tables print the source's
 >      significant figures (column14 shows 0.669606 for a three-figure source); pool-fire
 >      legend capitals and `kW^(2/5)/m`.
