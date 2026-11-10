@@ -163,13 +163,13 @@ function CombustionTable({ cat, fuel, onFuel }: {
         </Table.Thead>
         <Table.Tbody>
           <Table.Tr><Table.Td>formula; a, b, c</Table.Td><Table.Td>{f.formula}; {f.C}, {f.H}, {f.O}</Table.Td><Table.Td>record</Table.Td></Table.Tr>
-          <Table.Tr><Table.Td>O2 per mole of fuel</Table.Td><Table.Td>{fx(ox, 2)}</Table.Td><Table.Td>a + b/4 − c/2</Table.Td></Table.Tr>
+          <Table.Tr><Table.Td>O2 per mole of fuel</Table.Td><Table.Td>{fx(ox, 2)}</Table.Td><Table.Td><Tex mode="inline" src={"a + \\frac{b}{4} - \\frac{c}{2}"} /></Table.Td></Table.Tr>
           <Table.Tr><Table.Td>ΔH_f of the fuel, ideal gas [kJ/mol]</Table.Td><Table.Td>{fx(f.dHf / 1000, 3)}</Table.Td><Table.Td>record</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>ΔH_f of CO2 / H2O(g) / O2 [kJ/mol]</Table.Td><Table.Td>{fx(p.dHf_CO2 / 1000, 3)} / {fx(p.dHf_H2O / 1000, 3)} / {fx(p.dHf_O2 / 1000, 1)}</Table.Td><Table.Td>records</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>lower heating value of the vapour [kJ/mol]</Table.Td><Table.Td>{fx(vap / 1000, 2)}</Table.Td><Table.Td>Hess, step 2</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>latent heat at 298.15 K [kJ/mol]</Table.Td><Table.Td>{fx(hv / 1000, 2)}</Table.Td><Table.Td>Watson from Tb = {fx(f.Tb, 2)} K, Tc = {fx(f.Tc, 2)} K, ΔH_v,b = {fx(f.HvapTb / 1000, 2)} kJ/mol</Table.Td></Table.Tr>
-          <Table.Tr><Table.Td><b>lower heating value of the liquid [kJ/mol]</b></Table.Td><Table.Td><b>{fx(liq / 1000, 2)}</b></Table.Td><Table.Td>vapour − latent</Table.Td></Table.Tr>
-          <Table.Tr><Table.Td><b>Δh_c [MJ/kg]</b></Table.Td><Table.Td><b>{fx(perKg(liq, f.MW) / 1e6, 3)}</b></Table.Td><Table.Td>÷ M = {fx(f.MW, 3)} g/mol</Table.Td></Table.Tr>
+          <Table.Tr><Table.Td><b>lower heating value of the liquid [kJ/mol]</b></Table.Td><Table.Td><b>{fx(liq / 1000, 2)}</b></Table.Td><Table.Td>vapour minus latent</Table.Td></Table.Tr>
+          <Table.Tr><Table.Td><b>Δh_c [MJ/kg]</b></Table.Td><Table.Td><b>{fx(perKg(liq, f.MW) / 1e6, 3)}</b></Table.Td><Table.Td>divided by M = {fx(f.MW, 3)} g/mol</Table.Td></Table.Tr>
         </Table.Tbody>
       </PanTable>
       <PanelNote>
@@ -199,8 +199,8 @@ function BurningRateTable({ cat, fuel }: { cat: Catalogue; fuel: PoolFuel }): JS
           <Table.Tr><Table.Th>quantity</Table.Th><Table.Th>value</Table.Th><Table.Th>from</Table.Th></Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          <Table.Tr><Table.Td>Δh_g, heat to gasify [MJ/kg]</Table.Td><Table.Td>{fx(c.dHg / 1e6, 4)}</Table.Td><Table.Td>record: ΔH_v,b + C_p,L (T_b − 298.15 K), C_p,L = {fx(f.CpLiq, 1)} J/(mol K)</Table.Td></Table.Tr>
-          <Table.Tr><Table.Td><b>ṁ″_∞, Burgess [g/(m2 s)]</b></Table.Td><Table.Td><b>{fx(c.mInf * 1000, 2)}</b></Table.Td><Table.Td>0.001 Δh_c / Δh_g</Table.Td></Table.Tr>
+          <Table.Tr><Table.Td>Δh_g, heat to gasify [MJ/kg]</Table.Td><Table.Td>{fx(c.dHg / 1e6, 4)}</Table.Td><Table.Td>record: <Tex mode="inline" src={"\\Delta H_{\\mathrm{v,b}} + C_{p,\\mathrm{L}}\\,(T_\\mathrm{b} - 298.15\\ \\mathrm{K})"} />, C_p,L = {fx(f.CpLiq, 1)} J/(mol K)</Table.Td></Table.Tr>
+          <Table.Tr><Table.Td><b>ṁ″_∞, Burgess [g/(m2 s)]</b></Table.Td><Table.Td><b>{fx(c.mInf * 1000, 2)}</b></Table.Td><Table.Td><Tex mode="inline" src={"0.001\\,\\Delta h_\\mathrm{c}/\\Delta h_\\mathrm{g}"} /></Table.Td></Table.Tr>
           {usbm && (
             <Table.Tr><Table.Td>ṁ″_∞, Bureau of Mines Bulletin 680 [g/(m2 s)]</Table.Td><Table.Td>{fx(regressionToFlux(usbm.v_cm_min, rho) * 1000, 2)}</Table.Td><Table.Td>{usbm.v_cm_min} cm/min × ρ_L = {fx(rho, 1)} kg/m3 (record)</Table.Td></Table.Tr>
           )}
@@ -476,10 +476,10 @@ function Bench({ cat, fuel, onFuel }: {
           <Table.Tr><Table.Td>ṁ″_∞ / ṁ″ at D [g/(m2 s)]</Table.Td><Table.Td>{fx(fire.mInf * 1000, 2)} / {fx(fire.m * 1000, 2)}</Table.Td><Table.Td>3</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>heat release Q [MW]</Table.Td><Table.Td>{fx(fire.Q / 1e6, 3)}</Table.Td><Table.Td>4</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>flame height L, Thomas / Heskestad [m]</Table.Td><Table.Td>{fx(fire.L_thomas, 2)} / {fx(fire.L_heskestad, 2)}</Table.Td><Table.Td>5</Table.Td></Table.Tr>
-          <Table.Tr><Table.Td>Heskestad&apos;s group Q^(2/5)/D [kW^(2/5)/m]</Table.Td><Table.Td>{fx(hg, 1)}</Table.Td><Table.Td>5: {hgInside ? "inside" : "OUTSIDE"} the tested {HESKESTAD_RANGE[0]}–{HESKESTAD_RANGE[1]}</Table.Td></Table.Tr>
+          <Table.Tr><Table.Td>Heskestad&apos;s group Q^(2/5)/D [kW^(2/5)/m]</Table.Td><Table.Td>{fx(hg, 1)}</Table.Td><Table.Td>5: {hgInside ? "inside" : "outside"} the tested {HESKESTAD_RANGE[0]}–{HESKESTAD_RANGE[1]}</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>emissive power E, energy / Mudan &amp; Croce [kW/m2]</Table.Td><Table.Td>{kW(fire.E_energy, 1)} / {kW(fire.E_mudan, 1)}</Table.Td><Table.Td>6</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>radiative fraction the solid flame implies, χ_E</Table.Td><Table.Td>{fx(fire.chiImplied, 3)}</Table.Td><Table.Td>10</Table.Td></Table.Tr>
-          <Table.Tr><Table.Td>far-field ratio solid / point (1000 D away)</Table.Td><Table.Td>{fx(ratioFar, 3)}</Table.Td><Table.Td>10: 4/π × χ_E/χ_r = {fx(4 / Math.PI * fire.chiImplied / chiR, 3)}</Table.Td></Table.Tr>
+          <Table.Tr><Table.Td>far-field ratio solid / point (1000 D away)</Table.Td><Table.Td>{fx(ratioFar, 3)}</Table.Td><Table.Td>10: <Tex mode="inline" src={"\\frac{4}{\\pi}\\,\\chi_\\mathrm{E}/\\chi_\\mathrm{r}"} /> = {fx(4 / Math.PI * fire.chiImplied / chiR, 3)}</Table.Td></Table.Tr>
         </Table.Tbody>
       </PanTable>
       <PanTable>
@@ -574,6 +574,10 @@ export function PoolFireTool(): JSX.Element {
 
         <Title order={4}>Part 1 — why a distance</Title>
         {step(1)}
+        {/* The bench comes second (DEV.md 4c C277): the student sets a pool and
+            a receiver and sees both models' flux against the thresholds, then
+            the parts below build each quantity the bench uses. */}
+        {cat.err === null && cat.products && <Bench cat={cat} fuel={fuel} onFuel={setFuel} />}
 
         <Title order={4}>Part 2 — the pool</Title>
         {step(2)}
@@ -596,7 +600,6 @@ export function PoolFireTool(): JSX.Element {
         <Title order={4}>Part 5 — thresholds, and the distance to each</Title>
         {step(11)}
         {step(12)}
-        {cat.err === null && cat.products && <Bench cat={cat} fuel={fuel} onFuel={setFuel} />}
 
         <Title order={4}>Part 6 — limits</Title>
         {step(13)}
