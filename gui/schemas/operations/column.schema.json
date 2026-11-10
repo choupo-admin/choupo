@@ -29,6 +29,13 @@
       "description": "L/D, liquid returned to the column over distillate withdrawn.",
       "default": 2.0
     },
+    "refluxTemperature": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Reflux temperature",
+      "description": "Temperature at which the reflux returns to the top stage, when it is SUBCOOLED below the distillate's bubble point (a total condenser followed by an accumulator at ambient). The cold reflux condenses vapour on the top stage, so the internal reflux exceeds `refluxRatio` and the reboiler duty rises with it. Read by the Wang-Henke model with a total condenser only; the other models refuse it by name. Absent: the reflux returns at its bubble point.",
+      "unit": "K"
+    },
     "distillateRate": {
       "type": "number",
       "exclusiveMinimum": 0,

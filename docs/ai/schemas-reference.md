@@ -183,6 +183,7 @@ Multistage distillation column with constant molar overflow. Solved by the seque
 | `nStages` | ✓ | integer | — | Equilibrium stages between condenser and reboiler. Total stages = nStages + 2. |
 | `feedStage` |   | integer | — | 1-indexed stage where the single feed enters (1 = top tray below the condenser). Omit it when the column declares a `feeds` list, which i… |
 | `refluxRatio` |   | number | — | L/D, liquid returned to the column over distillate withdrawn. |
+| `refluxTemperature` |   | number | K | Temperature at which the reflux returns to the top stage, when it is SUBCOOLED below the distillate's bubble point (a total condenser fol… |
 | `distillateRate` |   | number | kmol/s | Top product molar flow rate. XOR with `distillateRecovery`: a rate is the right specification for a fixed-duty column, a recovery for one… |
 | `bottomsRate` |   | number | kmol/s | Bottom product molar flow rate. Specifies the column TOGETHER with `boilupRatio` (the pair replaces `refluxRatio` + `distillateRate`): th… |
 | `boilupRatio` |   | number | — | V/B, vapour leaving the reboiler over the bottoms withdrawn. Pairs with `bottomsRate` (see there). |
@@ -355,6 +356,7 @@ Multistage distillation column with constant molar overflow. Solved by the seque
 | `nStages` | ✓ | integer | — | Equilibrium stages between condenser and reboiler. Total stages = nStages + 2. |
 | `feedStage` |   | integer | — | 1-indexed stage where the single feed enters (1 = top tray below the condenser). Omit it when the column declares a `feeds` list, which i… |
 | `refluxRatio` |   | number | — | L/D, liquid returned to the column over distillate withdrawn. |
+| `refluxTemperature` |   | number | K | Temperature at which the reflux returns to the top stage, when it is SUBCOOLED below the distillate's bubble point (a total condenser fol… |
 | `distillateRate` |   | number | kmol/s | Top product molar flow rate. XOR with `distillateRecovery`: a rate is the right specification for a fixed-duty column, a recovery for one… |
 | `bottomsRate` |   | number | kmol/s | Bottom product molar flow rate. Specifies the column TOGETHER with `boilupRatio` (the pair replaces `refluxRatio` + `distillateRate`): th… |
 | `boilupRatio` |   | number | — | V/B, vapour leaving the reboiler over the bottoms withdrawn. Pairs with `bottomsRate` (see there). |
