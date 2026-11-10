@@ -55,7 +55,7 @@ pipes { <stream> { waypoints ( { x; y; z; } ... ); } }     // override one route
 ports { <stream> { item <id>; side top|bottom|east|west|north|south;
                    [elevation 2 m;] } }                     // move one pipe end's port
 typicals ( { typical "train"; index "train"; count 6; pitch { x 19 m; y 0 m; }
-             members ( "RO1/train1" ... ); source; reason; } );   // N identical trains: one in full, the rest repeated
+             members ( "RO1/train1" ... ); source; reason; } );
 areas { <SECTOR> { xMin; xMax; yMin; yMax; } }             // sectored cases only
 plot { margin 5 m; reason; }
 roads { source; reason; headroom 5 m; access { distance 25 m; source; reason; }
