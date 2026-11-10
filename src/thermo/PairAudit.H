@@ -92,6 +92,29 @@ inline void fillPairAudit(PairResolution&    r,
                          " it records before the result is cited, and mark"
                          " `reviewStatus reviewed;` once a human has.\n";
     }
+    //  `autoPromoted` (DEV.md 4c C225/C226/C282, 2026-11-10): a record that
+    //  its fitting pipeline (bin/choupo-curate) promoted into the catalogue
+    //  WITHOUT a human reading it.  Same channel, same tag and the same
+    //  once-per-process rule as `interim`, a different sentence: the reader
+    //  must be able to tell "fitted by a machine" from "fitted, not yet read
+    //  back", and neither from a reviewed record.  Any other word is, as
+    //  before, read and not announced.
+    else if (provDict->lookupWordOrDefault("reviewStatus", "") == "autoPromoted")
+    {
+        if (AdvisoryLog::instance().addAnnouncedOnce("autoPromoted:pair:" + pairName,
+                "provenance", "warning", "pair " + pairName,
+                "reviewStatus autoPromoted -- promoted AUTOMATICALLY by its fitting"
+                " pipeline; NO human has reviewed it"))
+            std::cerr << "[unreviewed] pair " << pairName
+                      << ": reviewStatus autoPromoted -- this pair was promoted"
+                         " into the catalogue AUTOMATICALLY by its fitting pipeline"
+                         " (held-out verdict validated against a band declared"
+                         " before the fit) and NO human has reviewed it"
+                         " (humanReviewed false).  Read its provenance{} block and"
+                         " the held-out verdict it records before the result is"
+                         " cited; a curator who has read it back marks"
+                         " `reviewStatus reviewed; humanReviewed true;`.\n";
+    }
 
     auto readRange = [&](const DictPtr& blk, const char* lo, const char* hi,
                          const Dimensions& dims) -> std::optional<Range>

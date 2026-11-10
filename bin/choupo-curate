@@ -1,51 +1,1311 @@
 #!/usr/bin/env python3
-"""choupo-curate -- one command: evidence -> partition -> fit -> held-out -> dossier.
+"""choupo-curate -- the C16 chain for one binary pair, as ONE command.
 
-    choupo-curate <compound> [--case DIR] [--rule byDoiOrder] [--nFit N]
+    bin/choupo-curate pair A B [--pmax 110] [--number N] [--plan] [--no-commit]
+    bin/choupo-curate pair A B --promote
+    bin/choupo-curate fetch <case>
+    bin/choupo-curate revert <pair-file-stem>
+    bin/choupo-curate <compound> [--case DIR] [--rule byDoiOrder] [--nFit N]
+                                 (the pure-compound mode, unchanged; see below)
 
-What it does, in the order a curator would:
+WHY (DEV.md 4c C282, after C16/C225/C226/C280).  The chain that regressed the
+catalogue's first NRTL pairs (docs/design/binary-pairs-from-open-measurements.md)
+was a sequence of manual steps: join the two compounds to the archive, list
+the studies, choose a fit set and a held-out set, compute the band, write a
+case, fit, read the verdict, check the phase stability, promote.  Every rule
+in it was already DECIDED; only the hands were missing.  This tool applies
+the decided rules and decides nothing new:
 
-    identity      resolve the compound in the local ThermoML index
-    evidence      extract every dataset Choupo can read into the case
-    partition     DECLARE which datasets fit and which are held out
-    fit           run choupoProps
-    validate      report held-out residuals, or refuse
-    dossier       write the evidence record; promote nothing
+  1. IDENTITY.  Both components are joined to the archive by InChIKey
+     (thirdParty/thermoml/identity.json, two resolvers that agree) -- never
+     by name.  A pair that already has a record in ANY model directory of
+     data/standards/parameters/ is REFUSED: this tool never overwrites.
+  2. STUDIES.  Every isobaric (or multi-isobar) bubble-temperature block at
+     or below --pmax kPa whose uncertainty is declared, extracted with
+     `choupo-thermoml extract-vle --interior-only` into a scratch directory.
+     A block whose uncertainty is partial or absent, whose x is reported for
+     the OTHER component (extract-vle has no reorientation, C16 6.1), or with
+     fewer than 5 interior points is SET ASIDE BY NAME.
+  3. TRIAGE (C226 item 3).  Leave-one-study-out: the pair is fitted by the
+     ENGINE (fitParameters, the same model and weighting) on every study but
+     one and scored on that one.  A study whose held-out AAD exceeds its own
+     largest stated U plus the largest stated U of the others disagrees with
+     them beyond their stated uncertainties and is SET ASIDE BY NAME in the
+     declaration.  With two usable studies the triage cannot say which of two
+     disagreeing studies is wrong; it says so, and the held-out verdict is
+     then the test.
+  4. PARTITION (C16 slice 2, declared rule).  FIT = the study with the most
+     interior points; HELD OUT = the next largest sharing NO author with it
+     and measured at ONE pressure.  None -> REFUSED by name.
+  5. BAND (C16 rule).  The held-out set's largest stated expanded U plus the
+     catalogue vapour-pressure model's own error at that set's pure endpoints
+     (the larger of the two, measured with no pair, by the engine), as a % of
+     the held-out mean T, rounded UP to two significant figures; the Antoine
+     term is ZERO when the study reports no pure endpoint.
+  6. CASE.  tutorials/props/curation/curateNN_nrtl_<A>_<B> on the shape of
+     curate06/curate09: two fits from two starts, ideal/UNIFAC/NRTL overlays.
+     The declaration (partition, triage, band and its origin sentence) is
+     WRITTEN and COMMITTED before any fit runs, so it can be read against the
+     result.
+  7. NO MEASURED SERIES IN THE TREE (Vitor, 2026-11-10: "nao vamos copiar as
+     series medidas! Vamos so guardar os parametros de ajuste").  The case
+     declares each dataset in `constant/archiveDatasets`: DOI, the NIST
+     per-article URL, the sha256 of the article file, the extraction selector
+     and the sha256 of the extracted file.  `fetch` regenerates the extracts
+     into constant/archiveExtracts/ (gitignored): from the local cache when it
+     holds the article, else from the NIST URL; a sha256 mismatch REFUSES; an
+     unreachable NIST is reported NOT RUN (exit 2), never a pass.
+  8. RUN, VERDICT, PHASE STABILITY.  The fit is run, the case-local record is
+     written from the proposal (reviewStatus interim), the case is sealed
+     (bin/choupo-import), and arm (f) of check_regressed_pairs is applied to
+     the fitted parameters: a pair that splits ONE liquid inside its own
+     validity span is never proposed for promotion.
+  9. PROMOTION (C225/C226, the architect's decision).  `--promote` copies the
+     record into data/standards/parameters/NRTL/ as `reviewStatus
+     autoPromoted; humanReviewed false;` ONLY when the verdict is
+     `validated`, arm (f) is clean and the triage ran; it never overwrites a
+     record; `revert` removes a record this tool promoted, and only such a
+     record.
 
-THE PARTITION RULE IS DECLARED AND DETERMINISTIC, AND THAT IS THE WHOLE POINT.
-A class cannot hand-pick DOIs for thirty components, so an automatic rule is
-allowed -- but only one that is stated in advance, reproducible from the
-declaration alone, and RECORDED in the dossier.  `byDoiOrder` sorts the
-datasets by DOI and gives the first `nFit` to the fit; the rest are held out.
-It does not look at a single residual, and this tool will not re-run it after
-seeing one.  Automatic-and-declared is not tuning; re-partitioning after a bad
-result is, and that is what the whole contract exists to prevent.
-
-WITH ONLY ONE DATASET the honest outcome is a refusal, not a smaller split.
-The tool says so before running, and choupoProps then prints
-
-    VALIDATION REFUSED:
-    No independent experimental evidence remains after fitting.
-
-which is the correct answer to "I have one measurement and want to know if my
-model generalises".
-
-NOTHING IS PROMOTED.  The dossier has evidence semantics and sits in
-<case>/curation/, outside every resolver root.  Admitting a property to
-data/standards/ is a separate, explicit human act:
-bin/curate/promote-from-dossier.
+WHAT IT DOES NOT DO.  Read the articles back (every dataset stays
+`transcribedNotCheckedAgainstArticle`; the CHECKLIST it writes beside the
+extracts is the aid for that human act); fit any model but two-parameter NRTL
+(a = 0, alpha 0.30, the C16 frame); decide a band; choose a partition by
+looking at a residual.
 """
-
 import argparse
+import hashlib
 import json
+import math
 import os
-import pathlib
+import re
+import shutil
 import subprocess
 import sys
+import tempfile
+import unicodedata
+import urllib.request
+from datetime import date
+from pathlib import Path
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]
-THERMOML = ROOT / "bin" / "choupo-thermoml"
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "bin" / "curate"))
+import check_regressed_pairs as crp  # noqa: E402  (arm f and the record reader: ONE home)
+
 PROPS = ROOT / "choupoProps"
+THERMOML = ROOT / "bin" / "choupo-thermoml"
+IMPORT = ROOT / "bin" / "choupo-import"
+CURATION = ROOT / "tutorials" / "props" / "curation"
+STD_PARAMS = ROOT / "data" / "standards" / "parameters"
+STD_NRTL = STD_PARAMS / "NRTL"
+DECL = "constant/archiveDatasets"
+EXTRACTS = "constant/archiveExtracts"
+NIST = "https://trc.nist.gov/ThermoML/{doi}.{ext}"
+ARCHIVE = "ThermoML.v2020-09-30.tgz"
+ARCHIVE_DOI = "10.18434/mds2-2422"
+MIN_INTERIOR = 5
+PROMOTED_BY = "bin/choupo-curate pair --promote"
+
+
+def cache_root():
+    env = os.environ.get("CHOUPO_THERMOML_HOME")
+    return Path(env) if env else ROOT / "thirdParty" / "thermoml"
+
+
+def say(*a):
+    print(*a, flush=True)
+
+
+def refuse(msg, code=1):
+    say("choupo-curate: REFUSED\n  " + msg)
+    sys.exit(code)
+
+
+def sha_file(p):
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def env():
+    return dict(os.environ, CHOUPO_HOME=str(ROOT))
+
+
+# --------------------------------------------------------------------------
+#  1. identity
+# --------------------------------------------------------------------------
+def identity(name):
+    f = cache_root() / "identity.json"
+    if not f.exists():
+        refuse(f"no {f} -- run `bin/choupo-thermoml identity` first: a pair is "
+               "joined to the archive by InChIKey, never by name")
+    doc = json.loads(f.read_text())
+    hits = [r for r in doc["records"]
+            if name in (r.get("component"), r.get("cas"), r.get("inchiKey"))]
+    if not hits:
+        refuse(f"'{name}' names no catalogue component in identity.json")
+    r = hits[0]
+    if r.get("status") != "resolved":
+        refuse(f"'{r['component']}' has identity status '{r.get('status')}' -- the "
+               "two resolvers did not agree on its InChIKey, so no archive block "
+               "can be joined to it")
+    if len(doc["byInchiKey"].get(r["inchiKey"], [])) != 1:
+        refuse(f"the InChIKey of '{r['component']}' is claimed by "
+               f"{doc['byInchiKey'][r['inchiKey']]} -- an ambiguous join joins nothing")
+    return r["component"], r["cas"], r["inchiKey"]
+
+
+def existing_records(a, b):
+    """Every record in ANY model directory of data/standards/parameters/ for
+    the pair -- by file name (either order, any prefix) and by `pair {}`."""
+    out = []
+    pat = re.compile(r"pair\s*\{\s*i\s+(\S+?)\s*;\s*j\s+(\S+?)\s*;")
+    for p in sorted(STD_PARAMS.rglob("*.dat")):
+        parts = p.stem.split("-")
+        hit = len(parts) >= 2 and {parts[-2], parts[-1]} == {a, b}
+        m = pat.search(p.read_text(errors="replace"))
+        if m and {m.group(1), m.group(2)} == {a, b}:
+            hit = True
+        if hit:
+            out.append(p.relative_to(ROOT).as_posix())
+    return out
+
+
+# --------------------------------------------------------------------------
+#  2. studies
+# --------------------------------------------------------------------------
+def surnames(authors):
+    out = set()
+    for a in authors:
+        s = a.split(",")[0].strip()
+        s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode().lower()
+        if s:
+            out.add(s)
+    return out
+
+
+def blocks_for(keys, pmax):
+    vi = cache_root() / "vleIndex.json"
+    ix = cache_root() / "index.json"
+    for f in (vi, ix):
+        if not f.exists():
+            refuse(f"no {f} -- run `bin/choupo-thermoml index` and `vle-index` first")
+    rows = json.loads(vi.read_text())["blocks"]
+    authors = {e["doi"]: e.get("authors", []) for e in json.loads(ix.read_text())["entries"]}
+    out = []
+    for r in rows:
+        ks = {c.get("inchiKey") for c in r["compounds"]}
+        if ks != set(keys) or r["geometry"] != "bubbleT":
+            continue
+        if not r["P_kPa"] or r["P_kPa"][1] > pmax:
+            continue
+        r = dict(r, authors=authors.get(r["doi"], []))
+        out.append(r)
+    out.sort(key=lambda r: (r["doi"], r["block"]))
+    return out
+
+
+def read_dataset(path):
+    """The facts this tool needs from an extract-vle dataset file."""
+    t = path.read_text()
+    cols = re.findall(r"\{\s*name\s+(\S+?);", t[t.index("\ncolumns"):t.index("\ndata")])
+    xcomp = re.match(r"x\[(.+)\]", cols[0]).group(1)
+    d = t[t.index("\ndata"):]
+    rows = [l.split() for l in d.splitlines() if l.strip() and l.strip()[0].isdigit()]
+    iT = cols.index("T_bubble")
+    iP = cols.index("Pressure") if "Pressure" in cols else None
+    m = re.search(r"^pressure\s+([0-9.eE+-]+)\s+kPa;", t, re.M)
+    u = re.search(r"T_bubble\s*\{[^}]*values\s*\(([^)]*)\)", t, re.S)
+    U = [float(v) for v in u.group(1).split()] if u else None
+    if U is not None and len(U) != len(rows):
+        U = None
+    pe = re.findall(r"\{\s*x\s+([0-9.]+);\s*T_bubble\s+([0-9.eE+-]+)\s*K;\s*\}", t)
+    return {
+        "x": xcomp, "n": len(rows),
+        "T": [float(r[iT]) for r in rows],
+        "P_kPa": float(m.group(1)) if m else None,
+        "isobars": sorted({float(r[iP]) for r in rows}) if iP is not None else None,
+        "U": U, "pure": [(float(x), float(T)) for x, T in pe],
+    }
+
+
+def extract(xml, block, into, fake_cache=None):
+    """Run extract-vle on ONE block; return (path, stdout) or (None, why)."""
+    cmd = [sys.executable, "-I", str(THERMOML), "extract-vle", str(xml),
+           "--block", str(block), "--interior-only", "--into", str(into)]
+    e = env()
+    if fake_cache:
+        e["CHOUPO_THERMOML_HOME"] = str(fake_cache)
+    p = subprocess.run(cmd, capture_output=True, text=True, env=e)
+    m = re.search(r"extract-vle: (\S+\.dat)\s+\(", p.stdout)
+    if p.returncode != 0 or not m:
+        why = " ".join(l.strip() for l in p.stdout.splitlines()[1:3]) or p.stderr[-300:]
+        return None, why
+    return Path(m.group(1)), p.stdout
+
+
+# --------------------------------------------------------------------------
+#  engine runs (scratch cases)
+# --------------------------------------------------------------------------
+def thermo_dict(c1, c2, header=""):
+    return f"""{header}recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( {c1}  {c2} );
+
+equilibrium
+{{
+    formulation gammaPhi;
+
+    liquid
+    {{
+        activityModel
+        {{
+            model NRTL;
+            binaryParameters   // the FIT'S starting point -- see the header
+            {{
+                {c1}-{c2}
+                {{
+                    i {c1};
+                    j {c2};
+                    a_ij 0;
+                    b_ij 0;
+                    a_ji 0;
+                    b_ji 0;
+                    alpha 0.30;
+                }}
+            }}
+        }}
+        standardState pureLiquid;
+    }}
+
+    vapour
+    {{
+        fugacityModel idealGas;
+    }}
+}}
+"""
+
+
+def fit_op(name, c1, c2, fits, held, band_pct, origin, start, proposal=None,
+           parity="parity.csv", log=None):
+    ev = "".join(f"""            {{
+                dataset  "{d}";
+                role     fit;
+            }}
+""" for d in fits)
+    ev += f"""            {{
+                dataset  "{held}";
+                role     validation;
+            }}
+"""
+    out = f"            parity     {parity};\n"
+    if log:
+        out = f"            fit_log    {log};\n" + out
+    if proposal:
+        out += f"            proposal   {proposal};\n"
+    path = f"equilibrium.liquid.activityModel.binaryParameters.{c1}-{c2}"
+    return f"""    {{
+        name        {name};
+        type        fitParameters;
+
+        parameters
+        (
+            {{ path  {path}.b_ij;  initial {start[0]};  min -3000;  max 3000; }}
+            {{ path  {path}.b_ji;  initial {start[1]};  min -3000;  max 3000; }}
+        );
+
+        evidence
+        (
+{ev}        );
+
+        acceptance
+        {{
+            maxAAD  {band_pct} percent;
+            origin  "{origin}";
+        }}
+
+        objective {{ method leastSquares; }}
+        residual
+        {{
+            kind        T_bubble;
+            components  ( {c1} {c2} );
+            weighting   uncertainty;
+        }}
+
+        options
+        {{
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }}
+
+        output
+        {{
+{out}        }}
+    }}
+"""
+
+
+def run_props(case):
+    p = subprocess.run([str(PROPS), "."], cwd=str(case), env=env(),
+                       capture_output=True, text=True, timeout=1800)
+    out = p.stdout + p.stderr
+    m = re.search(r"<<<Choupo:result-begin>>>(.*?)<<<Choupo:result-end>>>", out, re.S)
+    js = json.loads(m.group(1)) if m else None
+    return p.returncode, out, js
+
+
+def op_result(js, name):
+    for op in (js or {}).get("operationResults", []):
+        if op.get("name") == name:
+            return op
+    return None
+
+
+def scratch_case(base, c1, c2, ops, files):
+    if base.exists():
+        shutil.rmtree(base)
+    (base / "system").mkdir(parents=True)
+    (base / "constant").mkdir()
+    (base / "system" / "controlDict").write_text(
+        'application choupoProps;\ndescription "choupo-curate scratch";\nverbosity 2;\n')
+    (base / "system" / "propsDict").write_text("operations\n(\n" + "".join(ops) + ");\n")
+    (base / "constant" / "thermoPhysPropDict").write_text(thermo_dict(c1, c2))
+    for rel, src in files.items():
+        (base / rel).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(src, base / rel)
+    return base
+
+
+def pure_bubble_T(work, c1, c2, P_kPa):
+    """The ENGINE's bubble T of each pure component at P (the catalogue
+    vapour-pressure record, no pair): (T at x1 = 0, T at x1 = 1)."""
+    op = f"""    {{
+        name        pureEnds;
+        type        propertyScan1D;
+        vary        {{ variable x[{c1}];  from 0.0;  to 1.0;  n 2; }}
+        state       {{ P {P_kPa} kPa;  composition {{ {c1} 0.5;  {c2} 0.5; }} }}
+        thermo      {{ equilibrium {{ liquid {{ activityModel {{ model ideal; }} }} }} }}
+        properties  ( T_bubble );
+        output      {{ file ends.csv; }}
+    }}
+"""
+    case = scratch_case(work / "ends", c1, c2, [op], {})
+    rc, out, _ = run_props(case)
+    rows = [l.split(",") for l in (case / "ends.csv").read_text().splitlines()
+            if l and l[0].isdigit()] if (case / "ends.csv").exists() else []
+    if rc != 0 or len(rows) != 2:
+        refuse(f"the engine could not compute the pure-component bubble points at "
+               f"{P_kPa} kPa (exit {rc}) -- the band cannot be computed: {out[-300:]}")
+    hdr = (case / "ends.csv").read_text().splitlines()[0].split(",")
+    k = [i for i, h in enumerate(hdr) if h.startswith("T_bubble")][0]
+    return float(rows[0][k]), float(rows[1][k])
+
+
+def round_up_2sf(v):
+    e = math.floor(math.log10(v)) - 1
+    return math.ceil(round(v / 10 ** e, 9)) * 10 ** e
+
+
+def fmt_band(v):
+    e = math.floor(math.log10(v)) - 1
+    return f"{v:.{max(0, -e)}f}"
+
+
+# --------------------------------------------------------------------------
+#  the plan: studies -> triage -> partition -> band
+# --------------------------------------------------------------------------
+def plan(a, b, pmax, work):
+    ca, cb = identity(a), identity(b)
+    a, b = ca[0], cb[0]
+    if a == b:
+        refuse("a pair needs two different components")
+    have = existing_records(a, b)
+    if have:
+        refuse(f"the pair {a} + {b} already has a catalogue record: {', '.join(have)} "
+               "-- this tool never overwrites a literature, reviewed or regressed "
+               "record; a new regression of it is a curator's decision")
+    blocks = blocks_for((ca[2], cb[2]), pmax)
+    if not blocks:
+        refuse(f"no isobaric bubble-temperature block for {a} + {b} at or below "
+               f"{pmax} kPa in the archive index")
+    ext = work / "extracts"
+    ext.mkdir(parents=True, exist_ok=True)
+    studies, aside = [], []
+    for r in blocks:
+        xml = cache_root() / r["file"]
+        tag = f"doi {r['doi']} block {r['block']}"
+        if not r["uncertaintyDeclared"]:
+            aside.append((tag, "declares no uncertainty"))
+            continue
+        d = work / f"b{len(studies) + len(aside)}"
+        path, why = extract(xml, r["block"], d)
+        if path is None:
+            aside.append((tag, "extract-vle refused it: " + why))
+            continue
+        ds = read_dataset(path)
+        if ds["U"] is None:
+            aside.append((tag, "its uncertainty is partial or not one per point"))
+            continue
+        if ds["n"] < MIN_INTERIOR:
+            aside.append((tag, f"only {ds['n']} interior point(s) (< {MIN_INTERIOR})"))
+            continue
+        final = ext / path.name
+        if final.exists():
+            aside.append((tag, f"a second block of the same article ({final.name} "
+                          "already taken from it) -- one block per study"))
+            continue
+        shutil.move(str(path), final)
+        studies.append({"doi": r["doi"], "block": r["block"], "file": r["file"],
+                        "xml": xml, "path": final, "authors": r["authors"],
+                        "sur": surnames(r["authors"]), "year": r.get("year"), **ds})
+    if not studies:
+        refuse(f"no usable study for {a} + {b}: " +
+               "; ".join(f"{t}: {w}" for t, w in aside))
+    #  Orientation: the one of the largest usable study.  A study reporting x
+    #  of the other component is set aside BY NAME (no reorientation exists).
+    studies.sort(key=lambda s: (-s["n"], s["doi"]))
+    c1 = studies[0]["x"]
+    c2 = b if c1 == a else a
+    keep = []
+    for s in studies:
+        if s["x"] != c1:
+            aside.append((f"doi {s['doi']} block {s['block']}",
+                          f"reports x of {s['x']}, the others of {c1}; extract-vle has "
+                          "no reorientation (C16 section 6.1) and a hand edit of a "
+                          "measured file is what the chain exists to prevent"))
+        else:
+            keep.append(s)
+    studies = keep
+
+    #  3. triage, leave one study out, by the engine
+    triage = []
+    if len(studies) >= 3:
+        for k, s in enumerate(studies):
+            others = [o for o in studies if o is not s]
+            files = {f"data/s{n}.dat": o["path"] for n, o in enumerate(others)}
+            files["data/held.dat"] = s["path"]
+            op = fit_op("loso", c1, c2, [f"data/s{n}.dat" for n in range(len(others))],
+                        "data/held.dat", "100",
+                        "triage scratch run -- the band is not used", (0, 0))
+            case = scratch_case(work / f"loso{k}", c1, c2, [op], files)
+            rc, out, js = run_props(case)
+            r = op_result(js, "loso")
+            aad = (r or {}).get("diagnostics", {}).get("aad_heldout_K")
+            lim = max(s["U"]) + max(max(o["U"]) for o in others)
+            if rc != 0 or aad is None:
+                triage.append((s, None, lim, "the leave-one-out fit did not run "
+                               f"(exit {rc}); the study is KEPT, unjudged"))
+                continue
+            out_ = aad > lim
+            triage.append((s, aad, lim, "DISAGREES -- set aside" if out_ else "agrees"))
+        flagged = [t[0] for t in triage if t[3].startswith("DISAGREES")]
+        if len(flagged) * 2 > len(studies):
+            refuse(f"{len(flagged)} of {len(studies)} studies disagree with the others "
+                   "beyond their stated uncertainties -- there is no majority to "
+                   "triage against; choosing which laboratory is right is a "
+                   "curator's act.  " + triage_text(triage))
+        for s in flagged:
+            aside.append((f"doi {s['doi']} block {s['block']}",
+                          "TRIAGE: disagrees with the other studies beyond their "
+                          "stated uncertainties (leave-one-study-out, below)"))
+        studies = [s for s in studies if s not in flagged]
+    triage_note = (triage_text(triage) if triage else
+                   f"NOT RUN: {len(studies)} usable stud{'y' if len(studies) == 1 else 'ies'}; "
+                   "with fewer than three the triage cannot say which of two "
+                   "disagreeing studies is wrong -- the held-out verdict is then the test")
+
+    #  4. partition
+    fit = studies[0]
+    held = None
+    for s in studies[1:]:
+        if s["sur"] & fit["sur"]:
+            continue
+        if s["isobars"] is not None:
+            continue
+        held = s
+        break
+    if held is None:
+        refuse(f"no independent held-out study for {c1} + {c2}: the fit set is doi "
+               f"{fit['doi']} ({fit['n']} interior points) and no other usable "
+               "single-pressure study shares no author with it.  Studies: " +
+               "; ".join(f"{s['doi']} ({s['n']} pts, authors {sorted(s['sur'])})"
+                         for s in studies[1:]) +
+               (". Set aside: " + "; ".join(f"{t}: {w}" for t, w in aside) if aside else ""))
+
+    #  5. band
+    Umax = max(held["U"])
+    meanT = sum(held["T"]) / len(held["T"])
+    errs = []
+    if held["pure"]:
+        T0, T1 = pure_bubble_T(work, c1, c2, held["P_kPa"])
+        for x, Tm in held["pure"]:
+            comp, Tmod = (c2, T0) if x == 0 else (c1, T1)
+            errs.append((comp, Tmod - Tm))
+    eps = max((abs(e) for _, e in errs), default=0.0)
+    raw = (Umax + eps) / meanT * 100.0
+    band = round_up_2sf(raw)
+    if errs:
+        ends = ", ".join(f"{c} {e:+.3f} K" for c, e in errs)
+    else:
+        ends = ("NONE: the held-out study reports no pure-component bubble point, so "
+                "the term is ZERO, the strictest reading of the rule -- the band is "
+                "the measurement's own uncertainty alone")
+    origin = (f"declared before the fit by bin/choupo-curate, the ONE rule of C16: the "
+              f"held-out set's largest stated expanded uncertainty (U95 = {Umax:g} K) "
+              f"plus the catalogue vapour-pressure model's own error at that set's "
+              f"pure endpoints ({ends}; measured with no pair involved), as a "
+              f"percentage of the held-out mean T ({meanT:.2f} K) = {raw:.4f} %, "
+              f"rounded UP to two significant figures")
+    return {"c1": c1, "c2": c2, "ident": {ca[0]: ca, cb[0]: cb},
+            "fit": fit, "held": held, "studies": studies, "aside": aside,
+            "triage": triage, "triage_note": triage_note, "band": band,
+            "band_txt": fmt_band(band), "origin": origin, "ends": errs,
+            "Umax": Umax, "meanT": meanT}
+
+
+def triage_text(triage):
+    return "; ".join(
+        f"{s['doi']}: AAD {('%.3f K' % aad) if aad is not None else 'n/a'} against "
+        f"the limit {lim:.3f} K -> {v}" for s, aad, lim, v in triage)
+
+
+# --------------------------------------------------------------------------
+#  6. the case
+# --------------------------------------------------------------------------
+def next_number():
+    n = [int(m.group(1)) for p in CURATION.iterdir()
+         if (m := re.match(r"curate(\d+)_", p.name))]
+    return max(n) + 1
+
+
+def has_unifac(comp):
+    p = ROOT / "data" / "standards" / "components" / f"{comp}.dat"
+    return p.exists() and re.search(r"^\s*unifac\b", p.read_text(), re.M | re.I) is not None
+
+
+def wrap(text, width=74, indent="  "):
+    out, line = [], indent
+    for w in text.split():
+        if len(line) + len(w) + 1 > width and line.strip():
+            out.append(line.rstrip())
+            line = indent
+        line += w + " "
+    if line.strip():
+        out.append(line.rstrip())
+    return "\n".join(out)
+
+
+def decl_text(pl, case_rel):
+    fit, held = pl["fit"], pl["held"]
+    lines = [
+        "/*--------------------------------*- Choupo -*--------------------------------*\\",
+        f"  constant/archiveDatasets -- WHERE the measurements of {case_rel.split('/')[-1]}",
+        "  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE",
+        "  (Vitor, 2026-11-10: the measured series are not copied; only the fitted",
+        "  parameters are kept).  `bin/choupo-curate fetch <case>` writes each",
+        f"  dataset into {EXTRACTS}/ (gitignored): the article file is taken from",
+        "  the local ThermoML cache when it holds it, else from the NIST URL below,",
+        "  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable",
+        "  NIST is reported NOT RUN, never a pass.",
+        "\\*-----------------------------------------------------------------------------*/",
+        "",
+        "recordType    archiveDatasets;",
+        "",
+        "archive",
+        "{",
+        f'    tarball   "{ARCHIVE}";',
+        f'    doi       "{ARCHIVE_DOI}";',
+        '    note      "the finding aid; each article file is also served one by one at the NIST URL";',
+        "}",
+        "",
+        "datasets",
+        "(",
+    ]
+    for role, s in (("fit", fit), ("validation", held)):
+        lines += [
+            "    {",
+            f'        file          "{EXTRACTS}/{s["path"].name}";',
+            f"        role          {role};   // informational: the operation declares it",
+            f'        doi           "{s["doi"]}";',
+            f'        url           "{NIST.format(doi=s["doi"], ext="xml")}";',
+            f'        page          "{NIST.format(doi=s["doi"], ext="json")}";',
+            f'        articleFile   "{Path(s["file"]).name}";',
+            f'        articleSha256 "{sha_file(s["xml"])}";',
+            f"        block         {s['block']};",
+            "        filter        ( --interior-only );",
+            f'        extract       "bin/choupo-thermoml extract-vle <article file> --block {s["block"]} --interior-only --into <dir>";',
+            f'        sha256        "{sha_file(s["path"])}";',
+            "        identity",
+            "        {",
+        ]
+        for comp in (pl["c1"], pl["c2"]):
+            _, cas, key = pl["ident"][comp]
+            lines.append(f'            {comp:<14} {{ cas "{cas}"; inchiKey "{key}"; }}')
+        lines += ["        }", "    }"]
+    lines += [");", ""]
+    return "\n".join(lines)
+
+
+def props_text(pl, case_name, stem, unifac):
+    c1, c2 = pl["c1"], pl["c2"]
+    fit, held = pl["fit"], pl["held"]
+    fpath = f"{EXTRACTS}/{fit['path'].name}"
+    hpath = f"{EXTRACTS}/{held['path'].name}"
+    Ph = held["P_kPa"]
+    Pf = fit["P_kPa"] if fit["isobars"] is None else max(fit["isobars"])
+    aside = "\n".join(wrap(f"- {t}: {w}", indent="      ") for t, w in pl["aside"]) \
+        or "      (none)"
+    fitP = (f"{fit['P_kPa']:g} kPa" if fit["isobars"] is None else
+            f"{len(fit['isobars'])} isobars {min(fit['isobars']):g}-{max(fit['isobars']):g} kPa")
+    hdr = f"""/*--------------------------------*- Choupo -*--------------------------------*\\
+|       \\|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\\\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\\\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\\\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \\|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\\
+  {case_name} -- AN NRTL PAIR FROM PUBLISHED MEASUREMENTS, BY THE PIPELINE.
+
+  WRITTEN BY bin/choupo-curate pair {c1} {c2} (DEV.md 4c C282; record
+  docs/design/binary-pairs-from-open-measurements.md section 8).  Every rule
+  below was decided before this tool existed (C16, C225, C226); the tool
+  applies them and decides nothing.
+
+  THE DECLARATION -- WRITTEN AND COMMITTED BEFORE ANY FIT RAN.
+  (C16 slice 2: so the declaration can be read against the result.)
+
+  IDENTITY.  {c1} (CAS {pl['ident'][c1][1]}, InChIKey {pl['ident'][c1][2]})
+  + {c2} (CAS {pl['ident'][c2][1]}, InChIKey {pl['ident'][c2][2]}), joined
+  to the archive through identity.json -- never by name.
+
+  NO MEASURED SERIES IN THIS TREE.  constant/archiveDatasets names each
+  dataset (DOI, NIST URL, article sha256, extraction selector, extract
+  sha256); `bin/choupo-curate fetch` writes the points into
+  {EXTRACTS}/, which is gitignored.
+
+  STUDIES CONSIDERED: every bubble-temperature block of the pair at or below
+  110 kPa with a declared uncertainty ({len(pl['studies']) + len(pl['aside'])} block(s)).
+  USABLE after the screens: {len(pl['studies'])}.  SET ASIDE, BY NAME:
+{aside}
+
+  TRIAGE (C226 item 3, leave one study out, fitted by the engine; a study
+  whose held-out AAD exceeds its own largest stated U plus the others'
+  largest stated U disagrees with them beyond their stated uncertainties):
+{wrap(pl['triage_note'], indent="      ")}
+
+  PARTITION (the declared rule of C16 slice 2): the FIT set is the usable
+  study with the most interior points; the HELD-OUT set is the next largest
+  that shares NO author with it and was measured at one pressure.
+    FIT       doi {fit['doi']} ({fit['n']} interior points, {fitP})
+              authors: {'; '.join(fit['authors'][:6])}
+    HELD OUT  doi {held['doi']} ({held['n']} interior points, {Ph:g} kPa)
+              authors: {'; '.join(held['authors'][:6])}
+
+  BAND: maxAAD {pl['band_txt']} % of the held-out mean T.
+{wrap(pl['origin'], indent="      ")}
+
+  THE FIT.  NRTL with a_ij = a_ji = 0 and alpha = 0.30 fixed: TWO parameters
+  (b_ij, b_ji), the C16 frame (bubble temperatures over these ranges do not
+  identify more).  Each point weighted by 1/U, U its own stated expanded
+  uncertainty.  Two starts: (0, 0) and (800, -400).
+
+  @@RESULT-BEGIN@@
+  WHAT THE RUN FOUND: not yet run.
+  @@RESULT-END@@
+
+  WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
+  frame (ideal-gas vapour, the catalogue's own vapour-pressure records); the
+  measurements were transcribed by the archive and have NOT been read back
+  against the articles (the CHECKLIST that `fetch` writes beside the extracts
+  is the aid for that reading).
+\\*---------------------------------------------------------------------------*/
+
+operations
+(
+"""
+    body = fit_op("fit_nrtl", c1, c2, [fpath], hpath, pl["band_txt"], pl["origin"],
+                  (0, 0), proposal=f"{stem}.proposal.dat", parity="parity.csv",
+                  log="fit_history.csv")
+    body += fit_op("fit_nrtl_start2", c1, c2, [fpath], hpath, pl["band_txt"],
+                   pl["origin"], (800, -400), parity="parity_start2.csv")
+    models = ["ideal"] + (["UNIFAC"] if unifac else []) + ["NRTL"]
+
+    def scans(P, sfx):
+        s = ""
+        for m in models:
+            th = ("model NRTL; /* no inline pair: the case's own record */"
+                  if m == "NRTL" else f"model {m};")
+            s += f"""    {{
+        name        txy_{m.lower()}{sfx};
+        type        propertyScan1D;
+        vary        {{ variable x[{c1}];  from 0.0;  to 1.0;  n 101; }}
+        state       {{ P {P:g} kPa;  composition {{ {c1} 0.5;  {c2} 0.5; }} }}
+        thermo
+        {{
+            equilibrium {{ liquid {{ activityModel {{ {th} }} }} }}
+        }}
+        properties  ( T_bubble  y_eq_{c1} );
+        output      {{ file txy_{m.lower()}{sfx}.csv; }}
+    }}
+"""
+        return s
+    body += scans(Ph, "")
+    if fit["isobars"] is None:
+        body += scans(Pf, "_fitP")
+    body += ");\n\nexperimental\n(\n"
+    body += f"""    {{
+        name      heldout;
+        component {c1};
+        kind      txy;
+        models    ( {'  '.join('txy_' + m.lower() for m in models)} );
+        dataset   "{hpath}";
+        source    "held out: doi {held['doi']}";
+    }}
+"""
+    if fit["isobars"] is None:
+        body += f"""    {{
+        name      fitset;
+        component {c1};
+        kind      txy;
+        models    ( {'  '.join('txy_' + m.lower() + '_fitP' for m in models)} );
+        dataset   "{fpath}";
+        source    "IN-SAMPLE (the fit set): doi {fit['doi']}";
+    }}
+"""
+    body += ");\n"
+    return hdr + body
+
+
+def write_case(pl, number):
+    c1, c2 = pl["c1"], pl["c2"]
+    name = f"curate{number:02d}_nrtl_{c1}_{c2}"
+    case = CURATION / name
+    if case.exists():
+        refuse(f"{case.relative_to(ROOT)} exists -- never overwritten")
+    stem = "-".join(sorted((c1, c2)))   # the loader opens the ALPHABETICAL name (NRTL.cpp alphaPairFilename)
+    (case / "system").mkdir(parents=True)
+    (case / "constant").mkdir()
+    (case / f"{name}.cho").write_text("")
+    (case / "system" / "controlDict").write_text(f"""/*  {name}: an NRTL pair for {c1} + {c2} regressed by bin/choupo-curate to
+    MEASURED bubble temperatures from one article and scored on another it
+    never saw.  See system/propsDict for the declaration and the result.  */
+
+application   choupoProps;
+description   "NRTL {c1}-{c2} regressed by the curation pipeline to measured bubble temperatures (ThermoML locates, the article sources), held out against an independent study";
+verbosity     2;
+""")
+    hdr = f"""/*---------------------------------------------------------------------------*\\
+  {name} -- the thermophysical system: gamma-phi at LOW PRESSURE.
+    * vapour: IDEAL GAS (fugacity coefficient 1, no Poynting term);
+    * pure components: the catalogue's own vapour-pressure records, UNCHANGED
+      (their error at the held-out endpoints is in the band's origin);
+    * liquid: NRTL, tau_ij = a_ij + b_ij/T, alpha 0.30 FIXED.
+  The inline pair is the FIT'S STARTING POINT (zero = ideal mixing); the
+  regressed pair is the record under constant/parameters/NRTL/ (or, once
+  promoted, the catalogue's, sealed into this case), read by the scans.
+\\*---------------------------------------------------------------------------*/
+
+"""
+    (case / "constant" / "thermoPhysPropDict").write_text(thermo_dict(c1, c2, hdr))
+    (case / "constant" / "archiveDatasets").write_text(
+        decl_text(pl, case.relative_to(ROOT).as_posix()))
+    unifac = has_unifac(c1) and has_unifac(c2)
+    (case / "system" / "propsDict").write_text(props_text(pl, name, stem, unifac))
+    ex = case / EXTRACTS
+    ex.mkdir(parents=True)
+    for s in (pl["fit"], pl["held"]):
+        shutil.copy(s["path"], ex / s["path"].name)
+    return case, stem
+
+
+# --------------------------------------------------------------------------
+#  7. fetch
+# --------------------------------------------------------------------------
+def parse_decl(case):
+    f = case / DECL
+    if not f.exists():
+        return None
+    t = crp.strip_comments(f.read_text())
+    m = re.search(r"datasets\s*\((.*)\)\s*;", t, re.S)
+    out = []
+    depth, start = 0, None
+    body = m.group(1) if m else ""
+    for k, ch in enumerate(body):
+        if ch == "{":
+            if depth == 0:
+                start = k
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                d = body[start + 1:k]
+                ident = {}
+                for im in re.finditer(r"(\S+)\s*\{\s*cas\s+\"([^\"]+)\";\s*inchiKey\s+\"([^\"]+)\";\s*\}", d):
+                    ident[im.group(1)] = (im.group(2), im.group(3))
+                out.append({k2: crp.word(d, k2) for k2 in
+                            ("file", "doi", "url", "articleFile", "articleSha256",
+                             "block", "sha256")} | {"identity": ident})
+    return out
+
+
+def fetch(case, quiet=False):
+    """0 = every extract present and verified; 1 = refused (a mismatch);
+    2 = NOT RUN (the article is neither cached nor reachable)."""
+    decl = parse_decl(case)
+    if decl is None:
+        say(f"choupo-curate fetch: {case} declares no {DECL}")
+        return 1
+    tmp = Path(tempfile.mkdtemp(prefix="choupo-curate-fetch-"))
+    try:
+        for d in decl:
+            dest = case / d["file"]
+            if dest.exists() and sha_file(dest) == d["sha256"]:
+                continue
+            src = cache_root() / (d["doi"] + ".xml")
+            if src.exists():
+                how = "local cache"
+            else:
+                src = tmp / "article" / d["doi"] / d["articleFile"]
+                src = src.parent / d["articleFile"]
+                src.parent.mkdir(parents=True, exist_ok=True)
+                try:
+                    with urllib.request.urlopen(d["url"], timeout=60) as r:
+                        src.write_bytes(r.read())
+                except Exception as ex:   # noqa: BLE001 -- any network failure
+                    say(f"choupo-curate fetch: NOT RUN -- NIST ThermoML unreachable "
+                        f"for doi {d['doi']} ({d['url']}: {ex}); regenerate with "
+                        f"`bin/choupo-curate fetch {case}` where the network or "
+                        "the archive cache (bin/choupo-thermoml sync) is present")
+                    return 2
+                how = "NIST URL"
+            got = sha_file(src)
+            if got != d["articleSha256"]:
+                say(f"choupo-curate fetch: REFUSED -- the article file of doi {d['doi']} "
+                    f"({how}) has sha256 {got}, the case declares {d['articleSha256']}: "
+                    "it is not the file the fit was declared on")
+                return 1
+            #  A private cache holding ONLY the two identities this case
+            #  declares: the join is the declaration's, never a name.
+            fake = tmp / "cache"
+            fake.mkdir(exist_ok=True)
+            recs = [{"component": c, "cas": cas, "inchiKey": key, "status": "resolved"}
+                    for c, (cas, key) in d["identity"].items()]
+            (fake / "identity.json").write_text(json.dumps(
+                {"records": recs,
+                 "byInchiKey": {r["inchiKey"]: [r["component"]] for r in recs}}))
+            if src.name != d["articleFile"]:
+                refuse(f"article file name {src.name} != {d['articleFile']}")
+            out, why = extract(src, d["block"], tmp / "x", fake_cache=fake)
+            if out is None:
+                say(f"choupo-curate fetch: REFUSED -- extract-vle refused doi {d['doi']} "
+                    f"block {d['block']}: {why}")
+                return 1
+            got = sha_file(out)
+            if got != d["sha256"]:
+                say(f"choupo-curate fetch: REFUSED -- the extract of doi {d['doi']} has "
+                    f"sha256 {got}, the case declares {d['sha256']}: the extractor or "
+                    "the article changed since the declaration")
+                return 1
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(out), dest)
+            if not quiet:
+                say(f"choupo-curate fetch: {dest.relative_to(case)}  ({how}, both "
+                    "sha256 verified)")
+        write_checklist(case, decl)
+        return 0
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def write_checklist(case, decl):
+    """C226: the extracted table beside each DOI, so a reviewer can confirm
+    it against the article in minutes.  Beside the extracts, gitignored."""
+    lines = ["CHECKLIST -- read each table against its article, then mark the",
+             "dataset `reviewStatus checked` in a curator's act.  Generated by",
+             "bin/choupo-curate fetch; NOT tracked (it carries measured points).", ""]
+    for d in decl:
+        p = case / d["file"]
+        t = p.read_text()
+        cit = crp.word(crp.block(t, "provenance") or "", "citation") or ""
+        lines += ["=" * 74, f"doi {d['doi']}   block {d['block']}",
+                  f"article  https://doi.org/{d['doi']}", f"citation {cit}",
+                  f"NIST     {d['url']}", "-" * 74]
+        dd = t[t.index("\ncolumns"):]
+        lines += [l for l in dd.splitlines() if l.strip()]
+        lines.append("")
+    (case / EXTRACTS / "CHECKLIST.txt").write_text("\n".join(lines))
+
+
+# --------------------------------------------------------------------------
+#  8. run, record, seal
+# --------------------------------------------------------------------------
+def record_header(stem, c1, c2, case_rel, reason_line, extra=""):
+    return f"""/*---------------------------------------------------------------------------*\\
+  NRTL binary interaction parameters --- {c1}(i) + {c2}(j)
+
+  REGRESSED BY CHOUPO'S CURATION PIPELINE (bin/choupo-curate, DEV.md 4c C282;
+  record docs/design/binary-pairs-from-open-measurements.md) to measured
+  bubble temperatures.  The two articles named under `evidence` are the
+  SOURCE of the measurements; the NIST/TRC ThermoML Archive located them.
+  NO MEASURED POINT IS IN THIS RECORD OR THIS TREE: the case regenerates
+  them from the DOIs and sha256 sums it declares (constant/archiveDatasets).
+  The PARAMETERS are Choupo's own work.
+
+  EQUATION: tau_ij = a_ij + b_ij / T [b in K], G_ij = exp(-alpha tau_ij),
+  Renon & Prausnitz direction (src/thermo/activityCoefficient/NRTL.cpp).
+  a_ij = a_ji = 0 and alpha = 0.30 FIXED, not fitted.
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
+  vapour-pressure records for both pure components.
+
+  {reason_line}
+{extra}
+  REPRODUCE: run {case_rel} (after `bin/choupo-curate fetch` on it); its fit
+  writes {stem}.proposal.dat, which bin/curate/check_regressed_pairs.py holds
+  equal to this record.
+\\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair {{ i {c1}; j {c2}; }}
+
+"""
+
+
+def record_from_proposal(prop_text, header, fields):
+    body = prop_text[prop_text.index("components"):]
+    ins = "".join(f"    {k:<13} {v};\n" for k, v in fields)
+    body = re.sub(r"(\n    fitDate )", "\n" + ins.rstrip("\n") + r"\1", body, count=1)
+    return header + body
+
+
+def case_record_fields(case_rel):
+    return [("fittedInCase", f'"{case_rel}"'),
+            ("reviewStatus", "interim"),
+            ("reviewReason", '"regressed by bin/choupo-curate from archive-transcribed '
+                             'measurements; not yet read back against the articles"'),
+            ("reuse", '"Choupo\'s own regression; the measured points belong to the '
+                      'cited articles and are not reproduced in this record or this tree"')]
+
+
+def stability(rec_text, tag):
+    rf = crp.facts(rec_text)
+    return rf, crp.one_liquid_failures(rf, tag)
+
+
+def run_pipeline(case, stem, pl, commit):
+    case_rel = case.relative_to(ROOT).as_posix()
+    c1, c2 = pl["c1"], pl["c2"]
+    if commit:
+        files = [p for p in case.rglob("*") if p.is_file()
+                 and EXTRACTS not in p.relative_to(case).as_posix()]
+        git(["add", "--"] + [str(p) for p in files])
+        git(["commit", "-q", "-m",
+             f"C282: {case.name} -- the declaration, before any fit\n\n"
+             f"bin/choupo-curate pair {c1} {c2}: partition (fit doi {pl['fit']['doi']}, "
+             f"held out doi {pl['held']['doi']}), triage and band maxAAD "
+             f"{pl['band_txt']} % written before the fit runs, so it can be read "
+             "against the result (C16 slice 2)."])
+        say(f"  committed the declaration: {git(['rev-parse', '--short', 'HEAD']).strip()}")
+    rc = fetch(case, quiet=True)
+    if rc:
+        refuse(f"fetch of {case_rel} returned {rc}")
+    #  The fit alone first: the NRTL scans read the record the fit produces.
+    work = Path(tempfile.mkdtemp(prefix="choupo-curate-fit-"))
+    try:
+        sc = work / case.name
+        shutil.copytree(case, sc)
+        t = (sc / "system" / "propsDict").read_text()
+        t = t[:t.index("    {\n        name        txy_")] + ");\n"
+        (sc / "system" / "propsDict").write_text(t)
+        rc, out, js = run_props(sc)
+        prop = sc / f"{stem}.proposal.dat"
+        if rc != 0 or not prop.exists():
+            refuse(f"the fit of {case_rel} exited {rc} / wrote no proposal: {out[-600:]}")
+        ptext = prop.read_text()
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+    rf, split = stability(ptext, stem)
+    verdict = rf["verdict"]
+    if split:
+        reason = ("NOT PROMOTABLE: the pair splits ONE liquid inside its own validity "
+                  "span (check_regressed_pairs arm f) -- " + split[0].split(": ", 1)[1][:240])
+    elif verdict != "validated":
+        reason = (f"NOT PROMOTABLE: held-out verdict {verdict} (AAD {rf['aad_pct']} % "
+                  f"against the band {rf['maxAAD']} % declared before the fit)")
+    else:
+        reason = ("PROMOTABLE by `bin/choupo-curate pair ... --promote`: verdict "
+                  "validated, one liquid across the validity span, triage "
+                  + ("run" if pl.get("triage") else "not run (fewer than three studies)"))
+    hdr = record_header(stem, c1, c2, case_rel,
+                        "reviewStatus interim: a case-local record, regressed and "
+                        "not read back.",
+                        wrap(reason, indent="  ") + "\n")
+    rec = record_from_proposal(ptext, hdr, case_record_fields(case_rel))
+    rp = case / "constant" / "parameters" / "NRTL" / f"{stem}.dat"
+    rp.parent.mkdir(parents=True, exist_ok=True)
+    rp.write_text(rec)
+    seal(case)
+    rc, out, js = run_props(case)
+    if rc != 0:
+        refuse(f"the sealed case {case_rel} exited {rc}: {out[-600:]}")
+    fill_result(case, js, rf, reason, pl)
+    return rf, split, reason
+
+
+def seal(case):
+    p = subprocess.run([sys.executable, "-I", str(IMPORT), str(case)],
+                       capture_output=True, text=True, env=env(), timeout=1800)
+    if p.returncode != 0:
+        refuse(f"bin/choupo-import {case.name} exited {p.returncode}: "
+               f"{(p.stdout + p.stderr)[-800:]}")
+
+
+def fill_result(case, js, rf, reason, pl):
+    f1 = op_result(js, "fit_nrtl") or {}
+    f2 = op_result(js, "fit_nrtl_start2") or {}
+    d1, d2 = f1.get("diagnostics", {}), f2.get("diagnostics", {})
+    keys = [k for k in d1 if k.endswith(".b_ij") or k.endswith(".b_ji")]
+    b1 = [d1[k] for k in sorted(keys)]
+    b2 = [d2.get(k) for k in sorted(keys)]
+    same = all(x is not None and abs(x - y) <= 1e-3 * max(1, abs(y))
+               for x, y in zip(b2, b1))
+    aad = rf["aad_pct"]
+    txt = (f"WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).  "
+           f"fit_nrtl: b_ij = {b1[0]:.1f} K, b_ji = {b1[1]:.1f} K, in-sample rms "
+           f"{d1.get('rms', float('nan')):.3f} K over {int(d1.get('n_data', 0))} points; "
+           f"fit_nrtl_start2 lands on {'the same pair' if same else 'A DIFFERENT pair'} "
+           f"({b2[0]:.1f}, {b2[1]:.1f}).  HELD OUT: AAD "
+           f"{d1.get('aad_heldout_K', float('nan')):.3f} K ({aad:.4f} %) against the "
+           f"band {rf['maxAAD']:g} % -> {rf['verdict']}.  {reason}")
+    p = case / "system" / "propsDict"
+    t = p.read_text()
+    t = re.sub(r"@@RESULT-BEGIN@@.*?@@RESULT-END@@",
+               "@@RESULT-BEGIN@@\n" + wrap(txt) + "\n  @@RESULT-END@@", t, flags=re.S)
+    p.write_text(t)
+
+
+def git(args):
+    p = subprocess.run(["git"] + args, cwd=str(ROOT), capture_output=True, text=True)
+    if p.returncode != 0:
+        refuse(f"git {' '.join(args[:2])} failed: {p.stderr[-400:]}")
+    return p.stdout
+
+
+# --------------------------------------------------------------------------
+#  9. promotion and its revert
+# --------------------------------------------------------------------------
+def find_case(c1, c2):
+    for p in sorted(CURATION.iterdir()):
+        if re.match(rf"curate\d+_nrtl_({re.escape(c1)}_{re.escape(c2)}|"
+                    rf"{re.escape(c2)}_{re.escape(c1)})$", p.name) \
+                and (p / DECL).exists():
+            return p
+    return None
+
+
+def promote(a, b):
+    a, b = identity(a)[0], identity(b)[0]
+    case = find_case(a, b)
+    if case is None:
+        refuse(f"no case written by this tool for {a} + {b} -- run "
+               f"`bin/choupo-curate pair {a} {b}` first")
+    recs = list((case / "constant" / "parameters" / "NRTL").glob("*.dat"))
+    if len(recs) != 1:
+        refuse(f"{case.name} carries {len(recs)} NRTL records; expected its one")
+    rp = recs[0]
+    text = rp.read_text()
+    have = existing_records(a, b)
+    if have:
+        refuse(f"a catalogue record for {a} + {b} already exists ({', '.join(have)}) "
+               "-- never overwritten")
+    rf, split = stability(text, rp.stem)
+    if rf["verdict"] != "validated":
+        refuse(f"{rp.stem}: verdict `{rf['verdict']}` -- only a `validated` fit is "
+               "promoted (C225)")
+    if split:
+        refuse(f"{rp.stem}: " + split[0])
+    decl = (case / "system" / "propsDict").read_text()
+    if "TRIAGE (C226" not in decl:
+        refuse(f"{case.name} carries no triage declaration -- the study triage of "
+               "C226 item 3 is a condition of automatic promotion")
+    case_rel = case.relative_to(ROOT).as_posix()
+    hdr = record_header(
+        rp.stem, rf["i"], rf["j"], case_rel,
+        "reviewStatus autoPromoted; humanReviewed false: PROMOTED AUTOMATICALLY by\n"
+        "  its fitting pipeline (verdict validated against a band declared before the\n"
+        "  fit, one liquid across its validity span, study triage run), and NO HUMAN\n"
+        "  HAS REVIEWED IT.  The engine says so on every run that reads it.  A\n"
+        "  curator who reads the series back against the articles marks it\n"
+        "  `reviewStatus reviewed; humanReviewed true;`.  Revert with\n"
+        f"  `bin/choupo-curate revert {rp.stem}`.")
+    body = text[text.index("components"):]
+    body = re.sub(r"(\n    reviewStatus\s+)interim;",
+                  r"\1autoPromoted;\n    humanReviewed false;\n"
+                  f'    promotedBy    "{PROMOTED_BY}";\n'
+                  f'    promotedDate  "{date.today().isoformat()}";', body, count=1)
+    dest = STD_NRTL / f"{rp.stem}.dat"
+    if dest.exists():
+        refuse(f"{dest.relative_to(ROOT)} exists -- never overwritten")
+    dest.write_text(hdr + body)
+    rp.unlink()
+    seal(case)
+    say(f"choupo-curate: PROMOTED {dest.relative_to(ROOT)} (autoPromoted, "
+        f"humanReviewed false); {case.name} re-sealed on it")
+    return 0
+
+
+def revert(stem):
+    dest = STD_NRTL / f"{stem}.dat"
+    if not dest.exists():
+        refuse(f"no catalogue record {dest.relative_to(ROOT)}")
+    t = crp.strip_comments(dest.read_text())
+    if crp.word(t, "reviewStatus") != "autoPromoted" or \
+            crp.word(t, "promotedBy") != PROMOTED_BY:
+        refuse(f"{dest.relative_to(ROOT)} was not promoted by this tool (reviewStatus "
+               f"{crp.word(t, 'reviewStatus')}, promotedBy {crp.word(t, 'promotedBy')}) "
+               "-- revert removes ONLY a record this tool promoted")
+    case = ROOT / crp.word(t, "fittedInCase")
+    text = dest.read_text()
+    dest.unlink()
+    seal(case)                               # drops the sealed copy
+    rp = case / "constant" / "parameters" / "NRTL" / f"{stem}.dat"
+    rf = crp.facts(text)
+    hdr = record_header(stem, rf["i"], rf["j"], case.relative_to(ROOT).as_posix(),
+                        "reviewStatus interim: a case-local record (its automatic "
+                        "promotion was REVERTED).")
+    body = text[text.index("components"):]
+    body = re.sub(r"\n    humanReviewed[^\n]*|\n    promotedBy[^\n]*|\n    promotedDate[^\n]*",
+                  "", body)
+    body = body.replace("reviewStatus  autoPromoted;", "reviewStatus  interim;")
+    rp.parent.mkdir(parents=True, exist_ok=True)
+    rp.write_text(hdr + body)
+    seal(case)
+    say(f"choupo-curate: REVERTED {dest.relative_to(ROOT)}; the record is case-local "
+        f"again in {case.name}")
+    return 0
+
+
+# --------------------------------------------------------------------------
+def main():
+    ap = argparse.ArgumentParser(prog="choupo-curate", description=__doc__.split("\n")[0])
+    sp = ap.add_subparsers(dest="cmd", required=True)
+    p = sp.add_parser("pair", help="the C16 chain for one binary pair")
+    p.add_argument("a")
+    p.add_argument("b")
+    p.add_argument("--pmax", type=float, default=110.0)
+    p.add_argument("--number", type=int)
+    p.add_argument("--plan", action="store_true", help="print the declaration, write nothing")
+    p.add_argument("--no-commit", action="store_true")
+    p.add_argument("--promote", action="store_true")
+    p.add_argument("--resume", action="store_true",
+                   help="the case exists (its declaration committed): verify the "
+                        "declaration is unchanged and run it")
+    f = sp.add_parser("fetch", help="regenerate a case's extracts")
+    f.add_argument("case")
+    r = sp.add_parser("revert", help="remove a record this tool promoted")
+    r.add_argument("stem")
+    a = ap.parse_args()
+    if a.cmd == "fetch":
+        return fetch(Path(a.case).resolve())
+    if a.cmd == "revert":
+        return revert(a.stem)
+    if a.promote:
+        return promote(a.a, a.b)
+    work = Path(tempfile.mkdtemp(prefix="choupo-curate-"))
+    try:
+        pl = plan(a.a, a.b, a.pmax, work)
+        say(f"choupo-curate pair {pl['c1']} {pl['c2']}")
+        say(f"  usable studies {len(pl['studies'])}; set aside {len(pl['aside'])}")
+        for t, w in pl["aside"]:
+            say(f"    aside  {t}: {w}")
+        say("  triage  " + pl["triage_note"])
+        say(f"  FIT      doi {pl['fit']['doi']} ({pl['fit']['n']} pts)")
+        say(f"  HELD OUT doi {pl['held']['doi']} ({pl['held']['n']} pts, "
+            f"{pl['held']['P_kPa']:g} kPa)")
+        say(f"  band     {pl['band_txt']} %  ({pl['origin']})")
+        if a.plan:
+            return 0
+        if a.resume:
+            case = find_case(pl["c1"], pl["c2"])
+            if case is None:
+                refuse("--resume: no case for this pair")
+            stem = "-".join(sorted((pl["c1"], pl["c2"])))
+            want = decl_text(pl, case.relative_to(ROOT).as_posix())
+            unifac = has_unifac(pl["c1"]) and has_unifac(pl["c2"])
+            wantp = props_text(pl, case.name, stem, unifac)
+            norm = lambda s: re.sub(r"@@RESULT-BEGIN@@.*?@@RESULT-END@@", "", s, flags=re.S)
+            if (case / DECL).read_text() != want or \
+                    norm((case / "system" / "propsDict").read_text()) != norm(wantp):
+                refuse(f"--resume: {case.name}'s declaration differs from the one the "
+                       "rules give now -- a declaration is never rewritten after it "
+                       "was committed")
+            for s in (pl["fit"], pl["held"]):
+                (case / EXTRACTS).mkdir(parents=True, exist_ok=True)
+                shutil.copy(s["path"], case / EXTRACTS / s["path"].name)
+            commit = False
+        else:
+            case, stem = write_case(pl, a.number or next_number())
+            commit = not a.no_commit
+        say(f"  case     {case.relative_to(ROOT)}")
+        rf, split, reason = run_pipeline(case, stem, pl, commit)
+        say(f"  verdict  {rf['verdict']}  (held-out AAD {rf['aad_pct']} %, band "
+            f"{rf['maxAAD']} %)")
+        say(f"  arm (f)  {'SPLITS: ' + split[0] if split else 'one liquid across the span'}")
+        say(f"  {reason}")
+        return 0
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+
+
+# ==========================================================================
+#  THE PURE-COMPOUND MODE, unchanged (it predates `pair`; usage
+#  `choupo-curate <compound> [--case DIR] [--rule byDoiOrder] [--nFit N]`).
+#  Its own description, as it was written:
+#
+#  choupo-curate -- one command: evidence -> partition -> fit -> held-out -> dossier.
+#
+#      choupo-curate <compound> [--case DIR] [--rule byDoiOrder] [--nFit N]
+#
+#  What it does, in the order a curator would:
+#
+#      identity      resolve the compound in the local ThermoML index
+#      evidence      extract every dataset Choupo can read into the case
+#      partition     DECLARE which datasets fit and which are held out
+#      fit           run choupoProps
+#      validate      report held-out residuals, or refuse
+#      dossier       write the evidence record; promote nothing
+#
+#  THE PARTITION RULE IS DECLARED AND DETERMINISTIC, AND THAT IS THE WHOLE POINT.
+#  A class cannot hand-pick DOIs for thirty components, so an automatic rule is
+#  allowed -- but only one that is stated in advance, reproducible from the
+#  declaration alone, and RECORDED in the dossier.  `byDoiOrder` sorts the
+#  datasets by DOI and gives the first `nFit` to the fit; the rest are held out.
+#  It does not look at a single residual, and this tool will not re-run it after
+#  seeing one.  Automatic-and-declared is not tuning; re-partitioning after a bad
+#  result is, and that is what the whole contract exists to prevent.
+#
+#  WITH ONLY ONE DATASET the honest outcome is a refusal, not a smaller split.
+#  The tool says so before running, and choupoProps then prints
+#
+#      VALIDATION REFUSED:
+#      No independent experimental evidence remains after fitting.
+#
+#  which is the correct answer to "I have one measurement and want to know if my
+#  model generalises".
+#
+#  NOTHING IS PROMOTED.  The dossier has evidence semantics and sits in
+#  <case>/curation/, outside every resolver root.  Admitting a property to
+#  data/standards/ is a separate, explicit human act:
+#  bin/curate/promote-from-dossier.
+# ==========================================================================
+def sh(args, cwd=None):
+    p = subprocess.run(args, cwd=cwd, capture_output=True, text=True)
+    return p.returncode, p.stdout + p.stderr
+
 
 PROP_OP = {
     "vapourPressure":  ("vaporPressureFit", "vapourPressure"),
@@ -58,8 +1318,8 @@ def sh(args, cwd=None):
     return p.returncode, p.stdout + p.stderr
 
 
-def main():
-    ap = argparse.ArgumentParser()
+def compound_main(argv):
+    ap = argparse.ArgumentParser(prog="choupo-curate <compound>")
     ap.add_argument("compound")
     ap.add_argument("--case", default=None,
                     help="case directory to build (default: ./curate-<compound>)")
@@ -68,9 +1328,9 @@ def main():
     ap.add_argument("--maxAAD", type=float, default=None,
                     help="acceptance band in percent; without one no verdict "
                          "is claimed on the held-out residuals")
-    a = ap.parse_args()
+    a = ap.parse_args(argv)
 
-    case = pathlib.Path(a.case or f"curate-{a.compound}")
+    case = Path(a.case or f"curate-{a.compound}")
 
     # -- identity ---------------------------------------------------------
     print(f"IDENTITY")
@@ -189,5 +1449,9 @@ def main():
     return 0
 
 
+
+
 if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] not in ("pair", "fetch", "revert", "-h", "--help"):
+        sys.exit(compound_main(sys.argv[1:]))
     sys.exit(main())

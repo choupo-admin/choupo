@@ -115,6 +115,12 @@ tutorials/**/postProcessing/
 # and are whitelisted below -- as is constant/reference/, the REFERENCE data a
 # case's views set beside its run (another program's numbers, a published
 # table; DEV.md 4c C147): a case INPUT, never a run output.
+# The measured points a C282 pipeline case REGENERATES from the DOIs and
+# sha256 sums it declares (constant/archiveDatasets, bin/choupo-curate
+# fetch).  Never tracked: Vitor, 2026-11-10 -- the measured series are not
+# copied, only the fitted parameters are kept.  The GUI glob carries the
+# second lock (gui/src/cases/tutorials.ts).
+tutorials/**/constant/archiveExtracts/
 tutorials/**/*.csv
 tutorials/**/balanceTrajectory.meta
 !tutorials/**/constant/experimental/*.csv

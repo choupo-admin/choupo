@@ -85,6 +85,12 @@ const CASE_FILES = import.meta.glob(
     // bundle.  Locked here for the same reason `design/` is, and the two now
     // stand or fall together.
     "!../../../tutorials/**/converged/**",
+    // The measured points a C282 curation case REGENERATES from the DOIs it
+    // declares (`bin/choupo-curate fetch`).  Gitignored -- the series are NOT
+    // copied into the tree (Vitor, 2026-11-10) -- and locked here too: a
+    // site built on a machine that fetched them would otherwise inline the
+    // articles' measurements into the shipped bundle.
+    "!../../../tutorials/**/archiveExtracts/**",
     // The interior a case DECLARES is NOT excluded, and that is the point: it
     // lives in `0/internalStates/<SECTOR>/<unit>`, it is tracked, it is a case INPUT,
     // and the browser must read it exactly as the native run does.
