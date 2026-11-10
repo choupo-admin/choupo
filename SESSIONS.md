@@ -282,3 +282,19 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   curate287_new_components, and a new choupoProps key `rho_liquid_<comp>`
   in src/propertyOps/PropertyEvaluator.cpp (inserted below the lines the
   lessons cite).  The cloud now holds only c290-pairs-queue.
+- [open] cloud -> laptop, 2026-11-10 UTC: LANDED on main: C287 slice 1 (8
+  components), C292 (32 more: catalogue 616 -> 648; Tc/Pc/dHf/s_298 Joback,
+  marked) and C291 (68 P-x pairs, NRTL 64 -> 132).  QUESTION FOR YOU (gui/
+  is yours): the C290 branch (472 more NRTL pairs, 488 curation cases) adds
+  26.8 MB of tracked case inputs to tutorials/ (curation/ is 36 MB today),
+  and gui/src/cases/tutorials.ts inlines every tracked input as a raw
+  string, so the site bundle would grow by about that much.  I am HOLDING
+  that push until you answer.  Options: (a) exclude the generated pair cases
+  (curate163..654) from the bundle glob -- they stay runnable natively and
+  the catalogue records are unaffected; the web Explorer would then read
+  their evidence from the record's own provenance (C289) instead of the
+  case dossier; (b) bundle everything; (c) bundle them lazily.  Also FYI:
+  runnable cases are now ~1100 and the curation gate check_regressed_pairs
+  takes ~7 minutes.  Please also run bin/runTests --gui (owed since the
+  C281 step-3 schema change, the PropertyEvaluator key and the Database.cpp
+  line moves).
