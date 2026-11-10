@@ -1,0 +1,117 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      oXylene;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-anisole.b_ij  -255.700136746;
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-anisole.b_ji  441.328944712;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "313a8ee354f7764b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/oXylene-anisole-bubble-acs.jced.8b00348.dat";
+            doi       "10.1021/acs.jced.8b00348";
+            sha256    "e77331c92505dd7cbd27a57b18c3ce0d849ebb9e656f0bba3a34cd2d32973bd1";
+            provenance measured;
+            archiveFile "acs.jced.8b00348.xml";
+            system    "oXylene + anisole";
+            pressure  "93130.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.059; max 0.95; n 11; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-anisole.b_ij  -255.700135688;
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-anisole.b_ji  441.328943038;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "313a8ee354f7764b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/oXylene-anisole-bubble-acs.jced.8b00348.dat";
+            doi       "10.1021/acs.jced.8b00348";
+            sha256    "e77331c92505dd7cbd27a57b18c3ce0d849ebb9e656f0bba3a34cd2d32973bd1";
+            provenance measured;
+            archiveFile "acs.jced.8b00348.xml";
+            system    "oXylene + anisole";
+            pressure  "93130.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.059; max 0.95; n 11; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

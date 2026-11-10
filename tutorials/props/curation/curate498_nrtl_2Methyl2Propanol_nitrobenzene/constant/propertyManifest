@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/2Methyl2Propanol.dat"
+        {
+            type          imported;
+            sha256        "85da846573aa8847cf253bb6a529bccb7cef7f6811f6f65be60476b507fc5442";
+            computationalSha256 "11753215451e3bf204fd6a69c6d95af63cdadf84fdfebe9aa516b4610a7ae366";
+            origin        "data/standards/components/2Methyl2Propanol.dat";
+            originSha256  "225442e6d92c7f5d9f6cd96593a5d8d958d8b0f65227d2eee965eac6e04747b2";
+            release       Choupo-2608;
+        }
+        "components/nitrobenzene.dat"
+        {
+            type          imported;
+            sha256        "7ca4a59b735550425138f28d1b5bca95a6ad5b19aa7c053c41e01f871c798193";
+            computationalSha256 "0b4a4231f87f80f41544b0e12087ccb13016c93e1b53475a9fe70cce95d732d1";
+            origin        "data/standards/components/nitrobenzene.dat";
+            originSha256  "4dfd083b1f44673d3672cb463555bdfa03068f10bec14bf97bce1e682ec0db07";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Methyl2Propanol-nitrobenzene.dat"
+        {
+            type          imported;
+            sha256        "560033011d6d4015959a980f74200580de4095f966ad1b81435823a7fbd371ff";
+            computationalSha256 "b7f4ce54deb99ddb3778c6764a3fc5bfde61c28a3f03179543be426f9771ffd2";
+            origin        "data/standards/parameters/NRTL/2Methyl2Propanol-nitrobenzene.dat";
+            originSha256  "59587a8941bbe66d95c216816328c693630e4b82503070d8e753b7f7ef8add97";
+            release       Choupo-2608;
+        }
+    }
+}

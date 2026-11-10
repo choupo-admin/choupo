@@ -58,11 +58,22 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      none: every one of the 12 points lies within 3 K after the
+      least-squares stage.
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = -247.3 K, b_ji = 130.1 K over 12 kept points of 1
+  laboratories (0 discarded): max |dT| 0.384 K, mean 0.225 K, graded
+  clean (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on A
+  DIFFERENT pair (1057.1, -670.1). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/2Methyl1Propanol-mCresol.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: fit grade
+  clean -- max |dT| 0.384 K over the 12 kept points (limits 1 / 2 / 4 K),
+  one liquid across the validity span -- it rests on ONE laboratory's
+  measurements (doi 10.1016/j.jct.2006.03.006); nothing here tells its
+  systematic error from the model's (DEV.md 4c C290)
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

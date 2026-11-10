@@ -1,0 +1,117 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      chloroform;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-nNDimethylformamide.b_ij  820.15012573;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-nNDimethylformamide.b_ji  -371.79879669;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2271198b974fb739";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/chloroform-nNDimethylformamide-bubble-j.fluid.2009.01.006.dat";
+            doi       "10.1016/j.fluid.2009.01.006";
+            sha256    "eaf7a06752baab1d0a6970e5d58ba2114668e13e50499653ec47bea6a9de77dc";
+            provenance measured;
+            archiveFile "j.fluid.2009.01.006.xml";
+            system    "chloroform + nNDimethylformamide";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0412; max 0.9158; n 14; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-nNDimethylformamide.b_ij  820.150122263;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-nNDimethylformamide.b_ji  -371.79879573;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2271198b974fb739";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/chloroform-nNDimethylformamide-bubble-j.fluid.2009.01.006.dat";
+            doi       "10.1016/j.fluid.2009.01.006";
+            sha256    "eaf7a06752baab1d0a6970e5d58ba2114668e13e50499653ec47bea6a9de77dc";
+            provenance measured;
+            archiveFile "j.fluid.2009.01.006.xml";
+            system    "chloroform + nNDimethylformamide";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0412; max 0.9158; n 14; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

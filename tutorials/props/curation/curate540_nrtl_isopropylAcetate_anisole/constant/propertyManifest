@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/anisole.dat"
+        {
+            type          imported;
+            sha256        "409f3f1c28e88cf65e16ddd58c835d8ce346a7d7e1511438b2cfcd3f0badd48f";
+            computationalSha256 "aaa9917f4ffc56d9b1e0cc7324988b535e09c74124611ef83377f1305b0c1725";
+            origin        "data/standards/components/anisole.dat";
+            originSha256  "1eb4544ae67d18f6f2118ebbf32d59c7685e4b349d1bfd634e8b53d218d3e654";
+            release       Choupo-2608;
+        }
+        "components/isopropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "2328fd502eebc591dc0d81570786331f2d6647eb2b71bfe7172809332c8e3fe0";
+            computationalSha256 "1c866ebe928bb3a9819829800fbff05561232d4be946665e4b122aac3e9f145f";
+            origin        "data/standards/components/isopropylAcetate.dat";
+            originSha256  "b4165a2c125255c87da7f45e828cad88381ca66d9b8bb23696bd173c77aae660";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/anisole-isopropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "9b0007bdbdb7606a8b9ed4ee152cd99210bf5f6b629b67758f2e0bc1dfbc117d";
+            computationalSha256 "2250612a8710dfdde47f0095e6d32edf5b9eb6aa22667fecdc9f864962176009";
+            origin        "data/standards/parameters/NRTL/anisole-isopropylAcetate.dat";
+            originSha256  "513501482f8004c1e497aaae0f78ee95a159f0d8047001ffaf13f59225677bb0";
+            release       Choupo-2608;
+        }
+    }
+}

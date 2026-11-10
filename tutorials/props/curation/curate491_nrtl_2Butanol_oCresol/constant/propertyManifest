@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/2Butanol.dat"
+        {
+            type          imported;
+            sha256        "e50417c9ddeaeb5527166cf726410485df839fdb613b8555aa2b8958be5a5c46";
+            computationalSha256 "ad0f4e4cb272e208c3a8ee83b570fe72b60cd9ab1b2dd9a7d6011dbd28c4995b";
+            origin        "data/standards/components/2Butanol.dat";
+            originSha256  "8c6ea94875403bbbd569f6facd5fdaefdcc5aee732ba499696802675d675202a";
+            release       Choupo-2608;
+        }
+        "components/oCresol.dat"
+        {
+            type          imported;
+            sha256        "a6194b5d1b0a25638dc767dff9eae61e6ce50061734b73ef2ae935d145e5d509";
+            computationalSha256 "9dab425421f00da5835249ca63b2e26114c53d7aa046a089857516351cd30e17";
+            origin        "data/standards/components/oCresol.dat";
+            originSha256  "b7c18c34145a8b2a41947207f9925b59390dbf9d8a52092690ea91dbc0320ce1";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Butanol-oCresol.dat"
+        {
+            type          imported;
+            sha256        "d23f51a2ba253dfa192cce727608489829e6899998f89130433f318eed4f6513";
+            computationalSha256 "16ac81f378efb091b667d349ba3e0d7a31c952f5b0c3cce99a251997a91141ee";
+            origin        "data/standards/parameters/NRTL/2Butanol-oCresol.dat";
+            originSha256  "05009751d13a1f7249828707ca88d5a4314841e077038e4a37da0f9fa1485f8b";
+            release       Choupo-2608;
+        }
+    }
+}

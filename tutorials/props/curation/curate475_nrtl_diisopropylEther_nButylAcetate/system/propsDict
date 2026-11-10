@@ -58,11 +58,22 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      none: every one of the 13 points lies within 3 K after the
+      least-squares stage.
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = -335.1 K, b_ji = 598.4 K over 13 kept points of 1
+  laboratories (0 discarded): max |dT| 1.063 K, mean 0.351 K, graded
+  warning (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (-335.1, 598.4). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/diisopropylEther-nButylAcetate.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: fit grade
+  warning -- max |dT| 1.063 K over the 13 kept points (limits 1 / 2 / 4
+  K), one liquid across the validity span -- it rests on ONE laboratory's
+  measurements (doi 10.1016/j.jct.2018.11.013); nothing here tells its
+  systematic error from the model's (DEV.md 4c C290)
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

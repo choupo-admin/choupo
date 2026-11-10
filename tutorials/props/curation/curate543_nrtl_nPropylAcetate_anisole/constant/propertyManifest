@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/anisole.dat"
+        {
+            type          imported;
+            sha256        "409f3f1c28e88cf65e16ddd58c835d8ce346a7d7e1511438b2cfcd3f0badd48f";
+            computationalSha256 "aaa9917f4ffc56d9b1e0cc7324988b535e09c74124611ef83377f1305b0c1725";
+            origin        "data/standards/components/anisole.dat";
+            originSha256  "1eb4544ae67d18f6f2118ebbf32d59c7685e4b349d1bfd634e8b53d218d3e654";
+            release       Choupo-2608;
+        }
+        "components/nPropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "bae5d694a37bfbe03d15627f0cb30337bf2fe4f53e411fd6241bbf08663bd720";
+            computationalSha256 "2c7f9840afa05762f6ea54030ca0f63c06c5a145138a3a1fc66405d5d64ecb1f";
+            origin        "data/standards/components/nPropylAcetate.dat";
+            originSha256  "d6441f89d965c47899449c155ee12a811238c3650307cbed703a2259c65126a9";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/anisole-nPropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "c12584e16da077a867be3b41f1d69faff170cf1876f1898a859d5c161566d770";
+            computationalSha256 "284a3b35cc75367a50b17d3792e4a6d31de6ac620d64133ec2f38d61ee876259";
+            origin        "data/standards/parameters/NRTL/anisole-nPropylAcetate.dat";
+            originSha256  "f6295d5bd687e14639f842eeaac3050693efceca0654d3bcc4969058b738119a";
+            release       Choupo-2608;
+        }
+    }
+}

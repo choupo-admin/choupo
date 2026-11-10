@@ -58,7 +58,17 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      8 point(s) of 12: doi 10.1016/j.jct.2006.03.006 row 2: x 0.1571, P
+      95.500 kPa, T 454.05 K, dT +3.73 K; doi 10.1016/j.jct.2006.03.006
+      row 3: x 0.2102, P 95.500 kPa, T 448.45 K, dT +3.96 K; doi
+      10.1016/j.jct.2006.03.006 row 4: x 0.2710, P 95.500 kPa, T 442.35
+      K, dT +3.80 K; doi 10.1016/j.jct.2006.03.006 row 8: x 0.6365, P
+      95.500 kPa, T 408.95 K, dT -3.37 K; doi 10.1016/j.jct.2006.03.006
+      row 9: x 0.7002, P 95.500 kPa, T 402.85 K, dT -4.73 K; doi
+      10.1016/j.jct.2006.03.006 row 10: x 0.7779, P 95.500 kPa, T 395.05
+      K, dT -6.00 K; doi 10.1016/j.jct.2006.03.006 row 11: x 0.8504, P
+      95.500 kPa, T 387.05 K, dT -6.18 K; doi 10.1016/j.jct.2006.03.006
+      row 12: x 0.9130, P 95.500 kPa, T 379.25 K, dT -4.73 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
@@ -88,6 +98,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/1Propanol-mCresol-bubble-j.jct.2006.03.006.dat";
                 role     fit;
+                discard  ( 2 3 4 8 9 10 11 12 );   // C283 outliers, by name in the header
             }
         );
 
@@ -129,6 +140,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/1Propanol-mCresol-bubble-j.jct.2006.03.006.dat";
                 role     fit;
+                discard  ( 2 3 4 8 9 10 11 12 );   // C283 outliers, by name in the header
             }
         );
 

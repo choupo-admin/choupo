@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/2Methyl1Propanol.dat"
+        {
+            type          imported;
+            sha256        "ee0bb35e8d706d7c4b0549d6ac51be77b89de4f5496fea7d9947d875b9bcdd35";
+            computationalSha256 "b1bfb84671b4f35f758f186af86d16cfe056fb1a54d6f2b5e2867328630848b3";
+            origin        "data/standards/components/2Methyl1Propanol.dat";
+            originSha256  "f0afa6609184a85f9c63deb6555d81619d932cc9049178f6f783e25420e34db6";
+            release       Choupo-2608;
+        }
+        "components/oCresol.dat"
+        {
+            type          imported;
+            sha256        "a6194b5d1b0a25638dc767dff9eae61e6ce50061734b73ef2ae935d145e5d509";
+            computationalSha256 "9dab425421f00da5835249ca63b2e26114c53d7aa046a089857516351cd30e17";
+            origin        "data/standards/components/oCresol.dat";
+            originSha256  "b7c18c34145a8b2a41947207f9925b59390dbf9d8a52092690ea91dbc0320ce1";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Methyl1Propanol-oCresol.dat"
+        {
+            type          imported;
+            sha256        "6a00e6b64994328723becba9500419871233088ab49b642f5d3654bd62f85547";
+            computationalSha256 "4a5bb1bcaad2bec7dbddf50b6a0f2aede8cb2480f89a2432808bec20740477cd";
+            origin        "data/standards/parameters/NRTL/2Methyl1Propanol-oCresol.dat";
+            originSha256  "534253979e1affe1bb9e8b791c775186d92b8e389b61dc3dab8cf1c4fbd3a797";
+            release       Choupo-2608;
+        }
+    }
+}

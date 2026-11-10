@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/1Hexanol.dat"
+        {
+            type          imported;
+            sha256        "ff92f5582d2dd1ba667f3d466054ce752b793a12050556496d6521f08fef7c91";
+            computationalSha256 "6363abe381b95dabcba93eb20cca67bd715fbcf43e6d5b0fb6a78766b1500711";
+            origin        "data/standards/components/1Hexanol.dat";
+            originSha256  "ab4dc5089f2f1bec42920a8f7b7301da49a9ac935c439900666185ba0de805c4";
+            release       Choupo-2608;
+        }
+        "components/acrylonitrile.dat"
+        {
+            type          imported;
+            sha256        "50e9a20506c0ca18d986e44002eda5712bc1d0b8dfda9a257cfe2af11d00fe3b";
+            computationalSha256 "08b73c7103c69084e44f5bc297fc2291b50066151b272bac0cc408ec87033cf2";
+            origin        "data/standards/components/acrylonitrile.dat";
+            originSha256  "cef27738a98dab0b4330d9a932721281388e126fa6223cd168b2298b1bce6648";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1Hexanol-acrylonitrile.dat"
+        {
+            type          imported;
+            sha256        "5539e6524efd9d85fa8a124cd4ab465a7f61d4be70e3afbcce921e089c24f794";
+            computationalSha256 "ca7f85237c39f4001011f756ecff85752b2d4452b2c08760bada34792f763b9f";
+            origin        "data/standards/parameters/NRTL/1Hexanol-acrylonitrile.dat";
+            originSha256  "16d9fed2033c1e79758157a1761a98e8415d83094f0d1e5ec4ee4d6ce75de8b9";
+            release       Choupo-2608;
+        }
+    }
+}

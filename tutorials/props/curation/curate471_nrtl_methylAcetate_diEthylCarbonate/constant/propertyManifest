@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/diEthylCarbonate.dat"
+        {
+            type          imported;
+            sha256        "d8297bed82a1e4c68340219492b44b2ebadfbba7475aca72c40a6041306fc5aa";
+            computationalSha256 "8b6426f096215db86e54acf5b49c9e1f191a8537d8473b789e919cf2a04b518c";
+            origin        "data/standards/components/diEthylCarbonate.dat";
+            originSha256  "25a6e822c12684b0de747028ccffc0bb8b01e03ac67152b15f90400b912f7a58";
+            release       Choupo-2608;
+        }
+        "components/methylAcetate.dat"
+        {
+            type          imported;
+            sha256        "2a853f9536c2e28bb0ff43384237e6bf552a62e4f4e5ab2b93bcf2f75ce80870";
+            computationalSha256 "984a3255e049d782ee122f64c337e80aee21d6e71f0e494d074cd23318bb6fa4";
+            origin        "data/standards/components/methylAcetate.dat";
+            originSha256  "03876631024ae93115fdb03586ab95e3720389bc0e68f5f8cf0b2b5aae74789e";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/diEthylCarbonate-methylAcetate.dat"
+        {
+            type          imported;
+            sha256        "0b0d5616fb7b480c0f58bb831967dbd88e87df0f9007518413cbd69023b7d041";
+            computationalSha256 "f6648ebb125d9574d402bf01dda45706c71368773064e170eeee31cd037c5d68";
+            origin        "data/standards/parameters/NRTL/diEthylCarbonate-methylAcetate.dat";
+            originSha256  "2a087edebeab79d0c21f20b7abc00109205b0fc907d9eee0c2c67ddf7a01c923";
+            release       Choupo-2608;
+        }
+    }
+}

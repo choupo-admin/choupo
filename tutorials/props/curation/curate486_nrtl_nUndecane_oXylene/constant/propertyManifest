@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/nUndecane.dat"
+        {
+            type          imported;
+            sha256        "a5fae856fd72b6771ac00f3a7ce0ad5a0116a803d819b312ba986439825ec59d";
+            computationalSha256 "3f115ea2cdc1c057dbcb025d472dc769d513190d133c8f106e42a07216b473ee";
+            origin        "data/standards/components/nUndecane.dat";
+            originSha256  "f8f8b76396af095cb86b0a64e1a274905626181597cb27e70ea3c169f673c36f";
+            release       Choupo-2608;
+        }
+        "components/oXylene.dat"
+        {
+            type          imported;
+            sha256        "d6bdb61163c015dec26d2cefff15a2c919b7a57896b8592d3605374a272dffa0";
+            computationalSha256 "a8ffc32a52cd609309dfebd10675e693ad9127c62d05bf6ddf8603f0a78620a2";
+            origin        "data/standards/components/oXylene.dat";
+            originSha256  "b6c6ede5d7ff713e82c02f27faf3ced0b49ef4762c4baa0eae22702c78888efe";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/nUndecane-oXylene.dat"
+        {
+            type          imported;
+            sha256        "9473df1df59531336014f93853426478fb7bba7a11cc351b227fb393a02ab3aa";
+            computationalSha256 "d70e8d3e19dd3bbd43d622b3684b1db469364d5fef82260b5b4063a4b808c86b";
+            origin        "data/standards/parameters/NRTL/nUndecane-oXylene.dat";
+            originSha256  "97a4b5e10622524a53f30955a4cec468bacabf6dfe790f98222ab8b62ba54dfb";
+            release       Choupo-2608;
+        }
+    }
+}

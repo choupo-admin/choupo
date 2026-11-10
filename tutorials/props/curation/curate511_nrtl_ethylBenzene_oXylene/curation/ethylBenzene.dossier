@@ -1,0 +1,117 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      ethylBenzene;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.b_ij  442.037805494;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.b_ji  -339.247399859;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "cc489c0f1d593bb2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-oXylene-bubble-je049701s.dat";
+            doi       "10.1021/je049701s";
+            sha256    "3ccafcbfe084a251f14d3558797976d462b5eb2eaaa108027621f376b830fdc0";
+            provenance measured;
+            archiveFile "je049701s.xml";
+            system    "ethylBenzene + oXylene";
+            pressure  "100650.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0538; max 0.9579; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.b_ij  442.037817079;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.b_ji  -339.247406945;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "cc489c0f1d593bb2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-oXylene-bubble-je049701s.dat";
+            doi       "10.1021/je049701s";
+            sha256    "3ccafcbfe084a251f14d3558797976d462b5eb2eaaa108027621f376b830fdc0";
+            provenance measured;
+            archiveFile "je049701s.xml";
+            system    "ethylBenzene + oXylene";
+            pressure  "100650.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0538; max 0.9579; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);
