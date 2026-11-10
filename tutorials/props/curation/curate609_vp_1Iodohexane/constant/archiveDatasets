@@ -1,5 +1,5 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
-  constant/archiveDatasets -- WHERE the measurements of curate605_vp_13Dibromobenzene
+  constant/archiveDatasets -- WHERE the measurements of curate609_vp_1Iodohexane
   come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
   (Vitor, 2026-11-10: the measured series are not copied; only the fitted
   parameters are kept).  `bin/choupo-curate fetch <case>` writes each
@@ -21,20 +21,20 @@ archive
 datasets
 (
     {
-        file          "constant/archiveExtracts/13Dibromobenzene-vapourPressure-je5008795.dat";
+        file          "constant/archiveExtracts/1Iodohexane-vapourPressure-je100398m.dat";
         role          fit;   // informational: the operation declares it
-        doi           "10.1021/je5008795";
-        url           "https://trc.nist.gov/ThermoML/10.1021/je5008795.xml";
-        page          "https://trc.nist.gov/ThermoML/10.1021/je5008795.json";
-        articleFile   "je5008795.xml";
-        articleSha256 "f720abb276f4686af6e1820f74536368c497b20e8b2cf24f364d2fe0aa08af82";
+        doi           "10.1021/je100398m";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je100398m.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je100398m.json";
+        articleFile   "je100398m.xml";
+        articleSha256 "ea2837e5bad08cf8bbe6d6b6f71780f2e7d21d190231bc0373eea418350d2971";
         extractor     vapourPressure;
-        inchiKey      "JSRLURSZEMLAFO-UHFFFAOYSA-N";
-        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey JSRLURSZEMLAFO-UHFFFAOYSA-N --into <dir>";
-        sha256        "f3bef20615d6b1c79456a11e9651cd4ada5cfa6b3a50ab3dd91686799b5882e3";
+        inchiKey      "ANOOTOPTCJRUPK-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey ANOOTOPTCJRUPK-UHFFFAOYSA-N --into <dir>";
+        sha256        "1c9161ad4ae2b3d030007b19db939874d3bce4f718c8e20f6cd6a9d5467e22c8";
         identity
         {
-            13Dibromobenzene { cas "108-36-1"; inchiKey "JSRLURSZEMLAFO-UHFFFAOYSA-N"; }
+            1Iodohexane    { cas "638-45-9"; inchiKey "ANOOTOPTCJRUPK-UHFFFAOYSA-N"; }
         }
     }
 );

@@ -7,9 +7,9 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  curate607_vp_1Bromobutane -- the vapour pressure of 1Bromobutane, REFITTED to
+  curate609_vp_1Iodohexane -- the vapour pressure of 1Iodohexane, REFITTED to
   measurements (DEV.md 4c C281 and C283).  Written by `bin/choupo-curate vp
-  1Bromobutane`; everything above the RESULT paragraph is the DECLARATION,
+  1Iodohexane`; everything above the RESULT paragraph is the DECLARATION,
   committed before any fit ran, so it can be read against the result.
 
   WHY.  The catalogue record carried `vaporPressure { model AmbroseWalton; }`,
@@ -20,8 +20,7 @@
 
   STUDIES (one per article, extracted by `choupo-thermoml extract-vp`; ranked
   by points, ties by DOI):
-      10.1021/je020110g                10 pts  278.15-323.15 K  Martinez; Garriga; Perez; Gracia
-      10.1021/je030168a                10 pts  278.15-323.15 K  Garriga; Martinez; Perez; Gracia
+      10.1021/je100398m                27 pts  258.17-308.15 K  Fulem; Ruzicka; Moravek; Pangrac et al.
   SET ASIDE BY NAME:
       (none)
 
@@ -70,18 +69,13 @@ operations
     {
         name       fit_antoine;
         type       vaporPressureFit;
-        component  1Bromobutane;
+        component  1Iodohexane;
 
         evidence
         (
             {
-                dataset   "constant/archiveExtracts/1Bromobutane-vapourPressure-je020110g.dat";
-                identity  { doi "10.1021/je020110g"; }
-                role      fit;
-            }
-            {
-                dataset   "constant/archiveExtracts/1Bromobutane-vapourPressure-je030168a.dat";
-                identity  { doi "10.1021/je030168a"; }
+                dataset   "constant/archiveExtracts/1Iodohexane-vapourPressure-je100398m.dat";
+                identity  { doi "10.1021/je100398m"; }
                 role      fit;
             }
         );
