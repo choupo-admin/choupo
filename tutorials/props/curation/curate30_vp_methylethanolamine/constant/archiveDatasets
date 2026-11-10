@@ -39,7 +39,7 @@ datasets
     }
     {
         file          "constant/archiveExtracts/methylethanolamine-vapourPressure-je101259r.dat";
-        role          validation;   // informational: the operation declares it
+        role          fit;   // informational: the operation declares it
         doi           "10.1021/je101259r";
         url           "https://trc.nist.gov/ThermoML/10.1021/je101259r.xml";
         page          "https://trc.nist.gov/ThermoML/10.1021/je101259r.json";
@@ -49,6 +49,23 @@ datasets
         inchiKey      "OPKOKAMJFNKNAS-UHFFFAOYSA-N";
         extract       "bin/choupo-thermoml extract-vp <article file> --inchikey OPKOKAMJFNKNAS-UHFFFAOYSA-N --into <dir>";
         sha256        "376cc48b6e56201d7c1e98861de763fd298a685df63f7e8fff96c95cb79c1254";
+        identity
+        {
+            methylethanolamine { cas "109-83-1"; inchiKey "OPKOKAMJFNKNAS-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/methylethanolamine-vapourPressure-je400373d.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je400373d";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je400373d.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je400373d.json";
+        articleFile   "je400373d.xml";
+        articleSha256 "5fd41a9baa3403e420dbd131ccdfe658a984d48b0965881982e740966f424eda";
+        extractor     vapourPressure;
+        inchiKey      "OPKOKAMJFNKNAS-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey OPKOKAMJFNKNAS-UHFFFAOYSA-N --into <dir>";
+        sha256        "86cc27e468db411ccca82d440159f42df78ca7f8c8a7d82d2153ce99f70f734a";
         identity
         {
             methylethanolamine { cas "109-83-1"; inchiKey "OPKOKAMJFNKNAS-UHFFFAOYSA-N"; }
