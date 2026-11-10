@@ -16,32 +16,32 @@ temperature, convention, fit purpose, status.
 
 ## Coverage -- disjoint categories
 
-Totals: **206 unique gas-liquid families** ((gas, solvent) after
-typed normalisation), **214 parameterisations**
-(205 H_xp pair records + 9 network gas-liquid records).
+Totals: **208 unique gas-liquid families** ((gas, solvent) after
+typed normalisation), **215 parameterisations**
+(206 H_xp pair records + 9 network gas-liquid records).
 A physical family and a parameterisation are NOT the same count.
 
-* **A. directly comparable** (same typed gas, dissolved identity and solvent -- token-equal or equivalent through a declared mapping): 7
+* **A. directly comparable** (same typed gas, dissolved identity and solvent -- token-equal or equivalent through a declared mapping): 6
     * CH4(g) -> CH4 in water: `parameters/Henry/CH4-water.dat` vs `chemistry/CH4-dissolution.dat`
     * CO2(g) -> CO2 in water: `parameters/Henry/CO2-water.dat` vs `chemistry/CO2-dissolution.dat`
     * H2(g) -> H2 in water: `parameters/Henry/H2-water.dat` vs `chemistry/H2-dissolution.dat`
     * N2(g) -> N2 in water: `parameters/Henry/N2-water.dat` vs `chemistry/N2-dissolution.dat`
     * NH3(g) -> NH3 in water: `parameters/Henry/NH3-water.dat` vs `chemistry/NH3-dissolution.dat`
     * O2(g) -> O2 in water: `parameters/Henry/O2-water.dat` vs `chemistry/O2-dissolution.dat`
-    * aceticAcid(g) -> aceticAcid in water: `parameters/Henry/aceticAcid-water.dat` vs `chemistry/aceticAcid-dissolution.dat` -- typed identities equivalent through declared mapping: component aceticAcid aqueousMapping {'Acetate': 1, 'H': 1} == species HAc masters (chemistry/HAc-formation.dat), z = 0
 * **B. both homes exist, equilibrium identities differ**: 1
     * H2S in water: `parameters/Henry/H2S-water.dat` (H2S) vs `chemistry/H2S-dissolution.dat` (H+ + HS-)
         * composite/fused equilibrium (gas dissolution + aqueous reaction in one constant): direct Henry comparison unavailable; a future comparison requires explicit thermodynamic decomposition through the molecular species' formation equilibrium, never labels
-* **C. only the H_xp (Sander-convention) pair**: 197
-* **D. only a PHREEQC/network equilibrium**: 1
+* **C. only the H_xp (Sander-convention) pair**: 199
+* **D. only a PHREEQC/network equilibrium**: 2
+    * C2H4O2(g) -> CH3COOH in water (Henry / infinite-dilution solute)
     * water(g) -> H2O in water (condensable solvent vapour equilibrium)
 * **E. identity unresolved or ambiguous**: 0
 
 Routes represented (a family's physical situation, NOT all 'Henry'):
-* Henry / infinite-dilution solute: 205 parameterisation(s)
+* Henry / infinite-dilution solute: 207 parameterisation(s)
 * composite gas-liquid + aqueous reaction: 1 parameterisation(s)
 * condensable solvent vapour equilibrium: 1 parameterisation(s)
-* reactive molecular gas-liquid equilibrium: 7 parameterisation(s)
+* reactive molecular gas-liquid equilibrium: 6 parameterisation(s)
 
 ## Cross-convention T-scans (category A families)
 
@@ -201,32 +201,6 @@ exists until the PHREEQC domains are curated.
 * worst deviation over the full common scan range: 46.8%
 * classification: independent primaries -- curation finding (no automatic ranking; recommendation is a reasoned review decision)
 
-### aceticAcid(g) = aceticAcid(aq) in water
-
-*typed identities equivalent through declared mapping: component aceticAcid aqueousMapping {'Acetate': 1, 'H': 1} == species HAc masters (chemistry/HAc-formation.dat), z = 0*
-
-* A: `parameters/Henry/aceticAcid-water.dat` (reactive molecular gas-liquid equilibrium) -- see record
-    * declared validity: 273-373 K
-* B: `chemistry/aceticAcid-dissolution.dat` (reactive molecular gas-liquid equilibrium) -- Sander, R. (2015) Atmos. Chem. Phys. 15, 4399 (CC-BY 3.0): acetic acid Hcp ~ 4.1e3 M/atm at 298 K, d(lnH)/d(1/T) ~ 6200 K
-    * declared validity: UNDECLARED (curation debt; the literature span lives in the source note only)
-
-| T [K] | H_xp A [Pa] | H_xp B [Pa] | rel dev | A validity | B validity |
-|---|---|---|---|---|---|
-| 273.15 | 213.8 | 206.2 | 3.6% | within (near lower boundary) | domain undeclared |
-| 283.15 | 495.6 | 459.3 | 7.3% | within | domain undeclared |
-| 298.15 | 1573 | 1381 | 12.2% | within | domain undeclared |
-| 323.15 | 8498 | 6888 | 18.9% | within | domain undeclared |
-| 348.15 | 3.603e+04 | 2.728e+04 | 24.3% | within | domain undeclared |
-| 368.15 | 9.936e+04 | 7.171e+04 | 27.8% | within (near upper boundary) | domain undeclared |
-| 373.15 | 1.259e+05 | 8.985e+04 | 28.6% | outside | domain undeclared |
-
-* points with BOTH records inside declared domains: 0
-* points with at least one record outside its declared domain: 0
-* points where some domain is undeclared (unknown validity): 7
-* worst deviation over the known-valid intersection: NOT AVAILABLE (no known-valid intersection -- B's domain is undeclared)
-* worst deviation over the full common scan range: 28.6%
-* classification: independent primaries -- curation finding (no automatic ranking; recommendation is a reasoned review decision)
-
 ## Pending-primary-review inventory
 
 Structured metadata (`reviewStatus` / `reviewReason` / `reviewOwner`)
@@ -235,12 +209,28 @@ not stated...) are a legacy fallback, announced as such below.  Records
 gain the structured block when they are reviewed or touched -- no
 mega-wave.  A record with `reviewStatus interim;` is not promotable.
 
+* `assets/BWRO_HIGH_FLUX.dat` -- **reviewStatus illustrative**
+* `assets/BWRO_HIGH_REJECTION.dat` -- **reviewStatus illustrative**
+* `assets/EUR2C-7P18.dat` -- **reviewStatus unverified**
+* `assets/EurodiaED-100P-50.dat` -- **reviewStatus unverified**
+* `assets/Generic-16040.dat` -- **reviewStatus unverified**
+* `assets/Generic-2540.dat` -- **reviewStatus unverified**
+* `assets/Generic-4040.dat` -- **reviewStatus unverified**
+* `assets/Generic-8040.dat` -- **reviewStatus unverified**
+* `assets/NF270-4040.dat` -- **reviewStatus unverified**
+* `assets/NF_DIVALENT_SELECTIVE.dat` -- **reviewStatus illustrative**
+* `assets/NF_OPEN.dat` -- **reviewStatus illustrative**
+* `assets/NF_TIGHT.dat` -- **reviewStatus illustrative**
+* `assets/SEPA_CF.dat` -- **reviewStatus unverified**
 * `assets/SS304.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L15: values; primary re-citation pending
     * L20: re-citation pending (IST review).
 * `assets/SS316.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L16: values; primary re-citation pending
     * L21: re-citation pending (IST review).
+* `assets/SW30HR-380.dat` -- **reviewStatus unverified**
+* `assets/SWRO.dat` -- **reviewStatus illustrative**
+* `assets/Spacer-28mil.dat` -- **reviewStatus unverified**
 * `assets/aluminium.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L12: folder); primary re-citation pending
     * L17: pure aluminium; primary re-citation pending
@@ -253,88 +243,618 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `chemistry/O2-dissolution.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L14: logK25 -2.8983; analytic ( -7.5001 0.0078981 0 0 200270 ); source "USGS PHREEQC phreeqc.dat (public domain); primary not stated in db";
 * `chemistry/aceticAcid-dissolution.dat` -- **reviewStatus interim**, reasons: primarySourceRecheck, owner: IST
-    * L32: source  "Chao & Zwolinski, J. Phys. Chem. Ref. Data 7 (1978) 363 (acetic acid vapour association) -- INTERIM: primary re-check pending (IST review)";
-    * L36: // free-text INTERIM marker above; records gain this block when touched or
+    * L72: // free-text INTERIM marker above; records gain this block when touched or
 * `chemistry/water-vapour-equilibrium.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L15: logK25 1.506; dH -44030; analytic ( -16.5066 -0.0020013 2710.7 3.7646 0 2.24e-06 ); source "USGS PHREEQC phreeqc.dat (public domain); primary not stat
+* `components/112Trichloroethane.dat` -- **reviewStatus interim**
+* `components/11Dichloroethane.dat` -- **reviewStatus interim**
+* `components/11Dimethylcyclohexane.dat` -- **reviewStatus interim**
+* `components/11Dimethylcyclopentane.dat` -- **reviewStatus interim**
+* `components/1234Tetramethylbenzene.dat` -- **reviewStatus interim**
+* `components/1235Tetramethylbenzene.dat` -- **reviewStatus interim**
+* `components/123Trimethylbenzene.dat` -- **reviewStatus interim**
+* `components/1245Tetramethylbenzene.dat` -- **reviewStatus interim**
+* `components/124Trichlorobenzene.dat` -- **reviewStatus interim**
+* `components/124Trimethylbenzene.dat` -- **reviewStatus interim**
+* `components/12Butadiene.dat` -- **reviewStatus interim**
+* `components/12PropyleneOxide.dat` -- **reviewStatus interim**
+* `components/13Butadiene.dat` -- **reviewStatus interim**
+* `components/14Butanediol.dat` -- **reviewStatus interim**
+* `components/14Dioxane.dat` -- **reviewStatus interim**
+* `components/1Butene.dat` -- **reviewStatus interim**
+* `components/1Heptanol.dat` -- **reviewStatus interim**
+* `components/1Heptene.dat` -- **reviewStatus interim**
+* `components/1Hexanol.dat` -- **reviewStatus interim**
+* `components/1Hexene.dat` -- **reviewStatus interim**
+* `components/1Methyl1Ethylcyclopentane.dat` -- **reviewStatus interim**
+* `components/1Methyl3NPropylbenzene.dat` -- **reviewStatus interim**
+* `components/1Methyl4NPropylbenzene.dat` -- **reviewStatus interim**
+* `components/1Methylindene.dat` -- **reviewStatus interim**
+* `components/1Methylnaphthalene.dat` -- **reviewStatus interim**
+* `components/1Nitrobutane.dat` -- **reviewStatus interim**
+* `components/1Nitropropane.dat` -- **reviewStatus interim**
+* `components/1Nonene.dat` -- **reviewStatus interim**
+* `components/1Octene.dat` -- **reviewStatus interim**
+* `components/1Pentanol.dat` -- **reviewStatus interim**
+* `components/1Pentene.dat` -- **reviewStatus interim**
+* `components/1Phenylnaphthalene.dat` -- **reviewStatus interim**
+* `components/1Propanol.dat` -- **reviewStatus interim**
+* `components/1Undecene.dat` -- **reviewStatus interim**
+* `components/2233Tetramethylbutane.dat` -- **reviewStatus interim**
+* `components/2233Tetramethylpentane.dat` -- **reviewStatus interim**
+* `components/2234Tetramethylpentane.dat` -- **reviewStatus interim**
+* `components/223Trimethylbutane.dat` -- **reviewStatus interim**
+* `components/223Trimethylpentane.dat` -- **reviewStatus interim**
+* `components/2244Tetramethylpentane.dat` -- **reviewStatus interim**
+* `components/224Trimethylpentane.dat` -- **reviewStatus interim**
+* `components/225Trimethylhexane.dat` -- **reviewStatus interim**
+* `components/22Dimethyl1Propanol.dat` -- **reviewStatus interim**
+* `components/22Dimethylbutane.dat` -- **reviewStatus interim**
+* `components/22Dimethylheptane.dat` -- **reviewStatus interim**
+* `components/22Dimethylhexane.dat` -- **reviewStatus interim**
+* `components/22Dimethyloctane.dat` -- **reviewStatus interim**
+* `components/22Dimethylpentane.dat` -- **reviewStatus interim**
+* `components/2334Tetramethylpentane.dat` -- **reviewStatus interim**
+* `components/233Trimethylpentane.dat` -- **reviewStatus interim**
+* `components/234Trimethylpentane.dat` -- **reviewStatus interim**
+* `components/23Dimethylbutane.dat` -- **reviewStatus interim**
+* `components/23Dimethylhexane.dat` -- **reviewStatus interim**
+* `components/23Dimethylpentane.dat` -- **reviewStatus interim**
+* `components/244Trimethylhexane.dat` -- **reviewStatus interim**
+* `components/246Trinitrotoluene.dat` -- **reviewStatus interim**
+* `components/24Dimethylhexane.dat` -- **reviewStatus interim**
+* `components/24Dimethylpentane.dat` -- **reviewStatus interim**
+* `components/24Dinitrotoluene.dat` -- **reviewStatus interim**
+* `components/25Dimethylhexane.dat` -- **reviewStatus interim**
+* `components/25Dinitrotoluene.dat` -- **reviewStatus interim**
+* `components/26Dinitrotoluene.dat` -- **reviewStatus interim**
+* `components/2Butanol.dat` -- **reviewStatus interim**
+* `components/2EthylMXylene.dat` -- **reviewStatus interim**
+* `components/2EthylPXylene.dat` -- **reviewStatus interim**
+* `components/2Heptanone.dat` -- **reviewStatus interim**
+* `components/2Hexanone.dat` -- **reviewStatus interim**
+* `components/2Methoxy2MethylHeptane.dat` -- **reviewStatus interim**
+* `components/2Methyl1Butanol.dat` -- **reviewStatus interim**
+* `components/2Methyl1Butene.dat` -- **reviewStatus interim**
+* `components/2Methyl1Heptene.dat` -- **reviewStatus interim**
+* `components/2Methyl1Pentene.dat` -- **reviewStatus interim**
+* `components/2Methyl1Propanol.dat` -- **reviewStatus interim**
+* `components/2Methyl2Butanol.dat` -- **reviewStatus interim**
+* `components/2Methyl2Butene.dat` -- **reviewStatus interim**
+* `components/2Methyl2Heptanol.dat` -- **reviewStatus interim**
+* `components/2Methyl2Propanol.dat` -- **reviewStatus interim**
+* `components/2Methyl3Ethylpentane.dat` -- **reviewStatus interim**
+* `components/2Methylheptane.dat` -- **reviewStatus interim**
+* `components/2Methylhexane.dat` -- **reviewStatus interim**
+* `components/2Methylindene.dat` -- **reviewStatus interim**
+* `components/2Methylnaphthalene.dat` -- **reviewStatus interim**
+* `components/2Methylnonane.dat` -- **reviewStatus interim**
+* `components/2Methyloctane.dat` -- **reviewStatus interim**
+* `components/2Methylpropanal.dat` -- **reviewStatus interim**
+* `components/2Nitropropane.dat` -- **reviewStatus interim**
+* `components/2Pentanol.dat` -- **reviewStatus interim**
+* `components/2Pentanone.dat` -- **reviewStatus interim**
+* `components/335Trimethylheptane.dat` -- **reviewStatus interim**
+* `components/33Diethylpentane.dat` -- **reviewStatus interim**
+* `components/33Dimethyl2Butanone.dat` -- **reviewStatus interim**
+* `components/33Dimethylhexane.dat` -- **reviewStatus interim**
+* `components/33Dimethylpentane.dat` -- **reviewStatus interim**
+* `components/34Dimethylhexane.dat` -- **reviewStatus interim**
+* `components/34Dinitrotoluene.dat` -- **reviewStatus interim**
+* `components/35Dinitrotoluene.dat` -- **reviewStatus interim**
+* `components/3Ethylheptane.dat` -- **reviewStatus interim**
+* `components/3Ethylhexane.dat` -- **reviewStatus interim**
+* `components/3Ethylpentane.dat` -- **reviewStatus interim**
+* `components/3Heptanone.dat` -- **reviewStatus interim**
+* `components/3Hexanone.dat` -- **reviewStatus interim**
+* `components/3Methyl1Butene.dat` -- **reviewStatus interim**
+* `components/3Methyl3Ethylpentane.dat` -- **reviewStatus interim**
+* `components/3Methylheptane.dat` -- **reviewStatus interim**
+* `components/3Methylhexane.dat` -- **reviewStatus interim**
+* `components/3Methylnonane.dat` -- **reviewStatus interim**
+* `components/3Methyloctane.dat` -- **reviewStatus interim**
+* `components/3Methylpentane.dat` -- **reviewStatus interim**
+* `components/3Pentanone.dat` -- **reviewStatus interim**
+* `components/4EthylMXylene.dat` -- **reviewStatus interim**
+* `components/4EthylOXylene.dat` -- **reviewStatus interim**
+* `components/4Heptanone.dat` -- **reviewStatus interim**
+* `components/4MethylCis2Pentene.dat` -- **reviewStatus interim**
+* `components/4MethylTrans2Pentene.dat` -- **reviewStatus interim**
+* `components/4Methylheptane.dat` -- **reviewStatus interim**
+* `components/4Methylnonane.dat` -- **reviewStatus interim**
+* `components/4Methyloctane.dat` -- **reviewStatus interim**
+* `components/5Methyl2Hexanone.dat` -- **reviewStatus interim**
+* `components/5Methylnonane.dat` -- **reviewStatus interim**
 * `components/Ar.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L11: literature value, primary re-citation pending (IST review).
+    * L42: // distribution; INTERIM pending primary review (Vitor))
+* `components/C.dat` -- **reviewStatus interim**
+* `components/C2H.dat` -- **reviewStatus interim**
+* `components/C2H3.dat` -- **reviewStatus interim**
+* `components/C2H5.dat` -- **reviewStatus interim**
+* `components/C3H7.dat` -- **reviewStatus interim**
+* `components/CH.dat` -- **reviewStatus interim**
+* `components/CH2.dat` -- **reviewStatus interim**
+* `components/CH2OH.dat` -- **reviewStatus interim**
+* `components/CH3.dat` -- **reviewStatus interim**
+* `components/CH3O.dat` -- **reviewStatus interim**
 * `components/CH4.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L9: literature value, primary re-citation pending (IST review).
+* `components/CN.dat` -- **reviewStatus interim**
 * `components/CO.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
-    * L42: // polynomial -- individual literature value, primary re-citation pending)
+    * L47: // polynomial -- individual literature value, primary re-citation pending)
 * `components/CO2.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
-    * L51: // polynomial -- individual literature value, primary re-citation pending)
+    * L56: // polynomial -- individual literature value, primary re-citation pending)
+* `components/CS.dat` -- **reviewStatus interim**
+* `components/CS2.dat` -- **reviewStatus interim**
 * `components/CaCl2.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L10: primary re-citation pending (IST review).  The VALUE is kept (physically
+* `components/Cl.dat` -- **reviewStatus interim**
 * `components/Cl2.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L13: re-citation pending (IST review).
-* `components/H2O2.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
-    * L8: re-citation pending (IST review).
+    * L48: // distribution; INTERIM pending primary review (Vitor))
+* `components/D2.dat` -- **reviewStatus interim**
+* `components/Dichloroethane.dat` -- **reviewStatus interim**
+* `components/H.dat` -- **reviewStatus interim**
+* `components/H2O2.dat` -- **reviewStatus interim**
+    * L17: re-citation pending (IST review).
+    * L47: // the MIT-licensed `chemicals` 1.5.2 data distribution; INTERIM pending
 * `components/H2S.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L11: literature value, primary re-citation pending (IST review).
+    * L48: // distribution; INTERIM pending primary review (Vitor)); consistent with
+* `components/HCCO.dat` -- **reviewStatus interim**
 * `components/HCHO.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L8: Sources: individual literature values -- primary re-citation pending
+    * L41: // `chemicals` 1.5.2 data distribution; INTERIM pending primary review
 * `components/HCN.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L10: individual literature values, primary re-citation pending (IST review).
+    * L42: // `chemicals` 1.5.2 data distribution; INTERIM pending primary review
+* `components/HCO.dat` -- **reviewStatus interim**
+* `components/HCl.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
+    * L44: // MIT-licensed `chemicals` 1.5.2 data distribution; INTERIM pending
+* `components/HNO.dat` -- **reviewStatus interim**
+* `components/HO2.dat` -- **reviewStatus interim**
+* `components/He.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
+    * L43: // `chemicals` 1.5.2 data distribution; INTERIM pending primary review
+* `components/KBr.dat` -- **reviewStatus interim**
 * `components/KCl.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L14: proxy: primary re-citation pending (IST review).
+* `components/KNO3.dat` -- **reviewStatus interim**
 * `components/LiCl.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L13: re-citation pending (candidate: Linke & Seidell, Solubilities, 4th ed.);
+* `components/MD3M.dat` -- **reviewStatus interim**
+* `components/MD4M.dat` -- **reviewStatus interim**
+* `components/MDM.dat` -- **reviewStatus interim**
+* `components/MgCl2.dat` -- **reviewStatus interim**
+* `components/N.dat` -- **reviewStatus interim**
 * `components/N2.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
-    * L43: // polynomial -- individual literature value, primary re-citation pending)
+    * L42: // distribution; INTERIM pending primary review (Vitor))
+    * L51: // polynomial -- individual literature value, primary re-citation pending)
+* `components/N2H4.dat` -- **reviewStatus interim**
 * `components/N2O.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L11: literature value, primary re-citation pending (IST review).
+    * L42: // distribution; INTERIM pending primary review (Vitor))
+* `components/NCO.dat` -- **reviewStatus interim**
+* `components/NH.dat` -- **reviewStatus interim**
 * `components/NH3.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L15: literature value, primary re-citation pending (IST review);
-    * L76: vaporPressure  "individual literature value -- primary re-citation pending (IST review)";
+    * L99: vaporPressure  "individual literature value -- primary re-citation pending (IST review)";
 * `components/NO.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L9: individual literature values, primary re-citation pending (IST review).
+    * L40: // distribution; INTERIM pending primary review (Vitor))
+* `components/NaBr.dat` -- **reviewStatus interim**
 * `components/NaCl.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L83: source "public domain crystallographic density; primary re-citation pending (IST review)";
+* `components/NaF.dat` -- **reviewStatus interim**
+* `components/NaNO3.dat` -- **reviewStatus interim**
+* `components/O.dat` -- **reviewStatus interim**
 * `components/O2.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L9: literature value, primary re-citation pending (IST review).
 * `components/O3.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L7: re-citation pending (IST review).
+* `components/OrthoDeuterium.dat` -- **reviewStatus interim**
+* `components/OrthoHydrogen.dat` -- **reviewStatus interim**
+* `components/ParaDeuterium.dat` -- **reviewStatus interim**
+* `components/ParaHydrogen.dat` -- **reviewStatus interim**
+* `components/R11.dat` -- **reviewStatus interim**
+* `components/R113.dat` -- **reviewStatus interim**
+* `components/R12.dat` -- **reviewStatus interim**
+* `components/R1234yf.dat` -- **reviewStatus interim**
+* `components/R1234zeE.dat` -- **reviewStatus interim**
+* `components/R1234zeZ.dat` -- **reviewStatus interim**
+* `components/R134a.dat` -- **reviewStatus interim**
+* `components/R13I1.dat` -- **reviewStatus interim**
+* `components/R143a.dat` -- **reviewStatus interim**
+* `components/R21.dat` -- **reviewStatus interim**
+* `components/R218.dat` -- **reviewStatus interim**
+* `components/R22.dat` -- **reviewStatus interim**
+* `components/R236EA.dat` -- **reviewStatus interim**
+* `components/R245fa.dat` -- **reviewStatus interim**
+* `components/R32.dat` -- **reviewStatus interim**
+* `components/R365MFC.dat` -- **reviewStatus interim**
+* `components/RC318.dat` -- **reviewStatus interim**
+* `components/S.dat` -- **reviewStatus interim**
+* `components/S2.dat` -- **reviewStatus interim**
+* `components/SF6.dat` -- **reviewStatus interim**
+* `components/SO.dat` -- **reviewStatus interim**
+* `components/SO3.dat` -- **reviewStatus interim**
+* `components/Xe.dat` -- **reviewStatus interim**
+* `components/acenaphthene.dat` -- **reviewStatus interim**
+* `components/acetaldehyde.dat` -- **reviewStatus interim**
 * `components/aceticAcid.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L11: re-citation pending (IST review).  UNIQUAC r,q are the van der
+* `components/aceticAnhydride.dat` -- **reviewStatus interim**
 * `components/acetone.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L6: re-citation pending (IST review).
-    * L56: standardThermochemistry "individual literature value -- primary re-citation pending (IST review)";
+    * L61: standardThermochemistry "individual literature value -- primary re-citation pending (IST review)";
+* `components/acetonitrile.dat` -- **reviewStatus interim**
+* `components/acetylChloride.dat` -- **reviewStatus interim**
 * `components/acetylene.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L10: re-citation pending (IST review).
+* `components/acrylicAcid.dat` -- **reviewStatus interim**
+* `components/acrylonitrile.dat` -- **reviewStatus interim**
+* `components/adipicAcid.dat` -- **reviewStatus interim**
+* `components/air.dat` -- **reviewStatus interim**
+* `components/aniline.dat` -- **reviewStatus interim**
+* `components/anisole.dat` -- **reviewStatus interim**
 * `components/benzene.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L7: primary re-citation pending (IST review).
+* `components/benzoicAcid.dat` -- **reviewStatus interim**
+* `components/biphenyl.dat` -- **reviewStatus interim**
+* `components/bromine.dat` -- **reviewStatus interim**
+* `components/bromobenzene.dat` -- **reviewStatus interim**
+* `components/butanal.dat` -- **reviewStatus interim**
+* `components/butylVinylEther.dat` -- **reviewStatus interim**
+* `components/calciumNitrate.dat` -- **reviewStatus interim**
 * `components/calciumTartrate.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L23: J/(mol K) liquid-Cp estimate -- primary re-citation pending
+* `components/carbonTetrachloride.dat` -- **reviewStatus interim**
+* `components/carbonylSulfide.dat` -- **reviewStatus interim**
+* `components/chloroform.dat` -- **reviewStatus interim**
+* `components/chrysene.dat` -- **reviewStatus interim**
+* `components/cis12Dimethylcyclohexane.dat` -- **reviewStatus interim**
+* `components/cis12Dimethylcyclopentane.dat` -- **reviewStatus interim**
+* `components/cis13Dimethylcyclohexane.dat` -- **reviewStatus interim**
+* `components/cis13Dimethylcyclopentane.dat` -- **reviewStatus interim**
+* `components/cis14Dimethylcyclohexane.dat` -- **reviewStatus interim**
+* `components/cis2Butene.dat` -- **reviewStatus interim**
+* `components/cis2Hexene.dat` -- **reviewStatus interim**
+* `components/cis2Pentene.dat` -- **reviewStatus interim**
+* `components/cisDecahydronaphthalene.dat` -- **reviewStatus interim**
+* `components/cumene.dat` -- **reviewStatus interim**
+* `components/cumeneHydroperoxide.dat` -- **reviewStatus interim**
+* `components/cyclobutane.dat` -- **reviewStatus interim**
+* `components/cyclohexane.dat` -- **reviewStatus interim**
+* `components/cyclohexanol.dat` -- **reviewStatus interim**
+* `components/cyclohexanone.dat` -- **reviewStatus interim**
+* `components/cyclohexene.dat` -- **reviewStatus interim**
+* `components/cyclopentane.dat` -- **reviewStatus interim**
+    * L67: s_298     292.9;      // J/(mol*K) third-law absolute (TRC class; primary re-citation pending IST review)
+* `components/cyclopropane.dat` -- **reviewStatus interim**
+    * L60: s_298     237.45;      // J/(mol*K) third-law absolute (TRC class; primary re-citation pending IST review)
+* `components/diButylCarbonate.dat` -- **reviewStatus interim**
+* `components/diEthylCarbonate.dat` -- **reviewStatus interim**
+* `components/diNButylEther.dat` -- **reviewStatus interim**
+* `components/diNPropylDisulfide.dat` -- **reviewStatus interim**
+* `components/diNPropylSulfide.dat` -- **reviewStatus interim**
+* `components/diPhenylCarbonate.dat` -- **reviewStatus interim**
+* `components/diSecButylEther.dat` -- **reviewStatus interim**
+* `components/diTertButylDisulfide.dat` -- **reviewStatus interim**
+* `components/dichloroacetaldehyde.dat` -- **reviewStatus interim**
+* `components/dichloroacetylChloride.dat` -- **reviewStatus interim**
+* `components/dicyclopentadiene.dat` -- **reviewStatus interim**
+* `components/diethanolamine.dat` -- **reviewStatus interim**
+* `components/diethylDisulfide.dat` -- **reviewStatus interim**
+* `components/diethylEther.dat` -- **reviewStatus interim**
+* `components/diethylSulfide.dat` -- **reviewStatus interim**
+* `components/diethylamine.dat` -- **reviewStatus interim**
+* `components/diethyleneGlycol.dat` -- **reviewStatus interim**
+* `components/diethylenetriamine.dat` -- **reviewStatus interim**
+* `components/diethylethanolamine.dat` -- **reviewStatus interim**
+* `components/diisobutylKetone.dat` -- **reviewStatus interim**
+* `components/diisopropanolamine.dat` -- **reviewStatus interim**
+* `components/diisopropylEther.dat` -- **reviewStatus interim**
+* `components/diisopropylKetone.dat` -- **reviewStatus interim**
+* `components/diisopropylamine.dat` -- **reviewStatus interim**
+* `components/dimethylCarbonate.dat` -- **reviewStatus interim**
+* `components/dimethylDisulfide.dat` -- **reviewStatus interim**
+* `components/dimethylEther.dat` -- **reviewStatus interim**
+* `components/dimethylSulfide.dat` -- **reviewStatus interim**
+* `components/dimethylSulfoxide.dat` -- **reviewStatus interim**
+* `components/dimethylTerephthalate.dat` -- **reviewStatus interim**
+* `components/dimethylacetylene.dat` -- **reviewStatus interim**
+* `components/dimethylethanolamine.dat` -- **reviewStatus interim**
+* `components/diphenylDisulfide.dat` -- **reviewStatus interim**
 * `components/ethane.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L10: literature value, primary re-citation pending (IST review).
 * `components/ethanol.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L6: values -- primary re-citation pending (IST review).  The
 * `components/ethylAcetate.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L6: values -- primary re-citation pending (IST review).
+    * L37: // distribution; INTERIM pending primary review (Vitor)). The old set's A
+* `components/ethylBenzene.dat` -- **reviewStatus interim**
+* `components/ethylChloride.dat` -- **reviewStatus interim**
+* `components/ethylFormate.dat` -- **reviewStatus interim**
+* `components/ethylMercaptan.dat` -- **reviewStatus interim**
+* `components/ethylMethylDisulfide.dat` -- **reviewStatus interim**
+* `components/ethylPhenylCarbonate.dat` -- **reviewStatus interim**
+* `components/ethylPropylDisulfide.dat` -- **reviewStatus interim**
+* `components/ethylTertPentylEther.dat` -- **reviewStatus interim**
+* `components/ethylacetylene.dat` -- **reviewStatus interim**
+* `components/ethylamine.dat` -- **reviewStatus interim**
+* `components/ethylcyclohexane.dat` -- **reviewStatus interim**
+* `components/ethylcyclopentane.dat` -- **reviewStatus interim**
 * `components/ethylene.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L11: literature value, primary re-citation pending (IST review).
+* `components/ethyleneCarbonate.dat` -- **reviewStatus interim**
+* `components/ethyleneGlycol.dat` -- **reviewStatus interim**
+* `components/ethyleneOxide.dat` -- **reviewStatus interim**
+    * L67: s_298     243.0;      // J/(mol*K) third-law absolute (TRC class; primary re-citation pending IST review)
+* `components/ethylenediamine.dat` -- **reviewStatus interim**
+* `components/fluoranthene.dat` -- **reviewStatus interim**
+* `components/fluorene.dat` -- **reviewStatus interim**
+* `components/fluorine.dat` -- **reviewStatus interim**
+* `components/furfural.dat` -- **reviewStatus interim**
+* `components/glycerol.dat` -- **reviewStatus interim**
+* `components/graphite.dat` -- **reviewStatus interim**
+* `components/heavyWater.dat` -- **reviewStatus reviewed**
+* `components/heptanal.dat` -- **reviewStatus interim**
+* `components/hexamethyldisiloxane.dat` -- **reviewStatus interim**
+* `components/hexanal.dat` -- **reviewStatus interim**
+* `components/hfe143m.dat` -- **reviewStatus interim**
+* `components/hydrogenIodide.dat` -- **reviewStatus interim**
+* `components/indane.dat` -- **reviewStatus interim**
+* `components/indene.dat` -- **reviewStatus interim**
+* `components/iodobenzene.dat` -- **reviewStatus interim**
+* `components/isoButane.dat` -- **reviewStatus interim**
+* `components/isoButene.dat` -- **reviewStatus interim**
+* `components/isobutylAcetate.dat` -- **reviewStatus interim**
+* `components/isobutylMercaptan.dat` -- **reviewStatus interim**
+* `components/isobutylbenzene.dat` -- **reviewStatus interim**
+* `components/isohexane.dat` -- **reviewStatus interim**
+* `components/isopentane.dat` -- **reviewStatus interim**
+* `components/isoprene.dat` -- **reviewStatus interim**
+* `components/isopropanol.dat` -- **reviewStatus interim**
+* `components/isopropylAcetate.dat` -- **reviewStatus interim**
+* `components/isopropylButylEther.dat` -- **reviewStatus interim**
+* `components/isopropylMercaptan.dat` -- **reviewStatus interim**
+* `components/isopropylcyclopentane.dat` -- **reviewStatus interim**
+* `components/krypton.dat` -- **reviewStatus interim**
+* `components/mCresol.dat` -- **reviewStatus interim**
+* `components/mCymene.dat` -- **reviewStatus interim**
+* `components/mDichlorobenzene.dat` -- **reviewStatus interim**
+* `components/mDiethylbenzene.dat` -- **reviewStatus interim**
+* `components/mEthyltoluene.dat` -- **reviewStatus interim**
+* `components/mNitrotoluene.dat` -- **reviewStatus interim**
+* `components/mXylene.dat` -- **reviewStatus interim**
+* `components/maleicAcid.dat` -- **reviewStatus interim**
+* `components/maleicAnhydride.dat` -- **reviewStatus interim**
+* `components/mesitylene.dat` -- **reviewStatus interim**
+* `components/methacrylicAcid.dat` -- **reviewStatus interim**
+* `components/methacrylonitrile.dat` -- **reviewStatus interim**
 * `components/methanol.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L6: values -- primary re-citation pending (IST review).  Viscosity:
+* `components/methylChloride.dat` -- **reviewStatus interim**
+* `components/methylDiEthanolAmine.dat` -- **reviewStatus interim**
+* `components/methylEthylCarbonate.dat` -- **reviewStatus interim**
+* `components/methylEthylEther.dat` -- **reviewStatus interim**
+* `components/methylEthylKetone.dat` -- **reviewStatus interim**
+* `components/methylEthylSulfide.dat` -- **reviewStatus interim**
+* `components/methylFormate.dat` -- **reviewStatus interim**
+* `components/methylIodide.dat` -- **reviewStatus interim**
+* `components/methylIsobutylEther.dat` -- **reviewStatus interim**
+* `components/methylIsobutylKetone.dat` -- **reviewStatus interim**
+* `components/methylIsopropylEther.dat` -- **reviewStatus interim**
+* `components/methylIsopropylKetone.dat` -- **reviewStatus interim**
+* `components/methylLinoleate.dat` -- **reviewStatus interim**
+* `components/methylLinolenate.dat` -- **reviewStatus interim**
+* `components/methylMercaptan.dat` -- **reviewStatus interim**
+* `components/methylMethacrylate.dat` -- **reviewStatus interim**
+* `components/methylNPropylEther.dat` -- **reviewStatus interim**
+* `components/methylNPropylSulfide.dat` -- **reviewStatus interim**
+* `components/methylOleate.dat` -- **reviewStatus interim**
+* `components/methylPalmitate.dat` -- **reviewStatus interim**
+* `components/methylPhenylCarbonate.dat` -- **reviewStatus interim**
+* `components/methylPropionate.dat` -- **reviewStatus interim**
+* `components/methylStearate.dat` -- **reviewStatus interim**
+* `components/methylTButylSulfide.dat` -- **reviewStatus interim**
+* `components/methylTPentylSulfide.dat` -- **reviewStatus interim**
+* `components/methylTertButylEther.dat` -- **reviewStatus interim**
+* `components/methylTertPentylEther.dat` -- **reviewStatus interim**
+* `components/methylal.dat` -- **reviewStatus interim**
+* `components/methylamine.dat` -- **reviewStatus interim**
+* `components/methylcyclohexane.dat` -- **reviewStatus interim**
+* `components/methylcyclopentane.dat` -- **reviewStatus interim**
+* `components/methylethanolamine.dat` -- **reviewStatus interim**
+* `components/monochlorobenzene.dat` -- **reviewStatus interim**
+* `components/monoethanolamine.dat` -- **reviewStatus interim**
+* `components/nAminoethylEthanolamine.dat` -- **reviewStatus interim**
+* `components/nAminoethylPiperazine.dat` -- **reviewStatus interim**
 * `components/nButanol.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L7: re-citation pending (IST review); the 125.5 degC water/1-butanol
+* `components/nButylAcetate.dat` -- **reviewStatus interim**
+* `components/nButylbenzene.dat` -- **reviewStatus interim**
+* `components/nButylcyclohexane.dat` -- **reviewStatus interim**
+* `components/nButylcyclopentane.dat` -- **reviewStatus interim**
+* `components/nButyricAcid.dat` -- **reviewStatus interim**
+* `components/nDecane.dat` -- **reviewStatus interim**
+* `components/nDocosane.dat` -- **reviewStatus interim**
+* `components/nDodecane.dat` -- **reviewStatus interim**
+* `components/nEicosane.dat` -- **reviewStatus interim**
+* `components/nHeneicosane.dat` -- **reviewStatus interim**
+* `components/nHeptacosane.dat` -- **reviewStatus interim**
+* `components/nHeptadecane.dat` -- **reviewStatus interim**
+* `components/nHeptane.dat` -- **reviewStatus interim**
+* `components/nHexacosane.dat` -- **reviewStatus interim**
+* `components/nHexadecane.dat` -- **reviewStatus interim**
 * `components/nHexane.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L6: values -- primary re-citation pending (IST review).
+* `components/nHexylAcetate.dat` -- **reviewStatus interim**
+* `components/nHexylMercaptan.dat` -- **reviewStatus interim**
+* `components/nNDimethylacetamide.dat` -- **reviewStatus interim**
+* `components/nNDimethylformamide.dat` -- **reviewStatus interim**
+* `components/nNonacosane.dat` -- **reviewStatus interim**
+* `components/nNonadecane.dat` -- **reviewStatus interim**
+* `components/nNonane.dat` -- **reviewStatus interim**
+* `components/nOctacosane.dat` -- **reviewStatus interim**
+* `components/nOctadecane.dat` -- **reviewStatus interim**
+* `components/nPentacosane.dat` -- **reviewStatus interim**
+* `components/nPentadecane.dat` -- **reviewStatus interim**
+* `components/nPentane.dat` -- **reviewStatus interim**
+* `components/nPentylAcetate.dat` -- **reviewStatus interim**
+* `components/nPropylAcetate.dat` -- **reviewStatus interim**
+* `components/nPropylFormate.dat` -- **reviewStatus interim**
+* `components/nPropylMercaptan.dat` -- **reviewStatus interim**
+* `components/nPropylbenzene.dat` -- **reviewStatus interim**
+* `components/nPropylcyclohexane.dat` -- **reviewStatus interim**
+* `components/nPropylcyclopentane.dat` -- **reviewStatus interim**
+* `components/nTetracosane.dat` -- **reviewStatus interim**
+* `components/nTetradecane.dat` -- **reviewStatus interim**
+* `components/nTricosane.dat` -- **reviewStatus interim**
+* `components/nTridecane.dat` -- **reviewStatus interim**
+* `components/nUndecane.dat` -- **reviewStatus interim**
+* `components/naphthalene.dat` -- **reviewStatus interim**
+* `components/neon.dat` -- **reviewStatus interim**
+* `components/neopentane.dat` -- **reviewStatus interim**
+* `components/nitrobenzene.dat` -- **reviewStatus interim**
+* `components/nitroethane.dat` -- **reviewStatus interim**
+* `components/nitrogenTetroxide.dat` -- **reviewStatus interim**
+* `components/nitrogenTrioxide.dat` -- **reviewStatus interim**
+* `components/nitromethane.dat` -- **reviewStatus interim**
+* `components/novec649.dat` -- **reviewStatus interim**
+* `components/oCresol.dat` -- **reviewStatus interim**
+* `components/oCymene.dat` -- **reviewStatus interim**
+* `components/oDichlorobenzene.dat` -- **reviewStatus interim**
+* `components/oDiethylbenzene.dat` -- **reviewStatus interim**
+* `components/oEthyltoluene.dat` -- **reviewStatus interim**
+* `components/oNitrotoluene.dat` -- **reviewStatus interim**
+* `components/oToluicAcid.dat` -- **reviewStatus interim**
+* `components/oXylene.dat` -- **reviewStatus interim**
+* `components/oxalicAcid.dat` -- **reviewStatus interim**
+* `components/pCresol.dat` -- **reviewStatus interim**
+* `components/pCymene.dat` -- **reviewStatus interim**
+* `components/pDichlorobenzene.dat` -- **reviewStatus interim**
+* `components/pDiethylbenzene.dat` -- **reviewStatus interim**
+* `components/pDiisopropylbenzene.dat` -- **reviewStatus interim**
+* `components/pEthyltoluene.dat` -- **reviewStatus interim**
+* `components/pNitrotoluene.dat` -- **reviewStatus interim**
+* `components/pPhenylenediamine.dat` -- **reviewStatus interim**
+* `components/pToluicAcid.dat` -- **reviewStatus interim**
+* `components/pXylene.dat` -- **reviewStatus interim**
+* `components/pentanal.dat` -- **reviewStatus interim**
+* `components/phenanthrene.dat` -- **reviewStatus interim**
+* `components/phenol.dat` -- **reviewStatus interim**
+* `components/phosgene.dat` -- **reviewStatus interim**
+* `components/phthalicAcid.dat` -- **reviewStatus interim**
+* `components/piperazine.dat` -- **reviewStatus interim**
 * `components/potassiumBitartrate.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L17: order of magnitude -- primary re-citation pending (IST review:
+* `components/propadiene.dat` -- **reviewStatus interim**
+* `components/propanal.dat` -- **reviewStatus interim**
 * `components/propane.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L6: re-citation pending (IST review)
+* `components/propionicAcid.dat` -- **reviewStatus interim**
+* `components/propionitrile.dat` -- **reviewStatus interim**
 * `components/propylene.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L10: literature value, primary re-citation pending (IST review).
+    * L41: // distribution; INTERIM pending primary review (Vitor))
+* `components/propyleneCarbonate.dat` -- **reviewStatus interim**
+* `components/propyne.dat` -- **reviewStatus interim**
+* `components/pyrene.dat` -- **reviewStatus interim**
+* `components/pyridine.dat` -- **reviewStatus interim**
+* `components/salicylicAcid.dat` -- **reviewStatus interim**
+* `components/secButylMercaptan.dat` -- **reviewStatus interim**
+* `components/secButylbenzene.dat` -- **reviewStatus interim**
 * `components/silica.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L17: silica / sand) -- primary re-citation pending (IST review).
+* `components/squalane.dat` -- **reviewStatus interim**
+* `components/styrene.dat` -- **reviewStatus interim**
 * `components/sucrose.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L62: // re-citation pending (IST review).
+* `components/sulfolane.dat` -- **reviewStatus interim**
+* `components/terephthalicAcid.dat` -- **reviewStatus interim**
+* `components/tertButylEthylEther.dat` -- **reviewStatus interim**
+* `components/tertButylMercaptan.dat` -- **reviewStatus interim**
+* `components/tertButylbenzene.dat` -- **reviewStatus interim**
+* `components/tertButylcyclohexane.dat` -- **reviewStatus interim**
+* `components/tetraethyleneGlycol.dat` -- **reviewStatus interim**
+* `components/tetrahydrofuran.dat` -- **reviewStatus interim**
+* `components/thiophene.dat` -- **reviewStatus interim**
 * `components/toluene.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
     * L6: values -- primary re-citation pending (IST review).  Viscosity:
+* `components/trans12Dimethylcyclohexane.dat` -- **reviewStatus interim**
+* `components/trans12Dimethylcyclopentane.dat` -- **reviewStatus interim**
+* `components/trans13Dimethylcyclohexane.dat` -- **reviewStatus interim**
+* `components/trans13Dimethylcyclopentane.dat` -- **reviewStatus interim**
+* `components/trans14Dimethylcyclohexane.dat` -- **reviewStatus interim**
+* `components/trans2Butene.dat` -- **reviewStatus interim**
+* `components/trans2Hexene.dat` -- **reviewStatus interim**
+* `components/trans2Pentene.dat` -- **reviewStatus interim**
+* `components/transDecahydronaphthalene.dat` -- **reviewStatus interim**
+* `components/trichloroacetaldehyde.dat` -- **reviewStatus interim**
+* `components/trichloroacetylChloride.dat` -- **reviewStatus interim**
+* `components/trichloroethylene.dat` -- **reviewStatus interim**
+* `components/triethanolamine.dat` -- **reviewStatus interim**
+* `components/triethylamine.dat` -- **reviewStatus interim**
+* `components/triethyleneGlycol.dat` -- **reviewStatus interim**
+* `components/trimethylamine.dat` -- **reviewStatus interim**
+* `components/vinylAcetate.dat` -- **reviewStatus interim**
+* `components/vinylChloride.dat` -- **reviewStatus interim**
 * `components/water.dat` -- *detected by TEXT MARKER only* (structured metadata pending)
-    * L8: values -- primary re-citation pending (IST review).  K_b/K_f
-    * L57: // Reference: individual literature values -- primary re-citation pending (IST review).
+    * L21: values -- primary re-citation pending (IST review).  K_b/K_f
+    * L110: // Reference: individual literature values -- primary re-citation pending (IST review).
+* `conventions/MilleroConventional-v1.dat` -- **reviewStatus interim**
+* `parameters/NRTL/1Pentanol-2Hexanone.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/1Pentanol-anisole.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/1Propanol-water.dat` -- **reviewStatus interim**
+* `parameters/NRTL/224Trimethylpentane-isopropanol.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/2Methyl1Butanol-ethanol.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/acetone-ethanol.dat` -- **reviewStatus interim**
+* `parameters/NRTL/acetone-methanol.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/acetonitrile-ethylAcetate.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/acetonitrile-methanol.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/acetonitrile-water.dat` -- **reviewStatus interim**
+* `parameters/NRTL/cyclohexane-nHeptane.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/cyclohexane-tetrahydrofuran.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/dimethylCarbonate-isopropanol.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/dimethylCarbonate-methanol.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/ethanol-ethylAcetate.dat` -- **reviewStatus interim**
+* `parameters/NRTL/ethanol-methylEthylKetone.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/ethylAcetate-methanol.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/ethylBenzene-monochlorobenzene.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/isopropanol-isopropylAcetate.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/isopropanol-water.dat` -- **reviewStatus interim**
+* `parameters/NRTL/mXylene-nDecane.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/mXylene-nOctane.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/methanol-methylAcetate.dat` -- **reviewStatus interim**
+* `parameters/NRTL/methanol-methylEthylKetone.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/methanol-tetrahydrofuran.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/methanol-water.dat` -- **reviewStatus interim**
+* `parameters/NRTL/nButanol-nButylAcetate.dat` -- **reviewStatus autoPromoted**
+* `parameters/NRTL/nButanol-water.dat` -- **reviewStatus interim**
+* `parameters/NRTL/nHeptane-thiophene.dat` -- **reviewStatus autoPromoted**
+* `species/Ba.dat` -- **reviewStatus interim**
+* `species/Br.dat` -- **reviewStatus interim**
+* `species/CO3.dat` -- **reviewStatus interim**
+* `species/Ca.dat` -- **reviewStatus interim**
+* `species/Cl.dat` -- **reviewStatus interim**
+* `species/F.dat` -- **reviewStatus interim**
+* `species/FeII.dat` -- **reviewStatus interim**
+* `species/H.dat` -- **reviewStatus interim**
+* `species/H2PO4.dat` -- **reviewStatus interim**
+* `species/HCO3.dat` -- **reviewStatus interim**
+* `species/HPO4.dat` -- **reviewStatus interim**
+* `species/I.dat` -- **reviewStatus interim**
+* `species/K.dat` -- **reviewStatus interim**
+* `species/Li.dat` -- **reviewStatus interim**
+* `species/Mg.dat` -- **reviewStatus interim**
+* `species/MnII.dat` -- **reviewStatus interim**
+* `species/NH4.dat` -- **reviewStatus interim**
+* `species/NO3.dat` -- **reviewStatus interim**
+* `species/Na.dat` -- **reviewStatus interim**
+* `species/OH.dat` -- **reviewStatus interim**
+* `species/PO4.dat` -- **reviewStatus interim**
+* `species/SO4.dat` -- **reviewStatus interim**
+* `species/Sr.dat` -- **reviewStatus interim**
 
-Totals: 1 record(s) with structured review metadata, 46 detected by text marker only (legacy fallback -- migrate on touch/review).
+Totals: 531 record(s) with structured review metadata, 47 detected by text marker only (legacy fallback -- migrate on touch/review).

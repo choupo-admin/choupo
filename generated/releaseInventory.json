@@ -5,7 +5,7 @@
   "catalogue": {
     "components": 608,
     "aqueousSpecies": 53,
-    "nrtlPairs": 12,
+    "nrtlPairs": 31,
     "wilsonPairs": 0,
     "uniquacPairs": 3,
     "henryPairs": 206,
@@ -21,15 +21,15 @@
     "engines": 5
   },
   "tutorials": {
-    "runnableCases": 562,
-    "regressionChecks": 546,
+    "runnableCases": 622,
+    "regressionChecks": 606,
     "byTier": {
-      "witness": 504,
+      "witness": 564,
       "tutorial": 42,
       "showcase": 16
     }
   },
   "totals": {
-    "mixtureParameterRecords": 279
+    "mixtureParameterRecords": 298
   }
 }
