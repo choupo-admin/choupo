@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of curate608_nrtl_acetonitrile_2Methyl1Propanol
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/acetonitrile-2Methyl1Propanol-bubble-j.jct.2006.07.014.dat";
+        role          fit;   // C283: every laboratory is fitted
+        doi           "10.1016/j.jct.2006.07.014";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.jct.2006.07.014.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.jct.2006.07.014.json";
+        articleFile   "j.jct.2006.07.014.xml";
+        articleSha256 "6ea8b67af76094c659a0d14163e655bf4360d03777a000f2565c121aa8beac49";
+        block         16;
+        filter        ( --interior-only );
+        extract       "bin/choupo-thermoml extract-vle <article file> --block 16 --interior-only --into <dir>";
+        sha256        "fd2e0e85e0341c9e37d7a9b719ea3fb8bcbba195974a90384bd5c432183d6720";
+        identity
+        {
+            acetonitrile   { cas "75-05-8"; inchiKey "WEVYAHXRMPXWCK-UHFFFAOYSA-N"; }
+            2Methyl1Propanol { cas "78-83-1"; inchiKey "ZXEKIIBDNHEJCQ-UHFFFAOYSA-N"; }
+        }
+    }
+);

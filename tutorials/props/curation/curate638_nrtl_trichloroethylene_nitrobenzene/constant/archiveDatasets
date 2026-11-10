@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of curate638_nrtl_trichloroethylene_nitrobenzene
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/trichloroethylene-nitrobenzene-bubble-je0301085.dat";
+        role          fit;   // C283: every laboratory is fitted
+        doi           "10.1021/je0301085";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je0301085.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je0301085.json";
+        articleFile   "je0301085.xml";
+        articleSha256 "b1fe3f87feb94add0759ccbac63caabc818e5ec6803f846b16b1badbb1ca828e";
+        block         32;
+        filter        ( --interior-only );
+        extract       "bin/choupo-thermoml extract-vle <article file> --block 32 --interior-only --into <dir>";
+        sha256        "607c620aca54764e2b8cb63d3211d55f8b4bbb4d9ccf91850a9222c631123cb9";
+        identity
+        {
+            trichloroethylene { cas "79-01-6"; inchiKey "XSTXAVWGXDQKEL-UHFFFAOYSA-N"; }
+            nitrobenzene   { cas "98-95-3"; inchiKey "LQNUZADURLCDLV-UHFFFAOYSA-N"; }
+        }
+    }
+);

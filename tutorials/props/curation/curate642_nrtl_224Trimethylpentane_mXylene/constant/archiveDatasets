@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of curate642_nrtl_224Trimethylpentane_mXylene
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/224Trimethylpentane-mXylene-bubble-j.jct.2005.04.006.dat";
+        role          fit;   // C283: every laboratory is fitted
+        doi           "10.1016/j.jct.2005.04.006";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.jct.2005.04.006.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.jct.2005.04.006.json";
+        articleFile   "j.jct.2005.04.006.xml";
+        articleSha256 "e157abbd4d346d9ee5e79799e72fb16000d461970ab65ba327666624870901bc";
+        block         21;
+        filter        ( --interior-only );
+        extract       "bin/choupo-thermoml extract-vle <article file> --block 21 --interior-only --into <dir>";
+        sha256        "7adc80b3bb7db4fa685add4c444ec35bd3b2016e769c9de36b507db9829dac8c";
+        identity
+        {
+            224Trimethylpentane { cas "540-84-1"; inchiKey "NHTMVDHEPJAVLT-UHFFFAOYSA-N"; }
+            mXylene        { cas "108-38-3"; inchiKey "IVSZLXZYQVIEFR-UHFFFAOYSA-N"; }
+        }
+    }
+);
