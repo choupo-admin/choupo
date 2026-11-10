@@ -2,8 +2,9 @@
   Component: triethylamine  (CAS 121-44-8)
   PROPOSAL TIER -- UNVERIFIED. Imported from ChemSep v8.3
   pure-component data under Artistic License 2.0.
-  Critical constants are source data; Psat is an explicitly
-  estimated Ambrose-Walton corresponding-states closure.
+  Critical constants are source data.  Psat is an Antoine FITTED by
+  bin/choupo-curate vp to measured vapour pressures (DEV.md 4c C281;
+  provenance.vaporPressure): reviewStatus autoPromoted, NOT human-reviewed.
 \*---------------------------------------------------------------------------*/
 
 name        triethylamine;
@@ -24,7 +25,11 @@ standardThermochemistry
 
 vaporPressure
 {
-    model AmbroseWalton;  // [origin=estimated method=Ambrose-Walton]
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C), FITTED by bin/choupo-curate vp to
+    // measured vapour pressures -- see provenance.vaporPressure
+    coefficients  (4.187638016  1340.781179  -41.81279694);
+    Trange        (273.04  352.77);   // the fit's own span; outside it the engine announces the extrapolation
 }
 
 Vliq        0.000139691;      // m3/mol at 25 C  [ChemSep eqno 105]
@@ -132,10 +137,44 @@ provenance
     }
     vaporPressure
     {
-        origin        predictive;
-        method        "Ambrose-Walton corresponding states";
-        methodVersion "choupo-aw-1989";
-        uncertainty   "not quantified; validate against saturation data";
-        notes         "computed from ChemSep Tc/Pc/omega";
+        origin        fitted;
+        method        "vaporPressureFit (three-parameter Antoine; objective twoStage: least squares in log10 P, then the largest relative error in P minimised from it; every usable study fitted, outliers above 15 % discarded by name)";
+        methodVersion "choupoProps Choupo-dev";
+        fittedInCase  "tutorials/props/curation/curate43_vp_triethylamine";
+        reviewStatus  autoPromoted;
+        humanReviewed false;
+        promotedBy    "bin/choupo-curate vp --promote";
+        promotedDate  "2026-11-10";
+        reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+        uncertainty   "the fit's maximum relative error over every kept measurement, below";
+        replaces      "model AmbroseWalton (a corresponding-states estimate from Tc, Pc, omega); `bin/choupo-curate revert <component>` restores it";
+        evidence
+        (
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/triethylamine-vapourPressure-je800603z.dat";
+                doi       "10.1021/je800603z";
+                sha256    "7258c1a5c2aa8884bd2e4497926597b0b11ab0deeca75598eaddf23bb2e97330";
+                articleSha256 "e052a16eb9f27b130323161aa1f582b1ccdd9af758d8df3f7d3a5cdfbcff1605";
+                pointsKept    5;
+                pointsDropped 0;
+                provenance measured;
+            }
+        );
+        acceptance
+        {
+            rule        "the default of DEV.md 4c C283: max relative error in P over the kept points <= 5 %; Tnb within 1 K of Tb where Tb lies outside their range";
+            verdict     accepted;
+            studies     1;
+            pointsKept  5;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.239768;   // the fitted Antoine, every kept point
+            max_pct     0.260920;
+            awAad_pct   1.038598;   // the AmbroseWalton curve it replaces, the same points
+            awMax_pct   1.666733;
+            Tnb_fit     362.4265;   // K, the fitted curve at 101.325 kPa
+        }
     }
 }

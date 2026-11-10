@@ -39,7 +39,7 @@ datasets
     }
     {
         file          "constant/archiveExtracts/methylTertPentylEther-vapourPressure-je0255980.dat";
-        role          validation;   // informational: the operation declares it
+        role          fit;   // informational: the operation declares it
         doi           "10.1021/je0255980";
         url           "https://trc.nist.gov/ThermoML/10.1021/je0255980.xml";
         page          "https://trc.nist.gov/ThermoML/10.1021/je0255980.json";
@@ -49,6 +49,40 @@ datasets
         inchiKey      "HVZJRWJGKQPSFL-UHFFFAOYSA-N";
         extract       "bin/choupo-thermoml extract-vp <article file> --inchikey HVZJRWJGKQPSFL-UHFFFAOYSA-N --into <dir>";
         sha256        "380efd7b934334f817710e2f9511634f5dee52b1034e1f3cf27b6c1636374ac7";
+        identity
+        {
+            methylTertPentylEther { cas "994-05-8"; inchiKey "HVZJRWJGKQPSFL-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/methylTertPentylEther-vapourPressure-je049867t.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je049867t";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je049867t.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je049867t.json";
+        articleFile   "je049867t.xml";
+        articleSha256 "f2d0b00f3253e92e83c431ab1312c345acac156cdb8de31cc2dcad573cf25bc2";
+        extractor     vapourPressure;
+        inchiKey      "HVZJRWJGKQPSFL-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey HVZJRWJGKQPSFL-UHFFFAOYSA-N --into <dir>";
+        sha256        "251496fa21f557fb1517e432bc834a7be3aa46666c4431ddd993cad7d6d511e6";
+        identity
+        {
+            methylTertPentylEther { cas "994-05-8"; inchiKey "HVZJRWJGKQPSFL-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/methylTertPentylEther-vapourPressure-je901026b.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je901026b";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je901026b.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je901026b.json";
+        articleFile   "je901026b.xml";
+        articleSha256 "d12c1801ff61ff6206aef6443aaa300487f62b237c312c474378902e58613bc4";
+        extractor     vapourPressure;
+        inchiKey      "HVZJRWJGKQPSFL-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey HVZJRWJGKQPSFL-UHFFFAOYSA-N --into <dir>";
+        sha256        "df102c56711a862fef3b69810d4a85ee9f5134c4a06d90c3e8bd84f7c4d3e984";
         identity
         {
             methylTertPentylEther { cas "994-05-8"; inchiKey "HVZJRWJGKQPSFL-UHFFFAOYSA-N"; }

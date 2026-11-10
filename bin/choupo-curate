@@ -1319,8 +1319,21 @@ def revert(stem):
 #       fit; no measured series in the tree (constant/archiveDatasets, as
 #       `pair`).  Not sealed: the fit reads no catalogue record, and the
 #       run must read the CATALOGUE record so it can voice its status.
-#    7. PROMOTION (`--promote`) only when the verdict is `validated` and the
-#       Tb rule holds: the AmbroseWalton block is REPLACED by the fitted
+#    7. PROMOTION (`--promote`) -- THE DEFAULT ACCEPTANCE OF DEV.md 4c C283
+#       (Vitor, 2026-11-10: "isto nao e ciencia exata ... Por default um erro
+#       relativo de 5% chega e sobra! E um erro inferior a 1 grau K
+#       tambem!"; it REPLACES the band rule of items 4-5 as the test).  A fit
+#       is ACCEPTED when its MAXIMUM relative error in P on the held-out
+#       measurements is <= 5 %, and -- where the record's Tb lies OUTSIDE the
+#       FIT study's range -- its normal boiling point is within 1 K of Tb
+#       (absolute); outside either the gap is announced and the fit is not
+#       promoted.  A case may declare another acceptance in
+#       `system/curationDict` (`acceptance { maxRelativeError <x> percent;
+#       maxTemperatureError <y> K; reason "..."; }`, a reason REQUIRED); with
+#       none the default is used and SAID so in the run and the result.  The
+#       band of item 4 is kept as INFORMATION (`bandVerdict`); both errors
+#       (the fit and the AmbroseWalton curve it replaces, mean and max, on the
+#       held-out points) are written in the record's provenance.  When it holds: the AmbroseWalton block is REPLACED by the fitted
 #       Antoine (Trange = the fit's own span; outside it the engine announces
 #       the extrapolation, as for every Antoine), the per-value provenance
 #       entry names the DOIs, the case and the verdict, and is marked
@@ -1335,7 +1348,11 @@ def revert(stem):
 #  src/propertyOps/VaporPressureFit.cpp; read the articles back.
 # ==========================================================================
 VP_PROMOTED_BY = "bin/choupo-curate vp --promote"
-TB_TOL_K = 2.0
+TB_TOL_K = 2.0      # step 2's normal-boiling-point tolerance (superseded)
+VP_ACCEPT_DEFAULT = {"maxRel": 5.0, "maxT": 1.0, "reason": None}   # DEV.md 4c C283
+VP_CURATION_DICT = "system/curationDict"
+VP_RULE_MARK = "FIT AND ACCEPTANCE (DEV.md 4c C283"
+VP_OUTLIER_PCT = 15.0   # C283 amended: three times the 5 % acceptance
 STD_COMP = ROOT / "data" / "standards" / "components"
 AW_BLOCK = ("vaporPressure\n{\n    model AmbroseWalton;  "
             "// [origin=estimated method=Ambrose-Walton]\n}\n")
@@ -1346,6 +1363,24 @@ AW_PROV = ("    vaporPressure\n    {\n        origin        predictive;\n"
            '        methodVersion "choupo-aw-1989";\n'
            '        uncertainty   "not quantified; validate against saturation data";\n'
            '        notes         "computed from ChemSep Tc/Pc/omega";\n    }\n')
+
+
+def aw_psat_kPa(T, rec_text):
+    """The AmbroseWalton curve the record declares, from its own Tc, Pc and
+    omega, through check_ambrose_walton_announced's independent Python
+    (which that gate holds to the engine's own Psat to 1e-11)."""
+    import importlib.machinery
+    import importlib.util
+    global _AW
+    if "_AW" not in globals():
+        path = ROOT / "bin" / "curate" / "check_ambrose_walton_announced.py"
+        ld = importlib.machinery.SourceFileLoader("check_aw", str(path))
+        sp_ = importlib.util.spec_from_loader("check_aw", ld)
+        _AW = importlib.util.module_from_spec(sp_)
+        ld.exec_module(_AW)
+    t = crp.strip_comments(rec_text)
+    g = lambda k: float(re.search(r"^%s\s+([-+0-9.eE]+)" % k, t, re.M).group(1))
+    return _AW.psat(T, g("Tc"), g("Pc") * 1e5, g("omega")) / 1e3
 
 
 def vp_record(comp):
@@ -1429,43 +1464,25 @@ def vp_plan(name, work):
                             Tmin=min(ds["T"]), Tmax=max(ds["T"])))
     studies.sort(key=lambda s: (-s["n"], s["doi"]))
     pl = {"comp": comp, "cas": cas, "key": key, "studies": studies, "aside": aside,
-          "Tb": record_Tb(text), "fit": None, "held": None}
+          "Tb": record_Tb(text)}
     if not studies:
         pl["why"] = "no usable study"
         return pl
-    fit = studies[0]
-    fa = surnames(fit["authors"])
-    held = next((s for s in studies[1:] if not (surnames(s["authors"]) & fa)), None)
-    pl["fit"] = fit
-    if held is None:
-        pl["why"] = ("no second study sharing no author with the fit study "
-                     f"({fit['doi']}): fewer than two independent studies")
-        return pl
-    pl["held"] = held
-    rel = [Ui / Pi for Ui, Pi in zip(held["U"], held["P"])]
-    u = sum(rel) / len(rel)
-    band = round_up_2sf(100.0 * u)
-    pl["band"] = band
-    pl["band_txt"] = fmt_band(band)
-    pl["origin"] = (
-        "declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out "
-        "study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its "
-        f"{held['n']} points ({100.0 * min(rel):.3g} to {100.0 * max(rel):.3g} %, mean "
-        f"{100.0 * u:.4g} %), rounded UP to two significant figures -- a mean held "
-        "against the held-out AAD, which is a mean")
-    lo = min(fit["Tmin"], held["Tmin"])
-    hi = max(fit["Tmax"], held["Tmax"])
+    #  THE EVIDENCE (DEV.md 4c C283, amended): EVERY usable study is fitted;
+    #  none is held out.  Independence is no longer the test -- agreement
+    #  across laboratories is, through the outlier rule and the acceptance.
+    lo = min(s["Tmin"] for s in studies)
+    hi = max(s["Tmax"] for s in studies)
     pl["span"] = (lo, hi)
     Tb = pl["Tb"]
     pl["tb_rule"] = (
         "no Tb declared in the record: no normal-boiling-point condition" if Tb is None else
-        f"the record's Tb {Tb:g} K lies INSIDE the measured span {lo:g}-{hi:g} K: the "
-        "held-out verdict is the test there, no further condition" if lo <= Tb <= hi else
-        f"the record's Tb {Tb:g} K lies OUTSIDE the measured span {lo:g}-{hi:g} K: the "
-        f"fitted Antoine's own normal boiling point (P = 101.325 kPa) must lie within "
-        f"{TB_TOL_K:g} K of it, or the fit is NOT promoted (an extrapolation that misses "
-        "the record's own boiling point)")
-    pl["tb_applies"] = Tb is not None and not (lo <= Tb <= hi)
+        f"the record's Tb {Tb:g} K is judged against the range of the KEPT points "
+        f"(all studies span {lo:g}-{hi:g} K before any outlier is discarded): if Tb lies "
+        "OUTSIDE that range, the fitted Antoine's own normal boiling point (P = 101.325 "
+        "kPa) must lie within the acceptance's temperature error of it, or the gap is "
+        "announced and the fit is not promoted; inside it, the gap is reported and is "
+        "not a condition")
     return pl
 
 
@@ -1494,7 +1511,7 @@ def vp_decl_text(pl, case_rel):
         "datasets",
         "(",
     ]
-    for role, s in (("fit", pl["fit"]), ("validation", pl["held"])):
+    for role, s in [("fit", st) for st in pl["studies"]]:
         lines += [
             "    {",
             f'        file          "{EXTRACTS}/{s["path"].name}";',
@@ -1518,14 +1535,30 @@ def vp_decl_text(pl, case_rel):
     return "\n".join(lines)
 
 
-def vp_props_text(pl, case_name):
-    comp, fit, held = pl["comp"], pl["fit"], pl["held"]
+VP_OBJECTIVE = "twoStage"   # C281 step 3: Vitor's fitting practice (C280), declared
+VP_OBJ_WORDS = {"twoStage": "least squares in log10 P, then the largest relative error "
+                            "in P minimised from it",
+                "leastSquares": "least squares in log10 P",
+                "minimax": "the largest relative error in P minimised"}
+
+
+def vp_props_text(pl, case_name, earlier=None):
+    comp = pl["comp"]
+    earlier_par = ("" if not earlier else
+                   "\n  EARLIER FITS, SUPERSEDED BY THIS DECLARATION\n  @@EARLIER-BEGIN@@\n"
+                   + wrap(earlier) + "\n  @@EARLIER-END@@\n")
     ranked = "\n".join(
         f"      {s['doi']:<30} {s['n']:>4} pts  {s['Tmin']:g}-{s['Tmax']:g} K  "
         + "; ".join(a.split(",")[0] for a in s["authors"][:4])
         + (" et al." if len(s["authors"]) > 4 else "")
         for s in pl["studies"])
     aside = "\n".join(f"      {d}: {w}" for d, w in pl["aside"]) or "      (none)"
+    ev = "".join(f"""            {{
+                dataset   "{EXTRACTS}/{st['path'].name}";
+                identity  {{ doi "{st['doi']}"; }}
+                role      fit;
+            }}
+""" for st in pl["studies"])
     return f"""/*--------------------------------*- Choupo -*--------------------------------*\\
 |       \\|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
 |      \\\\|//   H eat-transfer |  Version:  Choupo-dev                         |
@@ -1536,15 +1569,15 @@ def vp_props_text(pl, case_name):
 \\*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\\
   {case_name} -- the vapour pressure of {comp}, REFITTED to
-  measurements (DEV.md 4c C281 step 2).  Written by `bin/choupo-curate vp
-  {comp}`; everything above the RESULT paragraph is the DECLARATION, committed
-  before any fit ran, so it can be read against the result.
+  measurements (DEV.md 4c C281 and C283).  Written by `bin/choupo-curate vp
+  {comp}`; everything above the RESULT paragraph is the DECLARATION,
+  committed before any fit ran, so it can be read against the result.
 
   WHY.  The catalogue record carried `vaporPressure {{ model AmbroseWalton; }}`,
   a corresponding-states ESTIMATE from Tc, Pc and omega that never reads the
   record's own Tb (C279 measured a median 19.6 % AAD over the 25 such records
-  with archive data).  Here a three-parameter Antoine is fitted to ONE
-  laboratory and held out on ANOTHER that shares no author with it.
+  with archive data).  Here a three-parameter Antoine is fitted to EVERY
+  usable laboratory's measurements of it.
 
   STUDIES (one per article, extracted by `choupo-thermoml extract-vp`; ranked
   by points, ties by DOI):
@@ -1552,16 +1585,29 @@ def vp_props_text(pl, case_name):
   SET ASIDE BY NAME:
 {aside}
 
-  PARTITION (the C16 rule, declared): FIT = the study with the most points,
-  doi {fit['doi']} ({fit['n']} pts, {fit['Tmin']:g}-{fit['Tmax']:g} K); HELD OUT =
-  the next largest sharing no author with it, doi {held['doi']} ({held['n']} pts,
-  {held['Tmin']:g}-{held['Tmax']:g} K).
-
-  BAND: maxAAD {pl['band_txt']} % ({pl['origin']}).
+  {VP_RULE_MARK}, Vitor 2026-11-10, declared before the fit).
+  EVIDENCE: every study above is fitted; none is held out (C283 amended:
+  laboratories disagree with each other by more than they claim, so the
+  test is agreement across all of them, not one laboratory's claimed
+  precision).  OBJECTIVE: `objective {{ method {VP_OBJECTIVE}; }}` -- least
+  squares in log10 P for a first estimate, then the LARGEST relative error in
+  P, (P_model - P)/P, over the kept points minimised from it (Vitor's
+  practice, C280); both answers kept.  OUTLIERS: after the least-squares
+  stage a point with a relative P error above {VP_OUTLIER_PCT:g} % (three times
+  the acceptance) is DISCARDED BY NAME (its study DOI, T and P), listed in
+  the result and the record, and the fit repeated without it, once
+  (`outliers {{ maxRelativeError {VP_OUTLIER_PCT:g} percent; }}`).  ACCEPTANCE,
+  the DEFAULT of C283: ACCEPTED and promoted (autoPromoted, humanReviewed
+  false) when the maximum relative P error over all kept points is at most
+  {VP_ACCEPT_DEFAULT['maxRel']:g} % and the normal-boiling-point condition below holds with an
+  absolute error below {VP_ACCEPT_DEFAULT['maxT']:g} K.  This case declares no
+  `{VP_CURATION_DICT}`, so the default applies; a case that needs another
+  acceptance declares it there, with its reason.  The AmbroseWalton curve's
+  errors on the same points are reported beside the fit's, as information.
 
   NORMAL BOILING POINT: {pl['tb_rule']}.
-
-  NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares both
+{earlier_par}
+  NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares every
   series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates
   them into constant/archiveExtracts/ (gitignored).
 
@@ -1580,23 +1626,10 @@ operations
 
         evidence
         (
-            {{
-                dataset   "{EXTRACTS}/{fit['path'].name}";
-                identity  {{ doi "{fit['doi']}"; }}
-                role      fit;
-            }}
-            {{
-                dataset   "{EXTRACTS}/{held['path'].name}";
-                identity  {{ doi "{held['doi']}"; }}
-                role      validation;
-            }}
-        );
+{ev}        );
 
-        acceptance
-        {{
-            maxAAD  {pl['band_txt']} percent;
-            origin  "{pl['origin']}";
-        }}
+        objective  {{ method {VP_OBJECTIVE}; }}
+        outliers   {{ maxRelativeError {VP_OUTLIER_PCT:g} percent; }}
 
         output     {{ file fit_antoine.csv; }}
     }}
@@ -1623,12 +1656,11 @@ def vp_write_case(pl, number):
     (case / f"{name}.cho").write_text("")
     (case / "system" / "controlDict").write_text(
         f"""/*  {name}: the vapour pressure of {comp} refitted as an Antoine to MEASURED
-    vapour pressures from one article and scored on another it never saw
-    (DEV.md 4c C281 step 2).  See system/propsDict for the declaration and
-    the result.  */
+    vapour pressures from every usable laboratory (DEV.md 4c C281, C283).
+    See system/propsDict for the declaration and the result.  */
 
 application   choupoProps;
-description   "Antoine vapour pressure of {comp} fitted by the curation pipeline to measured vapour pressures (ThermoML locates, the article sources), held out against an independent study";
+description   "Antoine vapour pressure of {comp} fitted by the curation pipeline to the measured vapour pressures of every usable laboratory (ThermoML locates, the articles source), outliers discarded by name";
 verbosity     2;
 """)
     (case / "constant" / "thermoPhysPropDict").write_text(
@@ -1651,7 +1683,7 @@ equilibrium
 """)
     (case / DECL).write_text(vp_decl_text(pl, case_rel))
     (case / "system" / "propsDict").write_text(vp_props_text(pl, name))
-    for s in (pl["fit"], pl["held"]):
+    for s in pl["studies"]:
         (case / EXTRACTS).mkdir(parents=True, exist_ok=True)
         shutil.copy(s["path"], case / EXTRACTS / s["path"].name)
     return case
@@ -1674,57 +1706,187 @@ def vp_run(case):
     op = op_result(js, "fit_antoine") or {}
     d, cu = op.get("diagnostics", {}), op.get("curation", {})
     decl = parse_decl(case)
-    fitd = next(x for x in decl if x.get("role") == "fit")
-    fitds = read_vp_dataset(case / fitd["file"])
-    return {"A": d.get("A"), "B": d.get("B"), "C": d.get("C"), "R2": d.get("R2"),
-            "n": d.get("n_points"), "n_heldout": d.get("n_heldout"),
-            "aad_pct": d.get("aad_heldout_pct"), "verdict": cu.get("verdict"),
-            "maxAAD": float(cu.get("acceptanceMaxAADPct", "nan")),
-            "Tmin": min(fitds["T"]), "Tmax": max(fitds["T"])}, out
+    comp = case.name.split("_vp_")[1]
+    rec = vp_record(comp).read_text()
+    dropped = vp_dropped(cu.get("outliersDropped", ""))
+    studies = []
+    kept_T, kept_P = [], []
+    for x in decl:
+        ds = read_vp_dataset(case / x["file"])
+        kT, kP, nd = [], [], 0
+        for t, pk in zip(ds["T"], ds["P"]):
+            if (x["doi"], round(t, 3), round(math.log10(pk * 1e3), 5)) in dropped:
+                nd += 1
+                continue
+            kT.append(t); kP.append(pk)
+        studies.append({"doi": x["doi"], "n": ds["n"], "kept": len(kT), "dropped": nd,
+                        "T": kT, "P": kP})
+        kept_T += kT; kept_P += kP
+    if len(kept_T) != int(d.get("n_points", -1)):
+        return None, (f"{case.name}: the tool reconstructs {len(kept_T)} kept points, the "
+                      f"engine fitted {d.get('n_points')} -- the outlier list does not "
+                      "name what the engine discarded")
+    awr = [abs(aw_psat_kPa(t, rec) / pk - 1.0) for t, pk in zip(kept_T, kept_P)]
+    return {"aw_aad": 100.0 * sum(awr) / len(awr), "aw_max": 100.0 * max(awr),
+            "Tb": record_Tb(rec), "A": d.get("A"), "B": d.get("B"), "C": d.get("C"),
+            "R2": d.get("R2"), "n": d.get("n_points"),
+            "n_dropped": int(d.get("n_outliers_dropped", 0)),
+            "dropped_txt": cu.get("outliersDropped", "none"),
+            "aad_pct": d.get("relErr_mean_fit_pct"), "max_pct": d.get("relErr_max_fit_pct"),
+            "aad_ls": d.get("relErr_mean_fit_pct_leastSquares"),
+            "max_ls": d.get("relErr_max_fit_pct_leastSquares"),
+            "objective": {0: "leastSquares", 1: "minimax", 2: "twoStage"}.get(
+                int(d.get("objective_method", -1)), "unstated"),
+            "studies": studies,
+            "Tmin": min(kept_T), "Tmax": max(kept_T)}, out
+
+
+def vp_dropped(txt):
+    """The engine's curation.outliersDropped list -> {(doi, T, P_Pa)}."""
+    out = set()
+    for item in (txt or "").split(";"):
+        m = re.match(r"\s*(\S+) T=([0-9.eE+-]+) K P=([0-9.eE+-]+) Pa", item)
+        if m:
+            out.add((m.group(1), round(float(m.group(2)), 3),
+                     round(math.log10(float(m.group(3))), 5)))
+    return out
+
+
+def vp_acceptance(case):
+    """The acceptance the case DECLARES (system/curationDict), else the C283
+    default -- (dict, declared?)."""
+    p = case / VP_CURATION_DICT
+    if not p.exists():
+        return dict(VP_ACCEPT_DEFAULT), False
+    t = crp.strip_comments(p.read_text())
+    b = crp.block(t, "acceptance")
+    if b is None:
+        refuse(f"{p.relative_to(ROOT)}: no `acceptance {{}}` block")
+    mr = re.search(r"maxRelativeError\s+([0-9.eE+-]+)\s+percent\s*;", b)
+    mt = re.search(r"maxTemperatureError\s+([0-9.eE+-]+)\s+K\s*;", b)
+    rs = re.search(r'reason\s+"([^"]+)"\s*;', b)
+    if not (mr and mt):
+        refuse(f"{p.relative_to(ROOT)}: `acceptance` declares `maxRelativeError <x> "
+               "percent;` and `maxTemperatureError <y> K;`, both with their units")
+    if not rs:
+        refuse(f"{p.relative_to(ROOT)}: an acceptance other than the C283 default "
+               "carries its `reason \"...\";` -- none is declared")
+    return {"maxRel": float(mr.group(1)), "maxT": float(mt.group(1)),
+            "reason": rs.group(1)}, True
 
 
 def vp_judge(case, rf):
-    """(promotable, reason) by the declared rules, from the declaration."""
+    """(promotable, reason) by the acceptance the case declares (C283's
+    default unless system/curationDict says otherwise); a declaration that
+    predates the rule is not judged by it."""
     decl = (case / "system" / "propsDict").read_text()
-    m = re.search(r"NORMAL BOILING POINT: (.*?)\.\n\n", decl, re.S)
-    tb_rule = " ".join(m.group(1).split()) if m else ""
+    if VP_RULE_MARK not in decl:
+        refuse(f"{case.name} does not declare the C281 step-3 acceptance -- "
+               f"`bin/choupo-curate vp <c> --redeclare` first")
+    acc, declared = vp_acceptance(case)
+    rf["acceptance"] = acc
+    rf["acceptance_declared"] = declared
+    who = (f"the acceptance declared in {VP_CURATION_DICT} ({acc['reason']})" if declared
+           else "the DEFAULT acceptance of DEV.md 4c C283 (no system/curationDict)")
     Tnb = antoine_Tnb(rf["A"], rf["B"], rf["C"])
     rf["Tnb"] = Tnb
-    tbm = re.search(r"record's Tb ([0-9.]+) K lies OUTSIDE", tb_rule)
-    if rf["verdict"] != "validated":
-        return False, (f"NOT PROMOTED: held-out verdict {rf['verdict']} (AAD "
-                       f"{rf['aad_pct']:.4g} % against the band {rf['maxAAD']:g} % "
-                       "declared before the fit); the record keeps AmbroseWalton")
-    if tbm:
-        Tb = float(tbm.group(1))
-        if abs(Tnb - Tb) > TB_TOL_K:
-            return False, (f"NOT PROMOTED: validated, but the fitted Antoine's normal "
-                           f"boiling point {Tnb:.2f} K misses the record's Tb {Tb:g} K by "
-                           f"{Tnb - Tb:+.2f} K, outside the declared {TB_TOL_K:g} K -- an "
-                           "extrapolation that contradicts the record; the record keeps "
-                           "AmbroseWalton")
-        return True, (f"PROMOTABLE by `bin/choupo-curate vp {case.name.split('_vp_')[1]} "
-                      f"--promote`: verdict validated, normal boiling point {Tnb:.2f} K "
-                      f"within {TB_TOL_K:g} K of the record's Tb {Tb:g} K")
-    return True, (f"PROMOTABLE by `bin/choupo-curate vp {case.name.split('_vp_')[1]} "
-                  f"--promote`: verdict validated (the record's Tb is inside the "
-                  f"measured span or not declared; the fit's own normal boiling point "
-                  f"is {Tnb:.2f} K)")
+    Tb = rf.get("Tb")
+    info = (f"AmbroseWalton on the same points mean {rf['aw_aad']:.4g} % / max "
+            f"{rf['aw_max']:.4g} %")
+    errs = (f"{len(rf['studies'])} studies, {int(rf['n'])} points kept, "
+            f"{rf['n_dropped']} discarded as outliers; max relative error "
+            f"{rf['max_pct']:.4g} % (mean {rf['aad_pct']:.4g} %) against {acc['maxRel']:g} %")
+    comp = case.name.split("_vp_")[1]
+    gap = None if Tb is None else Tnb - Tb
+    gtxt = "" if Tb is None else (f"normal boiling point {Tnb:.2f} K, {gap:+.2f} K from "
+                                  f"the record's Tb {Tb:g} K")
+    if rf["max_pct"] > acc["maxRel"]:
+        return False, (f"NOT PROMOTED by {who}: {errs}; {info}; the record keeps "
+                       "AmbroseWalton")
+    if Tb is not None and not (rf["Tmin"] <= Tb <= rf["Tmax"]):
+        if not abs(gap) < acc["maxT"]:
+            return False, (f"NOT PROMOTED by {who}: {errs} passes, but Tb lies outside "
+                           f"the kept points' range and the {gtxt} is not within "
+                           f"{acc['maxT']:g} K -- the gap is announced; {info}; the "
+                           "record keeps AmbroseWalton")
+        tb = f"Tb outside the kept points' range, {gtxt} (within {acc['maxT']:g} K)"
+    else:
+        tb = (f"Tb inside the kept points' range, {gtxt} (reported, not a condition)"
+              if Tb is not None else "no Tb declared")
+    return True, (f"PROMOTABLE by `bin/choupo-curate vp {comp} --promote`: under {who}, "
+                  f"{errs}; {tb}; {info}")
 
 
 def vp_fill_result(case, rf, reason):
+    per = "; ".join(f"{st['doi']} {st['kept']}/{st['n']} kept" for st in rf["studies"])
     txt = (f"WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).  "
+           f"Objective {rf['objective']}.  "
            f"Antoine log10(Psat/bar) = {rf['A']:.6f} - {rf['B']:.4f}/(T + "
-           f"{rf['C']:.4f}), in-sample R2 {rf['R2']:.6f} over {int(rf['n'])} points, "
-           f"{rf['Tmin']:g}-{rf['Tmax']:g} K.  HELD OUT: {int(rf['n_heldout'])} points, "
-           f"AAD {rf['aad_pct']:.4f} % against the band {rf['maxAAD']:g} % -> "
-           f"{rf['verdict']}.  Its own normal boiling point (101.325 kPa): "
-           f"{rf['Tnb']:.2f} K.  {reason}")
+           f"{rf['C']:.4f}), in-sample R2 {rf['R2']:.6f} over {int(rf['n'])} kept points, "
+           f"{rf['Tmin']:g}-{rf['Tmax']:g} K ({per}).  Relative error in P over the kept "
+           f"points: mean {rf['aad_pct']:.4f} %, max {rf['max_pct']:.4f} %; AmbroseWalton on "
+           f"the same points: mean {rf['aw_aad']:.4f} %, max {rf['aw_max']:.4f} %.  "
+           f"Outliers discarded: {rf['dropped_txt']}.  Its own normal boiling point "
+           f"(101.325 kPa): {rf['Tnb']:.2f} K.  {reason}")
     p = case / "system" / "propsDict"
     t = p.read_text()
     t = re.sub(r"@@RESULT-BEGIN@@.*?@@RESULT-END@@",
                "@@RESULT-BEGIN@@\n" + wrap(txt) + "\n  @@RESULT-END@@", t, flags=re.S)
     p.write_text(t)
+
+
+def earlier_of(case):
+    m = re.search(r"@@EARLIER-BEGIN@@(.*?)@@EARLIER-END@@",
+                  (case / "system" / "propsDict").read_text(), re.S)
+    return " ".join(m.group(1).split()) if m else None
+
+
+def vp_redeclare(pl, no_commit):
+    """C281 step 3: a NEW declaration for a case the tool already wrote --
+    the SAME partition and band (re-derived by the same rules and refused if
+    they differ: never a re-partition after seeing a result), the declared
+    objective added, the earlier result kept in the header, committed before
+    the fit runs."""
+    case = vp_case_dir(pl["comp"])
+    if case is None:
+        refuse("--redeclare: no case for this component -- run `vp` first")
+    pd = case / "system" / "propsDict"
+    old = pd.read_text()
+    if VP_RULE_MARK in old:
+        refuse(f"--redeclare: {case.name} already declares the step-3 promotion rule")
+    #  C283 (amended) changes the EVIDENCE by ruling: every usable study is
+    #  fitted, none held out.  The studies are re-derived by the same
+    #  extraction rules; the archiveDatasets are rewritten with them.
+    m = re.search(r"@@RESULT-BEGIN@@(.*?)@@RESULT-END@@", old, re.S)
+    prev = " ".join(m.group(1).split()) if m else "(no result recorded)"
+    before = earlier_of(case)
+    if before:
+        earlier = (before + "  THEN C281 step 3, objective twoStage, one study fitted "
+                   "and one held out, judged by the band (superseded by C283): " + prev)
+    else:
+        earlier = ("C281 step 2, objective leastSquares (log10 P), the same partition "
+                   "and band: " + prev)
+    pd.write_text(vp_props_text(pl, case.name, earlier))
+    (case / DECL).write_text(vp_decl_text(pl, case.relative_to(ROOT).as_posix()))
+    for st in pl["studies"]:
+        (case / EXTRACTS).mkdir(parents=True, exist_ok=True)
+        shutil.copy(st["path"], case / EXTRACTS / st["path"].name)
+    for old_x in (case / EXTRACTS).glob("*.dat"):
+        if old_x.name not in {st["path"].name for st in pl["studies"]}:
+            old_x.unlink()
+    if not no_commit:
+        git(["add", "--", str(pd), str(case / DECL)])
+        git(["commit", "-q", "-m",
+             f"C281 step 3: {case.name} -- the new declaration, before the fit\n\n"
+             f"bin/choupo-curate vp {pl['comp']} --redeclare (DEV.md 4c C283, "
+             f"amended): every usable study fitted ({len(pl['studies'])}), none held "
+             f"out; objective {VP_OBJECTIVE}; outliers above {VP_OUTLIER_PCT:g} % "
+             "discarded by name and the fit repeated; the default acceptance (max "
+             "relative error over the kept points <= 5 %, Tnb within 1 K where Tb "
+             "lies outside their range) declared; the earlier results kept in the "
+             "header."])
+        say(f"  committed the new declaration: {git(['rev-parse', '--short', 'HEAD']).strip()}")
+    return case
 
 
 def vp_main(a):
@@ -1739,24 +1901,24 @@ def vp_main(a):
             say(f"    aside  {d}: {w}")
         for s in pl["studies"]:
             say(f"    study  {s['doi']} ({s['n']} pts, {s['Tmin']:g}-{s['Tmax']:g} K)")
-        if pl["held"] is None:
+        if not pl["studies"]:
             say(f"  NO FIT: {pl['why']} -- the record keeps AmbroseWalton")
             return 3
-        fit, held = pl["fit"], pl["held"]
-        say(f"  FIT      doi {fit['doi']} ({fit['n']} pts)")
-        say(f"  HELD OUT doi {held['doi']} ({held['n']} pts)")
-        say(f"  band     {pl['band_txt']} %  ({pl['origin']})")
+        say(f"  FIT      every usable study ({len(pl['studies'])}); none held out (C283)")
         say(f"  Tb       {pl['tb_rule']}")
         if a.plan:
             return 0
-        if a.resume:
+        if a.redeclare:
+            case = vp_redeclare(pl, a.no_commit)
+        elif a.resume:
             case = vp_case_dir(pl["comp"])
             if case is None:
                 refuse("--resume: no case for this component")
-            norm = lambda s: re.sub(r"@@RESULT-BEGIN@@.*?@@RESULT-END@@", "", s, flags=re.S)
+            norm = lambda s: re.sub(r"@@(RESULT|EARLIER)-BEGIN@@.*?@@(RESULT|EARLIER)-END@@",
+                                    "", s, flags=re.S)
             if (case / DECL).read_text() != vp_decl_text(pl, case.relative_to(ROOT).as_posix()) \
                     or norm((case / "system" / "propsDict").read_text()) != \
-                    norm(vp_props_text(pl, case.name)):
+                    norm(vp_props_text(pl, case.name, earlier_of(case))):
                 refuse(f"--resume: {case.name}'s declaration differs from the one the "
                        "rules give now -- a declaration is never rewritten after it "
                        "was committed")
@@ -1767,12 +1929,13 @@ def vp_main(a):
                          and EXTRACTS not in p.relative_to(case).as_posix()]
                 git(["add", "--"] + [str(p) for p in files])
                 git(["commit", "-q", "-m",
-                     f"C281: {case.name} -- the declaration, before any fit\n\n"
-                     f"bin/choupo-curate vp {pl['comp']}: partition (fit doi "
-                     f"{fit['doi']}, held out doi {held['doi']}), band maxAAD "
-                     f"{pl['band_txt']} % and the normal-boiling-point condition "
+                     f"C283: {case.name} -- the declaration, before any fit\n\n"
+                     f"bin/choupo-curate vp {pl['comp']}: every usable study "
+                     f"({len(pl['studies'])}) fitted, objective {VP_OBJECTIVE}, "
+                     f"outliers above {VP_OUTLIER_PCT:g} % discarded by name, the "
+                     "default acceptance (max relative error <= 5 %, Tnb within 1 K) "
                      "written before the fit runs, so they can be read against the "
-                     "result (C16 slice 2)."])
+                     "result."])
                 say(f"  committed the declaration: "
                     f"{git(['rev-parse', '--short', 'HEAD']).strip()}")
         say(f"  case     {case.relative_to(ROOT)}")
@@ -1781,9 +1944,10 @@ def vp_main(a):
             refuse(out)
         ok, reason = vp_judge(case, rf)
         vp_fill_result(case, rf, reason)
-        say(f"  verdict  {rf['verdict']}  (held-out AAD {rf['aad_pct']:.4g} %, band "
-            f"{rf['maxAAD']:g} %); normal boiling point {rf['Tnb']:.2f} K, record Tb "
-            f"{pl['Tb']}")
+        say(f"  fit      max {rf['max_pct']:.4g} % / mean {rf['aad_pct']:.4g} % over "
+            f"{int(rf['n'])} kept points ({rf['n_dropped']} discarded); AmbroseWalton "
+            f"{rf['aw_max']:.4g} % / {rf['aw_aad']:.4g} %; Tnb {rf['Tnb']:.2f} K, record "
+            f"Tb {pl['Tb']}")
         say(f"  {reason}")
         return 0
     finally:
@@ -1799,21 +1963,30 @@ def vp_block(rf):
             "outside it the engine announces the extrapolation\n}\n")
 
 
-def vp_prov(rf, case, decl, origin):
+def vp_prov(rf, case, decl):
     case_rel = case.relative_to(ROOT).as_posix()
     ev = ""
     for d in decl:
+        st = next(x for x in rf["studies"] if x["doi"] == d["doi"])
         ev += ("            {\n"
                f"                role      {d['role']};\n"
                f'                dataset   "{d["file"]}";\n'
                f'                doi       "{d["doi"]}";\n'
                f'                sha256    "{d["sha256"]}";\n'
                f'                articleSha256 "{d["articleSha256"]}";\n'
+               f"                pointsKept    {st['kept']};\n"
+               f"                pointsDropped {st['dropped']};\n"
                "                provenance measured;\n"
                "            }\n")
+    acc = rf["acceptance"]
+    acc_txt = ("the default of DEV.md 4c C283: max relative error in P over the kept points "
+               "<= 5 %; Tnb within 1 K of Tb where Tb lies outside their range"
+               if not rf.get("acceptance_declared") else
+               f"declared in {VP_CURATION_DICT}: max relative error <= {acc['maxRel']:g} %, "
+               f"Tnb within {acc['maxT']:g} K; reason: {acc['reason']}")
     return ("    vaporPressure\n    {\n"
             "        origin        fitted;\n"
-            '        method        "vaporPressureFit (three-parameter Antoine, least squares in log10 P)";\n'
+            f'        method        "vaporPressureFit (three-parameter Antoine; objective {rf["objective"]}: {VP_OBJ_WORDS.get(rf["objective"], "unstated")}; every usable study fitted, outliers above {VP_OUTLIER_PCT:g} % discarded by name)";\n'
             '        methodVersion "choupoProps Choupo-dev";\n'
             f'        fittedInCase  "{case_rel}";\n'
             "        reviewStatus  autoPromoted;\n"
@@ -1822,15 +1995,20 @@ def vp_prov(rf, case, decl, origin):
             f'        promotedDate  "{date.today().isoformat()}";\n'
             '        reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";\n'
             '        reuse         "Choupo\'s own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";\n'
-            '        uncertainty   "the held-out AAD below, against an independent study";\n'
+            '        uncertainty   "the fit\'s maximum relative error over every kept measurement, below";\n'
             '        replaces      "model AmbroseWalton (a corresponding-states estimate from Tc, Pc, omega); `bin/choupo-curate revert <component>` restores it";\n'
             "        evidence\n        (\n" + ev + "        );\n"
-            "        validation\n        {\n"
-            f"            verdict     {rf['verdict']};\n"
-            f"            points      {int(rf['n_heldout'])};\n"
-            f"            aad_pct     {rf['aad_pct']:.6f};\n"
-            f"            maxAAD      {rf['maxAAD']:g};   // per cent, declared before the fit\n"
-            f'            origin      "{origin}";\n'
+            "        acceptance\n        {\n"
+            f'            rule        "{acc_txt}";\n'
+            "            verdict     accepted;\n"
+            f"            studies     {len(rf['studies'])};\n"
+            f"            pointsKept  {int(rf['n'])};\n"
+            f"            pointsDropped {rf['n_dropped']};\n"
+            f'            dropped     "{rf["dropped_txt"]}";\n'
+            f"            aad_pct     {rf['aad_pct']:.6f};   // the fitted Antoine, every kept point\n"
+            f"            max_pct     {rf['max_pct']:.6f};\n"
+            f"            awAad_pct   {rf['aw_aad']:.6f};   // the AmbroseWalton curve it replaces, the same points\n"
+            f"            awMax_pct   {rf['aw_max']:.6f};\n"
             f"            Tnb_fit     {rf['Tnb']:.4f};   // K, the fitted curve at 101.325 kPa\n"
             "        }\n    }\n")
 
@@ -1854,10 +2032,8 @@ def vp_promote(name):
     if not ok:
         refuse(f"{comp}: {reason}")
     decl = parse_decl(case)
-    pd = (case / "system" / "propsDict").read_text()
-    origin = re.search(r'origin\s+"([^"]+)";', crp.block(pd, "acceptance")).group(1)
     new = text.replace(AW_BLOCK, vp_block(rf), 1)
-    new = new.replace(AW_PROV, vp_prov(rf, case, decl, origin), 1)
+    new = new.replace(AW_PROV, vp_prov(rf, case, decl), 1)
     new = new.replace(AW_BANNER,
                       "  Critical constants are source data.  Psat is an Antoine FITTED by\n"
                       "  bin/choupo-curate vp to measured vapour pressures (DEV.md 4c C281;\n"
@@ -1916,6 +2092,10 @@ def main():
     v.add_argument("--no-commit", action="store_true")
     v.add_argument("--promote", action="store_true")
     v.add_argument("--resume", action="store_true")
+    v.add_argument("--redeclare", action="store_true",
+                   help="C281 step 3: rewrite an existing case's declaration with the "
+                        "declared objective (same partition and band, refused "
+                        "otherwise), commit it, then fit")
     f = sp.add_parser("fetch", help="regenerate a case's extracts")
     f.add_argument("case")
     r = sp.add_parser("revert", help="remove a record this tool promoted")

@@ -26,18 +26,19 @@ properties
     property       vapourPressure;
     operation      fit_antoine;   // type vaporPressureFit
     model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
-    verdict        notValidated;
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
 
     fittedParameters
     {
-        A  6.06847253542;
-        B  2994.60608534;
-        C  -63.1209263651;
+        A  5.80869633206;
+        B  2818.05883921;
+        C  -72.3002910192;
     }
 
     evidence
     {
-        partitionFingerprint  "eb19461e910357fb";   // frozen before the fit
+        partitionFingerprint  "f0ce4924518ea571";   // frozen before the fit
 
         datasets
         (
@@ -51,7 +52,7 @@ properties
             system    "glycerol";
         }
         {
-            role      validation;
+            role      fit;
             dataset   "constant/archiveExtracts/glycerol-vapourPressure-je200766t.dat";
             doi       "10.1021/je200766t";
             sha256    "3d1646bd31387e679d96d72530e61de2b93919168e8d5b6ab8374ea28e90756a";
@@ -59,23 +60,38 @@ properties
             archiveFile "je200766t.xml";
             system    "glycerol";
         }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/glycerol-vapourPressure-j.jct.2012.09.032.dat";
+            doi       "10.1016/j.jct.2012.09.032";
+            sha256    "59a183a753d0a24d0e7c7eb71a7035153ff0e9a77aa9ea356a84e752eedf5aa4";
+            provenance measured;
+            archiveFile "j.jct.2012.09.032.xml";
+            system    "glycerol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/glycerol-vapourPressure-je800070y.dat";
+            doi       "10.1021/je800070y";
+            sha256    "61ca526726acbf3b877653dcc701e15a4ad758cc2f1a8709f3f9e7f0d8c8b127";
+            provenance measured;
+            archiveFile "je800070y.xml";
+            system    "glycerol";
+        }
         );
 
         domain
         {
             coordinate  K;
-            fit         { min 303.59; max 436.13; n 113; }
-            validation  { min 351.8; max 462.86; n 11; }
+            fit         { min 303.59; max 543.15; n 134; }
         }
     }
 
     metrics
     {
-        r2InSample        0.99998555311;   // the model reproducing the points it was FITTED to
-        rmsHeldOut        0.0435820641946;   // log10(P), on evidence the fit never saw
-        aadHeldOutPct     8.30349477605;
-        acceptanceMaxAADPct 5;   // DECLARED BEFORE the fit; part of the fingerprint
-        acceptanceOrigin  "declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 11 points (0.707 to 7.38 %, mean 4.98 %), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean";
+        r2InSample        0.999561297891;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
     }
 }
 

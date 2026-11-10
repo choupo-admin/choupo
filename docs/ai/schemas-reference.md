@@ -1406,6 +1406,8 @@ Least-squares fit of measured vapour-pressure data to the Antoine form, producin
 | `dataset` |   | string | — | Path to a self-describing dataset dict (a `columns ( { name ...; unit ...; } ... )` block plus a flat `data ( ... )` grid), relative to t… |
 | `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
 | `evidence` |   | array[object] | — | The FIT / HELD-OUT partition (src/propertyOps/EvidencePartition.H). Each entry names a dataset and DECLARES its role; `role` has no defau… |
+| `objective` |   | object | — | DEV.md 4c C280, C281 step 3: the same block as fitParameters, read through FitObjective. `method`: leastSquares (the op's own search in l… |
+| `outliers` |   | object | — | DEV.md 4c C283: after the least-squares stage a fit point whose relative pressure error exceeds `maxRelativeError` (with its unit, `perce… |
 | `acceptance` |   | object | — | The acceptance band, DECLARED BEFORE the fit. `origin` is mandatory: a limit with no stated provenance cannot be told apart from one chos… |
 
 ## `vleConsistency`  (vleConsistency operation)

@@ -39,7 +39,7 @@ datasets
     }
     {
         file          "constant/archiveExtracts/nEicosane-vapourPressure-je800534x.dat";
-        role          validation;   // informational: the operation declares it
+        role          fit;   // informational: the operation declares it
         doi           "10.1021/je800534x";
         url           "https://trc.nist.gov/ThermoML/10.1021/je800534x.xml";
         page          "https://trc.nist.gov/ThermoML/10.1021/je800534x.json";

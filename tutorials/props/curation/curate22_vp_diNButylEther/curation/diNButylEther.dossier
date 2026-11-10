@@ -26,18 +26,19 @@ properties
     property       vapourPressure;
     operation      fit_antoine;   // type vaporPressureFit
     model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
-    verdict        notValidated;
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
 
     fittedParameters
     {
-        A  4.54681382768;
-        B  1697.16128423;
-        C  -39.9108462236;
+        A  4.22625991854;
+        B  1490.07349279;
+        C  -60.6246869427;
     }
 
     evidence
     {
-        partitionFingerprint  "aac862189865de0d";   // frozen before the fit
+        partitionFingerprint  "0d871ac4fd0d83e8";   // frozen before the fit
 
         datasets
         (
@@ -51,7 +52,7 @@ properties
             system    "diNButylEther";
         }
         {
-            role      validation;
+            role      fit;
             dataset   "constant/archiveExtracts/diNButylEther-vapourPressure-j.fluid.2015.05.002.dat";
             doi       "10.1016/j.fluid.2015.05.002";
             sha256    "4011ad3ec096730aca9e21dd96b2ae5e4dae45c1b9e2d4c75b480c6d85261145";
@@ -59,23 +60,38 @@ properties
             archiveFile "j.fluid.2015.05.002.xml";
             system    "diNButylEther";
         }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diNButylEther-vapourPressure-j.fluid.2007.09.002.dat";
+            doi       "10.1016/j.fluid.2007.09.002";
+            sha256    "cce7a8570600ee9f4df212272220749a2dffe27a9fab8d95983e498f104300ef";
+            provenance measured;
+            archiveFile "j.fluid.2007.09.002.xml";
+            system    "diNButylEther";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diNButylEther-vapourPressure-je7007523.dat";
+            doi       "10.1021/je7007523";
+            sha256    "c9b5b693d7e2459732b084f6fdb52e9529dbcdb0cdedc23dccfe2307e37dc22c";
+            provenance measured;
+            archiveFile "je7007523.xml";
+            system    "diNButylEther";
+        }
         );
 
         domain
         {
             coordinate  K;
-            fit         { min 346.03; max 413.67; n 26; }
-            validation  { min 430.15; max 508.15; n 14; }
+            fit         { min 263.15; max 508.15; n 57; }
         }
     }
 
     metrics
     {
-        r2InSample        0.999981541275;   // the model reproducing the points it was FITTED to
-        rmsHeldOut        0.02393907967;   // log10(P), on evidence the fit never saw
-        aadHeldOutPct     4.75264267862;
-        acceptanceMaxAADPct 0.36;   // DECLARED BEFORE the fit; part of the fingerprint
-        acceptanceOrigin  "declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 14 points (0.171 to 0.629 %, mean 0.3574 %), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean";
+        r2InSample        0.999931261634;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
     }
 }
 

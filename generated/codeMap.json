@@ -6879,6 +6879,7 @@
    "src/core/Units.H",
    "src/propertyOps/CurationDossier.H",
    "src/propertyOps/EvidencePartition.H",
+   "src/propertyOps/FitObjective.H",
    "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/VaporPressureFit.H",
    "src/thermo/Component.H",
@@ -15303,7 +15304,8 @@
   "src/propertyOps/FitObjective.H": [
    "src/propertyOps/FitObjective.cpp",
    "src/propertyOps/FitParameters.cpp",
-   "src/propertyOps/FitWeighting.cpp"
+   "src/propertyOps/FitWeighting.cpp",
+   "src/propertyOps/VaporPressureFit.cpp"
   ],
   "src/propertyOps/FitParameters.H": [
    "src/propertyOps/FitParameters.cpp",

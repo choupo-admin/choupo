@@ -8,15 +8,15 @@
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   curate27_vp_glycerol -- the vapour pressure of glycerol, REFITTED to
-  measurements (DEV.md 4c C281 step 2).  Written by `bin/choupo-curate vp
-  glycerol`; everything above the RESULT paragraph is the DECLARATION, committed
-  before any fit ran, so it can be read against the result.
+  measurements (DEV.md 4c C281 and C283).  Written by `bin/choupo-curate vp
+  glycerol`; everything above the RESULT paragraph is the DECLARATION,
+  committed before any fit ran, so it can be read against the result.
 
   WHY.  The catalogue record carried `vaporPressure { model AmbroseWalton; }`,
   a corresponding-states ESTIMATE from Tc, Pc and omega that never reads the
   record's own Tb (C279 measured a median 19.6 % AAD over the 25 such records
-  with archive data).  Here a three-parameter Antoine is fitted to ONE
-  laboratory and held out on ANOTHER that shares no author with it.
+  with archive data).  Here a three-parameter Antoine is fitted to EVERY
+  usable laboratory's measurements of it.
 
   STUDIES (one per article, extracted by `choupo-thermoml extract-vp`; ranked
   by points, ties by DOI):
@@ -28,28 +28,69 @@
       10.1016/j.jct.2013.09.046: 4 pressure point(s), fewer than 5
       10.1021/acs.jced.5b01080: 3 pressure point(s), fewer than 5
 
-  PARTITION (the C16 rule, declared): FIT = the study with the most points,
-  doi 10.1016/j.fluid.2015.03.038 (113 pts, 303.59-436.13 K); HELD OUT =
-  the next largest sharing no author with it, doi 10.1021/je200766t (11 pts,
-  351.8-462.86 K).
+  FIT AND ACCEPTANCE (DEV.md 4c C283, Vitor 2026-11-10, declared before the fit).
+  EVIDENCE: every study above is fitted; none is held out (C283 amended:
+  laboratories disagree with each other by more than they claim, so the
+  test is agreement across all of them, not one laboratory's claimed
+  precision).  OBJECTIVE: `objective { method twoStage; }` -- least
+  squares in log10 P for a first estimate, then the LARGEST relative error in
+  P, (P_model - P)/P, over the kept points minimised from it (Vitor's
+  practice, C280); both answers kept.  OUTLIERS: after the least-squares
+  stage a point with a relative P error above 15 % (three times
+  the acceptance) is DISCARDED BY NAME (its study DOI, T and P), listed in
+  the result and the record, and the fit repeated without it, once
+  (`outliers { maxRelativeError 15 percent; }`).  ACCEPTANCE,
+  the DEFAULT of C283: ACCEPTED and promoted (autoPromoted, humanReviewed
+  false) when the maximum relative P error over all kept points is at most
+  5 % and the normal-boiling-point condition below holds with an
+  absolute error below 1 K.  This case declares no
+  `system/curationDict`, so the default applies; a case that needs another
+  acceptance declares it there, with its reason.  The AmbroseWalton curve's
+  errors on the same points are reported beside the fit's, as information.
 
-  BAND: maxAAD 5.0 % (declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 11 points (0.707 to 7.38 %, mean 4.98 %), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean).
+  NORMAL BOILING POINT: the record's Tb 563.15 K is judged against the range of the KEPT points (all studies span 303.59-543.15 K before any outlier is discarded): if Tb lies OUTSIDE that range, the fitted Antoine's own normal boiling point (P = 101.325 kPa) must lie within the acceptance's temperature error of it, or the gap is announced and the fit is not promoted; inside it, the gap is reported and is not a condition.
 
-  NORMAL BOILING POINT: the record's Tb 563.15 K lies OUTSIDE the measured span 303.59-462.86 K: the fitted Antoine's own normal boiling point (P = 101.325 kPa) must lie within 2 K of it, or the fit is NOT promoted (an extrapolation that misses the record's own boiling point).
+  EARLIER FITS, SUPERSEDED BY THIS DECLARATION
+  @@EARLIER-BEGIN@@
+  C281 step 2, objective leastSquares (log10 P), the same partition and
+  band: WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Antoine log10(Psat/bar) = 6.068473 - 2994.6061/(T + -63.1209),
+  in-sample R2 0.999986 over 113 points, 303.59-436.13 K. HELD OUT: 11
+  points, AAD 8.3035 % against the band 5 % -> notValidated. Its own
+  normal boiling point (101.325 kPa): 557.06 K. NOT PROMOTED: held-out
+  verdict notValidated (AAD 8.303 % against the band 5 % declared before
+  the fit); the record keeps AmbroseWalton THEN C281 step 3, objective
+  twoStage, one study fitted and one held out, judged by the band
+  (superseded by C283): WHAT THE RUN FOUND (pinned in `expected`;
+  measured, not argued). Objective twoStage. Antoine log10(Psat/bar) =
+  5.889944 - 2876.5912/(T + -69.3990), in-sample R2 0.999928 over 113
+  points, 303.59-436.13 K. HELD OUT: 11 points, AAD 6.9909 % (max 13.2871
+  %) against the band 5 % -> notValidated; the stage-1 least-squares
+  answer on the same points: AAD 8.3035 %, max 15.0182 %. Its own normal
+  boiling point (101.325 kPa): 558.26 K. NOT PROMOTED: held-out verdict
+  notValidated (AAD 6.991 % against the band 5 % declared before the
+  fit); the record keeps AmbroseWalton
+  @@EARLIER-END@@
 
-  NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares both
+  NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares every
   series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates
   them into constant/archiveExtracts/ (gitignored).
 
   RESULT
   @@RESULT-BEGIN@@
   WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
-  Antoine log10(Psat/bar) = 6.068473 - 2994.6061/(T + -63.1209),
-  in-sample R2 0.999986 over 113 points, 303.59-436.13 K. HELD OUT: 11
-  points, AAD 8.3035 % against the band 5 % -> notValidated. Its own
-  normal boiling point (101.325 kPa): 557.06 K. NOT PROMOTED: held-out
-  verdict notValidated (AAD 8.303 % against the band 5 % declared before
-  the fit); the record keeps AmbroseWalton
+  Objective twoStage. Antoine log10(Psat/bar) = 5.808696 - 2818.0588/(T +
+  -72.3003), in-sample R2 0.999561 over 134 kept points, 303.59-543.15 K
+  (10.1016/j.fluid.2015.03.038 113/113 kept; 10.1021/je200766t 11/11
+  kept; 10.1016/j.jct.2012.09.032 5/5 kept; 10.1021/je800070y 5/5 kept).
+  Relative error in P over the kept points: mean 6.2927 %, max 8.6903 %;
+  AmbroseWalton on the same points: mean 99.8560 %, max 100.0000 %.
+  Outliers discarded: none. Its own normal boiling point (101.325 kPa):
+  557.92 K. NOT PROMOTED by the DEFAULT acceptance of DEV.md 4c C283 (no
+  system/curationDict): 4 studies, 134 points kept, 0 discarded as
+  outliers; max relative error 8.69 % (mean 6.293 %) against 5 %;
+  AmbroseWalton on the same points mean 99.86 % / max 100 %; the record
+  keeps AmbroseWalton
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 
@@ -70,15 +111,22 @@ operations
             {
                 dataset   "constant/archiveExtracts/glycerol-vapourPressure-je200766t.dat";
                 identity  { doi "10.1021/je200766t"; }
-                role      validation;
+                role      fit;
+            }
+            {
+                dataset   "constant/archiveExtracts/glycerol-vapourPressure-j.jct.2012.09.032.dat";
+                identity  { doi "10.1016/j.jct.2012.09.032"; }
+                role      fit;
+            }
+            {
+                dataset   "constant/archiveExtracts/glycerol-vapourPressure-je800070y.dat";
+                identity  { doi "10.1021/je800070y"; }
+                role      fit;
             }
         );
 
-        acceptance
-        {
-            maxAAD  5.0 percent;
-            origin  "declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 11 points (0.707 to 7.38 %, mean 4.98 %), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean";
-        }
+        objective  { method twoStage; }
+        outliers   { maxRelativeError 15 percent; }
 
         output     { file fit_antoine.csv; }
     }

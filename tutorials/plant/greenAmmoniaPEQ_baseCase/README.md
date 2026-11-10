@@ -429,12 +429,34 @@ outside every zone, with its own rows in the separation table. Move
 `tank2` back to x 181 m, or the substation back to (16, −31) m, and the run
 announces each again: say why your own arrangement is safe.
 
-**What still hangs, and why.** The ten buffer vessels and the two ammonia
-tanks are stores attached to a boundary stream in `system/postDict`, not
-flowsheet units, so no pipe is routed to them: `H2Feed` runs from the fence
-to the make-up mixer and `ProductNH3` from the storage flash to the fence,
-past the stores they feed. The fence labels say so. Routing a manifold to
-every vessel of a store is not something the engine does yet.
+**The stores are piped.** The ten buffer vessels and the two ammonia tanks
+are stores attached to a boundary stream in `system/postDict`, not
+flowsheet units. The engine routes that stream through the store: `H2Feed`
+from the west fence to a header between the two rows of vessels (one branch
+to each vessel's low nozzle) and on to the make-up mixer, `ProductNH3` from
+the storage flash to a header beside the two tanks (one branch to each) and
+on to the east fence. Each branch is a pipe of its own in the register
+(`pipe:H2Feed@H2Buffer/vessel1`, ...), with the stream's state and no flow.
+
+**The utilities block (2026-11-10).** The north-east corner of the plot
+holds three facilities that the run's own utility ledger consumes: the
+**cooling tower** (19.7 MW rejected by the four water coolers, 471 kg/s
+circulated), the **ammonia refrigeration package** (the 20.6 MW the Chiller
+takes at -33.3 C, 15.1 kg/s of boiling ammonia) and the **flare** (the three
+gas outlets, 747 kg/h in all, with its own spur of the tank-farm road and
+60 m rows in the separation table). Each is a non-process box declared in
+`layoutDict`; the number it is sized on is the run's, the box drawn on it
+is an author-set assumption. They are outside the battery limit, so none is
+costed (their running cost is already in C_UT) and no capital is invented
+for them. They leave the plot, the land and every balance unchanged.
+
+**What still hangs, and why.** The utilities are not piped: the engine
+routes a pipe for a stream of the flowsheet, and the cooling water, the
+refrigerant and the flare header are not streams of this case. Two things
+a real plant has and this case does not compute: the refrigeration
+compressor's shaft power and the flare's emergency relief load (the flare
+is placed on the normal vent load only). The steam the converter raises is
+a credit, not equipment, so no steam system is drawn.
 
 ## Engine notes
 

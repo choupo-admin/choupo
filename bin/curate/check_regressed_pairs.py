@@ -105,10 +105,19 @@ case-local one that did not earn promotion):
       `fittedInCase` (or claims `autoPromoted` / `humanReviewed`) was refitted
       by `bin/choupo-curate vp` from an AmbroseWalton estimate to an Antoine:
       its case is fetched and run, and the record's coefficients (to 1e-8
-      relative), its Trange (the FIT dataset's own span), its evidence (role,
-      DOI, extract sha256 against the case's archiveDatasets), its verdict,
-      held-out points, AAD and band must equal the run's; only `validated`
-      is in the catalogue; the entry is `reviewStatus autoPromoted;
+      relative) must equal the run's; under DEV.md 4c C283 (every usable
+      study fitted, none held out) the gate RECOMPUTES from the record's own
+      coefficients, the case's datasets and the run's list of discarded
+      points: the points kept and dropped, the mean and max relative P error
+      of the fit and of the AmbroseWalton curve on the kept points, and
+      requires acceptance.verdict `accepted`, max <= the acceptance (5 %
+      unless the case's system/curationDict declares another with a reason),
+      the normal boiling point within the acceptance's temperature error
+      where Tb lies outside the kept range, Trange = the kept span, the
+      evidence (role, DOI, extract sha256) equal to the case's
+      archiveDatasets, `outliers { maxRelativeError 15 percent; }` declared,
+      and the objective twoStage in the case, the run and the record's
+      `method` (C281 step 3); the entry is `reviewStatus autoPromoted;
       humanReviewed false;` with `promotedBy`; and the case's run prints the
       component loader's `[unreviewed] component '<c>': `vaporPressure`
       reviewStatus autoPromoted` line AND carries it in the result JSON
@@ -642,8 +651,31 @@ def check_ll_arm(tmp, fails):
 #  catalogue, `autoPromoted` carries `humanReviewed false` and `promotedBy`,
 #  and the case's own run VOICES the status through the component loader.
 STD_COMP = ROOT / "data" / "standards" / "components"
-VP_FLOOR = 1      # the number promoted at landing (C281 step 2): a
+
+
+def _load_aw():
+    import importlib.machinery
+    import importlib.util
+    path = ROOT / "bin" / "curate" / "check_ambrose_walton_announced.py"
+    ld = importlib.machinery.SourceFileLoader("check_aw_for_regressed", str(path))
+    sp_ = importlib.util.spec_from_loader(ld.name, ld)
+    mod = importlib.util.module_from_spec(sp_)
+    ld.exec_module(mod)
+    return mod
+
+
+AW = _load_aw()     # the AmbroseWalton curve, the gate that holds it to the engine
+
+
+def AW_ARGS(rec_text):
+    t = strip_comments(rec_text)
+    return (num(t, "Tc"), num(t, "Pc") * 1e5, num(t, "omega"))
+
+
+VP_FLOOR = 7      # promoted at C281 step 3 under DEV.md 4c C283 (step 2's
+                  # nHexylAcetate reverted): a
                   # collapsed scan surface must not read as a clean catalogue
+VP_OBJECTIVE = "twoStage"   # C281 step 3: the declared objective of every regression
 
 
 def vp_entry(text):
@@ -659,7 +691,7 @@ def vp_facts(text):
     if m:
         vb = block(t[m.start():], "vaporPressure")
     ent = vp_entry(text) or ""
-    val = block(ent, "validation") or ""
+    val = block(ent, "acceptance") or ""
     co = re.search(r"coefficients\s*\(([^)]*)\)", vb or "")
     tr = re.search(r"Trange\s*\(([^)]*)\)", vb or "")
     ev = set()
@@ -672,8 +704,12 @@ def vp_facts(text):
         "coef": [float(x) for x in co.group(1).split()] if co else None,
         "Trange": [float(x) for x in tr.group(1).split()] if tr else None,
         "evidence": ev,
-        "verdict": word(val, "verdict"), "points": num(val, "points"),
-        "aad_pct": num(val, "aad_pct"), "maxAAD": num(val, "maxAAD"),
+        "verdict": word(val, "verdict"), "pointsKept": num(val, "pointsKept"),
+        "pointsDropped": num(val, "pointsDropped"), "studies": num(val, "studies"),
+        "dropped": (re.search(r'dropped\s+"([^"]*)"', val) or [None, None])[1],
+        "aad_pct": num(val, "aad_pct"), "max_pct": num(val, "max_pct"),
+        "awAad_pct": num(val, "awAad_pct"), "awMax_pct": num(val, "awMax_pct"),
+        "Tnb_fit": num(val, "Tnb_fit"),
     }
 
 
@@ -696,7 +732,7 @@ def check_vp_dataset(path, comp, fails, tag):
     if not m or len(m.group(1).split()) != len(rows):
         fails.append(f"{tag}: {path.name} -- per-point Psat uncertainties missing "
                      f"or not one per data row ({len(rows)} rows)")
-    return [float(l.split()[0]) for l in rows]
+    return [(float(l.split()[0]), float(l.split()[1])) for l in rows]   # (K, kPa)
 
 
 def check_vapour_pressures(tmp, fails, not_run, fetched):
@@ -713,7 +749,7 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
     if len(recs) < VP_FLOOR:
         fails.append(f"arm (i): only {len(recs)} regressed vapour-pressure record(s) "
                      f"under {STD_COMP.relative_to(ROOT)} -- {VP_FLOOR} were promoted "
-                     "at landing (C281 step 2); the scan surface has collapsed or the "
+                     "by C281 step 3; the scan surface has collapsed or the "
                      "records lost their `fittedInCase`")
     for p in recs:
         comp, text = p.stem, p.read_text()
@@ -736,9 +772,9 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
             fails.append(f"{tag}: the vaporPressure block is not a fitted Antoine "
                          "with coefficients and a Trange")
             continue
-        if rf["verdict"] != "validated":
-            fails.append(f"{tag}: verdict `{rf['verdict']}` in the CATALOGUE -- only "
-                         "a validated fit is promoted")
+        if rf["verdict"] != "accepted":
+            fails.append(f"{tag}: acceptance.verdict `{rf['verdict']}` in the CATALOGUE "
+                         "-- only an accepted fit is promoted (DEV.md 4c C283)")
         case_rel = word(ent, "fittedInCase")
         case = ROOT / case_rel if case_rel else None
         if case is None or not (case / "system" / "propsDict").exists() \
@@ -757,12 +793,14 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
                          f"regenerated: {msg[-400:]}")
             continue
         decl = (case / ARCHIVE_DECL).read_text()
-        fit_T = []
+        pts = []            # (doi, T K, P kPa) of every declared fit dataset
         for ds in sorted((case / "constant" / "archiveExtracts").glob("*.dat")):
-            T = check_vp_dataset(ds, comp, fails, tag)
-            if re.search(r'file\s+"constant/archiveExtracts/%s";\s*role\s+fit;'
-                         % re.escape(ds.name), strip_comments(decl)):
-                fit_T = T
+            rows = check_vp_dataset(ds, comp, fails, tag)
+            mdoi = re.search(r'file\s+"constant/archiveExtracts/%s";\s*role\s+fit;'
+                             r'[^}]*?doi\s+"([^"]+)"' % re.escape(ds.name),
+                             strip_comments(decl), re.S)
+            if mdoi:
+                pts += [(mdoi.group(1), t, pk) for t, pk in rows]
         work = tmp / ("vp-" + case.name)
         shutil.copytree(case, work)
         pr = subprocess.run([str(PROPS), "."], cwd=str(work), capture_output=True,
@@ -778,25 +816,68 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
                          "published no `fit_antoine` result")
             continue
         d, cu = op.get("diagnostics", {}), op.get("curation", {})
-        run = {"coef": [d.get("A"), d.get("B"), d.get("C")],
-               "verdict": cu.get("verdict"), "points": d.get("n_heldout"),
-               "aad_pct": d.get("aad_heldout_pct"),
-               "maxAAD": float(cu.get("acceptanceMaxAADPct", "nan"))}
+        run = {"coef": [d.get("A"), d.get("B"), d.get("C")]}
         for k, (x, y) in zip("ABC", zip(rf["coef"], run["coef"])):
             if not close(x, y, rel=1e-8):
                 fails.append(f"{tag}: Antoine {k} = {x} in the record, {y} from its "
                              "case -- the record has drifted from its evidence")
-        for k in ("points", "aad_pct", "maxAAD"):
-            if not close(rf[k], run[k]):
-                fails.append(f"{tag}: `{k}` = {rf[k]} in the record, {run[k]} from "
-                             "its case")
-        if rf["verdict"] != run["verdict"]:
-            fails.append(f"{tag}: verdict {rf['verdict']!r} in the record, "
-                         f"{run['verdict']!r} from its case")
-        if not fit_T or not close(rf["Trange"][0], min(fit_T)) \
-                or not close(rf["Trange"][1], max(fit_T)):
-            fails.append(f"{tag}: Trange {rf['Trange']} is not the fit's own span "
-                         f"({(min(fit_T), max(fit_T)) if fit_T else 'no fit dataset'})")
+        #  C283 (amended): every study fitted, outliers discarded BY NAME, the
+        #  acceptance on the KEPT points.  Recomputed here from the record's
+        #  own coefficients, the case's datasets and the run's list of
+        #  discarded points -- never read back from the tool.
+        pd_text = strip_comments((case / "system" / "propsDict").read_text())
+        if not re.search(r"^\s*outliers\s*\{\s*maxRelativeError\s+15\s+percent\s*;",
+                         pd_text, re.M):
+            fails.append(f"{tag}: its case does not declare `outliers {{ maxRelativeError "
+                         "15 percent; }` (the C283 default)")
+        drop = set()
+        for item in (cu.get("outliersDropped") or "").split(";"):
+            mm = re.match(r"\s*(\S+) T=([0-9.eE+-]+) K P=([0-9.eE+-]+) Pa", item)
+            if mm:
+                drop.add((mm.group(1), round(float(mm.group(2)), 3),
+                          round(math.log10(float(mm.group(3))), 5)))
+        kept = [(t, pk) for doi, t, pk in pts
+                if (doi, round(t, 3), round(math.log10(pk * 1e3), 5)) not in drop]
+        if len(kept) != int(d.get("n_points", -1)) or not kept:
+            fails.append(f"{tag}: {len(kept)} kept points by the run's outlier list, the "
+                         f"run fitted {d.get('n_points')}")
+            continue
+        A_, B_, C_ = rf["coef"]
+        rel = [abs(100.0 * 10 ** (A_ - B_ / (t + C_)) / pk - 1.0) for t, pk in kept]
+        aw = [abs(AW.psat(t, *AW_ARGS(text)) / 1e3 / pk - 1.0) for t, pk in kept]
+        want_n = {"pointsKept": len(kept), "pointsDropped": len(drop),
+                  "aad_pct": 100.0 * sum(rel) / len(rel), "max_pct": 100.0 * max(rel),
+                  "awAad_pct": 100.0 * sum(aw) / len(aw), "awMax_pct": 100.0 * max(aw)}
+        for k, v in want_n.items():
+            if rf[k] is None or not close(rf[k], v, rel=1e-5):
+                fails.append(f"{tag}: `acceptance.{k}` = {rf[k]} in the record, {v:.6g} "
+                             "recomputed from its case")
+        if (rf["dropped"] or "none") != (cu.get("outliersDropped") or "none"):
+            fails.append(f"{tag}: the record's discarded points differ from its case's run")
+        acc_max, acc_T = 5.0, 1.0
+        cdict = case / "system" / "curationDict"
+        if cdict.exists():
+            ct = strip_comments(cdict.read_text())
+            mr = re.search(r"maxRelativeError\s+([0-9.eE+-]+)\s+percent", ct)
+            mt = re.search(r"maxTemperatureError\s+([0-9.eE+-]+)\s+K", ct)
+            if not (mr and mt and re.search(r'reason\s+"[^"]+"', ct)):
+                fails.append(f"{tag}: system/curationDict declares no complete acceptance "
+                             "with a reason")
+            else:
+                acc_max, acc_T = float(mr.group(1)), float(mt.group(1))
+        if not 100.0 * max(rel) <= acc_max:
+            fails.append(f"{tag}: max relative error {100.0 * max(rel):.4g} % over the kept "
+                         f"points exceeds the acceptance {acc_max:g} % -- promoted anyway")
+        Tb = num(strip_comments(text), "Tb")
+        Tnb = B_ / (A_ - math.log10(1.01325)) - C_
+        lo, hi = min(t for t, _ in kept), max(t for t, _ in kept)
+        if Tb is not None and not (lo <= Tb <= hi) and not abs(Tnb - Tb) < acc_T:
+            fails.append(f"{tag}: Tb {Tb} K lies outside the kept points' range and the fit's "
+                         f"normal boiling point {Tnb:.3f} K misses it by {Tnb - Tb:+.3f} K "
+                         f"(acceptance {acc_T:g} K) -- promoted anyway")
+        if not close(rf["Trange"][0], lo) or not close(rf["Trange"][1], hi):
+            fails.append(f"{tag}: Trange {rf['Trange']} is not the kept points' span "
+                         f"({lo}, {hi})")
         want = set()
         body = strip_comments(decl)
         body = body[body.find("datasets"):]
@@ -814,6 +895,26 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
         if rf["evidence"] != want:
             fails.append(f"{tag}: evidence {sorted(rf['evidence'])} differs from its "
                          f"case's declaration {sorted(want)}")
+        #  THE OBJECTIVE (C281 step 3).  The record is reproduced by the
+        #  objective its case DECLARES, and that objective is the one the
+        #  record names: the case's `objective { method <m>; }`, the run's
+        #  published method, and the record's provenance `method` must agree,
+        #  and the catalogue's regressions are twoStage (Vitor's practice,
+        #  C280) -- a record fitted by another objective is a different curve.
+        decl_m = re.search(r"^\s*objective\s*\{[^}]*\bmethod\s+(\w+)\s*;",
+                           strip_comments((case / "system" / "propsDict").read_text()),
+                           re.M)
+        decl_m = decl_m.group(1) if decl_m else None
+        run_m = {0: "leastSquares", 1: "minimax", 2: "twoStage"}.get(
+            int(d.get("objective_method", -1)) if d.get("objective_method") is not None
+            else -1)
+        rec_m = re.search(r'\bmethod\s+"[^"]*\bobjective (\w+):', ent or "")
+        rec_m = rec_m.group(1) if rec_m else None
+        if decl_m != VP_OBJECTIVE or run_m != VP_OBJECTIVE or rec_m != VP_OBJECTIVE:
+            fails.append(f"{tag}: objective -- the case declares {decl_m!r}, its run "
+                         f"published {run_m!r}, the record names {rec_m!r}; a "
+                         f"catalogue vapour pressure is the `{VP_OBJECTIVE}` fit its "
+                         "case declares (C281 step 3)")
         said = f"[unreviewed] component '{comp}': `vaporPressure` reviewStatus autoPromoted"
         if said not in out:
             fails.append(f"{tag}: marked autoPromoted and its case printed no "
@@ -1074,7 +1175,8 @@ def main():
           "those a least-squares stage with no discard puts beyond 3 K (arm j); "
           f"{len(vp_done)} catalogue vapour pressure(s) regressed by `choupo-curate vp` "
           f"({', '.join(vp_done) or 'none'}) reproduced by their cases -- Antoine "
-          "coefficients, Trange = the fit's span, evidence, held-out verdict -- "
+          "coefficients under the declared twoStage objective, the C283 acceptance recomputed on the kept points "
+          "(max <= 5 %, both curves' errors, discarded points, Tb), Trange = the kept span, evidence -- "
           "autoPromoted with humanReviewed false and voiced by the component "
           "loader into the caveat block (arm i); "
           f"{span_held} water pair(s) used BELOW their span announce it once "

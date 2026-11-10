@@ -39,7 +39,7 @@ datasets
     }
     {
         file          "constant/archiveExtracts/diEthylCarbonate-vapourPressure-acs.jced.7b00295.dat";
-        role          validation;   // informational: the operation declares it
+        role          fit;   // informational: the operation declares it
         doi           "10.1021/acs.jced.7b00295";
         url           "https://trc.nist.gov/ThermoML/10.1021/acs.jced.7b00295.xml";
         page          "https://trc.nist.gov/ThermoML/10.1021/acs.jced.7b00295.json";
@@ -49,6 +49,74 @@ datasets
         inchiKey      "OIFBSDVPJOWBCH-UHFFFAOYSA-N";
         extract       "bin/choupo-thermoml extract-vp <article file> --inchikey OIFBSDVPJOWBCH-UHFFFAOYSA-N --into <dir>";
         sha256        "13e0864fd0a30ce745ef1851e75771d81cb32a3001fb0686ccd199c28c60b85b";
+        identity
+        {
+            diEthylCarbonate { cas "105-58-8"; inchiKey "OIFBSDVPJOWBCH-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/diEthylCarbonate-vapourPressure-je200784y.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je200784y";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je200784y.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je200784y.json";
+        articleFile   "je200784y.xml";
+        articleSha256 "a7695594db44f92cb072af34f2520d0f20b183d2bac95d6a6b68553b91ac8e9a";
+        extractor     vapourPressure;
+        inchiKey      "OIFBSDVPJOWBCH-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey OIFBSDVPJOWBCH-UHFFFAOYSA-N --into <dir>";
+        sha256        "7ad708c09f84b17b89b7840593e93413cf54742e2b654b21eac097bcdfea69f1";
+        identity
+        {
+            diEthylCarbonate { cas "105-58-8"; inchiKey "OIFBSDVPJOWBCH-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/diEthylCarbonate-vapourPressure-je800984q.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je800984q";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je800984q.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je800984q.json";
+        articleFile   "je800984q.xml";
+        articleSha256 "426f1ceda7058f05de3862b8cf2371db17f028e62a2b7e95587cd9fa5e0fab8b";
+        extractor     vapourPressure;
+        inchiKey      "OIFBSDVPJOWBCH-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey OIFBSDVPJOWBCH-UHFFFAOYSA-N --into <dir>";
+        sha256        "6902194c46b94a24129f9571ab0d9c127e40baa554c781b9a1bcc9e65b122932";
+        identity
+        {
+            diEthylCarbonate { cas "105-58-8"; inchiKey "OIFBSDVPJOWBCH-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/diEthylCarbonate-vapourPressure-j.jct.2014.07.004.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1016/j.jct.2014.07.004";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.jct.2014.07.004.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.jct.2014.07.004.json";
+        articleFile   "j.jct.2014.07.004.xml";
+        articleSha256 "cebd4567148a144cfaf01d7dbd9092730e77942aa417eb1f7e1bce0ff00d5075";
+        extractor     vapourPressure;
+        inchiKey      "OIFBSDVPJOWBCH-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey OIFBSDVPJOWBCH-UHFFFAOYSA-N --into <dir>";
+        sha256        "56d4a659e4fc3c25d7e21711e9d5c90abe4218c4f32bec1966a3b5df2ea479cf";
+        identity
+        {
+            diEthylCarbonate { cas "105-58-8"; inchiKey "OIFBSDVPJOWBCH-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/diEthylCarbonate-vapourPressure-acs.jced.7b00236.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/acs.jced.7b00236";
+        url           "https://trc.nist.gov/ThermoML/10.1021/acs.jced.7b00236.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/acs.jced.7b00236.json";
+        articleFile   "acs.jced.7b00236.xml";
+        articleSha256 "1e5e4c9d7d976906b09ca7e8bd4283f28e6358d83b65169c35fb422bc6201cdc";
+        extractor     vapourPressure;
+        inchiKey      "OIFBSDVPJOWBCH-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey OIFBSDVPJOWBCH-UHFFFAOYSA-N --into <dir>";
+        sha256        "a30ea8f25c594db05f32cbed254cb0df060764661dbe561afbe6d4970463c367";
         identity
         {
             diEthylCarbonate { cas "105-58-8"; inchiKey "OIFBSDVPJOWBCH-UHFFFAOYSA-N"; }

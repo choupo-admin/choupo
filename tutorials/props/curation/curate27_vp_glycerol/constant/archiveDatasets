@@ -39,7 +39,7 @@ datasets
     }
     {
         file          "constant/archiveExtracts/glycerol-vapourPressure-je200766t.dat";
-        role          validation;   // informational: the operation declares it
+        role          fit;   // informational: the operation declares it
         doi           "10.1021/je200766t";
         url           "https://trc.nist.gov/ThermoML/10.1021/je200766t.xml";
         page          "https://trc.nist.gov/ThermoML/10.1021/je200766t.json";
@@ -49,6 +49,40 @@ datasets
         inchiKey      "PEDCQBHIVMGVHV-UHFFFAOYSA-N";
         extract       "bin/choupo-thermoml extract-vp <article file> --inchikey PEDCQBHIVMGVHV-UHFFFAOYSA-N --into <dir>";
         sha256        "13ca366b2b4222eea2ee208f2f9c97ae16480288b2847ce2d23cf320cce7fe9c";
+        identity
+        {
+            glycerol       { cas "56-81-5"; inchiKey "PEDCQBHIVMGVHV-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/glycerol-vapourPressure-j.jct.2012.09.032.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1016/j.jct.2012.09.032";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.jct.2012.09.032.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.jct.2012.09.032.json";
+        articleFile   "j.jct.2012.09.032.xml";
+        articleSha256 "59a183a753d0a24d0e7c7eb71a7035153ff0e9a77aa9ea356a84e752eedf5aa4";
+        extractor     vapourPressure;
+        inchiKey      "PEDCQBHIVMGVHV-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey PEDCQBHIVMGVHV-UHFFFAOYSA-N --into <dir>";
+        sha256        "315daa3896ae52174d67c1c397a43b6d692d09749f3e130cf026e15f3de38ac8";
+        identity
+        {
+            glycerol       { cas "56-81-5"; inchiKey "PEDCQBHIVMGVHV-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/glycerol-vapourPressure-je800070y.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je800070y";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je800070y.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je800070y.json";
+        articleFile   "je800070y.xml";
+        articleSha256 "61ca526726acbf3b877653dcc701e15a4ad758cc2f1a8709f3f9e7f0d8c8b127";
+        extractor     vapourPressure;
+        inchiKey      "PEDCQBHIVMGVHV-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey PEDCQBHIVMGVHV-UHFFFAOYSA-N --into <dir>";
+        sha256        "bfec46b9fff2a8ee161d115d22e4d561ec1d65b6de0087e592dfab1c4f0f11fb";
         identity
         {
             glycerol       { cas "56-81-5"; inchiKey "PEDCQBHIVMGVHV-UHFFFAOYSA-N"; }

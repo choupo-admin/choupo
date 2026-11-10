@@ -2,8 +2,9 @@
   Component: dimethylSulfoxide  (CAS 67-68-5)
   PROPOSAL TIER -- UNVERIFIED. Imported from ChemSep v8.3
   pure-component data under Artistic License 2.0.
-  Critical constants are source data; Psat is an explicitly
-  estimated Ambrose-Walton corresponding-states closure.
+  Critical constants are source data.  Psat is an Antoine FITTED by
+  bin/choupo-curate vp to measured vapour pressures (DEV.md 4c C281;
+  provenance.vaporPressure): reviewStatus autoPromoted, NOT human-reviewed.
 \*---------------------------------------------------------------------------*/
 
 name        dimethylSulfoxide;
@@ -24,7 +25,11 @@ standardThermochemistry
 
 vaporPressure
 {
-    model AmbroseWalton;  // [origin=estimated method=Ambrose-Walton]
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C), FITTED by bin/choupo-curate vp to
+    // measured vapour pressures -- see provenance.vaporPressure
+    coefficients  (4.693649558  1946.01699  -48.5200814);
+    Trange        (293.15  463.45);   // the fit's own span; outside it the engine announces the extrapolation
 }
 
 Vliq        7.12818e-05;      // m3/mol at 25 C  [ChemSep eqno 105]
@@ -132,10 +137,64 @@ provenance
     }
     vaporPressure
     {
-        origin        predictive;
-        method        "Ambrose-Walton corresponding states";
-        methodVersion "choupo-aw-1989";
-        uncertainty   "not quantified; validate against saturation data";
-        notes         "computed from ChemSep Tc/Pc/omega";
+        origin        fitted;
+        method        "vaporPressureFit (three-parameter Antoine; objective twoStage: least squares in log10 P, then the largest relative error in P minimised from it; every usable study fitted, outliers above 15 % discarded by name)";
+        methodVersion "choupoProps Choupo-dev";
+        fittedInCase  "tutorials/props/curation/curate24_vp_dimethylSulfoxide";
+        reviewStatus  autoPromoted;
+        humanReviewed false;
+        promotedBy    "bin/choupo-curate vp --promote";
+        promotedDate  "2026-11-10";
+        reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+        uncertainty   "the fit's maximum relative error over every kept measurement, below";
+        replaces      "model AmbroseWalton (a corresponding-states estimate from Tc, Pc, omega); `bin/choupo-curate revert <component>` restores it";
+        evidence
+        (
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/dimethylSulfoxide-vapourPressure-j.fluid.2011.02.002.dat";
+                doi       "10.1016/j.fluid.2011.02.002";
+                sha256    "1126f272e459e8c42b3ca6a54ace995cab24cb8b48a133db3255eeecf09f4bb7";
+                articleSha256 "9bf78a3180df28aa81da573dba0a9b22d46c4f5191a2ceb451e13b17047b7a29";
+                pointsKept    21;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/dimethylSulfoxide-vapourPressure-je400531a.dat";
+                doi       "10.1021/je400531a";
+                sha256    "4be8e0e21ad1200873dd09d0323e76631015a77d22059632afb192ab4ca79854";
+                articleSha256 "edd47a0f561183a4e83930823356df31104086f2203e1fce79bd027d5848225e";
+                pointsKept    19;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/dimethylSulfoxide-vapourPressure-j.jct.2018.04.014.dat";
+                doi       "10.1016/j.jct.2018.04.014";
+                sha256    "6508d283b7b0e35d445d6548bbdb5646ae3f4b5c9cd2b498e4a8909fe245b9ec";
+                articleSha256 "cbaa662fdf6729848746508f29cbaacda6ea575bb013c398006fec618746a9f8";
+                pointsKept    9;
+                pointsDropped 0;
+                provenance measured;
+            }
+        );
+        acceptance
+        {
+            rule        "the default of DEV.md 4c C283: max relative error in P over the kept points <= 5 %; Tnb within 1 K of Tb where Tb lies outside their range";
+            verdict     accepted;
+            studies     3;
+            pointsKept  49;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.597547;   // the fitted Antoine, every kept point
+            max_pct     0.794321;
+            awAad_pct   21.304495;   // the AmbroseWalton curve it replaces, the same points
+            awMax_pct   35.906009;
+            Tnb_fit     463.6320;   // K, the fitted curve at 101.325 kPa
+        }
     }
 }

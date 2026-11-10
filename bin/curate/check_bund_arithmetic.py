@@ -212,8 +212,13 @@ def arm_b(pins, got):
         if k not in P or P[k][0] != e:
             fails.append("(b) pin %s reads %r; the case declares %r"
                          % (k, P.get(k, ("absent",))[0], e))
+    #  V_R is a converged recycle result: a re-record moves it in its last
+    #  printed digits (1e-11 relative, 2026-11-10), so the pin's V_R is read
+    #  as a NUMBER and held to the golden's at 1e-9, the tolerance (b) states;
+    #  the fraction is a declared input and stays textual.
     for k in ("green_term", "green_required"):
-        if k not in P or ("termVolume(%s, true, %s," % (frac.group(1), vr.group(1))) not in P[k][0]:
+        m = re.search(r"termVolume\(%s, true, (\S+?)," % re.escape(frac.group(1)), P[k][0]) if k in P else None
+        if not m or abs(num(m.group(1)) - num(vr.group(1))) > 1e-9 * abs(num(vr.group(1))):
             fails.append("(b) pin %s does not take the rule's fraction %s of tank1's V_R %s"
                          % (k, frac.group(1), vr.group(1)))
     checks = [

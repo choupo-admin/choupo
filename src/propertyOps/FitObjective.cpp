@@ -55,11 +55,13 @@ namespace fitobj {
 
 namespace {
 
-const char* const WHO = "fitParameters(objective)";
+//  The op whose objective is being read names the refusal: `vaporPressureFit`
+//  for `kind Psat` (DEV.md 4c C281 step 3), `fitParameters` for every other.
+std::string WHO = "fitParameters(objective)";
 
 [[noreturn]] void refuse(const std::string& m)
 {
-    throw std::runtime_error(std::string(WHO) + ": " + m);
+    throw std::runtime_error(WHO + ": " + m);
 }
 
 void requireKeys(const DictPtr& d, const std::vector<std::string>& allowed,
@@ -89,6 +91,7 @@ std::string methodName(Method m)
 
 Spec read(const DictPtr& dict, const std::string& kind, bool evalMode)
 {
+    WHO = (kind == "Psat") ? "vaporPressureFit(objective)" : "fitParameters(objective)";
     Spec s;
     if (evalMode)
     {
@@ -115,6 +118,23 @@ Spec read(const DictPtr& dict, const std::string& kind, bool evalMode)
             refuse("`objective.maxEvaluations` = " + std::to_string(n)
                    + " -- an integer from 10 to 1000000.");
         s.maxEvaluations = static_cast<int>(n);
+    }
+    if (kind == "Psat")
+    {
+        //  vaporPressureFit: ONE residual, the pressure, judged RELATIVE to the
+        //  measured value.  The temperature is the op's independent variable and
+        //  carries no residual, so there is no T scale to declare.
+        if (o->found("scale"))
+        {
+            auto sc = o->subDict("scale");
+            requireKeys(sc, {"Psat"}, "objective.scale");
+            s.pSat = sc->lookupWordOrDefault("Psat", s.pSat);
+            if (s.pSat != "relative")
+                refuse("`scale { Psat " + s.pSat + "; }` is not built: the vapour-"
+                       "pressure residual is relative, (P_model - P)/P, by design"
+                       " (one series spans orders of magnitude in P).");
+        }
+        return s;
     }
     if (o->found("scale"))
     {
@@ -170,6 +190,30 @@ std::string describe(const Spec& s, const std::string& kind)
         default:
             os << "                1) sum of squares (Levenberg-Marquardt), 2) largest scaled residual,"
                   " max|r| (Nelder-Mead from the stage-1 answer); both answers kept\n";
+    }
+    if (kind == "Psat")
+    {
+        //  vaporPressureFit's stage 1 is its own linear-in-(A, B) search on
+        //  log10 P, said here so the header does not claim Levenberg-Marquardt
+        os.str("");
+        os << "  Objective:   " << methodName(s.method)
+           << (s.declared ? "" : "   (the default: no `objective {}` block declared)") << "\n";
+        switch (s.method)
+        {
+            case Method::leastSquares:
+                os << "                sum of squared residuals in log10(P) (golden-section C,"
+                      " linear A, B)\n"; break;
+            case Method::minimax:
+                os << "                largest relative residual, max|(P_model - P)/P|"
+                      " (Nelder-Mead, from the log10 least-squares answer as its start)\n"; break;
+            default:
+                os << "                1) sum of squared residuals in log10(P) (golden-section C,"
+                      " linear A, B), 2) largest relative residual, max|(P_model - P)/P|"
+                      " (Nelder-Mead from the stage-1 answer); both answers kept\n";
+        }
+        os << "  Scale:       Psat " << s.pSat << "  ((P_model - P)/P; T is the"
+              " independent variable, no T residual)\n";
+        return os.str();
     }
     if (kind == "P_bubble")
         os << "  Scale:       P_bubble " << s.pBubble << "  ((P_model - P)/P)\n";

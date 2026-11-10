@@ -29,6 +29,7 @@ License
 #include "VaporPressureFit.H"
 #include "EvidencePartition.H"
 #include "CurationDossier.H"
+#include "FitObjective.H"
 #include "core/Constants.H"
 #include "core/Dictionary.H"
 #include "core/Units.H"
@@ -38,6 +39,7 @@ License
 #include <cmath>
 #include <sstream>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -51,6 +53,7 @@ int VaporPressureFit::run(const DictPtr& dict,
                           int verbosity)
 {
     diag_.clear();
+    curation_.clear();
     const std::string comp = dict->lookupWordOrDefault("component", "");
 
     // -- THE EVIDENCE PARTITION, frozen before a single point is fitted ----
@@ -63,6 +66,13 @@ int VaporPressureFit::run(const DictPtr& dict,
     //  before the fit (DEV.md 4c C172)
     part.requireBandInUnitOf(HeldOutStatistic::relativeAAD(), label);
     part.announce(label, verbosity);
+
+    //  THE OBJECTIVE (DEV.md 4c C281 step 3): the SAME declared block as
+    //  `fitParameters`, read through its one home (FitObjective) -- default
+    //  twoStage, the pressure residual relative.  Read before the fit, and the
+    //  header says which objective produced the numbers below.
+    const fitobj::Spec objSpec = fitobj::read(dict, "Psat", /*evalMode*/ false);
+    if (verbosity >= 1) std::cout << fitobj::describe(objSpec, "Psat");
 
     const std::vector<std::string> xN{ "T", "temperature" };
     const std::vector<std::string> yN{ "Psat", "P", "psat" };
@@ -82,7 +92,39 @@ int VaporPressureFit::run(const DictPtr& dict,
     };
 
     std::vector<scalar> T, y;                                 // y = log10(Psat[bar])
-    admissible(EvidencePartition::loadAll(part.fit(), xN, yN, label), T, y);
+    std::vector<std::string> src;                             // each fit point's dataset (its DOI, else its path)
+    for (const auto& ds : part.fit())
+    {
+        const std::size_t n0 = T.size();
+        admissible(EvidencePartition::loadAll(std::vector<EvidenceDataset>{ ds }, xN, yN, label), T, y);
+        for (std::size_t k = n0; k < T.size(); ++k) src.push_back(ds.doi.empty() ? ds.path : ds.doi);
+    }
+
+    //  OUTLIERS (DEV.md 4c C283, amended): `outliers { maxRelativeError <x>
+    //  percent; }` -- after the least-squares stage, a fit point whose
+    //  relative pressure error exceeds x is DISCARDED BY NAME (its dataset, T
+    //  and P, printed and published) and the fit is REPEATED without it, once.
+    //  Absent, no point is discarded.  A declared rule, never a silent filter.
+    scalar outlierRel = -1.0;
+    if (dict->found("outliers"))
+    {
+        auto od = dict->subDict("outliers");
+        for (const auto& k : od->keys())
+            if (k != "maxRelativeError")
+                throw std::runtime_error(label + ": `outliers` has no entry `" + k
+                    + "`; the entry is maxRelativeError <x> percent;");
+        if (!od->found("maxRelativeError") || od->unitWordOf("maxRelativeError") != "percent")
+            throw std::runtime_error(label + ": `outliers` declares `maxRelativeError"
+                " <x> percent;` -- the relative pressure error beyond which a fit point"
+                " is discarded, with its unit.");
+        outlierRel = od->lookupScalar("maxRelativeError");          // a fraction
+        if (!(outlierRel > 0.0))
+            throw std::runtime_error(label + ": `outliers.maxRelativeError` must be > 0.");
+        if (verbosity >= 1)
+            std::cout << "  Outliers:    a fit point with |P_model - P|/P > " << 100.0 * outlierRel
+                      << " % after the least-squares stage is discarded by name, and the fit"
+                         " repeated without it (once)\n";
+    }
 
     std::vector<scalar> Tv, yv;                               // held-out
     admissible(EvidencePartition::loadAll(part.validation(), xN, yN, label), Tv, yv);
@@ -92,42 +134,182 @@ int VaporPressureFit::run(const DictPtr& dict,
         throw std::runtime_error(label + ": need >= 3 admissible (T, Psat)"
             " fitting points; got " + std::to_string(T.size()) + ".");
 
-    scalar Tmin = 1e30, Tmax = 0.0;
-    for (scalar t : T) { Tmin = std::min(Tmin, t); Tmax = std::max(Tmax, t); }
+    scalar Tmin = 1e30, Tmax = 0.0, Clo = 0.0, Chi = 300.0, A = 0, B = 0, C = 0;
 
     // -- fit log10(P) = A − B/(T+C): linear (A,B) for fixed C, golden-section C -
-    auto solveAtC = [&](scalar C, scalar& A, scalar& B) -> scalar
+    auto solveAtC = [&](scalar Cc, scalar& Aa, scalar& Bb) -> scalar
     {
         scalar su = 0, sy = 0, suu = 0, suy = 0; const scalar n = static_cast<scalar>(T.size());
         for (std::size_t i = 0; i < T.size(); ++i)
         {
-            const scalar u = 1.0 / (T[i] + C);
+            const scalar u = 1.0 / (T[i] + Cc);
             su += u; sy += y[i]; suu += u * u; suy += u * y[i];
         }
         const scalar denom = suu - su * su / n;
         const scalar m = (denom != 0.0) ? (suy - su * sy / n) / denom : 0.0;  // slope y vs u = -B
-        B = -m; A = sy / n - m * su / n;
+        Bb = -m; Aa = sy / n - m * su / n;
         scalar sse = 0.0;
         for (std::size_t i = 0; i < T.size(); ++i)
         {
-            const scalar yh = A - B / (T[i] + C);
+            const scalar yh = Aa - Bb / (T[i] + Cc);
             sse += (y[i] - yh) * (y[i] - yh);
         }
         return sse;
     };
-    // C must keep (T+C) > 0 for every point; search below Tmin.
-    scalar Clo = -(Tmin) + 5.0, Chi = 300.0;
-    const scalar gr = 0.6180339887498949;
-    scalar a = Clo, b = Chi, A1 = 0, B1 = 0, A2 = 0, B2 = 0;
-    scalar c1 = b - gr * (b - a), d1 = a + gr * (b - a);
-    scalar f1 = solveAtC(c1, A1, B1), f2 = solveAtC(d1, A2, B2);
-    for (int it = 0; it < 120; ++it)
+    auto lsFit = [&]()
     {
-        if (f1 < f2) { b = d1; d1 = c1; f2 = f1; c1 = b - gr * (b - a); f1 = solveAtC(c1, A1, B1); }
-        else         { a = c1; c1 = d1; f1 = f2; d1 = a + gr * (b - a); f2 = solveAtC(d1, A2, B2); }
+        Tmin = 1e30; Tmax = 0.0;
+        for (scalar t : T) { Tmin = std::min(Tmin, t); Tmax = std::max(Tmax, t); }
+        // C must keep (T+C) > 0 for every point; search below Tmin.
+        Clo = -(Tmin) + 5.0; Chi = 300.0;
+        const scalar gr = 0.6180339887498949;
+        scalar a = Clo, b = Chi, A1 = 0, B1 = 0, A2 = 0, B2 = 0;
+        scalar c1 = b - gr * (b - a), d1 = a + gr * (b - a);
+        scalar f1 = solveAtC(c1, A1, B1), f2 = solveAtC(d1, A2, B2);
+        for (int it = 0; it < 120; ++it)
+        {
+            if (f1 < f2) { b = d1; d1 = c1; f2 = f1; c1 = b - gr * (b - a); f1 = solveAtC(c1, A1, B1); }
+            else         { a = c1; c1 = d1; f1 = f2; d1 = a + gr * (b - a); f2 = solveAtC(d1, A2, B2); }
+        }
+        C = 0.5 * (a + b);
+        solveAtC(C, A, B);
+    };
+    lsFit();
+
+    std::string dropped;                       // "<dataset> T=<K> P=<Pa> err=<%>; ..."
+    std::size_t nDropped = 0;
+    if (outlierRel > 0.0)
+    {
+        std::vector<scalar> T2, y2; std::vector<std::string> s2;
+        for (std::size_t i = 0; i < T.size(); ++i)
+        {
+            const scalar r = std::pow(10.0, (A - B / (T[i] + C)) - y[i]) - 1.0;
+            if (std::abs(r) > outlierRel)
+            {
+                std::ostringstream os;
+                os << src[i] << " T=" << std::setprecision(8) << T[i] << " K P="
+                   << std::pow(10.0, y[i]) * units::bar_to_Pa << " Pa err="
+                   << std::setprecision(4) << 100.0 * r << " %";
+                dropped += (dropped.empty() ? "" : "; ") + os.str();
+                ++nDropped;
+                if (verbosity >= 1)
+                    std::cout << "    [outlier] DISCARDED " << os.str() << "\n";
+            }
+            else { T2.push_back(T[i]); y2.push_back(y[i]); s2.push_back(src[i]); }
+        }
+        if (nDropped > 0)
+        {
+            T = T2; y = y2; src = s2;
+            if (T.size() < 3)
+                throw std::runtime_error(label + ": " + std::to_string(nDropped)
+                    + " outlier(s) discarded leave " + std::to_string(T.size())
+                    + " fit points; need >= 3.");
+            if (verbosity >= 1)
+                std::cout << "    [outlier] " << nDropped << " point(s) discarded; the"
+                             " least-squares stage is REPEATED on the " << T.size()
+                          << " kept\n";
+            lsFit();
+        }
+        else if (verbosity >= 1)
+            std::cout << "    [outlier] no point beyond the declared limit; nothing discarded\n";
     }
-    scalar C = 0.5 * (a + b), A = 0, B = 0;
-    const scalar sse = solveAtC(C, A, B);
+    diag_["n_outliers_dropped"] = static_cast<scalar>(nDropped);
+    if (outlierRel > 0.0) curation_["outliersDropped"] = dropped.empty() ? "none" : dropped;
+
+    //  relative pressure residual of a curve at one point, (P_model - P)/P
+    auto relAt = [](scalar Aa, scalar Bb, scalar Cc, scalar t, scalar ylog)
+    { return std::pow(10.0, (Aa - Bb / (t + Cc)) - ylog) - 1.0; };
+    auto relStats = [&](scalar Aa, scalar Bb, scalar Cc, const std::vector<scalar>& Ts,
+                        const std::vector<scalar>& ys, scalar& mean, scalar& mx)
+    {
+        mean = 0.0; mx = 0.0;
+        for (std::size_t i = 0; i < Ts.size(); ++i)
+        {
+            const scalar r = std::abs(relAt(Aa, Bb, Cc, Ts[i], ys[i]));
+            mean += r; mx = std::max(mx, r);
+        }
+        if (!Ts.empty()) mean /= static_cast<scalar>(Ts.size());
+    };
+
+    //  STAGE 2 (twoStage / minimax): the largest RELATIVE pressure residual
+    //  over the FIT points, minimised by the one minimax search in
+    //  FitObjective, started from the least-squares answer above.  The held-out
+    //  points are never handed to it.
+    //
+    //  THE SEARCH COORDINATES.  (A, B, C) are almost collinear over one
+    //  laboratory's range -- a long, narrow valley in which the simplex crawls
+    //  and stops on the valley floor still descending (measured on curate33:
+    //  1500 evaluations left the maximum 0.6 % above where 4700 put it, and the
+    //  held-out AAD moved from 7.5 % to 9.4 % between the two).  So the search
+    //  moves the curve's own log10 P at three temperatures of the fit range
+    //  (its ends and its middle), which are nearly independent, and maps them
+    //  back to (A, B, C) in closed form (three-point Antoine).  The objective
+    //  and the answer are the same curve; only the coordinates differ.  A trial
+    //  whose curve leaves T + C > 0 on a fit point is infeasible.
+    const sVector lsV{ A, B, C };
+    fitobj::Outcome obj2;
+    if (objSpec.runsMinimax())
+    {
+        const scalar t1 = Tmin, t3 = Tmax, t2 = 0.5 * (Tmin + Tmax);
+        auto toABC = [&](const sVector& v, scalar& Aa, scalar& Bb, scalar& Cc) -> bool
+        {
+            const scalar d12 = v[0] - v[1], d23 = v[1] - v[2];
+            if (!(std::abs(d23) > 0.0)) return false;
+            const scalar r = d12 / d23;
+            const scalar den = r * (t2 - t3) - (t1 - t2);
+            if (!(std::abs(den) > 0.0)) return false;
+            Cc = ((t1 - t2) * t3 - r * (t2 - t3) * t1) / den;
+            if (!(t1 + Cc > 0.0)) return false;
+            Bb = d12 * (t1 + Cc) * (t2 + Cc) / (t1 - t2);
+            Aa = v[0] + Bb / (t1 + Cc);
+            return std::isfinite(Aa) && std::isfinite(Bb) && std::isfinite(Cc);
+        };
+        auto f = [&](const sVector& v)
+        {
+            scalar Aa, Bb, Cc;
+            if (!toABC(v, Aa, Bb, Cc)) return 1.0e30;
+            scalar m = 0.0;
+            for (std::size_t i = 0; i < T.size(); ++i)
+            {
+                const scalar r = std::abs(relAt(Aa, Bb, Cc, T[i], y[i]));
+                if (!std::isfinite(r)) return 1.0e30;
+                m = std::max(m, r);
+            }
+            return m;
+        };
+        const sVector v0{ A - B / (t1 + C), A - B / (t2 + C), A - B / (t3 + C) };
+        sVector lo(3), hi(3);
+        for (int k = 0; k < 3; ++k) { lo[k] = v0[k] - 0.5; hi[k] = v0[k] + 0.5; }   // a factor ~3 in P
+        if (verbosity >= 2)
+            std::cout << "  Stage 2:     minimising the largest relative pressure residual,"
+                         " max|(P_model - P)/P|, from the least-squares answer\n"
+                         "               (searching log10 P at " << t1 << ", " << t2 << " and "
+                      << t3 << " K; mapped back to A, B, C)\n";
+        obj2 = fitobj::minimise(f, v0, lo, hi, objSpec.maxEvaluations, verbosity);
+        scalar Aa, Bb, Cc;
+        if (toABC(obj2.x, Aa, Bb, Cc)) { A = Aa; B = Bb; C = Cc; }
+    }
+    scalar sse = 0.0;
+    for (std::size_t i = 0; i < T.size(); ++i)
+    {
+        const scalar yh = A - B / (T[i] + C);
+        sse += (y[i] - yh) * (y[i] - yh);
+    }
+    {
+        //  both answers kept (fit.<i>.value_leastSquares / value_minimax, i = A, B, C)
+        fitobj::publish(diag_, objSpec, lsV, sVector{ A, B, C }, obj2);
+        diag_.erase("objective_binodal_relative");   // a tie-line word; this op has none
+        scalar m = 0.0, x = 0.0;
+        relStats(A, B, C, T, y, m, x);
+        diag_["relErr_mean_fit_pct"] = 100.0 * m;
+        diag_["relErr_max_fit_pct"]  = 100.0 * x;
+        if (obj2.ran)
+        {
+            relStats(lsV[0], lsV[1], lsV[2], T, y, m, x);
+            diag_["relErr_mean_fit_pct_leastSquares"] = 100.0 * m;
+            diag_["relErr_max_fit_pct_leastSquares"]  = 100.0 * x;
+        }
+    }
 
     scalar ybar = 0; for (scalar v : y) ybar += v; ybar /= static_cast<scalar>(y.size());
     scalar ssTot = 0; for (scalar v : y) ssTot += (v - ybar) * (v - ybar);
@@ -174,12 +356,30 @@ int VaporPressureFit::run(const DictPtr& dict,
         diag_["n_heldout"]          = static_cast<scalar>(Tv.size());
         diag_["rms_heldout_log10P"] = rms_v;
         diag_["aad_heldout_pct"]    = aad_v;
+        {
+            scalar m = 0.0, x = 0.0;
+            relStats(A, B, C, Tv, yv, m, x);
+            diag_["relErr_max_heldout_pct"] = 100.0 * x;
+            if (obj2.ran)
+            {
+                //  the least-squares answer, held out on the same points: what
+                //  the second stage bought (or cost) on evidence it never saw
+                relStats(lsV[0], lsV[1], lsV[2], Tv, yv, m, x);
+                diag_["aad_heldout_pct_leastSquares"]    = 100.0 * m;
+                diag_["relErr_max_heldout_pct_leastSquares"] = 100.0 * x;
+            }
+        }
 
         if (verbosity >= 2)
         {
             std::cout << "    HELD-OUT VALIDATION (" << Tv.size()
                       << " pts, " << Tvmin << "-" << Tvmax << " K): AAD "
-                      << aad_v << " %, RMS " << rms_v << " in log10(P)\n";
+                      << aad_v << " %, max " << diag_["relErr_max_heldout_pct"]
+                      << " % (relative in P), RMS " << rms_v << " in log10(P)\n";
+            if (obj2.ran)
+                std::cout << "      (the stage-1 least-squares answer on the same points: AAD "
+                          << diag_["aad_heldout_pct_leastSquares"] << " %, max "
+                          << diag_["relErr_max_heldout_pct_leastSquares"] << " %)\n";
             //  A caller-side independence fact: the partition class settles
             //  identity, the caller has the numbers and settles domain.
             //  THE VERDICT, said out loud -- but only against a band the
@@ -284,7 +484,16 @@ int VaporPressureFit::run(const DictPtr& dict,
     if (verbosity >= 2)
         std::cout << "  VaporPressureFit (" << comp << ", " << T.size() << " pts):\n"
                   << "    Antoine  log10(Psat[bar]) = " << A << " - " << B
-                  << "/(T" << (C >= 0 ? "+" : "") << C << ")   R2 = " << R2 << "\n"
+                  << "/(T" << (C >= 0 ? "+" : "") << C << ")   R2 = " << R2
+                  << "   (objective " << fitobj::methodName(objSpec.method) << ")\n"
+                  << "    fit set: relative error in P mean " << diag_["relErr_mean_fit_pct"]
+                  << " %, max " << diag_["relErr_max_fit_pct"] << " %"
+                  << (obj2.ran ? "  (least squares alone: mean "
+                                 + std::to_string(diag_["relErr_mean_fit_pct_leastSquares"])
+                                 + " %, max "
+                                 + std::to_string(diag_["relErr_max_fit_pct_leastSquares"]) + " %)"
+                               : std::string())
+                  << "\n"
                   << "    Clausius-Clapeyron dHvap(" << Tmax << " K) = "
                   << dHvap / 1000.0 << " kJ/mol\n";
     return 0;

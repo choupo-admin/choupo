@@ -26,18 +26,19 @@ properties
     property       vapourPressure;
     operation      fit_antoine;   // type vaporPressureFit
     model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
-    verdict        validated;
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
 
     fittedParameters
     {
-        A  6.76602536554;
-        B  2807.2440362;
-        C  -17.4236374886;
+        A  5.37968312661;
+        B  2089.08865441;
+        C  -55.2179317189;
     }
 
     evidence
     {
-        partitionFingerprint  "9d3f1ad5c8756c37";   // frozen before the fit
+        partitionFingerprint  "575eb2655673108f";   // frozen before the fit
 
         datasets
         (
@@ -51,7 +52,7 @@ properties
             system    "monoethanolamine";
         }
         {
-            role      validation;
+            role      fit;
             dataset   "constant/archiveExtracts/monoethanolamine-vapourPressure-je800530u.dat";
             doi       "10.1021/je800530u";
             sha256    "1c90a9fd7513387b393b9a27ececebe92573fe5000e9c4f203694f8161743221";
@@ -59,23 +60,56 @@ properties
             archiveFile "je800530u.xml";
             system    "monoethanolamine";
         }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/monoethanolamine-vapourPressure-je800290k.dat";
+            doi       "10.1021/je800290k";
+            sha256    "51baf217f8b5f257b4c5c26ec4713d84bc714c8775fffbd01af931591160e9c7";
+            provenance measured;
+            archiveFile "je800290k.xml";
+            system    "monoethanolamine";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/monoethanolamine-vapourPressure-je049761y.dat";
+            doi       "10.1021/je049761y";
+            sha256    "df002e21a6af81808fc0ab6df77965b06bff0babbf3a176469fe95f2234618c4";
+            provenance measured;
+            archiveFile "je049761y.xml";
+            system    "monoethanolamine";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/monoethanolamine-vapourPressure-je101259r.dat";
+            doi       "10.1021/je101259r";
+            sha256    "3963c4cf50d9b279a449dc923dd5a4301188be5d3ddeb2ee32ea2dd4eaecd626";
+            provenance measured;
+            archiveFile "je101259r.xml";
+            system    "monoethanolamine";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/monoethanolamine-vapourPressure-je400885z.dat";
+            doi       "10.1021/je400885z";
+            sha256    "952b467f5ae68dc2fe34f089f817c7d0b847bb356e15e4423d40a319b3965575";
+            provenance measured;
+            archiveFile "je400885z.xml";
+            system    "monoethanolamine";
+        }
         );
 
         domain
         {
             coordinate  K;
-            fit         { min 273.65; max 303.16; n 38; }
-            validation  { min 283.15; max 363.15; n 26; }
+            fit         { min 273.65; max 441.9; n 93; }
         }
     }
 
     metrics
     {
-        r2InSample        0.999992628284;   // the model reproducing the points it was FITTED to
-        rmsHeldOut        0.0151375388401;   // log10(P), on evidence the fit never saw
-        aadHeldOutPct     2.81757334607;
-        acceptanceMaxAADPct 5.4;   // DECLARED BEFORE the fit; part of the fingerprint
-        acceptanceOrigin  "declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 26 points (0.773 to 12 %, mean 5.314 %), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean";
+        r2InSample        0.999903075597;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
     }
 }
 

@@ -39,7 +39,7 @@ datasets
     }
     {
         file          "constant/archiveExtracts/dimethylSulfoxide-vapourPressure-je400531a.dat";
-        role          validation;   // informational: the operation declares it
+        role          fit;   // informational: the operation declares it
         doi           "10.1021/je400531a";
         url           "https://trc.nist.gov/ThermoML/10.1021/je400531a.xml";
         page          "https://trc.nist.gov/ThermoML/10.1021/je400531a.json";
@@ -49,6 +49,23 @@ datasets
         inchiKey      "IAZDPXIOMUYVGZ-UHFFFAOYSA-N";
         extract       "bin/choupo-thermoml extract-vp <article file> --inchikey IAZDPXIOMUYVGZ-UHFFFAOYSA-N --into <dir>";
         sha256        "4be8e0e21ad1200873dd09d0323e76631015a77d22059632afb192ab4ca79854";
+        identity
+        {
+            dimethylSulfoxide { cas "67-68-5"; inchiKey "IAZDPXIOMUYVGZ-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/dimethylSulfoxide-vapourPressure-j.jct.2018.04.014.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1016/j.jct.2018.04.014";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.jct.2018.04.014.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.jct.2018.04.014.json";
+        articleFile   "j.jct.2018.04.014.xml";
+        articleSha256 "cbaa662fdf6729848746508f29cbaacda6ea575bb013c398006fec618746a9f8";
+        extractor     vapourPressure;
+        inchiKey      "IAZDPXIOMUYVGZ-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey IAZDPXIOMUYVGZ-UHFFFAOYSA-N --into <dir>";
+        sha256        "6508d283b7b0e35d445d6548bbdb5646ae3f4b5c9cd2b498e4a8909fe245b9ec";
         identity
         {
             dimethylSulfoxide { cas "67-68-5"; inchiKey "IAZDPXIOMUYVGZ-UHFFFAOYSA-N"; }

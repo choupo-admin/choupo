@@ -26,18 +26,19 @@ properties
     property       vapourPressure;
     operation      fit_antoine;   // type vaporPressureFit
     model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
-    verdict        notValidated;
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
 
     fittedParameters
     {
-        A  4.78323608922;
-        B  2119.16653165;
-        C  -34.8668239828;
+        A  4.01886992528;
+        B  1504.34189732;
+        C  -101.983954832;
     }
 
     evidence
     {
-        partitionFingerprint  "5b76c69b149960d6";   // frozen before the fit
+        partitionFingerprint  "038af7f1169ed078";   // frozen before the fit
 
         datasets
         (
@@ -51,7 +52,7 @@ properties
             system    "diButylCarbonate";
         }
         {
-            role      validation;
+            role      fit;
             dataset   "constant/archiveExtracts/diButylCarbonate-vapourPressure-j.jct.2008.02.012.dat";
             doi       "10.1016/j.jct.2008.02.012";
             sha256    "be53748e8b6274105a9c4cfc3e0cbd9cd338284829286478fff629568fa8cc72";
@@ -64,18 +65,15 @@ properties
         domain
         {
             coordinate  K;
-            fit         { min 383.16; max 478.18; n 23; }
-            validation  { min 287.1; max 329.1; n 21; }
+            fit         { min 287.1; max 478.18; n 44; }
         }
     }
 
     metrics
     {
-        r2InSample        0.998031140839;   // the model reproducing the points it was FITTED to
-        rmsHeldOut        0.31402082619;   // log10(P), on evidence the fit never saw
-        aadHeldOutPct     105.116711331;
-        acceptanceMaxAADPct 5.3;   // DECLARED BEFORE the fit; part of the fingerprint
-        acceptanceOrigin  "declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 21 points (5.1 to 5.5 %, mean 5.264 %), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean";
+        r2InSample        0.99978907588;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
     }
 }
 

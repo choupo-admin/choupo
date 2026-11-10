@@ -396,7 +396,7 @@ def props_text(pl, case_name, stem, unifac, discards=None, outlier_txt=None):
   {case_name} -- AN NRTL PAIR FROM EVERY LABORATORY'S MEASUREMENTS.
 
   WRITTEN BY bin/choupo-curate pair {c1} {c2} (DEV.md 4c C284, the bulk run;
-  record docs/design/binary-pairs-from-open-measurements.md section 10).
+  record docs/design/binary-pairs-from-open-measurements.md section 11).
 
   THE DECLARATION -- WRITTEN AND COMMITTED BEFORE ANY FIT RAN (several
   declarations of the bulk run share one commit).

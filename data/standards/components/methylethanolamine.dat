@@ -2,8 +2,9 @@
   Component: methylethanolamine  (CAS 109-83-1)
   PROPOSAL TIER -- UNVERIFIED. Imported from ChemSep v8.3
   pure-component data under Artistic License 2.0.
-  Critical constants are source data; Psat is an explicitly
-  estimated Ambrose-Walton corresponding-states closure.
+  Critical constants are source data.  Psat is an Antoine FITTED by
+  bin/choupo-curate vp to measured vapour pressures (DEV.md 4c C281;
+  provenance.vaporPressure): reviewStatus autoPromoted, NOT human-reviewed.
 \*---------------------------------------------------------------------------*/
 
 name        methylethanolamine;
@@ -24,7 +25,11 @@ standardThermochemistry
 
 vaporPressure
 {
-    model AmbroseWalton;  // [origin=estimated method=Ambrose-Walton]
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C), FITTED by bin/choupo-curate vp to
+    // measured vapour pressures -- see provenance.vaporPressure
+    coefficients  (5.412086192  2028.335653  -56.35018651);
+    Trange        (274.9  451.1);   // the fit's own span; outside it the engine announces the extrapolation
 }
 
 Vliq        8.02502e-05;      // m3/mol at 25 C  [ChemSep eqno 105]
@@ -124,10 +129,64 @@ provenance
     }
     vaporPressure
     {
-        origin        predictive;
-        method        "Ambrose-Walton corresponding states";
-        methodVersion "choupo-aw-1989";
-        uncertainty   "not quantified; validate against saturation data";
-        notes         "computed from ChemSep Tc/Pc/omega";
+        origin        fitted;
+        method        "vaporPressureFit (three-parameter Antoine; objective twoStage: least squares in log10 P, then the largest relative error in P minimised from it; every usable study fitted, outliers above 15 % discarded by name)";
+        methodVersion "choupoProps Choupo-dev";
+        fittedInCase  "tutorials/props/curation/curate30_vp_methylethanolamine";
+        reviewStatus  autoPromoted;
+        humanReviewed false;
+        promotedBy    "bin/choupo-curate vp --promote";
+        promotedDate  "2026-11-10";
+        reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+        uncertainty   "the fit's maximum relative error over every kept measurement, below";
+        replaces      "model AmbroseWalton (a corresponding-states estimate from Tc, Pc, omega); `bin/choupo-curate revert <component>` restores it";
+        evidence
+        (
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/methylethanolamine-vapourPressure-je049761y.dat";
+                doi       "10.1021/je049761y";
+                sha256    "7400a65d99a20f30d1b2da246f5e914eee7c47182eaa4ee0524cb093cc8211ee";
+                articleSha256 "df002e21a6af81808fc0ab6df77965b06bff0babbf3a176469fe95f2234618c4";
+                pointsKept    16;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/methylethanolamine-vapourPressure-je101259r.dat";
+                doi       "10.1021/je101259r";
+                sha256    "376cc48b6e56201d7c1e98861de763fd298a685df63f7e8fff96c95cb79c1254";
+                articleSha256 "3963c4cf50d9b279a449dc923dd5a4301188be5d3ddeb2ee32ea2dd4eaecd626";
+                pointsKept    16;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/methylethanolamine-vapourPressure-je400373d.dat";
+                doi       "10.1021/je400373d";
+                sha256    "86cc27e468db411ccca82d440159f42df78ca7f8c8a7d82d2153ce99f70f734a";
+                articleSha256 "5fd41a9baa3403e420dbd131ccdfe658a984d48b0965881982e740966f424eda";
+                pointsKept    7;
+                pointsDropped 0;
+                provenance measured;
+            }
+        );
+        acceptance
+        {
+            rule        "the default of DEV.md 4c C283: max relative error in P over the kept points <= 5 %; Tnb within 1 K of Tb where Tb lies outside their range";
+            verdict     accepted;
+            studies     3;
+            pointsKept  39;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     2.208677;   // the fitted Antoine, every kept point
+            max_pct     4.359555;
+            awAad_pct   8.272615;   // the AmbroseWalton curve it replaces, the same points
+            awMax_pct   18.671861;
+            Tnb_fit     431.5254;   // K, the fitted curve at 101.325 kPa
+        }
     }
 }

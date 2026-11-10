@@ -26,18 +26,19 @@ properties
     property       vapourPressure;
     operation      fit_antoine;   // type vaporPressureFit
     model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
-    verdict        notValidated;
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
 
     fittedParameters
     {
-        A  3.63810681581;
-        B  1181.74144194;
-        C  -109.881678268;
+        A  4.57855408926;
+        B  1695.19356892;
+        C  -61.6012877477;
     }
 
     evidence
     {
-        partitionFingerprint  "3b27ea869694179f";   // frozen before the fit
+        partitionFingerprint  "104f0d23f2f3d94f";   // frozen before the fit
 
         datasets
         (
@@ -51,7 +52,7 @@ properties
             system    "furfural";
         }
         {
-            role      validation;
+            role      fit;
             dataset   "constant/archiveExtracts/furfural-vapourPressure-je060406c.dat";
             doi       "10.1021/je060406c";
             sha256    "3dd393e47cf38af4405874740ce38d7802ad17805f6e2883b410cd05212068e7";
@@ -59,23 +60,29 @@ properties
             archiveFile "je060406c.xml";
             system    "furfural";
         }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/furfural-vapourPressure-je020117y.dat";
+            doi       "10.1021/je020117y";
+            sha256    "d1021fbc89eeb52b6ec7aee907fde898c4fd8d431977e1449e0766c4dae85244";
+            provenance measured;
+            archiveFile "je020117y.xml";
+            system    "furfural";
+        }
         );
 
         domain
         {
             coordinate  K;
-            fit         { min 326.05; max 415.15; n 19; }
-            validation  { min 276.7; max 323.4; n 16; }
+            fit         { min 276.7; max 429.5; n 44; }
         }
     }
 
     metrics
     {
-        r2InSample        0.999802457993;   // the model reproducing the points it was FITTED to
-        rmsHeldOut        0.0708465858112;   // log10(P), on evidence the fit never saw
-        aadHeldOutPct     10.8740041814;
-        acceptanceMaxAADPct 5.6;   // DECLARED BEFORE the fit; part of the fingerprint
-        acceptanceOrigin  "declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 16 points (5.44 to 5.71 %, mean 5.518 %), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean";
+        r2InSample        0.999782574573;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
     }
 }
 

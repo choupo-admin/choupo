@@ -26,18 +26,19 @@ properties
     property       vapourPressure;
     operation      fit_antoine;   // type vaporPressureFit
     model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
-    verdict        notValidated;
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
 
     fittedParameters
     {
-        A  3.60775799445;
-        B  1978.61234893;
-        C  -123.726419626;
+        A  5.33564034105;
+        B  2719.80695797;
+        C  -89.8306524404;
     }
 
     evidence
     {
-        partitionFingerprint  "31e5c92d6519b78c";   // frozen before the fit
+        partitionFingerprint  "c7a28a9f6b9661a0";   // frozen before the fit
 
         datasets
         (
@@ -51,7 +52,7 @@ properties
             system    "nEicosane";
         }
         {
-            role      validation;
+            role      fit;
             dataset   "constant/archiveExtracts/nEicosane-vapourPressure-je800534x.dat";
             doi       "10.1021/je800534x";
             sha256    "5a2cf10f6642b7d9fb1f7045d6be5806082513a6e8d7efd5a0dd4874b97194e2";
@@ -64,18 +65,15 @@ properties
         domain
         {
             coordinate  K;
-            fit         { min 313.15; max 343.15; n 8; }
-            validation  { min 312.76; max 373.17; n 6; }
+            fit         { min 313.15; max 373.17; n 9; }
         }
     }
 
     metrics
     {
-        r2InSample        0.999592413271;   // the model reproducing the points it was FITTED to
-        rmsHeldOut        0.111988601477;   // log10(P), on evidence the fit never saw
-        aadHeldOutPct     28.3787742947;
-        acceptanceMaxAADPct 4.2;   // DECLARED BEFORE the fit; part of the fingerprint
-        acceptanceOrigin  "declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 6 points (4.02 to 4.42 %, mean 4.181 %), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean";
+        r2InSample        0.999805961711;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
     }
 }
 
