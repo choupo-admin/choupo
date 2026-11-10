@@ -185,7 +185,7 @@ describe("the Merkel integral, printed as the engine evaluates it", () => {
 describe("what Merkel assumes — the page states all of it, and only it", () => {
   it("names the three hypotheses the engine announces, plus the cp one", () => {
     const body = prose(step(5).body);
-    expect(body).toContain("lewis factor as one");
+    expect(body).toContain("Lewis factor as one");
     expect(body).toContain("water flow constant");
     expect(body).toContain("exit air is saturated");
     expect(body).toContain("specific heats once");

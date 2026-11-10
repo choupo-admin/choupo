@@ -272,7 +272,7 @@ Q &= L\, \mathrm{cp}_L\, \text{range} &\qquad \text{range} &= T_\mathrm{water,in
     title: "What Merkel assumes, and where it costs you",
     body: "Merkel's method is an approximation with a named set of "
       + "hypotheses, and the engine announces them on every solve rather than "
-      + "burying them.  It takes the lewis factor as one, which is what lets "
+      + "burying them.  It takes the Lewis factor as one, which is what lets "
       + "heat and mass transfer be lumped into a single coefficient against a "
       + "single enthalpy potential — the unit's own header puts that factor "
       + "near 0.87–1 for air and water, so this is a near-coincidence of one "
