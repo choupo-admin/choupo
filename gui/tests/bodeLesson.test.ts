@@ -164,10 +164,12 @@ describe("every number the page quotes is recomputed here", () => {
 
   it("step 5's dead-time claim: magnitude exactly one, phase unbounded", () => {
     const t = stepText(5);
-    expect(t).toContain("EXACTLY one");
+    //  The lesson no longer sets words in capitals for emphasis (DEV.md 4c
+    //  C277); the claims below are the same, in lower case.
+    expect(t).toContain("exactly one");
     expect(t).toContain("−ω·θ");
     //  and the page must say Choupo has no such unit, because it has none
-    expect(t).toContain("NO unit operation that models a transport delay");
+    expect(t).toContain("no unit operation that models a transport delay");
   });
 });
 
@@ -179,14 +181,14 @@ describe("the page states which half Choupo computes", () => {
     expect(l, "the first limit must be the engine's absence").toBeTruthy();
     expect(l!.body).toContain("gain margin");
     expect(l!.body).toContain("phase margin");
-    expect(l!.body).toContain("MEASURES");
+    expect(l!.body).toContain("measures");
   });
 
   it("says which single element the engine judges, and which it does not", () => {
     const l = BODE_LIMITS.find((x) => x.id === "one-judged-element")!;
     for (const w of ["integrator", "dead time", "PID"])
       expect(l.body).toContain(w);
-    expect(l.body).toContain("NO engine answer");
+    expect(l.body).toContain("no engine answer");
   });
 
   it("declares the Theory Guide gap rather than leaving it to be found", () => {
