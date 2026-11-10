@@ -3302,6 +3302,19 @@ accepts today, and that is a policy call.
 >
 > **Acetic acid PARKED (architect, 2026-11-10, after Vitor: "Perdeste uma semana com essa merda antes!").**  The open acetic items (C201 (1) rest: dew-point distillate, Gibbs / three-phase / Txy readers, record identity; C174/C175 subcooled-feed q; column05's dimer in C239) get no work this month.  Reason: nothing the month delivers depends on them, aceticAcid02 runs with its balances gated (C258), and column05's ideal-vapour limit is already announced.  Reopened only if a case a student meets fails.
 >
+> **C285 (Vitor, 2026-11-10, on the nine vapour pressures above 5 %: "mete
+> mesmo as que estao acima de 5%. Mas acima de 5% - 10% mete um warning, e
+> entre 10 a 20% poe um warning mais severo. Acima de 20% descarta").  THE
+> ACCEPTANCE OF A CURATION FIT IS GRADED, NOT PASS/FAIL.**  On the maximum
+> relative error over the kept points: up to 5 % accepted clean; above 5 % up
+> to 10 % accepted with a WARNING; above 10 % up to 20 % accepted with a
+> SEVERE warning; above 20 % refused.  The grade is written in the record and
+> VOICED by the engine on every run that uses it, beside the autoPromoted
+> status, with the error.  Stated default, same factors, for a temperature
+> criterion (the normal boiling point against Tb): up to 1 K clean, 1-2 K
+> warning, 2-4 K severe, above 4 K refused.  Supersedes the single 5 % / 1 K
+> threshold of C283; everything else in C283 stands.
+
 > **C284 (Vitor, 2026-11-10: "faz favor de acelerar e comecares a produzir
 > componentes e binarios! ... os componentes tem classificacoes e os binarios
 > so se devem fazer para compostos que os aceitem").  PRODUCE PAIRS IN BULK,
