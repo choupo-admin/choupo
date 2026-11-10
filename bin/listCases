@@ -116,7 +116,7 @@ if [ -n "$CUR" ] && [ -d "$ROOT/$CUR" ]; then
     printf 'Curation traces (not tutorials) in %s:\n' "$ROOT/$CUR"
     for od in "$ROOT/$CUR"/*/; do
         [ -d "$od" ] || continue
-        n=$(find "$od" -mindepth 3 -maxdepth 3 -path '*/system/controlDict' 2>/dev/null | wc -l)
+        n=$(find "$od" -mindepth 3 -path '*/system/controlDict' 2>/dev/null | wc -l)
         printf '    %-12s %4d case(s)\n' "$(basename "$od")/" "$n"
     done
     printf '\n'

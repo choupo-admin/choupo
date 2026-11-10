@@ -28,7 +28,7 @@
   articles marks it `reviewStatus reviewed; humanReviewed true;`.  Revert with
   `bin/choupo-curate revert chloroform-methylIsobutylKetone`.
 
-  REPRODUCE: run tutorials/props/curation/curate560_nrtl_chloroform_methylIsobutylKetone (after `bin/choupo-curate fetch` on it); its fit
+  REPRODUCE: run data/curation/pairs/chloroform-methylIsobutylKetone (after `bin/choupo-curate fetch` on it); its fit
   writes chloroform-methylIsobutylKetone.proposal.dat, which bin/curate/check_regressed_pairs.py holds
   equal to this record.
 \*---------------------------------------------------------------------------*/
@@ -57,7 +57,7 @@ provenance
     origin        fitted;
     method        "fitParameters(P_bubble), Levenberg-Marquardt";
     methodVersion "choupoProps Choupo-dev";
-    fittedInCase  "tutorials/props/curation/curate560_nrtl_chloroform_methylIsobutylKetone";
+    fittedInCase  "data/curation/pairs/chloroform-methylIsobutylKetone";
     reviewStatus  autoPromoted;
     humanReviewed false;
     fitGrade      clean;   // DEV.md 4c C285 (C291): max |P_model - P|/P over the kept points, graded 5 / 10 / 20 %

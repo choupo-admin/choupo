@@ -132,7 +132,7 @@ provenance
         origin        fitted;
         method        "vaporPressureFit (three-parameter Antoine; objective twoStage: least squares in log10 P, then the largest relative error in P minimised from it; every usable study fitted, outliers above 15 % discarded by name)";
         methodVersion "choupoProps Choupo-dev";
-        fittedInCase  "tutorials/props/curation/curate34_vp_diethanolamine";
+        fittedInCase  "data/curation/components/diethanolamine";
         reviewStatus  autoPromoted;
         humanReviewed false;
         fitGrade      warning;   // DEV.md 4c C285: the worse of the grades below

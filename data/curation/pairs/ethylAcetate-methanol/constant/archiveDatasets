@@ -1,0 +1,59 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of ethylAcetate-methanol
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/ethylAcetate-methanol-bubble-acs.jced.5b00546.dat";
+        role          fit;   // C283: every laboratory is fitted
+        doi           "10.1021/acs.jced.5b00546";
+        url           "https://trc.nist.gov/ThermoML/10.1021/acs.jced.5b00546.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/acs.jced.5b00546.json";
+        articleFile   "acs.jced.5b00546.xml";
+        articleSha256 "8014bd04306585333ad1df1105db6259e912c154174273839cb8fc72ee6e81a9";
+        block         2;
+        filter        ( --interior-only );
+        extract       "bin/choupo-thermoml extract-vle <article file> --block 2 --interior-only --into <dir>";
+        sha256        "d03fb2ffd1f8c53009493d22caf6cc3a6c776096ba314fd275f0048b5f73b791";
+        identity
+        {
+            ethylAcetate   { cas "141-78-6"; inchiKey "XEKOWRVHYACXOJ-UHFFFAOYSA-N"; }
+            methanol       { cas "67-56-1"; inchiKey "OKKJLVBELUTLKV-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/ethylAcetate-methanol-bubble-acs.jced.8b00424.dat";
+        role          fit;   // C283: every laboratory is fitted
+        doi           "10.1021/acs.jced.8b00424";
+        url           "https://trc.nist.gov/ThermoML/10.1021/acs.jced.8b00424.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/acs.jced.8b00424.json";
+        articleFile   "acs.jced.8b00424.xml";
+        articleSha256 "f8ab869ed3da4aa35bb7b069679db785340acd27df292872eb430fc150633e94";
+        block         2;
+        filter        ( --interior-only );
+        extract       "bin/choupo-thermoml extract-vle <article file> --block 2 --interior-only --into <dir>";
+        sha256        "e6bd0fcb62aca31800c8b442260077f39e77e34971beaea3d890524d78cb53d7";
+        identity
+        {
+            ethylAcetate   { cas "141-78-6"; inchiKey "XEKOWRVHYACXOJ-UHFFFAOYSA-N"; }
+            methanol       { cas "67-56-1"; inchiKey "OKKJLVBELUTLKV-UHFFFAOYSA-N"; }
+        }
+    }
+);

@@ -1,0 +1,139 @@
+// [imported] origin "data/standards/parameters/NRTL/benzene-methanol.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- benzene(i) + methanol(j)
+
+  REGRESSED BY CHOUPO'S CURATION PIPELINE (bin/choupo-curate, DEV.md 4c C282;
+  record docs/design/binary-pairs-from-open-measurements.md) to measured
+  bubble temperatures.  The articles named under `evidence` are the
+  SOURCE of the measurements; the NIST/TRC ThermoML Archive located them.
+  NO MEASURED POINT IS IN THIS RECORD OR THIS TREE: the case regenerates
+  them from the DOIs and sha256 sums it declares (constant/archiveDatasets).
+  The PARAMETERS are Choupo's own work.
+
+  EQUATION: tau_ij = a_ij + b_ij / T [b in K], G_ij = exp(-alpha tau_ij),
+  Renon & Prausnitz direction (src/thermo/activityCoefficient/NRTL.cpp).
+  a_ij = a_ji = 0 and alpha = 0.30 FIXED, not fitted.
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
+  vapour-pressure records for both pure components.
+
+  reviewStatus autoPromoted; humanReviewed false: PROMOTED AUTOMATICALLY by
+  its fitting pipeline (every laboratory fitted, outliers beyond 3 K
+  discarded by name, max |T_model - T| over the kept points GRADED
+  clean / warning / severe at 1 / 2 / 4 K -- DEV.md 4c C283
+  amended, C285, C286; THIS fit: warning, 1.3053 K; one liquid
+  across its validity span), and NO HUMAN HAS REVIEWED IT.  The
+  engine says so on every run that reads it, and voices a warning
+  or a severe grade beside it.
+  Nothing was held out: the `validation {}` block says so, and the
+  acceptance is the `curation {}` block.  A curator who reads the series
+  back against the articles marks it `reviewStatus reviewed; humanReviewed
+  true;`.  Revert with `bin/choupo-curate revert benzene-methanol`.
+
+  REPRODUCE: run data/curation/pairs/benzene-methanol (after `bin/choupo-curate fetch` on it); its fit
+  writes benzene-methanol.proposal.dat, which bin/curate/check_regressed_pairs.py holds
+  equal to this record.
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i benzene; j methanol; }
+
+components  ( benzene  methanol );
+model       NRTL;
+
+parameters
+{
+    i           benzene;
+    j           methanol;
+    a_ij        0.00000000;
+    b_ij        520.19926889;
+    a_ji        0.00000000;
+    b_ji        239.38121075;
+    alpha       0.30000000;
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "data/curation/pairs/benzene-methanol";
+    reviewStatus  autoPromoted;
+    humanReviewed false;
+    fitGrade      warning;   // DEV.md 4c C285 (C286): max |T_model - T| over the kept points, graded 1 / 2 / 4 K
+    fitGradeMaxTemperatureError_K 1.3053;
+    promotedBy    "bin/choupo-curate pair --promote";
+    promotedDate  "2026-11-10";
+    reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+    fitDate       "2026-11-10";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/benzene-methanol-bubble-j.fluid.2019.03.022.dat";
+            doi       "10.1016/j.fluid.2019.03.022";
+            sha256    "403cce80c8f10e5b36634d0f14afdbfaaf79df47733366051304441025e32dc0";
+            provenance measured;
+            archiveFile "j.fluid.2019.03.022.xml";
+            system    "benzene + methanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/benzene-methanol-bubble-j.jct.2006.06.002.dat";
+            doi       "10.1016/j.jct.2006.06.002";
+            sha256    "07a8e406199bcaeb30b2a918bd5f38a9c8373e5ca928c93aff166a9c3f4f131f";
+            provenance measured;
+            archiveFile "j.jct.2006.06.002.xml";
+            system    "benzene + methanol";
+        }
+    );
+    fingerprint "528077f305f8cdda";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          81.10672423;
+    rms_K         0.55580453;
+    nDataPoints   23;
+    identifiable  true;
+    maxAbsCorr    0.95645676;
+
+    validity
+    {
+        temperature { min 331.56 K; max 343.83 K; }
+        pressure    { min 99500 Pa; max 101300 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validationRefused;
+
+    heldOut     none;   // every declared dataset carried `role fit`
+
+    acceptance  none;   // no band was declared before the fit, so no
+                        // pass/fail may be read out of the residual above
+}
+
+curation
+{
+    rule            "DEV.md 4c C283 (amended) + C284, graded by C285 (C286)";
+    evidence        allLaboratories;   // every study fitted, none held out
+    objective       twoStage;
+    outlierLimit    3 K;   // |T_model - T| after the least-squares stage
+    outliersDropped 0;
+    pointsKept      23;
+    noBubblePoint   0;
+    maxAbsError     1.3053 K;
+    meanAbsError    0.4292 K;
+    acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
+    gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
+    grade           warning;
+    oneLiquid       true;   // arm (f) over the validity span; a pair that splits ONE liquid is never promoted, whatever its grade
+    verdict         accepted;
+}

@@ -26,7 +26,7 @@ omega       0.206016;      // [-] (provenance.omega)
 //  the curve tested against itself (the fitted normal boiling point is
 //  in provenance.vaporPressure.acceptance.Tnb_fit).  Joback's Tb is NOT stored either: the vapour-pressure
 //  grade would read an estimate as a measurement (WRITE_ESTIMATED_TB in
-//  the tool); the case curate699 prints it.
+//  the tool); the case data/curation/batches/new_components_estimated prints it.
 
 standardThermochemistry
 {
@@ -80,7 +80,7 @@ provenance
         methodVersion    "joback-poling5e-table2-2";
         input            joback;
         inputFingerprint "CH3:1,etherRing:1,rCH:1,rCH2:3";
-        reproducedInCase "tutorials/props/curation/curate699_new_components_estimated";
+        reproducedInCase "data/curation/batches/new_components_estimated";
         uncertainty      { status unquantified; reason "Joback group contribution (Joback & Reid 1987); Tc within a few per cent and Pc within about 5-10 per cent for ordinary organics, worse for polyfunctional molecules"; }
         notes            "the archive carries no critical temperature for this compound; all groups of the structure are in the Joback table";
     }
@@ -91,14 +91,14 @@ provenance
         methodVersion    "joback-poling5e-table2-2";
         input            joback;
         inputFingerprint "CH3:1,etherRing:1,rCH:1,rCH2:3";
-        reproducedInCase "tutorials/props/curation/curate699_new_components_estimated";
+        reproducedInCase "data/curation/batches/new_components_estimated";
         uncertainty      { status unquantified; reason "Joback group contribution (Joback & Reid 1987); Tc within a few per cent and Pc within about 5-10 per cent for ordinary organics, worse for polyfunctional molecules"; }
         notes            "the archive carries no critical pressure for this compound; all groups of the structure are in the Joback table";
     }
     omega
     {
         origin        regressed;
-        method        "DERIVED from a fit: omega = -log10(Psat(0.7 Tc)/Pc) - 1 from the Antoine the vapour-pressure pipeline fitted (tutorials/props/curation/curate624_vp_2Methyltetrahydrofuran) and the measured Tc, Pc; 0.7 Tc = 387.56 K, inside the fitted range";
+        method        "DERIVED from a fit: omega = -log10(Psat(0.7 Tc)/Pc) - 1 from the Antoine the vapour-pressure pipeline fitted (data/curation/components/2Methyltetrahydrofuran) and the measured Tc, Pc; 0.7 Tc = 387.56 K, inside the fitted range";
         derivedBy     "bin/curate/c287_new_components.py";
         reviewStatus  autoPromoted;
         humanReviewed false;
@@ -179,7 +179,7 @@ provenance
         methodVersion    "joback-poling5e-table2-2";
         input            joback;
         inputFingerprint "CH3:1,etherRing:1,rCH:1,rCH2:3";
-        reproducedInCase "tutorials/props/curation/curate699_new_components_estimated";
+        reproducedInCase "data/curation/batches/new_components_estimated";
         uncertainty      { status unquantified; reason "Joback group contribution (Joback & Reid 1987); a few percent for Cp_ig of ordinary organics"; }
     }
     dHf_298
@@ -189,7 +189,7 @@ provenance
         methodVersion    "joback-poling5e-table2-2";
         input            joback;
         inputFingerprint "CH3:1,etherRing:1,rCH:1,rCH2:3";
-        reproducedInCase "tutorials/props/curation/curate699_new_components_estimated";
+        reproducedInCase "data/curation/batches/new_components_estimated";
         uncertainty      { status unquantified; reason "Joback group contribution (Joback & Reid 1987); several kJ/mol, more for polyfunctional molecules"; }
         notes            "the ThermoML archive carries no enthalpy of formation or combustion block for this compound (searched)";
     }
@@ -201,7 +201,7 @@ provenance
         input            joback;
         inputFingerprint "CH3:1,etherRing:1,rCH:1,rCH2:3";
         elementEntropies "CODATA Key Values for Thermodynamics (Cox, Wagman & Medvedev, 1989): S(C, graphite) 5.74, S(H2, g) 130.680, S(O2, g) 205.152, S(N2, g) 191.609, S(F2, g) 202.791, S(Cl2, g) 223.081, S(Br2, l) 152.206, S(I2, cr) 116.139 J/(mol K)";
-        reproducedInCase "tutorials/props/curation/curate699_new_components_estimated";
+        reproducedInCase "data/curation/batches/new_components_estimated";
         uncertainty      { status unquantified; reason "inherits the errors of Joback's dHf_298 and dGf_298"; }
     }
     vaporPressure
@@ -209,7 +209,7 @@ provenance
         origin        fitted;
         method        "vaporPressureFit (three-parameter Antoine; objective twoStage: least squares in log10 P, then the largest relative error in P minimised from it; every usable study fitted, outliers above 15 % discarded by name)";
         methodVersion "choupoProps Choupo-dev";
-        fittedInCase  "tutorials/props/curation/curate624_vp_2Methyltetrahydrofuran";
+        fittedInCase  "data/curation/components/2Methyltetrahydrofuran";
         reviewStatus  autoPromoted;
         humanReviewed false;
         fitGrade      clean;   // DEV.md 4c C285: the worse of the grades below

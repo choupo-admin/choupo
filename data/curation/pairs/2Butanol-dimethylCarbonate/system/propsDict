@@ -1,0 +1,227 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  2Butanol-dimethylCarbonate -- AN NRTL PAIR FROM EVERY LABORATORY'S MEASUREMENTS.
+
+  WRITTEN BY bin/choupo-curate pair 2Butanol dimethylCarbonate (DEV.md 4c C284, the bulk run;
+  record docs/design/binary-pairs-from-open-measurements.md section 11).
+
+  THE DECLARATION -- WRITTEN AND COMMITTED BEFORE ANY FIT RAN (several
+  declarations of the bulk run share one commit).
+
+  IDENTITY.  2Butanol (CAS 78-92-2, InChIKey BTANRVKWQNVYAZ-UHFFFAOYSA-N)
+  + dimethylCarbonate (CAS 616-38-6, InChIKey IEJIGPNLZYLLBP-UHFFFAOYSA-N), joined
+  to the archive through identity.json -- never by name.  CLASS (C284): both
+  records are volatile molecular liquids (no role nonvolatile/solute, no
+  dissociatesTo, no charge, no solid, a vapour-pressure model), and every
+  measured temperature lies below both critical temperatures.
+
+  NO MEASURED SERIES IN THIS TREE.  constant/archiveDatasets names each
+  dataset (DOI, NIST URL, article sha256, extraction selector, extract
+  sha256); `bin/choupo-curate fetch` writes the points into
+  constant/archiveExtracts/, which is gitignored.
+
+  STUDIES: every bubble-temperature block of the pair at or below 110 kPa
+  with a declared uncertainty (3 block(s)).  FITTED, ALL OF THEM
+  (3):
+      10.1016/j.jct.2011.08.006      block 10   70 pts  5 isobars 40-93.32 kPa  335.83-366.43 K  U 0.12-5.4 K
+      10.1016/j.jct.2004.09.009      block 18   32 pts  101.3 kPa  361.93-371.33 K  U 0.34-0.35 K
+        (reports x of the other member: written as x[2Butanol] = 1 - x by --x-of)
+      10.1021/je030131q              block 28    9 pts  95.8 kPa  360.25-365.75 K  U 0.32-0.32 K
+        (reports x of the other member: written as x[2Butanol] = 1 - x by --x-of)
+  SET ASIDE BY THE EXTRACTION RULES, BY NAME:
+      (none)
+
+  THE RULE (DEV.md 4c C283 amended, C284).  Every laboratory above is
+  fitted; none is held out (the C16 partition and its band are retired as
+  the acceptance test).  NRTL, a_ij = a_ji = 0, alpha = 0.30 fixed: two
+  parameters (b_ij, b_ji); each point weighted by 1/U, U its own stated
+  expanded uncertainty.  Objective twoStage (least squares, then minimax;
+  T_bubble absolute, in K).  OUTLIERS: after a least-squares stage over every
+  point, a point with |T_model - T| > 3 K is discarded BY
+  NAME (`discard` on its evidence entry, listed below) and the fit repeated
+  without it.
+  THE GRADED ACCEPTANCE (DEV.md 4c C285, applied to pairs by C286): max
+  |T_model - T| over the KEPT points is GRADED -- clean up to 1 K,
+  warning up to 2 K, severe up to 4 K, refused above; a point with no
+  bubble point refuses. C283's relative clause (5 / 10 / 20 %) judges
+  composition; this fit has no composition residual, so only the
+  temperature clause applies. Every grade but refused is accepted and
+  promoted (autoPromoted, humanReviewed false) with `fitGrade` and its
+  max |dT| in the record's provenance; the engine voices a warning or a
+  severe grade on every run that reads the pair. A pair that splits ONE
+  liquid inside its validity span is not promoted, whatever its grade
+  (arm f).
+  Two starts: (0, 0) and (800, -400).
+
+  OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
+  @@OUTLIERS-BEGIN@@
+      none: every one of the 111 points lies within 3 K after the
+      least-squares stage.
+  @@OUTLIERS-END@@
+
+  @@RESULT-BEGIN@@
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 169.8 K, b_ji = 144.1 K over 111 kept points of 3
+  laboratories (0 discarded): max |dT| 1.377 K, mean 0.368 K, graded
+  warning (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (169.8, 144.1). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/2Butanol-dimethylCarbonate.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: fit grade
+  warning -- max |dT| 1.377 K over the 111 kept points (limits 1 / 2 / 4
+  K), one liquid across the validity span
+  @@RESULT-END@@
+
+  EARLIER FITS, SUPERSEDED BY THIS DECLARATION
+  @@EARLIER-BEGIN@@
+  C283 amended + C284, the bulk run of 2026-11-10: every laboratory
+  fitted, outliers beyond 3 K discarded by name, accepted only below 1 K
+  (superseded by the graded acceptance of C285, applied to pairs by C286;
+  this declaration keeps the same studies, the same outlier rule and the
+  same discards -- nothing re-partitioned): WHAT THE RUN FOUND (pinned in
+  `expected`; measured, not argued). fit_nrtl: b_ij = 169.8 K, b_ji =
+  144.1 K over 111 kept points of 3 laboratories (0 discarded): max |dT|
+  1.377 K, mean 0.368 K against the acceptance 1 K -> notAccepted.
+  fit_nrtl_start2 lands on the same pair (169.8, 144.1). NOT PROMOTABLE:
+  max |dT| 1.377 K over the 111 kept points is not below 1 K
+  @@EARLIER-END@@
+
+  WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
+  frame (ideal-gas vapour, the catalogue's own vapour-pressure records); the
+  measurements were transcribed by the archive and have NOT been read back
+  against the articles (the CHECKLIST that `fetch` writes is the aid).
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        fit_nrtl;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.2Butanol-dimethylCarbonate.b_ij;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.2Butanol-dimethylCarbonate.b_ji;  initial 0;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/2Butanol-dimethylCarbonate-bubble-j.jct.2011.08.006.dat";
+                role     fit;
+            }
+            {
+                dataset  "constant/archiveExtracts/2Butanol-dimethylCarbonate-bubble-j.jct.2004.09.009.dat";
+                role     fit;
+            }
+            {
+                dataset  "constant/archiveExtracts/2Butanol-dimethylCarbonate-bubble-je030131q.dat";
+                role     fit;
+            }
+        );
+
+        objective { method twoStage;  scale { T_bubble absolute; } }
+        residual
+        {
+            kind        T_bubble;
+            components  ( 2Butanol dimethylCarbonate );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_history.csv;
+            parity     parity.csv;
+            proposal   2Butanol-dimethylCarbonate.proposal.dat;
+        }
+    }
+    {
+        name        fit_nrtl_start2;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.2Butanol-dimethylCarbonate.b_ij;  initial 800;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.2Butanol-dimethylCarbonate.b_ji;  initial -400;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/2Butanol-dimethylCarbonate-bubble-j.jct.2011.08.006.dat";
+                role     fit;
+            }
+            {
+                dataset  "constant/archiveExtracts/2Butanol-dimethylCarbonate-bubble-j.jct.2004.09.009.dat";
+                role     fit;
+            }
+            {
+                dataset  "constant/archiveExtracts/2Butanol-dimethylCarbonate-bubble-je030131q.dat";
+                role     fit;
+            }
+        );
+
+        objective { method twoStage;  scale { T_bubble absolute; } }
+        residual
+        {
+            kind        T_bubble;
+            components  ( 2Butanol dimethylCarbonate );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            parity     parity_start2.csv;
+        }
+    }
+    {
+        name        txy_ideal;
+        type        propertyScan1D;
+        vary        { variable x[2Butanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 93.32 kPa;  composition { 2Butanol 0.5;  dimethylCarbonate 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model ideal; } } }
+        }
+        properties  ( T_bubble  y_eq_2Butanol );
+        output      { file txy_ideal.csv; }
+    }
+    {
+        name        txy_nrtl;
+        type        propertyScan1D;
+        vary        { variable x[2Butanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 93.32 kPa;  composition { 2Butanol 0.5;  dimethylCarbonate 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_2Butanol );
+        output      { file txy_nrtl.csv; }
+    }
+);
+
+experimental
+(
+);

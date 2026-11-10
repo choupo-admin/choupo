@@ -3,10 +3,10 @@
 
     bin/curate/pairs_px.py census                     every bubbleP block, accepted / refused by reason
     bin/curate/pairs_px.py list [--top N]             the ranked candidate pairs, by status
-    bin/curate/pairs_px.py declare [--top N] [--skip K] [--number N]
+    bin/curate/pairs_px.py declare [--top N] [--skip K]
                                                       write N declarations (no fit), no commit
-    bin/curate/pairs_px.py run [--only NUMS]          fit every declared, not yet fitted case
-    bin/curate/pairs_px.py promote [--only NUMS]      promote every accepted, one-liquid case
+    bin/curate/pairs_px.py run [--only STEMS]          fit every declared, not yet fitted case
+    bin/curate/pairs_px.py promote [--only STEMS]      promote every accepted, one-liquid case
 
 The MIRROR of bin/curate/pairs_c283.py (the bubble-TEMPERATURE pipeline), which
 it imports READ-ONLY for the class filter, the fit driver and the outlier
@@ -37,7 +37,7 @@ The class filter is C284's (both components volatile molecular liquids, every
 measured temperature below each Tc, no acetic acid, no pair already in
 data/standards/parameters/ in ANY model, and -- stated default of this
 pipeline -- every measured pressure at or below PMAX_KPA, because the vapour
-is the ideal gas).  Case numbers start at curate500.  No measured series is
+is the ideal gas).  No measured series is
 kept in the tree (constant/archiveDatasets + `bin/choupo-curate fetch`).
 """
 import importlib.machinery
@@ -64,7 +64,6 @@ _s = importlib.util.spec_from_loader("choupo_thermoml", _l)
 tm = importlib.util.module_from_spec(_s)
 _l.exec_module(tm)
 
-FIRST_NUMBER = 500
 PMAX_KPA = 110.0          # stated default: the vapour is the ideal gas
 OUTLIER_PCT = 20.0        # blatant outlier: relative pressure error after least squares
 MAJORITY = 0.5            # a study with more than this share of blatant points is discarded whole
@@ -170,10 +169,8 @@ def other_claims():
             parts = p.stem.split("-")
             if len(parts) >= 2:
                 out.add(frozenset(parts[-2:]))
-        for p in cc.curation_roots.all_case_dirs(base):   # every root, old and new (C295)
-            m = re.match(r"curate\d+_nrtl_([^_]+)_([^_]+)$", p.name)
-            if m:
-                out.add(frozenset(m.groups()))
+        for p, a, b in cc.curation_roots.pair_cases(base):   # every pair case (C295, C296)
+            out.add(frozenset((a, b)))
     return out
 
 
@@ -320,12 +317,6 @@ def plan(a, b, pmax, work):
 # --------------------------------------------------------------------------
 #  the case
 # --------------------------------------------------------------------------
-def next_number():
-    n = [int(m.group(1)) for p in cc.curation_case_dirs()
-         if (m := re.match(r"curate(\d+)_", p.name))]
-    return max([FIRST_NUMBER - 1] + [v for v in n if v >= FIRST_NUMBER]) + 1
-
-
 def decl_text(pl, case_rel):
     lines = [
         "/*--------------------------------*- Choupo -*--------------------------------*\\",
@@ -512,16 +503,17 @@ operations
     return hdr + body
 
 
-def write_case(pl, number):
+def write_case(pl, kind="Px"):
     c1, c2 = pl["c1"], pl["c2"]
-    name = f"curate{number:02d}_nrtl_{c1}_{c2}"
-    case = cc.CURATION / name
-    if case.exists():
-        refuse(f"{case.relative_to(ROOT)} exists -- never overwritten")
+    try:
+        case = cc.curation_roots.new_pair_case_dir(c1, c2, kind)
+    except FileExistsError as ex:
+        refuse(str(ex))
+    name = cc.label(case)
     stem = "-".join(sorted((c1, c2)))
     (case / "system").mkdir(parents=True)
     (case / "constant").mkdir()
-    (case / f"{name}.cho").write_text("")
+    (case / f"{case.name}.cho").write_text("")
     (case / "system" / "controlDict").write_text(f"""/*  {name}: an NRTL pair for {c1} + {c2} regressed by bin/curate/pairs_px.py
     to EVERY laboratory's measured bubble PRESSURES (DEV.md 4c C291).  See
     system/propsDict for the declaration and the result.  */
@@ -552,13 +544,12 @@ verbosity     2;
 
 
 def px_cases():
+    """Every P-x case this module wrote: (case, c1, c2, record stem)."""
     out = []
-    for p in cc.curation_case_dirs():
-        m = re.match(r"curate(\d+)_nrtl_([^_]+)_([^_]+)$", p.name)
-        if m and int(m.group(1)) >= FIRST_NUMBER and (p / cc.DECL).exists() \
-                and MARK in (p / "system" / "propsDict").read_text():
-            out.append((int(m.group(1)), p, m.group(2), m.group(3)))
-    return [(p, a, b, n) for n, p, a, b in sorted(out)]
+    for p, a, b in cc.curation_roots.pair_cases():
+        if (p / cc.DECL).exists() and MARK in (p / "system" / "propsDict").read_text():
+            out.append((p, a, b, cc.curation_roots.pair_stem(a, b)))
+    return out
 
 
 def case_of(a, b):
@@ -585,7 +576,7 @@ def outliers_of(case, rows, files):
     """rows: [x, T, P_exp_Pa, P_model_Pa, res_rel]."""
     pm = point_map(case, files, {})
     if len(pm) != len(rows):
-        refuse(f"{case.name}: the least-squares stage loaded {len(rows)} points and the "
+        refuse(f"{cc.label(case)}: the least-squares stage loaded {len(rows)} points and the "
                f"extracts list {len(pm)} -- the outliers cannot be named")
     doi = {s["file"].split("/")[-1]: s["doi"] for s in cc.parse_decl(case)}
     found, lines = {}, []
@@ -724,9 +715,9 @@ def run(case, pl):
     otxt = (f"{n_drop} point(s) of {len(rows)}: " + "; ".join(lines)) if n_drop else \
         f"none: every one of the {len(rows)} points lies within {OUTLIER_PCT:g} % after the least-squares stage."
     pd = case / "system" / "propsDict"
-    new = props_text(pl, case.name, stem, discards=found, outlier_txt=otxt)
+    new = props_text(pl, cc.label(case), stem, discards=found, outlier_txt=otxt)
     if normalise(new) != normalise(pd.read_text()):
-        refuse(f"{case.name}: the declaration on disk differs from the one the rules give "
+        refuse(f"{cc.label(case)}: the declaration on disk differs from the one the rules give "
                "-- a declaration is never rewritten after it was committed")
     pd.write_text(new)
     rc, out, rows, ptext = pc.fit_only(case, "twoStage")
@@ -794,7 +785,7 @@ def run(case, pl):
     pd.write_text(t)
     return {"verdict": verdict, "split": bool(split), "max": mx, "mean": mean, "kept": n_kept,
             "dropped": n_drop, "grade": grade, "nT": nT, "nL": nL, "reason": reason,
-            "case": case.name, "same": same}
+            "case": cc.label(case), "same": same}
 
 
 # --------------------------------------------------------------------------
@@ -849,7 +840,7 @@ def promote(a, b):
         refuse(f"no C291 case for {a} + {b}")
     recs = list((case / "constant" / "parameters" / "NRTL").glob("*.dat"))
     if len(recs) != 1:
-        refuse(f"{case.name} carries {len(recs)} NRTL records; expected its one")
+        refuse(f"{cc.label(case)} carries {len(recs)} NRTL records; expected its one")
     rp = recs[0]
     text = rp.read_text()
     if cc.existing_records(a, b):
@@ -936,8 +927,8 @@ def main(argv):
                     rec["outcome"] = "declared already"
                 else:
                     pl = plan(x, y, PMAX_KPA, work)
-                    case, _ = write_case(pl, next_number())
-                    rec["outcome"], rec["case"] = "declared", case.name
+                    case, _ = write_case(pl)
+                    rec["outcome"], rec["case"] = "declared", cc.label(case)
             except Refused as ex:
                 rec["outcome"] = "refused: " + str(ex)
             except SystemExit as ex:
@@ -951,19 +942,19 @@ def main(argv):
         return 0
     if a.cmd == "readback":
         for case, x, y, num in px_cases():
-            if a.only and str(num) not in a.only:
+            if a.only and num not in a.only:
                 continue
             if append_readback(case, x, y):
                 cc.seal(case)
                 rc, o, js = cc.run_props(case)
-                cc.say(f"[{case.name}] read-back op appended; sealed case exit {rc}")
+                cc.say(f"[{cc.label(case)}] read-back op appended; sealed case exit {rc}")
         return 0
     cases = px_cases()
     if a.only:
-        want = {int(v) for v in a.only}
+        want = set(a.only)
         cases = [c for c in cases if c[3] in want]
     for case, x, y, num in cases:
-        rec = {"case": case.name, "pair": [x, y]}
+        rec = {"case": cc.label(case), "pair": [x, y]}
         work = Path(tempfile.mkdtemp(prefix="pairs-px-"))
         try:
             rps = list((case / "constant" / "parameters" / "NRTL").glob("*.dat"))
@@ -975,7 +966,7 @@ def main(argv):
                     pl = plan(x, y, PMAX_KPA, work)
                     if normalise((case / cc.DECL).read_text()) != normalise(
                             decl_text(pl, case.relative_to(ROOT).as_posix())):
-                        refuse(f"{case.name}'s dataset declaration differs from the one the rules give now")
+                        refuse(f"{cc.label(case)}'s dataset declaration differs from the one the rules give now")
                     for s in pl["studies"]:
                         (case / cc.EXTRACTS).mkdir(parents=True, exist_ok=True)
                         shutil.copy(s["path"], case / cc.EXTRACTS / s["path"].name)
@@ -1003,7 +994,7 @@ def main(argv):
             rec["outcome"] = f"error: {type(ex).__name__}: {ex}"
         finally:
             shutil.rmtree(work, ignore_errors=True)
-        print(f"[{case.name}] {rec['outcome'][:300]}"
+        print(f"[{cc.label(case)}] {rec['outcome'][:300]}"
               + (f"  {rec['verdict']} grade {rec['grade']} max {rec['max']:.2f} %"
                  f"{' SPLITS' if rec.get('split') else ''}" if "verdict" in rec else ""), flush=True)
         out.append(rec)

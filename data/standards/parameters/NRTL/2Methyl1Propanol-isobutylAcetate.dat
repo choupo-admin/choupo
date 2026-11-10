@@ -28,7 +28,7 @@
   back against the articles marks it `reviewStatus reviewed; humanReviewed
   true;`.  Revert with `bin/choupo-curate revert 2Methyl1Propanol-isobutylAcetate`.
 
-  REPRODUCE: run tutorials/props/curation/curate128_nrtl_2Methyl1Propanol_isobutylAcetate (after `bin/choupo-curate fetch` on it); its fit
+  REPRODUCE: run data/curation/pairs/2Methyl1Propanol-isobutylAcetate (after `bin/choupo-curate fetch` on it); its fit
   writes 2Methyl1Propanol-isobutylAcetate.proposal.dat, which bin/curate/check_regressed_pairs.py holds
   equal to this record.
 \*---------------------------------------------------------------------------*/
@@ -57,7 +57,7 @@ provenance
     origin        fitted;
     method        "fitParameters(T_bubble), Levenberg-Marquardt";
     methodVersion "choupoProps Choupo-dev";
-    fittedInCase  "tutorials/props/curation/curate128_nrtl_2Methyl1Propanol_isobutylAcetate";
+    fittedInCase  "data/curation/pairs/2Methyl1Propanol-isobutylAcetate";
     reviewStatus  autoPromoted;
     humanReviewed false;
     fitGrade      warning;   // DEV.md 4c C285 (C286): max |T_model - T| over the kept points, graded 1 / 2 / 4 K

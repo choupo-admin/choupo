@@ -167,7 +167,7 @@ def count_curation_traces() -> dict:
         d = ROOT / curation_roots.CURATION_REL / o
         n = 0
         if d.is_dir():
-            for cd in d.glob("*/system/controlDict"):
+            for cd in d.glob("**/system/controlDict"):
                 if re.search(r"^\s*application\b", cd.read_text(), re.M):
                     n += 1
                     golden += (cd.parent.parent / "expected").is_file()

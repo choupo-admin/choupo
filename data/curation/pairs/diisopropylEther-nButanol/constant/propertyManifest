@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/diisopropylEther.dat"
+        {
+            type          imported;
+            sha256        "6b45fb87942cba6849ea2f42f7d6cb49d4528e835d1f21c29048fceeccea86b4";
+            computationalSha256 "53efee790e5c19c8bd17869b2bec4c3ecdca58f454a09607bb2e61f9a19009e9";
+            origin        "data/standards/components/diisopropylEther.dat";
+            originSha256  "357def78c8c89b1216f62ddb46f352dc2af6f86a1b4c487cc88100d809302b51";
+            release       Choupo-2608;
+        }
+        "components/nButanol.dat"
+        {
+            type          imported;
+            sha256        "b94c5a927292040755a5310af8d6b2b35eab4b09a5d42feca3c9079cf7cb05dc";
+            computationalSha256 "84b146c0b864097e855611306486ba58bbca0f893ff1cf743ffd992b673ed825";
+            origin        "data/standards/components/nButanol.dat";
+            originSha256  "5b25d70fce421e7c0496c1e6d83620f20a4ee7ca35e9e0cc4762f9059c7ec3d1";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/diisopropylEther-nButanol.dat"
+        {
+            type          imported;
+            sha256        "3a0d26e990e7988be031e1bee14ec2b430ee2dd422ed0be2f0f1ca96cf61f34f";
+            computationalSha256 "0afffe5f6207ed11400ca6802cc3075bba1e8810a0c72d680e347ed86369489a";
+            origin        "data/standards/parameters/NRTL/diisopropylEther-nButanol.dat";
+            originSha256  "e96b00ac118e1bf7095cd5bfbc79254bdbf91389cec3b59bd3df080f67eb975d";
+            release       Choupo-2608;
+        }
+    }
+}

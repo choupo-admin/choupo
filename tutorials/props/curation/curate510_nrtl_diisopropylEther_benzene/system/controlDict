@@ -1,7 +1,0 @@
-/*  curate510_nrtl_diisopropylEther_benzene: an NRTL pair for diisopropylEther + benzene regressed by bin/curate/pairs_px.py
-    to EVERY laboratory's measured bubble PRESSURES (DEV.md 4c C291).  See
-    system/propsDict for the declaration and the result.  */
-
-application   choupoProps;
-description   "NRTL diisopropylEther-benzene regressed to every laboratory's measured bubble pressures (ThermoML locates, the articles source), graded by max relative pressure error (clean 5 %, warning 10 %, severe 20 %, refused above; C285, C291)";
-verbosity     2;

@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/chloroform.dat"
+        {
+            type          imported;
+            sha256        "6be151f882172f8d5ae6500892038a926c189af1b420ff62488a78b9170d482e";
+            computationalSha256 "4b74a318b869383610da3b090af40078ce9b35bf42168fa8fc990acc7b277eee";
+            origin        "data/standards/components/chloroform.dat";
+            originSha256  "ce6cc1f0babb4e035ae33118d8a4876d3a0bb9954605ed196ff04e41545c0458";
+            release       Choupo-2608;
+        }
+        "components/methylEthylKetone.dat"
+        {
+            type          imported;
+            sha256        "586be099c39ea991906a44b6e4174465bc5e616d454876c74d82213df9047df8";
+            computationalSha256 "9482c1f6a07785e2c4edc34219616f07e0c69837a8d3d2343ead92c064a412cb";
+            origin        "data/standards/components/methylEthylKetone.dat";
+            originSha256  "94912c130c9f2e982c8024d262432ce98809290bc68daaad011926f80f84413a";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/chloroform-methylEthylKetone.dat"
+        {
+            type          imported;
+            sha256        "382955e434d4fa492f88d5c3236dd71daf6b9b9b915dd0db4040325ad1abec73";
+            computationalSha256 "ca66a5b3421a847d5f11f9a66c0b3d6ca3210d2f762925bb09a084e426787ff0";
+            origin        "data/standards/parameters/NRTL/chloroform-methylEthylKetone.dat";
+            originSha256  "818ff9dd8d296338a6dd970bfbec765a2cc914470f8a017b5dd0fef3d4cc5132";
+            release       Choupo-2608;
+        }
+    }
+}

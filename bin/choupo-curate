@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """choupo-curate -- the C16 chain for one binary pair, as ONE command.
 
-    bin/choupo-curate pair A B [--pmax 110] [--number N] [--plan] [--no-commit]
+    bin/choupo-curate pair A B [--pmax 110] [--plan] [--no-commit]
     bin/choupo-curate pair A B --promote
     bin/choupo-curate fetch <case>
     bin/choupo-curate revert <pair-file-stem>
@@ -42,7 +42,7 @@ the decided rules and decides nothing new:
      (the larger of the two, measured with no pair, by the engine), as a % of
      the held-out mean T, rounded UP to two significant figures; the Antoine
      term is ZERO when the study reports no pure endpoint.
-  6. CASE.  data/curation/pairs/curateNN_nrtl_<A>_<B> on the shape of
+  6. CASE.  data/curation/pairs/<a>-<b> (the record's own stem) on the shape of
      curate06/curate09: two fits from two starts, ideal/UNIFAC/NRTL overlays.
      The declaration (partition, triage, band and its origin sentence) is
      WRITTEN and COMMITTED before any fit runs, so it can be read against the
@@ -96,8 +96,8 @@ import curation_roots  # noqa: E402  (where a curation case lives: ONE home, DEV
 PROPS = ROOT / "choupoProps"
 THERMOML = ROOT / "bin" / "choupo-thermoml"
 IMPORT = ROOT / "bin" / "choupo-import"
-CURATION = curation_roots.PAIRS        # a pair case is born here (C295)
-VP_CURATION = curation_roots.VP        # a vapour-pressure case is born here
+CURATION = curation_roots.PAIRS        # a pair case is born under here (C295, C296)
+VP_CURATION = curation_roots.COMPONENTS   # a vapour-pressure case is born here
 STD_PARAMS = ROOT / "data" / "standards" / "parameters"
 STD_NRTL = STD_PARAMS / "NRTL"
 DECL = "constant/archiveDatasets"
@@ -597,13 +597,14 @@ def triage_text(triage):
 #  6. the case
 # --------------------------------------------------------------------------
 def curation_case_dirs():
-    """Every curateNN case in every curation root (C295: the roots are
-    curation_roots' to name; a scan for a case looks in all of them)."""
+    """Every curation case in every curation root (C295: the roots are
+    curation_roots' to name; a case is found by walking, never by a number)."""
     return curation_roots.all_case_dirs()
 
 
-def next_number():
-    return max(curation_roots.numbers()) + 1
+def label(case):
+    """A case's name in prose: its path under data/curation, origin dropped."""
+    return curation_roots.label(case)
 
 
 def has_unifac(comp):
@@ -806,16 +807,17 @@ operations
     return hdr + body
 
 
-def write_case(pl, number):
+def write_case(pl, kind="Tx"):
     c1, c2 = pl["c1"], pl["c2"]
-    name = f"curate{number:02d}_nrtl_{c1}_{c2}"
-    case = CURATION / name
-    if case.exists():
-        refuse(f"{case.relative_to(ROOT)} exists -- never overwritten")
+    try:
+        case = curation_roots.new_pair_case_dir(c1, c2, kind)
+    except FileExistsError as ex:
+        refuse(str(ex))
+    name = label(case)
     stem = "-".join(sorted((c1, c2)))   # the loader opens the ALPHABETICAL name (NRTL.cpp alphaPairFilename)
     (case / "system").mkdir(parents=True)
     (case / "constant").mkdir()
-    (case / f"{name}.cho").write_text("")
+    (case / f"{case.name}.cho").write_text("")
     (case / "system" / "controlDict").write_text(f"""/*  {name}: an NRTL pair for {c1} + {c2} regressed by bin/choupo-curate to
     MEASURED bubble temperatures from one article and scored on another it
     never saw.  See system/propsDict for the declaration and the result.  */
@@ -942,7 +944,7 @@ def fetch(case, quiet=False):
                                       x_of=d.get("xOf"))
                 what = f"extract-px refused doi {d['doi']} block {d['block']}"
             elif d.get("extractor"):
-                refuse(f"{case.name}: dataset of doi {d['doi']} declares extractor "
+                refuse(f"{label(case)}: dataset of doi {d['doi']} declares extractor "
                        f"`{d['extractor']}`, which this tool does not know")
             else:
                 out, why = extract(src, d["block"], tmp / "x", fake_cache=fake,
@@ -1058,7 +1060,7 @@ def run_pipeline(case, stem, pl, commit):
                  and EXTRACTS not in p.relative_to(case).as_posix()]
         git(["add", "--"] + [str(p) for p in files])
         git(["commit", "-q", "-m",
-             f"C282: {case.name} -- the declaration, before any fit\n\n"
+             f"C282: {label(case)} -- the declaration, before any fit\n\n"
              f"bin/choupo-curate pair {c1} {c2}: partition (fit doi {pl['fit']['doi']}, "
              f"held out doi {pl['held']['doi']}), triage and band maxAAD "
              f"{pl['band_txt']} % written before the fit runs, so it can be read "
@@ -1114,7 +1116,7 @@ def seal(case):
     p = subprocess.run([sys.executable, "-I", str(IMPORT), str(case)],
                        capture_output=True, text=True, env=env(), timeout=1800)
     if p.returncode != 0:
-        refuse(f"bin/choupo-import {case.name} exited {p.returncode}: "
+        refuse(f"bin/choupo-import {label(case)} exited {p.returncode}: "
                f"{(p.stdout + p.stderr)[-800:]}")
 
 
@@ -1167,12 +1169,13 @@ def git(args):
 #  9. promotion and its revert
 # --------------------------------------------------------------------------
 def find_case(c1, c2):
-    for p in curation_case_dirs():
-        if re.match(rf"curate\d+_nrtl_({re.escape(c1)}_{re.escape(c2)}|"
-                    rf"{re.escape(c2)}_{re.escape(c1)})$", p.name) \
-                and (p / DECL).exists():
-            return p
-    return None
+    """The pair's case written by this tool (a pair with two cases: the one
+    the record names, `Tx`, is preferred)."""
+    stem = curation_roots.pair_stem(c1, c2)
+    found = [p for p, a, b in curation_roots.pair_cases()
+             if curation_roots.pair_stem(a, b) == stem and (p / DECL).exists()]
+    found.sort(key=lambda p: (p.name != "Tx", p.name))
+    return found[0] if found else None
 
 
 def promote(a, b):
@@ -1183,7 +1186,7 @@ def promote(a, b):
                f"`bin/choupo-curate pair {a} {b}` first")
     recs = list((case / "constant" / "parameters" / "NRTL").glob("*.dat"))
     if len(recs) != 1:
-        refuse(f"{case.name} carries {len(recs)} NRTL records; expected its one")
+        refuse(f"{label(case)} carries {len(recs)} NRTL records; expected its one")
     rp = recs[0]
     text = rp.read_text()
     have = existing_records(a, b)
@@ -1199,7 +1202,7 @@ def promote(a, b):
     decl = (case / "system" / "propsDict").read_text()
     tri = re.search(r"TRIAGE \(C226.*?\n\n", decl, re.S)
     if tri is None or "NOT RUN" in tri.group(0):
-        refuse(f"{case.name}: the study triage of C226 item 3 did not run (fewer than "
+        refuse(f"{label(case)}: the study triage of C226 item 3 did not run (fewer than "
                "three usable studies, or no triage declared) -- it is a condition of "
                "AUTOMATIC promotion; a human may still promote by the C16 route")
     case_rel = case.relative_to(ROOT).as_posix()
@@ -1239,7 +1242,7 @@ def promote(a, b):
                 "(REVERTED by `choupo-curate revert`, then promoted again on "
                 f"{date.today().isoformat()})")
     say(f"choupo-curate: PROMOTED {dest.relative_to(ROOT)} (autoPromoted, "
-        f"humanReviewed false); {case.name} re-sealed on it")
+        f"humanReviewed false); {label(case)} re-sealed on it")
     return 0
 
 
@@ -1296,12 +1299,12 @@ def revert(stem):
             rp.write_text(old_case)
         if old_man is not None:
             man.write_text(old_man)
-        refuse(f"bin/choupo-import on {case.name} exited "
+        refuse(f"bin/choupo-import on {label(case)} exited "
                f"{p.returncode}; nothing reverted: {(p.stdout + p.stderr)[-600:]}")
     mark_result(case, "PROMOTED on", "PROMOTED (and since REVERTED by `choupo-curate "
                 "revert`) on")
     say(f"choupo-curate: REVERTED {dest.relative_to(ROOT)}; the record is case-local "
-        f"again in {case.name}")
+        f"again in {label(case)}")
     return 0
 
 
@@ -1310,7 +1313,7 @@ def revert(stem):
 # ==========================================================================
 #  THE PURE-COMPONENT VAPOUR-PRESSURE MODE (DEV.md 4c C281 step 2)
 #
-#      choupo-curate vp <component> [--plan] [--number N] [--no-commit] [--resume]
+#      choupo-curate vp <component> [--plan] [--no-commit] [--resume]
 #      choupo-curate vp <component> --promote
 #      choupo-curate revert <component>     (a vapour pressure this mode promoted)
 #
@@ -1343,7 +1346,7 @@ def revert(stem):
 #       promoted only if its own normal boiling point (P = 101.325 kPa) lies
 #       within TB_TOL_K of the record's Tb.  Inside the measured span the
 #       held-out verdict is the test.  Declared in the case before the fit.
-#    6. CASE curateNN_vp_<component>, the declaration COMMITTED before any
+#    6. CASE data/curation/components/<component>, the declaration COMMITTED before any
 #       fit; no measured series in the tree (constant/archiveDatasets, as
 #       `pair`).  Not sealed: the fit reads no catalogue record, and the
 #       run must read the CATALOGUE record so it can voice its status.
@@ -1697,22 +1700,20 @@ operations
 
 
 def vp_case_dir(comp):
-    for p in curation_case_dirs():
-        if re.match(rf"curate\d+_vp_{re.escape(comp)}$", p.name) and (p / DECL).exists():
-            return p
-    return None
+    p = VP_CURATION / comp
+    return p if (p / DECL).exists() else None
 
 
-def vp_write_case(pl, number):
+def vp_write_case(pl):
     comp = pl["comp"]
-    name = f"curate{number:02d}_vp_{comp}"
-    case = VP_CURATION / name
+    case = VP_CURATION / comp
+    name = label(case)
     if case.exists():
         refuse(f"{case.relative_to(ROOT)} exists -- a declaration is never rewritten")
     case_rel = case.relative_to(ROOT).as_posix()
     (case / "system").mkdir(parents=True)
     (case / "constant").mkdir()
-    (case / f"{name}.cho").write_text("")
+    (case / f"{case.name}.cho").write_text("")
     (case / "system" / "controlDict").write_text(
         f"""/*  {name}: the vapour pressure of {comp} refitted as an Antoine to MEASURED
     vapour pressures from every usable laboratory (DEV.md 4c C281, C283).
@@ -1759,13 +1760,13 @@ def vp_run(case):
         shutil.copytree(case, sc)
         rc, out, js = run_props(sc)
         if rc != 0 or js is None:
-            return None, f"{case.name} exited {rc}: {out[-600:]}"
+            return None, f"{label(case)} exited {rc}: {out[-600:]}"
     finally:
         shutil.rmtree(work, ignore_errors=True)
     op = op_result(js, "fit_antoine") or {}
     d, cu = op.get("diagnostics", {}), op.get("curation", {})
     decl = parse_decl(case)
-    comp = case.name.split("_vp_")[1]
+    comp = case.name
     rec = vp_record(comp).read_text()
     dropped = vp_dropped(cu.get("outliersDropped", ""))
     studies = []
@@ -1782,7 +1783,7 @@ def vp_run(case):
                         "T": kT, "P": kP})
         kept_T += kT; kept_P += kP
     if len(kept_T) != int(d.get("n_points", -1)):
-        return None, (f"{case.name}: the tool reconstructs {len(kept_T)} kept points, the "
+        return None, (f"{label(case)}: the tool reconstructs {len(kept_T)} kept points, the "
                       f"engine fitted {d.get('n_points')} -- the outlier list does not "
                       "name what the engine discarded")
     awr = [abs(aw_psat_kPa(t, rec) / pk - 1.0) for t, pk in zip(kept_T, kept_P)]
@@ -1862,7 +1863,7 @@ def vp_judge(case, rf):
     that decided it."""
     decl = (case / "system" / "propsDict").read_text()
     if VP_RULE_MARK not in decl:
-        refuse(f"{case.name} does not declare the C285 graded acceptance -- "
+        refuse(f"{label(case)} does not declare the C285 graded acceptance -- "
                f"`bin/choupo-curate vp <c> --redeclare` first")
     acc, declared = vp_acceptance(case)
     rf["acceptance"] = acc
@@ -1880,7 +1881,7 @@ def vp_judge(case, rf):
             f"{rf['n_dropped']} discarded as outliers; max relative error "
             f"{rf['max_pct']:.4g} % (mean {rf['aad_pct']:.4g} %), grade {gP} (limits "
             + " / ".join(f"{x:g}" for x in acc["maxRel"]) + " %)")
-    comp = case.name.split("_vp_")[1]
+    comp = case.name
     gap = None if Tb is None else Tnb - Tb
     gtxt = "" if Tb is None else (f"normal boiling point {Tnb:.2f} K, {gap:+.2f} K from "
                                   f"the record's Tb {Tb:g} K")
@@ -1940,7 +1941,7 @@ def vp_redeclare(pl, no_commit):
     pd = case / "system" / "propsDict"
     old = pd.read_text()
     if VP_RULE_MARK in old:
-        refuse(f"--redeclare: {case.name} already declares the C285 graded acceptance")
+        refuse(f"--redeclare: {label(case)} already declares the C285 graded acceptance")
     c283 = VP_RULE_MARK_C283 in old
     if c283:
         #  C285 changes the ACCEPTANCE only: the evidence is never re-partitioned
@@ -1949,7 +1950,7 @@ def vp_redeclare(pl, no_commit):
         have = {(d["doi"], d["sha256"]) for d in (parse_decl(case) or [])}
         now = {(s["doi"], sha_file(s["path"])) for s in pl["studies"]}
         if have != now:
-            refuse(f"--redeclare: {case.name} declares the studies {sorted(have)} and the "
+            refuse(f"--redeclare: {label(case)} declares the studies {sorted(have)} and the "
                    f"extraction rules give {sorted(now)} now -- C285 changes the "
                    "acceptance only; the evidence is never re-partitioned")
     #  C283 (amended) changes the EVIDENCE by ruling: every usable study is
@@ -1969,7 +1970,7 @@ def vp_redeclare(pl, no_commit):
     else:
         earlier = ("C281 step 2, objective leastSquares (log10 P), the same partition "
                    "and band: " + prev)
-    pd.write_text(vp_props_text(pl, case.name, earlier))
+    pd.write_text(vp_props_text(pl, label(case), earlier))
     (case / DECL).write_text(vp_decl_text(pl, case.relative_to(ROOT).as_posix()))
     for st in pl["studies"]:
         (case / EXTRACTS).mkdir(parents=True, exist_ok=True)
@@ -1980,7 +1981,7 @@ def vp_redeclare(pl, no_commit):
     if not no_commit:
         git(["add", "--", str(pd), str(case / DECL)])
         git(["commit", "-q", "-m",
-             f"C285: {case.name} -- the new declaration, before the fit\n\n"
+             f"C285: {label(case)} -- the new declaration, before the fit\n\n"
              f"bin/choupo-curate vp {pl['comp']} --redeclare (DEV.md 4c C285): the "
              f"same {len(pl['studies'])} studies (every usable one, none held out, "
              f"not re-partitioned); objective {VP_OBJECTIVE}; outliers above "
@@ -2022,18 +2023,18 @@ def vp_main(a):
                                     "", s, flags=re.S)
             if (case / DECL).read_text() != vp_decl_text(pl, case.relative_to(ROOT).as_posix()) \
                     or norm((case / "system" / "propsDict").read_text()) != \
-                    norm(vp_props_text(pl, case.name, earlier_of(case))):
-                refuse(f"--resume: {case.name}'s declaration differs from the one the "
+                    norm(vp_props_text(pl, label(case), earlier_of(case))):
+                refuse(f"--resume: {label(case)}'s declaration differs from the one the "
                        "rules give now -- a declaration is never rewritten after it "
                        "was committed")
         else:
-            case = vp_write_case(pl, a.number or next_number())
+            case = vp_write_case(pl)
             if not a.no_commit:
                 files = [p for p in case.rglob("*") if p.is_file()
                          and EXTRACTS not in p.relative_to(case).as_posix()]
                 git(["add", "--"] + [str(p) for p in files])
                 git(["commit", "-q", "-m",
-                     f"C285: {case.name} -- the declaration, before any fit\n\n"
+                     f"C285: {label(case)} -- the declaration, before any fit\n\n"
                      f"bin/choupo-curate vp {pl['comp']}: every usable study "
                      f"({len(pl['studies'])}) fitted, objective {VP_OBJECTIVE}, "
                      f"outliers above {VP_OUTLIER_PCT:g} % discarded by name, the "
@@ -2193,7 +2194,6 @@ def main():
     p.add_argument("a")
     p.add_argument("b")
     p.add_argument("--pmax", type=float, default=110.0)
-    p.add_argument("--number", type=int)
     p.add_argument("--plan", action="store_true", help="print the declaration, write nothing")
     p.add_argument("--no-commit", action="store_true")
     p.add_argument("--promote", action="store_true")
@@ -2202,7 +2202,6 @@ def main():
                         "declaration is unchanged and run it")
     v = sp.add_parser("vp", help="refit ONE compound's estimated vapour pressure (C281)")
     v.add_argument("component")
-    v.add_argument("--number", type=int)
     v.add_argument("--plan", action="store_true", help="print the declaration, write nothing")
     v.add_argument("--no-commit", action="store_true")
     v.add_argument("--promote", action="store_true")
@@ -2247,12 +2246,12 @@ def main():
             stem = "-".join(sorted((pl["c1"], pl["c2"])))
             want = decl_text(pl, case.relative_to(ROOT).as_posix())
             unifac = has_unifac(pl["c1"]) and has_unifac(pl["c2"])
-            wantp = props_text(pl, case.name, stem, unifac)
+            wantp = props_text(pl, label(case), stem, unifac)
             norm = lambda s: re.sub(r"  @@PILOT-BEGIN@@.*?@@PILOT-END@@\n\n", "", re.sub(
                 r"@@RESULT-BEGIN@@.*?@@RESULT-END@@", "", s, flags=re.S), flags=re.S)
             if (case / DECL).read_text() != want or \
                     norm((case / "system" / "propsDict").read_text()) != norm(wantp):
-                refuse(f"--resume: {case.name}'s declaration differs from the one the "
+                refuse(f"--resume: {label(case)}'s declaration differs from the one the "
                        "rules give now -- a declaration is never rewritten after it "
                        "was committed")
             for s in (pl["fit"], pl["held"]):
@@ -2260,7 +2259,7 @@ def main():
                 shutil.copy(s["path"], case / EXTRACTS / s["path"].name)
             commit = False
         else:
-            case, stem = write_case(pl, a.number or next_number())
+            case, stem = write_case(pl)
             commit = not a.no_commit
         say(f"  case     {case.relative_to(ROOT)}")
         rf, split, reason = run_pipeline(case, stem, pl, commit)

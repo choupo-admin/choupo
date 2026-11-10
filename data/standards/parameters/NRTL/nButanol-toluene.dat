@@ -27,7 +27,7 @@
   articles marks it `reviewStatus reviewed; humanReviewed true;`.  Revert with
   `bin/choupo-curate revert nButanol-toluene`.
 
-  REPRODUCE: run tutorials/props/curation/curate508_nrtl_nButanol_toluene (after `bin/choupo-curate fetch` on it); its fit
+  REPRODUCE: run data/curation/pairs/nButanol-toluene (after `bin/choupo-curate fetch` on it); its fit
   writes nButanol-toluene.proposal.dat, which bin/curate/check_regressed_pairs.py holds
   equal to this record.
 \*---------------------------------------------------------------------------*/
@@ -56,7 +56,7 @@ provenance
     origin        fitted;
     method        "fitParameters(P_bubble), Levenberg-Marquardt";
     methodVersion "choupoProps Choupo-dev";
-    fittedInCase  "tutorials/props/curation/curate508_nrtl_nButanol_toluene";
+    fittedInCase  "data/curation/pairs/nButanol-toluene";
     reviewStatus  autoPromoted;
     humanReviewed false;
     fitGrade      clean;   // DEV.md 4c C285 (C291): max |P_model - P|/P over the kept points, graded 5 / 10 / 20 %

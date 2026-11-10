@@ -1,0 +1,57 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of diButylCarbonate
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/diButylCarbonate-vapourPressure-acs.jced.6b00517.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/acs.jced.6b00517";
+        url           "https://trc.nist.gov/ThermoML/10.1021/acs.jced.6b00517.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/acs.jced.6b00517.json";
+        articleFile   "acs.jced.6b00517.xml";
+        articleSha256 "46b268a0f01c7631c1edc996105125bbbb0a70f05ab8baa63b5601cbe38d2f5b";
+        extractor     vapourPressure;
+        inchiKey      "QLVWOKQMDLQXNN-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey QLVWOKQMDLQXNN-UHFFFAOYSA-N --into <dir>";
+        sha256        "3c139608c4d516c8e3b8e0d5a09f895f5777904e5a9c5337e276a0c53322d295";
+        identity
+        {
+            diButylCarbonate { cas "542-52-9"; inchiKey "QLVWOKQMDLQXNN-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/diButylCarbonate-vapourPressure-j.jct.2008.02.012.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1016/j.jct.2008.02.012";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.jct.2008.02.012.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.jct.2008.02.012.json";
+        articleFile   "j.jct.2008.02.012.xml";
+        articleSha256 "be53748e8b6274105a9c4cfc3e0cbd9cd338284829286478fff629568fa8cc72";
+        extractor     vapourPressure;
+        inchiKey      "QLVWOKQMDLQXNN-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey QLVWOKQMDLQXNN-UHFFFAOYSA-N --into <dir>";
+        sha256        "29c5f0f11aa77289573c4f68b6a774994c5a28ed9dbbea94b3df5f9c78293211";
+        identity
+        {
+            diButylCarbonate { cas "542-52-9"; inchiKey "QLVWOKQMDLQXNN-UHFFFAOYSA-N"; }
+        }
+    }
+);

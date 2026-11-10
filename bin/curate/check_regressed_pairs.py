@@ -839,7 +839,7 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
                              strip_comments(decl), re.S)
             if mdoi:
                 pts += [(mdoi.group(1), t, pk) for t, pk in rows]
-        work = tmp / ("vp-" + case.name)
+        work = tmp / ("vp-" + case.relative_to(ROOT).as_posix().replace("/", "__"))
         shutil.copytree(case, work)
         pr = subprocess.run([str(PROPS), "."], cwd=str(work), capture_output=True,
                             text=True, timeout=900, env=dict(os.environ, CHOUPO_HOME=str(ROOT)))
@@ -1393,7 +1393,9 @@ def main():
             #  2026-10-05) is held to the fit exactly as the original is.
             #  Copying the case twice into one work directory collided, so the
             #  run is made once and each record is compared against it.
-            work = tmp / case.name
+            #  Named by the case's whole path: two sibling cases of one pair share
+            #  a leaf name in every pair that has two (`Tx`, C296).
+            work = tmp / case.relative_to(ROOT).as_posix().replace("/", "__")
             if case_rel not in runs:
                 shutil.copytree(case, work)
                 for stale in work.glob("*.proposal.dat"):

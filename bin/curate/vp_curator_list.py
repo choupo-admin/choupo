@@ -71,8 +71,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="docs/reviews/2026-11-10-vapour-pressure-curator-list.md")
     a = ap.parse_args()
-    comps = sorted(p.name.split("_vp_")[1] for p in curation_roots.all_case_dirs()
-                   if re.match(r"curate\d+_vp_", p.name))
+    comps = sorted(p.name for p in curation_roots.COMPONENTS.iterdir()
+                   if curation_roots.is_case(p))
     index = cur.cache_root() / "index.json"
     if not index.exists():
         print(f"vp_curator_list: NOT RUN -- no ThermoML cache index at {index}; the "

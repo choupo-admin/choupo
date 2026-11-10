@@ -1,0 +1,125 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of 3Methyl1Butanol
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/3Methyl1Butanol-vapourPressure-je900812v.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je900812v";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je900812v.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je900812v.json";
+        articleFile   "je900812v.xml";
+        articleSha256 "17baa5eb23d1fe8dcc8e8158f02409943c10e8c4da0395a5fb631b19bd807008";
+        extractor     vapourPressure;
+        inchiKey      "PHTQWCKDNZKARW-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey PHTQWCKDNZKARW-UHFFFAOYSA-N --into <dir>";
+        sha256        "3bb639ae2b33d8f082209e793e697bcb0625f6a2151f390a7a6e0b7cc4526c45";
+        identity
+        {
+            3Methyl1Butanol { cas "123-51-3"; inchiKey "PHTQWCKDNZKARW-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/3Methyl1Butanol-vapourPressure-je800298n.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je800298n";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je800298n.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je800298n.json";
+        articleFile   "je800298n.xml";
+        articleSha256 "005abc28889e7df8eab6f17a818201c83126d1d427ec31f7e323342c1701db64";
+        extractor     vapourPressure;
+        inchiKey      "PHTQWCKDNZKARW-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey PHTQWCKDNZKARW-UHFFFAOYSA-N --into <dir>";
+        sha256        "f6f0769b18241a598e606169f4a50f55641461fe3b412faae510c1ce9ef4e2d8";
+        identity
+        {
+            3Methyl1Butanol { cas "123-51-3"; inchiKey "PHTQWCKDNZKARW-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/3Methyl1Butanol-vapourPressure-j.fluid.2012.11.004.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1016/j.fluid.2012.11.004";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2012.11.004.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2012.11.004.json";
+        articleFile   "j.fluid.2012.11.004.xml";
+        articleSha256 "1bce50f23a3d220c3157b69fcdd418608fc3a50f4e050baa0b32e8e27d674918";
+        extractor     vapourPressure;
+        inchiKey      "PHTQWCKDNZKARW-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey PHTQWCKDNZKARW-UHFFFAOYSA-N --into <dir>";
+        sha256        "e92df66c75ff3bc879450b1f9f27cb7b9dd16d76385496daa2cf96238bc0de25";
+        identity
+        {
+            3Methyl1Butanol { cas "123-51-3"; inchiKey "PHTQWCKDNZKARW-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/3Methyl1Butanol-vapourPressure-j.jct.2009.04.009.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1016/j.jct.2009.04.009";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.jct.2009.04.009.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.jct.2009.04.009.json";
+        articleFile   "j.jct.2009.04.009.xml";
+        articleSha256 "17164925926c86aae894df78aaad5249cbe0a7f1092f15b56f938237ba258aa3";
+        extractor     vapourPressure;
+        inchiKey      "PHTQWCKDNZKARW-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey PHTQWCKDNZKARW-UHFFFAOYSA-N --into <dir>";
+        sha256        "f7d60c50defdb14f64b5dd1acc8cc5509ae6ee36e424a71bdaf74f2e6a7d9d52";
+        identity
+        {
+            3Methyl1Butanol { cas "123-51-3"; inchiKey "PHTQWCKDNZKARW-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/3Methyl1Butanol-vapourPressure-j.fluid.2010.06.020.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1016/j.fluid.2010.06.020";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2010.06.020.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2010.06.020.json";
+        articleFile   "j.fluid.2010.06.020.xml";
+        articleSha256 "8712869c270385cc5c173d45bf7021d373c2edac50e32903a1f874d7b8a5fa93";
+        extractor     vapourPressure;
+        inchiKey      "PHTQWCKDNZKARW-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey PHTQWCKDNZKARW-UHFFFAOYSA-N --into <dir>";
+        sha256        "812b5419347b1dda82e24ec1f30d748f4a78ea2e27948f7e18ed6087db882082";
+        identity
+        {
+            3Methyl1Butanol { cas "123-51-3"; inchiKey "PHTQWCKDNZKARW-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/3Methyl1Butanol-vapourPressure-acs.jced.7b01128.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/acs.jced.7b01128";
+        url           "https://trc.nist.gov/ThermoML/10.1021/acs.jced.7b01128.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/acs.jced.7b01128.json";
+        articleFile   "acs.jced.7b01128.xml";
+        articleSha256 "6745bdc0beec2fa3fa8d1493f40cfd46ffa6dea83ecb70fb52646a21d3abc433";
+        extractor     vapourPressure;
+        inchiKey      "PHTQWCKDNZKARW-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey PHTQWCKDNZKARW-UHFFFAOYSA-N --into <dir>";
+        sha256        "6524032bca9000ec8c0e662f7d023c78e81503c5bae1a55a9c5179dfc99165dc";
+        identity
+        {
+            3Methyl1Butanol { cas "123-51-3"; inchiKey "PHTQWCKDNZKARW-UHFFFAOYSA-N"; }
+        }
+    }
+);

@@ -21,12 +21,21 @@
     "engines": 5
   },
   "tutorials": {
-    "runnableCases": 734,
-    "regressionChecks": 718,
+    "runnableCases": 533,
+    "regressionChecks": 517,
     "byTier": {
-      "witness": 676,
+      "witness": 475,
       "tutorial": 42,
       "showcase": 16
+    }
+  },
+  "curationTraces": {
+    "cases": 201,
+    "regressionChecks": 201,
+    "byOrigin": {
+      "pairs": 134,
+      "components": 65,
+      "batches": 2
     }
   },
   "totals": {

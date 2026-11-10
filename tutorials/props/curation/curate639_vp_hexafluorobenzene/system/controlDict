@@ -1,7 +1,0 @@
-/*  curate639_vp_hexafluorobenzene: the vapour pressure of hexafluorobenzene refitted as an Antoine to MEASURED
-    vapour pressures from every usable laboratory (DEV.md 4c C281, C283).
-    See system/propsDict for the declaration and the result.  */
-
-application   choupoProps;
-description   "Antoine vapour pressure of hexafluorobenzene fitted by the curation pipeline to the measured vapour pressures of every usable laboratory (ThermoML locates, the articles source), outliers discarded by name";
-verbosity     2;

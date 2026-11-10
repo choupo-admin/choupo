@@ -28,7 +28,7 @@
   articles marks it `reviewStatus reviewed; humanReviewed true;`.  Revert with
   `bin/choupo-curate revert 1Propanol-benzene`.
 
-  REPRODUCE: run tutorials/props/curation/curate530_nrtl_benzene_1Propanol (after `bin/choupo-curate fetch` on it); its fit
+  REPRODUCE: run data/curation/pairs/1Propanol-benzene (after `bin/choupo-curate fetch` on it); its fit
   writes 1Propanol-benzene.proposal.dat, which bin/curate/check_regressed_pairs.py holds
   equal to this record.
 \*---------------------------------------------------------------------------*/
@@ -57,7 +57,7 @@ provenance
     origin        fitted;
     method        "fitParameters(P_bubble), Levenberg-Marquardt";
     methodVersion "choupoProps Choupo-dev";
-    fittedInCase  "tutorials/props/curation/curate530_nrtl_benzene_1Propanol";
+    fittedInCase  "data/curation/pairs/1Propanol-benzene";
     reviewStatus  autoPromoted;
     humanReviewed false;
     fitGrade      clean;   // DEV.md 4c C285 (C291): max |P_model - P|/P over the kept points, graded 5 / 10 / 20 %
