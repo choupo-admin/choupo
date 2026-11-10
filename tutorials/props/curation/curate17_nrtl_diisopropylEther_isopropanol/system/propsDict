@@ -14,6 +14,33 @@
   below was decided before this tool existed (C16, C225, C226); the tool
   applies them and decides nothing.
 
+  @@PILOT-BEGIN@@
+  WHY THIS PAIR -- THE PILOT RANKING (C282; added after the run, but the
+  ranking reads ONLY the archive index and was computed before any fit).
+  Candidates: both components in the catalogue, NO record for the pair in
+  any model directory of data/standards/parameters/, no acetic acid (vapour
+  dimerisation, C16), no component whose vapour pressure is AmbroseWalton
+  (C281), and (checked for the five chosen) no binary block in the archive
+  with a second liquid.  Ranked
+  by the number of mutually author-disjoint isobaric bubble-T studies at or
+  below 110 kPa with a declared uncertainty, then by their total points:
+     1 methanol + dimethylCarbonate        5 independent (9 studies, 274 pts)
+     - acetone + methanol                  4 -- passed over: curate05 holds
+                                             its C16 regression and the two
+                                             studies' disagreement, a
+                                             curator's tie-break
+     2 ethanol + dimethylCarbonate         4 (4 studies, 156 pts)
+     3 diisopropylEther + isopropanol      3 (4 studies, 152 pts)
+     - triethyleneGlycol + water           3 -- REFUSED by the tool: 2 of 3
+                                             studies disagree beyond their U
+     4 isopropanol + dimethylCarbonate     3 (3 studies, 128 pts)
+     - 2Butanol + dimethylCarbonate        3 -- REFUSED by the tool: no
+                                             author-disjoint held-out study
+                                             reports x of the same component
+     5 ethanol + 224Trimethylpentane       3 (5 studies, 97 pts)
+  THIS CASE: rank 3.
+  @@PILOT-END@@
+
   THE DECLARATION -- WRITTEN AND COMMITTED BEFORE ANY FIT RAN.
   (C16 slice 2: so the declaration can be read against the result.)
 

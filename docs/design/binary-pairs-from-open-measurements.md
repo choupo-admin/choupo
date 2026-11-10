@@ -1,12 +1,14 @@
 # Binary pairs from open measurements
 
-**Status: FIRST PATH BUILT 2026-09-28; SLICE 2 2026-10-05 (section 6) (DEV.md C16).**  Vítor asked for wider
+**Status: FIRST PATH BUILT 2026-09-28; SLICE 2 2026-10-05 (section 6) (DEV.md C16); THE PIPELINE AND ITS PILOT 2026-11-10 (section 8, DEV.md C282).**  Vítor asked for wider
 binary-interaction coverage from free, open sources, keeping provenance,
 commercial use and redistribution.  Two routes were named: import tables
 already published under compatible terms, and fit new parameters to the
 NIST/TRC ThermoML Archive.  This record is the licence determination for
 both, the chain that was built, what it produced, and what it found on the
-way.  Nothing here was promoted to `reviewed`: that is Vítor's.
+way.  Nothing here was promoted to `reviewed`: that is Vítor's.  Since C282
+(section 8) a pair may also be promoted AUTOMATICALLY, as `reviewStatus
+autoPromoted; humanReviewed false;`, which the engine voices on every run.
 
 ---
 
@@ -474,3 +476,131 @@ are corrected here rather than rewritten: `P_bubble` has existed since C123.
   ThermoML LLE series, or a published table read by a curator), and the 4.2 GB
   archive cache is not in this tree.  A promoted real pair needs the same
   protocol as slice 2: fit on one study, hold out another, bands before the fit.
+
+## 8. The pipeline: `choupo-curate pair A B`, `autoPromoted`, and no series in the tree (2026-11-10, DEV.md 4c C282)
+
+### 8.1 What was built
+
+`bin/choupo-curate` (its pure-compound mode unchanged) gains three
+subcommands that apply the rules of sections 2-7 and decide nothing new:
+
+    choupo-curate pair A B [--plan] [--resume] [--no-commit]
+    choupo-curate pair A B --promote
+    choupo-curate fetch <case>
+    choupo-curate revert <pair-file-stem>
+
+`pair` joins A and B to the archive by InChIKey (identity.json); refuses a
+pair that already has a record in ANY model directory of
+`data/standards/parameters/`; extracts every bubble-T block at or below
+110 kPa with a declared uncertainty (`extract-vle --interior-only`); sets
+aside BY NAME a block with partial or no uncertainty, fewer than five interior
+points, a second block of the same article, or x reported for the other
+component (still no reorientation, section 6.1); runs the **study triage**
+(C226 item 3) as leave-one-study-out fits BY THE ENGINE (fitParameters, the
+same model and weighting) and sets aside a study whose held-out AAD exceeds
+its own largest stated U plus the largest stated U of the others -- with two
+studies the triage says it cannot judge, and with more than half flagged it
+refuses (no majority); applies the section-6.1 partition (fit = most interior
+points; held out = next largest sharing no author, measured at one pressure)
+and refuses without an independent held-out study; computes the band by the
+section-2.4 rule, the pure endpoints by the engine; writes
+`tutorials/props/curation/curateNN_nrtl_<i>_<j>` on the curate06/09 shape and
+COMMITS that declaration before any fit; then fits, writes the case-local
+record (`reviewStatus interim`), seals the case and applies arm (f).
+
+`--promote` writes the record into `data/standards/parameters/NRTL/` as
+`reviewStatus autoPromoted; humanReviewed false; promotedBy ...;` ONLY when
+the verdict is `validated`, arm (f) is clean and the triage RAN; it never
+overwrites, and re-seals the case on the catalogue record in the same
+transaction.  `revert` removes only a record whose `promotedBy` names this
+tool, puts the case-local record back and removes the importer's claim on the
+sealed copy (the importer's own rule 4 asks for that by hand).
+
+**The engine** (`src/thermo/PairAudit.H`): `reviewStatus autoPromoted` is
+voiced once per process on the `[unreviewed] pair` channel, into the caveat
+block -- "promoted into the catalogue AUTOMATICALLY by its fitting pipeline
+... and NO human has reviewed it (humanReviewed false)".  Every other word is
+read and not announced, as before.
+
+**The gate** (`check_regressed_pairs`): `autoPromoted` is accepted beside
+`interim` only with `humanReviewed false;`, a `promotedBy` and the engine's own
+autoPromoted sentence in its case's run (an `[unreviewed] pair` line alone does
+not count: an inline pair prints one too); `humanReviewed false` beside any
+other status is refused.
+
+### 8.2 No measured series in the tree
+
+Vítor, 2026-11-10: *"nós não vamos copiar as séries medidas! Vamos só guardar
+os parâmetros de ajuste."*  A pipeline case declares its datasets in
+`constant/archiveDatasets` -- DOI, the NIST per-article URL
+(`https://trc.nist.gov/ThermoML/<DOI>.xml`, the file the extractor reads;
+`.json` beside it as the page), the article file's sha256, the selector
+(`--block N --interior-only`) and the sha256 of the extracted file -- and
+`choupo-curate fetch` regenerates the points into
+`constant/archiveExtracts/` (gitignored; the GUI bundle glob excludes it too),
+from the local archive cache when it holds the article, else from NIST, with
+both sums checked.  A mismatch REFUSES; an unreachable NIST with no cache is
+NOT RUN (exit 2).  Measured: all nine article URLs of the pilot answer 200,
+and each extract regenerated from NIST alone is byte-identical to the one from
+the cache.  NIST answers Python's default client name with HTTP 403; the tool
+sends a generic one.  `fetch` also writes `CHECKLIST.txt` beside the extracts:
+each extracted table under its DOI and citation, for the read-back C226 asks
+for (gitignored, because it carries the points).
+
+`bin/runTests` fetches such a case before running it: a sha256 mismatch is a
+FAIL, an unreachable source a SKIP by name with the remedy, NOT counted as a
+pass; the regressed-pairs gate's exit 2 is SKIP the same way.  This is the
+gates' existing SKIP convention applied to a case -- a decision the commander
+should confirm (section 8.5).
+
+### 8.3 The pilot: five pairs
+
+Candidates: both components in the catalogue, no record for the pair in any
+model directory, no acetic acid, no AmbroseWalton vapour pressure (C281), and
+-- checked for the five chosen -- no binary block in the archive with a second
+liquid.  Ranked by mutually author-disjoint studies, then points; acetone +
+methanol (4) passed over (curate05 holds its disagreement), triethylene glycol
++ water and 2-butanol + dimethyl carbonate refused by the tool itself (no
+majority in the triage; no independent held-out study of the same
+orientation).  The ranking is in each case header.
+
+| case | pair (x of) | fit / held out | triage | band | held-out AAD | verdict | where |
+|---|---|---|---|---|---|---|---|
+| curate15 | methanol + DMC | je0601309 (65, 40-93 kPa) / je301290c (19, 101.3 kPa) | 8 studies, all agree | 0.088 % | 0.219 K, 0.0641 % | validated | **catalogue, autoPromoted** |
+| curate16 | ethanol + DMC | acs.jced.9b00414 (20) / je030131q (9, 95.8 kPa) | 2 of 4 set aside | 0.24 % | 1.18 K, 0.341 % | notValidated | its case |
+| curate17 | DIPE + isopropanol | j.fluid.2014.09.014 (67) / je300994y (19, 101.3 kPa) | 4, all agree | 0.24 % | 1.89 K, 0.551 % | notValidated | its case |
+| curate18 | isopropanol + DMC | j.jct.2004.09.009 (32) / je030131q (9, 95.8 kPa) | 1 of 3 set aside | 0.24 % | 0.184 K, 0.0521 % | validated | **catalogue, autoPromoted** |
+| curate19 | ethanol + isooctane | je300847v (22) / j.fluid.2005.01.007 (19, 101.32 kPa) | 5, all agree | 0.57 % | 0.394 K, 0.113 % | validated | its case: **splits one liquid** at 344.6 K inside its span (arm f) |
+
+Both starts land on the same pair in all five.  Public NRTL pairs: 10 -> 12.
+Three readings, not hidden: curate16's fit set is reproduced to 0.029 K and
+the held-out study missed by 1.18 K -- the triage had already found the four
+studies in two camps; curate18's triage set a study aside on a thin margin
+(0.636 against 0.520 K), which with three studies is a two-against-one
+reading; and curate19 is the section-6.3 lesson again (ethanol + a paraffin,
+validated on bubble temperatures, a false second liquid in the equation).
+DMC carries no UNIFAC groups in its record, so the three DMC cases draw ideal
+and NRTL only.
+
+### 8.4 What is NOT done
+
+- The read-back of the ten series against their articles (all stay
+  `transcribedNotCheckedAgainstArticle`; the CHECKLIST is the aid).
+- The existing C16 cases (curate04-curate14) still CARRY their measured
+  series in the tree; converting them to `archiveDatasets` is Vítor's
+  decision, not taken here.
+- The bulk form C226 asked for (many pairs, DOI-only) is not walked into:
+  the pilot is five pairs, one command each.
+- UNIQUAC/Wilson in the pipeline; `--x-of` reorientation in `extract-vle`;
+  a fit set spanning several articles.
+- The triage threshold (own largest U + the others' largest U) is a stated
+  default, deliberately generous; whether a curator wants it tighter is open.
+
+### 8.5 Open for the commander
+
+A case whose series are regenerated depends on NIST (or the local cache) at
+check time.  CI runners reach the public internet, so a nightly sweep should
+fetch and run them; where it cannot, the case and the gate SKIP by name and
+are not counted as a pass.  That per-case SKIP had no precedent in
+`bin/runTests` (only gates used SKIP), and its summary line does not count
+SKIPs -- the line names each one, the tally does not.

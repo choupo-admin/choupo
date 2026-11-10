@@ -3285,6 +3285,19 @@ accepts today, and that is a policy call.
 > to run where the archive is absent, which no gate does today; it is decided
 > before slice 2, not walked into.
 
+> **C282 RESULT (slice 1, branch c282-pairs-pilot, cloud general,
+> 2026-11-10).** `bin/choupo-curate pair A B` / `--promote` / `fetch` /
+> `revert` built; `reviewStatus autoPromoted` voiced by PairAudit and held by
+> check_regressed_pairs (with `humanReviewed false`).  Per Vitor's instructions
+> 4-5 the new cases keep NO measured series: `constant/archiveDatasets` (DOI,
+> NIST URL, sha256) and a gitignored regeneration.  PILOT: methanol + DMC
+> (curate15) and isopropanol + DMC (curate18) validated and PROMOTED
+> autoPromoted; ethanol + DMC (curate16) and DIPE + isopropanol (curate17)
+> notValidated; ethanol + isooctane (curate19) validated but splits one liquid
+> (arm f), stays in its case.  OPEN: the per-case SKIP in runTests when NIST is
+> unreachable (no precedent), and whether curate04-14 drop their tracked
+> series.  Record: docs/design/binary-pairs-from-open-measurements.md section 8.
+
 > **C281 (Vitor, 2026-11-10, from the cloud session: "Ataca primeiro o
 > Ambrose-Walton").  THE AMBROSE-WALTON VAPOUR PRESSURES: SAY WHAT THEY ARE, THEN
 > REPLACE THEM WHERE MEASUREMENTS EXIST.**  MEASURED before dispatch: 48 catalogue

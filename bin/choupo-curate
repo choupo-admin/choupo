@@ -1310,7 +1310,8 @@ def main():
             want = decl_text(pl, case.relative_to(ROOT).as_posix())
             unifac = has_unifac(pl["c1"]) and has_unifac(pl["c2"])
             wantp = props_text(pl, case.name, stem, unifac)
-            norm = lambda s: re.sub(r"@@RESULT-BEGIN@@.*?@@RESULT-END@@", "", s, flags=re.S)
+            norm = lambda s: re.sub(r"  @@PILOT-BEGIN@@.*?@@PILOT-END@@\n\n", "", re.sub(
+                r"@@RESULT-BEGIN@@.*?@@RESULT-END@@", "", s, flags=re.S), flags=re.S)
             if (case / DECL).read_text() != want or \
                     norm((case / "system" / "propsDict").read_text()) != norm(wantp):
                 refuse(f"--resume: {case.name}'s declaration differs from the one the "

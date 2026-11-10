@@ -2253,7 +2253,17 @@ under the Artistic grant (the LITE licence gives it to the pure-component
 databank "and ONLY" that, and the tables say "DECHEMA" in their headers),
 and the `thermo` package's byte-identical copy is not freed by its MIT
 licence -- both LOCAL ONLY, enforced by `check_source_licence`
-(`EXCLUDED_TABLES`).  Record:
+(`EXCLUDED_TABLES`).  **Since C282 (2026-11-10) the chain is ONE command,
+`bin/choupo-curate pair A B`** (InChIKey identity, leave-one-study-out
+triage by the engine, the declared partition, the band, a case whose
+declaration is committed before the fit, the fit, arm f), and `--promote`
+writes `reviewStatus autoPromoted; humanReviewed false;` -- voiced by the
+engine on every run, held by the gate -- for a validated, one-liquid,
+triaged pair, never overwriting a record; `revert` undoes it.  Its cases keep
+NO measured series in the tree (Vitor: only the fitted parameters are kept):
+`constant/archiveDatasets` names DOI, NIST URL and sha256 sums, `choupo-curate
+fetch` regenerates the points into a gitignored folder, and an unreachable
+source is SKIP, never a pass.  Record:
 [`docs/design/binary-pairs-from-open-measurements.md`](docs/design/binary-pairs-from-open-measurements.md).
 
 ### THE WASM BUILD DIED WHERE THE NATIVE ONE PASSED, AND THE SITE WENT STALE (2026-08-27)
