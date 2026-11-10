@@ -79,7 +79,7 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
     title: "The pH is not a knob here — and that is the whole lesson",
     body: "A textbook plots the three fractions against pH by putting pH into "
       + "the two mass-action expressions and solving for the ratios.  That is "
-      + "arithmetic, and it always works.  Choupo will do it too: `pH 7.8;` is "
+      + "arithmetic, and it always works.  Choupo will do it too: “pH 7.8;” is "
       + "a legal declaration.  Look at what it costs.  Fixing [H+] removes the "
       + "electroneutrality equation, so the run reports the net charge the "
       + "composition carries instead of forcing it to zero — the curve you "
@@ -94,14 +94,14 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
       + "total, the pH and neutrality at once.  In Choupo the given-pH mode "
       + "is for "
       + "a measured pH off a laboratory sheet, which is a datum somebody read "
-      + "off an instrument.  This case declares `pH solve;` instead, so [H+] "
+      + "off an instrument.  This case declares “pH solve;” instead, so [H+] "
       + "joins the unknowns and charge is what decides it: the solution must "
       + "be electrically neutral, and given everything else in the beaker "
       + "that fixes [H+].",
     formula: String.raw`\sum_i z_i m_i = 0 \quad \longrightarrow \quad [\ce{H+}] \text{, and therefore } \mathrm{pH}`,
     where: [
       { sym: "\\sum", means: "The sum runs over every aqueous species in the "
-        + "converged table — the masters, H+, oh- and every complex.  It is "
+        + "converged table — the masters, H+, OH- and every complex.  It is "
         + "not decoration: this is a row the solver assembles and imposes, "
         + "and it is the row that closes the system when the pH is unknown.  "
         + "A precipitated solid is not in it (a crystal is neutral)." },
@@ -116,10 +116,10 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
         + "enter here, and the engine announces that conversion.",
         unit: "mol/kg water" },
       { sym: "\\mathrm{pH}",
-        means: "A result on this page.  With `pH solve;` the free "
+        means: "A result on this page.  With “pH solve;” the free "
         + "H+ molality joins the Newton unknowns and the row above is what "
         + "closes for it.  It is reported with its scale: −log10(γ_H · m_H) "
-        + "on the Davies charge-symmetric convention, so this is a free h+ "
+        + "on the Davies charge-symmetric convention, so this is a free H+ "
         + "activity — not the total proton concentration, and not the "
         + "operational scale a laboratory meter reads against buffers.",
         unit: "dimensionless (a decimal logarithm)" },
@@ -145,7 +145,7 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
 \mathrm{Na}/C_T > 2 & \ce{Na2CO3} + \text{caustic soda}\\
 \text{the acid side} & \text{dissolved } \ce{CO2} + \text{hydrochloric acid}
 \end{array}`,
-    note: "The case declares `totalsBasis stoichiometric;` to say so.  Without "
+    note: "The case declares “totalsBasis stoichiometric;” to say so.  Without "
       + "it the engine reads the totals as a laboratory analysis, where a "
       + "charge imbalance means somebody mismeasured, and warns that the "
       + "solved pH absorbs the error.  That warning is right for a lab sheet "
@@ -169,7 +169,8 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
   {
     n: 4,
     title: "The crossovers land on the pK's, and nobody put them there",
-    body: "Read the diagram where two curves cross.  Below the first "
+    body: "Read the diagram, at its default settings of 298.15 K and "
+      + "1 mmol/kg total carbonate, where two curves cross.  Below the first "
       + "crossover the solution is essentially dissolved CO2; between the two "
       + "it is bicarbonate; above the second it is carbonate.  The crossovers "
       + "are where two forms are present in equal amounts — and, if every "
@@ -301,7 +302,7 @@ export const BJERRUM_LIMITS: readonly LessonLimit[] = [
     body: "Total carbonate is held fixed at every point.  A real beaker open "
       + "to the air loses CO2 as it is acidified and gains it as it is made "
       + "alkaline, which changes the total and bends the whole diagram.  "
-      + "Choupo can pin a gas phase — `atmosphere { pCO2 ...; }`, as "
+      + "Choupo can pin a gas phase — “atmosphere { pCO2 ...; }”, as "
       + "pb82_calcite_open_co2 does — but this case deliberately does not, "
       + "because a closed system is the one the textbook diagram assumes.",
   },
