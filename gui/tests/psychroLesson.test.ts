@@ -59,23 +59,23 @@ describe("the lesson runs end to end", () => {
     //  often taught to use and never told the reason for.  It is the reason
     //  every balance on the chart is a subtraction.
     const s1 = PSYCHRO_STEPS[0]!;
-    expect(prose(s1.body)).toContain("DRY-BULB");
-    expect(prose(s1.body)).toContain("HUMIDITY RATIO Y");
-    expect(prose(s1.body)).toContain("mass of DRY carrier gas");
+    expect(prose(s1.body)).toContain("dry-bulb");
+    expect(prose(s1.body)).toContain("humidity ratio Y");
+    expect(prose(s1.body)).toContain("mass of dry carrier gas");
     expect(prose(s1.note!)).toContain(
-      "passes through a heater, a dryer or a cooling coil UNCHANGED");
+      "passes through a heater, a dryer or a cooling coil unchanged");
     expect(prose(s1.formula!)).toContain(String.raw`Y = \frac{M_v}{M_c} \cdot \frac{p_v}{P - p_v}`);
   });
 
   it("makes the saturation curve a ceiling and RH a ratio of PRESSURES", () => {
     const s2 = PSYCHRO_STEPS.find((s) => s.n === 2)!;
-    expect(prose(s2.body)).toContain("SATURATION CURVE");
-    expect(prose(s2.body)).toContain("ratio of PRESSURES and not of humidities");
+    expect(prose(s2.body)).toContain("saturation curve");
+    expect(prose(s2.body)).toContain("ratio of pressures and not of humidities");
     expect(prose(s2.formula!)).toContain(String.raw`\varphi &= \frac{p_v}{P_\mathrm{sat}(T)}`);
     //  RH moves with nothing added or removed -- which is why Y is the
     //  variable a mass balance can be written in and φ is not.
     expect(prose(s2.note!)).toContain("heat the gas at constant Y and φ falls");
-    expect(prose(s2.note!)).toContain("DEW POINT");
+    expect(prose(s2.note!)).toContain("dew point");
   });
 
   it("teaches wet bulb as a BALANCE, and NOT as the general floor of evaporative cooling", () => {
@@ -84,7 +84,7 @@ describe("the lesson runs end to end", () => {
     //  2026-09-28 (external review, verified against PsychrometricChart.cpp,
     //  which draws both families): the floor is T_as, and it equals T_wb
     //  only for Le ~ 1.  This pin used to hold the wrong claim.
-    expect(prose(s3.body)).not.toContain("FLOOR for any adiabatic humidification");
+    expect(prose(s3.body)).not.toContain("floor for any adiabatic humidification");
     expect(prose(s3.body)).toContain("the two coincide only when the Lewis number is close to one");
     //  The enthalpy argument is what makes an adiabatic line STRAIGHT.
     expect(prose(s3.body)).toContain("constant-enthalpy lines");
@@ -102,20 +102,21 @@ describe("the lesson runs end to end", () => {
     //  wrong for every pair that is not air-water.
     const s3 = PSYCHRO_STEPS.find((s) => s.n === 3)!;
     const n = prose(s3.note!);
-    expect(n).toContain("ARE NOT THE SAME QUANTITY");
+    expect(n).toContain("are not the same quantity");
     expect(n).toContain("Lewis number Le = α/D_AB");
     expect(n).toContain("coincide when Le ≈ 1");
     expect(n).toContain("not a law");
-    expect(n).toContain("SEPARATE families");
+    expect(n).toContain("separate families");
     expect(prose(s3.formula!)).toContain(String.raw`\mathrm{Le}^{2/3}`);
   });
 
   it("draws all four processes, with the mixing lever rule named", () => {
     const s4 = PSYCHRO_STEPS.find((s) => s.n === 4)!;
     const b = prose(s4.body);
-    for (const move of ["HEATING", "DEHUMIDIFICATION",
-      "ADIABATIC HUMIDIFICATION", "MIXING"])
-      expect(b, `the ${move} path is missing`).toContain(move);
+    for (const move of ["Heating", "Dehumidification",
+      "Adiabatic humidification", "Mixing"])
+      //  DEV.md 4c C277: the page no longer shouts the process names.
+      expect(b.toLowerCase(), `the ${move} path is missing`).toContain(move.toLowerCase());
     //  Each move has a DIRECTION, and the direction is the lesson.
     expect(b).toContain("horizontal to the right");
     expect(b).toContain("horizontal to the left until the saturation curve");
@@ -123,7 +124,7 @@ describe("the lesson runs end to end", () => {
     expect(b).toContain("UP an adiabatic-saturation line");
     expect(b).toContain("straight segment");
     //  The same lever rule as the flash and the extraction triangle.
-    expect(prose(s4.note!)).toContain("LEVER RULE");
+    expect(prose(s4.note!)).toContain("lever rule");
     expect(prose(s4.note!)).toContain("extraction triangle");
     expect(prose(s4.formula!))
       .toContain(String.raw`Y_m = \frac{G_1 Y_1 + G_2 Y_2}{G_1 + G_2}`);
