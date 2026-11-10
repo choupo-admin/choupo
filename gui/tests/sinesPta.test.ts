@@ -211,7 +211,8 @@ describe("what the prose computes is computed from the data", () => {
     expect(OFFTAKE.ptaPerPet * OFFTAKE.petCapacity).toBeCloseTo(476, 9);
     expect(stepBody(4)).toContain("0.85 × 560 = 476");
     expect(stepBody(4)).toContain("35.7 %");
-    expect(stepBody(4)).toContain("MAXIMUM, not a guaranteed purchase");
+    //  Emphasis capital lowered (DEV.md 4c C277); the claim is unchanged.
+    expect(stepBody(4)).toContain("maximum, not a guaranteed purchase");
     expect(stepBody(4)).toContain("not the whole commercial risk");
   });
 

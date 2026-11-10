@@ -394,6 +394,12 @@ export function SinesPtaTool(): JSX.Element {
         <StatusLegend />
 
         {step(1)}
+
+        {/* The appraiser comes second (DEV.md 4c C277): the student moves the
+            inputs and watches the NPV before the documents are laid out; the
+            steps and tables that follow say where each default came from. */}
+        <Appraiser />
+
         {step(2)}
         {step(3)}
         <OriginMark of="reference" note="each value is the cited document's, with its status word" />
@@ -447,7 +453,6 @@ export function SinesPtaTool(): JSX.Element {
 
         {step(5)}
         {step(6)}
-        <Appraiser />
 
         {step(7)}
         <OriginMark of="reference" note="the published spreads, with their status words" />
