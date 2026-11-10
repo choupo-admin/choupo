@@ -102,8 +102,8 @@ export const BODE_STEPS: readonly LessonStep[] = [
   },
   {
     n: 2,
-    title: "Why both axes are logarithmic, and what a decibel is",
-    body: "Two reasons, and the second is the one that matters.  A process, "
+    title: "Why frequency and magnitude are logarithmic, and what a decibel is",
+    body: "Two reasons, and the first is the one that matters.  A process, "
       + "a valve, a sensor and a controller sit in series, and their "
       + "amplitude ratios multiply while their phases add.  Take the "
       + "logarithm of the magnitude and multiplication becomes addition too: "
