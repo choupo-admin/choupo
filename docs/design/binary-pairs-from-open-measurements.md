@@ -1084,3 +1084,214 @@ needs the same `fittedInCase` as well.
 laboratory by 2-4 K and say so on every run; that is the ruling, not an
 endorsement.  NOT done: the 431-pair queue, read-back against the articles,
 freeing alpha, and a composition criterion (no fit here has one).
+
+## 12. Pairs from bubble PRESSURES at a stated temperature (2026-11-10, DEV.md 4c C291)
+
+Vitor: produce binaries.  The index holds far more P-x blocks than the
+bubble-temperature pipeline of sections 10-11 reads, and a P-x isotherm fixes
+the activity coefficients at ONE temperature without needing the pure
+vapour pressures at a pressure the measurement did not state.  Section 12 is
+the mirror of section 11 for that geometry and changes the RESIDUAL and the
+ACCEPTANCE only.
+
+### 12.1 What was built
+
+* `bin/choupo-thermoml extract-px` reads ONE binary bubble-PRESSURE block (a
+  liquid mole fraction and the measured pressure, kPa, at a stated
+  temperature, K).  It refuses by name: more than two components; a property
+  that is not a pressure, or not in kPa; **a vapour composition and no liquid
+  one** ("reports y but no x"); **no stated per-point uncertainty**; **a
+  temperature that varies across the points** (unless `--allow-multi-isotherm`,
+  which writes it as a `T` column); a repeated row; a component the
+  InChIKey join cannot place.  The dataset carries the temperature as a held
+  constant (`temperature 313.15 K;`, the unit is never omitted), the per-point
+  uncertainty, the pure endpoints under `selection` (set aside, never deleted)
+  and `--x-of` reorients a study reporting the other member exactly as
+  `extract-vle` does.
+* `bin/curate/pairs_px.py` (`census`, `list`, `declare`, `run`, `promote`,
+  `readback`) mirrors `bin/curate/pairs_c283.py`, which it imports read-only
+  for the class filter, the fit driver and the discard bookkeeping.  Case
+  numbers start at curate500.  Shared-file hooks, all small: `bin/choupo-curate`
+  gains `extract_px` and the `extractor bubblePressure` branch of `fetch` (a
+  case regenerates its extract through it); `check_regressed_pairs.py` gains
+  arm (k) and two one-line hooks (see 12.4).
+* No engine change: `fitParameters` has carried `kind P_bubble` since C123 (the
+  roles of T and P swapped, the residual RELATIVE, `scale { P_bubble relative; }`
+  in the C280 objective block).
+
+### 12.2 The rule
+
+Class filter of C284 (both components volatile molecular liquids, every
+measured temperature below each Tc, no acetic acid, no pair already in
+`data/standards/parameters/` in ANY model); a stated default of this
+pipeline, announced in the case header: every measured pressure at or below
+110 kPa (the vapour is the ideal gas).  Every block of the pair is fitted
+together (NRTL, a_ij = a_ji = 0, alpha 0.30 fixed, b_ij and b_ji, so tau = b/T
+carries the temperature); the residual is (P_model - P)/P at each point's
+temperature; objective `twoStage`; two starts.  After the least-squares stage a
+point beyond 20 % in P is discarded BY NAME (`discard`, listed in the case
+header) and the fit repeated; **a study with more than half of its points
+beyond 20 % is discarded whole** (it contradicts the model and the other
+evidence as a unit -- see 12.3).  The acceptance is graded on the maximum
+relative pressure error over the kept points, C285's factors: up to 5 % clean,
+up to 10 % warning, up to 20 % severe, above refused; a pair that predicts two
+liquids inside its validity span (arm f) is not promoted whatever its grade.
+The record's `curation {}` block carries the grade, `gradeLimits_pct (5 10
+20)`, `maxRelError_pct`, the discards, `temperatures`, `laboratories`
+(counted over the studies that keep a point) and `singleTemperature` /
+`singleLaboratory`; a promoted record says in its header that it rests on ONE
+temperature and/or ONE laboratory.  The grade is voiced by
+`src/thermo/FitGrade.H` through the provenance (`fitGrade`,
+`fitGradeMaxRelativeError_pct`, a key that file already reads).  The fit ops
+run on the inline starting pair; the run appends a `txy_nrtl` read-back scan
+(thermo `model NRTL`, no inline pair), which is what loads the record through
+the pair loader and makes the engine voice `autoPromoted` and any grade.  It
+is not part of the declaration: the declaration is committed before any fit
+(`normalise` ignores the op).
+
+### 12.3 The run
+
+Census of the index (`pairs_px.py census`): 2512 blocks of two components
+carry a vapour-pressure property; **385 are interpretable by the strict
+reader** and 2127 are refused, by name: 1650 because the temperature varies
+across the points, 260 because the composition is not a liquid mole fraction
+(another composition measure, or none), 195 because only the vapour composition is
+reported ("reports y but no x"), 9 repeated rows, 9 with fewer than two usable
+points, 4 with no stated uncertainty.  Of the 638 pairs of two catalogue
+components with a bubble-pressure block: 74 candidates at the start (24 already
+in the catalogue in some model, 5 excluded with acetic acid, 5 refused by
+class -- four Henry solutes and one component with no vapour pressure -- and
+514 with no usable block: no isothermal block with a stated uncertainty,
+five interior points and P <= 110 kPa).  Between the first listing and the
+second the parallel pairs general (bubble-temperature queue) claimed more
+of the ranked pairs (16 -> 38) and they are excluded here, so no pair is
+fitted twice.
+
+69 pairs were declared (curate500-curate568, in two commits before any fit:
+50, then 19) and fitted: **65 clean, 3 warning, 1 severe, 0 refused; one
+splits one liquid** (curate522 1Pentanol + 124Trimethylbenzene, warning, stays
+case-local).  **68 promoted** (65 clean, 2 warning, 1 severe), autoPromoted /
+humanReviewed false: public NRTL pairs 64 -> 132.  63 of the 68 rest on ONE
+temperature and ONE laboratory and say so.  The first run found a study of
+j.fluid.2011.08.009 (2Butanol + nHexane, curate500) whose composition is
+evidently the OTHER member's (its x = 0 point is 14.55 kPa, the 2-butanol
+vapour pressure, where x of that member = 0 should give hexane's 68 kPa): 22
+of its 26 points were blatant outliers, the remaining four were noise the fit
+would have been bent by, and the whole-study rule was written (before the
+declarations were committed) and the study discarded as a unit; it is named in
+the case header.  This is an archive-labelling finding, not a tuning.
+
+The grades, point counts and outcomes:
+
+| case | pair | max abs dP/P, % | grade | points | evidence | outcome |
+|---|---|---|---|---|---|---|
+| curate500 | nHexane + 2Butanol | 4.90 | clean | 58 kept, 26 dropped | 2 T / 2 lab | promoted |
+| curate501 | ethanol + nNDimethylacetamide | 2.74 | clean | 59 kept, 0 dropped | 2 T / 2 lab | promoted |
+| curate502 | diNButylEther + nNDimethylacetamide | 2.45 | clean | 52 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate503 | benzene + nNDimethylacetamide | 3.37 | clean | 49 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate504 | chloroform + methylTertButylEther | 1.89 | clean | 48 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate505 | toluene + nNDimethylacetamide | 1.71 | clean | 42 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate506 | nHeptane + nNDimethylacetamide | 2.15 | clean | 40 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate507 | benzene + nButanol | 11.25 | severe | 37 kept, 1 dropped | 2 T / 2 lab | promoted |
+| curate508 | nButanol + toluene | 2.61 | clean | 38 kept, 0 dropped | 2 T / 2 lab | promoted |
+| curate509 | ethanol + acetonitrile | 0.89 | clean | 34 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate510 | diisopropylEther + benzene | 0.78 | clean | 27 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate511 | diNButylEther + 1Hexene | 0.37 | clean | 26 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate512 | nButanol + 1Hexene | 2.79 | clean | 26 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate513 | diisopropylEther + 2Butanol | 0.64 | clean | 26 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate514 | diisopropylEther + 2Methyl1Propanol | 0.76 | clean | 26 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate515 | diNButylEther + cyclohexane | 1.00 | clean | 26 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate516 | diNButylEther + toluene | 0.82 | clean | 26 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate517 | diisopropylEther + nButanol | 0.78 | clean | 26 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate518 | tertButylEthylEther + nHeptane | 1.69 | clean | 26 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate519 | nHeptane + toluene | 0.28 | clean | 26 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate520 | tertButylEthylEther + toluene | 2.09 | clean | 26 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate521 | diethylSulfide + ethanol | 1.61 | clean | 25 kept, 0 dropped | 2 T / 2 lab | promoted |
+| curate522 | 1Pentanol + 124Trimethylbenzene | 8.89 | warning | 22 kept, 2 dropped | 1 T / 1 lab | refused: splits one liquid (arm f) |
+| curate523 | 2Pentanol + 124Trimethylbenzene | 1.18 | clean | 24 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate524 | 1Pentanol + 1Hexene | 2.49 | clean | 24 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate525 | 2Butanol + 1Hexene | 2.42 | clean | 24 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate526 | 1Pentanol + 224Trimethylpentane | 2.27 | clean | 24 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate527 | 1Pentanol + cyclohexane | 2.59 | clean | 24 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate528 | 1Pentanol + nHexane | 2.64 | clean | 24 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate529 | 1Pentanol + toluene | 2.00 | clean | 24 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate530 | benzene + 1Propanol | 1.47 | clean | 24 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate531 | 2Butanol + 224Trimethylpentane | 2.38 | clean | 24 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate532 | 2Pentanol + 224Trimethylpentane | 2.40 | clean | 24 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate533 | benzene + 2Butanol | 1.16 | clean | 24 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate534 | 2Butanol + cyclohexane | 2.06 | clean | 24 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate535 | 2Butanol + nDodecane | 7.41 | warning | 24 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate536 | 2Butanol + toluene | 1.92 | clean | 24 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate537 | benzene + 2Methyl1Propanol | 1.55 | clean | 24 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate538 | 2Pentanol + cyclohexane | 2.67 | clean | 24 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate539 | 2Pentanol + nHeptane | 2.48 | clean | 24 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate540 | 2Pentanol + nHexane | 3.04 | clean | 24 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate541 | 2Pentanol + toluene | 1.35 | clean | 24 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate542 | benzene + isopropanol | 1.33 | clean | 24 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate543 | nButanol + cyclohexane | 3.21 | clean | 24 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate544 | tertButylEthylEther + cyclohexane | 1.26 | clean | 24 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate545 | diNButylEther + nHeptane | 0.53 | clean | 24 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate546 | nButanol + nDodecane | 4.17 | clean | 24 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate547 | tertButylEthylEther + 1Hexene | 0.73 | clean | 22 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate548 | 1Propanol + 224Trimethylpentane | 2.41 | clean | 21 kept, 1 dropped | 1 T / 1 lab | promoted |
+| curate549 | diisopropylEther + 1Propanol | 0.53 | clean | 22 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate550 | methylTertPentylEther + 224Trimethylpentane | 1.20 | clean | 22 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate551 | 224Trimethylpentane + nHeptane | 0.44 | clean | 22 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate552 | nButylAcetate + 1Hexanol | 5.39 | warning | 21 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate553 | chloroform + methylEthylKetone | 2.02 | clean | 20 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate554 | nButanol + 1Hexanol | 4.56 | clean | 19 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate555 | nOctane + aniline | 0.91 | clean | 19 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate556 | Dichloroethane + ethylAcetate | 1.11 | clean | 18 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate557 | nHexane + toluene | 3.15 | clean | 18 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate558 | nHexane + anisole | 4.60 | clean | 16 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate559 | 14Dioxane + nButanol | 0.71 | clean | 15 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate560 | chloroform + methylIsobutylKetone | 1.42 | clean | 14 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate561 | dimethylDisulfide + toluene | 0.43 | clean | 12 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate562 | Dichloroethane + 1Propanol | 1.00 | clean | 11 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate563 | diethylSulfide + 1Propanol | 0.32 | clean | 11 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate564 | methylTertPentylEther + toluene | 1.69 | clean | 11 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate565 | dimethylDisulfide + tertButylEthylEther | 0.44 | clean | 10 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate566 | dimethylDisulfide + 224Trimethylpentane | 0.25 | clean | 9 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate567 | diethylSulfide + nPropylAcetate | 0.19 | clean | 9 kept, 0 dropped | 1 T / 1 lab | promoted |
+| curate568 | diethylDisulfide + 224Trimethylpentane | 0.44 | clean | 8 kept, 0 dropped | 1 T / 1 lab | promoted |
+
+### 12.4 The gate: arm (k)
+
+`check_regressed_pairs` arm (k) holds a C291 record to its case's run: the
+grade is RECOMPUTED from the run's own max |dP|/P (`bubble_max_fit`) at 5 / 10 /
+20 % and the record must carry it with its limits, its verdict (`accepted`
+exactly when not refused) and `oneLiquid` (arm f on the record's own
+parameters); the temperature and laboratory counts and flags are recomputed
+from the case's datasets (counting only studies that keep a point); a
+catalogue record must carry `fitGrade` and `fitGradeMaxRelativeError_pct`
+equal to the run, a recomputed `refused` is never in the catalogue, and a
+warning or SEVERE grade must be VOICED by the pair loader (the `[fit-grade]`
+console line and the result JSON advisory); the discards are re-derived from
+the rule (a least-squares stage with no discard, 20 %, the whole-study
+clause).  Hooks in shared code: `check_dataset` reads a `P_bubble` per-point
+uncertainty as it reads a `T_bubble` one; `main` dispatches a record whose
+curation rule names C291 to arm (k).  By-hand sabotages, each caught: a
+catalogue record's grade edited down (curation and provenance `warning` ->
+`clean`: "curation grade `clean`, recomputed `warning` ... 7.4124 %"); a
+refused pair dressed as promoted (the grade limits tightened to 0.1 / 0.2 /
+0.3 % so the run recomputes `refused`: caught by the limits, grade, verdict and
+"promoted anyway" lines); voicing suppressed (the `fitGrade` lines removed from
+the provenance: "provenance fitGrade `None`, recomputed `warning`").
+
+### 12.5 Readings, and what is NOT done
+
+* **The temperature rule decides the size of the queue.**  The strict reader
+  refuses the 1650 blocks whose temperature takes several stated values; a
+  multi-isotherm block is a legitimate set of P-x isotherms, every point
+  carries its own stated T, and `fitParameters(P_bubble)` already reads a `T`
+  column.  With `--allow-multi-isotherm` the census reads 2000 blocks and the
+  candidate queue grows from 0 remaining to 117 pairs (4611 points).  Whether
+  b/T fitted across isotherms of ONE article is accepted evidence is Vitor's
+  ruling; nothing was fitted on it.
+* The pairs are P-x isotherms: single temperature, single laboratory in 63 of
+  68.  The `b/T` split of a pair fitted at one temperature is untested; the
+  record says so.  Nothing here is read back against the articles.
+* No P-x overlay (the Explorer draws T-x scans against measured series).
+* The pairs a parallel general holds under the bubble-temperature route (38 of
+  the ranked ones) can be refitted on T-x plus P-x evidence together later;
+  not done.

@@ -3375,6 +3375,62 @@ accepts today, and that is a policy call.
 > The 8 components whose omega the C287 slice held (0.7 Tc more than 50 K
 > beyond the data) stay held until Vitor decides how their omega is taken.
 
+> **C291 RESULT (2026-11-10, cloud general c291-px-pairs, branch c291-px-pairs).**
+> TOOLS: `bin/choupo-thermoml extract-px` (one isothermal binary bubble-PRESSURE
+> block; refuses by name a missing per-point uncertainty, a temperature that
+> varies across the points unless `--allow-multi-isotherm`, a vapour composition
+> with no liquid one, more than two components, a repeated row) and
+> `bin/curate/pairs_px.py` (`census|list|declare|run|promote|readback`; imports
+> pairs_c283 read-only; cases curate500+).  Rule: class filter of C284, every
+> block of a pair fitted together under `fitParameters` kind `P_bubble`
+> (relative residual, twoStage, NRTL b_ij/b_ji, alpha 0.30), a point beyond 20 %
+> in P discarded by name after the least-squares stage and a study with more
+> than half its points beyond it discarded WHOLE, graded 5 / 10 / 20 % of P
+> (refused above), arm f kept; stated default: measured P <= 110 kPa (ideal
+> vapour).  CENSUS: 2512 blocks of two components with a vapour-pressure
+> property, 385 interpretable by the strict reader; refused by name: 1650
+> temperature varies across the points, 260 no liquid mole fraction, 195 reports
+> y but no x, 9 repeated rows, 9 under two points, 4 no stated uncertainty.
+> 638 pairs of two catalogue components: 74 candidates at the start (24 already
+> in the catalogue, 5 acetic acid, 5 refused by class, 514 no usable block); the
+> parallel pairs general claimed 22 more of the ranked ones meanwhile (excluded,
+> so no pair is fitted twice).  RESULT: 69 declared (curate500-568, two commits
+> BEFORE any fit: 50, then 19) and fitted: 65 clean, 3 warning, 1 severe, 0
+> refused, 1 splits one liquid (curate522, case-local); 68 PROMOTED autoPromoted
+> / humanReviewed false -- public NRTL pairs 64 -> 132; 63 of the 68 rest on ONE
+> temperature and ONE laboratory and say so in `curation {}` and the record
+> header.  FINDING: j.fluid.2011.08.009 block 6 (2Butanol + nHexane) carries a
+> composition that is the other member's (its x = 0 pressure is 14.55 kPa, the
+> alcohol's); the whole-study rule was written for it BEFORE the declarations were
+> committed and curate500 discards the study whole.  GATE: check_regressed_pairs
+> arm (k) recomputes the grade from the run's max |dP|/P, the verdict, oneLiquid,
+> the temperature/laboratory counts and flags from the datasets (studies that keep
+> a point), fitGrade and `fitGradeMaxRelativeError_pct` in the catalogue, the
+> pair loader's voicing, and re-derives the discards (sabotages: grade edited
+> down, a pair dressed as promoted over limits that recompute `refused`, the
+> fitGrade lines removed -- all caught).  No engine change (P_bubble is C123's;
+> `src/thermo/FitGrade.H` already reads `fitGradeMaxRelativeError_pct`).  No
+> golden moved: `expected` of the 69 NEW cases only.  OPEN FOR VITOR (the
+> temperature handling): the strict reader refuses 1650 multi-isotherm blocks;
+> with `--allow-multi-isotherm` the census reads 2000 blocks and the queue grows
+> by 117 candidate pairs (4611 points) -- each point carries its own stated T and
+> fitParameters reads a T column, but b/T across the isotherms of one article is
+> his ruling; nothing was fitted on it.  Table and readings:
+> docs/design/binary-pairs-from-open-measurements.md section 12.  VALIDATED: make
+> all (nothing in src/ changed; the shared build was reused); `--scope` on curate04-19,
+> curate100-162 and curate500-568 (150 PASS, 0 FAIL); `--fast` (78 PASS, 0 FAIL, 5
+> EXPECTED-FAIL); check_regressed_pairs (full, 145 records), check_source_licence,
+> check_doc_references, check_doctrine, check_glossary_bans, check_record_form,
+> check_review_status, check_caveat_surface, check_schema_coverage,
+> check_guide_pdf_fresh; generated views regenerated (caseManifest, releaseInventory
+> 64 -> 132 NRTL pairs, interimReviewDossier, tutorialsGuide-props, propsGuide-operations;
+> both guide PDFs rebuilt with make -B); gate_manifest --check and the
+> check_regressed_pairs claim re-observed.  NOT run: a full sweep, --gui, the
+> method-tools generator (gui/node_modules absent, as before).  Added under
+> tutorials/: 2.7 MB tracked (12.9 MB on disk with the gitignored run outputs and
+> extracts).
+
+
 > **C289 (Vitor, 2026-11-10: "Sim! Isso e boa ideia!", on a proposal from
 > the cloud session).  THE EXPLORER COMPARES A FITTED RECORD WITH THE
 > MEASUREMENTS THE USER BRINGS.**  The measured series are not in the tree
