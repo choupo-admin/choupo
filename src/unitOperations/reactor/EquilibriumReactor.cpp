@@ -35,7 +35,7 @@ License
 #include "thermo/reaction/Reaction.H"
 #include "core/Advisory.H"
 #include "core/Dimensions.H"
-
+#include "ReactionHeat.H"
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
@@ -113,7 +113,7 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
     bool haveDuty = true;
     for (std::size_t j = 0; j < R; ++j)
     {
-        rname[j] = rxnList[j]->lookupWordOrDefault("name", "rxn" + std::to_string(j + 1));
+        rname[j] = rxnList[j]->lookupWordOrDefault("name", "rxn" + std::to_string(j + 1)); refuseDeclaredHeat(*rxnList[j], "equilibriumReactor (reaction '" + rname[j] + "')", "Its composition is set by K(T) = exp(-dG(T)/RT) from the SAME formation data a measured heat contradicts: correcting the duty while keeping that K would publish an equilibrium composition from the datum the case has just declared untrustworthy, and the van 't Hoff slope of K would contradict the declared heat inside one unit.  Use a conversionReactor or cstr with the measured conversion or kinetics.");
         for (const auto& s : rxnList[j]->lookupDictList("stoichiometry"))
             nu[j][thermo.indexOf(s->lookupWord("component"))] = s->lookupScalar("nu");
 
