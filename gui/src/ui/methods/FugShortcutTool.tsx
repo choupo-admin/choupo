@@ -783,10 +783,10 @@ export function FugShortcutTool(): JSX.Element {
               + ` cost on this separation, and it is not a constant — take`
               + ` the reflux up and Gilliland's contribution shrinks towards`
               + ` Fenske's N_min.  Whether the two counts then meet is not`
-              + ` shown here: this ladder stops at 8x R_min, the frozen`
+              + ` shown here: this ladder stops at 8 × R_min, the frozen`
               + ` alpha's error has not been separated from Gilliland's`
               + ` scatter on this separation, and the ladder reports an`
-              + ` integer where the shortcut's own N tends to 10.07.`
+              + ` integer where the shortcut's own N tends to ${basis ? basis.Nmin.toFixed(2) : "N_min"}.`
             : ""}
         </Text>
 
