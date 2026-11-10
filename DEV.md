@@ -3302,6 +3302,21 @@ accepts today, and that is a policy call.
 >
 > **Acetic acid PARKED (architect, 2026-11-10, after Vitor: "Perdeste uma semana com essa merda antes!").**  The open acetic items (C201 (1) rest: dew-point distillate, Gibbs / three-phase / Txy readers, record identity; C174/C175 subcooled-feed q; column05's dimer in C239) get no work this month.  Reason: nothing the month delivers depends on them, aceticAcid02 runs with its balances gated (C258), and column05's ideal-vapour limit is already announced.  Reopened only if a case a student meets fails.
 >
+> **C288 (Vitor, 2026-11-10, after the discussion of reaction heats on the
+> ideal-gas formation route: "e melhor fazer como o aspen faz e ate criar um
+> EduTools a explicar esta questao!").  A MEASURED HEAT OF REACTION MAY
+> CORRECT THE DUTY, AND THE CORRECTION IS A NAMED TERM.**  Vitor's decision
+> amends the 2026-06-27 heat-of-reaction contract (CLAUDE.md section 5): a
+> reaction may declare a MEASURED heat of reaction (value, temperature, phase,
+> source); the reactor's duty is then corrected by extent x (declared -
+> computed from formation data at the same conditions), the stream
+> enthalpies stay on the formation datum, and the correction is published
+> beside the duty and as its own line in the energy report (never hidden in
+> the duty).  The formation route stays the default; the mismatch is always
+> printed.  An EduTool explains why a computed reaction heat on the
+> ideal-gas route can be unreliable in the liquid phase and what the
+> correction does.  The EduTool scope is put to Vitor before it is built.
+
 > **C285 (Vitor, 2026-11-10, on the nine vapour pressures above 5 %: "mete
 > mesmo as que estao acima de 5%. Mas acima de 5% - 10% mete um warning, e
 > entre 10 a 20% poe um warning mais severo. Acima de 20% descarta").  THE
