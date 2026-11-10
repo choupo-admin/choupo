@@ -91,20 +91,20 @@ export const MODEL_LADDER = [
   },
   {
     name: "fitted pair — Wilson · NRTL",
-    knows: "THIS binary's own measured data, regressed into 2-3 constants",
+    knows: "this binary's own measured data, regressed into 2-3 constants",
     line: "γ from τ_ij fitted to the pair",
     cite: "src/thermo/activityCoefficient/NRTL.cpp · data/standards/parameters/",
     note: "The gold standard where its evidence was taken — and only "
-      + "there.  The held-out lesson (fitNRTL02, golden-pinned): the "
+      + "there.  The held-out lesson (fitNRTL02, a recorded run): the "
       + "catalogue pair scores 0.0821 K on the 1-atm points its evidence "
-      + "covers, while a fit regressed on three VACUUM isobars predicts "
+      + "covers, while a fit regressed on three vacuum isobars predicts "
       + "those same points at 0.3857 K — a factor of 4.7 lost where the "
       + "fit never looked.  A fitted constant is a record of an "
       + "experiment, not a law.",
   },
   {
     name: "UNIFAC — group contribution",
-    knows: "only the molecules' GROUPS (CH3, OH, H2O, …) — no pair data",
+    knows: "only the molecules' groups (CH3, OH, H2O, …) — no pair data",
     line: "γ from group interactions",
     cite: "src/thermo/activityCoefficient/UNIFAC.cpp",
     note: "Predictive: the pair may never have been measured.  On this "
@@ -123,10 +123,10 @@ export const MODEL_LADDER = [
       + "σ-profiles walk in, an activity coefficient walks out.  That is "
       + "reach, not a rank: how well it predicts depends on whether the "
       + "profiles and the model's constants cover your chemistry, and "
-      + "there is no universal ordering of the rungs by accuracy.  LICENCE HONESTY, said plainly: the "
-      + "public tree ships SYNTHETIC teaching surrogates (the VT-2005 "
+      + "there is no universal ordering of the rungs by accuracy.  A licence note, said plainly: the "
+      + "public tree ships synthetic teaching surrogates (the VT-2005 "
       + "profiles cannot be redistributed), so the shipped witness "
-      + "demonstrates the MECHANISM, not validated numbers — your own "
+      + "demonstrates the mechanism, not validated numbers — your own "
       + "copy installs via bin/choupo-import-cosmo, and the model refuses "
       + "by name without it.",
   },
@@ -134,11 +134,11 @@ export const MODEL_LADDER = [
     name: "PC-SAFT — a molecular equation of state",
     knows: "3-5 molecular constants per component + an association "
       + "scheme (water is 2B here — the scheme is part of the fit)",
-    line: "one Gibbs surface, BOTH phases, density included",
+    line: "one Gibbs surface, both phases, density included",
     cite: "src/thermo/equationOfState/PCSAFT.cpp · flash20",
     note: "Not an activity model: a full equation of state from "
       + "perturbation theory, pricing vapour, liquid and density with one "
-      + "set of physics.  The twin flash (flash20, golden-pinned) shows "
+      + "set of physics.  The twin flash (flash20, a recorded run) shows "
       + "what that generality costs on a polar azeotropic pair: at the "
       + "same 358.15 K and 1 atm, fitted NRTL gives K_ethanol = 3.90 and "
       + "V/F = 0.512; predictive PC-SAFT gives K_ethanol = 11.47 and "
@@ -150,11 +150,11 @@ export const MODEL_LADDER = [
 
 /** The questions this page installs. */
 export const MIXTURE_INTERROGATION = [
-  "What did this model KNOW about my pair — its own data, its groups, its charge surface, or nothing?",
+  "What did this model know about my pair — its own data, its groups, its charge surface, or nothing?",
   "Is my pair inside the fitted evidence, or am I extrapolating someone's regression?",
-  "What is the predictive method's error on a system LIKE mine — and does my design survive it?",
+  "What is the predictive method's error on a system like mine — and does my design survive it?",
   "Is the vapour priced by the same model as the liquid (an EoS), or is this a gamma-phi split?",
-  "Has anyone compared this model with a measured point on THIS system — and where is that number?",
+  "Has anyone compared this model with a measured point on this system — and where is that number?",
 ] as const;
 
 // ---- visual pieces ----------------------------------------------------------
@@ -238,7 +238,7 @@ export function FourWaysMixtureTool(): JSX.Element {
             binary against one measured dataset, and two more rungs —
             COSMO-SAC and PC-SAFT — are shown from their own witnesses, not
             on that table.  By the end of this page each one should come with a reflex
-            question attached: <strong>what did it KNOW about this pair
+            question attached: <strong>what did it know about this pair
             before it answered?</strong>
           </Text>
         </Box>
@@ -316,7 +316,7 @@ export function FourWaysMixtureTool(): JSX.Element {
           )}
           {aad && <AadTable aad={aad} />}
           <Text size="sm" mt={6}>
-            PC-SAFT and COSMO-SAC are deliberately NOT rows in this table:
+            PC-SAFT and COSMO-SAC are deliberately not rows in this table:
             PC-SAFT is an equation of state, priced against this system in
             its own twin-flash witness (flash20 — the K-values on its card
             above), and the public COSMO-SAC profiles are teaching
@@ -338,12 +338,12 @@ export function FourWaysMixtureTool(): JSX.Element {
             ))}
           </Box>
           <Text size="xs" c={INK} mt={6}>
-            The mixing-rules side of the same story — how a CUBIC prices a
+            The mixing-rules side of the same story — how a cubic prices a
             multicomponent mixture through a_mix and b_mix, pair by pair,
             declared kij beside the defaulted ones — is the mixingRules
             bench op (tutorials/props/molecular/mixrules01_natural_gas).
             And “When a property database lies to you” is the page to
-            read before trusting any of these models’ INPUTS.
+            read before trusting any of these models’ inputs.
           </Text>
         </Box>
 
