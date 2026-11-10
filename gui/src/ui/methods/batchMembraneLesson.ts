@@ -743,7 +743,7 @@ export const BATCH_MEMBRANE_LIMITS: readonly LessonLimit[] = [
     body: "A reader who knows how pilot and production plants are actually "
       + "run will look for a third mode, and it is not a mode of this unit: "
       + "a feed-and-bleed loop is a steady module inside a recirculating "
-      + "tank, so Choupo builds it as a FLOWSHEET -- at steady state as a "
+      + "tank, so Choupo builds it as a flowsheet -- at steady state as a "
       + "steady recycle (tutorials/steady/membranes/membrane18_nf_feed_and_"
       + "bleed), and in time under choupoSemiContinuous, the module wrapped "
       + "as `quasiSteady` and re-solved at every instant beside a "
@@ -758,8 +758,8 @@ export const BATCH_MEMBRANE_LIMITS: readonly LessonLimit[] = [
     body: "Where the run and the hand law part, the hand law's assumption is "
       + "what failed, and the rejection trajectory beside them says how.  "
       + "Nothing on this page adjusts either number to close the gap, and "
-      + "nothing here judges the engine's answer to be right -- the goldens "
-      + "of the two witnesses pin what this model gives, and neither case is "
+      + "nothing here judges the engine's answer to be right -- the stored "
+      + "reference results of the two witness cases record what this model gives, and neither case is "
       + "validated against a measured diafiltration.",
   },
   {
