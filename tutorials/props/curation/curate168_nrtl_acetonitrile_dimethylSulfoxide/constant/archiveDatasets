@@ -1,0 +1,59 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of curate168_nrtl_acetonitrile_dimethylSulfoxide
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/acetonitrile-dimethylSulfoxide-bubble-je100033s.dat";
+        role          fit;   // C283: every laboratory is fitted
+        doi           "10.1021/je100033s";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je100033s.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je100033s.json";
+        articleFile   "je100033s.xml";
+        articleSha256 "63d0af97a2dfe7caf79d808b7e73911ea1011fdd1db317ad05e24ef2f49d86ae";
+        block         11;
+        filter        ( --interior-only );
+        extract       "bin/choupo-thermoml extract-vle <article file> --block 11 --interior-only --into <dir>";
+        sha256        "a0dfe970f337a3a73427904cd7aee891ac618b81cb147e24a3167b26a940b44b";
+        identity
+        {
+            acetonitrile   { cas "75-05-8"; inchiKey "WEVYAHXRMPXWCK-UHFFFAOYSA-N"; }
+            dimethylSulfoxide { cas "67-68-5"; inchiKey "IAZDPXIOMUYVGZ-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/acetonitrile-dimethylSulfoxide-bubble-je400531a.dat";
+        role          fit;   // C283: every laboratory is fitted
+        doi           "10.1021/je400531a";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je400531a.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je400531a.json";
+        articleFile   "je400531a.xml";
+        articleSha256 "edd47a0f561183a4e83930823356df31104086f2203e1fce79bd027d5848225e";
+        block         13;
+        filter        ( --interior-only );
+        extract       "bin/choupo-thermoml extract-vle <article file> --block 13 --interior-only --into <dir>";
+        sha256        "293180092f894a57351b01b6b5f2bae84db6c1bd42a3e93fbf844e0be60602ee";
+        identity
+        {
+            acetonitrile   { cas "75-05-8"; inchiKey "WEVYAHXRMPXWCK-UHFFFAOYSA-N"; }
+            dimethylSulfoxide { cas "67-68-5"; inchiKey "IAZDPXIOMUYVGZ-UHFFFAOYSA-N"; }
+        }
+    }
+);
