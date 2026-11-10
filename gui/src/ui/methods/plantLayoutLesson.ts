@@ -230,7 +230,7 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
       + "Mecklenburgh's Process Plant Layout are the usual references, and "
       + "a client often specifies its own.  None of them grants the right to "
       + "copy its tables into an open-source program, so Choupo ships no "
-      + "spacing table and no default distance: every distance is the case'S "
+      + "spacing table and no default distance: every distance is the case's "
       + "declaration, and every table carries a source and a reason the "
       + "engine refuses to run without.  That is also the honest position for "
       + "a student: a number copied from a table is a number someone else "
