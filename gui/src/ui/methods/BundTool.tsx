@@ -50,7 +50,7 @@ import {
 } from "./bundLesson.js";
 import { LessonQuiz } from "./lessonQuiz.js";
 import { KnobField, KnobNumber, PanelNote } from "./knobPanel.js";
-import { LessonLimits, LessonStepView, LessonReferences } from "./lessonStep.js";
+import { LessonLimits, LessonStepView, LessonReferences, Tex } from "./lessonStep.js";
 import { setActiveMethodTool } from "./registry.js";
 import { OriginMark } from "./origin.js";
 
@@ -82,7 +82,7 @@ function PanTable({ children }: { children: React.ReactNode }): JSX.Element {
 const ruleOf = (id: string): CapacityRule => RULES.find((r) => r.id === id) ?? RULES[0]!;
 
 function Verdict({ ok }: { ok: boolean }): JSX.Element {
-  return <Text span fw={700} c={ok ? "teal" : "red"}>{ok ? "adequate" : "SHORT"}</Text>;
+  return <Text span fw={700} c={ok ? "teal" : "red"}>{ok ? "adequate" : "short"}</Text>;
 }
 
 function BundKnobs({ bund, onBund, slope = true }: {
@@ -131,6 +131,10 @@ function DesignBench({ bund, onBund, ruleId, onRule, basis, onBasis, rain, onRai
     <Box data-testid="bund-design">
       <Title order={5}>The design check: geometric, net and useful, side by side</Title>
       <OriginMark of={["page", "reference", "assumption"]} note="this page's arithmetic -- the rows marked Choupo's reproduce the engine's BundArithmetic.H, which is not run here; the rule and the HSG176 clearances are the cited guidance; the bund, the tanks and the rain are inputs" />
+      <Text size="sm" mt={4}>
+        Move the walls, the slope or the freeboard and read how the three
+        capacities part company; the steps after this bench define each one.
+      </Text>
       <Box mt={8} style={KNOB_GRID}>
         <RuleSelect value={ruleId} onChange={onRule} />
         <KnobField label="the volume a tank counts">
@@ -153,18 +157,18 @@ function DesignBench({ bund, onBund, ruleId, onRule, basis, onBasis, rain, onRai
               <Table.Tr><Table.Th>quantity</Table.Th><Table.Th>value [m3]</Table.Th><Table.Th>how</Table.Th></Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-              <Table.Tr><Table.Td>floor area A</Table.Td><Table.Td>{fx(d.area, 2)} m2</Table.Td><Table.Td>L × W</Table.Td></Table.Tr>
-              <Table.Tr><Table.Td>geometric capacity, flat-floor formula</Table.Td><Table.Td>{fx(d.gross, 3)}</Table.Td><Table.Td>A h_w (the engine&apos;s gross volume)</Table.Td></Table.Tr>
-              <Table.Tr><Table.Td>geometric capacity, with the slope</Table.Td><Table.Td>{fx(d.geometric, 3)}</Table.Td><Table.Td>{bund.slope > 0 ? "A (h_w − Δ/2): this page only" : "the same: the floor is flat"}</Table.Td></Table.Tr>
-              <Table.Tr><Table.Td>displaced by every tank below the wall top</Table.Td><Table.Td>{fx(d.displacedAll, 3)}</Table.Td><Table.Td>Σ π D²/4 × min(h_w, H) (step 5)</Table.Td></Table.Tr>
-              <Table.Tr><Table.Td><b>net volume (Choupo&apos;s layout check)</b></Table.Td><Table.Td><b>{fx(d.net, 3)}</b></Table.Td><Table.Td>gross − displaced, flat floor, no freeboard</Table.Td></Table.Tr>
+              <Table.Tr><Table.Td>floor area A</Table.Td><Table.Td>{fx(d.area, 2)} m2</Table.Td><Table.Td><Tex mode="inline" src={"L \\times W"} /></Table.Td></Table.Tr>
+              <Table.Tr><Table.Td>geometric capacity, flat-floor formula</Table.Td><Table.Td>{fx(d.gross, 3)}</Table.Td><Table.Td><Tex mode="inline" src={"A\\,h_\\mathrm{w}"} /> (the engine&apos;s gross volume)</Table.Td></Table.Tr>
+              <Table.Tr><Table.Td>geometric capacity, with the slope</Table.Td><Table.Td>{fx(d.geometric, 3)}</Table.Td><Table.Td>{bund.slope > 0 ? <><Tex mode="inline" src={"A\\left(h_\\mathrm{w} - \\Delta/2\\right)"} />: this page only</> : "the same: the floor is flat"}</Table.Td></Table.Tr>
+              <Table.Tr><Table.Td>displaced by every tank below the wall top</Table.Td><Table.Td>{fx(d.displacedAll, 3)}</Table.Td><Table.Td><Tex mode="inline" src={"\\sum \\frac{\\pi D^2}{4}\\,\\min(h_\\mathrm{w}, H)"} /> (step 5)</Table.Td></Table.Tr>
+              <Table.Tr><Table.Td><b>net volume (Choupo&apos;s layout check)</b></Table.Td><Table.Td><b>{fx(d.net, 3)}</b></Table.Td><Table.Td>gross minus displaced, flat floor, no freeboard</Table.Td></Table.Tr>
               {d.rule.terms.map((t) => (
                 <Table.Tr key={`${t.fraction}${t.of}`}><Table.Td>term: {fx(t.fraction * 100, 0)} % of the {t.of}</Table.Td><Table.Td>{fx(t.volume, 3)}</Table.Td><Table.Td>{t.of === "largest" ? `largest ${fx(d.rule.largest, 2)}` : `total ${fx(d.rule.total, 2)}`} m3{t.of === d.rule.governing && t.volume === d.rule.governingVolume ? " — governs" : ""}</Table.Td></Table.Tr>
               ))}
               <Table.Tr><Table.Td>rain, d A</Table.Td><Table.Td>{fx(d.rain, 3)}</Table.Td><Table.Td>{fx(rain * 1000, 0)} mm over {fx(d.area, 1)} m2</Table.Td></Table.Tr>
               <Table.Tr><Table.Td><b>required (Choupo&apos;s layout check)</b></Table.Td><Table.Td><b>{fx(d.required, 3)}</b></Table.Td><Table.Td>governing term + rain: <Verdict ok={d.engineAdequate} /> by {fx(d.net - d.required, 3)} m3</Table.Td></Table.Tr>
-              <Table.Tr><Table.Td><b>useful capacity, {d.failing} failing</b></Table.Td><Table.Td><b>{fx(d.useful, 3)}</b></Table.Td><Table.Td>free volume to h_w − f, the OTHER tanks deducted, less the rain (step 6): <Verdict ok={d.usefulAdequate} /> against {fx(d.rule.governingVolume, 3)} by {fx(d.useful - d.rule.governingVolume, 3)} m3</Table.Td></Table.Tr>
-              <Table.Tr><Table.Td>the engine&apos;s safe-side margin</Table.Td><Table.Td>{fx(d.engineCredit, 3)}</Table.Td><Table.Td>{d.failing}&apos;s footprint × min(h_w, its height): what the net volume deducts and the failing tank does not take</Table.Td></Table.Tr>
+              <Table.Tr><Table.Td><b>useful capacity, {d.failing} failing</b></Table.Td><Table.Td><b>{fx(d.useful, 3)}</b></Table.Td><Table.Td>free volume to <Tex mode="inline" src={"h_\\mathrm{w} - f"} />, the other tanks deducted, less the rain (step 6): <Verdict ok={d.usefulAdequate} /> against {fx(d.rule.governingVolume, 3)} by {fx(d.useful - d.rule.governingVolume, 3)} m3</Table.Td></Table.Tr>
+              <Table.Tr><Table.Td>the engine&apos;s safe-side margin</Table.Td><Table.Td>{fx(d.engineCredit, 3)}</Table.Td><Table.Td>{d.failing}&apos;s footprint times <Tex mode="inline" src={"\\min(h_\\mathrm{w}, \\text{its height})"} />: what the net volume deducts and the failing tank does not take</Table.Td></Table.Tr>
             </Table.Tbody>
           </PanTable>
           <PanTable>
@@ -435,7 +439,7 @@ function ExerciseBench(): JSX.Element {
       )}
       <PanelNote>
         The wall height the engine&apos;s check needs is found by bisection on
-        net − required (bund.ts, wallForEngineRule).  The rupture is the
+        net minus required (bund.ts, wallForEngineRule).  The rupture is the
         largest tank, full, its footprint left free (step 6).  The rain is an
         author-set number for the exercise, not a design rainfall.
       </PanelNote>
@@ -480,6 +484,11 @@ export function BundTool(): JSX.Element {
 
         <Title order={4}>Part 1 — why a bund</Title>
         {step(1)}
+        {/* The design bench comes second (DEV.md 4c C277): the student moves
+            the bund and reads the three capacities before the steps define
+            each of them; the scenario bench below reuses this bund. */}
+        <DesignBench bund={bund} onBund={setBund} ruleId={ruleId} onRule={setRuleId}
+          basis={basis} onBasis={setBasis} rain={rain} onRain={setRain} />
         {step(2)}
 
         <Title order={4}>Part 2 — what a failure does</Title>
@@ -493,8 +502,6 @@ export function BundTool(): JSX.Element {
 
         <Title order={4}>Part 4 — the rule</Title>
         {step(8)}
-        <DesignBench bund={bund} onBund={setBund} ruleId={ruleId} onRule={setRuleId}
-          basis={basis} onBasis={setBasis} rain={rain} onRain={setRain} />
 
         <Title order={4}>Part 5 — four scenarios</Title>
         {step(9)}

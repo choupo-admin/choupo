@@ -344,48 +344,16 @@ export function FrontEndLoadingTool(): JSX.Element {
 
         {step(1)}
 
-        <Box>
-          <Title order={5}>The stages, and the gates between them</Title>
-          <OriginMark of="reference" note="the stage tables of the cited sources, as the research record transcribes them" />
-          <Text size="sm" mt={4}>
-            Click a stage.  Each row of the table is the research record's
-            stage table (§2.3), with what Choupo runs at that fidelity added.
-          </Text>
-          <Box mt={8}><StageStrip active={stage} onPick={setStage} /></Box>
-          <StageDetail s={active} />
-        </Box>
-
-        {step(2)}
-
-        <Box style={{ display: "grid", gap: 12,
-          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))" }}>
-          {FEL_NUMBERINGS.map((nb) => (
-            <Box key={nb.source}>
-              <Text size="xs" c="dimmed" mb={4}>{nb.source}</Text>
-              <Table withTableBorder fz="sm">
-                <Table.Tbody>
-                  {nb.stages.map((s) => (
-                    <Table.Tr key={s.label}>
-                      <Table.Td style={{ width: 70 }}><b>{s.label}</b></Table.Td>
-                      <Table.Td>{s.name}</Table.Td>
-                    </Table.Tr>
-                  ))}
-                </Table.Tbody>
-              </Table>
-            </Box>
-          ))}
-        </Box>
-
-        {step(3)}
-        {step(4)}
-
+        {/* The figure comes second (DEV.md 4c C277): the student draws the
+            bands first; the stages and steps 2-4 then explain them. */}
         <Box>
           <Title order={5}>Draw the range of ranges</Title>
           <OriginMark of={["page", "reference", "assumption"]} note="your point estimate times the AACE class bands (cited), computed on this page" />
           <Text size="sm" mt={4}>
             Type a point estimate.  Each class draws both ends of its range of
             ranges around it.  Look for a pale bar of one class that is no
-            wider than the solid bar of the class above it.
+            wider than the solid bar of the class above it.  The steps after
+            the figure say why the bands overlap.
           </Text>
           <Box mt={8} style={{ display: "grid", gap: 12,
             gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
@@ -442,6 +410,41 @@ export function FrontEndLoadingTool(): JSX.Element {
             states it.
           </PanelNote>
         </Box>
+
+        <Box>
+          <Title order={5}>The stages, and the gates between them</Title>
+          <OriginMark of="reference" note="the stage tables of the cited sources, as the research record transcribes them" />
+          <Text size="sm" mt={4}>
+            Click a stage.  Each row of the table is the research record's
+            stage table (§2.3), with what Choupo runs at that fidelity added.
+          </Text>
+          <Box mt={8}><StageStrip active={stage} onPick={setStage} /></Box>
+          <StageDetail s={active} />
+        </Box>
+
+        {step(2)}
+
+        <Box style={{ display: "grid", gap: 12,
+          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))" }}>
+          {FEL_NUMBERINGS.map((nb) => (
+            <Box key={nb.source}>
+              <Text size="xs" c="dimmed" mb={4}>{nb.source}</Text>
+              <Table withTableBorder fz="sm">
+                <Table.Tbody>
+                  {nb.stages.map((s) => (
+                    <Table.Tr key={s.label}>
+                      <Table.Td style={{ width: 70 }}><b>{s.label}</b></Table.Td>
+                      <Table.Td>{s.name}</Table.Td>
+                    </Table.Tr>
+                  ))}
+                </Table.Tbody>
+              </Table>
+            </Box>
+          ))}
+        </Box>
+
+        {step(3)}
+        {step(4)}
 
         {step(5)}
 

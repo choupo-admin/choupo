@@ -419,12 +419,14 @@ describe("process-safety: the lesson text", () => {
     for (const s of SAFETY_STEPS) if (s.formula) expect(texParses(s.formula), `step ${s.n}`).toBe(true);
     expect(new Set(fs).size).toBe(fs.length);
   });
+  //  Emphasis capitals in the lesson prose lowered (DEV.md 4c C277); these
+  //  assertions now compare lower-case, the claims they pin are unchanged.
   it("puts the caveats before the runs: fictitious, no vapour phase, T_D24 assumed", () => {
     const s8 = prose(SAFETY_STEPS.find((s) => s.n === 8)!.body);
     for (const w of ["FICTITIOUS", "NO VAPOUR PHASE", "T_D24 is ASSUMED",
       "declared IDEAL", "no azeotrope", "heat capacity is a CONSTANT",
       "MIXTURE's specific heat changes with composition", "1.013 bar"])
-      expect(s8, w).toContain(w);
+      expect(s8.toLowerCase(), w).toContain(w.toLowerCase());
     const page = tree("gui/src/ui/methods/ProcessSafetyTool.tsx");
     expect(page.indexOf("{step(8)}")).toBeLessThan(page.indexOf("<CoolingFailureBench"));
   });
@@ -610,35 +612,35 @@ describe("process-safety: the 2026-10-11 reviews' corrections stay made", () => 
   });
   it("the interlock step: compound, rate not total, the dosing vessel, the refill named", () => {
     const s = prose(SAFETY_STEPS.find((q) => q.n === 13)!.body);
-    expect(s).toContain("COMPOUND");
-    expect(s).toContain("it is not an MTSR");
-    expect(s).toContain("limits the RATE at which the feed enters, not the TOTAL");
-    expect(s).toContain("safety no longer depend on the interlock");
-    expect(s).toContain("WHOLE content, added to what has already accumulated");
-    expect(s).toContain("the refill is a discrete, deliberate act");
+    expect(s.toLowerCase()).toContain("COMPOUND".toLowerCase());
+    expect(s.toLowerCase()).toContain("it is not an MTSR".toLowerCase());
+    expect(s.toLowerCase()).toContain("limits the RATE at which the feed enters, not the TOTAL".toLowerCase());
+    expect(s.toLowerCase()).toContain("safety no longer depend on the interlock".toLowerCase());
+    expect(s.toLowerCase()).toContain("WHOLE content, added to what has already accumulated".toLowerCase());
+    expect(s.toLowerCase()).toContain("the refill is a discrete, deliberate act".toLowerCase());
   });
   it("the search: three maxima kept apart, and the sample said", () => {
     const s = prose(SAFETY_STEPS.find((q) => q.n === 11)!.body);
-    expect(s).toContain("right AFTER a portion");
+    expect(s.toLowerCase()).toContain("right AFTER a portion".toLowerCase());
     for (const w of ["(a) The scenario you chose", "(b) The largest value of the estimate",
       "(c) The largest T_cf the ENGINE reached among the failure instants it was asked about",
       "Neither (b) nor (c) is a maximum over every instant"])
-      expect(s, w).toContain(w);
+      expect(s.toLowerCase(), w).toContain(w.toLowerCase());
   });
   it("the class: of a scenario, of the process, and the margin along the run", () => {
     const s = prose(SAFETY_STEPS.find((q) => q.n === 12)!.body);
-    expect(s).toContain("it is not the class of the process");
-    expect(s).toContain("MTT(t) - T_cf(t)");
+    expect(s.toLowerCase()).toContain("it is not the class of the process".toLowerCase());
+    expect(s.toLowerCase()).toContain("MTT(t) - T_cf(t)".toLowerCase());
     const s6 = prose(SAFETY_STEPS.find((q) => q.n === 6)!.body);
-    expect(s6).toContain("one technical limit among others");
-    expect(s6).toContain("1.013 bar");
+    expect(s6.toLowerCase()).toContain("one technical limit among others".toLowerCase());
+    expect(s6.toLowerCase()).toContain("1.013 bar".toLowerCase());
     expect(tree("gui/src/ui/methods/ProcessSafetyTool.tsx")).toContain("class of this scenario");
     expect(tree("gui/src/ui/methods/ProcessSafetyTool.tsx")).toContain("class of the process");
   });
   it("refrigeration is not inherent", () => {
     const s4 = prose(SAFETY_STEPS.find((q) => q.n === 4)!.body);
-    expect(s4).toContain("REFRIGERATION is not on the list");
-    expect(s4).toContain("the refrigeration had been switched off");
+    expect(s4.toLowerCase()).toContain("REFRIGERATION is not on the list".toLowerCase());
+    expect(s4.toLowerCase()).toContain("the refrigeration had been switched off".toLowerCase());
   });
   it("the thesis keeps the protection layers for the hazard that remains", () => {
     expect(prose(SAFETY_STEPS.find((s) => s.n === 1)!.body))

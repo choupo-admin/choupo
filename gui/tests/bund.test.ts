@@ -348,7 +348,8 @@ describe("the lesson text", () => {
       expect(BUND_SOURCES.find((s) => s.id === id)!.used, id).toMatch(/^READ/);
   });
   it("calls the 110 % / 25 % rule an example, never an obligation", () => {
-    expect(all).toContain("treats the figures as an EXAMPLE");
+    //  Emphasis capital lowered (DEV.md 4c C277); the claim is unchanged.
+    expect(all).toContain("treats the figures as an example");
     expect(all).not.toMatch(/\bmust hold 110\b|\bis required by law everywhere\b/);
   });
   it("closes on Vitor's reflection, verbatim from his specification", () => {
