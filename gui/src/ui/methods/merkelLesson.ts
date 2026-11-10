@@ -215,7 +215,7 @@ Q &= L\, \mathrm{cp}_L\, \text{range} &\qquad \text{range} &= T_\mathrm{water,in
       + "the tower can carry that away is proportional to the local enthalpy "
       + "gap.  Adding up dT/(h* − h) from the cold end to the hot end gives "
       + "the tower's number of transfer units, KaV/L — the Merkel number.  K "
-      + "is a mass-transfer coefficient, a the interfacial area per unit "
+      + "is a mass-transfer coefficient, a is the interfacial area per unit "
       + "volume, V the packing volume and L the water flow, so the same "
       + "number reads two ways: as the demand this duty places on a tower, "
       + "and as the supply an installed packing offers.",
