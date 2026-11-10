@@ -1062,8 +1062,6 @@ function McCabeTool({ catalogue, localUnifac, componentFiles }: {
         {alerts}
 
         {step(1)}
-        {step(2)}
-        {step(3)}
 
         <Box>
           <Title order={5}>Now walk it</Title>
@@ -1090,6 +1088,10 @@ function McCabeTool({ catalogue, localUnifac, componentFiles }: {
           </Box>
         </Box>
 
+        {/*  Steps 2-3 follow the figure (DEV.md 4c C277): the picture a
+             student stays for comes after ONE step, not three.  */}
+        {step(2)}
+        {step(3)}
         {step(4)}
         {step(5)}
 
@@ -1253,8 +1255,6 @@ function PsychroTool({ catalogue, componentFiles }: {
         {alerts}
 
         {step(1)}
-        {step(2)}
-        {step(3)}
 
         <Box>
           <Title order={5}>Now read one</Title>
@@ -1301,6 +1301,10 @@ function PsychroTool({ catalogue, componentFiles }: {
           </Box>
         </Box>
 
+        {/*  Steps 2-3 follow the figure (DEV.md 4c C277): the picture a
+             student stays for comes after ONE step, not three.  */}
+        {step(2)}
+        {step(3)}
         {step(4)}
         {step(5)}
 

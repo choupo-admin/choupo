@@ -177,7 +177,7 @@ describe("the tool renders it as a scrolling lesson", () => {
       .not.toContain("MethodSetupRail");
   });
 
-  it("renders the definitions before the chart and the consequences after", () => {
+  it("renders step 1 before the chart and the other steps after", () => {
     //  The interactive is EARNED by the paragraphs above it.  Read the RENDER
     //  site, not the import: the import sits at the top of the file and a
     //  declaration-order test would pass whatever the page looked like.
@@ -189,10 +189,11 @@ describe("the tool renders it as a scrolling lesson", () => {
     expect((fn.match(/<PsychroPlot/g) ?? []).length,
       "the chart is drawn more than once").toBe(1);
     expect(fn.indexOf("<PsychroPlot")).toBeLessThan(plot);
-    for (const n of [1, 2, 3])
+    //  DEV.md 4c C277: the figure follows step 1; steps 2-5 follow it.
+    for (const n of [1])
       expect(fn.indexOf(`{step(${n})}`), `step ${n} renders after the chart`)
         .toBeLessThan(plot);
-    for (const n of [4, 5])
+    for (const n of [2, 3, 4, 5])
       expect(fn.indexOf(`{step(${n})}`), `step ${n} renders before the chart`)
         .toBeGreaterThan(plot);
     //  The limits close the page, after everything else.

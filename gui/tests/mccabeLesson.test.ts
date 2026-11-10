@@ -103,7 +103,7 @@ describe("the tool renders it as a scrolling lesson", () => {
       .not.toContain("MethodSetupRail");
   });
 
-  it("renders the definitions before the diagram and the limits after", () => {
+  it("renders step 1 before the diagram and the other steps after", () => {
     //  The interactive is EARNED by the paragraphs above it.  Read the render
     //  order, not where the constant is declared: the import sits at the top
     //  of the file and a declaration-order test would pass whatever the page
@@ -112,10 +112,11 @@ describe("the tool renders it as a scrolling lesson", () => {
     const fn = WS.slice(i, WS.indexOf("// ---- Psychrometric chart ---"));
     const plot = fn.indexOf("{plotPane}");
     expect(plot).toBeGreaterThan(0);
-    for (const n of [1, 2, 3])
+    //  DEV.md 4c C277: the figure follows step 1; steps 2-5 follow it.
+    for (const n of [1])
       expect(fn.indexOf(`{step(${n})}`), `step ${n} renders after the diagram`)
         .toBeLessThan(plot);
-    for (const n of [4, 5])
+    for (const n of [2, 3, 4, 5])
       expect(fn.indexOf(`{step(${n})}`), `step ${n} renders before the diagram`)
         .toBeGreaterThan(plot);
   });
