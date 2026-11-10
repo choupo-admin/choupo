@@ -3298,6 +3298,8 @@ accepts today, and that is a policy call.
 > unreachable (no precedent), and whether curate04-14 drop their tracked
 > series.  Record: docs/design/binary-pairs-from-open-measurements.md section 8.
 
+> **C268 RESULT (2026-11-10).** C268 utilities block LANDED 11-10: cooling tower (19.7 MW, 471 kg/s), refrigeration package (20.6 MW at the chiller) and flare (747 kg/h normal vent) on greenAmmoniaPEQ's plot, each sized on the run's own numbers; 0 findings, 36/36 pipes, closures unchanged (mass 99.997 %, energy 0.002 %); utility pipes not routed (no grammar for a line between two items); check_bund_arithmetic now compares tank1's V_R as a number at 1e-9.  Not run: --gui, a full sweep; the flare separation rows are asserted, not sabotage-tested.
+>
 > **Acetic acid PARKED (architect, 2026-11-10, after Vitor: "Perdeste uma semana com essa merda antes!").**  The open acetic items (C201 (1) rest: dew-point distillate, Gibbs / three-phase / Txy readers, record identity; C174/C175 subcooled-feed q; column05's dimer in C239) get no work this month.  Reason: nothing the month delivers depends on them, aceticAcid02 runs with its balances gated (C258), and column05's ideal-vapour limit is already announced.  Reopened only if a case a student meets fails.
 >
 > **C284 (Vitor, 2026-11-10: "faz favor de acelerar e comecares a produzir
