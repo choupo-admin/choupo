@@ -21,6 +21,8 @@
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { PinchResult } from "../../case/pinch.js";
+import { pinchUnits, type PinchUnits } from "../../case/pinchUnits.js";
+import { useStore } from "../../state/store.js";
 import {
   paretoFilter, gridLanes, gridAxis, gridTicks, gridSegments, gridMatchLines,
   utilitySegments, xOfShifted,
@@ -50,6 +52,8 @@ export function PinchGridPlot({
   paretoPct: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const dispPrefs = useStore((s) => s.displayPrefs);
+  const pu = useMemo(() => pinchUnits(dispPrefs), [dispPrefs]);
   const [width, setWidth] = useState(860);
   // Inline override of the Pareto threshold for THIS view only -- the
   // Display-menu preference (the persistent default) is untouched.
@@ -115,12 +119,12 @@ export function PinchGridPlot({
   const noMatches = pinch.matches.length === 0;
   const noMatchExplanation = noMatches
     ? recovKW <= 0.5
-      ? `the hottest hot stream (${hotMaxT.toFixed(0)} K) is colder than the coldest cold ` +
-        `stream (${coldMinT.toFixed(0)} K) once ΔTmin is applied — no process-process ` +
+      ? `the hottest hot stream (${pu.T(hotMaxT)} ${pu.tLabel}) is colder than the coldest cold ` +
+        `stream (${pu.T(coldMinT)} ${pu.tLabel}) once ΔTmin is applied — no process-process ` +
         `exchange is possible`
       : `the candidate screening is a HEURISTIC (it only pairs streams whose shifted-T ` +
         `intervals overlap directly) and found none here — yet the targets say ` +
-        `${recovKW.toFixed(0)} kW IS recoverable, so feasible counter-current pairings the ` +
+        `${pu.Q(recovKW)} ${pu.qLabel} IS recoverable, so feasible counter-current pairings the ` +
         `heuristic misses may exist; read the composite curves for where the overlap sits`
     : null;
   // y of the annotation row: the gap between the hot and cold blocks.
@@ -131,7 +135,7 @@ export function PinchGridPlot({
   // The Pareto announcement -- shown whenever anything is omitted (house rule:
   // no silent crutch), NAMING the omitted streams.  Drawing-only; the numbers
   // keep every stream.
-  const omittedNames = filter.omitted.map((s) => `${s.unit} (${s.Q_kW.toFixed(0)} kW)`);
+  const omittedNames = filter.omitted.map((s) => `${s.unit} (${pu.Q(s.Q_kW)} ${pu.qLabel})`);
   const shownNames = omittedNames.slice(0, 4).join(", ") +
     (omittedNames.length > 4 ? ` +${omittedNames.length - 4} more` : "");
 
@@ -155,7 +159,7 @@ export function PinchGridPlot({
   return (
     <div ref={ref} style={{ width: "100%", overflowX: "auto" }}>
       <div style={{ fontSize: 12, opacity: 0.7, padding: "2px 8px" }}>
-        Grid diagram · ΔT<sub>min</sub> = {pinch.dTmin} K · axis = <em>shifted</em> temperature
+        Grid diagram · ΔT<sub>min</sub> = {pu.dT(pinch.dTmin, 0)} {pu.tLabel} · axis = <em>shifted</em> temperature
         T* (hot −ΔT<sub>min</sub>/2, cold +ΔT<sub>min</sub>/2), high T on the left ·
         endpoint labels = <em>actual</em> stream T
       </div>
@@ -187,14 +191,14 @@ export function PinchGridPlot({
         {/* utility tails (dashed, in their own thin lanes) */}
         {utils.map((u) => (
           <UtilityTail key={u.kind} u={u}
-            kW={u.kind === "hotUtility" ? pinch.QhMin : pinch.QcMin} />
+            kW={u.kind === "hotUtility" ? pinch.QhMin : pinch.QcMin} pu={pu} />
         ))}
         {/* stream segments (full Ts -> Tt lines) */}
         {segments.map((s) => (
-          <StreamSegment key={s.unit} seg={s} dTmin={pinch.dTmin} left={axis.left} />
+          <StreamSegment key={s.unit} seg={s} dTmin={pinch.dTmin} left={axis.left} pu={pu} />
         ))}
         {/* candidate matches (circles ON the stream lines, classical style) */}
-        {matchRes.drawn.map((m, i) => <MatchLine key={i} m={m} />)}
+        {matchRes.drawn.map((m, i) => <MatchLine key={i} m={m} pu={pu} />)}
         {/* explicit match state when there are none (never an empty implication) */}
         {noMatches && gapY != null && (
           <g>
@@ -214,13 +218,13 @@ export function PinchGridPlot({
                   stroke={PINCH_COLOUR} strokeWidth={1.5} strokeDasharray="5 4" />
             <text x={pinchX - 6} y={27} textAnchor="end" fontSize={11}
                   fill={PINCH_COLOUR}>
-              hot pinch {pinch.pinchHot.toFixed(1)} K
+              hot pinch {pu.T(pinch.pinchHot, 1)} {pu.tLabel}
             </text>
             <text x={pinchX + 6} y={27} textAnchor="start" fontSize={11}
                   fill={PINCH_COLOUR}>
-              cold pinch {pinch.pinchCold!.toFixed(1)} K
+              cold pinch {pu.T(pinch.pinchCold!, 1)} {pu.tLabel}
             </text>
-            <title>{`Pinch: hot streams reach ${pinch.pinchHot.toFixed(2)} K here, cold streams ${pinch.pinchCold!.toFixed(2)} K (ΔTmin = ${pinch.dTmin} K apart; shifted T* = ${pinch.pinchShift!.toFixed(2)} K).\nGolden rule: no match across the pinch — heat above stays above, heat below stays below.`}</title>
+            <title>{`Pinch: hot streams reach ${pu.T(pinch.pinchHot, 2)} ${pu.tLabel} here, cold streams ${pu.T(pinch.pinchCold!, 2)} ${pu.tLabel} (ΔTmin = ${pu.dT(pinch.dTmin, 0)} ${pu.tLabel} apart; shifted T* = ${pu.T(pinch.pinchShift!, 2)} ${pu.tLabel}).\nGolden rule: no match across the pinch — heat above stays above, heat below stays below.`}</title>
           </g>
         )}
         {/* explicit shifted-temperature axis (the PRIMARY scale) */}
@@ -237,13 +241,13 @@ export function PinchGridPlot({
                 <line x1={x} y1={lanes.lanesBottom} x2={x} y2={lanes.lanesBottom + 5}
                       stroke="currentColor" opacity={0.6} />
                 <text x={x} y={lanes.lanesBottom + 17} textAnchor="middle" fontSize={10}
-                      fill="currentColor" opacity={0.8}>{formatTick(t)}</text>
+                      fill="currentColor" opacity={0.8}>{formatTick(pu.tNum(t))}</text>
               </g>
             );
           })}
           <text x={axis.left + axis.plotWidth / 2} y={lanes.lanesBottom + 32}
                 textAnchor="middle" fontSize={11} fill="currentColor" opacity={0.75}>
-            shifted temperature T* (K) — decreases →
+            shifted temperature T* ({pu.tLabel}) — decreases →
           </text>
         </g>
         <defs>
@@ -278,8 +282,8 @@ export function PinchGridPlot({
       {filter.omitted.length > 0 && (
         <div style={{ fontSize: 12, padding: "0 8px 8px", color: PINCH_COLOUR }}
              title={omittedNames.join(", ")}>
-          ⚠ omitted from the drawing (each &lt; {paretoPct} % of the {filter.refKW.toFixed(0)} kW
-          process heating+cooling duty): {shownNames} — Σ = {filter.omittedKW.toFixed(0)} kW
+          ⚠ omitted from the drawing (each &lt; {paretoPct} % of the {pu.Q(filter.refKW)} {pu.qLabel}
+          process heating+cooling duty): {shownNames} — Σ = {pu.Q(filter.omittedKW)} {pu.qLabel}
           {matchRes.hidden > 0 ? `, ${matchRes.hidden} match${matchRes.hidden > 1 ? "es" : ""} hidden with them` : ""}.
           Drawing only — the targets count every stream.{" "}
           <FooterButton onClick={() => setShowAll(true)}>Show all</FooterButton>
@@ -310,7 +314,8 @@ function FooterButton({ onClick, children }: { onClick: () => void; children: Re
   );
 }
 
-function StreamSegment({ seg, dTmin, left }: {
+function StreamSegment({ seg, dTmin, left, pu }: {
+  pu: PinchUnits;
   seg: GridSegment;
   dTmin: number;
   left: number;
@@ -327,7 +332,7 @@ function StreamSegment({ seg, dTmin, left }: {
       <text x={left - 8} y={seg.y - 2} textAnchor="end" fontSize={12}
             fill="currentColor">{seg.unit}</text>
       <text x={left - 8} y={seg.y + 11} textAnchor="end" fontSize={10}
-            fill="currentColor" opacity={0.65}>{seg.Q_kW.toFixed(0)} kW</text>
+            fill="currentColor" opacity={0.65}>{pu.Q(seg.Q_kW)} {pu.qLabel}</text>
       {/* the FULL stream line: supply dot -> target arrowhead */}
       <line x1={seg.xd1} y1={seg.y} x2={seg.xd2} y2={seg.y}
             stroke={colour} strokeWidth={2.5} markerEnd={marker} />
@@ -335,16 +340,16 @@ function StreamSegment({ seg, dTmin, left }: {
       {/* BOTH actual temperatures flanking the ends (the secondary scale) */}
       <text x={seg.xd1 - dir * 6} y={seg.y + 3.5}
             textAnchor={dir > 0 ? "end" : "start"} fontSize={10}
-            fill="currentColor" opacity={0.8}>{seg.Ts.toFixed(0)}</text>
+            fill="currentColor" opacity={0.8}>{pu.T(seg.Ts)}</text>
       <text x={seg.xd2 + dir * 10} y={seg.y + 3.5}
             textAnchor={dir > 0 ? "start" : "end"} fontSize={10}
-            fill="currentColor" opacity={0.8}>{seg.Tt.toFixed(0)} K</text>
-      <title>{`${seg.unit} — ${seg.kind === "hot" ? "hot stream (needs cooling)" : "cold stream (needs heating)"}\nactual  Ts = ${seg.Ts.toFixed(2)} K → Tt = ${seg.Tt.toFixed(2)} K\nshifted  T* = ${(seg.Ts + d).toFixed(2)} → ${(seg.Tt + d).toFixed(2)} K (position on the axis)\nQ = ${seg.Q_kW.toFixed(1)} kW${cp != null ? ` · CP ≈ ${cp.toFixed(2)} kW/K` : " · ≈ isothermal duty (phase change / reboil / condense)"}`}</title>
+            fill="currentColor" opacity={0.8}>{pu.T(seg.Tt)} {pu.tLabel}</text>
+      <title>{`${seg.unit} — ${seg.kind === "hot" ? "hot stream (needs cooling)" : "cold stream (needs heating)"}\nactual  Ts = ${pu.T(seg.Ts, 2)} ${pu.tLabel} → Tt = ${pu.T(seg.Tt, 2)} ${pu.tLabel}\nshifted  T* = ${pu.T(seg.Ts + d, 2)} → ${pu.T(seg.Tt + d, 2)} ${pu.tLabel} (position on the axis)\nQ = ${pu.Q(seg.Q_kW, 1)} ${pu.qLabel}${cp != null ? ` · CP ≈ ${pu.CP(cp, 2)} ${pu.cpLabel}` : " · ≈ isothermal duty (phase change / reboil / condense)"}`}</title>
     </g>
   );
 }
 
-function UtilityTail({ u, kW }: { u: UtilitySegment; kW: number }) {
+function UtilityTail({ u, kW, pu }: { u: UtilitySegment; kW: number; pu: PinchUnits }) {
   const hot = u.kind === "hotUtility";
   const colour = hot ? HOT_COLOUR : COLD_COLOUR;
   return (
@@ -354,16 +359,16 @@ function UtilityTail({ u, kW }: { u: UtilitySegment; kW: number }) {
             markerEnd={`url(#pinchgrid-arrow-${hot ? "hot" : "cold"})`} opacity={0.85} />
       <text x={(u.x1 + u.x2) / 2} y={u.y - 7} textAnchor="middle" fontSize={10}
             fill={colour}>
-        {hot ? "hot utility" : "cold utility"} — min {kW.toFixed(0)} kW
+        {hot ? "hot utility" : "cold utility"} — min {pu.Q(kW)} {pu.qLabel}
       </text>
       <title>{hot
-        ? `Hot utility: at least ${kW.toFixed(1)} kW of external heating, ALL of it above the pinch (left of the pinch line).`
-        : `Cold utility: at least ${kW.toFixed(1)} kW of external cooling, ALL of it below the pinch (right of the pinch line).`}</title>
+        ? `Hot utility: at least ${pu.Q(kW, 1)} ${pu.qLabel} of external heating, ALL of it above the pinch (left of the pinch line).`
+        : `Cold utility: at least ${pu.Q(kW, 1)} ${pu.qLabel} of external cooling, ALL of it below the pinch (right of the pinch line).`}</title>
     </g>
   );
 }
 
-function MatchLine({ m }: { m: GridMatchLine }) {
+function MatchLine({ m, pu }: { m: GridMatchLine; pu: PinchUnits }) {
   const colour = SIDE_COLOUR[m.side];
   const yMid = (m.yHot + m.yCold) / 2;
   return (
@@ -373,8 +378,8 @@ function MatchLine({ m }: { m: GridMatchLine }) {
       <circle cx={m.x} cy={m.yHot} r={4.5} fill={colour} />
       <circle cx={m.x} cy={m.yCold} r={4.5} fill={colour} />
       <text x={m.x + 6} y={yMid + 3} textAnchor="start" fontSize={10}
-            fill={colour}>≤{m.capKW.toFixed(0)} kW</text>
-      <title>{`${m.hot} (hot) → ${m.cold} (cold)\nfeasible duty ≤ ${m.capKW.toFixed(1)} kW — ${m.side} the pinch\nHeuristic screening: bound = min of the two stream duties (NOT a per-side capacity); side classified by the overlap midpoint.  The network design sizes the real exchanger.`}</title>
+            fill={colour}>≤{pu.Q(m.capKW)} {pu.qLabel}</text>
+      <title>{`${m.hot} (hot) → ${m.cold} (cold)\nfeasible duty ≤ ${pu.Q(m.capKW, 1)} ${pu.qLabel} — ${m.side} the pinch\nHeuristic screening: bound = min of the two stream duties (NOT a per-side capacity); side classified by the overlap midpoint.  The network design sizes the real exchanger.`}</title>
     </g>
   );
 }

@@ -55,6 +55,8 @@ import { IconAdjustments } from "@tabler/icons-react";
 
 import {
   PRESETS,
+  DUTY_UNITS,
+  type DutyUnit,
   type ConcentrationUnit,
   type DisplayPrefs,
   type FlowUnit,
@@ -200,6 +202,16 @@ export function UnitsMenu() {
               data={MASS_FLOW}
               value={flowIn(MASS_FLOW)}
               onChange={(v) => setPrefs({ flow: v as FlowUnit })}
+            />
+          </Row>
+
+          <Row label="Duty">
+            <SegmentedControl
+              fullWidth
+              size="xs"
+              data={DUTY_UNITS}
+              value={prefs.duty}
+              onChange={(v) => setPrefs({ duty: v as DutyUnit })}
             />
           </Row>
 

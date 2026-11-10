@@ -44,12 +44,14 @@ import { Box, Group, NumberInput, SegmentedControl, Stack, Text, Tooltip } from 
 import { useStore } from "../state/store.js";
 import { pinchFromEngine, PINCH_PASS_EXCERPT } from "../case/pinch.js";
 import { PinchGridPlot } from "./plotting/PinchGridPlot.js";
+import { pinchUnits, pinchStatusLine } from "../case/pinchUnits.js";
 import { PinchCompositeTool } from "./methods/PinchCompositeTool.js";
 
 export function PinchView() {
   const runResult = useStore((s) => s.runResult);
   const paretoPct = useStore((s) => s.displayPrefs.pinchParetoPct);
   const setPrefs = useStore((s) => s.setDisplayPrefs);
+  const dispPrefs = useStore((s) => s.displayPrefs);
   const [view, setView] = useState<"curves" | "grid">("curves");
 
   const pinch = useMemo(() => pinchFromEngine(runResult), [runResult]);
@@ -88,10 +90,7 @@ export function PinchView() {
                           : <PinchCompositeTool fixedSource="current" />}
       </Box>
       <Text size="xs" c="dimmed">
-        {pinch.streams.length} process streams in the engine&apos;s population
-        (reports/pinch/population.csv) · ΔTmin {pinch.dTmin} K · targets{" "}
-        {pinch.QhMin.toFixed(0)} kW hot / {pinch.QcMin.toFixed(0)} kW cold ·{" "}
-        {pinch.pinchShift == null ? "no pinch (threshold problem)" : `pinch T* ${pinch.pinchShift.toFixed(1)} K`}.
+        {pinchStatusLine(pinch, pinchUnits(dispPrefs))}
       </Text>
     </Stack>
   );

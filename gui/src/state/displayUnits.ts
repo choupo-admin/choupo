@@ -45,6 +45,9 @@ import type { ColorScheme, ColorMode, ColorMap } from "../ui/plotting/palette.js
 export type PressureUnit = "bar" | "Pa" | "kPa" | "MPa" | "atm" | "psi";
 export type TemperatureUnit = "K" | "degC";
 export type TimeUnit = "s" | "min" | "h";
+/** Heat duty / power.  Canonical is kW (what the pinch pass and the unit
+ *  KPIs emit). */
+export type DutyUnit = "kW" | "MW" | "kJ/h" | "GJ/h" | "kcal/h";
 export type ConcentrationUnit = "mol/kg" | "mmol/kg" | "mg/L";
 export type FlowUnit =
   | "kmol/h"
@@ -61,6 +64,8 @@ export interface DisplayPrefs {
   temperature: TemperatureUnit;
   time: TimeUnit;
   flow: FlowUnit;
+  /** Heat duty unit (pinch page); canonical kW. */
+  duty: DutyUnit;
   /** Which phase palette the canvas + streams use (Colours menu). */
   colorScheme: ColorScheme;
   /** What the stream colour ENCODES: phase (default) | temperature | pressure. */
@@ -93,6 +98,7 @@ export const DEFAULT_PREFS: DisplayPrefs = {
   temperature: "K",
   time: "s",
   flow: "kmol/h",
+  duty: "kW",
   concentration: "mol/kg",
   colorScheme: "default",
   colorMode: "phase",
@@ -346,4 +352,38 @@ export function parseTemperature(displayValue: number, u: TemperatureUnit): numb
 
 export function parseFlow(displayValue: number, u: FlowUnit): number {
   return displayValue * FLOW_FACTOR[u];
+}
+
+// =====================================================================
+//  Heat duty.  Canonical kW; `DUTY_PER_KW` = display value of 1 kW.
+//  A temperature DIFFERENCE (dT, and the K in a CP = Q/dT) converts with
+//  `dKToDisplay`: K and degC differences are equal, so no offset is added.
+// =====================================================================
+
+export const DUTY_UNITS: DutyUnit[] = ["kW", "MW", "kJ/h", "GJ/h", "kcal/h"];
+const DUTY_PER_KW: Record<DutyUnit, number> = {
+  kW: 1.0,
+  MW: 1.0e-3,
+  "kJ/h": 3600.0,
+  "GJ/h": 3.6e-3,
+  "kcal/h": 3600.0 / 4.184,
+};
+export function dutyLabel(u: DutyUnit): string { return u; }
+export function kWToDisplay(kW: number, u: DutyUnit): number {
+  return kW * DUTY_PER_KW[u];
+}
+export function formatDuty(kW: number, u: DutyUnit, sig: number = DEFAULT_SIG): string {
+  if (kW === undefined || kW === null || !Number.isFinite(kW)) return "—";
+  return formatSig(kWToDisplay(kW, u), sig);
+}
+/** A temperature difference [K] -> picked temperature unit (same size). */
+export function dKToDisplay(dK: number, _u: TemperatureUnit): number {
+  return dK;
+}
+/** Heat-capacity flow rate CP [kW/K] -> duty-per-temperature-difference. */
+export function cpToDisplay(kWperK: number, d: DutyUnit, _t: TemperatureUnit): number {
+  return kWToDisplay(kWperK, d);
+}
+export function cpLabel(d: DutyUnit, t: TemperatureUnit): string {
+  return `${dutyLabel(d)}/${t === "degC" ? "°C" : "K"}`;
 }
