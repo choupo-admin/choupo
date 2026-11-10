@@ -1,0 +1,125 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      12Propanediol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        A  5.07289610269;
+        B  1943.08268843;
+        C  -77.5351376712;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "32d9aca94ffe09a4";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/12Propanediol-vapourPressure-je4004993.dat";
+            doi       "10.1021/je4004993";
+            sha256    "7815d74f34d9dd83acd32741c64e67fdafac5a7ce9f7933d781c46d6f048e9a9";
+            provenance measured;
+            archiveFile "je4004993.xml";
+            system    "12Propanediol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/12Propanediol-vapourPressure-j.jct.2016.01.019.dat";
+            doi       "10.1016/j.jct.2016.01.019";
+            sha256    "67af4c62caba8fe9644d6ff093aebc32c6ebb933b139d8ff89e558561d21ba3a";
+            provenance measured;
+            archiveFile "j.jct.2016.01.019.xml";
+            system    "12Propanediol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/12Propanediol-vapourPressure-j.fluid.2014.09.015.dat";
+            doi       "10.1016/j.fluid.2014.09.015";
+            sha256    "c915c8e5c543eb324df4dccdd4b61fefe8c48359a49da7b785b7fcf3f839feed";
+            provenance measured;
+            archiveFile "j.fluid.2014.09.015.xml";
+            system    "12Propanediol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/12Propanediol-vapourPressure-je4009014.dat";
+            doi       "10.1021/je4009014";
+            sha256    "c5eac6f0f8b3da19f310f0c314d5b14644ef12d512a2a392befc5ce3d4f727af";
+            provenance measured;
+            archiveFile "je4009014.xml";
+            system    "12Propanediol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/12Propanediol-vapourPressure-je100803e.dat";
+            doi       "10.1021/je100803e";
+            sha256    "ddf304812c4562713d4eed3173c86032fb293351f31bdf898e89a56685edaafd";
+            provenance measured;
+            archiveFile "je100803e.xml";
+            system    "12Propanediol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/12Propanediol-vapourPressure-je034096z.dat";
+            doi       "10.1021/je034096z";
+            sha256    "e1dace98786fd0312c9b1ccef3145b20889fa12b4c6cd772be59b4f28f6fbf4f";
+            provenance measured;
+            archiveFile "je034096z.xml";
+            system    "12Propanediol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/12Propanediol-vapourPressure-je5010824.dat";
+            doi       "10.1021/je5010824";
+            sha256    "244c7d3c2d7506d1914d46e14ff6706089ba194ab50a2f631e7cb95fbc4c9e3c";
+            provenance measured;
+            archiveFile "je5010824.xml";
+            system    "12Propanediol";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 345.15; max 460.87; n 100; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.999431134072;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

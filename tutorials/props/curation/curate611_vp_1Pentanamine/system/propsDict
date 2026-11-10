@@ -66,7 +66,8 @@
   (10.1021/je025660t 13/13 kept). Relative error in P over the kept
   points: mean 0.0136 %, max 0.0202 %; AmbroseWalton on the same points:
   mean 45.7194 %, max 52.4547 %. Outliers discarded: none. Its own normal
-  boiling point (101.325 kPa): 377.94 K. PROMOTED on 2026-11-10 into
+  boiling point (101.325 kPa): 377.94 K. PROMOTED (and since REVERTED by
+  `choupo-curate revert`) on 2026-11-10 into
   data/standards/components/1Pentanamine.dat as reviewStatus
   autoPromoted, humanReviewed false, because: fit grade clean under the
   DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 1

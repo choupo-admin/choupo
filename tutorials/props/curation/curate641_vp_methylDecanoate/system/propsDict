@@ -69,7 +69,8 @@
   15/15 kept). Relative error in P over the kept points: mean 0.9936 %,
   max 2.8250 %; AmbroseWalton on the same points: mean 212.5415 %, max
   349.6042 %. Outliers discarded: none. Its own normal boiling point
-  (101.325 kPa): 497.70 K. PROMOTED on 2026-11-10 into
+  (101.325 kPa): 497.70 K. PROMOTED (and since REVERTED by `choupo-curate
+  revert`) on 2026-11-10 into
   data/standards/components/methylDecanoate.dat as reviewStatus
   autoPromoted, humanReviewed false, because: fit grade clean under the
   DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 2

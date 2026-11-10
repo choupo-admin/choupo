@@ -76,7 +76,8 @@
   10.1021/je5010824 5/5 kept). Relative error in P over the kept points:
   mean 2.7950 %, max 5.1642 %; AmbroseWalton on the same points: mean
   555.9471 %, max 1185.3770 %. Outliers discarded: none. Its own normal
-  boiling point (101.325 kPa): 461.00 K. PROMOTED on 2026-11-10 into
+  boiling point (101.325 kPa): 461.00 K. PROMOTED (and since REVERTED by
+  `choupo-curate revert`) on 2026-11-10 into
   data/standards/components/12Propanediol.dat as reviewStatus
   autoPromoted, humanReviewed false, because: fit grade warning under the
   DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 7

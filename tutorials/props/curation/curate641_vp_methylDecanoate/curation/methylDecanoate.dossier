@@ -1,0 +1,80 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      methylDecanoate;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        A  5.08036838376;
+        B  2219.8942147;
+        C  -60.2571106457;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "05f56d2ce1ec0d29";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylDecanoate-vapourPressure-j.jct.2019.01.007.dat";
+            doi       "10.1016/j.jct.2019.01.007";
+            sha256    "8340b475ec1fa4819c9516cd5e7f9215fff266556b4aa3aabe82ca183dae19fa";
+            provenance measured;
+            archiveFile "j.jct.2019.01.007.xml";
+            system    "methylDecanoate";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylDecanoate-vapourPressure-j.jct.2016.07.024.dat";
+            doi       "10.1016/j.jct.2016.07.024";
+            sha256    "ab5f70414539ba6b3049ce1befb3819b033d81f9e8d72d2c46a028563d033bf0";
+            provenance measured;
+            archiveFile "j.jct.2016.07.024.xml";
+            system    "methylDecanoate";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 273.35; max 432.65; n 157; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.999970623079;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

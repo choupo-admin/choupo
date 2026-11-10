@@ -3375,6 +3375,96 @@ accepts today, and that is a policy call.
 > The 8 components whose omega the C287 slice held (0.7 Tc more than 50 K
 > beyond the data) stay held until Vitor decides how their omega is taken.
 
+> **C292 RESULT (slice 2 of C287, branch c292-components-2, 2026-11-10).**
+> THE ROUTE, same tool (`bin/curate/c287_new_components.py`, now with an
+> ESTIMATED-critical route and `CHOUPO_THERMOML_HOME`): compounds outside
+> the catalogue with a vapour-pressure study of >= 5 points that states its
+> uncertainty, a measured liquid density and a measured liquid Cp but NO
+> measured Tc and Pc.  RECOUNT: 83 such compounds, 3 of them with a measured
+> Tc and Pc (slice 1's), 80 without; 79 after ethyl methyl carbonate, which
+> the catalogue holds as `methylEthylCarbonate` (found by CAS).  Tc and Pc
+> are ESTIMATED by Joback in the formulas of `estimateComponent` and marked
+> `origin estimated; method Joback` per value with the group list
+> (check_estimates reproduces them, 1e-6, so they are stored to nine
+> figures); the case `curate699_new_components_estimated` reproduces them and
+> smoke-tests every record.  omega is read from the fitted Antoine at 0.7 Tc
+> of the ESTIMATED Tc only inside 50 K of the fitted data; beyond that the
+> component is HELD, not written, and listed with the distance (the omega
+> route stays Vitor's; Lee-Kesler not used).  Tb: measured where the archive
+> reports it at 100-102.5 kPa, else NOT stored (see QUESTIONS).  dHf_298 and
+> s_298 Joback and derived (no formation or combustion datum for any of the
+> 79 in the archive: its enthalpy properties are fusion, vaporisation,
+> mixing, solution), the fits (vapour pressure, Vliq, liquid Cp) all
+> laboratories, least squares then minimax, graded 5/10/20 %, `fitGrade`
+> voiced.  ADDED 32 (catalogue 616 -> 648; vp cases curate600-647, each
+> declaration committed before its fit): vp grade clean 23,
+> warning 7 (12Propanediol, 1Decanol, 2Methoxyethanol, 3Pentanol,
+> ethylDecanoate, methylHexanoate, tetradecanoicAcid), severe 2 (1Octanol,
+> NMethyl13Diaminopropane); Vliq clean 31, warning 1 (12Propanediol 6.80 %);
+> liquid Cp clean 31, warning 1 (1Octanol 8.52 %); Tb measured for 6
+> (1Decanol, 2Methoxyethanol, 3Methyl1Butanol, cyclopentanol,
+> methylHeptanoate, tetrahydropyran).  Names: 12Butanediol,
+> 12Propanediol, 13Dioxolane, 1Chlorobutane, 1Decanol, 1HPerfluorooctane,
+> 1Octanol, 1Pentanamine, 1Propoxy2Propanol, 2Butoxyethanol, 2Chlorotoluene,
+> 2Methoxyethanol, 2Methyltetrahydrofuran, 2Propoxyethanol, 3Methyl1Butanol,
+> 3Methyl2Butanol, 3Pentanol, 4Chlorotoluene, NMethyl13Diaminopropane,
+> cyclopentanol, diIsobutylEther, diethyleneGlycolDibutylEther,
+> diethyleneGlycolDiethylEther, diethyleneGlycolMonohexylEther, ethylDecanoate,
+> methylButanoate, methylDecanoate, methylHeptanoate, methylHexanoate,
+> methylOctanoate, tetradecanoicAcid, tetrahydropyran.  HELD 23 (distance of
+> 0.7 Tc(est) from the data): geraniol 131 K, cis3Hexen1ol 113, 12Dibromobenzene
+> 202, 13Dibromobenzene 213, 1Bromobutane 57, 1Iodohexane 133, 1Octanamine 130,
+> 1Phenylethanol 94, nEthylethanolamine 99, nIsopropylethanolamine 95,
+> 2Methyl24Pentanediol 151, 3Chlorotoluene 146, 2Heptanol 119, 2Octanol 117,
+> chavibetol 204 (fitted ranges; their cases removed, declarations in history),
+> and from the raw measured range without a case: methylRicinoleate 201,
+> benzylamine 117, diphenylEther 214, ethylDodecanoate 56, methylDodecanoate 63,
+> 1Nonanol 106, pentaerythritolTetranonanoate 943, pentaerythritolTetrapentanoate
+> 451.  EXCLUDED by name: ionic liquids (1-butyl-3-methylimidazolium NTf2 and
+> BF4, 1-ethyl-3-methylimidazolium NTf2 and methylsulfate,
+> 1-tetradecyl-3-methylimidazolium NTf2, trihexyl(tetradecyl)phosphonium NTf2:
+> no neutral molecule for Joback); decamethylcyclopentasiloxane,
+> octamethylcyclotetrasiloxane, hexamethylcyclotrisiloxane (no Si group);
+> beta-pinene, alpha-pinene, 1,2-dihydronaphthalene, 2,5-dimethylfuran,
+> 5-methylfurfural, 2-acetylthiophene (the table has no ring =CH / =C< group);
+> gamma-valerolactone, 1,2-butylene carbonate, dipropyl carbonate,
+> N-methylpyrrolidone, formamide, N-methylpiperazine (no ring-ester, carbonate,
+> amide or ring tertiary-amine group); eucalyptol and
+> exo-tetrahydrodicyclopentadiene (the two identity resolvers disagree on the
+> InChIKey: the stereo layer); hexafluorobenzene (see QUESTIONS 2).  FINDINGS:
+> (a) 1HPerfluorooctane gets omega 1.37, and 12Butanediol 1.03 and
+> 12Propanediol 1.20 (the glycols are physically high; the fluorocarbon is a
+> Joback Tc/Pc artefact); (b) the Antoine C bound: the fit's least-squares
+> stage searches C in (-Tmin + 5, 300] and the minimax stage only needs T + C
+> > 0; this tool does not own the fit and applies no bound; one promoted C
+> is positive (2Methoxyethanol, +173 K, warning) and none exceeds that 300 K;
+> (c) a measured "boiling temperature" of 191.4 K for chavibetol (a Celsius
+> value under a kelvin heading in the article's table) is now DISCARDED by name
+> when 60 K or more from Joback's, and a liquid Cp measured at ONE temperature
+> writes `Trange unknown;` (a zero-width window is refused by the engine);
+> (d) the vp judge and arm (i) grade a fit against the record's Tb where Tb
+> lies outside the kept range, so the ORDER matters: the tool writes a
+> provisional record for the vp run, then `revert` + `vp --promote` after the
+> final omega is written (the AmbroseWalton comparison depends on omega), then
+> splices.  QUESTIONS for Vitor: (1) store Joback's Tb in the record?  Done
+> literally it vetoes measured curves (tetradecanoic acid: Tnb - Tb = -72.6 K,
+> refused), so it is NOT stored (`WRITE_ESTIMATED_TB`); flipping it needs a
+> judge and arm (i) that ignore a Tb whose provenance origin is estimated.
+> (2) check_regressed_pairs arm (i) reads ANY `fitGrade` advisory of the
+> component as the vapour pressure's, so a clean vapour pressure beside a
+> non-clean Vliq is accused ("a clean fit says nothing more"): hexafluorobenzene
+> (vp clean, Vliq severe 10.84 %, five points dropped, presumably because the
+> Rackett shape follows the Joback Tc, 543 K) was therefore not shipped; the fix is to read the
+> `vaporPressure` advisory only.  (3) which omega route for the 23 held.
+> Validation: scope on curate287 and the 33 new cases and `--fast` PASS, the
+> property gates (record_form, review_status, validity_windows, psat_range,
+> psat_continuity, estimates, estimate_visible, estimate_class, source_licence,
+> component_name_hint, glossary_bans, doctrine, regressed_pairs) OK; no src/
+> change, no existing golden moved, new goldens only (the 32 vp cases, 16 rows
+> each, and curate699, 512 rows); `check_doc_references` fails on this branch
+> only for `bin/curate/pairs_px.py`, the c291 general's tool named in C291
+> above, which is not here yet.  No full sweep.
+
 > **C289 (Vitor, 2026-11-10: "Sim! Isso e boa ideia!", on a proposal from
 > the cloud session).  THE EXPLORER COMPARES A FITTED RECORD WITH THE
 > MEASUREMENTS THE USER BRINGS.**  The measured series are not in the tree

@@ -6,6 +6,16 @@ componentes novos e binarios").
     bin/curate/c287_new_components.py plan
     bin/curate/c287_new_components.py write <name>... | all  [--provisional]
 
+SLICE 2 (DEV.md 4c C292): CANDIDATES2 / ESTIMATED are the compounds whose archive
+carries NO measured critical constant.  Tc and Pc are ESTIMATED by Joback (the
+estimateComponent formulas, origin estimated, per value), the Tb a measured one
+only (a Joback Tb is not stored: WRITE_ESTIMATED_TB), omega from the fitted
+Antoine at 0.7 Tc(estimated) when within 50 K of the data else the candidate is
+HELD and printed with the distance.  Flow per component: `write --provisional`,
+`choupo-thermoml identity`, `choupo-curate vp <c> --number N`, `vp --promote`,
+`write` (final omega), then `choupo-curate revert <c>` + `vp --promote` + `write`
+again (the AmbroseWalton comparison the promotion records depends on omega).
+
 WHAT IT DOES.  For compounds the catalogue does NOT carry, and that the local
 ThermoML cache (thirdParty/thermoml, a finding aid -- the articles are the
 sources) measures for vapour pressure, liquid density, liquid heat capacity
@@ -289,6 +299,14 @@ S_EL_CITE = ("CODATA Key Values for Thermodynamics (Cox, Wagman & Medvedev, 1989
              "S(Br2, l) 152.206, S(I2, cr) 116.139 J/(mol K)")
 ATOMIC = {"C": 12.011, "H": 1.008, "O": 15.999, "N": 14.007, "F": 18.998,
           "Cl": 35.45, "Br": 79.904, "I": 126.904}
+#  DESIGN QUESTION (DEV.md 4c C292, put to Vitor): a Joback Tb written into the
+#  record would be READ by `choupo-curate vp --promote` and by
+#  check_regressed_pairs arm (i) as if measured -- where it lies outside the kept
+#  vapour-pressure range the fitted curve is graded by its gap to it (tetradecanoic
+#  acid: -72.6 K, refused), so an estimate would veto a measured curve.  So the
+#  estimated Tb is NOT stored (the case curate699 prints it); flip this flag only
+#  together with a judge that ignores a Tb whose provenance origin is estimated.
+WRITE_ESTIMATED_TB = False
 TB_IMPLAUSIBLE_K = 60.0
 OUTLIER_PCT = 15.0
 GRADES = ("clean", "warning", "severe", "refused")
@@ -722,7 +740,7 @@ def build(c, data, sha, provisional):
     #  An ESTIMATED Tb is written only on the final record: during the vapour-pressure
     #  run the record carries Tb only where it is MEASURED, so a Joback estimate
     #  (several K off) never grades a fitted curve (DEV.md 4c C292).
-    Tb_est = J["Tb"] if (est and Tb is None and not provisional) else None
+    Tb_est = J["Tb"] if (est and Tb is None and not provisional and WRITE_ESTIMATED_TB) else None
     repro = REPRO_CASE2 if est else REPRO_CASE
     case, ant = fitted_antoine(name)
     if ant is None:
@@ -777,12 +795,16 @@ def build(c, data, sha, provisional):
                  f"Trange        unknown;   // ONE measurement temperature ({cp['Tmin']:g} K): no interval can be claimed")
     vp_note = ("  Psat: fitted by `bin/choupo-curate vp`; its promotion replaces the\n"
                "  AmbroseWalton block this tool writes (provenance.vaporPressure).\n")
+    nf = '.9g' if est else '.6g'   # an ESTIMATE must reproduce to round-off (check_estimates, 1e-6)
     tb_line = (f"Tb          {Tb[0]:.6g};      // K, measured (provenance.Tb)\n" if Tb else
-               f"Tb          {Tb_est:.6g};      // K, Joback ESTIMATE (provenance.Tb)\n" if Tb_est else
+               f"Tb          {Tb_est:{nf}};      // K, Joback ESTIMATE (provenance.Tb)\n" if Tb_est else
                "//  Tb: NOT DECLARED -- the archive reports no boiling temperature at\n"
                "//  101.3 kPa for it, and a Tb read back off the fitted Antoine would be\n"
                "//  the curve tested against itself (the fitted normal boiling point is\n"
-               "//  in provenance.vaporPressure.acceptance.Tnb_fit).\n")
+               "//  in provenance.vaporPressure.acceptance.Tnb_fit)."
+               + ("  Joback's Tb is NOT stored either: the vapour-pressure\n"
+                  "//  grade would read an estimate as a measurement (WRITE_ESTIMATED_TB in\n"
+                  "//  the tool); the case curate699 prints it.\n" if est else "\n"))
     head = f"""/*--------------------------------*- Choupo -*-----------------------*\\
   Component: {name}  ({label}; CAS {cas})
   NEW in the catalogue (DEV.md 4c {'C292, slice 2 of C287' if est else 'C287'}, {today}), built by
@@ -790,7 +812,7 @@ def build(c, data, sha, provisional):
   locates (the articles are the sources; their DOIs are in provenance).
   {("MEASURED: Tb" if Tb else "MEASURED: no critical constant, no Tb") if est else ("MEASURED: Tc, Pc" + (", Tb" if Tb else ""))}.  FITTED: vapour pressure (bin/choupo-curate vp),
   Vliq, liquid Cp.  DERIVED: omega (from the fitted vapour pressure{" at the ESTIMATED Tc" if est else ""}).
-  ESTIMATED (Joback): {"Tc, Pc, " + ("" if Tb else "Tb, ") if est else ""}ideal-gas Cp, dHf_298; s_298 derived from Joback's
+  ESTIMATED (Joback): {"Tc, Pc, " if est else ""}ideal-gas Cp, dHf_298; s_298 derived from Joback's
   dHf and dGf.  No measured series is reproduced here.
   reviewStatus autoPromoted, humanReviewed false: NO human has read it back.
 {vp_note}\\*---------------------------------------------------------------------------*/
@@ -801,8 +823,8 @@ formula     {formula};
 reviewStatus autoPromoted;
 humanReviewed false;
 MW          {MW:.4f};      // kg/kmol, from the formula (IUPAC standard atomic weights)
-Tc          {Tc:.6g};      // K, {"Joback ESTIMATE" if est else "measured"} (provenance.Tc)
-Pc          {Pc:.6g};      // bar, {"Joback ESTIMATE" if est else "measured"} (provenance.Pc)
+Tc          {Tc:{nf}};      // K, {"Joback ESTIMATE" if est else "measured"} (provenance.Tc)
+Pc          {Pc:{nf}};      // bar, {"Joback ESTIMATE" if est else "measured"} (provenance.Pc)
 omega       {omega:.6f};      // [-] (provenance.omega)
 {tb_line}
 standardThermochemistry

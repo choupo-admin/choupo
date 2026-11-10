@@ -5,7 +5,7 @@
   locates (the articles are the sources; their DOIs are in provenance).
   MEASURED: no critical constant, no Tb.  FITTED: vapour pressure (bin/choupo-curate vp),
   Vliq, liquid Cp.  DERIVED: omega (from the fitted vapour pressure at the ESTIMATED Tc).
-  ESTIMATED (Joback): Tc, Pc, Tb, ideal-gas Cp, dHf_298; s_298 derived from Joback's
+  ESTIMATED (Joback): Tc, Pc, ideal-gas Cp, dHf_298; s_298 derived from Joback's
   dHf and dGf.  No measured series is reproduced here.
   reviewStatus autoPromoted, humanReviewed false: NO human has read it back.
   Psat: fitted by `bin/choupo-curate vp`; its promotion replaced the
@@ -18,10 +18,15 @@ formula     C5H10O;
 reviewStatus autoPromoted;
 humanReviewed false;
 MW          86.1340;      // kg/kmol, from the formula (IUPAC standard atomic weights)
-Tc          553.653;      // K, Joback ESTIMATE (provenance.Tc)
-Pc          42.8866;      // bar, Joback ESTIMATE (provenance.Pc)
+Tc          553.653135;      // K, Joback ESTIMATE (provenance.Tc)
+Pc          42.8866305;      // bar, Joback ESTIMATE (provenance.Pc)
 omega       0.206016;      // [-] (provenance.omega)
-Tb          356.23;      // K, Joback ESTIMATE (provenance.Tb)
+//  Tb: NOT DECLARED -- the archive reports no boiling temperature at
+//  101.3 kPa for it, and a Tb read back off the fitted Antoine would be
+//  the curve tested against itself (the fitted normal boiling point is
+//  in provenance.vaporPressure.acceptance.Tnb_fit).  Joback's Tb is NOT stored either: the vapour-pressure
+//  grade would read an estimate as a measurement (WRITE_ESTIMATED_TB in
+//  the tool); the case curate699 prints it.
 
 standardThermochemistry
 {
@@ -89,17 +94,6 @@ provenance
         reproducedInCase "tutorials/props/curation/curate699_new_components_estimated";
         uncertainty      { status unquantified; reason "Joback group contribution (Joback & Reid 1987); Tc within a few per cent and Pc within about 5-10 per cent for ordinary organics, worse for polyfunctional molecules"; }
         notes            "the archive carries no critical pressure for this compound; all groups of the structure are in the Joback table";
-    }
-    Tb
-    {
-        origin           estimated;
-        method           "Joback";
-        methodVersion    "joback-poling5e-table2-2";
-        input            joback;
-        inputFingerprint "CH3:1,etherRing:1,rCH:1,rCH2:3";
-        reproducedInCase "tutorials/props/curation/curate699_new_components_estimated";
-        uncertainty      { status unquantified; reason "Joback group contribution (Joback & Reid 1987); Tc within a few per cent and Pc within about 5-10 per cent for ordinary organics, worse for polyfunctional molecules"; }
-        notes            "the archive reports no boiling temperature at 100 - 102.5 kPa for this compound; NOT read off the fitted vapour pressure; all groups of the structure are in the Joback table";
     }
     omega
     {
@@ -269,8 +263,8 @@ provenance
             dropped     "none";
             aad_pct     0.370291;   // the fitted Antoine, every kept point
             max_pct     0.639921;
-            awAad_pct   53.049835;   // the AmbroseWalton curve it replaces, the same points
-            awMax_pct   83.286736;
+            awAad_pct   6.763360;   // the AmbroseWalton curve it replaces, the same points
+            awMax_pct   18.346809;
             Tnb_fit     352.8950;   // K, the fitted curve at 101.325 kPa
         }
     }

@@ -87,13 +87,13 @@
   10.1021/je030168a T=288.15 K P=1 Pa err=86.78 %; 10.1021/je030168a
   T=293.15 K P=3 Pa err=18.79 %; 10.1016/j.jct.2003.09.009 T=293.15 K P=3
   Pa err=18.79 %. Its own normal boiling point (101.325 kPa): 469.94 K.
-  PROMOTED on 2026-11-10 into data/standards/components/1Octanol.dat as
-  reviewStatus autoPromoted, humanReviewed false, because: fit grade
-  severe under the DEFAULT graded acceptance of DEV.md 4c C285 (no
-  system/curationDict), 10 studies, 153 points kept, 9 discarded as
-  outliers; max relative error 12.27 % (mean 4.526 %), grade severe
-  (limits 5 / 10 / 20 %); no Tb declared; AmbroseWalton on the same
-  points mean 275.5 % / max 1691 %
+  PROMOTED (and since REVERTED by `choupo-curate revert`) on 2026-11-10
+  into data/standards/components/1Octanol.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade severe under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict),
+  10 studies, 153 points kept, 9 discarded as outliers; max relative
+  error 12.27 % (mean 4.526 %), grade severe (limits 5 / 10 / 20 %); no
+  Tb declared; AmbroseWalton on the same points mean 275.5 % / max 1691 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

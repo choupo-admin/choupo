@@ -1,0 +1,80 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      2Chlorotoluene;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        A  4.32730100161;
+        B  1624.83918263;
+        C  -54.7477129621;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "27e03d85a6edee41";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Chlorotoluene-vapourPressure-j.fluid.2014.07.029.dat";
+            doi       "10.1016/j.fluid.2014.07.029";
+            sha256    "ec4aea6d08881c349b9d001667c32250127ab1fc8e59e1c004ff855068f3332a";
+            provenance measured;
+            archiveFile "j.fluid.2014.07.029.xml";
+            system    "2Chlorotoluene";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Chlorotoluene-vapourPressure-j.fluid.2007.01.042.dat";
+            doi       "10.1016/j.fluid.2007.01.042";
+            sha256    "cedd0eb764f1427941773184d7169a274170fbb2bada7c408c98c1dea1325d0d";
+            provenance measured;
+            archiveFile "j.fluid.2007.01.042.xml";
+            system    "2Chlorotoluene";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 274.2; max 428.76; n 19; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.999928555444;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

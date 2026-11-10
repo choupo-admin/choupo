@@ -68,7 +68,8 @@
   14/14 kept). Relative error in P over the kept points: mean 2.7254 %,
   max 5.9269 %; AmbroseWalton on the same points: mean 18.1372 %, max
   27.7694 %. Outliers discarded: none. Its own normal boiling point
-  (101.325 kPa): 422.15 K. PROMOTED on 2026-11-10 into
+  (101.325 kPa): 422.15 K. PROMOTED (and since REVERTED by `choupo-curate
+  revert`) on 2026-11-10 into
   data/standards/components/methylHexanoate.dat as reviewStatus
   autoPromoted, humanReviewed false, because: fit grade warning under the
   DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 2

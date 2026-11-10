@@ -69,7 +69,8 @@
   10.1021/je900093h 8/8 kept). Relative error in P over the kept points:
   mean 3.5333 %, max 6.2981 %; AmbroseWalton on the same points: mean
   101.9513 %, max 235.7031 %. Outliers discarded: none. Its own normal
-  boiling point (101.325 kPa): 511.67 K. PROMOTED on 2026-11-10 into
+  boiling point (101.325 kPa): 511.67 K. PROMOTED (and since REVERTED by
+  `choupo-curate revert`) on 2026-11-10 into
   data/standards/components/ethylDecanoate.dat as reviewStatus
   autoPromoted, humanReviewed false, because: fit grade warning under the
   DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 3

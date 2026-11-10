@@ -18,8 +18,8 @@ formula     C10H22O;
 reviewStatus autoPromoted;
 humanReviewed false;
 MW          158.2850;      // kg/kmol, from the formula (IUPAC standard atomic weights)
-Tc          679.129;      // K, Joback ESTIMATE (provenance.Tc)
-Pc          22.9811;      // bar, Joback ESTIMATE (provenance.Pc)
+Tc          679.129055;      // K, Joback ESTIMATE (provenance.Tc)
+Pc          22.9811307;      // bar, Joback ESTIMATE (provenance.Pc)
 omega       0.682499;      // [-] (provenance.omega)
 Tb          502.95;      // K, measured (provenance.Tb)
 
@@ -297,8 +297,8 @@ provenance
             dropped     "none";
             aad_pct     0.477306;   // the fitted Antoine, every kept point
             max_pct     0.889673;
-            awAad_pct   48.823572;   // the AmbroseWalton curve it replaces, the same points
-            awMax_pct   57.361348;
+            awAad_pct   0.679554;   // the AmbroseWalton curve it replaces, the same points
+            awMax_pct   1.302822;
             Tnb_fit     504.2300;   // K, the fitted curve at 101.325 kPa
         }
     }

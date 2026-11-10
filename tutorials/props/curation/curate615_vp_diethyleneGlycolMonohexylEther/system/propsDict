@@ -68,7 +68,8 @@
   error in P over the kept points: mean 3.2084 %, max 3.9105 %;
   AmbroseWalton on the same points: mean 94.0365 %, max 133.7502 %.
   Outliers discarded: none. Its own normal boiling point (101.325 kPa):
-  538.53 K. PROMOTED on 2026-11-10 into
+  538.53 K. PROMOTED (and since REVERTED by `choupo-curate revert`) on
+  2026-11-10 into
   data/standards/components/diethyleneGlycolMonohexylEther.dat as
   reviewStatus autoPromoted, humanReviewed false, because: fit grade
   clean under the DEFAULT graded acceptance of DEV.md 4c C285 (no

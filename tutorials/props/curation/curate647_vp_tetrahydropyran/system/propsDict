@@ -75,7 +75,8 @@
   10.1021/je800145h 7/7 kept). Relative error in P over the kept points:
   mean 1.2337 %, max 2.5233 %; AmbroseWalton on the same points: mean
   74.1327 %, max 91.5844 %. Outliers discarded: none. Its own normal
-  boiling point (101.325 kPa): 360.59 K. PROMOTED on 2026-11-10 into
+  boiling point (101.325 kPa): 360.59 K. PROMOTED (and since REVERTED by
+  `choupo-curate revert`) on 2026-11-10 into
   data/standards/components/tetrahydropyran.dat as reviewStatus
   autoPromoted, humanReviewed false, because: fit grade clean under the
   DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 5

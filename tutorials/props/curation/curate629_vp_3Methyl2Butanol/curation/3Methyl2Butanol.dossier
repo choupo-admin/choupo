@@ -1,0 +1,80 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      3Methyl2Butanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        A  4.05160884058;
+        B  1094.83376509;
+        C  -114.501974807;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2116d5f0177ff51c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methyl2Butanol-vapourPressure-j.fluid.2010.06.020.dat";
+            doi       "10.1016/j.fluid.2010.06.020";
+            sha256    "8712869c270385cc5c173d45bf7021d373c2edac50e32903a1f874d7b8a5fa93";
+            provenance measured;
+            archiveFile "j.fluid.2010.06.020.xml";
+            system    "3Methyl2Butanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methyl2Butanol-vapourPressure-je050062a.dat";
+            doi       "10.1021/je050062a";
+            sha256    "bb7750963e7918d95ee7a4192708d80e8cd15afb9814ceaed967fee560ae3213";
+            provenance measured;
+            archiveFile "je050062a.xml";
+            system    "3Methyl2Butanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 323.609; max 384.452; n 33; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.999995651333;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);
