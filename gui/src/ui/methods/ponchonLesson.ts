@@ -104,7 +104,7 @@ V H &= L h + D\, h_D - Q_C
           + "(x, h), the vapour (y, H), and a single point Δ at "
           + "(x_D, Δ_D) that does not move as you go from tray to tray.",
         eq: String.raw`(y, H),\ (x, h) \text{ and } (x_D, \Delta_D) \text{ lie on one straight line}`},
-      { step: "That fixed point is the DIFFERENCE POINT.  It is not a state "
+      { step: "That fixed point is the difference point.  It is not a state "
           + "of any stream — its enthalpy is a net flow divided by a flow, "
           + "and it usually sits far off the diagram.  It is the whole "
           + "construction: every operating line in the rectifying section "
@@ -161,16 +161,16 @@ V H &= L h + D\, h_D - Q_C
           + "point further from the curves and the reflux rises (L/V → 1); push it "
           + "away to infinity and the rays become vertical, which is total "
           + "reflux and the minimum stage count.", eq: "" },
-      { step: "And minimum reflux is where a ray coincides with a TIE LINE: "
+      { step: "And minimum reflux is where a ray coincides with a tie line: "
           + "the two ends of the step meet and no separation is bought.  "
           + "The pinch is a geometric coincidence you can point at, not a "
           + "root-finding problem.", eq: "" },
     ],
     formula: String.raw`\frac{L}{V} = \frac{\Delta_D - H}{\Delta_D - h}`,
     where: [],
-    note: "Stepping off stages is then the same alternation as McCabe: a TIE "
+    note: "Stepping off stages is then the same alternation as McCabe: a tie "
       + "line to move from a liquid to the vapour in equilibrium with it, "
-      + "then a RAY from the difference point to move to the next tray.",
+      + "then a ray from the difference point to move to the next tray.",
   },
   {
     n: 4,
@@ -187,7 +187,7 @@ V H &= L h + D\, h_D - Q_C
           + "shape of the two enthalpy curves — which the engine computes "
           + "from the same thermophysical system the rest of the case "
           + "declares.", eq: "" },
-      { step: "Two PARALLEL STRAIGHT LINES are enough for constant molar "
+      { step: "Two parallel straight lines are enough for constant molar "
           + "overflow, and the argument is short.  Write the liquid line as "
           + "h = a + b·x and the vapour line as H = a + b·y + λ, the same "
           + "slope and a constant gap λ.  Put both into a tray's energy "
@@ -195,7 +195,7 @@ V H &= L h + D\, h_D - Q_C
           + "component balances, and what is left is λ times the vapour "
           + "leaving equal to λ times the vapour entering — so V, and with "
           + "it L, does not change from tray to tray.", eq: "" },
-      { step: "That is a SUFFICIENT condition, not a measure of error.  Look "
+      { step: "That is a sufficient condition, not a measure of error.  Look "
           + "at h(x) and H(y) for your system: where they depart from "
           + "parallel and straight, the internal flows can vary within a "
           + "section.  How much that changes the reflux or the stage count "
