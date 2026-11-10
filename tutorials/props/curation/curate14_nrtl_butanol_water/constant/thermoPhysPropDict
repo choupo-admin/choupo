@@ -8,7 +8,7 @@
 \*-----------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  curate13_synthetic_lle_butanol_water -- the thermophysical system.
+  curate14_nrtl_butanol_water -- the thermophysical system.
 
   TWO LIQUIDS, ONE ACTIVITY MODEL.  The tie-line residual asks the
   liquid-liquid flash, which needs two liquid phases in the package, so the
@@ -21,8 +21,8 @@
   The inline pair is the FIT'S STARTING POINT, not a result: b_ij = 0,
   b_ji = 1000 K is a pair that DOES split the liquid at every measured tie
   line (an all-zero start would be ideal mixing, split nothing, and give the
-  penalty no gradient -- the run refuses such a start by name).  The
-  parameters the evidence was generated from are in the datasets' headers.
+  penalty no gradient -- the run refuses such a start by name).  The fit
+  frees a_ij, a_ji and alpha as well (propsDict), from the values below.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
