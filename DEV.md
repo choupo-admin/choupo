@@ -3426,7 +3426,7 @@ accepts today, and that is a policy call.
 > 64 -> 132 NRTL pairs, interimReviewDossier, tutorialsGuide-props, propsGuide-operations;
 > both guide PDFs rebuilt with make -B); gate_manifest --check and the
 > check_regressed_pairs claim re-observed.  NOT run: a full sweep, --gui, the
-> method-tools generator (gui/node_modules absent, as before).  Added under
+> method-tools generator (the GUI dependencies are not installed here, as before).  Added under
 > tutorials/: 2.7 MB tracked (12.9 MB on disk with the gitignored run outputs and
 > extracts).
 
