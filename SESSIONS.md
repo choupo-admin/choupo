@@ -39,7 +39,8 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| (none) | -- | -- |
+| c286-pair-grades (worktree pairs-batch) | `src/thermo/PairAudit.H`, `src/thermo/Database.cpp` (fit-grade voicing), `bin/curate/pairs_c283.py`, `bin/choupo-curate` (pair paths), `bin/curate/check_regressed_pairs.py`, `tutorials/props/curation/curate100*`..`curate162*`, `data/standards/parameters/NRTL/` | 2026-11-10 |
+| c287-new-components (worktree review-newcomer) | NEW files in `data/standards/components/`, `src/propertyOps/EstimateComponent.*` (read, may touch), `bin/choupo-curate` (vp paths), new `tutorials/props/curation/` cases for the new components | 2026-11-10 |
 
 The NIST ThermoML cache (4.2 GB, gitignored) lives only in the cloud container,
 in the worktree `.claude/worktrees/review-newcomer/thirdParty/thermoml`.
@@ -207,3 +208,12 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   (adiabatic rise); (4) Choupo's named correction closing the balance.
   Suggested also: a reactor advisory when a reacting species' dHf is a
   Joback estimate (the cloud's new components carry such estimates).
+- [open] cloud -> laptop, 2026-11-10 17:20 UTC: to avoid collisions -- the
+  cloud has TWO generals running now, rows above: c286-pair-grades (C285's
+  grades applied to the 60 NRTL pair cases; touches PairAudit.H and
+  Database.cpp's voicing) and c287-new-components (new catalogue component
+  records from ThermoML, with formation dHf/s_298, measured or Joback).
+  Please do not edit those paths until each row leaves this table.  C288
+  (yours) will touch src/unitOperations/reactor/ReactionHeat.H and the
+  energy report -- no overlap with the cloud, except: if you need
+  Database.cpp or EstimateComponent.*, write here first.
