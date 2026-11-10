@@ -1,0 +1,141 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      ethanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validated;
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.b_ij  429.365695745;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.b_ji  493.205168943;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "579468a47c7620f9";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-224Trimethylpentane-bubble-je300847v.dat";
+            doi       "10.1021/je300847v";
+            sha256    "48cf0d1f1170b2e23d70db079156fd5843f03041852ed9db0fcb3b276e365ee3";
+            provenance measured;
+            archiveFile "je300847v.xml";
+            system    "ethanol + 224Trimethylpentane";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      validation;
+            dataset   "constant/archiveExtracts/ethanol-224Trimethylpentane-bubble-j.fluid.2005.01.007.dat";
+            doi       "10.1016/j.fluid.2005.01.007";
+            sha256    "f1acfe9dcd9476d848a167c0a3fe983e5b719138dd99807652ad914b3f29eb62";
+            provenance measured;
+            archiveFile "j.fluid.2005.01.007.xml";
+            system    "ethanol + 224Trimethylpentane";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1406; max 0.9575; n 22; }
+            validation  { min 0.024; max 0.954; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     0.113232264022;
+        acceptanceMaxAADPct 0.57;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit by bin/choupo-curate, the ONE rule of C16: the held-out set's largest stated expanded uncertainty (U95 = 1.93 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (224Trimethylpentane -0.012 K, ethanol +0.012 K; measured with no pair involved), as a percentage of the held-out mean T (346.81 K) = 0.5600 %, rounded UP to two significant figures";
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validated;
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.b_ij  429.360794812;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.b_ji  493.20973824;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "579468a47c7620f9";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-224Trimethylpentane-bubble-je300847v.dat";
+            doi       "10.1021/je300847v";
+            sha256    "48cf0d1f1170b2e23d70db079156fd5843f03041852ed9db0fcb3b276e365ee3";
+            provenance measured;
+            archiveFile "je300847v.xml";
+            system    "ethanol + 224Trimethylpentane";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      validation;
+            dataset   "constant/archiveExtracts/ethanol-224Trimethylpentane-bubble-j.fluid.2005.01.007.dat";
+            doi       "10.1016/j.fluid.2005.01.007";
+            sha256    "f1acfe9dcd9476d848a167c0a3fe983e5b719138dd99807652ad914b3f29eb62";
+            provenance measured;
+            archiveFile "j.fluid.2005.01.007.xml";
+            system    "ethanol + 224Trimethylpentane";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1406; max 0.9575; n 22; }
+            validation  { min 0.024; max 0.954; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     0.113231720006;
+        acceptanceMaxAADPct 0.57;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit by bin/choupo-curate, the ONE rule of C16: the held-out set's largest stated expanded uncertainty (U95 = 1.93 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (224Trimethylpentane -0.012 K, ethanol +0.012 K; measured with no pair involved), as a percentage of the held-out mean T (346.81 K) = 0.5600 %, rounded UP to two significant figures";
+    }
+}
+
+);

@@ -1,0 +1,139 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      methanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validated;
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-dimethylCarbonate.b_ij  401.302927633;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-dimethylCarbonate.b_ji  89.4443878637;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f5e569e3152d3e6c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-dimethylCarbonate-bubble-je0601309.dat";
+            doi       "10.1021/je0601309";
+            sha256    "6ddd13da5f82956b17e5ae2526f704058dfcbf03b90e50716fb5a7cf3d47836d";
+            provenance measured;
+            archiveFile "je0601309.xml";
+            system    "methanol + dimethylCarbonate";
+        }
+        {
+            role      validation;
+            dataset   "constant/archiveExtracts/methanol-dimethylCarbonate-bubble-je301290c.dat";
+            doi       "10.1021/je301290c";
+            sha256    "d225bd23f96d879db7121212408c33e517c6ac4e5847ab9c300652e41e8fe48c";
+            provenance measured;
+            archiveFile "je301290c.xml";
+            system    "methanol + dimethylCarbonate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.106; max 0.948; n 65; }
+            validation  { min 0.038; max 0.947; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     0.0640801029909;
+        acceptanceMaxAADPct 0.088;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit by bin/choupo-curate, the ONE rule of C16: the held-out set's largest stated expanded uncertainty (U95 = 0.3 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (NONE: the held-out study reports no pure-component bubble point, so the term is ZERO, the strictest reading of the rule -- the band is the measurement's own uncertainty alone; measured with no pair involved), as a percentage of the held-out mean T (341.73 K) = 0.0878 %, rounded UP to two significant figures";
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validated;
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-dimethylCarbonate.b_ij  401.302517705;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-dimethylCarbonate.b_ji  89.4446707579;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f5e569e3152d3e6c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-dimethylCarbonate-bubble-je0601309.dat";
+            doi       "10.1021/je0601309";
+            sha256    "6ddd13da5f82956b17e5ae2526f704058dfcbf03b90e50716fb5a7cf3d47836d";
+            provenance measured;
+            archiveFile "je0601309.xml";
+            system    "methanol + dimethylCarbonate";
+        }
+        {
+            role      validation;
+            dataset   "constant/archiveExtracts/methanol-dimethylCarbonate-bubble-je301290c.dat";
+            doi       "10.1021/je301290c";
+            sha256    "d225bd23f96d879db7121212408c33e517c6ac4e5847ab9c300652e41e8fe48c";
+            provenance measured;
+            archiveFile "je301290c.xml";
+            system    "methanol + dimethylCarbonate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.106; max 0.948; n 65; }
+            validation  { min 0.038; max 0.947; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     0.0640799536555;
+        acceptanceMaxAADPct 0.088;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit by bin/choupo-curate, the ONE rule of C16: the held-out set's largest stated expanded uncertainty (U95 = 0.3 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (NONE: the held-out study reports no pure-component bubble point, so the term is ZERO, the strictest reading of the rule -- the band is the measurement's own uncertainty alone; measured with no pair involved), as a percentage of the held-out mean T (341.73 K) = 0.0878 %, rounded UP to two significant figures";
+    }
+}
+
+);

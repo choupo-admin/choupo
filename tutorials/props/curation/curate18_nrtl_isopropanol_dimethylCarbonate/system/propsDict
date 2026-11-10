@@ -64,7 +64,14 @@
   uncertainty.  Two starts: (0, 0) and (800, -400).
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 284.4 K, b_ji = 62.9 K, in-sample rms 0.132 K over 32
+  points; fit_nrtl_start2 lands on the same pair (284.4, 62.9). HELD OUT:
+  AAD 0.184 K (0.0521 %) against the band 0.24 % -> validated. PROMOTED
+  on 2026-11-10 into
+  data/standards/parameters/NRTL/dimethylCarbonate-isopropanol.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: verdict
+  validated, one liquid across the validity span, triage run
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

@@ -63,7 +63,17 @@
   uncertainty.  Two starts: (0, 0) and (800, -400).
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 429.4 K, b_ji = 493.2 K, in-sample rms 0.484 K over 22
+  points; fit_nrtl_start2 lands on the same pair (429.4, 493.2). HELD
+  OUT: AAD 0.394 K (0.1132 %) against the band 0.57 % -> validated. NOT
+  PROMOTABLE: the pair splits ONE liquid inside its own validity span
+  (check_regressed_pairs arm f) -- predicts a LIQUID-LIQUID SPLIT at
+  344.57 K (x_ethanol 0.313 .. 0.648), inside its own validity span
+  344.57-347.65 K -- its evidence is bubble temperatures of ONE liquid,
+  which a bubble scan cannot contradict; a pair that splits that liquid
+  stays in its case, not the catalogue (or it DECLARES `liquidLiquid
+  true;` with tie-line evidence and a gap band)
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

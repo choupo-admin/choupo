@@ -1,0 +1,141 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      ethanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        notValidated;
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-dimethylCarbonate.b_ij  427.578432244;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-dimethylCarbonate.b_ji  -4.17119596783;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "45ce350201e9ce58";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-dimethylCarbonate-bubble-acs.jced.9b00414.dat";
+            doi       "10.1021/acs.jced.9b00414";
+            sha256    "08859773e230d7e51409d5d329c037ea6ec178042d4602aca05aa5470b4ea6d5";
+            provenance measured;
+            archiveFile "acs.jced.9b00414.xml";
+            system    "ethanol + dimethylCarbonate";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      validation;
+            dataset   "constant/archiveExtracts/ethanol-dimethylCarbonate-bubble-je030131q.dat";
+            doi       "10.1021/je030131q";
+            sha256    "b41bca23136ec66aba1b6984f5c0f44a5fca02ba9d89bed1e374a726fb032c08";
+            provenance measured;
+            archiveFile "je030131q.xml";
+            system    "ethanol + dimethylCarbonate";
+            pressure  "95800.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0141; max 0.9807; n 20; }
+            validation  { min 0.198; max 0.9316; n 9; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     0.340556701675;
+        acceptanceMaxAADPct 0.24;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit by bin/choupo-curate, the ONE rule of C16: the held-out set's largest stated expanded uncertainty (U95 = 0.32 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (dimethylCarbonate +0.504 K; measured with no pair involved), as a percentage of the held-out mean T (347.42 K) = 0.2371 %, rounded UP to two significant figures";
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        notValidated;
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-dimethylCarbonate.b_ij  427.57884798;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-dimethylCarbonate.b_ji  -4.17149122044;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "45ce350201e9ce58";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-dimethylCarbonate-bubble-acs.jced.9b00414.dat";
+            doi       "10.1021/acs.jced.9b00414";
+            sha256    "08859773e230d7e51409d5d329c037ea6ec178042d4602aca05aa5470b4ea6d5";
+            provenance measured;
+            archiveFile "acs.jced.9b00414.xml";
+            system    "ethanol + dimethylCarbonate";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      validation;
+            dataset   "constant/archiveExtracts/ethanol-dimethylCarbonate-bubble-je030131q.dat";
+            doi       "10.1021/je030131q";
+            sha256    "b41bca23136ec66aba1b6984f5c0f44a5fca02ba9d89bed1e374a726fb032c08";
+            provenance measured;
+            archiveFile "je030131q.xml";
+            system    "ethanol + dimethylCarbonate";
+            pressure  "95800.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0141; max 0.9807; n 20; }
+            validation  { min 0.198; max 0.9316; n 9; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     0.3405568046;
+        acceptanceMaxAADPct 0.24;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit by bin/choupo-curate, the ONE rule of C16: the held-out set's largest stated expanded uncertainty (U95 = 0.32 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (dimethylCarbonate +0.504 K; measured with no pair involved), as a percentage of the held-out mean T (347.42 K) = 0.2371 %, rounded UP to two significant figures";
+    }
+}
+
+);

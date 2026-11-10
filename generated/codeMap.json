@@ -252,6 +252,9 @@
   "BracketedRoot": [
    "src/unitOperations/flash/PureSaturationPlateau.H"
   ],
+  "Branch": [
+   "src/propertyOps/LleResidual.H"
+  ],
   "BrockBird": [
    "src/thermo/transport/BrockBird.H"
   ],
@@ -1358,6 +1361,7 @@
    "src/unitOperations/membrane/osmotic/OsmoticModel.H"
   ],
   "Outcome": [
+   "src/propertyOps/FitObjective.H",
    "src/thermo/solidEquilibrium/SolidEquilibriumService.H"
   ],
   "OuterDriver": [
@@ -1925,6 +1929,7 @@
    "src/thermo/PairAudit.H"
   ],
   "Spec": [
+   "src/propertyOps/FitObjective.H",
    "src/unitOperations/heatTransfer/htc/BellDelaware.H"
   ],
   "Speciate": [
@@ -5813,6 +5818,15 @@
    "src/propertyOps/PropertyOperation.H",
    "src/unitOperations/separation/ExtractionShortcut.H"
   ],
+  "src/propertyOps/FitObjective.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/PublishedTable.H",
+   "src/core/Types.H",
+   "src/propertyOps/EvidencePartition.H",
+   "src/propertyOps/FitObjective.H",
+   "src/propertyOps/LleResidual.H"
+  ],
   "src/propertyOps/FitParameters.cpp": [
    "src/core/Advisory.H",
    "src/core/Banner.H",
@@ -5828,6 +5842,7 @@
    "src/propertyOps/CurationDossier.H",
    "src/propertyOps/EvidencePartition.H",
    "src/propertyOps/FitAlgebra.H",
+   "src/propertyOps/FitObjective.H",
    "src/propertyOps/FitParameters.H",
    "src/propertyOps/FitWeighting.H",
    "src/propertyOps/LleResidual.H",
@@ -5889,6 +5904,7 @@
    "src/core/PublishedTable.H",
    "src/core/Types.H",
    "src/propertyOps/EvidencePartition.H",
+   "src/propertyOps/FitObjective.H",
    "src/propertyOps/FitWeighting.H",
    "src/propertyOps/LleResidual.H"
   ],
@@ -8958,6 +8974,7 @@
    "src/thermo/utility/UtilityCatalogue.H"
   ],
   "src/thermo/vaporPressure/AmbroseWalton.cpp": [
+   "src/core/Advisory.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Types.H",
@@ -11936,6 +11953,7 @@
    "src/thermo/transport/ChemSepVisc101.cpp",
    "src/thermo/transport/ChungViscosity.cpp",
    "src/thermo/transport/StokesEinstein.cpp",
+   "src/thermo/vaporPressure/AmbroseWalton.cpp",
    "src/thermo/vaporPressure/VaporPressureModel.cpp",
    "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
@@ -12561,6 +12579,7 @@
    "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/ExtractionShortcutOp.cpp",
+   "src/propertyOps/FitObjective.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/FitWeighting.cpp",
@@ -12935,6 +12954,7 @@
    "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/ExtractionShortcutOp.cpp",
+   "src/propertyOps/FitObjective.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/FitWeighting.cpp",
@@ -14057,6 +14077,7 @@
    "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/ExtractionShortcutOp.cpp",
+   "src/propertyOps/FitObjective.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/FitWeighting.cpp",
@@ -14451,6 +14472,7 @@
    "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/ExtractionShortcutOp.cpp",
+   "src/propertyOps/FitObjective.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/FitWeighting.cpp",
@@ -15246,6 +15268,7 @@
    "src/propertyOps/CurationDossier.cpp",
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/EvidencePartition.cpp",
+   "src/propertyOps/FitObjective.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/FitWeighting.cpp",
@@ -15276,6 +15299,11 @@
    "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FitParametersMembrane.cpp"
+  ],
+  "src/propertyOps/FitObjective.H": [
+   "src/propertyOps/FitObjective.cpp",
+   "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitWeighting.cpp"
   ],
   "src/propertyOps/FitParameters.H": [
    "src/propertyOps/FitParameters.cpp",
@@ -15331,6 +15359,7 @@
    "src/propertyOps/PropertyOperation.cpp"
   ],
   "src/propertyOps/LleResidual.H": [
+   "src/propertyOps/FitObjective.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/FitWeighting.cpp",

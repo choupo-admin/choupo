@@ -1,0 +1,123 @@
+// [imported] origin "data/standards/parameters/NRTL/dimethylCarbonate-methanol.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- methanol(i) + dimethylCarbonate(j)
+
+  REGRESSED BY CHOUPO'S CURATION PIPELINE (bin/choupo-curate, DEV.md 4c C282;
+  record docs/design/binary-pairs-from-open-measurements.md) to measured
+  bubble temperatures.  The two articles named under `evidence` are the
+  SOURCE of the measurements; the NIST/TRC ThermoML Archive located them.
+  NO MEASURED POINT IS IN THIS RECORD OR THIS TREE: the case regenerates
+  them from the DOIs and sha256 sums it declares (constant/archiveDatasets).
+  The PARAMETERS are Choupo's own work.
+
+  EQUATION: tau_ij = a_ij + b_ij / T [b in K], G_ij = exp(-alpha tau_ij),
+  Renon & Prausnitz direction (src/thermo/activityCoefficient/NRTL.cpp).
+  a_ij = a_ji = 0 and alpha = 0.30 FIXED, not fitted.
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
+  vapour-pressure records for both pure components.
+
+  reviewStatus autoPromoted; humanReviewed false: PROMOTED AUTOMATICALLY by
+  its fitting pipeline (verdict validated against a band declared before the
+  fit, one liquid across its validity span, study triage run), and NO HUMAN
+  HAS REVIEWED IT.  The engine says so on every run that reads it.  A
+  curator who reads the series back against the articles marks it
+  `reviewStatus reviewed; humanReviewed true;`.  Revert with
+  `bin/choupo-curate revert dimethylCarbonate-methanol`.
+
+  REPRODUCE: run tutorials/props/curation/curate15_nrtl_methanol_dimethylCarbonate (after `bin/choupo-curate fetch` on it); its fit
+  writes dimethylCarbonate-methanol.proposal.dat, which bin/curate/check_regressed_pairs.py holds
+  equal to this record.
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i methanol; j dimethylCarbonate; }
+
+components  ( methanol  dimethylCarbonate );
+model       NRTL;
+
+parameters
+{
+    i           methanol;
+    j           dimethylCarbonate;
+    a_ij        0.00000000;
+    b_ij        401.30292763;
+    a_ji        0.00000000;
+    b_ji        89.44438786;
+    alpha       0.30000000;
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "tutorials/props/curation/curate15_nrtl_methanol_dimethylCarbonate";
+    reviewStatus  autoPromoted;
+    humanReviewed false;
+    promotedBy    "bin/choupo-curate pair --promote";
+    promotedDate  "2026-11-10";
+    reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+    fitDate       "2026-11-10";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-dimethylCarbonate-bubble-je0601309.dat";
+            doi       "10.1021/je0601309";
+            sha256    "6ddd13da5f82956b17e5ae2526f704058dfcbf03b90e50716fb5a7cf3d47836d";
+            provenance measured;
+            archiveFile "je0601309.xml";
+            system    "methanol + dimethylCarbonate";
+        }
+        {
+            role      validation;
+            dataset   "constant/archiveExtracts/methanol-dimethylCarbonate-bubble-je301290c.dat";
+            doi       "10.1021/je301290c";
+            sha256    "d225bd23f96d879db7121212408c33e517c6ac4e5847ab9c300652e41e8fe48c";
+            provenance measured;
+            archiveFile "je301290c.xml";
+            system    "methanol + dimethylCarbonate";
+            pressure  "101300.000000 Pa";
+        }
+    );
+    fingerprint "f5e569e3152d3e6c";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          34.24285623;
+    rms_K         0.17562395;
+    nDataPoints   65;
+    identifiable  true;
+    maxAbsCorr    0.97752058;
+
+    validity
+    {
+        temperature { min 314.41 K; max 348.58 K; }
+        pressure    { min 40000 Pa; max 93320 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validated;
+
+    heldOut
+    {
+        points      19;
+        aad_pct     0.064080;
+        aad_K       0.218818;
+        domain_x1   ( 0.038000 0.947000 );
+    }
+
+    acceptance
+    {
+        maxAAD      0.088000;   // per cent
+        origin      "declared before the fit by bin/choupo-curate, the ONE rule of C16: the held-out set's largest stated expanded uncertainty (U95 = 0.3 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (NONE: the held-out study reports no pure-component bubble point, so the term is ZERO, the strictest reading of the rule -- the band is the measurement's own uncertainty alone; measured with no pair involved), as a percentage of the held-out mean T (341.73 K) = 0.0878 %, rounded UP to two significant figures";
+    }
+}

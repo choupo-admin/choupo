@@ -72,7 +72,14 @@
   uncertainty.  Two starts: (0, 0) and (800, -400).
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 401.3 K, b_ji = 89.4 K, in-sample rms 0.176 K over 65
+  points; fit_nrtl_start2 lands on the same pair (401.3, 89.4). HELD OUT:
+  AAD 0.219 K (0.0641 %) against the band 0.088 % -> validated. PROMOTED
+  on 2026-11-10 into
+  data/standards/parameters/NRTL/dimethylCarbonate-methanol.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: verdict
+  validated, one liquid across the validity span, triage run
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

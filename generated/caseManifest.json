@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 533,
+  "cases": 538,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 15
@@ -1888,6 +1888,86 @@
     "formulation": "gammaGamma",
     "activityModels": [
      "NRTL"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate15_nrtl_methanol_dimethylCarbonate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate16_nrtl_ethanol_dimethylCarbonate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate17_nrtl_diisopropylEther_isopropanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate18_nrtl_isopropanol_dimethylCarbonate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate19_nrtl_ethanol_224Trimethylpentane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
     ]
    },
    "roles": [],
@@ -7947,6 +8027,11 @@
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
     "tutorials/props/curation/curate13_synthetic_lle_butanol_water",
     "tutorials/props/curation/curate14_nrtl_butanol_water",
+    "tutorials/props/curation/curate15_nrtl_methanol_dimethylCarbonate",
+    "tutorials/props/curation/curate16_nrtl_ethanol_dimethylCarbonate",
+    "tutorials/props/curation/curate17_nrtl_diisopropylEther_isopropanol",
+    "tutorials/props/curation/curate18_nrtl_isopropanol_dimethylCarbonate",
+    "tutorials/props/curation/curate19_nrtl_ethanol_224Trimethylpentane",
     "tutorials/props/electrolyte/archer01_nacl_cold_to_hot",
     "tutorials/props/electrolyte/bjerrum01_carbonate_pH",
     "tutorials/props/electrolyte/composition01_nacl",
@@ -9113,6 +9198,11 @@
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
     "tutorials/props/curation/curate13_synthetic_lle_butanol_water",
     "tutorials/props/curation/curate14_nrtl_butanol_water",
+    "tutorials/props/curation/curate15_nrtl_methanol_dimethylCarbonate",
+    "tutorials/props/curation/curate16_nrtl_ethanol_dimethylCarbonate",
+    "tutorials/props/curation/curate17_nrtl_diisopropylEther_isopropanol",
+    "tutorials/props/curation/curate18_nrtl_isopropanol_dimethylCarbonate",
+    "tutorials/props/curation/curate19_nrtl_ethanol_224Trimethylpentane",
     "tutorials/props/molecular/eval_nrtl_catalogue",
     "tutorials/props/molecular/eval_nrtl_pinned",
     "tutorials/props/molecular/nrtl01_ethanol_water_package",
@@ -9356,6 +9446,11 @@
     "tutorials/props/curation/curate10_nrtl_acetonitrile_water",
     "tutorials/props/curation/curate11_nrtl_acetone_ethanol",
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
+    "tutorials/props/curation/curate15_nrtl_methanol_dimethylCarbonate",
+    "tutorials/props/curation/curate16_nrtl_ethanol_dimethylCarbonate",
+    "tutorials/props/curation/curate17_nrtl_diisopropylEther_isopropanol",
+    "tutorials/props/curation/curate18_nrtl_isopropanol_dimethylCarbonate",
+    "tutorials/props/curation/curate19_nrtl_ethanol_224Trimethylpentane",
     "tutorials/props/electrolyte/archer01_nacl_cold_to_hot",
     "tutorials/props/electrolyte/enrtl_mixed_nacl_ethanol_esteso",
     "tutorials/props/electrolyte/enrtl_multisalt_nacl_kcl",
@@ -9708,6 +9803,11 @@
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
     "tutorials/props/curation/curate13_synthetic_lle_butanol_water",
     "tutorials/props/curation/curate14_nrtl_butanol_water",
+    "tutorials/props/curation/curate15_nrtl_methanol_dimethylCarbonate",
+    "tutorials/props/curation/curate16_nrtl_ethanol_dimethylCarbonate",
+    "tutorials/props/curation/curate17_nrtl_diisopropylEther_isopropanol",
+    "tutorials/props/curation/curate18_nrtl_isopropanol_dimethylCarbonate",
+    "tutorials/props/curation/curate19_nrtl_ethanol_224Trimethylpentane",
     "tutorials/props/molecular/eval_nrtl_catalogue",
     "tutorials/props/molecular/eval_nrtl_pinned",
     "tutorials/steady/membranes/membrane24_fit_then_simulate",
@@ -9836,6 +9936,11 @@
     "tutorials/props/curation/curate10_nrtl_acetonitrile_water",
     "tutorials/props/curation/curate11_nrtl_acetone_ethanol",
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
+    "tutorials/props/curation/curate15_nrtl_methanol_dimethylCarbonate",
+    "tutorials/props/curation/curate16_nrtl_ethanol_dimethylCarbonate",
+    "tutorials/props/curation/curate17_nrtl_diisopropylEther_isopropanol",
+    "tutorials/props/curation/curate18_nrtl_isopropanol_dimethylCarbonate",
+    "tutorials/props/curation/curate19_nrtl_ethanol_224Trimethylpentane",
     "tutorials/props/molecular/entropy01_air_ledger",
     "tutorials/props/molecular/flash01_operating_line",
     "tutorials/props/steam/steam02_water_transport",

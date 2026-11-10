@@ -67,7 +67,12 @@
   uncertainty.  Two starts: (0, 0) and (800, -400).
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 427.6 K, b_ji = -4.2 K, in-sample rms 0.029 K over 20
+  points; fit_nrtl_start2 lands on the same pair (427.6, -4.2). HELD OUT:
+  AAD 1.184 K (0.3406 %) against the band 0.24 % -> notValidated. NOT
+  PROMOTABLE: held-out verdict notValidated (AAD 0.340557 % against the
+  band 0.24 % declared before the fit)
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

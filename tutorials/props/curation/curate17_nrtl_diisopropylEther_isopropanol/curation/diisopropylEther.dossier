@@ -1,0 +1,139 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      diisopropylEther;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        notValidated;
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.b_ij  168.9520368;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.b_ji  410.773280263;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "12a04ecf07bb13c8";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diisopropylEther-isopropanol-bubble-j.fluid.2014.09.014.dat";
+            doi       "10.1016/j.fluid.2014.09.014";
+            sha256    "d41cda01c43a3cc76aeaf4a625ed8e978cc642c74d02ad242d7a042b8a1ec367";
+            provenance measured;
+            archiveFile "j.fluid.2014.09.014.xml";
+            system    "diisopropylEther + isopropanol";
+        }
+        {
+            role      validation;
+            dataset   "constant/archiveExtracts/diisopropylEther-isopropanol-bubble-je300994y.dat";
+            doi       "10.1021/je300994y";
+            sha256    "8c1682c6dd6f8ff2d44ad5b8ab25cc70777931d2f330498695f7f60ee0cc160a";
+            provenance measured;
+            archiveFile "je300994y.xml";
+            system    "diisopropylEther + isopropanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.051; max 0.977; n 67; }
+            validation  { min 0.029; max 0.947; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     0.550724059447;
+        acceptanceMaxAADPct 0.24;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit by bin/choupo-curate, the ONE rule of C16: the held-out set's largest stated expanded uncertainty (U95 = 0.61 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (isopropanol -0.206 K, diisopropylEther +0.116 K; measured with no pair involved), as a percentage of the held-out mean T (342.77 K) = 0.2380 %, rounded UP to two significant figures";
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        notValidated;
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.b_ij  168.933034599;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.b_ji  410.799378206;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "12a04ecf07bb13c8";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diisopropylEther-isopropanol-bubble-j.fluid.2014.09.014.dat";
+            doi       "10.1016/j.fluid.2014.09.014";
+            sha256    "d41cda01c43a3cc76aeaf4a625ed8e978cc642c74d02ad242d7a042b8a1ec367";
+            provenance measured;
+            archiveFile "j.fluid.2014.09.014.xml";
+            system    "diisopropylEther + isopropanol";
+        }
+        {
+            role      validation;
+            dataset   "constant/archiveExtracts/diisopropylEther-isopropanol-bubble-je300994y.dat";
+            doi       "10.1021/je300994y";
+            sha256    "8c1682c6dd6f8ff2d44ad5b8ab25cc70777931d2f330498695f7f60ee0cc160a";
+            provenance measured;
+            archiveFile "je300994y.xml";
+            system    "diisopropylEther + isopropanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.051; max 0.977; n 67; }
+            validation  { min 0.029; max 0.947; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     0.550729322708;
+        acceptanceMaxAADPct 0.24;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit by bin/choupo-curate, the ONE rule of C16: the held-out set's largest stated expanded uncertainty (U95 = 0.61 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (isopropanol -0.206 K, diisopropylEther +0.116 K; measured with no pair involved), as a percentage of the held-out mean T (342.77 K) = 0.2380 %, rounded UP to two significant figures";
+    }
+}
+
+);
