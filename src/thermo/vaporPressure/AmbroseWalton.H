@@ -51,6 +51,15 @@ Description
     on measured Psat (the estimate op does this against the `reference{}` /
     `experimental{}` blocks) before trusting it for design.
 
+    IT SAYS WHAT IT IS (C281 step 1, 2026-11-10).  The record marks the
+    estimate only in a `//` comment, so the model announces it, once per
+    component per process (AdvisoryLog: the end-of-run caveat block and the
+    result JSON), naming Tc, Pc and omega.  The curve does not read the
+    record's Tb; where the record declares one, the model computes its own
+    normal boiling point and announces both temperatures and the gap when they
+    differ by more than 1 K (`tbGapAnnounce_K`, AmbroseWalton.cpp).  No number
+    is changed by either announcement.  Gate: check_ambrose_walton_announced.
+
     DRY: Tc, Pc and omega live at COMPONENT level, not inside the
     `vaporPressure {}` block.  Component::Component injects them into the
     sub-dict before constructing the model, so the case author declares them
@@ -74,6 +83,8 @@ public:
     // estimateComponent props op) reuse the SAME coefficients instead of
     // duplicating them.  T, Tc in K; Pc in Pa; omega dimensionless; returns Pa.
     static scalar psat(scalar T_K, scalar Tc, scalar Pc, scalar omega);
+    // T (K) at which the curve itself gives 101325 Pa; NaN when it never does.
+    static scalar normalBoilingPoint(scalar Tc, scalar Pc, scalar omega);
     // Corresponding-states correlation: defined from the triple point up to
     // the critical point.  range() is advisory (the engine does not yet gate
     // on it); the honest validity caveat is the polar/associating degradation,
@@ -87,6 +98,10 @@ protected:
     scalar safeUpperT() const override { return Tc_; }   // psat() caps at Pc there
 
 private:
+    // C281 step 1: say what the curve is, and where it contradicts the
+    // record's Tb.  Announces only; no pressure depends on it.
+    void announce(const std::string& owner, scalar Tb) const;
+
     scalar Tc_, Pc_, omega_;
     std::string name_;
 };

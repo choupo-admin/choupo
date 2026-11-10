@@ -499,6 +499,10 @@ void Component::readFromDict(const DictPtr& d)
         if (!vpd->found("Tc"))    vpd->insert("Tc",    Tc_);
         if (!vpd->found("Pc"))    vpd->insert("Pc",    Pc_);
         if (!vpd->found("omega")) vpd->insert("omega", omega_);
+        //  Tb travels too, but AmbroseWalton does not USE it in the curve: it
+        //  compares it against the curve's own normal boiling point and says
+        //  so when they differ (C281 step 1).  Antoine/Wagner ignore it.
+        if (!vpd->found("Tb") && Tb_ > 0.0) vpd->insert("Tb", Tb_);
         //  The NAME travels with the model, for the same reason the Cp blocks
         //  get one: a validity warning that cannot say WHICH component it is
         //  about is a warning the reader cannot act on.  The name is known

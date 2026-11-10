@@ -1625,6 +1625,11 @@
       "exit": 0,
       "claim": "check_lesson_references: OK -- 62 of 76 mounted EduTool pages carry references, 202 entries (100 with a DOI); verified by crossref 90, pdf 24, catalogue 71, official 17; every entry records how, where and when, no lesson repeats a work, a DOI reads the same on every page, and every listed page draws its block.  WHAT THIS DOES NOT CHECK: it is network-free, so it holds that a verification was RECORDED, never that it was true -- re-resolving a DOI or reopening a PDF is the evidence string's to start.",
       "seconds": 0.0
+    },
+    "check_ambrose_walton_announced": {
+      "exit": 0,
+      "claim": "check_ambrose_walton_announced: OK -- (a) 48 AW records: 30 announce a gap, each equal to the independent Python value within 0.01 K, the other 18 print the estimate line only; (b) the consistent component prints only the estimate line, the inconsistent one exactly one gap line, both in the result JSON advisories; (c) nine Psat values (3 components x 3 T) equal the parent commit's build and the published equations; (d) a record with no Tb prints the estimate line and no gap line.  The gate checks that the reader is TOLD and that no number moved, never that the estimate is ACCURATE or that a declared Tb is right.",
+      "seconds": 0.2
     }
   }
 }

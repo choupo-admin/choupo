@@ -6218,6 +6218,24 @@ PYEOF
     fi
     rm -f /tmp/psatrange.$$
 
+    # Ambrose-Walton announced gate (2026-11-10, DEV.md 4c C281 step 1).  The
+    # 48 catalogue records that declare `model AmbroseWalton` mark the estimate
+    # only in a comment; the model now announces that its pressure is a
+    # corresponding-states estimate and, where the curve's own normal boiling
+    # point misses the record's Tb by more than 1 K, both temperatures and the
+    # gap.  The gate recomputes every gap from the published equations, runs a
+    # consistent/inconsistent probe, and pins nine Psat values to the parent
+    # build.  Sabotage-verified twice (see its docstring).
+    if gate_exec "$ROOT/bin/curate/check_ambrose_walton_announced.py" > /tmp/awann.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "ambrose-walton-announced-gate" "$(grep -m1 ': OK' /tmp/awann.$$ | cut -c1-200)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_ambrose_walton_announced.py)\n" "ambrose-walton-announced-gate"
+        cat /tmp/awann.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/awann.$$
+
     # logK cross-check gate (2026-08-06).  chemistry/ carries 77 equilibria
     # with a curated logK25 (mostly USGS PHREEQC); species/ carries the
     # aqueous species with hfAq/sAq.  The two describe the SAME
