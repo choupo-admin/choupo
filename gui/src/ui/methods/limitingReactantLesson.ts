@@ -55,10 +55,10 @@ export const LIMITING_STEPS: readonly LessonStep[] = [
     title: "Two ratios, and only one of them is yours",
     body: "A reactor with two reactants, A and B, seems to need two numbers "
       + "chosen at once: which one is limiting, and the ratio between them.  "
-      + "In a plant with a recycle there are in fact TWO different ratios, "
+      + "In a plant with a recycle there are in fact two different ratios, "
       + "measured at two different places, and they behave completely "
-      + "differently.  The FRESH-FEED ratio is measured on what enters the "
-      + "plant.  The REACTOR-INLET ratio is measured where the fresh feed and "
+      + "differently.  The fresh-feed ratio is measured on what enters the "
+      + "plant.  The reactor-inlet ratio is measured where the fresh feed and "
       + "the recycle have already been mixed.  The rest of this page shows "
       + "that the plant decides the first one for you, the loop decides the "
       + "second one, and what is left to choose is a single variable.",
@@ -66,13 +66,13 @@ export const LIMITING_STEPS: readonly LessonStep[] = [
 \qquad\qquad
 r_\mathrm{in} = \frac{F_B^\mathrm{in}}{F_A^\mathrm{in}}`,
     where: [
-      { sym: "A", means: "the LIMITING reactant: the one whose conversion is "
+      { sym: "A", means: "the limiting reactant: the one whose conversion is "
         + "quoted, and which runs out first", unit: "—" },
-      { sym: "B", means: "the reactant fed in EXCESS", unit: "—" },
-      { sym: "r_\\mathrm{f}", means: "the molar ratio of B to A in the FRESH "
+      { sym: "B", means: "the reactant fed in excess", unit: "—" },
+      { sym: "r_\\mathrm{f}", means: "the molar ratio of B to A in the fresh "
         + "feed, the material that crosses the plant boundary", unit: "—" },
       { sym: "r_\\mathrm{in}", means: "the molar ratio of B to A at the "
-        + "REACTOR INLET, after the recycle has been mixed in", unit: "—" },
+        + "reactor inlet, after the recycle has been mixed in", unit: "—" },
       { sym: "F_B^\\mathrm{f}", means: "the fresh feed of B", unit: "mol/s" },
       { sym: "F_A^\\mathrm{f}", means: "the fresh feed of A", unit: "mol/s" },
       { sym: "F_B^\\mathrm{in}", means: "the flow of B entering the reactor",
@@ -84,21 +84,21 @@ r_\mathrm{in} = \frac{F_B^\mathrm{in}}{F_A^\mathrm{in}}`,
   {
     n: 2,
     title: "At steady state the fresh feed is stoichiometric, plus the losses",
-    body: "Draw the balance around the WHOLE plant, not around the reactor.  "
+    body: "Draw the balance around the whole plant, not around the reactor.  "
       + "At steady state nothing accumulates, so every mole of A that enters "
       + "either reacts or leaves in a loss stream (a purge, a gas dissolved in "
       + "the product, a vent), and the same for B.  The reaction consumes them "
-      + "in the stoichiometric proportion.  So the fresh-feed ratio is NOT a "
-      + "FREE design variable: the fresh ratio, the extent and the losses "
-      + "must satisfy this balance TOGETHER — the stoichiometric coefficient "
+      + "in the stoichiometric proportion.  So the fresh-feed ratio is not a "
+      + "free design variable: the fresh ratio, the extent and the losses "
+      + "must satisfy this balance together — the stoichiometric coefficient "
       + "ratio plus a correction for whatever leaves unreacted, which tends "
       + "to the stoichiometric ratio as the losses become negligible.  That "
       + "does not take the choice away from the designer: the losses (a "
       + "purge, what the separation lets through) can themselves depend on "
       + "the ratio the plant runs at, so the identity ties the choices into "
       + "one rather than removing one.  What it does rule out is a feed "
-      + "ratio that disagrees with the conversion and the losses ALREADY "
-      + "SPECIFIED: for those, there is no steady state — the reactant in "
+      + "ratio that disagrees with the conversion and the losses already "
+      + "specified: for those, there is no steady state — the reactant in "
       + "surplus accumulates in the loop until a loss stream grows enough "
       + "to carry it out, which is the plant moving to different losses.",
     formula: String.raw`\begin{aligned}
@@ -130,7 +130,7 @@ r_\mathrm{f} &= \frac{\nu\,\xi + L_B}{\xi + L_A}
       + "fresh-feed ratio as the stoichiometric one with a small relative "
       + "excess ε.  The component balances around the mixing point close in "
       + "two lines, and the inlet ratio comes out in closed form.  Read the "
-      + "result for what it says: ε, the error in the FRESH ratio, is divided "
+      + "result for what it says: ε, the error in the fresh ratio, is divided "
       + "by p.  When the purge is small — and a purge is kept small because it "
       + "throws reactant away — a fresh-feed error of one part in ten "
       + "thousand becomes a large change in the reactor-inlet ratio.  With a "
@@ -172,11 +172,11 @@ r_\mathrm{in} &= \nu \left( 1 + \varepsilon\,\frac{D}{p} \right),
       { step: "The B left over after the reactor cannot be negative; that is "
           + "the bound on ε." },
     ],
-    note: "WHAT THE SIMPLE LOOP LEAVES OUT IS THE NEXT STEP.  Here the purge "
+    note: "What the simple loop leaves out is the next step.  Here the purge "
       + "takes A and B in the proportion they have in the loop, so a "
       + "stoichiometric fresh feed gives a stoichiometric inlet.  A real loop "
-      + "also loses gas DISSOLVED in the liquid product, and a gas does not "
-      + "dissolve in the proportion it has in the loop.  That is a SELECTIVE "
+      + "also loses gas dissolved in the liquid product, and a gas does not "
+      + "dissolve in the proportion it has in the loop.  That is a selective "
       + "loss, and it moves the inlet ratio even when ε is exactly zero.",
   },
   {
@@ -185,21 +185,21 @@ r_\mathrm{in} &= \nu \left( 1 + \varepsilon\,\frac{D}{p} \right),
     body: "Choupo's green ammonia case (tutorials/plant/"
       + "greenAmmoniaPEQ_baseCase) feeds hydrogen and nitrogen at 3 : 1 and "
       + "its converter sees H₂/N₂ = 3.589.  Both effects of step 3 are in "
-      + "it, and they can be separated by running it twice.  The SELECTIVE "
+      + "it, and they can be separated by running it twice.  The selective "
       + "loss first: nitrogen dissolves in liquid ammonia more than hydrogen, "
       + "so the gas released when the product is let down is nitrogen-rich — "
       + "H₂/N₂ = 2.77 in the let-down gas and 1.70 in the storage flash "
       + "gas, against 3.92 in the purge.  If the loop sat at 3, its losses "
       + "would take more nitrogen than the fresh feed brings, hydrogen would "
       + "accumulate, and it does until the losses come back to the fresh "
-      + "ratio.  Run with a fresh feed EXACTLY 3 : 1, the converter inlet "
-      + "settles at 3.532.  Then the FRESH-RATIO error: the case's nitrogen "
+      + "ratio.  Run with a fresh feed exactly 3 : 1, the converter inlet "
+      + "settles at 3.532.  Then the fresh-ratio error: the case's nitrogen "
       + "carries 100 ppm of argon in place of nitrogen, so its fresh H₂/N₂ "
       + "is 3.0003, an ε of one part in ten thousand.  That moves the inlet "
       + "from 3.532 to 3.589.  The loop throws away about 0.2 % of its "
       + "unreacted gas, and the closed form of step 3 with that p, X = 0.355 "
       + "and ε = 0.0001 predicts a shift of 0.053; the case shows 0.057.",
-    note: "WHAT A REAL LOOP DOES ABOUT IT.  It does not fight the loop with "
+    note: "What a real loop does about it.  It does not fight the loop with "
       + "the fresh feed held at exactly 3 : 1.  It measures the converter-inlet "
       + "ratio and trims the make-up ratio to bring it where it should be — "
       + "which, by step 2, means a make-up ratio a hair away from "
@@ -214,23 +214,23 @@ r_\mathrm{in} &= \nu \left( 1 + \varepsilon\,\frac{D}{p} \right),
     body: "Once the plant balance and the loop have taken their share, the "
       + "remaining choice — which reactant is in excess at the reactor inlet, "
       + "and by how much — is made for one of four reasons, and it is worth "
-      + "knowing which one is deciding.  SAFETY first.  In the old air-based "
+      + "knowing which one is deciding.  Safety first.  In the old air-based "
       + "ethylene-oxide process, \"oxygen concentrations in inlet gases are "
       + "kept below 8% and preferably at 3-6% to minimize explosive hazards\" "
       + "(US 2,734,906, Allied Chemical & Dye, 1956): the oxygen is limited "
       + "because a flammable mixture is not an option, whatever the kinetics "
-      + "would prefer.  SELECTIVITY second.  In ethylbenzene manufacture "
+      + "would prefer.  Selectivity second.  In ethylbenzene manufacture "
       + "\"the ethylbenzene formed is more reactive than benzene with respect "
       + "to ethylene\", so the prior art used \"a strong excess of benzene\" "
       + "at the reactor entry — a benzene/ethylene ratio \"generally between "
       + "2 and 2.5\" with aluminium chloride and up to \"between 8 and 16\" "
       + "with zeolites in the gas phase (EP 0 873 291 B1, 2002).  The excess "
-      + "starves the side reaction of the reagent it needs.  COST third: make "
+      + "starves the side reaction of the reagent it needs.  Cost third: make "
       + "limiting the reactant that is expensive, or hard to recover and "
-      + "recycle, so that little of it travels round the loop.  EQUILIBRIUM "
+      + "recycle, so that little of it travels round the loop.  Equilibrium "
       + "last: an excess of one reactant pushes the conversion of the other "
       + "towards completion.",
-    note: "WHERE THE FRAMEWORK COMES FROM.  Treating the reactor-inlet excess "
+    note: "Where the framework comes from.  Treating the reactor-inlet excess "
       + "as a design decision of the recycle structure, taken after the "
       + "structure is fixed and before the separations are designed, is "
       + "J. M. Douglas's hierarchy (Conceptual Design of Chemical Processes, "
@@ -260,7 +260,7 @@ r_\mathrm{in} &= \nu \left( 1 + \varepsilon\,\frac{D}{p} \right),
         + "consumed: the B that leaves the reactor unreacted, divided by the B "
         + "the reaction uses", unit: "—" },
     ],
-    note: "READ IT AS A PRICE.  At the green ammonia converter, "
+    note: "Read it as a price.  At the green ammonia converter, "
       + "with an inlet ratio of 3.589 and X = 0.355 per pass, it is 2.4: "
       + "for every mole of hydrogen that becomes ammonia, 2.4 more go round "
       + "the loop and through the recycle compressor.",

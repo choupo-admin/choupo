@@ -32,10 +32,10 @@ describe("the lesson", () => {
     expect(f).toContain(String.raw`r_\mathrm{in}`);
     //  C150 R18: the balance ties the fresh ratio to the extent and the
     //  losses; it is not FREE, but it is not removed from the design either.
-    expect(all(2)).toContain("NOT a FREE design variable");
-    expect(all(2)).toContain("TOGETHER");
-    expect(all(2)).toContain("ALREADY SPECIFIED");
-    expect(all(2)).not.toContain("NOT a design variable");
+    expect(all(2)).toContain("not a free design variable");
+    expect(all(2)).toContain("together");
+    expect(all(2)).toContain("already specified");
+    expect(all(2)).not.toContain("not a design variable");
   });
 
   it("states the closed form and its steady-state bound", () => {
