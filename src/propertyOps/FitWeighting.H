@@ -84,3 +84,6 @@ sVector fitWeights(const DictPtr& residualDict,
                    int verbosity);
 
 } // namespace Choupo
+
+//  The declared objective of the fit (C280) rides with the declared weighting.
+#include "FitObjective.H"

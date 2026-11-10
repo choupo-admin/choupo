@@ -97,7 +97,7 @@ std::vector<EvidenceDataset> lleSets(const std::vector<EvidenceDataset>& all)
     return out;
 }
 
-scalar readSigma(const DictPtr& resDict)
+scalar readSigma(const DictPtr& resDict, bool relative)
 {
     if (!resDict->found("liquidLiquid"))
         throw std::runtime_error(std::string(WHO) + ": `residual { liquidLiquid"
@@ -108,6 +108,20 @@ scalar readSigma(const DictPtr& resDict)
             " of the binodal measurement, and the engine will not choose a"
             " scale for the two kinds of evidence.");
     auto b = resDict->subDict("liquidLiquid");
+    if (relative)
+    {
+        if (!b->found("sigmaRelative") || !b->found("origin"))
+            throw std::runtime_error(std::string(WHO) + ": under `objective { scale"
+                " { binodal relative; } }` (the default) `residual.liquidLiquid`"
+                " needs BOTH `sigmaRelative <fraction>;` (the relative uncertainty"
+                " of one tie-line composition, dimensionless) and `origin \"...\";`;"
+                " or declare `scale { binodal absolute; }` and keep `sigma`.");
+        const scalar sr = b->lookupScalar("sigmaRelative");
+        if (!(sr > 0.0 && sr <= 1.0) || b->lookupWord("origin").empty())
+            throw std::runtime_error(std::string(WHO) + ": `liquidLiquid.sigmaRelative`"
+                " is a fraction in (0, 1] and `origin` may not be empty.");
+        return sr;
+    }
     if (!b->found("sigma") || !b->found("origin"))
         throw std::runtime_error(std::string(WHO) + ": `residual.liquidLiquid`"
             " needs BOTH `sigma <mole fraction>;` and `origin \"...\";` (where"
@@ -141,11 +155,12 @@ void requireFitMode(const std::string& kind, bool evalMode,
 }
 
 Rows load(const std::vector<EvidenceDataset>& sets, const std::string& comp1,
-          scalar sigma, std::size_t first, const std::string& label)
+          scalar sigma, std::size_t first, const std::string& label, bool relative)
 {
     Rows r;
     r.first = first;
     r.sigma = sigma;
+    r.relative = relative;
     if (sets.empty()) return r;
     if (comp1.empty())
         throw std::runtime_error(std::string(WHO) + ": `residual.components`"
@@ -169,6 +184,12 @@ Rows load(const std::vector<EvidenceDataset>& sets, const std::string& comp1,
                 + std::to_string(t.T) + " K has both liquids at x = "
                 + std::to_string(t.xLo) + " -- that is one liquid, not a tie"
                   " line.");
+        if (relative && !(t.xLo > 0.0))
+            throw std::runtime_error(std::string(WHO) + ": a tie line at T = "
+                + std::to_string(t.T) + " K has a measured mole fraction of "
+                + std::to_string(t.xLo) + ".  A RELATIVE error against zero is"
+                  " undefined and the engine will not floor it: declare `objective"
+                  " { scale { binodal absolute; } }`, or drop the tie line.");
         r.ties.push_back(t);
     }
     return r;
@@ -268,7 +289,9 @@ scalar row(const ThermoPackage& thermo, const Rows& r, std::size_t k,
     if (!s_cache.b.split) return penalty;
     const scalar meas  = hi ? r.ties[t].xHi : r.ties[t].xLo;
     const scalar model = hi ? s_cache.b.xHi : s_cache.b.xLo;
-    return (model - meas) * (weights ? (*weights)[k] : 1.0);
+    //  unweighted = the physical dx; weighted = the scaled row of the objective
+    if (!weights) return model - meas;
+    return (model - meas) * (*weights)[k] / (r.relative ? meas : 1.0);
 }
 
 void requireSplitAtStart(const Rows& r, const sVector& res)
@@ -293,6 +316,28 @@ void requireSplitAtStart(const Rows& r, const sVector& res)
                      " fit proceeds on the others.\n";
 }
 
+namespace {
+void addBranch(Branch& b, scalar dx, scalar meas)
+{
+    ++b.n;
+    b.aad += std::fabs(dx);
+    b.max = std::max(b.max, std::fabs(dx));
+    if (meas > 0.0)
+    {
+        const scalar rel = std::fabs(dx) / meas;
+        b.relAad += rel;
+        b.relMax = std::max(b.relMax, rel);
+    }
+    else ++b.relSkipped;
+}
+void closeBranch(Branch& b)
+{
+    const std::size_t nRel = b.n - b.relSkipped;
+    b.relAad = nRel ? b.relAad / static_cast<scalar>(nRel) : 0.0;
+    b.aad    = b.n ? b.aad / static_cast<scalar>(b.n) : 0.0;
+}
+}  // namespace
+
 Stats statsOf(const Rows& r, const sVector& u)
 {
     Stats s;
@@ -306,9 +351,28 @@ Stats statsOf(const Rows& r, const sVector& u)
         sum += std::fabs(a) + std::fabs(b);
         n += 2;
         s.maxAbs = std::max(s.maxAbs, std::max(std::fabs(a), std::fabs(b)));
+        addBranch(s.lean, a, r.ties[t].xLo);
+        addBranch(s.rich, b, r.ties[t].xHi);
     }
     s.aad = n ? sum / static_cast<scalar>(n) : 0.0;
+    closeBranch(s.lean); closeBranch(s.rich);
     return s;
+}
+
+void printBranches(std::ostream& os, const Stats& s, const std::string& label)
+{
+    os << "    " << label << "  (" << s.ties << " tie lines, one liquid predicted at "
+       << s.penalisedTies << ")\n"
+       << "      liquid        mean |dx|    max |dx|   mean |dx|/x   max |dx|/x\n";
+    auto row = [&](const char* name, const Branch& b) {
+        os << "      " << std::left << std::setw(12) << name << std::right << std::fixed
+           << std::setprecision(5) << std::setw(10) << b.aad << std::setw(12) << b.max
+           << std::setprecision(4) << std::setw(13) << b.relAad << std::setw(13) << b.relMax
+           << (b.relSkipped ? "   (relative: " + std::to_string(b.relSkipped) + " zero-valued rows left out)" : "")
+           << "\n";
+    };
+    row("lean", s.lean);
+    row("rich", s.rich);
 }
 
 Stats heldOut(const ThermoPackage& thermo, const Rows& r, std::size_t i1,
@@ -333,12 +397,15 @@ Stats heldOut(const ThermoPackage& thermo, const Rows& r, std::size_t i1,
         sum += da + db;
         n += 2;
         s.maxAbs = std::max(s.maxAbs, std::max(da, db));
+        addBranch(s.lean, b.xLo - t.xLo, t.xLo);
+        addBranch(s.rich, b.xHi - t.xHi, t.xHi);
         if (verbosity >= 3)
             std::cout << "      [LLE held-out] T = " << t.T << " K  measured "
                       << t.xLo << " | " << t.xHi << "  model " << b.xLo << " | "
                       << b.xHi << "\n";
     }
     s.aad = n ? sum / static_cast<scalar>(n) : 0.0;
+    closeBranch(s.lean); closeBranch(s.rich);
     //  THE HELD-OUT TIE LINES, in words: a tie line the model leaves ONE
     //  liquid was named above and is a MISS of the verdict, never a skip.
     if (verbosity >= 2)
@@ -360,6 +427,8 @@ void publish(std::map<std::string, scalar>& diag, const Rows& fit,
     diag["lle_penalised_ties"]    = static_cast<scalar>(s.penalisedTies);
     diag["lle_aad_dx"]            = s.aad;
     diag["lle_max_abs_dx"]        = s.maxAbs;
+    diag["lle_rel_aad_lean"] = s.lean.relAad; diag["lle_rel_max_lean"] = s.lean.relMax;
+    diag["lle_rel_aad_rich"] = s.rich.relAad; diag["lle_rel_max_rich"] = s.rich.relMax;
     if (s.penalisedTies > 0)
         std::cerr << "[fitParameters] LLE: " << s.penalisedTies << " of "
                   << s.ties << " fit tie line(s) are ONE liquid in the fitted"
@@ -371,6 +440,8 @@ void publishHeldOut(std::map<std::string, scalar>& diag, const Stats& held)
     diag["lle_n_ties_heldout"]         = static_cast<scalar>(held.ties);
     diag["lle_penalised_ties_heldout"] = static_cast<scalar>(held.penalisedTies);
     diag["lle_aad_dx_heldout"]         = held.aad;
+    diag["lle_rel_aad_lean_heldout"] = held.lean.relAad; diag["lle_rel_max_lean_heldout"] = held.lean.relMax;
+    diag["lle_rel_aad_rich_heldout"] = held.rich.relAad; diag["lle_rel_max_rich_heldout"] = held.rich.relMax;
 }
 
 void requireBands(const EvidencePartition& part, bool bubbleHeldOut, bool lleHeldOut)

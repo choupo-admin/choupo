@@ -110,6 +110,8 @@ operations
             origin  "declared before the fit, by the ONE rule of C16 (slice 1, five systems; slice 2, four more): the held-out set's largest stated expanded uncertainty (U95 = 1.4 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (NONE: the held-out study reports no pure-component bubble point, so the term is ZERO, the strictest reading of the rule -- the band is the measurement's own uncertainty alone; measured with no pair involved), as a percentage of the held-out mean T (342.92 K) = 0.4083 %, rounded UP to two significant figures";
         }
 
+        //  C280: pinned to the least-squares objective (this case's header and golden are a least-squares result).
+        objective { method leastSquares; }
         residual
         {
             kind        T_bubble;
@@ -163,6 +165,8 @@ operations
             origin  "declared before the fit, by the ONE rule of C16 (slice 1, five systems; slice 2, four more): the held-out set's largest stated expanded uncertainty (U95 = 1.4 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (NONE: the held-out study reports no pure-component bubble point, so the term is ZERO, the strictest reading of the rule -- the band is the measurement's own uncertainty alone; measured with no pair involved), as a percentage of the held-out mean T (342.92 K) = 0.4083 %, rounded UP to two significant figures";
         }
 
+        //  C280: pinned to the least-squares objective (this case's header and golden are a least-squares result).
+        objective { method leastSquares; }
         residual
         {
             kind        T_bubble;

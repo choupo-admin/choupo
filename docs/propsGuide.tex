@@ -1349,6 +1349,49 @@ the Theory Guide's \emph{Levenberg--Marquardt} and \emph{What is fittable}
 chapters derive the diagnostic.  Fit across pressures, or fix $b$, to break it.
 \end{intuition}
 
+\subsection{The objective: what the fit minimises, and in what scale}
+
+The sum of squares above is the default \emph{first} stage, not the whole
+objective.  \code{fitParameters} takes a declared, selectable
+\code{objective}, and the run header names the one that produced the numbers:
+\begin{verbatim}
+objective
+{
+    method   twoStage;     // leastSquares | minimax | twoStage (the default)
+    scale
+    {
+        T_bubble  absolute;   // kelvin
+        P_bubble  relative;   // (P_model - P)/P
+        binodal   relative;   // tie-line mole fractions, (x_model - x)/x
+    }
+    maxEvaluations 1500;   // minimax stage only
+}
+\end{verbatim}
+\code{leastSquares} is the Levenberg--Marquardt search of this chapter.
+\code{minimax} minimises the \emph{largest} scaled residual,
+$\min_\theta \max_k |r_k(\theta)|$, by a derivative-free Nelder--Mead simplex.
+\code{twoStage} runs the first and then the second, started from the
+least-squares answer; both answers are kept in the result
+(\code{fit.<i>.value\_leastSquares}, \code{fit.<i>.value\_minimax}) and the
+minimax one is reported as the fit.  A relative tie-line row also needs
+\code{liquidLiquid \{ sigmaRelative; origin; \}}, and a measured mole fraction
+of zero is refused by name.  The report prints, for the fit and the held-out
+sets, the mean and maximum \emph{absolute} error of the bubble temperature and
+the mean and maximum \emph{relative} error of each liquid's composition.
+
+\begin{intuition}
+\textbf{Least squares finds the basin; minimax bounds the worst point.}  A sum
+of squares is smooth, so it is the right way to reach the neighbourhood of the
+answer.  But it lets one large miss at the end of the range hide among many
+small ones, and the end of the range is where a prediction is spoiled.  The
+minimax stage cannot make the largest scaled residual worse (its first vertex
+is the least-squares answer), and it is what turns ``the average is small'' into
+``no point is worse than this''.  \textbf{Relative for compositions, absolute
+for temperature:} a mole fraction of 0.02 and one of 0.5 should each count in
+proportion to themselves, whereas an absolute residual weighs the first
+twenty-five times less; a temperature error has one natural unit, the kelvin.
+\end{intuition}
+
 \subsection{See, then decide: the model overlay}
 
 Before fitting, look.  Declare one scan \code{operation} per candidate model

@@ -86,6 +86,7 @@ Description
 #include "core/Types.H"
 
 #include <cstdio>
+#include <iosfwd>
 #include <map>
 #include <memory>
 #include <string>
@@ -111,7 +112,8 @@ struct Tie { scalar T = 0.0; scalar xLo = 0.0; scalar xHi = 0.0; };
 struct Rows
 {
     std::size_t      first = 0;
-    scalar           sigma = 1.0;
+    scalar           sigma = 1.0;       // the divisor of a weighted row: sigma (absolute) or sigmaRelative
+    bool             relative = false;  // C280: a weighted row is (model - meas)/meas, over `sigma`
     std::vector<Tie> ties;
     std::size_t size() const { return 2 * ties.size(); }
     bool active() const { return !ties.empty(); }
@@ -146,13 +148,17 @@ std::vector<EvidenceDataset> vleSets(const std::vector<EvidenceDataset>& all, bo
 std::vector<EvidenceDataset> lleSets(const std::vector<EvidenceDataset>& all);
 
 //  The declared sigma (REQUIRED, with its origin) and the mode's refusals.
-scalar readSigma(const DictPtr& resDict);
+//  `relative` (C280, objective.scale.binodal): the weight is `sigmaRelative`, a
+//  dimensionless relative uncertainty, declared with its `origin` like `sigma`.
+scalar readSigma(const DictPtr& resDict, bool relative = false);
 void   requireFitMode(const std::string& kind, bool evalMode,
                       const std::string& weighting);
 
 //  Read the tie lines; `first` = index of the first LLE row.
+//  `relative` REFUSES a measured mole fraction that is not positive.
 Rows load(const std::vector<EvidenceDataset>& sets, const std::string& comp1,
-          scalar sigma, std::size_t first, const std::string& label);
+          scalar sigma, std::size_t first, const std::string& label,
+          bool relative = false);
 
 //  Append the rows to the (x, T, p) arrays the bubble engine keeps, so the
 //  residual vector, the Jacobian and the statistics run over ONE index.
@@ -178,15 +184,30 @@ Binodal solveTie(const ThermoPackage& thermo, scalar T, scalar xLo, scalar xHi,
 //  ones it does not.  `residuals` = the first residual vector.
 void requireSplitAtStart(const Rows& r, const sVector& residuals);
 
+//  One liquid of the tie lines (C280): the mean and the largest error, absolute
+//  (mole fraction) and relative (to the measured mole fraction).  A measured
+//  value <= 0 has no relative error; it is left out of the relative figures and
+//  counted in relSkipped.
+struct Branch
+{
+    std::size_t n = 0;
+    std::size_t relSkipped = 0;
+    scalar      aad = 0.0, max = 0.0;          // |dx|
+    scalar      relAad = 0.0, relMax = 0.0;    // |dx|/x
+};
 struct Stats
 {
     std::size_t ties = 0;
     std::size_t penalisedTies = 0;
     scalar      aad = 0.0;          // mean |dx| over the rows that split
     scalar      maxAbs = 0.0;
+    Branch      lean, rich;         // the two liquids, reported apart
 };
 //  From UNWEIGHTED residuals r[first .. first+2t).
 Stats statsOf(const Rows& r, const sVector& unweighted);
+
+//  The per-liquid table of a Stats (fit or held-out), one block of lines.
+void printBranches(std::ostream& os, const Stats& s, const std::string& label);
 
 //  The held-out pass: tie lines the fitter never saw, solved with the fitted
 //  parameters.  Prints each tie line that the model leaves one liquid.

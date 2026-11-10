@@ -93,6 +93,8 @@ operations
             origin  "declared before the fit, by ONE rule applied to all five C16 systems: the held-out set's largest stated expanded uncertainty (U95 = 0.17 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (methanol +0.003 K, methylAcetate -0.121 K; measured with no pair involved), as a percentage of the held-out mean T (330.04 K) = 0.0881 %, rounded UP to two significant figures";
         }
 
+        //  C280: pinned to the least-squares objective (this case's header and golden are a least-squares result).
+        objective { method leastSquares; }
         residual
         {
             kind        T_bubble;
@@ -146,6 +148,8 @@ operations
             origin  "declared before the fit, by ONE rule applied to all five C16 systems: the held-out set's largest stated expanded uncertainty (U95 = 0.17 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (methanol +0.003 K, methylAcetate -0.121 K; measured with no pair involved), as a percentage of the held-out mean T (330.04 K) = 0.0881 %, rounded UP to two significant figures";
         }
 
+        //  C280: pinned to the least-squares objective (this case's header and golden are a least-squares result).
+        objective { method leastSquares; }
         residual
         {
             kind        T_bubble;

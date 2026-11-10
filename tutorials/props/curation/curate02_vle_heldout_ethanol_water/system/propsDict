@@ -108,6 +108,8 @@ operations
             origin  "experimental scatter of atmospheric bubble-T measurements in the source compilation (a few tenths of a kelvin), rounded to 0.1 % of T -- declared before the fit and not adjusted after";
         }
 
+        //  C280: pinned to the least-squares objective (this case's header and golden are a least-squares result).
+        objective { method leastSquares; }
         residual
         {
             kind        T_bubble;

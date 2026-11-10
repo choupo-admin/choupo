@@ -68,6 +68,8 @@ operations
         //  the pressure its own dataset declares, repeating it in the case
         //  became a second home for one fact and is refused by name.  Nothing
         //  numeric moved: the two values were always identical.
+        //  C280: pinned to the least-squares objective (this case's header and golden are a least-squares result).
+        objective { method leastSquares; }
         residual
         {
             kind        T_bubble;

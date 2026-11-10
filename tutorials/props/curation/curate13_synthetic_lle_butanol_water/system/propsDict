@@ -78,6 +78,8 @@ operations
             origin  "declared before the fit, for a SYNTHETIC zero-noise recovery: 0.1 % of T (about 0.4 K, twice the declared 0.2 K standard uncertainty of a bubble point) and 0.01 in mole fraction (twice the declared sigma of a binodal composition).  The data are generated from the model, so the true deviation is round-off; the bands are generous on purpose and the gate (check_lle_residual) holds the recovery to 1e-5, not these.";
         }
 
+        //  C280: pinned to the least-squares objective (this case's header and golden are a least-squares result).
+        objective { method leastSquares; scale { binodal absolute; } }
         residual
         {
             kind        T_bubble+LLE;
@@ -130,6 +132,8 @@ operations
             origin  "declared before the fit, for a SYNTHETIC zero-noise recovery: 0.1 % of T (about 0.4 K, twice the declared 0.2 K standard uncertainty of a bubble point) and 0.01 in mole fraction (twice the declared sigma of a binodal composition).  The data are generated from the model, so the true deviation is round-off; the bands are generous on purpose and the gate (check_lle_residual) holds the recovery to 1e-5, not these.";
         }
 
+        //  C280: pinned to the least-squares objective (this case's header and golden are a least-squares result).
+        objective { method leastSquares; scale { binodal absolute; } }
         residual
         {
             kind        T_bubble+LLE;

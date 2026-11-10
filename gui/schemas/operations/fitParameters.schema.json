@@ -123,11 +123,15 @@
         "liquidLiquid": {
           "type": "object",
           "title": "Weight of the tie-line rows (kind T_bubble+LLE)",
-          "description": "REQUIRED with `kind T_bubble+LLE`. `sigma` is the mole fraction judged equivalent to one standard uncertainty of a binodal measurement: each tie-line row is (x_model - x_measured)/sigma, a dimensionless number added to the bubble rows (dT/U) in one chi2. `origin` says where that weight came from; a weight with no provenance cannot be told from one tuned after the fit.",
+          "description": "REQUIRED with `kind T_bubble+LLE`. Under `objective.scale.binodal absolute`, `sigma` is the mole fraction judged equivalent to one standard uncertainty of a binodal measurement: each tie-line row is (x_model - x_measured)/sigma, a dimensionless number added to the bubble rows (dT/U) in one chi2; under `relative` (the default) `sigmaRelative` is the same judgement as a fraction of the measured value and each row is (x_model - x_measured)/x_measured/sigmaRelative. `origin` says where that weight came from; a weight with no provenance cannot be told from one tuned after the fit.",
           "properties": {
             "sigma": {
               "type": "number",
-              "title": "Mole-fraction scale of one binodal measurement"
+              "title": "Mole-fraction scale of one binodal measurement (objective.scale.binodal absolute)"
+            },
+            "sigmaRelative": {
+              "type": "number",
+              "title": "Relative scale of one binodal measurement, a fraction (objective.scale.binodal relative, the default)"
             },
             "origin": {
               "type": "string",
@@ -135,7 +139,6 @@
             }
           },
           "required": [
-            "sigma",
             "origin"
           ]
         },
@@ -179,6 +182,31 @@
       "required": [
         "kind"
       ]
+    },
+    "objective": {
+      "type": "object",
+      "title": "Objective (what the fit minimises)",
+      "description": "DEV.md 4c C280. `method`: leastSquares (Levenberg-Marquardt, the sum of squared scaled residuals), minimax (the LARGEST scaled residual, by Nelder-Mead from the declared start) or twoStage (the DEFAULT: least squares for a first estimate, then minimax from that answer; both answers are kept in the result). `scale` per residual property: T_bubble absolute (kelvin), P_bubble relative, binodal relative (the default; a measured mole fraction <= 0 is refused) or absolute. The run header names the objective and the scales. Fit mode of the bubble kinds only; the isotherm and membrane kinds accept only `method leastSquares`.",
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": ["leastSquares", "minimax", "twoStage"],
+          "title": "Objective method"
+        },
+        "scale": {
+          "type": "object",
+          "title": "Residual scale per property",
+          "properties": {
+            "T_bubble": {"type": "string", "enum": ["absolute"], "title": "Bubble temperature (kelvin)"},
+            "P_bubble": {"type": "string", "enum": ["relative"], "title": "Bubble pressure ((P_model - P)/P)"},
+            "binodal": {"type": "string", "enum": ["absolute", "relative"], "title": "Tie-line mole fractions"}
+          }
+        },
+        "maxEvaluations": {
+          "type": "number",
+          "title": "Evaluation budget of the minimax stage (default 1500)"
+        }
+      }
     },
     "options": {
       "type": "object",

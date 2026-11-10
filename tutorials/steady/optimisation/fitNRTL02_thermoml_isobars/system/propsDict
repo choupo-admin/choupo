@@ -131,6 +131,8 @@ operations
         //  Kamihama set as a held-constant because that one fixed it.  A
         //  scalar declared beside them would be a second home for the same
         //  fact and the op refuses the pair by name.
+        //  C280: pinned to the least-squares objective (this case's header and golden are a least-squares result).
+        objective { method leastSquares; }
         residual
         {
             kind        T_bubble;

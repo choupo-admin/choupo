@@ -310,12 +310,12 @@ int FitParameters::run(const DictPtr& dict,
     memSets_.clear(); memQuantities_.clear(); memSetQuantities_.clear(); memUnits_.clear(); memSetHeldOut_.clear();
     memHeldOutUnit_.clear(); memInSampleUnit_.clear(); pairParamUnits_.clear();
     if (dict->subDict("residual")->lookupWord("kind") == "isotherm")
-        return runIsothermFit(dict, verbosity);
+        { fitobj::requireLeastSquares(dict, "isotherm"); return runIsothermFit(dict, verbosity); }
     // The membrane kind (DEV.md 4c C149/C152) fits a MEMBRANE RECORD's
     // parameters against measured rejections and fluxes; the package is the
     // case's as authored and is only read (FitParametersMembrane.cpp).
     if (dict->subDict("residual")->lookupWord("kind") == "membrane")
-        return runMembraneFit(dict, initialThermo, verbosity);
+        { fitobj::requireLeastSquares(dict, "membrane"); return runMembraneFit(dict, initialThermo, verbosity); }
 
     // The AUTHORED v2 grammar is the ONE fit source (named-path mutation,
     // rebuilt natively per iteration).
@@ -420,7 +420,7 @@ int FitParameters::run(const DictPtr& dict,
     //  MEASURED one (T or P); the names are the T_bubble engine's, and the
     //  swap is said once here rather than renamed in a thousand lines.
     const bool  kindP    = (kind == "P_bubble");
-    s_bubbleP = kindP; const bool lleMode = lle::isMixed(kind); lle::requireFitMode(kind, evalMode, resDict->lookupWordOrDefault("weighting", "equal"));
+    s_bubbleP = kindP; const bool lleMode = lle::isMixed(kind); lle::requireFitMode(kind, evalMode, resDict->lookupWordOrDefault("weighting", "equal")); const fitobj::Spec objSpec = fitobj::read(dict, kind, evalMode);
     const char* fixedKey = kindP ? "T" : "P";
     const std::string yUnit = kindP ? "rel" : "K";     // the residual's unit
     //  `residual.P` (or `residual.T` for P_bubble) is CONDITIONAL: it is the
@@ -656,16 +656,16 @@ int FitParameters::run(const DictPtr& dict,
            << " .. " << (pHi/1.0e5) << " bar";
         return os.str();
     };
-    lle::Rows lleFit, lleVal; if (lleMode) { if (!partPtr) throw std::runtime_error("fitParameters(T_bubble+LLE): needs the `evidence ( )` form (tie-line datasets are routed by their `property`)."); const scalar sg = lle::readSigma(resDict); lleFit = lle::load(lle::lleSets(partPtr->fit()), comp1Name, sg, xExp.size(), "fitParameters(T_bubble+LLE)"); if (!lleFit.active()) throw std::runtime_error("fitParameters(T_bubble+LLE): no `role fit` dataset carries `property binaryLLE.binodal;` -- without tie lines this is a plain T_bubble fit; declare `kind T_bubble;`."); lleVal = lle::load(lle::lleSets(partPtr->validation()), comp1Name, sg, 0, "fitParameters(T_bubble+LLE)"); lle::requireBands(*partPtr, !lle::vleSets(partPtr->validation(), true).empty(), lleVal.active()); lle::append(lleFit, xExp, tExp, pExp); N = xExp.size(); }
+    lle::Rows lleFit, lleVal; if (lleMode) { if (!partPtr) throw std::runtime_error("fitParameters(T_bubble+LLE): needs the `evidence ( )` form (tie-line datasets are routed by their `property`)."); const scalar sg = lle::readSigma(resDict, objSpec.binodalRelative); lleFit = lle::load(lle::lleSets(partPtr->fit()), comp1Name, sg, xExp.size(), "fitParameters(T_bubble+LLE)", objSpec.binodalRelative); if (!lleFit.active()) throw std::runtime_error("fitParameters(T_bubble+LLE): no `role fit` dataset carries `property binaryLLE.binodal;` -- without tie lines this is a plain T_bubble fit; declare `kind T_bubble;`."); lleVal = lle::load(lle::lleSets(partPtr->validation()), comp1Name, sg, 0, "fitParameters(T_bubble+LLE)", objSpec.binodalRelative); lle::requireBands(*partPtr, !lle::vleSets(partPtr->validation(), true).empty(), lleVal.active()); lle::append(lleFit, xExp, tExp, pExp); N = xExp.size(); }
     // -- options -----------------------------------------------------------
-    int    maxIter = 40;
+    int    maxIter = objSpec.runsLeastSquares() ? 40 : 0;
     scalar tol     = 1.0e-4;
     scalar fdStep  = 1.0e-3;
     scalar lambda  = 1.0e-3;
     if (dict->found("options"))
     {
         auto o = dict->subDict("options");
-        if (o->found("maxIter"))   maxIter = static_cast<int>(o->lookupScalar("maxIter"));
+        if (o->found("maxIter") && objSpec.runsLeastSquares()) maxIter = static_cast<int>(o->lookupScalar("maxIter"));
         if (o->found("tolerance")) tol     = o->lookupScalar("tolerance");
         if (o->found("fdStep"))    fdStep  = o->lookupScalar("fdStep");
         if (o->found("lambda0"))   lambda  = o->lookupScalar("lambda0");
@@ -738,7 +738,7 @@ int FitParameters::run(const DictPtr& dict,
         std::cout << "  LM:  maxIter " << maxIter
                   << "   tol " << tol
                   << "   fdStep " << fdStep
-                  << "   lambda0 " << lambda << "\n"
+                  << "   lambda0 " << lambda << "\n" << fitobj::describe(objSpec, kind)
                   << "  --------------------------------------------------\n"
                   << "   iter      chi2          lambda     params\n";
     }
@@ -1053,7 +1053,7 @@ int FitParameters::run(const DictPtr& dict,
     //  those qualifies what this operation publishes, so the frame must be
     //  closed before them -- and closed EXPLICITLY rather than left to the
     //  destructor, because the destructor runs after they do.
-    search.close();
+    const std::vector<ParamSpec> paramsLS = params; fitobj::Outcome obj2; if (objSpec.runsMinimax()) { sVector x0, lo, hi; for (const auto& ps : params) { x0.push_back(ps.value); lo.push_back(ps.lo); hi.push_back(ps.hi); } auto scaledMax = [&](const sVector& v) { std::vector<ParamSpec> t = params; for (std::size_t j = 0; j < P; ++j) t[j].value = v[j]; ThermoPackage th = buildThermo(t); sVector r; computeResiduals(th, pExp, xExp, tExp, r, nullptr, iF1, iF2, wPtr); return fitobj::maxAbs(r); }; if (verbosity >= 2) std::cout << "  Stage 2:     minimising the largest scaled residual, max|r|, from the " << (objSpec.runsLeastSquares() ? "least-squares answer" : "declared start") << "\n"; obj2 = fitobj::minimise(scaledMax, x0, lo, hi, objSpec.maxEvaluations, verbosity); for (std::size_t j = 0; j < P; ++j) params[j].value = obj2.x[j]; thermo = buildThermo(params); chi2 = computeResiduals(thermo, pExp, xExp, tExp, r_curr, nullptr, iF1, iF2, wPtr); } search.close();
 
     // -- Parity CSV --------------------------------------------------------
     //  The NAMED pair's indices (iF1/iF2, resolved for the LM above), never
@@ -1265,7 +1265,7 @@ int FitParameters::run(const DictPtr& dict,
                                                 : std::numeric_limits<scalar>::quiet_NaN();   // K, always
         diag_["max_abs_resid"]    = maxAbsResid;
         diag_["penalised_points"] = static_cast<scalar>(nFailed);
-        diag_["weighted"]         = wPtr ? 1.0 : 0.0; lle::publish(diag_, lleFit, r_kelvin); lleIn = lle::statsOf(lleFit, r_kelvin);
+        diag_["weighted"]         = wPtr ? 1.0 : 0.0; lle::publish(diag_, lleFit, r_kelvin); lleIn = lle::statsOf(lleFit, r_kelvin); fitobj::publishBubble(diag_, "fit", lle::head(r_kelvin, lleFit)); { sVector lsV, finV; for (const auto& ps : paramsLS) lsV.push_back(ps.value); for (const auto& ps : params) finV.push_back(ps.value); fitobj::publish(diag_, objSpec, lsV, finV, obj2); }
         int atBound = 0;
         for (std::size_t i = 0; i < P; ++i)
         {
@@ -1479,7 +1479,7 @@ int FitParameters::run(const DictPtr& dict,
     scalar aadHeldOutK_ = 0.0;   // the same residual in kelvin
     scalar heldOutXmin = 0.0, heldOutXmax = 0.0;
     std::size_t nHeldOut = 0;
-    std::string heldOutSets; lle::Stats lleHeld;
+    std::string heldOutSets; lle::Stats lleHeld; std::vector<fitobj::DatasetError> heldBubble;
     if (engaged)
     {
         const EvidencePartition& part = *partPtr;
@@ -1548,7 +1548,7 @@ int FitParameters::run(const DictPtr& dict,
             //  comparison, between a fitted pair and the catalogue pair on the
             //  same held-out file.  Both are printed with their unit, always.
             aadHeldOutK_ /= static_cast<scalar>(rV.size());
-            nHeldOut = rV.size();
+            nHeldOut = rV.size(); fitobj::publishBubble(diag_, "heldout", rV); for (const auto& ds : lle::vleSets(part.validation(), lleMode)) { sVector xs, ts, ps; for (const auto& pt : EvidencePartition::loadAll(std::vector<EvidenceDataset>{ds}, xNames, yNames, "fitParameters(" + kind + ")", zNames)) { xs.push_back(pt.x); ts.push_back(pt.y); ps.push_back(pt.hasZ() ? pt.z : pExp[0]); } if (xs.empty()) continue; sVector rd; computeResiduals(thV, ps, xs, ts, rd, nullptr, iF1, iF2); fitobj::DatasetError de; de.name = ds.path; de.n = rd.size(); for (const scalar v : rd) { de.mean += std::fabs(v) / static_cast<scalar>(rd.size()); de.max = std::max(de.max, std::fabs(v)); } heldBubble.push_back(de); }
             heldOutXmin = *std::min_element(xVal.begin(), xVal.end());
             heldOutXmax = *std::max_element(xVal.begin(), xVal.end());
         } if (lleVal.active()) { ThermoPackage thL = buildThermo(params); lleHeld = lle::heldOut(thL, lleVal, iF1, iF2, verbosity, partPtr->lleBand()); lle::publishHeldOut(diag_, lleHeld); }
@@ -1606,7 +1606,7 @@ int FitParameters::run(const DictPtr& dict,
                           << "   (" << std::setprecision(4) << aadHeldOutK_
                           << " " << yUnit << ")\n";
 
-            std::cout << "\n  ACCEPTANCE CRITERION\n";
+            fitobj::printReport(std::cout, objSpec, yUnit, diag_, lleFit.active() ? &lleIn : nullptr, lleVal.active() ? &lleHeld : nullptr, nHeldOut > 0, heldBubble); std::cout << "\n  ACCEPTANCE CRITERION\n";
             if (part.hasAcceptance())
                 std::cout << "    maxAAD      " << part.acceptanceMaxAADPct()
                           << " %\n"

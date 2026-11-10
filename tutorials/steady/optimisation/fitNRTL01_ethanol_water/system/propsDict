@@ -35,6 +35,8 @@ operations
             { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ji;  initial -586.0809; min -5000;  max 5000; }
         );
 
+        //  C280: pinned to the least-squares objective (this case's header and golden are a least-squares result).
+        objective { method leastSquares; }
         residual
         {
             kind      T_bubble;
