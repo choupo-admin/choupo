@@ -172,7 +172,7 @@ describe("each page SAYS the engine fact it rests on", () => {
 
   it("tear: DECLARED ORDER, not a topological sort, is stated up front", () => {
     expect(TEAR_STEPS[0]!.body + (TEAR_STEPS[0]!.note ?? ""))
-      .toMatch(/DECLARED ORDER/);
+      .toMatch(/declared order/i); // C277: lesson no longer shouts (DEV.md 4c C277)
     expect(tear).toMatch(/does not topologically sort|never topologically/i);
   });
 
