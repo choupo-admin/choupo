@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/sulfolane.dat"
+        {
+            type          imported;
+            sha256        "3608f9788ff3687e08d902ca6977898c4ab6a466053619faae6ff73913362066";
+            computationalSha256 "7385ac756f3617a1d484545550e657cb980d6b9c42593d66620f003b03c4144b";
+            origin        "data/standards/components/sulfolane.dat";
+            originSha256  "ac7f8c608764cf5b4538d3877c47f5ffb0e65846642a661fe10cdebb90748d96";
+            release       Choupo-2608;
+        }
+        "components/toluene.dat"
+        {
+            type          imported;
+            sha256        "025c441842aa1728935905ed8dfa50db5a6405ee082618c11673f665596d4911";
+            computationalSha256 "f66debfbcd493c4c7c4636809e784a1e07a6c482c3baed13ba34dce12ae63f79";
+            origin        "data/standards/components/toluene.dat";
+            originSha256  "fe5cb21ba09cf44b41de252f6a5a5dd21b6803fcd40666f6fed8d9de8e68563a";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/sulfolane-toluene.dat"
+        {
+            type          imported;
+            sha256        "f581da4735db3b0d5c15ebe6397c6a315909378eae2b377c8ead39c9985fe7d4";
+            computationalSha256 "3531ce9fe7a1881174b2c07e304d90e373e6f6cdbb9855e3d92ecec40707b669";
+            origin        "data/standards/parameters/NRTL/sulfolane-toluene.dat";
+            originSha256  "0a4a0d7c70594ec6f63f041d9c551fa566805c258a3a2f6fd90becd997f72a00";
+            release       Choupo-2608;
+        }
+    }
+}

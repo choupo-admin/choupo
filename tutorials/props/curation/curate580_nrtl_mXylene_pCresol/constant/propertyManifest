@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/mXylene.dat"
+        {
+            type          imported;
+            sha256        "31e05cfce81a4ad48a63993498067ba9335977201b7c08f73428ecb561233c33";
+            computationalSha256 "14aef5c18c81d0dc2c18d79c3d5122956e769c6e1250a11d7636f9dec649d2eb";
+            origin        "data/standards/components/mXylene.dat";
+            originSha256  "b9df745d6fde70e82309ea2398df70cbaebffe5e09a8e7026d83c9cf5fe18921";
+            release       Choupo-2608;
+        }
+        "components/pCresol.dat"
+        {
+            type          imported;
+            sha256        "767ac9abb6550c621ff3951ffa542c4dee205376a7eaf76207f1c6eeaa50e0c7";
+            computationalSha256 "3cc13a6b0c9de6a83992511396891d94763740804d612252c183d6a665d11ecc";
+            origin        "data/standards/components/pCresol.dat";
+            originSha256  "ef31b5279b0a4ce433776d9cc0b6e71b734fab8316ff8c4c5193402ee9a1eaf5";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/mXylene-pCresol.dat"
+        {
+            type          imported;
+            sha256        "8de80ffc247da262efb905e514888a20829539e9cecc01ec8b98eea4d84b2c09";
+            computationalSha256 "17df1b9df9e8e35c5ad6f41127badb8cab8698dcf2883c18c1ac7d0db83d12e3";
+            origin        "data/standards/parameters/NRTL/mXylene-pCresol.dat";
+            originSha256  "be7d36bd0f908bee3e47c11cdf5f0dfe4648c924f807a03c5a94513639c05987";
+            release       Choupo-2608;
+        }
+    }
+}

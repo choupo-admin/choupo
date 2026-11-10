@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/dimethylSulfoxide.dat"
+        {
+            type          imported;
+            sha256        "d0645447457ce82ab3cc1c5c9b24ade9e1a72fd7e63d1f97cb76d3de6edc3843";
+            computationalSha256 "d408f92d38a1dba4d9c8342a49863025a4a67d27900239d913d6f6e8da72f82e";
+            origin        "data/standards/components/dimethylSulfoxide.dat";
+            originSha256  "f96e96de368f808f5f982ca5a1267fd09ae9823c507446568adb26e438fc8583";
+            release       Choupo-2608;
+        }
+        "components/methylIsobutylKetone.dat"
+        {
+            type          imported;
+            sha256        "883dca67acc7aabffa681e76e5b38194a93fc68f78d4a3433df849a68718372f";
+            computationalSha256 "3b343b8cff791a127701ce6eadd23f8a9a7b015e0678246d7007a3416d2d7c49";
+            origin        "data/standards/components/methylIsobutylKetone.dat";
+            originSha256  "8e66af3abd6102965d13c7772247cf28d37eeb7439927a2af07c69a09dae2718";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/dimethylSulfoxide-methylIsobutylKetone.dat"
+        {
+            type          imported;
+            sha256        "8b9b75bc9c6cda4b876436b335f2a4667e0393ac2f588d70409b37167bf0a1af";
+            computationalSha256 "b424c7278d9b827ea765c42a32287d0e0bea78e5fc0619765790d4484872ada3";
+            origin        "data/standards/parameters/NRTL/dimethylSulfoxide-methylIsobutylKetone.dat";
+            originSha256  "b3474059892c8bf0c62669894d0fec33a588e914a973d68b822328a7aeeacbd0";
+            release       Choupo-2608;
+        }
+    }
+}

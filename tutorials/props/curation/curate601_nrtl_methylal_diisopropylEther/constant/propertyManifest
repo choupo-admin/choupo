@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/diisopropylEther.dat"
+        {
+            type          imported;
+            sha256        "6b45fb87942cba6849ea2f42f7d6cb49d4528e835d1f21c29048fceeccea86b4";
+            computationalSha256 "53efee790e5c19c8bd17869b2bec4c3ecdca58f454a09607bb2e61f9a19009e9";
+            origin        "data/standards/components/diisopropylEther.dat";
+            originSha256  "357def78c8c89b1216f62ddb46f352dc2af6f86a1b4c487cc88100d809302b51";
+            release       Choupo-2608;
+        }
+        "components/methylal.dat"
+        {
+            type          imported;
+            sha256        "fbdb96d75a57ee188d05ac1ac195896a65ee14695b565d4994b7acd8590b493e";
+            computationalSha256 "df2b77bd422abfabe26846550054b99c444393f5a8498b4003ffd4913a78b73f";
+            origin        "data/standards/components/methylal.dat";
+            originSha256  "10ac8d72145f06bc16bb46213fc74296d6f1c69a99bfeab6bf6e44a020fc2b51";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/diisopropylEther-methylal.dat"
+        {
+            type          imported;
+            sha256        "a69e6f95ec4a0b2213c18405410e712fa33b0380b68207a27d1bda1415c6b53a";
+            computationalSha256 "3d005555f8789bd3b961a0d2514d8939b99602318affafe6d5880056c04d0556";
+            origin        "data/standards/parameters/NRTL/diisopropylEther-methylal.dat";
+            originSha256  "17a5ecd972dedb99cdbf40572fb361bb00d6c7bb92f69c2e3f0023bb6d2d90b1";
+            release       Choupo-2608;
+        }
+    }
+}

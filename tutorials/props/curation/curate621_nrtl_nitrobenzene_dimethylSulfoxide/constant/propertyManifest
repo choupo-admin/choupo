@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/dimethylSulfoxide.dat"
+        {
+            type          imported;
+            sha256        "d0645447457ce82ab3cc1c5c9b24ade9e1a72fd7e63d1f97cb76d3de6edc3843";
+            computationalSha256 "d408f92d38a1dba4d9c8342a49863025a4a67d27900239d913d6f6e8da72f82e";
+            origin        "data/standards/components/dimethylSulfoxide.dat";
+            originSha256  "f96e96de368f808f5f982ca5a1267fd09ae9823c507446568adb26e438fc8583";
+            release       Choupo-2608;
+        }
+        "components/nitrobenzene.dat"
+        {
+            type          imported;
+            sha256        "7ca4a59b735550425138f28d1b5bca95a6ad5b19aa7c053c41e01f871c798193";
+            computationalSha256 "0b4a4231f87f80f41544b0e12087ccb13016c93e1b53475a9fe70cce95d732d1";
+            origin        "data/standards/components/nitrobenzene.dat";
+            originSha256  "4dfd083b1f44673d3672cb463555bdfa03068f10bec14bf97bce1e682ec0db07";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/dimethylSulfoxide-nitrobenzene.dat"
+        {
+            type          imported;
+            sha256        "fecc99ece01fd04eb8821f1e8f00c8a2b821d5eedbcddf9bd778c81d9fa67640";
+            computationalSha256 "c2081677c9a49b5237401cd88c0b10bbfd825ae1ec0c610c07e09e9793722cd3";
+            origin        "data/standards/parameters/NRTL/dimethylSulfoxide-nitrobenzene.dat";
+            originSha256  "9aedcb77594a20722cfefceae8e8efef3a73484dce70a7378115b35708a9785b";
+            release       Choupo-2608;
+        }
+    }
+}

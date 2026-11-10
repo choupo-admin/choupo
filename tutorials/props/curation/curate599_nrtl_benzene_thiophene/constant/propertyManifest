@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/benzene.dat"
+        {
+            type          imported;
+            sha256        "af31cf9da05b7d34c657c430cef68abbf0f08db2402827a4867f7a64073225c9";
+            computationalSha256 "b8a586d23e8f38eb0b5c0f9534f7057eb2d4059de464edbdc18995094fdca93e";
+            origin        "data/standards/components/benzene.dat";
+            originSha256  "77d7604645ff3a28b34d91023e497586af35fa74849c914378f858666a2b900e";
+            release       Choupo-2608;
+        }
+        "components/thiophene.dat"
+        {
+            type          imported;
+            sha256        "f48118ed552bc53714c29f3ddf0be1dfcc0512305119b482e007a96e5d5b49f8";
+            computationalSha256 "7eccc609b98be5a96a944dbbd9a3f46c35718bfce146e25bd274bf3a67810f70";
+            origin        "data/standards/components/thiophene.dat";
+            originSha256  "c31e9d94607f8d5427f6eff49a2b5bf45719021dc9a6893088b81cc9a371a43d";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/benzene-thiophene.dat"
+        {
+            type          imported;
+            sha256        "3ce02109c1210a92395f92ddb9da06bbc7354619e27d70bc13121164c140f846";
+            computationalSha256 "38eb600065c1ace6785bd3b833110f9027527f45c0fe2b1095e3c4b6e18a9890";
+            origin        "data/standards/parameters/NRTL/benzene-thiophene.dat";
+            originSha256  "2937d682c8abfa064ed0b605ddbc9ad7a1e1be3e4e1e302e5239e59d89cfe141";
+            release       Choupo-2608;
+        }
+    }
+}

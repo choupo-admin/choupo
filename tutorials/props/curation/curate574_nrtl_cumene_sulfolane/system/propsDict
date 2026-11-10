@@ -58,11 +58,25 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      3 point(s) of 12: doi 10.1016/j.jct.2011.06.015 row 1: x 0.0803, P
+      101.330 kPa, T 472.71 K, dT +7.13 K; doi 10.1016/j.jct.2011.06.015
+      row 2: x 0.0973, P 101.330 kPa, T 466.33 K, dT +6.38 K; doi
+      10.1016/j.jct.2011.06.015 row 3: x 0.1365, P 101.330 kPa, T 457.68
+      K, dT +3.37 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 676.7 K, b_ji = 177.9 K over 9 kept points of 1
+  laboratories (3 discarded): max |dT| 1.771 K, mean 0.679 K, graded
+  warning (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (676.7, 177.9). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/cumene-sulfolane.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade warning -- max
+  |dT| 1.771 K over the 9 kept points (limits 1 / 2 / 4 K), one liquid
+  across the validity span -- it rests on ONE laboratory's measurements
+  (doi 10.1016/j.jct.2011.06.015); nothing here tells its systematic
+  error from the model's (DEV.md 4c C290)
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -88,6 +102,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/cumene-sulfolane-bubble-j.jct.2011.06.015.dat";
                 role     fit;
+                discard  ( 1 2 3 );   // C283 outliers, by name in the header
             }
         );
 
@@ -129,6 +144,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/cumene-sulfolane-bubble-j.jct.2011.06.015.dat";
                 role     fit;
+                discard  ( 1 2 3 );   // C283 outliers, by name in the header
             }
         );
 

@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/R32.dat"
+        {
+            type          imported;
+            sha256        "5491156fac09b4fbce81854da7bb003a62d0bb2e1b6b29cfff01319723438196";
+            computationalSha256 "753f60fb0dec87e6e9d9df12fbfa5c903e0e7e2d6c24dda16ec6c06fbece9fa4";
+            origin        "data/standards/components/R32.dat";
+            originSha256  "300275313fff9aeb9e195d228555810ab783edd1695f4d7521880f78088a45e3";
+            release       Choupo-2608;
+        }
+        "components/benzene.dat"
+        {
+            type          imported;
+            sha256        "af31cf9da05b7d34c657c430cef68abbf0f08db2402827a4867f7a64073225c9";
+            computationalSha256 "b8a586d23e8f38eb0b5c0f9534f7057eb2d4059de464edbdc18995094fdca93e";
+            origin        "data/standards/components/benzene.dat";
+            originSha256  "77d7604645ff3a28b34d91023e497586af35fa74849c914378f858666a2b900e";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/R32-benzene.dat"
+        {
+            type          imported;
+            sha256        "57400d1fa7226a4cd3a29b4545dbabf74331e0948dd8f27644a3c93019d720ca";
+            computationalSha256 "5912cd87a63504e9b68a2cecd284a4add630c8b7cbd31e664cdede39da0e78c0";
+            origin        "data/standards/parameters/NRTL/R32-benzene.dat";
+            originSha256  "0a9d11260041dff64c3a4638785f3058ac90c8978294b7c00863d8475c88cdd6";
+            release       Choupo-2608;
+        }
+    }
+}

@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/chloroform.dat"
+        {
+            type          imported;
+            sha256        "6be151f882172f8d5ae6500892038a926c189af1b420ff62488a78b9170d482e";
+            computationalSha256 "4b74a318b869383610da3b090af40078ce9b35bf42168fa8fc990acc7b277eee";
+            origin        "data/standards/components/chloroform.dat";
+            originSha256  "ce6cc1f0babb4e035ae33118d8a4876d3a0bb9954605ed196ff04e41545c0458";
+            release       Choupo-2608;
+        }
+        "components/ethanol.dat"
+        {
+            type          imported;
+            sha256        "380a2ae743c8e8e75eb80075f85fb2ac90dc479a6ff9e062e674aeaa366334b3";
+            computationalSha256 "f2710ae8622b1abc118f9a68c47702e2e2324453ed27c71e0760eb23d799c481";
+            origin        "data/standards/components/ethanol.dat";
+            originSha256  "7c6b2bedb149e1165145d6bedce8fb5588519bb6b1d575caca76236a0d809074";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/chloroform-ethanol.dat"
+        {
+            type          imported;
+            sha256        "47d3827d8f6c15eaf6d342766805e495790195ba73db1809dd59d12d71016612";
+            computationalSha256 "b16b6df7f8bd4d7709484126d1d4a9092fced480c422df682009c7434c222002";
+            origin        "data/standards/parameters/NRTL/chloroform-ethanol.dat";
+            originSha256  "185934865fc02b65052eaaff035e875400fac645caeb5349699b4c33b06801f5";
+            release       Choupo-2608;
+        }
+    }
+}

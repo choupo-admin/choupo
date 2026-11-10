@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/cumene.dat"
+        {
+            type          imported;
+            sha256        "5763ffde2778cdb5ff38fc349c211e0968f20e6b43170985e05036c248f75ab2";
+            computationalSha256 "9421ee66e28c8a041fdf92e06c2afef534cfeff30c781ee4b3ff218f5dd97e79";
+            origin        "data/standards/components/cumene.dat";
+            originSha256  "9880d3c429c6a7695e717ac0ff1ce82e3105b4962e59880afb15e4d311f9319e";
+            release       Choupo-2608;
+        }
+        "components/sulfolane.dat"
+        {
+            type          imported;
+            sha256        "3608f9788ff3687e08d902ca6977898c4ab6a466053619faae6ff73913362066";
+            computationalSha256 "7385ac756f3617a1d484545550e657cb980d6b9c42593d66620f003b03c4144b";
+            origin        "data/standards/components/sulfolane.dat";
+            originSha256  "ac7f8c608764cf5b4538d3877c47f5ffb0e65846642a661fe10cdebb90748d96";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/cumene-sulfolane.dat"
+        {
+            type          imported;
+            sha256        "e25437592f855bab46d19fb178efc5bca8a064bdf2e4ec39e816c118f6bfc756";
+            computationalSha256 "62578a1a4d84e9d782fd2bab42fe49919964b9ea8b7aefeccd5ffd92154198c5";
+            origin        "data/standards/parameters/NRTL/cumene-sulfolane.dat";
+            originSha256  "135f9353a68b3ddfb15500d8eac478f4c4581790dca31f9b49a186273460187d";
+            release       Choupo-2608;
+        }
+    }
+}

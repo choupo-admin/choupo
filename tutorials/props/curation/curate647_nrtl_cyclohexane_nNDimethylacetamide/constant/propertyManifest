@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/cyclohexane.dat"
+        {
+            type          imported;
+            sha256        "54ac6c67fe0fa7f8d15744192b515efd56b05bf78dc8bf99b6dfc092f349f26c";
+            computationalSha256 "6f57b6ee7356428daa748404b1343309e762255b70baf430d387550ae4683431";
+            origin        "data/standards/components/cyclohexane.dat";
+            originSha256  "c17d37ff35f43849e846d3f6a974ab7f2312085a349d1169494ad2374fd90d23";
+            release       Choupo-2608;
+        }
+        "components/nNDimethylacetamide.dat"
+        {
+            type          imported;
+            sha256        "c610724a79017122d5b8ee214aaa0439491c94e996204e3ce77fbff026a2675a";
+            computationalSha256 "c32ec745ee8d52d0388d6f4e5acf76045c4d55407159f3b402f5b6452419abfb";
+            origin        "data/standards/components/nNDimethylacetamide.dat";
+            originSha256  "7d63d9306b1db1a59b071610a145ef0761ad5ee2c6c84ab204e164d6a9004c68";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/cyclohexane-nNDimethylacetamide.dat"
+        {
+            type          imported;
+            sha256        "feeae36292db7dc7eaada4f0d81488b03bd5d9827692d2be70410ff7c75cbaf8";
+            computationalSha256 "3246f7740ebf69da4999a8d900bac07a60d36fefc63cdfc132224b6d1dab0d9f";
+            origin        "data/standards/parameters/NRTL/cyclohexane-nNDimethylacetamide.dat";
+            originSha256  "f80eb4735a8db9709441a768b45b1066e8c84ab46f3b0cc277a2c2dddb4d1a3e";
+            release       Choupo-2608;
+        }
+    }
+}
