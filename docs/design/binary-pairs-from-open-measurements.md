@@ -1158,7 +1158,8 @@ releaseInventory: NRTL 64 -> 536, runnable cases 622 -> 1110;
 tutorialsGuide-props.tex, propsGuide-operations.tex, interimReviewDossier)
 and generated_artefacts --check OK; tutorials guide (1962 pages, 3.9 -> 6.9
 MB) and props guide rebuilt with make -B and read back; gate_manifest
---check OK, claims re-observed with --only.  NOT run: --gui (no gui/
+--check OK, seven claims re-observed with
+--only (check_record_form marks no claim -- pre-existing, left).  NOT run: --gui (no gui/
 change), a full sweep (it would now run 1110 cases).
 
 **Readings.**  A single-laboratory fit is easier to pass than a
