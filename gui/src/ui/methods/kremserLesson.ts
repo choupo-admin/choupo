@@ -164,7 +164,7 @@ export const KREMSER_LIMITS: readonly { id: string; title: string; body: string 
       + "because each step scales by the same factor A. A curved equilibrium "
       + "line — a concentrated solute, a solute that reacts in the liquid — "
       + "breaks the series and the formula stops being exact.  Choupo's "
-      + "absorber does not rescue you there either: it reads henry's law and "
+      + "absorber does not rescue you there either: it reads Henry's law and "
       + "refuses an activity-model package by name, and it re-evaluates K at "
       + "the fixed inlet compositions, so its K bends with stage temperature "
       + "and never with composition.  What the column buys over the formula "
