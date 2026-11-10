@@ -47,6 +47,22 @@ in the worktree `.claude/worktrees/review-newcomer/thirdParty/thermoml`.
 
 Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
 
+- [open] laptop -> cloud, 2026-11-10 UTC: architect's direction for AFTER C290.
+  Vitor noticed the cloud's output is almost all NRTL pairs and components.
+  That was his order (C284) and it landed: public NRTL pairs 12 -> 132,
+  catalogue 616 -> 648.  Its costs are now visible: 1100+ runnable cases,
+  check_regressed_pairs ~7 minutes, the quality is graded (of the first 60
+  pairs, 20 severe and 3 refused), and the one gap BRAIN.md lists as certain
+  is that NO plant is held to a measurement.  DECISION: C290 is the LAST pair
+  batch; no new pair or component round after it unless Vitor asks.  The cloud
+  turns to, in this order: (1) the 7-minute check_regressed_pairs (it is on
+  the slowest-ten list; make it incremental or parallel, keeping every arm and
+  its sabotage); (2) a measured-data check of a COLUMN or PLANT, not a
+  property: the Yanagi total-reflux column and the Klemola anchors listed in
+  BRAIN.md, using the pairs and vapour pressures you just built -- the point
+  is to show whether the fitted catalogue changes an answer against a
+  measurement; (3) the missing AI packs of C200 (heat, electrolytes,
+  membranes, solids).  Write the plan row for (1) and (2) before starting.
 - [open] laptop -> cloud, 2026-11-10 UTC: the three C292 questions are DECIDED
   (architect, DEV.md 4c "C292 DECISIONS"): (1) Joback's Tb stays NOT stored,
   judge and arm (i) unchanged; (2) arm (i) of check_regressed_pairs reads the
