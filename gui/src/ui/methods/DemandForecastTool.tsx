@@ -272,7 +272,7 @@ export function DemandForecastTool(): JSX.Element {
                   <PanTable>
                     <Table.Thead><Table.Tr>
                       <Table.Th>slope b (series unit / yr)</Table.Th><Table.Th>intercept a</Table.Th>
-                      <Table.Th>R^2</Table.Th><Table.Th>s (series unit)</Table.Th>
+                      <Table.Th>R²</Table.Th><Table.Th>s (series unit)</Table.Th>
                       <Table.Th>t of slope</Table.Th><Table.Th>p of slope</Table.Th><Table.Th>df</Table.Th>
                     </Table.Tr></Table.Thead>
                     <Table.Tbody><Table.Tr data-fit="">
@@ -325,7 +325,7 @@ export function DemandForecastTool(): JSX.Element {
                 <Num label="Treatment share m" value={ddd.moleculeShare} step={0.05} onChange={(v) => setDdd({ ...ddd, moleculeShare: v })} />
                 <Num label="Adherence c" value={ddd.adherence} step={0.05} onChange={(v) => setDdd({ ...ddd, adherence: v })} />
                 <Num label="DDD per day u" value={ddd.dddPerDay} step={0.5} onChange={(v) => setDdd({ ...ddd, dddPerDay: v })} />
-                <Num label="Growth / yr" value={ddd.growth} step={0.005} min={-0.5} onChange={(v) => setDdd({ ...ddd, growth: v })} />
+                <Num label="Growth" unit="fraction per year" value={ddd.growth} step={0.005} min={-0.5} onChange={(v) => setDdd({ ...ddd, growth: v })} />
               </Group>
               <Text size="sm" mt={6} data-ddd-recon="">
                 Base-year count: <b>{f(show(dddReconciliation(inp) * (inp.values[inp.values.length - 1] ?? 0) / (kind === "DDD" ? dddPerPack : 1)), 3)} {aw}</b>packs
