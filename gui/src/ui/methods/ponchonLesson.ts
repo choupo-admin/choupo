@@ -79,14 +79,13 @@ export const PONCHON_STEPS: readonly LessonStep[] = [
     body: "Take any envelope around the top of the column — the condenser, "
       + "the trays above the cut, and the distillate leaving.  Write both "
       + "balances over it: material, and energy.  The condenser here is a "
-      + "total one, and the page had never said so: it condenses the top "
+      + "total one: it condenses the top "
       + "vapour entirely, so the distillate is a liquid at h_D and the "
       + "vapour leaving the top tray carries the same composition as it, "
       + "y₁ = x_D.  A partial condenser is a different diagram — its "
       + "distillate is a vapour, and the reflux is the liquid in "
       + "equilibrium with it, one tie line away.  Confusing the two moves "
-      + "the difference point, which is exactly the defect this page "
-      + "carried until 2026-09-01.",
+      + "the difference point.",
     derivation: [
       { step: "Total, component and energy balances over the top envelope.  "
           + "Q_C is the condenser duty, negative because heat leaves.",
@@ -100,7 +99,7 @@ V H &= L h + D\, h_D - Q_C
           + "enthalpy leaving the top per mole of distillate.",
         eq: String.raw`\Delta_D \equiv h_D - \frac{Q_C}{D}`},
       { step: "Eliminate V and L between the three balances.  What survives "
-          + "is a statement that three points are colinear: the liquid "
+          + "is a statement that three points are collinear: the liquid "
           + "(x, h), the vapour (y, H), and a single point Δ at "
           + "(x_D, Δ_D) that does not move as you go from tray to tray.",
         eq: String.raw`(y, H),\ (x, h) \text{ and } (x_D, \Delta_D) \text{ lie on one straight line}`},
@@ -112,9 +111,9 @@ V H &= L h + D\, h_D - Q_C
       { step: "Repeat the argument on a bottom envelope and a second "
           + "difference point appears, carrying the reboiler duty.  The feed "
           + "ties the two: Δ_D, the feed point and Δ_B are themselves "
-          + "colinear, which is the overall balance drawn rather than "
+          + "collinear, which is the overall balance drawn rather than "
           + "written.",
-        eq: String.raw`\Delta_B \equiv h_B - \frac{Q_R}{B} \qquad \text{and} \qquad \Delta_D,\ (z_F, h_F),\ \Delta_B \text{ colinear}`},
+        eq: String.raw`\Delta_B \equiv h_B - \frac{Q_R}{B} \qquad \text{and} \qquad \Delta_D,\ (z_F, h_F),\ \Delta_B \text{ collinear}`},
     ],
     formula: String.raw`\text{rectifying ray:}\quad \Delta_D \,\text{---}\, (x_n, h_n) \,\text{---}\, (y_{n+1}, H_{n+1})`,
     where: [
@@ -131,7 +130,8 @@ V H &= L h + D\, h_D - Q_C
         + "its thermal condition a position on this diagram rather than a "
         + "separate parameter q", unit: "J/mol" },
       { sym: "z_F", means: "feed composition" },
-      { sym: "Q_C", means: "condenser duty, removed from the top", unit: "W" },
+      { sym: "Q_C", means: "condenser duty, removed from the top (negative in "
+        + "the balances above, because heat leaves)", unit: "W" },
       { sym: "Q_R", means: "reboiler duty, added at the bottom", unit: "W" },
       { sym: "\\Delta_D",
         means: "the difference point's enthalpy coordinate at the "
@@ -147,7 +147,7 @@ V H &= L h + D\, h_D - Q_C
   {
     n: 3,
     title: "The lever rule: flows read off the diagram with a ruler",
-    body: "Because the three points are colinear, the ratio of the flows is "
+    body: "Because the three points are collinear, the ratio of the flows is "
       + "the ratio of the segments — the ordinary lever rule of any "
       + "two-phase mixture, now doing the work a numerical balance does in "
       + "McCabe-Thiele.",

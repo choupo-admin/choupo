@@ -136,7 +136,7 @@ function ConstructionPane(): JSX.Element {
       <OriginMark of={["engine", "page", "assumption"]} note="the H-x-y curves are the engine's run in this browser (choupoProps); the difference points and the stage steps are this page's geometry on them, at the x_D and R you set" />
       <Group gap={20} mt={8} align="flex-end" wrap="wrap">
         <Box style={{ minWidth: 210 }}>
-          <Text size="xs" c={INK}>distillate composition x_D = {xD.toFixed(2)}</Text>
+          <Text size="xs" c={INK}>distillate composition <Tex mode="inline" src={"x_D"} /> = {xD.toFixed(2)}</Text>
           <Slider min={0.5} max={0.95} step={0.01} value={xD} onChange={setXD}
             label={null} />
         </Box>
@@ -180,9 +180,8 @@ function ConstructionPane(): JSX.Element {
             whatever <Tex mode="inline" src={"H_1"} /> is, even a
             wrong one.  This readback confirms the difference point was put
             where the reflux says, and nothing else — it cannot tell you the
-            enthalpies underneath it are right.  (An earlier version of this
-            page called it “the check to demand of any construction”.  It is
-            an identity, not a check, and the arithmetic above says which.)
+            enthalpies underneath it are right.  It is an identity, not a
+            check, and the arithmetic above shows why.
           </Text>
           <Text size="sm" mt={6}>
             The check that would bite is the one this page does not yet reach:
@@ -250,8 +249,8 @@ export function PonchonSavaritTool(): JSX.Element {
             point and one ray — the top tray's.  It does not step a full
             staircase down the column, and there is no second difference
             point for the stripping section yet.  Stated rather than left
-            for you to discover: what is here is enough to see where Δ_D
-            goes as the reflux moves, and not yet enough to count stages.
+            for you to discover: what is here is enough to see where{" "}
+            <Tex mode="inline" src={"\\Delta_D"} /> goes as the reflux moves, and not yet enough to count stages.
           </Text>
         </Alert>
 
