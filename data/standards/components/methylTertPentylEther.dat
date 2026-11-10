@@ -2,8 +2,9 @@
   Component: methylTertPentylEther  (CAS 994-05-8)
   PROPOSAL TIER -- UNVERIFIED. Imported from ChemSep v8.3
   pure-component data under Artistic License 2.0.
-  Critical constants are source data; Psat is an explicitly
-  estimated Ambrose-Walton corresponding-states closure.
+  Critical constants are source data.  Psat is an Antoine FITTED by
+  bin/choupo-curate vp to measured vapour pressures (DEV.md 4c C281;
+  provenance.vaporPressure): reviewStatus autoPromoted, NOT human-reviewed.
 \*---------------------------------------------------------------------------*/
 
 name        methylTertPentylEther;
@@ -24,7 +25,11 @@ standardThermochemistry
 
 vaporPressure
 {
-    model AmbroseWalton;  // [origin=estimated method=Ambrose-Walton]
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C), FITTED by bin/choupo-curate vp to
+    // measured vapour pressures -- see provenance.vaporPressure
+    coefficients  (3.697091662  1055.886097  -74.05918831);
+    Trange        (274.2  359.95);   // the fit's own span; outside it the engine announces the extrapolation
 }
 
 Vliq        0.000133433;      // m3/mol at 25 C  [ChemSep eqno 105]
@@ -137,10 +142,74 @@ provenance
     }
     vaporPressure
     {
-        origin        predictive;
-        method        "Ambrose-Walton corresponding states";
-        methodVersion "choupo-aw-1989";
-        uncertainty   "not quantified; validate against saturation data";
-        notes         "computed from ChemSep Tc/Pc/omega";
+        origin        fitted;
+        method        "vaporPressureFit (three-parameter Antoine; objective twoStage: least squares in log10 P, then the largest relative error in P minimised from it; every usable study fitted, outliers above 15 % discarded by name)";
+        methodVersion "choupoProps Choupo-dev";
+        fittedInCase  "tutorials/props/curation/curate29_vp_methylTertPentylEther";
+        reviewStatus  autoPromoted;
+        humanReviewed false;
+        promotedBy    "bin/choupo-curate vp --promote";
+        promotedDate  "2026-11-10";
+        reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+        uncertainty   "the fit's maximum relative error over every kept measurement, below";
+        replaces      "model AmbroseWalton (a corresponding-states estimate from Tc, Pc, omega); `bin/choupo-curate revert <component>` restores it";
+        evidence
+        (
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/methylTertPentylEther-vapourPressure-je101250d.dat";
+                doi       "10.1021/je101250d";
+                sha256    "076e4ca5ddc1bd3cd80df3bf31cb999a82ac6ddae568221334b1b03411305a85";
+                articleSha256 "6669b12035e317cc29bb9ffe16bf70870f3d4766ed9b0dc05b0b6709dcfbc736";
+                pointsKept    21;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/methylTertPentylEther-vapourPressure-je0255980.dat";
+                doi       "10.1021/je0255980";
+                sha256    "380efd7b934334f817710e2f9511634f5dee52b1034e1f3cf27b6c1636374ac7";
+                articleSha256 "cd80b80e5c63806e1b87ed419e16a7cd8f082489ff69e7f530a00711ac27c1db";
+                pointsKept    11;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/methylTertPentylEther-vapourPressure-je049867t.dat";
+                doi       "10.1021/je049867t";
+                sha256    "251496fa21f557fb1517e432bc834a7be3aa46666c4431ddd993cad7d6d511e6";
+                articleSha256 "f2d0b00f3253e92e83c431ab1312c345acac156cdb8de31cc2dcad573cf25bc2";
+                pointsKept    11;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/methylTertPentylEther-vapourPressure-je901026b.dat";
+                doi       "10.1021/je901026b";
+                sha256    "df102c56711a862fef3b69810d4a85ee9f5134c4a06d90c3e8bd84f7c4d3e984";
+                articleSha256 "d12c1801ff61ff6206aef6443aaa300487f62b237c312c474378902e58613bc4";
+                pointsKept    5;
+                pointsDropped 0;
+                provenance measured;
+            }
+        );
+        acceptance
+        {
+            rule        "the default of DEV.md 4c C283: max relative error in P over the kept points <= 5 %; Tnb within 1 K of Tb where Tb lies outside their range";
+            verdict     accepted;
+            studies     4;
+            pointsKept  48;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     1.875467;   // the fitted Antoine, every kept point
+            max_pct     3.951711;
+            awAad_pct   3.098268;   // the AmbroseWalton curve it replaces, the same points
+            awMax_pct   14.039679;
+            Tnb_fit     360.1006;   // K, the fitted curve at 101.325 kPa
+        }
     }
 }

@@ -83,7 +83,32 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 5.379683 - 2089.0887/(T +
+  -55.2179), in-sample R2 0.999903 over 93 kept points, 273.65-441.9 K
+  (10.1016/j.fluid.2015.06.045 38/38 kept; 10.1021/je800530u 26/26 kept;
+  10.1021/je800290k 16/16 kept; 10.1021/je049761y 0/13 kept;
+  10.1021/je101259r 7/7 kept; 10.1021/je400885z 6/6 kept). Relative error
+  in P over the kept points: mean 2.8553 %, max 4.5292 %; AmbroseWalton
+  on the same points: mean 6.3644 %, max 15.8433 %. Outliers discarded:
+  10.1021/je049761y T=279 K P=8.48 Pa err=23.33 %; 10.1021/je049761y
+  T=281.1 K P=10.55 Pa err=20.67 %; 10.1021/je049761y T=294 K P=32.21 Pa
+  err=23.25 %; 10.1021/je049761y T=297.2 K P=40.9 Pa err=26.47 %;
+  10.1021/je049761y T=300.2 K P=53.03 Pa err=24.29 %; 10.1021/je049761y
+  T=303.2 K P=63.3 Pa err=31.95 %; 10.1021/je049761y T=306.3 K P=83.66 Pa
+  err=26.82 %; 10.1021/je049761y T=309.4 K P=105.6 Pa err=26.93 %;
+  10.1021/je049761y T=312.4 K P=133.7 Pa err=25.07 %; 10.1021/je049761y
+  T=315.4 K P=168.9 Pa err=22.93 %; 10.1021/je049761y T=318.4 K P=202.7
+  Pa err=26.61 %; 10.1021/je049761y T=321.4 K P=255.9 Pa err=23.4 %;
+  10.1021/je049761y T=324.5 K P=313.4 Pa err=24.27 %. Its own normal
+  boiling point (101.325 kPa): 443.96 K. PROMOTED on 2026-11-10 into
+  data/standards/components/monoethanolamine.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: under the DEFAULT
+  acceptance of DEV.md 4c C283 (no system/curationDict), 6 studies, 93
+  points kept, 13 discarded as outliers; max relative error 4.529 % (mean
+  2.855 %) against 5 %; Tb outside the kept points' range, normal boiling
+  point 443.96 K, -0.19 K from the record's Tb 444.15 K (within 1 K);
+  AmbroseWalton on the same points mean 6.364 % / max 15.84 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

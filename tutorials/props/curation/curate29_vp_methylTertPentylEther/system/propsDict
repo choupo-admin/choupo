@@ -79,7 +79,22 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 3.697092 - 1055.8861/(T +
+  -74.0592), in-sample R2 0.999639 over 48 kept points, 274.2-359.95 K
+  (10.1021/je101250d 21/21 kept; 10.1021/je0255980 11/11 kept;
+  10.1021/je049867t 11/11 kept; 10.1021/je901026b 5/5 kept). Relative
+  error in P over the kept points: mean 1.8755 %, max 3.9517 %;
+  AmbroseWalton on the same points: mean 3.0983 %, max 14.0397 %.
+  Outliers discarded: none. Its own normal boiling point (101.325 kPa):
+  360.10 K. PROMOTED on 2026-11-10 into
+  data/standards/components/methylTertPentylEther.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: under the DEFAULT
+  acceptance of DEV.md 4c C283 (no system/curationDict), 4 studies, 48
+  points kept, 0 discarded as outliers; max relative error 3.952 % (mean
+  1.875 %) against 5 %; Tb inside the kept points' range, normal boiling
+  point 360.10 K, +0.59 K from the record's Tb 359.51 K (reported, not a
+  condition); AmbroseWalton on the same points mean 3.098 % / max 14.04 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

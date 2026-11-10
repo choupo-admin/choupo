@@ -82,7 +82,22 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 4.226260 - 1490.0735/(T +
+  -60.6247), in-sample R2 0.999931 over 57 kept points, 263.15-508.15 K
+  (10.1016/j.fluid.2006.06.017 26/26 kept; 10.1016/j.fluid.2015.05.002
+  14/14 kept; 10.1016/j.fluid.2007.09.002 10/10 kept; 10.1021/je7007523
+  7/7 kept). Relative error in P over the kept points: mean 1.4580 %, max
+  3.9934 %; AmbroseWalton on the same points: mean 4.5289 %, max 8.2943
+  %. Outliers discarded: none. Its own normal boiling point (101.325
+  kPa): 413.68 K. PROMOTED on 2026-11-10 into
+  data/standards/components/diNButylEther.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: under the DEFAULT
+  acceptance of DEV.md 4c C283 (no system/curationDict), 4 studies, 57
+  points kept, 0 discarded as outliers; max relative error 3.993 % (mean
+  1.458 %) against 5 %; Tb inside the kept points' range, normal boiling
+  point 413.68 K, -1.67 K from the record's Tb 415.35 K (reported, not a
+  condition); AmbroseWalton on the same points mean 4.529 % / max 8.294 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

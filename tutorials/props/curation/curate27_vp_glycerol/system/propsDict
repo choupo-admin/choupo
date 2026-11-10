@@ -78,7 +78,19 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 5.808696 - 2818.0588/(T +
+  -72.3003), in-sample R2 0.999561 over 134 kept points, 303.59-543.15 K
+  (10.1016/j.fluid.2015.03.038 113/113 kept; 10.1021/je200766t 11/11
+  kept; 10.1016/j.jct.2012.09.032 5/5 kept; 10.1021/je800070y 5/5 kept).
+  Relative error in P over the kept points: mean 6.2927 %, max 8.6903 %;
+  AmbroseWalton on the same points: mean 99.8560 %, max 100.0000 %.
+  Outliers discarded: none. Its own normal boiling point (101.325 kPa):
+  557.92 K. NOT PROMOTED by the DEFAULT acceptance of DEV.md 4c C283 (no
+  system/curationDict): 4 studies, 134 points kept, 0 discarded as
+  outliers; max relative error 8.69 % (mean 6.293 %) against 5 %;
+  AmbroseWalton on the same points mean 99.86 % / max 100 %; the record
+  keeps AmbroseWalton
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 
