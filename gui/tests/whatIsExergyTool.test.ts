@@ -168,7 +168,7 @@ describe("the spine's order and claims", () => {
     //  energy units, not pseudo-monetary ones
     expect(SRC).not.toContain("money-units");
     //  the slider's claim holds s_gen fixed, explicitly
-    expect(prose(SRC)).toContain("FIXED entropy generation");
+    expect(prose(SRC)).toContain("fixed entropy generation");
   });
 
   it("ends on the interrogation, five questions", () => {
@@ -185,7 +185,7 @@ describe("the honest absences", () => {
     //  The op refuses `chemical true;` naming the standard-environment
     //  model it would need; the page reports that refusal and teaches no
     //  chemical-exergy formula.
-    expect(prose(SRC)).toMatch(/CHEMICAL exergy[^.]*refuses/);
+    expect(prose(SRC)).toMatch(/chemical exergy[^.]*refused/);
     expect(prose(SRC)).toContain("Szargut");
     expect(SRC).not.toContain("b_ch");
   });
@@ -266,7 +266,7 @@ describe("the idea before the program (owner's review, 2026-09-28)", () => {
   });
 
   it("states the common basis and the reversible/real distinction", () => {
-    expect(prose(BODY)).toContain("on ONE basis");
+    expect(prose(BODY)).toContain("on one basis");
     expect(prose(BODY)).toContain("Reversible and real: what is destroyed");
   });
 

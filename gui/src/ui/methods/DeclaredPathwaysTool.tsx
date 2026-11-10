@@ -143,7 +143,7 @@ export const T_KNOB: PanelKnob = {
   min: 525, max: 625, step: 25, unit: "K",
   why: "The physical temperature, held by every reactor.  The Gibbs column "
     + "stays methane across the range; watch what the declared column does.  "
-    + "The slider stops at 525 K, clear of where water condenses in the "
+    + "The slider starts at 525 K, clear of where water condenses in the "
     + "Gibbs column (the limits below say so).",
 };
 
@@ -152,7 +152,7 @@ export const DT_KNOB: PanelKnob = {
   min: 0, max: 50, step: 5, unit: "K",
   why: "You declare only how far short of equilibrium the bed sits.  The "
     + "engine gives each declared reaction its own sign from the way it "
-    + "RUNS: methanol synthesis runs forward and is exothermic, so its K is "
+    + "runs: methanol synthesis runs forward and is exothermic, so its K is "
     + "taken above T; the shift runs backward here, so its K is taken below.",
 };
 
@@ -239,7 +239,7 @@ export function DeclaredPathwaysTool(): JSX.Element {
           </Title>
           <Text size="sm" c="dimmed" mt={4}>
             Assume equilibrium — but declare which reaction pathways are the
-            ONLY ones possible. Experience says which reactions a catalyst
+            only ones possible. Experience says which reactions a catalyst
             leaves too slow to matter; thermodynamics says where the rest stop.
             One syngas, three equilibrium reactors, and the difference between
             them is one word left off a list.
@@ -304,7 +304,7 @@ export function DeclaredPathwaysTool(): JSX.Element {
               <Box mt={6}>{approachRows}</Box>
               <Text size="xs" c="dimmed" mt={6}>
                 The Gibbs and the all-three columns should agree to every digit
-                shown: a complete set of independent reactions IS the Gibbs
+                shown: a complete set of independent reactions is the Gibbs
                 reactor (step 2). The approach knob moves only the third
                 column, and the reactor stays at T — only each K moves.
               </Text>
@@ -318,7 +318,7 @@ export function DeclaredPathwaysTool(): JSX.Element {
         <LessonLimits limits={PATHWAYS_LIMITS} />
 
         <Text size="sm">
-          The level below this one — where the SPECIES list is the only
+          The level below this one — where the species list is the only
           kinetic statement and one approach applies to the whole
           transformation — is the page{" "}
           <Anchor component="button" type="button"

@@ -178,7 +178,7 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the state is priced here}
       + "(GibbsReactor.cpp:407–410).  The outlet is therefore a legitimate "
       + "non-equilibrium state: its composition belongs to one temperature and "
       + "its enthalpy to another, its affinity at T is not zero, and that "
-      + "nonzero affinity IS the distance from equilibrium rather than a bug.",
+      + "nonzero affinity is the distance from equilibrium rather than a bug.",
   },
   {
     n: 4,
@@ -422,7 +422,7 @@ n_N &= n_\mathrm{eq}\big(T_N + \Delta T,\; P;\; b\big)
     title: "What approach practice uses, and where each number comes from",
     body: "There is no universal value; there are published design statements, "
       + "process by process, and each is a preference written by a licensor, "
-      + "not a law.  AMMONIA SYNTHESIS: \"The approach to equilibrium in any "
+      + "not a law.  Ammonia synthesis: \"The approach to equilibrium in any "
       + "catalyst bed is 0 C. to 30 C. and preferably 1 C. to 10 C.\", with "
       + "5 °C called \"typical and optimum in many commercial process "
       + "designs\" (US 5,352,428, M. L. Bhakta and B. J. Grotz, C F Braun & "

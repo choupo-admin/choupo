@@ -152,7 +152,7 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
       + "that floor is the adiabatic-saturation temperature of the next "
       + "step, and the two coincide only when the Lewis number is close to "
       + "one, as it happens to be for air and water.  Enthalpy "
-      + "is why those lines are straight.  Counted per kilogram of the same "
+      + "is why the adiabatic-saturation lines are straight.  Counted per kilogram of the same "
       + "dry carrier, moist-gas enthalpy is sensible plus latent, and along "
       + "an adiabatic-saturation line the sensible heat given up is very "
       + "nearly the latent heat taken in — so the constant-enthalpy lines and "
@@ -247,7 +247,7 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
       + "temperature while the difference in Y drops out as liquid.  That is "
       + "dehumidification, and the chart gives the condensate directly: the "
       + "vertical drop, in kg per kg of dry gas.  Adiabatic humidification "
-      + "runs UP an adiabatic-saturation line towards saturation (for air "
+      + "runs up an adiabatic-saturation line towards saturation (for air "
       + "and water, practically a wet-bulb line) — liquid evaporates, Y "
       + "rises, and the gas pays the latent heat out of its own temperature.  "
       + "Mixing two streams puts the mixed state on the straight segment "
@@ -355,11 +355,8 @@ export const PSYCHRO_LIMITS: readonly { id: string; title: string; body: string 
       + "(Eucken) to form the Lewis number; a component whose record carries "
       + "no diffusion volume simply yields no wet-bulb lines. Their absence "
       + "means the data was missing, never that Le = 1 and the two families "
-      + "coincide — and since 2026-08-28 the run says which of those it is, "
-      + "naming the reason no line was drawn, because for most of this "
-      + "chart's life the transport block was written in a dialect the "
-      + "builder dropped and the family was silently missing from every "
-      + "chart. Le is also evaluated once per line, at its saturation "
+      + "coincide — and the run says which of those it is, "
+      + "naming the reason no line was drawn. Le is also evaluated once per line, at its saturation "
       + "anchor and in a carrier-dominated gas, rather than along it.",
   },
   {
@@ -387,9 +384,9 @@ export const PSYCHRO_LIMITS: readonly { id: string; title: string; body: string 
       + "the whole chart: nitrogen at 28.013 against air at 28.96 puts every "
       + "humidity ratio about 3 % above a printed air chart.  Nitrogen is "
       + "only the default: the carrier list offers every component whose "
-      + "record declares `noncondensable true;`, and the catalogue's air "
-      + "record has declared it since 2026-08-29 (with the ideal-gas Cp the "
-      + "adiabatic and wet-bulb families need grafted on 2026-08-31).  Pick "
+      + "record declares “noncondensable true;”, and the catalogue's air "
+      + "record declares it (together with the ideal-gas Cp the "
+      + "adiabatic and wet-bulb families need).  Pick "
       + "air and the chart moves onto the printed one — Y_sat at 60 °C goes "
       + "from 0.1586 to 0.1534, against the ~0.152 a handbook reads.",
   },

@@ -153,7 +153,7 @@ describe("the spine's order and claims", () => {
     //  The old sharp line ("one column is convention; this one is
     //  experiment") taught something false about the enthalpy column.
     expect(prose(SRC)).toContain("third law");
-    expect(prose(SRC)).toContain("DETERMINED calorimetrically");
+    expect(prose(SRC)).toContain("determined calorimetrically");
     expect(prose(SRC)).toContain("both columns rest on experiment");
     expect(prose(SRC)).toContain("an agreed convention");
     expect(prose(SRC)).not.toContain("an agreement, not a measurement");
@@ -234,7 +234,7 @@ describe("the honest absences and the marked divergence", () => {
     expect(SRC).not.toContain("dead state");
     expect(SRC).not.toContain("Gouy");
     //  and the mention must stay a STATUS sentence, not a lesson
-    expect(prose(SRC)).toMatch(/CHEMICAL exergy/);
+    expect(prose(SRC)).toMatch(/chemical\s+exergy/);
     expect(SRC).not.toContain("k_B");
     expect(SRC).not.toContain("ln W");
     expect(SRC).not.toContain("ln Ω");
@@ -246,8 +246,8 @@ describe("the honest absences and the marked divergence", () => {
     //  asked for the trace, which found the +R ln Z missing; it was fixed
     //  OPENLY -- the page says what the residual is, how it is converted,
     //  when the term was added and which gate holds it.
-    expect(prose(SRC)).toContain("PC-SAFT computes its residual at (T, ρ)");
-    expect(prose(SRC)).toContain("+R ln Z");
+    expect(prose(SRC)).toContain("PC-SAFT computes its residual at");
+    expect(SRC).toContain("+R\\\\ln Z");
     expect(prose(SRC)).toContain("until 2026-10-25");
     expect(SRC).toContain("check_departure_convention");
   });

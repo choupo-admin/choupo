@@ -88,7 +88,7 @@ export const LS_STEPS: readonly LessonStep[] = [
       { sym: "N", means: "the number of measurements the fitter is handed. "
         + "Not the number available — see step 8" },
       { sym: "\\chi", means: "the sum of squared residuals, the single number "
-        + "the search minimises", unit: "K^2 here" },
+        + "the search minimises", unit: "K² here" },
     ],
     note: "One notational warning, because you will meet both. Choupo's "
       + "`chi2` diagnostic is the plain sum of squares (src/propertyOps/"
@@ -129,7 +129,7 @@ export const LS_STEPS: readonly LessonStep[] = [
     formula: String.raw`\chi^2_w(p) = \sum_{i=1}^{N} \left(\frac{r_i(p)}{\sigma_i}\right)^2
 \qquad \text{Choupo: } \sigma_i = 1 \ \text{for every } i`,
     where: [
-      { sym: "\\chi_{w}", means: "the WEIGHTED sum of squares, each residual "
+      { sym: "\\chi_{w}", means: "the weighted sum of squares, each residual "
         + "measured in its own point's standard uncertainty" },
       { sym: "\\sigma_i", means: "the declared standard uncertainty of "
         + "measurement i. Choupo's bubble-temperature fit does not read one, "
@@ -182,7 +182,7 @@ export const LS_STEPS: readonly LessonStep[] = [
         + "sensitivity of residual i to parameter j" },
       { sym: "p_j", means: "the j-th entry of the parameter vector: one "
         + "adjustable coefficient" },
-      { sym: "\\delta", means: "the STEP: the change to the parameters this "
+      { sym: "\\delta", means: "the step: the change to the parameters this "
         + "solve proposes" },
       { sym: "r", means: "the column of residuals at the current parameters" },
       { sym: "\\nabla", means: "the gradient with respect to the parameters; "
@@ -219,7 +219,7 @@ export const LS_STEPS: readonly LessonStep[] = [
     ],
     formula: String.raw`\left( J' J + \lambda\,\operatorname{diag}(J' J) \right) \delta = -J' r`,
     where: [
-      { sym: "\\lambda", means: "the DAMPING. Zero is Gauss-Newton; large is "
+      { sym: "\\lambda", means: "the damping. Zero is Gauss-Newton; large is "
         + "a short step down the gradient. It is declared in the operation's "
         + "dict as `lambda0` (read at FitParameters.cpp:671) and then moved "
         + "by the engine every iteration" },
@@ -367,7 +367,7 @@ export const LS_STEPS: readonly LessonStep[] = [
 \qquad \text{(still in-sample: a smaller number is not a better model)}`,
     where: [
       { sym: "\\chi_{\\mathrm{in}}", means: "the in-sample sum of squares, "
-        + "over the fitted points only", unit: "K^2 here" },
+        + "over the fitted points only", unit: "K² here" },
       { sym: "\\mathrm{rms}", means: "the root-mean-square residual over the "
         + "fitted points, which is the in-sample number in the units a reader "
         + "thinks in", unit: "K" },

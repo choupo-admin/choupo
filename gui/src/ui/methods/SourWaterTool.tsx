@@ -70,24 +70,24 @@ export const SOURWATER_STEPS = [
       + "everything else in the water.",
     eq: "H₂S(aq)  ⇌  H⁺ + HS⁻            K₁(T)\n"
       + "HS⁻      ⇌  H⁺ + S²⁻            K₂(T)",
-    after: "This is why the stream table's `H2S` column is not a lie but is "
-      + "not the whole truth either.  Choupo carries BOTH bases on every "
-      + "stream its package can resolve: the apparent components, which ARE "
+    after: "This is why the stream table's “H2S” column is not a lie but is "
+      + "not the whole truth either.  Choupo carries both bases on every "
+      + "stream its package can resolve: the apparent components, which are "
       + "the state and close the flowsheet's mass balance, and a "
-      + "`speciation {}` block that decomposes the liquid into the species "
+      + "“speciation {}” block that decomposes the liquid into the species "
       + "the equilibrium is actually solved in.  Neither is derived from the "
-      + "other by convention — the bridge is DECLARED on the component, and "
+      + "other by convention — the bridge is declared on the component, and "
       + "the reader verifies m = A n against the same bridges, where m is "
-      + "the master-species TOTALS on the same molar basis as n.",
+      + "the master-species totals on the same molar basis as n.",
     where: [
       { sym: "K₁, K₂", means: "dissociation constants of the sulfide family at T", unit: "—" },
-      { sym: "m", means: "the master-species totals the apparent amounts map onto — an AMOUNT on the same basis as n, not a molality despite the letter", unit: "mol" },
+      { sym: "m", means: "the master-species totals the apparent amounts map onto — an amount on the same basis as n, not a molality despite the letter (in steps 2 and 4, m with a species subscript is a molality)", unit: "mol" },
       { sym: "A", means: "the declared stoichiometric bridge, component → master species", unit: "—" },
       { sym: "n", means: "the apparent component amounts (the flowsheet's state)", unit: "mol" },
     ],
-    assumes: "That the case DECLARES which networks exist.  A component with "
+    assumes: "That the case declares which networks exist.  A component with "
       + "no declared bridge is refused rather than guessed at by name — a "
-      + "species called `S` is not automatically sulfide.",
+      + "species called “S” is not automatically sulfide.",
     cites: "SpeciationSolver.cpp:685-696",
   },
   {
@@ -113,10 +113,10 @@ export const SOURWATER_STEPS = [
       { sym: "ν_ji", means: "stoichiometric coefficient of master j in species i", unit: "—" },
       { sym: "z", means: "charge of a species", unit: "—" },
       { sym: "m_j, m_species", means: "molality of master j, of a formed species", unit: "mol/kg" },
-      { sym: "n_j", means: "total of master species j from the apparent basis, PER KILOGRAM OF WATER — a molality, so that the balance adds like to like", unit: "mol/kg" },
+      { sym: "n_j", means: "total of master species j from the apparent basis, per kilogram of water — a molality, so that the balance adds like to like", unit: "mol/kg" },
     ],
     assumes: "That the curated records for these families exist and are "
-      + "reachable from THIS feed.  A record the feed cannot reach is "
+      + "reachable from this feed.  A record the feed cannot reach is "
       + "reported as not activated, with the master species that was "
       + "missing — the closure shows its work rather than assembling itself "
       + "silently.",
@@ -129,8 +129,8 @@ export const SOURWATER_STEPS = [
       + "from thermodynamics per stage — a K-value — and the engine asks for "
       + "it through a single entry point.  For a molecular package that call "
       + "forwards straight to the ordinary K; for a reactive one it solves "
-      + "the stage's OWN equilibrium at the stage's own T, P and overall "
-      + "composition and returns an effective APPARENT K.",
+      + "the stage's own equilibrium at the stage's own T, P and overall "
+      + "composition and returns an effective apparent K.",
     eq: "K_stage = ThermoPackage::stageK(T, P, z_stage, x, y)",
     after: "The consequence is worth stating plainly: the Jacobian never "
       + "sees an ion.  The apparent components stay the column's state, the "
@@ -138,14 +138,14 @@ export const SOURWATER_STEPS = [
       + "the column's dimension does not depend on how much chemistry the "
       + "case declared.  What it costs is one reactive flash per stage per "
       + "residual evaluation, which is why this case selects "
-      + "`model simultaneous;` rather than a bubble-point sweep.",
+      + "“model simultaneous;” rather than a bubble-point sweep.",
     where: [
       { sym: "K_i", means: "vapour-liquid distribution ratio y_i / x_i for apparent component i", unit: "—" },
       { sym: "z_stage", means: "overall composition on the stage", unit: "—" },
       { sym: "x, y", means: "liquid and vapour compositions on the stage", unit: "—" },
     ],
     assumes: "That equilibrium holds on each stage.  This is a rigorous MESH "
-      + "column, not a shortcut — but it is still an EQUILIBRIUM column, and "
+      + "column, not a shortcut — but it is still an equilibrium column, and "
       + "no tray efficiency is applied anywhere.",
     cites: "ThermoPackage.cpp:935-939",
   },
@@ -158,7 +158,7 @@ export const SOURWATER_STEPS = [
       + "raise the pH going down the column.",
     after: "It falls: 8.4947876 at the top to 7.6090598 at the reboiler.  "
       + "The reason is that CO₂ is not the only thing leaving.  Ammonia "
-      + "leaves too, and it is the base; meanwhile the sulfide does NOT "
+      + "leaves too, and it is the base; meanwhile the sulfide does not "
       + "follow the carbonate out — m_HCO3 collapses from 0.14620364 to "
       + "5.6325275e-06 while m_HS goes the other way, 0.27828666 to "
       + "0.28854884.  The departing ammonia and the accumulating sulfide "
@@ -168,7 +168,7 @@ export const SOURWATER_STEPS = [
     where: [
       { sym: "m_HCO3", means: "molality of bicarbonate on the tray", unit: "mol/kg" },
       { sym: "m_HS", means: "molality of bisulfide on the tray", unit: "mol/kg" },
-      { sym: "pH", means: "−log₁₀ of the hydrogen-ion ACTIVITY, solved not declared", unit: "—" },
+      { sym: "pH", means: "−log₁₀ of the hydrogen-ion activity, solved not declared", unit: "—" },
     ],
     assumes: "Three networks at once — ammonia, carbonate, sulfide — each "
       + "from its own curated record.  Drop any one and the answer changes, "
@@ -181,22 +181,22 @@ export const SOURWATER_STEPS = [
     title: "Where the numbers come from",
     body: "Almost nothing on this shelf is checked against a published "
       + "reference, and this page is one of the exceptions — but the "
-      + "reference is a published MODEL's own predictions, not a "
+      + "reference is a published model's own predictions, not a "
       + "measurement, so it is worth being precise about what is anchored "
       + "and what is not.",
-    after: "The CHEMISTRY under this column is pinned one layer down by two "
+    after: "The chemistry under this column is pinned one layer down by two "
       + "witness cases that reproduce Edwards, Maurer, Newman & Prausnitz, "
       + "AIChE J. 24(6):966-976 (1978) — its Table 7 for the NH₃-CO₂-water "
       + "system and Table 8 for NH₃-H₂S-water — with the paper's own "
       + "truncated Pitzer expansion and its own parameters, compared with "
-      + "the paper's PREDICTED values (its measurements are quoted as context "
+      + "the paper's predicted values (its measurements are quoted as context "
       + "only), with bands sized to the residual measured between the two "
       + "rather than chosen to pass.  That verifies a transcription of a "
       + "published model; it does not validate the model against measured "
-      + "data.  The COLUMN "
+      + "data.  The column "
       + "itself is not validated against anything: its stage count, feed "
-      + "position and reflux are a teaching configuration, and its golden "
-      + "records that the answer has not MOVED, never that it is right.",
+      + "position and reflux are a teaching configuration, and its recorded "
+      + "result shows only that the answer has not moved, never that it is right.",
     where: [],
     assumes: "That an anchored property model under an unanchored unit gives "
       + "an unanchored answer.  It does.  The anchor buys confidence that the "
@@ -238,7 +238,7 @@ export function SourWaterTool(): JSX.Element {
           energy over ideal gases with no solvent and no charge; this one
           solves an aqueous equilibrium where the same sulfur exists under
           three names and the <strong>pH decides which</strong>.  Numbers are
-          the recorded golden of{" "}
+          the recorded run of{" "}
           <Code style={{ fontSize: 11 }}>tutorials/steady/distillation/stripper02_sour_water_h2s</Code>.
         </Text>
       </Box>
@@ -277,12 +277,12 @@ export function SourWaterTool(): JSX.Element {
 
       <Box>
         <Title order={5}>Down the column</Title>
-        <OriginMark of="engine" note="the recorded run (golden) of stripper02_sour_water_h2s, not re-run on this page" />
+        <OriginMark of="engine" note="the recorded run of stripper02_sour_water_h2s, not re-run on this page" />
         <Text size="sm" mt={4} mb={8}>
           Stages 1 (top), 2 (feed) and 8 (reboiler), off the run's own
           profile.  The top stage carries no sulfide at all, so the
           bisulfide and bicarbonate are followed from stage 2; a dash is a
-          value the golden does not pin.
+          value the recorded run does not pin.
         </Text>
         <Table withTableBorder withColumnBorders striped>
           <Table.Thead>
@@ -307,7 +307,7 @@ export function SourWaterTool(): JSX.Element {
       </Box>
 
       <Alert variant="light" color="blue"
-        title="Two pages, one element — and NOT one stream">
+        title="Two pages, one element — and not one stream">
         <Text size="sm">
           It is tempting to say the overhead of this column is the feed to the
           Claus furnace on the other page.  It is not, and the difference is
@@ -321,7 +321,7 @@ export function SourWaterTool(): JSX.Element {
         <Text size="sm" mt={6}>
           What genuinely connects them is the sulfur and{" "}
           <strong>the two model families it needs</strong>.  In water it is a
-          charged equilibrium at 100 °C where a curated log K and an activity
+          charged equilibrium near 100 °C where a curated log K and an activity
           coefficient decide everything.  In the furnace it is an uncharged
           minimisation at 1500 K where a formation enthalpy decides everything
           and the word pH does not occur.  Same element, same plant, and no
@@ -337,7 +337,7 @@ export function SourWaterTool(): JSX.Element {
           after a run: it carries all three families' molalities per tray, so
           the pH story above can be checked line by line rather than believed.
           Then look at <Code>stripper01_sour_water</Code>, the same column with
-          the sulfide family removed — its pH RISES.  The difference between
+          the sulfide family removed — its pH rises.  The difference between
           the two cases is one chemistry record, and it reverses the
           direction of the answer — its pH climbs 8.46 → 8.80 from tray 2
           down.  Its header explains why the claim starts at tray 2 and not

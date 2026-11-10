@@ -32,8 +32,8 @@ export const CAMPAIGN_PLAN_STEPS: readonly LessonStep[] = [
     n: 1,
     title: "A batch plant is a recipe of stages, run in trains",
     body: "A drug-product plant makes a lot, not a flow. The recipe is a list of "
-      + "STAGES in order (dissolve, spray-dry, blend, press, coat, pack), and "
-      + "the stages that run lot by lot together form a TRAIN. Two trains are "
+      + "stages in order (dissolve, spray-dry, blend, press, coat, pack), and "
+      + "the stages that run lot by lot together form a train. Two trains are "
       + "decoupled by a store (a bin of dried powder that QC releases), so "
       + "each has its own hours and its own campaigns. A stage is a batch "
       + "stage (a vessel that is charged, processed, discharged and cleaned) "
@@ -52,7 +52,7 @@ export const CAMPAIGN_PLAN_STEPS: readonly LessonStep[] = [
       + "kilograms per kilogram of product (BatchPlanPass.H:97). The plant "
       + "makes a whole number of lots, so the year's lots are the demand "
       + "divided by the lot, rounded up (BatchPlanPass.H:113; the engine "
-      + "guards the rounding by one part in 10^9, BatchPlanPass.cpp:518). A "
+      + "guards the rounding by one part in a billion, BatchPlanPass.cpp:518). A "
       + "batch vessel is sized by what its stage handles: the volume is the "
       + "mass per lot divided by the bulk density and the fill fraction "
       + "(BatchPlanPass.H:101-102). The lot is therefore both an equipment choice "
@@ -102,12 +102,12 @@ export const CAMPAIGN_PLAN_STEPS: readonly LessonStep[] = [
   {
     n: 4,
     title: "Parallel units: in phase, out of phase",
-    body: "Two identical units can be used in two ways. IN PHASE they take the "
+    body: "Two identical units can be used in two ways. In phase they take the "
       + "same lot together and each handles half of it: the vessels are "
-      + "half the size and the cycle is unchanged. OUT OF PHASE they take "
+      + "half the size and the cycle is unchanged. Out of phase they take "
       + "alternate lots: the vessels are the same size but a lot enters "
       + "the stage every half cycle, so the stage's contribution to the "
-      + "limit is t_j divided by 2 (BatchPlanPass.H:111). That is the cheapest "
+      + "limit is its cycle divided by 2 (BatchPlanPass.H:111). That is the cheapest "
       + "way to unload a limiting stage, and the engine's own remedy when a plan "
       + "is refused (BatchPlanPass.H:138-140). In the Gantt chart an "
       + "out-of-phase stage has one lane per unit and its lots alternate "
@@ -117,7 +117,7 @@ export const CAMPAIGN_PLAN_STEPS: readonly LessonStep[] = [
   {
     n: 5,
     title: "Campaigns, changeovers and the year's hours",
-    body: "Lots of one product are made in CAMPAIGNS of a declared number of "
+    body: "Lots of one product are made in campaigns of a declared number of "
       + "lots, and a clean (the changeover) separates two campaigns "
       + "(BatchPlanPass.H:114). One campaign of n lots takes the time for the "
       + "first lot to pass through every stage plus one limiting cycle for "
@@ -127,9 +127,9 @@ export const CAMPAIGN_PLAN_STEPS: readonly LessonStep[] = [
       + "train needs in the year are the campaigns plus their changeovers "
       + "(BatchPlanPass.H:121) and a stage's busy hours add its own "
       + "cycles (BatchPlanPass.H:122); each is compared with the hours the "
-      + "train is available (BatchPlanPass.H:123). The engine REFUSES a "
+      + "train is available (BatchPlanPass.H:123). The engine refuses a "
       + "plan whose hours exceed the available ones, with the number and "
-      + "the remedies. The year chart of the engine halves below shows "
+      + "the remedies. The year chart in the engine half of the page, below, shows "
       + "the first campaign only: the later ones repeat it shifted.",
     formula: String.raw`\mathrm{span}(n)=\max_j\left(o_j+t_j\right)+(n-1)\,T_{\mathrm{L}},\qquad H=\sum_{\mathrm{campaigns}}\left[\mathrm{span}(n)+t_{\mathrm{co}}\right],\qquad \omega=\frac{H}{H_{\mathrm{av}}}`,
     where: [
@@ -155,7 +155,7 @@ export const CAMPAIGN_PLAN_STEPS: readonly LessonStep[] = [
       + "is held until the dryer has taken the whole lot (postDict:170: "
       + "dischargeTime throughFedStage; engine BatchPlanPass.H:109). So the "
       + "tank's cycle is its own steps plus the dryer's run, and the "
-      + "TANK, not the dryer, is the stage that paces the train. The dryer "
+      + "tank, not the dryer, is the stage that paces the train. The dryer "
       + "is not cleaned between lots but at the campaign changeover "
       + "(postDict:178 declares cleanTime 0 h; the changeover of 48 h is at "
       + "postDict:113, seven lots a campaign at postDict:112). What carries the "
@@ -185,7 +185,7 @@ export const CAMPAIGN_PLAN_STEPS: readonly LessonStep[] = [
       + "products every stage is cleaned at once, so the train waits for "
       + "the longest of the stages' cleans (BatchPlanPass.H:210), and the "
       + "year is the campaigns of each product plus those cleans "
-      + "(BatchPlanPass.H:214). The clean can depend on the DIRECTION: a "
+      + "(BatchPlanPass.H:214). The clean can depend on the direction: a "
       + "trace of a yellow pigment must be rinsed from a pan before a white "
       + "coat, but a trace of white hides in a yellow one. With the cleans "
       + "that depend on the stage alone, any order costs the same "

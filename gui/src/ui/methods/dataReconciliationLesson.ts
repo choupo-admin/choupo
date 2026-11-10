@@ -113,7 +113,7 @@ export const DR_STEPS: readonly LessonStep[] = [
       + "add their own, and two meters calibrated against one standard can "
       + "share an error, which a diagonal list of sigmas cannot say.  Because the plant is "
       + "invented, its true flows are known too, and the page shows them; no "
-      + "real plant can.  In the words of step 1, this model of the meters IS "
+      + "real plant can.  In the words of step 1, this model of the meters is "
       + "the likelihood: it says how probable each reading is for every "
       + "possible true flow.",
     formula: String.raw`m_j = x_j + \varepsilon_j, \qquad \varepsilon_j \sim \mathrm{N}(0,\ \sigma_j^2)`,

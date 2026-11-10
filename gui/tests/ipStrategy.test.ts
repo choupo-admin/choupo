@@ -165,7 +165,7 @@ describe("ip-strategy: the Unified Patent Court (C260)", () => {
     expect(b).toContain("(Regulation 1257/2012 Art. 3(2))");
     expect(b).toContain("Regulation 1257/2012 Art. 18(2)");
     expect(b).toContain("(UPCA Art. 3(c))");
-    expect(b).toMatch(/NATIONAL patent[^.]*never does/);
+    expect(b).toMatch(/national patent[^.]*never does/);
     expect(b).toContain("(UPCA Art. 32(2))");
     //  Exclusive competence, including prior use.
     expect(b).toContain("(UPCA Art. 32(1)(a)-(e), (g))");
@@ -238,24 +238,24 @@ describe("ip-strategy: the Unified Patent Court (C260)", () => {
   });
 
   it("opens each part of the case study with a plain-language summary", () => {
-    const heads: Record<number, string> = { 20: "THE FIRST.  On 29 November 1960",
-      21: "THE CONTRACT AND THE SPIN-OFF.  In 1976",
-      22: "WHY HISTORY REMEMBERS THE FIRST -- this page's reading" };
+    const heads: Record<number, string> = { 20: "The first.  On 29 November 1960",
+      21: "The contract and the spin-off.  In 1976",
+      22: "Why history remembers the first -- this page's reading" };
     for (const n of [20, 21, 22]) {
       const b = step(n);
-      expect(b.startsWith("IN BRIEF.  "), `step ${n}`).toBe(true);
+      expect(b.startsWith("In brief.  "), `step ${n}`).toBe(true);
       //  Short: two sentences or three, and no citation -- the detail
       //  follows under the part's first heading, which is still there.
       const at = b.indexOf(heads[n]!);
       expect(at, `step ${n}: its original opening is gone`).toBeGreaterThan(0);
-      const brief = b.slice("IN BRIEF.  ".length, at);
+      const brief = b.slice("In brief.  ".length, at);
       expect(brief.length, `step ${n}`).toBeLessThan(450);
       expect(brief.split(/\.\s+/).filter(Boolean).length, `step ${n}`).toBeLessThanOrEqual(3);
       expect(brief, `step ${n}`).not.toMatch(/F\.[23]d|US \d|col\./);
     }
-    expect(step(20)).toContain("THE FIRST.  On 29 November 1960");
-    expect(step(21)).toContain("THE CONTRACT AND THE SPIN-OFF.  In 1976");
-    expect(step(22)).toContain("WHY HISTORY REMEMBERS THE FIRST -- this page's reading");
+    expect(step(20)).toContain("The first.  On 29 November 1960");
+    expect(step(21)).toContain("The contract and the spin-off.  In 1976");
+    expect(step(22)).toContain("Why history remembers the first -- this page's reading");
   });
 
 });

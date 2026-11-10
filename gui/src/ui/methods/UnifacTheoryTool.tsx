@@ -55,13 +55,13 @@ export const UNIFAC_STEPS = [
   {
     n: 1,
     title: "The door UNIQUAC left open",
-    body: "UNIQUAC's size parameters r_i and q_i belong to the MOLECULE, "
+    body: "UNIQUAC's size parameters r_i and q_i belong to the molecule, "
       + "not to the pair — a fact that looks like bookkeeping until you ask "
       + "where they come from.  They come from adding up the molecule's "
       + "pieces.  Ethanol is two CH_x groups and one OH; if every group "
       + "carries a published volume R_k and area Q_k, then",
     eq: "r_i = Σ_k ν_k^(i) R_k        q_i = Σ_k ν_k^(i) Q_k",
-    after: "where ν_k^(i) is simply HOW MANY groups of type k molecule i "
+    after: "where ν_k^(i) is simply how many groups of type k molecule i "
       + "contains.  Nothing has been predicted yet — this is still UNIQUAC, "
       + "with its r and q assembled rather than tabulated.  The step that "
       + "makes UNIFAC predictive is the next one.",
@@ -73,10 +73,10 @@ export const UNIFAC_STEPS = [
     n: 2,
     title: "Solution of groups: forget the molecules",
     body: "Here is the whole idea, and it is audacious.  A mixture of "
-      + "molecules is treated as a mixture of GROUPS.  The liquid does not "
+      + "molecules is treated as a mixture of groups.  The liquid does not "
       + "contain ethanol and water; it contains so many CH₃, so many CH₂, "
       + "so many OH, so many H₂O, all stirred together.  Interaction "
-      + "energies are then needed only between GROUP TYPES — of which there "
+      + "energies are then needed only between group types — of which there "
       + "are a few dozen — instead of between molecule pairs, of which "
       + "there are millions.  That is the trade, and it is why UNIFAC can "
       + "price a pair nobody has ever measured.",
@@ -93,7 +93,7 @@ export const UNIFAC_STEPS = [
     body: "Between two group types sits one number a_mn, published in a "
       + "table, asymmetric (a_mn ≠ a_nm), and entering exactly one place:",
     eq: "Ψ_mn = exp( −a_mn / T )      (Ψ = 1 within one main group, a = 0)",
-    after: "Groups belonging to the SAME main group — CH₃ and CH₂ both "
+    after: "Groups belonging to the same main group — CH₃ and CH₂ both "
       + "belong to main group CH₂ — interact with a = 0, hence Ψ = 1: "
       + "athermally.  A model that distinguished them energetically would "
       + "be claiming that a methyl feels a methylene, which the table does "
@@ -108,7 +108,7 @@ export const UNIFAC_STEPS = [
     n: 4,
     title: "The group activity coefficient — UNIQUAC's residual, one level down",
     body: "Now the same expression you have already seen, with groups where "
-      + "molecules used to be.  Area fractions first — X_m is the GROUP mole "
+      + "molecules used to be.  Area fractions first — X_m is the group mole "
       + "fraction, the number of groups m over the total number of groups "
       + "in the mixture — then the activity of each group in whatever "
       + "surroundings it finds:",
@@ -116,7 +116,7 @@ export const UNIFAC_STEPS = [
       + "ln Γ_k = Q_k [ 1 − ln( Σ_m Θ_m Ψ_mk )"
       + " − Σ_m Θ_m Ψ_km / ( Σ_n Θ_n Ψ_nm ) ]",
     after: "Compare it, term for term, with UNIQUAC's residual on the "
-      + "local-composition page: it IS that expression, with Θ for θ, Ψ for "
+      + "local-composition page: it is that expression, with Θ for θ, Ψ for "
       + "τ, and Q_k for q_i.  UNIFAC did not invent a new theory; it moved "
       + "an existing one down a level, from molecules to their parts.",
     assumes: "Nothing new — this inherits every assumption of UNIQUAC's "
@@ -126,7 +126,7 @@ export const UNIFAC_STEPS = [
   {
     n: 5,
     title: "The subtraction that makes it an activity coefficient",
-    body: "A group activity is not yet what we want: a group in PURE "
+    body: "A group activity is not yet what we want: a group in pure "
       + "ethanol is already in some environment, and γ must measure the "
       + "change on mixing, not the absolute state.  So solve step 4 twice "
       + "— once for the mixture's group census, once for the census of "
@@ -189,7 +189,7 @@ export function UnifacTheoryTool(): JSX.Element {
       ))}
 
       <Alert variant="light" color="orange"
-        title="Two models drop an unfitted interaction, and it is NOT the same failure">
+        title="Two models drop an unfitted interaction, and it is not the same failure">
         <Text size="sm">
           On the local-composition page you met NRTL running a pair at{" "}
           <Code>τ = 0</Code> when nobody had fitted it.  UNIFAC does the
@@ -201,12 +201,12 @@ export function UnifacTheoryTool(): JSX.Element {
           conflates them will look for the wrong remedy.</strong>
         </Text>
         <Text size="sm" mt={6}>
-          NRTL's gap is <em>nobody has fitted YOUR pair</em>: it closes by
+          NRTL's gap is <em>nobody has fitted your pair</em>: it closes by
           regressing data, and the tree has a fitter for exactly that.
-          UNIFAC's gap is <em>the PUBLISHED TABLE has holes</em> — Hansen
+          UNIFAC's gap is <em>the published table has holes</em> — Hansen
           1991 genuinely does not report every main-group pair — so your
           own data closes it only by regressing that group pair yourself,
-          and the result is a NEW, named parameterisation, not a hole filled
+          and the result is a new, named parameterisation, not a hole filled
           in somebody else's published matrix.
         </Text>
         <Text size="sm" mt={6}>

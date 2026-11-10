@@ -163,7 +163,7 @@ function RaPlot({ table, xLabel, r0, guess, height = 300 }: RaPlotProps): JSX.El
           fraction of {xLabel} ({rows[0]?.basis ?? "volume"} basis)
         </text>
         <text x={14} y={(T + H - B) / 2} fontSize={12} fill={TEXT} textAnchor="middle"
-          transform={`rotate(-90 14 ${(T + H - B) / 2})`}>Ra, MPa^1/2</text>
+          transform={`rotate(-90 14 ${(T + H - B) / 2})`}>Ra, MPa½</text>
         {Number.isFinite(r0) && (
           <g>
             <line x1={L} x2={W - R} y1={sy(r0)} y2={sy(r0)} stroke={TARGET} strokeDasharray="6 4" />
@@ -346,12 +346,12 @@ function QuestionPage(): JSX.Element {
         originNote="the synthetic pair is invented for the arithmetic; Hansen's 1967 placements are transcribed from his thesis">
         <Text size="sm">
           Page 2 and 3 use a <b>synthetic</b> pair -- solventA (16, 2, 4), solventB (16, 10, 12)
-          and a polymer P at (17, 6, 8) with R0 = 4, all MPa^1/2, all invented so the
+          and a polymer P at (17, 6, 8) with R0 = 4, all MPa½, all invented so the
           arithmetic is checkable by hand; the engine announces them as not real on every
           run.  Page 4 uses <b>Hansen&apos;s own</b> placements of 1967: polystyrene (his
-          solute G) at (8.6, 3.0, 2.0) with radius 3.5 in his (cal/cm³)^1/2, and solvents
+          solute G) at (8.6, 3.0, 2.0) with radius 3.5 in his (cal/cm³)½, and solvents
           from his Table 2.1, each transcribed into a case-local record with the thesis
-          page and row beside it, converted to Pa^1/2 and marked interim.  Every record
+          page and row beside it, converted to Pa½ and marked interim.  Every record
           declares the temperature its triple was placed at (adopted 25 °C; the thesis
           prints none beside its tables), and no correction moves it elsewhere.
         </Text>
@@ -370,7 +370,7 @@ function PredictPage({ guess, setGuess, committed, commit }: {
         originNote="your guess, and the synthetic pair's declared parameters">
         <Text size="sm">
           solventA is (16, 2, 4), solventB is (16, 10, 12), the polymer is (17, 6, 8), all
-          MPa^1/2.  At which <b>volume fraction of solventB</b> do you expect the blend to
+          MPa½.  At which <b>volume fraction of solventB</b> do you expect the blend to
           come closest to the polymer?
         </Text>
         <Slider min={0} max={1} step={0.05} value={guess} onChange={setGuess}
@@ -408,7 +408,7 @@ function CurvePage({ table, guess, committed }: {
             {best && (
               <Text size="sm">
                 Your guess: <b>{(100 * guess).toFixed(0)} % B</b>.  The engine&apos;s minimum:{" "}
-                <b>Ra = {fmt(best.Ra, 3)} MPa^1/2 at {(100 * best.s).toFixed(0)} % B</b>
+                <b>Ra = {fmt(best.Ra, 3)} MPa½ at {(100 * best.s).toFixed(0)} % B</b>
                 {Number.isFinite(best.RED) ? ` (RED ${fmt(best.RED, 3)})` : ""};
                 the pure ends sit at{" "}
                 {ends.map((r) => `${r.label} ${fmt(r.Ra, 3)}`).join(" and ")}.
@@ -479,7 +479,7 @@ function RealPage({ acetone, nitro, screen, observations }: {
         <RaPlot table={acetone} xLabel={acetone.solvents[1] ?? "acetone"} r0={r0of(acetone)} />
         {bestA && (
           <Text size="sm">
-            Minimum Ra = {fmt(bestA.Ra, 3)} MPa^1/2 (RED {fmt(bestA.RED, 3)}) at{" "}
+            Minimum Ra = {fmt(bestA.Ra, 3)} MPa½ (RED {fmt(bestA.RED, 3)}) at{" "}
             {(100 * bestA.s).toFixed(0)} % acetone by volume; pure ends{" "}
             {acetone.rows.filter((r) => r.phase === "pure").map((r) => `${r.label} RED ${fmt(r.RED, 3)}`).join(", ")}.
           </Text>
@@ -493,7 +493,7 @@ function RealPage({ acetone, nitro, screen, observations }: {
         <RaPlot table={nitro} xLabel={nitro.solvents[1] ?? "nitromethane"} r0={r0of(nitro)} />
         {bestN && (
           <Text size="sm">
-            Minimum over the points that survive: Ra = {fmt(bestN.Ra, 3)} MPa^1/2 (RED{" "}
+            Minimum over the points that survive: Ra = {fmt(bestN.Ra, 3)} MPa½ (RED{" "}
             {fmt(bestN.RED, 3)}) at mole fraction {fmt(bestN.s, 2)} of nitromethane (volume
             fraction {fmt(bestN.phi.nitromethane ?? NaN, 3)}).
           </Text>

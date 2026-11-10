@@ -41,7 +41,7 @@ export const TEAR_STEPS: readonly LessonStep[] = [
     title: "A sequential solver walks the units once, in the order you wrote them",
     body: "This is the whole premise, and it is worth being precise about "
       + "because everything below is a consequence. Choupo takes the "
-      + "flattened unit list and executes it IN declared order. It does not "
+      + "flattened unit list and executes it in declared order. It does not "
       + "topologically sort it for you, and it does not decide for itself "
       + "which unit is ready. When it reaches a unit it reads that unit's "
       + "inlet streams out of the registry and solves it — so if a unit's "
@@ -117,7 +117,7 @@ export const TEAR_STEPS: readonly LessonStep[] = [
           + "output, which is a genuine one-unit cycle.",
         eq: String.raw`\text{backward} \iff \mathrm{pos}(\text{consumer}) \le \mathrm{pos}(\text{producer})`},
       { step: "Every backward edge must be declared, and no forward one may "
-          + "be. So for a given order the tear set is not a choice: it IS "
+          + "be. So for a given order the tear set is not a choice: it is "
           + "the set of backward edges." },
     ],
     formula: String.raw`\text{backward} \iff \mathrm{pos}(\text{consumer}) \le \mathrm{pos}(\text{producer})`,
@@ -217,7 +217,7 @@ n_W &= N_t (N_c + 3) &\qquad n_N &= N_t (N_c + 2)\\[4pt]
       + "shared edge may point forwards in the order you wrote. Reorder the "
       + "units and it points backwards, and now one cut does the work of "
       + "two. That is the real decision: in a sequential-modular simulator, "
-      + "choosing the tears IS choosing the order.",
+      + "choosing the tears is choosing the order.",
     derivation: [
       { step: "Fix an order. The tears are then forced: the backward edges "
           + "that close cycles." },

@@ -563,7 +563,7 @@ export function BreakthroughTool(): JSX.Element {
                 <Group gap="sm" wrap="nowrap" align="center">
                   <Loader size="sm" />
                   <Text size="sm" c="dimmed">
-                    the engine is integrating the bed — seconds, not instant
+                    the engine is integrating the bed — seconds, not instantly
                   </Text>
                 </Group>
               ) : (
@@ -580,7 +580,7 @@ export function BreakthroughTool(): JSX.Element {
               justifyContent: "center", padding: 12 }}>
               <Text size="sm" c="dimmed" ta="center" maw={460}>
                 Adsorption breakthrough needs a fixed-bed choupoBatch run with
-                OUTLET tracking: a trajectory carrying c_out_/y_out_ columns and
+                outlet tracking: a trajectory carrying c_out_/y_out_ columns and
                 the engine&apos;s front KPIs (t_stoichiometric_*). A holdup-only
                 adsorber run has no breakthrough curve to draw.
               </Text>
@@ -613,11 +613,11 @@ export function BreakthroughTool(): JSX.Element {
             The curve below is the outlet history the engine produced; the
             three vertical markers are its own 5 %, 50 % and 95 % crossings,
             and the step is the ideal front at the stoichiometric time it
-            announced BEFORE integrating.  Lengthen the bed and the front
+            announced before integrating.  Lengthen the bed and the front
             arrives later while the zone stays about as wide, so the wasted
             fraction falls.  Raise the temperature and the front arrives
             sooner — b falls, the solid holds less.  Raise the pressure and
-            watch the retention factor in the table go DOWN rather than up:
+            watch the retention factor in the table go down rather than up:
             the feed concentration rises in proportion to P, but a saturating
             isotherm cannot, so each mole of gas is carrying less capacity
             with it.

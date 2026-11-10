@@ -217,7 +217,7 @@ describe("materials: the bench's sentences, against the engine's arithmetic", ()
     expect(by("SS304").sigma_y).toBe(by("SS316").sigma_y);
     expect(by("SS304").density).toBe(by("SS316").density);
     expect(by("SS304").F_M).toBeLessThan(by("SS316").F_M!);
-    expect(allText).toContain("SS304 and SS316 give the SAME wall");
+    expect(allText).toContain("SS304 and SS316 give the same wall");
   });
   it("aluminium: a thicker wall, a lighter shell, more than a quarter of a metre at 220 bar", () => {
     for (const v of BENCH_VESSELS) {
@@ -312,7 +312,7 @@ describe("materials: the lesson text", () => {
     expect(csb).toContain("report itself NOT READ");
   });
   it("calls the Pareto a teaching ordering and carries no share", () => {
-    expect(allText).toContain("TEACHING ORDERING");
+    expect(allText).toContain("teaching ordering");
     expect(allText).not.toMatch(/\d+\s*(%|per cent) of (the )?(market|tonnage|plants)/i);
     for (const r of PARETO_ROWS) expect(`${r.firstFor} ${r.defeatedBy}`).not.toMatch(/\d/);
   });
@@ -381,7 +381,7 @@ describe("materials: the lesson text", () => {
   it("says what the records say about their own provenance", () => {
     expect(tree("data/standards/assets/carbonSteel.dat"))
       .toContain("THESE SIX NUMBERS ARE UNSOURCED DESIGN ASSERTIONS (AP6,");
-    expect(allText).toContain("carbonSteel's own header calls its six numbers UNSOURCED");
+    expect(allText).toContain("carbonSteel's own header calls its six numbers unsourced");
     for (const r of ["SS304", "SS316"])
       expect(tree(`data/standards/assets/${r}.dat`)).toMatch(/F_M 2\.34|F_M 3\.05/);
   });

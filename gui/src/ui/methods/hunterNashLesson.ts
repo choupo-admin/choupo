@@ -66,7 +66,7 @@ export const HUNTER_NASH_STEPS: readonly LessonStep[] = [
         + "original carrier, entering the cascade at stage 1 and leaving it, "
         + "stripped, as the raffinate at stage N.  It is a real inlet: the "
         + "extractor takes exactly two, feed then solvent, and refuses any "
-        + "other arity by name.", unit: "mol/s" },
+        + "other number of inlets by name.", unit: "mol/s" },
       { sym: "S", means: "The solvent — the second inlet, the phase that "
         + "will take the solute up.  Which species defines the extract phase "
         + "may be declared (`operation.solvent`), and this witness declares "

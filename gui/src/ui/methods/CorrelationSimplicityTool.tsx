@@ -930,7 +930,7 @@ export function PracticePage({ moody, nusselt }: { moody: SweepTable; nusselt: S
           2300 a substituted laminar law, or an extrapolation; Blasius at any ε/D above zero,
           because it has no roughness term). The Nusselt spread is Gnielinski against
           Dittus-Boelter only -- Kern is a shell-side correlation and is left out. A row
-          inside the band is what each correlation RETURNS there, not what a pipe at that Re
+          inside the band is what each correlation returns there, not what a pipe at that Re
           does: the regime itself is not determined by Re in the band.
         </Text>
         <EngineSource />
@@ -993,7 +993,7 @@ export function CorrelationSimplicityTool(): JSX.Element {
           <Text size="sm" c="dimmed" mt={4}>
             From dimensional analysis to master and slave scales. The Buckingham Π theorem
             reduces the number of variables, but the function it leaves is arbitrary; that
-            correlations end up with few groups AND very simple formulas that fit to a design
+            correlations end up with few groups and very simple formulas that fit to a design
             tolerance comes from somewhere else -- from asymptotic regimes, from the separation
             of scales, and from the narrow range a correlation is fitted over.
           </Text>

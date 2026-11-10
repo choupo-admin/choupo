@@ -88,7 +88,7 @@ describe("the claims an external review caught, checked against the engine", () 
 describe("the derivation closes, from the surface to the properties", () => {
   it("defines the reduced Helmholtz energy and the NUMBER density", () => {
     expect(SRC).toContain("\\\\tilde a \\\\equiv \\\\frac{A^{\\\\mathrm{res}}}{NkT}");
-    expect(prose(STEPS)).toContain("is the NUMBER density");
+    expect(prose(STEPS)).toContain("is the number density");
     expect(SRC).not.toContain("a_res / NkT");
   });
 
@@ -112,7 +112,7 @@ describe("the derivation closes, from the surface to the properties", () => {
     expect(eq).toContain("Z = 1 + \\rho");
     expect(eq).toContain("P = \\rho\\, k T\\, Z");
     expect(eq).toContain("\\ln \\varphi_i");
-    expect(prose(s6.after!)).toContain("Two roots are two CANDIDATE phases");
+    expect(prose(s6.after!)).toContain("Two roots are two candidate phases");
     expect(prose(s6.after!)).toContain("mechanically unstable");
   });
 

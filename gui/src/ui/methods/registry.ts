@@ -631,7 +631,7 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "conventional Claus plant is controlled to is never entered as a "
       + "ratio: the declared air rate forces it through the O and H "
       + "balances, while the furnace's 1.04 is explained by the "
-      + "hydrogen on the same line.  And that a species with no formation "
+      + "hydrogen the furnace also makes.  And that a species with no formation "
       + "data has no Gibbs energy and cannot play at all -- which is why "
       + "the case writes two components of its own, one new and one an "
       + "overlay filling a gap the catalogue record honestly declares.",

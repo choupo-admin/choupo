@@ -513,7 +513,7 @@ describe("overpressure (C112 point 3): a liquid chokes at the vena contracta, as
     for (const w of ["single-phase liquid", "cavitation with recovery", "flashing",
       "choked liquid flow"])
       expect(t.toLowerCase()).toContain(w);
-    expect(t).toMatch(/NOT universal/);
+    expect(t).toMatch(/not universal/);
     expect(step(10).formula).toMatch(/P_\\mathrm\{vc\} > P_v/);
   });
   it("the engine finding is cited on the lines it names", () => {

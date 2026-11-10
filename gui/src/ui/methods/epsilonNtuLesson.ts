@@ -135,7 +135,7 @@ Q_\mathrm{max} &= C_\mathrm{min} (T_{h,\mathrm{in}} - T_{c,\mathrm{in}})
         + "exchange, at infinite area", unit: "W" },
       { sym: "T_{h,\\mathrm{in}} \\,/\\, T_{c,\\mathrm{in}}",
         means: "the two inlet temperatures — the only "
-        + "temperatures the eps-NTU route needs", unit: "K" },
+        + "temperatures the ε-NTU route needs", unit: "K" },
     ],
     note: "Q_max is what a counterflow exchanger of infinite area would "
       + "deliver.  That is not a rhetorical infinity: it is the ceiling the "
@@ -253,7 +253,7 @@ export const ENTU_LIMITS: readonly { id: string; title: string; body: string }[]
   },
   {
     id: "constant-U",
-    title: "One u, for the whole exchanger.",
+    title: "One U, for the whole exchanger.",
     body: "U is a single declared number, used unchanged along the entire "
       + "area — the 21-point temperature profile beside the chart is "
       + "integrated with it. A real U varies along the exchanger with "

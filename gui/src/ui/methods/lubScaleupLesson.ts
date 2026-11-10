@@ -55,17 +55,17 @@ export const LUB_SCALEUP_STEPS: readonly LessonStep[] = [
       + "length, velocity, feed concentration, packing density, void "
       + "fraction and temperature.  The plant question is different in kind: "
       + "not what this column did, but how long a bed and what diameter will "
-      + "hold a required feed flow for a required SERVICE TIME before the "
+      + "hold a required feed flow for a required service time before the "
       + "outlet goes off specification.  The whole method rests on one "
       + "premise, and it is stated here rather than discovered later: on a "
-      + "FAVOURABLE isotherm the mass-transfer zone, once formed, travels "
-      + "down the bed WITHOUT CHANGING SHAPE.  Its length is then a property "
+      + "favourable isotherm the mass-transfer zone, once formed, travels "
+      + "down the bed without changing shape.  Its length is then a property "
       + "of the adsorbent, the feed, the velocity, the temperature and the "
-      + "particle size -- and NOT of the bed length.  That is what lets a "
+      + "particle size -- and not of the bed length.  That is what lets a "
       + "half-metre column say anything about a three-metre bed.",
     formula: String.raw`\begin{aligned}
 \text{given}\quad & c_\mathrm{out}/c_\mathrm{in} \text{ against } t, \text{ at } L_\mathrm{lab},\ u,\ c_\mathrm{in},\ \rho_b,\ \varepsilon,\ T\\
-\text{wanted}\quad & L_\mathrm{full} \text{ and } D \text{ for a service time } t_\mathrm{req} \text{ at the SAME } u
+\text{wanted}\quad & L_\mathrm{full} \text{ and } D \text{ for a service time } t_\mathrm{req} \text{ at the same } u
 \end{aligned}`,
     where: [
       { sym: "c_\\mathrm{out}",
@@ -77,15 +77,15 @@ export const LUB_SCALEUP_STEPS: readonly LessonStep[] = [
       { sym: "t", means: "time since the feed was switched onto the clean "
         + "column", unit: "s" },
       { sym: "L_\\mathrm{lab}",
-        means: "the LABORATORY column's packed length -- the "
+        means: "the laboratory column's packed length -- the "
         + "one number the method is going to change", unit: "m" },
-      { sym: "u", means: "the SUPERFICIAL velocity, volumetric flow over "
+      { sym: "u", means: "the superficial velocity, volumetric flow over "
         + "the empty tube's cross-section.  Held constant across the "
         + "scale-up, for a reason step 5 states", unit: "m/s" },
-      { sym: "\\rho_b", means: "the BULK density of the packing, kilograms of "
+      { sym: "\\rho_b", means: "the bulk density of the packing, kilograms of "
         + "adsorbent per cubic metre of bed, voids included", unit: "kg/m³" },
       { sym: "\\varepsilon",
-        means: "the interparticle VOID FRACTION of the bed" },
+        means: "the interparticle void fraction of the bed" },
       { sym: "T", means: "the bed temperature -- isothermal in the "
         + "laboratory, and assumed the same at full scale", unit: "K" },
       { sym: "L_\\mathrm{full}", means: "the full-scale bed length the method "
@@ -93,17 +93,17 @@ export const LUB_SCALEUP_STEPS: readonly LessonStep[] = [
       { sym: "D", means: "the full-scale bed diameter, set by the design "
         + "feed flow at the same u", unit: "m" },
       { sym: "t_\\mathrm{req}",
-        means: "the REQUIRED service time: how long the plant "
+        means: "the required service time: how long the plant "
         + "needs the outlet on specification before the bed is switched",
         unit: "s" },
     ],
     note: "When the premise fails, so does everything below.  On an "
-      + "UNFAVOURABLE or LINEAR isotherm the zone never settles: it spreads "
-      + "as it travels -- proportionally to √t on a LINEAR isotherm, where "
+      + "unfavourable or linear isotherm the zone never settles: it spreads "
+      + "as it travels -- proportionally to √t on a linear isotherm, where "
       + "only dispersion and mass-transfer resistance spread it, and to t on "
-      + "an UNFAVOURABLE one, where the equilibrium itself pulls it apart -- "
+      + "an unfavourable one, where the equilibrium itself pulls it apart -- "
       + "so a length measured in a short column "
-      + "underestimates it in a long one.  A laboratory column SHORTER than "
+      + "underestimates it in a long one.  A laboratory column shorter than "
       + "the zone never lets it form, so the curve you measured is not the "
       + "constant pattern at all.  And a plant bed run at a different "
       + "velocity, temperature or particle size has a different zone: the "
@@ -118,12 +118,12 @@ export const LUB_SCALEUP_STEPS: readonly LessonStep[] = [
     n: 2,
     title: "Two times read off the curve: breakthrough, and the stoichiometric "
       + "front",
-    body: "The curve yields two times.  The BREAKTHROUGH time t_b is where "
+    body: "The curve yields two times.  The breakthrough time t_b is where "
       + "the outlet first reaches the fraction of the feed you have declared "
       + "unacceptable -- 5 % by default here, and a knob, because it is a "
-      + "specification and not a property of the bed.  The STOICHIOMETRIC "
-      + "time t_st is where the front WOULD have arrived if it were "
-      + "infinitely sharp, and the curve gives it as an AREA: the solute that "
+      + "specification and not a property of the bed.  The stoichiometric "
+      + "time t_st is where the front would have arrived if it were "
+      + "infinitely sharp, and the curve gives it as an area: the solute that "
       + "leaked out before t_st and the capacity still filling after it are "
       + "equal, so the area above the curve, out to where it reaches the "
       + "feed value, is t_st itself.  On data that area is a trapezoid sum "
@@ -134,16 +134,16 @@ t_\mathrm{st} &= \int_0^\infty \left( 1 - \frac{c_\mathrm{out}}{c_\mathrm{in}} \
 &\approx \sum_k \tfrac{1}{2} (t_{k+1} - t_k) \left[ (1 - f_k) + (1 - f_{k+1}) \right]
 \end{aligned}`,
     where: [
-      { sym: "t_b", means: "the BREAKTHROUGH time -- the first instant the "
+      { sym: "t_b", means: "the breakthrough time -- the first instant the "
         + "outlet reaches the declared fraction f_b, found by linear "
         + "interpolation between the two samples that bracket it, which is "
         + "the engine's own rule for its 5 % crossing "
         + "(FixedBedAdsorber.cpp:1744-1751)", unit: "s" },
-      { sym: "f_b", means: "the breakthrough CRITERION, c_out/c_in at which "
+      { sym: "f_b", means: "the breakthrough criterion, c_out/c_in at which "
         + "you switch beds -- a specification you declare (the knob), never "
         + "a datum the curve carries" },
       { sym: "t_\\mathrm{st}",
-        means: "the STOICHIOMETRIC time: the area above the "
+        means: "the stoichiometric time: the area above the "
         + "curve, and the arrival time of an ideal square front carrying the "
         + "same total", unit: "s" },
       { sym: "\\sum_k",
@@ -157,20 +157,20 @@ t_\mathrm{st} &= \int_0^\infty \left( 1 - \frac{c_\mathrm{out}}{c_\mathrm{in}} \
         + "(FixedBedAdsorber.cpp:1743)" },
     ],
     note: "The tail is handled honestly rather than extrapolated.  The sum "
-      + "runs to the LAST sample; whatever the curve would still have "
+      + "runs to the last sample; whatever the curve would still have "
       + "contributed after it is dropped, and the tool says what the outlet "
       + "had reached there.  If the last sample has not reached "
-      + "c_out/c_in = 0.95 the data are INCOMPLETE and t_st is a LOWER BOUND.  "
+      + "c_out/c_in = 0.95 the data are incomplete and t_st is a lower bound.  "
       + "That does not make every number below a lower bound: q*_curve and "
-      + "LUB inherit the underestimate, but L_es DIVIDES by t_st and so "
-      + "comes out too LONG, and so does L_full whenever the service time "
+      + "LUB inherit the underestimate, but L_es divides by t_st and so "
+      + "comes out too long, and so does L_full whenever the service time "
       + "sought is longer than the laboratory breakthrough time (the usual "
       + "case: L_full = L_lab [1 + (t_req − t_b)/t_st]) — a truncated curve "
       + "makes the bed look worse than it is.  Do not size from it; extend the curve first.  "
       + "The engine publishes its own t_st for the same "
-      + "curve -- the analytic (L/u)·R_f it announced BEFORE integrating "
+      + "curve -- the analytic (L/u)·R_f it announced before integrating "
       + "(t_stoichiometric_<i>, FixedBedAdsorber.cpp:774-775) -- and the "
-      + "tool prints it beside the trapezoid: two readings of ONE quantity, "
+      + "tool prints it beside the trapezoid: two readings of one quantity, "
       + "and the gap between them is the mesh plus the dropped tail, nothing "
       + "else.  On the witness they agree to about seven digits.",
   },
@@ -193,23 +193,23 @@ q^*_\mathrm{isotherm} &= \frac{(R_f - \varepsilon)\, c_\mathrm{in}}{\rho_b}
  &\qquad R_f &= \varepsilon + \rho_b \frac{q^*(c_\mathrm{in})}{c_\mathrm{in}}
 \end{aligned}`,
     where: [
-      { sym: "q^*", means: "the EQUILIBRIUM loading of the solid at the feed "
+      { sym: "q^*", means: "the equilibrium loading of the solid at the feed "
         + "concentration -- moles held per kilogram of adsorbent when the "
         + "solid has stopped taking anything up", unit: "mol/kg" },
       { sym: "q^*_\\mathrm{curve}",
-        means: "that loading as the CURVE implies it: the "
+        means: "that loading as the curve implies it: the "
         + "solute fed to t_st, less what the voids hold, per kilogram of "
         + "packing", unit: "mol/kg" },
       { sym: "q^*_\\mathrm{isotherm}",
-        means: "the same loading as the ISOTHERM gives "
+        means: "the same loading as the isotherm gives "
         + "it, recovered from the engine's own retention factor "
         + "(retention_factor_<i>, FixedBedAdsorber.cpp:2906-2907) by "
         + "inverting the definition the engine prints", unit: "mol/kg" },
-      { sym: "R_f", means: "the RETENTION FACTOR, how many empty-tube "
+      { sym: "R_f", means: "the retention factor, how many empty-tube "
         + "transit times the front lags the gas -- defined at "
         + "FixedBedAdsorber.cpp:898 exactly as written here" },
     ],
-    note: "A DISAGREEMENT IS THE DIAGNOSTIC, and it points at the data, not "
+    note: "A disagreement is the diagnostic, and it points at the data, not "
       + "at the isotherm.  If q*_curve falls short, the curve's tail was cut "
       + "before the outlet reached the feed value, or the run was stopped "
       + "before the bed was in equilibrium with its feed -- either way the "
@@ -229,25 +229,25 @@ q^*_\mathrm{isotherm} &= \frac{(R_f - \varepsilon)\, c_\mathrm{in}}{\rho_b}
       + "Everything upstream of it is at equilibrium, everything downstream "
       + "is clean, and the zone itself is half-loaded.  The fraction of the "
       + "column's capacity you used is the ratio of the two times; the rest "
-      + "is a LENGTH of bed that did no work, and under the constant-pattern "
+      + "is a length of bed that did no work, and under the constant-pattern "
       + "premise that length is the same in every bed run at these "
       + "conditions, however long the bed.  That is the quantity carried to "
       + "full scale.",
     formula: String.raw`\begin{aligned}
 f_\mathrm{used} &= \frac{t_b}{t_\mathrm{st}}\\[4pt]
 \mathrm{LUB} &= L_\mathrm{lab} \left( 1 - \frac{t_b}{t_\mathrm{st}} \right)\\[4pt]
-L_\mathrm{MTZ} &\approx 2\, \mathrm{LUB} \qquad \text{(a SYMMETRIC front only)}
+L_\mathrm{MTZ} &\approx 2\, \mathrm{LUB} \qquad \text{(a symmetric front only)}
 \end{aligned}`,
     where: [
       { sym: "f_\\mathrm{used}", means: "the fraction of the laboratory bed's "
         + "capacity used at breakthrough" },
       { sym: "\\mathrm{LUB}",
-        means: "the LENGTH OF UNUSED BED -- the capacity left unused "
-        + "when the column was switched, as an EQUIVALENT length (it sits "
+        means: "the length of unused bed -- the capacity left unused "
+        + "when the column was switched, as an equivalent length (it sits "
         + "mostly inside the partly loaded zone, not in a clean slice at the "
         + "outlet), which the constant pattern makes a property of the "
         + "conditions rather than of the column", unit: "m" },
-      { sym: "L_\\mathrm{MTZ}", means: "the length of the MASS-TRANSFER ZONE, "
+      { sym: "L_\\mathrm{MTZ}", means: "the length of the mass-transfer zone, "
         + "estimated as twice the unused length.  That equality holds only "
         + "for a front symmetric about t_st; the sizing below uses LUB "
         + "directly, which needs no symmetry", unit: "m" },
@@ -269,7 +269,7 @@ L_\mathrm{MTZ} &\approx 2\, \mathrm{LUB} \qquad \text{(a SYMMETRIC front only)}
       + "faster gas means a solid that cannot keep up and a wider zone -- so "
       + "the only length you may carry across unchanged is one measured at "
       + "the velocity the plant will run.  The bed then divides in two: an "
-      + "EQUILIBRIUM section long enough that its stoichiometric front takes "
+      + "equilibrium section long enough that its stoichiometric front takes "
       + "exactly the required service time to arrive, and the unused length "
       + "added on top so that the zone is still inside the bed when that "
       + "time comes.  Because the stoichiometric time is proportional to "
@@ -286,13 +286,13 @@ m_\mathrm{ads} &= \rho_b \frac{\pi D^2}{4} L_\mathrm{full}
 \end{aligned}`,
     where: [
       { sym: "L_\\mathrm{es}",
-        means: "the EQUILIBRIUM-SECTION length -- the bed that "
+        means: "the equilibrium-section length -- the bed that "
         + "would suffice if the front were a square wave arriving at t_req",
         unit: "m" },
       { sym: "\\eta_\\mathrm{bed}",
-        means: "the bed UTILISATION at full scale: the share "
+        means: "the bed utilisation at full scale: the share "
         + "of the bed that is doing equilibrium work at switch" },
-      { sym: "Q", means: "the DESIGN feed volumetric flow the plant bed "
+      { sym: "Q", means: "the design feed volumetric flow the plant bed "
         + "must take -- the second design requirement, beside t_req",
         unit: "m³/s" },
       { sym: "\\pi", means: "the circle constant, because the bed is a "
@@ -301,18 +301,18 @@ m_\mathrm{ads} &= \rho_b \frac{\pi D^2}{4} L_\mathrm{full}
         means: "the mass of adsorbent the full-scale bed "
         + "holds, ρ_b times its volume", unit: "kg" },
     ],
-    note: "THE LESSON'S POINT IS IN η_bed.  LUB is fixed by the conditions, "
-      + "so a longer bed wastes a SMALLER fraction: a half-metre laboratory "
+    note: "The point of the lesson is in η_bed.  LUB is fixed by the conditions, "
+      + "so a longer bed wastes a smaller fraction: a half-metre laboratory "
       + "column that throws away 5 % of itself looks poor, and a three-metre "
       + "plant bed with the same 2.5 cm unused wastes under 1 %.  That is "
       + "why laboratory columns look terrible and plant beds do not, and why "
-      + "the plant bed's service time is not the laboratory column's scaled "
-      + "by length -- it is a little longer than that, because the unused "
+      + "the plant bed's service time is not the laboratory column's "
+      + "breakthrough time scaled by length -- it is a little longer than that, because the unused "
       + "length is added once rather than scaled.  Which knob re-runs the "
       + "engine and which does not: the velocity, length, temperature, "
-      + "pressure and horizon knobs write the witness's dict and RE-RUN the "
+      + "pressure and horizon knobs write the witness's dict and re-run the "
       + "bed in your browser; the criterion, the service time and the "
-      + "design flow are POST-PROCESSING and re-draw only, because none of "
+      + "design flow are post-processing and re-draw only, because none of "
       + "them changes the curve the column produced.",
   },
   {
@@ -321,7 +321,7 @@ m_\mathrm{ads} &= \rho_b \frac{\pi D^2}{4} L_\mathrm{full}
     body: "A single bed is a batch device, so a continuous plant runs two: "
       + "one loads while the other is regenerated, and they swap at or "
       + "before t_req.  The service time you just sized for is therefore an "
-      + "upper bound on the time the OTHER bed has for its regeneration -- a "
+      + "upper bound on the time the other bed has for its regeneration -- a "
       + "hot purge, a pressure swing, a displacement -- which has to finish "
       + "inside it, or a third bed is needed (each bed's full cycle, loading "
       + "plus regeneration, is twice that step when the swap is "
@@ -329,7 +329,7 @@ m_\mathrm{ads} &= \rho_b \frac{\pi D^2}{4} L_\mathrm{full}
       + "cases in the corpus: batch21_tsa_hot_purge runs one "
       + "temperature-swing half-cycle, batch23_tsa_cycles runs three cycles "
       + "in one campaign, and batch24_blowdown_inert is the pressure-swing "
-      + "blowdown witness.  This page sizes the LOADING step of a clean bed "
+      + "blowdown witness.  This page sizes the loading step of a clean bed "
       + "and teaches none of that.",
   },
 ];
@@ -337,7 +337,7 @@ m_\mathrm{ads} &= \rho_b \frac{\pi D^2}{4} L_\mathrm{full}
 export const LUB_SCALEUP_LIMITS: readonly LessonLimit[] = [
   {
     id: "constant-pattern",
-    title: "Constant pattern is ASSUMED, not checked by the tool.",
+    title: "Constant pattern is assumed, not checked by the tool.",
     body: "Every length here rests on the zone travelling unchanged, which a "
       + "favourable isotherm and a column longer than the zone buy.  The tool "
       + "cannot tell from one curve whether the zone had settled; the "
@@ -376,7 +376,7 @@ export const LUB_SCALEUP_LIMITS: readonly LessonLimit[] = [
       + "service time.  The pressure drop across a bed that long, packed "
       + "with that particle size, at that velocity, is not computed here, "
       + "and it can rule the design out — a shorter, wider bed at a lower "
-      + "velocity is then the answer, with a LUB measured at THAT velocity.",
+      + "velocity is then the answer, with a LUB measured at that velocity.",
   },
   {
     id: "single-adsorbate",
@@ -399,16 +399,16 @@ export const LUB_SCALEUP_LIMITS: readonly LessonLimit[] = [
   },
   {
     id: "model-not-measurement",
-    title: "The engine's curve is a MODEL, and the measured column is empty "
+    title: "The engine's curve is a model, and the measured column is empty "
       + "until a case brings one.",
     body: "Everything on the plot by default is the engine's integration of "
       + "the witness -- the same 1-D, LDF, first-order-upwind model the "
-      + "breakthrough tool draws, mesh spreading included.  A MEASUREMENT "
+      + "breakthrough tool draws, mesh spreading included.  A measurement "
       + "enters through the open case: ship `constant/experimental/"
       + "breakthrough.csv` (a `t_s,c_over_c0` header, `#` comments allowed, "
       + "one row per sample, the same shape as the digitised figures under "
       + "membrane12's constant/experimental/) and the tool draws it as "
-      + "markers beside the engine's curve and runs the SAME arithmetic on "
+      + "markers beside the engine's curve and runs the same arithmetic on "
       + "it, labelled measured.  No tutorial ships one today, and the tool "
       + "says so rather than inventing a curve.",
   },

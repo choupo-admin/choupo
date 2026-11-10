@@ -378,7 +378,7 @@ export function SiteProcessPriceTool(): JSX.Element {
             <Num label="Shelf price" unit="currency per pack" value={shelf} step={0.5} w={170} onChange={setShelf} />
           </Group>
           <PanTable>
-            <Table.Thead><Table.Tr><Table.Th>Stage</Table.Th><Table.Th ta="right">Price above</Table.Th><Table.Th ta="right">Takes</Table.Th><Table.Th ta="right">Price below</Table.Th></Table.Tr></Table.Thead>
+            <Table.Thead><Table.Tr><Table.Th>Stage</Table.Th><Table.Th ta="right">Price above, per pack</Table.Th><Table.Th ta="right">Takes, per pack</Table.Th><Table.Th ta="right">Price below, per pack</Table.Th></Table.Tr></Table.Thead>
             <Table.Tbody data-chain-down="">
               {down.rows.map((r, k) => (
                 <Table.Tr key={k}><Table.Td>{r.stage}</Table.Td><Table.Td ta="right">{f(r.priceBefore, 4)}</Table.Td>
@@ -403,7 +403,7 @@ export function SiteProcessPriceTool(): JSX.Element {
             <Num label="Ex-factory price the plant needs" unit="currency per pack" value={exNeed} step={0.5} w={220} onChange={setExNeed} />
           </Group>
           <PanTable>
-            <Table.Thead><Table.Tr><Table.Th>Stage (from the plant gate up)</Table.Th><Table.Th ta="right">Price below</Table.Th><Table.Th ta="right">Adds</Table.Th><Table.Th ta="right">Price above</Table.Th></Table.Tr></Table.Thead>
+            <Table.Thead><Table.Tr><Table.Th>Stage (from the plant gate up)</Table.Th><Table.Th ta="right">Price below, per pack</Table.Th><Table.Th ta="right">Adds, per pack</Table.Th><Table.Th ta="right">Price above, per pack</Table.Th></Table.Tr></Table.Thead>
             <Table.Tbody data-chain-up="">
               {upNeed.rows.map((r, k) => (
                 <Table.Tr key={k}><Table.Td>{r.stage}</Table.Td><Table.Td ta="right">{f(r.priceBefore, 4)}</Table.Td>

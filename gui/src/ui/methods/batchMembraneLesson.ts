@@ -316,7 +316,7 @@ N &= \frac{\int Q_d\, \mathrm{d}t}{V_0} &\qquad& \text{the wash clock}
         unit: "kmol/m³" },
       { sym: "R", means: "the rejection, held constant -- the assumption "
         + "every line here spends" },
-      { sym: "N", means: "the diavolumes of the wash, counted in vessel volumes of the retentate AS IT IS during the wash: V_0 for a wash of the initial charge (step 3's clock), V_0/VCF after a concentration -- the volume dN = Q_p dt / V divides by" },
+      { sym: "N", means: "the diavolumes of the wash, counted in vessel volumes of the retentate as it is during the wash: V_0 for a wash of the initial charge (step 3's clock), V_0/VCF after a concentration -- the volume dN = Q_p dt / V divides by" },
       { sym: "\\mathrm{d}N",
         means: "an element of the wash clock, Q_p dt / V" },
       { sym: "\\mathrm{VCF}",
@@ -436,7 +436,7 @@ c_m > c_b & \text{the wall is richer than the bulk}\\[8pt]
     where: [
       { sym: "V_\\mathrm{permeated}",
         means: "the cumulative permeate volume, an integrated state of the run",
-        unit: "m^3" },
+        unit: "m³" },
       { sym: "A_\\mathrm{eff}",
         means: "the effective water permeance the transport "
         + "law is handed -- what the membrane still has", unit: "m/(s·Pa)" },
@@ -470,7 +470,7 @@ c_m > c_b & \text{the wall is richer than the bulk}\\[8pt]
       + "the tool's witness toggle to put the two shipped cases side by side: "
       + "diafilter01 and diafilter02 are the same charge, area, pressure and "
       + "horizon, and the only difference between them is the fouling block, "
-      + "so the difference in the answer IS the fouling.  Read diafilter02's "
+      + "so the difference in the answer is the fouling.  Read diafilter02's "
       + "own header before believing its constant: a fully dissolved brine "
       + "has nothing to deposit, the value is declared hypothetical in the "
       + "case, and what the case demonstrates is the consequence of a decline "
@@ -479,8 +479,8 @@ c_m > c_b & \text{the wall is richer than the bulk}\\[8pt]
   {
     n: 7,
     title: "The trade you actually make: purity against product and time",
-    body: "Washing longer buys purity and costs two things.  It costs product "
-      + ", because no rejection is one and the exponent of step 4 never "
+    body: "Washing longer buys purity and costs two things.  It costs product, "
+      + "because no rejection is one and the exponent of step 4 never "
       + "stops running; and it costs time, because every diavolume is a "
       + "vessel volume of permeate that has to go through the membrane.  The "
       + "time is where the design decision lives.  For a fixed inventory of "
@@ -696,7 +696,7 @@ G_\mathrm{max} = \dfrac{\ln\!\left( 1 - \mathrm{loss}_\mathrm{goal} \right)}{R -
         + "the product loss can see" },
       { sym: "\\mathrm{VCF}",
         means: "the volume concentration factor of step 3" },
-      { sym: "N", means: "the diavolumes of the wash, counted in vessel volumes of the retentate AS IT IS during the wash: V_0 for a wash of the initial charge (step 3's clock), V_0/VCF after a concentration -- the volume dN = Q_p dt / V divides by" },
+      { sym: "N", means: "the diavolumes of the wash, counted in vessel volumes of the retentate as it is during the wash: V_0 for a wash of the initial charge (step 3's clock), V_0/VCF after a concentration -- the volume dN = Q_p dt / V divides by" },
       { sym: "R", means: "the retention of the product, held constant "
         + "through the whole process -- the same assumption step 4 spends, "
         + "and step 5 is about why it is not true" },
@@ -743,7 +743,7 @@ export const BATCH_MEMBRANE_LIMITS: readonly LessonLimit[] = [
     body: "A reader who knows how pilot and production plants are actually "
       + "run will look for a third mode, and it is not a mode of this unit: "
       + "a feed-and-bleed loop is a steady module inside a recirculating "
-      + "tank, so Choupo builds it as a FLOWSHEET -- at steady state as a "
+      + "tank, so Choupo builds it as a flowsheet -- at steady state as a "
       + "steady recycle (tutorials/steady/membranes/membrane18_nf_feed_and_"
       + "bleed), and in time under choupoSemiContinuous, the module wrapped "
       + "as `quasiSteady` and re-solved at every instant beside a "
@@ -758,8 +758,8 @@ export const BATCH_MEMBRANE_LIMITS: readonly LessonLimit[] = [
     body: "Where the run and the hand law part, the hand law's assumption is "
       + "what failed, and the rejection trajectory beside them says how.  "
       + "Nothing on this page adjusts either number to close the gap, and "
-      + "nothing here judges the engine's answer to be right -- the goldens "
-      + "of the two witnesses pin what this model gives, and neither case is "
+      + "nothing here judges the engine's answer to be right -- the stored "
+      + "reference results of the two witness cases record what this model gives, and neither case is "
       + "validated against a measured diafiltration.",
   },
   {

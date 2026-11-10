@@ -307,16 +307,16 @@ describe("the LUB scale-up lesson", () => {
 
   it("states the constant-pattern premise up front, and when it fails", () => {
     const s1 = LUB_SCALEUP_STEPS[0]!;
-    expect(s1.body).toContain("WITHOUT CHANGING SHAPE");
-    expect(s1.note).toMatch(/UNFAVOURABLE or LINEAR/);
-    expect(s1.note).toMatch(/SHORTER than/);
+    expect(s1.body).toContain("without changing shape");
+    expect(s1.note).toMatch(/unfavourable or linear/);
+    expect(s1.note).toMatch(/shorter than/);
   });
 
   it("reads t_b and t_st off the curve and names the engine's own t_st beside it", () => {
     const s2 = LUB_SCALEUP_STEPS[1]!;
     expect(s2.formula).toContain(String.raw`\int_0^\infty \left( 1 - \frac{c_\mathrm{out}}{c_\mathrm{in}} \right) \mathrm{d}t`);
     expect(s2.note).toContain("t_stoichiometric_<i>");
-    expect(s2.note).toContain("LOWER BOUND");
+    expect(s2.note).toContain("lower bound");
   });
 
   it("checks the curve's capacity against the isotherm through R_f", () => {
@@ -331,8 +331,8 @@ describe("the LUB scale-up lesson", () => {
     expect(s4.formula).toContain(String.raw`\mathrm{LUB} &= L_\mathrm{lab} \left( 1 - \frac{t_b}{t_\mathrm{st}} \right)`);
     expect(s5.formula).toContain(String.raw`L_\mathrm{full} &= L_\mathrm{es} + \mathrm{LUB}`);
     expect(s5.formula).toContain(String.raw`D &= \sqrt{\frac{4Q}{\pi u}}`);
-    expect(s5.note).toMatch(/RE-RUN/);
-    expect(s5.note).toMatch(/POST-PROCESSING/);
+    expect(s5.note).toMatch(/re-runs/);
+    expect(s5.note).toMatch(/post-processing/);
   });
 
   it("names the regeneration cases rather than teaching them, and lists its limits", () => {

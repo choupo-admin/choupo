@@ -167,10 +167,10 @@ describe("the lesson and its placement", () => {
 
   it("states the pivot and the slope where the student can see them", () => {
     const s3 = FLASH_STEPS.find((s) => s.n === 3)!;
-    expect(s3.formula).toContain("(z, z)");
-    expect(s3.formula).toContain("−L/V");
-    expect(s3.note).toContain("VERTICAL");
-    expect(s3.note).toContain("HORIZONTAL");
+    expect(s3.formula).toContain("(z,\\,z)");
+    expect(s3.formula).toContain("slope } -L/V");
+    expect(s3.note).toContain("vertical");
+    expect(s3.note).toContain("horizontal");
   });
 
   it("names the binary limit rather than letting it be generalised", () => {
@@ -178,7 +178,7 @@ describe("the lesson and its placement", () => {
     //  is no x-y plane to draw it in and Rachford-Rice stops being a picture.
     //  A page that stayed silent would invite exactly the wrong inference.
     const b = FLASH_LIMITS.find((l) => l.id === "binary")!;
-    expect(b.title).toContain("BINARY ONLY");
+    expect(b.title).toContain("Binary only");
     expect(b.body).toContain("Rachford-Rice");
   });
 
@@ -186,7 +186,7 @@ describe("the lesson and its placement", () => {
     //  The construction must be answerable to a solver that did not use it.
     expect(ENGINE_CHECK.VF).toBeCloseTo(0.30398357314, 10);
     expect(SRC).toContain("flash01_benzene_toluene");
-    expect(SRC).toContain("property of the DRAWING");
+    expect(SRC).toContain("property of the drawing");
   });
 
   it("says which knobs re-run the engine and which are geometry", () => {

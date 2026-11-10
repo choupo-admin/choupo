@@ -44,7 +44,9 @@
   THE EQUATIONS ARE LaTeX (2026-09-22, Vitor's order: render them the way the
   guides do).  `formula`, every `derivation[].eq` and every `where[].sym` carry
   LaTeX and are drawn by KaTeX; `body`, `note`, `where[].means` and
-  `where[].unit` are prose and are drawn as prose.
+  `where[].unit` are prose and are drawn as prose; inside `body`, `note`, a
+  `leadsTo.body` and a limit's `body` a symbol may be written \\( ... \\) and is
+  drawn by KaTeX inline (C277), so prose never shows an underscore.
 
   THREE DECLARATIONS INSIDE AN EQUATION, and check_lesson_symbols reads the
   same three, which is why it no longer guesses:
@@ -203,7 +205,7 @@ export function LessonStepView({ step }: { step: LessonStep }): JSX.Element {
   return (
     <Box>
       <Title order={5}>{step.n} · {step.title}</Title>
-      <Text size="sm" mt={4}>{step.body}</Text>
+      <Text size="sm" mt={4}><TexText text={step.body} /></Text>
       {step.derivation && step.derivation.length > 0 && (
         <Box my={8} px="sm" py={8}
           style={{ border: `1px solid ${BORDER}`, borderRadius: 4 }}>
@@ -239,7 +241,7 @@ export function LessonStepView({ step }: { step: LessonStep }): JSX.Element {
           )}
         </Box>
       )}
-      {step.note && <Text size="sm" c="dimmed">{step.note}</Text>}
+      {step.note && <Text size="sm" c="dimmed"><TexText text={step.note} /></Text>}
       {step.leadsTo && (
         <Box my={10} px="sm" py={8}
           style={{ border: `1px solid ${BORDER}`, borderRadius: 4,
@@ -247,7 +249,7 @@ export function LessonStepView({ step }: { step: LessonStep }): JSX.Element {
           <Text size="xs" c="dimmed" fw={700} tt="uppercase" mb={6}>
             where does this lead?
           </Text>
-          <Text size="sm">{step.leadsTo.body}</Text>
+          <Text size="sm"><TexText text={step.leadsTo.body} /></Text>
           {step.leadsTo.chain && (
             <Box mt={6}><Tex src={step.leadsTo.chain} mode="display" /></Box>
           )}
@@ -296,7 +298,7 @@ export function LessonLimits(
         {limits.map((l) => (
           <Box key={l.id} mb={8} data-chapter-anchor={chapterSlug(l.title)}>
             <Text size="sm" fw={600}>{l.title}</Text>
-            <Text size="sm" c="dimmed">{l.body}</Text>
+            <Text size="sm" c="dimmed"><TexText text={l.body} /></Text>
           </Box>
         ))}
       </Box>

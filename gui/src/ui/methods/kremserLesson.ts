@@ -134,7 +134,7 @@ export const KREMSER_STEPS: readonly LessonStep[] = [
       + "both branches meet there, and the limit is the textbook N/(N+1).  "
       + "The engine's stagewise answer is plotted against this formula on the "
       + "same axes, so you can see where the assumption holds and where it "
-      + "starts to cost you.  Note what that comparison is against: This "
+      + "starts to cost you.  Note what that comparison is against: this "
       + "absorber model — Henry's law, constant total flows, K varying with "
       + "stage temperature only — not a general non-ideal absorber.  "
       + "Agreement here does not validate the formula, or the column, "

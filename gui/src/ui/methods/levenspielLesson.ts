@@ -69,11 +69,11 @@ export const LEVENSPIEL_STEPS: readonly LessonStep[] = [
         + "each stored point.  The two are the same equation with the "
         + "variable changed, which is why a strip's area is a slice of volume "
         + "per mole of feed.", unit: "dimensionless" },
-      { sym: "r_A", means: "The rate of reaction OF A per unit volume.  Since "
+      { sym: "r_A", means: "The rate of reaction of A per unit volume.  Since "
         + "A is a reactant its stoichiometric coefficient is negative, so "
         + "r_A itself is negative while the reaction runs forward.  That is "
         + "why the minus sign in −r_A is written explicitly: it makes the "
-        + "plotted quantity a positive rate of CONSUMPTION.  On a reversible "
+        + "plotted quantity a positive rate of consumption.  On a reversible "
         + "law it goes negative past equilibrium — the sign is information, "
         + "not an error.", unit: "mol/(m³·s)" },
     ],
@@ -103,7 +103,7 @@ V_\mathrm{CSTR} &= \frac{F_{A0}\, X_\mathrm{exit}}{\left.(-r_A)\right|_\mathrm{e
     where: [
       { sym: "V_\\mathrm{CSTR}",
         means: "The volume of the perfectly mixed tank — the "
-        + "RECTANGLE.  Nothing is approximated to get it: it is the exact "
+        + "rectangle.  Nothing is approximated to get it: it is the exact "
         + "mole balance of an ideal CSTR, drawn instead of solved.",
         unit: "m³" },
       { sym: "X_\\mathrm{exit}",
@@ -144,7 +144,7 @@ V_\mathrm{CSTR} &= \frac{F_{A0}\, X_\mathrm{exit}}{\left.(-r_A)\right|_\mathrm{e
         + "exit price for every mole, the tube pays each mole its own price.",
         unit: "m³" },
     ],
-    note: "The same reading explains tanks in SERIES.  Each tank is its own "
+    note: "The same reading explains tanks in series.  Each tank is its own "
       + "rectangle standing on the previous tank's conversion, so N tanks are "
       + "a staircase of rectangles over one curve — where the curve rises, "
       + "more than the area but less than one big tank, closing on the area "
@@ -195,7 +195,7 @@ C_P = 0 \text{ at } X = 0 \;&\Rightarrow\; -r_A = 0 \;\Rightarrow\; \frac{1}{-r_
       { sym: "C_P", means: "The concentration of a product, formed the same "
         + "way — there is no separate product path in the engine.  A product "
         + "enters the forward rate only if its stoichiometry entry declares "
-        + "its own reaction ORDER; an undeclared product contributes nothing. "
+        + "its own reaction order; an undeclared product contributes nothing. "
         + " That is what makes an autocatalytic law expressible here rather "
         + "than a special case.", unit: "mol/m³" },
       { sym: "k", means: "The rate constant of the law as written.  Its units "
@@ -206,7 +206,7 @@ C_P = 0 \text{ at } X = 0 \;&\Rightarrow\; -r_A = 0 \;\Rightarrow\; \frac{1}{-r_
     note: "Read this off the plot rather than memorising which reactor wins: "
       + "whichever way the curve runs, compare the rectangle at the exit "
       + "height against the area, and the smaller one is the smaller reactor.  "
-      + "neither witness below is autocatalytic — both are pseudo-first-order "
+      + "Neither witness below is autocatalytic — both are pseudo-first-order "
       + "in ethanol, so both curves rise — so the falling branch is described "
       + "here, not demonstrated.  Choupo can express one — but note where: a "
       + "product that declares its own `order` in the stoichiometry list "
@@ -215,7 +215,7 @@ C_P = 0 \text{ at } X = 0 \;&\Rightarrow\; -r_A = 0 \;\Rightarrow\; \frac{1}{-r_
       + "name: its extent Newton claims the residual is monotone in the "
       + "extent, which a forward order on a product breaks, so it points you "
       + "at the multi-reaction `reactions ( ... )` grammar instead.  The "
-      + "asymmetry is load-bearing on this very step, where the CSTR is the "
+      + "asymmetry matters on this very step, where the CSTR is the "
       + "unit that wins.",
   },
   {
@@ -237,14 +237,14 @@ C_P = 0 \text{ at } X = 0 \;&\Rightarrow\; -r_A = 0 \;\Rightarrow\; \frac{1}{-r_
 \end{aligned}`,
     where: [
       { sym: "V_\\mathrm{total}",
-        means: "The volume of the two reactors in SERIES: a "
+        means: "The volume of the two reactors in series: a "
         + "tank carried to the minimum of the ordinate, then a tube taking "
         + "the rest.  This combination is a lesson construction — no engine "
         + "site computes it and no tutorial flowsheet puts a tank and a tube "
         + "in series, so what you see here is the two published volumes "
         + "added, not a simulated train.", unit: "m³" },
       { sym: "X^*", means: "The conversion at which you switch from the tank "
-        + "to the tube — the abscissa of the curve's MINIMUM.  The derivative "
+        + "to the tube — the abscissa of the curve's minimum.  The derivative "
         + "in the second line is why: at the minimum the extra volume of "
         + "widening the rectangle exactly matches the strip the tube would "
         + "have cost.", unit: "dimensionless" },

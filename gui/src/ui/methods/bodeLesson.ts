@@ -102,8 +102,8 @@ export const BODE_STEPS: readonly LessonStep[] = [
   },
   {
     n: 2,
-    title: "Why both axes are logarithmic, and what a decibel is",
-    body: "Two reasons, and the second is the one that matters.  A process, "
+    title: "Why frequency and magnitude are logarithmic, and what a decibel is",
+    body: "Two reasons, and the first is the one that matters.  A process, "
       + "a valve, a sensor and a controller sit in series, and their "
       + "amplitude ratios multiply while their phases add.  Take the "
       + "logarithm of the magnitude and multiplication becomes addition too: "
@@ -329,7 +329,7 @@ K_p &= K_c &\qquad K_i &= \frac{K_c}{\tau_I} &\qquad K_d &= K_c \tau_D
         means: "Integral time: how long the integral term takes "
         + "to repeat the proportional action.  Small τ_I is aggressive "
         + "integral action", unit: "s" },
-      { sym: "\\tau_D", means: "DERIVATIVE TIME — how far ahead the derivative "
+      { sym: "\\tau_D", means: "Derivative time — how far ahead the derivative "
         + "term extrapolates", unit: "s" },
       { sym: "K_p \\,/\\, K_i \\,/\\, K_d",
         means: "the three gains Choupo's dict "
@@ -375,10 +375,10 @@ L(i\omega) &= G_c(i\omega)\, G_p(i\omega)\\[4pt]
         + "times everything else in the ring (valve, sensor, delay)" },
       { sym: "G_p", means: "the process response — the plant as the "
         + "controller sees it, from manipulated variable to measurement" },
-      { sym: "\\omega_c", means: "the GAIN crossover frequency, where the "
+      { sym: "\\omega_c", means: "the gain crossover frequency, where the "
         + "open-loop magnitude passes through 1.  The phase margin is read "
         + "here", unit: "rad/s" },
-      { sym: "\\omega_u", means: "the PHASE crossover frequency, where the "
+      { sym: "\\omega_u", means: "the phase crossover frequency, where the "
         + "open-loop phase passes through −180°.  The gain margin is read "
         + "here.  It is also the frequency at which the loop would "
         + "oscillate", unit: "rad/s" },

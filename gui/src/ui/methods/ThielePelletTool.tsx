@@ -721,7 +721,7 @@ export function ThielePelletTool(): JSX.Element {
         <Text size="xs" mt={6}>
           Two things reach the reader this way. If the engine does not know the
           operation at all, this build&apos;s WebAssembly predates it — rebuild
-          with <code>make wasm-gui</code>. Otherwise the operation EXITS 1 when
+          with <code>make wasm-gui</code>. Otherwise the operation exits 1 when
           its numerical answer misses the case&apos;s own declared verification
           tolerance (field 1e-4 absolute, eta 1e-4 relative), and on a non-zero
           exit the browser run returns no CSV at all, so the shape is not drawn.
@@ -897,7 +897,7 @@ export function ThielePelletTool(): JSX.Element {
                   ? runs[0]!.diag!.nodes : "—"} points
               </Badge>
               <Tooltip withArrow multiline w={430}
-                label={"The generalised Weisz modulus M_W = eta*phi^2 with phi "
+                label={"The generalised Weisz modulus (eta times phi squared) with phi "
                   + "built on Lambda = V/S, exactly as the engine publishes "
                   + "it.  For a sphere Lambda = R/3, so the conventional "
                   + "Weisz-Prater number on the radius is nine times this "

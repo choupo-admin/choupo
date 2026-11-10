@@ -67,7 +67,7 @@ describe("the breakthrough lesson", () => {
     //  did not say so would read as one more staircase.
     const s1 = BREAKTHROUGH_STEPS[0]!;
     expect(prose(s1.body)).toContain("A fixed bed never does");
-    expect(prose(s1.body)).toContain("HISTORY");
+    expect(prose(s1.body)).toContain("history");
   });
 
   it("prints the two equations the unit actually integrates", () => {
@@ -77,13 +77,13 @@ describe("the breakthrough lesson", () => {
     expect(s1.formula).toContain(String.raw`\rho_b \frac{\partial q_i}{\partial t}`);
     expect(s1.formula).toContain(String.raw`D_\mathrm{ax} \frac{\partial^2 c_i}{\partial z^2}`);
     expect(s1.formula).toContain(String.raw`\frac{\partial q_i}{\partial t} &= k_i \left( q^*_i - q_i \right)`);
-    expect(prose(s1.note!)).toContain("LINEAR DRIVING FORCE");
+    expect(prose(s1.note!)).toContain("linear driving force");
     expect(prose(s1.note!)).toContain("first-order upwind");
   });
 
   it("defines the mass-transfer zone and why it crawls", () => {
     const s2 = BREAKTHROUGH_STEPS.find((s) => s.n === 2)!;
-    expect(prose(s2.body)).toContain("MASS-TRANSFER ZONE");
+    expect(prose(s2.body)).toContain("mass-transfer zone");
     expect(s2.formula).toContain(String.raw`R_f &= \varepsilon + \rho_b \frac{q^*(c_\mathrm{in})}{c_\mathrm{in}}`);
     expect(s2.formula).toContain(String.raw`u_\mathrm{zone} &= \frac{u}{R_f}`);
     expect(s2.formula).toContain(String.raw`t_\mathrm{st} &= \frac{L}{u}\, R_f`);
@@ -91,7 +91,7 @@ describe("the breakthrough lesson", () => {
 
   it("says the S-curve is the zone passing the exit, not a new object", () => {
     const s3 = BREAKTHROUGH_STEPS.find((s) => s.n === 3)!;
-    expect(prose(s3.body)).toContain("picture of the ZONE itself");
+    expect(prose(s3.body)).toContain("picture of the zone itself");
     expect(prose(s3.body)).toContain("steepness IS the zone");
     expect(s3.formula).toContain(String.raw`\int_0^\infty \left( 1 - \frac{c_\mathrm{out}}{c_\mathrm{in}} \right) \mathrm{d}t = t_\mathrm{st}`);
   });
@@ -105,7 +105,7 @@ describe("the design consequence — a switched bed is only partly used", () => 
     //  WIDTH of the zone.  Either half alone is not the lesson.
     expect(prose(s4.body)).toContain("everything upstream of the zone is saturated");
     expect(prose(s4.body)).toContain("downstream is still clean");
-    expect(prose(s4.body)).toContain("how WIDE the zone is");
+    expect(prose(s4.body)).toContain("how wide the zone is");
     expect(s4.formula).toContain(String.raw`\mathrm{LUB} = L \left( 1 - \frac{t_b}{t_\mathrm{st}} \right)`);
   });
 
@@ -150,9 +150,9 @@ describe("what sharpens or broadens the zone, and the cyclic reality", () => {
   const s5 = BREAKTHROUGH_STEPS.find((s) => s.n === 5)!;
 
   it("names the isotherm as the self-sharpening mechanism, both directions", () => {
-    expect(prose(s5.body)).toContain("FAVOURABLE isotherm");
+    expect(prose(s5.body)).toContain("favourable isotherm");
     expect(prose(s5.body)).toContain("constant pattern");
-    expect(prose(s5.body)).toContain("UNFAVOURABLE isotherm");
+    expect(prose(s5.body)).toContain("unfavourable isotherm");
     expect(prose(s5.body)).toContain("spreads for the whole length of the bed");
   });
 
@@ -182,12 +182,12 @@ describe("what sharpens or broadens the zone, and the cyclic reality", () => {
   });
 
   it("says why breakthrough time is a commercial number: beds run in PAIRS", () => {
-    expect(prose(s5.note!)).toContain("PAIRS");
+    expect(prose(s5.note!)).toContain("pairs");
     //  t_b BOUNDS the loading step; it is not the cycle time (C22 slice 2).
-    expect(prose(s5.note!)).toContain("breakthrough time BOUNDS the loading step");
+    expect(prose(s5.note!)).toContain("breakthrough time bounds the loading step");
     expect(prose(s5.note!)).not.toContain("breakthrough time IS the cycle time");
     //  And that this plot is the loading half only.
-    expect(prose(s5.note!)).toContain("ONE loading step");
+    expect(prose(s5.note!)).toContain("one loading step");
   });
 });
 
@@ -354,7 +354,7 @@ describe("R_f is the RETENTION factor, everywhere (audited 2026-08-31)", () => {
   it("the gloss uses the engine's own word and its KPI key", () => {
     const s = BREAKTHROUGH_STEPS.find((x) => x.n === 2)!;
     const g = prose(s.where!.find((w) => w.sym === "R_f")!.means);
-    expect(g).toContain("RETENTION FACTOR");
+    expect(g).toContain("retention factor");
     expect(g).toContain("retention_factor_");
     expect(g).not.toMatch(/RETARDATION/i);
   });
@@ -370,7 +370,7 @@ describe("R_f is the RETENTION factor, everywhere (audited 2026-08-31)", () => {
   it("the transit time names the SUPERFICIAL velocity it is measured on", () => {
     const s = BREAKTHROUGH_STEPS.find((x) => x.n === 2)!;
     const note = prose(s.note ?? "");
-    expect(note).toContain("SUPERFICIAL");
+    expect(note).toContain("superficial");
     //  the interstitial number the page previously omitted
     expect(note).toContain("u/ε");
     expect(note).toContain("4 s");

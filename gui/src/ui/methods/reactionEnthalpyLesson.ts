@@ -67,7 +67,7 @@ export const ENTHALPY_STEPS: readonly LessonStep[] = [
         + "enthalpy change when the reactants, each pure in its standard "
         + "state, become the products in theirs — at the temperature T",
         unit: "J per mole of reaction" },
-      { sym: "T", means: "the temperature it is evaluated at — ANY "
+      { sym: "T", means: "the temperature it is evaluated at — any "
         + "temperature, not only 298.15 K", unit: "K" },
       { sym: "\\nu_i", means: "the stoichiometric coefficient of species i, "
         + "negative for a reactant and positive for a product", unit: "—" },
@@ -253,7 +253,7 @@ K(T)`,
       + "reaction heat capacity by the distance from 298.15 K and compare "
       + "with the tabulated value.  For ammonia the engine's own numbers "
       + "give about −21 J per kelvin per mole of ammonia between 298 and "
-      + "400 K, and 475 K of distance makes that about −10 kJ against −46: "
+      + "400 K, and 475 K of distance (298 to 773 K) makes that about −10 kJ against −46: "
       + "far too large to ignore.  The same check also shows the limit of a "
       + "constant reaction heat capacity — carried to 773 K it predicts −55.9 "
       + "kJ against the engine's −53.4, because the heat capacities "

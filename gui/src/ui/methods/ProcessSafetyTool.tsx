@@ -858,7 +858,7 @@ function LoopComparison({ loops }: { loops: Loops }): JSX.Element {
               );
             })}
             <Table.Tr>
-              <Table.Td>hydrogen and ammonia HELD in the loop</Table.Td>
+              <Table.Td>hydrogen and ammonia held in the loop</Table.Td>
               <Table.Td colSpan={3}>
                 not computed: these cases size no vessel, so there is no
                 volume to hold anything (lesson step 15)

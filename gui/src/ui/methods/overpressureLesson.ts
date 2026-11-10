@@ -251,7 +251,7 @@ export const OVERPRESSURE_STEPS: readonly LessonStep[] = [
       { sym: "Q", means: "the heat the fire puts into the liquid", unit: "W" },
       { sym: "C", means: "the API 521 coefficient: 21 000 or 34 500 in "
         + "Btu/h with A in ft2 (43 190 or 70 960 in W with A in m2)",
-        unit: "W/m^1.64" },
+        unit: "W/m to the power 1.64" },
       { sym: "F", means: "the environment factor: 1 for a bare vessel",
         unit: "–" },
       { sym: "A_\\mathrm{wet}", means: "the wetted surface the fire can "
@@ -391,7 +391,7 @@ export const OVERPRESSURE_STEPS: readonly LessonStep[] = [
     body: "A conventional spring-loaded valve holds its disc shut with a "
       + "spring; whatever pressure sits on the outlet side pushes on the "
       + "disc too, so back pressure changes when it opens and how far it "
-      + "lifts.  Back pressure comes in two kinds: Superimposed, already in "
+      + "lifts.  Back pressure comes in two kinds: superimposed, already in "
       + "the discharge header before the valve opens (other valves "
       + "relieving into the same flare header), and built-up, made by this "
       + "valve's own flow through its outlet piping.  Secondary summaries of "
@@ -523,7 +523,7 @@ export const OVERPRESSURE_STEPS: readonly LessonStep[] = [
       + "much lower than a gas valve's, and there are two more corrections: "
       + "Kw for back pressure on a balanced valve and Kv for a viscous "
       + "liquid (both 1 here, and named rather than computed).  The "
-      + "equation is NOT universal.  It carries a hypothesis none of its "
+      + "equation is not universal.  It carries a hypothesis none of its "
       + "symbols shows: the liquid does not vaporise anywhere in the valve.  "
       + "The lowest pressure in a liquid valve is not at its outlet but at "
       + "the vena contracta, the narrowest section of the jet, below the "
@@ -631,7 +631,7 @@ export const OVERPRESSURE_STEPS: readonly LessonStep[] = [
       + "argument: the relief valve on the methyl isocyanate tank opened, "
       + "and the scrubber and the flare behind it were not in service, so "
       + "the relief went into the city.  The inequality below is an "
-      + "illustrative capacity condition: Necessary, and nowhere near "
+      + "illustrative capacity condition: necessary, and nowhere near "
       + "sufficient.  The rate it compares is the sum over every device one "
       + "cause opens at once -- a power failure or a cooling-water failure "
       + "lifts many valves into one header together -- which is why a "
@@ -698,7 +698,7 @@ export const OVERPRESSURE_STEPS: readonly LessonStep[] = [
       + "two-phase flow passes is the question "
       + "Leung's omega method answers (AIChE J. 32 (1986) 1743), and the "
       + "method API 520 Part I builds its two-phase sizing on.  Its "
-      + "equations are NOT on this page: neither Leung's papers nor the "
+      + "equations are not on this page: neither Leung's papers nor the "
       + "standard's annex could be read for it, and a correlation copied "
       + "from memory is the false source this project refuses to publish.",
     formula: String.raw`W = \frac{Q_\mathrm{r}}{x\, \lambda}`,
@@ -790,7 +790,7 @@ export const OVERPRESSURE_LIMITS: readonly LessonLimit[] = [
       + "temperature, the latent heat).  This page's arithmetic is its own, "
       + "and the engine's reliefValve sizer (a sizing-pass item, worked in "
       + "the green-ammonia basic design) carries the same equations, held to "
-      + "the same published examples by a gate.  No flowsheet case relieves, "
+      + "the same published examples by an automated check.  No flowsheet case relieves, "
       + "and no balance ever sees a relief stream." },
   { id: "ideal-k",
     title: "k is the ideal-gas ratio",

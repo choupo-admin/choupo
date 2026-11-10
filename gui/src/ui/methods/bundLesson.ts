@@ -68,7 +68,7 @@ export const BUND_SOURCES: readonly BundSource[] = [
       + "3(2)(d), no valve, pipe or opening for draining through them; "
       + "3(2)(e), a fill or draw-off pipe through them adequately sealed; "
       + "3(5), drip trays for drums; and regulation 2, its scope -- England, "
-      + "oil, and NOT containers of 200 litres or less, containers in a "
+      + "oil, and not containers of 200 litres or less, containers in a "
       + "building or wholly underground, small domestic stores, premises "
       + "refining oil or distributing it onward, or oil used on a farm." },
   { id: "hse-hsg176", kind: "guidance",
@@ -128,7 +128,7 @@ export const BUND_SOURCES: readonly BundSource[] = [
       + "remote pits, each rule declared in the case's own words as an "
       + "author-set assumption, not a transcription of any code.  The "
       + "green-ammonia bund's published volumes are reproduced by this "
-      + "page's arithmetic in the gate that holds the two together." },
+      + "page's arithmetic in the test that holds the two together." },
 ];
 
 /** The page's one-line statement of what the 110 % / 25 % rule is here. */
@@ -171,7 +171,7 @@ export const BUND_STEPS: readonly LessonStep[] = [
       + "a leak detector, a round).  Isolation stops it growing (a shut-off "
       + "valve, a pump trip).  Secondary containment holds what has already "
       + "escaped.  Mitigation limits what follows (fire-fighting, emergency "
-      + "response).  A bund does NOT prevent the initiating event: the tank "
+      + "response).  A bund does not prevent the initiating event: the tank "
       + "has already failed when the bund begins to work.  What it does is "
       + "stop, or limit, the propagation -- the spill reaching a drain, a "
       + "river, an ignition source or the next tank.  That is why a bund is "
@@ -259,7 +259,7 @@ export const BUND_STEPS: readonly LessonStep[] = [
       + "which also carries a lying cylinder's circular segment ("
       + ENGINE + ":73 (displacedLying)) and a box (" + ENGINE
       + ":88 (displacedBox)); the page's twin is bund.ts:69 "
-      + "(displacedStanding) and the gate holds the two to the same "
+      + "(displacedStanding) and a test holds the two to the same "
       + "numbers.  In a Choupo layout a solid plinth must be declared into "
       + "the item's footprint height, because the check counts an item's "
       + "envelope from its declared base up.",
@@ -374,7 +374,7 @@ export const BUND_STEPS: readonly LessonStep[] = [
       + "(bund.ts:292 (levelOf), a bisection: the free volume only grows "
       + "with the level).  If the volume is more than the free volume at the "
       + "wall top, the level is the wall top and the rest has gone over it: "
-      + "Overtopping.  What overtops is no longer contained -- it is on the "
+      + "overtopping.  What overtops is no longer contained -- it is on the "
       + "road, in the drain, at the next tank -- and the balance of step 3 "
       + "keeps it, because it is still somewhere.",
     formula: String.raw`V_\mathrm{free}(e) = V_\mathrm{bund}\ \ (e \le h_\mathrm{w}), \qquad V_\mathrm{over} = V_\mathrm{bund} - V_\mathrm{free}\left(h_\mathrm{w}\right)\ \text{when positive}`,
@@ -458,7 +458,7 @@ export const BUND_STEPS: readonly LessonStep[] = [
       + "low, wide bund makes a larger cloud and a larger fire than a high, "
       + "narrow one for the same spill, and a fire in a bund heats the tanks "
       + "standing in it.  This page states that qualitatively and computes "
-      + "only the surface (bund.ts:275 (poolArea)).  It is NOT a fire or "
+      + "only the surface (bund.ts:275 (poolArea)).  It is not a fire or "
       + "dispersion model, and not a certified risk analysis: the "
       + "evaporation rate, the size of the cloud and the radiation of the "
       + "fire are questions of their own.",

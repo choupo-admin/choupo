@@ -92,7 +92,7 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
     title: "What the tear vector holds, and where the two solvers differ",
     body: "Before the method, one thing to see: what exactly is being iterated. A process stream carries a total flow, a composition, a "
       + "temperature, a pressure and a phase split. The phase split follows "
-      + "from a flash and is not torn. The pressure IS torn, since a loop "
+      + "from a flash and is not torn. The pressure is torn, since a loop "
       + "whose units change the pressure has a steady state only if the "
       + "pressure that comes back is the pressure that was handed in (a "
       + "recycle that returns 3 bar after being handed 5 bar is not "
@@ -219,7 +219,7 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
     note: "Where you meet it: Wegstein is the default recycle accelerator "
       + "of every sequential-modular simulator. The source is Wegstein, "
       + "J. H. (1958), Accelerating convergence of iterative processes, "
-      + "Comm. ACM 1(6), 9-13. Step 1 of the previous page, Relaxation, "
+      + "Comm. ACM 1(6), 9-13. Step 5 of the previous page, Relaxation, "
       + "shows that this update is a relaxation x+ = (1 - w) x + w G(x) with "
       + "w = 1 - q. Note where q lives: between 0 and minus infinity for a "
       + "monotonically contracting direction (0 < s < 1). An oscillating but "
@@ -399,7 +399,7 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
       + "at zero the toy loop is two independent scalar problems and "
       + "Wegstein is very good at it; turn the coupling up and the "
       + "iteration count climbs while Newton, on a linear map, keeps "
-      + "landing in a single step. That gap IS the price.",
+      + "landing in a single step. That gap is the price.",
   },
   {
     n: 8,

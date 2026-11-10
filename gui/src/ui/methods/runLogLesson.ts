@@ -36,7 +36,7 @@ export const RUN_LOG_STEPS: readonly LessonStep[] = [
     title: "A run talks, and the log is where it says what it did",
     body: "Every run prints what it did while it did it: what it found, how "
       + "each unit converged, what it wrote, and what it wants you to know "
-      + "about the answer. From a terminal, runCase sends ALL of it — both "
+      + "about the answer. From a terminal, runCase sends all of it — both "
       + "the standard output and the standard error — into one file beside "
       + "the case, log.choupoSolve (" + at("runCaseRedirect") + ", "
       + at("runCaseLog") + "), and shows you only a summary: the last 14 "
@@ -50,7 +50,7 @@ export const RUN_LOG_STEPS: readonly LessonStep[] = [
       + "0 to 4, 3 when absent (" + at("verbosityRead") + "). The table "
       + "under the viewer says what each level adds, measured on flash01 — "
       + "and verbosity 0 is not silent. Pick a level and a run in the viewer: "
-      + "every line is coloured by what KIND of line it is, and a click on a "
+      + "every line is coloured by what kind of line it is, and a click on a "
       + "line says what it is and which line of the engine printed it.",
   },
   {
@@ -128,7 +128,7 @@ export const RUN_LOG_STEPS: readonly LessonStep[] = [
       + "Choupo's convergence home (" + at("rawL1") + ") divides the summed "
       + "residual by the spread of the very terms each equation balances ("
       + at("normFactor") + ", " + at("normalized") + "). The reactive "
-      + "flash takes its verdict there, and prints FIVE numbers and the "
+      + "flash takes its verdict there, and prints five numbers and the "
       + "criterion that decided: the raw "
       + "residual at the start and at the end, the normalised one at the "
       + "start and at the end, and their reduction (" + at("fiveNumbers")
@@ -168,7 +168,7 @@ export const RUN_LOG_STEPS: readonly LessonStep[] = [
         + "documented default, printed by the [convergence] line" },
     ],
     note: "The [convergence] line printed when the solve starts says which "
-      + "controls apply and whether the case DECLARED them or the defaults "
+      + "controls apply and whether the case declared them or the defaults "
       + "did (" + at("convergenceControls") + "). Of the runs on this page, "
       + "only the reactive flash prints the five numbers; the plain flash "
       + "reports its own final |g(V)|, and the recycle its relative |r|2.",
@@ -188,7 +188,7 @@ export const RUN_LOG_STEPS: readonly LessonStep[] = [
       + "loop has converged does the engine run them once more, with their "
       + "full trace, under \"Final pass with full unit logging\" ("
       + at("finalPass") + ").",
-    note: "So in a recycle case the unit blocks you read are the LAST pass, "
+    note: "So in a recycle case the unit blocks you read are the last pass, "
       + "the one at the answer — not the history of how it got there. That "
       + "history is the recycle table. Cut the loop to one iteration (the "
       + "\"exit 1\" run in the viewer) and the verdict becomes a WARNING: "
@@ -217,7 +217,7 @@ export const RUN_LOG_STEPS: readonly LessonStep[] = [
       + at("convergedWritten") + "). And then two blocks, in this order on "
       + "purpose: first whether the problem solved is the problem posed ("
       + at("divergenceFirst") + "), then every caveat about the answer ("
-      + at("caveatsAfter") + ") — you must learn WHICH problem was solved "
+      + at("caveatsAfter") + ") — you must learn which problem was solved "
       + "before reading how well.",
     note: "Both blocks are printed even when they have nothing to say: "
       + "\"PROBLEM SOLVED == PROBLEM POSED\" (" + at("divergenceNone") + ") "
@@ -231,22 +231,22 @@ export const RUN_LOG_STEPS: readonly LessonStep[] = [
   {
     n: 7,
     title: "Three kinds of message, and what each one asks of you",
-    body: "An ADVISORY qualifies the answer: the run went on, and told you "
+    body: "An advisory qualifies the answer: the run went on, and told you "
       + "something you need to know to trust the number — a vapour pressure "
       + "evaluated outside the range its fit declares (" + at("psat")
       + "), an enthalpy integrated beyond its data (" + at("cp") + "), a "
       + "model used beyond its trust range. It is printed where it "
       + "happens and put on the advisory log (" + at("psatLogged") + "), "
-      + "which is how it reaches the caveat block at the end. A DIVERGENCE "
-      + "says the answer is to a DIFFERENT question: shortcut01 asks for a "
+      + "which is how it reaches the caveat block at the end. A divergence "
+      + "says the answer is to a different question: shortcut01 asks for a "
       + "distillation and gets the Fenske-Underwood-Gilliland shortcut, and "
       + "the block names what was requested, what was solved and why ("
-      + at("divergenceBlock") + "). A REFUSAL means there is no answer: the "
+      + at("divergenceBlock") + "). A refusal means there is no answer: the "
       + "engine prints ERROR: with what is wrong and usually the remedy, "
       + "and exits with code 2 (" + at("error") + ", " + at("exit2") + ").",
     note: "The exit code is the one-number summary, and the browser prints "
       + "it too, as the worker's \"run_case returned rc=\" line: 0 is an "
-      + "answer; 1 is a run that finished WITHOUT converging — no "
+      + "answer; 1 is a run that finished without converging — no "
       + "converged/ is written (" + at("exit1") + ", "
       + at("convergedOnlyIfConverged") + "; the recount of 0/ after the run "
       + "also returns 1 when it fails, " + at("exit1Recount") + "); 2 is a "

@@ -487,7 +487,7 @@ export function PlantRunTool(): JSX.Element {
           </Group>
           <Tornado rows={sens} base={cfr.npv} />
           <PanTable>
-            <Table.Thead><Table.Tr><Table.Th>Input</Table.Th><Table.Th ta="right">NPV at -step</Table.Th><Table.Th ta="right">NPV at +step</Table.Th>
+            <Table.Thead><Table.Tr><Table.Th>Input</Table.Th><Table.Th ta="right">NPV at -step, M EUR</Table.Th><Table.Th ta="right">NPV at +step, M EUR</Table.Th>
               <Table.Th ta="right">Elasticity</Table.Th><Table.Th ta="right">Share of cash cost</Table.Th></Table.Tr></Table.Thead>
             <Table.Tbody data-sens="">
               {sens.map((r) => (

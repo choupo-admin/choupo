@@ -49,7 +49,7 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
       + "put the pressure on the axis and each isotherm climbs a little.  "
       + "Read two points: at 1 bar, heating from 300 to 1000 K raises the "
       + "enthalpy by 20.64 kJ/mol; at 300 K, compressing from 1 to 1000 bar "
-      + "at CONSTANT temperature raises it by 1.29 kJ/mol (the reference "
+      + "at constant temperature raises it by 1.29 kJ/mol (the reference "
       + "equation of state says 1.38); at 1000 K the same compression adds "
       + "1.69 (reference 1.73).  So in this range the enthalpy of hydrogen "
       + "moves far more with temperature than with pressure — but the "
@@ -64,9 +64,9 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
       { sym: "T", means: "temperature of the state", unit: "K" },
       { sym: "P", means: "pressure of the state", unit: "bar" },
     ],
-    note: "Two things this comparison is NOT.  It is not a compression: a "
+    note: "Two things this comparison is not.  It is not a compression: a "
       + "compressor heats the gas, and that temperature rise is another "
-      + "problem — the chart compares two states at the SAME temperature.  And "
+      + "problem — the chart compares two states at the same temperature.  And "
       + "no percentage of the enthalpy itself is quoted anywhere on this page, "
       + "because the enthalpy's value depends on where its zero was put (step "
       + "6); only differences between named states are compared.",
@@ -77,11 +77,11 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
     body: "The identity below is trivial and is the whole idea.  If the "
       + "enthalpy is known along ONE pressure — a reference pressure — the "
       + "enthalpy at any other pressure is that curve plus the difference "
-      + "between the two pressures at the same temperature.  To APPROXIMATE "
+      + "between the two pressures at the same temperature.  To approximate "
       + "is to drop that difference when it is small enough for the "
       + "calculation at hand (for hydrogen between 1 and 150 bar it is a "
       + "fraction of a kilojoule per mole against tens for the heating).  To "
-      + "CORRECT is to compute it.  For an ideal gas the difference is "
+      + "correct is to compute it.  For an ideal gas the difference is "
       + "exactly zero and the enthalpy depends on temperature alone; for a "
       + "real gas it depends on both; for liquids and solids the pressure "
       + "effect is small in many applications, but it is not removed by "
@@ -103,10 +103,10 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
       { step: "For a real gas the cancellation is not exact in general.  Write "
           + "the thermal expansion coefficient α_P = (1/v)(∂v/∂T) at constant "
           + "P, and the derivative is v(1 − T·α_P): positive where T·α_P < 1, "
-          + "negative where T·α_P > 1, and ZERO at the states in between — the "
+          + "negative where T·α_P > 1, and zero at the states in between — the "
           + "Joule–Thomson inversion curve.  So zero is not unique to the "
           + "ideal gas: the ideal gas is the case where it is zero "
-          + "IDENTICALLY, at every state.  Hydrogen above about 200 K has "
+          + "identically, at every state.  Hydrogen above about 200 K has "
           + "T·α_P < 1, a positive derivative, which is why every isotherm on "
           + "the chart climbs with pressure.  Integrating this derivative from the reference pressure to "
           + "P gives the bracket of the identity above." },
@@ -115,21 +115,21 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
   {
     n: 3,
     title: "So why does the degree sign appear?",
-    body: "Now, and only now, the symbol.  The degree sign names a RULE OF "
-      + "REFERENCE called the standard state.  The temperature is not part of "
+    body: "Now, and only now, the symbol.  The degree sign names a rule of "
+      + "reference called the standard state.  The temperature is not part of "
       + "that rule and must be stated separately — so a standard enthalpy at "
       + "298.15 K, at 700 K and at 1000 K are three standard properties of the "
       + "same substance at three temperatures.  The standard pressure in "
       + "current use is 1 bar; some sources and some programs still use 1 atm, "
-      + "and which one a table uses must be identified.  For a GAS the "
+      + "and which one a table uses must be identified.  For a gas the "
       + "standard state is the pure substance as an ideal gas at the standard "
       + "pressure — a hypothetical state, which asks nothing of how the real "
-      + "gas at 1 bar behaves.  For a pure LIQUID or SOLID it is the pure "
+      + "gas at 1 bar behaves.  For a pure liquid or solid it is the pure "
       + "substance in the stated phase at the standard pressure.  (Solutions "
       + "have their own standard states; they are not on this page.)",
     formula: String.raw`h^\circ(298.15\,\text{K}), \quad h^\circ(700\,\text{K}), \quad h^\circ(1000\,\text{K})`,
     where: [
-      { sym: "h^\\circ", means: "molar enthalpy in the STANDARD STATE: the pure "
+      { sym: "h^\\circ", means: "molar enthalpy in the standard state: the pure "
         + "substance at the standard pressure, as an ideal gas if a gas, in its "
         + "stated phase otherwise — evaluated at the temperature written in the "
         + "argument", unit: "kJ/mol" },
@@ -147,7 +147,7 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
       + "formation enthalpies are printed at 298.15 K because a table must be "
       + "printed at some temperature.  But the standard properties are needed "
       + "at every temperature a process runs at, so what the symbol names is a "
-      + "FUNCTION of temperature, not a value.  There is no contradiction "
+      + "function of temperature, not a value.  There is no contradiction "
       + "between tabulating a value at 298.15 K, having a function defined at "
       + "every temperature, and using that function in a process at another "
       + "pressure with the correction of step 2.  The degree sign identifies "
@@ -171,14 +171,14 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
   {
     n: 5,
     title: "And if the process is at 150 bar?",
-    body: "Three separate things, kept separate.  The REAL state: the "
-      + "temperature, pressure and composition of the stream.  The STANDARD "
-      + "property at the same temperature.  The MODEL's correction that takes "
+    body: "Three separate things, kept separate.  The real state: the "
+      + "temperature, pressure and composition of the stream.  The standard "
+      + "property at the same temperature.  The model's correction that takes "
       + "the standard property to the real one.  For the enthalpy of a gas "
       + "that is the sum below: the ideal-gas enthalpy, which depends on "
       + "temperature alone, plus the residual (departure) enthalpy, which the "
       + "equation of state computes at the real temperature and pressure.  "
-      + "Using an ideal reference does NOT make the real fluid ideal: the "
+      + "Using an ideal reference does not make the real fluid ideal: the "
       + "non-ideality enters through the correction.  The witness evaluates "
       + "hydrogen at the green-ammonia converter's state, 733.15 K and 150 "
       + "bar: the ideal-gas enthalpy has risen 12.73 kJ/mol since 298.15 K and "
@@ -193,8 +193,8 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
         + "fluid's enthalpy minus the ideal gas's at the same T and P, computed by "
         + "the equation of state", unit: "kJ/mol" },
     ],
-    note: "Both terms must carry the SAME reference for the enthalpy, or the "
-      + "sum is meaningless (step 6).  For a MIXTURE the residual depends on "
+    note: "Both terms must carry the same reference for the enthalpy, or the "
+      + "sum is meaningless (step 6).  For a mixture the residual depends on "
       + "composition as well as on T and P; a pure-component correction is not "
       + "carried over to a mixture by assumption.",
   },
@@ -208,9 +208,9 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
       + "the 1.29 of step 1 do not move.  Four things that share a letter and "
       + "must not be confused: the molar enthalpy of a state, which depends on "
       + "the zero; a difference between two states, which does not; the "
-      + "standard enthalpy of a FORMATION reaction, which is a difference "
+      + "standard enthalpy of a formation reaction, which is a difference "
       + "between a compound and its elements; and the standard enthalpy of the "
-      + "reaction AS WRITTEN, which is a difference between products and "
+      + "reaction as written, which is a difference between products and "
       + "reactants.  In a reacting system the zeros of the species must be "
       + "consistent with one another, and the derivation shows what "
       + "\"consistent\" means.",
@@ -235,7 +235,7 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
           + "constants:",
         eq: String.raw`\Delta_r H^\circ \;\to\; \Delta_r H^\circ + \sum_i \nu_i\, c_i` },
       { step: "That sum vanishes only when the constants are built from a datum "
-          + "the reaction conserves.  The ELEMENTS are such a datum: write each "
+          + "the reaction conserves.  The elements are such a datum: write each "
           + "species' constant as the sum of its atoms' constants, and the atom "
           + "balance of the reaction makes the stoichiometric sum zero for every "
           + "reaction at once.",
@@ -252,7 +252,7 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
   {
     n: 7,
     title: "What Choupo does — and what any simulator's convention must declare",
-    body: "Choupo prices every stream on the ELEMENTS datum, and the formula "
+    body: "Choupo prices every stream on the elements datum, and the formula "
       + "below is the whole of it: the species' standard formation enthalpy at "
       + "298.15 K, plus the ideal-gas enthalpy rise from 298.15 K to the "
       + "stream's temperature, plus the equation of state's residual at the "
@@ -285,7 +285,7 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
       + "not the gas.  The residual is measured from that same ideal gas at "
       + "the same temperature, so it vanishes at the reference by "
       + "construction, and no residual is subtracted at the reference.  A "
-      + "datum tabulated for the REAL gas at 1 bar would need its own "
+      + "datum tabulated for the real gas at 1 bar would need its own "
       + "residual, h^R(298.15 K, 1 bar), taken off; for methane on SRK that "
       + "is about −17 J/mol, small but not zero, and a program that mixes "
       + "the two conventions is wrong by it.  The ideal-gas term does not "
@@ -307,7 +307,7 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
       + "their real temperatures; or evaluate the reaction enthalpy at the "
       + "reactor temperature by Kirchhoff's law and arrange the sensible terms "
       + "accordingly.  Using the 298.15 K value is not automatically an error; "
-      + "using it AS IF it were the value at the reactor temperature is.  For "
+      + "using it as if it were the value at the reactor temperature is.  For "
       + "ammonia the engine prices −45.9 kJ per mole of NH₃ at 298.15 K and "
       + "−53.4 at 773 K (the `reaction-enthalpy` page), and a design that "
       + "takes the first for the second is 14 % short on the heat released in "
@@ -323,7 +323,7 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
         + "(298.15 K for a table)", unit: "K" },
       { sym: "T'", means: "the integration variable, a temperature", unit: "K" },
     ],
-    note: "The BASIS matters: \"per mole of reaction as written\" is not \"per "
+    note: "The basis matters: \"per mole of reaction as written\" is not \"per "
       + "mole of product\".  N₂ + 3 H₂ → 2 NH₃ releases twice what the same "
       + "equation written per mole of NH₃ does, and multiplying a chemical "
       + "equation by a number multiplies its standard reaction enthalpy and "
@@ -337,13 +337,13 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
       + "constant pressure is a difference of H.  The Helmholtz energy "
       + "subtracts T·S; the Gibbs energy does the same to H.  None of them is "
       + "minimised because \"nature minimises energy\".  The second law says "
-      + "the entropy of a system AND its surroundings together never decreases "
+      + "the entropy of a system and its surroundings together never decreases "
       + "in a spontaneous process.  For a closed system held at a temperature "
       + "and a pressure imposed by reservoirs, with no work other than "
       + "expansion, that total entropy change is minus the system's Gibbs "
       + "energy change divided by the temperature — the derivation is four "
       + "lines.  So at fixed T and P a spontaneous change lowers G, and the "
-      + "stable equilibrium is the MINIMUM of G compatible with the "
+      + "stable equilibrium is the minimum of G compatible with the "
       + "constraints.  That minimum is some number; nothing says it is zero.",
     formula: String.raw`H = U + P V, \qquad A = U - T S, \qquad G = H - T S`,
     where: [
@@ -375,7 +375,7 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
       { step: "Equality is equilibrium: no further change at fixed T and P can "
           + "lower G.  G itself is whatever the datum makes it.  What is zero, "
           + "for a reaction whose species are all present and that can run "
-          + "either way, is its first-order change: ΔrG = 0.  At a BOUNDARY — "
+          + "either way, is its first-order change: ΔrG = 0.  At a boundary — "
           + "a species or a phase absent — a displacement can go one way only "
           + "(forming the absent one), and the minimum asks only that G not "
           + "fall along it: ΔrG ≥ 0 for forming it, with either the amount "
@@ -389,15 +389,15 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
     n: 10,
     title: "Where the 1/T² comes from: three relations, kept apart",
     body: "Three derivatives with respect to temperature, three different "
-      + "subjects.  Kirchhoff (step 8) says how the standard reaction ENTHALPY "
+      + "subjects.  Kirchhoff (step 8) says how the standard reaction enthalpy "
       + "changes with temperature.  Gibbs–Helmholtz says how the standard "
-      + "reaction Gibbs energy DIVIDED BY T changes — and that derivative is "
+      + "reaction Gibbs energy divided by T changes — and that derivative is "
       + "the reaction enthalpy over T squared.  Van 't Hoff says how the "
-      + "thermodynamic EQUILIBRIUM CONSTANT changes, and it is Gibbs–Helmholtz "
+      + "thermodynamic equilibrium constant changes, and it is Gibbs–Helmholtz "
       + "read through the definition of K: the 1/T² is the same one.  K here "
       + "is dimensionless, defined through activities; for a real gas the "
       + "activity is the fugacity over the standard pressure, so a K computed "
-      + "from STANDARD properties does not oblige anyone to treat the real "
+      + "from standard properties does not oblige anyone to treat the real "
       + "mixture as ideal — the fugacity coefficients carry the non-ideality, "
       + "exactly as the residual enthalpy did in step 5.",
     formula: String.raw`\frac{\mathrm{d}\,\Delta_r H^\circ}{\mathrm{d}T} = \Delta_r c_p^\circ, \qquad \frac{\mathrm{d}}{\mathrm{d}T}\!\left(\frac{\Delta_r G^\circ}{T}\right) = -\frac{\Delta_r H^\circ}{T^2}, \qquad \frac{\mathrm{d} \ln K}{\mathrm{d}T} = \frac{\Delta_r H^\circ}{R\,T^2}`,
@@ -476,17 +476,17 @@ export const STANDARD_STATE_QUIZ: readonly QuizQuestion[] = [
     options: ["Yes", "No"], correct: 1,
     feedback: "Every value moves by the same constant, so every difference "
       + "between two states is unchanged — the panel's slider shows it (step "
-      + "6).  What a shift CAN corrupt is a reaction enthalpy, if the species' "
+      + "6).  What a shift can corrupt is a reaction enthalpy, if the species' "
       + "zeros are moved inconsistently.",
   },
   {
     id: "g-zero", steps: [9, 10],
     q: "At equilibrium, is G equal to zero?",
     options: ["Yes", "No"], correct: 1,
-    feedback: "At fixed T and P the stable equilibrium is the MINIMUM of G "
+    feedback: "At fixed T and P the stable equilibrium is the minimum of G "
       + "compatible with the constraints.  Its value is whatever the datum "
       + "makes it; what vanishes, for a reaction whose species are all "
-      + "present and free to move either way, is the CHANGE of G — ΔrG = 0, "
+      + "present and free to move either way, is the change of G — ΔrG = 0, "
       + "not G = 0.  For a species or phase that is absent, the condition is "
       + "an inequality instead (steps 9 and 10).",
   },
@@ -498,7 +498,7 @@ export const STANDARD_STATE_QUIZ: readonly QuizQuestion[] = [
     feedback: "Not if the sensible terms that take reactants and products from "
       + "298.15 K to their real temperatures are included: that route and the "
       + "Kirchhoff route give the same answer.  What is wrong is taking the "
-      + "298.15 K value AS the value at 700 K (step 8).",
+      + "298.15 K value as the value at 700 K (step 8).",
   },
 ];
 
@@ -516,7 +516,7 @@ export const STANDARD_STATE_LIMITS: readonly LessonLimit[] = [
     title: "SRK is a model of hydrogen, not hydrogen",
     body: "The ideal-gas part the engine prices agrees with the reference "
       + "equation of state to a few joules per mole across the whole range; the "
-      + "RESIDUAL does not — SRK is 6 % below the reference at 300 K and 1000 "
+      + "residual does not — SRK is 6 % below the reference at 300 K and 1000 "
       + "bar, a third below at 300 K and 100 bar, and 11 % below at the "
       + "converter's state.  The page draws both and states the gap rather than "
       + "tuning anything.  Measured before SRK was chosen: Peng-Robinson is "

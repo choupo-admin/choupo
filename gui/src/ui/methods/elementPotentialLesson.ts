@@ -78,16 +78,16 @@ export const EP_STEPS: readonly LessonStep[] = [
     n: 1,
     title: "N amounts become M + 1 unknowns",
     body: "The page `The allotrope nobody declared` derives why a constrained "
-      + "minimum of G attaches one multiplier to each ELEMENT, and how that "
+      + "minimum of G attaches one multiplier to each element, and how that "
       + "turns every species amount into a closed form.  This page starts "
       + "where that one stops: from the closed form, what does the engine "
-      + "actually SOLVE?  Not the amounts.  It solves for one element "
+      + "actually solve?  Not the amounts.  It solves for one element "
       + "potential per element and the logarithm of the total, and builds "
       + "every amount from them (the residual, GibbsMethod.cpp:76–94).  On "
       + "the witness, the water-gas shift reactor carries four species over "
       + "three elements (C, H, O): four unknowns, π_C, π_H, π_O and ln N.  "
       + "The steam reformer beside it carries six species and still has "
-      + "four unknowns — the number is set by the ELEMENTS, never by the "
+      + "four unknowns — the number is set by the elements, never by the "
       + "species list.",
     derivation: [
       { step: "At the constrained minimum every species present satisfies "
@@ -115,7 +115,7 @@ export const EP_STEPS: readonly LessonStep[] = [
       { sym: "P", means: "the reactor pressure", unit: "Pa" },
       { sym: "P^\\circ", means: "the standard pressure of the formation "
         + "data, 1 bar", unit: "Pa" },
-      { sym: "\\pi_k", means: "the ELEMENT POTENTIAL of element k: the "
+      { sym: "\\pi_k", means: "the element potential of element k: the "
         + "Lagrange multiplier of its balance, divided by RT — one per "
         + "element, an unknown of the Newton" },
       { sym: "\\pi", means: "the vector of all M element potentials" },
@@ -123,7 +123,7 @@ export const EP_STEPS: readonly LessonStep[] = [
         + "species i, the `atoms ( ... )` list the case declares",
         unit: "atoms per molecule" },
       { sym: "n_i", means: "the amount of species i in the gas", unit: "mol/s" },
-      { sym: "N", means: "the total amount — an UNKNOWN of the Newton, "
+      { sym: "N", means: "the total amount — an unknown of the Newton, "
         + "equal to the sum of the n_i only once the last residual is zero",
         unit: "mol/s" },
       { sym: "f_k", means: "the residual of element k's balance",
@@ -143,8 +143,8 @@ export const EP_STEPS: readonly LessonStep[] = [
         + "potentials and ln N" },
       { sym: "F", means: "the vector of the M + 1 residuals" },
     ],
-    note: "WHAT THE CHANGE OF VARIABLES BUYS.  Every species' stationarity "
-      + "condition holds BY CONSTRUCTION, at every iterate, whatever the "
+    note: "What the change of variables buys.  Every species' stationarity "
+      + "condition holds by construction, at every iterate, whatever the "
       + "Newton is doing — it is the formula the amounts are built from.  "
       + "What the Newton must still achieve is only that the atoms balance "
       + "and that N is the true total.  N stationarity equations have "
@@ -161,7 +161,7 @@ export const EP_STEPS: readonly LessonStep[] = [
       + ":926–937).  It stops when "
       + "|F| < 10⁻⁸ mol/s, within 80 iterations (GibbsMethod.cpp:128–129).  "
       + "It starts from a least-squares fit of the potentials that pretends "
-      + "the FEED is already the answer (GibbsMethod.cpp:100–124).  On the "
+      + "the feed is already the answer (GibbsMethod.cpp:100–124).  On the "
       + `shift reactor at 800 K that seed puts CO at ln n = ${Q.shiftSeedLnnCO}: `
       + "about 1.4 × 10⁻⁴ mol/s against 0.139 fed, so every balance is "
       + `short and |F| = ${Q.shiftSeedNormF} mol/s.  The full Newton step `
@@ -182,7 +182,7 @@ export const EP_STEPS: readonly LessonStep[] = [
         + "for the full step, halved until |F| decreases" },
       { sym: "j", means: "the iteration counter" },
     ],
-    note: "WHY NO AMOUNT CAN EVER GO NEGATIVE.  The Newton moves π and ln N, "
+    note: "Why no amount can ever go negative.  The Newton moves π and ln N, "
       + "never an amount.  Every n_i is an exponential of a real number, so "
       + "it is positive at every iterate, however wild the step — a Newton "
       + "on the amounts themselves can step straight through zero and has "
@@ -235,7 +235,7 @@ export const EP_STEPS: readonly LessonStep[] = [
           + "equilibrium condition.",
         eq: String.raw`\sum_i \nu_i A_{ki} = 0 \quad\implies\quad \ln K = -\sum_i \nu_i \frac{g^\circ_i}{RT} = \sum_i \nu_i \ln\frac{y_i\,P}{P^\circ}` },
     ],
-    note: "WHY THIS IS A CHECK AND NOT A TAUTOLOGY.  The identity holds at "
+    note: "Why this is a check and not a tautology.  The identity holds at "
       + "every iterate with y_i = n_i / N — but N is an unknown, and before "
       + "convergence the amounts do not add up to it, so that y is the "
       + "composition of no real mixture.  Only at the answer is it the "
@@ -246,9 +246,9 @@ export const EP_STEPS: readonly LessonStep[] = [
     n: 4,
     title: "A new phase: tested on the gas answer, then found by a search",
     body: "Neither a liquid nor a solid makes the Newton bigger.  The engine "
-      + "solves the gas alone, TESTS whether a new phase would lower G, and "
-      + "only then SEARCHES for how much of it forms — a one-dimensional "
-      + "bisection, each step of which is a whole gas Newton.  The LIQUID, "
+      + "solves the gas alone, tests whether a new phase would lower G, and "
+      + "only then searches for how much of it forms — a one-dimensional "
+      + "bisection, each step of which is a whole gas Newton.  The liquid, "
       + "on gibbs07 (1 CO : 3 steam at 350 K): the test compares y_i P with "
       + "Psat_i for every species with a vapour pressure "
       + `(ElementPotential.cpp:58–66); water is at ${Q.liquidYP} Pa against `
@@ -256,7 +256,7 @@ export const EP_STEPS: readonly LessonStep[] = [
       + "the liquid amount L, solves the gas on the atoms that remain, and "
       + "bisects L until the gas leaves exactly saturated "
       + `(ElementPotential.cpp:79–114): ${Q.liquidSolves} gas solves, `
-      + `L = ${Q.liquidL} mol/s.  The SOLID, on the witness's steam-lean `
+      + `L = ${Q.liquidL} mol/s.  The solid, on the witness's steam-lean `
       + "reformer at 1000 K: graphite has no mole fraction — it is its own "
       + "phase at activity one — so the test is its activity in the "
       + "graphite-free gas (GibbsSolidPhase.cpp:105, :231): "
@@ -279,9 +279,9 @@ export const EP_STEPS: readonly LessonStep[] = [
       { sym: "g^\\circ_s", means: "the standard Gibbs energy of the pure "
         + "solid at T, on the solid rung", unit: "J/mol" },
     ],
-    note: "BOTH TESTS ARE THE SAME TEST.  A phase belongs at the minimum "
+    note: "Both tests are the same test.  A phase belongs at the minimum "
       + "exactly when its own chemical potential, read off the element "
-      + "potentials, is no LOWER than its standard state (the solid's ln a_s ≥ "
+      + "potentials, is no lower than its standard state (the solid's ln a_s ≥ "
       + "0) — the liquid's "
       + "through Raoult (y_c P = Psat_c), the solid's through a_s = 1.  The "
       + "element potentials price a phase the gas does not yet contain, "
@@ -305,7 +305,7 @@ export const EP_STEPS: readonly LessonStep[] = [
       + "same two directions, and the Gauss elimination meets a zero pivot "
       + "at iteration 0 — the Newton stops without taking a step "
       + "(NewtonND.cpp:770–780).  The engine does not give up and does not "
-      + "stay silent: it re-seeds (GibbsMethod.cpp:230–289) from a PRIMAL "
+      + "stay silent: it re-seeds (GibbsMethod.cpp:230–289) from a primal "
       + "Newton on ln n_i started from equal amounts of every species (the "
       + "reduced equations of Gordon & McBride, NASA RP-1311, "
       + "GibbsMethod.cpp:409–533), whose matrix is weighted by the current "
@@ -324,13 +324,13 @@ export const EP_STEPS: readonly LessonStep[] = [
       { sym: "\\Delta\\ln N", means: "the change in the logarithm of the "
         + "total in the same iteration" },
     ],
-    note: "A NEWTON'S SEED IS PART OF THE METHOD.  The element-potential "
+    note: "A Newton's seed is part of the method.  The element-potential "
       + "equations are the same at 700 K and at 1100 K; what changes is "
       + "whether the point the Newton starts from can see its own answer.  "
       + "Move the temperature knob up and read the route table: above a "
       + "certain temperature the least-squares seed converges on its own, "
-      + "below it the re-seed answers.  The answer is the same Newton's "
-      + "either way, on the same residual, to the same tolerance.",
+      + "below it the re-seed answers.  The answer is the same "
+      + "either way: the same residual, to the same tolerance.",
   },
 ];
 
@@ -351,7 +351,7 @@ export const EP_LIMITS: readonly LessonLimit[] = [
       + "condensable.  With two species supersaturated at once, or a second "
       + "one left supersaturated after the first has condensed, the gas it "
       + "returns is not the equilibrium: the method marks it "
-      + "(ElementPotential.cpp:71) and the reactor REFUSES the run, naming "
+      + "(ElementPotential.cpp:71) and the reactor refuses the run, naming "
       + "each species with its y·P and Psat and pointing at directMin, which "
       + "carries a multi-component liquid by minimising G directly.  Until "
       + "2026-10-25 this answer was published, converged and unannounced.  "
@@ -359,7 +359,7 @@ export const EP_LIMITS: readonly LessonLimit[] = [
       + "implementation it chooses them on the gas-only answer, so it is "
       + "refused the same way when a species saturates only after the "
       + "others condense.  Two pure solids supersaturated at once are "
-      + "REFUSED by name too.",
+      + "refused by name too.",
   },
   {
     id: "equilibrium-not-duty",

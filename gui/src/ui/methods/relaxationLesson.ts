@@ -283,8 +283,8 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
     body: "If you have used OpenFOAM or another CFD code, you set "
       + "`relaxationFactors` for pressure and velocity. Those solvers are "
       + "segregated: they solve one equation at a time, holding the others "
-      + "frozen, and sweep until the frozen values stop changing (simple and "
-      + "its relatives). That outer sweep is a fixed-point iteration, "
+      + "frozen, and sweep until the frozen values stop changing (the SIMPLE "
+      + "algorithm and its relatives). That outer sweep is a fixed-point iteration, "
       + "exactly like a recycle, and its gain is often above the safe "
       + "range -- so a fixed under-relaxation factor, typically 0.3 for "
       + "pressure and 0.7 for velocity, is the standard cure. A "
@@ -339,7 +339,7 @@ export const RELAXATION_LIMITS: readonly LessonLimit[] = [
     id: "engine-w",
     title: "The engine's factor stops at 1",
     body: "recycleRelaxation is refused outside (0, 1]. Over-relaxation "
-      + "(w above 1, the shaded part of the third figure) is what an "
+      + "(w above 1, the strip marked in the third figure) is what an "
       + "unclamped Wegstein does by itself; the key does not offer it.",
   },
 ];

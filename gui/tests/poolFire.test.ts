@@ -397,7 +397,7 @@ describe("pool fire: exposure time stands beside every result (C112 point 14)", 
     expect(TOOL).toContain("where a curve crosses a line is not");
     expect(TOOL).toContain("{exposureSentence(qHere)}");
     const s11 = prose(POOL_STEPS.find((s) => s.n === 11)!.body);
-    expect(s11).toContain("is NOT a line between safe and harmed");
+    expect(s11).toContain("is not a line between safe and harmed");
   });
 });
 

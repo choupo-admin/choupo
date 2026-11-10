@@ -42,10 +42,10 @@ export const ECON_ERRORS_STEPS: readonly LessonStep[] = [
       + "page takes eight such mistakes, each as a small example you can "
       + "edit: the wrong calculation and the right one on the same inputs, "
       + "side by side, and, under each, what Choupo does about it. Read from "
-      + "the engine, the answer is one of four words: it REFUSES (the run "
-      + "stops), it ANNOUNCES (the run goes on and says so), it CONSTRUCTS "
+      + "the engine, the answer is one of four words: it refuses (the run "
+      + "stops), it announces (the run goes on and says so), it constructs "
       + "the quantity correctly in one place without comparing it with "
-      + "yours, or it does NOTHING, and then the check is yours. Several "
+      + "yours, or it does nothing, and then the check is yours. Several "
       + "classes have no guard at all, and the page says so.",
   },
   {
@@ -168,7 +168,7 @@ export const ECON_ERRORS_STEPS: readonly LessonStep[] = [
     body: "The discount rate is the return you require; it is chosen by "
       + "you, before the calculation, as the return the money could earn "
       + "elsewhere at a comparable risk, and it enters the NPV. The IRR is "
-      + "something else: the discount rate at which the NPV of THIS cash "
+      + "something else: the discount rate at which the NPV of this cash "
       + "flow is zero. It does not depend on the rate you chose. An IRR of "
       + "several hundred per cent therefore says that the cash flow is "
       + "enormous next to the investment, which is almost always a scale "

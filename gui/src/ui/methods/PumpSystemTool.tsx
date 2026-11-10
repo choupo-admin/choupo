@@ -583,7 +583,7 @@ export function PumpSystemTool(): JSX.Element {
           <PanelNote>{PUMP_PROVENANCE_LINE}</PanelNote>
           <PanelNote>
             Each drag rewrites the declared dict scalar and re-solves the whole
-            sweep in the engine — close the valve (raise L, drop D) and watch
+            sweep in the engine — throttle the system (raise L, drop D; there is no valve knob) and watch
             the operating point walk.  The swept flow window itself is fixed at
             the witness&apos;s 0.4–1.6 kmol/s: the outerDict declares{" "}
             <code>range ( 0.4 1.6 );</code>, a list, which the scalar-override

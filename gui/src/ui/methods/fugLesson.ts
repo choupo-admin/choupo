@@ -172,7 +172,7 @@ R_\mathrm{min} + 1 &= \sum_i \frac{\alpha_i\, x_{D,i}}{\alpha_i - \theta}
     where: [
       { sym: "\\alpha_i",
         means: "component i's relative volatility against the heavy key: the same "
-        + "quantity as alpha_i,HK, written short" },
+        + "quantity as α with the subscripts i and HK, written short" },
       { sym: "x_{D,i}",
         means: "mole fraction of component i in the distillate" },
       { sym: "\\sum_i",
@@ -197,7 +197,7 @@ R_\mathrm{min} + 1 &= \sum_i \frac{\alpha_i\, x_{D,i}}{\alpha_i - \theta}
         + "and in the textbook q outside [0,1] is a subcooled liquid or a "
         + "superheated vapour.  Choupo takes q = 1 − vf, where vf is the "
         + "feed's vapour fraction resolved at its own declared T and P: an "
-        + "authored feed with no `vf` is flashed there, a pinned one keeps "
+        + "authored feed with no “vf” is flashed there, a pinned one keeps "
         + "its declaration, a produced stream keeps its producer's answer.  "
         + "A vapour fraction lies in [0, 1], so a subcooled (q > 1) or "
         + "superheated (q < 0) feed is not expressible here; and the feed's "
@@ -230,7 +230,7 @@ R_\mathrm{min} + 1 &= \sum_i \frac{\alpha_i\, x_{D,i}}{\alpha_i - \theta}
       + "one-root-per-adjacent-pair extension that case needs — it refuses, "
       + "naming the offending components and their α's, rather than returning "
       + "the bracket midpoint as a plausible R_min with nothing behind it; a "
-      + "rigorous column (`model simultaneous;`) has no such restriction.  "
+      + "rigorous column (“model simultaneous;”) has no such restriction.  "
       + "A root from any "
       + "other branch returns a number that is not R_min, and nothing about it "
       + "looks wrong.  Underwood's derivation also assumes constant molar "
@@ -376,8 +376,8 @@ export const FUG_LIMITS: readonly { id: string; title: string; body: string }[] 
     body: "Underwood's derivation assumes equal molar latent heats, so the "
       + "internal vapour and liquid flows do not change from stage to stage. "
       + "It is the same assumption Choupo's two CMO column models make "
-      + "(`model WangHenke;`, a bubble-point iteration run here at constant "
-      + "molar overflow, and `model simultaneous;`); `fullMESH` is where it "
+      + "(“model WangHenke;”, a bubble-point iteration run here at constant "
+      + "molar overflow, and “model simultaneous;”); “fullMESH” is where it "
       + "is dropped.",
   },
   {

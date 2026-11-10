@@ -393,9 +393,9 @@ export function PlantCostTool(): JSX.Element {
           </Group>
           <PanTable>
             <Table.Thead><Table.Tr>
-              <Table.Th>year</Table.Th><Table.Th>phase</Table.Th><Table.Th>debt at start</Table.Th>
-              <Table.Th>draw</Table.Th><Table.Th>interest capitalised</Table.Th>
-              <Table.Th>interest paid</Table.Th><Table.Th>repayment</Table.Th><Table.Th>debt at end</Table.Th>
+              <Table.Th>year</Table.Th><Table.Th>phase</Table.Th><Table.Th>debt at start, M EUR</Table.Th>
+              <Table.Th>draw, M EUR</Table.Th><Table.Th>interest capitalised, M EUR</Table.Th>
+              <Table.Th>interest paid, M EUR</Table.Th><Table.Th>repayment, M EUR</Table.Th><Table.Th>debt at end, M EUR</Table.Th>
             </Table.Tr></Table.Thead>
             <Table.Tbody>
               {ls.rows.map((r) => (

@@ -846,8 +846,8 @@ export function PinchCompositeTool(
           <Title order={5}>Watch the curves the engine published</Title>
           <Text size="sm" mt={4}>
             The two composites below are the engine&apos;s own, straight off{" "}
-            <code>{COMPOSITE_CURVES_CSV_PATH}</code>: the horizontal gap
-            between their ends is what the process can recover from itself
+            <code>{COMPOSITE_CURVES_CSV_PATH}</code>: the horizontal overlap
+            of the two curves is what the process can recover from itself
             (the green bracket), and the two overhangs are the utility targets
             (the coloured brackets, Q_C,min at the cold end and Q_H,min at the
             hot end).  The cold curve is drawn slid right by Q_C,min, which is
