@@ -3402,6 +3402,34 @@ accepts today, and that is a policy call.
 > Database.cpp were moved by hand and each checked to carry its `contains`
 > text), a full sweep.
 
+> **C298 (Vitor, 2026-11-10: "A outra sessao para ja esta parada!  Eu vou
+> passar as tarefas dela para aqui porque temos aqui mais cores!").  THE
+> CLOUD'S CURATION WORK CONTINUES ON THE LAPTOP.**  The cloud pushed
+> `wip/c295-curation-root` (21 commits: C290's 466 pairs and the C295
+> tooling for `data/curation/`; the move itself NOT done; scratch in
+> `bin/curate/c295_handoff/`) and a hand-off note in SESSIONS.md.  Its three
+> questions, DECIDED by the architect:
+>   1. curate15..19 MOVE with the rest.  The rule is the header ("Written
+>      by bin/choupo-curate"), and under C296 the number means nothing: a
+>      generated case is named by what it fits.  curate01..14, written by
+>      hand as lessons, stay in `tutorials/`.
+>   2. The 117 multi-isotherm P-x pairs (C291 follow-up) are ACCEPTED as a
+>      source: several temperatures is what the single-temperature finding
+>      of C296 asks for.  They are fitted only after the acceptance is
+>      tightened (C297 and the C296 findings), so they are born under it.
+>   3. The ThermoML cache exists on the laptop (`thirdParty/thermoml`,
+>      4.2 GB, with `index.json`, `vleIndex.json`, `identity.json`,
+>      measured 2026-11-10); nothing to fetch.
+> ORDER: (a) C296 slice 1, the two gates -- LANDED 2026-11-10
+> (`check_no_symlinks`, `check_pair_names`; both shown to fail on a planted
+> offender; two component names with an underscore, `labile_S` and
+> `sepiolite_d`, pinned as named debt; held by: `bash -n bin/runTests`,
+> both gates, `gate_manifest --check`; NOT run: the suite itself, gate
+> self-test).  (b) the move, on top of the cloud's branch, with C296's
+> names (`data/curation/pairs/<a>-<b>/`, not `curateNN`).  (c) acceptance
+> tightened and the `review {}` block written by the tools.  (d) C290
+> lands under (c).  (e) C294, the 117 pairs, the gui side.
+
 > **C297 (Vitor, 2026-11-10, agreeing to C296 "excepto na questao da
 > revisao": "ja ninguem tem tempo para andar a curar humanamente tudo!  Eu
 > sugiro que se diga se e validado por humano, ou por um dado modelo LLM").

@@ -33,7 +33,7 @@ Rules (agreed by both sessions, 2026-11-10):
 | branch | holds (do not edit) | since |
 |---|---|---|
 | c266-walk-stage2 | `docs/audits/2026-11-10-student-walk-stage2.md` (report only) | 2026-11-10 |
-| c296-gates | `bin/curate/check_pair_names.py`, `bin/curate/check_no_symlinks.py` (new), their `bin/runTests` wiring | 2026-11-10 |
+| c295-move (from wip/c295-curation-root) | `tutorials/props/curation/` (generated cases), `data/curation/`, `data/standards/parameters/`, `bin/choupo-curate`, `bin/curate/pairs_*.py`, `check_regressed_pairs.py`, `curation_roots.py` | 2026-11-10 |
 | c297-review-block | `src/thermo/Database.cpp`, `src/thermo/PairAudit.H` (the review announcement) | 2026-11-10 |
 
 ## Cloud session
