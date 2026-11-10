@@ -194,7 +194,7 @@ export const LEDGER_META = [
     question: "How much did heating add?",
     cite: "src/thermo/Component.cpp · Component::s_formation",
     note: "Closed form per $c_p$ model; phase crossings are explicit legs "
-      + "between the 298 K STANDARD STATES, which are not in equilibrium "
+      + "between the 298 K standard states, which are not in equilibrium "
       + "with each other — so the vaporisation leg keeps its Gibbs term, "
       + "$\\Delta s = (\\Delta h_{\\mathrm{vap}} - \\Delta g)/(298.15\\ "
       + "\\mathrm{K})$.  On the saturation curve, where $\\Delta g = 0$, "
@@ -205,7 +205,7 @@ export const LEDGER_META = [
     line: "-R\\sum_i y_i \\ln y_i",
     question: "How much did mixing add?",
     cite: "src/thermo/ThermoPackage.cpp · ThermoPackage::S_ig",
-    note: "Written explicitly in exactly TWO places — the assembly "
+    note: "Written explicitly in exactly two places — the assembly "
       + "(ThermoPackage.cpp) and the audit that re-adds it "
       + "(ExplainProperty.cpp, which is the op this page's own witness "
       + "runs); everywhere else it appears disguised as the $\\ln y_i$ of a "
@@ -225,18 +225,19 @@ export const LEDGER_META = [
     question: "What does the real gas change?",
     cite: "src/thermo/equationOfState/CubicEoS.cpp:425 · CubicEoS::S_residual (SRK and PR)",
     note: "The departure from ideal — SRK (Sandler eq. 6.4-31), PR or "
-      + "PC-SAFT.  A pureFluids{} IF97 route has NO residual line at all: "
+      + "PC-SAFT.  A pureFluids{} IF97 route has no residual line at all: "
       + "the fundamental equation replaces this whole ledger, and "
       + "explainProperty refuses such a state by name rather than "
       + "mislabelling the derivation.  Small at 2 bar, growing with "
       + "pressure.  Every one of them is the departure at the SAME (T, P) as "
       + "the ideal-gas lines above it, which is what lets them be added: "
-      + "PC-SAFT computes its residual at (T, ρ) and converts it with "
-      + "+R ln Z (P = ZρRT) — a term it omitted until 2026-10-25 "
+      + "PC-SAFT computes its residual at $(T, \\rho)$ and converts it with "
+      + "$+R\\ln Z$ ($P = Z\\rho R T$) — a term it omitted until 2026-10-25 "
       + "(docs/design/entropy-glass-box-trace.md §6); "
       + "check_departure_convention now holds all three equations of state "
       + "to "
-      + "(∂H^R/∂T)_P = T(∂s^R/∂T)_P and (∂G^R/∂P)_T = v − RT/P.",
+      + "$(\\partial H^{\\mathrm{R}}/\\partial T)_P = T(\\partial s^{\\mathrm{R}}/\\partial T)_P$ and "
+      + "$(\\partial G^{\\mathrm{R}}/\\partial P)_T = v - RT/P$.",
   },
 ] as const;
 
@@ -353,9 +354,9 @@ function LedgerTable({ lg }: { lg: Ledger }) {
       {row(<>pressure line <M t="-R\ln(2\ \mathrm{bar}/1\ \mathrm{bar})" /></>,
         lg.pressure)}
       {row("re-added by this page", lg.rebuilt, true)}
-      {row(<>the engine’s own <M t="s^{\mathrm{ig}}" /> (S_ig)</>, lg.S_ig, true)}
-      {row(<>model line <M t="s^{\mathrm{R}}" /> (S_residual, SRK)</>, lg.S_R)}
-      {row(<>the engine’s <M t="s" /> (S_real)</>, lg.S_real)}
+      {row(<>the engine’s own <M t="s^{\mathrm{ig}}" /> (<Text span ff="monospace">S_ig</Text>)</>, lg.S_ig, true)}
+      {row(<>model line <M t="s^{\mathrm{R}}" /> (<Text span ff="monospace">S_residual</Text>, SRK)</>, lg.S_R)}
+      {row(<>the engine’s <M t="s" /> (<Text span ff="monospace">S_real</Text>)</>, lg.S_real)}
       <Text size="xs" c={INK} px="sm" py={6}>
         <strong>An internal arithmetic consistency check, not a
         validation.</strong>  The re-added total and the engine’s
@@ -363,7 +364,7 @@ function LedgerTable({ lg }: { lg: Ledger }) {
         {" "}{lg.gap.toExponential(1)} J/(mol·K): this page adds the same
         lines the engine assembled, and if it ever disagreed with the
         simulator this row is where you would see it.  It says nothing about
-        whether the lines are RIGHT — that rests on the data behind
+        whether the lines are right — that rests on the data behind
         {" "}<M t="s^\circ_{298}" /> and <M t="c_p" />, whose homes part C
         names.
       </Text>
@@ -447,8 +448,10 @@ export function WhatIsEntropyTool(): JSX.Element {
           <Text size="xs" c={INK} mt={4}>
             Notation: <M t="s" /> is a molar entropy, in J/(mol·K);
             {" "}<M t="S" /> is the entropy of a whole system, in J/K (or
-            kJ/K).  The engine’s own labels S_ig, S_R and S_real are molar
-            values despite the capital letter.
+            kJ/K).  The engine’s own labels <Text span ff="monospace">S_ig</Text>,
+            {" "}<Text span ff="monospace">S_R</Text> and
+            {" "}<Text span ff="monospace">S_real</Text> are molar values
+            despite the capital letter.
           </Text>
         </Box>
 
@@ -577,7 +580,7 @@ export function WhatIsEntropyTool(): JSX.Element {
             absolute value possible is the <strong>third law</strong>: a
             perfect crystal with a unique ground state has
             {" "}<M t="S = 0" /> at 0 K, so the molar entropy of a substance
-            at 298.15 K can be DETERMINED calorimetrically — integrating
+            at 298.15 K can be determined calorimetrically — integrating
             {" "}<M t="c_p/T" /> up from near absolute zero and adding each
             phase transition crossed on the way (the very
             {" "}<M t="\int c_p/T\,dT" /> structure the ledger in part B
@@ -715,7 +718,7 @@ export function WhatIsEntropyTool(): JSX.Element {
             {" "}<M t="s(T_{\mathrm{out}}, P_{\mathrm{out}}, y) = s(T_{\mathrm{in}}, P_{\mathrm{in}}, y)" />
             {" "}— a Newton iteration on the real entropy surface
             (src/unitOperations/rotating/IsentropicCore.cpp) — and the
-            distance the REAL outlet falls short is published on every run
+            distance the real outlet falls short is published on every run
             as the KPI <Text span ff="monospace">dS_gen</Text>, the entropy
             generated by the irreversibility.  Every bit of it is work that
             could have been had and was not: the machine destroys exergy in
@@ -785,14 +788,14 @@ export function WhatIsEntropyTool(): JSX.Element {
           <Text size="xs" c={INK} mt={6}>
             The full engine trace behind this page, with every claim at its
             file and line: docs/design/entropy-glass-box-trace.md.  What the
-            engine does NOT carry on these routes — wet-steam entropy, the
-            EXCESS entropy of a liquid priced by an activity model (no
+            engine does not carry on these routes — wet-steam entropy, the
+            excess entropy of a liquid priced by an activity model (no
             temperature derivative of γ is taken; a liquid priced by an
             equation of state does carry its residual entropy), an entropy
             column on streams — is recorded there too.
-            Physical exergy IS carried now (the `exergy` op, and the page
-            beside this one); what stays absent there is CHEMICAL exergy and
-            any exergy balance over a flowsheet.
+            Physical exergy is carried now (the <Text span ff="monospace">exergy</Text> op,
+            and the page beside this one); what stays absent there is chemical
+            exergy and any exergy balance over a flowsheet.
           </Text>
         </Box>
 
