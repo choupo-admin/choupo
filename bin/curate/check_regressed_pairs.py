@@ -129,6 +129,11 @@ case-local one that did not earn promotion):
       reviewStatus autoPromoted` line AND carries it in the result JSON
       advisories.  Each dataset carries its DOI, archive sha256, citation, the
       compound's CAS + InChIKey and one stated Psat uncertainty per row.
+      The grade read is the `vaporPressure` entry's ALONE (C293): a clean
+      vapour pressure beside a non-clean Vliq or liquid-Cp grade (a component
+      carries one `fitGrade` per fitted value) is not accused, and a built
+      negative (`check_vp_grade_channel`) edits the vapour-pressure grade of a
+      copy of such a record down and requires the refusal.
       NOT RUN (exit 2) where the series cannot be regenerated, as above.
 
   (j) A PAIR FITTED ON EVERY LABORATORY (DEV.md 4c C283 amended, C284,
@@ -980,6 +985,7 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
         gsaid = f"[fit-grade] component '{comp}': `vaporPressure` fitGrade "
         gadv = [a for a in (js or {}).get("advisories", [])
                 if a.get("locus") == f"component '{comp}'"
+                and "`vaporPressure`" in a.get("message", "")
                 and "fitGrade" in a.get("message", "")]
         if gword:
             if gsaid + gword not in out:
@@ -1004,6 +1010,56 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
         done.append(comp)
         VP_GRADE_COUNT[rf["fitGrade"]] = VP_GRADE_COUNT.get(rf["fitGrade"], 0) + 1
     return done
+
+
+VP_GRADE_WITNESS = "hexafluorobenzene"   # vp clean, Vliq severe (C293)
+
+
+def check_vp_grade_channel(tmp, fails):
+    """C293: arm (i) reads the `vaporPressure` fitGrade advisory only.  The
+    witness (a clean vapour pressure, a severe Vliq) must pass as it stands,
+    and a copy whose vapour-pressure grade is edited down to `warning` must
+    be refused for not voicing it.  Both run through arm (i) itself."""
+    global STD_COMP, VP_FLOOR
+    src = STD_COMP / (VP_GRADE_WITNESS + ".dat")
+    if not src.exists():
+        fails.append(f"arm (i) grade channel: witness {src.relative_to(ROOT)} is gone -- "
+                     "the negative has nothing to edit")
+        return
+    text = src.read_text()
+    if not re.search(r"fitGrade\s+(warning|severe);", text):
+        fails.append("arm (i) grade channel: the witness carries no non-clean grade beside "
+                     "its vapour pressure -- it no longer tests the channel")
+        return
+    clean = list(re.finditer(r"fitGrade\s+clean;", text))
+    if not clean:
+        fails.append("arm (i) grade channel: the witness has no clean grade to edit down")
+        return
+    last = clean[-1]            # the vapour pressure's entry is the last provenance entry
+    edited = text[:last.start()] + "fitGrade      warning;" + text[last.end():]
+    keep, keep_floor, keep_count = STD_COMP, VP_FLOOR, dict(VP_GRADE_COUNT)
+    VP_FLOOR = 0                # one record on purpose
+    work = Path(tempfile.mkdtemp(prefix="vpgrade-", dir=ROOT / "build"))
+    try:
+        for label, body, must_fail in (("as shipped", text, False),
+                                       ("vapour-pressure grade edited down", edited, True)):
+            for old in work.glob("*.dat"):
+                old.unlink()
+            (work / src.name).write_text(body)
+            STD_COMP = work
+            got = []
+            sub = Path(tempfile.mkdtemp(prefix="vpgrade-run-", dir=tmp))
+            check_vapour_pressures(sub, got, [], {})
+            if must_fail and not any("printed no" in g and "warning" in g for g in got):
+                fails.append(f"arm (i) grade channel [{label}]: not refused: {got[:1]}")
+            if not must_fail and got:
+                fails.append(f"arm (i) grade channel [{label}]: a clean vapour pressure "
+                             f"beside a non-clean Vliq was accused: {got[0][:200]}")
+    finally:
+        STD_COMP, VP_FLOOR = keep, keep_floor
+        VP_GRADE_COUNT.clear()
+        VP_GRADE_COUNT.update(keep_count)
+        shutil.rmtree(work, ignore_errors=True)
 
 
 VP_GRADE_COUNT = {}
@@ -1401,6 +1457,7 @@ def main():
                      else "case-local in " + rec_path.parents[3].name)
             checked.append(f"{rec_path.stem} ({where}, {rf['verdict']})")
         vp_done = check_vapour_pressures(tmp, fails, not_run, fetched)
+        check_vp_grade_channel(tmp, fails)
         vp_grades = ", ".join(f"{VP_GRADE_COUNT.get(g, 0)} {g}" for g in VP_GRADES[:3])
         span_held = check_span_announcement(tmp, fails)
         ll_held = check_ll_arm(tmp, fails)
