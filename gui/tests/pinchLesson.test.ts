@@ -56,15 +56,15 @@ describe("the lesson runs end to end", () => {
     //  Without this sentence the reader meets composite curves as a drawing
     //  exercise, and the whole method is a drawing exercise from then on.
     const s1 = prose(step(1).body);
-    expect(s1).toContain("MINIMUM hot utility");
+    expect(s1).toContain("minimum hot utility");
     expect(s1).toContain("before a single exchanger has been drawn");
     expect(step(1).formula).toContain(String.raw`\mathrm{CP} = \dfrac{\lvert Q \rvert}{\lvert T_\mathrm{target} - T_\mathrm{supply} \rvert}`);
   });
 
   it("says what a composite curve IS: every stream of one kind, merged", () => {
     const s2 = step(2);
-    expect(prose(s2.body)).toContain("HOT COMPOSITE CURVE");
-    expect(prose(s2.body)).toContain("COLD COMPOSITE");
+    expect(prose(s2.body)).toContain("hot composite curve");
+    expect(prose(s2.body)).toContain("cold composite");
     //  The merge rule itself, not just the name.
     expect(s2.formula).toContain(String.raw`\mathrm{CP}_\mathrm{total} &= \sum_i \mathrm{CP}_i`);
     //  And the horizontal freedom, which is what makes the slide meaningful.
@@ -73,7 +73,7 @@ describe("the lesson runs end to end", () => {
 
   it("names the overlap as recovery and the overhangs as the targets", () => {
     const s3 = step(3);
-    expect(prose(s3.body)).toContain("OVERLAP");
+    expect(prose(s3.body)).toContain("overlap");
     expect(prose(s3.body)).toContain("hot utility");
     expect(prose(s3.body)).toContain("cold utility");
     expect(s3.formula).toContain(String.raw`Q_\mathrm{H,min} &= \sum \Delta H_\mathrm{cold} - Q_\mathrm{recovery}`);
@@ -89,7 +89,7 @@ describe("the lesson runs end to end", () => {
     expect(prose(s4.body)).toContain("buys more surface");
     expect(s4.formula).toContain(String.raw`A &= \frac{Q}{U \cdot \Delta T_\mathrm{lm}}`);
     //  The pinch splits the plant, and that is why the rules below bite.
-    expect(prose(s4.body)).toMatch(/net heat SINK[\s\S]*net heat SOURCE/);
+    expect(prose(s4.body)).toMatch(/net heat sink[\s\S]*net heat source/);
   });
 
   it("admits that a problem need not have a pinch at all", () => {
@@ -99,7 +99,7 @@ describe("the lesson runs end to end", () => {
     //  is always a pinch" would send the reader to read a threshold problem's
     //  chip as a physical temperature.
     const n4 = prose(step(4).note!);
-    expect(n4).toContain("THRESHOLD");
+    expect(n4).toContain("threshold");
     expect(n4).toContain("classifies the problem from the whole cascade");
     expect(n4).toContain("several pinches");
   });
@@ -110,9 +110,9 @@ describe("THE THREE RULES, and the price of breaking each", () => {
 
   it("states all three, as prohibitions", () => {
     const b = prose(s5.body);
-    expect(b).toContain("Do not transfer heat ACROSS the pinch");
-    expect(b).toContain("Do not use hot utility BELOW the pinch");
-    expect(b).toContain("Do not use cold utility ABOVE the pinch");
+    expect(b).toContain("Do not transfer heat across the pinch");
+    expect(b).toContain("Do not use hot utility below the pinch");
+    expect(b).toContain("Do not use cold utility above the pinch");
   });
 
   it("says the sentence worth remembering: BOTH utilities rise by Q", () => {
@@ -121,8 +121,8 @@ describe("THE THREE RULES, and the price of breaking each", () => {
     const b = prose(s5.body);
     //  The DUTIES rise above the targets; the targets do not move (C22
     //  slice 2 -- the old sentence said the targets rose).
-    expect(b).toContain("BOTH utility duties rise above their targets by Q");
-    expect(b).not.toContain("BOTH targets rise by Q");
+    expect(b).toContain("Both utility duties rise above their targets by Q");
+    expect(b).not.toContain("both targets rise by Q");
     expect(b).toContain("paid for twice");
     expect(s5.formula).toContain(String.raw`Q_H = Q_\mathrm{H,min} + Q`);
     expect(s5.formula).toContain(String.raw`Q_C = Q_\mathrm{C,min} + Q`);
@@ -162,7 +162,7 @@ describe("the printed arithmetic follows from the printed definitions", () => {
     //  "changing the approach moves BOTH targets by the same amount".
     //  Recovery falls by δ when the curves are pulled apart; both targets
     //  rise by δ and their difference is untouched.
-    expect(prose(step(3).note!)).toContain("moves BOTH targets by the same amount");
+    expect(prose(step(3).note!)).toContain("moves both targets by the same amount");
     const Hhot = 320, Hcold = 410;
     const before = { QH: Hcold - 200, QC: Hhot - 200 };
     const after = { QH: Hcold - 185, QC: Hhot - 185 };
@@ -226,8 +226,8 @@ describe("the honest half", () => {
     //  pass does: every other duty is listed as excluded, and an exchanger's
     //  recovered heat is never offered back as a saving.
     const pop = prose(limit("stream-population").body);
-    expect(pop).not.toContain("NET duty");
-    expect(pop).toContain("Every other heat duty is NOT in it");
+    expect(pop).not.toContain("net duty");
+    expect(pop).toContain("Every other heat duty is not in it");
     expect(pop).toContain("reports/pinch/population.csv");
     expect(pop).toContain("counted in neither current-utility total");
   });
@@ -290,10 +290,11 @@ describe("the tool renders it as a scrolling lesson", () => {
     //  the picture appears on the page.
     const plot = TOOL_SRC.indexOf("<CompositeSvg hot=");
     expect(plot).toBeGreaterThan(0);
-    for (const n of [1, 2, 3])
-      expect(TOOL_SRC.indexOf(`{lessonStep(${n})}`), `step ${n} is after the plot`)
-        .toBeLessThan(plot);
-    for (const n of [4, 5])
+    //  DEV.md 4c C277: the figure comes second -- step 1 opens the page and
+    //  steps 2-5 explain what the student has just watched.
+    expect(TOOL_SRC.indexOf("{lessonStep(1)}"), "step 1 is after the plot")
+      .toBeLessThan(plot);
+    for (const n of [2, 3, 4, 5])
       expect(TOOL_SRC.indexOf(`{lessonStep(${n})}`), `step ${n} is before the plot`)
         .toBeGreaterThan(plot);
     //  The limits close the page.

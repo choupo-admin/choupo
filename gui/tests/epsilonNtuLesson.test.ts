@@ -46,8 +46,8 @@ describe("the lesson runs end to end", () => {
     //  A page that opened with the definition of epsilon would have skipped
     //  the only motivation a student needs.
     const s1 = step(1);
-    expect(prose(s1.body)).toContain("all FOUR terminal temperatures");
-    expect(prose(s1.body)).toContain("the two INLETS and a piece of hardware");
+    expect(prose(s1.body)).toContain("all four terminal temperatures");
+    expect(prose(s1.body)).toContain("the two inlets and a piece of hardware");
     expect(s1.formula).toContain(String.raw`Q = U A\, \Delta T_\mathrm{lm}`);
     expect(s1.formula).toContain(String.raw`Q = \varepsilon\, C_\mathrm{min} (T_{h,\mathrm{in}} - T_{c,\mathrm{in}})`);
     //  And it says which route the engine actually takes, which is checkable
@@ -61,7 +61,7 @@ describe("the lesson runs end to end", () => {
     expect(s2.formula).toContain(String.raw`Q_\mathrm{max} &= C_\mathrm{min} (T_{h,\mathrm{in}} - T_{c,\mathrm{in}})`);
     //  The REASON, not just the rule: giving the full swing to the larger-C
     //  stream drives the smaller-C one past its partner's inlet.
-    expect(prose(s2.body)).toContain("past the OTHER stream's inlet temperature");
+    expect(prose(s2.body)).toContain("past the other stream's inlet temperature");
     expect(prose(s2.body)).toContain("straight past its partner's inlet");
   });
 
@@ -73,7 +73,7 @@ describe("the lesson runs end to end", () => {
     //  2026-09-28 (external review, verified): the cap on Q is the SECOND
     //  law's, and eps = 1 destroys no availability for a balanced
     //  counter-current exchanger.  This pin used to hold the wrong wording.
-    expect(prose(s3.note!)).not.toContain("FIRST-LAW maximum");
+    expect(prose(s3.note!)).not.toContain("first-law maximum");
     expect(prose(s3.note!)).toContain("largest duty the second law allows");
     expect(prose(s3.note!)).toContain("Only a balanced counter-current");
   });
@@ -85,7 +85,7 @@ describe("the lesson runs end to end", () => {
     expect(s4.formula).toContain(String.raw`\varepsilon = \dfrac{\mathrm{NTU}}{1 + \mathrm{NTU}}`);
     //  C_r = 0 is where the arrangement stops mattering; C_r = 1 is where it
     //  matters most.  Both halves, or the chart stays unreadable.
-    expect(prose(s4.note!)).toContain("all three arrangements collapse onto ONE curve");
+    expect(prose(s4.note!)).toContain("all three arrangements collapse onto one curve");
     expect(prose(s4.note!)).toContain("the hardest case");
   });
 });
@@ -190,9 +190,9 @@ describe("the design consequence, and the honest half", () => {
     //  says the engine announces the DUTY, and that the plain U·A·LMTD check
     //  holds only for one pass with both sides single-phase.
     const l = prose(ENTU_LIMITS.find((x) => x.id === "sensible-only")!.body);
-    expect(l).toContain("is NOT the duty of a condenser or an evaporator");
-    expect(l).toContain("the DUTY (not only the outlet) rests on a sensible model");
-    expect(l).toContain("the same RATIO but not the same physics");
+    expect(l).toContain("is not the duty of a condenser or an evaporator");
+    expect(l).toContain("the duty (not only the outlet) rests on a sensible model");
+    expect(l).toContain("the same ratio but not the same physics");
     const n = prose(step(1).note!);
     expect(n).toContain("Q = U·A·F·ΔT_lm");
     expect(n).not.toMatch(/if they disagree, one of them is wrong\.$/);
@@ -217,7 +217,7 @@ describe("the design consequence, and the honest half", () => {
     //  engine, and this test pinned the stale wording verbatim, which is
     //  how a false claim becomes a maintained invariant.  Corrected
     //  2026-08-31; the old sentence is asserted ABSENT so it cannot return.
-    expect(prose(byId["arrangements"]!.body)).toContain("REFUSED by name");
+    expect(prose(byId["arrangements"]!.body)).toContain("refused by name");
     expect(prose(byId["arrangements"]!.body))
       .not.toContain("silently counter-current rather than refused");
     expect(prose(byId["arrangements"]!.body)).toContain("Crossflow");
@@ -260,9 +260,13 @@ describe("the tool renders it as a scrolling lesson", () => {
     //  families and the engine's point are actually drawn.
     const plot = SRC.indexOf("<SolvedView");
     expect(plot).toBeGreaterThan(0);
-    for (const n of [1, 2, 3, 4])
-      expect(SRC.indexOf(`{lessonStep(${n})}`), `step ${n} is not before the chart`)
-        .toBeLessThan(plot);
+    //  DEV.md 4c C277: the figure comes second -- step 1 opens the page and
+    //  steps 2-4 explain what the student has just watched.
+    expect(SRC.indexOf("{lessonStep(1)}"), "step 1 is not before the chart")
+      .toBeLessThan(plot);
+    for (const n of [2, 3, 4])
+      expect(SRC.indexOf(`{lessonStep(${n})}`), `step ${n} is not after the chart`)
+        .toBeGreaterThan(plot);
     expect(SRC.indexOf("{lessonStep(5)}"), "the consequence is not after the chart")
       .toBeGreaterThan(plot);
     expect(SRC.indexOf("{lessonLimits}"), "the limits are not after the chart")

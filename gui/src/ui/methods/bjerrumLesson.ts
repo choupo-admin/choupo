@@ -52,21 +52,21 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
       + "HCO3-, and the carbonate ion CO3--, each differing from the next by "
       + "one proton.  Nothing is created or destroyed as you move between "
       + "them — the total carbon is fixed — so what a diagram of this system "
-      + "shows is not how much carbon there is, but WHICH FORM it is in.",
+      + "shows is not how much carbon there is, but which form it is in.",
     formula: String.raw`\begin{aligned}
 \ce{CO2(aq) + H2O &<=> HCO3^- + H^+} &\qquad& K_1\\
 \ce{HCO3^- &<=> CO3^2- + H^+} &\qquad& K_2
 \end{aligned}`,
     where: [
       { sym: "K_1",
-        means: "the FIRST dissociation constant, written on DISSOLVED CO2: the "
+        means: "the first dissociation constant, written on dissolved CO2: the "
         + "loss of the first proton, from dissolved CO2 to bicarbonate.  In "
         + "the convention of the PHREEQC data used here, CO2(aq) stands for "
-        + "ALL the dissolved CO2, the small amount of true carbonic acid "
+        + "all the dissolved CO2, the small amount of true carbonic acid "
         + "H2CO3 included (often written H2CO3*); the constant of the H2CO3 "
         + "molecule alone is a different, much larger number" },
       { sym: "K_2",
-        means: "the SECOND: the loss of the proton from bicarbonate to carbonate" },
+        means: "the second: the loss of the proton from bicarbonate to carbonate" },
     ],
     note: "The two constants are not free numbers on this page: they come "
       + "from data/standards/chemistry/CO2aq-formation.dat and "
@@ -76,50 +76,50 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
   },
   {
     n: 2,
-    title: "The pH is NOT a knob here — and that is the whole lesson",
+    title: "The pH is not a knob here — and that is the whole lesson",
     body: "A textbook plots the three fractions against pH by putting pH into "
       + "the two mass-action expressions and solving for the ratios.  That is "
       + "arithmetic, and it always works.  Choupo will do it too: `pH 7.8;` is "
-      + "a legal declaration.  Look at what it costs.  Fixing [H+] REMOVES the "
+      + "a legal declaration.  Look at what it costs.  Fixing [H+] removes the "
       + "electroneutrality equation, so the run reports the net charge the "
       + "composition carries instead of forcing it to zero — the curve you "
       + "drew describes a real beaker only if something you did not write "
       + "down carries the missing charge: the Na+ or Cl- of the base or acid "
       + "that set the pH, or a buffer.  The diagram is real; its counter-ion "
-      + "is untracked.  An imposed-pH diagram is a VALID specification, not "
+      + "is untracked.  An imposed-pH diagram is a valid specification, not "
       + "a forbidden one — it answers a different question, and it describes "
       + "a real solution once it says what carries the charge: an amount of "
       + "acid or base left free to hold the pH, which equilibrium codes such "
       + "as PHREEQC let you name.  What no specification can do is fix every "
-      + "total, the pH AND neutrality at once.  In Choupo the given-pH mode "
+      + "total, the pH and neutrality at once.  In Choupo the given-pH mode "
       + "is for "
-      + "a MEASURED pH off a laboratory sheet, which is a datum somebody read "
+      + "a measured pH off a laboratory sheet, which is a datum somebody read "
       + "off an instrument.  This case declares `pH solve;` instead, so [H+] "
-      + "joins the unknowns and CHARGE is what decides it: the solution must "
+      + "joins the unknowns and charge is what decides it: the solution must "
       + "be electrically neutral, and given everything else in the beaker "
       + "that fixes [H+].",
     formula: String.raw`\sum_i z_i m_i = 0 \quad \longrightarrow \quad [\ce{H+}] \text{, and therefore } \mathrm{pH}`,
     where: [
-      { sym: "\\sum", means: "The sum runs over EVERY aqueous species in the "
-        + "converged table — the masters, H+, OH- and every complex.  It is "
+      { sym: "\\sum", means: "The sum runs over every aqueous species in the "
+        + "converged table — the masters, H+, oh- and every complex.  It is "
         + "not decoration: this is a row the solver assembles and imposes, "
         + "and it is the row that closes the system when the pH is unknown.  "
         + "A precipitated solid is not in it (a crystal is neutral)." },
-      { sym: "z_i", means: "The charge NUMBER of species i, signed: +1 for "
+      { sym: "z_i", means: "The charge number of species i, signed: +1 for "
         + "Na+, −2 for CO3--, 0 for a neutral such as CO2(aq).  It is not "
         + "fitted — it is read off the species' own curated identity record, "
         + "and every formation reaction is checked to conserve it before the "
         + "solve begins.", unit: "dimensionless (elementary charges, signed)" },
       { sym: "m_i", means: "The molality of species i: moles of i per "
-        + "KILOGRAM OF SOLVENT, not per litre of solution.  A concentration "
+        + "kilogram of solvent, not per litre of solution.  A concentration "
         + "declared per litre has to pass through a density before it can "
         + "enter here, and the engine announces that conversion.",
         unit: "mol/kg water" },
       { sym: "\\mathrm{pH}",
-        means: "A RESULT on this page.  With `pH solve;` the free "
+        means: "A result on this page.  With `pH solve;` the free "
         + "H+ molality joins the Newton unknowns and the row above is what "
-        + "closes for it.  It is reported WITH its scale: −log10(γ_H · m_H) "
-        + "on the Davies charge-symmetric convention, so this is a FREE H+ "
+        + "closes for it.  It is reported with its scale: −log10(γ_H · m_H) "
+        + "on the Davies charge-symmetric convention, so this is a free h+ "
         + "activity — not the total proton concentration, and not the "
         + "operational scale a laboratory meter reads against buffers.",
         unit: "dimensionless (a decimal logarithm)" },
@@ -146,22 +146,22 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
 \text{the acid side} & \text{dissolved } \ce{CO2} + \text{hydrochloric acid}
 \end{array}`,
     note: "The case declares `totalsBasis stoichiometric;` to say so.  Without "
-      + "it the engine reads the totals as a LABORATORY ANALYSIS, where a "
+      + "it the engine reads the totals as a laboratory analysis, where a "
       + "charge imbalance means somebody mismeasured, and warns that the "
       + "solved pH absorbs the error.  That warning is right for a lab sheet "
-      + "and wrong here: this imbalance IS the titrant.  Declaring the basis "
+      + "and wrong here: this imbalance is the titrant.  Declaring the basis "
       + "changes no number — it changes what the engine says about them.",
     where: [
-      { sym: "C_T", means: "The TOTAL carbonate, held fixed at the same value "
+      { sym: "C_T", means: "The total carbonate, held fixed at the same value "
         + "in all 44 beakers — the one quantity that does not vary from point "
-        + "to point.  That is what makes the diagram a statement about WHICH "
+        + "to point.  That is what makes the diagram a statement about which "
         + "form the carbon is in rather than how much of it there is.  It is "
         + "declared once as a case variable and read by every operation.",
         unit: "mol/kg water (the witness declares 0.001)" },
       { sym: "\\mathrm{Na}",
         means: "The total sodium in the beaker, added as strong "
         + "base (NaOH).  Na/C_T is therefore the titration coordinate: how "
-        + "many equivalents of base per carbonate.  It is an INPUT — the "
+        + "many equivalents of base per carbonate.  It is an input — the "
         + "thing you weigh out — while the pH it produces is the output.",
         unit: "mol/kg water" },
     ],
@@ -174,9 +174,9 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
       + "it is bicarbonate; above the second it is carbonate.  The crossovers "
       + "are where two forms are present in equal amounts — and, if every "
       + "activity coefficient were 1, that would happen at the pH equal to "
-      + "the pK of the step that separates them.  The K's ARE inputs — the "
+      + "the pK of the step that separates them.  The K's are inputs — the "
       + "chemistry records of step 1 — but no crossover was: nothing told "
-      + "the solver where to put one, and the titration simply ARRIVES "
+      + "the solver where to put one, and the titration simply arrives "
       + "there.  In activities the exact statement, for the first step, is "
       + "pH = pK1 + log10(a_HCO3 / a_CO2): at equal molalities what is left "
       + "is log10(γ_HCO3 / γ_CO2), not zero.",
@@ -186,51 +186,51 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
 \end{aligned}`,
     where: [
       { sym: "\\mathrm{p}K_1",
-        means: "−log10 of the equilibrium constant for the FIRST "
+        means: "−log10 of the equilibrium constant for the first "
         + "dissociation, CO2(aq) + H2O = HCO3- + H+.  Choupo's chemistry "
-        + "record writes the reaction the other way round, as a FORMATION, "
+        + "record writes the reaction the other way round, as a formation, "
         + "so the file carries logK25 = +6.352 for CO2aq-formation and the "
         + "number you read here is its negative-log twin — the same "
         + "constant, one convention apart, which is exactly the kind of sign "
         + "that gets copied wrong between a book and a data file",
         unit: "dimensionless" },
-      { sym: "\\mathrm{p}K_2", means: "the same for the SECOND dissociation, "
+      { sym: "\\mathrm{p}K_2", means: "the same for the second dissociation, "
         + "HCO3- = CO3-- + H+ (the record is CO3-formation, logK25 = "
         + "−10.329).  It is nearly four pH units above pK1, which is why the "
         + "three curves separate rather than overlapping",
         unit: "dimensionless" },
     ],
-    note: "Both crossovers sit slightly BELOW the thermodynamic pK, and the "
+    note: "Both crossovers sit slightly below the thermodynamic pK, and the "
       + "gap is that quotient of activity coefficients: the engine works in activities, a "
       + "textbook diagram works in concentrations and takes every gamma as 1. "
-      + " The first crossover is moved by the BICARBONATE's gamma alone — "
+      + " The first crossover is moved by the bicarbonate's gamma alone — "
       + "about 0.975 there, the dissolved CO2 being neutral with gamma 1 — so "
       + "it shifts only slightly; the carbonate's own gamma there, 0.90, "
       + "moves nothing, carbonate being a trace at that pH.  The second is "
       + "moved by the ratio of the "
       + "carbonate's gamma to the bicarbonate's, and the divalent carbonate is "
       + "the one that feels it most: 0.81 against 0.95.  Both crossover "
-      + "pH's are INTERPOLATED between the two beakers that bracket them: the "
+      + "pH's are interpolated between the two beakers that bracket them: the "
       + "axis is 44 sampled points, not a continuum, and no beaker lands "
       + "exactly on a crossing.",
   },
   {
     n: 5,
     title: "The three fractions do not sum to one",
-    body: "Add up the three species' MOLALITIES at any point in the middle "
+    body: "Add up the three species' molalities at any point in the middle "
       + "of the range, divide by all the carbon in the beaker, and you get "
       + "0.9997, not 1.  (The curves plotted below will not show you that: "
       + "they are renormalised onto the three, so they sum to exactly 1 by "
       + "construction, and the shortfall is printed separately beneath "
       + "them.)  That missing 0.03 % is not round-off and "
-      + "it is not an error: it is a FOURTH species, the ion pair NaHCO3(aq), "
+      + "it is not an error: it is a fourth species, the ion pair NaHCO3(aq), "
       + "which the curated chemistry carries and a three-curve drawing has no "
       + "room for.  The sodium you added as titrant is not a spectator — it "
       + "associates weakly with bicarbonate and takes a little of the carbon "
       + "out of the diagram you are reading.",
-    note: "Look also at where that species is ABSENT.  In the ELEVEN beakers "
+    note: "Look also at where that species is absent.  In the eleven beakers "
       + "with no sodium in them at all — the whole acid side, and Na/C_T = 0 "
-      + "— the pair does not EXIST, and the "
+      + "— the pair does not exist, and the "
       + "engine refuses to report a species that is not in its table rather "
       + "than printing a zero — absent and zero are different claims.  This "
       + "matters more than it looks: a real 'inert' background electrolyte "
@@ -240,7 +240,7 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
   {
     n: 6,
     title: "Two ways to move the diagram, and they are different",
-    body: "Raise the temperature and the pK's THEMSELVES move: each constant "
+    body: "Raise the temperature and the pK's themselves move: each constant "
       + "carries its own enthalpy of reaction, so the two steps respond by "
       + "different amounts and the two crossovers slide by different "
       + "distances.  Raise the ionic strength instead and the pK's do not "
@@ -248,15 +248,15 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
       + "divalent carbonate ion, and the crossovers move anyway.  Two "
       + "mechanisms, one appearance.",
     note: "Only the temperature knob is here.  The background-electrolyte "
-      + "knob is NOT built.  What it would show follows from step 4 by "
+      + "knob is not built.  What it would show follows from step 4 by "
       + "hand: at 0.5 mol/kg of KNO3, Davies drops the carbonate gamma from "
       + "0.903 to 0.289 and the bicarbonate's from 0.975 to 0.733 (one ionic "
       + "strength, so the univalent gamma is the fourth root of the "
-      + "divalent one), and the first crossover of the FREE species moves "
+      + "divalent one), and the first crossover of the free species moves "
       + "from pH 6.341 to about 6.22 (6.352 + log10 0.733).  Counting the "
       + "KHCO3(aq) pair with the bicarbonate would move it further, to about "
       + "6.17.  Two defects in the sealing machinery blocked it "
-      + "and were fixed on 2026-08-30; what remains is the CURATION half, "
+      + "and were fixed on 2026-08-30; what remains is the curation half, "
       + "which is the honest blocker — the chemistry list carries no "
       + "LiHCO3aq record, and potassium is the wrong carrier precisely "
       + "because KHCO3(aq) would take 5.4 % of the carbon out of the "
@@ -272,7 +272,7 @@ export const BJERRUM_LIMITS: readonly LessonLimit[] = [
     id: "not-validated",
     title: "This is a structural witness, not a validation.",
     body: "No titration measurement is compared against anywhere in this "
-      + "case.  The crossovers landing near the two pK's is an INTERNAL "
+      + "case.  The crossovers landing near the two pK's is an internal "
       + "consistency check — that the network, the activity model and the "
       + "charge balance compose into the diagram the chemistry predicts — "
       + "and not agreement with an experiment.",
@@ -290,7 +290,7 @@ export const BJERRUM_LIMITS: readonly LessonLimit[] = [
     id: "complete-only-to-the-reaction-list",
     title: "The diagram is complete only up to the reactions somebody wrote down.",
     body: "NaHCO3(aq) appears because a record for it exists.  Lithium forms "
-      + "no carbonate pair HERE — which is a statement about this reaction "
+      + "no carbonate pair here — which is a statement about this reaction "
       + "list, not about nature: LiHCO3(aq) exists and is weak, and the "
       + "database simply has nothing to say about it.  A species with no "
       + "record is invisible, and invisible is not the same as absent.",
@@ -308,7 +308,7 @@ export const BJERRUM_LIMITS: readonly LessonLimit[] = [
   {
     id: "no-precipitation",
     title: "Nothing precipitates here, and the engine says how close it came.",
-    body: "Every SODIUM-BEARING point reports saturation indices for "
+    body: "Every sodium-bearing point reports saturation indices for "
       + "nahcolite, natron and trona — 33 of the 44, the acid side having no "
       + "sodium and therefore no such mineral to be saturated in.  At "
       + "1 mmol/kg they stay far below zero, which is why this "

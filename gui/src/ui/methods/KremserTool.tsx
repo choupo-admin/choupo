@@ -74,7 +74,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { Suspense, lazy, useMemo, useState, type ComponentProps } from "react";
-import { lessonStepper, LessonReferences } from "./lessonStep.js";
+import { lessonStepper, LessonReferences, Tex } from "./lessonStep.js";
 import {
   Alert, Badge, Box, Group, Loader, LoadingOverlay, SegmentedControl, Stack,
   Text, Title, Tooltip,
@@ -494,7 +494,7 @@ export function KremserTool(): JSX.Element {
             vs the closed form at the case's own (A_i, N). */}
         {active?.components.map((c) => (
           <Tooltip key={c.name} withArrow multiline w={300}
-            label={`|recovery_KPI − Kremser(A, N)| for ${c.name}: the closed form assumes ONE constant A = L/(K·V); the engine re-evaluates K on every stage, so the run leaves the curve.`}>
+            label={`|recovery_KPI − Kremser(A, N)| for ${c.name}: the closed form assumes one constant A = L/(K·V); the engine re-evaluates K on every stage, so the run leaves the curve.`}>
             <Badge variant="light" size="lg"
               color={c.deviation != null && c.deviation > 0.02 ? "orange" : "teal"}
               styles={{ root: { textTransform: "none", cursor: "help" } }}>
@@ -527,11 +527,9 @@ export function KremserTool(): JSX.Element {
         </Box>
 
         {step(1)}
-        {step(2)}
-        {step(3)}
 
         <Box>
-          <Title order={5}>Now compare the formula with a solved column</Title>
+          <Title order={5}>Compare the formula with a solved column</Title>
           <Text size="sm" mt={4}>
             The engine solves the absorber stage by stage, re-evaluating K on
             every one; the closed form assumes a single A.  The plot draws
@@ -588,15 +586,24 @@ export function KremserTool(): JSX.Element {
         </Box>
       </Box>
 
+      {/* The figure comes second (DEV.md 4c C277): steps 2-3 now explain what
+          the student has just watched. */}
+      {step(2)}
+      {step(3)}
+
       {step(4)}
 
       {active && (
         <Text size="xs" c="dimmed">
-          Kremser assumes ONE constant absorption factor A = L/(K·V) — straight
+          Kremser assumes one constant absorption factor{" "}
+          <Tex mode="inline" src={"A = L/(K\\,V)"} /> — straight
           operating and equilibrium lines. The engine re-computes K stage by
           stage, so the run&apos;s recovery leaves the closed-form curve; each chip
-          measures that gap, |recovery_KPI − Kremser(A, N)|, at the case&apos;s own
-          A_i (taken at the feed T).
+          measures that gap,{" "}
+          <Tex mode="inline"
+            src={"\\left|\\mathrm{recovery}_\\mathrm{KPI} - \\mathrm{Kremser}(A, N)\\right|"} />,
+          at the case&apos;s own <Tex mode="inline" src={"A_i"} /> (taken at the
+          feed T).
           {active.nonIsothermal &&
             " This run is non-isothermal: the solvent heats as it absorbs (dT_rise), and that temperature rise drives the K variation."}
         </Text>

@@ -36,37 +36,37 @@ export const ENTU_STEPS: readonly LessonStep[] = [
     n: 1,
     title: "The question LMTD cannot answer",
     body: "Q = U·A·ΔT_lm is the first heat-exchanger equation anyone learns, "
-      + "and it needs all FOUR terminal temperatures, because the log-mean "
+      + "and it needs all four terminal temperatures, because the log-mean "
       + "difference is built out of the two end approaches.  A rating or "
-      + "design problem hands you the opposite: the two INLETS and a piece of "
+      + "design problem hands you the opposite: the two inlets and a piece of "
       + "hardware, with the outlets as the unknowns.  So the LMTD route has "
       + "to guess an outlet, compute a duty, correct the guess and go round "
       + "again.  The ε-NTU method is the same first law rearranged so that "
       + "the duty falls out of what you already know.",
     formula: String.raw`\begin{array}{lll}
 \text{LMTD route} & Q = U A\, \Delta T_\mathrm{lm} & \text{needs } T_{h,\mathrm{in}},\ T_{h,\mathrm{out}},\ T_{c,\mathrm{in}},\ T_{c,\mathrm{out}}\\
-\varepsilon\text{-NTU route} & Q = \varepsilon\, C_\mathrm{min} (T_{h,\mathrm{in}} - T_{c,\mathrm{in}}) & \text{needs the two INLETS}
+\varepsilon\text{-NTU route} & Q = \varepsilon\, C_\mathrm{min} (T_{h,\mathrm{in}} - T_{c,\mathrm{in}}) & \text{needs the two inlets}
 \end{array}`,
     where: [
-      { sym: "Q", means: "the DUTY — heat actually crossing from the hot "
+      { sym: "Q", means: "the duty — heat actually crossing from the hot "
         + "stream to the cold one", unit: "W" },
       { sym: "U", means: "the overall heat-transfer coefficient, hot side to "
         + "cold side through the wall", unit: "W/(m²·K)" },
-      { sym: "A", means: "the heat-transfer AREA of the exchanger",
+      { sym: "A", means: "the heat-transfer area of the exchanger",
         unit: "m²" },
       { sym: "\\Delta T_\\mathrm{lm}",
         means: "the log-mean temperature difference — the "
-        + "average driving force along the exchanger, which needs all FOUR "
+        + "average driving force along the exchanger, which needs all four "
         + "terminal temperatures and therefore needs the answer before it "
         + "can be computed", unit: "K" },
       { sym: "\\varepsilon",
-        means: "the EFFECTIVENESS — the duty as a fraction of the "
+        means: "the effectiveness — the duty as a fraction of the "
         + "most this pair of streams could possibly exchange" },
       { sym: "C_\\mathrm{min}",
         means: "the smaller of the two capacity rates ṁ·c_p, "
         + "defined in the next step", unit: "W/K" },
       { sym: "T_{h,\\mathrm{in}} \\,/\\, T_{c,\\mathrm{in}}",
-        means: "the hot and cold INLET temperatures",
+        means: "the hot and cold inlet temperatures",
         unit: "K" },
       { sym: "T_{h,\\mathrm{out}} \\,/\\, T_{c,\\mathrm{out}}",
         means: "the two outlet temperatures — what "
@@ -76,8 +76,8 @@ export const ENTU_STEPS: readonly LessonStep[] = [
       + "both outlets from ε-NTU, and only then computes the LMTD, printing "
       + "U·A·LMTD beside the duty as a cross-check.  Two routes to one number "
       + "is worth the arithmetic — but only where the two routes describe the "
-      + "same exchanger.  WHAT THE METHOD ALLOWS: Q = U·A·ΔT_lm holds as "
-      + "written for a SINGLE-pass, purely counter- or co-current exchanger "
+      + "same exchanger.  What the method allows: Q = U·A·ΔT_lm holds as "
+      + "written for a single-pass, purely counter- or co-current exchanger "
       + "whose U is constant and whose streams each have a constant heat "
       + "capacity rate, or sit at a constant temperature.  A pure fluid "
       + "condensing or boiling at constant temperature against a "
@@ -89,9 +89,9 @@ export const ENTU_STEPS: readonly LessonStep[] = [
       + "or a pressure drop), or strongly varying properties; there the "
       + "exchanger is divided into segments and each is treated alone.  A "
       + "1-shell / 2-tube-pass exchanger obeys Q = U·A·F·ΔT_lm with a "
-      + "correction factor F below one, so the plain product is EXPECTED to "
+      + "correction factor F below one, so the plain product is expected to "
       + "exceed Q (the engine prints the F that the two numbers imply).  "
-      + "WHAT THIS UNIT MODELS: a sensible duty only.  Its duty is built from "
+      + "What this unit models: a sensible duty only.  Its duty is built from "
       + "the capacity rate of each stream's inlet phase, with no latent "
       + "term, so when a side changes phase the duty is not that of a "
       + "condenser or an evaporator, the engine announces it, and U·A·LMTD "
@@ -103,13 +103,13 @@ export const ENTU_STEPS: readonly LessonStep[] = [
     n: 2,
     title: "The most you could possibly get, and why C_min sets it",
     body: "Before asking how well an exchanger performs, ask what performing "
-      + "perfectly would mean.  No exchanger can push a stream past the OTHER "
+      + "perfectly would mean.  No exchanger can push a stream past the other "
       + "stream's inlet temperature — that is the second law, and it caps "
       + "everything.  So the largest temperature swing available to either "
       + "stream is ΔT_max = T_h,in − T_c,in, and the duty that swing carries "
       + "is C·ΔT_max, where the capacity rate C = ṁ·c_p is the watts per "
       + "kelvin a stream can absorb or release.  Work it out for each stream "
-      + "and you get two different numbers, and only the SMALLER is "
+      + "and you get two different numbers, and only the smaller is "
       + "achievable: the stream with the smaller C is the one that can swing "
       + "the whole ΔT_max, because handing that swing to the larger-C stream "
       + "would force the smaller-C one straight past its partner's inlet.",
@@ -118,13 +118,13 @@ C &= \dot m\, c_p & C_\mathrm{min} &= \min(C_\mathrm{hot},\, C_\mathrm{cold})\\
 Q_\mathrm{max} &= C_\mathrm{min} (T_{h,\mathrm{in}} - T_{c,\mathrm{in}})
 \end{aligned}`,
     where: [
-      { sym: "C", means: "the CAPACITY RATE of a stream — how much heat it "
+      { sym: "C", means: "the capacity rate of a stream — how much heat it "
         + "carries away per degree", unit: "W/K" },
       { sym: "\\dot m", means: "mass flow rate", unit: "kg/s" },
       { sym: "c_p", means: "specific heat capacity", unit: "J/(kg·K)" },
       { sym: "C_\\mathrm{min}",
         means: "the smaller of the two capacity rates — the "
-        + "stream that changes temperature FASTEST, and therefore the one "
+        + "stream that changes temperature fastest, and therefore the one "
         + "that limits the exchange" },
       { sym: "C_\\mathrm{hot} \\,/\\, C_\\mathrm{cold}",
         means: "the capacity rates of the hot and the "
@@ -134,10 +134,10 @@ Q_\mathrm{max} &= C_\mathrm{min} (T_{h,\mathrm{in}} - T_{c,\mathrm{in}})
         means: "the largest duty this pair of streams could "
         + "exchange, at infinite area", unit: "W" },
       { sym: "T_{h,\\mathrm{in}} \\,/\\, T_{c,\\mathrm{in}}",
-        means: "the two INLET temperatures — the only "
+        means: "the two inlet temperatures — the only "
         + "temperatures the eps-NTU route needs", unit: "K" },
     ],
-    note: "Q_max is what a COUNTERFLOW exchanger of infinite area would "
+    note: "Q_max is what a counterflow exchanger of infinite area would "
       + "deliver.  That is not a rhetorical infinity: it is the ceiling the "
       + "counter-current curves on the plot climb towards, and the one the "
       + "co-current curves visibly do not.",
@@ -148,7 +148,7 @@ Q_\mathrm{max} &= C_\mathrm{min} (T_{h,\mathrm{in}} - T_{c,\mathrm{in}})
     body: "Effectiveness is the duty as a fraction of that maximum — a pure "
       + "ratio, no units, between 0 and 1, and it says what this exchanger "
       + "got out of the temperature difference it was given.  NTU is the "
-      + "dimensionless SIZE: the heat-transfer conductance U·A measured "
+      + "dimensionless size: the heat-transfer conductance U·A measured "
       + "against the capacity rate it has to serve.  Double the area, or "
       + "double U, and you double NTU.",
     formula: String.raw`\begin{aligned}
@@ -157,8 +157,8 @@ Q_\mathrm{max} &= C_\mathrm{min} (T_{h,\mathrm{in}} - T_{c,\mathrm{in}})
 \end{aligned}`,
     where: [
       { sym: "\\mathrm{NTU}",
-        means: "the NUMBER OF TRANSFER UNITS: the exchanger's size made "
-        + "dimensionless against the stream that limits it.  It is the SIZE "
+        means: "the number of transfer units: the exchanger's size made "
+        + "dimensionless against the stream that limits it.  It is the size "
         + "variable of the method, as epsilon is its performance variable" },
     ],
     note: "ε is not a thermodynamic efficiency: it is a fraction of the "
@@ -174,7 +174,7 @@ Q_\mathrm{max} &= C_\mathrm{min} (T_{h,\mathrm{in}} - T_{c,\mathrm{in}})
     n: 4,
     title: "C_r, the parameter nobody remembers, and the two limits it brackets",
     body: "The third parameter is the capacity ratio, and it is the one "
-      + "students skip.  It says how MATCHED the two streams are, and it "
+      + "students skip.  It says how matched the two streams are, and it "
       + "decides whether the flow arrangement matters at all.  Two limits "
       + "bracket every curve on the plot, and once you can place them the "
       + "whole family becomes readable.",
@@ -185,10 +185,10 @@ C_r = 1 & \varepsilon = \dfrac{\mathrm{NTU}}{1 + \mathrm{NTU}} & \text{counter-c
 \end{array}`,
     where: [
       { sym: "\\mathrm{NTU}",
-        means: "the NUMBER OF TRANSFER UNITS, U·A/C_min — the "
-        + "exchanger's SIZE measured against the stream that limits it, and "
+        means: "the number of transfer units, U·A/C_min — the "
+        + "exchanger's size measured against the stream that limits it, and "
         + "dimensionless because it is a ratio of two conductances" },
-      { sym: "C_r", means: "the capacity-rate RATIO C_min/C_max — how evenly "
+      { sym: "C_r", means: "the capacity-rate ratio C_min/C_max — how evenly "
         + "matched the two streams are.  0 when one side changes phase and "
         + "holds its temperature; 1 when both swing equally" },
       { sym: "T_h \\,/\\, T_c", means: "hot-side and cold-side temperature, at "
@@ -198,7 +198,7 @@ C_r = 1 & \varepsilon = \dfrac{\mathrm{NTU}}{1 + \mathrm{NTU}} & \text{counter-c
       + "steam, a boiling liquid, or simply a service stream so large that "
       + "its outlet is its inlet.  With one side isothermal there is no "
       + "\"which way round\" left to ask, and all three arrangements collapse "
-      + "onto ONE curve.  C_r = 1 is balanced streams, the hardest case and "
+      + "onto one curve.  C_r = 1 is balanced streams, the hardest case and "
       + "the one where the arrangements differ most: counter-current still "
       + "climbs towards ε = 1, slowly, while co-current stops dead at "
       + "1/(1 + C_r) = 0.5 however much area you buy.",
@@ -218,7 +218,7 @@ C_r = 1 & \varepsilon = \dfrac{\mathrm{NTU}}{1 + \mathrm{NTU}} & \text{counter-c
       + "it, because its ceiling is 1/(1 + C_r) = 0.667.",
     note: "This is why exchanger design ends in a trade-off and not a "
       + "maximum: area costs capital, recovered duty saves operating cost, "
-      + "and the two cross somewhere on this curve.  WHERE they cross depends "
+      + "and the two cross somewhere on this curve.  Where they cross depends "
       + "on prices and on the pumping power the extra area costs — neither of "
       + "which is on this plot, and neither of which the numbers here can "
       + "tell you.",
@@ -229,35 +229,35 @@ export const ENTU_LIMITS: readonly { id: string; title: string; body: string }[]
   {
     id: "sensible-only",
     title: "A sensible duty only — the C_r = 0 limit is on the chart, not in the unit.",
-    body: "The exchanger's DUTY comes from sensible capacity rates: each "
+    body: "The exchanger's duty comes from sensible capacity rates: each "
       + "stream's c_p is read from the phase its vapour fraction declares "
       + "(liquid below 0.5, ideal gas above), and flow, composition and "
       + "pressure pass through unchanged. A condensing or boiling stream — "
       + "the physical C_r = 0 — is not something this unit solves in its "
-      + "ε-NTU. The outlet STATE is found afterwards from the enthalpy, so a "
+      + "ε-NTU. The outlet state is found afterwards from the enthalpy, so a "
       + "stream may leave partly boiled (a pure one at its saturation "
       + "temperature, its vapour fraction carried as a pin), but the duty "
-      + "that boiled it came from a sensible c_p — so such a duty is NOT the "
+      + "that boiled it came from a sensible c_p — so such a duty is not the "
       + "duty of a condenser or an evaporator, and the engine says so: when "
       + "either outlet leaves in a different phase from its inlet, the run "
-      + "announces that the DUTY (not only the outlet) rests on a sensible "
+      + "announces that the duty (not only the outlet) rests on a sensible "
       + "model and that U·A·LMTD is no check there. On this page's witness "
       + "the knobs keep both sides liquid (the hot inlet stops at 390 K, "
       + "below the 393 K saturation of water at the case's 2 bar), so the "
       + "exercise stays in the domain the model covers. With the knobs you "
       + "can only approach C_r = 0 by starving one side's flow, which reaches "
-      + "the same RATIO but not the same physics: a starved stream swings "
+      + "the same ratio but not the same physics: a starved stream swings "
       + "through the whole temperature difference while the other side "
       + "barely moves, whereas a boiling stream holds its temperature because "
       + "its heat goes into latent change.",
   },
   {
     id: "constant-U",
-    title: "ONE U, for the whole exchanger.",
+    title: "One u, for the whole exchanger.",
     body: "U is a single declared number, used unchanged along the entire "
       + "area — the 21-point temperature profile beside the chart is "
       + "integrated with it. A real U varies along the exchanger with "
-      + "velocity, viscosity and wall temperature. Each stream's c_p IS "
+      + "velocity, viscosity and wall temperature. Each stream's c_p is "
       + "re-evaluated at its own mean temperature (two passes), so the "
       + "capacity rates are mean-temperature values; U gets no such "
       + "treatment. The unit's separate geometry mode computes one U from a "
@@ -293,8 +293,8 @@ export const ENTU_LIMITS: readonly { id: string; title: string; body: string }[]
       + "unmixed — is not implemented, and neither is any multi-shell "
       + "arrangement. The unit reads `flow` as a single word: co, cocurrent "
       + "and parallel are co-current, counter and countercurrent are "
-      + "counter-current, and ANY OTHER WORD -- crossflow, a capital Co, a "
-      + "typo -- is REFUSED by name, with the accepted set in the message. "
+      + "counter-current, and any other word -- crossflow, a capital Co, a "
+      + "typo -- is refused by name, with the accepted set in the message. "
       + "It used to fall back to counter-current instead, which is the "
       + "optimistic arrangement, so a typo quietly undersized the exchanger "
       + "at exit 0.",

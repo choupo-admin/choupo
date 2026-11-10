@@ -415,12 +415,9 @@ export function EpsilonNtuTool(): JSX.Element {
 
         {lessonHead}
         {lessonStep(1)}
-        {lessonStep(2)}
-        {lessonStep(3)}
-        {lessonStep(4)}
 
         <Box>
-          <Title order={5}>Now read the exchanger the engine solved</Title>
+          <Title order={5}>Watch the exchanger the engine solved</Title>
           <Text size="sm" mt={4}>
             The curves below are the textbook closed forms — three flow
             arrangements, each drawn for C_r = 0, 0.25, 0.5, 0.75 and 1.  The
@@ -480,6 +477,12 @@ export function EpsilonNtuTool(): JSX.Element {
             )}
           </Box>
         </Box>
+
+        {/* The figure comes second (DEV.md 4c C277): steps 2-4 now explain what
+            the student has just watched. */}
+        {lessonStep(2)}
+        {lessonStep(3)}
+        {lessonStep(4)}
 
         {lessonStep(5)}
         {lessonLimits}

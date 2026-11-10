@@ -37,8 +37,8 @@ export const HUNTER_NASH_STEPS: readonly LessonStep[] = [
     title: "Three components, so the diagram grows a dimension",
     body: "Everything so far has been binary, and a binary mixture needs one "
       + "number: give x and the other component is 1 − x.  Extraction has "
-      + "three — the carrier you are taking the solute OUT of, the solute, "
-      + "and the solvent you are taking it INTO — so a composition needs two "
+      + "three — the carrier you are taking the solute out of, the solute, "
+      + "and the solvent you are taking it into — so a composition needs two "
       + "numbers, and the diagram becomes a triangle.  Each corner is a pure "
       + "component; each point inside is a whole mixture; and distance from a "
       + "side is how much of the opposite corner it contains.",
@@ -49,7 +49,7 @@ export const HUNTER_NASH_STEPS: readonly LessonStep[] = [
   {
     n: 2,
     title: "Mixing is a straight line, and it is the lever rule again",
-    body: "Add two streams together and the product sits ON the straight line "
+    body: "Add two streams together and the product sits on the straight line "
       + "joining them — always, because a mixture's composition is the "
       + "flow-weighted average of what went in.  Where on that line is fixed "
       + "by the flows, and the arithmetic is exactly the lever rule you read "
@@ -57,31 +57,31 @@ export const HUNTER_NASH_STEPS: readonly LessonStep[] = [
     formula: String.raw`M = F + S \qquad \frac{\overline{FM}}{\overline{MS}} = \frac{S}{F}`,
     where: [
       { sym: "\\overline{FM} \\,/\\, \\overline{MS}",
-        means: "the two SEGMENTS into "
+        means: "the two segments into "
         + "which the mixing point M cuts the straight line FS — the lever "
         + "arms, measured on the diagram.  Each is opposite the stream whose "
         + "flow it is proportional to, which is why the ratio comes out "
         + "inverted", unit: "a length on the triangle" },
-      { sym: "F", means: "The FEED — the stream carrying the solute in its "
+      { sym: "F", means: "The feed — the stream carrying the solute in its "
         + "original carrier, entering the cascade at stage 1 and leaving it, "
         + "stripped, as the raffinate at stage N.  It is a real inlet: the "
         + "extractor takes exactly two, feed then solvent, and refuses any "
         + "other arity by name.", unit: "mol/s" },
-      { sym: "S", means: "The SOLVENT — the second inlet, the phase that "
-        + "will take the solute up.  Which SPECIES defines the extract phase "
+      { sym: "S", means: "The solvent — the second inlet, the phase that "
+        + "will take the solute up.  Which species defines the extract phase "
         + "may be declared (`operation.solvent`), and this witness declares "
         + "benzene; absent that, the engine takes the solvent stream's "
         + "dominant component.  Either way it is never guessed from the "
         + "name.", unit: "mol/s" },
-      { sym: "M", means: "The MIXING POINT: the state you would get by "
+      { sym: "M", means: "The mixing point: the state you would get by "
         + "dumping F and S into one pot.  It is not a stream in the "
         + "flowsheet — it is a bookkeeping point on the triangle, and it "
         + "lies on the straight line FS because mixing is linear in the "
         + "component flows.", unit: "mol/s as a flow; a composition as plotted" },
     ],
     note: "That is the whole of the material balance in this diagram: a "
-      + "SUM lies between its parts, on the line joining them.  On this page "
-      + "every flow is MOLAR and every point a mole fraction, so every lever "
+      + "sum lies between its parts, on the line joining them.  On this page "
+      + "every flow is molar and every point a mole fraction, so every lever "
       + "arm is a molar balance.  A textbook triangle drawn in mass "
       + "fractions is the same construction in mass flows; the lever rule "
       + "holds in either basis, but only when the flows and the fractions "
@@ -92,11 +92,11 @@ export const HUNTER_NASH_STEPS: readonly LessonStep[] = [
     title: "Tie lines are what equilibrium says, and they are not parallel",
     body: "Inside the two-phase region a mixture cannot exist as one liquid: "
       + "it splits into an extract, rich in solvent, and a raffinate, rich in "
-      + "carrier.  The line joining those two is a TIE LINE, and the mixture "
+      + "carrier.  The line joining those two is a tie line, and the mixture "
       + "sits on it — again by the lever rule.  Unlike the vapour-liquid case "
       + "there is no single curve to read them off: the tie lines have their "
-      + "own slopes, they rotate across the region, and they SHRINK TO A "
-      + "POINT at the plait point, where the two liquids become one.",
+      + "own slopes, they rotate across the region, and they shrink to a "
+      + "point at the plait point, where the two liquids become one.",
     note: "This is why an extraction diagram is drawn from measured or "
       + "computed tie lines rather than from a correlation. The tool draws "
       + "the ones the engine solved, and says so — a tie line at a "
@@ -106,8 +106,8 @@ export const HUNTER_NASH_STEPS: readonly LessonStep[] = [
     n: 4,
     title: "The operating line becomes a point — and it is usually off the page",
     body: "In a countercurrent cascade the material balance still holds "
-      + "everywhere, but it no longer gives ONE line.  Rearranged, it says "
-      + "that the NET flow crossing any section of the cascade is the same: "
+      + "everywhere, but it no longer gives one line.  Rearranged, it says "
+      + "that the net flow crossing any section of the cascade is the same: "
       + "feed minus the extract leaving the top equals the raffinate leaving "
       + "the bottom minus the solvent entering it.  Call that Δ.  Every "
       + "operating line in the construction passes through it, so the pencil "
@@ -116,14 +116,14 @@ export const HUNTER_NASH_STEPS: readonly LessonStep[] = [
     formula: String.raw`\Delta = F - E_1 = R_N - S`,
     where: [
       { sym: "\\Delta",
-        means: "The DIFFERENCE POINT — a fictitious stream: the net "
+        means: "The difference point — a fictitious stream: the net "
         + "flow passing every cut of the cascade.  Because F − E₁ = R_j − "
         + "E_{j+1} = R_N − S is the same net stream wherever you cut, Δ, R_j "
         + "and E_{j+1} are colinear for every j, which is exactly why every "
         + "operating line radiates from this one point — it takes the place "
         + "the single operating line held in McCabe-Thiele.  It is a "
-        + "DIFFERENCE of flows, not a mixture, so it is under no obligation "
-        + "to be a composition: it routinely lies OUTSIDE the triangle, and "
+        + "difference of flows, not a mixture, so it is under no obligation "
+        + "to be a composition: it routinely lies outside the triangle, and "
         + "a negative amount of a component is just what a net flow in the "
         + "other direction looks like on a diagram.  Nothing in the engine "
         + "computes Δ — it is a construction device built in the browser "
@@ -131,13 +131,13 @@ export const HUNTER_NASH_STEPS: readonly LessonStep[] = [
         + "absent entirely when the two defining lines are parallel and the "
         + "net stream is at infinity.", unit: "mol/s as a net flow" },
       { sym: "E",
-        means: "The EXTRACT (E₁ is the one leaving stage 1) — the solvent-rich "
+        means: "The extract (E₁ is the one leaving stage 1) — the solvent-rich "
         + "phase, flowing countercurrent to the raffinate and carrying out "
         + "the solute it has taken up.  The engine does not decide which "
         + "phase is the extract by name: at each stage it flashes the "
         + "combined inlet into two liquids and labels the one richer in the "
         + "declared solvent species.", unit: "mol/s" },
-      { sym: "R_N", means: "The RAFFINATE leaving the LAST stage N — the "
+      { sym: "R_N", means: "The raffinate leaving the last stage N — the "
         + "feed-derived phase after it has passed every stage, i.e. the "
         + "depleted product.  The subscript is doing real work, and so is "
         + "this warning: R is the most overloaded letter in the corpus.  It "
@@ -146,8 +146,8 @@ export const HUNTER_NASH_STEPS: readonly LessonStep[] = [
         + "the retention factor in adsorption — four quantities, one "
         + "letter.  Always read the subscript and the page.", unit: "mol/s" },
     ],
-    note: "AND IT IS OFTEN OUTSIDE THE TRIANGLE, which alarms every student "
-      + "who meets it and is entirely correct.  Δ is a DIFFERENCE of flows, "
+    note: "And it is often outside the triangle, which alarms every student "
+      + "who meets it and is entirely correct.  Δ is a difference of flows, "
       + "not a mixture, and a difference has no obligation to be a "
       + "composition. A negative amount of something is exactly what a net "
       + "flow in the other direction looks like.",
@@ -167,7 +167,7 @@ export const HUNTER_NASH_STEPS: readonly LessonStep[] = [
 export const HUNTER_NASH_LIMITS: readonly { id: string; title: string; body: string }[] = [
   {
     id: "ternary",
-    title: "TERNARY only. Four components have no triangle to live in.",
+    title: "Ternary only. Four components have no triangle to live in.",
     body: "The whole construction depends on two independent compositions "
       + "fitting in a plane. A fourth component needs a tetrahedron, and real "
       + "extraction systems — a solvent that is itself a mixture, a second "
@@ -176,8 +176,8 @@ export const HUNTER_NASH_LIMITS: readonly { id: string; title: string; body: str
   },
   {
     id: "no-binodal",
-    title: "The binodal CURVE is not drawn, because nothing publishes one.",
-    body: "The engine publishes tie-line ENDS and a node classification, not "
+    title: "The binodal curve is not drawn, because nothing publishes one.",
+    body: "The engine publishes tie-line ends and a node classification, not "
       + "a curve through them. Drawing a smooth binodal would be this view "
       + "inventing the boundary of the two-phase region, which is a physical "
       + "claim and not a drawing decision. The plait point and the spinodal "
@@ -185,7 +185,7 @@ export const HUNTER_NASH_LIMITS: readonly { id: string; title: string; body: str
   },
   {
     id: "engine-stages",
-    title: "The staircase walks the ENGINE's stages, not a graphical count.",
+    title: "The staircase walks the engine's stages, not a graphical count.",
     body: "A graphical stage count needs the tie line through a composition "
       + "the solver was never asked about, and no engine surface returns one "
       + "yet. So this draws the cascade the engine actually converged, stage "

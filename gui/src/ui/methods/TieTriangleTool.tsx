@@ -443,7 +443,7 @@ export function TieTriangleTool(): JSX.Element {
         <Group gap={6} wrap="nowrap" align="center">
           <Loader size="xs" />
           <Text size="xs" c="dimmed">
-            re-solving the map AND the cascade — seconds, not instant
+            re-solving the map and the cascade — seconds, not instant
           </Text>
         </Group>
       )}
@@ -463,7 +463,7 @@ export function TieTriangleTool(): JSX.Element {
         map&apos;s tie-lines and the column&apos;s stages are the same physics.
       </PanelNote>
       <PanelNote>
-        There is NO temperature knob: the map&apos;s T sits in an inline
+        There is no temperature knob: the map&apos;s T sits in an inline
         sub-dict the override grammar cannot reach, and moving the column alone
         would draw one temperature&apos;s stages on another temperature&apos;s
         map.
@@ -545,12 +545,9 @@ export function TieTriangleTool(): JSX.Element {
       {lessonHead}
       {alerts}
       {lessonStep(1)}
-      {lessonStep(2)}
-      {lessonStep(3)}
-      {lessonStep(4)}
 
       <Box>
-        <Title order={5}>Now read the cascade the engine solved</Title>
+        <Title order={5}>Watch the cascade the engine solved</Title>
         <Text size="sm" mt={4}>
           The triangle below carries the engine’s own tie-lines, its cascade
           stage by stage, and the difference point located by two independent
@@ -567,13 +564,13 @@ export function TieTriangleTool(): JSX.Element {
 
       <Group gap="sm" wrap="wrap" align="center" px={12} py={6} style={{ flexShrink: 0 }}>
         <Tooltip withArrow multiline w={460}
-          label={"Hunter-Nash says Δ, R_j and E_{j+1} are colinear at EVERY "
+          label={"Hunter-Nash says Δ, R_j and E_{j+1} are colinear at every "
             + "cut, because the net stream Δ = F − E₁ = R_j − E_{j+1} is the "
             + "same at every one.  Δ was located from two of those lines "
-            + "(F–E₁ and R_N–S), so the remaining cuts are a TEST: this is the "
+            + "(F–E₁ and R_N–S), so the remaining cuts are a test: this is the "
             + "largest perpendicular distance from the engine's own E_{j+1} to "
             + "the line through Δ and its own R_j, in units where a triangle "
-            + "edge is 1.  It comes out of the same ORDER as the cascade's own "
+            + "edge is 1.  It comes out of the same order as the cascade's own "
             + "stopping tolerance (a relative mass closure of 1e-4) — an "
             + "order-of-magnitude remark and not an identity, since a mass "
             + "closure and a distance on a diagram are different quantities."}>
@@ -583,7 +580,7 @@ export function TieTriangleTool(): JSX.Element {
           </Badge>
         </Tooltip>
         <Tooltip withArrow multiline w={460}
-          label={"Two independent determinations of the SAME point.  The "
+          label={"Two independent determinations of the same point.  The "
             + "circle is where the line F–S crosses the line E₁–R_N (the "
             + "construction).  The lever-rule value is (F·z_F + S·z_S)/(F+S) "
             + "from the run's own published flows and compositions.  They are "
@@ -636,12 +633,12 @@ export function TieTriangleTool(): JSX.Element {
         </Text>
         <Text size="xs" c="dimmed" mt={2}>
           <b>Not on this diagram, because nothing publishes it:</b> the binodal
-          CURVE (the engine publishes tie-line ends and a node classification,
+          curve (the engine publishes tie-line ends and a node classification,
           not a curve through them); the plait point; the spinodal; and any
           tie-line at a composition the engine did not solve — which is why the
           staircase walks the cascade&apos;s own stages instead of counting
           stages graphically. A graphical stage count needs an engine surface
-          that returns the tie-line through a GIVEN composition; that surface
+          that returns the tie-line through a given composition; that surface
           does not exist yet.
         </Text>
         {scan && (
@@ -667,6 +664,12 @@ export function TieTriangleTool(): JSX.Element {
       </Box>
         </Box>
       </Box>
+
+      {/* The figure comes second (DEV.md 4c C277): steps 2-4 now explain what
+          the student has just watched. */}
+      {lessonStep(2)}
+      {lessonStep(3)}
+      {lessonStep(4)}
 
       {lessonStep(5)}
       {lessonLimits}
