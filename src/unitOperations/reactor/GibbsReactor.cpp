@@ -41,7 +41,7 @@ License
 #include <stdexcept>
 #include <string>
 #include <vector>
-
+#include "ReactionHeat.H"
 namespace Choupo {
 
 scalar GibbsReactor::stateEnthalpy_W(const GibbsProblem&     prob,
@@ -182,7 +182,7 @@ int GibbsReactor::solve(const DictPtr& dict,
     if (mode != "isothermal" && mode != "adiabatic")
         throw std::runtime_error("GibbsReactor: unknown mode '" + mode
             + "' (expected 'isothermal' or 'adiabatic')");
-    const scalar Q_kJ_per_kmol = operDict->lookupScalarOrDefault("Q", 0.0);
+    const scalar Q_kJ_per_kmol = operDict->lookupScalarOrDefault("Q", 0.0); if (dict->hasDictList("reactions")) for (const auto& rx : dict->lookupDictList("reactions")) refuseDeclaredHeat(*rx, "gibbsReactor", "It has no reactions and therefore no extents to multiply a per-extent heat by: it minimises G over element-conserving species, so a measured heat of reaction has nothing to correct.  Use a cstr, conversionReactor or batchReactor with the declared reaction.");
 
     // `approachTemperature` is RETIRED (2026-09-26).  It was a SECOND approach
     // key read by this same solve, 76 lines above the one that announces

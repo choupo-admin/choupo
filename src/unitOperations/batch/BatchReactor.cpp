@@ -327,8 +327,8 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
         // override.  Only consulted for the energy balance in ADIABATIC mode --
         // isothermal pins T, so its heat of reaction is inert and we skip the
         // resolve/announce to keep those cases byte-identical and quiet.
-        std::optional<scalar> dictDH;
-        if (rxn->found("dH_rxn")) dictDH = rxn->lookupScalar("dH_rxn");
+        const std::string heatCtx = "BatchReactor '" + name_ + "' reaction '" + rxnName + "'";
+        const std::optional<scalar> dictDH = resolveDeclaredHeat(thermo, r.comps, r.nu, parseDeclaredHeat(*rxn, heatCtx), heatCtx, verbosity_).overrideForResolver;
         {
             // Resolved in BOTH modes since the energy ledger (phase (a)):
             // the isothermal jacket duty IS this heat of reaction -- the old

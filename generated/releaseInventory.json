@@ -3,7 +3,7 @@
   "latestRelease": "Choupo-2608",
   "latestReleasedAt": "2026-09-02",
   "catalogue": {
-    "components": 616,
+    "components": 648,
     "aqueousSpecies": 53,
     "nrtlPairs": 132,
     "wilsonPairs": 0,
@@ -21,10 +21,10 @@
     "engines": 5
   },
   "tutorials": {
-    "runnableCases": 700,
-    "regressionChecks": 684,
+    "runnableCases": 733,
+    "regressionChecks": 717,
     "byTier": {
-      "witness": 642,
+      "witness": 675,
       "tutorial": 42,
       "showcase": 16
     }

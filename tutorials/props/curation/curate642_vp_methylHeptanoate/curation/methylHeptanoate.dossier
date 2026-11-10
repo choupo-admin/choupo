@@ -1,0 +1,80 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      methylHeptanoate;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        A  4.3562331366;
+        B  1614.76708928;
+        C  -71.8500056703;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b743a66d1e06ad4b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylHeptanoate-vapourPressure-je800915d.dat";
+            doi       "10.1021/je800915d";
+            sha256    "201b89a6ab7adecfd45e74868b6f7770c8f84d31cc174c0c41d44be657e19d69";
+            provenance measured;
+            archiveFile "je800915d.xml";
+            system    "methylHeptanoate";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylHeptanoate-vapourPressure-j.fluid.2008.02.001.dat";
+            doi       "10.1016/j.fluid.2008.02.001";
+            sha256    "5536401ae961738619cd4c07612866147bb1e9eeb3cccf631d1b7a5733db41d2";
+            provenance measured;
+            archiveFile "j.fluid.2008.02.001.xml";
+            system    "methylHeptanoate";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 278.1; max 443.94; n 39; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.999975820742;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

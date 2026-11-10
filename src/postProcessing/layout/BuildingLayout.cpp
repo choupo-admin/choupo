@@ -315,7 +315,7 @@ std::map<std::string, IndoorPlace> indoorPlaces(const Dictionary& layoutDict)
         const std::string name = e->lookupWord("room");
         const std::string w = "room `" + name + "`";
         const std::size_t fi = floorOf(*e, w, floorIdx, floors);
-        for (const auto& id : e->lookupWordList("equipment"))
+        for (const auto& id : plantLayout::typical::withCopies(layoutDict, e->lookupWordList("equipment")))
         {
             const auto ins = out.emplace(id, IndoorPlace{ name, floors[fi].name,
                                                           floors[fi].elevation });
@@ -477,7 +477,7 @@ BuildingRecord evaluate(const Dictionary& layoutDict,
             r.occupancy = static_cast<int>(std::lround(o));
             rec.occupancy += r.occupancy;
         }
-        if (e->found("equipment")) r.equipment = e->lookupWordList("equipment");
+        if (e->found("equipment")) r.equipment = plantLayout::typical::withCopies(layoutDict, e->lookupWordList("equipment"));
         if (e->found("source") != e->found("reason"))
             refuse(w + ": declare both `source` and `reason`, or neither");
         if (e->found("source"))

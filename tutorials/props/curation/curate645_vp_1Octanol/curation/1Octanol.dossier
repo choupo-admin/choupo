@@ -1,0 +1,152 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      1Octanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        A  4.00937961008;
+        B  1350.83195851;
+        C  -132.541417775;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b52a91c49cf1092f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Octanol-vapourPressure-j.tca.2013.03.018.dat";
+            doi       "10.1016/j.tca.2013.03.018";
+            sha256    "a2acfafefb550bb7ab462cca603bf427aea640ae4d9e8a413be28148c30c1f8c";
+            provenance measured;
+            archiveFile "j.tca.2013.03.018.xml";
+            system    "1Octanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Octanol-vapourPressure-je049600u.dat";
+            doi       "10.1021/je049600u";
+            sha256    "7308480db0c38603a6dc3431215613a89dcd469cd93d18a44f1645a63d4071d0";
+            provenance measured;
+            archiveFile "je049600u.xml";
+            system    "1Octanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Octanol-vapourPressure-j.fluid.2010.06.019.dat";
+            doi       "10.1016/j.fluid.2010.06.019";
+            sha256    "6161bfb0ad549d4a0d43df752a0c6e93411a7d3259c26035f893da46638b3534";
+            provenance measured;
+            archiveFile "j.fluid.2010.06.019.xml";
+            system    "1Octanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Octanol-vapourPressure-acs.jced.7b00574.dat";
+            doi       "10.1021/acs.jced.7b00574";
+            sha256    "a10ed94316601b1f8b223698c78b8234f18edbe637c9663236ec77b2c5adc1bb";
+            provenance measured;
+            archiveFile "acs.jced.7b00574.xml";
+            system    "1Octanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Octanol-vapourPressure-acs.jced.8b00680.dat";
+            doi       "10.1021/acs.jced.8b00680";
+            sha256    "24e5d0a547f0ece199cef88e38a33059d446a79066ec16e532dde61242113b94";
+            provenance measured;
+            archiveFile "acs.jced.8b00680.xml";
+            system    "1Octanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Octanol-vapourPressure-j.fluid.2011.04.024.dat";
+            doi       "10.1016/j.fluid.2011.04.024";
+            sha256    "f695b9de005b0fbb1168e244bcfb9665c5663e235f5586fa47cdb2ece4699899";
+            provenance measured;
+            archiveFile "j.fluid.2011.04.024.xml";
+            system    "1Octanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Octanol-vapourPressure-je400951k.dat";
+            doi       "10.1021/je400951k";
+            sha256    "49af8ac55dc52ecdc1b0c52b7ce21c5818a41758b3cdfb9aa95dc8d6dc8eb89a";
+            provenance measured;
+            archiveFile "je400951k.xml";
+            system    "1Octanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Octanol-vapourPressure-j.tca.2014.09.011.dat";
+            doi       "10.1016/j.tca.2014.09.011";
+            sha256    "00f0fd20258eb39ce4d277b77738e9b3464be2552a217982fc9155dc243be9d9";
+            provenance measured;
+            archiveFile "j.tca.2014.09.011.xml";
+            system    "1Octanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Octanol-vapourPressure-je030168a.dat";
+            doi       "10.1021/je030168a";
+            sha256    "6e36cf17003d2c130f8d65b2a43cfbc6ef8d9c7175353ddc58446fa703403831";
+            provenance measured;
+            archiveFile "je030168a.xml";
+            system    "1Octanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Octanol-vapourPressure-j.jct.2003.09.009.dat";
+            doi       "10.1016/j.jct.2003.09.009";
+            sha256    "f2666d0d886d604130ea42f9b1e45049d90f2b20c516ab3851bf82ba85508acc";
+            provenance measured;
+            archiveFile "j.jct.2003.09.009.xml";
+            system    "1Octanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 298.15; max 468.47; n 153; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.999498908342;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

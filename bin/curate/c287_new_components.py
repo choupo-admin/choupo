@@ -6,6 +6,16 @@ componentes novos e binarios").
     bin/curate/c287_new_components.py plan
     bin/curate/c287_new_components.py write <name>... | all  [--provisional]
 
+SLICE 2 (DEV.md 4c C292): CANDIDATES2 / ESTIMATED are the compounds whose archive
+carries NO measured critical constant.  Tc and Pc are ESTIMATED by Joback (the
+estimateComponent formulas, origin estimated, per value), the Tb a measured one
+only (a Joback Tb is not stored: WRITE_ESTIMATED_TB), omega from the fitted
+Antoine at 0.7 Tc(estimated) when within 50 K of the data else the candidate is
+HELD and printed with the distance.  Flow per component: `write --provisional`,
+`choupo-thermoml identity`, `choupo-curate vp <c> --number N`, `vp --promote`,
+`write` (final omega), then `choupo-curate revert <c>` + `vp --promote` + `write`
+again (the AmbroseWalton comparison the promotion records depends on omega).
+
 WHAT IT DOES.  For compounds the catalogue does NOT carry, and that the local
 ThermoML cache (thirdParty/thermoml, a finding aid -- the articles are the
 sources) measures for vapour pressure, liquid density, liquid heat capacity
@@ -76,11 +86,14 @@ from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-CACHE = ROOT / "thirdParty" / "thermoml"
+import os
+CACHE = (Path(os.environ["CHOUPO_THERMOML_HOME"]) if os.environ.get("CHOUPO_THERMOML_HOME")
+         else ROOT / "thirdParty" / "thermoml")
 STD = ROOT / "data" / "standards" / "components"
 JOBACK = ROOT / "data" / "standards" / "parameters" / "Joback.dat"
 CURATION = ROOT / "tutorials" / "props" / "curation"
 REPRO_CASE = "tutorials/props/curation/curate287_new_components"
+REPRO_CASE2 = "tutorials/props/curation/curate699_new_components_estimated"
 TOOL = "bin/curate/c287_new_components.py"
 
 #  name, InChIKey, formula, CAS (PubChem by InChIKey; the identity bridge
@@ -125,6 +138,131 @@ CANDIDATES = [
      [("CH3", 2), ("CH2", 5), ("ketone", 1), ("ester", 1)]),
 ]
 
+CANDIDATES2 = [
+    ('geraniol', 'GLZPCOQZEFWAFX-JXMROGBWSA-N', 'C10H18O', '106-24-1',
+     '(E)-3,7-dimethyl-2,6-octadien-1-ol', [('CH3', 3), ('CH2', 3), ('eCH', 2), ('eC', 2), ('OH', 1)]),
+    ('cis3Hexen1ol', 'UFLHIIWVXFIJGU-ARJAWSKDSA-N', 'C6H12O', '928-96-1',
+     '(Z)-3-hexen-1-ol', [('CH3', 1), ('CH2', 3), ('eCH', 2), ('OH', 1)]),
+    ('12Butanediol', 'BMRWNKZVCUKKSR-UHFFFAOYSA-N', 'C4H10O2', '584-03-2',
+     '1,2-butanediol', [('CH3', 1), ('CH2', 2), ('CH', 1), ('OH', 2)]),
+    ('12Dibromobenzene', 'WQONPSCCEXUXTQ-UHFFFAOYSA-N', 'C6H4Br2', '583-53-9',
+     '1,2-dibromobenzene', [('arCH', 4), ('arC', 2), ('Br', 2)]),
+    ('12Propanediol', 'DNIAPMSPPWPWGF-UHFFFAOYSA-N', 'C3H8O2', '57-55-6',
+     '1,2-propanediol', [('CH3', 1), ('CH2', 1), ('CH', 1), ('OH', 2)]),
+    ('eucalyptol', 'WEEGYLXZBRQIMU-UHFFFAOYSA-N', 'C10H18O', '470-82-6',
+     '1,3,3-trimethyl-2-oxabicyclo[2.2.2]octane', [('CH3', 3), ('rC', 2), ('rCH', 1), ('rCH2', 4), ('etherRing', 1)]),
+    ('13Dibromobenzene', 'JSRLURSZEMLAFO-UHFFFAOYSA-N', 'C6H4Br2', '108-36-1',
+     '1,3-dibromobenzene', [('arCH', 4), ('arC', 2), ('Br', 2)]),
+    ('13Dioxolane', 'WNXJIVFYUVYPPR-UHFFFAOYSA-N', 'C3H6O2', '646-06-0',
+     '1,3-dioxolane', [('rCH2', 3), ('etherRing', 2)]),
+    ('1Bromobutane', 'MPPPKRYCTPRNTB-UHFFFAOYSA-N', 'C4H9Br', '109-65-9',
+     '1-bromobutane', [('CH3', 1), ('CH2', 3), ('Br', 1)]),
+    ('1Chlorobutane', 'VFWCMGCRMGJXDK-UHFFFAOYSA-N', 'C4H9Cl', '109-69-3',
+     '1-chlorobutane', [('CH3', 1), ('CH2', 3), ('Cl', 1)]),
+    ('1Iodohexane', 'ANOOTOPTCJRUPK-UHFFFAOYSA-N', 'C6H13I', '638-45-9',
+     '1-iodohexane', [('CH3', 1), ('CH2', 5), ('I', 1)]),
+    ('1Octanamine', 'IOQPZZOEVPZRBK-UHFFFAOYSA-N', 'C8H19N', '111-86-4',
+     '1-octanamine', [('CH3', 1), ('CH2', 7), ('NH2', 1)]),
+    ('1Pentanamine', 'DPBLXKKOBLCELK-UHFFFAOYSA-N', 'C5H13N', '110-58-7',
+     '1-pentanamine', [('CH3', 1), ('CH2', 4), ('NH2', 1)]),
+    ('1Phenylethanol', 'WAPNOHKVXSQRPX-UHFFFAOYSA-N', 'C8H10O', '98-85-1',
+     '1-phenylethanol', [('CH3', 1), ('CH', 1), ('arC', 1), ('arCH', 5), ('OH', 1)]),
+    ('1Propoxy2Propanol', 'FENFUOGYJVOCRY-UHFFFAOYSA-N', 'C6H14O2', '1569-01-3',
+     '1-propoxy-2-propanol', [('CH3', 2), ('CH2', 3), ('CH', 1), ('ether', 1), ('OH', 1)]),
+    ('1HPerfluorooctane', 'KBHBUUBXEQUIMV-UHFFFAOYSA-N', 'C8HF17', '335-65-9',
+     '1H-perfluorooctane', [('CH', 1), ('C', 7), ('F', 17)]),
+    ('diethyleneGlycolMonohexylEther', 'GZMAAYIALGURDQ-UHFFFAOYSA-N', 'C10H22O3', '112-59-4',
+     '2-(2-hexyloxyethoxy)ethanol', [('CH3', 1), ('CH2', 9), ('ether', 2), ('OH', 1)]),
+    ('nEthylethanolamine', 'MIJDSYMOBYNHOT-UHFFFAOYSA-N', 'C4H11NO', '110-73-6',
+     '2-(ethylamino)ethanol', [('CH3', 1), ('CH2', 3), ('NH', 1), ('OH', 1)]),
+    ('2Butoxyethanol', 'POAOYUHQDCAZBD-UHFFFAOYSA-N', 'C6H14O2', '111-76-2',
+     '2-butoxyethan-1-ol', [('CH3', 1), ('CH2', 5), ('ether', 1), ('OH', 1)]),
+    ('2Chlorotoluene', 'IBSQPLPBRSHTTG-UHFFFAOYSA-N', 'C7H7Cl', '95-49-8',
+     '2-chlorotoluene', [('CH3', 1), ('arC', 2), ('arCH', 4), ('Cl', 1)]),
+    ('2Heptanol', 'CETWDUZRCINIHU-UHFFFAOYSA-N', 'C7H16O', '543-49-7',
+     '2-heptanol', [('CH3', 2), ('CH2', 4), ('CH', 1), ('OH', 1)]),
+    ('chavibetol', 'RRAFCDWBNXTKKO-UHFFFAOYSA-N', 'C10H12O2', '97-53-0',
+     '2-hydroxy-5-allylanisole', [('CH3', 1), ('CH2', 1), ('eCH2', 1), ('eCH', 1), ('arCH', 3), ('arC', 3), ('OHar', 1), ('ether', 1)]),
+    ('nIsopropylethanolamine', 'RILLZYSZSDGYGV-UHFFFAOYSA-N', 'C5H13NO', '109-56-8',
+     '2-isopropylaminoethanol', [('CH3', 2), ('CH', 1), ('CH2', 2), ('NH', 1), ('OH', 1)]),
+    ('2Methoxyethanol', 'XNWFRZJHXBZDAG-UHFFFAOYSA-N', 'C3H8O2', '109-86-4',
+     '2-methoxyethan-1-ol', [('CH3', 1), ('CH2', 2), ('ether', 1), ('OH', 1)]),
+    ('2Methyl24Pentanediol', 'SVTBMSDMJJWYQN-UHFFFAOYSA-N', 'C6H14O2', '107-41-5',
+     '2-methyl-2,4-pentanediol', [('CH3', 3), ('C', 1), ('CH2', 1), ('CH', 1), ('OH', 2)]),
+    ('2Methyltetrahydrofuran', 'JWUJQDFVADABEY-UHFFFAOYSA-N', 'C5H10O', '96-47-9',
+     '2-methyltetrahydrofuran', [('CH3', 1), ('rCH', 1), ('rCH2', 3), ('etherRing', 1)]),
+    ('2Octanol', 'SJWFXCIHNDVPSH-UHFFFAOYSA-N', 'C8H18O', '123-96-6',
+     '2-octanol', [('CH3', 2), ('CH2', 5), ('CH', 1), ('OH', 1)]),
+    ('2Propoxyethanol', 'YEYKMVJDLWJFOA-UHFFFAOYSA-N', 'C5H12O2', '2807-30-9',
+     '2-propoxyethanol', [('CH3', 1), ('CH2', 4), ('ether', 1), ('OH', 1)]),
+    ('3Chlorotoluene', 'OSOUNOBYRMOXQQ-UHFFFAOYSA-N', 'C7H7Cl', '108-41-8',
+     '3-chlorotoluene', [('CH3', 1), ('arC', 2), ('arCH', 4), ('Cl', 1)]),
+    ('4Chlorotoluene', 'NPDACUSDTOMAMK-UHFFFAOYSA-N', 'C7H7Cl', '106-43-4',
+     '4-chlorotoluene', [('CH3', 1), ('arC', 2), ('arCH', 4), ('Cl', 1)]),
+    ('3Methyl2Butanol', 'MXLMTQWGSQIYOW-UHFFFAOYSA-N', 'C5H12O', '598-75-4',
+     '3-methyl-2-butanol', [('CH3', 3), ('CH', 2), ('OH', 1)]),
+    ('3Methyl1Butanol', 'PHTQWCKDNZKARW-UHFFFAOYSA-N', 'C5H12O', '123-51-3',
+     '3-methylbutan-1-ol', [('CH3', 2), ('CH', 1), ('CH2', 2), ('OH', 1)]),
+    ('3Pentanol', 'AQIXEPGDORPWBJ-UHFFFAOYSA-N', 'C5H12O', '584-02-1',
+     '3-pentanol', [('CH3', 2), ('CH2', 2), ('CH', 1), ('OH', 1)]),
+    ('diethyleneGlycolDibutylEther', 'KZVBBTZJMSWGTK-UHFFFAOYSA-N', 'C12H26O3', '112-73-2',
+     '5,8,11-trioxapentadecane', [('CH3', 2), ('CH2', 10), ('ether', 3)]),
+    ('NMethyl13Diaminopropane', 'QHJABUZHRJTCAR-UHFFFAOYSA-N', 'C4H12N2', '6291-84-5',
+     'N-methyl-1,3-diaminopropane', [('CH3', 1), ('CH2', 3), ('NH', 1), ('NH2', 1)]),
+    ('methylRicinoleate', 'XKGDWZQXVZSXAO-UHFFFAOYSA-N', 'C19H36O3', '23224-20-6',
+     '[R]-methyl 12-hydroxy-9-octadecenoate', [('CH3', 2), ('CH2', 13), ('CH', 1), ('eCH', 2), ('OH', 1), ('ester', 1)]),
+    ('benzylamine', 'WGQKYBSKWIADBV-UHFFFAOYSA-N', 'C7H9N', '100-46-9',
+     'benzylamine', [('arC', 1), ('arCH', 5), ('CH2', 1), ('NH2', 1)]),
+    ('cyclopentanol', 'XCIXKGXIYUWCLL-UHFFFAOYSA-N', 'C5H10O', '96-41-3',
+     'cyclopentanol', [('rCH2', 4), ('rCH', 1), ('OH', 1)]),
+    ('1Decanol', 'MWKFXSUHUHTGQN-UHFFFAOYSA-N', 'C10H22O', '112-30-1',
+     'decan-1-ol', [('CH3', 1), ('CH2', 9), ('OH', 1)]),
+    ('diethyleneGlycolDiethylEther', 'RRQYJINTUHWNHW-UHFFFAOYSA-N', 'C8H18O3', '112-36-7',
+     'diethylene glycol diethyl ether', [('CH3', 2), ('CH2', 6), ('ether', 3)]),
+    ('diIsobutylEther', 'SZNYYWIUQFZLLT-UHFFFAOYSA-N', 'C8H18O', '628-55-7',
+     'diisobutyl ether', [('CH3', 4), ('CH', 2), ('CH2', 2), ('ether', 1)]),
+    ('diphenylEther', 'USIUVYZYUHIAEV-UHFFFAOYSA-N', 'C12H10O', '101-84-8',
+     'diphenyl ether', [('arCH', 10), ('arC', 2), ('ether', 1)]),
+    ('ethylDecanoate', 'RGXWDWUGBIJHDO-UHFFFAOYSA-N', 'C12H24O2', '110-38-3',
+     'ethyl decanoate', [('CH3', 2), ('CH2', 9), ('ester', 1)]),
+    ('ethylDodecanoate', 'MMXKVMNBHPAILY-UHFFFAOYSA-N', 'C14H28O2', '106-33-2',
+     'ethyl dodecanoate', [('CH3', 2), ('CH2', 11), ('ester', 1)]),
+    ('exoTetrahydrodicyclopentadiene', 'LPSXSORODABQKT-FIRGSJFUSA-N', 'C10H16', '2825-82-3',
+     'exo-tetrahydrodicyclopentadiene', [('rCH', 4), ('rCH2', 6)]),
+    ('hexafluorobenzene', 'ZQBFAOFFOQMSGJ-UHFFFAOYSA-N', 'C6F6', '392-56-3',
+     'hexafluorobenzene', [('arC', 6), ('F', 6)]),
+    ('methylButanoate', 'UUIQMZJEGPQKFD-UHFFFAOYSA-N', 'C5H10O2', '623-42-7',
+     'methyl butanoate', [('CH3', 2), ('CH2', 2), ('ester', 1)]),
+    ('methylDecanoate', 'YRHYCMZPEVDGFQ-UHFFFAOYSA-N', 'C11H22O2', '110-42-9',
+     'methyl decanoate', [('CH3', 2), ('CH2', 8), ('ester', 1)]),
+    ('methylDodecanoate', 'UQDUPQYQJKYHQI-UHFFFAOYSA-N', 'C13H26O2', '111-82-0',
+     'methyl dodecanoate', [('CH3', 2), ('CH2', 10), ('ester', 1)]),
+    ('methylHeptanoate', 'XNCNNDVCAUWAIT-UHFFFAOYSA-N', 'C8H16O2', '106-73-0',
+     'methyl heptanoate', [('CH3', 2), ('CH2', 5), ('ester', 1)]),
+    ('methylHexanoate', 'NUKZAGXMHTUAFE-UHFFFAOYSA-N', 'C7H14O2', '106-70-7',
+     'methyl hexanoate', [('CH3', 2), ('CH2', 4), ('ester', 1)]),
+    ('methylOctanoate', 'JGHZJRVDZXSNKQ-UHFFFAOYSA-N', 'C9H18O2', '111-11-5',
+     'methyl octanoate', [('CH3', 2), ('CH2', 6), ('ester', 1)]),
+    ('1Nonanol', 'ZWRUINPWMLAQRD-UHFFFAOYSA-N', 'C9H20O', '143-08-8',
+     'nonan-1-ol', [('CH3', 1), ('CH2', 8), ('OH', 1)]),
+    ('1Octanol', 'KBPLFHHGFOOTCA-UHFFFAOYSA-N', 'C8H18O', '111-87-5',
+     'octan-1-ol', [('CH3', 1), ('CH2', 7), ('OH', 1)]),
+    ('pentaerythritolTetranonanoate', 'IBKKMFMBXQARGV-UHFFFAOYSA-N', 'C41H76O8', '14450-05-6',
+     'pentaerythritol tetranonanoate', [('CH3', 4), ('CH2', 32), ('C', 1), ('ester', 4)]),
+    ('pentaerythritolTetrapentanoate', 'ZQYCVIGMGPFQQS-UHFFFAOYSA-N', 'C25H44O8', '15834-04-5',
+     'pentaerythritol tetrapentanoate', [('CH3', 4), ('CH2', 16), ('C', 1), ('ester', 4)]),
+    ('tetradecanoicAcid', 'TUNFSRHWOTWDNC-UHFFFAOYSA-N', 'C14H28O2', '544-63-8',
+     'tetradecanoic acid', [('CH3', 1), ('CH2', 12), ('acid', 1)]),
+    ('tetrahydropyran', 'DHXVGJBLRPWPCS-UHFFFAOYSA-N', 'C5H10O', '142-68-7',
+     'tetrahydropyran', [('rCH2', 5), ('etherRing', 1)]),
+]
+
+#  DEV.md 4c C292 (slice 2): compounds whose archive carries NO measured critical
+#  constant.  Tc, Pc are ESTIMATED by Joback (the estimateComponent formulas)
+#  and marked so; Tb is measured where the archive reports it, else Joback.
+ESTIMATED = {c[0] for c in CANDIDATES2}
+CANDIDATES = CANDIDATES + CANDIDATES2
+
 #  HELD (DEV.md 4c C287): every value fitted and graded, the vapour-pressure
 #  fit PROMOTABLE, but 0.7 Tc lies more than OMEGA_MAX_EXTRAPOLATION_K
 #  beyond the measured vapour pressures, so omega (the definition, at
@@ -153,11 +291,23 @@ EXCLUDED = [
 #  CODATA Key Values for Thermodynamics (Cox, Wagman & Medvedev, Hemisphere,
 #  1989), standard molar entropies at 298.15 K and 1 bar, J/(mol K), per
 #  ELEMENT REFERENCE STATE: C(cr, graphite); H2, O2, N2 (g).
-S_EL = {"C": 5.74, "H": 130.680 / 2, "O": 205.152 / 2, "N": 191.609 / 2}
+S_EL = {"C": 5.74, "H": 130.680 / 2, "O": 205.152 / 2, "N": 191.609 / 2,
+        "F": 202.791 / 2, "Cl": 223.081 / 2, "Br": 152.206 / 2, "I": 116.139 / 2}
 S_EL_CITE = ("CODATA Key Values for Thermodynamics (Cox, Wagman & Medvedev, 1989): "
              "S(C, graphite) 5.74, S(H2, g) 130.680, S(O2, g) 205.152, "
-             "S(N2, g) 191.609 J/(mol K)")
-ATOMIC = {"C": 12.011, "H": 1.008, "O": 15.999, "N": 14.007, "F": 18.998}
+             "S(N2, g) 191.609, S(F2, g) 202.791, S(Cl2, g) 223.081, "
+             "S(Br2, l) 152.206, S(I2, cr) 116.139 J/(mol K)")
+ATOMIC = {"C": 12.011, "H": 1.008, "O": 15.999, "N": 14.007, "F": 18.998,
+          "Cl": 35.45, "Br": 79.904, "I": 126.904}
+#  DESIGN QUESTION (DEV.md 4c C292, put to Vitor): a Joback Tb written into the
+#  record would be READ by `choupo-curate vp --promote` and by
+#  check_regressed_pairs arm (i) as if measured -- where it lies outside the kept
+#  vapour-pressure range the fitted curve is graded by its gap to it (tetradecanoic
+#  acid: -72.6 K, refused), so an estimate would veto a measured curve.  So the
+#  estimated Tb is NOT stored (the case curate699 prints it); flip this flag only
+#  together with a judge that ignores a Tb whose provenance origin is estimated.
+WRITE_ESTIMATED_TB = False
+TB_IMPLAUSIBLE_K = 60.0
 OUTLIER_PCT = 15.0
 GRADES = ("clean", "warning", "severe", "refused")
 LIMITS = (5.0, 10.0, 20.0)
@@ -167,6 +317,10 @@ RACKETT_TREF = 298.15
 #  0.7 Tc only when 0.7 Tc lies within this distance of the fitted range;
 #  beyond it the component is HELD, not written (see HELD).
 OMEGA_MAX_EXTRAPOLATION_K = 50.0
+
+
+class Held(Exception):
+    """A candidate not written: the omega route is Vitor's (DEV.md 4c C287/C292)."""
 
 
 def refuse(msg):
@@ -445,7 +599,11 @@ def joback_table():
 def joback(groups):
     J = joback_table()
     s = lambda k: sum(J[g][k] * n for g, n in groups)
-    return {"dHf": (68.29 + s("dHf")) * 1000.0, "dGf": (53.88 + s("dGf")) * 1000.0,
+    nA = sum(J[g]["nA"] * n for g, n in groups)
+    Tb = 198.2 + s("dTb")
+    return {"Tb": Tb, "Tc": Tb / (0.584 + 0.965 * s("dTc") - s("dTc") ** 2),
+            "Pc": 1.0 / (0.113 + 0.0032 * nA - s("dPc")) ** 2,      # bar
+            "dHf": (68.29 + s("dHf")) * 1000.0, "dGf": (53.88 + s("dGf")) * 1000.0,
             "cp": [s("cpa") - 37.93, s("cpb") + 0.210, s("cpc") - 3.91e-4, s("cpd") + 2.06e-7]}
 
 
@@ -530,6 +688,20 @@ def constant_entry(key, val, dois, allv, unit, note=""):
             "    }\n")
 
 
+def est_entry(key, J, fp, JTAB, repro, why):
+    return (f"    {key}\n    {{\n"
+            "        origin           estimated;\n"
+            '        method           "Joback";\n'
+            f'        methodVersion    "{JTAB}";\n'
+            "        input            joback;\n"
+            f'        inputFingerprint "{fp}";\n'
+            f'        reproducedInCase "{repro}";\n'
+            '        uncertainty      { status unquantified; reason "Joback group contribution (Joback & Reid 1987); '
+            'Tc within a few per cent and Pc within about 5-10 per cent for ordinary organics, worse for polyfunctional molecules"; }\n'
+            f'        notes            "{why}; all groups of the structure are in the Joback table";\n'
+            "    }\n")
+
+
 def build(c, data, sha, provisional):
     name, key, formula, cas, label, groups = c
     d = data[key]
@@ -537,20 +709,39 @@ def build(c, data, sha, provisional):
     gc = collections.Counter()
     atoms = {"CH3": "CH3", "CH2": "CH2", "CH": "CH", "C": "C", "eCH2": "CH2", "eCH": "CH",
              "OH": "OH", "ether": "O", "ester": "CO2", "ketone": "CO", "arC": "C",
-             "arCH": "CH", "NH2": "NH2"}
+             "arCH": "CH", "NH2": "NH2", "eC": "C", "OHar": "OH", "etherRing": "O",
+             "acid": "COOH", "rCH2": "CH2", "rCH": "CH", "rC": "C", "NH": "NH",
+             "F": "F", "Cl": "Cl", "Br": "Br", "I": "I"}
     for g, n in groups:
         for el, m in formula_counts(atoms[g]).items():
             gc[el] += m * n
     if gc != fc:
         refuse(f"{name}: Joback groups give {dict(gc)}, the formula {formula}")
     MW = mw_of(formula)
-    if not d["Tc"] or not d["Pc"]:
-        refuse(f"{name}: no measured Tc AND Pc in the archive")
-    Tc, Tc_dois, Tc_all = measured_constant(d["Tc"])
-    Pc_kPa, Pc_dois, Pc_all = measured_constant(d["Pc"])
-    Pc = Pc_kPa / 100.0
+    est = name in ESTIMATED
+    J = joback(groups)
+    if est:
+        Tc, Pc = J["Tc"], J["Pc"]
+    else:
+        if not d["Tc"] or not d["Pc"]:
+            refuse(f"{name}: no measured Tc AND Pc in the archive")
+        Tc, Tc_dois, Tc_all = measured_constant(d["Tc"])
+        Pc_kPa, Pc_dois, Pc_all = measured_constant(d["Pc"])
+        Pc = Pc_kPa / 100.0
     tb_rows = [r for r in d["Tboil"] if r["P"] is not None and 100.0 <= r["P"] <= 102.5]
     Tb = measured_constant(tb_rows) if tb_rows else None
+    if Tb is not None and abs(Tb[0] - J["Tb"]) > TB_IMPLAUSIBLE_K:
+        #  a reported "boiling temperature" 60 K or more from the group estimate is a
+        #  unit or transcription defect of the article's table (chavibetol: 191.4, a
+        #  Celsius value under a kelvin heading), not a measurement to grade a curve by
+        print(f"{name}: measured Tb {Tb[0]:g} K ({', '.join(Tb[1])}) DISCARDED: "
+              f"{abs(Tb[0] - J['Tb']):.0f} K from Joback's {J['Tb']:.1f} K, implausible")
+        Tb = None
+    #  An ESTIMATED Tb is written only on the final record: during the vapour-pressure
+    #  run the record carries Tb only where it is MEASURED, so a Joback estimate
+    #  (several K off) never grades a fitted curve (DEV.md 4c C292).
+    Tb_est = J["Tb"] if (est and Tb is None and not provisional and WRITE_ESTIMATED_TB) else None
+    repro = REPRO_CASE2 if est else REPRO_CASE
     case, ant = fitted_antoine(name)
     if ant is None:
         if not provisional:
@@ -563,6 +754,9 @@ def build(c, data, sha, provisional):
         P7 = 10 ** (ant["A"] - ant["B"] / (T7 + ant["C"]))     # bar
         omega = -math.log10(P7 / Pc) - 1.0
         beyond = max(0.0, T7 - ant["Tmax"], ant["Tmin"] - T7)
+        if beyond > OMEGA_MAX_EXTRAPOLATION_K and est:
+            raise Held(f"{name}: HELD, 0.7 Tc(estimated) = {T7:.1f} K lies {beyond:.1f} K "
+                       f"outside the fitted vapour pressures ({ant['Tmin']:g}-{ant['Tmax']:g} K)")
         if beyond > OMEGA_MAX_EXTRAPOLATION_K:
             refuse(f"{name}: omega would be read off the fitted Antoine {beyond:.1f} K outside "
                    f"its fitted range (0.7 Tc = {T7:.2f} K, data {ant['Tmin']:g}-{ant['Tmax']:g} K), "
@@ -587,7 +781,6 @@ def build(c, data, sha, provisional):
     cp = fit_cp(cp_rows, MW)
     if rho is None or cp is None:
         refuse(f"{name}: no usable liquid density or liquid Cp at or below {P_MAX_KPA:g} kPa")
-    J = joback(groups)
     nel = formula_counts(formula)
     if set(nel) - set(S_EL):
         refuse(f"{name}: no element entropy for {set(nel) - set(S_EL)}")
@@ -598,21 +791,28 @@ def build(c, data, sha, provisional):
     jgroups = " ".join(f"{{ group {g}; count {n}; }}" for g, n in groups)
     cpig = J["cp"]
     cpl = cp["coef"]
+    cp_trange = (f"Trange        ({cp['Tmin']:g}  {cp['Tmax']:g});" if cp["Tmax"] > cp["Tmin"] else
+                 f"Trange        unknown;   // ONE measurement temperature ({cp['Tmin']:g} K): no interval can be claimed")
     vp_note = ("  Psat: fitted by `bin/choupo-curate vp`; its promotion replaces the\n"
                "  AmbroseWalton block this tool writes (provenance.vaporPressure).\n")
+    nf = '.9g' if est else '.6g'   # an ESTIMATE must reproduce to round-off (check_estimates, 1e-6)
     tb_line = (f"Tb          {Tb[0]:.6g};      // K, measured (provenance.Tb)\n" if Tb else
+               f"Tb          {Tb_est:{nf}};      // K, Joback ESTIMATE (provenance.Tb)\n" if Tb_est else
                "//  Tb: NOT DECLARED -- the archive reports no boiling temperature at\n"
                "//  101.3 kPa for it, and a Tb read back off the fitted Antoine would be\n"
                "//  the curve tested against itself (the fitted normal boiling point is\n"
-               "//  in provenance.vaporPressure.acceptance.Tnb_fit).\n")
+               "//  in provenance.vaporPressure.acceptance.Tnb_fit)."
+               + ("  Joback's Tb is NOT stored either: the vapour-pressure\n"
+                  "//  grade would read an estimate as a measurement (WRITE_ESTIMATED_TB in\n"
+                  "//  the tool); the case curate699 prints it.\n" if est else "\n"))
     head = f"""/*--------------------------------*- Choupo -*-----------------------*\\
   Component: {name}  ({label}; CAS {cas})
-  NEW in the catalogue (DEV.md 4c C287, {today}), built by
+  NEW in the catalogue (DEV.md 4c {'C292, slice 2 of C287' if est else 'C287'}, {today}), built by
   {TOOL} from measurements the NIST/TRC ThermoML Archive
   locates (the articles are the sources; their DOIs are in provenance).
-  MEASURED: Tc, Pc{', Tb' if Tb else ''}.  FITTED: vapour pressure (bin/choupo-curate vp),
-  Vliq, liquid Cp.  DERIVED: omega (from the fitted vapour pressure).
-  ESTIMATED (Joback): ideal-gas Cp, dHf_298; s_298 derived from Joback's
+  {("MEASURED: Tb" if Tb else "MEASURED: no critical constant, no Tb") if est else ("MEASURED: Tc, Pc" + (", Tb" if Tb else ""))}.  FITTED: vapour pressure (bin/choupo-curate vp),
+  Vliq, liquid Cp.  DERIVED: omega (from the fitted vapour pressure{" at the ESTIMATED Tc" if est else ""}).
+  ESTIMATED (Joback): {"Tc, Pc, " if est else ""}ideal-gas Cp, dHf_298; s_298 derived from Joback's
   dHf and dGf.  No measured series is reproduced here.
   reviewStatus autoPromoted, humanReviewed false: NO human has read it back.
 {vp_note}\\*---------------------------------------------------------------------------*/
@@ -623,8 +823,8 @@ formula     {formula};
 reviewStatus autoPromoted;
 humanReviewed false;
 MW          {MW:.4f};      // kg/kmol, from the formula (IUPAC standard atomic weights)
-Tc          {Tc:.6g};      // K, measured (provenance.Tc)
-Pc          {Pc:.6g};      // bar, measured (provenance.Pc)
+Tc          {Tc:{nf}};      // K, {"Joback ESTIMATE" if est else "measured"} (provenance.Tc)
+Pc          {Pc:{nf}};      // bar, {"Joback ESTIMATE" if est else "measured"} (provenance.Pc)
 omega       {omega:.6f};      // [-] (provenance.omega)
 {tb_line}
 standardThermochemistry
@@ -653,7 +853,7 @@ liquidHeatCapacity
     model         polynomial;
     // Cp [J/(mol K)] = a0 + a1 T + a2 T^2, FITTED (provenance.liquidHeatCapacity)
     coefficients  ({'  '.join(f'{x:.10g}' for x in cpl)});
-    Trange        ({cp['Tmin']:g}  {cp['Tmax']:g});
+    {cp_trange}
 }}
 
 groups
@@ -668,9 +868,16 @@ provenance
         origin        literature;
         method        "sum of IUPAC standard atomic weights over the formula";
     }}
-""" + constant_entry("Tc", Tc, Tc_dois, Tc_all, "K") \
-    + constant_entry("Pc", Pc, Pc_dois, [x / 100 for x in Pc_all], "bar",
-                     "; the archive reports kPa, divided by 100") \
+""" + (est_entry("Tc", J, fp, JTAB, repro,
+                        "the archive carries no critical temperature for this compound") if est else
+           constant_entry("Tc", Tc, Tc_dois, Tc_all, "K")) \
+    + (est_entry("Pc", J, fp, JTAB, repro,
+                 "the archive carries no critical pressure for this compound") if est else
+       constant_entry("Pc", Pc, Pc_dois, [x / 100 for x in Pc_all], "bar",
+                      "; the archive reports kPa, divided by 100")) \
+    + (est_entry("Tb", J, fp, JTAB, repro,
+                 "the archive reports no boiling temperature at 100 - 102.5 kPa for this compound; "
+                 "NOT read off the fitted vapour pressure") if Tb_est else "") \
     + (constant_entry("Tb", Tb[0], Tb[1], Tb[2], "K",
                       "; boiling temperatures reported at 100 - 102.5 kPa") if Tb else "") \
     + omega_entry \
@@ -690,7 +897,7 @@ provenance
         methodVersion    "{JTAB}";
         input            joback;
         inputFingerprint "{fp}";
-        reproducedInCase "{REPRO_CASE}";
+        reproducedInCase "{repro}";
         uncertainty      {{ status unquantified; reason "Joback group contribution (Joback & Reid 1987); a few percent for Cp_ig of ordinary organics"; }}
     }}
     dHf_298
@@ -700,7 +907,7 @@ provenance
         methodVersion    "{JTAB}";
         input            joback;
         inputFingerprint "{fp}";
-        reproducedInCase "{REPRO_CASE}";
+        reproducedInCase "{repro}";
         uncertainty      {{ status unquantified; reason "Joback group contribution (Joback & Reid 1987); several kJ/mol, more for polyfunctional molecules"; }}
         notes            "the ThermoML archive carries no enthalpy of formation or combustion block for this compound (searched)";
     }}
@@ -712,7 +919,7 @@ provenance
         input            joback;
         inputFingerprint "{fp}";
         elementEntropies "{S_EL_CITE}";
-        reproducedInCase "{REPRO_CASE}";
+        reproducedInCase "{repro}";
         uncertainty      {{ status unquantified; reason "inherits the errors of Joback's dHf_298 and dGf_298"; }}
     }}
     vaporPressure
@@ -728,7 +935,7 @@ provenance
     #  The vaporPressure provenance entry above is the EXACT text
     #  `bin/choupo-curate vp --promote` replaces (its AW_PROV, whose note
     #  names ChemSep); the promotion overwrites it with the fit's entry.
-    return head, {"rho": rho, "cp": cp, "Tc": Tc, "Pc": Pc, "Tb": Tb, "omega": omega,
+    return head, {"rho": rho, "cp": cp, "Tc": Tc, "Pc": Pc, "Tb": Tb, "Tb_est": Tb_est, "omega": omega, "est": est,
                   "J": J, "s298": s298, "ant": ant}
 
 
@@ -771,11 +978,15 @@ def main(argv):
     if not sel:
         refuse("no candidate named")
     for c in sel:
-        text, facts = build(c, data, sha, prov)
+        try:
+            text, facts = build(c, data, sha, prov)
+        except Held as h:
+            print(str(h))
+            continue
         p = STD / f"{c[0]}.dat"
         if p.exists():
             old = p.read_text()
-            if "C287" not in old:
+            if "C287" not in old and "C292" not in old:
                 refuse(f"{p.relative_to(ROOT)} exists and was not written by this tool")
             if "model AmbroseWalton;" not in old:
                 text = splice_promoted_vp(old, text, p)

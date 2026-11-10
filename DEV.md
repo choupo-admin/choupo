@@ -3298,6 +3298,10 @@ accepts today, and that is a policy call.
 > unreachable (no precedent), and whether curate04-14 drop their tracked
 > series.  Record: docs/design/binary-pairs-from-open-measurements.md section 8.
 
+> **C288 SLICE 1 RESULT.** C288 slice 1 LANDED 11-10: `heatOfReaction { value; T; phase; method; source; reason; }` parsed by one shared parser (ReactionHeat.H/.cpp, which also reads the bare `dH_rxn` with its meaning unchanged); both forms on one reaction refused; equilibriumReactor and gibbsReactor refuse a declared heat with the physical reason; a reactive column announces a divergence; delta = declared - formation is computed and printed (methyl acetate witness: -5.67 vs -7.31 kJ/mol at 318 K, delta +1.64) but no reactor applies it yet (slices 2-4). No shipped number moved: 21 cases byte-identical to main's binary, --scope 173 cases PASS, --fast 78 PASS, --gui app tests green; full sweep not run (written reason: the parser is the only shared path and every reactor family went through --scope/--fast); the 13 refusal fixtures wait for check_declared_heat.
+>
+> **C272 RESULT.** C272 slice 1 LANDED 11-10: `typicals ( { typical; index; count; pitch; members; source; reason; } )` in layoutDict -- a train declared once and repeated; every repeat is a real item for overlap, separation, zones, roads, bunds and pipes; `layout.items` stays complete (each repeat carries typical / trainIndex / repeatOf), the outlines go in `layout.typicalOutlines`; swro01's 35 repeated item entries became two typicals; findings, pipes, plot unchanged; lesson citations untouched (line-neutral edits). Full sweep NOT run (written reason: the new code runs only where `typicals` is declared, swro01 alone; the seven other layout cases pass their goldens); --gui 46 PASS / 1 FAIL on the branch, the failure being main's dossier test, since fixed by the cloud. Not done: the app does not draw the outlines yet.
+>
 > **C268 RESULT (2026-11-10).** C268 utilities block LANDED 11-10: cooling tower (19.7 MW, 471 kg/s), refrigeration package (20.6 MW at the chiller) and flare (747 kg/h normal vent) on greenAmmoniaPEQ's plot, each sized on the run's own numbers; 0 findings, 36/36 pipes, closures unchanged (mass 99.997 %, energy 0.002 %); utility pipes not routed (no grammar for a line between two items); check_bund_arithmetic now compares tank1's V_R as a number at 1e-9.  Not run: --gui, a full sweep; the flare separation rows are asserted, not sabotage-tested.
 >
 > **Acetic acid PARKED (architect, 2026-11-10, after Vitor: "Perdeste uma semana com essa merda antes!").**  The open acetic items (C201 (1) rest: dew-point distillate, Gibbs / three-phase / Txy readers, record identity; C174/C175 subcooled-feed q; column05's dimer in C239) get no work this month.  Reason: nothing the month delivers depends on them, aceticAcid02 runs with its balances gated (C258), and column05's ideal-vapour limit is already announced.  Reopened only if a case a student meets fails.
@@ -3367,13 +3371,103 @@ accepts today, and that is a policy call.
 > disk).  TWO MORE GENERALS, ON DISJOINT PATHS.**  (1) c291-px-pairs: NRTL
 > pairs from isothermal bubble-PRESSURE (P-x) data -- the NIST index holds
 > 1676 such pairs against the 1410 bubble-T pairs the C284/C290 pipeline
-> reads -- in a NEW tool (bin/curate/pairs_px.py), case numbers curate500+,
+> reads -- in a NEW tool (a P-x pairs script, to be written), case numbers curate500+,
 > graded like C286.  (2) c292-components-2: the next new catalogue
 > components (the compounds with measured vapour pressure, density and Cp
 > but NO measured critical constant: Tc and Pc estimated by Joback and
 > marked estimated, per Vitor's ruling of C282), case numbers curate600+.
 > The 8 components whose omega the C287 slice held (0.7 Tc more than 50 K
 > beyond the data) stay held until Vitor decides how their omega is taken.
+
+> **C292 RESULT (slice 2 of C287, branch c292-components-2, 2026-11-10).**
+> THE ROUTE, same tool (`bin/curate/c287_new_components.py`, now with an
+> ESTIMATED-critical route and `CHOUPO_THERMOML_HOME`): compounds outside
+> the catalogue with a vapour-pressure study of >= 5 points that states its
+> uncertainty, a measured liquid density and a measured liquid Cp but NO
+> measured Tc and Pc.  RECOUNT: 83 such compounds, 3 of them with a measured
+> Tc and Pc (slice 1's), 80 without; 79 after ethyl methyl carbonate, which
+> the catalogue holds as `methylEthylCarbonate` (found by CAS).  Tc and Pc
+> are ESTIMATED by Joback in the formulas of `estimateComponent` and marked
+> `origin estimated; method Joback` per value with the group list
+> (check_estimates reproduces them, 1e-6, so they are stored to nine
+> figures); the case `curate699_new_components_estimated` reproduces them and
+> smoke-tests every record.  omega is read from the fitted Antoine at 0.7 Tc
+> of the ESTIMATED Tc only inside 50 K of the fitted data; beyond that the
+> component is HELD, not written, and listed with the distance (the omega
+> route stays Vitor's; Lee-Kesler not used).  Tb: measured where the archive
+> reports it at 100-102.5 kPa, else NOT stored (see QUESTIONS).  dHf_298 and
+> s_298 Joback and derived (no formation or combustion datum for any of the
+> 79 in the archive: its enthalpy properties are fusion, vaporisation,
+> mixing, solution), the fits (vapour pressure, Vliq, liquid Cp) all
+> laboratories, least squares then minimax, graded 5/10/20 %, `fitGrade`
+> voiced.  ADDED 32 (catalogue 616 -> 648; vp cases curate600-647, each
+> declaration committed before its fit): vp grade clean 23,
+> warning 7 (12Propanediol, 1Decanol, 2Methoxyethanol, 3Pentanol,
+> ethylDecanoate, methylHexanoate, tetradecanoicAcid), severe 2 (1Octanol,
+> NMethyl13Diaminopropane); Vliq clean 31, warning 1 (12Propanediol 6.80 %);
+> liquid Cp clean 31, warning 1 (1Octanol 8.52 %); Tb measured for 6
+> (1Decanol, 2Methoxyethanol, 3Methyl1Butanol, cyclopentanol,
+> methylHeptanoate, tetrahydropyran).  Names: 12Butanediol,
+> 12Propanediol, 13Dioxolane, 1Chlorobutane, 1Decanol, 1HPerfluorooctane,
+> 1Octanol, 1Pentanamine, 1Propoxy2Propanol, 2Butoxyethanol, 2Chlorotoluene,
+> 2Methoxyethanol, 2Methyltetrahydrofuran, 2Propoxyethanol, 3Methyl1Butanol,
+> 3Methyl2Butanol, 3Pentanol, 4Chlorotoluene, NMethyl13Diaminopropane,
+> cyclopentanol, diIsobutylEther, diethyleneGlycolDibutylEther,
+> diethyleneGlycolDiethylEther, diethyleneGlycolMonohexylEther, ethylDecanoate,
+> methylButanoate, methylDecanoate, methylHeptanoate, methylHexanoate,
+> methylOctanoate, tetradecanoicAcid, tetrahydropyran.  HELD 23 (distance of
+> 0.7 Tc(est) from the data): geraniol 131 K, cis3Hexen1ol 113, 12Dibromobenzene
+> 202, 13Dibromobenzene 213, 1Bromobutane 57, 1Iodohexane 133, 1Octanamine 130,
+> 1Phenylethanol 94, nEthylethanolamine 99, nIsopropylethanolamine 95,
+> 2Methyl24Pentanediol 151, 3Chlorotoluene 146, 2Heptanol 119, 2Octanol 117,
+> chavibetol 204 (fitted ranges; their cases removed, declarations in history),
+> and from the raw measured range without a case: methylRicinoleate 201,
+> benzylamine 117, diphenylEther 214, ethylDodecanoate 56, methylDodecanoate 63,
+> 1Nonanol 106, pentaerythritolTetranonanoate 943, pentaerythritolTetrapentanoate
+> 451.  EXCLUDED by name: ionic liquids (1-butyl-3-methylimidazolium NTf2 and
+> BF4, 1-ethyl-3-methylimidazolium NTf2 and methylsulfate,
+> 1-tetradecyl-3-methylimidazolium NTf2, trihexyl(tetradecyl)phosphonium NTf2:
+> no neutral molecule for Joback); decamethylcyclopentasiloxane,
+> octamethylcyclotetrasiloxane, hexamethylcyclotrisiloxane (no Si group);
+> beta-pinene, alpha-pinene, 1,2-dihydronaphthalene, 2,5-dimethylfuran,
+> 5-methylfurfural, 2-acetylthiophene (the table has no ring =CH / =C< group);
+> gamma-valerolactone, 1,2-butylene carbonate, dipropyl carbonate,
+> N-methylpyrrolidone, formamide, N-methylpiperazine (no ring-ester, carbonate,
+> amide or ring tertiary-amine group); eucalyptol and
+> exo-tetrahydrodicyclopentadiene (the two identity resolvers disagree on the
+> InChIKey: the stereo layer); hexafluorobenzene (see QUESTIONS 2).  FINDINGS:
+> (a) 1HPerfluorooctane gets omega 1.37, and 12Butanediol 1.03 and
+> 12Propanediol 1.20 (the glycols are physically high; the fluorocarbon is a
+> Joback Tc/Pc artefact); (b) the Antoine C bound: the fit's least-squares
+> stage searches C in (-Tmin + 5, 300] and the minimax stage only needs T + C
+> > 0; this tool does not own the fit and applies no bound; one promoted C
+> is positive (2Methoxyethanol, +173 K, warning) and none exceeds that 300 K;
+> (c) a measured "boiling temperature" of 191.4 K for chavibetol (a Celsius
+> value under a kelvin heading in the article's table) is now DISCARDED by name
+> when 60 K or more from Joback's, and a liquid Cp measured at ONE temperature
+> writes `Trange unknown;` (a zero-width window is refused by the engine);
+> (d) the vp judge and arm (i) grade a fit against the record's Tb where Tb
+> lies outside the kept range, so the ORDER matters: the tool writes a
+> provisional record for the vp run, then `revert` + `vp --promote` after the
+> final omega is written (the AmbroseWalton comparison depends on omega), then
+> splices.  QUESTIONS for Vitor: (1) store Joback's Tb in the record?  Done
+> literally it vetoes measured curves (tetradecanoic acid: Tnb - Tb = -72.6 K,
+> refused), so it is NOT stored (`WRITE_ESTIMATED_TB`); flipping it needs a
+> judge and arm (i) that ignore a Tb whose provenance origin is estimated.
+> (2) check_regressed_pairs arm (i) reads ANY `fitGrade` advisory of the
+> component as the vapour pressure's, so a clean vapour pressure beside a
+> non-clean Vliq is accused ("a clean fit says nothing more"): hexafluorobenzene
+> (vp clean, Vliq severe 10.84 %, five points dropped, presumably because the
+> Rackett shape follows the Joback Tc, 543 K) was therefore not shipped; the fix is to read the
+> `vaporPressure` advisory only.  (3) which omega route for the 23 held.
+> Validation: scope on curate287 and the 33 new cases and `--fast` PASS, the
+> property gates (record_form, review_status, validity_windows, psat_range,
+> psat_continuity, estimates, estimate_visible, estimate_class, source_licence,
+> component_name_hint, glossary_bans, doctrine, regressed_pairs) OK; no src/
+> change, no existing golden moved, new goldens only (the 32 vp cases, 16 rows
+> each, and curate699, 512 rows); `check_doc_references` fails on this branch
+> only for the P-x pair tool, the c291 general's tool named in C291
+> above, which is not here yet.  No full sweep.
 
 > **C291 RESULT (2026-11-10, cloud general c291-px-pairs, branch c291-px-pairs).**
 > TOOLS: `bin/choupo-thermoml extract-px` (one isothermal binary bubble-PRESSURE

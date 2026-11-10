@@ -148,4 +148,126 @@ scalar reactionHeat(const ThermoPackage&            thermo,
     return 0.0;
 }
 
+std::optional<DeclaredHeat> parseDeclaredHeat(const Dictionary& rxn,
+                                              const std::string& context)
+{
+    const bool hasBare  = rxn.found("dH_rxn");
+    const bool hasBlock = rxn.found("heatOfReaction");
+    if (hasBare && hasBlock)
+        throw std::runtime_error(context + ": the reaction declares BOTH `dH_rxn`"
+            " and `heatOfReaction {}` -- two homes for one number.  Keep the"
+            " `heatOfReaction` block (value, T, phase, method, source, reason)"
+            " and remove `dH_rxn`.");
+    DeclaredHeat d;
+    if (hasBare)
+    {
+        d.bare = true;
+        d.value_J_per_mol = rxn.lookupScalar("dH_rxn");
+        return d;
+    }
+    if (!hasBlock) return std::nullopt;
+
+    const auto b = rxn.subDict("heatOfReaction");
+    for (const char* k : {"value", "T", "phase", "method", "source", "reason"})
+        if (!b->found(k))
+            throw std::runtime_error(context + ": heatOfReaction is missing the"
+                " required field `" + std::string(k) + "`.  All six of value, T,"
+                " phase, method, source and reason are required: a declared heat"
+                " that changes a duty must say what was measured, where, how and"
+                " why it is declared.");
+    d.value_J_per_mol = b->lookupScalar("value", Dims::molarEnergy);
+    d.T_K             = b->lookupScalar("T", Dims::temperature);
+    if (!(d.T_K > 0.0))
+        throw std::runtime_error(context + ": heatOfReaction.T must be a"
+            " positive absolute temperature (got " + std::to_string(d.T_K) + " K).");
+    d.phase  = b->lookupWord("phase");
+    if (d.phase != "liquid" && d.phase != "gas")
+        throw std::runtime_error(context + ": heatOfReaction.phase '" + d.phase
+            + "' is not accepted.  Accepted: liquid, gas (the two rungs the"
+            " formation route is priced on).");
+    d.method = b->lookupWord("method");
+    if (d.method != "calorimetry" && d.method != "vantHoff")
+        throw std::runtime_error(context + ": heatOfReaction.method '" + d.method
+            + "' is not accepted.  Accepted: calorimetry, vantHoff.");
+    d.source = b->lookupWord("source");
+    d.reason = b->lookupWord("reason");
+    if (d.source.empty())
+        throw std::runtime_error(context + ": heatOfReaction.source is empty --"
+            " cite the measurement.");
+    if (d.reason.empty())
+        throw std::runtime_error(context + ": heatOfReaction.reason is empty --"
+            " say why the formation route is not trusted for this reaction.");
+    return d;
+}
+
+HeatCorrection resolveDeclaredHeat(const ThermoPackage&            thermo,
+                                   const std::vector<std::size_t>& comps,
+                                   const std::vector<scalar>&      nu,
+                                   const std::optional<DeclaredHeat>& decl,
+                                   const std::string&              context,
+                                   int                             verbosity)
+{
+    HeatCorrection hc;
+    if (!decl) return hc;
+    hc.decl     = *decl;
+    hc.declared = decl->value_J_per_mol;
+    // The bare key: unchanged behaviour, no evaluation, no output.
+    if (decl->bare) { hc.overrideForResolver = decl->value_J_per_mol; return hc; }
+
+    bool allFormation = !comps.empty();
+    for (std::size_t s = 0; s < comps.size(); ++s)
+        if (nu[s] != 0.0 && !thermo.comp(comps[s]).hasGibbsData())
+            allFormation = false;
+    if (!allFormation)
+    {
+        // Nothing to compare with: the declared value IS the heat.
+        hc.overrideForResolver = decl->value_J_per_mol;
+        std::cout << "  [reaction heat] " << context << ": heatOfReaction ("
+                  << decl->method << ", " << decl->source << ") used as the heat"
+                  << " (no formation datum), " << (decl->value_J_per_mol / 1000.0)
+                  << " kJ/mol at T = " << decl->T_K << " K, " << decl->phase << "\n";
+        return hc;
+    }
+    std::string src;
+    const scalar f = reactionHeat(thermo, comps, nu, decl->T_K, decl->phase,
+                                  decl->value_J_per_mol, context, verbosity, src);
+    if (src != "formation")
+    {
+        hc.overrideForResolver = decl->value_J_per_mol;
+        return hc;
+    }
+    hc.active    = true;
+    hc.formation = f;
+    hc.delta     = decl->value_J_per_mol - f;
+    std::cout << "  [reaction heat] " << context << ": declared heat of reaction "
+              << (decl->value_J_per_mol / 1000.0) << " kJ/mol (" << decl->method
+              << ", " << decl->source << ") against " << (f / 1000.0)
+              << " kJ/mol on the formation route at T = " << decl->T_K << " K, "
+              << decl->phase << " basis: delta = " << (hc.delta / 1000.0)
+              << " kJ/mol of extent (computed; not yet applied by this reactor)\n";
+    return hc;
+}
+
+void refuseDeclaredHeat(const Dictionary& rxn, const std::string& unitType,
+                        const std::string& physicalReason)
+{
+    if (!rxn.found("heatOfReaction")) return;
+    throw std::runtime_error(unitType + ": a reaction declares `heatOfReaction {}`"
+        " and this unit REFUSES it.  " + physicalReason);
+}
+
+void announceDeclaredHeatDivergence(const Dictionary& rxn, const std::string& context)
+{
+    if (!rxn.found("heatOfReaction")) return;
+    std::cout << "  [problem divergence] " << context << ": the reaction declares a"
+        " measured `heatOfReaction {}`, but the column's stage balances price the"
+        " streams on the formation datum and do NOT apply it; the reboiler and"
+        " condenser duties here come from the formation route.\n";
+    ProblemDivergence::instance().add("substitution", context,
+        "a measured heat of reaction (heatOfReaction {}) on the reaction",
+        "the column's stage balances on the formation datum; the declared heat"
+        " is not applied",
+        "");
+}
+
 } // namespace Choupo

@@ -1,0 +1,80 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      diethyleneGlycolMonohexylEther;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        A  3.6739327728;
+        B  1435.87871633;
+        C  -147.08839781;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "aa5f45e75e3a3864";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diethyleneGlycolMonohexylEther-vapourPressure-je034096z.dat";
+            doi       "10.1021/je034096z";
+            sha256    "e1dace98786fd0312c9b1ccef3145b20889fa12b4c6cd772be59b4f28f6fbf4f";
+            provenance measured;
+            archiveFile "je034096z.xml";
+            system    "diethyleneGlycolMonohexylEther";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diethyleneGlycolMonohexylEther-vapourPressure-je049627d.dat";
+            doi       "10.1021/je049627d";
+            sha256    "bb0c3de599fe62a72935f2494161a8f40de13969403005889f87880914f8e496";
+            provenance measured;
+            archiveFile "je049627d.xml";
+            system    "diethyleneGlycolMonohexylEther";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 402.96; max 473.15; n 18; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.998819408014;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

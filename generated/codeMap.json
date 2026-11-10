@@ -489,6 +489,9 @@
   "DatumAmendment": [
    "src/unitOperations/batch/BatchUnitOperation.H"
   ],
+  "DeclaredHeat": [
+   "src/unitOperations/reactor/ReactionHeat.H"
+  ],
   "Def": [
    "src/thermo/reaction/ExpressionRate.H"
   ],
@@ -906,6 +909,9 @@
   "GridSweepDriver": [
    "src/outerDriver/GridSweepDriver.H"
   ],
+  "Group": [
+   "src/postProcessing/layout/TypicalTrain.H"
+  ],
   "HConsistency": [
    "src/propertyOps/HConsistency.H"
   ],
@@ -920,6 +926,9 @@
   ],
   "HeatCapacityModel": [
    "src/thermo/heatCapacity/HeatCapacityModel.H"
+  ],
+  "HeatCorrection": [
+   "src/unitOperations/reactor/ReactionHeat.H"
   ],
   "HeatDutyPort": [
    "src/result/EnergyItems.H"
@@ -1121,6 +1130,9 @@
    "src/core/ResultRecords.H"
   ],
   "LayoutTurningArea": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutTypical": [
    "src/core/ResultRecords.H"
   ],
   "LayoutWind": [
@@ -3516,6 +3528,7 @@
    "src/postProcessing/PostProcessor.H",
    "src/postProcessing/layout/BuildingLayout.H",
    "src/postProcessing/layout/PlantLayout.H",
+   "src/postProcessing/layout/TypicalTrain.H",
    "src/postProcessing/views/RunPublications.H",
    "src/postProcessing/views/Views.H",
    "src/reporting/Report.H",
@@ -4643,7 +4656,8 @@
    "src/core/RegistryRefusal.H",
    "src/core/ResultRecords.H",
    "src/core/Types.H",
-   "src/postProcessing/layout/BuildingLayout.H"
+   "src/postProcessing/layout/BuildingLayout.H",
+   "src/postProcessing/layout/TypicalTrain.H"
   ],
   "src/postProcessing/layout/PlantLayout.cpp": [
    "src/core/Advisory.H",
@@ -4663,6 +4677,7 @@
    "src/postProcessing/layout/BuildingLayout.H",
    "src/postProcessing/layout/BundArithmetic.H",
    "src/postProcessing/layout/PlantLayout.H",
+   "src/postProcessing/layout/TypicalTrain.H",
    "src/result/ClosureVariable.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
@@ -4675,6 +4690,12 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H"
+  ],
+  "src/postProcessing/layout/TypicalTrain.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/postProcessing/layout/TypicalTrain.H"
   ],
   "src/postProcessing/sizing/CatalystBedSize.cpp": [
    "src/core/Advisory.H",
@@ -9576,6 +9597,7 @@
    "src/core/Identifiers.H",
    "src/core/InfeasibleTrial.H",
    "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
    "src/core/RegistryRefusal.H",
    "src/core/Types.H",
    "src/result/ClosureVariable.H",
@@ -9605,6 +9627,7 @@
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
+   "src/unitOperations/reactor/ReactionHeat.H",
    "src/unitOperations/saturation/BubblePoint.H",
    "src/unitOperations/saturation/DewPoint.H"
   ],
@@ -9659,6 +9682,7 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
    "src/core/RegistryRefusal.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
@@ -10917,6 +10941,7 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
    "src/core/Types.H",
    "src/result/ClosureVariable.H",
    "src/result/UnitProfile.H",
@@ -10937,6 +10962,7 @@
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/reactor/EquilibriumReactor.H",
    "src/unitOperations/reactor/PureSolidPhase.H",
+   "src/unitOperations/reactor/ReactionHeat.H",
    "src/unitOperations/reactor/ReactorOutlet.H",
    "src/unitOperations/reactor/TemperatureApproach.H"
   ],
@@ -10948,6 +10974,7 @@
    "src/core/Identifiers.H",
    "src/core/InfeasibleTrial.H",
    "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
    "src/core/Types.H",
    "src/result/ClosureVariable.H",
    "src/result/UnitProfile.H",
@@ -10968,6 +10995,7 @@
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/reactor/GibbsReactor.H",
    "src/unitOperations/reactor/PureSolidPhase.H",
+   "src/unitOperations/reactor/ReactionHeat.H",
    "src/unitOperations/reactor/TemperatureApproach.H",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H"
   ],
@@ -10979,6 +11007,7 @@
    "src/core/Formula.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
    "src/core/RegistryRefusal.H",
    "src/core/Types.H",
    "src/core/Units.H",
@@ -11045,6 +11074,7 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
@@ -12545,6 +12575,7 @@
    "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/layout/BuildingLayout.cpp",
    "src/postProcessing/layout/PlantLayout.cpp",
+   "src/postProcessing/layout/TypicalTrain.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -12920,6 +12951,7 @@
    "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/layout/BuildingLayout.cpp",
    "src/postProcessing/layout/PlantLayout.cpp",
+   "src/postProcessing/layout/TypicalTrain.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -14063,9 +14095,15 @@
    "src/unitOperations/batch/BatchStill.cpp",
    "src/unitOperations/batch/BatchUnitOperation.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp",
+   "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
+   "src/unitOperations/dynamic/DynamicCSTR.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
-   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp"
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp",
+   "src/unitOperations/reactor/EquilibriumReactor.cpp",
+   "src/unitOperations/reactor/GibbsReactor.cpp",
+   "src/unitOperations/reactor/PFR.cpp",
+   "src/unitOperations/reactor/ReactionHeat.cpp"
   ],
   "src/core/PublishedTable.H": [
    "src/applications/choupoProps/main.cpp",
@@ -14437,6 +14475,7 @@
    "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/layout/BuildingLayout.cpp",
    "src/postProcessing/layout/PlantLayout.cpp",
+   "src/postProcessing/layout/TypicalTrain.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -15033,6 +15072,12 @@
   "src/postProcessing/layout/PlantLayout.H": [
    "src/applications/choupoSolve/main.cpp",
    "src/postProcessing/layout/PlantLayout.cpp"
+  ],
+  "src/postProcessing/layout/TypicalTrain.H": [
+   "src/applications/choupoSolve/main.cpp",
+   "src/postProcessing/layout/BuildingLayout.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp",
+   "src/postProcessing/layout/TypicalTrain.cpp"
   ],
   "src/postProcessing/sizing/CatalystBedSize.H": [
    "src/postProcessing/sizing/CatalystBedSize.cpp",
@@ -20214,7 +20259,10 @@
   ],
   "src/unitOperations/reactor/ReactionHeat.H": [
    "src/unitOperations/batch/BatchReactor.cpp",
+   "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
+   "src/unitOperations/reactor/EquilibriumReactor.cpp",
+   "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/ReactionHeat.cpp"
   ],

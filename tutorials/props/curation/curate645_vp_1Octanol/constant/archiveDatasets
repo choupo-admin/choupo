@@ -1,0 +1,193 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of curate645_vp_1Octanol
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/1Octanol-vapourPressure-j.tca.2013.03.018.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1016/j.tca.2013.03.018";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.tca.2013.03.018.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.tca.2013.03.018.json";
+        articleFile   "j.tca.2013.03.018.xml";
+        articleSha256 "a2acfafefb550bb7ab462cca603bf427aea640ae4d9e8a413be28148c30c1f8c";
+        extractor     vapourPressure;
+        inchiKey      "KBPLFHHGFOOTCA-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey KBPLFHHGFOOTCA-UHFFFAOYSA-N --into <dir>";
+        sha256        "124496185f1944c1ea21c780adecb03645ebd9b6b5b045963680850292ee9d82";
+        identity
+        {
+            1Octanol       { cas "111-87-5"; inchiKey "KBPLFHHGFOOTCA-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/1Octanol-vapourPressure-je049600u.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je049600u";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je049600u.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je049600u.json";
+        articleFile   "je049600u.xml";
+        articleSha256 "7308480db0c38603a6dc3431215613a89dcd469cd93d18a44f1645a63d4071d0";
+        extractor     vapourPressure;
+        inchiKey      "KBPLFHHGFOOTCA-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey KBPLFHHGFOOTCA-UHFFFAOYSA-N --into <dir>";
+        sha256        "2063b14437c7cfdfd26090c0498f3097cfd67a2dee3485598797222a42926c7d";
+        identity
+        {
+            1Octanol       { cas "111-87-5"; inchiKey "KBPLFHHGFOOTCA-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/1Octanol-vapourPressure-j.fluid.2010.06.019.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1016/j.fluid.2010.06.019";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2010.06.019.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2010.06.019.json";
+        articleFile   "j.fluid.2010.06.019.xml";
+        articleSha256 "6161bfb0ad549d4a0d43df752a0c6e93411a7d3259c26035f893da46638b3534";
+        extractor     vapourPressure;
+        inchiKey      "KBPLFHHGFOOTCA-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey KBPLFHHGFOOTCA-UHFFFAOYSA-N --into <dir>";
+        sha256        "ca86b6aa8276bdc124170783e62e71d2d7fac3148b3499dca20dde3d8c91be5f";
+        identity
+        {
+            1Octanol       { cas "111-87-5"; inchiKey "KBPLFHHGFOOTCA-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/1Octanol-vapourPressure-acs.jced.7b00574.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/acs.jced.7b00574";
+        url           "https://trc.nist.gov/ThermoML/10.1021/acs.jced.7b00574.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/acs.jced.7b00574.json";
+        articleFile   "acs.jced.7b00574.xml";
+        articleSha256 "a10ed94316601b1f8b223698c78b8234f18edbe637c9663236ec77b2c5adc1bb";
+        extractor     vapourPressure;
+        inchiKey      "KBPLFHHGFOOTCA-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey KBPLFHHGFOOTCA-UHFFFAOYSA-N --into <dir>";
+        sha256        "08edc703b6776602a7449e1fe1caa030769d5374e09984e5db724cd7fcfacffa";
+        identity
+        {
+            1Octanol       { cas "111-87-5"; inchiKey "KBPLFHHGFOOTCA-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/1Octanol-vapourPressure-acs.jced.8b00680.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/acs.jced.8b00680";
+        url           "https://trc.nist.gov/ThermoML/10.1021/acs.jced.8b00680.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/acs.jced.8b00680.json";
+        articleFile   "acs.jced.8b00680.xml";
+        articleSha256 "24e5d0a547f0ece199cef88e38a33059d446a79066ec16e532dde61242113b94";
+        extractor     vapourPressure;
+        inchiKey      "KBPLFHHGFOOTCA-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey KBPLFHHGFOOTCA-UHFFFAOYSA-N --into <dir>";
+        sha256        "7f00ec4a27af1f1b17b65d0b76216af9b85a0fc5cff817775089de332ff5003f";
+        identity
+        {
+            1Octanol       { cas "111-87-5"; inchiKey "KBPLFHHGFOOTCA-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/1Octanol-vapourPressure-j.fluid.2011.04.024.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1016/j.fluid.2011.04.024";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2011.04.024.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2011.04.024.json";
+        articleFile   "j.fluid.2011.04.024.xml";
+        articleSha256 "f695b9de005b0fbb1168e244bcfb9665c5663e235f5586fa47cdb2ece4699899";
+        extractor     vapourPressure;
+        inchiKey      "KBPLFHHGFOOTCA-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey KBPLFHHGFOOTCA-UHFFFAOYSA-N --into <dir>";
+        sha256        "4041ca40b58aeec9ba3a67eb0e415975750a1243ffbca51f92afbad7b4516b2e";
+        identity
+        {
+            1Octanol       { cas "111-87-5"; inchiKey "KBPLFHHGFOOTCA-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/1Octanol-vapourPressure-je400951k.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je400951k";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je400951k.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je400951k.json";
+        articleFile   "je400951k.xml";
+        articleSha256 "49af8ac55dc52ecdc1b0c52b7ce21c5818a41758b3cdfb9aa95dc8d6dc8eb89a";
+        extractor     vapourPressure;
+        inchiKey      "KBPLFHHGFOOTCA-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey KBPLFHHGFOOTCA-UHFFFAOYSA-N --into <dir>";
+        sha256        "b5348f5c6359097e1083d4aae04c704ee20d650c9baf5c324e7f45799825474a";
+        identity
+        {
+            1Octanol       { cas "111-87-5"; inchiKey "KBPLFHHGFOOTCA-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/1Octanol-vapourPressure-j.tca.2014.09.011.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1016/j.tca.2014.09.011";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.tca.2014.09.011.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.tca.2014.09.011.json";
+        articleFile   "j.tca.2014.09.011.xml";
+        articleSha256 "00f0fd20258eb39ce4d277b77738e9b3464be2552a217982fc9155dc243be9d9";
+        extractor     vapourPressure;
+        inchiKey      "KBPLFHHGFOOTCA-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey KBPLFHHGFOOTCA-UHFFFAOYSA-N --into <dir>";
+        sha256        "9d09b90959ce952429b73c886a93a8f3edf83b60c9aab14f9a01719dabc5e0dd";
+        identity
+        {
+            1Octanol       { cas "111-87-5"; inchiKey "KBPLFHHGFOOTCA-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/1Octanol-vapourPressure-je030168a.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je030168a";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je030168a.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je030168a.json";
+        articleFile   "je030168a.xml";
+        articleSha256 "6e36cf17003d2c130f8d65b2a43cfbc6ef8d9c7175353ddc58446fa703403831";
+        extractor     vapourPressure;
+        inchiKey      "KBPLFHHGFOOTCA-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey KBPLFHHGFOOTCA-UHFFFAOYSA-N --into <dir>";
+        sha256        "49e0fc72a0bb2e4f0ce3046a616e7617c81ebfd60c236f9f944fb17a7bc8add1";
+        identity
+        {
+            1Octanol       { cas "111-87-5"; inchiKey "KBPLFHHGFOOTCA-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/1Octanol-vapourPressure-j.jct.2003.09.009.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1016/j.jct.2003.09.009";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.jct.2003.09.009.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.jct.2003.09.009.json";
+        articleFile   "j.jct.2003.09.009.xml";
+        articleSha256 "f2666d0d886d604130ea42f9b1e45049d90f2b20c516ab3851bf82ba85508acc";
+        extractor     vapourPressure;
+        inchiKey      "KBPLFHHGFOOTCA-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey KBPLFHHGFOOTCA-UHFFFAOYSA-N --into <dir>";
+        sha256        "1087276ea8c5ef2445a9c90d9491733b17938c8dbfcaed5a0dc83fa1acc6184e";
+        identity
+        {
+            1Octanol       { cas "111-87-5"; inchiKey "KBPLFHHGFOOTCA-UHFFFAOYSA-N"; }
+        }
+    }
+);
