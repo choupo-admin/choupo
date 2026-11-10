@@ -156,7 +156,7 @@ function LayoutBench(): JSX.Element {
           decimals={1} onChange={(v) => set({ roomX: v })} />
         <KnobNumber label="control room y [m]" value={knobs.roomY} step={1}
           decimals={1} onChange={(v) => set({ roomY: v })} />
-        <KnobNumber label="wind blows FROM, true bearing [deg]" value={knobs.windFrom}
+        <KnobNumber label="wind blows from, true bearing [deg]" value={knobs.windFrom}
           min={0} max={359} step={15} decimals={0} onChange={(v) => set({ windFrom: v })} />
         <KnobField label="separations measured">
           <SegmentedControl size="xs" fullWidth value={knobs.measure}
@@ -273,6 +273,9 @@ export function PlantLayoutTool(): JSX.Element {
 
         <Title order={4}>Part 1 — why layout matters</Title>
         {step(1)}
+        {/* The bench comes second (DEV.md 4c C277): the plot plan under the
+            student's hand, then step 2 and the parts that explain it. */}
+        <LayoutBench />
         {step(2)}
 
         <Title order={4}>Part 2 — separation distances</Title>
@@ -283,7 +286,6 @@ export function PlantLayoutTool(): JSX.Element {
         <Title order={4}>Part 3 — the exercise</Title>
         {step(6)}
         {step(7)}
-        <LayoutBench />
         {step(8)}
 
         <Title order={4}>Part 4 — the wind and the zones</Title>
@@ -313,7 +315,7 @@ export function PlantLayoutTool(): JSX.Element {
           </Anchor>.
         </Text>
         <Text size="sm">
-          A pharmaceutical plant is laid out mostly INSIDE a building, where the
+          A pharmaceutical plant is laid out mostly inside a building, where the
           questions are rooms, grades, air pressures and the ways people and
           material walk through them.  That interior is the subject of{" "}
           <Anchor component="button" type="button"
