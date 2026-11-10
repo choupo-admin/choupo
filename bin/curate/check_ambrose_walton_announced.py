@@ -5,7 +5,8 @@ when its curve contradicts the record it was built from -- and moves no number.
     bin/curate/check_ambrose_walton_announced.py
 
 WHY THIS EXISTS (2026-11-10, DEV.md 4c C281 step 1).  48 catalogue components
-declare `vaporPressure { model AmbroseWalton; }`.  The model reads Tc, Pc and
+declared `vaporPressure { model AmbroseWalton; }` (47 since C281 step 2, which
+replaced nHexylAcetate's by an Antoine fitted to measurements; arm (e)).  The model reads Tc, Pc and
 omega only and never the record's Tb; evaluated from each record's own
 constants, the curve's normal boiling point (P = 101325 Pa) misses the record's
 Tb by more than 2 K for 26 of the 48 and by more than 10 K for 14 (maleic acid
@@ -38,6 +39,13 @@ WHAT IS CHECKED, by running the real `choupoProps` on probe cases:
       1e-12 relative, and equal the Python equations to 1e-9.
   (d) A record with no Tb gets the estimate line and no gap line.
 
+  (e) THE COUNT ONLY FALLS (C281 step 2).  At most AW_MAX records declare
+      AmbroseWalton: step 2 replaced the curve of every record whose archive
+      measurements validated a fit (`bin/choupo-curate vp`), and a NEW
+      estimate entering the catalogue, or a promoted fit reverted
+      (`bin/choupo-curate revert <component>`), must lower or raise this pin
+      deliberately, never in silence.
+
 WHAT IS NOT CHECKED: that the estimate is ACCURATE (C279 measured a median
 19.6 % AAD against archive data on 25 of them); that a declared Tb is itself
 right (several are estimates); the wording beyond the numbers and the one
@@ -68,6 +76,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 EXE = ROOT / "choupoProps"
 THRESHOLD_K = 1.0            # the engine's tbGapAnnounce_K (stated default)
+AW_MAX = 47                  # arm (e): 48 at step 1, 47 after C281 step 2
 
 # Parent-commit (19933c63f) values, printed by its build before the change.
 PARENT = [
@@ -183,6 +192,13 @@ def main():
               "(run `make all`)")
         return 2
     recs = records()
+    # ---- (e) the count only falls -----------------------------------------
+    if len(recs) > AW_MAX:
+        fail.append("(e) %d catalogue records declare AmbroseWalton, the pin is %d "
+                    "(C281 step 2) -- a new estimate entered, or a fitted curve was "
+                    "reverted; lower or raise AW_MAX deliberately" % (len(recs), AW_MAX))
+    else:
+        checked.append("(e) %d AW records, at most the pinned %d" % (len(recs), AW_MAX))
     with tempfile.TemporaryDirectory() as td:
         td = Path(td)
 

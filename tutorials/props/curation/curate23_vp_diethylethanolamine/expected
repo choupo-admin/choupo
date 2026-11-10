@@ -1,0 +1,13 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    fit_antoine            A                5.21126894303      1e-4
+diag    fit_antoine            B                1996.87898735      1e-4
+diag    fit_antoine            C                -43.7040322793     1e-4
+diag    fit_antoine            R2               0.999590344094     1e-4
+diag    fit_antoine            aad_heldout_pct  3.56636432017      1e-4
+diag    fit_antoine            dHvap_kJ_per_mol 51.3672820437      1e-4
+diag    fit_antoine            n_heldout        24                 1e-4
+diag    fit_antoine            n_points         31                 1e-4
+diag    fit_antoine            rms_heldout_log10P 0.0158353317872    1e-4
+verdict fit_antoine            verdict          notValidated       exact

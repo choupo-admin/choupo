@@ -1,0 +1,82 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      diButylCarbonate;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        notValidated;
+
+    fittedParameters
+    {
+        A  4.78323608922;
+        B  2119.16653165;
+        C  -34.8668239828;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5b76c69b149960d6";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diButylCarbonate-vapourPressure-acs.jced.6b00517.dat";
+            doi       "10.1021/acs.jced.6b00517";
+            sha256    "46b268a0f01c7631c1edc996105125bbbb0a70f05ab8baa63b5601cbe38d2f5b";
+            provenance measured;
+            archiveFile "acs.jced.6b00517.xml";
+            system    "diButylCarbonate";
+        }
+        {
+            role      validation;
+            dataset   "constant/archiveExtracts/diButylCarbonate-vapourPressure-j.jct.2008.02.012.dat";
+            doi       "10.1016/j.jct.2008.02.012";
+            sha256    "be53748e8b6274105a9c4cfc3e0cbd9cd338284829286478fff629568fa8cc72";
+            provenance measured;
+            archiveFile "j.jct.2008.02.012.xml";
+            system    "diButylCarbonate";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 383.16; max 478.18; n 23; }
+            validation  { min 287.1; max 329.1; n 21; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.998031140839;   // the model reproducing the points it was FITTED to
+        rmsHeldOut        0.31402082619;   // log10(P), on evidence the fit never saw
+        aadHeldOutPct     105.116711331;
+        acceptanceMaxAADPct 5.3;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 21 points (5.1 to 5.5 %, mean 5.264 %), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean";
+    }
+}
+
+);

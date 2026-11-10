@@ -2,8 +2,9 @@
   Component: nHexylAcetate  (CAS 142-92-7)
   PROPOSAL TIER -- UNVERIFIED. Imported from ChemSep v8.3
   pure-component data under Artistic License 2.0.
-  Critical constants are source data; Psat is an explicitly
-  estimated Ambrose-Walton corresponding-states closure.
+  Critical constants are source data.  Psat is an Antoine FITTED by
+  bin/choupo-curate vp to measured vapour pressures (DEV.md 4c C281;
+  provenance.vaporPressure): reviewStatus autoPromoted, NOT human-reviewed.
 \*---------------------------------------------------------------------------*/
 
 name        nHexylAcetate;
@@ -24,7 +25,11 @@ standardThermochemistry
 
 vaporPressure
 {
-    model AmbroseWalton;  // [origin=estimated method=Ambrose-Walton]
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C), FITTED by bin/choupo-curate vp to
+    // measured vapour pressures -- see provenance.vaporPressure
+    coefficients  (4.198145701  1539.55153  -77.238816);
+    Trange        (397.97  439.98);   // the fit's own span; outside it the engine announces the extrapolation
 }
 
 Vliq        0.000165938;      // m3/mol at 25 C  [ChemSep eqno 105]
@@ -137,10 +142,45 @@ provenance
     }
     vaporPressure
     {
-        origin        predictive;
-        method        "Ambrose-Walton corresponding states";
-        methodVersion "choupo-aw-1989";
-        uncertainty   "not quantified; validate against saturation data";
-        notes         "computed from ChemSep Tc/Pc/omega";
+        origin        fitted;
+        method        "vaporPressureFit (three-parameter Antoine, least squares in log10 P)";
+        methodVersion "choupoProps Choupo-dev";
+        fittedInCase  "tutorials/props/curation/curate33_vp_nHexylAcetate";
+        reviewStatus  autoPromoted;
+        humanReviewed false;
+        promotedBy    "bin/choupo-curate vp --promote";
+        promotedDate  "2026-11-10";
+        reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+        uncertainty   "the held-out AAD below, against an independent study";
+        replaces      "model AmbroseWalton (a corresponding-states estimate from Tc, Pc, omega); `bin/choupo-curate revert <component>` restores it";
+        evidence
+        (
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/nHexylAcetate-vapourPressure-je050141m.dat";
+                doi       "10.1021/je050141m";
+                sha256    "227d04e5329db370740f9a5a9af2b8ff0ea610efb10f745afafa2ce17e9e3b26";
+                articleSha256 "99044e3dea8c42c7fae56f37eca05732279ba72064540df1310a541562d21c46";
+                provenance measured;
+            }
+            {
+                role      validation;
+                dataset   "constant/archiveExtracts/nHexylAcetate-vapourPressure-j.jct.2005.08.003.dat";
+                doi       "10.1016/j.jct.2005.08.003";
+                sha256    "d31c8b4f118530d49fac4b38b1c63f3f41d5bc014540b987a10ca989439ac971";
+                articleSha256 "1eec2ea342589c529ad39737b4111c9d660b04a0f2e44bda099823839bb5a3ec";
+                provenance measured;
+            }
+        );
+        validation
+        {
+            verdict     validated;
+            points      13;
+            aad_pct     5.894812;
+            maxAAD      7.2;   // per cent, declared before the fit
+            origin      "declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 13 points (7.08 to 7.24 %, mean 7.125 %), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean";
+            Tnb_fit     444.4607;   // K, the fitted curve at 101.325 kPa
+        }
     }
 }

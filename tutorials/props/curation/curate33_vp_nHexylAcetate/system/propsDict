@@ -40,7 +40,14 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Antoine log10(Psat/bar) = 4.198146 - 1539.5515/(T + -77.2388),
+  in-sample R2 0.999994 over 14 points, 397.97-439.98 K. HELD OUT: 13
+  points, AAD 5.8948 % against the band 7.2 % -> validated. Its own
+  normal boiling point (101.325 kPa): 444.46 K. PROMOTED on 2026-11-10
+  into data/standards/components/nHexylAcetate.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: verdict validated, normal
+  boiling point 444.46 K within 2 K of the record's Tb 444.65 K
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

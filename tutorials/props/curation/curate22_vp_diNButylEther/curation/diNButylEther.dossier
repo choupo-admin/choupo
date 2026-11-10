@@ -1,0 +1,82 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      diNButylEther;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        notValidated;
+
+    fittedParameters
+    {
+        A  4.54681382768;
+        B  1697.16128423;
+        C  -39.9108462236;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "aac862189865de0d";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diNButylEther-vapourPressure-j.fluid.2006.06.017.dat";
+            doi       "10.1016/j.fluid.2006.06.017";
+            sha256    "d401b8185db8ece41d83c2d7aea8b9d6e3398e5a6e065d1eea7704065e51cb2f";
+            provenance measured;
+            archiveFile "j.fluid.2006.06.017.xml";
+            system    "diNButylEther";
+        }
+        {
+            role      validation;
+            dataset   "constant/archiveExtracts/diNButylEther-vapourPressure-j.fluid.2015.05.002.dat";
+            doi       "10.1016/j.fluid.2015.05.002";
+            sha256    "4011ad3ec096730aca9e21dd96b2ae5e4dae45c1b9e2d4c75b480c6d85261145";
+            provenance measured;
+            archiveFile "j.fluid.2015.05.002.xml";
+            system    "diNButylEther";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 346.03; max 413.67; n 26; }
+            validation  { min 430.15; max 508.15; n 14; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.999981541275;   // the model reproducing the points it was FITTED to
+        rmsHeldOut        0.02393907967;   // log10(P), on evidence the fit never saw
+        aadHeldOutPct     4.75264267862;
+        acceptanceMaxAADPct 0.36;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 14 points (0.171 to 0.629 %, mean 0.3574 %), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean";
+    }
+}
+
+);

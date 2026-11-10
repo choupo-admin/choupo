@@ -1,0 +1,82 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      dimethylethanolamine;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        notValidated;
+
+    fittedParameters
+    {
+        A  14.1918550973;
+        B  9599.56333988;
+        C  289.4229977;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f102b5a5de508594";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/dimethylethanolamine-vapourPressure-je049761y.dat";
+            doi       "10.1021/je049761y";
+            sha256    "df002e21a6af81808fc0ab6df77965b06bff0babbf3a176469fe95f2234618c4";
+            provenance measured;
+            archiveFile "je049761y.xml";
+            system    "dimethylethanolamine";
+        }
+        {
+            role      validation;
+            dataset   "constant/archiveExtracts/dimethylethanolamine-vapourPressure-j.jct.2013.03.020.dat";
+            doi       "10.1016/j.jct.2013.03.020";
+            sha256    "f95b18479b755cf040e67d4972cea8eb700cf4c9dc094f83e6ca74cac57d78df";
+            provenance measured;
+            archiveFile "j.jct.2013.03.020.xml";
+            system    "dimethylethanolamine";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 277.9; max 316.3; n 29; }
+            validation  { min 273.15; max 363.15; n 25; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.998528756946;   // the model reproducing the points it was FITTED to
+        rmsHeldOut        0.064013725784;   // log10(P), on evidence the fit never saw
+        aadHeldOutPct     12.9405651115;
+        acceptanceMaxAADPct 2.2;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 25 points (2.01 to 2.82 %, mean 2.165 %), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean";
+    }
+}
+
+);

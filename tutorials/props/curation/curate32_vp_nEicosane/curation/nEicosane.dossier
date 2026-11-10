@@ -1,0 +1,82 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      nEicosane;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        notValidated;
+
+    fittedParameters
+    {
+        A  3.60775799445;
+        B  1978.61234893;
+        C  -123.726419626;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "31e5c92d6519b78c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nEicosane-vapourPressure-acs.jced.6b00821.dat";
+            doi       "10.1021/acs.jced.6b00821";
+            sha256    "a17d31db0c5e1ff22c22e07a2ba0ff21e9a18b306cc731cdd558a8562347b7e5";
+            provenance measured;
+            archiveFile "acs.jced.6b00821.xml";
+            system    "nEicosane";
+        }
+        {
+            role      validation;
+            dataset   "constant/archiveExtracts/nEicosane-vapourPressure-je800534x.dat";
+            doi       "10.1021/je800534x";
+            sha256    "5a2cf10f6642b7d9fb1f7045d6be5806082513a6e8d7efd5a0dd4874b97194e2";
+            provenance measured;
+            archiveFile "je800534x.xml";
+            system    "nEicosane";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 313.15; max 343.15; n 8; }
+            validation  { min 312.76; max 373.17; n 6; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.999592413271;   // the model reproducing the points it was FITTED to
+        rmsHeldOut        0.111988601477;   // log10(P), on evidence the fit never saw
+        aadHeldOutPct     28.3787742947;
+        acceptanceMaxAADPct 4.2;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 6 points (4.02 to 4.42 %, mean 4.181 %), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean";
+    }
+}
+
+);

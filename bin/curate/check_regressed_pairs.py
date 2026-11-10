@@ -626,7 +626,7 @@ def check_ll_arm(tmp, fails):
 #  catalogue, `autoPromoted` carries `humanReviewed false` and `promotedBy`,
 #  and the case's own run VOICES the status through the component loader.
 STD_COMP = ROOT / "data" / "standards" / "components"
-VP_FLOOR = 0      # SET AT LANDING to the number promoted (see main): a
+VP_FLOOR = 1      # the number promoted at landing (C281 step 2): a
                   # collapsed scan surface must not read as a clean catalogue
 
 
@@ -752,7 +752,9 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
         pr = subprocess.run([str(PROPS), "."], cwd=str(work), capture_output=True,
                             text=True, timeout=900, env=dict(os.environ, CHOUPO_HOME=str(ROOT)))
         out = pr.stdout + pr.stderr
-        js = result_of(pr.stdout)
+        m = re.search(r"<<<Choupo:result-begin>>>(.*?)<<<Choupo:result-end>>>",
+                      pr.stdout, re.S)
+        js = json.loads(m.group(1)) if m else None
         op = next((o for o in (js or {}).get("operationResults", [])
                    if o.get("name") == "fit_antoine"), None)
         if pr.returncode != 0 or op is None:
@@ -780,12 +782,19 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
             fails.append(f"{tag}: Trange {rf['Trange']} is not the fit's own span "
                          f"({(min(fit_T), max(fit_T)) if fit_T else 'no fit dataset'})")
         want = set()
-        for m in re.finditer(r"\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}",
-                             (re.search(r"datasets\s*\((.*)\)\s*;",
-                                        strip_comments(decl), re.S) or re.match("", "")).group(1)
-                             if "datasets" in decl else ""):
-            b = re.sub(r"identity\s*\{.*", "", m.group(1), flags=re.S)
-            want.add((word(b, "role"), word(b, "doi"), word(b, "sha256")))
+        body = strip_comments(decl)
+        body = body[body.find("datasets"):]
+        depth, start = 0, None
+        for k, ch in enumerate(body):
+            if ch == "{":
+                if depth == 0:
+                    start = k
+                depth += 1
+            elif ch == "}":
+                depth -= 1
+                if depth == 0:
+                    b = re.sub(r"identity\s*\{.*", "", body[start + 1:k], flags=re.S)
+                    want.add((word(b, "role"), word(b, "doi"), word(b, "sha256")))
         if rf["evidence"] != want:
             fails.append(f"{tag}: evidence {sorted(rf['evidence'])} differs from its "
                          f"case's declaration {sorted(want)}")

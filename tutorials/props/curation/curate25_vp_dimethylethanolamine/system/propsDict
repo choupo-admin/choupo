@@ -41,7 +41,13 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Antoine log10(Psat/bar) = 14.191855 - 9599.5633/(T + 289.4230),
+  in-sample R2 0.998529 over 29 points, 277.9-316.3 K. HELD OUT: 25
+  points, AAD 12.9406 % against the band 2.2 % -> notValidated. Its own
+  normal boiling point (101.325 kPa): 387.26 K. NOT PROMOTED: held-out
+  verdict notValidated (AAD 12.94 % against the band 2.2 % declared
+  before the fit); the record keeps AmbroseWalton
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

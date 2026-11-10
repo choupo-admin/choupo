@@ -1,0 +1,82 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      methylTertPentylEther;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        notValidated;
+
+    fittedParameters
+    {
+        A  4.24093692441;
+        B  1366.28911271;
+        C  -36.8587932811;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "0bfe47f9ca7ad63f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylTertPentylEther-vapourPressure-je101250d.dat";
+            doi       "10.1021/je101250d";
+            sha256    "6669b12035e317cc29bb9ffe16bf70870f3d4766ed9b0dc05b0b6709dcfbc736";
+            provenance measured;
+            archiveFile "je101250d.xml";
+            system    "methylTertPentylEther";
+        }
+        {
+            role      validation;
+            dataset   "constant/archiveExtracts/methylTertPentylEther-vapourPressure-je0255980.dat";
+            doi       "10.1021/je0255980";
+            sha256    "cd80b80e5c63806e1b87ed419e16a7cd8f082489ff69e7f530a00711ac27c1db";
+            provenance measured;
+            archiveFile "je0255980.xml";
+            system    "methylTertPentylEther";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 313.44; max 359.95; n 21; }
+            validation  { min 274.2; max 307.8; n 11; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.999995704179;   // the model reproducing the points it was FITTED to
+        rmsHeldOut        0.0430027908225;   // log10(P), on evidence the fit never saw
+        aadHeldOutPct     9.94141702513;
+        acceptanceMaxAADPct 7.8;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit by bin/choupo-curate vp (C281 step 2): the held-out study's own stated relative expanded uncertainty U95(P)/P, AVERAGED over its 11 points (7.75 to 7.77 %, mean 7.764 %), rounded UP to two significant figures -- a mean held against the held-out AAD, which is a mean";
+    }
+}
+
+);
