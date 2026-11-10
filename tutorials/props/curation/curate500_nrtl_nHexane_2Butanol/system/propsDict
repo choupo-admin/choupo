@@ -106,13 +106,15 @@
   @@RESULT-BEGIN@@
   WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
   fit_nrtl: b_ij = 736.5 K, b_ji = 38.9 K over 58 kept points of 2
-  block(s), 2 laboratory(ies), 2 temperature(s) (26 discarded): max
+  block(s), 1 laboratory(ies), 1 temperature(s) (26 discarded): max
   |dP|/P 4.90 %, mean 3.17 %, graded clean -> accepted. fit_nrtl_start2
   lands on the same pair (736.5, 38.9). PROMOTED on 2026-11-10 into
   data/standards/parameters/NRTL/2Butanol-nHexane.dat as reviewStatus
   autoPromoted, humanReviewed false, because: fit grade clean -- max
   |dP|/P 4.90 % over the 58 kept points (limits 5 / 10 / 20 %), one
-  liquid across the validity span
+  liquid across the validity span SINGLE TEMPERATURE: b/T was fitted at
+  one temperature; its extrapolation is untested. SINGLE LABORATORY: one
+  article's data, nothing to cross-check it.
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these temperatures in this

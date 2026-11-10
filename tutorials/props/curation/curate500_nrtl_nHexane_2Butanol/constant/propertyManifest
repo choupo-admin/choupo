@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/2Butanol-nHexane.dat"
         {
             type          imported;
-            sha256        "3467ef7dc528a0b2abadecaa2461f7e0503e9e8cc9c101df8104b395fb087f6b";
-            computationalSha256 "a7c7d5b9e61b74b8def36eef5d73757e2aa3e798973b16145e89cc00904dc2f5";
+            sha256        "b5407ac09e5ff3647f7de676d7371b00c406338b38d3fcb3272ed537b1141bf0";
+            computationalSha256 "0399ca4bcca77e562a11874b4ec2b81428a4cafd5faf5e2b04417f51dee2452c";
             origin        "data/standards/parameters/NRTL/2Butanol-nHexane.dat";
-            originSha256  "532e0483909939a9ecd6fd36a2f99061f81eeeac9beb3521aba0da6ee81ba4ab";
+            originSha256  "17fba52d3a2c25732f4c57e6d5d709c70191cf71414c36d89ed8ca122716d124";
             release       Choupo-2608;
         }
     }

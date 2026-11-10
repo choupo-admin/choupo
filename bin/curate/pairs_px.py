@@ -621,6 +621,19 @@ def stats(rows):
     return (max(r) if r else float("nan"), sum(r) / len(r) if r else float("nan"), len(r), nan)
 
 
+def contributing(case):
+    """The (doi, T) of every declared dataset that keeps at least one point
+    after the case's declared discards: a study discarded whole is evidence
+    that was looked at, not evidence the pair rests on."""
+    disc = pc.declared_discards(case)
+    out = []
+    for d in cc.parse_decl(case) or []:
+        ds = read_dataset(case / d["file"])
+        if len(disc.get(Path(d["file"]).name, [])) < ds["n"]:
+            out.append((d["doi"], ds["T_K"]))
+    return out
+
+
 def declared_discards(case):
     return pc.declared_discards(case)
 
@@ -726,8 +739,9 @@ def run(case, pl):
     grade = grade_of(mx, nan)
     accepted = grade != "refused"
     verdict = "accepted" if accepted else "notAccepted"
-    nT = len({s["T_K"] for s in pl["studies"]})
-    nL = len({s["doi"] for s in pl["studies"]})
+    live = [s for s in pl["studies"] if len(found.get(s["path"].name, [])) < s["n"]]
+    nT = len({s["T_K"] for s in live})
+    nL = len({s["doi"] for s in live})
     nb = f" ({nan} point(s) with no bubble pressure)" if nan else ""
     if not accepted:
         reason = (f"NOT PROMOTABLE: fit grade refused -- max |dP|/P {mx:.2f} % over the {n_kept} "

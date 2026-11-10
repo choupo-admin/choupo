@@ -1180,9 +1180,9 @@ def c291_failures(rec, cur, case, out, tag, fails, in_std=False):
         fails.append(f"{tag}: curation oneLiquid `{word(cur, 'oneLiquid')}`, arm (f) on the "
                      f"record's own parameters says {'it SPLITS' if split else 'one liquid'}")
     #  the single-temperature / single-laboratory flags, recomputed from the datasets
-    decl = px.cc.parse_decl(case) or []
-    temps = {px.read_dataset(case / d["file"])["T_K"] for d in decl}
-    labs = {d["doi"] for d in decl}
+    live = px.contributing(case)   # a study discarded whole is not evidence the pair rests on
+    temps = {T for _, T in live}
+    labs = {doi for doi, _ in live}
     for key, n, flag in (("temperatures", len(temps), "singleTemperature"),
                          ("laboratories", len(labs), "singleLaboratory")):
         if num(cur, key) != n:

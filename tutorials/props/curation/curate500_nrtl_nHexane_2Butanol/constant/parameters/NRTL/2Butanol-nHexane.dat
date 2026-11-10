@@ -23,6 +23,7 @@
   THIS fit: clean, 4.8999 %; one liquid across its validity span), and NO
   HUMAN HAS REVIEWED IT.  The engine says so on every run that reads it, and
   voices a warning or a severe grade beside it.
+  CAUTION: this record rests on ONE temperature and ONE laboratory.
   Nothing was held out: the `validation {}` block says so, and the acceptance
   is the `curation {}` block.  A curator who reads the series back against the
   articles marks it `reviewStatus reviewed; humanReviewed true;`.  Revert with
@@ -135,9 +136,9 @@ curation
     gradeLimits_pct (5 10 20);   // upper limits of clean / warning / severe; above, refused
     grade           clean;
     oneLiquid       true;   // arm (f) over the validity span; a pair that splits ONE liquid is never promoted
-    temperatures    2;   // distinct stated temperatures in the evidence
-    laboratories    2;   // distinct articles in the evidence
-    singleTemperature false;   // true: b/T was fitted at ONE temperature
-    singleLaboratory  false;   // true: ONE laboratory's data, nothing to cross-check it
+    temperatures    1;   // distinct stated temperatures in the evidence
+    laboratories    1;   // distinct articles in the evidence
+    singleTemperature true;   // true: b/T was fitted at ONE temperature
+    singleLaboratory  true;   // true: ONE laboratory's data, nothing to cross-check it
     verdict         accepted;
 }
