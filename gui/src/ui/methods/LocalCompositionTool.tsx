@@ -63,20 +63,20 @@ export const LC_STEPS = [
     title: "The idea: a molecule does not see the bulk composition",
     body: "Raoult's law assumes two things: a molecule's neighbours are "
       + "drawn at random from the mixture, so a molecule of 1 in a 50/50 "
-      + "mixture is surrounded by half 1 and half 2; AND a like contact "
+      + "mixture is surrounded by half 1 and half 2; and a like contact "
       + "costs the same energy as an unlike one.  Drop the second alone and "
       + "you have the regular solution, which already deviates from Raoult "
       + "with perfectly random neighbours (it is the α = 0 limit of NRTL "
       + "below, ln γ_1 = x_2² (τ_12 + τ_21)).  The local-composition family "
-      + "drops the FIRST as well: in a real liquid the neighbourhood is not "
+      + "drops the first as well: in a real liquid the neighbourhood is not "
       + "random whenever the molecules have preferences.  Ethanol and water deviate "
-      + "POSITIVELY from Raoult's law, and the local-composition picture "
-      + "READS that deviation as each molecule preferring its own kind, so "
+      + "positively from Raoult's law, and the local-composition picture "
+      + "reads that deviation as each molecule preferring its own kind, so "
       + "that an ethanol molecule sits in a neighbourhood richer in ethanol "
       + "than the bulk is.  That is the model's picture, not a measurement "
       + "of the liquid's structure: a positive deviation alone does not "
       + "prove such a preference at every composition.  Call the "
-      + "LOCAL mole fraction x_ji — the fraction of the molecules around a "
+      + "local mole fraction x_ji — the fraction of the molecules around a "
       + "central molecule i that are of type j.  Every model on this page "
       + "is one answer to: how is x_ji related to the bulk x_j?",
     assumes: "That a single 'local composition' is a meaningful average — "
@@ -93,7 +93,7 @@ export const LC_STEPS = [
     after: "That is the whole physical content of the family.  Everything "
       + "that follows is a choice about what to do with it — which excess "
       + "Gibbs energy to build from it, and how many parameters per pair "
-      + "the answer is allowed to cost.  Note that ONLY DIFFERENCES of "
+      + "the answer is allowed to cost.  Note that only differences of "
       + "energy appear: no model here knows an absolute g, and none needs "
       + "one.",
     assumes: "The energy of a neighbourhood is the sum of independent "
@@ -109,12 +109,12 @@ export const LC_STEPS = [
       + "one quantity per ordered pair:",
     eq: "Λ_ij = ( V_j / V_i ) · exp( −A_ij / RT )\n"
       + "ln γ_i = 1 − ln( Σ_j x_j Λ_ij ) − Σ_j [ x_j Λ_ji / Σ_k x_k Λ_jk ]",
-    after: "V_j and V_i are the pure LIQUID molar volumes, read from the "
+    after: "V_j and V_i are the pure liquid molar volumes, read from the "
       + "component records — so Wilson costs two energy parameters per "
       + "pair and borrows its size information from data already on the "
       + "shelf.  Its famous limitation is structural, not numerical: no "
       + "choice of A_12 and A_21 makes this expression predict a "
-      + "LIQUID-LIQUID SPLIT.  The function simply cannot produce the "
+      + "liquid-liquid split.  The function simply cannot produce the "
       + "shape.  If your system separates into two liquid phases, Wilson "
       + "is not a bad fit for it — it is the wrong instrument.",
     assumes: "Local volume fractions, not local mole fractions; and "
@@ -126,7 +126,7 @@ export const LC_STEPS = [
     n: 4,
     title: "NRTL — buy back the non-randomness with a third parameter",
     body: "Renon and Prausnitz (1968) keep the local-composition idea but "
-      + "add a parameter α that says HOW non-random the neighbourhood is "
+      + "add a parameter α that says how non-random the neighbourhood is "
       + "(α = 0 recovers a random mixture; typical values are 0.2–0.47). "
       + "Two quantities per ordered pair:",
     eq: "τ_ij = a_ij + b_ij / T           (τ_ii = 0)\n"
@@ -138,9 +138,9 @@ export const LC_STEPS = [
       + "pair fitted at one temperature extrapolates by that form and by "
       + "nothing else — which is why the held-out lesson on the comparison "
       + "page matters. The payoff for the third parameter is the one "
-      + "Wilson could not buy: NRTL CAN describe two liquid phases, and "
+      + "Wilson could not buy: NRTL can describe two liquid phases, and "
       + "this is why Choupo's extraction and LLE cases use it.",
-    assumes: "The non-randomness parameter α is a property of the PAIR and "
+    assumes: "The non-randomness parameter α is a property of the pair and "
       + "is symmetric (α_ij = α_ji), which is a modelling convention, not "
       + "a derived result.",
     cites: "NRTL.cpp:375-378 (τ, G), NRTL.cpp:400-413 (the two terms)",
@@ -150,9 +150,9 @@ export const LC_STEPS = [
     title: "UNIQUAC — split the problem in two before modelling either half",
     body: "Abrams and Prausnitz (1975) make explicit what Wilson smuggled "
       + "in through V_j/V_i: two different things make a mixture "
-      + "non-ideal, and they should not share a parameter.  SIZE and SHAPE "
+      + "non-ideal, and they should not share a parameter.  Size and shape "
       + "change the entropy even with no energetic preference at all; "
-      + "ENERGY does the rest.  So γ is built from two pieces.",
+      + "energy does the rest.  So γ is built from two pieces.",
     eq: "φ_i = r_i x_i / Σ_j r_j x_j        θ_i = q_i x_i / Σ_j q_j x_j\n"
       + "l_i = (z/2)(r_i − q_i) − (r_i − 1)\n"
       + "ln γ_i^C = ln(φ_i/x_i) + (z/2) q_i ln(θ_i/φ_i) + l_i"
@@ -160,9 +160,9 @@ export const LC_STEPS = [
       + "ln γ_i^R = q_i [ 1 − ln( Σ_j θ_j τ_ji ) − Σ_j θ_j τ_ij / Σ_k θ_k τ_kj ]\n"
       + "τ_ij = exp[ −( a_ij + b_ij T + c_ij T² ) / T ]",
     after: "r_i and q_i are volume and surface-area parameters of the "
-      + "MOLECULE, tabulated once and reused for every pair it appears in "
+      + "molecule, tabulated once and reused for every pair it appears in "
       + "— which is the door UNIFAC walks through. The combinatorial half "
-      + "is Staverman–Guggenheim, the SAME expression the COSMO-SAC page "
+      + "is Staverman–Guggenheim, the same expression the COSMO-SAC page "
       + "derives: it is not a coincidence and not a borrowing, it is the "
       + "standard lattice answer to 'what does size alone cost?'.  Setting "
       + "c = 0 recovers the usual a + bT form; the quadratic exists so a "
@@ -245,7 +245,7 @@ export function LocalCompositionTool(): JSX.Element {
           energy, that makes the pair neutral.
         </Text>
         <Text size="sm" mt={6}>
-          In NRTL and Wilson the substituted pair, as a BINARY on its own, is
+          In NRTL and Wilson the substituted pair, as a binary on its own, is
           then <strong>exactly ideal</strong> — γ = 1, Raoult's law.  Inside a
           multicomponent mixture it is not: that pair contributes nothing,
           but both of its molecules still meet the other components, whose
@@ -256,7 +256,7 @@ export function LocalCompositionTool(): JSX.Element {
         <Text size="sm" mt={6}>
           That is a defensible choice and a dangerous one, so it is neither
           silent nor free: the run announces the pair, and if the case has not
-          AUTHORISED the substitution the engine <strong>refuses</strong>
+          authorised the substitution the engine <strong>refuses</strong>
           {" "}rather than quietly answering a different question.  A declared
           NRTL system running two of its pairs as ideal is not an NRTL answer,
           and the reader is told so beside the number.
