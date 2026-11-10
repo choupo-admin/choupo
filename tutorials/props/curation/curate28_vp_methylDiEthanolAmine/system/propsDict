@@ -103,7 +103,24 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 5.728795 - 3050.8503/(T +
+  8.0790), in-sample R2 0.998997 over 28 kept points, 409.69-738.4 K
+  (10.1021/je060269j 9/9 kept; 10.1021/je400373d 7/7 kept;
+  10.1021/je800290k 7/7 kept; 10.1021/acs.jced.8b00054 5/6 kept).
+  Relative error in P over the kept points: mean 6.2530 %, max 11.0828 %;
+  AmbroseWalton on the same points: mean 68.2614 %, max 94.8247 %.
+  Outliers discarded: 10.1021/acs.jced.8b00054 T=430.52 K P=5000 Pa
+  err=16.59 %. Its own normal boiling point (101.325 kPa): 525.00 K.
+  PROMOTED on 2026-11-10 into
+  data/standards/components/methylDiEthanolAmine.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade severe under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 4
+  studies, 28 points kept, 1 discarded as outliers; max relative error
+  11.08 % (mean 6.253 %), grade severe (limits 5 / 10 / 20 %); Tb inside
+  the kept points' range, normal boiling point 525.00 K, +4.85 K from the
+  record's Tb 520.15 K (reported, not a condition); AmbroseWalton on the
+  same points mean 68.26 % / max 94.82 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

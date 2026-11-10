@@ -2,8 +2,9 @@
   Component: nHexylAcetate  (CAS 142-92-7)
   PROPOSAL TIER -- UNVERIFIED. Imported from ChemSep v8.3
   pure-component data under Artistic License 2.0.
-  Critical constants are source data; Psat is an explicitly
-  estimated Ambrose-Walton corresponding-states closure.
+  Critical constants are source data.  Psat is an Antoine FITTED by
+  bin/choupo-curate vp to measured vapour pressures (DEV.md 4c C281;
+  provenance.vaporPressure): reviewStatus autoPromoted, NOT human-reviewed.
 \*---------------------------------------------------------------------------*/
 
 name        nHexylAcetate;
@@ -24,7 +25,11 @@ standardThermochemistry
 
 vaporPressure
 {
-    model AmbroseWalton;  // [origin=estimated method=Ambrose-Walton]
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C), FITTED by bin/choupo-curate vp to
+    // measured vapour pressures -- see provenance.vaporPressure
+    coefficients  (4.797190301  1877.497126  -51.17236648);
+    Trange        (274.5  439.98);   // the fit's own span; outside it the engine announces the extrapolation
 }
 
 Vliq        0.000165938;      // m3/mol at 25 C  [ChemSep eqno 105]
@@ -137,10 +142,57 @@ provenance
     }
     vaporPressure
     {
-        origin        predictive;
-        method        "Ambrose-Walton corresponding states";
-        methodVersion "choupo-aw-1989";
-        uncertainty   "not quantified; validate against saturation data";
-        notes         "computed from ChemSep Tc/Pc/omega";
+        origin        fitted;
+        method        "vaporPressureFit (three-parameter Antoine; objective twoStage: least squares in log10 P, then the largest relative error in P minimised from it; every usable study fitted, outliers above 15 % discarded by name)";
+        methodVersion "choupoProps Choupo-dev";
+        fittedInCase  "tutorials/props/curation/curate33_vp_nHexylAcetate";
+        reviewStatus  autoPromoted;
+        humanReviewed false;
+        fitGrade      warning;   // DEV.md 4c C285: the worse of the grades below
+        fitGradeMaxRelativeError_pct 3.297328;   // grade clean
+        fitGradeBoilingPointGap_K    -1.6364;   // grade warning (Tb outside the kept points' range)
+        promotedBy    "bin/choupo-curate vp --promote";
+        promotedDate  "2026-11-10";
+        reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+        uncertainty   "the fit's maximum relative error over every kept measurement, below";
+        replaces      "model AmbroseWalton (a corresponding-states estimate from Tc, Pc, omega); `bin/choupo-curate revert <component>` restores it";
+        evidence
+        (
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/nHexylAcetate-vapourPressure-je050141m.dat";
+                doi       "10.1021/je050141m";
+                sha256    "227d04e5329db370740f9a5a9af2b8ff0ea610efb10f745afafa2ce17e9e3b26";
+                articleSha256 "99044e3dea8c42c7fae56f37eca05732279ba72064540df1310a541562d21c46";
+                pointsKept    14;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/nHexylAcetate-vapourPressure-j.jct.2005.08.003.dat";
+                doi       "10.1016/j.jct.2005.08.003";
+                sha256    "d31c8b4f118530d49fac4b38b1c63f3f41d5bc014540b987a10ca989439ac971";
+                articleSha256 "1eec2ea342589c529ad39737b4111c9d660b04a0f2e44bda099823839bb5a3ec";
+                pointsKept    13;
+                pointsDropped 0;
+                provenance measured;
+            }
+        );
+        acceptance
+        {
+            rule        "the default of DEV.md 4c C285 (graded): max relative error in P over the kept points 5 / 10 / 20 %, and |Tnb - Tb| 1 / 2 / 4 K where Tb lies outside their range, are the upper limits of clean / warning / severe; above, refused; the grade is the worse of the two";
+            verdict     accepted;
+            studies     2;
+            pointsKept  27;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     1.708234;   // the fitted Antoine, every kept point
+            max_pct     3.297328;
+            awAad_pct   19.563627;   // the AmbroseWalton curve it replaces, the same points
+            awMax_pct   43.586204;
+            Tnb_fit     443.0136;   // K, the fitted curve at 101.325 kPa
+        }
     }
 }

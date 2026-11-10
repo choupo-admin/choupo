@@ -101,7 +101,22 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 5.412086 - 2028.3357/(T +
+  -56.3502), in-sample R2 0.999931 over 39 kept points, 274.9-451.1 K
+  (10.1021/je049761y 16/16 kept; 10.1021/je101259r 16/16 kept;
+  10.1021/je400373d 7/7 kept). Relative error in P over the kept points:
+  mean 2.2087 %, max 4.3596 %; AmbroseWalton on the same points: mean
+  8.2726 %, max 18.6719 %. Outliers discarded: none. Its own normal
+  boiling point (101.325 kPa): 431.53 K. PROMOTED on 2026-11-10 into
+  data/standards/components/methylethanolamine.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade clean under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 3
+  studies, 39 points kept, 0 discarded as outliers; max relative error
+  4.36 % (mean 2.209 %), grade clean (limits 5 / 10 / 20 %); Tb inside
+  the kept points' range, normal boiling point 431.53 K, -0.86 K from the
+  record's Tb 432.388 K (reported, not a condition); AmbroseWalton on the
+  same points mean 8.273 % / max 18.67 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

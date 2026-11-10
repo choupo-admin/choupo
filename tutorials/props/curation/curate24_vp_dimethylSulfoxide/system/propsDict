@@ -110,7 +110,22 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 4.693650 - 1946.0170/(T +
+  -48.5201), in-sample R2 0.999995 over 49 kept points, 293.15-463.45 K
+  (10.1016/j.fluid.2011.02.002 21/21 kept; 10.1021/je400531a 19/19 kept;
+  10.1016/j.jct.2018.04.014 9/9 kept). Relative error in P over the kept
+  points: mean 0.5975 %, max 0.7943 %; AmbroseWalton on the same points:
+  mean 21.3045 %, max 35.9060 %. Outliers discarded: none. Its own normal
+  boiling point (101.325 kPa): 463.63 K. PROMOTED on 2026-11-10 into
+  data/standards/components/dimethylSulfoxide.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade clean under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 3
+  studies, 49 points kept, 0 discarded as outliers; max relative error
+  0.7943 % (mean 0.5975 %), grade clean (limits 5 / 10 / 20 %); Tb inside
+  the kept points' range, normal boiling point 463.63 K, +1.48 K from the
+  record's Tb 462.15 K (reported, not a condition); AmbroseWalton on the
+  same points mean 21.3 % / max 35.91 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

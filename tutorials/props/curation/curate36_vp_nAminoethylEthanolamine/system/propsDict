@@ -80,7 +80,21 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 6.274747 - 3062.5355/(T +
+  -30.3642), in-sample R2 0.999411 over 33 kept points, 323.2-374.2 K
+  (10.1021/je2002489 33/33 kept). Relative error in P over the kept
+  points: mean 2.2635 %, max 4.4704 %; AmbroseWalton on the same points:
+  mean 68.6798 %, max 79.7274 %. Outliers discarded: none. Its own normal
+  boiling point (101.325 kPa): 518.88 K. PROMOTED on 2026-11-10 into
+  data/standards/components/nAminoethylEthanolamine.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade warning under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 1
+  studies, 33 points kept, 0 discarded as outliers; max relative error
+  4.47 % (mean 2.264 %), grade clean (limits 5 / 10 / 20 %); Tb outside
+  the kept points' range, normal boiling point 518.88 K, +1.88 K from the
+  record's Tb 517 K, grade warning (limits 1 / 2 / 4 K); AmbroseWalton on
+  the same points mean 68.68 % / max 79.73 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

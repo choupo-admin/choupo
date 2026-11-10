@@ -148,6 +148,8 @@ provenance
         fittedInCase  "tutorials/props/curation/curate22_vp_diNButylEther";
         reviewStatus  autoPromoted;
         humanReviewed false;
+        fitGrade      clean;   // DEV.md 4c C285: the worse of the grades below
+        fitGradeMaxRelativeError_pct 3.993426;   // grade clean
         promotedBy    "bin/choupo-curate vp --promote";
         promotedDate  "2026-11-10";
         reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
@@ -199,7 +201,7 @@ provenance
         );
         acceptance
         {
-            rule        "the default of DEV.md 4c C283: max relative error in P over the kept points <= 5 %; Tnb within 1 K of Tb where Tb lies outside their range";
+            rule        "the default of DEV.md 4c C285 (graded): max relative error in P over the kept points 5 / 10 / 20 %, and |Tnb - Tb| 1 / 2 / 4 K where Tb lies outside their range, are the upper limits of clean / warning / severe; above, refused; the grade is the worse of the two";
             verdict     accepted;
             studies     4;
             pointsKept  57;

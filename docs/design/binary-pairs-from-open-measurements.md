@@ -790,3 +790,57 @@ max |dT| < 1 K) would flip curate19 (ethanol + isooctane, held-out max
 (3.19 K) stay not; curate04-13 pin no held-out maximum, so their move is
 unmeasured until each case is run.  A two-liquid pair's composition side
 (5 % relative) is also unmeasured.
+
+### 10.1 The acceptance is graded (2026-11-10, DEV.md 4c C285)
+
+Vitor, on the nine curves above 5 %: "mete mesmo as que estao acima de 5%.
+Mas acima de 5% - 10% mete um warning, e entre 10 a 20% poe um warning mais
+severo. Acima de 20% descarta".  The pass/fail threshold of section 10 item 3
+became FOUR grades.  On the max relative P error over the kept points: up to
+5 % `clean`, up to 10 % `warning`, up to 20 % `severe`, above `refused`; where
+the record's Tb lies outside the kept range, on |Tnb - Tb| (stated default,
+same factors): up to 1 K `clean`, 2 K `warning`, 4 K `severe`, above
+`refused`.  The fit's grade is the worse of the two, and every grade but
+`refused` is promoted.  Everything else in C283 stands (all laboratories,
+outliers above 15 % discarded by name, objective twoStage).
+
+**Where the grade lives.**  In the value's per-value provenance entry,
+beside `reviewStatus autoPromoted`: `fitGrade clean|warning|severe;`,
+`fitGradeMaxRelativeError_pct` and, only where the temperature criterion
+applied, `fitGradeBoilingPointGap_K` -- the numbers that decided it, so a
+reader (and the loader) never recomputes it.  The component loader
+(`src/thermo/Database.cpp`, `announceFitGrade`) is generic over the
+provenance key: a clean grade says nothing more; a warning prints `[fit-grade]
+... fitGrade warning -- the fitted curve misses some of its measurements by up
+to X %[, and places its normal boiling point Y K from the record's Tb]; it was
+accepted with a WARNING`; a severe one the same with `SEVERE` and "it is WEAK";
+both ride the AdvisoryLog once per component and value per process (caveat
+block, result JSON advisories).  A grade word the loader does not know --
+`refused` included -- refuses by name.
+
+**Result.**  The 24 cases were re-declared (`--redeclare`, each declaration
+committed before its fit, the studies required to be the ones already
+declared -- no re-partition) and re-run; no fitted number moved.  SIXTEEN are
+promoted: seven clean (the seven of C283, re-promoted with their grade),
+six warning (diEthylCarbonate 7.54 %; dimethylethanolamine 8.51 %;
+nHexylAcetate, Tb gap -1.64 K; diethanolamine -1.75 K;
+nAminoethylEthanolamine +1.88 K; squalane 9.43 %), three severe
+(diButylCarbonate, 8.82 % and -3.76 K; furfural, -2.54 K; methylDiEthanolAmine
+11.08 %).  Eight are refused, every one on the temperature criterion (glycerol
+-5.23 K, triethanolamine -6.63 K, pyrene -8.16 K, and five more than 16 K
+off).  No fit exceeded 20 %: the largest kept-point error is 12.15 %
+(triethanolamine), so the P branch of `refused` has no live witness and its
+gate arm was proved by a tightened limit instead.  The AmbroseWalton count
+falls to 32.  squalane is accepted with its Tb INSIDE the kept range (no
+temperature condition) although its curve's normal boiling point is 59 K above
+the record's Tb -- the rule as declared; the curator list shows it.
+
+Held by `check_regressed_pairs` arm (i): the grade recomputed from the kept
+points and the record's coefficients, the record's `fitGrade` and deciding
+numbers equal to it, never `refused`, and a warning or SEVERE grade voiced on
+the console and in the advisories (a clean one voicing nothing).  Sabotages,
+by hand: furfural's grade edited severe -> warning (caught: recomputed
+severe); glycerol force-promoted as severe through a patched tool (caught:
+recomputed refused, on its -5.23 K gap); the P limits tightened to 5 / 6 / 7 %
+in the gate (five records caught as refused, the P branch); the loader's line
+suppressed (caught, 18 failures: nine records, console and JSON).

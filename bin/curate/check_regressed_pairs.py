@@ -110,10 +110,16 @@ case-local one that did not earn promotion):
       coefficients, the case's datasets and the run's list of discarded
       points: the points kept and dropped, the mean and max relative P error
       of the fit and of the AmbroseWalton curve on the kept points, and
-      requires acceptance.verdict `accepted`, max <= the acceptance (5 %
-      unless the case's system/curationDict declares another with a reason),
-      the normal boiling point within the acceptance's temperature error
-      where Tb lies outside the kept range, Trange = the kept span, the
+      requires acceptance.verdict `accepted`; under DEV.md 4c C285 it GRADES
+      the fit (max relative P error 5 / 10 / 20 %, and |Tnb - Tb| 1 / 2 / 4 K
+      where Tb lies outside the kept range, the limits of clean / warning /
+      severe, the worse of the two; a case's system/curationDict may declare
+      others with a reason) and requires the record's `fitGrade` to be that
+      grade, never `refused`, with `fitGradeMaxRelativeError_pct` and (only
+      where the temperature criterion applies) `fitGradeBoilingPointGap_K`
+      equal to the recomputed numbers, and a warning or severe grade VOICED by
+      the loader (`[fit-grade] ... fitGrade warning|SEVERE` on the console and
+      in the advisories; a clean grade voices nothing); Trange = the kept span, the
       evidence (role, DOI, extract sha256) equal to the case's
       archiveDatasets, `outliers { maxRelativeError 15 percent; }` declared,
       and the objective twoStage in the case, the run and the record's
@@ -656,9 +662,20 @@ def AW_ARGS(rec_text):
     return (num(t, "Tc"), num(t, "Pc") * 1e5, num(t, "omega"))
 
 
-VP_FLOOR = 7      # promoted at C281 step 3 under DEV.md 4c C283 (step 2's
-                  # nHexylAcetate reverted): a
-                  # collapsed scan surface must not read as a clean catalogue
+VP_FLOOR = 16     # promoted under DEV.md 4c C285's graded acceptance (7 clean,
+                  # 6 warning, 3 severe; seven were promoted at C281 step 3
+                  # under C283): a collapsed scan surface must not read as a
+                  # clean catalogue
+VP_GRADES = ("clean", "warning", "severe", "refused")
+VP_LIMITS_P = (5.0, 10.0, 20.0)   # %, upper limits of clean / warning / severe (C285)
+VP_LIMITS_T = (1.0, 2.0, 4.0)     # K, the same factors (C285's stated default)
+
+
+def vp_grade(x, limits):
+    for g, lim in zip(VP_GRADES, limits):
+        if x <= lim:
+            return g
+    return VP_GRADES[-1]
 VP_OBJECTIVE = "twoStage"   # C281 step 3: the declared objective of every regression
 
 
@@ -694,6 +711,9 @@ def vp_facts(text):
         "aad_pct": num(val, "aad_pct"), "max_pct": num(val, "max_pct"),
         "awAad_pct": num(val, "awAad_pct"), "awMax_pct": num(val, "awMax_pct"),
         "Tnb_fit": num(val, "Tnb_fit"),
+        "fitGrade": word(ent, "fitGrade"),
+        "gradeMax": num(ent, "fitGradeMaxRelativeError_pct"),
+        "gradeGap": num(ent, "fitGradeBoilingPointGap_K"),
     }
 
 
@@ -838,27 +858,52 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
                              "recomputed from its case")
         if (rf["dropped"] or "none") != (cu.get("outliersDropped") or "none"):
             fails.append(f"{tag}: the record's discarded points differ from its case's run")
-        acc_max, acc_T = 5.0, 1.0
+        #  THE GRADE (DEV.md 4c C285).  Recomputed from the kept points: the
+        #  max relative P error graded by the acceptance's three limits, the
+        #  normal-boiling-point gap graded where Tb lies outside the kept
+        #  range, the worse of the two; the record must carry that grade and
+        #  the numbers that decided it, a refused fit is never in the catalogue.
+        lim_P, lim_T = VP_LIMITS_P, VP_LIMITS_T
         cdict = case / "system" / "curationDict"
         if cdict.exists():
             ct = strip_comments(cdict.read_text())
-            mr = re.search(r"maxRelativeError\s+([0-9.eE+-]+)\s+percent", ct)
-            mt = re.search(r"maxTemperatureError\s+([0-9.eE+-]+)\s+K", ct)
+            three = r"\(\s*([0-9.eE+-]+)\s+([0-9.eE+-]+)\s+([0-9.eE+-]+)\s*\)"
+            mr = re.search(r"maxRelativeError\s*%s\s+percent" % three, ct)
+            mt = re.search(r"maxTemperatureError\s*%s\s+K" % three, ct)
             if not (mr and mt and re.search(r'reason\s+"[^"]+"', ct)):
-                fails.append(f"{tag}: system/curationDict declares no complete acceptance "
-                             "with a reason")
+                fails.append(f"{tag}: system/curationDict declares no complete graded "
+                             "acceptance with a reason")
             else:
-                acc_max, acc_T = float(mr.group(1)), float(mt.group(1))
-        if not 100.0 * max(rel) <= acc_max:
-            fails.append(f"{tag}: max relative error {100.0 * max(rel):.4g} % over the kept "
-                         f"points exceeds the acceptance {acc_max:g} % -- promoted anyway")
+                lim_P = tuple(float(x) for x in mr.groups())
+                lim_T = tuple(float(x) for x in mt.groups())
+        maxP = 100.0 * max(rel)
+        gP = vp_grade(maxP, lim_P)
         Tb = num(strip_comments(text), "Tb")
         Tnb = B_ / (A_ - math.log10(1.01325)) - C_
         lo, hi = min(t for t, _ in kept), max(t for t, _ in kept)
-        if Tb is not None and not (lo <= Tb <= hi) and not abs(Tnb - Tb) < acc_T:
-            fails.append(f"{tag}: Tb {Tb} K lies outside the kept points' range and the fit's "
-                         f"normal boiling point {Tnb:.3f} K misses it by {Tnb - Tb:+.3f} K "
-                         f"(acceptance {acc_T:g} K) -- promoted anyway")
+        t_applies = Tb is not None and not (lo <= Tb <= hi)
+        gT = vp_grade(abs(Tnb - Tb), lim_T) if t_applies else "clean"
+        grade = gP if VP_GRADES.index(gP) >= VP_GRADES.index(gT) else gT
+        if grade == "refused":
+            fails.append(f"{tag}: recomputed grade REFUSED (max {maxP:.4g} %, grade {gP}; "
+                         + (f"Tnb - Tb {Tnb - Tb:+.3f} K, grade {gT}" if t_applies
+                            else "Tb inside the kept range")
+                         + ") -- promoted anyway")
+        if rf["fitGrade"] != grade:
+            fails.append(f"{tag}: provenance.vaporPressure.fitGrade `{rf['fitGrade']}`, "
+                         f"recomputed `{grade}` (max {maxP:.4g} % -> {gP}"
+                         + (f"; Tnb - Tb {Tnb - Tb:+.3f} K -> {gT}" if t_applies else "")
+                         + ")")
+        if rf["gradeMax"] is None or not close(rf["gradeMax"], maxP, rel=1e-5):
+            fails.append(f"{tag}: fitGradeMaxRelativeError_pct = {rf['gradeMax']}, "
+                         f"recomputed {maxP:.6g}")
+        if t_applies and (rf["gradeGap"] is None
+                          or not close(rf["gradeGap"], Tnb - Tb, rel=1e-3, abs_=1e-3)):
+            fails.append(f"{tag}: fitGradeBoilingPointGap_K = {rf['gradeGap']}, recomputed "
+                         f"{Tnb - Tb:.4f} (Tb outside the kept range)")
+        if not t_applies and rf["gradeGap"] is not None:
+            fails.append(f"{tag}: fitGradeBoilingPointGap_K declared, but Tb is inside the "
+                         "kept range (or undeclared) and no temperature criterion applies")
         if not close(rf["Trange"][0], lo) or not close(rf["Trange"][1], hi):
             fails.append(f"{tag}: Trange {rf['Trange']} is not the kept points' span "
                          f"({lo}, {hi})")
@@ -899,6 +944,24 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
                          f"published {run_m!r}, the record names {rec_m!r}; a "
                          f"catalogue vapour pressure is the `{VP_OBJECTIVE}` fit its "
                          "case declares (C281 step 3)")
+        #  THE GRADE IS VOICED (C285): a warning or a severe grade prints its
+        #  [fit-grade] line with its severity word and rides the advisories; a
+        #  clean grade says nothing more.
+        gword = {"warning": "warning", "severe": "SEVERE"}.get(rf["fitGrade"])
+        gsaid = f"[fit-grade] component '{comp}': `vaporPressure` fitGrade "
+        gadv = [a for a in (js or {}).get("advisories", [])
+                if a.get("locus") == f"component '{comp}'"
+                and "fitGrade" in a.get("message", "")]
+        if gword:
+            if gsaid + gword not in out:
+                fails.append(f"{tag}: fitGrade {rf['fitGrade']} and its case printed no "
+                             f"`{gsaid}{gword}` line -- the engine does not voice it")
+            if not any(f"fitGrade {gword}" in a.get("message", "") for a in gadv):
+                fails.append(f"{tag}: the fitGrade {gword} line is not in the result JSON "
+                             "advisories (the end-of-run caveat block)")
+        elif gsaid in out or gadv:
+            fails.append(f"{tag}: fitGrade {rf['fitGrade']!r} and the engine voiced a grade "
+                         "-- a clean fit says nothing more")
         said = f"[unreviewed] component '{comp}': `vaporPressure` reviewStatus autoPromoted"
         if said not in out:
             fails.append(f"{tag}: marked autoPromoted and its case printed no "
@@ -910,7 +973,11 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
             fails.append(f"{tag}: the autoPromoted status is not in the result JSON "
                          "advisories (the end-of-run caveat block)")
         done.append(comp)
+        VP_GRADE_COUNT[rf["fitGrade"]] = VP_GRADE_COUNT.get(rf["fitGrade"], 0) + 1
     return done
+
+
+VP_GRADE_COUNT = {}
 
 
 def main():
@@ -1055,6 +1122,7 @@ def main():
                      else "case-local in " + rec_path.parents[3].name)
             checked.append(f"{rec_path.stem} ({where}, {rf['verdict']})")
         vp_done = check_vapour_pressures(tmp, fails, not_run, fetched)
+        vp_grades = ", ".join(f"{VP_GRADE_COUNT.get(g, 0)} {g}" for g in VP_GRADES[:3])
         span_held = check_span_announcement(tmp, fails)
         ll_held = check_ll_arm(tmp, fails)
     finally:
@@ -1089,10 +1157,11 @@ def main():
           "by name and passed the right one (arm f, amended); "
           f"{len(vp_done)} catalogue vapour pressure(s) regressed by `choupo-curate vp` "
           f"({', '.join(vp_done) or 'none'}) reproduced by their cases -- Antoine "
-          "coefficients under the declared twoStage objective, the C283 acceptance recomputed on the kept points "
-          "(max <= 5 %, both curves' errors, discarded points, Tb), Trange = the kept span, evidence -- "
-          "autoPromoted with humanReviewed false and voiced by the component "
-          "loader into the caveat block (arm i); "
+          "coefficients under the declared twoStage objective, both curves' errors and the "
+          "discarded points recomputed on the kept points, the C285 fitGrade recomputed "
+          f"({vp_grades}; none refused) with its deciding numbers, Trange = the kept span, "
+          "evidence -- autoPromoted with humanReviewed false, and a warning or SEVERE "
+          "grade voiced by the component loader into the caveat block (arm i); "
           f"{span_held} water pair(s) used BELOW their span announce it once "
           "per run, into the caveat block, say nothing inside it, and publish "
           "the same gammas as a span-less inline twin (arm g).  NOT "
