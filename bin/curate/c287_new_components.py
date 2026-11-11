@@ -364,6 +364,28 @@ IUPAC = {
     "nButylButanoate":       {"Tc": (612.1, 1.0, "P7")},
     "ethylHexanoate":        {"Tc": (615.2, 0.1, "P12"), "Pc": (2.53, 0.02, "P12")},
     "diphenylmethane":       {"Tc": (770.0, 10.0, "P12"), "Pc": (2.9, 0.3, "P12")},
+    #  UPGRADES (C309 item 2): slice-2 (C292) records that carried Joback Tc/Pc
+    #  where the IUPAC series recommends a value.  Only Tc, Pc and the omega
+    #  derived from them change; the vapour pressure, liquid Cp and the Joback
+    #  ideal-gas/formation values stay as they were.
+    "12Butanediol":          {"Tc": (680.0, 5.0, "P7"), "Pc": (5.2, 0.5, "P7")},
+    "12Propanediol":         {"Tc": (676.4, 0.6, "P12"), "Pc": (6.0, 0.01, "P12")},
+    "1Chlorobutane":         {"Tc": (539.2, 0.5, "P10")},
+    "1Propoxy2Propanol":     {"Tc": (605.0, 1.0, "P7"), "Pc": (3.0, 0.05, "P7")},
+    "2Butoxyethanol":        {"Tc": (634.0, 1.0, "P7"), "Pc": (3.27, 0.05, "P7")},
+    "2Methoxyethanol":       {"Tc": (597.6, 0.2, "P7"), "Pc": (5.28, 0.02, "P7")},
+    "2Methyltetrahydrofuran": {"Tc": (537.0, 2.0, "P7"), "Pc": (3.76, 0.1, "P7")},
+    "2Propoxyethanol":       {"Tc": (615.0, 1.0, "P7"), "Pc": (3.65, 0.05, "P7")},
+    "3Methyl1Butanol":       {"Tc": (577.2, 0.5, "P12"), "Pc": (3.93, 0.02, "P12")},
+    "diethyleneGlycolDiethylEther": {"Tc": (612.0, 10.0, "P7")},
+    "hexafluorobenzene":     {"Tc": (516.7, 0.1, "P12"), "Pc": (3.28, 0.01, "P12")},
+    "methylButanoate":       {"Tc": (554.5, 1.0, "P7"), "Pc": (3.47, 0.05, "P7")},
+    "methylDecanoate":       {"Tc": (675.0, 7.0, "P12"), "Pc": (1.93, 0.06, "P12")},
+    "methylHeptanoate":      {"Tc": (628.0, 1.0, "P12"), "Pc": (2.53, 0.08, "P12")},
+    "methylHexanoate":       {"Tc": (612.0, 6.0, "P12"), "Pc": (2.88, 0.09, "P12")},
+    "methylOctanoate":       {"Tc": (646.0, 6.0, "P12"), "Pc": (2.34, 0.07, "P12")},
+    "tetradecanoicAcid":     {"Tc": (763.0, 8.0, "P12"), "Pc": (1.64, 0.05, "P12")},
+    "tetrahydropyran":       {"Tc": (572.0, 2.0, "P7"), "Pc": (4.77, 0.1, "P7")},
 }
 #  Zabransky et al. recommended liquid heat capacity: name -> (supplement,
 #  table, [A1, A2, ...], (Tlo, Thi), level, type, note).  Eq. 19:
@@ -1171,7 +1193,7 @@ def build(c, data, sha, provisional):
     MW = mw_of(formula)
     c309 = name in C309
     J = joback(groups)
-    lit = IUPAC.get(name, {}) if c309 else {}
+    lit = IUPAC.get(name, {})
     #  Each critical constant takes its own route (C309): the IUPAC recommended
     #  value, else the archive's measured median, else Joback (marked).
     if c309:
@@ -1179,6 +1201,9 @@ def build(c, data, sha, provisional):
         Pc_route = "iupac" if "Pc" in lit else ("thermoml" if d["Pc"] else "joback")
     else:
         Tc_route = Pc_route = ("joback" if name in ESTIMATED else "thermoml")
+        #  C309 item 2: an IUPAC recommended value replaces the Joback estimate
+        Tc_route = "iupac" if "Tc" in lit else Tc_route
+        Pc_route = "iupac" if "Pc" in lit else Pc_route
     est = Tc_route == "joback" or Pc_route == "joback"
     Tc_dois = Pc_dois = Tc_all = Pc_all = None
     if Tc_route == "iupac":
@@ -1211,7 +1236,7 @@ def build(c, data, sha, provisional):
     #  run the record carries Tb only where it is MEASURED, so a Joback estimate
     #  (several K off) never grades a fitted curve (DEV.md 4c C292).
     Tb_est = J["Tb"] if (est and Tb is None and not provisional and WRITE_ESTIMATED_TB) else None
-    repro = REPRO_CASE3 if c309 else (REPRO_CASE2 if est else REPRO_CASE)
+    repro = REPRO_CASE3 if c309 else (REPRO_CASE2 if name in ESTIMATED else REPRO_CASE)
     case, ant = fitted_antoine(name)
     if ant is None:
         if not provisional:
@@ -1356,6 +1381,20 @@ def build(c, data, sha, provisional):
         if cp_route == "rowlinsonBondi":
             lines.append("ESTIMATED (Rowlinson-Bondi, Poling 5e Eq. 6-6.4): liquid Cp -- no measurement or recommended correlation in hand")
         body = intro + "".join("  " + ln + ".\n" for ln in lines) + "  No measured series is reproduced here.\n"
+    elif lit:
+        upg = " and ".join(k for k in ("Tc", "Pc") if k in lit)
+        still = [k for k, r in (("Tc", Tc_route), ("Pc", Pc_route)) if r == "joback"]
+        body = ("  NEW in the catalogue by DEV.md 4c C292 (slice 2 of C287), built by\n"
+                f"  {TOOL} from measurements the NIST/TRC ThermoML Archive\n"
+                "  locates (the articles are the sources; their DOIs are in provenance).\n"
+                f"  UPGRADED by DEV.md 4c C309 ({today}): {upg} replaced by the IUPAC recommended\n"
+                "  value (critically evaluated measurements; citation in provenance) and omega\n"
+                "  re-derived from them; nothing else refitted.\n"
+                + ("  MEASURED: Tb.  " if Tb else "  ")
+                + "FITTED: vapour pressure (bin/choupo-curate vp), Vliq, liquid Cp.\n"
+                "  DERIVED: omega (from the fitted vapour pressure).\n"
+                f"  ESTIMATED (Joback): {''.join(s + ', ' for s in still)}ideal-gas Cp, dHf_298; s_298 derived from Joback's\n"
+                "  dHf and dGf.  No measured series is reproduced here.\n")
     else:
         body = (f"  NEW in the catalogue (DEV.md 4c {'C292, slice 2 of C287' if est else 'C287'}, {today}), built by\n"
                 f"  {TOOL} from measurements the NIST/TRC ThermoML Archive\n"
@@ -1591,6 +1630,40 @@ def write_c309_case():
     return 0
 
 
+def upgrade_record(old, new, name):
+    """C309 item 2 ("refit nothing else"): an existing record keeps every byte
+    except Tc, Pc and omega -- the three value lines and their three provenance
+    entries are taken from the freshly built text -- plus an UPGRADED note in
+    its header.  Vliq (fitted with the Joback Tc/Pc), liquid Cp, groups and
+    every later hand addition stay as they were."""
+    out = old
+    for k in ("Tc", "Pc", "omega"):
+        ln = re.compile(r"^" + k + r" .*$", re.M)
+        en = re.compile(r"\n    " + k + r"\n    \{\n.*?\n    \}\n", re.S)
+        nl, ne = ln.search(new), en.search(new)
+        if not (ln.search(out) and en.search(out) and nl and ne):
+            refuse(f"{name}: no {k} line or provenance entry to upgrade")
+        out = ln.sub(lambda _: nl.group(0), out, count=1)
+        out = en.sub(lambda _: ne.group(0), out, count=1)
+    lit = IUPAC[name]
+    upg = " and ".join(k for k in ("Tc", "Pc") if k in lit)
+    still = "".join(k + ", " for k in ("Tc", "Pc") if k not in lit)
+    note = (f"  UPGRADED by DEV.md 4c C309 ({date.today().isoformat()}): {upg} replaced by the IUPAC\n"
+            "  recommended value (critically evaluated measurements; citation in\n"
+            "  provenance) and omega re-derived from them.  Nothing else refitted: Vliq\n"
+            "  is the C292 fit, made with the Joback Tc/Pc, kept as it was.\n")
+    anchor = "  locates (the articles are the sources; their DOIs are in provenance).\n"
+    if anchor not in out:
+        refuse(f"{name}: header anchor not found")
+    out = out.replace(anchor, anchor + note, 1)
+    out = out.replace("ESTIMATED (Joback): Tc, Pc, ", f"ESTIMATED (Joback): {still}", 1)
+    out = out.replace("MEASURED: no critical constant, no Tb.",
+                      "MEASURED: no Tb (critical constants: UPGRADED above).", 1)
+    out = out.replace("(from the fitted vapour pressure at the ESTIMATED Tc)",
+                      "(from the fitted vapour pressure)", 1)
+    return out
+
+
 def main(argv):
     if argv and argv[0] == "case":
         return write_c309_case()
@@ -1629,6 +1702,8 @@ def main(argv):
                 refuse(f"{p.relative_to(ROOT)} exists and was not written by this tool")
             if "model AmbroseWalton;" not in old:
                 text = splice_promoted_vp(old, text, p)
+            if c[0] in IUPAC and c[0] not in C309:
+                text = upgrade_record(old, text, c[0])
         p.write_text(text)
         r, cp = facts["rho"], facts["cp"]
         print(f"{c[0]:<24} Tc {facts['Tc']:g} Pc {facts['Pc']:.4g} omega {facts['omega']:.4f} "
