@@ -223,7 +223,7 @@
     },
     "check_decision_index": {
       "exit": 0,
-      "claim": "check_decision_index: OK -- all 222 design record(s) appear in the index, and its stated counts (159 state a rejected alternative, 63 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed.",
+      "claim": "check_decision_index: OK -- all 223 design record(s) appear in the index, and its stated counts (160 state a rejected alternative, 63 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed.",
       "seconds": 0.0
     },
     "check_default_reports": {
@@ -749,7 +749,7 @@
     "check_problem_divergence": {
       "exit": 0,
       "claim": "check_problem_divergence: OK -- an unauthorised ideal-pair substitution refuses by name with a paste-ready remedy on all three pair models; the authorisation is read at the top level ONLY and delimits to the pairs it lists; a declared approximation reaches the human block (above the caveats), the result JSON (above the kpis) and converged/, naming the unit; silence is printed rather than implied.  NOT CHECKED: whether any authorised approximation is scientifically acceptable (the author's judgement, which is why `reason` is demanded), and any downgrade outside shortcutColumn + the three pair-parameter activity models -- those are UNCOVERED.  The NotRead branch of the authorisation is asserted UNREACHED rather than exercised: no path in this corpus produces it, which is why it announces itself as an engine defect if it ever does.  A9 covers the SECOND authorisation kind: a component the activity model cannot price at all (no UNIFAC group exists for hydrogen) refuses by name, its authorised exit rides the result with the case's own reason, the run states that gamma = 1 is not a solubility model, and an all-grouped package records nothing.",
-      "seconds": 0.3
+      "seconds": 0.4
     },
     "check_process_prose": {
       "exit": 0,
@@ -1469,7 +1469,7 @@
     "check_gates_judge_tracked": {
       "exit": 0,
       "claim": "check_gates_judge_tracked: OK -- 5 of 5 converted gates keep their verdict when an UNTRACKED file and a data/local/ file violate their rule, and 5 of 5 FAIL on the same violation once it is tracked (scratch index, the real one untouched); tracked_tree refuses by name outside a repository.  NOT checked: the ~130 other gates that walk a directory (only the converted ones were measured to differ), and gates whose subject is the private tier itself.",
-      "seconds": 43.6
+      "seconds": 63.9
     },
     "check_swro_plant": {
       "exit": 0,
