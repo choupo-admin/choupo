@@ -51,7 +51,7 @@ export interface DossierDataset {
 }
 
 export interface DossierProperty {
-  /** the case the curation ran in — `tutorials/props/curation/curate02_…` */
+  /** the case the curation ran in — `tutorials/props/curation/curate02_…` or `data/curation/pairs/<a>-<b>` */
   casePath: string;
   /** the case's own folder name, for a compact row */
   caseName: string;
@@ -70,7 +70,19 @@ export interface DossierProperty {
   acceptanceOrigin: string;
 }
 
-const RAW = import.meta.glob("../../../tutorials/**/curation/*.dossier", {
+//  Two homes (DEV.md 4c C295): the hand-written lessons keep theirs under
+//  `tutorials/**/curation/`; the GENERATED curation cases live in
+//  `data/curation/{pairs,components,batches}/<name>/curation/`.  Only the
+//  `.dossier` files are matched, and the negatives lock run outputs out of
+//  the bundle as `tutorials.ts` does for the case files.
+const RAW = import.meta.glob([
+  "../../../tutorials/**/curation/*.dossier",
+  "../../../data/curation/**/curation/*.dossier",
+  "!../../../data/curation/**/reports/**",
+  "!../../../data/curation/**/converged/**",
+  "!../../../data/curation/**/log.*",
+  "!../../../data/curation/**/*.csv",
+], {
   query: "?raw",
   import: "default",
   eager: true,
@@ -163,8 +175,10 @@ function index(): Map<string, DossierProperty[]> {
   const m = new Map<string, DossierProperty[]>();
   for (const [path, raw] of Object.entries(RAW)) {
     //  `.../tutorials/props/curation/curate02_x/curation/ethanol.dossier`
-    //  -> the case is everything above the `curation/` directory.
-    const casePath = path.replace(/^.*?tutorials\//, "tutorials/")
+    //  or `.../data/curation/pairs/a-b/curation/b.dossier`
+    //  -> the case is everything above the `curation/` directory, shown
+    //  with its real repository path.
+    const casePath = path.replace(/^.*?(tutorials|data\/curation)\//, (_m, h) => `${h}/`)
                          .replace(/\/curation\/[^/]+$/, "");
     for (const d of readDossier(raw, casePath)) {
       const list = m.get(d.component) ?? [];
