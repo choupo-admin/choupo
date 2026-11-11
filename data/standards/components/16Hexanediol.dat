@@ -61,11 +61,18 @@ liquidHeatCapacity
 
 groups
 {
+    unifac ( { group CH2; count 6; } { group OH; count 2; } );
     joback ( { group CH2; count 6; } { group OH; count 2; } );
 }
 
 provenance
 {
+    groups
+    {
+        origin       definition;
+        method       "unifac: the original UNIFAC subgroups assigned from the structure HO(CH2)6OH; atom count of the decomposition equals the formula C6H14O2 (checked when written, 2026-11-11) and agrees with the unifac_choupo column of data/groupEstimative/compounds.csv";
+        citation     "subgroup definitions of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat";
+    }
     MW
     {
         origin        literature;

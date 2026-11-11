@@ -63,11 +63,18 @@ liquidHeatCapacity
 
 groups
 {
+    unifac ( { group CH3; count 2; } { group CH2; count 7; } { group CH2O; count 3; } );
     joback ( { group CH3; count 2; } { group CH2; count 10; } { group ether; count 3; } );
 }
 
 provenance
 {
+    groups
+    {
+        origin       definition;
+        method       "unifac: the original UNIFAC subgroups assigned from the structure C4H9-O-CH2CH2-O-CH2CH2-O-C4H9; three ethers on CH2O; atom count of the decomposition equals the formula C12H26O3 (checked when written, 2026-11-11) and agrees with the unifac_choupo column of data/groupEstimative/compounds.csv";
+        citation     "subgroup definitions of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat";
+    }
     MW
     {
         origin        literature;
