@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/cyclohexane-tertButylEthylEther.dat"
         {
             type          imported;
-            sha256        "ea5c9be4a3492365e5bb2e0b4662e49440733f050bbcfb70a50f981ac898232c";
-            computationalSha256 "d8d5d2aec94fb8e79235c0e4798038626f61e1305abfaee1a4d41fe69726a252";
+            sha256        "a58e4f77c689192fa5170a0b5b29217b0ba9ffc90bc33e1ebd5eb970c8fd6426";
+            computationalSha256 "1eb71dd70dbd353132a06891d5ffc82bada3f6bb88c7cee64fc07154351e30d1";
             origin        "data/standards/parameters/NRTL/cyclohexane-tertButylEthylEther.dat";
-            originSha256  "03d9ffe464e28b07ebbb2ad92b9f1de695616f0e4e754b809fcf87644d85174c";
+            originSha256  "b2fabc40ba03017f81e1ad7060fb1b13255ceb809a605f5ce30e0327f7d50e5a";
             release       Choupo-2608;
         }
     }

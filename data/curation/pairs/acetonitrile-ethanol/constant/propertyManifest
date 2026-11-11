@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/acetonitrile-ethanol.dat"
         {
             type          imported;
-            sha256        "25b1c7ebcf4742db2609735ccffd9e2a7fe726dbc56e82c0259b85accf4695c9";
-            computationalSha256 "9d66217592f5711cd29e44c8becd75ad4048857685fa38e102cd4ee3779ae43d";
+            sha256        "0d4b7b58a40490da89d5bcce66d16945f84b4025e63349b111a5d5e557f4a148";
+            computationalSha256 "0cd69ede7d4bd42de3ebed1712f9e496022fc1f610476e9e3e7fc5c7b4b79700";
             origin        "data/standards/parameters/NRTL/acetonitrile-ethanol.dat";
-            originSha256  "5affc64d681043cb1f9e56bb538c4498d2b8f50a198a673ba03346fb890d1331";
+            originSha256  "ff70c7c021ffb9f7dc336108f7448db1fba6a44dad4c3373740d1d5d9ef0c341";
             release       Choupo-2608;
         }
     }

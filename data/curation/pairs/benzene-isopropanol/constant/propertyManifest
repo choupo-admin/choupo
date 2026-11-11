@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/benzene-isopropanol.dat"
         {
             type          imported;
-            sha256        "db7ee5f879c1d16878707ed3daabd6dc6c33121096c465430dde7e84d3bc03b3";
-            computationalSha256 "5eda175d5190e8d6f427f30ad6ee8dc3cc882721084306108937b97bb67a10e4";
+            sha256        "cb88ba44dd94c53b979252e3301e346073084b76e33abb165e9593e339b003f5";
+            computationalSha256 "e762c651a51fa564c5c08db5221d88a9e03c069137ee1c431c1eff9a3a72fce7";
             origin        "data/standards/parameters/NRTL/benzene-isopropanol.dat";
-            originSha256  "bd9a20e97a2a8f852154ea736e653381e6d32c654eb86b06bf2d32d730f85f32";
+            originSha256  "188c6c416a4724a9f560778fe386e2a412ff84d1654414dcfe7c9681721e6294";
             release       Choupo-2608;
         }
     }

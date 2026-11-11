@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/1Propanol-benzene.dat"
         {
             type          imported;
-            sha256        "ad99e8cf7667bb6a51093153e71e72c24c131bc4d103c1d3c05b8edee5f67f6f";
-            computationalSha256 "ee233623136cbcbade59e6dbe5f629ed54c92071bfa9aa389cd8cc8e6378da8a";
+            sha256        "30846a98e48f618e280f6ee529cd8fbaf6c63ebf5a31e1fa2d552ef442bfe735";
+            computationalSha256 "563694f9f9b1010ac2e413784eec7dd7cf991e2ef8cb7eb2a15973b2353a0514";
             origin        "data/standards/parameters/NRTL/1Propanol-benzene.dat";
-            originSha256  "56a0365e223f8c3aa1e3cb2f0c03169ca19da4611c3da76db27b04499c453e78";
+            originSha256  "9f594c2899cfe5a9957b76ea6feedbc8705a8f2dfc92c11eaa4b75e86fa40c45";
             release       Choupo-2608;
         }
     }

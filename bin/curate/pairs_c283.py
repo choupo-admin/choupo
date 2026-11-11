@@ -128,6 +128,56 @@ class Refused(Exception):
     pass
 
 
+#  DEV.md 4c C300 rules 1 and 2 (2026-11-11), ONE home for both pair tools
+#  (pairs_px imports this module) and for the gate that recomputes them
+#  (bin/curate/check_regressed_pairs.py).  Rule 1: every grade is the fit
+#  reproducing the very points it was fitted to, and the record says so
+#  (`fitGradeBasis inSample;`).  Rule 2: `clean` needs evidence able to
+#  contradict it -- at least two temperatures AND at least two laboratories,
+#  or a held-out set that itself grades clean; otherwise the grade is CAPPED
+#  at `warning` and the record names why (`fitGradeCap ( ... );`).  The
+#  curation block keeps the in-sample grade the residual earned (`grade`);
+#  the provenance carries the grade the catalogue applies (`fitGrade`).
+CAP_WORDS = ("singleTemperature", "singleLaboratory")
+#  C300 rule 4: a tool writes who reviewed the record, and today that is nobody.
+REVIEW_NONE = cc.REVIEW_NONE   # one wording, in bin/choupo-curate
+BASIS_LINE = "    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to\n"
+
+
+def cap_grade(grade, n_temperatures, n_laboratories, heldout_clean=False):
+    """(grade the catalogue applies, [cap words]) -- C300 rule 2.  Only an
+    in-sample `clean` is capped; a warning or severe stands as it is."""
+    if grade != "clean" or heldout_clean:
+        return grade, []
+    caps = [w for w, n in zip(CAP_WORDS, (n_temperatures, n_laboratories)) if n < 2]
+    return ("warning" if caps else grade), caps
+
+
+def cap_line(caps):
+    """The provenance line naming the cap, or "" when nothing was capped."""
+    if not caps:
+        return ""
+    return (f"    fitGradeCap   ( {' '.join(caps)} );   // DEV.md 4c C300 rule 2: in-sample "
+            "clean, capped -- nothing held out could have contradicted it\n")
+
+
+def tx_evidence_counts(case):
+    """(distinct temperatures, distinct laboratories) of the KEPT bubble-
+    temperature points of a C283 case: a study whose every row the case
+    discards is evidence that was looked at, not evidence the pair rests on.
+    Needs the extracts (`bin/choupo-curate fetch`)."""
+    disc = declared_discards(case)
+    doi = {Path(s["file"]).name: s["doi"] for s in cc.parse_decl(case) or []}
+    temps, labs = set(), set()
+    for f in evidence_files(case):
+        ds = cc.read_dataset(case / cc.EXTRACTS / f)
+        kept = [T for r, T in enumerate(ds["T"], 1) if r not in disc.get(f, [])]
+        if kept:
+            labs.add(doi.get(f, f))
+            temps.update(round(T, 2) for T in kept)
+    return len(temps), len(labs)
+
+
 def refuse(msg):
     raise Refused(msg)
 
@@ -862,20 +912,27 @@ def run(case, pl, commit):
 # --------------------------------------------------------------------------
 def promoted_text(text, case, stem, i, j):
     """The catalogue form of an accepted case-local record: autoPromoted,
-    humanReviewed false, and -- under the graded acceptance -- the grade and
-    the number that decided it in the record's provenance (DEV.md 4c C286)."""
+    `review { by none; }` (C300 rule 4: no `humanReviewed`), and -- under the
+    graded acceptance -- the grade, its basis (in-sample, C300 rule 1), the
+    cap rule 2 applies and the number that decided it in the record's
+    provenance (DEV.md 4c C286, C300)."""
     case_rel = case.relative_to(ROOT).as_posix()
     cur = crp.block(crp.strip_comments(text), "curation") or ""
     grade = crp.word(cur, "grade")
     mx = crp.num(cur, "maxAbsError")
+    applied, caps = grade, []
     if grade:
         if grade not in GRADES[:3]:
             refuse(f"{stem}: curation grade `{grade}` -- a refused fit is not promoted")
+        nT, nL = tx_evidence_counts(case)
+        applied, caps = cap_grade(grade, nT, nL)
         rule_txt = (f"  its fitting pipeline (every laboratory fitted, outliers beyond 3 K\n"
                     f"  discarded by name, max |T_model - T| over the kept points GRADED\n"
                     f"  clean / warning / severe at {GRADE_K[0]:g} / {GRADE_K[1]:g} / "
                     f"{GRADE_K[2]:g} K -- DEV.md 4c C283\n"
-                    f"  amended, C285, C286; THIS fit: {grade}, {mx:.4f} K; one liquid\n"
+                    f"  amended, C285, C286; THIS fit: {grade} in-sample, {mx:.4f} K"
+                    + (f", CAPPED at {applied} by C300 ({' and '.join(caps)})" if caps else "")
+                    + "; one liquid\n"
                     "  across its validity span), and NO HUMAN HAS REVIEWED IT.  The\n"
                     "  engine says so on every run that reads it, and voices a warning\n"
                     "  or a severe grade beside it.\n")
@@ -886,22 +943,24 @@ def promoted_text(text, case, stem, i, j):
                     "  HUMAN HAS REVIEWED IT.  The engine says so on every run that reads it.\n")
     hdr = cc.record_header(
         stem, i, j, case_rel,
-        "reviewStatus autoPromoted; humanReviewed false: PROMOTED AUTOMATICALLY by\n"
+        "reviewStatus autoPromoted; review { by none; }: PROMOTED AUTOMATICALLY by\n"
         + rule_txt +
         "  Nothing was held out: the `validation {}` block says so, and the\n"
         "  acceptance is the `curation {}` block.  A curator who reads the series\n"
-        "  back against the articles marks it `reviewStatus reviewed; humanReviewed\n"
-        f"  true;`.  Revert with `bin/choupo-curate revert {stem}`.")
+        "  back against the articles records it in the `review {}` block (by,\n"
+        "  reviewer, date, checked, verdict; DEV.md 4c C297).  Revert with\n"
+        f"  `bin/choupo-curate revert {stem}`.")
     hdr = hdr.replace("The two articles named under `evidence` are the",
                       "The articles named under `evidence` are the")
     body = cc.body_of(text)
     gl = ""
     if grade:
-        gl = (f"    fitGrade      {grade};   // DEV.md 4c C285 (C286): max |T_model - T| over "
+        gl = (f"    fitGrade      {applied};   // DEV.md 4c C285 (C286): max |T_model - T| over "
               f"the kept points, graded {GRADE_K[0]:g} / {GRADE_K[1]:g} / {GRADE_K[2]:g} K\n"
+              + BASIS_LINE + cap_line(caps) +
               f"    fitGradeMaxTemperatureError_K {mx:.4f};\n")
     body = re.sub(r"(\n    reviewStatus\s+)interim;",
-                  r"\1autoPromoted;\n    humanReviewed false;\n"
+                  r"\1autoPromoted;\n" + REVIEW_NONE
                   + gl.replace("\\", "\\\\") +
                   f'    promotedBy    "{cc.PROMOTED_BY}";\n'
                   f'    promotedDate  "{date.today().isoformat()}";', body, count=1)
@@ -949,10 +1008,11 @@ def promote(a, b):
     cc.mark_result(case, "PROMOTABLE by `bin/choupo-curate pair ... --promote`:",
                    f"PROMOTED on {date.today().isoformat()} into "
                    f"{dest.relative_to(ROOT).as_posix()} as reviewStatus autoPromoted, "
-                   "humanReviewed false, because:")
+                   "review by none, because:")
+    pv = crp.block(crp.strip_comments(dest.read_text()), "provenance") or ""
     cc.say(f"choupo-curate: PROMOTED {dest.relative_to(ROOT)} (autoPromoted, "
-           "humanReviewed false" + (f", fitGrade {crp.word(cur, 'grade')}"
-                                    if crp.word(cur, "grade") else "") + ")")
+           "review by none" + (f", fitGrade {crp.word(pv, 'fitGrade')}"
+                               if crp.word(pv, "fitGrade") else "") + ")")
     return 0
 
 

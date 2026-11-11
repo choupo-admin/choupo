@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/ethanol-nNDimethylacetamide.dat"
         {
             type          imported;
-            sha256        "96e305b0e257fd5c0a5958b60aa408b1e8a80485d50093ae2ae570704aff3cb9";
-            computationalSha256 "d350b7d79fbf77098f0cf7986992cbdfdd39895e1c878296e74f4c32256b7161";
+            sha256        "f5c05714f279250180f69656119f05502624c08e2ce19731f95e91c27252ce79";
+            computationalSha256 "b41883d96c25c4749130a09c44de43018893655d7ab8025e251c447534104431";
             origin        "data/standards/parameters/NRTL/ethanol-nNDimethylacetamide.dat";
-            originSha256  "efbec3a2b5cf963b43e8f1155b549c9b5cc5e7e26f2fce7366206e2fbc855bdb";
+            originSha256  "974cf93318c9428556485dcb37efe2ca9c5c537336c946fc46484082d1e512d4";
             release       Choupo-2608;
         }
     }

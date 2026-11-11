@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/dimethylCarbonate-pXylene.dat"
         {
             type          imported;
-            sha256        "86e1df8c7e061059322c61de304e10e072372d0ee43816d0cc0b0e2b54980303";
-            computationalSha256 "5b59e480e9f7ef5c6641ec851a275fc82bde4737bb39387c9b3ee63bfe9db99e";
+            sha256        "1db3502b3cdfc0a5b3d65d9358e127a2e731d2a15540881f1593ce5640a3fbc6";
+            computationalSha256 "6e68d64e46ef38d35bcc2c946db18c049b9d166425aa982dcc1e9716c4079fb5";
             origin        "data/standards/parameters/NRTL/dimethylCarbonate-pXylene.dat";
-            originSha256  "4a0cfd0549001e7f6a2b254c4cca1e1079511ffff005f83ab94e70e5eaeb0421";
+            originSha256  "388bae9aa35cd6f6c12eb0e70f6a171cc3d443e5e6890b105480cfb182aa4847";
             release       Choupo-2608;
         }
     }

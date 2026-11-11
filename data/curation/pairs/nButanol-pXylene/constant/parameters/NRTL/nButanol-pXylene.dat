@@ -62,6 +62,7 @@ provenance
     reviewStatus  autoPromoted;
     humanReviewed false;
     fitGrade      severe;   // DEV.md 4c C285 (C286): max |T_model - T| over the kept points, graded 1 / 2 / 4 K
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
     fitGradeMaxTemperatureError_K 2.0599;
     promotedBy    "bin/choupo-curate pair --promote";
     promotedDate  "2026-11-10";

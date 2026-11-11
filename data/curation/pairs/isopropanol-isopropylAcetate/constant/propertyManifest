@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/isopropanol-isopropylAcetate.dat"
         {
             type          imported;
-            sha256        "ca09f1a9db949285ea25b3f58b6218f56f9315fd679acb37daa9bf5b620c283e";
-            computationalSha256 "f64cf3a7fed7b706b5f81d1a67b58d24ad89e446e438832a8ff3c5cb2620b284";
+            sha256        "2accf54a3d98084913efa37ab4052066cb08bbffa2ccbe8eed04399ae068a3d5";
+            computationalSha256 "e5b0775dca822635ee24d2ab0edaa800fec6add1e9fd823014cfc7573364f80d";
             origin        "data/standards/parameters/NRTL/isopropanol-isopropylAcetate.dat";
-            originSha256  "8e8907e88b6e3fdb3b470390496ec0a025420b4a1fdb67abb137cb874d9a025e";
+            originSha256  "ebd47356311e6cf2104dcff5f9d812b73b0b9998b47e2298e7651d862e2a385d";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

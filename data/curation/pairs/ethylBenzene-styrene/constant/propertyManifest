@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/ethylBenzene-styrene.dat"
         {
             type          imported;
-            sha256        "f89b6d176dfdf17a9f7c98b59c8c7849eb08f054bdae0178ccae4db1d73472f2";
-            computationalSha256 "07f32e82e269cc2ed97a6b6b7ba8ffebd6a02b32d17584b3a13fe15efa7aa1f0";
+            sha256        "727214e58ebeacb3890a709f0376cd16d5d7065517a2f8e6b60bac8d9a2a3576";
+            computationalSha256 "466d7dd87058e41e76d8baa8ad0b94b36619e1c024b4a411bcfdd6842ea08eaa";
             origin        "data/standards/parameters/NRTL/ethylBenzene-styrene.dat";
-            originSha256  "0e86e546430a156702154b5d66dc77f3fb08176a112161cb7fd0d5d62e5e3905";
+            originSha256  "535aff1a79ee2fa9d3478a092cad9866dcbd4491320621e134ada99b31af4341";
             release       Choupo-2608;
         }
     }

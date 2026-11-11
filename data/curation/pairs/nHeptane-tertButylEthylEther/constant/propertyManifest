@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/nHeptane-tertButylEthylEther.dat"
         {
             type          imported;
-            sha256        "ae6e0e2c83fde6e859d36cf83601dbbbecc8fb9490856cfb53e9e9e88aca31c6";
-            computationalSha256 "2fcb91990f5c2cbc56fbe88042d8700aefa95037e6afc31673d69fab1c94d0b3";
+            sha256        "60324871e51f01f69198af34e45b98c94462e608fd540400b552b538f07353c6";
+            computationalSha256 "d5a445b95cf097a95125868f8b2fd65a8241b9b0007a66323db51cec931c701d";
             origin        "data/standards/parameters/NRTL/nHeptane-tertButylEthylEther.dat";
-            originSha256  "a8a3094e160042ff9ed2805577b074d90a7bc607fb739e2ecd0133bf4e76ac3e";
+            originSha256  "ea8e04c57a0b54b89a31549653dd2fb8b9ae1451121b958c74769310d1a9a31b";
             release       Choupo-2608;
         }
     }

@@ -60,7 +60,9 @@ provenance
     fittedInCase  "data/curation/pairs/anisole-nHexane";
     reviewStatus  autoPromoted;
     humanReviewed false;
-    fitGrade      clean;   // DEV.md 4c C285 (C291): max |P_model - P|/P over the kept points, graded 5 / 10 / 20 %
+    fitGrade      warning;   // DEV.md 4c C285 (C291): max |P_model - P|/P over the kept points, graded 5 / 10 / 20 %
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+    fitGradeCap   ( singleTemperature singleLaboratory );   // DEV.md 4c C300 rule 2: in-sample clean, capped -- nothing held out could have contradicted it
     fitGradeMaxRelativeError_pct 4.6012;
     promotedBy    "bin/curate/pairs_px.py promote";
     promotedDate  "2026-11-10";
