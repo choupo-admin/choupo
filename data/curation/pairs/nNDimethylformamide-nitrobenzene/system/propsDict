@@ -58,11 +58,20 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      1 point(s) of 12: doi 10.1016/j.fluid.2006.12.010 row 10: x 0.7419,
+      P 94.950 kPa, T 437.35 K, dT -3.21 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 543.0 K, b_ji = -592.5 K over 11 kept points of 1
+  laboratories (1 discarded): max |dT| 2.423 K, mean 1.473 K, graded
+  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (543.0, -592.5). NOT PROMOTED (max |dT| 2.423 K over the 11
+  kept points, one liquid across the validity span): fit grade severe --
+  DEV.md 4c C300 rule 3: a severe pair does not enter the default
+  catalogue; its record stays in this curation case's constant/, and a
+  case that needs it carries it in its own constant/
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -88,6 +97,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/nNDimethylformamide-nitrobenzene-bubble-j.fluid.2006.12.010.dat";
                 role     fit;
+                discard  ( 10 );   // C283 outliers, by name in the header
             }
         );
 
@@ -129,6 +139,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/nNDimethylformamide-nitrobenzene-bubble-j.fluid.2006.12.010.dat";
                 role     fit;
+                discard  ( 10 );   // C283 outliers, by name in the header
             }
         );
 

@@ -1,0 +1,177 @@
+// [imported] origin "data/standards/components/diethanolamine.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diethanolamine  (CAS 111-42-2)
+  PROPOSAL TIER -- UNVERIFIED. Imported from ChemSep v8.3
+  pure-component data under Artistic License 2.0.
+  Critical constants are source data.  Psat is an Antoine FITTED by
+  bin/choupo-curate vp to measured vapour pressures (DEV.md 4c C281;
+  provenance.vaporPressure): reviewStatus autoPromoted, NOT human-reviewed.
+\*---------------------------------------------------------------------------*/
+
+name        diethanolamine;
+CAS         111-42-2;
+formula     C4H11NO2;      // counted from the ChemSep v8.3 structure formula "(HOCH2CH2)2NH" (derived 2026-09-03; reproduces MW to 0.001 %)
+reviewStatus interim;
+MW          105.1356;      // kg/kmol [origin=ChemSep v8.3]
+Tc          736.6;      // K [origin=ChemSep v8.3]
+Pc          47.2;      // bar; source Pa / 1e5 [origin=ChemSep v8.3]
+omega       0.991515;      // [-] [origin=ChemSep v8.3]
+Tb          542;      // K [origin=ChemSep v8.3]
+
+standardThermochemistry
+{
+    dHf_298   -373000;        // J/mol   [ChemSep v8.3, ideal gas]
+    s_298     429;        // J/(mol.K)  third-law absolute
+}
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C), FITTED by bin/choupo-curate vp to
+    // measured vapour pressures -- see provenance.vaporPressure
+    coefficients  (4.246563341  1576.688274  -168.4642331);
+    Trange        (427.5  452.4);   // the fit's own span; outside it the engine announces the extrapolation
+}
+
+Vliq        9.61124e-05;      // m3/mol at 25 C  [ChemSep eqno 105]
+HvapTb      65771.2;      // J/mol at Tb  [ChemSep eqno 106]
+
+idealGasHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    // ChemSep states J/(kmol.K); A and the exp are scaled to per-mole here.
+    coefficients  (92.216  -624.1  6.030244721  -0.00014779  6.6337e-08);
+    Trange        (273  1500.1);
+}
+
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     -0.28702;
+        B     6080.5;
+        C     -3.8708;
+        D     1.517e-05;
+        E     2;
+        Tmin  293.15;
+        Tmax  589.28;
+    }
+}
+
+liquidThermalConductivity
+{
+    chemsepEq16
+    {
+        A     -0.91328;
+        B     16.824;
+        C     -0.15997;
+        D     0.0011516;
+        E     -1.3756e-06;
+        Tmin  301.15;
+        Tmax  673.15;
+    }
+}
+solubilityParameter 29260;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
+
+source
+{
+    database      "ChemSep pure-component data v8.3";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "chemsep1.xml";
+    sourceSha256  "78b3e0c6408ff35f3b75fb71a1fdd70bb8e967d8996b49452a4a9fa2dd567c76";
+    sourceRecord  "Diethanolamine";
+    importedBy    "chemsep_to_choupo";
+    review        { state pending; reviewer unassigned; }
+}
+
+provenance
+{
+    MW
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Pc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    omega
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tb
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    vaporPressure
+    {
+        origin        fitted;
+        method        "vaporPressureFit (three-parameter Antoine; objective twoStage: least squares in log10 P, then the largest relative error in P minimised from it; every usable study fitted, outliers above 15 % discarded by name)";
+        methodVersion "choupoProps Choupo-dev";
+        fittedInCase  "data/curation/components/diethanolamine";
+        reviewStatus  autoPromoted;
+        humanReviewed false;
+        fitGrade      warning;   // DEV.md 4c C285: the worse of the grades below
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+        fitGradeMaxRelativeError_pct 0.332559;   // grade clean
+        fitGradeBoilingPointGap_K    -1.7496;   // grade warning (Tb outside the kept points' range)
+        promotedBy    "bin/choupo-curate vp --promote";
+        promotedDate  "2026-11-10";
+        reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+        uncertainty   "the fit's maximum relative error over every kept measurement, below";
+        replaces      "model AmbroseWalton (a corresponding-states estimate from Tc, Pc, omega); `bin/choupo-curate revert <component>` restores it";
+        evidence
+        (
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/diethanolamine-vapourPressure-je101259r.dat";
+                doi       "10.1021/je101259r";
+                sha256    "41e58a023b9f306a10a11d7507823f6af949053af44b3a9485fce583725fec86";
+                articleSha256 "3963c4cf50d9b279a449dc923dd5a4301188be5d3ddeb2ee32ea2dd4eaecd626";
+                pointsKept    5;
+                pointsDropped 0;
+                provenance measured;
+            }
+        );
+        acceptance
+        {
+            rule        "the default of DEV.md 4c C285 (graded): max relative error in P over the kept points 5 / 10 / 20 %, and |Tnb - Tb| 1 / 2 / 4 K where Tb lies outside their range, are the upper limits of clean / warning / severe; above, refused; the grade is the worse of the two";
+            verdict     accepted;
+            studies     1;
+            pointsKept  5;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.272439;   // the fitted Antoine, every kept point
+            max_pct     0.332559;
+            awAad_pct   15.942907;   // the AmbroseWalton curve it replaces, the same points
+            awMax_pct   16.574441;
+            Tnb_fit     540.2504;   // K, the fitted curve at 101.325 kPa
+        }
+    }
+}

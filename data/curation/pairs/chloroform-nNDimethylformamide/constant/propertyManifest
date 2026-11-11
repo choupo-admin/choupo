@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/chloroform.dat"
+        {
+            type          imported;
+            sha256        "6be151f882172f8d5ae6500892038a926c189af1b420ff62488a78b9170d482e";
+            computationalSha256 "4b74a318b869383610da3b090af40078ce9b35bf42168fa8fc990acc7b277eee";
+            origin        "data/standards/components/chloroform.dat";
+            originSha256  "ce6cc1f0babb4e035ae33118d8a4876d3a0bb9954605ed196ff04e41545c0458";
+            release       Choupo-2608;
+        }
+        "components/nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "5dc5e624ec26f7584374f1c24564d0750fe6035d6d04806c118cacafdbb9a9cf";
+            computationalSha256 "a54dfb01aa4f8ccf4cd36ebaaa39c04ad37254ae34c4fd4f112690de9f1d0425";
+            origin        "data/standards/components/nNDimethylformamide.dat";
+            originSha256  "9c683ee45a5fcc273e4186865d45184b187b080ff179cec4f0ac16d72933fc21";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/chloroform-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "59aa1faef50d4b6be3ddfecdedbe81aebc7f75b3b95768f879e6dd2f241e2764";
+            computationalSha256 "bc0e01f7b70d8a86d30f5deea58cb214226f16e76515ca64999b0b7d8c3c95bd";
+            origin        "data/standards/parameters/NRTL/chloroform-nNDimethylformamide.dat";
+            originSha256  "3c0c2a7bd21f97e1c4666ced8251d19724d40d0b48af26ec9044bf2ef479ca2e";
+            release       Choupo-2608;
+        }
+    }
+}

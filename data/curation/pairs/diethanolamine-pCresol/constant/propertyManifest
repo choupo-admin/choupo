@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/diethanolamine.dat"
+        {
+            type          imported;
+            sha256        "30b205b2a155166029610a69843cd1a1aedbc0896ca03b7b64debd82da8fc3d1";
+            computationalSha256 "19fd205a8c7d726f32baa7be66d0ad6846a005d5a9c8d664fcfeb50a87c5d3bf";
+            origin        "data/standards/components/diethanolamine.dat";
+            originSha256  "e3870da872ee13591a8482e428efe541248900be03a3e1980c69ae97bc6724db";
+            release       Choupo-2608;
+        }
+        "components/pCresol.dat"
+        {
+            type          imported;
+            sha256        "767ac9abb6550c621ff3951ffa542c4dee205376a7eaf76207f1c6eeaa50e0c7";
+            computationalSha256 "3cc13a6b0c9de6a83992511396891d94763740804d612252c183d6a665d11ecc";
+            origin        "data/standards/components/pCresol.dat";
+            originSha256  "ef31b5279b0a4ce433776d9cc0b6e71b734fab8316ff8c4c5193402ee9a1eaf5";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/diethanolamine-pCresol.dat"
+        {
+            type          imported;
+            sha256        "9484cb919467e59b700cde6e2f4630ca903af8b386f56e58edb86c340f551d3d";
+            computationalSha256 "f96dc952bbe48feb712da05b5c2928daf38f2bd878924150ee9e7363cb085e24";
+            origin        "data/standards/parameters/NRTL/diethanolamine-pCresol.dat";
+            originSha256  "fdc303b249434cf38935fd7400602d05bf82827c2016383a04febf0209749414";
+            release       Choupo-2608;
+        }
+    }
+}

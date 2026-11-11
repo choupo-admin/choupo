@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "5dc5e624ec26f7584374f1c24564d0750fe6035d6d04806c118cacafdbb9a9cf";
+            computationalSha256 "a54dfb01aa4f8ccf4cd36ebaaa39c04ad37254ae34c4fd4f112690de9f1d0425";
+            origin        "data/standards/components/nNDimethylformamide.dat";
+            originSha256  "9c683ee45a5fcc273e4186865d45184b187b080ff179cec4f0ac16d72933fc21";
+            release       Choupo-2608;
+        }
+        "components/nOctane.dat"
+        {
+            type          imported;
+            sha256        "bb8d866ae2a345667264d47bb499d49eafa1a76a17728e78ed2c256626b61777";
+            computationalSha256 "b281e3245fe2ce57ab504bbf223594f6184e2ad1d76fa4f8964807b6e0ddc953";
+            origin        "data/standards/components/nOctane.dat";
+            originSha256  "99bde55672f9e84a9d7b55e91d646e13eb9d473696dd1c82d8d905228fca8608";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/nNDimethylformamide-nOctane.dat"
+        {
+            type          imported;
+            sha256        "f8b7fe9f4cd9918f6be1375c8741fb790ab29e29ca2018659d925c2d215a56d8";
+            computationalSha256 "cdb36aaf4cff0170fa6a704d00a778528a0f928f85d9bda7c0716a14ae2e27d8";
+            origin        "data/standards/parameters/NRTL/nNDimethylformamide-nOctane.dat";
+            originSha256  "fe8058d3279f381c56c788d2c019c7d53720b096f1c569f36150c3dd905e8db3";
+            release       Choupo-2608;
+        }
+    }
+}
