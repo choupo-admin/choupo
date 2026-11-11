@@ -53,6 +53,8 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| integrating 11-11 (parallel lanes) | C311 electrolytes (eNRTL 3->48, Pitzer 55->99, eNRTL charge fix C312 already on main), C327/C328 transport (92 viscosity/conductivity records, 88 measured surface tensions, `StoredCorrelation` model with Brock-Bird fallback), C325 second pair campaign (NRTL +172, UNIQUAC +128, Wilson +199) | C311, C312, C325, C327, C328 |
+| until Sat 11-14: pairs only (Vitor's credit limit) | Henry in water (Sander) LANDED 11-11 (207->252); C315/C316 solubility EduTools built, parked until Saturday | C315, C316, C321 |
 | LANDED 11-11 | C301: the grand composite names Q_H,min/Q_C,min, the Q = 0 axis, the pinch, the pockets and the sink/source regions; status line 107.5 kW | C301 |
 | LANDED 11-11 (only new pinch rows; closures identical) | C302: greenAmmoniaPEQ and greenAmmonia03 declare a pinch pass (threshold, no hot utility; FEHE within 0.1 MW of the target); open: the converter's 30.3 MW outside the population, the five plants presented as one project | C302 |
 | LANDED 11-11 | red gates on main fixed: UNIFAC groups for 33 components (atoms checked), missing includes for the WASM build; check_reactor_limits' probe repaired (the engine was right) | C303 |
@@ -114,6 +116,8 @@ before the UNIFAC matrix.  UNIFAC itself: 52x on column19 from one string-keyed 
 
 | status | what | ref |
 |---|---|---|
+| Sat 11-14, scheduled | C329 FIRST DELIVERY: total reflux checked (blocker for Yanagi), then quantitative comparison with Yanagi & Sakata 1982 (sieve tray, 8 -> 14 % open area predicted without refit) and Schulz et al. 2018 (Montz-Pak A3-500M, 0.10 bar fitted, 0.02 bar predicted); papers in ~/Choupo-Literature | C329 |
+| Sat 11-14 | Consolidate: DEV.md 4c C318-C331 + this plan; integrate the parked branches (C315, C316) one at a time; rebuild WASM | C318-C331 |
 | LANDED 11-10/11 (both slices: Pinch page, datasheets, first-law table, streams) | C299: the Units menu has a duty unit and the result displays follow it | C299 |
 | done | C251 (Vitor, 11-08 night): EduTools get a way in -- a home (what they are, the guided sequences as cards, the shelves), no tool opens by default, "Path" becomes "Guided sequence" with step and why visible; GUI general, lands with the PIF batch | C251 |
 | done | C248 (Vitor, 11-08 night): PIF readiness for the 11-09 tutorial -- a Fable general walks the two tablet cases as a student, fixes the cheap blockers, writes the readiness review (docs/reviews/) and the student path page (docs/); site republished after it lands | C248 |
@@ -133,6 +137,10 @@ before the UNIFAC matrix.  UNIFAC itself: 52x on column19 from one string-keyed 
 
 | status | what | ref |
 |---|---|---|
+| todo (after the first delivery) | C329 rate-based, two formulations on one case: MESH with efficiency/HETP from the internals (rating vs sizing at a flooding fraction) and the explicit interfacial model (bulk + interface compositions, film coefficients, effective area, closures, axial-discretisation independence); Pelkonen 2001 axial profiles (second ternary held for prediction); Klemola column14/15 with the efficiency coming out of the model | C329 |
+| todo | C331 mixing rules, best practice BY DEFAULT (students choose through AI): surface tension by Butler with the case's activity model (water-acetone is the witness), liquid viscosity Grunberg-Nissan WITH interaction, liquid conductivity Filippov/Li, mixture density reviewed; each new rule beside the old one, validated on ThermoML mixture data, default switched only after the moved goldens are listed case by case | C330, C331 |
+| todo | C318 flash detailed sizing (Haider-Levenspiel terminal velocity, Souders-Brown, vertical/horizontal, demister, nozzles); C319 absorber/stripper with film theory and Henry (Billet-Schultes / Onda, Treybal) | C318, C319 |
+| todo | C323 molten salts part 1 (solar salt, Hitec, chlorides as heat-transfer fluids; Janz JPCRD 17 Suppl 2); C326 WASM data shared once instead of 19 MB in each of 5 binaries | C323, C326 |
 | todo | Stranded branches (11-08 sweep): C235 Watson liquid rung above the Cp window (`e149c478e`, to C245 slice 5), C201 `check_dimerisation` arm (`5bed50aeb`), C200 phase B' browser init0 WIP (`de8f450ec`); each lands or Vitor drops it | DEV.md 4c, stranded |
 | todo | C247 (Vitor, 11-08): `stack-dispersion` EduTool -- Gaussian plume, Pasquill-Gifford classes (day/night, sun, wind), Briggs sigmas and plume rise, the least stack height under a declared limit, GEP downwash; four live figures; engine half reads a fired unit's flue gas. After C246 | C247 |
 | done (phase 2 decided 11-09: the three green-ammonia cases stay as FEL stages, PEQ the reference; C268) | C244: phase 1 LANDED (f468736fd, ten cases left tutorials/plant/, ladder flat under steady/reactors); phase 2 next: greenAmmonia03's content and the feasibility pair folded into PEQ | C244 |
@@ -158,6 +166,8 @@ before the UNIFAC matrix.  UNIFAC itself: 52x on column19 from one string-keyed 
 
 | status | what | ref |
 |---|---|---|
+| todo | C329 part 3: atmospheric crude unit (TBP -> pseudocomponents -> furnace, main column, side draws, pump-arounds, side strippers, steam), U. Porto public case, Sines protocol (calibrate one condition, predict seven); demonstration A (tray open area / packing height) and B (crude or feed change: gasoil yield, spec, extra fuel) in the GUI | C329 |
+| todo | C320 aqueous species from NBS/CODATA (+ replace estimated dHf by measured); C322 EduTool 'how to find properties'; Henry in organic solvents from ThermoML (136 pairs); C308 Gibbs-Duhem test on the 110+ pairs with y; C323 part 2 molten-salt thermodynamics (machinery + LiCl-KCl, NaNO3-KNO3, LiF-BeF2, each validated on a measured phase diagram) | C308, C320, C322, C323 |
 | todo | DECEMBER (Vitor, 11-09): consolidate how community feedback arrives -- the review registry (C261) and a community case repository (C262: its own repo, CI admission on run + self-containment + rule-4b balances + licence, rungs submitted / reviewed / promoted, credit through the same registry) designed together | C261, C262 |
 | todo | C227 (Vitor): `pairLookup` and `componentLookup` props operations with a byte-budget gate and an honesty ladder (catalogue / autoPromoted / UNIFAC-as-estimate / servable-not-fitted / unknown); ONE evidence card per pair that the Explorer's 'Evidence for this pair' also draws; the brief shrinks to 'call the lookup'; the saving is measured. Slice (a) is BUILT on a branch and awaits integration (the lookups bypass the seal: to be understood first) | C227 |
 | done | C16 chain, the real butanol-water pair LANDED 11-10 (curate14, laptop session): five-parameter NRTL (b_ij, b_ji, a_ij, a_ji, alpha) fitted to measured ThermoML bubble temperatures and tie lines; solubility of butanol in water flat with T as measured; held-out tie-line AAD 0.0061, bubble 0.53 K. NOT promoted to the catalogue: above 320 K the water-rich liquid is 15 % high in relative terms (C280). The cloud session may proceed | C226, C225, C280 |
