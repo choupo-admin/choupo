@@ -1,0 +1,58 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Li-Br: mean ionic activity coefficient gamma_pm and osmotic coefficient
+  phi of the salt (Li)1(Br)1 in water at 298.15 K -- the EVALUATED
+  (recommended) values of
+    W. J. Hamer and Y.-C. Wu, Osmotic Coefficients and Mean Activity Coefficients of Uni-univalent Electrolytes in Water at 25 C, J. Phys. Chem. Ref. Data 1 (1972) 1047-1100,
+    doi:10.1063/1.3253108, Table 10, p. 1064 (m, phi, gamma), the recommended values.
+  The evaluation is the primary source of these recommended values (its
+  own references are the measurements behind them).
+  TRANSCRIBED 2026-11-11 (DEV.md 4c C311) from the NIST reprint
+  (nist-jpcrd-1.3253108.pdf): every row read by eye from the page image, then checked the same way (agreement to 0.0012 with a smooth Gibbs-Duhem-consistent curve through the table).
+  Rows kept: 0.1 mol/kg up to ionic strength 6 mol/kg; a row the
+  source marks saturated, supersaturated or from another author is not
+  here.  Every 4th row (0-based index % 4 == 3, never the first or the
+  last) is HELD OUT by the case (system/propsDict), not by this file.
+\*-----------------------------------------------------------------------------*/
+provenance
+{
+    source        "W. J. Hamer and Y.-C. Wu, Osmotic Coefficients and Mean Activity Coefficients of Uni-univalent Electrolytes in Water at 25 C, J. Phys. Chem. Ref. Data 1 (1972) 1047-1100";
+    doi           "10.1063/1.3253108";
+    location      "Table 10, p. 1064 (m, phi, gamma), the recommended values";
+    reviewStatus  transcribed;
+}
+
+temperature 298.15;   // K, every row
+
+columns
+(
+    { name m;     unit mol/kg; }
+    { name gamma; unit -; }       // gamma_pm, molality scale
+    { name phi;   unit -; }       // molal osmotic coefficient
+);
+
+data
+(
+    0.1     0.797    0.944   
+    0.2     0.767    0.944   
+    0.3     0.755    0.951   
+    0.4     0.752    0.96    
+    0.5     0.754    0.97    
+    0.6     0.759    0.982   
+    0.7     0.767    0.994   
+    0.8     0.778    1.007   
+    0.9     0.789    1.021   
+    1       0.803    1.035   
+    1.2     0.834    1.064   
+    1.4     0.871    1.095   
+    1.6     0.913    1.127   
+    1.8     0.96     1.16    
+    2       1.012    1.195   
+    2.5     1.166    1.284   
+    3       1.359    1.377   
+    3.5     1.598    1.473   
+    4       1.891    1.572   
+    4.5     2.252    1.674   
+    5       2.696    1.777   
+    5.5     3.242    1.883   
+    6       3.915    1.99    
+);

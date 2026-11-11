@@ -1,0 +1,49 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Mg-Br: mean ionic activity coefficient gamma_pm and osmotic coefficient
+  phi of the salt (Mg)1(Br)2 in water at 298.15 K -- the EVALUATED
+  (recommended) values of
+    R. N. Goldberg and R. L. Nuttall, Evaluated Activity and Osmotic Coefficients for Aqueous Solutions: The Alkaline Earth Metal Halides, J. Phys. Chem. Ref. Data 7 (1978) 263-310,
+    doi:10.1063/1.555569, Table 18, p. 289 (m, gamma, phi, a_w), the recommended values.
+  The evaluation is the primary source of these recommended values (its
+  own references are the measurements behind them).
+  TRANSCRIBED 2026-11-11 (DEV.md 4c C311) from the NIST reprint
+  (nist-jpcrd-1.555569.pdf): every row read by eye from the page image; phi checked against the printed water activity (ln a_w = -nu m phi M_w, to 2.5e-4) and gamma against its neighbours by the Gibbs-Duhem relation.
+  Rows kept: 0.1 mol/kg up to ionic strength 6 mol/kg; a row the
+  source marks saturated, supersaturated or from another author is not
+  here.  Every 4th row (0-based index % 4 == 3, never the first or the
+  last) is HELD OUT by the case (system/propsDict), not by this file.
+\*-----------------------------------------------------------------------------*/
+provenance
+{
+    source        "R. N. Goldberg and R. L. Nuttall, Evaluated Activity and Osmotic Coefficients for Aqueous Solutions: The Alkaline Earth Metal Halides, J. Phys. Chem. Ref. Data 7 (1978) 263-310";
+    doi           "10.1063/1.555569";
+    location      "Table 18, p. 289 (m, gamma, phi, a_w), the recommended values";
+    reviewStatus  transcribed;
+}
+
+temperature 298.15;   // K, every row
+
+columns
+(
+    { name m;     unit mol/kg; }
+    { name gamma; unit -; }       // gamma_pm, molality scale
+    { name phi;   unit -; }       // molal osmotic coefficient
+);
+
+data
+(
+    0.1     0.5426   0.874   
+    0.2     0.5123   0.8976  
+    0.3     0.5109   0.9303  
+    0.4     0.5218   0.9666  
+    0.5     0.5405   1.0051  
+    0.6     0.5651   1.0451  
+    0.7     0.5949   1.0866  
+    0.8     0.6298   1.1292  
+    0.9     0.6698   1.173   
+    1       0.7151   1.2179  
+    1.25    0.8541   1.3345  
+    1.5     1.0372   1.457   
+    1.75    1.2769   1.5849  
+    2       1.5902   1.7177  
+);
