@@ -132,7 +132,7 @@ export const COSMO_STEPS = [
     assumes: "Where a segment sits on the molecule does not matter, only "
       + "how much charge density it carries.  This is why COSMO-SAC cannot "
       + "distinguish isomers whose profiles coincide.",
-    cites: "CosmoSac.cpp:26-27 (grid), CosmoSac.cpp:88-92 (area, volume, "
+    cites: "CosmoSac.cpp:26-27 (grid), CosmoSac.cpp:130-134 (area, volume, "
       + "profile read per component)",
   },
   {
@@ -156,7 +156,7 @@ export const COSMO_STEPS = [
       + "hydrogen bond exists.",
     assumes: "Interactions are pairwise between surface segments and "
       + "independent of what the rest of either molecule is doing.",
-    cites: "CosmoSac.cpp:103-107",
+    cites: "CosmoSac.cpp:170-174",
   },
   {
     n: 4,
@@ -178,7 +178,7 @@ export const COSMO_STEPS = [
       + "Boltzmann-weights every contact, so a segment does prefer "
       + "partners it pairs well with — but nothing beyond the pair is "
       + "tracked: no geometry, no neighbour of a neighbour.",
-    cites: "CosmoSac.cpp:118-133",
+    cites: "CosmoSac.cpp:185-200",
   },
   {
     n: 5,
@@ -196,7 +196,7 @@ export const COSMO_STEPS = [
       + "— it is why a pure component returns γ = 1 to machine precision, "
       + "which the witness checks.",
     assumes: "Nothing new; this step is bookkeeping over steps 3 and 4.",
-    cites: "CosmoSac.cpp:138-149 (mixture profile), CosmoSac.cpp:167-173",
+    cites: "CosmoSac.cpp:205-216 (mixture profile), CosmoSac.cpp:234-240",
   },
   {
     n: 6,
@@ -219,7 +219,7 @@ export const COSMO_STEPS = [
     assumes: "The entropy of mixing depends on volume and surface area "
       + "only, through the lattice picture Staverman and Guggenheim "
       + "derived it in.",
-    cites: "CosmoSac.cpp:151-162, CosmoSac.cpp:175-183",
+    cites: "CosmoSac.cpp:218-229, CosmoSac.cpp:242-250",
   },
   {
     n: 7,
@@ -243,7 +243,7 @@ export const COSMO_STEPS = [
       + "energy of pairing their surfaces can be computed independently "
       + "and summed.  This is the assumption easiest to forget, because it "
       + "is made by the plus sign rather than by any term.",
-    cites: "CosmoSac.cpp:185",
+    cites: "CosmoSac.cpp:252",
   },
 ] as const;
 

@@ -56,6 +56,29 @@ cosmo
         licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
         installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
     }
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file HYDRAZINE.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey OAKJQQAXSVQMHS-UHFFFAOYSA-N (full match); formula H4N2; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        66.116886;   // sum of the profile below; GAMESS prints 66.12
+        volume      46.86;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.228712     3.173260     7.303331     3.539760     5.918004     5.712257
+               3.856939     2.343120     1.331937     1.534534     1.576302     2.487332
+               0.534885     2.147284     1.249531     0.494350     1.092248     0.452027
+               0.074823     1.356053     2.503889     1.059186     0.968111     1.977144
+               0.755721     0.017486     1.300746     0.761518     0.871464     1.492516
+               1.802347     0.970393     1.073107     0.920529     0.435657     0.355038
+               2.228618     0.216727     0.000000
+        );
+    }
 }
 
 provenance

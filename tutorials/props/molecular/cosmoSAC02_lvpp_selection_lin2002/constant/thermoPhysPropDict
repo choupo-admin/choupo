@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict -- COSMO-SAC, variant LVPP-HFTZVP-2018: the 2002
+  equations with the constants Ferrarini et al. (AIChE J. 64 (2018) 3443)
+  fitted to the LVPP sigma-profile database 18.07 (GAMESS HF/TZVP, MIT).
+  Every component carries its OWN profile in constant/components/<name>.dat
+  (set LVPP-HFTZVP-2018); there is NO binary parameter anywhere.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( water Dichloroethane 14Dioxane 1Hexene 1Nitropropane aceticAcid acetone acetonitrile aniline benzene carbonTetrachloride chloroform cyclohexane diethylEther ethylamine ethylAcetate methylAcetate methylEthylKetone nButane nButanol butanal nHeptane nHexane nOctane nPentane 1Propanol nitroethane nitromethane propionitrile pyridine tetrahydrofuran triethylamine ethanol );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel
+        {
+            model cosmoSAC;
+            source LVPP-HFTZVP-2018;      // named parameter set (one per component)
+        }
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

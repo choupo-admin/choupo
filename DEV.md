@@ -3446,6 +3446,56 @@ accepts today, and that is a policy call.
 > four-stream utility-only network hides (Q_H - Q_H,min = cross-pinch +
 > heating below + cooling above).  Pinch first, then the most used tools.
 >
+> **C308 (Vitor, 2026-11-11: "aplicas a tecnica de duhem para ver se sao
+> consistentes?").**  Measured: the engine carries `vleConsistency`
+> (src/propertyOps/VleConsistency.H: Herington area, pointwise Gibbs-Duhem,
+> gamma-inf), used by two cases and by NO pair tool.  A consistency test needs
+> the vapour composition: bubble-T or bubble-P data alone (most C290 data) fit
+> a Gibbs-Duhem-consistent model by Barker's method and can only be judged by
+> the residual.  DECIDED: datasets with y are tested per laboratory BEFORE the
+> fit (the van Ness direct test as the criterion, Herington as companion); a
+> failing dataset leaves the fit by name, as an outlier does; a record without
+> y says "consistency not testable (no vapour composition)"; the 17 severe get
+> it in their diagnosis.
+>
+> **C309 (Vitor, 2026-11-11: "o maximo de compostos"; the IUPAC critical
+> properties series Parts 7, 8, 9, 10, 12 and Zabransky's liquid-Cp
+> Supplements I and II added to ~/Choupo-Literature).**  Measured: 647
+> compounds outside the catalogue block fittable VLE pairs; in ThermoML 43 have
+> Tc, Pc and vp measured, 232 vp only, 365 nothing (131 ionic); together they
+> unblock at most 859 pairs.  DECIDED: new components by batches ordered by
+> pairs unblocked: Tc/Pc from the IUPAC series, else ThermoML, else Joback
+> MARKED; liquid Cp from Zabransky, else ThermoML, else Rowlinson-Bondi MARKED;
+> the omega rule and HELD stay; Yaws (a commercial compilation that does not
+> say which value is measured) is a cross-check only, never an origin in the
+> public tree.  Running (branch c309-components).
+>
+> **C310 (architect, 2026-11-11): a native COSMO-SAC variant on the LVPP
+> sigma profiles (MIT, 2653 molecules), with LVPP's own published
+> parametrisation** -- the reserved task #95, decided under rule 00.  The
+> 2002 constants are never applied to an LVPP profile (the July study: the sign
+> of G^E flips).  Validated against the fitted NRTL pairs, family by family:
+> where a predictive model holds and where it fails, shown to the student.
+>
+> **C311 (Vitor, 2026-11-11: "porque nao temos quase nada de eNRTL?").**  The
+> pair campaign never touched electrolytes (they fit mean activity and osmotic
+> coefficients, which ThermoML barely holds).  DECIDED: an electrolyte campaign
+> on the NIST-evaluated compilations (Hamer & Wu 1972, the Goldberg series
+> 1978-1981, JPCRD; free NIST reprints), fitting eNRTL and Pitzer salt by
+> salt with grade, held-out points and review {}, cases under data/curation/;
+> Kim & Frederick 1988 and Song & Chen as comparison only.
+
+> **C307 (Vitor, 2026-11-11, in the running app: "no pinch aparecem demasiados
+> algarismos significativos ... 3 sao suficientes ... nas tabelas devia de
+> haver forma de ordenar de varias formas").**  Measured: the Units menu
+> already carries a significant-figures preference (displayUnits.ts,
+> DEFAULT_SIG 3), but the Pinch page formats with toFixed and ignores it;
+> only PropertyPanel sorts a table.  DECIDED: every displayed number follows
+> the significant-figures preference (default 3; exports keep full precision);
+> every result table is sortable by column through ONE shared component.
+> Slice 1 on the Pinch page (added to the C304 branch); slice 2 the other
+> workspaces (streams, units, reports, datasheets).
+
 > **C306 (Vitor, 2026-11-11: "em que fase ... se passa de ter uma lista de
 > utilidades para ... a energia integrada ... e se numa fase final deve haver
 > tubagem a ligar as utilidades").**  Measured against the AACE deliverable

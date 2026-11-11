@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 773,
+  "cases": 775,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 15
@@ -6764,6 +6764,32 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/molecular/cosmoSAC02_lvpp_selection_lin2002": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "cosmoSAC"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/molecular/cosmoSAC03_ethanol_water_predictive": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "cosmoSAC"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/molecular/entropy01_air_ledger": {
    "application": "choupoProps",
    "ops": [
@@ -12294,6 +12320,8 @@
     "tutorials/props/membrane/shortlist01_class_to_modules",
     "tutorials/props/molecular/componentLookup01_catalogue_ladder",
     "tutorials/props/molecular/cosmoSAC01_water_ethanol",
+    "tutorials/props/molecular/cosmoSAC02_lvpp_selection_lin2002",
+    "tutorials/props/molecular/cosmoSAC03_ethanol_water_predictive",
     "tutorials/props/molecular/entropy01_air_ledger",
     "tutorials/props/molecular/envelope01_natural_gas",
     "tutorials/props/molecular/envelope02_c3c4c5_branch_stop",
@@ -13529,6 +13557,7 @@
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
     "tutorials/props/curation/curate13_synthetic_lle_butanol_water",
     "tutorials/props/curation/curate14_nrtl_butanol_water",
+    "tutorials/props/molecular/cosmoSAC03_ethanol_water_predictive",
     "tutorials/props/molecular/eval_nrtl_catalogue",
     "tutorials/props/molecular/eval_nrtl_pinned",
     "tutorials/props/molecular/nrtl01_ethanol_water_package",
@@ -13602,7 +13631,9 @@
     "tutorials/steady/flash/flash03_wilson_ethanol_water"
    ],
    "cosmoSAC": [
-    "tutorials/props/molecular/cosmoSAC01_water_ethanol"
+    "tutorials/props/molecular/cosmoSAC01_water_ethanol",
+    "tutorials/props/molecular/cosmoSAC02_lvpp_selection_lin2002",
+    "tutorials/props/molecular/cosmoSAC03_ethanol_water_predictive"
    ],
    "davies": [
     "tutorials/batch/electrodialysis/edbatch01_constant_current",
@@ -14432,6 +14463,7 @@
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
     "tutorials/props/curation/curate13_synthetic_lle_butanol_water",
     "tutorials/props/curation/curate14_nrtl_butanol_water",
+    "tutorials/props/molecular/cosmoSAC03_ethanol_water_predictive",
     "tutorials/props/molecular/eval_nrtl_catalogue",
     "tutorials/props/molecular/eval_nrtl_pinned",
     "tutorials/steady/membranes/membrane24_fit_then_simulate",

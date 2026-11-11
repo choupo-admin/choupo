@@ -731,6 +731,7 @@ public:
         std::string model;                // e.g. COSMOSAC (the family)
         std::string variant;              // e.g. 2002 -> which constants
         std::string source;               // provenance (databank + primary)
+        std::string protocol;             // how the profile was built (checked against the variant)
         scalar area   = 0.0;              // cavity surface area [A^2]
         scalar volume = 0.0;              // cavity volume [A^3]
         std::vector<scalar> sigmaProfile; // p(sigma) [A^2 per bin] on the model grid
