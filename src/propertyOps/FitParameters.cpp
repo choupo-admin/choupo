@@ -317,9 +317,9 @@ int FitParameters::run(const DictPtr& dict,
     if (dict->subDict("residual")->lookupWord("kind") == "membrane")
         { fitobj::requireLeastSquares(dict, "membrane"); return runMembraneFit(dict, initialThermo, verbosity); }
 
-    // The AUTHORED v2 grammar is the ONE fit source (named-path mutation,
-    // rebuilt natively per iteration).
-    const DictPtr fitSource = authoredV2();
+    // The AUTHORED v2 grammar (+ the op's own thermo{} fragment, C294) is the
+    // ONE fit source (named-path mutation, rebuilt natively per iteration).
+    const DictPtr fitSource = authoredV2For(dict);
     if (!fitSource || !database())
         throw std::runtime_error(
             "fitParameters: needs the authored property dict + database (set "
@@ -1651,7 +1651,7 @@ int FitParameters::run(const DictPtr& dict,
         rec.opName     = dict->lookupWordOrDefault("name", "fitParameters");
         rec.opType     = "fitParameters";
         rec.model      = kindP ? "binary pair, relative bubble-P residual at fixed T"
-                               : "NRTL binary pair, bubble-T residual at fixed P";
+                               : [&]{ DictPtr e = fitSource->found("equilibrium") ? fitSource->subDict("equilibrium") : nullptr, l = (e && e->found("liquid")) ? e->subDict("liquid") : nullptr, a = (l && l->found("activityModel")) ? l->subDict("activityModel") : nullptr; return (a ? a->lookupWordOrDefault("model", "NRTL") : std::string("NRTL")) + " binary pair, bubble-T residual at fixed P"; }();   // the model the op fits (C294), NRTL as before
         for (const auto& ps : params)
             rec.parameters.push_back({ps.path, ps.value});
         rec.engaged     = true;

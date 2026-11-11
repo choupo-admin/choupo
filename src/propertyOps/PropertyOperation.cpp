@@ -129,6 +129,14 @@ std::vector<std::string> PropertyOperation::availableTypes()
     return out;
 }
 
+DictPtr PropertyOperation::authoredV2For(const DictPtr& opDict) const
+{
+    if (!authoredV2_ || !opDict || !opDict->found("thermo"))
+        return authoredV2_;
+    return mergeThermoOverride(authoredV2_, opDict->subDict("thermo"),
+                               "op thermo{} override");
+}
+
 std::unique_ptr<ThermoPackage>
 PropertyOperation::thermoForOp(const DictPtr& opDict) const
 {

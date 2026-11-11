@@ -212,6 +212,14 @@ def main():
                 "    }\n}\n")
         overlay4 = _re.sub(r"(?m)^formula\s+[^;]+;",
                            "formula     aromaticCut;", std_toluene, count=1)
+        #  A record that already carries a provenance block (toluene does since
+        #  its UNIQUAC r/q were derived, DEV.md 4c C294) gets the entry INSIDE
+        #  it: a second top-level block is refused by the dictionary reader.
+        pm = _re.search(r"(?m)^provenance\s*\{\n", overlay4)
+        if pm:
+            overlay4 = (overlay4[:pm.end()] + prov.split("{\n", 1)[1].rsplit("}\n", 1)[0]
+                        + overlay4[pm.end():])
+            prov = ""
         overlay4 += ("elementalComposition\n{\n    basis massFraction;\n"
                      "    massFractions { C 0.9078; H 0.0872; }\n"
                      "    unaccountedMassFraction 0.005;\n}\n" + prov)

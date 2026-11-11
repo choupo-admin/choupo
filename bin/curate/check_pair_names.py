@@ -18,7 +18,11 @@ WHAT IT CHECKS
   4. in the symmetric-pair directories (NRTL, UNIQUAC, Wilson -- Wilson absent
      from standards today, tolerated) each `<a>-<b>.dat` is exactly two
      existing component names in byte order;
-  5. every `fittedInCase` a record carries names a directory that exists.
+  5. every `fittedInCase` a record carries names a directory that exists;
+  6. (DEV.md 4c C294) in a symmetric directory every record declares
+     `model <that directory>;`, and a record a pair case fitted names a case
+     of that very pair (data/curation/pairs/<stem>/...): the UNIQUAC and
+     Wilson records the pair cases fit beside their NRTL share its stem.
 
 NOT APPLIED (looked at, 2026-11-10): Henry (directed solute-solvent), Pitzer
 (subdirectories lambda/pairs/psi), EdwardsPitzer, eNRTL (cation-anion ions,
@@ -85,6 +89,18 @@ def main() -> int:
                         errs.append(f"{mdir.name}/{f}: '{c}' is not a component in data/standards/components")
                 if a >= b:
                     errs.append(f"{mdir.name}/{f}: names not in byte order (expected {min(a, b)}-{max(a, b)}.dat)")
+        if mdir.name in SYMMETRIC:
+            for p in sorted(mdir.glob("*.dat")):
+                body = re.sub(r"/\*.*?\*/", "", p.read_text(errors="replace"), flags=re.S)
+                mm = re.search(r"^\s*model\s+(\S+?)\s*;", body, re.M)
+                if not mm or mm.group(1) != mdir.name:
+                    errs.append(f"{mdir.name}/{p.name}: declares model "
+                                f"{mm.group(1) if mm else 'nothing'}, not {mdir.name}")
+                fc = re.search(r'^\s*fittedInCase\s+"([^"]+)"', body, re.M)
+                if fc and fc.group(1).startswith("data/curation/pairs/"):
+                    if Path(fc.group(1)).parts[3] != p.stem:
+                        errs.append(f"{mdir.name}/{p.name}: fittedInCase {fc.group(1)} is "
+                                    "not a case of this pair (data/curation/pairs/<stem>/)")
         for p in mdir.rglob("*.dat"):
             for m in re.finditer(r'^\s*fittedInCase\s+"([^"]+)"', p.read_text(errors="replace"), re.M):
                 fitted += 1
@@ -96,8 +112,11 @@ def main() -> int:
             print("  " + e)
         return 1
     n_pairs = sum(len(list((PARAMS / m).glob("*.dat"))) for m in SYMMETRIC if (PARAMS / m).is_dir())
+    per = ", ".join(f"{m} {len(list((PARAMS / m).glob('*.dat'))) if (PARAMS / m).is_dir() else 0}"
+                    for m in SYMMETRIC)
     print(f"check_pair_names: OK -- {len(stems)} component stems ({len(NAME_DEBT)} named debt), "
-          f"{n_pairs} symmetric pair files in byte order over existing components, "
+          f"{n_pairs} symmetric pair files ({per}) in byte order over existing components, "
+          "each declaring its directory's model, a pair-case record naming a case of its pair, "
           f"{fitted} fittedInCase paths resolve, no case-insensitive collisions.  "
           f"NOT APPLIED: Henry, Pitzer, EdwardsPitzer, eNRTL, UNIFAC, SRK, adsorption, solution.")
     return 0

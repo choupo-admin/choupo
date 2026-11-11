@@ -66,6 +66,15 @@ liquidViscosity
 
 diffusionVolume  111.5;  // Fuller (FSG revised: 7C+8H - aromatic ring)
 
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (5 ACH + 1 ACCH3), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   3.9228;
+    q   2.9680;
+}
+
 groups
 {
     unifac ( { group ACH; count 5; } { group ACCH3; count 1; } );
@@ -81,5 +90,15 @@ cosmo
         source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0243-PROF.txt bundled in usnistgov/COSMOSAC; CAS 108-88-3";
         licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
         installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
+    }
+}
+
+provenance
+{
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 3.9228, q = sum nu_k Q_k = 2.9680 over the record's unifac groups (5 ACH + 1 ACCH3)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
     }
 }
