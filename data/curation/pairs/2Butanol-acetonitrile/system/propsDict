@@ -1,0 +1,192 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  2Butanol-acetonitrile -- AN NRTL PAIR FROM EVERY LABORATORY'S MEASUREMENTS.
+
+  WRITTEN BY bin/choupo-curate pair acetonitrile 2Butanol (DEV.md 4c C284, the bulk run;
+  record docs/design/binary-pairs-from-open-measurements.md section 11).
+
+  THE DECLARATION -- WRITTEN AND COMMITTED BEFORE ANY FIT RAN (several
+  declarations of the bulk run share one commit).
+
+  IDENTITY.  acetonitrile (CAS 75-05-8, InChIKey WEVYAHXRMPXWCK-UHFFFAOYSA-N)
+  + 2Butanol (CAS 78-92-2, InChIKey BTANRVKWQNVYAZ-UHFFFAOYSA-N), joined
+  to the archive through identity.json -- never by name.  CLASS (C284): both
+  records are volatile molecular liquids (no role nonvolatile/solute, no
+  dissociatesTo, no charge, no solid, a vapour-pressure model), and every
+  measured temperature lies below both critical temperatures.
+
+  NO MEASURED SERIES IN THIS TREE.  constant/archiveDatasets names each
+  dataset (DOI, NIST URL, article sha256, extraction selector, extract
+  sha256); `bin/choupo-curate fetch` writes the points into
+  constant/archiveExtracts/, which is gitignored.
+
+  STUDIES: every bubble-temperature block of the pair at or below 110 kPa
+  with a declared uncertainty (1 block(s)).  FITTED, ALL OF THEM
+  (1):
+      10.1016/j.jct.2006.07.014      block 17    8 pts  94.83 kPa  352.85-359.95 K  U 1.38-1.39 K
+  SET ASIDE BY THE EXTRACTION RULES, BY NAME:
+      (none)
+
+  THE RULE (DEV.md 4c C283 amended, C284).  Every laboratory above is
+  fitted; none is held out (the C16 partition and its band are retired as
+  the acceptance test).  NRTL, a_ij = a_ji = 0, alpha = 0.30 fixed: two
+  parameters (b_ij, b_ji); each point weighted by 1/U, U its own stated
+  expanded uncertainty.  Objective twoStage (least squares, then minimax;
+  T_bubble absolute, in K).  OUTLIERS: after a least-squares stage over every
+  point, a point with |T_model - T| > 3 K is discarded BY
+  NAME (`discard` on its evidence entry, listed below) and the fit repeated
+  without it.
+  THE GRADED ACCEPTANCE (DEV.md 4c C285, applied to pairs by C286): max
+  |T_model - T| over the KEPT points is GRADED -- clean up to 1 K,
+  warning up to 2 K, severe up to 4 K, refused above; a point with no
+  bubble point refuses. C283's relative clause (5 / 10 / 20 %) judges
+  composition; this fit has no composition residual, so only the
+  temperature clause applies. Every grade but refused is accepted and
+  promoted (autoPromoted, humanReviewed false) with `fitGrade` and its
+  max |dT| in the record's provenance; the engine voices a warning or a
+  severe grade on every run that reads the pair. A pair that splits ONE
+  liquid inside its validity span is not promoted, whatever its grade
+  (arm f).
+  Two starts: (0, 0) and (800, -400).
+
+  OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
+  @@OUTLIERS-BEGIN@@
+      not yet run.
+  @@OUTLIERS-END@@
+
+  @@RESULT-BEGIN@@
+  WHAT THE RUN FOUND: not yet run.
+  @@RESULT-END@@
+
+  WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
+  frame (ideal-gas vapour, the catalogue's own vapour-pressure records); the
+  measurements were transcribed by the archive and have NOT been read back
+  against the articles (the CHECKLIST that `fetch` writes is the aid).
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        fit_nrtl;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.acetonitrile-2Butanol.b_ij;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.acetonitrile-2Butanol.b_ji;  initial 0;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/acetonitrile-2Butanol-bubble-j.jct.2006.07.014.dat";
+                role     fit;
+            }
+        );
+
+        objective { method twoStage;  scale { T_bubble absolute; } }
+        residual
+        {
+            kind        T_bubble;
+            components  ( acetonitrile 2Butanol );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_history.csv;
+            parity     parity.csv;
+            proposal   2Butanol-acetonitrile.proposal.dat;
+        }
+    }
+    {
+        name        fit_nrtl_start2;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.acetonitrile-2Butanol.b_ij;  initial 800;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.acetonitrile-2Butanol.b_ji;  initial -400;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/acetonitrile-2Butanol-bubble-j.jct.2006.07.014.dat";
+                role     fit;
+            }
+        );
+
+        objective { method twoStage;  scale { T_bubble absolute; } }
+        residual
+        {
+            kind        T_bubble;
+            components  ( acetonitrile 2Butanol );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            parity     parity_start2.csv;
+        }
+    }
+    {
+        name        txy_ideal;
+        type        propertyScan1D;
+        vary        { variable x[acetonitrile];  from 0.0;  to 1.0;  n 101; }
+        state       { P 94.83 kPa;  composition { acetonitrile 0.5;  2Butanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model ideal; } } }
+        }
+        properties  ( T_bubble  y_eq_acetonitrile );
+        output      { file txy_ideal.csv; }
+    }
+    {
+        name        txy_nrtl;
+        type        propertyScan1D;
+        vary        { variable x[acetonitrile];  from 0.0;  to 1.0;  n 101; }
+        state       { P 94.83 kPa;  composition { acetonitrile 0.5;  2Butanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_acetonitrile );
+        output      { file txy_nrtl.csv; }
+    }
+);
+
+experimental
+(
+    {
+        name      study1;
+        component acetonitrile;
+        kind      txy;
+        models    ( txy_ideal  txy_nrtl );
+        dataset   "constant/archiveExtracts/acetonitrile-2Butanol-bubble-j.jct.2006.07.014.dat";
+        source    "IN-SAMPLE (fitted): doi 10.1016/j.jct.2006.07.014";
+    }
+);
