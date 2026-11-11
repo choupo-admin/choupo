@@ -558,6 +558,30 @@ def main() -> int:
                    "    s_298     365.1;         // J/(mol K)  [ESTIMATE: Joback, enters nothing here]\n"
                    "    referenceState  idealGas;\n")
         src8 = T / "steady/reactors/cstr08_furusawa_bistable"
+        #  THE REFUSING PROBES MUST LACK THE DATUM EVERYWHERE, NOT ONLY IN THE
+        #  CASE.  A case-local record without `overlayOf` is a full shadow by
+        #  TOP-LEVEL KEY (src/thermo/Database.cpp, the `[overlay]` branch): a
+        #  key it drops is filled from a catalogue record of the same name.
+        #  C292 (8b7fa758e, 2026-11-10) put a 12Propanediol record in
+        #  data/standards/components with a fitted liquid Cp and a Joback
+        #  ideal-gas datum, so dropping either block from the case's record
+        #  no longer left the engine without it, and the four refusals below
+        #  went green-to-red although the CSTR/PFR pre-checks never changed
+        #  (the energy balance then ran on the catalogue's values, which it
+        #  HAS).  The refusing probes therefore rename the glycol to a name no
+        #  catalogue carries, and refuse to run if one ever does.
+        glyc_only = "12PropanediolCaseOnly"
+
+        def case_only(c):
+            if (ROOT / "data/standards/components" / (glyc_only + ".dat")).exists():
+                failures.append("R9/R10: data/standards/components/" + glyc_only
+                                + ".dat exists -- the refusing probes would be backfilled")
+                return False
+            for rel in ("constant/thermoPhysPropDict", "constant/reactions", glyc):
+                p = c / rel
+                p.write_text(re.sub(r"\b12Propanediol\b", glyc_only, p.read_text()))
+            (c / glyc).rename(c / ("constant/components/" + glyc_only + ".dat"))
+            return True
         ok = True
         d9 = probe(src8, td / "r9_liquid")
         if True:
@@ -570,7 +594,8 @@ def main() -> int:
                     ok = False
         d9b = probe(src8, td / "r9_noCp")
         if edit(
-                d9b / glyc, "liquidHeatCapacity", "liquidHeatCapacityOFF", "R9"):
+                d9b / glyc, "liquidHeatCapacity", "liquidHeatCapacityOFF", "R9") \
+                and case_only(d9b):
             if not expect_refusal("R9 (pureLiquid, no liquid Cp)", d9b,
                                   ["12Propanediol", "pureLiquid", "liquidHeatCapacity"]):
                 ok = False
@@ -586,7 +611,7 @@ def main() -> int:
         i0 = t9.index("standardThermochemistry\n{")
         i1 = t9.index("}", i0) + 1
         std.write_text(t9[:i0] + t9[i1:])
-        if not expect_refusal("R9 (no block at all)", d9c,
+        if not case_only(d9c) or not expect_refusal("R9 (no block at all)", d9c,
                               ["12Propanediol", "has no `standardThermochemistry` block"]):
             ok = False
         if ok:
@@ -617,6 +642,8 @@ def main() -> int:
             if drop_cp and not edit(c / glyc, "liquidHeatCapacity",
                                     "liquidHeatCapacityOFF", "R10"):
                 return None
+            if drop_cp and not case_only(c):
+                return None
             return c
 
         c10 = as_pfr(td / "r10_gasRung", False)
@@ -645,7 +672,7 @@ def main() -> int:
             t9 = std.read_text()
             i0 = t9.index("standardThermochemistry\n{")
             std.write_text(t9[:i0] + t9[t9.index("}", i0) + 1:])
-            if not expect_refusal("R10 (no block at all)", c10,
+            if not case_only(c10) or not expect_refusal("R10 (no block at all)", c10,
                                   ["PFR:", "12Propanediol", "has none"]):
                 ok = False
         if ok:
