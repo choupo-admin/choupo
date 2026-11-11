@@ -9,8 +9,8 @@
   (10 points fitted, 2 interleaved points held out).
   Outside it the record is an extrapolation; off 25 C it carries no
   temperature extension of its own.
-  GRADE: in-sample max error 3.39 % -> warning;
-  the held-out points 2.77 % (warning).  No human has
+  GRADE: in-sample max error 2.31 % -> warning;
+  the held-out points 1.74 % (clean).  No human has
   reviewed it.  REPRODUCE: run data/curation/electrolytes/Cs-SO4; its proposal is held equal to this
   record by bin/curate/check_regressed_electrolytes.py.
 \*-----------------------------------------------------------------------------*/
@@ -23,8 +23,8 @@ pair { cation Cs; anion SO4; }
 
 parameters
 {
-    tau_m_ca 2.994173461;
-    tau_ca_m -1.630997953;
+    tau_m_ca 7.926987401;
+    tau_ca_m -3.948396184;
     alpha    0.2;
 }
 
@@ -39,7 +39,7 @@ provenance
     reviewStatus  autoPromoted;
     fitGrade      warning;   // DEV.md 4c C311: max relative error of gamma_pm or phi over the fitted points, graded 2 / 5 / 10 %
     fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
-    fitGradeMaxRelativeError_pct 3.3926;
+    fitGradeMaxRelativeError_pct 2.3140;
     promotedBy    "bin/curate/electrolytes_c311.py promote";
     promotedDate  "2026-11-11";
     reviewReason  "regressed by bin/curate/electrolytes_c311.py from a hand-checked transcription of an evaluated table; not yet read back by a human";
@@ -56,19 +56,19 @@ provenance
     );
     inSample
     {
-        gammaAAD_pct 1.9157;
-        phiAAD_pct   0.9249;
-        max_pct      3.3926;
+        gammaAAD_pct 0.8483;
+        phiAAD_pct   1.0853;
+        max_pct      2.3140;
         nPoints      10;
     }
     heldOut
     {
         kind         interleavedSameSource;   // every 4th point of the same evaluation: NOT a validation
-        gammaAAD_pct 1.8591;
-        phiAAD_pct   0.5307;
-        max_pct      2.7658;
+        gammaAAD_pct 0.5886;
+        phiAAD_pct   1.5059;
+        max_pct      1.7425;
         nPoints      2;
-        grade        warning;
+        grade        clean;
     }
     validity
     {

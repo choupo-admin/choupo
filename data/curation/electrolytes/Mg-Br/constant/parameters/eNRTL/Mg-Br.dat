@@ -9,8 +9,8 @@
   (11 points fitted, 3 interleaved points held out).
   Outside it the record is an extrapolation; off 25 C it carries no
   temperature extension of its own.
-  GRADE: in-sample max error 6.86 % -> severe;
-  the held-out points 5.87 % (severe).  No human has
+  GRADE: in-sample max error 5.97 % -> severe;
+  the held-out points 4.48 % (warning).  No human has
   reviewed it.  REPRODUCE: run data/curation/electrolytes/Mg-Br; its proposal is held equal to this
   record by bin/curate/check_regressed_electrolytes.py.
 \*-----------------------------------------------------------------------------*/
@@ -23,8 +23,8 @@ pair { cation Mg; anion Br; }
 
 parameters
 {
-    tau_m_ca 9.993324621;
-    tau_ca_m -5.360079765;
+    tau_m_ca 9.623722777;
+    tau_ca_m -5.102184277;
     alpha    0.2;
 }
 
@@ -39,7 +39,7 @@ provenance
     reviewStatus  autoPromoted;
     fitGrade      severe;   // DEV.md 4c C311: max relative error of gamma_pm or phi over the fitted points, graded 2 / 5 / 10 %
     fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
-    fitGradeMaxRelativeError_pct 6.8620;
+    fitGradeMaxRelativeError_pct 5.9655;
     promotedBy    "bin/curate/electrolytes_c311.py promote";
     promotedDate  "2026-11-11";
     reviewReason  "regressed by bin/curate/electrolytes_c311.py from a hand-checked transcription of an evaluated table; not yet read back by a human";
@@ -56,19 +56,19 @@ provenance
     );
     inSample
     {
-        gammaAAD_pct 3.2466;
-        phiAAD_pct   3.4104;
-        max_pct      6.8620;
+        gammaAAD_pct 3.2640;
+        phiAAD_pct   2.4726;
+        max_pct      5.9655;
         nPoints      11;
     }
     heldOut
     {
         kind         interleavedSameSource;   // every 4th point of the same evaluation: NOT a validation
-        gammaAAD_pct 2.4197;
-        phiAAD_pct   3.7031;
-        max_pct      5.8725;
+        gammaAAD_pct 2.8050;
+        phiAAD_pct   2.2350;
+        max_pct      4.4831;
         nPoints      3;
-        grade        severe;
+        grade        warning;
     }
     validity
     {

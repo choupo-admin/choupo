@@ -9,8 +9,8 @@
   (11 points fitted, 3 interleaved points held out).
   Outside it the record is an extrapolation; off 25 C it carries no
   temperature extension of its own.
-  GRADE: in-sample max error 3.86 % -> warning;
-  the held-out points 1.63 % (clean).  No human has
+  GRADE: in-sample max error 1.06 % -> clean (capped at warning: one temperature, one evaluation);
+  the held-out points 0.807 % (clean).  No human has
   reviewed it.  REPRODUCE: run data/curation/electrolytes/Li-SO4; its proposal is held equal to this
   record by bin/curate/check_regressed_electrolytes.py.
 \*-----------------------------------------------------------------------------*/
@@ -23,8 +23,8 @@ pair { cation Li; anion SO4; }
 
 parameters
 {
-    tau_m_ca 3.859270842;
-    tau_ca_m -2.417501058;
+    tau_m_ca 7.666687;
+    tau_ca_m -3.946351855;
     alpha    0.2;
 }
 
@@ -39,7 +39,8 @@ provenance
     reviewStatus  autoPromoted;
     fitGrade      warning;   // DEV.md 4c C311: max relative error of gamma_pm or phi over the fitted points, graded 2 / 5 / 10 %
     fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
-    fitGradeMaxRelativeError_pct 3.8581;
+    fitGradeCap   ( singleTemperature singleLaboratory );   // DEV.md 4c C300 rule 2: in-sample clean, capped -- one temperature, one evaluation
+    fitGradeMaxRelativeError_pct 1.0550;
     promotedBy    "bin/curate/electrolytes_c311.py promote";
     promotedDate  "2026-11-11";
     reviewReason  "regressed by bin/curate/electrolytes_c311.py from a hand-checked transcription of an evaluated table; not yet read back by a human";
@@ -56,17 +57,17 @@ provenance
     );
     inSample
     {
-        gammaAAD_pct 1.1468;
-        phiAAD_pct   0.7414;
-        max_pct      3.8581;
+        gammaAAD_pct 0.4699;
+        phiAAD_pct   0.5339;
+        max_pct      1.0550;
         nPoints      11;
     }
     heldOut
     {
         kind         interleavedSameSource;   // every 4th point of the same evaluation: NOT a validation
-        gammaAAD_pct 1.0423;
-        phiAAD_pct   0.4845;
-        max_pct      1.6315;
+        gammaAAD_pct 0.4905;
+        phiAAD_pct   0.5962;
+        max_pct      0.8074;
         nPoints      3;
         grade        clean;
     }

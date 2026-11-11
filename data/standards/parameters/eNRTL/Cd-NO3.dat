@@ -9,8 +9,8 @@
   (11 points fitted, 3 interleaved points held out).
   Outside it the record is an extrapolation; off 25 C it carries no
   temperature extension of its own.
-  GRADE: in-sample max error 4.72 % -> warning;
-  the held-out points 4.02 % (warning).  No human has
+  GRADE: in-sample max error 3.93 % -> warning;
+  the held-out points 2.86 % (warning).  No human has
   reviewed it.  REPRODUCE: run data/curation/electrolytes/Cd-NO3; its proposal is held equal to this
   record by bin/curate/check_regressed_electrolytes.py.
 \*-----------------------------------------------------------------------------*/
@@ -23,8 +23,8 @@ pair { cation Cd; anion NO3; }
 
 parameters
 {
-    tau_m_ca 6.186096155;
-    tau_ca_m -3.720859895;
+    tau_m_ca 6.385828633;
+    tau_ca_m -3.686294269;
     alpha    0.2;
 }
 
@@ -39,7 +39,7 @@ provenance
     reviewStatus  autoPromoted;
     fitGrade      warning;   // DEV.md 4c C311: max relative error of gamma_pm or phi over the fitted points, graded 2 / 5 / 10 %
     fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
-    fitGradeMaxRelativeError_pct 4.7171;
+    fitGradeMaxRelativeError_pct 3.9252;
     promotedBy    "bin/curate/electrolytes_c311.py promote";
     promotedDate  "2026-11-11";
     reviewReason  "regressed by bin/curate/electrolytes_c311.py from a hand-checked transcription of an evaluated table; not yet read back by a human";
@@ -56,17 +56,17 @@ provenance
     );
     inSample
     {
-        gammaAAD_pct 2.3465;
-        phiAAD_pct   1.1260;
-        max_pct      4.7171;
+        gammaAAD_pct 1.8346;
+        phiAAD_pct   1.6769;
+        max_pct      3.9252;
         nPoints      11;
     }
     heldOut
     {
         kind         interleavedSameSource;   // every 4th point of the same evaluation: NOT a validation
-        gammaAAD_pct 2.3420;
-        phiAAD_pct   1.0920;
-        max_pct      4.0190;
+        gammaAAD_pct 1.4133;
+        phiAAD_pct   1.6387;
+        max_pct      2.8618;
         nPoints      3;
         grade        warning;
     }

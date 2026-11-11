@@ -9,8 +9,8 @@
   (11 points fitted, 3 interleaved points held out).
   Outside it the record is an extrapolation; off 25 C it carries no
   temperature extension of its own.
-  GRADE: in-sample max error 6.68 % -> severe;
-  the held-out points 6.37 % (severe).  No human has
+  GRADE: in-sample max error 2.87 % -> warning;
+  the held-out points 2.31 % (warning).  No human has
   reviewed it.  REPRODUCE: run data/curation/electrolytes/Na-HPO4; its proposal is held equal to this
   record by bin/curate/check_regressed_electrolytes.py.
 \*-----------------------------------------------------------------------------*/
@@ -23,8 +23,8 @@ pair { cation Na; anion HPO4; }
 
 parameters
 {
-    tau_m_ca 0.4012541614;
-    tau_ca_m 2.649060034;
+    tau_m_ca 6.107318398;
+    tau_ca_m -2.935253189;
     alpha    0.2;
 }
 
@@ -37,9 +37,9 @@ provenance
     methodVersion "choupoProps Choupo-dev";
     fittedInCase  "data/curation/electrolytes/Na-HPO4";
     reviewStatus  autoPromoted;
-    fitGrade      severe;   // DEV.md 4c C311: max relative error of gamma_pm or phi over the fitted points, graded 2 / 5 / 10 %
+    fitGrade      warning;   // DEV.md 4c C311: max relative error of gamma_pm or phi over the fitted points, graded 2 / 5 / 10 %
     fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
-    fitGradeMaxRelativeError_pct 6.6822;
+    fitGradeMaxRelativeError_pct 2.8651;
     promotedBy    "bin/curate/electrolytes_c311.py promote";
     promotedDate  "2026-11-11";
     reviewReason  "regressed by bin/curate/electrolytes_c311.py from a hand-checked transcription of an evaluated table; not yet read back by a human";
@@ -56,19 +56,19 @@ provenance
     );
     inSample
     {
-        gammaAAD_pct 1.2133;
-        phiAAD_pct   3.4097;
-        max_pct      6.6822;
+        gammaAAD_pct 1.0656;
+        phiAAD_pct   1.5197;
+        max_pct      2.8651;
         nPoints      11;
     }
     heldOut
     {
         kind         interleavedSameSource;   // every 4th point of the same evaluation: NOT a validation
-        gammaAAD_pct 0.6326;
-        phiAAD_pct   4.1832;
-        max_pct      6.3735;
+        gammaAAD_pct 0.8946;
+        phiAAD_pct   1.4459;
+        max_pct      2.3129;
         nPoints      3;
-        grade        severe;
+        grade        warning;
     }
     validity
     {

@@ -9,8 +9,8 @@
   (15 points fitted, 4 interleaved points held out).
   Outside it the record is an extrapolation; off 25 C it carries no
   temperature extension of its own.
-  GRADE: in-sample max error 6.95 % -> severe;
-  the held-out points 5.48 % (severe).  No human has
+  GRADE: in-sample max error 7.38 % -> severe;
+  the held-out points 5.02 % (severe).  No human has
   reviewed it.  REPRODUCE: run data/curation/electrolytes/Sr-I; its proposal is held equal to this
   record by bin/curate/check_regressed_electrolytes.py.
 \*-----------------------------------------------------------------------------*/
@@ -23,8 +23,8 @@ pair { cation Sr; anion I; }
 
 parameters
 {
-    tau_m_ca 9.296966408;
-    tau_ca_m -5.095859634;
+    tau_m_ca -5.949112642;
+    tau_ca_m -2.331208674;
     alpha    0.2;
 }
 
@@ -39,7 +39,7 @@ provenance
     reviewStatus  autoPromoted;
     fitGrade      severe;   // DEV.md 4c C311: max relative error of gamma_pm or phi over the fitted points, graded 2 / 5 / 10 %
     fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
-    fitGradeMaxRelativeError_pct 6.9489;
+    fitGradeMaxRelativeError_pct 7.3849;
     promotedBy    "bin/curate/electrolytes_c311.py promote";
     promotedDate  "2026-11-11";
     reviewReason  "regressed by bin/curate/electrolytes_c311.py from a hand-checked transcription of an evaluated table; not yet read back by a human";
@@ -56,17 +56,17 @@ provenance
     );
     inSample
     {
-        gammaAAD_pct 3.6911;
-        phiAAD_pct   3.1882;
-        max_pct      6.9489;
+        gammaAAD_pct 3.2929;
+        phiAAD_pct   2.6612;
+        max_pct      7.3849;
         nPoints      15;
     }
     heldOut
     {
         kind         interleavedSameSource;   // every 4th point of the same evaluation: NOT a validation
-        gammaAAD_pct 2.6818;
-        phiAAD_pct   2.9686;
-        max_pct      5.4757;
+        gammaAAD_pct 2.2166;
+        phiAAD_pct   2.5938;
+        max_pct      5.0169;
         nPoints      4;
         grade        severe;
     }
