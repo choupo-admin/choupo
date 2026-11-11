@@ -1,0 +1,57 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of diNPropylEther
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/diNPropylEther-vapourPressure-j.fluid.2006.06.017.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1016/j.fluid.2006.06.017";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2006.06.017.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2006.06.017.json";
+        articleFile   "j.fluid.2006.06.017.xml";
+        articleSha256 "d401b8185db8ece41d83c2d7aea8b9d6e3398e5a6e065d1eea7704065e51cb2f";
+        extractor     vapourPressure;
+        inchiKey      "POLCUAVZOMRGSN-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey POLCUAVZOMRGSN-UHFFFAOYSA-N --into <dir>";
+        sha256        "e9bd5921a507a21eee7fd456957c1f708dbe1b780800ea5cfb01e56d608bc385";
+        identity
+        {
+            diNPropylEther { cas "111-43-3"; inchiKey "POLCUAVZOMRGSN-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/diNPropylEther-vapourPressure-acs.jced.6b00587.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/acs.jced.6b00587";
+        url           "https://trc.nist.gov/ThermoML/10.1021/acs.jced.6b00587.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/acs.jced.6b00587.json";
+        articleFile   "acs.jced.6b00587.xml";
+        articleSha256 "06357bf87a7c8a93b580a6eccbd282c239ddb4bb3e442872842ff4d035d7184b";
+        extractor     vapourPressure;
+        inchiKey      "POLCUAVZOMRGSN-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey POLCUAVZOMRGSN-UHFFFAOYSA-N --into <dir>";
+        sha256        "6306274c4a7a99b723961b97de67db019bbf0651c7e7bb42bd2f4bfe69a00300";
+        identity
+        {
+            diNPropylEther { cas "111-43-3"; inchiKey "POLCUAVZOMRGSN-UHFFFAOYSA-N"; }
+        }
+    }
+);
