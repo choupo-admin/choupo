@@ -62,6 +62,33 @@
       least-squares stage.
   @@OUTLIERS-END@@
 
+  @@MODELS-BEGIN@@
+  THE OTHER ACTIVITY MODELS (DEV.md 4c C294), declared before their fits
+  ran. The SAME datasets and the SAME kept points as fit_nrtl: each op
+  below is fit_nrtl copied verbatim -- evidence, discards, objective,
+  residual, weighting, options -- with only its parameters, its `thermo
+  {}` fragment (the model) and its outputs changed; the outlier discard
+  was decided ONCE, on the NRTL least-squares stage, and is reused, never
+  re-decided per model. UNIQUAC: two parameters a_ij, a_ji (K), tau_ij =
+  exp(-a_ij/T), b = c = 0 fixed (the NRTL default's count; temperature
+  dependence 1/T), r and q each component's own record. Wilson: two
+  parameters A_ij, A_ji (J/mol), Lambda_ij = (V_j/V_i) exp(-A_ij/RT), V
+  the records' Vliq. Two starts each. Each model gets its own record
+  (constant/parameters/<MODEL>/), its own grade at 1 / 2 / 4 K (max
+  |T_model - T|), its own one-liquid test (arm f), `fitGradeBasis
+  inSample`, the C300 cap and `review { by none; }`; a severe or refused
+  grade, or a split, is not promoted. The three in-sample residuals are
+  published side by side, never used to choose a model for the student.
+  UNIQUAC: NOT FITTED -- pCresol carries no UNIQUAC r and q (no tabulated
+  value, and no UNIFAC groups to sum them from,
+  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
+  is estimated silently. Wilson: FITTED.
+  @@MODELS-END@@
+
+  @@MODELS-RESULT-BEGIN@@
+  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  @@MODELS-RESULT-END@@
+
   @@RESULT-BEGIN@@
   WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
   fit_nrtl: b_ij = 2.6 K, b_ji = -961.8 K over 10 kept points of 1
@@ -186,6 +213,126 @@ operations
         properties  ( T_bubble  y_eq_methanol );
         output      { file txy_nrtl.csv; }
     }
+    // @@C294-OPS-BEGIN@@ -- UNIQUAC and Wilson on the NRTL fit's own evidence (DEV.md 4c C294)
+    {
+        name        fit_wilson;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.methanol-pCresol.A_ij;  initial 0;  min -30000;  max 30000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.methanol-pCresol.A_ji;  initial 0;  min -30000;  max 30000; }
+        );
+
+        thermo   // the model, as a fragment of the case's system (C294)
+        {
+            equilibrium
+            {
+                liquid
+                {
+                    activityModel
+                    {
+                        model Wilson;
+                        binaryParameters   // the FIT'S starting point
+                        {
+                            methanol-pCresol { i methanol; j pCresol; A_ij 0; A_ji 0; }
+                        }
+                    }
+                    standardState pureLiquid;
+                }
+            }
+        }
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/methanol-pCresol-bubble-j.fluid.2006.03.018.dat";
+                role     fit;
+            }
+        );
+
+        objective { method twoStage;  scale { T_bubble absolute; } }
+        residual
+        {
+            kind        T_bubble;
+            components  ( methanol pCresol );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_history_wilson.csv;
+            parity     parity_wilson.csv;
+            proposal   methanol-pCresol.Wilson.proposal.dat;
+        }
+    }
+    {
+        name        fit_wilson_start2;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.methanol-pCresol.A_ij;  initial 4000;  min -30000;  max 30000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.methanol-pCresol.A_ji;  initial -2000;  min -30000;  max 30000; }
+        );
+
+        thermo   // the model, as a fragment of the case's system (C294)
+        {
+            equilibrium
+            {
+                liquid
+                {
+                    activityModel
+                    {
+                        model Wilson;
+                        binaryParameters   // the FIT'S starting point
+                        {
+                            methanol-pCresol { i methanol; j pCresol; A_ij 0; A_ji 0; }
+                        }
+                    }
+                    standardState pureLiquid;
+                }
+            }
+        }
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/methanol-pCresol-bubble-j.fluid.2006.03.018.dat";
+                role     fit;
+            }
+        );
+
+        objective { method twoStage;  scale { T_bubble absolute; } }
+        residual
+        {
+            kind        T_bubble;
+            components  ( methanol pCresol );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            parity     parity_wilson_start2.csv;
+        }
+    }
+    // @@C294-OPS-END@@
 );
 
 experimental
