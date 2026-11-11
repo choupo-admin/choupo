@@ -102,7 +102,7 @@ provenance
     omega
     {
         origin        regressed;
-        method        "DERIVED from a fit: omega = -log10(Psat(0.7 Tc)/Pc) - 1 from the Antoine the vapour-pressure pipeline fitted (data/curation/components/furan) and the IUPAC-recommended Tc, Pc; 0.7 Tc = 343.14 K, EXTRAPOLATED +38.7 K beyond the fitted range (284.4-304.46 K)";
+        method        "DERIVED from a fit: omega = -log10(Psat(0.7 Tc)/Pc) - 1 from the Antoine the vapour-pressure pipeline fitted (data/curation/components/furan) and the IUPAC-recommended Tc, Pc; 0.7 Tc = 343.14 K, EXTRAPOLATED +38.7 K beyond the fitted range (284.4-304.46 K); cross-check (C309): omega 0.2033 from the Antoine at 0.7 Tc against Lee-Kesler 0.1955 from the fitted Antoine's own normal boiling point 304.60 K, Tc and Pc (difference +0.0078)";
         derivedBy     "bin/curate/c287_new_components.py";
         reviewStatus  autoPromoted;
         review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it

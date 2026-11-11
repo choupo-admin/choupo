@@ -109,7 +109,7 @@ provenance
     omega
     {
         origin        regressed;
-        method        "DERIVED from a fit: omega = -log10(Psat(0.7 Tc)/Pc) - 1 from the Antoine the vapour-pressure pipeline fitted (data/curation/components/1122Tetrachloroethane) and the Joback-estimated Tc, Pc; 0.7 Tc = 424.14 K, EXTRAPOLATED +5.2 K beyond the fitted range (283.15-418.95 K)";
+        method        "DERIVED from a fit: omega = -log10(Psat(0.7 Tc)/Pc) - 1 from the Antoine the vapour-pressure pipeline fitted (data/curation/components/1122Tetrachloroethane) and the Joback-estimated Tc, Pc; 0.7 Tc = 424.14 K, EXTRAPOLATED +5.2 K beyond the fitted range (283.15-418.95 K); cross-check (C309): omega 0.5652 from the Antoine at 0.7 Tc against Lee-Kesler 0.5551 from the measured Tb 419.35 K, Tc and Pc (difference +0.0101)";
         derivedBy     "bin/curate/c287_new_components.py";
         reviewStatus  autoPromoted;
         review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it

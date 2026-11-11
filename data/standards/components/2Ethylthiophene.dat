@@ -102,7 +102,7 @@ provenance
     omega
     {
         origin        regressed;
-        method        "DERIVED from a fit: omega = -log10(Psat(0.7 Tc)/Pc) - 1 from the Antoine the vapour-pressure pipeline fitted (data/curation/components/2Ethylthiophene) and the Joback-estimated Tc, Pc; 0.7 Tc = 439.50 K, EXTRAPOLATED +29.0 K beyond the fitted range (292.41-410.46 K)";
+        method        "DERIVED from a fit: omega = -log10(Psat(0.7 Tc)/Pc) - 1 from the Antoine the vapour-pressure pipeline fitted (data/curation/components/2Ethylthiophene) and the Joback-estimated Tc, Pc; 0.7 Tc = 439.50 K, EXTRAPOLATED +29.0 K beyond the fitted range (292.41-410.46 K); cross-check (C309): omega 0.3323 from the Antoine at 0.7 Tc against Lee-Kesler 0.3097 from the fitted Antoine's own normal boiling point 411.18 K, Tc and Pc (difference +0.0226)";
         derivedBy     "bin/curate/c287_new_components.py";
         reviewStatus  autoPromoted;
         review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it

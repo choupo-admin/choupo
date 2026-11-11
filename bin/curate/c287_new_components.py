@@ -269,7 +269,8 @@ CANDIDATES = CANDIDATES + CANDIDATES2
 #  beyond the measured vapour pressures, so omega (the definition, at
 #  Tr = 0.7) would be an extrapolation of an Antoine by 58-237 K.  Their
 #  records and cases are not shipped until Vitor rules how omega is taken.
-HELD = ["25Dimethylfuran", "methylTetradecanoate", "13Propanediamine", "di2EthylhexylPhthalate",
+HELD = ["25Dimethylfuran", "epichlorohydrin", "222Trifluoroethanol", "2HydroxyethylAcetate",
+        "methylTetradecanoate", "13Propanediamine", "di2EthylhexylPhthalate",
         "ethylLevulinate", "16Hexanediamine", "butylLevulinate",
         "glycerylTrioctanoate", "glycerylTridecanoate"]
 
@@ -658,6 +659,30 @@ RACKETT_TREF = 298.15
 #  0.7 Tc only when 0.7 Tc lies within this distance of the fitted range;
 #  beyond it the component is HELD, not written (see HELD).
 OMEGA_MAX_EXTRAPOLATION_K = 50.0
+#  OMEGA SANITY (DEV.md 4c C309, the architect's rule of 2026-11-11), applied to
+#  every record C309 writes: (a) Tc or Pc estimated and |omega - omega_LK| >
+#  0.10, or omega outside [0, 0.8] for a molecule below C12 -> HELD; (b) Tc and
+#  Pc measured, 0.7 Tc more than 25 K beyond the fitted vapour pressures and
+#  |omega - omega_LK| > 0.05 -> written, omega graded warning, both values kept.
+OMEGA_LK_TOL_EST = 0.10
+OMEGA_LK_TOL_MEAS = 0.05
+OMEGA_LK_EXTRAP_K = 25.0
+
+
+def lee_kesler_omega(Tb, Tc, Pc_bar):
+    """Lee & Kesler, AIChE J. 21 (1975) 510, the vapour-pressure form solved for
+    omega at the normal boiling point, Pc in atm:
+        omega = [-ln Pc - 5.92714 + 6.09648/t + 1.28862 ln t - 0.169347 t^6]
+              / [15.2518 - 15.6875/t - 13.4721 ln t + 0.43577 t^6],  t = Tb/Tc.
+    Checked: benzene (353.24, 562.05 K, 48.95 bar) 0.208 against 0.210; n-hexane
+    0.298 against 0.300.  NOTE: src/thermo/DerivedClosures.H leeKeslerOmega
+    carries 5.97214 (two digits transposed), which raises omega by 0.013-0.018
+    on those two; reported, not changed here (DEV.md 4c C309)."""
+    th = Tb / Tc
+    Pa = Pc_bar / 1.01325
+    a = -math.log(Pa) - 5.92714 + 6.09648 / th + 1.28862 * math.log(th) - 0.169347 * th ** 6
+    b = 15.2518 - 15.6875 / th - 13.4721 * math.log(th) + 0.43577 * th ** 6
+    return a / b
 
 
 class Held(Exception):
@@ -1213,6 +1238,34 @@ def build(c, data, sha, provisional):
                    f"more than the stated {OMEGA_MAX_EXTRAPOLATION_K:g} K -- HELD for Vitor "
                    "(DEV.md 4c C287): a three-parameter Antoine carried that far gives an "
                    "omega nobody can defend (butylLevulinate: 0.096)")
+        #  OMEGA SANITY (DEV.md 4c C309, architect's rule, 2026-11-11): a second,
+        #  independent omega by Lee-Kesler from Tb, Tc, Pc (lee_kesler_omega).
+        sane_note, sane_grade = "", None
+        if c309 or name in IUPAC:
+            if Tb:
+                Tb_lk, tb_word = Tb[0], f"the measured Tb {Tb[0]:g} K"
+            else:
+                Tb_lk = ant["B"] / (ant["A"] - math.log10(1.01325)) - ant["C"]
+                tb_word = f"the fitted Antoine's own normal boiling point {Tb_lk:.2f} K"
+            w_lk = lee_kesler_omega(Tb_lk, Tc, Pc)
+            dw = omega - w_lk
+            nC = formula_counts(formula).get("C", 0)
+            crit_est = Tc_route == "joback" or Pc_route == "joback"
+            both = (f"omega {omega:.4f} from the Antoine at 0.7 Tc against Lee-Kesler {w_lk:.4f} "
+                    f"from {tb_word}, Tc and Pc (difference {dw:+.4f})")
+            if crit_est and abs(dw) > OMEGA_LK_TOL_EST:
+                raise Held(f"{name}: HELD (C309 omega sanity, rule a): Tc or Pc is a Joback estimate "
+                           f"and {both}, more than {OMEGA_LK_TOL_EST:g} apart")
+            if crit_est and nC < 12 and not (0.0 <= omega <= 0.8):
+                raise Held(f"{name}: HELD (C309 omega sanity, rule a): Tc or Pc is a Joback estimate "
+                           f"and omega {omega:.4f} lies outside [0, 0.8] for a C{nC} molecule ({both})")
+            if not crit_est and beyond > OMEGA_LK_EXTRAP_K and abs(dw) > OMEGA_LK_TOL_MEAS:
+                sane_grade = "warning"
+                sane_note = (f"; OMEGA SANITY (C309 rule b): 0.7 Tc lies {beyond:.1f} K beyond the "
+                             f"fitted vapour pressures (more than {OMEGA_LK_EXTRAP_K:g} K) and {both}, "
+                             f"more than {OMEGA_LK_TOL_MEAS:g} apart -- graded warning, both kept here")
+            else:
+                sane_note = f"; cross-check (C309): {both}"
         extra = ("inside the fitted range" if ant["Tmin"] <= T7 <= ant["Tmax"] else
                  f"EXTRAPOLATED {T7 - ant['Tmax']:+.1f} K beyond the fitted range "
                  f"({ant['Tmin']:g}-{ant['Tmax']:g} K)" if T7 > ant["Tmax"] else
@@ -1220,8 +1273,9 @@ def build(c, data, sha, provisional):
         omega_entry = (
             "    omega\n    {\n"
             "        origin        regressed;\n"
-            f'        method        "DERIVED from a fit: omega = -log10(Psat(0.7 Tc)/Pc) - 1 from the Antoine the vapour-pressure pipeline fitted ({case.relative_to(ROOT).as_posix()}) and the {crit_words} Tc, Pc; 0.7 Tc = {T7:.2f} K, {extra}";\n'
-            f'        derivedBy     "{TOOL}";\n'
+            f'        method        "DERIVED from a fit: omega = -log10(Psat(0.7 Tc)/Pc) - 1 from the Antoine the vapour-pressure pipeline fitted ({case.relative_to(ROOT).as_posix()}) and the {crit_words} Tc, Pc; 0.7 Tc = {T7:.2f} K, {extra}{sane_note}";\n'
+            + (f"        fitGrade      {sane_grade};   // DEV.md 4c C309 omega sanity, rule b\n" if sane_grade else "")
+            + f'        derivedBy     "{TOOL}";\n'
             "        reviewStatus  autoPromoted;\n"
             "        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it\n"
             '        reviewReason  "derived by a machine; read it with the fitGrade of the vapour pressure it comes from";\n'

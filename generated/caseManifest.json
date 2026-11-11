@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 776,
+  "cases": 773,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 15
@@ -319,22 +319,6 @@
    ],
    "hasGolden": true
   },
-  "data/curation/components/222Trifluoroethanol": {
-   "application": "choupoProps",
-   "ops": [
-    "vaporPressureFit"
-   ],
-   "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "ideal"
-    ]
-   },
-   "roles": [
-    "curationTrace"
-   ],
-   "hasGolden": true
-  },
   "data/curation/components/244Trimethyl1Pentene": {
    "application": "choupoProps",
    "ops": [
@@ -464,22 +448,6 @@
    "hasGolden": true
   },
   "data/curation/components/2Ethylthiophene": {
-   "application": "choupoProps",
-   "ops": [
-    "vaporPressureFit"
-   ],
-   "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "ideal"
-    ]
-   },
-   "roles": [
-    "curationTrace"
-   ],
-   "hasGolden": true
-  },
-  "data/curation/components/2HydroxyethylAcetate": {
    "application": "choupoProps",
    "ops": [
     "vaporPressureFit"
@@ -960,22 +928,6 @@
    "hasGolden": true
   },
   "data/curation/components/diphenylmethane": {
-   "application": "choupoProps",
-   "ops": [
-    "vaporPressureFit"
-   ],
-   "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "ideal"
-    ]
-   },
-   "roles": [
-    "curationTrace"
-   ],
-   "hasGolden": true
-  },
-  "data/curation/components/epichlorohydrin": {
    "application": "choupoProps",
    "ops": [
     "vaporPressureFit"
@@ -12024,7 +11976,6 @@
     "data/curation/components/1Octanol",
     "data/curation/components/1Pentanamine",
     "data/curation/components/1Propoxy2Propanol",
-    "data/curation/components/222Trifluoroethanol",
     "data/curation/components/244Trimethyl1Pentene",
     "data/curation/components/2Amino2Methyl1Propanol",
     "data/curation/components/2Butoxyethanol",
@@ -12034,7 +11985,6 @@
     "data/curation/components/2Ethoxypropene",
     "data/curation/components/2Ethyl1Hexanol",
     "data/curation/components/2Ethylthiophene",
-    "data/curation/components/2HydroxyethylAcetate",
     "data/curation/components/2Methoxyethanol",
     "data/curation/components/2Methylfuran",
     "data/curation/components/2Methyltetrahydrofuran",
@@ -12065,7 +12015,6 @@
     "data/curation/components/dimethylSulfoxide",
     "data/curation/components/dimethylethanolamine",
     "data/curation/components/diphenylmethane",
-    "data/curation/components/epichlorohydrin",
     "data/curation/components/ethylButanoate",
     "data/curation/components/ethylDecanoate",
     "data/curation/components/ethylHexanoate",
@@ -13738,7 +13687,6 @@
     "data/curation/components/1Octanol",
     "data/curation/components/1Pentanamine",
     "data/curation/components/1Propoxy2Propanol",
-    "data/curation/components/222Trifluoroethanol",
     "data/curation/components/244Trimethyl1Pentene",
     "data/curation/components/2Amino2Methyl1Propanol",
     "data/curation/components/2Butoxyethanol",
@@ -13748,7 +13696,6 @@
     "data/curation/components/2Ethoxypropene",
     "data/curation/components/2Ethyl1Hexanol",
     "data/curation/components/2Ethylthiophene",
-    "data/curation/components/2HydroxyethylAcetate",
     "data/curation/components/2Methoxyethanol",
     "data/curation/components/2Methylfuran",
     "data/curation/components/2Methyltetrahydrofuran",
@@ -13779,7 +13726,6 @@
     "data/curation/components/dimethylSulfoxide",
     "data/curation/components/dimethylethanolamine",
     "data/curation/components/diphenylmethane",
-    "data/curation/components/epichlorohydrin",
     "data/curation/components/ethylButanoate",
     "data/curation/components/ethylDecanoate",
     "data/curation/components/ethylHexanoate",
@@ -14845,7 +14791,6 @@
     "data/curation/components/1Octanol",
     "data/curation/components/1Pentanamine",
     "data/curation/components/1Propoxy2Propanol",
-    "data/curation/components/222Trifluoroethanol",
     "data/curation/components/244Trimethyl1Pentene",
     "data/curation/components/2Amino2Methyl1Propanol",
     "data/curation/components/2Butoxyethanol",
@@ -14855,7 +14800,6 @@
     "data/curation/components/2Ethoxypropene",
     "data/curation/components/2Ethyl1Hexanol",
     "data/curation/components/2Ethylthiophene",
-    "data/curation/components/2HydroxyethylAcetate",
     "data/curation/components/2Methoxyethanol",
     "data/curation/components/2Methylfuran",
     "data/curation/components/2Methyltetrahydrofuran",
@@ -14886,7 +14830,6 @@
     "data/curation/components/dimethylSulfoxide",
     "data/curation/components/dimethylethanolamine",
     "data/curation/components/diphenylmethane",
-    "data/curation/components/epichlorohydrin",
     "data/curation/components/ethylButanoate",
     "data/curation/components/ethylDecanoate",
     "data/curation/components/ethylHexanoate",

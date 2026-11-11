@@ -8,5 +8,5 @@
 \*-----------------------------------------------------------------------------*/
 
 application   choupoProps;
-description   "The 41 C309 components (slice 3 of C287: Tc, Pc from the IUPAC series where it recommends them, liquid Cp from Zabransky where a supplement recommends it): their Joback estimates reproduced, and Psat, liquid Cp and liquid density evaluated";
+description   "The 38 C309 components (slice 3 of C287: Tc, Pc from the IUPAC series where it recommends them, liquid Cp from Zabransky where a supplement recommends it): their Joback estimates reproduced, and Psat, liquid Cp and liquid density evaluated";
 verbosity     2;

@@ -3,7 +3,7 @@
   "latestRelease": "Choupo-2608",
   "latestReleasedAt": "2026-09-02",
   "catalogue": {
-    "components": 690,
+    "components": 687,
     "aqueousSpecies": 53,
     "nrtlPairs": 132,
     "wilsonPairs": 0,
@@ -30,11 +30,11 @@
     }
   },
   "curationTraces": {
-    "cases": 243,
-    "regressionChecks": 243,
+    "cases": 240,
+    "regressionChecks": 240,
     "byOrigin": {
       "pairs": 134,
-      "components": 106,
+      "components": 103,
       "batches": 3
     }
   },

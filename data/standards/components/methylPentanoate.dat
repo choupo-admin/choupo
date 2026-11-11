@@ -103,7 +103,7 @@ provenance
     omega
     {
         origin        regressed;
-        method        "DERIVED from a fit: omega = -log10(Psat(0.7 Tc)/Pc) - 1 from the Antoine the vapour-pressure pipeline fitted (data/curation/components/methylPentanoate) and the IUPAC-recommended Tc, Pc; 0.7 Tc = 413.00 K, inside the fitted range";
+        method        "DERIVED from a fit: omega = -log10(Psat(0.7 Tc)/Pc) - 1 from the Antoine the vapour-pressure pipeline fitted (data/curation/components/methylPentanoate) and the IUPAC-recommended Tc, Pc; 0.7 Tc = 413.00 K, inside the fitted range; cross-check (C309): omega 0.3305 from the Antoine at 0.7 Tc against Lee-Kesler 0.3377 from the fitted Antoine's own normal boiling point 399.15 K, Tc and Pc (difference -0.0072)";
         derivedBy     "bin/curate/c287_new_components.py";
         reviewStatus  autoPromoted;
         review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it

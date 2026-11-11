@@ -7,7 +7,7 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  new_components_c309 -- the 41 components DEV.md 4c C309 (slice 3 of
+  new_components_c309 -- the 38 components DEV.md 4c C309 (slice 3 of
   C287) added to the catalogue, loaded and exercised.  Written by
   `bin/curate/c287_new_components.py case`.
   Tc and Pc come from the IUPAC critical-property series where it recommends
@@ -145,12 +145,6 @@ operations
         groups      ( { group CH3; count 2; } { group CH2; count 4; } { group ether; count 1; } );
     }
     {
-        name        joback_epichlorohydrin;
-        type        estimateComponent;
-        component   epichlorohydrin;
-        groups      ( { group rCH2; count 1; } { group rCH; count 1; } { group etherRing; count 1; } { group CH2; count 1; } { group Cl; count 1; } );
-    }
-    {
         name        joback_2Ethylthiophene;
         type        estimateComponent;
         component   2Ethylthiophene;
@@ -163,22 +157,10 @@ operations
         groups      ( { group CH3; count 2; } { group CH2; count 3; } { group ester; count 1; } );
     }
     {
-        name        joback_222Trifluoroethanol;
-        type        estimateComponent;
-        component   222Trifluoroethanol;
-        groups      ( { group CH2; count 1; } { group C; count 1; } { group F; count 3; } { group OH; count 1; } );
-    }
-    {
         name        joback_tertButylAcetate;
         type        estimateComponent;
         component   tertButylAcetate;
         groups      ( { group CH3; count 4; } { group C; count 1; } { group ester; count 1; } );
-    }
-    {
-        name        joback_2HydroxyethylAcetate;
-        type        estimateComponent;
-        component   2HydroxyethylAcetate;
-        groups      ( { group CH3; count 1; } { group CH2; count 2; } { group OH; count 1; } { group ester; count 1; } );
     }
     {
         name        joback_1Methoxy2PropylAcetate;
@@ -429,14 +411,6 @@ operations
         output      { file smoke_diNPropylEther.csv; }
     }
     {
-        name        smoke_epichlorohydrin;
-        type        propertyScan1D;
-        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
-        state       { P 1 bar;  composition { epichlorohydrin 1.0; } }
-        properties  ( Psat_epichlorohydrin  Cp_liquid_epichlorohydrin  rho_liquid_epichlorohydrin );
-        output      { file smoke_epichlorohydrin.csv; }
-    }
-    {
         name        smoke_2Ethylthiophene;
         type        propertyScan1D;
         vary        { variable T;  from 300 K;  to 340 K;  n 3; }
@@ -453,28 +427,12 @@ operations
         output      { file smoke_methylPentanoate.csv; }
     }
     {
-        name        smoke_222Trifluoroethanol;
-        type        propertyScan1D;
-        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
-        state       { P 1 bar;  composition { 222Trifluoroethanol 1.0; } }
-        properties  ( Psat_222Trifluoroethanol  Cp_liquid_222Trifluoroethanol  rho_liquid_222Trifluoroethanol );
-        output      { file smoke_222Trifluoroethanol.csv; }
-    }
-    {
         name        smoke_tertButylAcetate;
         type        propertyScan1D;
         vary        { variable T;  from 300 K;  to 340 K;  n 3; }
         state       { P 1 bar;  composition { tertButylAcetate 1.0; } }
         properties  ( Psat_tertButylAcetate  Cp_liquid_tertButylAcetate  rho_liquid_tertButylAcetate );
         output      { file smoke_tertButylAcetate.csv; }
-    }
-    {
-        name        smoke_2HydroxyethylAcetate;
-        type        propertyScan1D;
-        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
-        state       { P 1 bar;  composition { 2HydroxyethylAcetate 1.0; } }
-        properties  ( Psat_2HydroxyethylAcetate  Cp_liquid_2HydroxyethylAcetate  rho_liquid_2HydroxyethylAcetate );
-        output      { file smoke_2HydroxyethylAcetate.csv; }
     }
     {
         name        smoke_1Methoxy2PropylAcetate;

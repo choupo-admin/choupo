@@ -101,7 +101,7 @@ provenance
     omega
     {
         origin        regressed;
-        method        "DERIVED from a fit: omega = -log10(Psat(0.7 Tc)/Pc) - 1 from the Antoine the vapour-pressure pipeline fitted (data/curation/components/2Amino2Methyl1Propanol) and the Joback-estimated Tc, Pc; 0.7 Tc = 447.67 K, inside the fitted range";
+        method        "DERIVED from a fit: omega = -log10(Psat(0.7 Tc)/Pc) - 1 from the Antoine the vapour-pressure pipeline fitted (data/curation/components/2Amino2Methyl1Propanol) and the Joback-estimated Tc, Pc; 0.7 Tc = 447.67 K, inside the fitted range; cross-check (C309): omega 0.5309 from the Antoine at 0.7 Tc against Lee-Kesler 0.5461 from the fitted Antoine's own normal boiling point 436.94 K, Tc and Pc (difference -0.0152)";
         derivedBy     "bin/curate/c287_new_components.py";
         reviewStatus  autoPromoted;
         review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
