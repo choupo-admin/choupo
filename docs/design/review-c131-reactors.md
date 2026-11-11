@@ -348,7 +348,7 @@ announcement good practice expects).
   normalised residual of `solver/Convergence.H` (CLAUDE.md §5) is not wired
   here; family (d).
 * **M4. Heat-of-reaction warnings off the caveat block.**
-  `ReactionHeat.cpp:113-120` and `:143-148` print "thermally NEUTRAL" and
+  `ReactionHeat.cpp:113-120` and `:144-149` print "thermally NEUTRAL" and
   "the dict value is IGNORED" to stdout only; neither reaches `AdvisoryLog`,
   so the end-of-run caveat block of a batch or dynamic run does not repeat
   them. Proposal: one `AdvisoryLog::add` at each.

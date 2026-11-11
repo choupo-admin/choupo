@@ -91,7 +91,7 @@ HeatCorrection resolveDeclaredHeat(const ThermoPackage&, comps, nu,
 ```
 
 `formation` is computed by `reactionHeat` itself -- the same
-`speciesPhaseEnthalpy(..., StandardPhase)` leg (`ReactionHeat.cpp:84`) every
+`speciesPhaseEnthalpy(..., StandardPhase)` leg (`ReactionHeat.cpp:85`) every
 ledger duty reads -- so the comparison and the duty can never price on two
 surfaces.  Each reactor then adds `C(xi) = SUM_j xi_j delta_j` in exactly
 one site per equation it solves:
@@ -178,7 +178,7 @@ esterification_meoac
 * **`phase`**: REQUIRED, `liquid` or `gas` -- the two rungs `reactionHeat`
   prices (`ReactionHeat.H:72-84`).  A third word (`solution`, `aqueous`) is
   refused by name: the comparison is on the pure STANDARD-PHASE legs
-  (`ReferenceContext::StandardPhase`, `ReactionHeat.cpp:84-86`), so any heat
+  (`ReferenceContext::StandardPhase`, `ReactionHeat.cpp:85-87`), so any heat
   of mixing in the measurement lands in `delta`.  That is said in the
   printed line, not hidden.
 * **`method`**: REQUIRED, `calorimetry | vantHoff`.  A van 't Hoff value
@@ -204,7 +204,7 @@ key.  So:
    * on branch (b) (a species lacks formation data) remains THE heat, as now
      -- the 16 toy cases are byte-identical;
    * on branch (a) (full formation data) remains the cross-check WARNING it
-     is now (`ReactionHeat.cpp:109-123`) and **never triggers a
+     is now (`ReactionHeat.cpp:110-124`) and **never triggers a
      correction**: a correction needs `source` and `reason`, which the bare
      key cannot carry.
 3. **`heatOfReaction {}` on branch (b)** (no formation datum) is the heat
@@ -402,7 +402,7 @@ reaction enthalpy, and it is NOT calorimetric:
 Run on 2026-11-10 with this worktree's `./choupoBatch` (built by `make -j1
 all` from `55540b520`) on two scratch copies of `batch07_lhhw_methylAcetate`
 (its own case-local records), isothermal, at 298.15 K and at 333.15 K; the
-`[reaction heat]` line is printed by `ReactionHeat.cpp:103-107`:
+`[reaction heat]` line is printed by `ReactionHeat.cpp:104-108`:
 
 | quantity | value (kJ/mol of extent) | where it comes from |
 |---|---|---|

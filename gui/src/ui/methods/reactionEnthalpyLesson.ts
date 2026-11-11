@@ -225,7 +225,7 @@ K(T)`,
       + "it.  This is how every Choupo reactor closes its energy balance, and "
       + "when a reactor announces a reaction enthalpy it evaluates it at the "
       + "reactor's own temperature, never at 25 °C (`reactionHeat`, "
-      + "ReactionHeat.cpp:40, called with the local temperature — for a plug "
+      + "ReactionHeat.cpp:41, called with the local temperature — for a plug "
       + "flow reactor at PFR.cpp:466).",
     formula: String.raw`\dot{Q} = \sum_i \dot{n}_i^\mathrm{out}\, h_i(T_\mathrm{out})
 - \sum_i \dot{n}_i^\mathrm{in}\, h_i(T_\mathrm{in})`,
