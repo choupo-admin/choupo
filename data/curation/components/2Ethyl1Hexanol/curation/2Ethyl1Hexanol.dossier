@@ -1,0 +1,80 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      2Ethyl1Hexanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        A  4.37890621589;
+        B  1517.29900959;
+        C  -109.084524507;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "3bd5d277ea1d31af";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Ethyl1Hexanol-vapourPressure-je300678r.dat";
+            doi       "10.1021/je300678r";
+            sha256    "cc908e9d0b702c35a49fe2f63addf286f5ea5862863cd5fab8eb8ce2f88b6fb1";
+            provenance measured;
+            archiveFile "je300678r.xml";
+            system    "2Ethyl1Hexanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Ethyl1Hexanol-vapourPressure-je049561m.dat";
+            doi       "10.1021/je049561m";
+            sha256    "817d3df8bce2a2d24c1ba156c8813c54d3a917b887dcf37ed8c15d567be0150d";
+            provenance measured;
+            archiveFile "je049561m.xml";
+            system    "2Ethyl1Hexanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 293.8; max 458.24; n 30; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.999909018221;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

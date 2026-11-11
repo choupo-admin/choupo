@@ -45,6 +45,22 @@ exists, an LVPP profile has nothing correct to be computed with, and writing
 `variant "2002"` on one would defeat the only guard standing between it and a
 silently wrong activity coefficient.
 
+**UPDATE 2026-11-11 (DEV.md 4c C310): a variant WAS built, on the OLDER
+release.**  Not on `release_v25` (CS25's dispersion term and alpha' are still
+unpublished -- Soares et al. 2025 §4.4: "details of this calibration will be
+published elsewhere"), but on **release 18.07, GAMESS HF/TZVP**, with the
+constants Ferrarini, Flores, Muniz & Soares published for exactly those
+profiles (AIChE J. 64 (2018) 3443, p. 11).  The variant is
+`LVPP-HFTZVP-2018`; the archive (`HF_TZVP.zip`, sha256 `bd17aaee...659d49`,
+MIT) is unpacked under `thirdParty/lvpp-sigma-1807/` (gitignored, no card --
+this card covers it); `bin/curate/lvpp_sigma_profile.py` builds each profile
+and joins the archive to the catalogue by InChIKey; `data/standards/components`
+now SHIPS those derived profiles under `licence MIT;` with the LVPP citation.
+`check_cosmo_scrub` arm (vi) refuses any set of that variant whose protocol,
+source or licence is not the 18.07 one.  The v25 statement above still holds:
+no v25 profile is shipped or usable.  Record:
+[`docs/design/cosmo-sac-lvpp-hftzvp-2018.md`](../../docs/design/cosmo-sac-lvpp-hftzvp-2018.md).
+
 ## What is here, and what reads it
 
 `nw-b3lyp-svpd-v25.zip` (the NWChem release), `LICENSE`, `SHA256` — gitignored;

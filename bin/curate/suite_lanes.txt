@@ -264,6 +264,7 @@ PRE  | PAR    | bin/curate/check_std_includes.py                   | traced: wri
 PRE  | PAR    | bin/curate/check_git_visibility.py                 | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_type_coverage.py                  | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_cosmo_scrub.py                    | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
+PRE  | PAR    | bin/curate/check_cosmo_lvpp_selection.py           | runs its witness in a tempfile.TemporaryDirectory copy (unique /tmp name); writes nothing in the tree; no make, no node, no pool
 PRE  | PAR    | bin/checkHeaderSelfContained                       | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_equilibrium_families.py           | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_legacy_schema.py                  | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
