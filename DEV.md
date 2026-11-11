@@ -3417,6 +3417,52 @@ accepts today, and that is a policy call.
 > (check by grep) are listed, not silently left.  Status: recorded, general to
 > be dispatched (gui only; `--gui` is its validation).  Owner: architect.
 
+> **C318-C331 (Vitor and architect, 2026-11-11; registered the same day, written
+> here at the consolidation; the CML rows are in PLAN.md 5521b418d).**
+> - C318 flash/drum detailed sizing: droplet terminal velocity (Haider &
+>   Levenspiel 1989, doi 10.1016/0032-5910(89)80008-7), Souders-Brown,
+>   vertical vs horizontal, liquid hold-up and levels, demister, nozzles;
+>   today VesselSize sizes a drum by residence time only (VesselSize.H).
+> - C319 absorber/stripper with film theory: today Absorber.cpp/Stripper.cpp
+>   are Kremser equilibrium stages with Henry K; folded into C329's interfacial
+>   model (Billet & Schultes 1999 doi 10.1205/026387699526520; Onda 1968;
+>   Treybal).
+> - C320 aqueous species from the NBS tables (Wagman 1982) and CODATA (Cox
+>   1989), checked against each other; measured dHf to replace the 81 Joback
+>   estimates in components.
+> - C321 Henry pairs: water from Sander 2015 LANDED (207 -> 252); organic
+>   solvents from the ThermoML archive (315 catalogue pairs, ~136 non-water)
+>   open; a Henry record without enthalpy is refused by the loader today.
+> - C322 EduTool "how to find properties" (free sources, licences, primary
+>   citation, measured vs estimated; Choupo's provenance as the example).
+> - C323 molten salts: part 1 (solar salt, Hitec, chlorides as heat-transfer
+>   fluids; Janz JPCRD 17 Suppl 2 1988) next; part 2 (machinery + LiCl-KCl,
+>   NaNO3-KNO3, LiF-BeF2, each validated on a measured phase diagram) after the
+>   electrolyte campaign (Vitor's order).
+> - C326 WASM: `--embed-file data/standards` (19 MB) passed the 16 MiB initial
+>   memory (wasm-ld "initial memory too small, 20009744 bytes needed");
+>   INITIAL_MEMORY raised to 64 MiB; the durable fix is ONE shared data
+>   package instead of 19 MB inside each of five binaries.
+> - C327/C328 transport: 92 measured viscosity/conductivity records, 88
+>   measured surface tensions, `StoredCorrelation` model with Brock-Bird as the
+>   announced fallback (Brock-Bird +102 % on methanol, 0 % on n-hexane).
+> - C329 Vitor's next campaign (rate-based columns + atmospheric crude unit),
+>   full brief in PLAN.md rows and the architect's notes; first delivery: total
+>   reflux + Yanagi 1982 + Schulz 2018.
+> - C330/C331 mixing rules, BEST PRACTICE BY DEFAULT (students choose through
+>   AI): today ThermoPackage.cpp uses Wilke and Wassiljewa-Mason-Saxena for
+>   gases (kept), Grunberg-Nissan WITHOUT interaction for liquid viscosity,
+>   a MASS-fraction average for liquid conductivity, a MOLE-fraction average
+>   for surface tension (ThermoPackage.cpp:2229); to come: Butler with the
+>   case's activity model, Grunberg-Nissan with G12, Filippov/Li, density
+>   reviewed; each beside the old rule, validated on ThermoML mixture data,
+>   default switched only after the moved goldens are listed.
+> - Checklist for a NEW props operation (C311 cost a failed integration): a
+>   file-traffic row in PropsPlan.cpp, the generated GUI schema, one case in
+>   tutorials/ that builds it, a FASTSET line for a new curation family.
+> - The credit restriction of 11-11 (pairs only until Saturday) was LIFTED the
+>   same evening.
+
 > **C304 (Vitor, 2026-11-11, an external reviewer's reading of the Pinch
 > report of greenAmmoniaPEQ_baseCase: "a normal case report must be an
 > engineering report, not a textbook chapter").**  DECIDED: every case view
