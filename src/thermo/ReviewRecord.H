@@ -51,7 +51,9 @@ bool readReviewBlock(const std::string& subject, const DictPtr& entry,
 //  The loaders' single call.  Returns true when the review block HANDLED the
 //  record's announcement (the caller then skips its "[unreviewed]" text);
 //  false when there is no block, or `by none` accepted: the caller then says
-//  what it always said.
+//  what it always said.  With no block, a legacy `humanReviewed true;` reads
+//  as `by human` (true) and `humanReviewed false;` as `by none` (false)
+//  (DEV.md 4c C300 rule 4).
 //    subject: "component 'water'" / "pair a-b";  onceKey: process-unique key;
 //    key: the provenance entry's property ("" for a pair).
 bool announceReviewBlock(const std::string& subject, const std::string& onceKey,
