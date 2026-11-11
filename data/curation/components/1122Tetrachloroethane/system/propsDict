@@ -73,7 +73,24 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 4.239650 - 1525.7645/(T +
+  -59.2148), in-sample R2 0.999977 over 40 kept points, 283.15-418.95 K
+  (10.1016/j.jct.2006.01.010 13/13 kept; 10.1016/j.fluid.2004.02.021 9/9
+  kept; 10.1016/j.fluid.2004.10.025 9/9 kept; 10.1016/j.jct.2005.06.003
+  9/9 kept). Relative error in P over the kept points: mean 0.7757 %, max
+  1.4557 %; AmbroseWalton on the same points: mean 21.0292 %, max 35.9402
+  %. Outliers discarded: none. Its own normal boiling point (101.325
+  kPa): 419.58 K. PROMOTED (and since REVERTED by `choupo-curate revert`)
+  on 2026-11-11 into data/standards/components/1122Tetrachloroethane.dat
+  as reviewStatus autoPromoted, review by none, because: fit grade clean
+  under the DEFAULT graded acceptance of DEV.md 4c C285 (no
+  system/curationDict), 4 studies, 40 points kept, 0 discarded as
+  outliers; max relative error 1.456 % (mean 0.7757 %), grade clean
+  (limits 5 / 10 / 20 %); Tb outside the kept points' range, normal
+  boiling point 419.58 K, +0.23 K from the record's Tb 419.35 K, grade
+  clean (limits 1 / 2 / 4 K); AmbroseWalton on the same points mean 21.03
+  % / max 35.94 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

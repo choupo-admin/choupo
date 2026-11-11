@@ -66,7 +66,23 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 4.899596 - 1812.9802/(T +
+  -24.5240), in-sample R2 0.999522 over 82 kept points, 331.47-578.57 K
+  (10.1021/acs.jced.8b00845 25/26 kept; 10.1016/j.jct.2012.04.029 19/19
+  kept; 10.1021/je025660t 13/13 kept; 10.1021/je034096z 10/10 kept;
+  10.1021/je400885z 8/8 kept; 10.1016/j.fluid.2007.06.006 7/7 kept).
+  Relative error in P over the kept points: mean 3.3887 %, max 6.4461 %;
+  AmbroseWalton on the same points: mean 11.4101 %, max 18.1839 %.
+  Outliers discarded: 10.1021/acs.jced.8b00845 T=412.24 K P=150000 Pa
+  err=15.42 %. Its own normal boiling point (101.325 kPa): 394.98 K.
+  PROMOTED (and since REVERTED by `choupo-curate revert`) on 2026-11-11
+  into data/standards/components/1Methoxy2Propanol.dat as reviewStatus
+  autoPromoted, review by none, because: fit grade warning under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 6
+  studies, 82 points kept, 1 discarded as outliers; max relative error
+  6.446 % (mean 3.389 %), grade warning (limits 5 / 10 / 20 %); no Tb
+  declared; AmbroseWalton on the same points mean 11.41 % / max 18.18 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

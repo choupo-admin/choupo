@@ -1,0 +1,89 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      ethylButanoate;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        A  4.51014085826;
+        B  1596.04171088;
+        C  -39.7824878982;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9b117b66903ede38";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylButanoate-vapourPressure-je300799f.dat";
+            doi       "10.1021/je300799f";
+            sha256    "2b9f12af8b997bb1fff5760f52cf3597321cffbf8f72a5c44165755f4179be91";
+            provenance measured;
+            archiveFile "je300799f.xml";
+            system    "ethylButanoate";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylButanoate-vapourPressure-je3009599.dat";
+            doi       "10.1021/je3009599";
+            sha256    "880d8757318cb171e81b38e34a55e59c0104bce8faae24f544c5db08fd407458";
+            provenance measured;
+            archiveFile "je3009599.xml";
+            system    "ethylButanoate";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylButanoate-vapourPressure-acs.jced.5b01058.dat";
+            doi       "10.1021/acs.jced.5b01058";
+            sha256    "97e52019491b8e7b6002e92c401a38a3dcff6a8e4aafd17fa6b75f863bed4b2c";
+            provenance measured;
+            archiveFile "acs.jced.5b01058.xml";
+            system    "ethylButanoate";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 348.97; max 433; n 100; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.999930076784;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

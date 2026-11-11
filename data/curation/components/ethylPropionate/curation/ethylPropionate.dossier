@@ -1,0 +1,71 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      ethylPropionate;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        A  4.14344250532;
+        B  1270.46450209;
+        C  -65.0924718253;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "68969ef1c0fbca0c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylPropionate-vapourPressure-je4009415.dat";
+            doi       "10.1021/je4009415";
+            sha256    "c7eb83e2dc95e5a893713ee18fede2761c1385cf1fb4f90cc1cb6bfd32c3c0ac";
+            provenance measured;
+            archiveFile "je4009415.xml";
+            system    "ethylPropionate";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 348.07; max 408.75; n 61; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.999998076308;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

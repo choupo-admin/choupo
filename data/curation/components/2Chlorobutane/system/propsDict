@@ -63,7 +63,20 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 4.033303 - 1167.0517/(T +
+  -51.4506), in-sample R2 0.999952 over 15 kept points, 319.8-341.75 K
+  (10.1016/j.fluid.2006.02.009 15/15 kept). Relative error in P over the
+  kept points: mean 0.1374 %, max 0.2833 %; AmbroseWalton on the same
+  points: mean 49.7516 %, max 54.1168 %. Outliers discarded: none. Its
+  own normal boiling point (101.325 kPa): 341.22 K. PROMOTED (and since
+  REVERTED by `choupo-curate revert`) on 2026-11-11 into
+  data/standards/components/2Chlorobutane.dat as reviewStatus
+  autoPromoted, review by none, because: fit grade clean under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 1
+  studies, 15 points kept, 0 discarded as outliers; max relative error
+  0.2833 % (mean 0.1374 %), grade clean (limits 5 / 10 / 20 %); no Tb
+  declared; AmbroseWalton on the same points mean 49.75 % / max 54.12 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 
