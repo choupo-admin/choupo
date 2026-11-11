@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/2Methyl2Propanol.dat"
+        {
+            type          imported;
+            sha256        "85da846573aa8847cf253bb6a529bccb7cef7f6811f6f65be60476b507fc5442";
+            computationalSha256 "11753215451e3bf204fd6a69c6d95af63cdadf84fdfebe9aa516b4610a7ae366";
+            origin        "data/standards/components/2Methyl2Propanol.dat";
+            originSha256  "225442e6d92c7f5d9f6cd96593a5d8d958d8b0f65227d2eee965eac6e04747b2";
+            release       Choupo-2608;
+        }
+        "components/monochlorobenzene.dat"
+        {
+            type          imported;
+            sha256        "07b47c23572f80795c0a75f023e3c7ef2f2ecb0cd97263fd8088f109d47be45a";
+            computationalSha256 "d512a679eb99bffae64c82d88ab256295f6986ed648f801d73addbe57b562b05";
+            origin        "data/standards/components/monochlorobenzene.dat";
+            originSha256  "eed188cd21ac21946bfba566c010cd85605fd6fc84b8b3e0a5ee4d3d1779df2b";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Methyl2Propanol-monochlorobenzene.dat"
+        {
+            type          imported;
+            sha256        "4776296bbb65a2000fbd6de03a2695a35b0a90e8bf1dfc0a05faa2493ff25d5e";
+            computationalSha256 "7ad8053351f3461a9dd7d7ebead89bff72c4dfecda66ffe25f8f6bfea1df5dcb";
+            origin        "data/standards/parameters/NRTL/2Methyl2Propanol-monochlorobenzene.dat";
+            originSha256  "c68f43ee0d9c303fd7127f1efbde9b6da6ce2d7cb88c7156018a7b882eb54de9";
+            release       Choupo-2608;
+        }
+    }
+}

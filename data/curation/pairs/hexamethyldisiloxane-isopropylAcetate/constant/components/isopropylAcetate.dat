@@ -1,0 +1,151 @@
+// [imported] origin "data/standards/components/isopropylAcetate.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isopropylAcetate  (CAS 108-21-4)
+  PROPOSAL TIER -- UNVERIFIED. Imported from ChemSep v8.3
+  pure-component data under Artistic License 2.0.
+  Critical constants are source data; Psat is an explicitly
+  estimated Ambrose-Walton corresponding-states closure.
+\*---------------------------------------------------------------------------*/
+
+name        isopropylAcetate;
+CAS         108-21-4;
+formula     C5H10O2;      // counted from the ChemSep v8.3 structure formula "CH3COOCH(CH3)2" (derived 2026-09-03; reproduces MW to 0.001 %)
+reviewStatus interim;
+MW          102.1317;      // kg/kmol [origin=ChemSep v8.3]
+Tc          516.15;      // K [origin=ChemSep v8.3]
+Pc          34.9564;      // bar; source Pa / 1e5 [origin=ChemSep v8.3]
+omega       0.542817;      // [-] [origin=ChemSep v8.3]
+Tb          361.65;      // K [origin=ChemSep v8.3]
+
+standardThermochemistry
+{
+    dHf_298   -481700;        // J/mol   [ChemSep v8.3, ideal gas]
+    s_298     390.2;        // J/(mol.K)  third-law absolute
+}
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)
+    // converted EXACTLY from ChemSep eqno 10, Psat[Pa] = exp(a - b/(T+c))
+    coefficients  (4.286953201  1328.637108  -51.328);
+    Trange        (312.04  462.05);
+}
+
+Vliq        0.000117516;      // m3/mol at 25 C  [ChemSep eqno 105]
+HvapTb      32840.7;      // J/mol at Tb  [ChemSep eqno 106]
+
+idealGasHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    // ChemSep states J/(kmol.K); A and the exp are scaled to per-mole here.
+    coefficients  (49.388  -461.23  5.978244721  -0.00010674  6.959e-08);
+    Trange        (199.75  1200.15);
+}
+
+liquidHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    coefficients  (131.39  -46.486  1.196944721  0.013597  -1.0999e-05);
+    Trange        (215.75  478.8);
+}
+
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     -10.895;
+        B     1115.7;
+        C     -0.084451;
+        D     4.8399e-07;
+        E     2;
+        Tmin  199.75;
+        Tmax  416;
+    }
+}
+
+liquidThermalConductivity
+{
+    chemsepEq16
+    {
+        A     -0.09612;
+        B     7.576;
+        C     -1.2028;
+        D     -0.00070085;
+        E     -9.2097e-07;
+        Tmin  161.4;
+        Tmax  421.4;
+    }
+}
+
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group CH3COO; count 1; } );
+}
+solubilityParameter 17150;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
+
+source
+{
+    database      "ChemSep pure-component data v8.3";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "chemsep1.xml";
+    sourceSha256  "78b3e0c6408ff35f3b75fb71a1fdd70bb8e967d8996b49452a4a9fa2dd567c76";
+    sourceRecord  "Isopropyl acetate";
+    importedBy    "chemsep_to_choupo";
+    review        { state pending; reviewer unassigned; }
+}
+
+provenance
+{
+    MW
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Pc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    omega
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tb
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    vaporPressure
+    {
+        origin        predictive;
+        method        "Ambrose-Walton corresponding states";
+        methodVersion "choupo-aw-1989";
+        uncertainty   "not quantified; validate against saturation data";
+        notes         "computed from ChemSep Tc/Pc/omega";
+    }
+}

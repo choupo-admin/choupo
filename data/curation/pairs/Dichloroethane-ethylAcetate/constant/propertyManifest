@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/Dichloroethane-ethylAcetate.dat"
         {
             type          imported;
-            sha256        "c60973d2e8a63d65678b5b2119986421a51233dc65ea9befaa9713483cd91e9b";
-            computationalSha256 "753a1a80351347de5afbbc0e4a52bfe1985a066a4e946469d37809e2951acc1e";
+            sha256        "1bd990bdfe015c17c7c8d922f1263a4f657fb5424211a1156e840ca90ffff013";
+            computationalSha256 "dc91d80f08334bfa8b9377f72d3cb1297dfd84ce11e1925f46646212837970e5";
             origin        "data/standards/parameters/NRTL/Dichloroethane-ethylAcetate.dat";
-            originSha256  "326d7333db05e2b1c910b737f3602ddc029344986b4e8e06ec39536480838a20";
+            originSha256  "17fe527d59b5a4bbe3d98f9230b8ab57de18da05cca0d33716d9b50e235166e3";
             release       Choupo-2608;
         }
     }

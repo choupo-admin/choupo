@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/triethyleneGlycol-water.dat"
         {
             type          imported;
-            sha256        "ff2710ac525e60134a6736fde24450704e47ed7a1ceb3d9f9ab2809ad2b2cdcb";
-            computationalSha256 "83d964d36d0cfaefe574b91e32ca8576cebad936030613817a2e7bf15fad93ea";
+            sha256        "37b801e2eb3b2bb318f524cf4c4e0f8b43ffad3c60d40f3e16d42d7dcdc4ed55";
+            computationalSha256 "294b1d8fa5007368be2a7912266556d8dc39281960d18520bfc98d986f5e3d0e";
             origin        "data/standards/parameters/NRTL/triethyleneGlycol-water.dat";
-            originSha256  "b884c6f625b346c0e0b4a67e7e536ffcad9b625af4f708755a011881694ac94d";
+            originSha256  "e19d4d6131bd2db1069622d6dd54180f9e1b3313f2601abce9629567ad21ae87";
             release       Choupo-2608;
         }
     }

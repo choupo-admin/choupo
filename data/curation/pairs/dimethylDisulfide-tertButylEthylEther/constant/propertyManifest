@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/dimethylDisulfide-tertButylEthylEther.dat"
         {
             type          imported;
-            sha256        "be8db5bbc460b9e5b4391de33500c45b02778e713ef54ee7d96012e79bccbac5";
-            computationalSha256 "cb6b89193e9f4c8e86002e3d31bb0d47499ddd563becdfe817ecc371ee3d6e40";
+            sha256        "aaf89f4bc76a9032d16fb5e87afe76d4937ec55700dc6e8a2f5de6de20902752";
+            computationalSha256 "bfead1215cade3a827c092090932c2afa48b543c2c480d8f8e62f1c6ba5e7ea7";
             origin        "data/standards/parameters/NRTL/dimethylDisulfide-tertButylEthylEther.dat";
-            originSha256  "10738acffe7c9046965850c6209931197868c10564b2f6dc99e953ba868517bf";
+            originSha256  "10017559b320cf5ee65d625e53ae321145ef44180cb4337136b6cbb9637aeebf";
             release       Choupo-2608;
         }
     }

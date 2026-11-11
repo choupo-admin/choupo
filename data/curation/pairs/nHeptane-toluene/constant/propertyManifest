@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/nHeptane-toluene.dat"
         {
             type          imported;
-            sha256        "af0cc1af0cb94deaf5dfddcc3901ae69b427c9badf7eb4c725949d84d1ddcde4";
-            computationalSha256 "26a89a8af2ac4133e0fc6d439fd1d2d57db8f4520abb9677371d97993e32d706";
+            sha256        "ba70f15120ab2a248cec88cd6d045e4e7516136675da02565778d3b26ab6c1d9";
+            computationalSha256 "ebe67cd0b72be49f9f6a4f80f63ec82f3ff50b9779c17e4746a81d5f38fb1416";
             origin        "data/standards/parameters/NRTL/nHeptane-toluene.dat";
-            originSha256  "f852423e3b1b3c68d6bd12f9d4e26e6ec4dbbcc28cdc0c6054248bd2a05bbbaf";
+            originSha256  "c6c415de5a1516d91dd099fdf3404a6b4a161725696311e950ac2079914ce763";
             release       Choupo-2608;
         }
     }

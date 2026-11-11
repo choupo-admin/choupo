@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/mXylene-nDecane.dat"
         {
             type          imported;
-            sha256        "dd0a353bb863797bb25f135d1424c331dba476bc2653ca6bd8f63fe0d4bde9fd";
-            computationalSha256 "eceb2625df70c2d92419ed61b745aa8d532a61cf84325b838056e858947cfa3c";
+            sha256        "e99fd0cba2cdbdd6f8ed6bf4daf855ba9657ecc68d3dc94db2650bbc936e4fb2";
+            computationalSha256 "9bd1ef91eb8ab3259688d79aeb237dd1c21c7a50509db33f2b1c5e7ec6a21640";
             origin        "data/standards/parameters/NRTL/mXylene-nDecane.dat";
-            originSha256  "329bf17bdbc2ac73b136122c0a87114d10426d78a72a1ea98a8df5e9f0dff82b";
+            originSha256  "7edc9c44dd900651ed8a3260ed40c2d8d476407c5bdda2330434d2c85eafc5bf";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

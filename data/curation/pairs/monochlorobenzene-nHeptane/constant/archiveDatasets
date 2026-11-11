@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of monochlorobenzene-nHeptane
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/nHeptane-monochlorobenzene-bubble-j.fluid.2005.11.020.dat";
+        role          fit;   // C283: every laboratory is fitted
+        doi           "10.1016/j.fluid.2005.11.020";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2005.11.020.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2005.11.020.json";
+        articleFile   "j.fluid.2005.11.020.xml";
+        articleSha256 "776ea7f9ec1d17bca28cf46356efc0d3d36e8fa7a997386a8d51da338722e93d";
+        block         10;
+        filter        ( --interior-only );
+        extract       "bin/choupo-thermoml extract-vle <article file> --block 10 --interior-only --into <dir>";
+        sha256        "2e830697040d205ad9a9374b56a0cfd77c5ee89fbc12662b980248f788d02e57";
+        identity
+        {
+            nHeptane       { cas "142-82-5"; inchiKey "IMNFDUFMRHMDMM-UHFFFAOYSA-N"; }
+            monochlorobenzene { cas "108-90-7"; inchiKey "MVPPADPHJFYWMZ-UHFFFAOYSA-N"; }
+        }
+    }
+);

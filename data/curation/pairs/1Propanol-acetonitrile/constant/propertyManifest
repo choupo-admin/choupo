@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/1Propanol-acetonitrile.dat"
         {
             type          imported;
-            sha256        "1b08afeb2c307421a62c8fced8bf42f980d2da3d04d364c1457e4e0b72f050bc";
-            computationalSha256 "ad49f2cea57733c0a4d470214b7cba4e2d87670562a17025103f5efe98a0b6df";
+            sha256        "76dcd83eccf5116bc528b3531af8e1aad62d6ed196b63d1b6a66e6930a99fb1d";
+            computationalSha256 "680570ed96566e9d3151777953ad0c57c40ddd95790562e7cb09fd991bb706a7";
             origin        "data/standards/parameters/NRTL/1Propanol-acetonitrile.dat";
-            originSha256  "a00257b23753d314dc89c16d0eeba9b6eaa22e3421f843adf887435ced7c4ff4";
+            originSha256  "e5d38de6c4c85b6d547fbad7a3a7eba3c48d6d544fc622212a8b0de9577a15a1";
             release       Choupo-2608;
         }
     }

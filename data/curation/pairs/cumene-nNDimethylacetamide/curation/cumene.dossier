@@ -1,0 +1,117 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      cumene;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.cumene-nNDimethylacetamide.b_ij  179.479138917;
+        equilibrium.liquid.activityModel.binaryParameters.cumene-nNDimethylacetamide.b_ji  502.817343114;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "48b3f4d712d26d05";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/cumene-nNDimethylacetamide-bubble-je800481n.dat";
+            doi       "10.1021/je800481n";
+            sha256    "0bccf82fbdb6626c87cf6c007e3dca4f9b91b3f4b7f9013071a1ae425c11911a";
+            provenance measured;
+            archiveFile "je800481n.xml";
+            system    "cumene + nNDimethylacetamide";
+            pressure  "97300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0122; max 0.9964; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.cumene-nNDimethylacetamide.b_ij  179.479138466;
+        equilibrium.liquid.activityModel.binaryParameters.cumene-nNDimethylacetamide.b_ji  502.817343869;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "48b3f4d712d26d05";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/cumene-nNDimethylacetamide-bubble-je800481n.dat";
+            doi       "10.1021/je800481n";
+            sha256    "0bccf82fbdb6626c87cf6c007e3dca4f9b91b3f4b7f9013071a1ae425c11911a";
+            provenance measured;
+            archiveFile "je800481n.xml";
+            system    "cumene + nNDimethylacetamide";
+            pressure  "97300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0122; max 0.9964; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

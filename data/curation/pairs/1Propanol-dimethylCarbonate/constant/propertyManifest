@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/1Propanol-dimethylCarbonate.dat"
         {
             type          imported;
-            sha256        "30317882ecbdff023da22e8856041472a62f6ecb8de7e38ea5c0dd3c9f23c54e";
-            computationalSha256 "266535c31ca0150870b85069773c670186c3ddffe8085dd33d4deba5f6361157";
+            sha256        "27f63ae59b8748066ee5bfa6958ca489af156250691d7b77c0cd589376dfe71f";
+            computationalSha256 "a859ebe749d7f8c0cd49be4676fc848712345a5114c2c892df47f15dc1f8b994";
             origin        "data/standards/parameters/NRTL/1Propanol-dimethylCarbonate.dat";
-            originSha256  "01f2b823b3f8931dfdaf3adb4831177bb33159e3372700f83f9740932a920dff";
+            originSha256  "c508d9858c20d1be880c73978544cfeaa1deeb5bfe9638dbcf46aaaaf685eded";
             release       Choupo-2608;
         }
     }

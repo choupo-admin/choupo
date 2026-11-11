@@ -739,6 +739,9 @@ def run(case, pl):
         reason = (f"NOT PROMOTABLE (fit grade {grade}, max |dP|/P {mx:.2f} %): the pair splits ONE "
                   "liquid inside its own validity span (check_regressed_pairs arm f) -- "
                   + split[0].split(": ", 1)[1])
+    elif pc.promotion_refusal(grade):
+        reason = (f"NOT PROMOTED (max |dP|/P {mx:.2f} % over the {n_kept} kept points, one liquid "
+                  "across the validity span): " + pc.promotion_refusal(grade))
     else:
         reason = (f"PROMOTABLE by `bin/curate/pairs_px.py promote`: fit grade {grade} -- max "
                   f"|dP|/P {mx:.2f} % over the {n_kept} kept points (limits {GRADE_PCT[0]:g} / "
@@ -803,29 +806,36 @@ def promoted_text(text, case, stem, i, j):
         one.append("ONE temperature")
     if crp.word(cur, "singleLaboratory") == "true":
         one.append("ONE laboratory")
+    #  DEV.md 4c C300 rule 2: an in-sample clean on one temperature or one
+    #  laboratory, with nothing held out, is CAPPED at warning (pc.cap_grade).
+    applied, caps = pc.cap_grade(grade, int(crp.num(cur, "temperatures") or 0),
+                                 int(crp.num(cur, "laboratories") or 0))
     note = (f"  CAUTION: this record rests on {' and '.join(one)}.\n") if one else ""
     hdr = cc.record_header(
         stem, i, j, case_rel,
-        "reviewStatus autoPromoted; humanReviewed false: PROMOTED AUTOMATICALLY by\n"
+        "reviewStatus autoPromoted; review { by none; }: PROMOTED AUTOMATICALLY by\n"
         "  its fitting pipeline (every laboratory fitted to the bubble pressure, outliers beyond\n"
         f"  {OUTLIER_PCT:g} % discarded by name, max |P_model - P|/P over the kept points GRADED\n"
         f"  clean / warning / severe at {GRADE_PCT[0]:g} / {GRADE_PCT[1]:g} / {GRADE_PCT[2]:g} % -- "
         "DEV.md 4c C283 amended, C285, C291;\n"
-        f"  THIS fit: {grade}, {mx:.4f} %; one liquid across its validity span), and NO\n"
+        f"  THIS fit: {grade} in-sample, {mx:.4f} %"
+        + (f", CAPPED at {applied} by C300 ({' and '.join(caps)})" if caps else "")
+        + "; one liquid across its validity span), and NO\n"
         "  HUMAN HAS REVIEWED IT.  The engine says so on every run that reads it, and\n"
         "  voices a warning or a severe grade beside it.\n" + note +
         "  Nothing was held out: the `validation {}` block says so, and the acceptance\n"
         "  is the `curation {}` block.  A curator who reads the series back against the\n"
-        "  articles marks it `reviewStatus reviewed; humanReviewed true;`.  Revert with\n"
+        "  articles records it in the `review {}` block (DEV.md 4c C297).  Revert with\n"
         f"  `bin/choupo-curate revert {stem}`.")
     hdr = hdr.replace("to measured\n  bubble temperatures.", "to measured\n  bubble PRESSURES at stated temperatures (P-x, DEV.md 4c C291).")
     hdr = hdr.replace("The two articles named under `evidence` are the", "The articles named under `evidence` are the")
     body = cc.body_of(text)
-    gl = (f"    fitGrade      {grade};   // DEV.md 4c C285 (C291): max |P_model - P|/P over the kept "
+    gl = (f"    fitGrade      {applied};   // DEV.md 4c C285 (C291): max |P_model - P|/P over the kept "
           f"points, graded {GRADE_PCT[0]:g} / {GRADE_PCT[1]:g} / {GRADE_PCT[2]:g} %\n"
+          + pc.BASIS_LINE + pc.cap_line(caps) +
           f"    fitGradeMaxRelativeError_pct {mx:.4f};\n")
     body = re.sub(r"(\n    reviewStatus\s+)interim;",
-                  lambda m: m.group(1) + "autoPromoted;\n    humanReviewed false;\n" + gl
+                  lambda m: m.group(1) + "autoPromoted;\n" + pc.REVIEW_NONE + gl
                   + f'    promotedBy    "{PROMOTED_BY}";\n'
                   + f'    promotedDate  "{date.today().isoformat()}";', body, count=1)
     return hdr + body
@@ -848,6 +858,8 @@ def promote(a, b):
     cur = crp.block(crp.strip_comments(text), "curation") or ""
     if crp.word(cur, "verdict") != "accepted":
         refuse(f"{rp.stem}: curation verdict `{crp.word(cur, 'verdict')}` -- only an accepted fit is promoted")
+    if pc.promotion_refusal(crp.word(cur, "grade")):
+        refuse(f"{rp.stem}: NOT PROMOTED: " + pc.promotion_refusal(crp.word(cur, "grade")))
     rf, split = cc.stability(text, rp.stem)
     if split:
         refuse(f"{rp.stem}: " + split[0])
@@ -865,8 +877,9 @@ def promote(a, b):
         raise
     cc.mark_result(case, "PROMOTABLE by `bin/curate/pairs_px.py promote`:",
                    f"PROMOTED on {date.today().isoformat()} into {dest.relative_to(ROOT).as_posix()} "
-                   "as reviewStatus autoPromoted, humanReviewed false, because:")
-    cc.say(f"pairs_px: PROMOTED {dest.relative_to(ROOT)} (fitGrade {crp.word(cur, 'grade')})")
+                   "as reviewStatus autoPromoted, review by none, because:")
+    pv = crp.block(crp.strip_comments(dest.read_text()), "provenance") or ""
+    cc.say(f"pairs_px: PROMOTED {dest.relative_to(ROOT)} (fitGrade {crp.word(pv, 'fitGrade')})")
 
 
 # --------------------------------------------------------------------------

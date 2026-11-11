@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/1Heptanol.dat"
+        {
+            type          imported;
+            sha256        "79fea1d323853bb2da8eac24d7824ee6194b141dd25d506f0071d5c7edca5457";
+            computationalSha256 "1195914da54fb5d51f6b730ea618434706056c761b7ebce979daa28274ce9bdf";
+            origin        "data/standards/components/1Heptanol.dat";
+            originSha256  "e2732fbe0aa55f2e557ebbbef1695df6211c1dbfc27e1bcd718c2fbc5e0c1867";
+            release       Choupo-2608;
+        }
+        "components/nUndecane.dat"
+        {
+            type          imported;
+            sha256        "a5fae856fd72b6771ac00f3a7ce0ad5a0116a803d819b312ba986439825ec59d";
+            computationalSha256 "3f115ea2cdc1c057dbcb025d472dc769d513190d133c8f106e42a07216b473ee";
+            origin        "data/standards/components/nUndecane.dat";
+            originSha256  "f8f8b76396af095cb86b0a64e1a274905626181597cb27e70ea3c169f673c36f";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1Heptanol-nUndecane.dat"
+        {
+            type          imported;
+            sha256        "827835878f33692ead93145686afcc674b004e33bcf627b4ba4ab4bae26fe2b3";
+            computationalSha256 "abc7b395aecef1a1b5ca4aa443217623e04e49cf02c2715d5d5da477b3d2314c";
+            origin        "data/standards/parameters/NRTL/1Heptanol-nUndecane.dat";
+            originSha256  "a13ccad2b0c64aac4ab826d68fde5deb11fd669b4add4fc2503ae35556dd52ea";
+            release       Choupo-2608;
+        }
+    }
+}

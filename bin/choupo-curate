@@ -62,7 +62,8 @@ the decided rules and decides nothing new:
      validity span is never proposed for promotion.
   9. PROMOTION (C225/C226, the architect's decision).  `--promote` copies the
      record into data/standards/parameters/NRTL/ as `reviewStatus
-     autoPromoted; humanReviewed false;` ONLY when the verdict is
+     autoPromoted;` with `review { by none; }` (DEV.md 4c C300 rule 4; a
+     record no longer gets `humanReviewed`) ONLY when the verdict is
      `validated`, arm (f) is clean and the triage ran; it never overwrites a
      record; `revert` removes a record this tool promoted, and only such a
      record.
@@ -107,6 +108,8 @@ ARCHIVE = "ThermoML.v2020-09-30.tgz"
 ARCHIVE_DOI = "10.18434/mds2-2422"
 MIN_INTERIOR = 5
 PROMOTED_BY = "bin/choupo-curate pair --promote"
+#  DEV.md 4c C300 rule 4: a tool writes who reviewed the record -- today nobody.
+REVIEW_NONE = "    review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it\n"
 
 
 def cache_root():
@@ -1208,16 +1211,16 @@ def promote(a, b):
     case_rel = case.relative_to(ROOT).as_posix()
     hdr = record_header(
         rp.stem, rf["i"], rf["j"], case_rel,
-        "reviewStatus autoPromoted; humanReviewed false: PROMOTED AUTOMATICALLY by\n"
+        "reviewStatus autoPromoted; review { by none; }: PROMOTED AUTOMATICALLY by\n"
         "  its fitting pipeline (verdict validated against a band declared before the\n"
         "  fit, one liquid across its validity span, study triage run), and NO HUMAN\n"
         "  HAS REVIEWED IT.  The engine says so on every run that reads it.  A\n"
-        "  curator who reads the series back against the articles marks it\n"
-        "  `reviewStatus reviewed; humanReviewed true;`.  Revert with\n"
+        "  curator who reads the series back against the articles records it in\n"
+        "  the `review {}` block (DEV.md 4c C297).  Revert with\n"
         f"  `bin/choupo-curate revert {rp.stem}`.")
     body = body_of(text)
     body = re.sub(r"(\n    reviewStatus\s+)interim;",
-                  r"\1autoPromoted;\n    humanReviewed false;\n"
+                  r"\1autoPromoted;\n" + REVIEW_NONE +
                   f'    promotedBy    "{PROMOTED_BY}";\n'
                   f'    promotedDate  "{date.today().isoformat()}";', body, count=1)
     dest = STD_NRTL / f"{rp.stem}.dat"
@@ -1237,12 +1240,12 @@ def promote(a, b):
     mark_result(case, "PROMOTABLE by `bin/choupo-curate pair ... --promote`:",
                 f"PROMOTED on {date.today().isoformat()} into "
                 f"{dest.relative_to(ROOT).as_posix()} as reviewStatus autoPromoted, "
-                "humanReviewed false, because:")
+                "review by none, because:")
     mark_result(case, "(and since REVERTED by `choupo-curate revert`)",
                 "(REVERTED by `choupo-curate revert`, then promoted again on "
                 f"{date.today().isoformat()})")
     say(f"choupo-curate: PROMOTED {dest.relative_to(ROOT)} (autoPromoted, "
-        f"humanReviewed false); {label(case)} re-sealed on it")
+        f"review by none); {label(case)} re-sealed on it")
     return 0
 
 
@@ -1264,7 +1267,8 @@ def revert(stem):
                         "reviewStatus interim: a case-local record (its automatic "
                         "promotion was REVERTED).")
     body = body_of(text)
-    body = re.sub(r"\n    humanReviewed[^\n]*|\n    promotedBy[^\n]*|\n    promotedDate[^\n]*",
+    body = re.sub(r"\n    humanReviewed[^\n]*|\n    review +\{[^\n]*|\n    promotedBy[^\n]*"
+                  r"|\n    promotedDate[^\n]*",
                   "", body)
     body = re.sub(r"(\n    reviewStatus\s+)autoPromoted;", r"\1interim;", body, count=1)
     old_case = rp.read_text() if rp.exists() else None
@@ -1377,7 +1381,7 @@ def revert(stem):
 #       Antoine (Trange = the fit's own span; outside it the engine announces
 #       the extrapolation, as for every Antoine), the per-value provenance
 #       entry names the DOIs, the case and the verdict, and is marked
-#       `reviewStatus autoPromoted; humanReviewed false;` -- voiced on every
+#       `reviewStatus autoPromoted;` with `review { by none; }` (C300) -- voiced on every
 #       run by the component loader (src/thermo/Database.cpp).  `revert
 #       <component>` puts the AmbroseWalton block back, and only on a record
 #       this mode promoted.
@@ -2094,6 +2098,7 @@ def vp_prov(rf, case, decl):
     gap = rf.get("tb_gap")
     grade_lines = (
         f"        fitGrade      {rf['grade']};   // DEV.md 4c C285: the worse of the grades below\n"
+        "        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to\n"
         f"        fitGradeMaxRelativeError_pct {rf['max_pct']:.6f};   // grade {rf['grade_P']}\n"
         + ("" if gap is None else
            f"        fitGradeBoilingPointGap_K    {gap:.4f};   // grade {rf['grade_T']} "
@@ -2104,7 +2109,7 @@ def vp_prov(rf, case, decl):
             '        methodVersion "choupoProps Choupo-dev";\n'
             f'        fittedInCase  "{case_rel}";\n'
             "        reviewStatus  autoPromoted;\n"
-            "        humanReviewed false;\n"
+            "        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it\n"
             + grade_lines +
             f'        promotedBy    "{VP_PROMOTED_BY}";\n'
             f'        promotedDate  "{date.today().isoformat()}";\n'
@@ -2158,9 +2163,9 @@ def vp_promote(name):
     mark_result(case, f"PROMOTABLE by `bin/choupo-curate vp {comp} --promote`:",
                 f"PROMOTED on {date.today().isoformat()} into "
                 f"{rp.relative_to(ROOT).as_posix()} as reviewStatus autoPromoted, "
-                "humanReviewed false, because:")
+                "review by none, because:")
     say(f"choupo-curate: PROMOTED the vapour pressure of {comp} into "
-        f"{rp.relative_to(ROOT)} (autoPromoted, humanReviewed false, fitGrade "
+        f"{rp.relative_to(ROOT)} (autoPromoted, review by none, fitGrade "
         f"{rf['grade']})")
     return 0
 

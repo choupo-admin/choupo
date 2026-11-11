@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/cyclohexane-nButanol.dat"
         {
             type          imported;
-            sha256        "dfa6098f5abe5a357b0cad2463d1eb24dd9e061cb758768850e84c8b474f5eae";
-            computationalSha256 "31648c5328e73ff748516abc626fde0043571986a047eadc9bfae4d7b9b1dc03";
+            sha256        "c058b110a7ae6c63ae4718899cd4253264a1c1a325af4d9b16373c532edd3aeb";
+            computationalSha256 "8c734b3833bcecf92c0f82957c9fbb537882c33f25ba64fbc6e5e2671df65019";
             origin        "data/standards/parameters/NRTL/cyclohexane-nButanol.dat";
-            originSha256  "319cae651040d12d766dba4bf1ce375ec02542cde2aed18c2392b3165b118902";
+            originSha256  "95aa79f93aa3d6c6b4c803be2ec010218829fbacf3c806c234639670b5b27406";
             release       Choupo-2608;
         }
     }

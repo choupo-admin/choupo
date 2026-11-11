@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/2Butanol-nNDimethylformamide.dat"
         {
             type          imported;
-            sha256        "e933d2aa2b8cb1e1bcd7da4c9ef3c6dba68d474425bfcbc5f25611be492384be";
-            computationalSha256 "bd2ceaf7beaccb5b7afa3d5cb7fc6e5926271f64ea20044c2245b2b295290557";
+            sha256        "59a7fbc153064b31a6ce99048f3e422f72505b1c1e1347f1f99de5e718a407d5";
+            computationalSha256 "81d4c065454b95350fd758ea9fcfbb6feb9dec8c4e4d852ace01d946bb2a789d";
             origin        "data/standards/parameters/NRTL/2Butanol-nNDimethylformamide.dat";
-            originSha256  "3aa49589dcf5418df05e8d0596ac024faad965b26e6b507a69e99349a502b4e7";
+            originSha256  "4833c215f03047be5c18e7a97a3b231c8745f22e8f391ba38edb6530245f2c0f";
             release       Choupo-2608;
         }
     }

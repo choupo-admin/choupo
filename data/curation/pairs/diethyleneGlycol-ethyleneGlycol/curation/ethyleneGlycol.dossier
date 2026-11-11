@@ -1,0 +1,115 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      ethyleneGlycol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-diethyleneGlycol.b_ij  337.563060487;
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-diethyleneGlycol.b_ji  -254.09930295;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9248523ba562cac2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethyleneGlycol-diethyleneGlycol-bubble-je401020e.dat";
+            doi       "10.1021/je401020e";
+            sha256    "7bad3139bf3363368aaef597e62ff78a955507b64b15bc3e89e819f860ed9fc3";
+            provenance measured;
+            archiveFile "je401020e.xml";
+            system    "ethyleneGlycol + diethyleneGlycol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.074; max 0.936; n 32; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-diethyleneGlycol.b_ij  338.557721474;
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-diethyleneGlycol.b_ji  -254.760410662;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9248523ba562cac2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethyleneGlycol-diethyleneGlycol-bubble-je401020e.dat";
+            doi       "10.1021/je401020e";
+            sha256    "7bad3139bf3363368aaef597e62ff78a955507b64b15bc3e89e819f860ed9fc3";
+            provenance measured;
+            archiveFile "je401020e.xml";
+            system    "ethyleneGlycol + diethyleneGlycol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.074; max 0.936; n 32; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

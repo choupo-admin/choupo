@@ -1,0 +1,133 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      methylDiEthanolAmine;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylDiEthanolAmine-water.b_ij  338.247193844;
+        equilibrium.liquid.activityModel.binaryParameters.methylDiEthanolAmine-water.b_ji  -363.330422282;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "6d5f7f403c82a466";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylDiEthanolAmine-water-bubble-acs.jced.8b00054.dat";
+            doi       "10.1021/acs.jced.8b00054";
+            sha256    "87fdfe4ce4455970e1a0d55c274cb156e01b4f7f3922db74ae4e4ff88b26f625";
+            provenance measured;
+            archiveFile "acs.jced.8b00054.xml";
+            system    "methylDiEthanolAmine + water";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylDiEthanolAmine-water-bubble-je060396f.dat";
+            doi       "10.1021/je060396f";
+            sha256    "46f47b1d94ce1c02129dc4a2df0bf43a2c73c094ff8dffac04f46b6f017deead";
+            provenance measured;
+            archiveFile "je060396f.xml";
+            system    "methylDiEthanolAmine + water";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.075; max 0.9427; n 29; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylDiEthanolAmine-water.b_ij  338.247194244;
+        equilibrium.liquid.activityModel.binaryParameters.methylDiEthanolAmine-water.b_ji  -363.330422469;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "6d5f7f403c82a466";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylDiEthanolAmine-water-bubble-acs.jced.8b00054.dat";
+            doi       "10.1021/acs.jced.8b00054";
+            sha256    "87fdfe4ce4455970e1a0d55c274cb156e01b4f7f3922db74ae4e4ff88b26f625";
+            provenance measured;
+            archiveFile "acs.jced.8b00054.xml";
+            system    "methylDiEthanolAmine + water";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylDiEthanolAmine-water-bubble-je060396f.dat";
+            doi       "10.1021/je060396f";
+            sha256    "46f47b1d94ce1c02129dc4a2df0bf43a2c73c094ff8dffac04f46b6f017deead";
+            provenance measured;
+            archiveFile "je060396f.xml";
+            system    "methylDiEthanolAmine + water";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.075; max 0.9427; n 29; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

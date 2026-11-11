@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/mXylene.dat"
+        {
+            type          imported;
+            sha256        "31e05cfce81a4ad48a63993498067ba9335977201b7c08f73428ecb561233c33";
+            computationalSha256 "14aef5c18c81d0dc2c18d79c3d5122956e769c6e1250a11d7636f9dec649d2eb";
+            origin        "data/standards/components/mXylene.dat";
+            originSha256  "b9df745d6fde70e82309ea2398df70cbaebffe5e09a8e7026d83c9cf5fe18921";
+            release       Choupo-2608;
+        }
+        "components/styrene.dat"
+        {
+            type          imported;
+            sha256        "04fc341e1cef4c77c55d4b19b3c209826512264b938fef38b980df185999641c";
+            computationalSha256 "c1a461dbfcc92172749c6a6e1c3a045310a513e07ed9410c22532ada36ece21b";
+            origin        "data/standards/components/styrene.dat";
+            originSha256  "2441f916e798e03532c8bc1333258b28b4ba60352a8be5441576afe1f062ebfa";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/mXylene-styrene.dat"
+        {
+            type          imported;
+            sha256        "8cdaf3da55c0e39bfaf6c51fdfeff333c79f2e4d91f6bfefcd28f590c2b4d07d";
+            computationalSha256 "39af8edb63f046870cd51dca8dbe32e4eee5e6e0463a81306ce22f67eb215119";
+            origin        "data/standards/parameters/NRTL/mXylene-styrene.dat";
+            originSha256  "d3f9e230db43f5521c407dd713aed7c3ec5ee43a4f0e00aa96f8687ad3c2065c";
+            release       Choupo-2608;
+        }
+    }
+}

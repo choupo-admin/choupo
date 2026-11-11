@@ -136,6 +136,7 @@ provenance
         reviewStatus  autoPromoted;
         humanReviewed false;
         fitGrade      clean;   // DEV.md 4c C285: the worse of the grades below
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
         fitGradeMaxRelativeError_pct 4.529183;   // grade clean
         fitGradeBoilingPointGap_K    -0.1897;   // grade clean (Tb outside the kept points' range)
         promotedBy    "bin/choupo-curate vp --promote";

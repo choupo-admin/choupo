@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/cumene.dat"
+        {
+            type          imported;
+            sha256        "5763ffde2778cdb5ff38fc349c211e0968f20e6b43170985e05036c248f75ab2";
+            computationalSha256 "9421ee66e28c8a041fdf92e06c2afef534cfeff30c781ee4b3ff218f5dd97e79";
+            origin        "data/standards/components/cumene.dat";
+            originSha256  "9880d3c429c6a7695e717ac0ff1ce82e3105b4962e59880afb15e4d311f9319e";
+            release       Choupo-2608;
+        }
+        "components/ethylFormate.dat"
+        {
+            type          imported;
+            sha256        "0e2547bb92bc3f10017fc4885e6e39b85bb87975140b8bb9c97487c44d5dceea";
+            computationalSha256 "935ebeec34b034a9bd4d07467d1f329de0c4e931299d1f49eece9caf521f2a39";
+            origin        "data/standards/components/ethylFormate.dat";
+            originSha256  "13533abf560f6d758d68d31587e0099db671c79f4f0e5c6e7061cfa233bb8fb4";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/cumene-ethylFormate.dat"
+        {
+            type          imported;
+            sha256        "b62b63d3d3aa23b1cfcf559307bd1755fe01af3ce41172c2b2ffb1888f31a6f5";
+            computationalSha256 "336722a3282a67d886782dff18fd6ef5d5dd64e69fb3c4545cb4ee258b94a1d0";
+            origin        "data/standards/parameters/NRTL/cumene-ethylFormate.dat";
+            originSha256  "9336d5e647debcfd5bb6102da5ad04dadbafc3903f99e2f7779a9ce04e913e84";
+            release       Choupo-2608;
+        }
+    }
+}

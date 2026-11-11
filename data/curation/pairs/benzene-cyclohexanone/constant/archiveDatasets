@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of benzene-cyclohexanone
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/cyclohexanone-benzene-bubble-acs.jced.6b00877.dat";
+        role          fit;   // C283: every laboratory is fitted
+        doi           "10.1021/acs.jced.6b00877";
+        url           "https://trc.nist.gov/ThermoML/10.1021/acs.jced.6b00877.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/acs.jced.6b00877.json";
+        articleFile   "acs.jced.6b00877.xml";
+        articleSha256 "f750e2a104bb5deca96cfb758804aae0c64d4a33a44e8d462e02805e122de1db";
+        block         0;
+        filter        ( --interior-only );
+        extract       "bin/choupo-thermoml extract-vle <article file> --block 0 --interior-only --into <dir>";
+        sha256        "31c3f1322a7be58240db8337e26f3bd3cb228ba458220b968a62f060fbcb10a4";
+        identity
+        {
+            cyclohexanone  { cas "108-94-1"; inchiKey "JHIVVAPYMSGYDF-UHFFFAOYSA-N"; }
+            benzene        { cas "71-43-2"; inchiKey "UHOVQNZJYSORNB-UHFFFAOYSA-N"; }
+        }
+    }
+);

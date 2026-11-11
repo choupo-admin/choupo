@@ -46,7 +46,16 @@ bool announceReviewBlock(const std::string& subject, const std::string& onceKey,
                          const std::string& key, const DictPtr& entry)
 {
     ReviewRecord rv;
-    if (!readReviewBlock(subject, entry, rv)) return false;
+    if (!readReviewBlock(subject, entry, rv))
+    {
+        //  THE LEGACY FIELD (DEV.md 4c C300 rule 4, C297's open item).  With
+        //  no `review {}` block, `humanReviewed true` reads as `by human`
+        //  with no reviewer named (handled: nothing more to say, as a
+        //  reviewed record) and `false` -- or no field -- as `by none`
+        //  (the caller says what it always said).  A block, when present,
+        //  is the one home and the field is not read.
+        return entry && entry->lookupWordOrDefault("humanReviewed", "") == "true";
+    }
 
     const std::string what = key.empty() ? std::string() : "`" + key + "` ";
     std::string who;
