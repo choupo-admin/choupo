@@ -1,0 +1,117 @@
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- methylButanoate(i) + nNonane(j)
+
+  REGRESSED BY CHOUPO'S CURATION PIPELINE (bin/choupo-curate, DEV.md 4c C282;
+  record docs/design/binary-pairs-from-open-measurements.md) to measured
+  bubble temperatures.  The articles named under `evidence` are the
+  SOURCE of the measurements; the NIST/TRC ThermoML Archive located them.
+  NO MEASURED POINT IS IN THIS RECORD OR THIS TREE: the case regenerates
+  them from the DOIs and sha256 sums it declares (constant/archiveDatasets).
+  The PARAMETERS are Choupo's own work.
+
+  EQUATION: tau_ij = a_ij + b_ij / T [b in K], G_ij = exp(-alpha tau_ij),
+  Renon & Prausnitz direction (src/thermo/activityCoefficient/NRTL.cpp).
+  a_ij = a_ji = 0 and alpha = 0.30 FIXED, not fitted.
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
+  vapour-pressure records for both pure components.
+
+  reviewStatus interim: a case-local record, regressed and not read back.  Fitted on EVERY laboratory (C283), so the
+  `validation {}` block below says, truthfully, that nothing
+  was held out; the acceptance is the `curation {}` block.
+  NOT PROMOTABLE: fit grade refused -- max |dT| 4.403 K over the 33 kept
+  points is above 4 K
+
+  REPRODUCE: run data/curation/pairs/methylButanoate-nNonane (after `bin/choupo-curate fetch` on it); its fit
+  writes methylButanoate-nNonane.proposal.dat, which bin/curate/check_regressed_pairs.py holds
+  equal to this record.
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i methylButanoate; j nNonane; }
+
+components  ( methylButanoate  nNonane );
+model       NRTL;
+
+parameters
+{
+    i           methylButanoate;
+    j           nNonane;
+    a_ij        0.00000000;
+    b_ij        -345.33460197;
+    a_ji        0.00000000;
+    b_ji        792.89961614;
+    alpha       0.30000000;
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "data/curation/pairs/methylButanoate-nNonane";
+    reviewStatus  interim;
+    reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+    fitDate       "2026-11-11";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylButanoate-nNonane-bubble-je300799f.dat";
+            doi       "10.1021/je300799f";
+            sha256    "2b9f12af8b997bb1fff5760f52cf3597321cffbf8f72a5c44165755f4179be91";
+            provenance measured;
+            archiveFile "je300799f.xml";
+            system    "methylButanoate + nNonane";
+            pressure  "101320.000000 Pa";
+        }
+    );
+    fingerprint "da541acbc07e27e4";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          1661.92357444;
+    rms_K         1.79813363;
+    nDataPoints   33;
+    identifiable  true;
+    maxAbsCorr    0.95077570;
+
+    validity
+    {
+        temperature { min 376.30 K; max 418.67 K; }
+        pressure    { min 101320 Pa; max 101320 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validationRefused;
+
+    heldOut     none;   // every declared dataset carried `role fit`
+
+    acceptance  none;   // no band was declared before the fit, so no
+                        // pass/fail may be read out of the residual above
+}
+
+curation
+{
+    rule            "DEV.md 4c C283 (amended) + C284, graded by C285 (C286)";
+    evidence        allLaboratories;   // every study fitted, none held out
+    objective       twoStage;
+    outlierLimit    3 K;   // |T_model - T| after the least-squares stage
+    outliersDropped 0;
+    pointsKept      33;
+    noBubblePoint   0;
+    maxAbsError     4.4034 K;
+    meanAbsError    1.3700 K;
+    acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
+    gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
+    grade           refused;
+    oneLiquid       true;   // arm (f) over the validity span; a pair that splits ONE liquid is never promoted, whatever its grade
+    verdict         notAccepted;
+}

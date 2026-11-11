@@ -1,0 +1,47 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/2Ethoxyethanol.dat"
+        {
+            type          imported;
+            sha256        "2b520ea3ec694be6226a910534f306def4ab82a6574202374d0a340c37acad40";
+            computationalSha256 "1d44df950672d5174ef993726cdc10f7a06dfcbff5c35d141714da4988bd7487";
+            origin        "data/standards/components/2Ethoxyethanol.dat";
+            originSha256  "967c792d6872c0f8b1f5d84a3078ddb3805feddcd451dcf4b7920271226afb4f";
+            release       Choupo-2608;
+        }
+        "components/dichloromethane.dat"
+        {
+            type          imported;
+            sha256        "6af35e44df114bc925e33244db50160b8d122f8bf3e98fd653835db93d29db04";
+            computationalSha256 "890ee7fa4f32182d7e259d936f035ec62a60e9a7bbc52a7215dd6b2be7c2e2ee";
+            origin        "data/standards/components/dichloromethane.dat";
+            originSha256  "b8ba0a1e7c64705bffe568d66f32f52ffaefee800eeff47989540075a788cf8b";
+            release       Choupo-2608;
+        }
+    }
+}

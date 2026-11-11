@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/3Methyl1Butanol.dat"
+        {
+            type          imported;
+            sha256        "06807fc2f8b7942f787f41efa53ec7e1563148f37a77e2fdddca264780511548";
+            computationalSha256 "bc3bde7defcd31de691ba224e91f33120bbc0f667050dcb886c645947069610a";
+            origin        "data/standards/components/3Methyl1Butanol.dat";
+            originSha256  "75054091b86e558cb1e679d4f372632e920bf79fe581a74aa788d14b19d5d1f7";
+            release       Choupo-2608;
+        }
+        "components/nButylAcetate.dat"
+        {
+            type          imported;
+            sha256        "06b88cdc6e2408caa992fb4d41c1633087192424e83a197d5b833932c40d6515";
+            computationalSha256 "1ae861f313889b627c999736ed42870423c2e43a750a001fee8d41a5f07ae7c8";
+            origin        "data/standards/components/nButylAcetate.dat";
+            originSha256  "3e297acf63243ba7f6b36e1a8a094d0d46423970b20bbaf2e2a300b974e3f540";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/3Methyl1Butanol-nButylAcetate.dat"
+        {
+            type          imported;
+            sha256        "77b58c108532beea3c904068d2a1927b7415a33f44f180b70da09f71f9b3b166";
+            computationalSha256 "ae8e5a392dae39a7b1845a2e1c290f44dcd76b540b6e8f90418f0d1a4e4c5e94";
+            origin        "data/standards/parameters/NRTL/3Methyl1Butanol-nButylAcetate.dat";
+            originSha256  "180025fb8be451eb91f22d6a7187ad59db7be4fa7d0d90e37313fc342866b9fe";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/3Methyl1Butanol-nButylAcetate.dat"
+        {
+            type          imported;
+            sha256        "a24201da47d405a441b9e1bf929b192c93d9afe467009e2106870cfb5a234b3b";
+            computationalSha256 "f1bf4c4589692cada1c4ce1c1b9d56490a42819f600ba79c54a45b48f3bee8b6";
+            origin        "data/standards/parameters/Wilson/3Methyl1Butanol-nButylAcetate.dat";
+            originSha256  "019d739d403aa9e8c2c4377c09cbcd1e0c1f8e205d9468be8078811077304ac1";
+            release       Choupo-2608;
+        }
+    }
+}

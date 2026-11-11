@@ -1,0 +1,205 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      carbonTetrachloride;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-2Ethoxyethanol.b_ij  500.626073528;
+        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-2Ethoxyethanol.b_ji  -111.636058155;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1871d3dd7fb26316";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/carbonTetrachloride-2Ethoxyethanol-bubbleP-je034153o-b4.dat";
+            doi       "10.1021/je034153o";
+            sha256    "2dde3b1eb81cd9f47cb0dca71f1248384d32ee8552ea15e3976666b30f7cc576";
+            provenance measured;
+            archiveFile "je034153o.xml";
+            system    "carbonTetrachloride + 2Ethoxyethanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0846; max 0.9724; n 20; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-2Ethoxyethanol.b_ij  500.626076193;
+        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-2Ethoxyethanol.b_ji  -111.636059461;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1871d3dd7fb26316";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/carbonTetrachloride-2Ethoxyethanol-bubbleP-je034153o-b4.dat";
+            doi       "10.1021/je034153o";
+            sha256    "2dde3b1eb81cd9f47cb0dca71f1248384d32ee8552ea15e3976666b30f7cc576";
+            provenance measured;
+            archiveFile "je034153o.xml";
+            system    "carbonTetrachloride + 2Ethoxyethanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0846; max 0.9724; n 20; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-2Ethoxyethanol.A_ij  -382.912895209;
+        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-2Ethoxyethanol.A_ji  4045.38838366;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1871d3dd7fb26316";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/carbonTetrachloride-2Ethoxyethanol-bubbleP-je034153o-b4.dat";
+            doi       "10.1021/je034153o";
+            sha256    "2dde3b1eb81cd9f47cb0dca71f1248384d32ee8552ea15e3976666b30f7cc576";
+            provenance measured;
+            archiveFile "je034153o.xml";
+            system    "carbonTetrachloride + 2Ethoxyethanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0846; max 0.9724; n 20; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-2Ethoxyethanol.A_ij  -382.91288477;
+        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-2Ethoxyethanol.A_ji  4045.3883642;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1871d3dd7fb26316";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/carbonTetrachloride-2Ethoxyethanol-bubbleP-je034153o-b4.dat";
+            doi       "10.1021/je034153o";
+            sha256    "2dde3b1eb81cd9f47cb0dca71f1248384d32ee8552ea15e3976666b30f7cc576";
+            provenance measured;
+            archiveFile "je034153o.xml";
+            system    "carbonTetrachloride + 2Ethoxyethanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0846; max 0.9724; n 20; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

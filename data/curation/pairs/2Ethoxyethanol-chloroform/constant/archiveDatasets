@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of 2Ethoxyethanol-chloroform
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.  The extractor is `extract-px`
+  (a bubble-PRESSURE block at a stated temperature, DEV.md 4c C291).
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/chloroform-2Ethoxyethanol-bubbleP-je034153o-b5.dat";
+        role          fit;   // C283: every laboratory is fitted
+        doi           "10.1021/je034153o";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je034153o.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je034153o.json";
+        articleFile   "je034153o.xml";
+        articleSha256 "2dde3b1eb81cd9f47cb0dca71f1248384d32ee8552ea15e3976666b30f7cc576";
+        block         5;
+        extractor     bubblePressure;
+        extract       "bin/choupo-thermoml extract-px <article file> --block 5 --into <dir>";
+        sha256        "939a47adeb5c36e434b70048002f9b872c3e890f6eab5d26bb713ccd7eccc454";
+        identity
+        {
+            chloroform     { cas "67-66-3"; inchiKey "HEDRZPFGACZZDS-UHFFFAOYSA-N"; }
+            2Ethoxyethanol { cas "110-80-5"; inchiKey "ZNQVEEAIQZEUHB-UHFFFAOYSA-N"; }
+        }
+    }
+);

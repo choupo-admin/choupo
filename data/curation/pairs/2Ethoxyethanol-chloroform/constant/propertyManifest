@@ -1,0 +1,47 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/2Ethoxyethanol.dat"
+        {
+            type          imported;
+            sha256        "2b520ea3ec694be6226a910534f306def4ab82a6574202374d0a340c37acad40";
+            computationalSha256 "1d44df950672d5174ef993726cdc10f7a06dfcbff5c35d141714da4988bd7487";
+            origin        "data/standards/components/2Ethoxyethanol.dat";
+            originSha256  "967c792d6872c0f8b1f5d84a3078ddb3805feddcd451dcf4b7920271226afb4f";
+            release       Choupo-2608;
+        }
+        "components/chloroform.dat"
+        {
+            type          imported;
+            sha256        "48ea2dd5d5aad8dc9d7eb3179ee28f8d1dd55182b307709458b96d6d90add033";
+            computationalSha256 "7cb8f2b79cad0b5ea72c7ec906f2a65d0d8c39478f5acbc40a1309b5e3ea4935";
+            origin        "data/standards/components/chloroform.dat";
+            originSha256  "d25766671415e3bc42a8a3af455d28827ed85f11e413ebfb1a7220ffae8747b2";
+            release       Choupo-2608;
+        }
+    }
+}

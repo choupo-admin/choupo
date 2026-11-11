@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of aniline-tetrahydropyran
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.  The extractor is `extract-px`
+  (a bubble-PRESSURE block at a stated temperature, DEV.md 4c C291).
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/aniline-tetrahydropyran-bubbleP-je1005196-b17.dat";
+        role          fit;   // C283: every laboratory is fitted
+        doi           "10.1021/je1005196";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je1005196.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je1005196.json";
+        articleFile   "je1005196.xml";
+        articleSha256 "b93571bde96a5b39fb8bd7063296577a2c5335f252cae579251c921a5c13a4b6";
+        block         17;
+        extractor     bubblePressure;
+        extract       "bin/choupo-thermoml extract-px <article file> --block 17 --into <dir>";
+        sha256        "50adb904f946bcb68a3d21e559cf021e21fd2dca331eea1ff430817a4127e8d8";
+        identity
+        {
+            aniline        { cas "62-53-3"; inchiKey "PAYRUJLWNCNPSJ-UHFFFAOYSA-N"; }
+            tetrahydropyran { cas "142-68-7"; inchiKey "DHXVGJBLRPWPCS-UHFFFAOYSA-N"; }
+        }
+    }
+);

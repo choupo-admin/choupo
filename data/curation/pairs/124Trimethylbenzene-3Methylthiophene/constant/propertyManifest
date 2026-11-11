@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/124Trimethylbenzene.dat"
+        {
+            type          imported;
+            sha256        "c793ff51651a2998a735424064a29e633611a7ee9edad4ee9c6aacec7c118d3a";
+            computationalSha256 "678db1ddc5d1ebfef9edbc8ac6be59ffa1a8eae239889e7efa7a0a6ccced413f";
+            origin        "data/standards/components/124Trimethylbenzene.dat";
+            originSha256  "6bb0791fec1a36e25f4131ba774c37fc6bddf84674a80220da4eb88017f2228d";
+            release       Choupo-2608;
+        }
+        "components/3Methylthiophene.dat"
+        {
+            type          imported;
+            sha256        "c8e08d236ca4f39bf34966cf875015c1154f56ddf92b1ddbefb6066c2b8b4f78";
+            computationalSha256 "f269dbbaf52cf7439142e7132d3db5e28df6bcbaaf9dd9facfdaecdd758591c0";
+            origin        "data/standards/components/3Methylthiophene.dat";
+            originSha256  "cb876f368219985355881a7320b119a4cc7d9059760446e9c3ef33089d1fc1fd";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/124Trimethylbenzene-3Methylthiophene.dat"
+        {
+            type          imported;
+            sha256        "6fa9d7d9af691f2e0813f588918717198e7a096a37c79ce4b1478ed3d8fa0eb3";
+            computationalSha256 "fe029096e8836368f3380957004c9697392e622807c37a93dd678915559bab72";
+            origin        "data/standards/parameters/NRTL/124Trimethylbenzene-3Methylthiophene.dat";
+            originSha256  "9dc805dce28490d37e7bd5770b09f9910ad3c6fec8ad459e2e46c8cce09ddd46";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/124Trimethylbenzene-3Methylthiophene.dat"
+        {
+            type          imported;
+            sha256        "5fa597432e5a91e7f615c2d4c1ecc1c12c15ec6c7ec0ef11b17c3d81f5b9da40";
+            computationalSha256 "22f66668e9484c4eedf2edcfb4c98180e60531dc0c45b56ebc3c3aece8ea7b08";
+            origin        "data/standards/parameters/Wilson/124Trimethylbenzene-3Methylthiophene.dat";
+            originSha256  "2348d62abdc42b3144e148351d458a3ffc8ee9e6e1e42fb6ec5f5390df70c2d9";
+            release       Choupo-2608;
+        }
+    }
+}

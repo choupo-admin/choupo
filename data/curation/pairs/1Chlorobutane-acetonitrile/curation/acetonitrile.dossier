@@ -1,0 +1,205 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      acetonitrile;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Chlorobutane.b_ij  213.387409029;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Chlorobutane.b_ji  246.74039514;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d178ea57ef46d2c9";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-1Chlorobutane-bubbleP-je800535c-b9.dat";
+            doi       "10.1021/je800535c";
+            sha256    "b936ec60ecb4d987ff9b9ae630c23851eb127999e550127382ca762a4e9b3be6";
+            provenance measured;
+            archiveFile "je800535c.xml";
+            system    "acetonitrile + 1Chlorobutane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1052; max 0.9446; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Chlorobutane.b_ij  213.387404037;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Chlorobutane.b_ji  246.740399997;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d178ea57ef46d2c9";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-1Chlorobutane-bubbleP-je800535c-b9.dat";
+            doi       "10.1021/je800535c";
+            sha256    "b936ec60ecb4d987ff9b9ae630c23851eb127999e550127382ca762a4e9b3be6";
+            provenance measured;
+            archiveFile "je800535c.xml";
+            system    "acetonitrile + 1Chlorobutane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1052; max 0.9446; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Chlorobutane.A_ij  4089.35934313;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Chlorobutane.A_ji  92.6287986879;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d178ea57ef46d2c9";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-1Chlorobutane-bubbleP-je800535c-b9.dat";
+            doi       "10.1021/je800535c";
+            sha256    "b936ec60ecb4d987ff9b9ae630c23851eb127999e550127382ca762a4e9b3be6";
+            provenance measured;
+            archiveFile "je800535c.xml";
+            system    "acetonitrile + 1Chlorobutane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1052; max 0.9446; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Chlorobutane.A_ij  4089.35933889;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Chlorobutane.A_ji  92.6288014256;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d178ea57ef46d2c9";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-1Chlorobutane-bubbleP-je800535c-b9.dat";
+            doi       "10.1021/je800535c";
+            sha256    "b936ec60ecb4d987ff9b9ae630c23851eb127999e550127382ca762a4e9b3be6";
+            provenance measured;
+            archiveFile "je800535c.xml";
+            system    "acetonitrile + 1Chlorobutane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1052; max 0.9446; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

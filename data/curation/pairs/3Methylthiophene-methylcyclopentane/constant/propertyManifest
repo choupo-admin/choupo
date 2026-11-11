@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/3Methylthiophene.dat"
+        {
+            type          imported;
+            sha256        "c8e08d236ca4f39bf34966cf875015c1154f56ddf92b1ddbefb6066c2b8b4f78";
+            computationalSha256 "f269dbbaf52cf7439142e7132d3db5e28df6bcbaaf9dd9facfdaecdd758591c0";
+            origin        "data/standards/components/3Methylthiophene.dat";
+            originSha256  "cb876f368219985355881a7320b119a4cc7d9059760446e9c3ef33089d1fc1fd";
+            release       Choupo-2608;
+        }
+        "components/methylcyclopentane.dat"
+        {
+            type          imported;
+            sha256        "f8bc14b35101bdfd91f9cd6f7ba035b4ea094e029391c8606f534c78c16dd4f5";
+            computationalSha256 "bc3810f68ef7bc10b2584e0c97dd2a3f056f0a7c9a7aa4c50b768717eef075d5";
+            origin        "data/standards/components/methylcyclopentane.dat";
+            originSha256  "b60295f52c4ee84e9f94beb61c76bbbd0e31ae55418cdbb5755f07f9518d9137";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/3Methylthiophene-methylcyclopentane.dat"
+        {
+            type          imported;
+            sha256        "cf681aa0461c22d439e7b793d33b56ee000653427b294cf5fdef6f57e6ae06e5";
+            computationalSha256 "b2bff2d272a47b3aaea90fe475086dde2ce7f949ee99899006c6efbbc7238c2f";
+            origin        "data/standards/parameters/NRTL/3Methylthiophene-methylcyclopentane.dat";
+            originSha256  "4a721841c2a276c79eeb063167b39ddbf932c6e5d792e98886ccc415de63c8ce";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/3Methylthiophene-methylcyclopentane.dat"
+        {
+            type          imported;
+            sha256        "10f903b90360b2d275e23354fff875c1195a092e2c04114fc5c3f0d3517a80fb";
+            computationalSha256 "e5c750a774e10b5ffba5c07306458d24619d2edd36df04b7ec66d294fbd5c33c";
+            origin        "data/standards/parameters/Wilson/3Methylthiophene-methylcyclopentane.dat";
+            originSha256  "72520ff4fd969c04f38d33493964baa61c52dbd027a92c28f0cdbf034a11ff09";
+            release       Choupo-2608;
+        }
+    }
+}

@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/methylDecanoate.dat"
+        {
+            type          imported;
+            sha256        "2494e1eba786eb599fd3bc9e7b1bc93e2360fdf59221841b5354114cf5f30ab7";
+            computationalSha256 "79ce8979eef66b4d5568ae4287a640bd2b35d17f7be0d6610328be5edc051225";
+            origin        "data/standards/components/methylDecanoate.dat";
+            originSha256  "1fb4f5be7a81a7ad8a78b8eb5325ea8adf22cecfca65c1c034e8229b023c6e96";
+            release       Choupo-2608;
+        }
+        "components/methylOctanoate.dat"
+        {
+            type          imported;
+            sha256        "320ec5cf4802c59e008c4cc7b432da583765e9f9a4ad7695239df78860ac7783";
+            computationalSha256 "c0de5b02b7d1447423f8422927073e81581daec9548d97897fb176dae8b4a362";
+            origin        "data/standards/components/methylOctanoate.dat";
+            originSha256  "3a4dedd45d72df3cedfaee47cfdaf8224378b12edbb49568c949980623324a7d";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+    }
+}

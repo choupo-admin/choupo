@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of 3Methyl1Butanol-nButanol
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.  The extractor is `extract-px`
+  (a bubble-PRESSURE block at a stated temperature, DEV.md 4c C291).
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/nButanol-3Methyl1Butanol-bubbleP-j.fluid.2016.12.025-b8.dat";
+        role          fit;   // C283: every laboratory is fitted
+        doi           "10.1016/j.fluid.2016.12.025";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2016.12.025.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2016.12.025.json";
+        articleFile   "j.fluid.2016.12.025.xml";
+        articleSha256 "b7b44ef1dde09c34c2e3e1ffd9878ca557df3bab0170d2c49b61296c03be2e26";
+        block         8;
+        extractor     bubblePressure;
+        extract       "bin/choupo-thermoml extract-px <article file> --block 8 --into <dir>";
+        sha256        "7a2dde43dce2d2201122a3a25c9c7a4760b0431b354b166282f7deda61162fef";
+        identity
+        {
+            nButanol       { cas "71-36-3"; inchiKey "LRHPLDYGYMQRHN-UHFFFAOYSA-N"; }
+            3Methyl1Butanol { cas "123-51-3"; inchiKey "PHTQWCKDNZKARW-UHFFFAOYSA-N"; }
+        }
+    }
+);

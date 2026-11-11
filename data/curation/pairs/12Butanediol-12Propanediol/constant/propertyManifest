@@ -1,0 +1,83 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/12Butanediol.dat"
+        {
+            type          imported;
+            sha256        "7a1f1670ea9c2368cdd79e9b5e2dab4afac966a2ba41200f902ac31b52276ee5";
+            computationalSha256 "51c254cc192b235b7f76bc2fc06ba4464b832f5ede9dd962783b630c75a8a52d";
+            origin        "data/standards/components/12Butanediol.dat";
+            originSha256  "77995ed1ee5720ffb3f0f53609fe6ab8ac10b6cdee0e2e47165f805779662487";
+            release       Choupo-2608;
+        }
+        "components/12Propanediol.dat"
+        {
+            type          imported;
+            sha256        "19f646da5abc3ed78768c78d025eda829a7e7232094ed40bb9b801027b9f424d";
+            computationalSha256 "08456b107ad9a0eaddabc00c74a2feabce91b8385423818f41a83561b368b61a";
+            origin        "data/standards/components/12Propanediol.dat";
+            originSha256  "7de0215a01c9bcf9de9f73d9d43e169cff533558ff41fb7604b55093b896ac98";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/12Butanediol-12Propanediol.dat"
+        {
+            type          imported;
+            sha256        "7f35a56d9c85afae9d47ecab48b5e23e2dce89fa342522b4b54f83ea7ca06fb3";
+            computationalSha256 "717369d71958a227863bfa5490d6797f3e0fbbeb4133434ff29aad6059c9a401";
+            origin        "data/standards/parameters/NRTL/12Butanediol-12Propanediol.dat";
+            originSha256  "b64fc21cb5a3b38fd541ed2d78c524c094120bc93f7b73e92558218f87e5ee90";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/12Butanediol-12Propanediol.dat"
+        {
+            type          imported;
+            sha256        "f8481625fb4c3eb10fa4c7e35a4e7be4274250c487e0246e9a8800c46f163851";
+            computationalSha256 "f2c39fe1cdb91bc77165691f0031b01e0afa15e5730a9164e9a37772030a1cf3";
+            origin        "data/standards/parameters/Wilson/12Butanediol-12Propanediol.dat";
+            originSha256  "e7ea87dcf9cbef909c13eff0a5a01d82fd3c27af3be23dc5073215e08379ba44";
+            release       Choupo-2608;
+        }
+    }
+}

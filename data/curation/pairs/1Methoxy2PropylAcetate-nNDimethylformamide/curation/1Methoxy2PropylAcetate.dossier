@@ -1,0 +1,205 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      1Methoxy2PropylAcetate;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Methoxy2PropylAcetate-nNDimethylformamide.b_ij  -74.6060151778;
+        equilibrium.liquid.activityModel.binaryParameters.1Methoxy2PropylAcetate-nNDimethylformamide.b_ji  261.01267858;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "420c56df3a9524e0";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Methoxy2PropylAcetate-nNDimethylformamide-bubble-acs.jced.6b01071.dat";
+            doi       "10.1021/acs.jced.6b01071";
+            sha256    "e5e3840b11d85390025771c40b7178bbd95159c167998895f14c435275dd5655";
+            provenance measured;
+            archiveFile "acs.jced.6b01071.xml";
+            system    "1Methoxy2PropylAcetate + nNDimethylformamide";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.073; max 0.983; n 39; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Methoxy2PropylAcetate-nNDimethylformamide.b_ij  -74.6060153187;
+        equilibrium.liquid.activityModel.binaryParameters.1Methoxy2PropylAcetate-nNDimethylformamide.b_ji  261.012678723;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "420c56df3a9524e0";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Methoxy2PropylAcetate-nNDimethylformamide-bubble-acs.jced.6b01071.dat";
+            doi       "10.1021/acs.jced.6b01071";
+            sha256    "e5e3840b11d85390025771c40b7178bbd95159c167998895f14c435275dd5655";
+            provenance measured;
+            archiveFile "acs.jced.6b01071.xml";
+            system    "1Methoxy2PropylAcetate + nNDimethylformamide";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.073; max 0.983; n 39; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Methoxy2PropylAcetate-nNDimethylformamide.A_ij  -249.481422983;
+        equilibrium.liquid.activityModel.binaryParameters.1Methoxy2PropylAcetate-nNDimethylformamide.A_ji  1781.39518704;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "420c56df3a9524e0";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Methoxy2PropylAcetate-nNDimethylformamide-bubble-acs.jced.6b01071.dat";
+            doi       "10.1021/acs.jced.6b01071";
+            sha256    "e5e3840b11d85390025771c40b7178bbd95159c167998895f14c435275dd5655";
+            provenance measured;
+            archiveFile "acs.jced.6b01071.xml";
+            system    "1Methoxy2PropylAcetate + nNDimethylformamide";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.073; max 0.983; n 39; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Methoxy2PropylAcetate-nNDimethylformamide.A_ij  -249.481426633;
+        equilibrium.liquid.activityModel.binaryParameters.1Methoxy2PropylAcetate-nNDimethylformamide.A_ji  1781.39518984;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "420c56df3a9524e0";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Methoxy2PropylAcetate-nNDimethylformamide-bubble-acs.jced.6b01071.dat";
+            doi       "10.1021/acs.jced.6b01071";
+            sha256    "e5e3840b11d85390025771c40b7178bbd95159c167998895f14c435275dd5655";
+            provenance measured;
+            archiveFile "acs.jced.6b01071.xml";
+            system    "1Methoxy2PropylAcetate + nNDimethylformamide";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.073; max 0.983; n 39; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

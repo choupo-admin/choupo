@@ -58,11 +58,60 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      4 point(s) of 60: doi 10.1016/j.tca.2016.12.010 row 5: x 0.0513, P
+      13.320 kPa, T 423.29 K, dT +3.94 K; doi 10.1016/j.tca.2016.12.010
+      row 9: x 0.0710, P 13.320 kPa, T 418.85 K, dT +4.63 K; doi
+      10.1016/j.tca.2016.12.010 row 13: x 0.1016, P 13.320 kPa, T 412.93
+      K, dT +4.70 K; doi 10.1016/j.tca.2016.12.010 row 17: x 0.2109, P
+      13.320 kPa, T 394.17 K, dT +4.02 K
   @@OUTLIERS-END@@
 
+  @@MODELS-BEGIN@@
+  THE OTHER ACTIVITY MODELS (DEV.md 4c C294), declared before their fits
+  ran. The SAME datasets and the SAME kept points as fit_nrtl: each op
+  below is fit_nrtl copied verbatim -- evidence, discards, objective,
+  residual, weighting, options -- with only its parameters, its `thermo
+  {}` fragment (the model) and its outputs changed; the outlier discard
+  was decided ONCE, on the NRTL least-squares stage, and is reused, never
+  re-decided per model. UNIQUAC: two parameters a_ij, a_ji (K), tau_ij =
+  exp(-a_ij/T), b = c = 0 fixed (the NRTL default's count; temperature
+  dependence 1/T), r and q each component's own record. Wilson: two
+  parameters A_ij, A_ji (J/mol), Lambda_ij = (V_j/V_i) exp(-A_ij/RT), V
+  the records' Vliq. Two starts each. Each model gets its own record
+  (constant/parameters/<MODEL>/), its own grade at 1 / 2 / 4 K (max
+  |T_model - T|), its own one-liquid test (arm f), `fitGradeBasis
+  inSample`, the C300 cap and `review { by none; }`; a severe or refused
+  grade, or a split, is not promoted. The three in-sample residuals are
+  published side by side, never used to choose a model for the student.
+  UNIQUAC: NOT FITTED -- morpholine and 1Decanol carry no UNIQUAC r and q
+  (no tabulated value, and no UNIFAC groups to sum them from,
+  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
+  is estimated silently. Wilson: FITTED.
+  @@MODELS-END@@
+
+  @@MODELS-RESULT-BEGIN@@
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dT| 3.061 K (severe) on the same
+  kept points. fit_wilson: A_ij = 5957.6, A_ji = -7204.1 J/mol over 56
+  kept points: max |dT| 4.460 K, mean 0.782 K, graded refused ->
+  notAccepted; fit_wilson_start2 lands on the same pair (5957.6,
+  -7204.1). NOT PROMOTABLE: fit grade refused -- max |dT| 4.460 K over
+  the 56 kept points. UNIQUAC: not fitted -- morpholine and 1Decanol
+  carry no UNIQUAC r and q (no tabulated value, and no UNIFAC groups to
+  sum them from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not
+  fitted; nothing is estimated silently.
+  @@MODELS-RESULT-END@@
+
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = -612.2 K, b_ji = 458.3 K over 56 kept points of 1
+  laboratories (4 discarded): max |dT| 3.061 K, mean 0.785 K, graded
+  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on A
+  DIFFERENT pair (2153.6, -908.5). NOT PROMOTED (max |dT| 3.061 K over
+  the 56 kept points, one liquid across the validity span): fit grade
+  severe -- DEV.md 4c C300 rule 3: a severe pair does not enter the
+  default catalogue; its record stays in this curation case's constant/,
+  and a case that needs it carries it in its own constant/
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -88,6 +137,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/morpholine-1Decanol-bubble-j.tca.2016.12.010.dat";
                 role     fit;
+                discard  ( 5 9 13 17 );   // C283 outliers, by name in the header
             }
         );
 
@@ -129,6 +179,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/morpholine-1Decanol-bubble-j.tca.2016.12.010.dat";
                 role     fit;
+                discard  ( 5 9 13 17 );   // C283 outliers, by name in the header
             }
         );
 
@@ -189,6 +240,142 @@ operations
         properties  ( T_bubble  y_eq_morpholine );
         output      { file txy_nrtl.csv; }
     }
+    // @@C294-OPS-BEGIN@@ -- UNIQUAC and Wilson on the NRTL fit's own evidence (DEV.md 4c C294)
+    {
+        name        fit_wilson;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.morpholine-1Decanol.A_ij;  initial 0;  min -30000;  max 30000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.morpholine-1Decanol.A_ji;  initial 0;  min -30000;  max 30000; }
+        );
+
+        thermo   // the model, as a fragment of the case's system (C294)
+        {
+            equilibrium
+            {
+                liquid
+                {
+                    activityModel
+                    {
+                        model Wilson;
+                        binaryParameters   // the FIT'S starting point
+                        {
+                            morpholine-1Decanol { i morpholine; j 1Decanol; A_ij 0; A_ji 0; }
+                        }
+                    }
+                    standardState pureLiquid;
+                }
+            }
+        }
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/morpholine-1Decanol-bubble-j.tca.2016.12.010.dat";
+                role     fit;
+                discard  ( 5 9 13 17 );   // the NRTL fit's outliers, reused: decided once (C294)
+            }
+        );
+
+        objective { method twoStage;  scale { T_bubble absolute; } }
+        residual
+        {
+            kind        T_bubble;
+            components  ( morpholine 1Decanol );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_history_wilson.csv;
+            parity     parity_wilson.csv;
+            proposal   1Decanol-morpholine.Wilson.proposal.dat;
+        }
+    }
+    {
+        name        fit_wilson_start2;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.morpholine-1Decanol.A_ij;  initial 4000;  min -30000;  max 30000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.morpholine-1Decanol.A_ji;  initial -2000;  min -30000;  max 30000; }
+        );
+
+        thermo   // the model, as a fragment of the case's system (C294)
+        {
+            equilibrium
+            {
+                liquid
+                {
+                    activityModel
+                    {
+                        model Wilson;
+                        binaryParameters   // the FIT'S starting point
+                        {
+                            morpholine-1Decanol { i morpholine; j 1Decanol; A_ij 0; A_ji 0; }
+                        }
+                    }
+                    standardState pureLiquid;
+                }
+            }
+        }
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/morpholine-1Decanol-bubble-j.tca.2016.12.010.dat";
+                role     fit;
+                discard  ( 5 9 13 17 );   // the NRTL fit's outliers, reused: decided once (C294)
+            }
+        );
+
+        objective { method twoStage;  scale { T_bubble absolute; } }
+        residual
+        {
+            kind        T_bubble;
+            components  ( morpholine 1Decanol );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            parity     parity_wilson_start2.csv;
+        }
+    }
+    // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[morpholine];  from 0.0;  to 1.0;  n 101; }
+        state       { P 94.9 kPa;  composition { morpholine 0.5;  1Decanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_morpholine );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );
 
 experimental

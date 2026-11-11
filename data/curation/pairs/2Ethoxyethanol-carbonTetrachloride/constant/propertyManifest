@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/2Ethoxyethanol.dat"
+        {
+            type          imported;
+            sha256        "2b520ea3ec694be6226a910534f306def4ab82a6574202374d0a340c37acad40";
+            computationalSha256 "1d44df950672d5174ef993726cdc10f7a06dfcbff5c35d141714da4988bd7487";
+            origin        "data/standards/components/2Ethoxyethanol.dat";
+            originSha256  "967c792d6872c0f8b1f5d84a3078ddb3805feddcd451dcf4b7920271226afb4f";
+            release       Choupo-2608;
+        }
+        "components/carbonTetrachloride.dat"
+        {
+            type          imported;
+            sha256        "849304c597f9629e78529f1070394e57ef3edc876a0dfb5b4438aba3520a18b1";
+            computationalSha256 "d54c47c0843de73ce61bea572a1ee65fb4db433626d6080f424d94235c58fda9";
+            origin        "data/standards/components/carbonTetrachloride.dat";
+            originSha256  "59e36c57323a7bcb01eaa635da77585eaf7ff4fb0780f5128abcae97324a332c";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Ethoxyethanol-carbonTetrachloride.dat"
+        {
+            type          imported;
+            sha256        "4244d1f7d3fd7f42d84362a1a32e48cb07f15a5d288418e1e8a51f29e7836be3";
+            computationalSha256 "492ba107945c15f9f9ae84d749fbf82940ca1738d9aa88389885861b2ffd645a";
+            origin        "data/standards/parameters/NRTL/2Ethoxyethanol-carbonTetrachloride.dat";
+            originSha256  "081f97c678567d5a53bb26f7d40e4bb4b6839153ad9e74682bd5adddad9b4b46";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Ethoxyethanol-carbonTetrachloride.dat"
+        {
+            type          imported;
+            sha256        "e45e1a8b1ca4b8d1b1d8b73579de5de09b941a21a748629d7e6bc46a34e79d12";
+            computationalSha256 "422de804b85df12e87fc8e79145453c3fcc585c11b42348c0979e28d75211469";
+            origin        "data/standards/parameters/Wilson/2Ethoxyethanol-carbonTetrachloride.dat";
+            originSha256  "8f58858ee62985a8ea9064e8d5f7bd413a3f13527bb0e4916cb06f264e341414";
+            release       Choupo-2608;
+        }
+    }
+}

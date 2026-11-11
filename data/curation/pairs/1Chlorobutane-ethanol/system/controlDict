@@ -1,0 +1,7 @@
+/*  1Chlorobutane-ethanol: an NRTL pair for ethanol + 1Chlorobutane regressed by bin/curate/pairs_px.py
+    to EVERY laboratory's measured bubble PRESSURES (DEV.md 4c C291).  See
+    system/propsDict for the declaration and the result.  */
+
+application   choupoProps;
+description   "NRTL ethanol-1Chlorobutane regressed to every laboratory's measured bubble pressures (ThermoML locates, the articles source), graded by max relative pressure error (clean 5 %, warning 10 %, severe 20 %, refused above; C285, C291)";
+verbosity     2;
