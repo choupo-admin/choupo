@@ -1,0 +1,88 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Pitzer binary ion-interaction parameters --- (K)1(H2PO4)1 in water.
+  Role: the beta0 / beta1 / Cphi set (alpha1 2, b 1.2) of the Pitzer virial
+  expansion, consumed by the pitzer (single-salt) and pitzerHMW
+  (multi-ion) activity engines.
+  REGRESSED BY CHOUPO (DEV.md 4c C311) to the evaluated gamma_pm and phi
+  of W. J. Hamer and Y.-C. Wu, Osmotic Coefficients and Mean Activity Coefficients of Uni-univalent Electrolytes in Water at 25 C, J. Phys. Chem. Ref. Data 1 (1972) 1047-1100, doi:10.1063/1.3253108 (Table 35, p. 1076 (m, phi, gamma), the recommended values) -- the evaluation is the
+  primary source of those recommended values.  The PARAMETERS are
+  Choupo's own work.  Window: 0.1-1.8 mol/kg at 298.15 K
+  (11 points fitted, 3 interleaved points held out).
+  Outside it the record is an extrapolation; off 25 C it carries no
+  temperature extension of its own.
+  GRADE: in-sample max error 0.104 % -> clean (capped at warning: one temperature, one evaluation);
+  the held-out points 0.0676 % (clean).  No human has
+  reviewed it.  REPRODUCE: run data/curation/electrolytes/K-H2PO4; its proposal is held equal to this
+  record by bin/curate/check_regressed_electrolytes.py.
+\*-----------------------------------------------------------------------------*/
+recordType electrolytePairParameters;
+schemaVersion 1;
+
+model pitzer;
+
+pair { cation K; anion H2PO4; }
+
+parameters
+{
+    beta0   -0.1132823587;
+    beta1   0.05965715882;
+    beta2   0;
+    Cphi    0.0203537385;
+    alpha1  2;
+    alpha2  12;
+}
+
+source "REGRESSED by Choupo (C311) to W. J. Hamer and Y.-C. Wu, Osmotic Coefficients and Mean Activity Coefficients of Uni-univalent Electrolytes in Water at 25 C, J. Phys. Chem. Ref. Data 1 (1972) 1047-1100, doi:10.1063/1.3253108, Table 35, p. 1076 (m, phi, gamma), the recommended values";
+
+provenance
+{
+    origin        regressed;
+    method        "electrolyteFit(pitzer): ln gamma_pm and phi, equal weight, Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "data/curation/electrolytes/K-H2PO4";
+    reviewStatus  autoPromoted;
+    fitGrade      warning;   // DEV.md 4c C311: max relative error of gamma_pm or phi over the fitted points, graded 2 / 5 / 10 %
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+    fitGradeCap   ( singleTemperature singleLaboratory );   // DEV.md 4c C300 rule 2: in-sample clean, capped -- one temperature, one evaluation
+    fitGradeMaxRelativeError_pct 0.1042;
+    promotedBy    "bin/curate/electrolytes_c311.py promote";
+    promotedDate  "2026-11-11";
+    reviewReason  "regressed by bin/curate/electrolytes_c311.py from a hand-checked transcription of an evaluated table; not yet read back by a human";
+    reuse         "Choupo's own regression; the evaluated values belong to the cited compilation";
+    fitDate       "2026-11-11";
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/experiments/K-H2PO4.dat";
+            doi       "10.1063/1.3253108";
+            provenance evaluated;
+        }
+    );
+    inSample
+    {
+        gammaAAD_pct 0.0454;
+        phiAAD_pct   0.0230;
+        max_pct      0.1042;
+        nPoints      11;
+    }
+    heldOut
+    {
+        kind         interleavedSameSource;   // every 4th point of the same evaluation: NOT a validation
+        gammaAAD_pct 0.0446;
+        phiAAD_pct   0.0403;
+        max_pct      0.0676;
+        nPoints      3;
+        grade        clean;
+    }
+    validity
+    {
+        temperature { min 298.15 K; max 298.15 K; }
+        molality    { min 0.1; max 1.8; }   // mol/kg
+        note        "the span of the fitted evaluated values; outside it the salt is an extrapolation";
+    }
+    review
+    {
+        by none;
+    }
+}

@@ -1,0 +1,83 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Electrolyte-NRTL binary energy parameters --- (Na)1(I)1 in water.
+  Role: the water / (Na)(I) pair taus of the Chen local-composition model,
+  alpha 0.2 fixed, consumed by the eNRTL activity engine.
+  REGRESSED BY CHOUPO (DEV.md 4c C311) to the evaluated gamma_pm and phi
+  of W. J. Hamer and Y.-C. Wu, Osmotic Coefficients and Mean Activity Coefficients of Uni-univalent Electrolytes in Water at 25 C, J. Phys. Chem. Ref. Data 1 (1972) 1047-1100, doi:10.1063/1.3253108 (Table 18, p. 1068 (m, phi, gamma), the recommended values) -- the evaluation is the
+  primary source of those recommended values.  The PARAMETERS are
+  Choupo's own work.  Window: 0.1-6 mol/kg at 298.15 K
+  (18 points fitted, 5 interleaved points held out).
+  Outside it the record is an extrapolation; off 25 C it carries no
+  temperature extension of its own.
+  GRADE: in-sample max error 4.53 % -> warning;
+  the held-out points 2.93 % (warning).  No human has
+  reviewed it.  REPRODUCE: run data/curation/electrolytes/Na-I; its proposal is held equal to this
+  record by bin/curate/check_regressed_electrolytes.py.
+\*-----------------------------------------------------------------------------*/
+recordType electrolyteNRTLParameters;
+schemaVersion 1;
+
+model eNRTL;
+
+pair { cation Na; anion I; }
+
+parameters
+{
+    tau_m_ca 9.492873361;
+    tau_ca_m -4.894339165;
+    alpha    0.2;
+}
+
+source "REGRESSED by Choupo (C311) to W. J. Hamer and Y.-C. Wu, Osmotic Coefficients and Mean Activity Coefficients of Uni-univalent Electrolytes in Water at 25 C, J. Phys. Chem. Ref. Data 1 (1972) 1047-1100, doi:10.1063/1.3253108, Table 18, p. 1068 (m, phi, gamma), the recommended values";
+
+provenance
+{
+    origin        regressed;
+    method        "electrolyteFit(eNRTL): ln gamma_pm and phi, equal weight, Levenberg-Marquardt from 4 starts";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "data/curation/electrolytes/Na-I";
+    reviewStatus  autoPromoted;
+    fitGrade      warning;   // DEV.md 4c C311: max relative error of gamma_pm or phi over the fitted points, graded 2 / 5 / 10 %
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+    fitGradeMaxRelativeError_pct 4.5273;
+    promotedBy    "bin/curate/electrolytes_c311.py promote";
+    promotedDate  "2026-11-11";
+    reviewReason  "regressed by bin/curate/electrolytes_c311.py from a hand-checked transcription of an evaluated table; not yet read back by a human";
+    reuse         "Choupo's own regression; the evaluated values belong to the cited compilation";
+    fitDate       "2026-11-11";
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/experiments/Na-I.dat";
+            doi       "10.1063/1.3253108";
+            provenance evaluated;
+        }
+    );
+    inSample
+    {
+        gammaAAD_pct 2.2486;
+        phiAAD_pct   1.3920;
+        max_pct      4.5273;
+        nPoints      18;
+    }
+    heldOut
+    {
+        kind         interleavedSameSource;   // every 4th point of the same evaluation: NOT a validation
+        gammaAAD_pct 2.3684;
+        phiAAD_pct   1.3295;
+        max_pct      2.9336;
+        nPoints      5;
+        grade        warning;
+    }
+    validity
+    {
+        temperature { min 298.15 K; max 298.15 K; }
+        molality    { min 0.1; max 6; }   // mol/kg
+        note        "the span of the fitted evaluated values; outside it the salt is an extrapolation";
+    }
+    review
+    {
+        by none;
+    }
+}

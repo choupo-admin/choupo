@@ -1,0 +1,88 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Pitzer binary ion-interaction parameters --- (Cs)1(OH)1 in water.
+  Role: the beta0 / beta1 / Cphi set (alpha1 2, b 1.2) of the Pitzer virial
+  expansion, consumed by the pitzer (single-salt) and pitzerHMW
+  (multi-ion) activity engines.
+  REGRESSED BY CHOUPO (DEV.md 4c C311) to the evaluated gamma_pm and phi
+  of W. J. Hamer and Y.-C. Wu, Osmotic Coefficients and Mean Activity Coefficients of Uni-univalent Electrolytes in Water at 25 C, J. Phys. Chem. Ref. Data 1 (1972) 1047-1100, doi:10.1063/1.3253108 (Table 48, p. 1082 (m, phi, gamma), the recommended values) -- the evaluation is the
+  primary source of those recommended values.  The PARAMETERS are
+  Choupo's own work.  Window: 0.1-1.2 mol/kg at 298.15 K
+  (9 points fitted, 2 interleaved points held out).
+  Outside it the record is an extrapolation; off 25 C it carries no
+  temperature extension of its own.
+  GRADE: in-sample max error 0.162 % -> clean (capped at warning: one temperature, one evaluation);
+  the held-out points 0.101 % (clean).  No human has
+  reviewed it.  REPRODUCE: run data/curation/electrolytes/Cs-OH; its proposal is held equal to this
+  record by bin/curate/check_regressed_electrolytes.py.
+\*-----------------------------------------------------------------------------*/
+recordType electrolytePairParameters;
+schemaVersion 1;
+
+model pitzer;
+
+pair { cation Cs; anion OH; }
+
+parameters
+{
+    beta0   0.1253600831;
+    beta1   0.437413905;
+    beta2   0;
+    Cphi    0.004020543745;
+    alpha1  2;
+    alpha2  12;
+}
+
+source "REGRESSED by Choupo (C311) to W. J. Hamer and Y.-C. Wu, Osmotic Coefficients and Mean Activity Coefficients of Uni-univalent Electrolytes in Water at 25 C, J. Phys. Chem. Ref. Data 1 (1972) 1047-1100, doi:10.1063/1.3253108, Table 48, p. 1082 (m, phi, gamma), the recommended values";
+
+provenance
+{
+    origin        regressed;
+    method        "electrolyteFit(pitzer): ln gamma_pm and phi, equal weight, Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "data/curation/electrolytes/Cs-OH";
+    reviewStatus  autoPromoted;
+    fitGrade      warning;   // DEV.md 4c C311: max relative error of gamma_pm or phi over the fitted points, graded 2 / 5 / 10 %
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+    fitGradeCap   ( singleTemperature singleLaboratory );   // DEV.md 4c C300 rule 2: in-sample clean, capped -- one temperature, one evaluation
+    fitGradeMaxRelativeError_pct 0.1615;
+    promotedBy    "bin/curate/electrolytes_c311.py promote";
+    promotedDate  "2026-11-11";
+    reviewReason  "regressed by bin/curate/electrolytes_c311.py from a hand-checked transcription of an evaluated table; not yet read back by a human";
+    reuse         "Choupo's own regression; the evaluated values belong to the cited compilation";
+    fitDate       "2026-11-11";
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/experiments/Cs-OH.dat";
+            doi       "10.1063/1.3253108";
+            provenance evaluated;
+        }
+    );
+    inSample
+    {
+        gammaAAD_pct 0.0540;
+        phiAAD_pct   0.0544;
+        max_pct      0.1615;
+        nPoints      9;
+    }
+    heldOut
+    {
+        kind         interleavedSameSource;   // every 4th point of the same evaluation: NOT a validation
+        gammaAAD_pct 0.0510;
+        phiAAD_pct   0.0483;
+        max_pct      0.1014;
+        nPoints      2;
+        grade        clean;
+    }
+    validity
+    {
+        temperature { min 298.15 K; max 298.15 K; }
+        molality    { min 0.1; max 1.2; }   // mol/kg
+        note        "the span of the fitted evaluated values; outside it the salt is an extrapolation";
+    }
+    review
+    {
+        by none;
+    }
+}

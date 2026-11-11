@@ -9,8 +9,8 @@
     "wilsonPairs": 0,
     "uniquacPairs": 3,
     "henryPairs": 206,
-    "pitzerPairs": 55,
-    "enrtlPairs": 3,
+    "pitzerPairs": 99,
+    "enrtlPairs": 45,
     "materials": 4,
     "membranes": 4,
     "adsorbents": 3,
@@ -30,15 +30,16 @@
     }
   },
   "curationTraces": {
-    "cases": 201,
-    "regressionChecks": 201,
+    "cases": 268,
+    "regressionChecks": 268,
     "byOrigin": {
       "pairs": 134,
       "components": 65,
-      "batches": 2
+      "batches": 2,
+      "electrolytes": 67
     }
   },
   "totals": {
-    "mixtureParameterRecords": 399
+    "mixtureParameterRecords": 485
   }
 }
