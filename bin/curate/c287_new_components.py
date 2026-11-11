@@ -269,7 +269,7 @@ CANDIDATES = CANDIDATES + CANDIDATES2
 #  beyond the measured vapour pressures, so omega (the definition, at
 #  Tr = 0.7) would be an extrapolation of an Antoine by 58-237 K.  Their
 #  records and cases are not shipped until Vitor rules how omega is taken.
-HELD = ["methylTetradecanoate", "13Propanediamine", "di2EthylhexylPhthalate",
+HELD = ["25Dimethylfuran", "methylTetradecanoate", "13Propanediamine", "di2EthylhexylPhthalate",
         "ethylLevulinate", "16Hexanediamine", "butylLevulinate",
         "glycerylTrioctanoate", "glycerylTridecanoate"]
 
@@ -562,6 +562,18 @@ CANDIDATES3 = [
     ("ethylTetradecanoate", "MMKRHZKQPFCLLS-UHFFFAOYSA-N", "C16H32O2", "124-06-1",
      "ethyl tetradecanoate (ethyl myristate)", [("CH3", 2), ("CH2", 13), ("ester", 1)],
      [("CH3", 2), ("CH2", 12), ("CH2COO", 1)]),
+    #  batch 3.  C292 excluded 2,5-dimethylfuran for "no ring =CH / =C< group";
+    #  C309 reads Joback's ring =CH- and =C< as the table's arCH / arC (the
+    #  same two rows), which is how furan, 2-methylfuran, pyrrole and the
+    #  thiophenes above are written: an aromatic five-membered ring.
+    #  HELD (2026-11-11), NOT under the 50 K rule (0.7 Tc is 24.4 K beyond the
+    #  fit): its omega came out 0.031 from Joback's Tc 596.6 K and Pc 41.7 bar,
+    #  physically impossible for a C6 aromatic ether (furan's, from IUPAC
+    #  constants, is 0.20), so the estimated critical pair is wrong and the
+    #  record is not shipped; the case is removed, its declaration is in the
+    #  history.  It needs a measured Tc and Pc.
+    ("25Dimethylfuran", "GSNUFIFRDBKVIE-UHFFFAOYSA-N", "C6H8O", "625-86-5",
+     "2,5-dimethylfuran", [("CH3", 2), ("arCH", 2), ("arC", 2), ("etherRing", 1)], None),
 ]
 C309 = {c[0] for c in CANDIDATES3}
 CANDIDATES = CANDIDATES + CANDIDATES3
