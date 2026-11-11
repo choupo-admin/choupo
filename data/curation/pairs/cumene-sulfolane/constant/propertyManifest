@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "e0186f90ce100eacee0ac0313ca5b3e82bc0820f6e713d4a0b64e57803f7eb98";
             release       Choupo-2608;
         }
+        "parameters/Wilson/cumene-sulfolane.dat"
+        {
+            type          imported;
+            sha256        "65d0429a69a020a573db5f83f49379ef6943a838779c62a6c1640f4047e2623f";
+            computationalSha256 "b6f05e1968b0d44a8d15446cab1fab07ec12cdf12e27ae34bea2e31453a1ed47";
+            origin        "data/standards/parameters/Wilson/cumene-sulfolane.dat";
+            originSha256  "6c05cff6a078471e8aaecd3f0b574b2efa0e303c2a892719bb3172f119959707";
+            release       Choupo-2608;
+        }
     }
 }

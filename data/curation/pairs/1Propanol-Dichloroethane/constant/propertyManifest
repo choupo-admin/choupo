@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "1188e64c5e506b3160205e17876ba193468cb542e688a3eef4a31dd4188e1db5";
             release       Choupo-2608;
         }
+        "parameters/Wilson/1Propanol-Dichloroethane.dat"
+        {
+            type          imported;
+            sha256        "ce33e4643af9e5a89c2c61a8437d4c7d08f930ccc8c4af7546457966f5ea24d6";
+            computationalSha256 "e9e24f31c6a8807cab91ed0fe87ac524231ccef41a74e5177b44c6d36377f354";
+            origin        "data/standards/parameters/Wilson/1Propanol-Dichloroethane.dat";
+            originSha256  "9da387eac97077d9c48f1ca728dad35827f58b269095e7de2b9b6d8bc750db2b";
+            release       Choupo-2608;
+        }
     }
 }

@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "d9175e64d6d2472668729f65e2c0970d09e288b53abb71e86fbde40ded681ac3";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diethylSulfide-toluene.dat"
+        {
+            type          imported;
+            sha256        "9ca5287a506ea55d646b9989022896b96ed8ac5099cb53d1dbd5805954bd6c3e";
+            computationalSha256 "80a7a11a7eb58c1bbd50550ec655de6aa85b180c1d0e2bf0b6cebf3afc72d64e";
+            origin        "data/standards/parameters/Wilson/diethylSulfide-toluene.dat";
+            originSha256  "60c27e6885676bfac8bf3378269e6bc7bddba7a00fbab6fae939cbf74d3fabec";
+            release       Choupo-2608;
+        }
     }
 }

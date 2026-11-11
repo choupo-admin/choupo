@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "96a22e475e18d7b4e8268fd22b1f72a167721ab8a49d62c26ba7c9eb85921cd4";
             release       Choupo-2608;
         }
+        "parameters/Wilson/cyclohexanone-toluene.dat"
+        {
+            type          imported;
+            sha256        "d0b7bcad258662c71dce019aa05360102e1fea5af7269c744b79c434f5bed927";
+            computationalSha256 "ea81a0d9289a0ee590f7ac054ef3477c15f76f84df8ad3ce578f3f4e069b6d8d";
+            origin        "data/standards/parameters/Wilson/cyclohexanone-toluene.dat";
+            originSha256  "9eac90b3d087824ba4f04c68ab1fc9bf388b97337b76c9c51f77412050bc92d3";
+            release       Choupo-2608;
+        }
     }
 }

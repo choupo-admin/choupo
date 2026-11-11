@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "bee7d78e0cb284ad9bbb98deb69301b5e186aebf388416a72758fa4e04dd8647";
             release       Choupo-2608;
         }
+        "parameters/Wilson/1Hexanol-Dichloroethane.dat"
+        {
+            type          imported;
+            sha256        "1ca1e78560e41cd13442b99a7b633ff718a7dec2241a349060e740cba6cb596c";
+            computationalSha256 "c0682887664a175a4c1df3e1a9020b87311337b2158bf49ef0b95e6e1ce301c5";
+            origin        "data/standards/parameters/Wilson/1Hexanol-Dichloroethane.dat";
+            originSha256  "5b9bcd5bdac4cb0aa94d3a87ea0be13cd1f6c0c7c1d89692a0d3205e22ab95b3";
+            release       Choupo-2608;
+        }
     }
 }

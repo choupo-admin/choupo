@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "db62396d938d34dc608f6c33667ec79519c3d5a8ef5ce3f553af97a78105acac";
             release       Choupo-2608;
         }
+        "parameters/Wilson/hexamethyldisiloxane-isopropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "0f5a4a50ff3d4f347442dc711cdb836678f26224243657f3539ebcaa13156238";
+            computationalSha256 "63a9d53d0497eda6bfe62a2df69354728dfc685b60bdf294d92ce1f913d63330";
+            origin        "data/standards/parameters/Wilson/hexamethyldisiloxane-isopropylAcetate.dat";
+            originSha256  "f264c6e03d9bdc2df6dda922c7a138cf7de7d78c554cb56568c4b20b1e054ffd";
+            release       Choupo-2608;
+        }
     }
 }

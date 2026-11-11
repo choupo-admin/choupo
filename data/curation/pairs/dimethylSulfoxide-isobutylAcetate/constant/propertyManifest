@@ -43,5 +43,14 @@ propertyManifest
             originSha256  "e76455ecb20132cba36ad3f3a307dcd0c54aa93202987729cabb50cc30626fa2";
             release       Choupo-2608;
         }
+        "parameters/Wilson/dimethylSulfoxide-isobutylAcetate.dat"
+        {
+            type          imported;
+            sha256        "579ddc8798ae85d110e87dece72b1eac0c16bff84b5683d36bd9e39f63aa5d7f";
+            computationalSha256 "d42b75b79d5bc49d5e60a5d0d1fccf878dedac5827bc02341e6ca5a4570ef224";
+            origin        "data/standards/parameters/Wilson/dimethylSulfoxide-isobutylAcetate.dat";
+            originSha256  "307d8f397b71d18615ccef272514fdd40c345d5eb81b12ed7df28a0639654f2b";
+            release       Choupo-2608;
+        }
     }
 }

@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "78e97eee3decba8f1905a58c41db520c1f85bf901959a1fcb0ad1a9b97725f6d";
             release       Choupo-2608;
         }
+        "parameters/Wilson/1Hexanol-trichloroethylene.dat"
+        {
+            type          imported;
+            sha256        "8f884cf95d67084ba41acfd73d1881b202a97cc12776951106849cd47e8e5f37";
+            computationalSha256 "f74b25dd87a4ceebd1dcfa7a0484bb43cc01c6c6ac8e4ac5b5fdd1c1908af103";
+            origin        "data/standards/parameters/Wilson/1Hexanol-trichloroethylene.dat";
+            originSha256  "fa856ffa5eb924b38da2f71187a2ce8cca3a30a5b04319ba1ca3f7bcd404b169";
+            release       Choupo-2608;
+        }
     }
 }

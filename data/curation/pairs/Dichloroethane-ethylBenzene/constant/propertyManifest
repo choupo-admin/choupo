@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "0647d0a386bb66a922aa78f5583cc087ce67d373b39ef2d97d807b01a0272791";
             release       Choupo-2608;
         }
+        "parameters/Wilson/Dichloroethane-ethylBenzene.dat"
+        {
+            type          imported;
+            sha256        "a08535018f1dec26f92bdbc81e8fb1dcecd92e09c9c05ec779a43242a11804fc";
+            computationalSha256 "a829eff4d55f76419f3a8377e254e82abb451f0f148eb3d493cb46938a168b9d";
+            origin        "data/standards/parameters/Wilson/Dichloroethane-ethylBenzene.dat";
+            originSha256  "61bff9d4d51bbe300b3f068bf6506de41e96c07fff50fd795ef9dbaf8f29c8f7";
+            release       Choupo-2608;
+        }
     }
 }

@@ -52,5 +52,23 @@ propertyManifest
             originSha256  "4b4b03d08130b15a8ce9ec3cee4c2e79636c7026f3c2cfd763c9f8eff0f6d762";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/2Butanol-toluene.dat"
+        {
+            type          imported;
+            sha256        "9611c2f650ef69ccdab2ad6560b247c06e9b0c6abc68b1b83f2daeffbdfa99c4";
+            computationalSha256 "e5029e25c84789e4789c7263668cd29304b93b60cbb1c3c89d60797323cfe41a";
+            origin        "data/standards/parameters/UNIQUAC/2Butanol-toluene.dat";
+            originSha256  "8c7e124d786d2c40f4e68d237759f686c6f8d613134f74f55b0b63ce22bcf6d7";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Butanol-toluene.dat"
+        {
+            type          imported;
+            sha256        "5c59a4a55cc7df35740fd2e7bf91fc093e6e72fd86d070788c7c206b5bbe44b7";
+            computationalSha256 "380c2ad85839f09b97bcba3683da083892d2b51a93f19d2d744f65c4c6afe780";
+            origin        "data/standards/parameters/Wilson/2Butanol-toluene.dat";
+            originSha256  "6c3db5fd03ade02e0bf2bc36a4f62d778258541c0c6eb54d765048f9205cf71f";
+            release       Choupo-2608;
+        }
     }
 }

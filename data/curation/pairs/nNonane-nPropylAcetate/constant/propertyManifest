@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/nNonane-nPropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "e24925a858ef52d589db02f2d40c3fd052ac75e868648f6a36780c2a5ffe784e";
+            computationalSha256 "aff0c27d588f345c7b29b06a35ee6d369879a461f54a419dd0a80ba473215912";
+            origin        "data/standards/parameters/UNIQUAC/nNonane-nPropylAcetate.dat";
+            originSha256  "88c27fa674ed39558d2b3f5a50027cfd7b4b818aef0422851e2b9ddd644b064a";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/nNonane-nPropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "8ca9871b12f1c38347c40c408d3206b73cb952bef9696ff3bdba67a98e09ca6c";
+            computationalSha256 "1a3c7e71b7dadd807b777294ca0e376ea337653aac8b36b6ae4790d73917066e";
+            origin        "data/standards/parameters/Wilson/nNonane-nPropylAcetate.dat";
+            originSha256  "1d9171bb8c32aeae9f52cd150d430d1b87ab5932f466e3585ea243eb0182eac8";
+            release       Choupo-2608;
+        }
     }
 }

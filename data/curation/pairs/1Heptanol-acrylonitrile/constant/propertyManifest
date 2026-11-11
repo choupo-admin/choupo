@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "c9a9c781a97c45bed0038f24fa8155fb7a9abf14e5f24d285ac104197b1d1a1d";
             release       Choupo-2608;
         }
+        "parameters/Wilson/1Heptanol-acrylonitrile.dat"
+        {
+            type          imported;
+            sha256        "b5526033c03ffcd6d990aee561a0041282472dda7408dc5133b1324904239a45";
+            computationalSha256 "335812ab97ecdb1f66e179b604c3de85e74ec0e47ac603cb21759df72871c2ce";
+            origin        "data/standards/parameters/Wilson/1Heptanol-acrylonitrile.dat";
+            originSha256  "3fdf2033ebbd94d8e8db1149ac4136b2afc6b35b54a9d173a704be0adf819de4";
+            release       Choupo-2608;
+        }
     }
 }

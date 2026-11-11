@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "7b244eb9d47b28e4ac9368c17ee6399cb94575c420bbd658d834b63bad737249";
             release       Choupo-2608;
         }
+        "parameters/Wilson/dimethylCarbonate-nDecane.dat"
+        {
+            type          imported;
+            sha256        "df658af4c2d45284c14c447dc39b7c7a1f19d0eef140e4c15de820c90be8d5a7";
+            computationalSha256 "8457f77dcb899dbb2024acd57ab9e67e083b3f8eb2e57c71df40947d6dbf219c";
+            origin        "data/standards/parameters/Wilson/dimethylCarbonate-nDecane.dat";
+            originSha256  "590bbec81925201558f15ddd57b5e3c486ee5b95060e68d8ffec0cd3d8f0ecca";
+            release       Choupo-2608;
+        }
     }
 }

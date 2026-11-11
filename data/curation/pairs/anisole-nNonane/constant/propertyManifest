@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "f906a0cc0349e75e4b0c79c001623309a2cbe5e4c6b679e2e67c2241be9eebc3";
             release       Choupo-2608;
         }
+        "parameters/Wilson/anisole-nNonane.dat"
+        {
+            type          imported;
+            sha256        "0e02e18531d17c7c88dcd11ca7b13de245c3ead4d47a4f95ba8fc45635102448";
+            computationalSha256 "7a1444fc398dcc0c0eebb3d2b4af320ac8c630df26a7414d14612edb82dc8199";
+            origin        "data/standards/parameters/Wilson/anisole-nNonane.dat";
+            originSha256  "ec6796a11c27d9b30a9e6b42c296433e4b44ce7cdccf22782df1692b844914e2";
+            release       Choupo-2608;
+        }
     }
 }

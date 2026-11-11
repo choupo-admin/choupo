@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "a4a1fae5938457344d795b869547b1ee4387a49927b0b10b9ca9fa9a6fe8c0b2";
             release       Choupo-2608;
         }
+        "parameters/Wilson/3Heptanone-nOctane.dat"
+        {
+            type          imported;
+            sha256        "786754a07c2775b961a1c84d3f1b415f20a59b76f8fd5881edfd2a3fa3333b67";
+            computationalSha256 "c3349a6f7e55e75c9735b7266c1aac0c86287951a79568218385676b79dd14f1";
+            origin        "data/standards/parameters/Wilson/3Heptanone-nOctane.dat";
+            originSha256  "9a11cb77a54c38ab419cf7a4c348c771483e50c347198acb694eca9bf6ad3134";
+            release       Choupo-2608;
+        }
     }
 }

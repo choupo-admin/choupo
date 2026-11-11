@@ -91,10 +91,12 @@
   kept points. fit_wilson: A_ij = -2466.2, A_ji = -109.2 J/mol over 10
   kept points: max |dT| 0.085 K, mean 0.057 K, graded clean -> accepted;
   fit_wilson_start2 lands on A DIFFERENT pair (30000.0, -6112.8).
-  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
-  clean -- max |dT| 0.085 K over the 10 kept points, one liquid across
-  the validity span. UNIQUAC: not fitted -- pCresol carries no UNIQUAC r
-  and q (no tabulated value, and no UNIFAC groups to sum them from,
+  PROMOTED on 2026-11-11 into
+  data/standards/parameters/Wilson/2Methyl2Propanol-pCresol.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dT| 0.085 K over the 10 kept points, one liquid across the
+  validity span. UNIQUAC: not fitted -- pCresol carries no UNIQUAC r and
+  q (no tabulated value, and no UNIFAC groups to sum them from,
   bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
   is estimated silently.
   @@MODELS-RESULT-END@@

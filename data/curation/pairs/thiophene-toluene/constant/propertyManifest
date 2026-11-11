@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "08af03efdc92a77583a38b914e8909ec282a80786d81289d0924a51f534831c8";
             release       Choupo-2608;
         }
+        "parameters/Wilson/thiophene-toluene.dat"
+        {
+            type          imported;
+            sha256        "b0eebf066ce6aa789bd3af0b3dee8a021f641da0ba1fa498a7924c89b9e54e93";
+            computationalSha256 "f435336bf0b8158a338178ae2f635a83cb8bf56cda8a62ff538e0e8ed564556a";
+            origin        "data/standards/parameters/Wilson/thiophene-toluene.dat";
+            originSha256  "90f6b0eeae8aece6d4ff8b3ea32c28689905333ff71f0755e0dfa18590c4a6dd";
+            release       Choupo-2608;
+        }
     }
 }

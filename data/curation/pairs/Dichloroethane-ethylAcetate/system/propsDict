@@ -85,12 +85,14 @@
   kept points. fit_wilson: A_ij = 651.2, A_ji = -1136.8 J/mol over 18
   kept points: max |dP|/P 1.110 %, mean 0.701 %, graded clean ->
   accepted; fit_wilson_start2 lands on A DIFFERENT pair (3738.7,
-  -2850.2). PROMOTABLE by `bin/choupo-curate pairs --models --promote`:
-  fit grade clean -- max |dP|/P 1.110 % over the 18 kept points, one
-  liquid across the validity span. UNIQUAC: not fitted -- Dichloroethane
-  carries no UNIQUAC r and q (no tabulated value, and no UNIFAC groups to
-  sum them from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not
-  fitted; nothing is estimated silently.
+  -2850.2). PROMOTED on 2026-11-11 into
+  data/standards/parameters/Wilson/Dichloroethane-ethylAcetate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dP|/P 1.110 % over the 18 kept points, one liquid across the
+  validity span. UNIQUAC: not fitted -- Dichloroethane carries no UNIQUAC
+  r and q (no tabulated value, and no UNIFAC groups to sum them from,
+  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
+  is estimated silently.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

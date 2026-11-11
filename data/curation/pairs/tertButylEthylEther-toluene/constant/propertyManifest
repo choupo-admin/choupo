@@ -52,5 +52,23 @@ propertyManifest
             originSha256  "7e9741a84f6381abd8d65af2d8bfb496fb60b72eba343b8d0f2d7082d1e224c1";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/tertButylEthylEther-toluene.dat"
+        {
+            type          imported;
+            sha256        "ac7071c755a1772e66f95726043a0daa02b2d52cb4b374e510397be8c0a5591d";
+            computationalSha256 "ecce2eb8907a076dbc5f3c53a3e669b69f3e4019714c1c62640003b0b5e33c1e";
+            origin        "data/standards/parameters/UNIQUAC/tertButylEthylEther-toluene.dat";
+            originSha256  "b547b7d2f0e4d227972e5f41e700104bde74cdd2678fd4eaac7aa2fca0cf2d26";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/tertButylEthylEther-toluene.dat"
+        {
+            type          imported;
+            sha256        "640e6378394f3196c89eed202be52ca654141760235e3a2932b5cb4f81e68198";
+            computationalSha256 "9e3154d2afdc80313cf32e3090aed7b484f28d1e45f53e23ba1237056244c817";
+            origin        "data/standards/parameters/Wilson/tertButylEthylEther-toluene.dat";
+            originSha256  "c315c2ded3566657084401a991fcb395d07c6d6467e031539ce62eabd188bcd8";
+            release       Choupo-2608;
+        }
     }
 }

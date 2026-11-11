@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "a54204cb6dda1250ca2517970990d124f50f536d40f1b300917307c4ccb33a27";
             release       Choupo-2608;
         }
+        "parameters/Wilson/1Hexanol-acetonitrile.dat"
+        {
+            type          imported;
+            sha256        "f0008002986b861a43fe04e04c35f8266db3d1748680fff17f5ad2d5bceb7e33";
+            computationalSha256 "ebef1a81211c723f3ff8106986ad2cc60ba37933868070e09083f8f59c7236d2";
+            origin        "data/standards/parameters/Wilson/1Hexanol-acetonitrile.dat";
+            originSha256  "ba4900c3267ab2a4a34dd77cbe5c75ad4a33d10a67fa08e038d0f9ed96c949ed";
+            release       Choupo-2608;
+        }
     }
 }

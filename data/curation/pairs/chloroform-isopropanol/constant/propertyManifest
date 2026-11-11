@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "ec9c25115a4baaa75abaee15ec2fb278e1e5ddfcc85ccb66dacd0d99cad12eb3";
             release       Choupo-2608;
         }
+        "parameters/Wilson/chloroform-isopropanol.dat"
+        {
+            type          imported;
+            sha256        "1f075263c9c50f258fe09c273cfcf6636b3249443bcc8cb8528ea0c285a9fb2f";
+            computationalSha256 "b0c48d7c43537718611ce06ddf193e918e90641d2a0cdd316c4f70bdce69ec01";
+            origin        "data/standards/parameters/Wilson/chloroform-isopropanol.dat";
+            originSha256  "c5a3ccd7927b2b90f2ded9614e6835ab9af3b76d2ee4d08ad9ac350922ca4fbc";
+            release       Choupo-2608;
+        }
     }
 }

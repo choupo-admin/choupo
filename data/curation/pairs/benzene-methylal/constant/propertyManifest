@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/benzene-methylal.dat"
+        {
+            type          imported;
+            sha256        "a3924b5f90fe73e21ccc0bc6a0a26637989fbd62027f78db9f5612efbafaebf0";
+            computationalSha256 "c38bd8b89b9cd3d8065598a0b2aa83c86c4ca353834922fb8fcec76e04863f11";
+            origin        "data/standards/parameters/UNIQUAC/benzene-methylal.dat";
+            originSha256  "8ebbb35b127b2886881721264961b2a4d6ba0e65dde9912ac2c9de61f0a677d6";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/benzene-methylal.dat"
+        {
+            type          imported;
+            sha256        "411239901d613b6284f23117154d7752fba968a025331007dd9db6ab417a302c";
+            computationalSha256 "4f593fac1fc8b5690f442ced8abd417eeb0040633e8d40043be429423ef50116";
+            origin        "data/standards/parameters/Wilson/benzene-methylal.dat";
+            originSha256  "5674096f936e9103a0b97f01c55c93c3bc4aa6ef6a99f7389fb497ae76ca0a22";
+            release       Choupo-2608;
+        }
     }
 }

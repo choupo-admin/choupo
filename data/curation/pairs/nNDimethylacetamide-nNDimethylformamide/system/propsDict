@@ -113,7 +113,9 @@
   kept points. fit_wilson: A_ij = -1291.1, A_ji = 4502.3 J/mol over 19
   kept points: max |dT| 1.351 K, mean 0.815 K, graded warning ->
   accepted; fit_wilson_start2 lands on the same pair (-1291.1, 4502.3).
-  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
+  PROMOTED on 2026-11-11 into
+  data/standards/parameters/Wilson/nNDimethylacetamide-nNDimethylformamide.dat
+  as reviewStatus autoPromoted, review by none, because: fit grade
   warning -- max |dT| 1.351 K over the 19 kept points, one liquid across
   the validity span. UNIQUAC: not fitted -- nNDimethylformamide and
   nNDimethylacetamide carry no UNIQUAC r and q (no tabulated value, and

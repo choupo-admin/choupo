@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/2Hexanone-cyclohexanol.dat"
+        {
+            type          imported;
+            sha256        "4e2fcfdb3c94b3e3b1150092cc1ac40b69c99065ae9b3a688a22349b2090fe6b";
+            computationalSha256 "42d7927760dbc61b7419eaa45af8c8f928e34da986f319192a997fcbf9b77d71";
+            origin        "data/standards/parameters/UNIQUAC/2Hexanone-cyclohexanol.dat";
+            originSha256  "ba37cc521922202edd16574418f55f9ca27ae7f0ca6edd6c7f1289209713413a";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Hexanone-cyclohexanol.dat"
+        {
+            type          imported;
+            sha256        "4171566a685430fcaa22e228e1d45e0ea6f966bb811066971df57dc21cc22b3c";
+            computationalSha256 "ed6e3f2167518c3db2354859fed21c811cc0fdc38185065503f77f9081f2d858";
+            origin        "data/standards/parameters/Wilson/2Hexanone-cyclohexanol.dat";
+            originSha256  "627436db372a04b03060cf5763ebe5d7417666b494dd3c28197cb93a49eddd94";
+            release       Choupo-2608;
+        }
     }
 }

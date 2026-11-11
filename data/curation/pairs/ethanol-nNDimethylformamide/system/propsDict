@@ -90,9 +90,11 @@
   not argued). Beside fit_nrtl's max |dT| 1.863 K (warning) on the same
   kept points. fit_wilson: A_ij = -4478.6, A_ji = 7989.7 J/mol over 19
   kept points: max |dT| 1.084 K, mean 0.764 K, graded warning ->
-  accepted; fit_wilson_start2 removed (it did not converge). PROMOTABLE
-  by `bin/choupo-curate pairs --models --promote`: fit grade warning --
-  max |dT| 1.084 K over the 19 kept points, one liquid across the
+  accepted; fit_wilson_start2 removed (it did not converge). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/Wilson/ethanol-nNDimethylformamide.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade warning
+  -- max |dT| 1.084 K over the 19 kept points, one liquid across the
   validity span. Wilson: fit_wilson_start2 was declared and run and did
   NOT CONVERGE (A_ij at its bound, -30000 .. 30000 J/mol: no finite
   optimum inside the declared bounds); the op is removed so the case runs

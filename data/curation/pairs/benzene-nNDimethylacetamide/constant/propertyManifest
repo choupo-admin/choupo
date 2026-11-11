@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "18380b41f3c172b5d6fbddeb397846795fafcb17ec5ce4b70e1c57f52104c172";
             release       Choupo-2608;
         }
+        "parameters/Wilson/benzene-nNDimethylacetamide.dat"
+        {
+            type          imported;
+            sha256        "694735209f4adab1e517c659bfa78ea41627c8fafc3f958c2cf80eb13c859f06";
+            computationalSha256 "0a34b97f527fabc1946840a8a955e46b808723740c04ed258353900b2e957ee5";
+            origin        "data/standards/parameters/Wilson/benzene-nNDimethylacetamide.dat";
+            originSha256  "0aa824580e1f4a41a0e64e91b189922292b265ad027073e30e2e5e4148dfd3c2";
+            release       Choupo-2608;
+        }
     }
 }

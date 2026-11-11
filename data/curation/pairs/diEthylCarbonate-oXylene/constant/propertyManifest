@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "3a4b62d31c223b43a5e3ed4d1664ab18f912ed7c97a86eb49a161bf1415ebdb9";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diEthylCarbonate-oXylene.dat"
+        {
+            type          imported;
+            sha256        "b24adc4f6603fdecb5308a49e000d06198f1fbf5e9bb38513bda66db8eee9eb7";
+            computationalSha256 "6492689dde7a3bd83b7cfd7b8165e9c0fe57e9acf0a15ba2980e80370989e1d4";
+            origin        "data/standards/parameters/Wilson/diEthylCarbonate-oXylene.dat";
+            originSha256  "b615973a3f62e1730cd6b6646fedb71d3875e8c9849f8882aee804d5914fd378";
+            release       Choupo-2608;
+        }
     }
 }

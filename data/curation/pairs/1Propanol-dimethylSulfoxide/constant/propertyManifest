@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "8a9066f90b7aebee8dde3b3fd3cc51e40e2b43c04b57e10ae1d8a51d429d638a";
             release       Choupo-2608;
         }
+        "parameters/Wilson/1Propanol-dimethylSulfoxide.dat"
+        {
+            type          imported;
+            sha256        "644d3744e7c97b1cfff391c0ef6a7336a81fc39e53644ec7cffeff750a607b62";
+            computationalSha256 "d6c5c48af7ccb9f799b15b33eaae07e2c357eeaff8ec95ad63270d452ac3db93";
+            origin        "data/standards/parameters/Wilson/1Propanol-dimethylSulfoxide.dat";
+            originSha256  "293f4749ff5e1455ebe9e539e91e82eb11cb3064e2fffdd8fd7b853cf4361965";
+            release       Choupo-2608;
+        }
     }
 }

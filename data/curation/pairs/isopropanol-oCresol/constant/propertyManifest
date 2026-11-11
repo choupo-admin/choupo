@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "3c494c51814ac12bd6337696a0104c4434e51671bafb94c58e9c46ec238469ca";
             release       Choupo-2608;
         }
+        "parameters/Wilson/isopropanol-oCresol.dat"
+        {
+            type          imported;
+            sha256        "c6134b3017dc48d37b76e79cfec73135011fdbd688783be1ccdacd3950a1fa4a";
+            computationalSha256 "3b5b7ddf5271e67bd0ae0bd62565b00ca08b1810c62959ace3fd66a2d22703c8";
+            origin        "data/standards/parameters/Wilson/isopropanol-oCresol.dat";
+            originSha256  "ef15716a60ceb67089faacdb50647d01fd434cc3a5cad890d58a9ef2196144cb";
+            release       Choupo-2608;
+        }
     }
 }

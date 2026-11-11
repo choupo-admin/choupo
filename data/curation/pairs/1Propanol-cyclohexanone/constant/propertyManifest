@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "7b477a2a8ef1b35e737678976925fdb1e647235bffa1d152149e94c6a3f4d379";
             release       Choupo-2608;
         }
+        "parameters/Wilson/1Propanol-cyclohexanone.dat"
+        {
+            type          imported;
+            sha256        "8cd1b7343aa7bd449b535659f94850f1be46282baf26ae9f31092efb99e52b44";
+            computationalSha256 "c3f5b1ab678d4a6952731a4f2732c480330cdc423820171110189adcc60f4932";
+            origin        "data/standards/parameters/Wilson/1Propanol-cyclohexanone.dat";
+            originSha256  "a35b6aaed73dcb1431089e1d6e302621957b1300a36aec690656ecfa87aa85bf";
+            release       Choupo-2608;
+        }
     }
 }

@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "06bcb465524240d49216164cf6010af5a61752cbc455db71e3390a97059e6241";
             release       Choupo-2608;
         }
+        "parameters/Wilson/nPropylAcetate-propyleneCarbonate.dat"
+        {
+            type          imported;
+            sha256        "1d4edb2e91569ac8df254ca8f774f77ce1e269ddd6506ab2ecddc5f3361ab9fc";
+            computationalSha256 "85a9aae3db4e19187f94d723aaf87c251d60483a3aa92892adf45f3e1b14b6a9";
+            origin        "data/standards/parameters/Wilson/nPropylAcetate-propyleneCarbonate.dat";
+            originSha256  "53292b311a3e7563df14692330bfdf99e9fc70ad7570b957db8f68f10f5359e7";
+            release       Choupo-2608;
+        }
     }
 }

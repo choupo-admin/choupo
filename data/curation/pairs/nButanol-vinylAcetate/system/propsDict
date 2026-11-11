@@ -87,15 +87,19 @@
   not argued). Beside fit_nrtl's max |dT| 1.073 K (warning) on the same
   kept points. fit_uniquac: a_ij = 179.7, a_ji = -61.9 K over 6 kept
   points: max |dT| 1.083 K, mean 0.548 K, graded warning -> accepted;
-  fit_uniquac_start2 lands on the same pair (179.7, -61.9). PROMOTABLE by
-  `bin/choupo-curate pairs --models --promote`: fit grade warning -- max
-  |dT| 1.083 K over the 6 kept points, one liquid across the validity
-  span. fit_wilson: A_ij = -191.1, A_ji = 3700.5 J/mol over 6 kept
-  points: max |dT| 1.142 K, mean 0.572 K, graded warning -> accepted;
-  fit_wilson_start2 lands on the same pair (-191.1, 3700.5). PROMOTABLE
-  by `bin/choupo-curate pairs --models --promote`: fit grade warning --
-  max |dT| 1.142 K over the 6 kept points, one liquid across the validity
-  span.
+  fit_uniquac_start2 lands on the same pair (179.7, -61.9). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/UNIQUAC/nButanol-vinylAcetate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade warning
+  -- max |dT| 1.083 K over the 6 kept points, one liquid across the
+  validity span. fit_wilson: A_ij = -191.1, A_ji = 3700.5 J/mol over 6
+  kept points: max |dT| 1.142 K, mean 0.572 K, graded warning ->
+  accepted; fit_wilson_start2 lands on the same pair (-191.1, 3700.5).
+  PROMOTED on 2026-11-11 into
+  data/standards/parameters/Wilson/nButanol-vinylAcetate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade warning
+  -- max |dT| 1.142 K over the 6 kept points, one liquid across the
+  validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

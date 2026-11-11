@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "f4fa176fe9d33a175fb9df92f9bb9f71cf20f3a8eb6cee3a3dc303f78ccfe9ad";
             release       Choupo-2608;
         }
+        "parameters/Wilson/1Hexanol-monochlorobenzene.dat"
+        {
+            type          imported;
+            sha256        "0afebc59faa8d723942eeb79eccf071e2e77f0af18d20d09695594f34bdd75bb";
+            computationalSha256 "cc8ea38f73874d54571c7a36a5c0bb9c74e7b94d0cf410a2fdd4c79ee3e33714";
+            origin        "data/standards/parameters/Wilson/1Hexanol-monochlorobenzene.dat";
+            originSha256  "6a5c74cb69d2adb259f6d2645fbdc689845ac3644f951ce3f37a50c5df8d87b7";
+            release       Choupo-2608;
+        }
     }
 }

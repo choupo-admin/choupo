@@ -91,13 +91,14 @@
   kept points. fit_wilson: A_ij = -2458.4, A_ji = 984.6 J/mol over 29
   kept points: max |dT| 1.316 K, mean 0.648 K, graded warning ->
   accepted; fit_wilson_start2 lands on A DIFFERENT pair (14289.4,
-  -5154.1). PROMOTABLE by `bin/choupo-curate pairs --models --promote`:
-  fit grade warning -- max |dT| 1.316 K over the 29 kept points, one
-  liquid across the validity span. UNIQUAC: not fitted --
-  nNDimethylacetamide carries no UNIQUAC r and q (no tabulated value, and
-  no UNIFAC groups to sum them from,
-  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
-  is estimated silently.
+  -5154.1). PROMOTED on 2026-11-11 into
+  data/standards/parameters/Wilson/2Butanol-nNDimethylacetamide.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade warning
+  -- max |dT| 1.316 K over the 29 kept points, one liquid across the
+  validity span. UNIQUAC: not fitted -- nNDimethylacetamide carries no
+  UNIQUAC r and q (no tabulated value, and no UNIFAC groups to sum them
+  from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted;
+  nothing is estimated silently.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

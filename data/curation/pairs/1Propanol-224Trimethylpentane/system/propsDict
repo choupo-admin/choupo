@@ -89,10 +89,12 @@
   of ONE liquid; a UNIQUAC pair that splits that liquid stays in its
   case. fit_wilson: A_ij = 7153.1, A_ji = 1345.8 J/mol over 21 kept
   points: max |dP|/P 1.103 %, mean 0.392 %, graded clean -> accepted;
-  fit_wilson_start2 lands on the same pair (7153.1, 1345.8). PROMOTABLE
-  by `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dP|/P 1.103 % over the 21 kept points, one liquid across the validity
-  span.
+  fit_wilson_start2 lands on the same pair (7153.1, 1345.8). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/Wilson/1Propanol-224Trimethylpentane.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dP|/P 1.103 % over the 21 kept points, one liquid across the
+  validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

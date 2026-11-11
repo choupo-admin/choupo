@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "77e5936620d29e5eb437da9db1aedfcd884ac1a9b4231820e4ae52ad7d2ab90d";
             release       Choupo-2608;
         }
+        "parameters/Wilson/1Hexanol-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "e1592d660feb6005a031da7debe3cb96af26f908d01b0a8eb314e66d05fea042";
+            computationalSha256 "2f4151c6751dbc3d30809b366c1ced7f91ba9f725cc80d19a8bef070c00a46fe";
+            origin        "data/standards/parameters/Wilson/1Hexanol-nNDimethylformamide.dat";
+            originSha256  "e29b45472cec1547003803520733d3fa2fee0b86c56acec1a8eb2fb61ac683ac";
+            release       Choupo-2608;
+        }
     }
 }

@@ -52,5 +52,23 @@ propertyManifest
             originSha256  "6bd778039729133b12e5a0d15365c8e5079da25a83615a7261a1a431627bd93e";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/14Dioxane-cyclopentane.dat"
+        {
+            type          imported;
+            sha256        "7d056b3933b05bd056ff36f09c2025067e5b74c0e93d2f9f15c42a3a6952d084";
+            computationalSha256 "19718a41704f43184d83070be8cc63eed7ec8df41bef5b176e8b66f1d6a124cc";
+            origin        "data/standards/parameters/UNIQUAC/14Dioxane-cyclopentane.dat";
+            originSha256  "e77bbee803202a8f163f2d89a0e8663ef43e167e8ab91c6e49e1850a6fade95a";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/14Dioxane-cyclopentane.dat"
+        {
+            type          imported;
+            sha256        "e19b81911bb1dc057ea1ef67803dec7b7c25f18168822f7cdfce7c32cfa73608";
+            computationalSha256 "139082d0563077ed3b0c2c3a64c43d07da56bf0658bd3f9d791c445c03a9c081";
+            origin        "data/standards/parameters/Wilson/14Dioxane-cyclopentane.dat";
+            originSha256  "5b6f9a5305fe1316ca93795d42e940b0bf938e0cc25872e098f6bd9b2273081e";
+            release       Choupo-2608;
+        }
     }
 }

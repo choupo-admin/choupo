@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "515a46477f21c7d2ee6c3bb4f329bcf28002ae96701d8ab49f696609946125c0";
             release       Choupo-2608;
         }
+        "parameters/Wilson/methylPropionate-nHeptane.dat"
+        {
+            type          imported;
+            sha256        "fe580af624857247f5e82d6e0269ed81d6431b2af8cbe59086bdf0bec7b4eb86";
+            computationalSha256 "c74587cca9b49318a98c565d1fb2efddabab660e23a6d58469a924f662d8b010";
+            origin        "data/standards/parameters/Wilson/methylPropionate-nHeptane.dat";
+            originSha256  "dbbcded22eaa5f9c93896a52642d412a5700b1ca01c1940ef48eb0fd73b77ba4";
+            release       Choupo-2608;
+        }
     }
 }

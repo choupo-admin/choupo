@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "0c4297b8740688302b4f37c175dac4209fc7a577ba0758c36c9c6343e69e7ac8";
             release       Choupo-2608;
         }
+        "parameters/Wilson/nButanol-nitrobenzene.dat"
+        {
+            type          imported;
+            sha256        "989812badde3910fba4c5cf79de86e4a84626ec4cb7bda8550c3e4516b6597d5";
+            computationalSha256 "8d5e4b47fc8644773eb64eb5f5f37ac83b55bd8bbc66e9d95ddfffc2c3e22522";
+            origin        "data/standards/parameters/Wilson/nButanol-nitrobenzene.dat";
+            originSha256  "14d07e115fc8aa417dc7ac7877c6e65baa3d2495fbfe0c2188990d1a1615a3d2";
+            release       Choupo-2608;
+        }
     }
 }

@@ -70,5 +70,14 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/Wilson/1Heptanol-1Propanol.dat"
+        {
+            type          imported;
+            sha256        "3250cad7086f8563aac80f65229fc067cdc0fc67b9dc85df4707ed9e255c4ff6";
+            computationalSha256 "c8ba8b5063950eeed4b9e20f91f963c2b74accfbdd95cc5220698887827edf1f";
+            origin        "data/standards/parameters/Wilson/1Heptanol-1Propanol.dat";
+            originSha256  "5d480e8776997afddbbae9a91b89ac3e61fe116649e66696b846b97f71e8fae4";
+            release       Choupo-2608;
+        }
     }
 }

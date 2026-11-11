@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "d3f9e230db43f5521c407dd713aed7c3ec5ee43a4f0e00aa96f8687ad3c2065c";
             release       Choupo-2608;
         }
+        "parameters/Wilson/mXylene-styrene.dat"
+        {
+            type          imported;
+            sha256        "a3e550f7497dbb78264ecb30e1cedc0d2abba44fb376009d84b4672952cfaab8";
+            computationalSha256 "0ecf0dc3854de54c4c019f89a6a6c97bb7a7b896a7b0b907b8757ef4f76f024a";
+            origin        "data/standards/parameters/Wilson/mXylene-styrene.dat";
+            originSha256  "9d006b5948f51793c32347dc4a06eff81f833f56f836ec2f73dbd329ffcb763c";
+            release       Choupo-2608;
+        }
     }
 }

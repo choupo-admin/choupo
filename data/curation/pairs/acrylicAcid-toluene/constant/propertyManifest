@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/acrylicAcid-toluene.dat"
+        {
+            type          imported;
+            sha256        "c35fc39c77c8565705451870ff26ff13c992f5ab0afa950df869b8485f324d10";
+            computationalSha256 "45486f41c4e9c578e08392f827224bb190c1bd421c8d4c8fb7de3fd9880dca9e";
+            origin        "data/standards/parameters/UNIQUAC/acrylicAcid-toluene.dat";
+            originSha256  "75e0592507c5a43dc283d2c5410d646e15ebe66d15d54b14ff0634d39c8951da";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/acrylicAcid-toluene.dat"
+        {
+            type          imported;
+            sha256        "7defa3e42747e3819ee97dc5dd39b2f1e0c5f5cf3b2ac83333971c07cbcaa287";
+            computationalSha256 "98210a68dc300a4e57b0597d937e8d8cd815f98aa63d28d5972941b4e3a399a5";
+            origin        "data/standards/parameters/Wilson/acrylicAcid-toluene.dat";
+            originSha256  "808af32f696bf21bd988449aef24aa29b148682faf263a89fac7b305b3762ecb";
+            release       Choupo-2608;
+        }
     }
 }

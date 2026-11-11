@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "10026e0b64fd9d91ee698a3df9b6f970d446a49482bf6d614b8b746aaacff104";
             release       Choupo-2608;
         }
+        "parameters/Wilson/ethylBenzene-trichloroethylene.dat"
+        {
+            type          imported;
+            sha256        "1185b6c1ab03c1e9aab22184eaa4a8c7445a077ab98d65a45f8e7bf2293f379e";
+            computationalSha256 "1c111e58f1bad5a233ac337f54c40460fde8113fcf78eaef634bee05fc0d13b8";
+            origin        "data/standards/parameters/Wilson/ethylBenzene-trichloroethylene.dat";
+            originSha256  "4491e97601bb53773037197724b7d802779e05f2a8ead114d3fdfe21241c6b96";
+            release       Choupo-2608;
+        }
     }
 }

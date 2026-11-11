@@ -87,15 +87,19 @@
   not argued). Beside fit_nrtl's max |dT| 1.492 K (warning) on the same
   kept points. fit_uniquac: a_ij = -267.4, a_ji = 425.8 K over 12 kept
   points: max |dT| 1.242 K, mean 0.730 K, graded warning -> accepted;
-  fit_uniquac_start2 lands on the same pair (-267.4, 425.8). PROMOTABLE
-  by `bin/choupo-curate pairs --models --promote`: fit grade warning --
-  max |dT| 1.242 K over the 12 kept points, one liquid across the
+  fit_uniquac_start2 lands on the same pair (-267.4, 425.8). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/UNIQUAC/cyclohexane-nNonane.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade warning
+  -- max |dT| 1.242 K over the 12 kept points, one liquid across the
   validity span. fit_wilson: A_ij = 5081.8, A_ji = -1649.8 J/mol over 12
   kept points: max |dT| 1.292 K, mean 0.880 K, graded warning ->
   accepted; fit_wilson_start2 lands on the same pair (5081.8, -1649.8).
-  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
-  warning -- max |dT| 1.292 K over the 12 kept points, one liquid across
-  the validity span.
+  PROMOTED on 2026-11-11 into
+  data/standards/parameters/Wilson/cyclohexane-nNonane.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade warning
+  -- max |dT| 1.292 K over the 12 kept points, one liquid across the
+  validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

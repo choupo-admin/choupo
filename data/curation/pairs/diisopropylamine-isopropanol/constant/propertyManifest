@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "3029800f95019acb928783293b76049245897310a403a3e7ca9576d7fab932e6";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diisopropylamine-isopropanol.dat"
+        {
+            type          imported;
+            sha256        "c6b682fadfa36f286ae885b59942cae7d2437e235cea9fc81332318d396a1979";
+            computationalSha256 "983db81df64ec559b996ec33a40d765595c7ac794fbb91656495c1d9d40b4d54";
+            origin        "data/standards/parameters/Wilson/diisopropylamine-isopropanol.dat";
+            originSha256  "d0654eb5a0c67c33c6fd839c8fe60b2f3e5e0e0db0a7d2a753e37cfb59c6d113";
+            release       Choupo-2608;
+        }
     }
 }

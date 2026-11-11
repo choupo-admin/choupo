@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/methanol-methylEthylKetone.dat"
+        {
+            type          imported;
+            sha256        "3abe3d5288be9f4857e01b7acd39f340abf0152cc071538f6d91fbca82f3f40f";
+            computationalSha256 "e3d4e42fc86b7b660e073886092e5ead6f1b2a564e8a26737bbbff30b19ff7b3";
+            origin        "data/standards/parameters/UNIQUAC/methanol-methylEthylKetone.dat";
+            originSha256  "725d1dc67be238aeac8ca75041e0f33229b00f9402b6ee87fa58ac8e6454eff0";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/methanol-methylEthylKetone.dat"
+        {
+            type          imported;
+            sha256        "60b76637e2a3997b82ca59d2cc14047fd405346c4e13fbfe0a390ed903e3a17d";
+            computationalSha256 "07f3c1d7b85386ca703c7b89acc78ab92fa65a25f1003c69dcabf2a38f736669";
+            origin        "data/standards/parameters/Wilson/methanol-methylEthylKetone.dat";
+            originSha256  "06ab3c368c0002094e6684550b0f221c4ace2bacb50f6a2dec05e121afb444a2";
+            release       Choupo-2608;
+        }
     }
 }

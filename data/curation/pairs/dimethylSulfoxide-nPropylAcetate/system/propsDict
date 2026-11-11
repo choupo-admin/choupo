@@ -91,7 +91,9 @@
   kept points. fit_wilson: A_ij = -2665.1, A_ji = 10889.6 J/mol over 16
   kept points: max |dT| 1.984 K, mean 1.222 K, graded warning ->
   accepted; fit_wilson_start2 lands on the same pair (-2665.1, 10889.4).
-  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
+  PROMOTED on 2026-11-11 into
+  data/standards/parameters/Wilson/dimethylSulfoxide-nPropylAcetate.dat
+  as reviewStatus autoPromoted, review by none, because: fit grade
   warning -- max |dT| 1.984 K over the 16 kept points, one liquid across
   the validity span. UNIQUAC: not fitted -- dimethylSulfoxide carries no
   UNIQUAC r and q (no tabulated value, and no UNIFAC groups to sum them

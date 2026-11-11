@@ -61,5 +61,14 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/ethylAcetate-nDecane.dat"
+        {
+            type          imported;
+            sha256        "419dc14c2ade9986ba9df404897cbc0c81ac237fcaef09ead2e38e7714b67630";
+            computationalSha256 "828d1a17a48633b6f76cf7b1338928fdfd40dc2de9ec15a5a717c6b0860a470e";
+            origin        "data/standards/parameters/UNIQUAC/ethylAcetate-nDecane.dat";
+            originSha256  "b937e431208dacfbb56957aa35dac08a4f163ebaafb737afc66aab25830e70b5";
+            release       Choupo-2608;
+        }
     }
 }

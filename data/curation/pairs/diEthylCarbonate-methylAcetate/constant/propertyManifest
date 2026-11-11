@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "05c3bbaf490c3d93a5f8e49f8de37b5e1a0e809f46046f2dd2ee45389da38b96";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diEthylCarbonate-methylAcetate.dat"
+        {
+            type          imported;
+            sha256        "170d103a691b85d4678d55314be773808c00e6b1082f5a7bd76f295f7d50a87c";
+            computationalSha256 "22f285360b10c7bf63a6879cdd9a2bdd38df26126fed0a766e964ec1b8c49565";
+            origin        "data/standards/parameters/Wilson/diEthylCarbonate-methylAcetate.dat";
+            originSha256  "44643485f45d42cc213e895158b4124f1c0172c02f758fd22a714ea14d5a6ab0";
+            release       Choupo-2608;
+        }
     }
 }

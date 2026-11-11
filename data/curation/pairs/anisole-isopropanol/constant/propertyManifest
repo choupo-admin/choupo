@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "efa48845f8ad762e94c12ba433308cbc22afbfaf18b8025169d3648bce8a9d2c";
             release       Choupo-2608;
         }
+        "parameters/Wilson/anisole-isopropanol.dat"
+        {
+            type          imported;
+            sha256        "0b9ad8a05197fd0292347acf35a1bb965b68fd0e8ec107d678de3723831c8f23";
+            computationalSha256 "acbd328f1a3bd7ac9cce15faea90bd9c2dec482a9ad8dbda5afac143f1fe622f";
+            origin        "data/standards/parameters/Wilson/anisole-isopropanol.dat";
+            originSha256  "a131d9a459b1f581b1f7a7b6d134bfe4fdffc8ffca6049a0436b02330b353aa1";
+            release       Choupo-2608;
+        }
     }
 }

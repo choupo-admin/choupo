@@ -84,9 +84,11 @@
   not argued). Beside fit_nrtl's max |dP|/P 7.412 % (warning) on the same
   kept points. fit_uniquac: a_ij = -157.9, a_ji = 408.7 K over 24 kept
   points: max |dP|/P 8.614 %, mean 5.673 %, graded warning -> accepted;
-  fit_uniquac_start2 lands on A DIFFERENT pair (59.3, 38.8). PROMOTABLE
-  by `bin/choupo-curate pairs --models --promote`: fit grade warning --
-  max |dP|/P 8.614 % over the 24 kept points, one liquid across the
+  fit_uniquac_start2 lands on A DIFFERENT pair (59.3, 38.8). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/UNIQUAC/2Butanol-nDodecane.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade warning
+  -- max |dP|/P 8.614 % over the 24 kept points, one liquid across the
   validity span. fit_wilson: A_ij = 2746.4, A_ji = 4153.9 J/mol over 23
   kept points: max |dP|/P 48.671 %, mean 9.802 %, graded refused ->
   notAccepted; fit_wilson_start2 lands on A DIFFERENT pair (7296.5,

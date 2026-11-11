@@ -91,7 +91,9 @@
   kept points. fit_wilson: A_ij = -1080.7, A_ji = 4750.9 J/mol over 11
   kept points: max |dT| 1.265 K, mean 0.845 K, graded warning ->
   accepted; fit_wilson_start2 lands on the same pair (-1080.7, 4750.9).
-  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
+  PROMOTED on 2026-11-11 into
+  data/standards/parameters/Wilson/dimethylCarbonate-ethyleneCarbonate.dat
+  as reviewStatus autoPromoted, review by none, because: fit grade
   warning -- max |dT| 1.265 K over the 11 kept points, one liquid across
   the validity span. UNIQUAC: not fitted -- dimethylCarbonate and
   ethyleneCarbonate carry no UNIQUAC r and q (no tabulated value, and no

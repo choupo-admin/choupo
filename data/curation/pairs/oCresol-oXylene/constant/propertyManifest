@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "f52bd28bdce26e1263a06b8d1fcf4d206285a7dcbf1ae1f459a75dab7f69fb3e";
             release       Choupo-2608;
         }
+        "parameters/Wilson/oCresol-oXylene.dat"
+        {
+            type          imported;
+            sha256        "df738b3b1fce35180ee8112cc8efa3f67ffe3e0f3c9fa7f94b5d3206537e7054";
+            computationalSha256 "c6c2e6d4b539a60bc5ed01613d0e615302fe107daa1bef3569d3033cd715f5d7";
+            origin        "data/standards/parameters/Wilson/oCresol-oXylene.dat";
+            originSha256  "f5bda36f7bcdd36083f98629569b64a82a5753d2a58f2d50d6d0d0253ed5062a";
+            release       Choupo-2608;
+        }
     }
 }

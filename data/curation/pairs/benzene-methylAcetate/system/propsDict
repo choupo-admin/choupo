@@ -87,15 +87,19 @@
   not argued). Beside fit_nrtl's max |dT| 0.185 K (clean) on the same
   kept points. fit_uniquac: a_ij = 121.5, a_ji = -97.6 K over 17 kept
   points: max |dT| 0.180 K, mean 0.104 K, graded clean -> accepted;
-  fit_uniquac_start2 lands on the same pair (121.5, -97.6). PROMOTABLE by
-  `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dT| 0.180 K over the 17 kept points, one liquid across the validity
-  span. fit_wilson: A_ij = -277.5, A_ji = 1141.1 J/mol over 17 kept
-  points: max |dT| 0.185 K, mean 0.109 K, graded clean -> accepted;
-  fit_wilson_start2 lands on the same pair (-277.5, 1141.1). PROMOTABLE
-  by `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dT| 0.185 K over the 17 kept points, one liquid across the validity
-  span.
+  fit_uniquac_start2 lands on the same pair (121.5, -97.6). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/UNIQUAC/benzene-methylAcetate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dT| 0.180 K over the 17 kept points, one liquid across the
+  validity span. fit_wilson: A_ij = -277.5, A_ji = 1141.1 J/mol over 17
+  kept points: max |dT| 0.185 K, mean 0.109 K, graded clean -> accepted;
+  fit_wilson_start2 lands on the same pair (-277.5, 1141.1). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/Wilson/benzene-methylAcetate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dT| 0.185 K over the 17 kept points, one liquid across the
+  validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

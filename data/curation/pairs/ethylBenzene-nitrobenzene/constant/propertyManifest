@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "157aa5c5d58802deb2a3797aa97bcdc424d9218df40eaa9f0db6d6760b4ae6c2";
             release       Choupo-2608;
         }
+        "parameters/Wilson/ethylBenzene-nitrobenzene.dat"
+        {
+            type          imported;
+            sha256        "c8e4546a95bf12d0fd19a48c84f33679aa0e317dac278bf2565999948c13a8fb";
+            computationalSha256 "b340c985005f58b446e38b8ca0e9e819a50185bf7435664f90c4ceb5c011692f";
+            origin        "data/standards/parameters/Wilson/ethylBenzene-nitrobenzene.dat";
+            originSha256  "65d810eb447bde33001341b5135ad76d1d9678a341ae752fea344d9af8fd7e5b";
+            release       Choupo-2608;
+        }
     }
 }

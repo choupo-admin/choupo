@@ -70,5 +70,14 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/Wilson/14Dioxane-2Methyl2Propanol.dat"
+        {
+            type          imported;
+            sha256        "89742baa2a9104f673d385e19038644d00fffd12ba2342255713eef42a1c4a3c";
+            computationalSha256 "f63cfba67ca725ba83d1f886a6aeb217ef35e326ffc452b0720feb20854754d7";
+            origin        "data/standards/parameters/Wilson/14Dioxane-2Methyl2Propanol.dat";
+            originSha256  "40620d4074a0afc452908406de9a4d5ed10ef906ee3ff77755d2a7c67ba1a791";
+            release       Choupo-2608;
+        }
     }
 }

@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "491d08993f3a3dc071fbac6c29d7fbce914928c2537cc4562f981c961ef57189";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diEthylCarbonate-nPropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "dec539e66e819e138c4856d44a68b1d6abef6c8ec8313f77c1a89c3c329d0a1a";
+            computationalSha256 "c415620a15bcd8a75584996f8ae44a636105d0185089e66319cbde0331e4dda3";
+            origin        "data/standards/parameters/Wilson/diEthylCarbonate-nPropylAcetate.dat";
+            originSha256  "d5e249b0fbf6bbe1b47c7a21ed447c74f2ad193b44e0fbdf91df302c3f4dffac";
+            release       Choupo-2608;
+        }
     }
 }

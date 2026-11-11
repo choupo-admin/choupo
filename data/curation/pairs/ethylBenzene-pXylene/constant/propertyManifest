@@ -52,5 +52,23 @@ propertyManifest
             originSha256  "d70128fdc55d425d5a8c8a0da83b4f7d3d6e0cfefda89da6ae9cc470dcb8b69c";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/ethylBenzene-pXylene.dat"
+        {
+            type          imported;
+            sha256        "0e6c1f2115e98735794883e392517350856eb02fc6c5208032be3e5651c8bd0d";
+            computationalSha256 "4db5bfcdbd0b243d466e07d0f243103ca69c2bf878c7a0311cf61f551df1b968";
+            origin        "data/standards/parameters/UNIQUAC/ethylBenzene-pXylene.dat";
+            originSha256  "d57a48b9a67260f8ac0c1651897bfda2bc151f6854c5a0849685e43f37d0278e";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/ethylBenzene-pXylene.dat"
+        {
+            type          imported;
+            sha256        "b52da89bdb9fe188bc0e8492f97d2f8e6c5767a482826adabbeeeb01150a7ff1";
+            computationalSha256 "0b889e183618a92e869792fd067a9dc9dd97cc5feb79f632d22ba8a23cea949b";
+            origin        "data/standards/parameters/Wilson/ethylBenzene-pXylene.dat";
+            originSha256  "829b675988a872895ba440e55fbd9185e469c9b6013ed5f9aa790fde4bb2d68a";
+            release       Choupo-2608;
+        }
     }
 }

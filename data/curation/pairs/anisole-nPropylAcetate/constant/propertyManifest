@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "1a02aeb22d7122e831b687bb1aaf3e287485421df46edf22cff2be960147568a";
             release       Choupo-2608;
         }
+        "parameters/Wilson/anisole-nPropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "42aa5aece8d3d9002611395008abf3ecdb3bdcc0aa5a2e5719fb4f7e2dfe37ec";
+            computationalSha256 "db1016392f5f10a9863af664af7b89599a29a6a0c8df28baf0313ac4a02431a1";
+            origin        "data/standards/parameters/Wilson/anisole-nPropylAcetate.dat";
+            originSha256  "3bd7a8a750c110f06f133bbd83979ff7f2a2c8c0ef4fef7cfdb95f2ab03428bf";
+            release       Choupo-2608;
+        }
     }
 }

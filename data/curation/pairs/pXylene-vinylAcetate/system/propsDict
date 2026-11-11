@@ -87,15 +87,19 @@
   not argued). Beside fit_nrtl's max |dT| 1.644 K (warning) on the same
   kept points. fit_uniquac: a_ij = -164.0, a_ji = 333.1 K over 18 kept
   points: max |dT| 1.671 K, mean 1.047 K, graded warning -> accepted;
-  fit_uniquac_start2 lands on the same pair (-164.0, 333.1). PROMOTABLE
-  by `bin/choupo-curate pairs --models --promote`: fit grade warning --
-  max |dT| 1.671 K over the 18 kept points, one liquid across the
+  fit_uniquac_start2 lands on the same pair (-164.0, 333.1). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/UNIQUAC/pXylene-vinylAcetate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade warning
+  -- max |dT| 1.671 K over the 18 kept points, one liquid across the
   validity span. fit_wilson: A_ij = 4451.6, A_ji = -861.6 J/mol over 18
   kept points: max |dT| 1.685 K, mean 1.050 K, graded warning ->
   accepted; fit_wilson_start2 lands on the same pair (4451.6, -861.6).
-  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
-  warning -- max |dT| 1.685 K over the 18 kept points, one liquid across
-  the validity span.
+  PROMOTED on 2026-11-11 into
+  data/standards/parameters/Wilson/pXylene-vinylAcetate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade warning
+  -- max |dT| 1.685 K over the 18 kept points, one liquid across the
+  validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

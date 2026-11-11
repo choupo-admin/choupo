@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "eb12522cdbdb9ed9df59e6a7c488b528a2aba27203ada68e511b3982de50e960";
             release       Choupo-2608;
         }
+        "parameters/Wilson/Dichloroethane-oCresol.dat"
+        {
+            type          imported;
+            sha256        "f478f93703be6b4868e0fd4084d173c2c357160b0ad1a86fbe9ab04b07409dc4";
+            computationalSha256 "490923dacac7868c37012584af96951fae7773b02650aa9599c06d5676062e7d";
+            origin        "data/standards/parameters/Wilson/Dichloroethane-oCresol.dat";
+            originSha256  "f5fa35aae5fc03a45e1dd41e8dc19819d93aa60b18747ab1300e2eb8ee92e80e";
+            release       Choupo-2608;
+        }
     }
 }

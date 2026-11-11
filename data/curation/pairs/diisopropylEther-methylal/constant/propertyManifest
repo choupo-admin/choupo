@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "596d64de154aed60adb6d33162aebf774d228d7d1ad93ab21e70ac1c53458c41";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diisopropylEther-methylal.dat"
+        {
+            type          imported;
+            sha256        "333be25c549f9dde318b6bda49a6c2e4e9c8e2d7d7b7f291f5d8adf791441332";
+            computationalSha256 "8e50e737c65442f2bdfd66c41bdbdc1152e4463f7bcc72cf8d8b9a55311c42c5";
+            origin        "data/standards/parameters/Wilson/diisopropylEther-methylal.dat";
+            originSha256  "cdb078a7d074405797a478dc43c3dc26222abb621d7d02ff88226af5969eab6e";
+            release       Choupo-2608;
+        }
     }
 }

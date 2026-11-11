@@ -87,15 +87,19 @@
   not argued). Beside fit_nrtl's max |dT| 0.828 K (clean) on the same
   kept points. fit_uniquac: a_ij = 230.2, a_ji = -226.5 K over 46 kept
   points: max |dT| 1.108 K, mean 0.642 K, graded warning -> accepted;
-  fit_uniquac_start2 lands on the same pair (230.2, -226.5). PROMOTABLE
-  by `bin/choupo-curate pairs --models --promote`: fit grade warning --
-  max |dT| 1.108 K over the 46 kept points, one liquid across the
+  fit_uniquac_start2 lands on the same pair (230.2, -226.5). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/UNIQUAC/1Pentanol-propionicAcid.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade warning
+  -- max |dT| 1.108 K over the 46 kept points, one liquid across the
   validity span. fit_wilson: A_ij = -4892.3, A_ji = 4971.7 J/mol over 46
   kept points: max |dT| 0.725 K, mean 0.289 K, graded clean -> accepted;
   fit_wilson_start2 lands on A DIFFERENT pair (30000.0, -3727.5).
-  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
-  clean -- max |dT| 0.725 K over the 46 kept points, one liquid across
-  the validity span.
+  PROMOTED on 2026-11-11 into
+  data/standards/parameters/Wilson/1Pentanol-propionicAcid.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dT| 0.725 K over the 46 kept points, one liquid across the
+  validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

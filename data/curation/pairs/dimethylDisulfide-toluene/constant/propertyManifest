@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "9df4b714e6588cd404cea2a032380e486ae0c64f77c618a7aaffaae15e8770f7";
             release       Choupo-2608;
         }
+        "parameters/Wilson/dimethylDisulfide-toluene.dat"
+        {
+            type          imported;
+            sha256        "876810139f10f80d61a3a13ba4e83d2aced863ee95e7584be0c270514b89faec";
+            computationalSha256 "115717e1a8aa84783f53f265d18bb1b2af4053d2acc4bfd57c257699235c5894";
+            origin        "data/standards/parameters/Wilson/dimethylDisulfide-toluene.dat";
+            originSha256  "16356d5cc12138b022a53af5cb616c201a7bbc9f6dbfed2bcf41aa7fde4e84cb";
+            release       Choupo-2608;
+        }
     }
 }

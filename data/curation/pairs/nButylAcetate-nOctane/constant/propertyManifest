@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/nButylAcetate-nOctane.dat"
+        {
+            type          imported;
+            sha256        "884c496d36fb40d07696748bb641d7b8e9be7df6973b712cebd2d5798aff06b8";
+            computationalSha256 "d66aff682b0d3e00f32538820751241b1a60da6475bd2c095c2a921c0338fd7b";
+            origin        "data/standards/parameters/UNIQUAC/nButylAcetate-nOctane.dat";
+            originSha256  "0da5a03a62b23cd50c108a511294aa0c530ff9e2e3e654738ffaabce51cb5eda";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/nButylAcetate-nOctane.dat"
+        {
+            type          imported;
+            sha256        "e7dd9683f9040e2f3c5ef14fbdea671fcdf06b694eb2b634f9f702ec57632164";
+            computationalSha256 "7f4015e0439f6dd77744a7ba11cf8bad13d20479456059366ecd10c198e06272";
+            origin        "data/standards/parameters/Wilson/nButylAcetate-nOctane.dat";
+            originSha256  "269e53d03c06e04b27769d1cf7d2509bf4915e7060866cfde13c8df6490bdbdd";
+            release       Choupo-2608;
+        }
     }
 }

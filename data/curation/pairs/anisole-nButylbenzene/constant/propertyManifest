@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "3f7bd910c5d4304a217cfedd214c250417542328b22a9249dd05034b9e96fcef";
             release       Choupo-2608;
         }
+        "parameters/Wilson/anisole-nButylbenzene.dat"
+        {
+            type          imported;
+            sha256        "68556e8910fb023980eadc3d8f16f2471349fd1e2f5874a9a4d66aa755957fb4";
+            computationalSha256 "8e0a031ac07181b030061b7f2669afbb20c2d895e97e18c50f76df0a44fd2127";
+            origin        "data/standards/parameters/Wilson/anisole-nButylbenzene.dat";
+            originSha256  "9eab04c638b6f874aaf599e6a042ee568525d5a591c9f0b353ee22eddb817464";
+            release       Choupo-2608;
+        }
     }
 }

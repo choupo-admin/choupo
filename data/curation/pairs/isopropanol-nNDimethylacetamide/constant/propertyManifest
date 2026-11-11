@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "0760e64877b1a3fe5847d3045ed8c0e27028089852d78b83538e3889bd408af8";
             release       Choupo-2608;
         }
+        "parameters/Wilson/isopropanol-nNDimethylacetamide.dat"
+        {
+            type          imported;
+            sha256        "b2d914ff50de83aa1e7e006fc65f617cc36364c3e2eddcc66ebc4c69c831c512";
+            computationalSha256 "9199ab61caa2876fe79202c87bffdc806e9a5694c625de5cbd8432d29f88e41e";
+            origin        "data/standards/parameters/Wilson/isopropanol-nNDimethylacetamide.dat";
+            originSha256  "43e648335fb1ca694f9c7cff985f051ab88b422a85f0940602be9f2a260de4ed";
+            release       Choupo-2608;
+        }
     }
 }

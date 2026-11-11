@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/nDecane-nPropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "3c1403cbe41e3fc0df60d1ec57c9ce017fac571459b9b13fbc1fafb02584dae7";
+            computationalSha256 "eef7fb4acb868a52da6e01d02945620dedcf1eccdd9321ac587a10522e596f5c";
+            origin        "data/standards/parameters/UNIQUAC/nDecane-nPropylAcetate.dat";
+            originSha256  "d04176f12a3f3e71094b648a531b628b5a4fd29feb32c2061fdbc9a8450b989f";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/nDecane-nPropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "ddcafe516d088a69eb0c5261cdb7fcfb9f0f28ab63262e135711c09c74e34eef";
+            computationalSha256 "fc89a5e09789c03ba091ff2a568284a717f3c3ecb9d52afa6ebed9c6802b3d68";
+            origin        "data/standards/parameters/Wilson/nDecane-nPropylAcetate.dat";
+            originSha256  "fffd341fa598acfc400498e2df86c4f7133543332a947ef4d2e4525ed65c2229";
+            release       Choupo-2608;
+        }
     }
 }

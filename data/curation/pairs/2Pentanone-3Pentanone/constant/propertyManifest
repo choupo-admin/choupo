@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "e7c832081f7e716ed5a543e77d256df7e5cff7e321026fe26e0bea5669a4747a";
             release       Choupo-2608;
         }
+        "parameters/Wilson/2Pentanone-3Pentanone.dat"
+        {
+            type          imported;
+            sha256        "bb11b06b7e33d8dc55f9f44714ec872731c98b6abdbffac3d7f833a3f9cd962c";
+            computationalSha256 "2d4063cb9aa3145949805312a19ebaa3fc191c3339999135072524cb05ea58f1";
+            origin        "data/standards/parameters/Wilson/2Pentanone-3Pentanone.dat";
+            originSha256  "fdff506a382075f1a3b5673e65f88011daa00a178a155c9acedec91a71ae62d7";
+            release       Choupo-2608;
+        }
     }
 }

@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/1Heptanol-1Hexanol.dat"
+        {
+            type          imported;
+            sha256        "7fd2827410ec34c1f19d36aba49df05e035c2ff8279d86d07bc5954007a10d16";
+            computationalSha256 "dce77a0ec8a35f7d4f16662c50791eb2bd54605e00f29c0d2a4db1aaab2aabd2";
+            origin        "data/standards/parameters/UNIQUAC/1Heptanol-1Hexanol.dat";
+            originSha256  "eede38e2fb7a4043ef95eece64e13d60367d5cf4b8573bfb23b9ceb7ecb713ee";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Heptanol-1Hexanol.dat"
+        {
+            type          imported;
+            sha256        "90539be044293ce0c9a3d8d8df3a7692cb0b2d56a351991fd783cecaf08979c4";
+            computationalSha256 "d74f3deb80f3bd121c79cc57f3da0ca242a5921b44b51c4f19918c9cad38bba7";
+            origin        "data/standards/parameters/Wilson/1Heptanol-1Hexanol.dat";
+            originSha256  "daa840bd1e7dcb6881b0ea9c73f85cccd8c66954419a8210c734312d5a5829ae";
+            release       Choupo-2608;
+        }
     }
 }

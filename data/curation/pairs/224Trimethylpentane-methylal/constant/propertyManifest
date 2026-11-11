@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/224Trimethylpentane-methylal.dat"
+        {
+            type          imported;
+            sha256        "eddbb7fa33241b25d9ca5e8f42f2ecd9a4cc0e765192960fd5b59349e5d68e4c";
+            computationalSha256 "173e5503b898a0d11a9d7733df9c3fc33323eef035acb47d613a4e24072c66cf";
+            origin        "data/standards/parameters/UNIQUAC/224Trimethylpentane-methylal.dat";
+            originSha256  "75ee231a43e8c7ddd37f1b84e16fa71abf794b4a87e0c77a890afa11a62ff55e";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/224Trimethylpentane-methylal.dat"
+        {
+            type          imported;
+            sha256        "10199cd628c87d573dfbcfe8ee2bc86d414c8c9ef2bc901ebf9f35739d40f4e1";
+            computationalSha256 "bdfb5c15e7cee9dfc39760d84a360e217ce94ae394d6d5f4c59ce90bc6d15b0c";
+            origin        "data/standards/parameters/Wilson/224Trimethylpentane-methylal.dat";
+            originSha256  "ccfae128fc0a5ede2faa1be02adde81a2b7c583d5fd142925eb818b3a593c08d";
+            release       Choupo-2608;
+        }
     }
 }

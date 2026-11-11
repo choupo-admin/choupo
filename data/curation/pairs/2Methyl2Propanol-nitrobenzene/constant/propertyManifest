@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "4177f2db3750a3b601615ce10bd0ad54788efb1126b42aaca5a9dd66d45e58bc";
             release       Choupo-2608;
         }
+        "parameters/Wilson/2Methyl2Propanol-nitrobenzene.dat"
+        {
+            type          imported;
+            sha256        "65edfa06af2ff8d74b1ed5aece70cf758faf002ae3461e242a788583ed500fa0";
+            computationalSha256 "d2d98a3831cd65f4eff569989d9d0af19bcc6a3dda6e9d7b56a2867f516e53a4";
+            origin        "data/standards/parameters/Wilson/2Methyl2Propanol-nitrobenzene.dat";
+            originSha256  "50aab3e3613ca6d5c9da598d927eb0b38dd804adce8828109c7267134d17c2e8";
+            release       Choupo-2608;
+        }
     }
 }

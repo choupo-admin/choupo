@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "8048285049de7c770038ad56f228b3a988350e93e4c52f9da188ca800e0453dd";
             release       Choupo-2608;
         }
+        "parameters/Wilson/benzene-thiophene.dat"
+        {
+            type          imported;
+            sha256        "460f19666b13b0e9926cdb93c2f73d56f6cf4f966498ea4624ce19bf0c8d65c7";
+            computationalSha256 "9f74768108883b2ae351ef6655dc152cab0ded6d5c671bdc720bedc50ddb3212";
+            origin        "data/standards/parameters/Wilson/benzene-thiophene.dat";
+            originSha256  "0e98844c3dda072a5c29685d85d7824ee32d28e5194ad9e98a2020e6b591b729";
+            release       Choupo-2608;
+        }
     }
 }

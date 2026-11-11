@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "dc59c6c07fc4abd03004096722d180b59d472c121205b78be9846a666418bc8e";
             release       Choupo-2608;
         }
+        "parameters/Wilson/2Methyl1Propanol-tetrahydrofuran.dat"
+        {
+            type          imported;
+            sha256        "5d7dab72406cc04aa4887bf72725aac83e7c73ed886ec6bd3d1bece6634a8bcb";
+            computationalSha256 "5b31011d69cda0f708ed3af122999b3b738a8842f9d58880c24fc978e97d3cd2";
+            origin        "data/standards/parameters/Wilson/2Methyl1Propanol-tetrahydrofuran.dat";
+            originSha256  "21083b7a972100232364b607b9303e8042441aaed1f15b81c9f960b1f502c6d3";
+            release       Choupo-2608;
+        }
     }
 }

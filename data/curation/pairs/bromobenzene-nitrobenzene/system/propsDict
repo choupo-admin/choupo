@@ -90,16 +90,17 @@
   not argued). Beside fit_nrtl's max |dT| 0.829 K (clean) on the same
   kept points. fit_wilson: A_ij = -4853.8, A_ji = 4821.2 J/mol over 12
   kept points: max |dT| 0.146 K, mean 0.101 K, graded clean -> accepted;
-  fit_wilson_start2 removed (it did not converge). PROMOTABLE by
-  `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dT| 0.146 K over the 12 kept points, one liquid across the validity
-  span. Wilson: fit_wilson_start2 was declared and run and did NOT
-  CONVERGE (A_ij at its bound, -30000 .. 30000 J/mol: no finite optimum
-  inside the declared bounds); the op is removed so the case runs (C294).
-  UNIQUAC: not fitted -- bromobenzene and nitrobenzene carry no UNIQUAC r
-  and q (no tabulated value, and no UNIFAC groups to sum them from,
-  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
-  is estimated silently.
+  fit_wilson_start2 removed (it did not converge). PROMOTED on 2026-11-11
+  into data/standards/parameters/Wilson/bromobenzene-nitrobenzene.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dT| 0.146 K over the 12 kept points, one liquid across the
+  validity span. Wilson: fit_wilson_start2 was declared and run and did
+  NOT CONVERGE (A_ij at its bound, -30000 .. 30000 J/mol: no finite
+  optimum inside the declared bounds); the op is removed so the case runs
+  (C294). UNIQUAC: not fitted -- bromobenzene and nitrobenzene carry no
+  UNIQUAC r and q (no tabulated value, and no UNIFAC groups to sum them
+  from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted;
+  nothing is estimated silently.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

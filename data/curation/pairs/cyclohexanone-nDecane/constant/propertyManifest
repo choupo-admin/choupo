@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "aa9e463725096bef19b7f3ae4106ea37230f8de26df9a0ba7aae2937bd1fc420";
             release       Choupo-2608;
         }
+        "parameters/Wilson/cyclohexanone-nDecane.dat"
+        {
+            type          imported;
+            sha256        "ee3e0649c2a5f9858caf1e55246903f87d72f833955c3229884adcf4c95ee067";
+            computationalSha256 "a46a98528646afbd8f14d6828b1cef737335c431ea86a89f98edc88635180587";
+            origin        "data/standards/parameters/Wilson/cyclohexanone-nDecane.dat";
+            originSha256  "b69c552e7f59d5a89483096a9d75611e6e187862b6d99a4f39207a1d76fd7a62";
+            release       Choupo-2608;
+        }
     }
 }

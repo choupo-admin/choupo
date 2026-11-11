@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "4c521c9840452a0f0672abd28366b4ee68ffd1afabcb75b65bac385faea09055";
             release       Choupo-2608;
         }
+        "parameters/Wilson/cyclohexane-nNDimethylacetamide.dat"
+        {
+            type          imported;
+            sha256        "c25975542e947b00e0eb7ecee0455fcf3b8d1acc1959ce2549913b544ab55725";
+            computationalSha256 "fd92119b0cac0582443ea3642de9a1eb37974b9f3226aa2aa6de7f71cf909716";
+            origin        "data/standards/parameters/Wilson/cyclohexane-nNDimethylacetamide.dat";
+            originSha256  "50e2f735965978f0e1324c92c639a7cf25d0c4cdb11704398db7b8ff88008ea6";
+            release       Choupo-2608;
+        }
     }
 }

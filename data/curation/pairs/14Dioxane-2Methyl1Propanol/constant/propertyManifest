@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/14Dioxane-2Methyl1Propanol.dat"
+        {
+            type          imported;
+            sha256        "01dbab8440632033cd6dc2c3dfdb790077dd7aa83196c812cf467349513bd1dc";
+            computationalSha256 "4e6d5dda525b1c7e374d6c880988ac1e1fe3af62924896d75552c8593a46ae61";
+            origin        "data/standards/parameters/UNIQUAC/14Dioxane-2Methyl1Propanol.dat";
+            originSha256  "51864a635fbb963dffb20538db9a452b7d300db2b8c73b256cf027ff90a7f9de";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/14Dioxane-2Methyl1Propanol.dat"
+        {
+            type          imported;
+            sha256        "ec2af95e01b77a461fdb47a5fc517c370f23076018bb97dd28a0cc415c9155ec";
+            computationalSha256 "7d0d2606ed7b02a2bcdea647c2652fcd940d4d9f75cd39eb8cb64afbcf2641e1";
+            origin        "data/standards/parameters/Wilson/14Dioxane-2Methyl1Propanol.dat";
+            originSha256  "62c5dce577e0e8219d9b210b73ff4c0965f83f703e573366fb22ed11b96a560e";
+            release       Choupo-2608;
+        }
     }
 }

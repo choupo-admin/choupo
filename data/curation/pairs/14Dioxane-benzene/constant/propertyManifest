@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/14Dioxane-benzene.dat"
+        {
+            type          imported;
+            sha256        "01d0561b73ac3f91c8daf2462e331fd663050397cb4a47daf9b67c5530f1797d";
+            computationalSha256 "84c957d3dbfc9c3bff2737ad33f2b3157653cf3c115fb56ed17c017e5057717c";
+            origin        "data/standards/parameters/UNIQUAC/14Dioxane-benzene.dat";
+            originSha256  "30b22a468ea359237b5e9ce7006ac6d1ab7bf409c5acc60d01116a444e5ab820";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/14Dioxane-benzene.dat"
+        {
+            type          imported;
+            sha256        "7e3d090627fbc45f2b348fd170de59545efb099a482412b55207cffc663aa6e1";
+            computationalSha256 "f89baac694d75e07916bc72cdbbf18b551e34e11b078f46fd212ca675250df4b";
+            origin        "data/standards/parameters/Wilson/14Dioxane-benzene.dat";
+            originSha256  "5ee6afcd49ebd9d4a47d3d74460f056ae25604a35c0a5926009d9c21fe96c01d";
+            release       Choupo-2608;
+        }
     }
 }

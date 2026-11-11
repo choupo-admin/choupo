@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/1Pentanol-propionicAcid.dat"
+        {
+            type          imported;
+            sha256        "bdb13902af391b01956ed5c9fb796320fd09afd3e53f4ec6921a6a4ac774bff3";
+            computationalSha256 "55c2d50a9d86f86b14ff8295a1a85ee96847b11abbd58de476bb65b5cb839954";
+            origin        "data/standards/parameters/UNIQUAC/1Pentanol-propionicAcid.dat";
+            originSha256  "79b008a2924f7f478452f9d36496a599dd4c2ec2f78f262d6dbd601dfc13a2a2";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Pentanol-propionicAcid.dat"
+        {
+            type          imported;
+            sha256        "96f1a4111683644676504b182d1e2457bfb27a8d277805688557cec03a93da60";
+            computationalSha256 "3a0ff5e0470152bceea78a782173a3a1bbe125d8b73d3d8ca3d11ac0432170a1";
+            origin        "data/standards/parameters/Wilson/1Pentanol-propionicAcid.dat";
+            originSha256  "59ea02382bc8c893d316b9b76b4a500754b5de62aec49e748e11369af6181009";
+            release       Choupo-2608;
+        }
     }
 }

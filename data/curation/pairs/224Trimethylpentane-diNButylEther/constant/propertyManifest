@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/224Trimethylpentane-diNButylEther.dat"
+        {
+            type          imported;
+            sha256        "9fadbbd06d03d18f821001ca4f4870482743a0449087cf593c7b287adfeb9944";
+            computationalSha256 "55428a0854e08c68bc14831db62ac501d92f08f7ff399407fa74114164ae41be";
+            origin        "data/standards/parameters/UNIQUAC/224Trimethylpentane-diNButylEther.dat";
+            originSha256  "b2807a93c62da8650f3f11bdcd8a29112772f173dd521aaa9f73cdd3e8b37abf";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/224Trimethylpentane-diNButylEther.dat"
+        {
+            type          imported;
+            sha256        "edec85594cc5141d9a14b702d12edfa7dd7d9a535aea146844886f90bd9221ea";
+            computationalSha256 "1c6cf57e8ec473bd9c9636f84711407dcdd290db6d657d489354cdfaad81240d";
+            origin        "data/standards/parameters/Wilson/224Trimethylpentane-diNButylEther.dat";
+            originSha256  "bed890f82502b8a15961461b240f6eeb7f7c9bbeafdedd81fd6598ad1781f6ee";
+            release       Choupo-2608;
+        }
     }
 }

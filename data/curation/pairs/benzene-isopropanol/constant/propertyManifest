@@ -52,5 +52,23 @@ propertyManifest
             originSha256  "188c6c416a4724a9f560778fe386e2a412ff84d1654414dcfe7c9681721e6294";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/benzene-isopropanol.dat"
+        {
+            type          imported;
+            sha256        "008c96bcc493a1560eb796da6f174086069a11be5c86f03ae8a3fd02074e6d96";
+            computationalSha256 "9a018acf06ea66edb92128efaa784b2c918a3e73c27e75378aea6385859f5526";
+            origin        "data/standards/parameters/UNIQUAC/benzene-isopropanol.dat";
+            originSha256  "bfe4693857f025d64b6c96b5d5f9ccec2f78374d622c28dec094a8b3158e7206";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/benzene-isopropanol.dat"
+        {
+            type          imported;
+            sha256        "9dc45fb1b4fad74686a26325afdf8c71900b02ba665d5c70cc785dca75b6a987";
+            computationalSha256 "f44d9bf8db0a996f6f5a4629de3c484a555553932ae84b3edf717fbb0911e56c";
+            origin        "data/standards/parameters/Wilson/benzene-isopropanol.dat";
+            originSha256  "0cbe994de281a70e23470df54ff55340f266e5a80c4b2286338e6d3f3de2bdec";
+            release       Choupo-2608;
+        }
     }
 }

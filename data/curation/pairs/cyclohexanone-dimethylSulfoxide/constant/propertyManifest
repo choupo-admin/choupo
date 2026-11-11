@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "c25e1f0dfbb53ab1fd2fe1601f15d26b290a79419cf257d68b4df1075868adde";
             release       Choupo-2608;
         }
+        "parameters/Wilson/cyclohexanone-dimethylSulfoxide.dat"
+        {
+            type          imported;
+            sha256        "ff84180fee3138f2c93eba03cdad8e50c99c171be2bfd3a5c091d2bef073cebe";
+            computationalSha256 "b8f1ef958b23c20f33b4a872d13557b37842f3caa4d89c3c2f80d0fd5bfafe00";
+            origin        "data/standards/parameters/Wilson/cyclohexanone-dimethylSulfoxide.dat";
+            originSha256  "4c9f7bab924fd1b4612800b6ae47866dc992dc5d5fcdd9cbb28fea3b5550e84b";
+            release       Choupo-2608;
+        }
     }
 }

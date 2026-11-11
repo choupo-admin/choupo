@@ -91,13 +91,14 @@
   kept points. fit_wilson: A_ij = -834.2, A_ji = 18334.5 J/mol over 19
   kept points: max |dT| 1.760 K, mean 0.855 K, graded warning ->
   accepted; fit_wilson_start2 lands on A DIFFERENT pair (2374.7,
-  -5032.2). PROMOTABLE by `bin/choupo-curate pairs --models --promote`:
-  fit grade warning -- max |dT| 1.760 K over the 19 kept points, one
-  liquid across the validity span. UNIQUAC: not fitted --
-  dimethylSulfoxide carries no UNIQUAC r and q (no tabulated value, and
-  no UNIFAC groups to sum them from,
-  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
-  is estimated silently.
+  -5032.2). PROMOTED on 2026-11-11 into
+  data/standards/parameters/Wilson/dimethylSulfoxide-water.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade warning
+  -- max |dT| 1.760 K over the 19 kept points, one liquid across the
+  validity span. UNIQUAC: not fitted -- dimethylSulfoxide carries no
+  UNIQUAC r and q (no tabulated value, and no UNIFAC groups to sum them
+  from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted;
+  nothing is estimated silently.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

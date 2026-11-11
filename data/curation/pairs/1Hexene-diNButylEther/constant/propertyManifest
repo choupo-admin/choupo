@@ -52,5 +52,23 @@ propertyManifest
             originSha256  "be9a4d752b238e7b34f38b1f8442b99ca212cdfc1e672cdf68a9063e723e6f6c";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/1Hexene-diNButylEther.dat"
+        {
+            type          imported;
+            sha256        "914987bfe36037a6aa8e546a8f03ea7ca20d4d9c849207257fc9541c8b2d9ee4";
+            computationalSha256 "a0f64d772528684ed4983473f1adf2fe9d8849a5d1bbc776df695639615283e2";
+            origin        "data/standards/parameters/UNIQUAC/1Hexene-diNButylEther.dat";
+            originSha256  "c89ebd5e1dc42afa6b9c566125dc1ba36b87947ec6abaac0eb2f41adfffb559d";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Hexene-diNButylEther.dat"
+        {
+            type          imported;
+            sha256        "f492b4b7e4cb13a80dca735722634aab1cad09b6d13fd90f980eab5c11af8338";
+            computationalSha256 "12242699371f3811b8bdeba785afabd1e915e9a8fe3640397c9614077b513b42";
+            origin        "data/standards/parameters/Wilson/1Hexene-diNButylEther.dat";
+            originSha256  "13eaef5307b7278232b033014313e8f2b4f91ce3e2bce0e35d7e0f2cc9fce37b";
+            release       Choupo-2608;
+        }
     }
 }

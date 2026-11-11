@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/nDecane-pXylene.dat"
+        {
+            type          imported;
+            sha256        "bc5536be621debde643df20085d330347504cf46db8221658be2e73770823c6d";
+            computationalSha256 "38a6aa1eb39b2ef41fa1f52009d87a8187269ece410fbe5894e0d7fe296b4aa4";
+            origin        "data/standards/parameters/UNIQUAC/nDecane-pXylene.dat";
+            originSha256  "d5d7a79c309210d63578f211b20b5e0f436af251e8ae9bfd1ef695fdef8f30b2";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/nDecane-pXylene.dat"
+        {
+            type          imported;
+            sha256        "586f08ccc48645deabc3e78ba630689528cafa97e56f35db2caf07d9cd4b2c93";
+            computationalSha256 "496e9d760ae78721552778e148587f29887feda23e8a5e9e1bfcfc7c2176012f";
+            origin        "data/standards/parameters/Wilson/nDecane-pXylene.dat";
+            originSha256  "b5cd52047e83d9ebcc432e25755b19a1aece90004422bb10db52ebf153dec281";
+            release       Choupo-2608;
+        }
     }
 }

@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "dd2246032824463a6fea9ad0f4da15727c04ba2eb927fb0d777fa6141ef7ab73";
             release       Choupo-2608;
         }
+        "parameters/Wilson/acetonitrile-nButanol.dat"
+        {
+            type          imported;
+            sha256        "0aee06ed0c2ab1edc9665bc5b5c1b465357a2dc1fb3661e79295897e59f0fdf3";
+            computationalSha256 "5a5d55bc31e9ea530019fdede481b81d0de081115d6ae94193ddd2f94cb97cb2";
+            origin        "data/standards/parameters/Wilson/acetonitrile-nButanol.dat";
+            originSha256  "683ae999fc43e237e75f704560825741f44ef30f9622f9d799f9cc866f3f3a76";
+            release       Choupo-2608;
+        }
     }
 }

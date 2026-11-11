@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "ece608080064e274bf93d1b4431791bc19bfe0c68ca60e316fbd8286af54c19e";
             release       Choupo-2608;
         }
+        "parameters/Wilson/dimethylCarbonate-methylal.dat"
+        {
+            type          imported;
+            sha256        "194ab12186e024097f5dcf4464436b197f0e78d28ad3dbfcefd03125e9b32777";
+            computationalSha256 "ec88e527c970c01db0cdd6c2e2a037d79e324ea09d5d4021e8896faaf5a35fcd";
+            origin        "data/standards/parameters/Wilson/dimethylCarbonate-methylal.dat";
+            originSha256  "8134c297dec4566c27114bf39e4d5d5ce454c65e56f5ba40a648aa3b8d26c35d";
+            release       Choupo-2608;
+        }
     }
 }

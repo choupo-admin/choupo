@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "16a30248f4c93c268ae295728111384a9195720e0ec0d5604e3f910ae01c1d61";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diisopropylEther-nButylAcetate.dat"
+        {
+            type          imported;
+            sha256        "92333e848c752e08298e3bdd1d6a974a42a908043d1158d298bc61116eb708ea";
+            computationalSha256 "8291cfcf84da1b3f95bd2cc217a5f2fcf7ef8911305b3fc6cd9c569c1346d92b";
+            origin        "data/standards/parameters/Wilson/diisopropylEther-nButylAcetate.dat";
+            originSha256  "cc63fd114ed2a5b1fe2cc8b695fa39663b95b0fcc50ab0a3c368f2bc4f344ed6";
+            release       Choupo-2608;
+        }
     }
 }

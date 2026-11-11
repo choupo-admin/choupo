@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "7b328b0d2012b7fa20db5d31589461fb5c65c08249d673df3ce0fa939bccc6d7";
             release       Choupo-2608;
         }
+        "parameters/Wilson/2Methyl2Propanol-dimethylCarbonate.dat"
+        {
+            type          imported;
+            sha256        "e24432841fbf391da02af138ca2dde06ef633804f72a8bf4c2fd09c899d01d22";
+            computationalSha256 "1ce4182340f4d2d80350b0ff7c0b40755079a8c3afcc2d712d9dd219b1ec6a29";
+            origin        "data/standards/parameters/Wilson/2Methyl2Propanol-dimethylCarbonate.dat";
+            originSha256  "b270a870aa9802874ecbaf9d58572b51b4a235e435cf4f7505ae2eee3b000542";
+            release       Choupo-2608;
+        }
     }
 }

@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "acfa602ecccb4151cf3d6b0b69c87e80bc38fe51f56d037f3f1f8255e499cbc0";
             release       Choupo-2608;
         }
+        "parameters/Wilson/ethylBenzene-monochlorobenzene.dat"
+        {
+            type          imported;
+            sha256        "f99fa4b1286f0ff871eb76ed59c494f773b17d6dd0be80601c549b1d90dc5df1";
+            computationalSha256 "81a98f6bd251a348feefd61b5bab6fd96f97239c40f0ea434f0fa3e400c70576";
+            origin        "data/standards/parameters/Wilson/ethylBenzene-monochlorobenzene.dat";
+            originSha256  "268337b9433a5742b714459752f108af2d75f610f9f06ca0e982c05ac510ca98";
+            release       Choupo-2608;
+        }
     }
 }

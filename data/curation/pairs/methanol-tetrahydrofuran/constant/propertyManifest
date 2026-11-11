@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "86294f0ef9c5eca07aca97ff302d80d0277c59c6619b99075c3479ab4f2ac8f0";
             release       Choupo-2608;
         }
+        "parameters/Wilson/methanol-tetrahydrofuran.dat"
+        {
+            type          imported;
+            sha256        "a2033f76b4e7f6e39d91b34a948ff1075c4433ab005f27ddaca76c6541109b44";
+            computationalSha256 "1b957d950ea7f2d5ce2ecbe9dd727aae4bce0d4b82cf79b98008de3c7f2a273a";
+            origin        "data/standards/parameters/Wilson/methanol-tetrahydrofuran.dat";
+            originSha256  "7e4e50f133a54a8d49f5167b5418a89dc42014c96cf3c3b832208c146294bae4";
+            release       Choupo-2608;
+        }
     }
 }

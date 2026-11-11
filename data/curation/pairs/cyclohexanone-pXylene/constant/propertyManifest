@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "af9264e5a0d4c39ca7a150649e3d905b41d4b527f1e1db4cfcb32515b41f2194";
             release       Choupo-2608;
         }
+        "parameters/Wilson/cyclohexanone-pXylene.dat"
+        {
+            type          imported;
+            sha256        "31b9cea4e6ade83dbaf1079c16db3cff6abba2a41cbb9457a6bc9e09136f720b";
+            computationalSha256 "bd9e81d976394544d09dd2f62538365892e2a3028ce9904c933d7616ad84cccf";
+            origin        "data/standards/parameters/Wilson/cyclohexanone-pXylene.dat";
+            originSha256  "f035e28717b48f3210cd3a96577442f635c45fc32dd7431a6e438bb178b50107";
+            release       Choupo-2608;
+        }
     }
 }

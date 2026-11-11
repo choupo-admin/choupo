@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/224Trimethylpentane-methylTertButylEther.dat"
+        {
+            type          imported;
+            sha256        "e81fda7a75bb0aee07221f5a093afa4b0d950ae038f3f51ad72c62c7bcc6f075";
+            computationalSha256 "a97276d14dbb7012c0d2900f646b13149dfc9389e0c398ad654311df1e74a44b";
+            origin        "data/standards/parameters/UNIQUAC/224Trimethylpentane-methylTertButylEther.dat";
+            originSha256  "415bd96d90ff28e85e73049d4b6bb6f8455de15f11e056febf2c3d2af2961e86";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/224Trimethylpentane-methylTertButylEther.dat"
+        {
+            type          imported;
+            sha256        "98a9358b640df53e082467a50695645a786bcc819d937d3c8b198518afa4c343";
+            computationalSha256 "04d71d96d6a2aaf2f8add03004a0ae6a0ff95c666c10e626be2908bfa23e8825";
+            origin        "data/standards/parameters/Wilson/224Trimethylpentane-methylTertButylEther.dat";
+            originSha256  "ca34f0f5f12b1c1f53470ef72ceab037e0fc211c8a4f3caa54255ae5423b6ec2";
+            release       Choupo-2608;
+        }
     }
 }

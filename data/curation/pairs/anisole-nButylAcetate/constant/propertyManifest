@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "0cd66e34af9fb40ab9e97a50ad8e272752b108422538efc902d97b0250d8f2dc";
             release       Choupo-2608;
         }
+        "parameters/Wilson/anisole-nButylAcetate.dat"
+        {
+            type          imported;
+            sha256        "3feb8798fa379e999f85f68df3f0135ae06fe336177de2c3280bff8d0d4979cf";
+            computationalSha256 "21c2ebd8e93ececc57879cdf108d675ebeefa170f47a7a8acd37609910b95834";
+            origin        "data/standards/parameters/Wilson/anisole-nButylAcetate.dat";
+            originSha256  "3eb8d74553346b1a964428642a8f2c20de336fa437e5ac585f9020a2479fcf15";
+            release       Choupo-2608;
+        }
     }
 }

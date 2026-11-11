@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/224Trimethylpentane-methylEthylKetone.dat"
+        {
+            type          imported;
+            sha256        "36a74fe2f6bf0ffd26e24816ceb2ef9c401a05a238a4ff05029abc3c1626ef80";
+            computationalSha256 "fcc34457669f1ebc716bb20e7ebdb9d36c5085658118d52cacd95d036a07819d";
+            origin        "data/standards/parameters/UNIQUAC/224Trimethylpentane-methylEthylKetone.dat";
+            originSha256  "ac483168c2b644147a56dfbd42a8b0b4d948bd1d1467cd467330d1a32094afeb";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/224Trimethylpentane-methylEthylKetone.dat"
+        {
+            type          imported;
+            sha256        "68f78dfad2971ba995ab315fc87edb787b9d1b7052588f8ce65c2331f4b6ebf0";
+            computationalSha256 "436a0009d4e002e76417555cd8807e985ce04ad0c5f53a14fc984df2e3a75257";
+            origin        "data/standards/parameters/Wilson/224Trimethylpentane-methylEthylKetone.dat";
+            originSha256  "3b7fa63e63acfb085e58fcd278553a332c292090ad03d93481b334e839c1cbf0";
+            release       Choupo-2608;
+        }
     }
 }

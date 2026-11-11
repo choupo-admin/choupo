@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "ac5df15452ff799d9468f5350d49baf50c18d02ac73fe558b9e8f8a45d7d56ac";
             release       Choupo-2608;
         }
+        "parameters/Wilson/acrylonitrile-ethylBenzene.dat"
+        {
+            type          imported;
+            sha256        "55323169b80624784209395aa09327fddcbe890a7185e00f35ba7418a007a88e";
+            computationalSha256 "0ac22e30c569039f1f1b920b109bbe26ec22436e4c0d84b27d5848311a4f0b4c";
+            origin        "data/standards/parameters/Wilson/acrylonitrile-ethylBenzene.dat";
+            originSha256  "b0e4a2dbbf1d4bca048155207e9440e6b19787ee3fca35c72e8649877f9ff58e";
+            release       Choupo-2608;
+        }
     }
 }

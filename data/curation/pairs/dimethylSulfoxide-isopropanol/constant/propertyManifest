@@ -43,5 +43,14 @@ propertyManifest
             originSha256  "7338879f6f351e08c4ec91a02c86117d7f56faef9906c7e3174f954a4000d0d7";
             release       Choupo-2608;
         }
+        "parameters/Wilson/dimethylSulfoxide-isopropanol.dat"
+        {
+            type          imported;
+            sha256        "956add66644b8ff2aad921e13b0357bc99b9c73f7980430028922f61b9aed692";
+            computationalSha256 "5aecfdca1a7561dc75858c5292f3971ae64bf2495cfc1c56dfe19bc33e6952dc";
+            origin        "data/standards/parameters/Wilson/dimethylSulfoxide-isopropanol.dat";
+            originSha256  "b454c288b62eda4c1edb5d7ca81105614b3fc4072185d70c14680684d96482ad";
+            release       Choupo-2608;
+        }
     }
 }

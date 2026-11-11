@@ -90,11 +90,12 @@
   not argued). Beside fit_nrtl's max |dT| 0.868 K (clean) on the same
   kept points. fit_wilson: A_ij = 705.0, A_ji = -8114.8 J/mol over 12
   kept points: max |dT| 0.676 K, mean 0.481 K, graded clean -> accepted;
-  fit_wilson_start2 lands on the same pair (705.0, -8114.8). PROMOTABLE
-  by `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dT| 0.676 K over the 12 kept points, one liquid across the validity
-  span. UNIQUAC: not fitted -- oCresol carries no UNIQUAC r and q (no
-  tabulated value, and no UNIFAC groups to sum them from,
+  fit_wilson_start2 lands on the same pair (705.0, -8114.8). PROMOTED on
+  2026-11-11 into data/standards/parameters/Wilson/methanol-oCresol.dat
+  as reviewStatus autoPromoted, review by none, because: fit grade clean
+  -- max |dT| 0.676 K over the 12 kept points, one liquid across the
+  validity span. UNIQUAC: not fitted -- oCresol carries no UNIQUAC r and
+  q (no tabulated value, and no UNIFAC groups to sum them from,
   bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
   is estimated silently.
   @@MODELS-RESULT-END@@

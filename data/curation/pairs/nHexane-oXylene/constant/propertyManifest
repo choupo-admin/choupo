@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/nHexane-oXylene.dat"
+        {
+            type          imported;
+            sha256        "f2db6a21d5c51df215e303d67bbf4e09a0f2ed914b62d46b10e185e831801baa";
+            computationalSha256 "2a518a83d4e8a492e49d8c238723fe9cab98245635edb0c5c5b1504a07b2b9c9";
+            origin        "data/standards/parameters/UNIQUAC/nHexane-oXylene.dat";
+            originSha256  "5b347cf0b3317eda1f82240cf4ace60611c2bf1da8f64b842c5d3b30cdf8e270";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/nHexane-oXylene.dat"
+        {
+            type          imported;
+            sha256        "0e92a3247d21459f68a3ff5ec74210ecb1ee2daee50a2e4c4ef178dbb992d107";
+            computationalSha256 "5ddb380d9b6e7c1989c9fce2f3c7a668a95a59cb2372b28105b9811c59940020";
+            origin        "data/standards/parameters/Wilson/nHexane-oXylene.dat";
+            originSha256  "1a56d386d40747d5404b54f136e41c9dec398a752ba2a7129a3876776b286b08";
+            release       Choupo-2608;
+        }
     }
 }

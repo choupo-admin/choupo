@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/ethanol-isobutylAcetate.dat"
+        {
+            type          imported;
+            sha256        "43553ac87d1e7fd6099fe2ed0fa592e7d4159b0a2bc74db29849dd28a6eaaeb1";
+            computationalSha256 "e2ee92fac6f55ef3427d570bb1e74fa39cf24cfcd60790a5babedb56973340a2";
+            origin        "data/standards/parameters/UNIQUAC/ethanol-isobutylAcetate.dat";
+            originSha256  "9914d8e96c8a025a929f6541254f68da069c2aeb05fb5894723d5d19f6324656";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/ethanol-isobutylAcetate.dat"
+        {
+            type          imported;
+            sha256        "e9d9da610b3456ecae44deb107a15c0312af706728c20a379de902fcb153427d";
+            computationalSha256 "e23f860869d99f2321c14ca84795651c5cfeb1ffcd4bf130ba7b1fa12682f8d3";
+            origin        "data/standards/parameters/Wilson/ethanol-isobutylAcetate.dat";
+            originSha256  "9c368d594046d0e19ef11caa0893fa12cb3ad390bf7eb3a0b70817af636ddfdf";
+            release       Choupo-2608;
+        }
     }
 }

@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "6224607bcb2a033bc1732193f748e03888885d3764c42835c56c7ab0e91c5b30";
             release       Choupo-2608;
         }
+        "parameters/Wilson/dimethylCarbonate-nButylAcetate.dat"
+        {
+            type          imported;
+            sha256        "930d17d023749b4d1aa9612e3597c0512e5aa31ee39b4624dc50c92223b120fa";
+            computationalSha256 "deec075c174c032f0ac7f5415bc49113a3a0c264bc423a0de25a8c73e1e28b8c";
+            origin        "data/standards/parameters/Wilson/dimethylCarbonate-nButylAcetate.dat";
+            originSha256  "2404e0ab4e23de4dc54d845a8477085efeb2b02bab662ff4f85eada928e2441d";
+            release       Choupo-2608;
+        }
     }
 }

@@ -90,14 +90,15 @@
   not argued). Beside fit_nrtl's max |dT| 1.494 K (warning) on the same
   kept points. fit_wilson: A_ij = -2986.9, A_ji = -5037.8 J/mol over 10
   kept points: max |dT| 0.701 K, mean 0.479 K, graded clean -> accepted;
-  fit_wilson_start2 removed (it did not converge). PROMOTABLE by
-  `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dT| 0.701 K over the 10 kept points, one liquid across the validity
-  span. Wilson: fit_wilson_start2 was declared and run and did NOT
-  CONVERGE (A_ij at its bound, -30000 .. 30000 J/mol: no finite optimum
-  inside the declared bounds); the op is removed so the case runs (C294).
-  UNIQUAC: not fitted -- pCresol carries no UNIQUAC r and q (no tabulated
-  value, and no UNIFAC groups to sum them from,
+  fit_wilson_start2 removed (it did not converge). PROMOTED on 2026-11-11
+  into data/standards/parameters/Wilson/methanol-pCresol.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dT| 0.701 K over the 10 kept points, one liquid across the
+  validity span. Wilson: fit_wilson_start2 was declared and run and did
+  NOT CONVERGE (A_ij at its bound, -30000 .. 30000 J/mol: no finite
+  optimum inside the declared bounds); the op is removed so the case runs
+  (C294). UNIQUAC: not fitted -- pCresol carries no UNIQUAC r and q (no
+  tabulated value, and no UNIFAC groups to sum them from,
   bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
   is estimated silently.
   @@MODELS-RESULT-END@@

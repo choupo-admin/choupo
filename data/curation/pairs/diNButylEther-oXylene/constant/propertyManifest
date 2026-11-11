@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/diNButylEther-oXylene.dat"
+        {
+            type          imported;
+            sha256        "86e5cfdf353b1bbbfa5e276b60da66a36bae7f84265d82d5a365332b99875673";
+            computationalSha256 "3f14be1f88fdddd57a90ea25037dad5a54e782e5ee517827f592544879c38beb";
+            origin        "data/standards/parameters/UNIQUAC/diNButylEther-oXylene.dat";
+            originSha256  "63586fce6c026ab0dd85c2193cd0aaac055c88afb628ee5793bdf77ce575cbe5";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/diNButylEther-oXylene.dat"
+        {
+            type          imported;
+            sha256        "08f838d73e714f9845b77e8d7ef6306c6e1cf675d844a4c2223b7909e2a40979";
+            computationalSha256 "aae9962b91cfbcca464f9ce840f0f8e5497b365b4da9f2ed92b1ed529f1fea00";
+            origin        "data/standards/parameters/Wilson/diNButylEther-oXylene.dat";
+            originSha256  "75990abd10733e8b6d927eeb7638a34a05ff2534a407a54093b4b69b239c5900";
+            release       Choupo-2608;
+        }
     }
 }

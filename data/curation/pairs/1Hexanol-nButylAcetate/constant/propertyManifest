@@ -52,5 +52,23 @@ propertyManifest
             originSha256  "4db39aba224d51f729115d6a1d83b97133beb2b9f037889fdd6e56c26e2f98b6";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/1Hexanol-nButylAcetate.dat"
+        {
+            type          imported;
+            sha256        "963d012a8db7d68fe9a50471d1758afd1ab88dda4641170ab3b672d6e7f2a775";
+            computationalSha256 "16df39688aa17bcb5c9c679955becb9452aaa91508b3f894f43d2b29a6c37f9d";
+            origin        "data/standards/parameters/UNIQUAC/1Hexanol-nButylAcetate.dat";
+            originSha256  "746fc66a79efd19d02f869a1ee3fbc2f0a9042e9d772edfce9f6f0fb4db1d257";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Hexanol-nButylAcetate.dat"
+        {
+            type          imported;
+            sha256        "e6c185b5282e687c41bacdc3c6ce58c34d4ec2e35d5e879619c104af2ac1ae57";
+            computationalSha256 "2e2401f3599fb74cd6cabca7beafb46212f0f49659868df2dacdf2f71a58236f";
+            origin        "data/standards/parameters/Wilson/1Hexanol-nButylAcetate.dat";
+            originSha256  "7d95b8ae17176f1700a1f9dc60304d568f5133f7fb1e140e92d1aeaa6a6517d5";
+            release       Choupo-2608;
+        }
     }
 }

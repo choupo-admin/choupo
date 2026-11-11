@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "46fbf0003c43a6af3d45cce2219e0a74f42d106c358d10083d9f9a9b24e6effe";
             release       Choupo-2608;
         }
+        "parameters/Wilson/anisole-ethylBenzene.dat"
+        {
+            type          imported;
+            sha256        "548da17291f468e7d9772015de7d1a8fd96ca34219973f5396ebf884408c0ff2";
+            computationalSha256 "d51e5140981dc9f2827500b9080c3e60966a2762013539dfa434b5e26aa8b2b5";
+            origin        "data/standards/parameters/Wilson/anisole-ethylBenzene.dat";
+            originSha256  "47363f84c91f1a37c63680911fcec742b3aa1182d062d922aceec291998bb4df";
+            release       Choupo-2608;
+        }
     }
 }

@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "778bdafe908ba71b639a70d95ca98d494d405a95ea190d5b38655d4bd91b80e7";
             release       Choupo-2608;
         }
+        "parameters/Wilson/anisole-mXylene.dat"
+        {
+            type          imported;
+            sha256        "12e4ed16e88480c13d741f440e13859789630be58ffc546a3e512f2e18cd82fa";
+            computationalSha256 "e6c197f5dc7e3ff6011a271f3a80def81efba75827488126c9069a538ececcb6";
+            origin        "data/standards/parameters/Wilson/anisole-mXylene.dat";
+            originSha256  "f155b59a084dc350faf7b67d1b30e923bc67517136ab7f052be6a45756dfd824";
+            release       Choupo-2608;
+        }
     }
 }

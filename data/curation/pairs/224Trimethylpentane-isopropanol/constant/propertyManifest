@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/224Trimethylpentane-isopropanol.dat"
+        {
+            type          imported;
+            sha256        "3dc8222bfe9ba16cac74843740bb441060285bcee26934ca4efa6f159a29ef72";
+            computationalSha256 "8112172d213717ee1a2b762dafe8979a7e7c7b6b2e201e8626bd06c2df849bbe";
+            origin        "data/standards/parameters/UNIQUAC/224Trimethylpentane-isopropanol.dat";
+            originSha256  "79b83fb487e0e18b968a973e8e26ca22588cf5f1cfa40eed154b87f154347cf5";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/224Trimethylpentane-isopropanol.dat"
+        {
+            type          imported;
+            sha256        "0ef2a89feb0cb139d1577bcb0773dad92d10e25915a146063c37240faacc775f";
+            computationalSha256 "8332aa952bfec5bb4301a33adc6fb914066899824aca1e8fc06461a379165a5d";
+            origin        "data/standards/parameters/Wilson/224Trimethylpentane-isopropanol.dat";
+            originSha256  "cbedd321204c7d9a7329c9ddbadfbebb1a6c8c8806a0bd1edc533ed0623bc43c";
+            release       Choupo-2608;
+        }
     }
 }

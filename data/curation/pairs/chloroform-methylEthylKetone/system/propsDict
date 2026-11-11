@@ -85,12 +85,14 @@
   kept points. fit_wilson: A_ij = -1949.8, A_ji = -400.5 J/mol over 20
   kept points: max |dP|/P 2.035 %, mean 1.116 %, graded clean ->
   accepted; fit_wilson_start2 lands on A DIFFERENT pair (30000.0,
-  -4990.0). PROMOTABLE by `bin/choupo-curate pairs --models --promote`:
-  fit grade clean -- max |dP|/P 2.035 % over the 20 kept points, one
-  liquid across the validity span. UNIQUAC: not fitted -- chloroform
-  carries no UNIQUAC r and q (no tabulated value, and no UNIFAC groups to
-  sum them from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not
-  fitted; nothing is estimated silently.
+  -4990.0). PROMOTED on 2026-11-11 into
+  data/standards/parameters/Wilson/chloroform-methylEthylKetone.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dP|/P 2.035 % over the 20 kept points, one liquid across the
+  validity span. UNIQUAC: not fitted -- chloroform carries no UNIQUAC r
+  and q (no tabulated value, and no UNIFAC groups to sum them from,
+  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
+  is estimated silently.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

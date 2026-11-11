@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "0f5abb72b6af9b14ad50c09919a024d8f9ed13f6080c6ac92f56f57687c631cc";
             release       Choupo-2608;
         }
+        "parameters/Wilson/2Methyl1Propanol-diisopropylEther.dat"
+        {
+            type          imported;
+            sha256        "9b8162a09dee351730957d39ddb12d23e1610882faa43b53040c7f880a529a48";
+            computationalSha256 "60113de2d5fa5b8dd7bb2628b791f4c6288d0ff5dada5eabca3df4cb7e860e15";
+            origin        "data/standards/parameters/Wilson/2Methyl1Propanol-diisopropylEther.dat";
+            originSha256  "ea22330d30c5944689865c88cf172a401a095873ef9315e2bcbeeed914518c40";
+            release       Choupo-2608;
+        }
     }
 }

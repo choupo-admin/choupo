@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/pXylene-vinylAcetate.dat"
+        {
+            type          imported;
+            sha256        "fdb758efdf8a00967bfcd91f750da19055af7bcd66b5194cf34f9c6b5e205581";
+            computationalSha256 "1af02dc21695d932304e8868001852285179f2c73fd17ed7c038bdbdc793227d";
+            origin        "data/standards/parameters/UNIQUAC/pXylene-vinylAcetate.dat";
+            originSha256  "a8bda2837ccbf286e177f390626fee607dbf34088a60528e013f719eaeb0e3e0";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/pXylene-vinylAcetate.dat"
+        {
+            type          imported;
+            sha256        "854b188ed94dc3d589b4d6ed302229f671398c06916ddd47f944c305ceccd1f4";
+            computationalSha256 "c93834d51df32f061e01bbeebbb6a96f65ea040857294add072d94168e4376c0";
+            origin        "data/standards/parameters/Wilson/pXylene-vinylAcetate.dat";
+            originSha256  "73e54dcfedfd23de5232ab1ddde692d5437b2b5e526cae79aa3c5f4d92b040e4";
+            release       Choupo-2608;
+        }
     }
 }

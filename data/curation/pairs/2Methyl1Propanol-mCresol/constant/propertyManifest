@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "d0417df27784e191eea1e40798ead313f46e13512ed6d62e0e2a2987b08c8e8c";
             release       Choupo-2608;
         }
+        "parameters/Wilson/2Methyl1Propanol-mCresol.dat"
+        {
+            type          imported;
+            sha256        "4a1a808690aa570fe2d2a3b6596c19769cbd8ce7de73f3f0ac226373d8594465";
+            computationalSha256 "8f2cd027788d9fd03a193498a962e43f0d8012e7641748c7b6c521f243e58fd9";
+            origin        "data/standards/parameters/Wilson/2Methyl1Propanol-mCresol.dat";
+            originSha256  "129892d5f2ad3c994282d49ba1a51f889f35dceaf85cdb73053b10f4d0a3e6cd";
+            release       Choupo-2608;
+        }
     }
 }

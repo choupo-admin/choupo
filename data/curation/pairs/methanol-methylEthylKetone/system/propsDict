@@ -88,15 +88,19 @@
   not argued). Beside fit_nrtl's max |dT| 0.659 K (clean) on the same
   kept points. fit_uniquac: a_ij = -48.3, a_ji = 255.6 K over 36 kept
   points: max |dT| 0.667 K, mean 0.290 K, graded clean -> accepted;
-  fit_uniquac_start2 lands on the same pair (-48.3, 255.6). PROMOTABLE by
-  `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dT| 0.667 K over the 36 kept points, one liquid across the validity
-  span. fit_wilson: A_ij = 2792.4, A_ji = -511.0 J/mol over 36 kept
-  points: max |dT| 0.663 K, mean 0.302 K, graded clean -> accepted;
-  fit_wilson_start2 lands on the same pair (2792.4, -511.0). PROMOTABLE
-  by `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dT| 0.663 K over the 36 kept points, one liquid across the validity
-  span.
+  fit_uniquac_start2 lands on the same pair (-48.3, 255.6). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/UNIQUAC/methanol-methylEthylKetone.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dT| 0.667 K over the 36 kept points, one liquid across the
+  validity span. fit_wilson: A_ij = 2792.4, A_ji = -511.0 J/mol over 36
+  kept points: max |dT| 0.663 K, mean 0.302 K, graded clean -> accepted;
+  fit_wilson_start2 lands on the same pair (2792.4, -511.0). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/Wilson/methanol-methylEthylKetone.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dT| 0.663 K over the 36 kept points, one liquid across the
+  validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

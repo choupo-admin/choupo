@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "9e1d50cb0d50c0ec3f02dd4d66fe6dd9719f530f9de8365528639cbce779f838";
             release       Choupo-2608;
         }
+        "parameters/Wilson/dimethylCarbonate-isobutylAcetate.dat"
+        {
+            type          imported;
+            sha256        "74d9deaa304054770101f14dda35af0fa1a08d1e0a58211516df8954fb235239";
+            computationalSha256 "72f30d30eb0db27e1126308756037f7a364f69297e19406fb00f68b0ebd064ab";
+            origin        "data/standards/parameters/Wilson/dimethylCarbonate-isobutylAcetate.dat";
+            originSha256  "bef7ea1ea594000703ef7945f9da050daa30ff7bc60fb94abe1d080f86563e83";
+            release       Choupo-2608;
+        }
     }
 }

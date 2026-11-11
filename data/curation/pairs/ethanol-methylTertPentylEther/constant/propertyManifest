@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/ethanol-methylTertPentylEther.dat"
+        {
+            type          imported;
+            sha256        "4233b10934aaf148b641675d2f10c4b7ae1252f5f64e9c04cb663ca7ce6a391a";
+            computationalSha256 "50ba6e3e246ca52cb5f7ba493f4fb30e292e7f33cbf19c9f3cbc33580d576f02";
+            origin        "data/standards/parameters/UNIQUAC/ethanol-methylTertPentylEther.dat";
+            originSha256  "e18a7f5e3921db07ad487a79f5a6228183a28132da559480aec5411150c18c3b";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/ethanol-methylTertPentylEther.dat"
+        {
+            type          imported;
+            sha256        "a05ab1e63fdcc9628d59d29935221a6482d49010eaab2e96e3a73c7caeef8e5d";
+            computationalSha256 "24c8b2e05c49e21bcc53509a147b3a0b40146045ca7c61a93b785889e50dfdab";
+            origin        "data/standards/parameters/Wilson/ethanol-methylTertPentylEther.dat";
+            originSha256  "3101beeb245255fbd64ac36e16005a7c728e4b3553fde413324001a79223fa70";
+            release       Choupo-2608;
+        }
     }
 }

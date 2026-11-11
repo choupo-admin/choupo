@@ -91,10 +91,12 @@
   kept points. fit_wilson: A_ij = 2395.8, A_ji = -2115.9 J/mol over 38
   kept points: max |dT| 1.274 K, mean 0.831 K, graded warning ->
   accepted; fit_wilson_start2 lands on the same pair (2395.8, -2115.9).
-  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
-  warning -- max |dT| 1.274 K over the 38 kept points, one liquid across
-  the validity span. UNIQUAC: not fitted -- styrene carries no UNIQUAC r
-  and q (no tabulated value, and no UNIFAC groups to sum them from,
+  PROMOTED on 2026-11-11 into
+  data/standards/parameters/Wilson/oXylene-styrene.dat as reviewStatus
+  autoPromoted, review by none, because: fit grade warning -- max |dT|
+  1.274 K over the 38 kept points, one liquid across the validity span.
+  UNIQUAC: not fitted -- styrene carries no UNIQUAC r and q (no tabulated
+  value, and no UNIFAC groups to sum them from,
   bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
   is estimated silently.
   @@MODELS-RESULT-END@@

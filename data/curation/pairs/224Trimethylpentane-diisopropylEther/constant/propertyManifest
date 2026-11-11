@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "44bf996008f0fce2e97a1c4c498df54de85f45d06c4c8111fa1227ed7ccb0d2e";
             release       Choupo-2608;
         }
+        "parameters/Wilson/224Trimethylpentane-diisopropylEther.dat"
+        {
+            type          imported;
+            sha256        "664f6be6715a75d80d77aaa81570923d52f18bbc27094aba3bcf4512726897e5";
+            computationalSha256 "37ae6a822d7600a40b8384b2240958423d482693ac8fce578ee6018c3d5685ff";
+            origin        "data/standards/parameters/Wilson/224Trimethylpentane-diisopropylEther.dat";
+            originSha256  "78da0250bb162854b74f93ce7fc744c7f111e79d2e2ed81e1e0a99222a62e1a8";
+            release       Choupo-2608;
+        }
     }
 }

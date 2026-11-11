@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "6be64c682b7ea1b4acdadc9f2bb24e44b2335dc4490f560cd1a30d3988c59b03";
             release       Choupo-2608;
         }
+        "parameters/Wilson/2Methyl2Propanol-ethylFormate.dat"
+        {
+            type          imported;
+            sha256        "75e7259baa1009b810645fb9fa73b329c9e2b64701892862ef4fc21b20623e31";
+            computationalSha256 "070cce790414868eea343dd3ebd9fe87caadc99895abbc4668b57ba6ea5f834d";
+            origin        "data/standards/parameters/Wilson/2Methyl2Propanol-ethylFormate.dat";
+            originSha256  "0af4cd3265fb2f1c58b442e5cefcb901db82edf3c04ad652342d3151067dabd0";
+            release       Choupo-2608;
+        }
     }
 }

@@ -52,5 +52,23 @@ propertyManifest
             originSha256  "f2efa0bcc55bd1954acab9d36d6c7c027f32b5f4c30cea7bca4e23a37a9391b4";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/1Hexanol-ethylBenzene.dat"
+        {
+            type          imported;
+            sha256        "79e0e565d0ee349d1d83ef8a480d6f30793a9b5b84429fb5352c699b1698566a";
+            computationalSha256 "99b3836fb1fad6d718ffe439d2610caabfc2c7532fe4da5a483a0d4873f2d921";
+            origin        "data/standards/parameters/UNIQUAC/1Hexanol-ethylBenzene.dat";
+            originSha256  "4c93433995b87d5282d598554a899cb51efb1688b94d2d3248484df5e92b9044";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Hexanol-ethylBenzene.dat"
+        {
+            type          imported;
+            sha256        "3509a26b12c4f46915b621c520c9141d6d8391c01d7fb02fbde823e02ab06868";
+            computationalSha256 "8faee563a77885e9ae8f59f47134cab49d52e43ccf7f821b66a4fd42913e4e9e";
+            origin        "data/standards/parameters/Wilson/1Hexanol-ethylBenzene.dat";
+            originSha256  "131df09347ece9f7a6c924185e1b6b054697dd2a3704103e5bb04623826a49d2";
+            release       Choupo-2608;
+        }
     }
 }

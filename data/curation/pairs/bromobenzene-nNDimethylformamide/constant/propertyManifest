@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "d241c3244715ed8d1be3a82e16b8d5bb09c3d852035dd0de77ed27ed4a3a6437";
             release       Choupo-2608;
         }
+        "parameters/Wilson/bromobenzene-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "b6915737dbbea71a1fc7fa6d2e5e82a799e3cf7aaefdf9d817f5f6a6aaf96087";
+            computationalSha256 "82fb18b3ed41ca7d5268f9ed58f2f8101cfba3e3762b5409c91bb28ef6eb9273";
+            origin        "data/standards/parameters/Wilson/bromobenzene-nNDimethylformamide.dat";
+            originSha256  "46e3b6bd913b4572f32e2c9c4ec032d5c527a2ee35665dc3590ce814cebd18a2";
+            release       Choupo-2608;
+        }
     }
 }

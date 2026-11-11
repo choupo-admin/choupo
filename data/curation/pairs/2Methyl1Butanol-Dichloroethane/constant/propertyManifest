@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "7108699afcc81ad16ebb097e8ba5659ec4286292c6abde881003a86cecbabf03";
             release       Choupo-2608;
         }
+        "parameters/Wilson/2Methyl1Butanol-Dichloroethane.dat"
+        {
+            type          imported;
+            sha256        "34b241281b872d4cc7ea29d41ecd5f62282b69e4a846d717652ee6548238bb58";
+            computationalSha256 "28e8e52f247d1ea121aaf2dc279a6247921f399d8d9f027dfa0cfd03576ffedb";
+            origin        "data/standards/parameters/Wilson/2Methyl1Butanol-Dichloroethane.dat";
+            originSha256  "a910d29194b98ad2ad77f4612e90046cbbf7ca125791fa401b6a8a594b2c2dec";
+            release       Choupo-2608;
+        }
     }
 }

@@ -81,15 +81,19 @@
   not argued). Beside fit_nrtl's max |dP|/P 0.441 % (clean) on the same
   kept points. fit_uniquac: a_ij = 15.9, a_ji = -16.2 K over 22 kept
   points: max |dP|/P 0.448 %, mean 0.281 %, graded clean -> accepted;
-  fit_uniquac_start2 lands on A DIFFERENT pair (-145.0, 190.1).
-  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
-  clean -- max |dP|/P 0.448 % over the 22 kept points, one liquid across
-  the validity span. fit_wilson: A_ij = 2770.3, A_ji = -1605.5 J/mol over
-  22 kept points: max |dP|/P 0.352 %, mean 0.222 %, graded clean ->
+  fit_uniquac_start2 lands on A DIFFERENT pair (-145.0, 190.1). PROMOTED
+  on 2026-11-11 into
+  data/standards/parameters/UNIQUAC/224Trimethylpentane-nHeptane.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dP|/P 0.448 % over the 22 kept points, one liquid across the
+  validity span. fit_wilson: A_ij = 2770.3, A_ji = -1605.5 J/mol over 22
+  kept points: max |dP|/P 0.352 %, mean 0.222 %, graded clean ->
   accepted; fit_wilson_start2 lands on the same pair (2770.3, -1605.5).
-  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
-  clean -- max |dP|/P 0.352 % over the 22 kept points, one liquid across
-  the validity span.
+  PROMOTED on 2026-11-11 into
+  data/standards/parameters/Wilson/224Trimethylpentane-nHeptane.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dP|/P 0.352 % over the 22 kept points, one liquid across the
+  validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

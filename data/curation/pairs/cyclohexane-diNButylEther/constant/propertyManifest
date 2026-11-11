@@ -52,5 +52,23 @@ propertyManifest
             originSha256  "a3e5d50375c9dfea2f53016927a6a7942ca669d2b160365b418b50a5f68c39c0";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/cyclohexane-diNButylEther.dat"
+        {
+            type          imported;
+            sha256        "f514fcd224a96f160271d588fb4cec932ce6d8c113b8d307360d970a186ac8cf";
+            computationalSha256 "25e7a975c54eb3c3ecd275af7c8b7e29de8cb5406b943e4ba29befc4f8fe8aab";
+            origin        "data/standards/parameters/UNIQUAC/cyclohexane-diNButylEther.dat";
+            originSha256  "bc4e55f9d9ccf8f0d18b4fd635d19bc306a363aa71d4cc209cb26a6510fff785";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/cyclohexane-diNButylEther.dat"
+        {
+            type          imported;
+            sha256        "2c596ca5ed9ef6cf30d27164bf604f1e277f984b8aaa00b4159a89af190b73c1";
+            computationalSha256 "b782d58a5cc8939204276171441426aa1b9a87fa09394b263c90732dd5f8248f";
+            origin        "data/standards/parameters/Wilson/cyclohexane-diNButylEther.dat";
+            originSha256  "8bdb4acdc30e24244ecdd04cb93cea3f12f4b492236a6824ea574b2e86700696";
+            release       Choupo-2608;
+        }
     }
 }

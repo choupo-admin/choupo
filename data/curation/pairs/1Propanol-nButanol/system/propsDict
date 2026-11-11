@@ -87,15 +87,18 @@
   not argued). Beside fit_nrtl's max |dT| 1.558 K (warning) on the same
   kept points. fit_uniquac: a_ij = 37.4, a_ji = -23.8 K over 30 kept
   points: max |dT| 1.552 K, mean 0.860 K, graded warning -> accepted;
-  fit_uniquac_start2 lands on the same pair (37.4, -23.8). PROMOTABLE by
-  `bin/choupo-curate pairs --models --promote`: fit grade warning -- max
-  |dT| 1.552 K over the 30 kept points, one liquid across the validity
-  span. fit_wilson: A_ij = 76.4, A_ji = 333.1 J/mol over 30 kept points:
-  max |dT| 1.549 K, mean 0.858 K, graded warning -> accepted;
-  fit_wilson_start2 lands on the same pair (76.4, 333.1). PROMOTABLE by
-  `bin/choupo-curate pairs --models --promote`: fit grade warning -- max
-  |dT| 1.549 K over the 30 kept points, one liquid across the validity
-  span.
+  fit_uniquac_start2 lands on the same pair (37.4, -23.8). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/UNIQUAC/1Propanol-nButanol.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade warning
+  -- max |dT| 1.552 K over the 30 kept points, one liquid across the
+  validity span. fit_wilson: A_ij = 76.4, A_ji = 333.1 J/mol over 30 kept
+  points: max |dT| 1.549 K, mean 0.858 K, graded warning -> accepted;
+  fit_wilson_start2 lands on the same pair (76.4, 333.1). PROMOTED on
+  2026-11-11 into data/standards/parameters/Wilson/1Propanol-nButanol.dat
+  as reviewStatus autoPromoted, review by none, because: fit grade
+  warning -- max |dT| 1.549 K over the 30 kept points, one liquid across
+  the validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

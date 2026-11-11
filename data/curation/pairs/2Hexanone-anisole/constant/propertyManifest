@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "911ee8892201bd07107964899a30a4f2831470f65657cac90a0a115435137dc1";
             release       Choupo-2608;
         }
+        "parameters/Wilson/2Hexanone-anisole.dat"
+        {
+            type          imported;
+            sha256        "92dff227b2a212c1127537d56517ec0947762901b3818c2f65b4b778c94be65c";
+            computationalSha256 "ba4a4841e49289cb9cb6d5406012686667f57260cf836ff0748e05a46c86f94f";
+            origin        "data/standards/parameters/Wilson/2Hexanone-anisole.dat";
+            originSha256  "2ab7362ccd702170c7334310e19c1e2e9f7fb7e34f1981686ff46e7180885eb7";
+            release       Choupo-2608;
+        }
     }
 }

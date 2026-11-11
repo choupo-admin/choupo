@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "e6ca46024eaa060c1911801a80fe4e06e66bb4bf0a0fdddcfa0dcdfc7eeb8298";
             release       Choupo-2608;
         }
+        "parameters/Wilson/nHeptane-trichloroethylene.dat"
+        {
+            type          imported;
+            sha256        "e9da59ab59f3118aa6db99d607e7f7015e56b7d575a1c2cc2588ca596a5bd6dd";
+            computationalSha256 "cd42a5bb09a98ec35cf0e43462825545c8c45a7365007d35697b3eb91db0cda9";
+            origin        "data/standards/parameters/Wilson/nHeptane-trichloroethylene.dat";
+            originSha256  "048000695c2f4d4b5ed93dcc3c38927e8e49af8243b342a01a5cc825fa28c615";
+            release       Choupo-2608;
+        }
     }
 }

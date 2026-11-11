@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "c488b8048dc6c6aaec5b904a7fb30b2be1e09417f87fc832d30f08d89dfae4fb";
             release       Choupo-2608;
         }
+        "parameters/Wilson/14Butanediol-diethyleneGlycol.dat"
+        {
+            type          imported;
+            sha256        "a08eba3a0fefe8ce86c64f6eaa35326c658fb3af2a070488325cf75d5f48a28b";
+            computationalSha256 "4ec13db4a49578f5055f88ce3b495f724bcaeb951c489e4ffb9eadd6b4dd968a";
+            origin        "data/standards/parameters/Wilson/14Butanediol-diethyleneGlycol.dat";
+            originSha256  "4fcf3fe2b6cb2679b35ad837809dd232931a8bba0ce668a584b88048a31e0bfc";
+            release       Choupo-2608;
+        }
     }
 }

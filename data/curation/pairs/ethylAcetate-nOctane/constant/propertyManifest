@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/ethylAcetate-nOctane.dat"
+        {
+            type          imported;
+            sha256        "0ccd71244865d6f0acf72c6fd5234d9a2c20cbe565dc963677c382d6860b4f89";
+            computationalSha256 "668f0208b481cebeb4350ab2f76efb34f62ee037c58257f562c688c42cd4b1a7";
+            origin        "data/standards/parameters/UNIQUAC/ethylAcetate-nOctane.dat";
+            originSha256  "0e7b0fdf11d32836042ed09dd8b01a09287b7eeda0565a76231cf76e6544cd95";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/ethylAcetate-nOctane.dat"
+        {
+            type          imported;
+            sha256        "36597f139fd2c81b7d9d6f589026fc1ca628d0ea0cdd37cf161b7ff0db6b07bd";
+            computationalSha256 "93352cd50f49164f4dd0ba443b7209a77b2e9364939853ab5f0da307c2e47f64";
+            origin        "data/standards/parameters/Wilson/ethylAcetate-nOctane.dat";
+            originSha256  "ed981ab17bf8055ba15686cf72a4c17babee5aecf33b16702b75cae9ec50f51a";
+            release       Choupo-2608;
+        }
     }
 }

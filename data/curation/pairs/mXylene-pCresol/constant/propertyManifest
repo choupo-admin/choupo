@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "71e9610f7a081723c91c8c62f933b7a2cf081fcd9080480d4ef3b90b69da5a16";
             release       Choupo-2608;
         }
+        "parameters/Wilson/mXylene-pCresol.dat"
+        {
+            type          imported;
+            sha256        "02ee4dc05015bbbb3630c6d111ed5ad6d0407aaf7e17459533ebc55655b4842a";
+            computationalSha256 "b6ec5052347a98d34f3cbd0f54e7c4876cae95bac7ccd339c1744eca0743e43e";
+            origin        "data/standards/parameters/Wilson/mXylene-pCresol.dat";
+            originSha256  "5c2ca714f132c4a6fc6cc80df91149e84136e3ce05226e91715ef2ce83abd9f7";
+            release       Choupo-2608;
+        }
     }
 }

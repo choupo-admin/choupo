@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "c5eeeccc446dd29a90eb7b75d52f6a7ae208623f1a479e9ef048fd937323876e";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diEthylCarbonate-vinylAcetate.dat"
+        {
+            type          imported;
+            sha256        "15a999819939444fca62bf9d77cc1684bcc6276af14c60afea72ec92571f5739";
+            computationalSha256 "6eda1af06f0cf85eff41e7b4061ad879ad31ac431e2249c536b899f4997ef88f";
+            origin        "data/standards/parameters/Wilson/diEthylCarbonate-vinylAcetate.dat";
+            originSha256  "da6f6f74a0d3301482f28cae1d73ae141e6f7dd44966dc2070eca0ef9600fbd6";
+            release       Choupo-2608;
+        }
     }
 }

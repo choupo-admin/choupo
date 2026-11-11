@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "59d9601a52982ea386fb0ae8df311e651a5901a9c66114439abe01b91ab8180f";
             release       Choupo-2608;
         }
+        "parameters/Wilson/anisole-toluene.dat"
+        {
+            type          imported;
+            sha256        "658ac40d5938d3f31567792d7409f7a225259936aa50b61a7c3c9aa341a135d5";
+            computationalSha256 "21c2405871089cbfd76423a970a1f9bb863b0edb0514d56dbc587fd4c0c95947";
+            origin        "data/standards/parameters/Wilson/anisole-toluene.dat";
+            originSha256  "69d55bd4ca25256c5e1c56c4be44cbc0c122fc0c15b7bfd536035335914fefcd";
+            release       Choupo-2608;
+        }
     }
 }

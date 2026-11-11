@@ -87,15 +87,17 @@
   not argued). Beside fit_nrtl's max |dT| 1.126 K (warning) on the same
   kept points. fit_uniquac: a_ij = 619.4, a_ji = -315.5 K over 11 kept
   points: max |dT| 1.685 K, mean 1.262 K, graded warning -> accepted;
-  fit_uniquac_start2 lands on the same pair (619.4, -315.5). PROMOTABLE
-  by `bin/choupo-curate pairs --models --promote`: fit grade warning --
-  max |dT| 1.685 K over the 11 kept points, one liquid across the
-  validity span. fit_wilson: A_ij = -2886.7, A_ji = 9254.3 J/mol over 11
-  kept points: max |dT| 1.549 K, mean 1.113 K, graded warning ->
+  fit_uniquac_start2 lands on the same pair (619.4, -315.5). PROMOTED on
+  2026-11-11 into data/standards/parameters/UNIQUAC/mXylene-nHexane.dat
+  as reviewStatus autoPromoted, review by none, because: fit grade
+  warning -- max |dT| 1.685 K over the 11 kept points, one liquid across
+  the validity span. fit_wilson: A_ij = -2886.7, A_ji = 9254.3 J/mol over
+  11 kept points: max |dT| 1.549 K, mean 1.113 K, graded warning ->
   accepted; fit_wilson_start2 lands on the same pair (-2886.7, 9254.3).
-  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
-  warning -- max |dT| 1.549 K over the 11 kept points, one liquid across
-  the validity span.
+  PROMOTED on 2026-11-11 into
+  data/standards/parameters/Wilson/mXylene-nHexane.dat as reviewStatus
+  autoPromoted, review by none, because: fit grade warning -- max |dT|
+  1.549 K over the 11 kept points, one liquid across the validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

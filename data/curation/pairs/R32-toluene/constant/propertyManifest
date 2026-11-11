@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "9c932cb9c072ffbb778666674eb0df6ed8976881d613f68a9657f7d9599ca779";
             release       Choupo-2608;
         }
+        "parameters/Wilson/R32-toluene.dat"
+        {
+            type          imported;
+            sha256        "705e139337c8b016ab870932f3acc071cfbe1ea52c3eb00898aa74028a834cff";
+            computationalSha256 "7ee80e736606eb5c01b22998025e9ffb2a50d9cfef9b2eca5039e901fa451317";
+            origin        "data/standards/parameters/Wilson/R32-toluene.dat";
+            originSha256  "cca8e675b84b65ea927c78e1f0b6865b47e5680b74cc1315127b585cb9354336";
+            release       Choupo-2608;
+        }
     }
 }

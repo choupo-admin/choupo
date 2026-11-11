@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "535aff1a79ee2fa9d3478a092cad9866dcbd4491320621e134ada99b31af4341";
             release       Choupo-2608;
         }
+        "parameters/Wilson/ethylBenzene-styrene.dat"
+        {
+            type          imported;
+            sha256        "d028d7b44f53c39e067676a30aafaf91511e459975186309582987f786d11b66";
+            computationalSha256 "f9cc5cac98b5211d5a724c8ee7f59c59cfd9d13a09d32ab4dd5b20b50c8cd67d";
+            origin        "data/standards/parameters/Wilson/ethylBenzene-styrene.dat";
+            originSha256  "d195d1e8046372fae20c5bc9fddebca375f5b8c12ed6ef8592fea11ff3e154ab";
+            release       Choupo-2608;
+        }
     }
 }

@@ -90,10 +90,12 @@
   not argued). Beside fit_nrtl's max |dT| 1.152 K (warning) on the same
   kept points. fit_wilson: A_ij = 2566.4, A_ji = -3273.1 J/mol over 22
   kept points: max |dT| 0.615 K, mean 0.161 K, graded clean -> accepted;
-  fit_wilson_start2 lands on A DIFFERENT pair (3653.3, -3690.3).
-  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
-  clean -- max |dT| 0.615 K over the 22 kept points, one liquid across
-  the validity span. UNIQUAC: not fitted -- dimethylSulfoxide carries no
+  fit_wilson_start2 lands on A DIFFERENT pair (3653.3, -3690.3). PROMOTED
+  on 2026-11-11 into
+  data/standards/parameters/Wilson/1Propanol-dimethylSulfoxide.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dT| 0.615 K over the 22 kept points, one liquid across the
+  validity span. UNIQUAC: not fitted -- dimethylSulfoxide carries no
   UNIQUAC r and q (no tabulated value, and no UNIFAC groups to sum them
   from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted;
   nothing is estimated silently.

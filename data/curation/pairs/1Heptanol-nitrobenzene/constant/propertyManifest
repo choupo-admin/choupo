@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "a636fe0afac35691fdab0924e7ae70ee1c1874e8c35135aa10f776faea935204";
             release       Choupo-2608;
         }
+        "parameters/Wilson/1Heptanol-nitrobenzene.dat"
+        {
+            type          imported;
+            sha256        "822321d6c8a11073a91b9cf128fff1b073f14f8e207685da06c4523e28ebce96";
+            computationalSha256 "1c5bd9de191bbe93098c69a0f814fbc5b8ee89a64f9ee2ba2ab374ce9e428cf5";
+            origin        "data/standards/parameters/Wilson/1Heptanol-nitrobenzene.dat";
+            originSha256  "8bda6702798d9f58284dc1fedc86cc2f81267e915568e35467f016fecf8b11a2";
+            release       Choupo-2608;
+        }
     }
 }

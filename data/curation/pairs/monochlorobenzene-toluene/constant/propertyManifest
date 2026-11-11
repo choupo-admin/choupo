@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "a49fd38378e9d041e15af72f4351c42cb5f9aa65d6f553cb33df1dd163834ac0";
             release       Choupo-2608;
         }
+        "parameters/Wilson/monochlorobenzene-toluene.dat"
+        {
+            type          imported;
+            sha256        "7c3c552c7481d467e1d4124c583bd604644e17f99b64bac1633d1b522ce7a8d1";
+            computationalSha256 "6bcc1572160389319451c838019d6cf247bb82e1339d575e1a9f8e4f54789850";
+            origin        "data/standards/parameters/Wilson/monochlorobenzene-toluene.dat";
+            originSha256  "c62f1c420b0e571657b69129b86538610304a00f59b6c40994dedf1a0e6cd6e0";
+            release       Choupo-2608;
+        }
     }
 }

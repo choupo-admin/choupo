@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "f181187a994f91d04ba742dc209fd8984c9582e46149eeb7df850ee38130654b";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diEthylCarbonate-pXylene.dat"
+        {
+            type          imported;
+            sha256        "3e32434b7779406b3030df9e2c7d613a1831d4a7e1b6e60ead3611d4315d59d6";
+            computationalSha256 "1f170cb6acf57b425ca617473ce4db580cb27e02292ec96d596f613022d584f4";
+            origin        "data/standards/parameters/Wilson/diEthylCarbonate-pXylene.dat";
+            originSha256  "8ceea357d899b52b15c9853b6d9c5668d101e2beb619aae45576927c111c315e";
+            release       Choupo-2608;
+        }
     }
 }

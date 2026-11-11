@@ -43,5 +43,14 @@ propertyManifest
             originSha256  "9d405c55385de50af77aa7f33666cea3e162b9eb19c03842c0f8279e6da3d1b4";
             release       Choupo-2608;
         }
+        "parameters/Wilson/1Propanol-nDodecane.dat"
+        {
+            type          imported;
+            sha256        "7b94e8f5286eff253884cd04f88a18f8db234281ee58e09421ae31a8f6df82e8";
+            computationalSha256 "dc68591507203c4247afa2eea0b4cacd49a8dc113ef54091f6476a31ed4d42d9";
+            origin        "data/standards/parameters/Wilson/1Propanol-nDodecane.dat";
+            originSha256  "57f05bf5347f60eae5cf0f5ad8e3337ea277fe4a31f4b43b0073291627cc4821";
+            release       Choupo-2608;
+        }
     }
 }

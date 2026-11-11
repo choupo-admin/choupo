@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/1Pentanol-isopropanol.dat"
+        {
+            type          imported;
+            sha256        "710b346b813edeae4db00dc4491d1f17a13bbda5282d79eaacd05d064f23f707";
+            computationalSha256 "8e2f8998b9b3e6973dc0d0d582fe154f8ff49fa608666c2193b85fafed227a24";
+            origin        "data/standards/parameters/UNIQUAC/1Pentanol-isopropanol.dat";
+            originSha256  "65ee6e9cd4a5ae1436202211a4dc9675e8f47fcd20241d0bb74c28953c0cce1a";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Pentanol-isopropanol.dat"
+        {
+            type          imported;
+            sha256        "8aafbb27d4fea29d8e2c4058281cd6b020a060c22ee844163ea0f322b462cee1";
+            computationalSha256 "acb6d592972ab9c20adaf1bb20b58965029056d0cc93ef80665986f01ce3a1db";
+            origin        "data/standards/parameters/Wilson/1Pentanol-isopropanol.dat";
+            originSha256  "86e5ce8959454e91af619b1645f957516270421d8cf51a57499ebd144f544d85";
+            release       Choupo-2608;
+        }
     }
 }

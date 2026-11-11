@@ -97,15 +97,18 @@
   not argued). Beside fit_nrtl's max |dT| 1.424 K (warning) on the same
   kept points. fit_uniquac: a_ij = -134.2, a_ji = 162.6 K over 28 kept
   points: max |dT| 1.413 K, mean 0.313 K, graded warning -> accepted;
-  fit_uniquac_start2 lands on A DIFFERENT pair (241.8, -181.9).
-  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
-  warning -- max |dT| 1.413 K over the 28 kept points, one liquid across
-  the validity span. fit_wilson: A_ij = -599.7, A_ji = 1726.8 J/mol over
-  28 kept points: max |dT| 1.834 K, mean 0.368 K, graded warning ->
-  accepted; fit_wilson_start2 lands on A DIFFERENT pair (3371.0,
-  -2908.8). PROMOTABLE by `bin/choupo-curate pairs --models --promote`:
-  fit grade warning -- max |dT| 1.834 K over the 28 kept points, one
-  liquid across the validity span.
+  fit_uniquac_start2 lands on A DIFFERENT pair (241.8, -181.9). PROMOTED
+  on 2026-11-11 into
+  data/standards/parameters/UNIQUAC/nDecane-pXylene.dat as reviewStatus
+  autoPromoted, review by none, because: fit grade warning -- max |dT|
+  1.413 K over the 28 kept points, one liquid across the validity span.
+  fit_wilson: A_ij = -599.7, A_ji = 1726.8 J/mol over 28 kept points: max
+  |dT| 1.834 K, mean 0.368 K, graded warning -> accepted;
+  fit_wilson_start2 lands on A DIFFERENT pair (3371.0, -2908.8). PROMOTED
+  on 2026-11-11 into data/standards/parameters/Wilson/nDecane-pXylene.dat
+  as reviewStatus autoPromoted, review by none, because: fit grade
+  warning -- max |dT| 1.834 K over the 28 kept points, one liquid across
+  the validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

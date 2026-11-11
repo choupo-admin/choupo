@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "10017559b320cf5ee65d625e53ae321145ef44180cb4337136b6cbb9637aeebf";
             release       Choupo-2608;
         }
+        "parameters/Wilson/dimethylDisulfide-tertButylEthylEther.dat"
+        {
+            type          imported;
+            sha256        "7d4f3e9a6a5350984d56db9cc696c7cf3d41f845b158fcd918b36fbbab03edf2";
+            computationalSha256 "060c01137671425bfb3c6f1c65ca55c286c52f368eafdbf8f33e20a84b0843f3";
+            origin        "data/standards/parameters/Wilson/dimethylDisulfide-tertButylEthylEther.dat";
+            originSha256  "87a350db19e46d9f81c4579c479c378782d889b5cc422339d83f8c820f4214e5";
+            release       Choupo-2608;
+        }
     }
 }

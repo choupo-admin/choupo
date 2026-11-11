@@ -52,5 +52,23 @@ propertyManifest
             originSha256  "33d067ad151f87d781716582a9dfd895dbddfc29378773820edcc475b00f53e4";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/nUndecane-oXylene.dat"
+        {
+            type          imported;
+            sha256        "c1d88c611cc4c009f18cccbd70765211cb5e1a1a63cb00cfbf1e0681459f41f3";
+            computationalSha256 "f27b721fbb40dbae6276d9732ac796180778293cabd6d3421332cacd7c4a6749";
+            origin        "data/standards/parameters/UNIQUAC/nUndecane-oXylene.dat";
+            originSha256  "6d302e0e5be04976a51b256b8140306a23988152cb94410dd55ad7c7485aef98";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/nUndecane-oXylene.dat"
+        {
+            type          imported;
+            sha256        "40d5516f5905f420528343d30bc66675ade8b1c53c358ceb69d02767e8745842";
+            computationalSha256 "233e606ce4bb6e01e0a619e18e6d1e34af4de062a20c5c5cd7d3b0a457e6c2df";
+            origin        "data/standards/parameters/Wilson/nUndecane-oXylene.dat";
+            originSha256  "d98d4538f50f5042d266cfc1e92ca5b814be74afbb7b9a9fcf1d1c1378c2ff22";
+            release       Choupo-2608;
+        }
     }
 }

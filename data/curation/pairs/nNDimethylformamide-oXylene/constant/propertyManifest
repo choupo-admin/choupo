@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "848d8c42fe2086d34cffc47bc84568a880fc3b077e72c076a7d9022dad24d620";
             release       Choupo-2608;
         }
+        "parameters/Wilson/nNDimethylformamide-oXylene.dat"
+        {
+            type          imported;
+            sha256        "ae0f4578ce61a75417a92f930c2c9235ae79935b02b8938db611d87ec9e5bcc8";
+            computationalSha256 "2fb6968db2210c95c0b96bd52f1cfed8eb526f8046a3f960fc1da9a3153f7de5";
+            origin        "data/standards/parameters/Wilson/nNDimethylformamide-oXylene.dat";
+            originSha256  "31d4e758e8e887e0fd542c1ecc14aac052d41f7b5801776362bd331511ed9c25";
+            release       Choupo-2608;
+        }
     }
 }

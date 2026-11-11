@@ -81,15 +81,19 @@
   not argued). Beside fit_nrtl's max |dP|/P 1.689 % (clean) on the same
   kept points. fit_uniquac: a_ij = 373.5, a_ji = -232.2 K over 11 kept
   points: max |dP|/P 1.677 %, mean 1.017 %, graded clean -> accepted;
-  fit_uniquac_start2 lands on the same pair (373.5, -232.2). PROMOTABLE
-  by `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dP|/P 1.677 % over the 11 kept points, one liquid across the validity
-  span. fit_wilson: A_ij = -2602.8, A_ji = 5213.2 J/mol over 11 kept
-  points: max |dP|/P 1.494 %, mean 0.869 %, graded clean -> accepted;
-  fit_wilson_start2 lands on the same pair (-2602.8, 5213.2). PROMOTABLE
-  by `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dP|/P 1.494 % over the 11 kept points, one liquid across the validity
-  span.
+  fit_uniquac_start2 lands on the same pair (373.5, -232.2). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/UNIQUAC/methylTertPentylEther-toluene.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dP|/P 1.677 % over the 11 kept points, one liquid across the
+  validity span. fit_wilson: A_ij = -2602.8, A_ji = 5213.2 J/mol over 11
+  kept points: max |dP|/P 1.494 %, mean 0.869 %, graded clean ->
+  accepted; fit_wilson_start2 lands on the same pair (-2602.8, 5213.2).
+  PROMOTED on 2026-11-11 into
+  data/standards/parameters/Wilson/methylTertPentylEther-toluene.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dP|/P 1.494 % over the 11 kept points, one liquid across the
+  validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

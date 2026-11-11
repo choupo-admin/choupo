@@ -90,9 +90,11 @@
   not argued). Beside fit_nrtl's max |dT| 1.532 K (warning) on the same
   kept points. fit_wilson: A_ij = -1925.5, A_ji = -174.8 J/mol over 22
   kept points: max |dT| 1.544 K, mean 0.866 K, graded warning ->
-  accepted; fit_wilson_start2 removed (it did not converge). PROMOTABLE
-  by `bin/choupo-curate pairs --models --promote`: fit grade warning --
-  max |dT| 1.544 K over the 22 kept points, one liquid across the
+  accepted; fit_wilson_start2 removed (it did not converge). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/Wilson/diethylamine-ethanol.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade warning
+  -- max |dT| 1.544 K over the 22 kept points, one liquid across the
   validity span. Wilson: fit_wilson_start2 was declared and run and did
   NOT CONVERGE (A_ij at its bound, -30000 .. 30000 J/mol: no finite
   optimum inside the declared bounds); the op is removed so the case runs

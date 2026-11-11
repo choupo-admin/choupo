@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/acetone-methanol.dat"
+        {
+            type          imported;
+            sha256        "0689b35bdf5d333136b93b30a30532bdf10c77f6071223fc7eaabcbafd1e4ae8";
+            computationalSha256 "10c94b007e084e1868b49b97182d1ac6cc85f2085ecea3819e528b34dc26015d";
+            origin        "data/standards/parameters/UNIQUAC/acetone-methanol.dat";
+            originSha256  "ac3c7cd6ba6c2229040d625be7ef10c2ac7d4d30d88a9e08d2bfa51af0dc90a9";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/acetone-methanol.dat"
+        {
+            type          imported;
+            sha256        "ad66722d311765bf90e04b96309a324c8ae63b3bcf8373c98aa55e4a07a16283";
+            computationalSha256 "8eb6044f4da00b54f8bcf8bf914a126c4463eb218abc2b15f7e55b719856bab1";
+            origin        "data/standards/parameters/Wilson/acetone-methanol.dat";
+            originSha256  "0ca506948c3323beb1122107e927b736b3993a62c2dc92560176f9e86fe04ad8";
+            release       Choupo-2608;
+        }
     }
 }

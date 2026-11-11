@@ -90,11 +90,13 @@
   not argued). Beside fit_nrtl's max |dT| 0.314 K (clean) on the same
   kept points. fit_wilson: A_ij = 2754.2, A_ji = 1674.5 J/mol over 30
   kept points: max |dT| 0.278 K, mean 0.135 K, graded clean -> accepted;
-  fit_wilson_start2 lands on the same pair (2754.2, 1674.5). PROMOTABLE
-  by `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dT| 0.278 K over the 30 kept points, one liquid across the validity
-  span. UNIQUAC: not fitted -- ethylFormate carries no UNIQUAC r and q
-  (no tabulated value, and no UNIFAC groups to sum them from,
+  fit_wilson_start2 lands on the same pair (2754.2, 1674.5). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/Wilson/ethylFormate-nHexane.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dT| 0.278 K over the 30 kept points, one liquid across the
+  validity span. UNIQUAC: not fitted -- ethylFormate carries no UNIQUAC r
+  and q (no tabulated value, and no UNIFAC groups to sum them from,
   bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
   is estimated silently.
   @@MODELS-RESULT-END@@

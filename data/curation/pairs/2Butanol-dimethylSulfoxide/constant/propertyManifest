@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "1325752958c34d88cce4fe911645d513e926858a928fa8584ed2b8e7b15ce7ac";
             release       Choupo-2608;
         }
+        "parameters/Wilson/2Butanol-dimethylSulfoxide.dat"
+        {
+            type          imported;
+            sha256        "2149d77362aeaef088f76bfa9fdc5ce7c74394ae4e6cd55d6dbdf146ab4f06ca";
+            computationalSha256 "17e9868f28859b29c413f68dd897b68b650c883f7070212d2f72cdfd4abd8548";
+            origin        "data/standards/parameters/Wilson/2Butanol-dimethylSulfoxide.dat";
+            originSha256  "075773b8b80f6104326c379eac5932ce94eb8da95b4d2b158a3836add83dbedc";
+            release       Choupo-2608;
+        }
     }
 }

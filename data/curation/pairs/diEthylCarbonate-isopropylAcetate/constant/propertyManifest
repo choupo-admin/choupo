@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "2eee5d7e6009597e951bb81c930838d6bbed6ee0223b80ef53a2c9bbf6909931";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diEthylCarbonate-isopropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "c5146741ce9eebb39d4577f020b517a526ea50b49792caee11a71d6654efad27";
+            computationalSha256 "66f85b60043b6654b4e934f5244cdd1e630f8afb27ed3000efdd6e4dd450a09e";
+            origin        "data/standards/parameters/Wilson/diEthylCarbonate-isopropylAcetate.dat";
+            originSha256  "7ecba52e2ede74dbeee386b9019a26b24c573f5085e754b467dfa36111238625";
+            release       Choupo-2608;
+        }
     }
 }

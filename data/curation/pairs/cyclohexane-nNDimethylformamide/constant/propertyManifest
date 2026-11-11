@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "9aeb947921df9722743b3b08f9087c493c483ddffd31e18374919c2503d9c926";
             release       Choupo-2608;
         }
+        "parameters/Wilson/cyclohexane-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "cb94398230fe788522aa3dbabc9b9e82c4b675eb301e77959ae71580f8469816";
+            computationalSha256 "201d64d98179be41a5278a2201189707300bcaec5eed96569882cbf71e8f585b";
+            origin        "data/standards/parameters/Wilson/cyclohexane-nNDimethylformamide.dat";
+            originSha256  "c18925d6eb72064bad6ece832d508cec05bb79ff352704a7e2efdce73777672b";
+            release       Choupo-2608;
+        }
     }
 }

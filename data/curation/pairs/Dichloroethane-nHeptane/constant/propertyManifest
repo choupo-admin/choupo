@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "9f5e2b29514dcb18eebfe61886247aebbf1242cd37517f128792b63d5b5443a7";
             release       Choupo-2608;
         }
+        "parameters/Wilson/Dichloroethane-nHeptane.dat"
+        {
+            type          imported;
+            sha256        "c9eb56490f5a2322b06c8d7c770c7d9738249ede907698b1df090104ead5ee5c";
+            computationalSha256 "dff2e25facd9b19a6e78460319bd5c095ff1bce859315fcee35b49dbf9333a7d";
+            origin        "data/standards/parameters/Wilson/Dichloroethane-nHeptane.dat";
+            originSha256  "cdbe7f773aafa023abc60951ee1725ef4a48bdc79ae34abf819081b4a46f64ad";
+            release       Choupo-2608;
+        }
     }
 }

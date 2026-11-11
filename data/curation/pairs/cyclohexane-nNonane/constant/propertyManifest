@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/cyclohexane-nNonane.dat"
+        {
+            type          imported;
+            sha256        "e469bc2ad338334b0685784fd6b554aa730f6f9b227b2ab4957e292695596eaf";
+            computationalSha256 "d5f04637ee9e0d4eb8a00621ca1621dee22da134c044337d82693dbdee71c9da";
+            origin        "data/standards/parameters/UNIQUAC/cyclohexane-nNonane.dat";
+            originSha256  "7c617539fecc203b314386d199f291e58ab84a0494fe11db6a8895aab5f1af0b";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/cyclohexane-nNonane.dat"
+        {
+            type          imported;
+            sha256        "b27d2d3390b461b1455dc50fab5fe277bc415a5b869069636aee6ef6c1e52930";
+            computationalSha256 "0c36cd631a9a86b5b820df3cf87712b26a2ae780365a7294feca40b744ccbc22";
+            origin        "data/standards/parameters/Wilson/cyclohexane-nNonane.dat";
+            originSha256  "b3db5a015cd4f8b49cbd120998ff235a00f2c835d2a7b69d5e1093a09e6c7e2c";
+            release       Choupo-2608;
+        }
     }
 }

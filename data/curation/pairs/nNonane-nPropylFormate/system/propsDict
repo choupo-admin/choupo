@@ -91,12 +91,14 @@
   kept points. fit_wilson: A_ij = 1402.3, A_ji = 2012.2 J/mol over 26
   kept points: max |dT| 1.062 K, mean 0.456 K, graded warning ->
   accepted; fit_wilson_start2 lands on the same pair (1402.3, 2012.2).
-  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
-  warning -- max |dT| 1.062 K over the 26 kept points, one liquid across
-  the validity span. UNIQUAC: not fitted -- nPropylFormate carries no
-  UNIQUAC r and q (no tabulated value, and no UNIFAC groups to sum them
-  from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted;
-  nothing is estimated silently.
+  PROMOTED on 2026-11-11 into
+  data/standards/parameters/Wilson/nNonane-nPropylFormate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade warning
+  -- max |dT| 1.062 K over the 26 kept points, one liquid across the
+  validity span. UNIQUAC: not fitted -- nPropylFormate carries no UNIQUAC
+  r and q (no tabulated value, and no UNIFAC groups to sum them from,
+  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
+  is estimated silently.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

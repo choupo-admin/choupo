@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "56d4edbf2e5189f1f88755e34ca4788f3678a049f88f9a572088160698e33dd1";
             release       Choupo-2608;
         }
+        "parameters/Wilson/acetonitrile-ethylAcetate.dat"
+        {
+            type          imported;
+            sha256        "9a1f4dffdca58baf678f080f74a469a9b23f1f866df39369673e8dc1c7d4f2e1";
+            computationalSha256 "915020e70a626f29bef780fb2f849842922e94674b97866cbfe115e321e86dd0";
+            origin        "data/standards/parameters/Wilson/acetonitrile-ethylAcetate.dat";
+            originSha256  "b7542d00471f0de1a5c90d72fc0f9f252923f1901476ebfeaa146e5cae5557f9";
+            release       Choupo-2608;
+        }
     }
 }

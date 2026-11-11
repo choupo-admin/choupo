@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "c77405071df4ab1497f0d3ad2b7ded91e2a188a44135929a6f30498c8ac11b8a";
             release       Choupo-2608;
         }
+        "parameters/Wilson/chloroform-methylTertButylEther.dat"
+        {
+            type          imported;
+            sha256        "9b6ac1385028b26eb6c590f6c839497195d3ffa468eec6812d38c60efd43ce7a";
+            computationalSha256 "c721b406895a0c33adecc1966efae26911c287faeca28a1db1452c080b375a1b";
+            origin        "data/standards/parameters/Wilson/chloroform-methylTertButylEther.dat";
+            originSha256  "3c2d073ebe491da658250ab9eb4169d5d803fa0a6e91c70f1589cc18d178d13c";
+            release       Choupo-2608;
+        }
     }
 }

@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/isopropylAcetate-methylEthylKetone.dat"
+        {
+            type          imported;
+            sha256        "5bdf92a609ba4648380dfb210f7f5126c571fbae649e62c485360527ac5a4d1f";
+            computationalSha256 "624b45def1e25280506230f53ce7714246a53296ce0b289bc8a59ec0cd7107b7";
+            origin        "data/standards/parameters/UNIQUAC/isopropylAcetate-methylEthylKetone.dat";
+            originSha256  "218b75c1de277c9f8ef6c6a87f7e73eed985ccc5cade19f406afb0a32856e468";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/isopropylAcetate-methylEthylKetone.dat"
+        {
+            type          imported;
+            sha256        "c6c285ed67cd99d30d00bcba835bb32cae53206832d26b037ca4a5e8f2ce3272";
+            computationalSha256 "e7f89c5eb01b17ce63d2f219958eeeebae93c77da38b2e8d06f36bf260784f59";
+            origin        "data/standards/parameters/Wilson/isopropylAcetate-methylEthylKetone.dat";
+            originSha256  "8a812514212582256b364c42d5e0cbc2500344071530740e33b53c744c09afa8";
+            release       Choupo-2608;
+        }
     }
 }

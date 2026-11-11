@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "23b4c9c5e7ef6cd053f03912245bb6897bfdb40d78260093ebe33e40757658e8";
             release       Choupo-2608;
         }
+        "parameters/Wilson/nButanol-nDodecane.dat"
+        {
+            type          imported;
+            sha256        "c3087c39e429f66049e4a5e9635cbd8bd303d0c9f2fe19b40e45495b1d782167";
+            computationalSha256 "4264bdebbb70d7845603124df94b5f142f8fbb410d3aa801c84d45bbce7b6ce8";
+            origin        "data/standards/parameters/Wilson/nButanol-nDodecane.dat";
+            originSha256  "5822ad7f6bd1549c645683bb6117d886ed73208df08675c20a88ecca4581197f";
+            release       Choupo-2608;
+        }
     }
 }

@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "f9a32b49a5f92cf4b0c668d1de91441a5647f9f7db2cf7d30326b13bcedc0c39";
             release       Choupo-2608;
         }
+        "parameters/Wilson/aniline-nOctane.dat"
+        {
+            type          imported;
+            sha256        "a2a72da097c7ddca0a27265100900e7a269c0b5fbd76dc0db126dac2c2e167de";
+            computationalSha256 "c57d0061580c288a13c9a90e5bc323bc0d41b4074db31e0ef8ea51222fe66376";
+            origin        "data/standards/parameters/Wilson/aniline-nOctane.dat";
+            originSha256  "db39ea5fd87b0c1f4b116c5a20a54d09eb86a2c362a6447f30fb62d9af86468b";
+            release       Choupo-2608;
+        }
     }
 }

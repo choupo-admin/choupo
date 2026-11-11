@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "111e24dff5ef46bd6ed0b669b65d9888247adfb368195eec57c0b9d14c960ae3";
             release       Choupo-2608;
         }
+        "parameters/Wilson/1Propanol-diEthylCarbonate.dat"
+        {
+            type          imported;
+            sha256        "d4da95c7a6b5a1e856997c0d97daec7f62e7eed024f91c4ad84cc85cd998363c";
+            computationalSha256 "fde5e3395fbcff0e9cb6e36093d6ede4384f40a75b2229ef0359a87138091993";
+            origin        "data/standards/parameters/Wilson/1Propanol-diEthylCarbonate.dat";
+            originSha256  "82d3e4d91ebc266af667aa2fac2fa95cbe5840363dbb3d86794b183041793825";
+            release       Choupo-2608;
+        }
     }
 }

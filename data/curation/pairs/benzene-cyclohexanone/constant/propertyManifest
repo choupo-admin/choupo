@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "c739b5f91a2531810463a8af8678efb90a2767ce5f669853bcb5c204208c5613";
             release       Choupo-2608;
         }
+        "parameters/Wilson/benzene-cyclohexanone.dat"
+        {
+            type          imported;
+            sha256        "d126516b4a2dbbfc13a5c1da4f00dbb17669686c9affd26b91761ff3a7e42e81";
+            computationalSha256 "3106119b121770659c284c0b0f95f105de17ee8d5d99e3a2a882627b37164305";
+            origin        "data/standards/parameters/Wilson/benzene-cyclohexanone.dat";
+            originSha256  "76230e9918307378bbef76ed2672425f6aaa5ef9f9975a408060c958a260111d";
+            release       Choupo-2608;
+        }
     }
 }

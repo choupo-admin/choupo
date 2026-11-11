@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "b0046c4f52017574c6c0a57b9047185763d6a6f78849d80fb7f4934c7c179341";
             release       Choupo-2608;
         }
+        "parameters/Wilson/nHeptane-tetrahydrofuran.dat"
+        {
+            type          imported;
+            sha256        "753e72a5ab24e1aca5b313b48df2789ce0b93b29afe3580ba8916a99a547774d";
+            computationalSha256 "cb4a0111fc8f9e458a203d7e3d7d8ce5c8084610c42921d688c7fd751d7d2d78";
+            origin        "data/standards/parameters/Wilson/nHeptane-tetrahydrofuran.dat";
+            originSha256  "2d831d799fce6ec349c4d0226d16dd04ee77e8796224206e957406ba81ede108";
+            release       Choupo-2608;
+        }
     }
 }

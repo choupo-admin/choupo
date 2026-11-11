@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/224Trimethylpentane-acetone.dat"
+        {
+            type          imported;
+            sha256        "8587129304429b2cee6aa7d72600ea68bbd98aef70bc6d2348837a5a7dd3af61";
+            computationalSha256 "6005f51ae2c8c567322ad9d72868b1a91c367241e57c6eccb2f146eeef7162db";
+            origin        "data/standards/parameters/UNIQUAC/224Trimethylpentane-acetone.dat";
+            originSha256  "93b54d5379695dbdf478ed41f2c72e304fc70d49f3cbba61e27801864bb2a8ff";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/224Trimethylpentane-acetone.dat"
+        {
+            type          imported;
+            sha256        "6a240ab9e258076cb0c011e5c25dd05fec137af41a426957ae8dae5364457a9d";
+            computationalSha256 "3f0158332cc86de7d4f2c0b9692d4a8f2659abeb3a0b948d97c7726e6012e6c1";
+            origin        "data/standards/parameters/Wilson/224Trimethylpentane-acetone.dat";
+            originSha256  "98bf296d33c74b43167c3172d06b0cf19b05d67d8b4131fe5fbae98b0ce0aeba";
+            release       Choupo-2608;
+        }
     }
 }

@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "6eef2283d1c0824ee6ae489ba5c2aacd4a9c70e2b0ae1e526c47e046d0e5ef9e";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diEthylCarbonate-methylEthylKetone.dat"
+        {
+            type          imported;
+            sha256        "1a09c74f51326ac66a96bf26e76f59e8dce7feb6817d1776d380f228aef50d97";
+            computationalSha256 "4940735cb7d5b6866edcf424247af424100e6a47fbb2f030c65f05ce96d90a09";
+            origin        "data/standards/parameters/Wilson/diEthylCarbonate-methylEthylKetone.dat";
+            originSha256  "50e49213ba1c496f9c7632351d10e0e5c6cf37ea68a4b83cb6a6120767a9a911";
+            release       Choupo-2608;
+        }
     }
 }

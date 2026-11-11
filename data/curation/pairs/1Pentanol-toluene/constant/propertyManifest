@@ -52,5 +52,23 @@ propertyManifest
             originSha256  "1b57a7720e2caf4cec4d3ae2246719036a0c442c94a011fcea89a67045bd4eba";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/1Pentanol-toluene.dat"
+        {
+            type          imported;
+            sha256        "f11aaccfd0a280f82f9d0b3888ec5211d6ccc787ad16c35153f28a8353a4d014";
+            computationalSha256 "09a9d3fa1e894fa68ea2b09565debe24480ed106951cac6be00a0a410e2872db";
+            origin        "data/standards/parameters/UNIQUAC/1Pentanol-toluene.dat";
+            originSha256  "28e345dcedaa9e77d889859ba6e204c709b81ca3da9ff90c1d8d1b12839bc257";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Pentanol-toluene.dat"
+        {
+            type          imported;
+            sha256        "700a06c4c2cf812c9bf9e33b1e0b51b613a8db71c0da7f0ba3f19ff65be9fd14";
+            computationalSha256 "906d2fd06e4ff4d0313e8bf3604774994314fa885089072857abffb9a8d4b0a8";
+            origin        "data/standards/parameters/Wilson/1Pentanol-toluene.dat";
+            originSha256  "c55b3b208489c46d948204af336f3e4b06bec8269a8de3e9c1a7892dc2619ff5";
+            release       Choupo-2608;
+        }
     }
 }

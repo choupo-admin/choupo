@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "bf9dbedc92b852539503965688d432622044573facba1271cd3b811eeab2e114";
             release       Choupo-2608;
         }
+        "parameters/Wilson/224Trimethylpentane-diethylDisulfide.dat"
+        {
+            type          imported;
+            sha256        "3fc6e7339e36a16da04f9f12649f41eab826aea56ec75f240bde994a248d6670";
+            computationalSha256 "6365f09a319dca86f82e1fc20f117b15f1b17d135bcaa8ce0a86fd8cfc6e56d1";
+            origin        "data/standards/parameters/Wilson/224Trimethylpentane-diethylDisulfide.dat";
+            originSha256  "5d440a2d2a513677614937bbd087f8d04b5f960768d471c64940c04c3a4c6db4";
+            release       Choupo-2608;
+        }
     }
 }

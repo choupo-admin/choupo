@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "18d2d113e70c0c14a876091bc307e8d9c694f3e71cd7fa4482a1e52330074e96";
             release       Choupo-2608;
         }
+        "parameters/Wilson/acetone-hexamethyldisiloxane.dat"
+        {
+            type          imported;
+            sha256        "3966dfe99ee05e7a2af1fbfa923e29661c0e4b114531245be9bddb35f3559189";
+            computationalSha256 "f0588444eb1c6cbbb411ac63315dc3512f99d2854e71e597f739892f40b713d8";
+            origin        "data/standards/parameters/Wilson/acetone-hexamethyldisiloxane.dat";
+            originSha256  "4b3b7c1a0460fdd219d4c1a8d6ffc9ec9236ad54ab925f4357424261dcc50613";
+            release       Choupo-2608;
+        }
     }
 }

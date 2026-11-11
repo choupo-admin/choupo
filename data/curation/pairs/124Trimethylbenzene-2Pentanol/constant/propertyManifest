@@ -52,5 +52,23 @@ propertyManifest
             originSha256  "423b3f418d40cc5f7a980c66d70dc29cd65b58a4c7f8b4eed4c823a583f1385e";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/124Trimethylbenzene-2Pentanol.dat"
+        {
+            type          imported;
+            sha256        "606ccd25e7571aab2effb54c7a38bc51d27366dbabbca9cb67ad5364f48f0900";
+            computationalSha256 "20cc3e7f98672f0de102d10557f63ffd9c50f1146263bc5a9bb992578db0a5ca";
+            origin        "data/standards/parameters/UNIQUAC/124Trimethylbenzene-2Pentanol.dat";
+            originSha256  "b36a68be65cd6c60d6cd5c6329dc5f949a03e079307fa5b9058c75290649068c";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/124Trimethylbenzene-2Pentanol.dat"
+        {
+            type          imported;
+            sha256        "402e826131856543cae470346a787410eded051c86f7b336b20f89f8c19ef618";
+            computationalSha256 "caa76e6f2204814dfb66c59637049eabd12b72d5d5f995caee72e68b0b36514f";
+            origin        "data/standards/parameters/Wilson/124Trimethylbenzene-2Pentanol.dat";
+            originSha256  "e8c1a811c6ea3bfb98de428b79cb2e06102da21efebe84629c562da5e8e0dae5";
+            release       Choupo-2608;
+        }
     }
 }

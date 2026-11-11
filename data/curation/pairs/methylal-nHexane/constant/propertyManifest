@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/methylal-nHexane.dat"
+        {
+            type          imported;
+            sha256        "49cbca27ffcf6f22e65309dcacef23bf2cbca1badf66db9f0eb17ce6dbc05afb";
+            computationalSha256 "8274c5fe00f16e6f653af22e149a6580ef8a3f3d661294d73a739530d435ffd8";
+            origin        "data/standards/parameters/UNIQUAC/methylal-nHexane.dat";
+            originSha256  "3a95ca42d29194597e42d391b1ada0bbc320e12ddde732172700abf1a600fa08";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/methylal-nHexane.dat"
+        {
+            type          imported;
+            sha256        "8465a559310e17af52d0018b75cb6e6ca016d4cec09cd0db7051334700c59942";
+            computationalSha256 "c99b9383343db713a9e0406e69716ed6d49dc72ffb6ceeea81f4f330b6e06103";
+            origin        "data/standards/parameters/Wilson/methylal-nHexane.dat";
+            originSha256  "2cc67b573ba64c0743010a930df3f1d76490aaf06736fbf32872fa59d280013e";
+            release       Choupo-2608;
+        }
     }
 }

@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "2b937f84b6812dce3f02ece84c874fffe601fbeaaf76a5e1d36429f5fcd86021";
             release       Choupo-2608;
         }
+        "parameters/Wilson/isopropanol-nitrobenzene.dat"
+        {
+            type          imported;
+            sha256        "2ad71fe1920ca8f240547710131a08f882d12beec8f30457747119ec9fd43c0b";
+            computationalSha256 "70c748ef2c1f1523ce8b7e4c3e461e02e234443f20864e1f4d3feeddfb42e7ff";
+            origin        "data/standards/parameters/Wilson/isopropanol-nitrobenzene.dat";
+            originSha256  "b609857135d6bda81d578580e36fae5c4477c0a994d4bb66da8a23a199141b58";
+            release       Choupo-2608;
+        }
     }
 }

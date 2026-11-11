@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/benzene-nButylAcetate.dat"
+        {
+            type          imported;
+            sha256        "678c9da4ffebce5e07039b4c62c10081a5887c1eb34eba5801934d9886d18b9b";
+            computationalSha256 "0a8252ef719075b1e4e8e3e8cb1835d5d717f094f6c0335ccf82158f7a403b06";
+            origin        "data/standards/parameters/UNIQUAC/benzene-nButylAcetate.dat";
+            originSha256  "237306f84842a1163b00fe63b48b99fa2936897bddea1cf74dd7dd6eb19d4c41";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/benzene-nButylAcetate.dat"
+        {
+            type          imported;
+            sha256        "07d736c8b56555643b716eae6f7788767894c5654a14a4e38d0db7e6a4c8550f";
+            computationalSha256 "772a65e0d290efbf453b97959f95657b3a8df97f08501eeadcb8d7b078d276c7";
+            origin        "data/standards/parameters/Wilson/benzene-nButylAcetate.dat";
+            originSha256  "7e0dfb88cfe75fb2e04d031f90312dd42ae1b992485f6e59aa625d77ced213ad";
+            release       Choupo-2608;
+        }
     }
 }

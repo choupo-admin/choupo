@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "a1da265942dc82445ea543bf436a73ad4672ad6ccfe7c61c429def31cd3929a4";
             release       Choupo-2608;
         }
+        "parameters/Wilson/acrylonitrile-cyclohexanone.dat"
+        {
+            type          imported;
+            sha256        "e14de243c3e3577addf7083410996f747ecac2ef034650378154e144801d57a7";
+            computationalSha256 "a296589e71019329cbfc95e80f59f7c41bdff76d94c8018e3d37ebc91a4ffa88";
+            origin        "data/standards/parameters/Wilson/acrylonitrile-cyclohexanone.dat";
+            originSha256  "dbe004beba597bda3f0d4ac0dffb85db5e904bb8c6e89a9b0e19f324c111ccce";
+            release       Choupo-2608;
+        }
     }
 }

@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "1b5e1497cd2c79989de574fe3139800788078742afd32b48ea21a9bbf979ba4c";
             release       Choupo-2608;
         }
+        "parameters/Wilson/ethylAcetate-hexamethyldisiloxane.dat"
+        {
+            type          imported;
+            sha256        "6e050d098c453a926437c6208482d057bccf025372fe41bdf6ad5cd68144cfd5";
+            computationalSha256 "4efacfe8f14fe149fd3d9745a4291cc472a826a60e181dc5a2987511f59cfd53";
+            origin        "data/standards/parameters/Wilson/ethylAcetate-hexamethyldisiloxane.dat";
+            originSha256  "814e36e8a7d314df07b57526180902992bad5067f7461092c12b1141cd833a31";
+            release       Choupo-2608;
+        }
     }
 }

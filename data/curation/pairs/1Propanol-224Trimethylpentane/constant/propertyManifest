@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "5d8c420ca544c0c2fc2fa8f548c95ccbdbf4781c817cb1ca541d8c0292f6cdee";
             release       Choupo-2608;
         }
+        "parameters/Wilson/1Propanol-224Trimethylpentane.dat"
+        {
+            type          imported;
+            sha256        "30579cd48d3bbd86a121ee638efde9908165e54d0eeb60f2fa252323a458ee7f";
+            computationalSha256 "c8ba153708896dcb49bd06b6ace6facb1c090ae1d0aad756853bd3ba1a01ed24";
+            origin        "data/standards/parameters/Wilson/1Propanol-224Trimethylpentane.dat";
+            originSha256  "fd7dee78175c3ab57728134289f83eee1f5dde18090912aebac38f0e5dce6147";
+            release       Choupo-2608;
+        }
     }
 }

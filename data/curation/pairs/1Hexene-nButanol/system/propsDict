@@ -81,15 +81,17 @@
   not argued). Beside fit_nrtl's max |dP|/P 2.786 % (clean) on the same
   kept points. fit_uniquac: a_ij = -69.7, a_ji = 265.4 K over 26 kept
   points: max |dP|/P 2.864 %, mean 1.884 %, graded clean -> accepted;
-  fit_uniquac_start2 lands on the same pair (-69.7, 265.4). PROMOTABLE by
-  `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dP|/P 2.864 % over the 26 kept points, one liquid across the validity
-  span. fit_wilson: A_ij = 6851.6, A_ji = 520.4 J/mol over 26 kept
-  points: max |dP|/P 0.848 %, mean 0.495 %, graded clean -> accepted;
-  fit_wilson_start2 lands on the same pair (6851.6, 520.4). PROMOTABLE by
-  `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dP|/P 0.848 % over the 26 kept points, one liquid across the validity
-  span.
+  fit_uniquac_start2 lands on the same pair (-69.7, 265.4). PROMOTED on
+  2026-11-11 into data/standards/parameters/UNIQUAC/1Hexene-nButanol.dat
+  as reviewStatus autoPromoted, review by none, because: fit grade clean
+  -- max |dP|/P 2.864 % over the 26 kept points, one liquid across the
+  validity span. fit_wilson: A_ij = 6851.6, A_ji = 520.4 J/mol over 26
+  kept points: max |dP|/P 0.848 %, mean 0.495 %, graded clean ->
+  accepted; fit_wilson_start2 lands on the same pair (6851.6, 520.4).
+  PROMOTED on 2026-11-11 into
+  data/standards/parameters/Wilson/1Hexene-nButanol.dat as reviewStatus
+  autoPromoted, review by none, because: fit grade clean -- max |dP|/P
+  0.848 % over the 26 kept points, one liquid across the validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

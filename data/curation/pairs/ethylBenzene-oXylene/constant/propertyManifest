@@ -52,5 +52,23 @@ propertyManifest
             originSha256  "5b87e19205b803339b317be8be09e92b2d001a10fafce383d73a056971165dfa";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/ethylBenzene-oXylene.dat"
+        {
+            type          imported;
+            sha256        "f758ecd00460eb21174ff4a7785d4c9533edd3b750720b196d88fb08fa053df5";
+            computationalSha256 "e6db035231dd99a967910f88c8ffe0e58685bda85d594c75c4be96797ccbe41f";
+            origin        "data/standards/parameters/UNIQUAC/ethylBenzene-oXylene.dat";
+            originSha256  "bbe9f8ce4ed642f6e2581d6b56cb2daadae3d467253d879cdc21e2a356227a76";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/ethylBenzene-oXylene.dat"
+        {
+            type          imported;
+            sha256        "e2187f23c5adeb290f8a5c9c68f1fc549e60c1dc1fbbf84cbf4723d0bef42da7";
+            computationalSha256 "7ecd55b6e2d7a114d9d883dd64de10e2eb497eff6459320f0412a75484c90cfa";
+            origin        "data/standards/parameters/Wilson/ethylBenzene-oXylene.dat";
+            originSha256  "d36a4302194522f9d9dbf7afbba9c6ef1a8b07685f77f7e7c514c5838acd6873";
+            release       Choupo-2608;
+        }
     }
 }

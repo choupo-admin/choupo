@@ -88,14 +88,18 @@
   not argued). Beside fit_nrtl's max |dT| 0.236 K (clean) on the same
   kept points. fit_uniquac: a_ij = 355.7, a_ji = -146.6 K over 7 kept
   points: max |dT| 0.203 K, mean 0.124 K, graded clean -> accepted;
-  fit_uniquac_start2 lands on the same pair (355.7, -146.6). PROMOTABLE
-  by `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dT| 0.203 K over the 7 kept points, one liquid across the validity
+  fit_uniquac_start2 lands on the same pair (355.7, -146.6). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/UNIQUAC/2Methyl1Propanol-nDodecane.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dT| 0.203 K over the 7 kept points, one liquid across the validity
   span. fit_wilson: A_ij = -792.5, A_ji = 12863.3 J/mol over 7 kept
   points: max |dT| 0.234 K, mean 0.145 K, graded clean -> accepted;
-  fit_wilson_start2 lands on the same pair (-792.5, 12863.3). PROMOTABLE
-  by `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dT| 0.234 K over the 7 kept points, one liquid across the validity
+  fit_wilson_start2 lands on the same pair (-792.5, 12863.3). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/Wilson/2Methyl1Propanol-nDodecane.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dT| 0.234 K over the 7 kept points, one liquid across the validity
   span.
   @@MODELS-RESULT-END@@
 

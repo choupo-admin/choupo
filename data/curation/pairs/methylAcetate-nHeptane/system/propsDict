@@ -87,14 +87,18 @@
   not argued). Beside fit_nrtl's max |dT| 1.276 K (warning) on the same
   kept points. fit_uniquac: a_ij = 33.4, a_ji = 107.8 K over 25 kept
   points: max |dT| 1.319 K, mean 0.565 K, graded warning -> accepted;
-  fit_uniquac_start2 lands on the same pair (33.4, 107.8). PROMOTABLE by
-  `bin/choupo-curate pairs --models --promote`: fit grade warning -- max
-  |dT| 1.319 K over the 25 kept points, one liquid across the validity
-  span. fit_wilson: A_ij = 2335.7, A_ji = 2114.0 J/mol over 25 kept
-  points: max |dT| 1.287 K, mean 0.506 K, graded warning -> accepted;
-  fit_wilson_start2 lands on the same pair (2335.7, 2114.0). PROMOTABLE
-  by `bin/choupo-curate pairs --models --promote`: fit grade warning --
-  max |dT| 1.287 K over the 25 kept points, one liquid across the
+  fit_uniquac_start2 lands on the same pair (33.4, 107.8). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/UNIQUAC/methylAcetate-nHeptane.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade warning
+  -- max |dT| 1.319 K over the 25 kept points, one liquid across the
+  validity span. fit_wilson: A_ij = 2335.7, A_ji = 2114.0 J/mol over 25
+  kept points: max |dT| 1.287 K, mean 0.506 K, graded warning ->
+  accepted; fit_wilson_start2 lands on the same pair (2335.7, 2114.0).
+  PROMOTED on 2026-11-11 into
+  data/standards/parameters/Wilson/methylAcetate-nHeptane.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade warning
+  -- max |dT| 1.287 K over the 25 kept points, one liquid across the
   validity span.
   @@MODELS-RESULT-END@@
 

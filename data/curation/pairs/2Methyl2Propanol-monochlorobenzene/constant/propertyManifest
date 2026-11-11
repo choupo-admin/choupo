@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "c68f43ee0d9c303fd7127f1efbde9b6da6ce2d7cb88c7156018a7b882eb54de9";
             release       Choupo-2608;
         }
+        "parameters/Wilson/2Methyl2Propanol-monochlorobenzene.dat"
+        {
+            type          imported;
+            sha256        "2f05fc4d0796e8ccd27e12556eedf99bb7fbbbd5eb69a6726e88e1ef61a42529";
+            computationalSha256 "d6aca99e09e4b14f467ae6fffab10a6c198ba34fc726795d84fadbc1aad021c4";
+            origin        "data/standards/parameters/Wilson/2Methyl2Propanol-monochlorobenzene.dat";
+            originSha256  "0142a0ffecf48ae8db51f870e07d516b5942fa4c791bb4a58137b4eec76646e1";
+            release       Choupo-2608;
+        }
     }
 }

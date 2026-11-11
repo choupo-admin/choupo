@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/1Propanol-isopropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "bdb85613924dc45e124a341123a4f85e666296d5bbe30862df90d6f038d48506";
+            computationalSha256 "46b03edb85fe9ef90216e10a85db29af5c30a91ceb7698b0b9f4227b173adfdb";
+            origin        "data/standards/parameters/UNIQUAC/1Propanol-isopropylAcetate.dat";
+            originSha256  "7057a79e008aa259c5d3ca5fa6157ada2cd972c01b1252115c72fc1311e08ace";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Propanol-isopropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "69bbdc8de17861b8892cb1941cbb12e0b4a428e8e836bc67800bfd95848aadaa";
+            computationalSha256 "fcb9c0d49625e1684b003dee089abea3f8217401ae9422e64aac0ea128835806";
+            origin        "data/standards/parameters/Wilson/1Propanol-isopropylAcetate.dat";
+            originSha256  "055451338ccdec1d0ad58167909322edb51a35ee8df816a3f3096ff61b8616e8";
+            release       Choupo-2608;
+        }
     }
 }

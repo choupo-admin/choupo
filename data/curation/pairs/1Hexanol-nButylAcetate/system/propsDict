@@ -81,15 +81,19 @@
   not argued). Beside fit_nrtl's max |dP|/P 5.394 % (warning) on the same
   kept points. fit_uniquac: a_ij = 340.5, a_ji = -143.0 K over 21 kept
   points: max |dP|/P 5.069 %, mean 3.207 %, graded warning -> accepted;
-  fit_uniquac_start2 lands on the same pair (340.5, -143.0). PROMOTABLE
-  by `bin/choupo-curate pairs --models --promote`: fit grade warning --
-  max |dP|/P 5.069 % over the 21 kept points, one liquid across the
+  fit_uniquac_start2 lands on the same pair (340.5, -143.0). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/UNIQUAC/1Hexanol-nButylAcetate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade warning
+  -- max |dP|/P 5.069 % over the 21 kept points, one liquid across the
   validity span. fit_wilson: A_ij = -149.0, A_ji = 8481.9 J/mol over 21
   kept points: max |dP|/P 3.620 %, mean 2.335 %, graded clean ->
   accepted; fit_wilson_start2 lands on the same pair (-149.0, 8481.9).
-  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
-  clean -- max |dP|/P 3.620 % over the 21 kept points, one liquid across
-  the validity span.
+  PROMOTED on 2026-11-11 into
+  data/standards/parameters/Wilson/1Hexanol-nButylAcetate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dP|/P 3.620 % over the 21 kept points, one liquid across the
+  validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

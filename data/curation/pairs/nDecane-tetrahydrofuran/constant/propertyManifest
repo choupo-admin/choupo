@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "89d0100e6880941a4357487a139bbf80ec6280b91fe279124449eb3c89a3cd51";
             release       Choupo-2608;
         }
+        "parameters/Wilson/nDecane-tetrahydrofuran.dat"
+        {
+            type          imported;
+            sha256        "85049ed5f44df650e030f8c930e9ed7447caea64e11259c73bcef92b754d62c4";
+            computationalSha256 "e5fa6eeca0f03adfe0b6b874f7844c297e10d16c3cb0c0fccc7eca1e1e46cd1a";
+            origin        "data/standards/parameters/Wilson/nDecane-tetrahydrofuran.dat";
+            originSha256  "8cc1fc0ae3a684d1c8a836e58db632c905e2bf6504202b1a042be6cd50de354f";
+            release       Choupo-2608;
+        }
     }
 }

@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "e1a4e159836714f7512f4db8b6e29891bcd6936b093c76a7356abb99caf0645a";
             release       Choupo-2608;
         }
+        "parameters/Wilson/methylEthylKetone-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "efe592c7a7672ba7b9641bfaa7b16d233086a458fdaeb8cbe4c78a534bd3c9b6";
+            computationalSha256 "652c624be29e3f364306a7fce23853e5785112a640269ff5e2334a269ef42c25";
+            origin        "data/standards/parameters/Wilson/methylEthylKetone-nNDimethylformamide.dat";
+            originSha256  "48f6cc79ecd335259388d8615bcd8688501400500759be34987dd1881a789f13";
+            release       Choupo-2608;
+        }
     }
 }

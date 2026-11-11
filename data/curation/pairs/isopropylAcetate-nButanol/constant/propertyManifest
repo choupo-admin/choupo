@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/isopropylAcetate-nButanol.dat"
+        {
+            type          imported;
+            sha256        "90528691860b68d5118c02edd6e1d6bc3ef86458ea6fbd3d032a3eea9704ae77";
+            computationalSha256 "dbde3df2a0171116f6d16ad10d566f36fa616c5e99cf5e4a10a7f32ac23b1257";
+            origin        "data/standards/parameters/UNIQUAC/isopropylAcetate-nButanol.dat";
+            originSha256  "faca0732fa01d63e389ffede30c07825e3160b89a9db664bccd1753e3614c0ac";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/isopropylAcetate-nButanol.dat"
+        {
+            type          imported;
+            sha256        "ca64c533b2cf2dca438c7b200bdb07c37ebffccb8ea0b8e84712da855d130458";
+            computationalSha256 "90967becd66b53a1cad0caae3de285c956348c638ce6d577887f8b53a90a4acf";
+            origin        "data/standards/parameters/Wilson/isopropylAcetate-nButanol.dat";
+            originSha256  "ce40b963c5666fe90089bfb418b237a7cd189d436fbc2c483c40490dba8d5661";
+            release       Choupo-2608;
+        }
     }
 }

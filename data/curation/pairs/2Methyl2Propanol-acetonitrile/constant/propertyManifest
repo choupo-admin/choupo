@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "592f85b0bf55884c227b11067f922d2261221fd02e7f98f5820c71177043d6d3";
             release       Choupo-2608;
         }
+        "parameters/Wilson/2Methyl2Propanol-acetonitrile.dat"
+        {
+            type          imported;
+            sha256        "8d60779c767097250b9a22ad9827a7242e4ab2b49265bf7987bbac8f624cd9d5";
+            computationalSha256 "81f6cdd7aafd3f470ea82ecb4a026aa99e96beecc87988cc430a85cfd08e7a4f";
+            origin        "data/standards/parameters/Wilson/2Methyl2Propanol-acetonitrile.dat";
+            originSha256  "a2c38a11d4de22be24da9deb8d7f766c17cb06d286aa19a03285fbe6e1769c26";
+            release       Choupo-2608;
+        }
     }
 }

@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "6ef2442800cae9c052b8a842d97b530e84a1ab9d4c6154e66769ea7d68171fff";
             release       Choupo-2608;
         }
+        "parameters/Wilson/pXylene-styrene.dat"
+        {
+            type          imported;
+            sha256        "c9a9befc34f075e83866d66d2d2580ff8cec2f0a920a80c2453cd518575d0486";
+            computationalSha256 "459b10f0a95a16a219c150787e88b8a43902e7a9f1fa9c548ef6e2a1c3bc91fa";
+            origin        "data/standards/parameters/Wilson/pXylene-styrene.dat";
+            originSha256  "25d6db508b745d14102704fdf6ee5def032eb45de0cf60430511576cd4b1948d";
+            release       Choupo-2608;
+        }
     }
 }

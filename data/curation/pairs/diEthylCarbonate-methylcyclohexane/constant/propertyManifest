@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "2b5865ed73179c99e931b9b12cb561658b6d40c9c13d57bc30344a524f3710d9";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diEthylCarbonate-methylcyclohexane.dat"
+        {
+            type          imported;
+            sha256        "2f8190191f63a779d36f58939ee074a3bb9852d01867bb818ced65f2fc7c38bd";
+            computationalSha256 "fa612454c4a13628bcf01fef1a0819920cee5364ac02d6731201a79154f26050";
+            origin        "data/standards/parameters/Wilson/diEthylCarbonate-methylcyclohexane.dat";
+            originSha256  "67a28bc27dee24b7eb7895a3b3aaacc3456fa182b96053966f39381c0c7653ab";
+            release       Choupo-2608;
+        }
     }
 }

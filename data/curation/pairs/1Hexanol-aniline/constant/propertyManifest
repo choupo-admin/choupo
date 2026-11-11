@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "67317ae8c68c74face275b30f1e37775146a766901ecda1878bcc08e37826bf7";
             release       Choupo-2608;
         }
+        "parameters/Wilson/1Hexanol-aniline.dat"
+        {
+            type          imported;
+            sha256        "d67eec7699e8857a81d9a04caadde7da6af8128f5260b57758893cc70baeb71b";
+            computationalSha256 "92de70522ef731b6ff0c04015dd0a90b8e121e56f5cffb42dcc7124283cbc90a";
+            origin        "data/standards/parameters/Wilson/1Hexanol-aniline.dat";
+            originSha256  "dd928f2c4a83b301df6f11430f4c677c692a7f99098ebe047d208c18be41cd36";
+            release       Choupo-2608;
+        }
     }
 }

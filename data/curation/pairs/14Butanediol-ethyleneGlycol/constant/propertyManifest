@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "979750b850cd62ffadf4a7a2f1d2a335554d0ab2edf30f04a1901fcb07e7e8e6";
             release       Choupo-2608;
         }
+        "parameters/Wilson/14Butanediol-ethyleneGlycol.dat"
+        {
+            type          imported;
+            sha256        "3aac97c02f77938f29425cd8cbe9cba67b2466fcecdc542f391ec21cf27909db";
+            computationalSha256 "af4833777be47c946aa8ddba0ab41932837576a68b505d9b0d6908403ab1cc44";
+            origin        "data/standards/parameters/Wilson/14Butanediol-ethyleneGlycol.dat";
+            originSha256  "8298388a9dc363b9016843312598f221f15f3a662ce0f03594c066b3a2a4f454";
+            release       Choupo-2608;
+        }
     }
 }

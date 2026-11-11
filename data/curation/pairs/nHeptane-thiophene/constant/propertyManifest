@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "13fac740421784c0fda08701c02452d40a9698ca5001c52722df6dbe16d71b8d";
             release       Choupo-2608;
         }
+        "parameters/Wilson/nHeptane-thiophene.dat"
+        {
+            type          imported;
+            sha256        "1bfccd546681ba41b1eac6a97426973520315f7a2567c4cfc454afbc97d16809";
+            computationalSha256 "fa925186f3c33f7a96b88917b8c74e649707d2a733c513e4d03f75524d8600e0";
+            origin        "data/standards/parameters/Wilson/nHeptane-thiophene.dat";
+            originSha256  "99b9c7ad2b52f596c331fa2b3592ab135f08f85a0da119a05c9fb1540d4710fc";
+            release       Choupo-2608;
+        }
     }
 }

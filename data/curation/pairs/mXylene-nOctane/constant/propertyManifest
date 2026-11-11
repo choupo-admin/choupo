@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/mXylene-nOctane.dat"
+        {
+            type          imported;
+            sha256        "cfb372b20ca90c00cf2c0b0ab7690be82e5788521b1d8d4c4a27dfd2f1b5e05e";
+            computationalSha256 "2ada21d02b58c30e675664b2e0c9e8a9ea4e174d622c9479c17adef1b36eb866";
+            origin        "data/standards/parameters/UNIQUAC/mXylene-nOctane.dat";
+            originSha256  "b7c6026a5624e5bc74fab7acb250973b5d0252694bdcca2cdc8a9d7fddd72a23";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/mXylene-nOctane.dat"
+        {
+            type          imported;
+            sha256        "2ed0497138ec6b1afadfa7b19a75faa58d5b4ee146a743e89c2fa128eea16662";
+            computationalSha256 "0ffce8d442c6fde35a9f751f9ef7bb9cec36cced6728453544c3f2346705be8e";
+            origin        "data/standards/parameters/Wilson/mXylene-nOctane.dat";
+            originSha256  "21ee8fdafb0c0c52288d80d6f3308de60826e08415d6f0968fa0319a90bb3800";
+            release       Choupo-2608;
+        }
     }
 }

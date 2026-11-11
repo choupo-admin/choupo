@@ -87,15 +87,19 @@
   not argued). Beside fit_nrtl's max |dT| 0.605 K (clean) on the same
   kept points. fit_uniquac: a_ij = 168.5, a_ji = -80.9 K over 38 kept
   points: max |dT| 0.597 K, mean 0.178 K, graded clean -> accepted;
-  fit_uniquac_start2 lands on the same pair (168.5, -80.9). PROMOTABLE by
-  `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dT| 0.597 K over the 38 kept points, one liquid across the validity
-  span. fit_wilson: A_ij = 486.0, A_ji = 2705.9 J/mol over 38 kept
-  points: max |dT| 0.586 K, mean 0.169 K, graded clean -> accepted;
-  fit_wilson_start2 lands on the same pair (486.0, 2705.9). PROMOTABLE by
-  `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dT| 0.586 K over the 38 kept points, one liquid across the validity
-  span.
+  fit_uniquac_start2 lands on the same pair (168.5, -80.9). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/UNIQUAC/nOctane-nPropylAcetate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dT| 0.597 K over the 38 kept points, one liquid across the
+  validity span. fit_wilson: A_ij = 486.0, A_ji = 2705.9 J/mol over 38
+  kept points: max |dT| 0.586 K, mean 0.169 K, graded clean -> accepted;
+  fit_wilson_start2 lands on the same pair (486.0, 2705.9). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/Wilson/nOctane-nPropylAcetate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dT| 0.586 K over the 38 kept points, one liquid across the
+  validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

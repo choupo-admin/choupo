@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "388b07249a4b98c3af9ca81f7ca8f1b7cdbf780a872f4383a660597f3805afbe";
             release       Choupo-2608;
         }
+        "parameters/Wilson/224Trimethylpentane-monochlorobenzene.dat"
+        {
+            type          imported;
+            sha256        "bf0609efaa868fe8011f25f004daf47037a276d93d88a59100cefcdc7124e6b1";
+            computationalSha256 "2a2b0c8ec4cea511d72ff29d81da3deda0cde55e6415c19940b218cdc61b66b9";
+            origin        "data/standards/parameters/Wilson/224Trimethylpentane-monochlorobenzene.dat";
+            originSha256  "c073835188803fc0da8119efa1d6e73f06b741c9ef5127c4659883df1c85bff1";
+            release       Choupo-2608;
+        }
     }
 }

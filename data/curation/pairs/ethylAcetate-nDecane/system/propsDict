@@ -87,11 +87,13 @@
   not argued). Beside fit_nrtl's max |dT| 2.258 K (severe) on the same
   kept points. fit_uniquac: a_ij = 73.4, a_ji = 36.6 K over 19 kept
   points: max |dT| 1.829 K, mean 0.980 K, graded warning -> accepted;
-  fit_uniquac_start2 lands on the same pair (73.4, 36.6). PROMOTABLE by
-  `bin/choupo-curate pairs --models --promote`: fit grade warning -- max
-  |dT| 1.829 K over the 19 kept points, one liquid across the validity
-  span. fit_wilson: A_ij = 1715.5, A_ji = 3365.9 J/mol over 19 kept
-  points: max |dT| 2.059 K, mean 1.113 K, graded severe -> accepted;
+  fit_uniquac_start2 lands on the same pair (73.4, 36.6). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/UNIQUAC/ethylAcetate-nDecane.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade warning
+  -- max |dT| 1.829 K over the 19 kept points, one liquid across the
+  validity span. fit_wilson: A_ij = 1715.5, A_ji = 3365.9 J/mol over 19
+  kept points: max |dT| 2.059 K, mean 1.113 K, graded severe -> accepted;
   fit_wilson_start2 lands on the same pair (1715.5, 3365.9). NOT PROMOTED
   (max |dT| 2.059 K over the 19 kept points, one liquid across the
   validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe

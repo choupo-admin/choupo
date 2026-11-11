@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "f8ea5dca7b1c91b1e94e2e941e75646344cb59d7ff7b1cdb6ef1b0609995904b";
             release       Choupo-2608;
         }
+        "parameters/Wilson/nNDimethylacetamide-toluene.dat"
+        {
+            type          imported;
+            sha256        "1fe7969554b33333b4585fb116ae895b377c7bde96353cf8810636f69e35a1c2";
+            computationalSha256 "668bf7c7ca5a2811a422daf6e769cd774b37bf5dd7361d48faa037f425308af1";
+            origin        "data/standards/parameters/Wilson/nNDimethylacetamide-toluene.dat";
+            originSha256  "8a8d882b7320e41bff4ccf0a8c98a365b535d20fd997dea87b079e564c56f6cb";
+            release       Choupo-2608;
+        }
     }
 }

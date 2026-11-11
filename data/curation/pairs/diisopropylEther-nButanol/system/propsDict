@@ -88,9 +88,11 @@
   kept points. fit_wilson: A_ij = -582.6, A_ji = 3618.4 J/mol over 26
   kept points: max |dP|/P 0.868 %, mean 0.483 %, graded clean ->
   accepted; fit_wilson_start2 lands on the same pair (-582.6, 3618.4).
-  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
-  clean -- max |dP|/P 0.868 % over the 26 kept points, one liquid across
-  the validity span. UNIQUAC: not fitted -- diisopropylEther carries no
+  PROMOTED on 2026-11-11 into
+  data/standards/parameters/Wilson/diisopropylEther-nButanol.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dP|/P 0.868 % over the 26 kept points, one liquid across the
+  validity span. UNIQUAC: not fitted -- diisopropylEther carries no
   UNIQUAC r and q (no tabulated value, and no UNIFAC groups to sum them
   from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted;
   nothing is estimated silently.

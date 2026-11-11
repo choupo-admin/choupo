@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "340cbc3e1e8a4a23dda4d9b91b9af8ce04d59e350aaad27000d30fd8bc3df249";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diEthylCarbonate-nHexane.dat"
+        {
+            type          imported;
+            sha256        "f236c4d28f113bbd99ab238bc5ffbe674b45ae5baac922ff80dd42571ee6fb01";
+            computationalSha256 "226a2cc2a15514bbd3f85684731b6f2dbb62cfa0b098a45d041e32ebf2cd5416";
+            origin        "data/standards/parameters/Wilson/diEthylCarbonate-nHexane.dat";
+            originSha256  "d52ca11fdcccd1ce176e76d29dd9b3c979df9763b2acb56107dff8cbc0eb0b40";
+            release       Choupo-2608;
+        }
     }
 }

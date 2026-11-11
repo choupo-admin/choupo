@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/cyclohexane-nButylAcetate.dat"
+        {
+            type          imported;
+            sha256        "cccfe4974f45c967a40fcd81447b28e644ba3ce115fda576bf7dff9239f7dd1e";
+            computationalSha256 "44f4dce57eb004c1ee90573b477961bc896235f95c324a1995ba3cd2c969f9ea";
+            origin        "data/standards/parameters/UNIQUAC/cyclohexane-nButylAcetate.dat";
+            originSha256  "f997f12cea37ff18cbb120c3e51cb33549227d633e3c6335917d2c36ee6aa827";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/cyclohexane-nButylAcetate.dat"
+        {
+            type          imported;
+            sha256        "2ca5bb958ab58d6d2b2882daa74e942244d2705234a8a6783bbb7fd9e946235e";
+            computationalSha256 "f64dd924e8ae1ba8dde5d19534bfc724d7b99085f30bc185f24fd563736d77c7";
+            origin        "data/standards/parameters/Wilson/cyclohexane-nButylAcetate.dat";
+            originSha256  "fc577659177363f54c7d2a14a42554eeaed40fd1ca8d828ea241e2018f766491";
+            release       Choupo-2608;
+        }
     }
 }

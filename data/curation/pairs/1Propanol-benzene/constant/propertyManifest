@@ -52,5 +52,23 @@ propertyManifest
             originSha256  "9f594c2899cfe5a9957b76ea6feedbc8705a8f2dfc92c11eaa4b75e86fa40c45";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/1Propanol-benzene.dat"
+        {
+            type          imported;
+            sha256        "769b31e2e41f225f12bb875d0971bb8fca7f47bb76fac6beec2abd28457cd9a8";
+            computationalSha256 "6dbe1bb7bcf3f8dc6c01e7122a739cc215dd4a93abbbb08c775564628ef73703";
+            origin        "data/standards/parameters/UNIQUAC/1Propanol-benzene.dat";
+            originSha256  "7328efca6cdd0e4683ac3816253b86d8ca2f257219ec3965e7283a5097cd72b2";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Propanol-benzene.dat"
+        {
+            type          imported;
+            sha256        "3ddef10cd079c6135e3aeb5fd10dcae7bf23382ae27762dd1ae8fb73282411d3";
+            computationalSha256 "3d7ca7e1f2fd1170f02607b54d22621a531876fa7318cab9b434931537fa5165";
+            origin        "data/standards/parameters/Wilson/1Propanol-benzene.dat";
+            originSha256  "a4507db6190633073558c5d43e798ef98466cd4911354919ee7617492c14e847";
+            release       Choupo-2608;
+        }
     }
 }

@@ -84,15 +84,19 @@
   not argued). Beside fit_nrtl's max |dP|/P 0.726 % (clean) on the same
   kept points. fit_uniquac: a_ij = 275.7, a_ji = -183.7 K over 22 kept
   points: max |dP|/P 0.717 %, mean 0.453 %, graded clean -> accepted;
-  fit_uniquac_start2 lands on the same pair (275.7, -183.7). PROMOTABLE
-  by `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dP|/P 0.717 % over the 22 kept points, one liquid across the validity
-  span. fit_wilson: A_ij = -2212.3, A_ji = 4122.6 J/mol over 22 kept
-  points: max |dP|/P 0.523 %, mean 0.365 %, graded clean -> accepted;
-  fit_wilson_start2 lands on the same pair (-2212.3, 4122.6). PROMOTABLE
-  by `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dP|/P 0.523 % over the 22 kept points, one liquid across the validity
-  span.
+  fit_uniquac_start2 lands on the same pair (275.7, -183.7). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/UNIQUAC/1Hexene-tertButylEthylEther.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dP|/P 0.717 % over the 22 kept points, one liquid across the
+  validity span. fit_wilson: A_ij = -2212.3, A_ji = 4122.6 J/mol over 22
+  kept points: max |dP|/P 0.523 %, mean 0.365 %, graded clean ->
+  accepted; fit_wilson_start2 lands on the same pair (-2212.3, 4122.6).
+  PROMOTED on 2026-11-11 into
+  data/standards/parameters/Wilson/1Hexene-tertButylEthylEther.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dP|/P 0.523 % over the 22 kept points, one liquid across the
+  validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

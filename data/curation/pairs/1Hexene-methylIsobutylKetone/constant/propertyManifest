@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/1Hexene-methylIsobutylKetone.dat"
+        {
+            type          imported;
+            sha256        "d4cad176941f228d8fcd0f992462bc049485254ad000ee8fc8aab6b4a7ee1c28";
+            computationalSha256 "6e7e0a88ac41037f0a36e1836693c81a98181f3b3bb1a0fa15ad8576d82c00fe";
+            origin        "data/standards/parameters/UNIQUAC/1Hexene-methylIsobutylKetone.dat";
+            originSha256  "c19542a677af72b6531c03944c7990e4ef46a1547c3f55b7e1b95356043448a2";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Hexene-methylIsobutylKetone.dat"
+        {
+            type          imported;
+            sha256        "cd7a917c60cdd02efdee2b46a79ebe6406fafa986a08a50025787bdbcfdbe57f";
+            computationalSha256 "f94a370c35823b7a9a16ece0b2bd674089a4d980ad20a80a00173d6742f5afef";
+            origin        "data/standards/parameters/Wilson/1Hexene-methylIsobutylKetone.dat";
+            originSha256  "a097bf14ef9030348ed7b7468e05a8d3ba43a8ef769d0ab3f53e10341ec0cfe7";
+            release       Choupo-2608;
+        }
     }
 }

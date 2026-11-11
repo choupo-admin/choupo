@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/nButanol-vinylAcetate.dat"
+        {
+            type          imported;
+            sha256        "1f7d827976956d271815f82a582acac17f4f2ff9988094ee992f833802a8208c";
+            computationalSha256 "94f6e7fb1b72d3d64e68a0e9153ccb85c4a47013e8cd86b0c6431312f8a9322f";
+            origin        "data/standards/parameters/UNIQUAC/nButanol-vinylAcetate.dat";
+            originSha256  "799fe0bbd47d5e09f5d45cd12c18d754a5370214ce8968ca4051d29e45fa4c1b";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/nButanol-vinylAcetate.dat"
+        {
+            type          imported;
+            sha256        "4c64d93b59866b1a5b75128593396b1213bb8c6fd8114699fd790a05a1868958";
+            computationalSha256 "ab8ff8fc0271ef3f58fcfd76ef5984b2a9765bde6ee453427d83d72b2d2756b0";
+            origin        "data/standards/parameters/Wilson/nButanol-vinylAcetate.dat";
+            originSha256  "6307adaa003104fb37b44d46b54cc68b764e6714df1897d18e560eadf236ef68";
+            release       Choupo-2608;
+        }
     }
 }

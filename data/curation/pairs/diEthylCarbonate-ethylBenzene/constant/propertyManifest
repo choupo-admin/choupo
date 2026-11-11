@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "fe4907045492b5bea489de00d694e4f3b2c8d01db5a52bb7de39548e5a1f6282";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diEthylCarbonate-ethylBenzene.dat"
+        {
+            type          imported;
+            sha256        "f57bba7e62a25d84f6861d525bc3644879c412642cbf55d2df5f5fe7d8bfad1a";
+            computationalSha256 "52cf1983e04b47acdd5f87a0b83f8958b574dbc761cb4fc784dff1535137e9ae";
+            origin        "data/standards/parameters/Wilson/diEthylCarbonate-ethylBenzene.dat";
+            originSha256  "9d8f08cbe34f37bb1ba06a404210f0f28339dbdcc5a451f8f53b3fe24ffebd9f";
+            release       Choupo-2608;
+        }
     }
 }

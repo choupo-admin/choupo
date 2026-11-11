@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "874355d9e2cd3666c38e2ba997586881ae297a7058ce95513790335a4531e19b";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diethylethanolamine-ethanol.dat"
+        {
+            type          imported;
+            sha256        "d7b42d60c8e9ac2284836fb6f050d48c04ee29730944b6a3104ff22707db5b95";
+            computationalSha256 "97ae74a5925fffe2f6239f0c1bec3c50a29dcd3590cee0156a391a54f1fcb386";
+            origin        "data/standards/parameters/Wilson/diethylethanolamine-ethanol.dat";
+            originSha256  "54bde14af955b50e1b403dd03958bb2844646a9c9bf7d7bc28cdf2eb56e79c64";
+            release       Choupo-2608;
+        }
     }
 }

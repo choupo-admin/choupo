@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/benzene-nNonane.dat"
+        {
+            type          imported;
+            sha256        "f4d8a738efa836c6ae83f20b8855a0f5289f258175e6ac33e8cb76c6c2a92bfe";
+            computationalSha256 "3ac2c10c9a07994895ffff70003f2e5c509ce3295c51d6d7e7a735ad4b7e858d";
+            origin        "data/standards/parameters/UNIQUAC/benzene-nNonane.dat";
+            originSha256  "0e0c70d401b3d25c4252a88be9338caa4d5505606256f1a93ee06b119c722979";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/benzene-nNonane.dat"
+        {
+            type          imported;
+            sha256        "00236061d0c79b717b14430038e3f1cc21a2927ab6fb6e1c781a4387eb9b60d1";
+            computationalSha256 "c098a8850a79eea8137ebb5e09090d859a78f4f2ea640ddeb38e79442f8bad2c";
+            origin        "data/standards/parameters/Wilson/benzene-nNonane.dat";
+            originSha256  "e5457b98d9707c4f16850ee30eeaae81735a55f0f44eec8ae7a59214e738408a";
+            release       Choupo-2608;
+        }
     }
 }

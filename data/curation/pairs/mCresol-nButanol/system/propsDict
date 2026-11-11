@@ -95,9 +95,10 @@
   not argued). Beside fit_nrtl's max |dT| 2.573 K (severe) on the same
   kept points. fit_wilson: A_ij = -8318.3, A_ji = 6514.3 J/mol over 7
   kept points: max |dT| 0.227 K, mean 0.138 K, graded clean -> accepted;
-  fit_wilson_start2 removed (it did not converge). PROMOTABLE by
-  `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dT| 0.227 K over the 7 kept points, one liquid across the validity
+  fit_wilson_start2 removed (it did not converge). PROMOTED on 2026-11-11
+  into data/standards/parameters/Wilson/mCresol-nButanol.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dT| 0.227 K over the 7 kept points, one liquid across the validity
   span. Wilson: fit_wilson_start2 was declared and run and did NOT
   CONVERGE (A_ij at its bound, -30000 .. 30000 J/mol: no finite optimum
   inside the declared bounds); the op is removed so the case runs (C294).

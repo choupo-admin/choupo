@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/124Trimethylbenzene-mEthyltoluene.dat"
+        {
+            type          imported;
+            sha256        "460bbf906442c504e558f72706404a4598e661987a24516b3058cfee7b8e8c90";
+            computationalSha256 "7fb93004a32fa46a104829894ea01d3d202f8cf38f65e23fa46cc136da71fb77";
+            origin        "data/standards/parameters/UNIQUAC/124Trimethylbenzene-mEthyltoluene.dat";
+            originSha256  "74b38cef771fe0f36725fde7d731b31043ecc0218846f18a389f7edc4d7d240b";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/124Trimethylbenzene-mEthyltoluene.dat"
+        {
+            type          imported;
+            sha256        "d55dc101d198b776d14d40081ba630109d4f824522e6631b3baaa9c37c291d11";
+            computationalSha256 "7c53eee0821f5c597dab03fe3dfa18f397f448493286691543c32e85a1b181fd";
+            origin        "data/standards/parameters/Wilson/124Trimethylbenzene-mEthyltoluene.dat";
+            originSha256  "0d76f86acdbeafeb602bf02da400cfd1c2c25a51a134337af1f6ce4a18a23a5d";
+            release       Choupo-2608;
+        }
     }
 }

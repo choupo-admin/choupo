@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/1Hexene-2Pentanol.dat"
+        {
+            type          imported;
+            sha256        "411b5b97b7c4a9a23e575928f0174d03dcac220f8958d16b1e30979f268559a5";
+            computationalSha256 "5a9440085a465f4b799fba86fbf0f13f12c37fd105ade7d6596e29e7d8c4e542";
+            origin        "data/standards/parameters/UNIQUAC/1Hexene-2Pentanol.dat";
+            originSha256  "bd07440d2747d873c19be9124ec41c0311b48586751e32d03bfd3ef3a3aa308c";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Hexene-2Pentanol.dat"
+        {
+            type          imported;
+            sha256        "2de0621d796f1932ff4c7f1c9dab5dbd3277721beb02a366bea4fbc770884f2a";
+            computationalSha256 "e3d85bc51e25670261ba3338e2c127b490e26a63c695f199c1e247ff081e9f8c";
+            origin        "data/standards/parameters/Wilson/1Hexene-2Pentanol.dat";
+            originSha256  "f4149e6d9f0e22f3aa48d855f68561a745099ac015b8249c127877a387f5101e";
+            release       Choupo-2608;
+        }
     }
 }

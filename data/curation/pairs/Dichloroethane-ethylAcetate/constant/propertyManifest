@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "17fe527d59b5a4bbe3d98f9230b8ab57de18da05cca0d33716d9b50e235166e3";
             release       Choupo-2608;
         }
+        "parameters/Wilson/Dichloroethane-ethylAcetate.dat"
+        {
+            type          imported;
+            sha256        "0f915fcc2e51d4edbb21118fab728284a21220aa35d5488d4c6b0e0072a66f6d";
+            computationalSha256 "effa92b3bfe95c1dc51de84f30d405c39b66d92916329671ef87e3011d2e5c4a";
+            origin        "data/standards/parameters/Wilson/Dichloroethane-ethylAcetate.dat";
+            originSha256  "59ccf94586da9feae25bbacf478bde9df4b096784f1cbd6c7f3fa13c5b6e9f68";
+            release       Choupo-2608;
+        }
     }
 }

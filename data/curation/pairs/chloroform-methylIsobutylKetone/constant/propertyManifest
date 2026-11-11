@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "a69bb8f9f41b52e19632098e55b3b88f814e7edc6ba57ca70582973644eb6044";
             release       Choupo-2608;
         }
+        "parameters/Wilson/chloroform-methylIsobutylKetone.dat"
+        {
+            type          imported;
+            sha256        "a87ead7d3f037dbb53e451f2f2024db5c2a61dff59cebb2cbed2f4f6081200b3";
+            computationalSha256 "4ad90a433cd34d1b669523aa373906f4c27b32008b20a5d3c21c6b11a84d4259";
+            origin        "data/standards/parameters/Wilson/chloroform-methylIsobutylKetone.dat";
+            originSha256  "2b231561ae843f0165967bed0e2cf8965076025277ed449ec6c7bfb438e93688";
+            release       Choupo-2608;
+        }
     }
 }

@@ -90,9 +90,11 @@
   not argued). Beside fit_nrtl's max |dT| 0.067 K (clean) on the same
   kept points. fit_wilson: A_ij = 2771.8, A_ji = -140.4 J/mol over 8 kept
   points: max |dT| 0.057 K, mean 0.037 K, graded clean -> accepted;
-  fit_wilson_start2 lands on the same pair (2771.8, -140.4). PROMOTABLE
-  by `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dT| 0.057 K over the 8 kept points, one liquid across the validity
+  fit_wilson_start2 lands on the same pair (2771.8, -140.4). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/Wilson/2Methyl2Propanol-acetonitrile.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dT| 0.057 K over the 8 kept points, one liquid across the validity
   span. UNIQUAC: not fitted -- acetonitrile carries no UNIQUAC r and q
   (no tabulated value, and no UNIFAC groups to sum them from,
   bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing

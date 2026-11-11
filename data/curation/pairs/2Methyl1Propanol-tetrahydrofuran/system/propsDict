@@ -91,7 +91,9 @@
   kept points. fit_wilson: A_ij = 1655.3, A_ji = -1676.8 J/mol over 10
   kept points: max |dT| 1.545 K, mean 1.021 K, graded warning ->
   accepted; fit_wilson_start2 lands on the same pair (1655.3, -1676.8).
-  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
+  PROMOTED on 2026-11-11 into
+  data/standards/parameters/Wilson/2Methyl1Propanol-tetrahydrofuran.dat
+  as reviewStatus autoPromoted, review by none, because: fit grade
   warning -- max |dT| 1.545 K over the 10 kept points, one liquid across
   the validity span. UNIQUAC: not fitted -- tetrahydrofuran carries no
   UNIQUAC r and q (no tabulated value, and no UNIFAC groups to sum them

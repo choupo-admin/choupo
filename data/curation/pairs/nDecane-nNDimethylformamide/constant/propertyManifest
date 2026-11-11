@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "4fce0463180f5fc20331545b8d3a9b83b85a873a3447b83c5f9cb97d40f9241c";
             release       Choupo-2608;
         }
+        "parameters/Wilson/nDecane-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "cfcd9364e6e00975605c1bd954f8677ec25890c90dccb2f9b46ded4c6998aa12";
+            computationalSha256 "6a6cacd6703f1f32294508aaf695d753326c9dfc310363e45617ba24cd784a7c";
+            origin        "data/standards/parameters/Wilson/nDecane-nNDimethylformamide.dat";
+            originSha256  "288da92fb8eb740e14a5180f52b14cf412f3f1dfccc185192b09e2b84c6a0020";
+            release       Choupo-2608;
+        }
     }
 }

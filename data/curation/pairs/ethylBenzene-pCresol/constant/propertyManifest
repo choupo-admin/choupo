@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "e0c3c5d577f9d2149c52e40a0ecf5f69f70a577462589239076a190739a0cad6";
             release       Choupo-2608;
         }
+        "parameters/Wilson/ethylBenzene-pCresol.dat"
+        {
+            type          imported;
+            sha256        "e0be6394eaa4ab0de5456bcce717e29d183c783ef02e7b69642451e6a51bd6fe";
+            computationalSha256 "44226855a07811ffab4425d74a6f67ee191e11ad1c080a6b4b4f3f532b37d173";
+            origin        "data/standards/parameters/Wilson/ethylBenzene-pCresol.dat";
+            originSha256  "889fcc8b14a461bdb588778642bedae26bcf432a3685a625eda8f72352e3f41d";
+            release       Choupo-2608;
+        }
     }
 }

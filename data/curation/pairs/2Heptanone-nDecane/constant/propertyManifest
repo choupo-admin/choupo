@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/2Heptanone-nDecane.dat"
+        {
+            type          imported;
+            sha256        "182a387f7b0471ae63875c1898bcebd9e0377013aa72af71299f2d8950bf92f0";
+            computationalSha256 "48ebf8a7fa00d293626db6c68b50bafea724d081be2b24ec26a5c6fe332525ce";
+            origin        "data/standards/parameters/UNIQUAC/2Heptanone-nDecane.dat";
+            originSha256  "837cafb2c19588d86adad361c41e839275eb0904009d09aeb0dcf7d74d3082f8";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Heptanone-nDecane.dat"
+        {
+            type          imported;
+            sha256        "caf7b0df9cc8c1ae63aad1e8f737e8995b977d3fbcd0975186f4b90ed520f287";
+            computationalSha256 "8b8ab931604328a7586eccdeda17a383614183a1cb3535e92b093c7ee8faf294";
+            origin        "data/standards/parameters/Wilson/2Heptanone-nDecane.dat";
+            originSha256  "1d61475cddf6c7a488c6123d560f12f03c4c306e052779aceb09cbbc961a0f7b";
+            release       Choupo-2608;
+        }
     }
 }

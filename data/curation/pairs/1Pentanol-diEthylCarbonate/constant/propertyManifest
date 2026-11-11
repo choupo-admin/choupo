@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "319812c7ec721eb31a0e924a6f675bdbbb2392df433c29406d237c3dff384c36";
             release       Choupo-2608;
         }
+        "parameters/Wilson/1Pentanol-diEthylCarbonate.dat"
+        {
+            type          imported;
+            sha256        "bb9d81391efe36e01e48f412c7f2e2c87cc6823cc2ec881df6f87562c52e8614";
+            computationalSha256 "34ed1f68d0cb8e27a0ce5358b976450b946445094d99ad184e94825f3e5cce95";
+            origin        "data/standards/parameters/Wilson/1Pentanol-diEthylCarbonate.dat";
+            originSha256  "2dbe74c5579d4b699382250ed92cfddecc27d053ae290957f76090c9cfc256c7";
+            release       Choupo-2608;
+        }
     }
 }

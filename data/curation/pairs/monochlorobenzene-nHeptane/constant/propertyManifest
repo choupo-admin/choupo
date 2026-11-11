@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "108f31f267eae150f775f6dc0c9fa133df5234284093f148a727890ba709d37b";
             release       Choupo-2608;
         }
+        "parameters/Wilson/monochlorobenzene-nHeptane.dat"
+        {
+            type          imported;
+            sha256        "7492a2d64730637d8ea1dcf353648bb08d8f8794a102025a8591c1bdcc59e7bc";
+            computationalSha256 "2bae6200602babd1e36267497d335b858786f7ba9dca40427faad6f3f9ca6e3b";
+            origin        "data/standards/parameters/Wilson/monochlorobenzene-nHeptane.dat";
+            originSha256  "4494b81fc43137a883f575d04f4841459027fc6fc99895f5a27a145b63d17342";
+            release       Choupo-2608;
+        }
     }
 }

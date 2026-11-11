@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "5afa7cb980d4e73e01fb0ae405e5e1b1e95a14cc5d11131a7d2685efd8d79363";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diNButylEther-nNDimethylacetamide.dat"
+        {
+            type          imported;
+            sha256        "ba5efc005646c2be2a67bd5b76f0d4d84b0ee6c2ad0dd0e1dbfe9468fc40f9e4";
+            computationalSha256 "5bd7e2627135cc9cefc3f755ee13420f22b27c5340fe2849eee18982d4c690ce";
+            origin        "data/standards/parameters/Wilson/diNButylEther-nNDimethylacetamide.dat";
+            originSha256  "ac82cbc72127246fc4959f6b6c98b47fc531962213d978622fdee0ce832be301";
+            release       Choupo-2608;
+        }
     }
 }

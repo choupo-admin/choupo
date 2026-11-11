@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "9bb7a5bf817a5345bbb23b9fadfe4500d3213d9d482a340af7c751dc9af3db00";
             release       Choupo-2608;
         }
+        "parameters/Wilson/benzene-diisopropylEther.dat"
+        {
+            type          imported;
+            sha256        "d0f6d7a57417894a2db706a920f5960886a924017e525cb0ddbb8923cb2a2e4a";
+            computationalSha256 "a544ce59a8ad98f4dc926e6c4052f307d9974c9b8ef3951bec457c646a71e564";
+            origin        "data/standards/parameters/Wilson/benzene-diisopropylEther.dat";
+            originSha256  "58ef36da3ba45484d50def82dd223b290db7f79fa6b37145effe9e3411c67a83";
+            release       Choupo-2608;
+        }
     }
 }

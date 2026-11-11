@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "e5d38de6c4c85b6d547fbad7a3a7eba3c48d6d544fc622212a8b0de9577a15a1";
             release       Choupo-2608;
         }
+        "parameters/Wilson/1Propanol-acetonitrile.dat"
+        {
+            type          imported;
+            sha256        "521fc48a651a616c16c115c4b33649103be8ea8f757a184da0e48a1abc4ebb14";
+            computationalSha256 "3c208988be1bf00e82fd103c61701760ef6c5391038ad0aa4f0a4f2218cb51be";
+            origin        "data/standards/parameters/Wilson/1Propanol-acetonitrile.dat";
+            originSha256  "c7929adbb8284629d772102ff4dac6b7d4a2ea1fc680ad12bb35c9f6a41b45ed";
+            release       Choupo-2608;
+        }
     }
 }

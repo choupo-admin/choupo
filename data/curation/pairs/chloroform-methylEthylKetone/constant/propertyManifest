@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "3755a3e14d4bcaf82582e0b260bee5051ae1b6c6f49b2da1e6cb49545fbcb094";
             release       Choupo-2608;
         }
+        "parameters/Wilson/chloroform-methylEthylKetone.dat"
+        {
+            type          imported;
+            sha256        "0c0eec97838ce3861e4906d3851ebb081af53b726bb98c98b948374f4e34a5cd";
+            computationalSha256 "58569fbf9106ca158bad60a59eeeed6ae38e2b939593a8bde01f0f3b5e3a1808";
+            origin        "data/standards/parameters/Wilson/chloroform-methylEthylKetone.dat";
+            originSha256  "e1cb07e656ddf9867379e8631eec8f5979b8de387e5cfb74d7f385e94c406ff6";
+            release       Choupo-2608;
+        }
     }
 }

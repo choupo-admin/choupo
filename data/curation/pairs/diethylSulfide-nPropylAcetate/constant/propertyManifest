@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "e3348e68158d22129c91272e5dfd643823d68543738eae726a8d0ab6294a0aa4";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diethylSulfide-nPropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "b3a2e9f03997845db518dfb00879403746dafa0ae93ad899ccbd2f7980ffbce2";
+            computationalSha256 "3d25523010587308ee44fe49692cdfadd4366c140f71928f7ef0963148986339";
+            origin        "data/standards/parameters/Wilson/diethylSulfide-nPropylAcetate.dat";
+            originSha256  "4cee96f668ae4f1089d01eb23397a043233f7301207e08554480643d30b23ae1";
+            release       Choupo-2608;
+        }
     }
 }

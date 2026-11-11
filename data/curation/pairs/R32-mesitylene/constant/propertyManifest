@@ -43,5 +43,14 @@ propertyManifest
             originSha256  "3a027b3cbea6ed940724e03e1b687c122ef2f1c9cbae4b76390c5ed2a57fd375";
             release       Choupo-2608;
         }
+        "parameters/Wilson/R32-mesitylene.dat"
+        {
+            type          imported;
+            sha256        "dcd8d5241937058e7a52ba9799f8e06a51c9e3f8846483c72d3a7b1e45483824";
+            computationalSha256 "7b4e44105fdb6071b3aa273e31d75948a3fa7051ecfdf9520a9fcb62b7795ee5";
+            origin        "data/standards/parameters/Wilson/R32-mesitylene.dat";
+            originSha256  "6ed1e5d3d4f29eb1bbd08661f627fa0195c9d5822dce752a516ef6d454fab84b";
+            release       Choupo-2608;
+        }
     }
 }

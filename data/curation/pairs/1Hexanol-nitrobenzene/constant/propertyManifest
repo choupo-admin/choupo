@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "e56b85c90a8763a4c74e381e79f60f809971b0d0ccc3c977dae8c1ad992bd553";
             release       Choupo-2608;
         }
+        "parameters/Wilson/1Hexanol-nitrobenzene.dat"
+        {
+            type          imported;
+            sha256        "be3681161a71f380c899ff8d189a023fd2f645ff30bdb9f9bbb899591cf798fb";
+            computationalSha256 "406e38e55d4077f1043b1e195db16d3518e6eea25a77c4a2021a8d85e91f673a";
+            origin        "data/standards/parameters/Wilson/1Hexanol-nitrobenzene.dat";
+            originSha256  "b4b88b8c8b0e318e0c81df11b0906280df1cda827bdaddbe0a8946d19f1c5a47";
+            release       Choupo-2608;
+        }
     }
 }

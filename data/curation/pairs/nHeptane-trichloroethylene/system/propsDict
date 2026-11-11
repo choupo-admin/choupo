@@ -90,9 +90,11 @@
   not argued). Beside fit_nrtl's max |dT| 0.638 K (clean) on the same
   kept points. fit_wilson: A_ij = 4236.6, A_ji = -2759.9 J/mol over 8
   kept points: max |dT| 0.648 K, mean 0.233 K, graded clean -> accepted;
-  fit_wilson_start2 lands on the same pair (4236.6, -2759.9). PROMOTABLE
-  by `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dT| 0.648 K over the 8 kept points, one liquid across the validity
+  fit_wilson_start2 lands on the same pair (4236.6, -2759.9). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/Wilson/nHeptane-trichloroethylene.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dT| 0.648 K over the 8 kept points, one liquid across the validity
   span. UNIQUAC: not fitted -- trichloroethylene carries no UNIQUAC r and
   q (no tabulated value, and no UNIFAC groups to sum them from,
   bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing

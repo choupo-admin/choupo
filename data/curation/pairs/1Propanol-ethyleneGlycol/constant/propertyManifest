@@ -43,5 +43,14 @@ propertyManifest
             originSha256  "409fc26748c4dd89998c0398c5023a4cc7143aeb481d53e119933d0d86b235d7";
             release       Choupo-2608;
         }
+        "parameters/Wilson/1Propanol-ethyleneGlycol.dat"
+        {
+            type          imported;
+            sha256        "8007a965e4151e779d90b47a82a92e4fd379c8b5c928fe5d2597b9dd6fe9300c";
+            computationalSha256 "5903dbcd343236cd8b003fce746d608e8b90c8ea8f5085917e4d9e8dd7652d66";
+            origin        "data/standards/parameters/Wilson/1Propanol-ethyleneGlycol.dat";
+            originSha256  "d16e1796a36a9a15512ac42b54792d05d6c14ccb1d698d011f0afab88d936127";
+            release       Choupo-2608;
+        }
     }
 }

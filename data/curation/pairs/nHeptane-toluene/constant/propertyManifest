@@ -52,5 +52,23 @@ propertyManifest
             originSha256  "c6c415de5a1516d91dd099fdf3404a6b4a161725696311e950ac2079914ce763";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/nHeptane-toluene.dat"
+        {
+            type          imported;
+            sha256        "042780fb4bbc70fcbbd8cb3f657407e64fb5ff97ec4fc2efd18d8a1848bacc4f";
+            computationalSha256 "19bb8adeaeba0730d1a22ce5278420d279a9ab6063075d57861fed74a751b91d";
+            origin        "data/standards/parameters/UNIQUAC/nHeptane-toluene.dat";
+            originSha256  "0fec55eb4d253a2387bbf8e1af2bb5aa8212864d5380c8f210311130f3fc718a";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/nHeptane-toluene.dat"
+        {
+            type          imported;
+            sha256        "65ee45688ea462a3ca87c2c16a82e7d15de641e40e3ac66b8cb085212b6f4f2d";
+            computationalSha256 "575ad712e1b4f2abfa6d982f0d70ac37030bf8de7097f14033e2b15f9e9ac37f";
+            origin        "data/standards/parameters/Wilson/nHeptane-toluene.dat";
+            originSha256  "92e798e0ea9c9bc149c5d07e7dd105885d3d45815f50bcf84f5014bd52e7d69a";
+            release       Choupo-2608;
+        }
     }
 }

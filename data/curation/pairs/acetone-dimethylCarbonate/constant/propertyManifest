@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "b69e5a34dafaecab5a74a9cb9e4077608b7952a3e75f42dba74e2bdab0630322";
             release       Choupo-2608;
         }
+        "parameters/Wilson/acetone-dimethylCarbonate.dat"
+        {
+            type          imported;
+            sha256        "ed4af4c416b34ffe56118c74457a635d908716fdc75bdde181ea0c6b8bd83fef";
+            computationalSha256 "268fe428c1819b5fb5c17f4821a4dfb99ddeaeb4cf009a2741fb285bb2bb5c79";
+            origin        "data/standards/parameters/Wilson/acetone-dimethylCarbonate.dat";
+            originSha256  "42a5e9003978a264bfa256d09284b4d954c873bd1882826dc19c5b975d96cb1a";
+            release       Choupo-2608;
+        }
     }
 }

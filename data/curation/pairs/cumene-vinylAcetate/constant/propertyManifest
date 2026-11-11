@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "9398e1e8a29e57326c9a041a912615279b707dd094dccfbea5da1e68a28ef0fa";
             release       Choupo-2608;
         }
+        "parameters/Wilson/cumene-vinylAcetate.dat"
+        {
+            type          imported;
+            sha256        "b15f3978b025279194d4e4070b2a2e59ce08f670a6cf1b7422fef2fa552ac6df";
+            computationalSha256 "1c97dd7c3f8e9d83da753cc557611433f5683c7b4237d5b0e001453005031e6d";
+            origin        "data/standards/parameters/Wilson/cumene-vinylAcetate.dat";
+            originSha256  "238c3269b41c2ee43c425b849a10e34dc8a02672f2ffa51f1c0c0879a9256ad9";
+            release       Choupo-2608;
+        }
     }
 }

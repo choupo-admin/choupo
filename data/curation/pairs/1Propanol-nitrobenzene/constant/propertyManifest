@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "6f5ba54c188ce9de56d64f8111309abe08a9a59a05233622d5e5800317f2fde5";
             release       Choupo-2608;
         }
+        "parameters/Wilson/1Propanol-nitrobenzene.dat"
+        {
+            type          imported;
+            sha256        "a9daf57eb5dc78b94366eba5b64d050182dfee6caf100056ab4bb36400fc28f2";
+            computationalSha256 "6d3c89a6529dbba92cced62cb357546db6bf2daf3153ea5cc7a3a293197f98b5";
+            origin        "data/standards/parameters/Wilson/1Propanol-nitrobenzene.dat";
+            originSha256  "1a489a3086d25f42a1a5e6fb8d9dcb1acce2cf25f1ae94d117f9eda05c24e83f";
+            release       Choupo-2608;
+        }
     }
 }

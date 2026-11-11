@@ -61,5 +61,14 @@ propertyManifest
             originSha256  "162aea9413514cb8cef5470f2444296f013e7cd813d9a5fb909b5806304e148d";
             release       Choupo-2608;
         }
+        "parameters/Wilson/methylFormate-methylal.dat"
+        {
+            type          imported;
+            sha256        "a5731b611fc46fb8b7a06c63c9d9379933e73dafc979108325c4cedda0ec9465";
+            computationalSha256 "3362cf6102a1e39f5454020d0dea9c1d82c208b1bf809f4c8e7744158c64aff9";
+            origin        "data/standards/parameters/Wilson/methylFormate-methylal.dat";
+            originSha256  "9c2823a4bcadd9fcab0c4cbcd2d645d11e0ee51a2501d22be00868aafdd5dd43";
+            release       Choupo-2608;
+        }
     }
 }

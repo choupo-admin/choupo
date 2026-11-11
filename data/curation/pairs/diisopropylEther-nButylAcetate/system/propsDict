@@ -90,13 +90,15 @@
   not argued). Beside fit_nrtl's max |dT| 1.063 K (warning) on the same
   kept points. fit_wilson: A_ij = 4174.2, A_ji = -1787.6 J/mol over 13
   kept points: max |dT| 0.772 K, mean 0.302 K, graded clean -> accepted;
-  fit_wilson_start2 lands on the same pair (4174.2, -1787.6). PROMOTABLE
-  by `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dT| 0.772 K over the 13 kept points, one liquid across the validity
-  span. UNIQUAC: not fitted -- diisopropylEther carries no UNIQUAC r and
-  q (no tabulated value, and no UNIFAC groups to sum them from,
-  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
-  is estimated silently.
+  fit_wilson_start2 lands on the same pair (4174.2, -1787.6). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/Wilson/diisopropylEther-nButylAcetate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dT| 0.772 K over the 13 kept points, one liquid across the
+  validity span. UNIQUAC: not fitted -- diisopropylEther carries no
+  UNIQUAC r and q (no tabulated value, and no UNIFAC groups to sum them
+  from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted;
+  nothing is estimated silently.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

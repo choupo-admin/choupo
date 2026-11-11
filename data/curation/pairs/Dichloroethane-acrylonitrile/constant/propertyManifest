@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "927acd4ddf9225cfa2b7a849b9e320a950cebdfedcc06d07cca5ea3659468d7f";
             release       Choupo-2608;
         }
+        "parameters/Wilson/Dichloroethane-acrylonitrile.dat"
+        {
+            type          imported;
+            sha256        "1a3bb0098fe2670d921d3863c8c6550902e18e5ec90594468d81b5adfa7d4286";
+            computationalSha256 "a8c2d494c35bc3764b9944dd8d63fd91f2465cb714759558056049dfd5e9fde1";
+            origin        "data/standards/parameters/Wilson/Dichloroethane-acrylonitrile.dat";
+            originSha256  "afada157a9482073b589916754bcc4c0a16c43596712f121be2adbc28bb4c8c5";
+            release       Choupo-2608;
+        }
     }
 }

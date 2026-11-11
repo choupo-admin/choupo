@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "494d1a99a66783440e7a60b7bd6ee65d7ef2af45934abd8d4b80b89e45d10e75";
             release       Choupo-2608;
         }
+        "parameters/Wilson/2Butanol-dimethylCarbonate.dat"
+        {
+            type          imported;
+            sha256        "0da1e4414171dc5abeaba44f21a5c3e4cf3ff6dafa5eecc979c672e592543382";
+            computationalSha256 "e78895ebf8cfa6f7d5fc669b83ca2dc88320748b1ca17be4391bba59edc0ab91";
+            origin        "data/standards/parameters/Wilson/2Butanol-dimethylCarbonate.dat";
+            originSha256  "141cce2053dd31aecaf8c544ac3fbbad36f8551a4bee58da4ced57257a0c0540";
+            release       Choupo-2608;
+        }
     }
 }

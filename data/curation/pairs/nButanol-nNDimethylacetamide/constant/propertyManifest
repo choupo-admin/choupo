@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "5f5d0dc22c133f82003ffa26d860feba8bd5a3ffa5f7d8f09cf2639aa255393c";
             release       Choupo-2608;
         }
+        "parameters/Wilson/nButanol-nNDimethylacetamide.dat"
+        {
+            type          imported;
+            sha256        "7f4a5b4331a853ca9f536f9bea3667dc77247e38d4286773fa2934712ddb1b50";
+            computationalSha256 "13a9f01364bb30b96f56d9a196b3d8c15d6322b4bf27884f47963a086bbf2e42";
+            origin        "data/standards/parameters/Wilson/nButanol-nNDimethylacetamide.dat";
+            originSha256  "b869e56d9e5a12ee3aeb76c9e5922207fac66182ffdc61bc2bda52d494f68035";
+            release       Choupo-2608;
+        }
     }
 }

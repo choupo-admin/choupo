@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "98433ac482dc47cead93b1edbcca21799c05d87d90e40a36eca80d02dde0802a";
             release       Choupo-2608;
         }
+        "parameters/Wilson/2Methyl1Butanol-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "f89b995d23cbd49ce7ba4d8d013d3987f0ecca911fb5834c216197ab7f490cb5";
+            computationalSha256 "a834b529d730877f93030a46dfe499231e496a72cca529cb29ba2ce64dc95793";
+            origin        "data/standards/parameters/Wilson/2Methyl1Butanol-nNDimethylformamide.dat";
+            originSha256  "74cb58a397db117edfc84b25b358a1037e4e693a0d1e18ff2c39a5a3355124ec";
+            release       Choupo-2608;
+        }
     }
 }

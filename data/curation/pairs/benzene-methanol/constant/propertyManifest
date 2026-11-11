@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/benzene-methanol.dat"
+        {
+            type          imported;
+            sha256        "1768f0d9d3420e82fbc44bb1b7cd22f2749029a7cbfdab024deb959149683b81";
+            computationalSha256 "3ff3ce44cf89eb88b8db235015cbd817fa416c95d446ef68ea6de90b041fa2a3";
+            origin        "data/standards/parameters/UNIQUAC/benzene-methanol.dat";
+            originSha256  "42e4ff4833eb377ac070335b30dc6069c9fd9e0b19bb24d4b0dcbc5ccfa6b375";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/benzene-methanol.dat"
+        {
+            type          imported;
+            sha256        "6134ce02e81222c06f4f901099c0b0fcad5746daef84aa67b93d3ccd573cd50f";
+            computationalSha256 "d400a6e8ce702906db8a110f62351152aac7d3be052e168325f4cc291918ff3f";
+            origin        "data/standards/parameters/Wilson/benzene-methanol.dat";
+            originSha256  "90b0307c0f3e13d754244f440e1e3a719d020005fc22a6132cd7e8b689f9ffb3";
+            release       Choupo-2608;
+        }
     }
 }

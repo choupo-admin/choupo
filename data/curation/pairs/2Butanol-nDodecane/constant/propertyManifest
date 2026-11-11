@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "71efd57e5fe64e8667395cdc87d12a9a76dc08fc01aa5b7e62a2a34c5323770c";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/2Butanol-nDodecane.dat"
+        {
+            type          imported;
+            sha256        "c274bb9b7b3361220cd760e48f7cdc399bc69b0eba4acc129b3f62cb5ad5f7d8";
+            computationalSha256 "49d237325be676ad405fdbb8b27223f2e3ae929d7cb3a5964ba31308546a2b91";
+            origin        "data/standards/parameters/UNIQUAC/2Butanol-nDodecane.dat";
+            originSha256  "e25f516f4ba1545a719725c2a443291b7eae6c797c16d2d75c31c6182e0d971e";
+            release       Choupo-2608;
+        }
     }
 }

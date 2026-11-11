@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "73e1922cc33ec89bd59c246e9e8a7a2afb1b2956aa99cb4cf7dcf5f41ec027ef";
             release       Choupo-2608;
         }
+        "parameters/Wilson/2Pentanone-dimethylCarbonate.dat"
+        {
+            type          imported;
+            sha256        "49970a59048af999b8d63fc8e54c3b02a34b553ab96bcd4d7fc368876319ae86";
+            computationalSha256 "310c759facb6a031dfa66c98ae5bcf9ecca494d1ad20dcfaebf64931813e7394";
+            origin        "data/standards/parameters/Wilson/2Pentanone-dimethylCarbonate.dat";
+            originSha256  "75a1c3b9292e22f8e8502f6b1de5a60e2890a0f374ea70e140d1ccdafd2b2049";
+            release       Choupo-2608;
+        }
     }
 }

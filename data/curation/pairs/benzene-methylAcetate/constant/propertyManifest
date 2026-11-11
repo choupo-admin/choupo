@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/benzene-methylAcetate.dat"
+        {
+            type          imported;
+            sha256        "23a63f7ab89049d1c31c28bc10359af964b8d5ac47ed69cac0b6aef9cc3bd9d5";
+            computationalSha256 "bc4059f447864a1f023f727300ff2185d002e1947528281834c43352ba36512d";
+            origin        "data/standards/parameters/UNIQUAC/benzene-methylAcetate.dat";
+            originSha256  "5fb7e4d17166370014b75113c4bef56a60c202fa789171e888816d91009a727d";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/benzene-methylAcetate.dat"
+        {
+            type          imported;
+            sha256        "2bb9b6030bca1a00f89282d3168796890f72fe72829ba4f42d3161c66df8975a";
+            computationalSha256 "8e9b39f2b978572f7102ff06e783e6a6dc8c3be57c4971fa80919e0b423a0ea5";
+            origin        "data/standards/parameters/Wilson/benzene-methylAcetate.dat";
+            originSha256  "d6c02ff1a91deb9e461165881c4c111961bc0fcd80e9b17aec037c7c13538b4c";
+            release       Choupo-2608;
+        }
     }
 }

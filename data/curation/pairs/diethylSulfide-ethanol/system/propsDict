@@ -85,11 +85,13 @@
   not argued). Beside fit_nrtl's max |dP|/P 1.607 % (clean) on the same
   kept points. fit_wilson: A_ij = 290.9, A_ji = 4938.1 J/mol over 25 kept
   points: max |dP|/P 1.410 %, mean 0.835 %, graded clean -> accepted;
-  fit_wilson_start2 lands on the same pair (290.9, 4938.1). PROMOTABLE by
-  `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dP|/P 1.410 % over the 25 kept points, one liquid across the validity
-  span. UNIQUAC: not fitted -- diethylSulfide carries no UNIQUAC r and q
-  (no tabulated value, and no UNIFAC groups to sum them from,
+  fit_wilson_start2 lands on the same pair (290.9, 4938.1). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/Wilson/diethylSulfide-ethanol.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dP|/P 1.410 % over the 25 kept points, one liquid across the
+  validity span. UNIQUAC: not fitted -- diethylSulfide carries no UNIQUAC
+  r and q (no tabulated value, and no UNIFAC groups to sum them from,
   bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
   is estimated silently.
   @@MODELS-RESULT-END@@

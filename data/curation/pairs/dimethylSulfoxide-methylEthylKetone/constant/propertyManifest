@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "98d908d83cf3fedd550dade7b6e6480ed56a3e8bd14e494434e69366fc2968c8";
             release       Choupo-2608;
         }
+        "parameters/Wilson/dimethylSulfoxide-methylEthylKetone.dat"
+        {
+            type          imported;
+            sha256        "e1480e8daec6eafb4b7a7885389d220d34d1997c889712f7dfd50d09a11e0a45";
+            computationalSha256 "bbff963f448703040a7dc0b1dce63540b6bb204a2f9bbc2ec60c8079c97a1772";
+            origin        "data/standards/parameters/Wilson/dimethylSulfoxide-methylEthylKetone.dat";
+            originSha256  "f8c16e2e0d1400249a110ae3d51fb8445e64eb218792e55d5937f4c8b25d6727";
+            release       Choupo-2608;
+        }
     }
 }

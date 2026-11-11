@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "3550b0217f00f0448e53343ce665aa27ab048bb1b5961db7d0c10705e9ab11d5";
             release       Choupo-2608;
         }
+        "parameters/Wilson/cyclohexanone-isopropanol.dat"
+        {
+            type          imported;
+            sha256        "ba79c26d776a8222ab100a29ade05641152d36ee15f973edd89ae582281a4deb";
+            computationalSha256 "58b5550826d2e6caab2a6b85c5c7e9ac470aaf3e09cfe5608bcc17c895c8686b";
+            origin        "data/standards/parameters/Wilson/cyclohexanone-isopropanol.dat";
+            originSha256  "7cdf7eebdcc811326d6159634467e84d7d591a7d5ebf542cbdfcdb75cc3dc2c1";
+            release       Choupo-2608;
+        }
     }
 }

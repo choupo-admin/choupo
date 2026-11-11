@@ -52,5 +52,23 @@ propertyManifest
             originSha256  "b2fabc40ba03017f81e1ad7060fb1b13255ceb809a605f5ce30e0327f7d50e5a";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/cyclohexane-tertButylEthylEther.dat"
+        {
+            type          imported;
+            sha256        "d08fa9ce1d768dd6e7e1ba01342a5d6a76da55b1eab505dd9358848d112dd925";
+            computationalSha256 "755fc856ffd6003363dcf93f7e9f12285d4addd906898c0f5fe9b404983400d0";
+            origin        "data/standards/parameters/UNIQUAC/cyclohexane-tertButylEthylEther.dat";
+            originSha256  "356bc170e57a03f22e9542f02642daef04bda2ce391383821f7e7c23aeab95a1";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/cyclohexane-tertButylEthylEther.dat"
+        {
+            type          imported;
+            sha256        "8445619778495cfdbba8c9edc296d68ca7e425e8bc07e536a494e10c36ce090e";
+            computationalSha256 "a14cf9ce64ecf2a8534b166b3868b9f0fb39cdde175dedb08bfce93e0bcc69d1";
+            origin        "data/standards/parameters/Wilson/cyclohexane-tertButylEthylEther.dat";
+            originSha256  "57b13fac41c47f657acfa43397b67b3cf9af8c24ea7c729c6204a2349027770a";
+            release       Choupo-2608;
+        }
     }
 }

@@ -90,13 +90,15 @@
   not argued). Beside fit_nrtl's max |dT| 0.656 K (clean) on the same
   kept points. fit_wilson: A_ij = -684.3, A_ji = 1908.7 J/mol over 32
   kept points: max |dT| 0.674 K, mean 0.353 K, graded clean -> accepted;
-  fit_wilson_start2 lands on the same pair (-684.3, 1908.7). PROMOTABLE
-  by `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dT| 0.674 K over the 32 kept points, one liquid across the validity
-  span. UNIQUAC: not fitted -- diethyleneGlycol and triethyleneGlycol
-  carry no UNIQUAC r and q (no tabulated value, and no UNIFAC groups to
-  sum them from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not
-  fitted; nothing is estimated silently.
+  fit_wilson_start2 lands on the same pair (-684.3, 1908.7). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/Wilson/diethyleneGlycol-triethyleneGlycol.dat
+  as reviewStatus autoPromoted, review by none, because: fit grade clean
+  -- max |dT| 0.674 K over the 32 kept points, one liquid across the
+  validity span. UNIQUAC: not fitted -- diethyleneGlycol and
+  triethyleneGlycol carry no UNIQUAC r and q (no tabulated value, and no
+  UNIFAC groups to sum them from, bin/curate/uniquac_rq_from_groups.py)
+  -- UNIQUAC is not fitted; nothing is estimated silently.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

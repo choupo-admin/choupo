@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "e4f36aad69a31e701b5a491e4704857027ec6cc833053c7ea8686056b07c1475";
             release       Choupo-2608;
         }
+        "parameters/Wilson/cyclohexane-tetrahydrofuran.dat"
+        {
+            type          imported;
+            sha256        "4533f42add13920b703afc4220bf20e32c3b77d3332989e71ceaff3de35a2ef1";
+            computationalSha256 "19f821757f32734266fc7a1b335fb6e36decf7787c235cb3616b1ffcb80eb747";
+            origin        "data/standards/parameters/Wilson/cyclohexane-tetrahydrofuran.dat";
+            originSha256  "3a9d9153b738e4088b41d7afddaf323191f498cda6bc9cbd45ce66a7ee55477a";
+            release       Choupo-2608;
+        }
     }
 }

@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/2Methyl2Butanol-methylTertButylEther.dat"
+        {
+            type          imported;
+            sha256        "35a2bed0c236e764c3355757838953b62b61cb0ac2d99043c59b207b6a67cad9";
+            computationalSha256 "0704f7c7dd9183bf26f3660e16c3ab0a567156e2bab6ec755ba43febf6dd7286";
+            origin        "data/standards/parameters/UNIQUAC/2Methyl2Butanol-methylTertButylEther.dat";
+            originSha256  "bbcfecc2041b18c1f21eeed135ee568d7a4bfcec266fc75abb0a48cc03155a9c";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Methyl2Butanol-methylTertButylEther.dat"
+        {
+            type          imported;
+            sha256        "9afed137de12487231d5544afa649b1d7fd27560f111f3c45f4203b369fd11be";
+            computationalSha256 "07bc0ab056f29c52ea35cf516302987e340fbf1ed2b8b20d6902760f5badd27e";
+            origin        "data/standards/parameters/Wilson/2Methyl2Butanol-methylTertButylEther.dat";
+            originSha256  "b2fbd5eb6f347e49cf82dd106e8a7152e62252edf777a448c0501fd19671b7d2";
+            release       Choupo-2608;
+        }
     }
 }

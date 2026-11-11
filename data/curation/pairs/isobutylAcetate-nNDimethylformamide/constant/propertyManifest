@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "4e5c75b79aa007b65927b4e3589f0275823e8aaabe9b71a78dbd364b11b5ab80";
             release       Choupo-2608;
         }
+        "parameters/Wilson/isobutylAcetate-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "173906dea86a7b3dd2625daaff0cb1ff4e65583457a317a8c8c8b7026dbed5e8";
+            computationalSha256 "f98d7fde356e784b6248ecca67716d504c3c8a4f39c34b55b2c93ad850941665";
+            origin        "data/standards/parameters/Wilson/isobutylAcetate-nNDimethylformamide.dat";
+            originSha256  "74971c65a8ee527d32293f0137a70915200a32c4281edb2a461c9cdc9a432cee";
+            release       Choupo-2608;
+        }
     }
 }

@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "b553e44278c5233c93ea96481ff92ed537819ee5c367c5400361c2314db01a3f";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diethylSulfide-ethanol.dat"
+        {
+            type          imported;
+            sha256        "2a20c52b562ecc9caec2b4ea2e4ae340a0f50d85df40376407581dd6a7787b80";
+            computationalSha256 "c82268cfeab96e45835f496202246623604c6bde451007d87f82621f63040667";
+            origin        "data/standards/parameters/Wilson/diethylSulfide-ethanol.dat";
+            originSha256  "d8157e6bcab344bed831b18ee55cb99c1c132b96e612c6916add88f41d10a26c";
+            release       Choupo-2608;
+        }
     }
 }

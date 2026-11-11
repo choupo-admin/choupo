@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "b3bb80347e5c04cb4314f321bf82b5c968ed242cd31b670fa4451548d48e0e68";
             release       Choupo-2608;
         }
+        "parameters/Wilson/Dichloroethane-nPropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "4882196169fe59f43476b7824532bd8591774ea53cd172c77a748602fc841258";
+            computationalSha256 "2771a7c1d0307542bd6865bfe77f11a94b791491005f0a430c5061ace210dc0f";
+            origin        "data/standards/parameters/Wilson/Dichloroethane-nPropylAcetate.dat";
+            originSha256  "3fc69e75669fa64e54e9545143e3f61823ea54d20dd348e0f20e6e256af120a0";
+            release       Choupo-2608;
+        }
     }
 }

@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/cyclohexene-methylIsobutylKetone.dat"
+        {
+            type          imported;
+            sha256        "7d0805a2fe1b2d724abd435ce9188bd87b357b9d4d8c40a435417c7b2f22301f";
+            computationalSha256 "e1d13f231f12d4a028b76964856162a759888b31595f54753e6adf2594720a95";
+            origin        "data/standards/parameters/UNIQUAC/cyclohexene-methylIsobutylKetone.dat";
+            originSha256  "11d7d578bd6703c1633cde7b07c017c274b3dba79fc7b4f6af396bcd02fb7275";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/cyclohexene-methylIsobutylKetone.dat"
+        {
+            type          imported;
+            sha256        "17379274af5e71bf5e639b2e6b6c06c8d17715bd3f5294f7ae510b33734eea23";
+            computationalSha256 "7e77dbecbd33f062e93c172e802ea09839db88e165d58390255db257f20d7c89";
+            origin        "data/standards/parameters/Wilson/cyclohexene-methylIsobutylKetone.dat";
+            originSha256  "ce4eb379eacf6e299978958fc5601fc5a6e391c253d7a33d28ed45276e2a2af5";
+            release       Choupo-2608;
+        }
     }
 }

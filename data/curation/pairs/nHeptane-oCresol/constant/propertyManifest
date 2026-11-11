@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "e50fabefbbb29c568b8793ee19e9070ca9e01172d68cd2e9346ced15fe567c56";
             release       Choupo-2608;
         }
+        "parameters/Wilson/nHeptane-oCresol.dat"
+        {
+            type          imported;
+            sha256        "48155dd8af438484ce1ac97d1226a0c594dfc0c828fc4d1c16db5aa9797c189f";
+            computationalSha256 "67b6a1a4a214d11356bfd93370dd3f333bfc5c4c4b88a1d9503d214eb73cbee1";
+            origin        "data/standards/parameters/Wilson/nHeptane-oCresol.dat";
+            originSha256  "5a6e7c078309dec5a301478e5e92c3b3e49bc79bf475b9acfa15718b77b4ca6e";
+            release       Choupo-2608;
+        }
     }
 }

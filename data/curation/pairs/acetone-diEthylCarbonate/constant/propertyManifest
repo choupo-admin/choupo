@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "f6e4f181894f07e48bc55b3748aabe0d67eb3b3969f8180dbf1513254e024603";
             release       Choupo-2608;
         }
+        "parameters/Wilson/acetone-diEthylCarbonate.dat"
+        {
+            type          imported;
+            sha256        "db64a15ebf66808373e848c1b887a4282efab5e0144064cbcb4b730f5914e8db";
+            computationalSha256 "2c044bf5f39cb96f042c8c2d5fd60b624bf97a1ec7bd2c3a5986ad0a8fd1e240";
+            origin        "data/standards/parameters/Wilson/acetone-diEthylCarbonate.dat";
+            originSha256  "53dd1d0f8cadf764d17097ac1b45b1c156ecc00a3291a10ab4bd48bf432d106c";
+            release       Choupo-2608;
+        }
     }
 }

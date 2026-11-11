@@ -70,5 +70,23 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
+        "parameters/UNIQUAC/methylcyclohexane-pXylene.dat"
+        {
+            type          imported;
+            sha256        "2558c7965d5f46db7a5029c84c1dffe12e5f8006f7584a670a56e1b13528764a";
+            computationalSha256 "d3a128394497fc50441285dce1e4395447bc4ccdfa6a42d73d93dde6e444cf7e";
+            origin        "data/standards/parameters/UNIQUAC/methylcyclohexane-pXylene.dat";
+            originSha256  "ed243c1a024086d88ec64882a635eff56742b5909a47256b94a9af7450911101";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/methylcyclohexane-pXylene.dat"
+        {
+            type          imported;
+            sha256        "6f701e0c0d1d328555a45e76b0db3cd4fe4d57fe5f2d0f10c2f7b6453fa5daee";
+            computationalSha256 "40e5aed57493c24f7a553266449c412511837ae12eaf89b4f60d0079204d9af8";
+            origin        "data/standards/parameters/Wilson/methylcyclohexane-pXylene.dat";
+            originSha256  "392c8e84abc3c857072caf27b5fe767d590a3ccc1cbe4b165a58dc656979ea48";
+            release       Choupo-2608;
+        }
     }
 }

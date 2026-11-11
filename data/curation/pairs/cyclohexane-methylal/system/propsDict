@@ -87,15 +87,19 @@
   not argued). Beside fit_nrtl's max |dT| 0.147 K (clean) on the same
   kept points. fit_uniquac: a_ij = 209.4, a_ji = -73.7 K over 10 kept
   points: max |dT| 0.123 K, mean 0.081 K, graded clean -> accepted;
-  fit_uniquac_start2 lands on the same pair (209.4, -73.7). PROMOTABLE by
-  `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dT| 0.123 K over the 10 kept points, one liquid across the validity
-  span. fit_wilson: A_ij = 524.8, A_ji = 3411.1 J/mol over 10 kept
-  points: max |dT| 0.104 K, mean 0.072 K, graded clean -> accepted;
-  fit_wilson_start2 lands on the same pair (524.8, 3411.1). PROMOTABLE by
-  `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
-  |dT| 0.104 K over the 10 kept points, one liquid across the validity
-  span.
+  fit_uniquac_start2 lands on the same pair (209.4, -73.7). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/UNIQUAC/cyclohexane-methylal.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dT| 0.123 K over the 10 kept points, one liquid across the
+  validity span. fit_wilson: A_ij = 524.8, A_ji = 3411.1 J/mol over 10
+  kept points: max |dT| 0.104 K, mean 0.072 K, graded clean -> accepted;
+  fit_wilson_start2 lands on the same pair (524.8, 3411.1). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/Wilson/cyclohexane-methylal.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dT| 0.104 K over the 10 kept points, one liquid across the
+  validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

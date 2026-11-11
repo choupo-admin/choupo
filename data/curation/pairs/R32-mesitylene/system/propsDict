@@ -92,11 +92,12 @@
   not argued). Beside fit_nrtl's max |dT| 2.119 K (severe) on the same
   kept points. fit_wilson: A_ij = 2767.2, A_ji = 918.1 J/mol over 7 kept
   points: max |dT| 1.776 K, mean 0.934 K, graded warning -> accepted;
-  fit_wilson_start2 lands on the same pair (2767.2, 918.1). PROMOTABLE by
-  `bin/choupo-curate pairs --models --promote`: fit grade warning -- max
-  |dT| 1.776 K over the 7 kept points, one liquid across the validity
-  span. UNIQUAC: not fitted -- R32 carries no UNIQUAC r and q (no
-  tabulated value, and no UNIFAC groups to sum them from,
+  fit_wilson_start2 lands on the same pair (2767.2, 918.1). PROMOTED on
+  2026-11-11 into data/standards/parameters/Wilson/R32-mesitylene.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade warning
+  -- max |dT| 1.776 K over the 7 kept points, one liquid across the
+  validity span. UNIQUAC: not fitted -- R32 carries no UNIQUAC r and q
+  (no tabulated value, and no UNIFAC groups to sum them from,
   bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
   is estimated silently.
   @@MODELS-RESULT-END@@

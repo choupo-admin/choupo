@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "c323839558e2a56498c2875eb02a2445726cf743cfca7376e72545865f537c4b";
             release       Choupo-2608;
         }
+        "parameters/Wilson/1Hexanol-acrylonitrile.dat"
+        {
+            type          imported;
+            sha256        "5e2e6377b7d52597f9f74bffdc4205b90000025ccf0a6be52726b56eaeca4837";
+            computationalSha256 "ff66cd40c9a59bc69fc83fa4b7fca9a6d857c76fb4df90c0164c919d55bc6ab1";
+            origin        "data/standards/parameters/Wilson/1Hexanol-acrylonitrile.dat";
+            originSha256  "0b0bf6a1d8454e6867e04f124dc027e6c4ad690a6f70c94d107251b436cd0ca5";
+            release       Choupo-2608;
+        }
     }
 }

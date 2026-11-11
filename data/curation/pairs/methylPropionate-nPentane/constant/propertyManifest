@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "9d639ce8b509514258968bf6a59cca60121e4cf337bc812228b35fe7ea907286";
             release       Choupo-2608;
         }
+        "parameters/Wilson/methylPropionate-nPentane.dat"
+        {
+            type          imported;
+            sha256        "f6c4d163072b540869deae86c9593097220aa5047346ae980f372f287c78d6da";
+            computationalSha256 "23365a282daf34b3f69f7278e77c70941eb9a273f87a819e3977f5adf280c4bc";
+            origin        "data/standards/parameters/Wilson/methylPropionate-nPentane.dat";
+            originSha256  "e95ed171670cdb994bb4fe389e9b66e360265a9b01eda0bdb1e1684d897e528d";
+            release       Choupo-2608;
+        }
     }
 }

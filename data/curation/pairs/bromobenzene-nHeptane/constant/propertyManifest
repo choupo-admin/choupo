@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "8bad10339023efc873827efbe330b102fdae67095b7608c25b769f46508d3d5e";
             release       Choupo-2608;
         }
+        "parameters/Wilson/bromobenzene-nHeptane.dat"
+        {
+            type          imported;
+            sha256        "8244eb053cabe105f16ddb184916ebd9af7a822aac2997d3e9109081f74d8601";
+            computationalSha256 "ee66a395e2290cd529df9ff4948825d435837d1e648d9dbdbfe90776c575bf95";
+            origin        "data/standards/parameters/Wilson/bromobenzene-nHeptane.dat";
+            originSha256  "f06f20f838742fd3d02eb15497db3d9ac24b286355a9abfb3bb11fd5b85e09fd";
+            release       Choupo-2608;
+        }
     }
 }
