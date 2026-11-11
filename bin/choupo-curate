@@ -1123,7 +1123,7 @@ def seal(case):
                        capture_output=True, text=True, env=env(), timeout=1800)
     if p.returncode != 0:
         refuse(f"bin/choupo-import {label(case)} exited {p.returncode}: "
-               f"{(p.stdout + p.stderr)[-800:]}")
+               f"{(lambda o: o if len(o) <= 1600 else o[:800] + ' [...] ' + o[-800:])(p.stdout + p.stderr)}")
 
 
 def fill_result(case, js, rf, reason, pl):
