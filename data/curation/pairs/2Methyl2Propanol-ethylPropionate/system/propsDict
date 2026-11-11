@@ -470,6 +470,18 @@ operations
     // @@C294-OPS-END@@
     // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
     {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[ethylPropionate];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.325 kPa;  composition { ethylPropionate 0.5;  2Methyl2Propanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_ethylPropionate );
+        output      { file txy_wilson.csv; }
+    }
+    {
         name        txy_uniquac;
         type        propertyScan1D;
         vary        { variable x[ethylPropionate];  from 0.0;  to 1.0;  n 101; }
