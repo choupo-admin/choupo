@@ -1,0 +1,7 @@
+/*  1Methoxy2Propanol-water: an NRTL pair for water + 1Methoxy2Propanol regressed by bin/choupo-curate to
+    EVERY laboratory's measured bubble temperatures (DEV.md 4c C283 amended,
+    C284).  See system/propsDict for the declaration and the result.  */
+
+application   choupoProps;
+description   "NRTL water-1Methoxy2Propanol regressed by the curation pipeline to every laboratory's measured bubble temperatures (ThermoML locates, the articles source), graded by max |dT| (clean 1 K, warning 2 K, severe 4 K, refused above; C285, C286)";
+verbosity     2;
