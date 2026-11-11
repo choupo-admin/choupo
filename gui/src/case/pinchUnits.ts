@@ -12,65 +12,85 @@
 
 import {
   DEFAULT_PREFS, cpLabel, cpToDisplay, dKToDisplay, dutyLabel, formatSig,
-  kToDisplay, kWToDisplay, temperatureLabel,
+  getDisplaySigFigs, kToDisplay, kWToDisplay, temperatureLabel,
   type DisplayPrefs,
 } from "../state/displayUnits.js";
+import { noInteriorPinchText } from "./pinchWording.js";
 
 export interface PinchUnits {
   tLabel: string;     // "K" | "°C"
   qLabel: string;     // "kW" | "MW" | ...
   cpLabel: string;    // "kW/K" | "MW/°C" | ...
-  /** absolute temperature [K] -> picked unit, `d` decimals */
+  /** absolute temperature [K] -> picked unit (the `d` argument is ignored:
+   *  every number follows the significant-figures preference) */
   T(K: number, d?: number): string;
   /** temperature difference [K] -> picked unit (no offset) */
   dT(K: number, d?: number): string;
-  /** temperature difference [K] as the bare number (no fixed decimals) */
+  /** temperature difference [K]; the same rule as dT (kept for callers) */
   dTraw(K: number): string;
   /** duty [kW] -> picked unit */
   Q(kW: number, d?: number): string;
-  /** a TARGET duty [kW]: 107.5 stays 107.5 (one decimal below 1000 in the
-   *  default unit; other units keep four significant figures) */
+  /** a TARGET duty [kW]; the same rule as Q (kept for callers) */
   Qt(kW: number): string;
   /** CP [kW/K] -> picked unit */
   CP(kWperK: number, d?: number): string;
+  /** a number ALREADY in display units (an axis tick), the same rule */
+  n(v: number): string;
+  /** duties [kW] shown TOGETHER in one identity (a sum, a difference):
+   *  returns a formatter with ONE absolute precision for all of them, chosen
+   *  so the SMALLEST nonzero |value| carries the preference's significant
+   *  figures.  61412.4 / 61494.0 / 81.6, never 61400 / 61500 / 81.6, which
+   *  a reader would subtract to 100. */
+  group(kWs: number[]): (kW: number) => string;
   /** numeric converters, for axes */
   qNum(kW: number): number;
   tNum(K: number): number;
 }
 
-/** The default duty (kW) keeps toFixed so every existing screen stays
- *  byte-identical; any other duty unit spans decades (0.02 MW would print
- *  0.0), so it is shown to significant figures instead. */
+/** EVERY printed number follows the Units menu's significant figures (C304,
+ *  Vitor 2026-11-11: "41051.0, 61412.4, 107.50" were too many digits): the
+ *  page shows `sigFigs` significant figures (default 3: 41100 kW, 108 kW,
+ *  353 K) and a user who sets 5 sees 5.  The `d` arguments call sites still
+ *  pass are IGNORED -- one rule, not one per call site.  `sigFigs` is read
+ *  from `prefs` when given, else from the live global the store keeps
+ *  (getDisplaySigFigs) at the moment of printing.  The CSV files stay at
+ *  full precision: nothing here writes one. */
 export function pinchUnits(
-  prefs: Pick<DisplayPrefs, "temperature" | "duty"> = DEFAULT_PREFS,
+  prefs: Pick<DisplayPrefs, "temperature" | "duty"> & { sigFigs?: number } = DEFAULT_PREFS,
 ): PinchUnits {
   const t = prefs.temperature, q = prefs.duty;
-  const fixedQ = q === "kW";
-  const fix = (v: number, d: number) => (Number.isFinite(v) ? v.toFixed(d) : "—");
-  const qfmt = (v: number, d: number) =>
-    (fixedQ ? fix(v, d) : Number.isFinite(v) ? formatSig(v, Math.max(4, d + 3)) : "—");
+  const sig = () => prefs.sigFigs ?? getDisplaySigFigs();
+  const f = (v: number) => (Number.isFinite(v) ? formatSig(v, sig()) : "—");
   return {
     tLabel: temperatureLabel(t),
     qLabel: dutyLabel(q),
     cpLabel: cpLabel(q, t),
-    T: (K, d = 0) => fix(kToDisplay(K, t), d),
-    dT: (K, d = 0) => fix(dKToDisplay(K, t), d),
-    dTraw: (K) => String(dKToDisplay(K, t)),
-    Q: (kW, d = 0) => qfmt(kWToDisplay(kW, q), d),
-    Qt: (kW) => {
-      if (!Number.isFinite(kW)) return "—";
-      const v = kWToDisplay(kW, q);
-      if (!fixedQ) return formatSig(v, 4);
-      return Math.abs(v) >= 1000 ? v.toFixed(0) : String(Number(v.toFixed(1)));
+    T: (K) => f(kToDisplay(K, t)),
+    dT: (K) => f(dKToDisplay(K, t)),
+    dTraw: (K) => f(dKToDisplay(K, t)),
+    Q: (kW) => f(kWToDisplay(kW, q)),
+    Qt: (kW) => f(kWToDisplay(kW, q)),
+    CP: (c) => f(cpToDisplay(c, q, t)),
+    n: (v) => f(v),
+    group: (kWs) => {
+      const mags = kWs.map((k) => Math.abs(kWToDisplay(k, q)))
+        .filter((a) => Number.isFinite(a) && a > 0);
+      const d = mags.length === 0 ? 0    // all zero: nothing to carry
+        : Math.max(0, Math.min(12, sig() - 1 - Math.floor(Math.log10(Math.min(...mags)))));
+      return (kW) => {
+        const v = kWToDisplay(kW, q);
+        if (!Number.isFinite(v)) return "—";
+        const s = v.toFixed(d);
+        return /^-0(\.0*)?$/.test(s) ? s.slice(1) : s;   // never "-0.0"
+      };
     },
-    CP: (c, d = 2) => qfmt(cpToDisplay(c, q, t), d),
     qNum: (kW) => kWToDisplay(kW, q),
     tNum: (K) => kToDisplay(K, t),
   };
 }
 
-/** The Pinch page's status line (PinchView footer), in the picked units.
- *  Default prefs reproduce the old literal text exactly. */
+/** The Pinch page's status line (PinchView footer), in the picked units and
+ *  significant figures. */
 export function pinchStatusLine(
   pinch: { streams: unknown[]; dTmin: number; QhMin: number; QcMin: number;
            pinchShift: number | null },
@@ -79,6 +99,6 @@ export function pinchStatusLine(
   return `${pinch.streams.length} process streams in the engine's population `
     + `(reports/pinch/population.csv) · ΔTmin ${u.dTraw(pinch.dTmin)} ${u.tLabel} · targets `
     + `${u.Qt(pinch.QhMin)} ${u.qLabel} hot / ${u.Qt(pinch.QcMin)} ${u.qLabel} cold · `
-    + (pinch.pinchShift == null ? "no pinch (threshold problem)"
+    + (pinch.pinchShift == null ? noInteriorPinchText(pinch.dTmin, u)
                                 : `pinch T* ${u.T(pinch.pinchShift, 1)} ${u.tLabel}`) + ".";
 }

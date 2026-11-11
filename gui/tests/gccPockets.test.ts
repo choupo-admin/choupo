@@ -61,10 +61,10 @@ describe("grand composite annotations", () => {
   const gcc = PINCH01.map((p) => ({ T_K: p.T, H_kW: p.Q }));
   const h = renderToStaticMarkup(createElement(GccSvg, { gcc, pinchStars: [353.15], u }));
   it("names the targets, the pinch, the pockets and the regions", () => {
-    expect(h).toContain("Q_H,min 107.5 kW (hot utility)");
+    expect(h).toContain("Q_H,min 108 kW (hot utility)");   // 3 s.f. (C304)
     expect(h).toContain("Q_C,min 40 kW (cold utility)");
     expect(h).toContain("pinch: no heat crosses here");
-    expect(h).toContain("T* = 353.15");
+    expect(h).toContain("T* = 353 K");
     expect(h).toContain("pocket: heat the process exchanges with itself; no utility is placed here");
     expect((h.match(/data-pocket=/g) ?? []).length).toBe(2);
     expect(h).toContain("net heat sink (takes hot utility)");
@@ -74,11 +74,11 @@ describe("grand composite annotations", () => {
   it("follows the Units menu", () => {
     const m = renderToStaticMarkup(createElement(GccSvg,
       { gcc, pinchStars: [353.15], u: pinchUnits({ temperature: "degC", duty: "MW" }) }));
-    expect(m).toContain("Q_H,min 0.1075 MW (hot utility)");
+    expect(m).toContain("Q_H,min 0.107 MW (hot utility)");  // 0.1075 is 0.10749.. in binary
     expect(m).not.toMatch(/\d kW\b/);
   });
-  it("the status line shows 107.5 kW, not 108", () => {
+  it("the status line follows the significant-figures preference (107.5 -> 108 at 3 s.f.)", () => {
     const s = pinchStatusLine({ streams: [], dTmin: 20, QhMin: 107.5, QcMin: 40, pinchShift: 353.15 }, u);
-    expect(s).toContain("targets 107.5 kW hot / 40 kW cold");
+    expect(s).toContain("targets 108 kW hot / 40 kW cold");
   });
 });

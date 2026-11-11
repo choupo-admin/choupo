@@ -241,7 +241,7 @@ export function PinchGridPlot({
                 <line x1={x} y1={lanes.lanesBottom} x2={x} y2={lanes.lanesBottom + 5}
                       stroke="currentColor" opacity={0.6} />
                 <text x={x} y={lanes.lanesBottom + 17} textAnchor="middle" fontSize={10}
-                      fill="currentColor" opacity={0.8}>{formatTick(pu.tNum(t))}</text>
+                      fill="currentColor" opacity={0.8}>{pu.n(pu.tNum(t))}</text>
               </g>
             );
           })}
@@ -384,6 +384,3 @@ function MatchLine({ m, pu }: { m: GridMatchLine; pu: PinchUnits }) {
   );
 }
 
-function formatTick(t: number): string {
-  return Math.abs(t - Math.round(t)) < 1e-6 ? String(Math.round(t)) : t.toFixed(1);
-}
