@@ -8,7 +8,7 @@
     "nrtlPairs": 558,
     "wilsonPairs": 0,
     "uniquacPairs": 3,
-    "henryPairs": 206,
+    "henryPairs": 251,
     "pitzerPairs": 55,
     "enrtlPairs": 3,
     "materials": 4,
@@ -30,15 +30,15 @@
     }
   },
   "curationTraces": {
-    "cases": 722,
-    "regressionChecks": 722,
+    "cases": 723,
+    "regressionChecks": 723,
     "byOrigin": {
       "pairs": 616,
       "components": 103,
-      "batches": 3
+      "batches": 4
     }
   },
   "totals": {
-    "mixtureParameterRecords": 825
+    "mixtureParameterRecords": 870
   }
 }

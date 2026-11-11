@@ -1645,6 +1645,11 @@
       "exit": 0,
       "claim": "check_cosmo_lvpp_selection: OK -- the engine's COSMO-SAC LVPP-HFTZVP-2018 reproduces the selected reading: mean |d ln gamma-inf| vs Lin & Sandler 2002 Table 2 = 0.9938 in water (32), 0.4038 in n-hexane (18), 0.7814 overall (the outside computation: 0.9938 / 0.4038 / 0.7814).  SELECTION DATA, NOT VALIDATION: this table chose the reading; the held-out test is bin/curate/cosmo_lvpp_vs_nrtl.py.",
       "seconds": 3.2
+    },
+    "check_henry_records": {
+      "exit": 0,
+      "claim": "check_henry_records: OK -- 45 Henry records from Sander 2015 reproduce from rows.tsv (1851 M/L rows, no Q or E row; NOT CHECKED: the values of the thermo-library records)",
+      "seconds": 0.0
     }
   }
 }
