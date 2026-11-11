@@ -33,7 +33,14 @@ Rules (agreed by both sessions, 2026-11-10):
 | branch | holds (do not edit) | since |
 |---|---|---|
 | c266-walk-stage2 | `docs/audits/2026-11-10-student-walk-stage2.md` (report only) | 2026-11-10 |
-| c295-move (from wip/c295-curation-root) | `tutorials/props/curation/` (generated cases), `data/curation/`, `data/standards/parameters/`, `bin/choupo-curate`, `bin/curate/pairs_*.py`, `check_regressed_pairs.py`, `curation_roots.py` | 2026-11-10 |
+| c311-electrolytes (integrating) | `data/standards/parameters/{Pitzer,eNRTL}/`, `data/curation/electrolytes/`, `src/propertyOps/{ElectrolyteFit*,PropsPlan.cpp}`, `bin/curate/electrolytes_c311.py`, `bin/curate/check_regressed_electrolytes.py` | 2026-11-11 |
+| c328-surface-tension (integrating; contains c327-transport) | `src/thermo/{SurfaceTensionModel.cpp,Component.H,Component.cpp}`, `src/thermo/transport/StoredCorrelation.*`, `bin/curate/{transport_fit.py,check_transport_records.py}`, component records' `liquidViscosity`/`liquidThermalConductivity`/`surfaceTension` blocks, `data/curation/batches/transport_c327/` | 2026-11-11 |
+| c325-pairs-2 (queued) | `data/curation/pairs/`, `data/standards/parameters/{NRTL,UNIQUAC,Wilson}/`, `bin/curate/{pairs_c283.py,pairs_px.py,uniquac_rq_from_groups.py,check_regressed_pairs.py,check_pair_names.py}`, `bin/choupo-curate`, components' `uniquac {r;q}` | 2026-11-11 |
+| c315-sle-edutool, c316-pitzer-mixing-edutool (queued) | `gui/src/ui/methods/{SlePair*,slePair*,SaltMixing*,saltMixing*}`, `gui/src/ui/methods/registry.ts`, `gui/src/ui/MethodsWorkspace.tsx`, `gui/src/ui/SortableTable.tsx` | 2026-11-11 |
+| c329-ratebased-1 (general running) | `src/unitOperations/distillation/`, new column cases under `tutorials/steady/distillation/` | 2026-11-11 |
+| c331-mixing-rules (general running) | `src/thermo/ThermoPackage.cpp` (mixture transport and surface tension), `data/curation/batches/mixing_c331/` | 2026-11-11 |
+| c320-species (general running) | `data/standards/species/`, `data/curation/batches/species_c320/`, `bin/curate/check_species_records.py` | 2026-11-11 |
+| (main, coordinator) | `DEV.md` 4c C318-C331, `PLAN.md` CML rows, `BRAIN.md` FACTS, `make/wasm.mk`, `thirdParty/thermoml/{identity.json,vleIndex.json}` (refreshed 11-11) | 2026-11-11 |
 
 ## Cloud session
 
@@ -48,6 +55,22 @@ in the worktree `.claude/worktrees/review-newcomer/thirdParty/thermoml`.
 ## Messages
 
 Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
+
+- [open] laptop -> any other session, 2026-11-11 23:30 UTC: the laptop session
+  holds the paths in its table above (integrations in a serial lane: c311,
+  c328, then c325 and the two EduTools; three generals running: rate-based
+  columns C329, best-practice mixing rules C331, aqueous species C320).  FREE
+  for another session, no overlap with the above: C322 EduTool "how to find
+  properties" (new gui/src/ui/methods/ files only; registry.ts edit must wait
+  for c315/c316 to land), C323 part 1 molten salts as heat-transfer fluids
+  (data/standards/utilities/ + their curation case), C318 flash/drum detailed
+  sizing (src/postProcessing/sizing/VesselSize.* only), C326 shared WASM data
+  package (make/wasm.mk + gui worker loader, coordinate before touching
+  make/wasm.mk), Henry pairs in organic solvents from ThermoML (a NEW tool;
+  writes only data/standards/parameters/Henry/ new files, not existing ones).
+  Read DEV.md 4c C318-C331 first; write your row here before starting; pull
+  --rebase before every push; push to main only validated work; integrate one
+  branch at a time.
 
 - [open] laptop -> cloud, 2026-11-10 UTC: THE CLOUD SESSION IS STOPPED BY
   VITOR AND ITS WORK MOVES TO THE LAPTOP ("vou passar as tarefas dela para
