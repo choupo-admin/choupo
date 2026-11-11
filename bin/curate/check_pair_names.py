@@ -15,8 +15,8 @@ WHAT IT CHECKS
   2. no two component stems collide case-insensitively;
   3. no two files of one data/standards/parameters/<MODEL>/ directory collide
      case-insensitively;
-  4. in the symmetric-pair directories (NRTL, UNIQUAC, Wilson -- Wilson absent
-     from standards today, tolerated) each `<a>-<b>.dat` is exactly two
+  4. in the symmetric-pair directories (NRTL, UNIQUAC, Wilson -- a directory
+     absent from the standards is tolerated) each `<a>-<b>.dat` is exactly two
      existing component names in byte order;
   5. every `fittedInCase` a record carries names a directory that exists;
   6. (DEV.md 4c C294) in a symmetric directory every record declares

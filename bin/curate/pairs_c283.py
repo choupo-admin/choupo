@@ -1688,9 +1688,34 @@ def declared_models(case):
     return [m for m in MODELS if f"name        fit_{m.lower()};" in t]
 
 
+def remove_op(t, name):
+    """The propsDict text without op `name` (its `{` line to the next op or
+    the C294 end marker)."""
+    s = t.index(f"    {{\n        name        {name};\n")
+    e = min(k for k in (t.find("    {\n        name", s + 10), t.find(OPS_END, s)) if k > 0)
+    return t[:s] + t[e:]
+
+
+def seal_without_models(case):
+    """Re-seal the case on the catalogue's records BEFORE its model fits run.
+    bin/choupo-import runs the case to prove the seal moves no number, and a
+    declared fit that does not converge would fail that run; so the C294 ops
+    are left out for the seal and put back after (the seal claims records,
+    never the propsDict)."""
+    pd = case / "system" / "propsDict"
+    t0 = pd.read_text()
+    t = re.sub(re.escape(OPS_BEGIN) + r".*?" + re.escape(OPS_END), OPS_BEGIN + OPS_END, t0, flags=re.S)
+    t = re.sub(re.escape(RB_BEGIN) + r".*?" + re.escape(RB_END), "", t, flags=re.S)
+    pd.write_text(t)
+    try:
+        cc.seal(case)
+    finally:
+        pd.write_text(t0)
+
+
 def model_fit_only(case, models):
-    """Run ONLY the primary fit op of each model in a scratch copy; return
-    {model: (rows, proposal text or None)}, plus (rc, output)."""
+    """Run the fit ops of each model (both starts) in a scratch copy; return
+    (rc, output, {model: (rows, proposal text or None)}, {op: diagnostics})."""
     work = Path(tempfile.mkdtemp(prefix="choupo-curate-c294-"))
     try:
         sc = work / case.name
@@ -1700,6 +1725,7 @@ def model_fit_only(case, models):
         for m in models:
             s = t.index(f"    {{\n        name        fit_{m.lower()};\n")
             e = t.index(f"    {{\n        name        fit_{m.lower()}_start2;\n", s)
+            e = min(k for k in (t.find("    {\n        name", e + 10), t.find(OPS_END, e)) if k > 0)
             ops += t[s:e]
         b = t.index("operations\n(\n") + len("operations\n(\n")
         t = t[:b] + ops + ");\n"
@@ -1717,7 +1743,11 @@ def model_fit_only(case, models):
                         rows.append([float(v) for v in l.split(",")])
             props = list(sc.glob(f"*.{m}.proposal.dat"))
             res[m] = (rows, props[0].read_text() if props else None)
-        return rc, out, res
+        diag = {}
+        for m in models:
+            for n in (f"fit_{m.lower()}", f"fit_{m.lower()}_start2"):
+                diag[n] = (cc.op_result(js, n) or {}).get("diagnostics", {})
+        return rc, out, res, diag
     finally:
         shutil.rmtree(work, ignore_errors=True)
 
@@ -1869,13 +1899,56 @@ def models_run(case):
         if m not in models:
             out["models"][m] = {"fitted": False, "reason": el[m]}
     if not models:
+        txt = ("WHAT THE UNIQUAC AND WILSON FITS FOUND: neither was fitted.  "
+               + "  ".join(f"{m}: {el[m]}." for m in MODELS))
+        t = re.sub(r"@@MODELS-RESULT-BEGIN@@.*?@@MODELS-RESULT-END@@",
+                   lambda _m: "@@MODELS-RESULT-BEGIN@@\n" + cc.wrap(txt)
+                   + "\n  @@MODELS-RESULT-END@@", t, flags=re.S)
+        pd.write_text(t)
         out["outcome"] = "no model fitted"
         return out
     rc = cc.fetch(case, quiet=True)
     if rc:
         refuse(f"fetch of {case_rel} returned {rc}")
-    cc.seal(case)   # the component records as the catalogue carries them now (r/q, C294)
-    rc, o, res = model_fit_only(case, models)
+    seal_without_models(case)   # the component records as the catalogue carries them now (r/q)
+    rc, o, res, diag = model_fit_only(case, models)
+    #  A FIT THAT DID NOT CONVERGE (a parameter run to its bound: for Wilson,
+    #  Lambda -> 0, no finite optimum on this evidence) is not a fit.  Its ops
+    #  are removed so the case runs, and the attempt is written into the
+    #  result paragraph -- never a record.  A second start that does not
+    #  converge where the first did is removed alone, and said.
+    notes = []
+    for m in list(models):
+        low = m.lower()
+        for n in (f"fit_{low}", f"fit_{low}_start2"):
+            d = diag.get(n, {})
+            if d.get("converged") == 1:
+                continue
+            ks = MSPEC[m][0]
+            bound = [ks[k] for k in range(len(ks)) if d.get(f"fit.{k}.at_bound") == 1]
+            why = (f"{n} was declared and run and did NOT CONVERGE"
+                   + (f" ({' and '.join(bound)} at its bound, {MSPEC[m][2][0]} .. {MSPEC[m][2][1]} "
+                      f"{MSPEC[m][1]}: no finite optimum inside the declared bounds)" if bound else "")
+                   + "; the op is removed so the case runs (C294)")
+            pt = pd.read_text()
+            if n == f"fit_{low}":
+                pt = remove_op(remove_op(pt, f"fit_{low}_start2"), n)
+                models.remove(m)
+                out["models"][m] = {"fitted": False, "reason": why, "nonConverged": True}
+                notes.append(f"{m}: not fitted -- {why}.")
+                pd.write_text(pt)
+                break
+            pd.write_text(remove_op(pt, n))
+            notes.append(f"{m}: {why}.")
+    if not models:
+        txt = ("WHAT THE UNIQUAC AND WILSON FITS FOUND: no record.  " + "  ".join(
+            notes + [f"{m}: not fitted -- {el[m]}." for m in MODELS if el[m]]))
+        t = re.sub(r"@@MODELS-RESULT-BEGIN@@.*?@@MODELS-RESULT-END@@",
+                   lambda _m: "@@MODELS-RESULT-BEGIN@@\n" + cc.wrap(txt)
+                   + "\n  @@MODELS-RESULT-END@@", pd.read_text(), flags=re.S)
+        pd.write_text(t)
+        out["outcome"] = "no model converged"
+        return out
     n_drop = sum(len(v) for v in declared_discards(case).values())
     nT, nL = evidence_counts(case, kind)
     u, sym = unit_of(kind)
@@ -1935,17 +2008,19 @@ def models_run(case):
         same = bool(keys) and all(y is not None and abs(x - y) <= 1e-2 * max(sc, abs(x))
                                   for x, y in zip(p1, p2))
         r = out["models"][m]
-        r["same"] = same
-        r["heldout"] = d1.get("bubble_max_heldout")
+        r["same"] = same if d2 else None
         kn = MSPEC[m][0]
         lines.append(
             f"fit_{m.lower()}: {kn[0]} = {p1[0]:.1f}, {kn[1]} = {p1[1]:.1f} {MSPEC[m][1]} over "
             f"{r['kept']} kept points: max {sym} {r['max']:.3f} {u}, mean {r['mean']:.3f} {u}, "
-            f"graded {r['grade']} -> {r['verdict']}; fit_{m.lower()}_start2 lands on "
-            f"{'the same pair' if same else 'A DIFFERENT pair'} ({p2[0]:.1f}, {p2[1]:.1f}).  "
+            f"graded {r['grade']} -> {r['verdict']}; "
+            + (f"fit_{m.lower()}_start2 lands on "
+               f"{'the same pair' if same else 'A DIFFERENT pair'} ({p2[0]:.1f}, {p2[1]:.1f}).  "
+               if d2 else f"fit_{m.lower()}_start2 removed (it did not converge).  ")
             + r["reason"] + ".")
+    lines += notes
     for m in MODELS:
-        if m not in models:
+        if m not in models and el[m]:
             lines.append(f"{m}: not fitted -- {el[m]}.")
     nl = (f"Beside fit_nrtl's max {sym} {nmx:.3f} {u} ({crp.word(ncur, 'grade')}) on the same "
           "kept points.  ")
