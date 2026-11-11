@@ -106,6 +106,16 @@ source
     review        { state pending; reviewer unassigned; }
 }
 
+surfaceTension
+{
+    A     0.06973160961;
+    B     0;
+    Tc    549.4;
+    n     1.359874997;
+    Tmin  298.15;
+    Tmax  313.15;
+}
+
 provenance
 {
     uniquac
@@ -188,5 +198,35 @@ cosmo
                0.958799     0.000000     0.000000     0.000000     0.000000     0.000000
                0.000000     0.000000     0.000000
         );
+    }
+    surfaceTension
+    {
+        origin        fitted;
+        method        "least squares on ln sigma of sigma/(N/m) = A tau^n, tau = 1 - T/Tc (A, n; B = 0; Tc the record's own), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeMaxRelativeError_pct 0.644089;
+        Trange        (298.15 313.15);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C328)";
+        evidence
+        (
+                { doi "10.1016/j.jct.2006.07.025"; articleSha256 "08b399e41567706706fe24c21384efa10962782b13f0689e9d06791285238753"; pointsKept 5; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je060485s"; articleSha256 "41d6e05eae31abb4492bb55cacdaedcd0f64ce41e65ca78b352746fa07b362b1"; pointsKept 3; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je900962v"; articleSha256 "2d394078d96ae121af0e32c3b79cb97f0c63c4707abfa4d05868f149aa713d7e"; pointsKept 1; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     3;
+            pointsKept  9;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.301053;
+            max_pct     0.644089;
+        }
     }
 }
