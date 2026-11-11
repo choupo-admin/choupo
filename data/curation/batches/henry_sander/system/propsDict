@@ -1,0 +1,67 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+  henry_sander -- the Henry-water records of data/standards/parameters/Henry/ made from
+  Sander (2015) Table 6 (DEV.md 4c C321, CC-BY 3.0, doi:10.5194/acp-15-4399-2015).
+  rows.tsv holds every M and L row of every catalogue species with the page it was read
+  on; summary.tsv the median, spread and status of each (new = promoted; heldSpread =
+  spread above 3x; heldNoEnthalpy = fewer than 2 d ln H/d(1/T) values: the loader REFUSES
+  a record without `enthalpy`, so none is written).  bin/curate/henry_sander.py rebuilds
+  them; bin/curate/check_henry_records.py holds each record to rows.tsv.  Each operation
+  asks the evidence card of one record.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    { name h_nitrogenTetroxide; type pairLookup; components ( nitrogenTetroxide water ); }
+    { name h_4Chlorotoluene; type pairLookup; components ( 4Chlorotoluene water ); }
+    { name h_pDichlorobenzene; type pairLookup; components ( pDichlorobenzene water ); }
+    { name h_ethylacetylene; type pairLookup; components ( ethylacetylene water ); }
+    { name h_nPropylMercaptan; type pairLookup; components ( nPropylMercaptan water ); }
+    { name h_2Pentanone; type pairLookup; components ( 2Pentanone water ); }
+    { name h_1Nitropropane; type pairLookup; components ( 1Nitropropane water ); }
+    { name h_bromobenzene; type pairLookup; components ( bromobenzene water ); }
+    { name h_monochlorobenzene; type pairLookup; components ( monochlorobenzene water ); }
+    { name h_pentanoicAcid; type pairLookup; components ( pentanoicAcid water ); }
+    { name h_nPropylAcetate; type pairLookup; components ( nPropylAcetate water ); }
+    { name h_2Heptanone; type pairLookup; components ( 2Heptanone water ); }
+    { name h_nPropylFormate; type pairLookup; components ( nPropylFormate water ); }
+    { name h_1Hexanol; type pairLookup; components ( 1Hexanol water ); }
+    { name h_nButylAcetate; type pairLookup; components ( nButylAcetate water ); }
+    { name h_14Dioxane; type pairLookup; components ( 14Dioxane water ); }
+    { name h_secButylbenzene; type pairLookup; components ( secButylbenzene water ); }
+    { name h_123Trimethylbenzene; type pairLookup; components ( 123Trimethylbenzene water ); }
+    { name h_mDichlorobenzene; type pairLookup; components ( mDichlorobenzene water ); }
+    { name h_tertButylEthylEther; type pairLookup; components ( tertButylEthylEther water ); }
+    { name h_C4H4; type pairLookup; components ( C4H4 water ); }
+    { name h_1Propanol; type pairLookup; components ( 1Propanol water ); }
+    { name h_1Pentanol; type pairLookup; components ( 1Pentanol water ); }
+    { name h_methylIodide; type pairLookup; components ( methylIodide water ); }
+    { name h_methylMercaptan; type pairLookup; components ( methylMercaptan water ); }
+    { name h_neon; type pairLookup; components ( neon water ); }
+    { name h_ethylMercaptan; type pairLookup; components ( ethylMercaptan water ); }
+    { name h_CS2; type pairLookup; components ( CS2 water ); }
+    { name h_11Dichloroethane; type pairLookup; components ( 11Dichloroethane water ); }
+    { name h_phosgene; type pairLookup; components ( phosgene water ); }
+    { name h_2Methyl2Propanol; type pairLookup; components ( 2Methyl2Propanol water ); }
+    { name h_H2O2; type pairLookup; components ( H2O2 water ); }
+    { name h_bromine; type pairLookup; components ( bromine water ); }
+    { name h_HONO; type pairLookup; components ( HONO water ); }
+    { name h_HOCl; type pairLookup; components ( HOCl water ); }
+    { name h_2Butanol; type pairLookup; components ( 2Butanol water ); }
+    { name h_112Trichloroethane; type pairLookup; components ( 112Trichloroethane water ); }
+    { name h_1122Tetrachloroethane; type pairLookup; components ( 1122Tetrachloroethane water ); }
+    { name h_2Nitropropane; type pairLookup; components ( 2Nitropropane water ); }
+    { name h_phenanthrene; type pairLookup; components ( phenanthrene water ); }
+    { name h_1Methylnaphthalene; type pairLookup; components ( 1Methylnaphthalene water ); }
+    { name h_2Chlorotoluene; type pairLookup; components ( 2Chlorotoluene water ); }
+    { name h_124Trimethylbenzene; type pairLookup; components ( 124Trimethylbenzene water ); }
+    { name h_tertButylbenzene; type pairLookup; components ( tertButylbenzene water ); }
+    { name h_pCymene; type pairLookup; components ( pCymene water ); }
+);

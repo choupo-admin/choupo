@@ -6803,6 +6803,17 @@ PYEOF
     fi
     rm -f /tmp/pairnames.$$
 
+    # henry-records gate (2026-11-11, DEV.md 4c C321).  The Henry-water records made from Sander (2015) Table 6 reproduce from their committed rows; no Q/E row; attribution present.
+    if gate_exec "$ROOT/bin/curate/check_henry_records.py" > /tmp/henryrec.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "henry-records-gate" "$(head -1 /tmp/henryrec.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_henry_records.py)\n" "henry-records-gate"
+        cat /tmp/henryrec.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/henryrec.$$
+
     # model-default-registered gate (2026-09-06).  A `massTransfer {}` block
     # that merely forgot its `model` key died naming 'constant' -- a model the
     # ENGINE invented in its own default, pruned from the factory on

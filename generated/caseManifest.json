@@ -6,12 +6,25 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1257,
+  "cases": 1258,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 15
  },
  "cases": {
+  "data/curation/batches/henry_sander": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/batches/new_components": {
    "application": "choupoProps",
    "ops": [
@@ -20659,6 +20672,7 @@
     "tutorials/ctrl/ctrl22_reactor_level_and_temperature"
    ],
    "choupoProps": [
+    "data/curation/batches/henry_sander",
     "data/curation/batches/new_components",
     "data/curation/batches/new_components_c309",
     "data/curation/batches/new_components_estimated",
@@ -23339,6 +23353,7 @@
     "tutorials/props/electrolyte/edwards01_sour_water_activity"
    ],
    "ideal": [
+    "data/curation/batches/henry_sander",
     "data/curation/batches/new_components",
     "data/curation/batches/new_components_c309",
     "data/curation/batches/new_components_estimated",
