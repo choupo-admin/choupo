@@ -348,6 +348,14 @@ int main()
                  "Wilson[inline flash03]"));
     add(testPair("cosmoSAC", "ethanol", "water", 328.15));
 
+    //  COSMO-SAC variant LVPP-HFTZVP-2018 (DEV.md 4c C310): the catalogue now
+    //  ships these profiles (MIT), so the model is EXERCISED, not refused --
+    //  one polar/H-bonding pair and one pair with a strong cross H-bond.
+    add(testPair("cosmoSAC", "acetone", "chloroform", 330.00, false,
+                 "source LVPP-HFTZVP-2018;", "cosmoSAC[LVPP-HFTZVP-2018]"));
+    add(testPair("cosmoSAC", "methanol", "benzene", 330.00, false,
+                 "source LVPP-HFTZVP-2018;", "cosmoSAC[LVPP-HFTZVP-2018]"));
+
     //  The negative: the SAME model and pair, with gamma_2 replaced by
     //  gamma_1.  Must come back O(1), or this whole probe proves nothing.
     add(testPair("NRTL", "ethanol", "water", 328.15, true));

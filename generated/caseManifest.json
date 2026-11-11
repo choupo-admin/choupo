@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1216,
+  "cases": 1257,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 15
@@ -29,11 +29,60 @@
    ],
    "hasGolden": true
   },
+  "data/curation/batches/new_components_c309": {
+   "application": "choupoProps",
+   "ops": [
+    "estimateComponent",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/batches/new_components_estimated": {
    "application": "choupoProps",
    "ops": [
     "estimateComponent",
     "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/1122Tetrachloroethane": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/11Diethoxyethane": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -190,6 +239,38 @@
    ],
    "hasGolden": true
   },
+  "data/curation/components/1Methoxy2Propanol": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/1Methoxy2PropylAcetate": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/components/1Octanol": {
    "application": "choupoProps",
    "ops": [
@@ -238,7 +319,55 @@
    ],
    "hasGolden": true
   },
+  "data/curation/components/244Trimethyl1Pentene": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/2Amino2Methyl1Propanol": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/components/2Butoxyethanol": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/2Chlorobutane": {
    "application": "choupoProps",
    "ops": [
     "vaporPressureFit"
@@ -286,7 +415,71 @@
    ],
    "hasGolden": true
   },
+  "data/curation/components/2Ethoxypropene": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/2Ethyl1Hexanol": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/2Ethylthiophene": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/components/2Methoxyethanol": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/2Methylfuran": {
    "application": "choupoProps",
    "ops": [
     "vaporPressureFit"
@@ -382,6 +575,22 @@
    ],
    "hasGolden": true
   },
+  "data/curation/components/3Methylthiophene": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/components/3Pentanol": {
    "application": "choupoProps",
    "ops": [
@@ -446,7 +655,39 @@
    ],
    "hasGolden": true
   },
+  "data/curation/components/benzoBThiophene": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/components/cyclopentanol": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/cyclopentanone": {
    "application": "choupoProps",
    "ops": [
     "vaporPressureFit"
@@ -526,7 +767,55 @@
    ],
    "hasGolden": true
   },
+  "data/curation/components/diNPropylEther": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/dichloromethane": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/components/diethanolamine": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/diethylSuccinate": {
    "application": "choupoProps",
    "ops": [
     "vaporPressureFit"
@@ -638,6 +927,38 @@
    ],
    "hasGolden": true
   },
+  "data/curation/components/diphenylmethane": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/ethylButanoate": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/components/ethylDecanoate": {
    "application": "choupoProps",
    "ops": [
@@ -654,7 +975,87 @@
    ],
    "hasGolden": true
   },
+  "data/curation/components/ethylHexanoate": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/ethylLactate": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/components/ethylOctanoate": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/ethylPropionate": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/fluoroethane": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/furan": {
    "application": "choupoProps",
    "ops": [
     "vaporPressureFit"
@@ -703,6 +1104,22 @@
    "hasGolden": true
   },
   "data/curation/components/hexafluorobenzene": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/isopentylAcetate": {
    "application": "choupoProps",
    "ops": [
     "vaporPressureFit"
@@ -814,6 +1231,22 @@
    ],
    "hasGolden": true
   },
+  "data/curation/components/methylLactate": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/components/methylLevulinate": {
    "application": "choupoProps",
    "ops": [
@@ -831,6 +1264,22 @@
    "hasGolden": true
   },
   "data/curation/components/methylOctanoate": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/methylPentanoate": {
    "application": "choupoProps",
    "ops": [
     "vaporPressureFit"
@@ -894,6 +1343,22 @@
    ],
    "hasGolden": true
   },
+  "data/curation/components/morpholine": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/components/nAminoethylEthanolamine": {
    "application": "choupoProps",
    "ops": [
@@ -911,6 +1376,54 @@
    "hasGolden": true
   },
   "data/curation/components/nAminoethylPiperazine": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/nButylButanoate": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/nButylFormate": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/nButylPropionate": {
    "application": "choupoProps",
    "ops": [
     "vaporPressureFit"
@@ -974,6 +1487,70 @@
    ],
    "hasGolden": true
   },
+  "data/curation/components/nPropylPropionate": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/pentanenitrile": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/pentanoicAcid": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/perfluorooctane": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/components/phenanthrene": {
    "application": "choupoProps",
    "ops": [
@@ -1006,7 +1583,39 @@
    ],
    "hasGolden": true
   },
+  "data/curation/components/pyrrole": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/components/squalane": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/tertButylAcetate": {
    "application": "choupoProps",
    "ops": [
     "vaporPressureFit"
@@ -1071,6 +1680,22 @@
    "hasGolden": true
   },
   "data/curation/components/triethylamine": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/components/vinylPropionate": {
    "application": "choupoProps",
    "ops": [
     "vaporPressureFit"
@@ -14815,6 +15440,32 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/molecular/cosmoSAC02_lvpp_selection_lin2002": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "cosmoSAC"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/molecular/cosmoSAC03_ethanol_water_predictive": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "cosmoSAC"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/molecular/entropy01_air_ledger": {
    "application": "choupoProps",
    "ops": [
@@ -20009,7 +20660,10 @@
    ],
    "choupoProps": [
     "data/curation/batches/new_components",
+    "data/curation/batches/new_components_c309",
     "data/curation/batches/new_components_estimated",
+    "data/curation/components/1122Tetrachloroethane",
+    "data/curation/components/11Diethoxyethane",
     "data/curation/components/12Butanediol",
     "data/curation/components/12Propanediol",
     "data/curation/components/13Butanediol",
@@ -20019,62 +20673,98 @@
     "data/curation/components/1Chlorobutane",
     "data/curation/components/1Decanol",
     "data/curation/components/1HPerfluorooctane",
+    "data/curation/components/1Methoxy2Propanol",
+    "data/curation/components/1Methoxy2PropylAcetate",
     "data/curation/components/1Octanol",
     "data/curation/components/1Pentanamine",
     "data/curation/components/1Propoxy2Propanol",
+    "data/curation/components/244Trimethyl1Pentene",
+    "data/curation/components/2Amino2Methyl1Propanol",
     "data/curation/components/2Butoxyethanol",
+    "data/curation/components/2Chlorobutane",
     "data/curation/components/2Chlorotoluene",
     "data/curation/components/2Ethoxyethanol",
+    "data/curation/components/2Ethoxypropene",
+    "data/curation/components/2Ethyl1Hexanol",
+    "data/curation/components/2Ethylthiophene",
     "data/curation/components/2Methoxyethanol",
+    "data/curation/components/2Methylfuran",
     "data/curation/components/2Methyltetrahydrofuran",
     "data/curation/components/2Propoxyethanol",
     "data/curation/components/33Oxydipropanol",
     "data/curation/components/3Methyl1Butanol",
     "data/curation/components/3Methyl2Butanol",
+    "data/curation/components/3Methylthiophene",
     "data/curation/components/3Pentanol",
     "data/curation/components/4Chlorotoluene",
     "data/curation/components/NMethyl13Diaminopropane",
     "data/curation/components/allylAlcohol",
+    "data/curation/components/benzoBThiophene",
     "data/curation/components/cyclopentanol",
+    "data/curation/components/cyclopentanone",
     "data/curation/components/diButylCarbonate",
     "data/curation/components/diEthylCarbonate",
     "data/curation/components/diIsobutylEther",
     "data/curation/components/diNButylEther",
+    "data/curation/components/diNPropylEther",
+    "data/curation/components/dichloromethane",
     "data/curation/components/diethanolamine",
+    "data/curation/components/diethylSuccinate",
     "data/curation/components/diethyleneGlycolDibutylEther",
     "data/curation/components/diethyleneGlycolDiethylEther",
     "data/curation/components/diethyleneGlycolMonohexylEther",
     "data/curation/components/diethylethanolamine",
     "data/curation/components/dimethylSulfoxide",
     "data/curation/components/dimethylethanolamine",
+    "data/curation/components/diphenylmethane",
+    "data/curation/components/ethylButanoate",
     "data/curation/components/ethylDecanoate",
+    "data/curation/components/ethylHexanoate",
+    "data/curation/components/ethylLactate",
     "data/curation/components/ethylOctanoate",
+    "data/curation/components/ethylPropionate",
+    "data/curation/components/fluoroethane",
+    "data/curation/components/furan",
     "data/curation/components/furfural",
     "data/curation/components/glycerol",
     "data/curation/components/hexafluorobenzene",
+    "data/curation/components/isopentylAcetate",
     "data/curation/components/mNitrotoluene",
     "data/curation/components/methylButanoate",
     "data/curation/components/methylDecanoate",
     "data/curation/components/methylDiEthanolAmine",
     "data/curation/components/methylHeptanoate",
     "data/curation/components/methylHexanoate",
+    "data/curation/components/methylLactate",
     "data/curation/components/methylLevulinate",
     "data/curation/components/methylOctanoate",
+    "data/curation/components/methylPentanoate",
     "data/curation/components/methylTertPentylEther",
     "data/curation/components/methylethanolamine",
     "data/curation/components/monoethanolamine",
+    "data/curation/components/morpholine",
     "data/curation/components/nAminoethylEthanolamine",
     "data/curation/components/nAminoethylPiperazine",
+    "data/curation/components/nButylButanoate",
+    "data/curation/components/nButylFormate",
+    "data/curation/components/nButylPropionate",
     "data/curation/components/nEicosane",
     "data/curation/components/nHexylAcetate",
     "data/curation/components/nPentylAcetate",
+    "data/curation/components/nPropylPropionate",
+    "data/curation/components/pentanenitrile",
+    "data/curation/components/pentanoicAcid",
+    "data/curation/components/perfluorooctane",
     "data/curation/components/phenanthrene",
     "data/curation/components/pyrene",
+    "data/curation/components/pyrrole",
     "data/curation/components/squalane",
+    "data/curation/components/tertButylAcetate",
     "data/curation/components/tetradecanoicAcid",
     "data/curation/components/tetrahydropyran",
     "data/curation/components/triethanolamine",
     "data/curation/components/triethylamine",
+    "data/curation/components/vinylPropionate",
     "data/curation/pairs/124Trimethylbenzene-1Pentanol",
     "data/curation/pairs/124Trimethylbenzene-2Pentanol",
     "data/curation/pairs/124Trimethylbenzene-mEthyltoluene",
@@ -20788,6 +21478,8 @@
     "tutorials/props/membrane/shortlist01_class_to_modules",
     "tutorials/props/molecular/componentLookup01_catalogue_ladder",
     "tutorials/props/molecular/cosmoSAC01_water_ethanol",
+    "tutorials/props/molecular/cosmoSAC02_lvpp_selection_lin2002",
+    "tutorials/props/molecular/cosmoSAC03_ethanol_water_predictive",
     "tutorials/props/molecular/entropy01_air_ledger",
     "tutorials/props/molecular/envelope01_natural_gas",
     "tutorials/props/molecular/envelope02_c3c4c5_branch_stop",
@@ -22505,6 +23197,7 @@
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
     "tutorials/props/curation/curate13_synthetic_lle_butanol_water",
     "tutorials/props/curation/curate14_nrtl_butanol_water",
+    "tutorials/props/molecular/cosmoSAC03_ethanol_water_predictive",
     "tutorials/props/molecular/eval_nrtl_catalogue",
     "tutorials/props/molecular/eval_nrtl_pinned",
     "tutorials/props/molecular/nrtl01_ethanol_water_package",
@@ -22578,7 +23271,9 @@
     "tutorials/steady/flash/flash03_wilson_ethanol_water"
    ],
    "cosmoSAC": [
-    "tutorials/props/molecular/cosmoSAC01_water_ethanol"
+    "tutorials/props/molecular/cosmoSAC01_water_ethanol",
+    "tutorials/props/molecular/cosmoSAC02_lvpp_selection_lin2002",
+    "tutorials/props/molecular/cosmoSAC03_ethanol_water_predictive"
    ],
    "davies": [
     "tutorials/batch/electrodialysis/edbatch01_constant_current",
@@ -22645,7 +23340,10 @@
    ],
    "ideal": [
     "data/curation/batches/new_components",
+    "data/curation/batches/new_components_c309",
     "data/curation/batches/new_components_estimated",
+    "data/curation/components/1122Tetrachloroethane",
+    "data/curation/components/11Diethoxyethane",
     "data/curation/components/12Butanediol",
     "data/curation/components/12Propanediol",
     "data/curation/components/13Butanediol",
@@ -22655,62 +23353,98 @@
     "data/curation/components/1Chlorobutane",
     "data/curation/components/1Decanol",
     "data/curation/components/1HPerfluorooctane",
+    "data/curation/components/1Methoxy2Propanol",
+    "data/curation/components/1Methoxy2PropylAcetate",
     "data/curation/components/1Octanol",
     "data/curation/components/1Pentanamine",
     "data/curation/components/1Propoxy2Propanol",
+    "data/curation/components/244Trimethyl1Pentene",
+    "data/curation/components/2Amino2Methyl1Propanol",
     "data/curation/components/2Butoxyethanol",
+    "data/curation/components/2Chlorobutane",
     "data/curation/components/2Chlorotoluene",
     "data/curation/components/2Ethoxyethanol",
+    "data/curation/components/2Ethoxypropene",
+    "data/curation/components/2Ethyl1Hexanol",
+    "data/curation/components/2Ethylthiophene",
     "data/curation/components/2Methoxyethanol",
+    "data/curation/components/2Methylfuran",
     "data/curation/components/2Methyltetrahydrofuran",
     "data/curation/components/2Propoxyethanol",
     "data/curation/components/33Oxydipropanol",
     "data/curation/components/3Methyl1Butanol",
     "data/curation/components/3Methyl2Butanol",
+    "data/curation/components/3Methylthiophene",
     "data/curation/components/3Pentanol",
     "data/curation/components/4Chlorotoluene",
     "data/curation/components/NMethyl13Diaminopropane",
     "data/curation/components/allylAlcohol",
+    "data/curation/components/benzoBThiophene",
     "data/curation/components/cyclopentanol",
+    "data/curation/components/cyclopentanone",
     "data/curation/components/diButylCarbonate",
     "data/curation/components/diEthylCarbonate",
     "data/curation/components/diIsobutylEther",
     "data/curation/components/diNButylEther",
+    "data/curation/components/diNPropylEther",
+    "data/curation/components/dichloromethane",
     "data/curation/components/diethanolamine",
+    "data/curation/components/diethylSuccinate",
     "data/curation/components/diethyleneGlycolDibutylEther",
     "data/curation/components/diethyleneGlycolDiethylEther",
     "data/curation/components/diethyleneGlycolMonohexylEther",
     "data/curation/components/diethylethanolamine",
     "data/curation/components/dimethylSulfoxide",
     "data/curation/components/dimethylethanolamine",
+    "data/curation/components/diphenylmethane",
+    "data/curation/components/ethylButanoate",
     "data/curation/components/ethylDecanoate",
+    "data/curation/components/ethylHexanoate",
+    "data/curation/components/ethylLactate",
     "data/curation/components/ethylOctanoate",
+    "data/curation/components/ethylPropionate",
+    "data/curation/components/fluoroethane",
+    "data/curation/components/furan",
     "data/curation/components/furfural",
     "data/curation/components/glycerol",
     "data/curation/components/hexafluorobenzene",
+    "data/curation/components/isopentylAcetate",
     "data/curation/components/mNitrotoluene",
     "data/curation/components/methylButanoate",
     "data/curation/components/methylDecanoate",
     "data/curation/components/methylDiEthanolAmine",
     "data/curation/components/methylHeptanoate",
     "data/curation/components/methylHexanoate",
+    "data/curation/components/methylLactate",
     "data/curation/components/methylLevulinate",
     "data/curation/components/methylOctanoate",
+    "data/curation/components/methylPentanoate",
     "data/curation/components/methylTertPentylEther",
     "data/curation/components/methylethanolamine",
     "data/curation/components/monoethanolamine",
+    "data/curation/components/morpholine",
     "data/curation/components/nAminoethylEthanolamine",
     "data/curation/components/nAminoethylPiperazine",
+    "data/curation/components/nButylButanoate",
+    "data/curation/components/nButylFormate",
+    "data/curation/components/nButylPropionate",
     "data/curation/components/nEicosane",
     "data/curation/components/nHexylAcetate",
     "data/curation/components/nPentylAcetate",
+    "data/curation/components/nPropylPropionate",
+    "data/curation/components/pentanenitrile",
+    "data/curation/components/pentanoicAcid",
+    "data/curation/components/perfluorooctane",
     "data/curation/components/phenanthrene",
     "data/curation/components/pyrene",
+    "data/curation/components/pyrrole",
     "data/curation/components/squalane",
+    "data/curation/components/tertButylAcetate",
     "data/curation/components/tetradecanoicAcid",
     "data/curation/components/tetrahydropyran",
     "data/curation/components/triethanolamine",
     "data/curation/components/triethylamine",
+    "data/curation/components/vinylPropionate",
     "data/curation/pairs/124Trimethylbenzene-mEthyltoluene",
     "data/curation/pairs/124Trimethylbenzene-oEthyltoluene",
     "data/curation/pairs/124Trimethylbenzene-pEthyltoluene",
@@ -23679,6 +24413,7 @@
    ],
    "estimateComponent": [
     "data/curation/batches/new_components",
+    "data/curation/batches/new_components_c309",
     "data/curation/batches/new_components_estimated",
     "tutorials/plant/polycaprolactonePlant/properties",
     "tutorials/props/estimate/estimate_acetone",
@@ -24332,6 +25067,7 @@
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
     "tutorials/props/curation/curate13_synthetic_lle_butanol_water",
     "tutorials/props/curation/curate14_nrtl_butanol_water",
+    "tutorials/props/molecular/cosmoSAC03_ethanol_water_predictive",
     "tutorials/props/molecular/eval_nrtl_catalogue",
     "tutorials/props/molecular/eval_nrtl_pinned",
     "tutorials/steady/membranes/membrane24_fit_then_simulate",
@@ -24441,6 +25177,7 @@
    ],
    "propertyScan1D": [
     "data/curation/batches/new_components",
+    "data/curation/batches/new_components_c309",
     "data/curation/batches/new_components_estimated",
     "data/curation/pairs/124Trimethylbenzene-1Pentanol",
     "data/curation/pairs/124Trimethylbenzene-2Pentanol",
@@ -25156,6 +25893,8 @@
     "tutorials/props/transport/transport02_chapman_enskog"
    ],
    "vaporPressureFit": [
+    "data/curation/components/1122Tetrachloroethane",
+    "data/curation/components/11Diethoxyethane",
     "data/curation/components/12Butanediol",
     "data/curation/components/12Propanediol",
     "data/curation/components/13Butanediol",
@@ -25165,62 +25904,98 @@
     "data/curation/components/1Chlorobutane",
     "data/curation/components/1Decanol",
     "data/curation/components/1HPerfluorooctane",
+    "data/curation/components/1Methoxy2Propanol",
+    "data/curation/components/1Methoxy2PropylAcetate",
     "data/curation/components/1Octanol",
     "data/curation/components/1Pentanamine",
     "data/curation/components/1Propoxy2Propanol",
+    "data/curation/components/244Trimethyl1Pentene",
+    "data/curation/components/2Amino2Methyl1Propanol",
     "data/curation/components/2Butoxyethanol",
+    "data/curation/components/2Chlorobutane",
     "data/curation/components/2Chlorotoluene",
     "data/curation/components/2Ethoxyethanol",
+    "data/curation/components/2Ethoxypropene",
+    "data/curation/components/2Ethyl1Hexanol",
+    "data/curation/components/2Ethylthiophene",
     "data/curation/components/2Methoxyethanol",
+    "data/curation/components/2Methylfuran",
     "data/curation/components/2Methyltetrahydrofuran",
     "data/curation/components/2Propoxyethanol",
     "data/curation/components/33Oxydipropanol",
     "data/curation/components/3Methyl1Butanol",
     "data/curation/components/3Methyl2Butanol",
+    "data/curation/components/3Methylthiophene",
     "data/curation/components/3Pentanol",
     "data/curation/components/4Chlorotoluene",
     "data/curation/components/NMethyl13Diaminopropane",
     "data/curation/components/allylAlcohol",
+    "data/curation/components/benzoBThiophene",
     "data/curation/components/cyclopentanol",
+    "data/curation/components/cyclopentanone",
     "data/curation/components/diButylCarbonate",
     "data/curation/components/diEthylCarbonate",
     "data/curation/components/diIsobutylEther",
     "data/curation/components/diNButylEther",
+    "data/curation/components/diNPropylEther",
+    "data/curation/components/dichloromethane",
     "data/curation/components/diethanolamine",
+    "data/curation/components/diethylSuccinate",
     "data/curation/components/diethyleneGlycolDibutylEther",
     "data/curation/components/diethyleneGlycolDiethylEther",
     "data/curation/components/diethyleneGlycolMonohexylEther",
     "data/curation/components/diethylethanolamine",
     "data/curation/components/dimethylSulfoxide",
     "data/curation/components/dimethylethanolamine",
+    "data/curation/components/diphenylmethane",
+    "data/curation/components/ethylButanoate",
     "data/curation/components/ethylDecanoate",
+    "data/curation/components/ethylHexanoate",
+    "data/curation/components/ethylLactate",
     "data/curation/components/ethylOctanoate",
+    "data/curation/components/ethylPropionate",
+    "data/curation/components/fluoroethane",
+    "data/curation/components/furan",
     "data/curation/components/furfural",
     "data/curation/components/glycerol",
     "data/curation/components/hexafluorobenzene",
+    "data/curation/components/isopentylAcetate",
     "data/curation/components/mNitrotoluene",
     "data/curation/components/methylButanoate",
     "data/curation/components/methylDecanoate",
     "data/curation/components/methylDiEthanolAmine",
     "data/curation/components/methylHeptanoate",
     "data/curation/components/methylHexanoate",
+    "data/curation/components/methylLactate",
     "data/curation/components/methylLevulinate",
     "data/curation/components/methylOctanoate",
+    "data/curation/components/methylPentanoate",
     "data/curation/components/methylTertPentylEther",
     "data/curation/components/methylethanolamine",
     "data/curation/components/monoethanolamine",
+    "data/curation/components/morpholine",
     "data/curation/components/nAminoethylEthanolamine",
     "data/curation/components/nAminoethylPiperazine",
+    "data/curation/components/nButylButanoate",
+    "data/curation/components/nButylFormate",
+    "data/curation/components/nButylPropionate",
     "data/curation/components/nEicosane",
     "data/curation/components/nHexylAcetate",
     "data/curation/components/nPentylAcetate",
+    "data/curation/components/nPropylPropionate",
+    "data/curation/components/pentanenitrile",
+    "data/curation/components/pentanoicAcid",
+    "data/curation/components/perfluorooctane",
     "data/curation/components/phenanthrene",
     "data/curation/components/pyrene",
+    "data/curation/components/pyrrole",
     "data/curation/components/squalane",
+    "data/curation/components/tertButylAcetate",
     "data/curation/components/tetradecanoicAcid",
     "data/curation/components/tetrahydropyran",
     "data/curation/components/triethanolamine",
     "data/curation/components/triethylamine",
+    "data/curation/components/vinylPropionate",
     "tutorials/props/curation/curate01_water_evidence_partition",
     "tutorials/props/fit/psat01_antoine_recovery"
    ],

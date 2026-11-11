@@ -1,0 +1,16 @@
+/*  244Trimethyl1Pentene: the component whose vapour pressure is fitted.  The fit reads
+    only its evidence; the catalogue record is loaded so the run voices what
+    it is (the AmbroseWalton estimate before promotion, the autoPromoted
+    Antoine after).  NOT sealed, for that reason.  */
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( 244Trimethyl1Pentene );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid { activityModel { model ideal; } }
+    vapour { fugacityModel idealGas; }
+}

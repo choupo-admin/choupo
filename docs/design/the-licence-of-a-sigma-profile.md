@@ -101,6 +101,11 @@ A native LVPP variant is therefore a NEW `ActivityModel` with its own
 constants, and it is **reserved for Vítor (task #95)**.  Nothing here builds
 it, and nothing here reads LVPP data.
 
+**UPDATE 2026-11-11 (DEV.md 4c C310): built, on release 18.07 (GAMESS
+HF/TZVP) with Ferrarini et al. 2018's constants, as `variant
+"LVPP-HFTZVP-2018"`; `lvpp_sigma_profile.py` no longer emits the 2002 label
+(§8).  Record: [`cosmo-sac-lvpp-hftzvp-2018.md`](cosmo-sac-lvpp-hftzvp-2018.md).**
+
 ## 5  The two corrupted memories, found and fixed
 
 Both were read back as true by the session that opened this task, which is

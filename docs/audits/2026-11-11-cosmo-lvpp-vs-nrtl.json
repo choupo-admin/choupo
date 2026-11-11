@@ -1,0 +1,2483 @@
+{
+ "what": "bin/curate/cosmo_lvpp_vs_nrtl.py, 2026-11-11 (DEV.md 4c C310): per catalogue NRTL pair graded clean or warning, fitParameters mode evaluate over the pair's own curation evidence; NRTL = the promoted record's parameters (in-sample), COSMO = COSMO-SAC LVPP-HFTZVP-2018 with no parameter (held out). aad in K for T_bubble, in % for P_bubble. No measured point is in this file.",
+ "results": [
+  {
+   "pair": "124Trimethylbenzene-2Pentanol",
+   "grade": "clean",
+   "components": [
+    "2Pentanol",
+    "124Trimethylbenzene"
+   ],
+   "families": [
+    "alcohol",
+    "aromatic hydrocarbon"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 0.595197718887441,
+     "bias": 0.2564749488261204,
+     "max": 1.1843722563652335
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 1.6279007285395373,
+     "bias": 1.5943244865711932,
+     "max": 11.185004074979625
+    }
+   }
+  },
+  {
+   "pair": "14Dioxane-2Methyl2Propanol",
+   "grade": "warning",
+   "components": [
+    "2Methyl2Propanol",
+    "14Dioxane"
+   ],
+   "families": [
+    "alcohol",
+    "ether"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 100,
+     "aad": 0.6988700000000017,
+     "bias": -0.11583000000000084,
+     "max": 1.9869999999999663
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 100,
+     "aad": 2.3804399999999974,
+     "bias": 2.3804399999999974,
+     "max": 4.538000000000011
+    }
+   }
+  },
+  {
+   "pair": "14Dioxane-nButanol",
+   "grade": "clean",
+   "components": [
+    "14Dioxane",
+    "nButanol"
+   ],
+   "families": [
+    "alcohol",
+    "ether"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 15,
+     "aad": 0.38243764831349586,
+     "bias": -0.17604273166319834,
+     "max": 0.7136721546170365
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 15,
+     "aad": 7.856843342250293,
+     "bias": -7.856843342250293,
+     "max": 11.030480014601203
+    }
+   }
+  },
+  {
+   "pair": "1Hexanol-nButanol",
+   "grade": "clean",
+   "components": [
+    "nButanol",
+    "1Hexanol"
+   ],
+   "families": [
+    "alcohol",
+    "alcohol"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 19,
+     "aad": 1.5040363589616825,
+     "bias": 0.6938615359392147,
+     "max": 4.5573809523809485
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 19,
+     "aad": 4.110393006461831,
+     "bias": 3.8829193222513054,
+     "max": 10.071666666666673
+    }
+   }
+  },
+  {
+   "pair": "1Hexanol-nButylAcetate",
+   "grade": "warning",
+   "components": [
+    "nButylAcetate",
+    "1Hexanol"
+   ],
+   "families": [
+    "alcohol",
+    "ester/carbonate"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 21,
+     "aad": 3.459347211242484,
+     "bias": -0.4651467606628025,
+     "max": 5.394285714285712
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 21,
+     "aad": 23.315919180081007,
+     "bias": -23.315919180081007,
+     "max": 32.449411764705886
+    }
+   }
+  },
+  {
+   "pair": "1Hexene-1Pentanol",
+   "grade": "clean",
+   "components": [
+    "1Pentanol",
+    "1Hexene"
+   ],
+   "families": [
+    "alcohol",
+    "alkene/alkyne"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 1.601482230799068,
+     "bias": 0.22373506292734677,
+     "max": 2.4921261693226224
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 4.500860658155949,
+     "bias": -4.457197671425047,
+     "max": 13.52597864768683
+    }
+   }
+  },
+  {
+   "pair": "1Hexene-diNButylEther",
+   "grade": "clean",
+   "components": [
+    "diNButylEther",
+    "1Hexene"
+   ],
+   "families": [
+    "alkene/alkyne",
+    "ether"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 26,
+     "aad": 0.14785050790856047,
+     "bias": -0.01919389255339832,
+     "max": 0.36684660368871796
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 26,
+     "aad": 0.18218338577437576,
+     "bias": 0.17827964570042326,
+     "max": 1.2872244714349879
+    }
+   }
+  },
+  {
+   "pair": "1Hexene-nButanol",
+   "grade": "clean",
+   "components": [
+    "nButanol",
+    "1Hexene"
+   ],
+   "families": [
+    "alcohol",
+    "alkene/alkyne"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 26,
+     "aad": 1.8358113134821976,
+     "bias": 0.33699438019072264,
+     "max": 2.7856728938436492
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 26,
+     "aad": 3.7468100989659656,
+     "bias": -3.745410492238177,
+     "max": 10.982642292832017
+    }
+   }
+  },
+  {
+   "pair": "1Hexene-tertButylEthylEther",
+   "grade": "clean",
+   "components": [
+    "tertButylEthylEther",
+    "1Hexene"
+   ],
+   "families": [
+    "alkene/alkyne",
+    "ether"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 22,
+     "aad": 0.4587164526779684,
+     "bias": -0.1819235123604546,
+     "max": 0.7260163071763099
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 22,
+     "aad": 1.131106877604459,
+     "bias": -1.131106877604459,
+     "max": 2.471567267683777
+    }
+   }
+  },
+  {
+   "pair": "1Pentanol-224Trimethylpentane",
+   "grade": "clean",
+   "components": [
+    "1Pentanol",
+    "224Trimethylpentane"
+   ],
+   "families": [
+    "alcohol",
+    "alkane/cycloalkane"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 1.5009080029564634,
+     "bias": 0.06003786082186682,
+     "max": 2.2708039492242538
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 4.088088815546857,
+     "bias": 4.088088815546857,
+     "max": 8.498062593144565
+    }
+   }
+  },
+  {
+   "pair": "1Pentanol-2Hexanone",
+   "grade": "clean",
+   "components": [
+    "2Hexanone",
+    "1Pentanol"
+   ],
+   "families": [
+    "alcohol",
+    "ketone"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 27,
+     "aad": 0.19092592592592703,
+     "bias": 0.11388888888889268,
+     "max": 0.49799999999999045
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 27,
+     "aad": 2.024518518518522,
+     "bias": 2.024518518518522,
+     "max": 2.9039999999999964
+    }
+   }
+  },
+  {
+   "pair": "1Pentanol-anisole",
+   "grade": "clean",
+   "components": [
+    "1Pentanol",
+    "anisole"
+   ],
+   "families": [
+    "alcohol",
+    "ether"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 68,
+     "aad": 0.19726470588235526,
+     "bias": -0.03920588235293779,
+     "max": 0.8840000000000146
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 68,
+     "aad": 0.5175882352941156,
+     "bias": -0.4466176470588228,
+     "max": 2.1299999999999955
+    }
+   }
+  },
+  {
+   "pair": "1Pentanol-cyclohexane",
+   "grade": "clean",
+   "components": [
+    "1Pentanol",
+    "cyclohexane"
+   ],
+   "families": [
+    "alcohol",
+    "alkane/cycloalkane"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 1.7703019577350438,
+     "bias": 0.27922613974233473,
+     "max": 2.590669270076019
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 0.9232268433597012,
+     "bias": 0.5865453525717554,
+     "max": 1.6065049821394966
+    }
+   }
+  },
+  {
+   "pair": "1Pentanol-nHexane",
+   "grade": "clean",
+   "components": [
+    "1Pentanol",
+    "nHexane"
+   ],
+   "families": [
+    "alcohol",
+    "alkane/cycloalkane"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 1.6101330821992716,
+     "bias": 0.20520437186818133,
+     "max": 2.639015252876636
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 1.4160394417972617,
+     "bias": 1.128947714734737,
+     "max": 2.3527727402882506
+    }
+   }
+  },
+  {
+   "pair": "1Pentanol-toluene",
+   "grade": "clean",
+   "components": [
+    "1Pentanol",
+    "toluene"
+   ],
+   "families": [
+    "alcohol",
+    "aromatic hydrocarbon"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 1.1029141645611276,
+     "bias": 0.5606301420829545,
+     "max": 1.9968701095461645
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 3.2036319468549497,
+     "bias": -2.7060554923441695,
+     "max": 8.302403045443727
+    }
+   }
+  },
+  {
+   "pair": "1Propanol-224Trimethylpentane",
+   "grade": "clean",
+   "components": [
+    "1Propanol",
+    "224Trimethylpentane"
+   ],
+   "families": [
+    "alcohol",
+    "alkane/cycloalkane"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 21,
+     "aad": 0.8662393803549882,
+     "bias": -0.18832007777813262,
+     "max": 2.4131824889326046
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 21,
+     "aad": 4.902611925020237,
+     "bias": 4.902611925020237,
+     "max": 7.174594877156299
+    }
+   }
+  },
+  {
+   "pair": "1Propanol-Dichloroethane",
+   "grade": "clean",
+   "components": [
+    "Dichloroethane",
+    "1Propanol"
+   ],
+   "families": [
+    "alcohol",
+    "halogenated"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 11,
+     "aad": 0.657891443532858,
+     "bias": -0.058277106264334154,
+     "max": 0.996909422299701
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 11,
+     "aad": 13.190401445434349,
+     "bias": -13.190401445434349,
+     "max": 18.963383187209907
+    }
+   }
+  },
+  {
+   "pair": "1Propanol-acetonitrile",
+   "grade": "warning",
+   "components": [
+    "acetonitrile",
+    "1Propanol"
+   ],
+   "families": [
+    "alcohol",
+    "nitrile"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 58,
+     "aad": 0.28329310344827363,
+     "bias": 0.07494827586206568,
+     "max": 1.3199999999999932
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 58,
+     "aad": 0.8792068965517207,
+     "bias": 0.8587586206896531,
+     "max": 3.062999999999988
+    }
+   }
+  },
+  {
+   "pair": "1Propanol-benzene",
+   "grade": "clean",
+   "components": [
+    "benzene",
+    "1Propanol"
+   ],
+   "families": [
+    "alcohol",
+    "aromatic hydrocarbon"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 0.9638264420145397,
+     "bias": 0.10386237529441202,
+     "max": 1.472643731418207
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 7.8863598398846655,
+     "bias": -7.8863598398846655,
+     "max": 14.609841719529474
+    }
+   }
+  },
+  {
+   "pair": "1Propanol-diethylSulfide",
+   "grade": "clean",
+   "components": [
+    "diethylSulfide",
+    "1Propanol"
+   ],
+   "families": [
+    "alcohol",
+    "sulfur"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 11,
+     "aad": 0.20959845209103992,
+     "bias": -0.017405476686464666,
+     "max": 0.3180631120783492
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 11,
+     "aad": 2.0624398004398334,
+     "bias": 1.73622749218264,
+     "max": 4.502193995381056
+    }
+   }
+  },
+  {
+   "pair": "1Propanol-diisopropylEther",
+   "grade": "clean",
+   "components": [
+    "diisopropylEther",
+    "1Propanol"
+   ],
+   "families": [
+    "alcohol",
+    "ether"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 22,
+     "aad": 0.3163840219197921,
+     "bias": -0.08649494390126516,
+     "max": 0.5284630585835381
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 22,
+     "aad": 16.47865210911772,
+     "bias": -16.47865210911772,
+     "max": 25.875803207926616
+    }
+   }
+  },
+  {
+   "pair": "1Propanol-dimethylCarbonate",
+   "grade": "warning",
+   "components": [
+    "1Propanol",
+    "dimethylCarbonate"
+   ],
+   "families": [
+    "alcohol",
+    "ether"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 84,
+     "aad": 0.37686904761904877,
+     "bias": 0.06015476190475849,
+     "max": 1.955000000000041
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 84,
+     "aad": 1.3684047619047595,
+     "bias": 1.3261904761904733,
+     "max": 2.4879999999999995
+    }
+   }
+  },
+  {
+   "pair": "224Trimethylpentane-2Pentanol",
+   "grade": "clean",
+   "components": [
+    "2Pentanol",
+    "224Trimethylpentane"
+   ],
+   "families": [
+    "alcohol",
+    "alkane/cycloalkane"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 1.4990221354258404,
+     "bias": -0.030009833209962478,
+     "max": 2.400338473110185
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 2.662434226578026,
+     "bias": 2.6257719115214546,
+     "max": 4.337131488515105
+    }
+   }
+  },
+  {
+   "pair": "224Trimethylpentane-diethylDisulfide",
+   "grade": "clean",
+   "components": [
+    "diethylDisulfide",
+    "224Trimethylpentane"
+   ],
+   "families": [
+    "alkane/cycloalkane",
+    "sulfur"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 8,
+     "aad": 0.28182182315785725,
+     "bias": 0.0446297238438029,
+     "max": 0.4370466321243448
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 8,
+     "aad": 5.513926931263772,
+     "bias": -5.513926931263772,
+     "max": 10.338860103626951
+    }
+   }
+  },
+  {
+   "pair": "224Trimethylpentane-diisopropylEther",
+   "grade": "warning",
+   "components": [
+    "diisopropylEther",
+    "224Trimethylpentane"
+   ],
+   "families": [
+    "alkane/cycloalkane",
+    "ether"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 28,
+     "aad": 0.949785714285712,
+     "bias": -0.10935714285713923,
+     "max": 1.7139999999999986
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 28,
+     "aad": 0.9451071428571437,
+     "bias": -0.11889285714285742,
+     "max": 1.725999999999999
+    }
+   }
+  },
+  {
+   "pair": "224Trimethylpentane-dimethylDisulfide",
+   "grade": "clean",
+   "components": [
+    "dimethylDisulfide",
+    "224Trimethylpentane"
+   ],
+   "families": [
+    "alkane/cycloalkane",
+    "sulfur"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 9,
+     "aad": 0.12746459833033386,
+     "bias": -0.005160645046153412,
+     "max": 0.25268817204301075
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 9,
+     "aad": 5.974260708375499,
+     "bias": -5.974260708375499,
+     "max": 7.753729729729727
+    }
+   }
+  },
+  {
+   "pair": "224Trimethylpentane-isopropanol",
+   "grade": "clean",
+   "components": [
+    "isopropanol",
+    "224Trimethylpentane"
+   ],
+   "families": [
+    "alcohol",
+    "alkane/cycloalkane"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 38,
+     "aad": 0.17426315789473273,
+     "bias": 0.048684210526313394,
+     "max": 0.507000000000005
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 38,
+     "aad": 2.4114473684210522,
+     "bias": -2.4114473684210522,
+     "max": 6.045000000000016
+    }
+   }
+  },
+  {
+   "pair": "224Trimethylpentane-methylTertPentylEther",
+   "grade": "clean",
+   "components": [
+    "methylTertPentylEther",
+    "224Trimethylpentane"
+   ],
+   "families": [
+    "alkane/cycloalkane",
+    "ether"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 22,
+     "aad": 0.7717765035894903,
+     "bias": -0.15495316074690776,
+     "max": 1.2002048131080463
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 22,
+     "aad": 1.6825134754060784,
+     "bias": -1.6825134754060784,
+     "max": 2.3421317244846582
+    }
+   }
+  },
+  {
+   "pair": "224Trimethylpentane-nHeptane",
+   "grade": "clean",
+   "components": [
+    "224Trimethylpentane",
+    "nHeptane"
+   ],
+   "families": [
+    "alkane/cycloalkane",
+    "alkane/cycloalkane"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 22,
+     "aad": 0.28013503494284053,
+     "bias": -0.18154899017622267,
+     "max": 0.4414370871596526
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 22,
+     "aad": 1.318548534629677,
+     "bias": 1.318548534629677,
+     "max": 1.789673740893253
+    }
+   }
+  },
+  {
+   "pair": "2Methyl1Propanol-benzene",
+   "grade": "clean",
+   "components": [
+    "benzene",
+    "2Methyl1Propanol"
+   ],
+   "families": [
+    "alcohol",
+    "aromatic hydrocarbon"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 0.9727046475583108,
+     "bias": 0.06733368053533742,
+     "max": 1.545776799902213
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 8.22309473301498,
+     "bias": -8.22309473301498,
+     "max": 18.136148007590126
+    }
+   }
+  },
+  {
+   "pair": "2Methyl1Propanol-diisopropylEther",
+   "grade": "clean",
+   "components": [
+    "diisopropylEther",
+    "2Methyl1Propanol"
+   ],
+   "families": [
+    "alcohol",
+    "ether"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 26,
+     "aad": 0.49601933739411286,
+     "bias": -0.21708763877545736,
+     "max": 0.7602059140428589
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 26,
+     "aad": 26.838246158298546,
+     "bias": -26.838246158298546,
+     "max": 44.44754381634165
+    }
+   }
+  },
+  {
+   "pair": "2Methyl1Propanol-isobutylAcetate",
+   "grade": "warning",
+   "components": [
+    "2Methyl1Propanol",
+    "isobutylAcetate"
+   ],
+   "families": [
+    "alcohol",
+    "ester/carbonate"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 58,
+     "aad": 0.7059482758620708,
+     "bias": -0.16577586206896272,
+     "max": 1.3170000000000073
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 58,
+     "aad": 2.4284137931034486,
+     "bias": 2.4284137931034486,
+     "max": 4.239000000000033
+    }
+   }
+  },
+  {
+   "pair": "2Pentanol-cyclohexane",
+   "grade": "clean",
+   "components": [
+    "2Pentanol",
+    "cyclohexane"
+   ],
+   "families": [
+    "alcohol",
+    "alkane/cycloalkane"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 1.7311805473069801,
+     "bias": 0.2675074153628808,
+     "max": 2.6709935097353967
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 1.2773707535299408,
+     "bias": 0.7323152405598696,
+     "max": 2.7213058419244005
+    }
+   }
+  },
+  {
+   "pair": "2Pentanol-nHeptane",
+   "grade": "clean",
+   "components": [
+    "2Pentanol",
+    "nHeptane"
+   ],
+   "families": [
+    "alcohol",
+    "alkane/cycloalkane"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 1.662542333073788,
+     "bias": 0.041593682870116305,
+     "max": 2.477531217688698
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 2.6918240041067274,
+     "bias": 2.6918240041067274,
+     "max": 4.645469705391891
+    }
+   }
+  },
+  {
+   "pair": "2Pentanol-nHexane",
+   "grade": "clean",
+   "components": [
+    "2Pentanol",
+    "nHexane"
+   ],
+   "families": [
+    "alcohol",
+    "alkane/cycloalkane"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 1.9099340216096719,
+     "bias": 0.16400068331009965,
+     "max": 3.0413434853767853
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 2.4382704194998364,
+     "bias": 2.320414059744667,
+     "max": 4.265637230484599
+    }
+   }
+  },
+  {
+   "pair": "2Pentanol-toluene",
+   "grade": "clean",
+   "components": [
+    "2Pentanol",
+    "toluene"
+   ],
+   "families": [
+    "alcohol",
+    "aromatic hydrocarbon"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 0.7108021046958388,
+     "bias": -0.38835916770630513,
+     "max": 1.3531211750305936
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 5.163752233231584,
+     "bias": -5.1636591233619376,
+     "max": 11.26039016115352
+    }
+   }
+  },
+  {
+   "pair": "Dichloroethane-ethylAcetate",
+   "grade": "clean",
+   "components": [
+    "Dichloroethane",
+    "ethylAcetate"
+   ],
+   "families": [
+    "ester/carbonate",
+    "halogenated"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 18,
+     "aad": 0.7000655609948068,
+     "bias": 0.15063572794828128,
+     "max": 1.1093764783801685
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 18,
+     "aad": 6.47922662491566,
+     "bias": -6.47922662491566,
+     "max": 8.513122300792556
+    }
+   }
+  },
+  {
+   "pair": "acetone-methanol",
+   "grade": "clean",
+   "components": [
+    "acetone",
+    "methanol"
+   ],
+   "families": [
+    "alcohol",
+    "ketone"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 156,
+     "aad": 0.16326282051282412,
+     "bias": 0.05826282051282561,
+     "max": 0.6220000000000141
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 156,
+     "aad": 1.777480769230769,
+     "bias": 1.777480769230769,
+     "max": 2.8810000000000286
+    }
+   }
+  },
+  {
+   "pair": "acetonitrile-ethylAcetate",
+   "grade": "clean",
+   "components": [
+    "ethylAcetate",
+    "acetonitrile"
+   ],
+   "families": [
+    "ester/carbonate",
+    "nitrile"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 30,
+     "aad": 0.15246666666667086,
+     "bias": -0.010133333333330559,
+     "max": 0.30400000000003047
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 30,
+     "aad": 2.1744333333333334,
+     "bias": 2.1744333333333334,
+     "max": 2.7870000000000346
+    }
+   }
+  },
+  {
+   "pair": "acetonitrile-methanol",
+   "grade": "clean",
+   "components": [
+    "acetonitrile",
+    "methanol"
+   ],
+   "families": [
+    "alcohol",
+    "nitrile"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 51,
+     "aad": 0.45231372549020693,
+     "bias": 0.24819607843137953,
+     "max": 0.9910000000000423
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 51,
+     "aad": 1.382647058823527,
+     "bias": -1.382647058823527,
+     "max": 3.3209999999999695
+    }
+   }
+  },
+  {
+   "pair": "aniline-nNDimethylformamide",
+   "grade": "warning",
+   "components": [
+    "nNDimethylformamide",
+    "aniline"
+   ],
+   "families": [
+    "amide",
+    "aromatic amine/N-heterocycle"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 27,
+     "aad": 0.9602592592592579,
+     "bias": 0.6411481481481431,
+     "max": 1.992999999999995
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 27,
+     "aad": 9.989148148148146,
+     "bias": 9.884407407407402,
+     "max": 17.680000000000007
+    }
+   }
+  },
+  {
+   "pair": "aniline-nOctane",
+   "grade": "clean",
+   "components": [
+    "nOctane",
+    "aniline"
+   ],
+   "families": [
+    "alkane/cycloalkane",
+    "aromatic amine/N-heterocycle"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 19,
+     "aad": 0.48481168249106155,
+     "bias": 0.17215702931891105,
+     "max": 0.9076008645533168
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 19,
+     "aad": 10.826125371175882,
+     "bias": -10.826125371175882,
+     "max": 33.35008217891524
+    }
+   }
+  },
+  {
+   "pair": "anisole-nHexane",
+   "grade": "clean",
+   "components": [
+    "nHexane",
+    "anisole"
+   ],
+   "families": [
+    "alkane/cycloalkane",
+    "ether"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 16,
+     "aad": 2.95695733062685,
+     "bias": -0.8289996621874667,
+     "max": 4.601327433628325
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 16,
+     "aad": 15.792245368524346,
+     "bias": 7.243366974536523,
+     "max": 48.463409090909096
+    }
+   }
+  },
+  {
+   "pair": "benzene-diisopropylEther",
+   "grade": "clean",
+   "components": [
+    "diisopropylEther",
+    "benzene"
+   ],
+   "families": [
+    "aromatic hydrocarbon",
+    "ether"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 27,
+     "aad": 0.5216200579082101,
+     "bias": -0.1866362512634139,
+     "max": 0.777036209343771
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 27,
+     "aad": 4.056346011354017,
+     "bias": -3.9805699334371094,
+     "max": 5.890233792074285
+    }
+   }
+  },
+  {
+   "pair": "benzene-isopropanol",
+   "grade": "clean",
+   "components": [
+    "benzene",
+    "isopropanol"
+   ],
+   "families": [
+    "alcohol",
+    "aromatic hydrocarbon"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 0.808042915441673,
+     "bias": 0.40818617408667784,
+     "max": 1.3270865112224806
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 7.670065759065522,
+     "bias": -7.670065759065522,
+     "max": 12.290345007386808
+    }
+   }
+  },
+  {
+   "pair": "benzene-methanol",
+   "grade": "warning",
+   "components": [
+    "benzene",
+    "methanol"
+   ],
+   "families": [
+    "alcohol",
+    "aromatic hydrocarbon"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 23,
+     "aad": 0.4291739130434774,
+     "bias": 0.3661304347826059,
+     "max": 1.3050000000000068
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 23,
+     "aad": 0.9651739130434739,
+     "bias": -0.9406521739130406,
+     "max": 4.222999999999956
+    }
+   }
+  },
+  {
+   "pair": "benzene-nNDimethylacetamide",
+   "grade": "clean",
+   "components": [
+    "benzene",
+    "nNDimethylacetamide"
+   ],
+   "families": [
+    "amide",
+    "aromatic hydrocarbon"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 49,
+     "aad": 1.7300039395151627,
+     "bias": 0.7345088297498455,
+     "max": 3.3732313575525756
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 49,
+     "aad": 6.312232811025809,
+     "bias": -6.115168319942563,
+     "max": 16.286094316807734
+    }
+   }
+  },
+  {
+   "pair": "chloroform-methylEthylKetone",
+   "grade": "clean",
+   "components": [
+    "chloroform",
+    "methylEthylKetone"
+   ],
+   "families": [
+    "halogenated",
+    "ketone"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 20,
+     "aad": 1.163368798408952,
+     "bias": 0.4857506665416662,
+     "max": 2.0250160359204665
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 20,
+     "aad": 42.440251034560774,
+     "bias": -42.440251034560774,
+     "max": 66.27213114754099
+    }
+   }
+  },
+  {
+   "pair": "chloroform-methylTertButylEther",
+   "grade": "clean",
+   "components": [
+    "chloroform",
+    "methylTertButylEther"
+   ],
+   "families": [
+    "ether",
+    "halogenated"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 48,
+     "aad": 1.1399208916097467,
+     "bias": -0.3443848352595705,
+     "max": 1.8850746268656717
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 48,
+     "aad": 32.03276712436848,
+     "bias": -32.03276712436848,
+     "max": 57.68081936685289
+    }
+   }
+  },
+  {
+   "pair": "cyclohexane-cyclohexene",
+   "grade": "warning",
+   "components": [
+    "cyclohexane",
+    "cyclohexene"
+   ],
+   "families": [
+    "alkane/cycloalkane",
+    "alkene/alkyne"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 81,
+     "aad": 0.2478641975308649,
+     "bias": -0.1018395061728391,
+     "max": 1.6240000000000236
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 81,
+     "aad": 0.16555555555555587,
+     "bias": -0.061456790123456895,
+     "max": 1.1580000000000155
+    }
+   }
+  },
+  {
+   "pair": "cyclohexane-diNButylEther",
+   "grade": "clean",
+   "components": [
+    "diNButylEther",
+    "cyclohexane"
+   ],
+   "families": [
+    "alkane/cycloalkane",
+    "ether"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 26,
+     "aad": 0.6615679799174546,
+     "bias": -0.5710460580995029,
+     "max": 1.004909983633382
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 26,
+     "aad": 0.8424105518427998,
+     "bias": 0.8052913306825678,
+     "max": 2.463829787234042
+    }
+   }
+  },
+  {
+   "pair": "cyclohexane-nButanol",
+   "grade": "clean",
+   "components": [
+    "nButanol",
+    "cyclohexane"
+   ],
+   "families": [
+    "alcohol",
+    "alkane/cycloalkane"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 2.011034390814228,
+     "bias": -0.19054191716952765,
+     "max": 3.2144326503743903
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 3.6938200617939123,
+     "bias": 3.6938200617939123,
+     "max": 6.490275191392514
+    }
+   }
+  },
+  {
+   "pair": "cyclohexane-nHeptane",
+   "grade": "clean",
+   "components": [
+    "cyclohexane",
+    "nHeptane"
+   ],
+   "families": [
+    "alkane/cycloalkane",
+    "alkane/cycloalkane"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 19,
+     "aad": 0.3082105263157862,
+     "bias": -0.15115789473684285,
+     "max": 0.6509999999999536
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 19,
+     "aad": 0.6959999999999994,
+     "bias": 0.6959999999999994,
+     "max": 1.4599999999999795
+    }
+   }
+  },
+  {
+   "pair": "cyclohexane-tertButylEthylEther",
+   "grade": "clean",
+   "components": [
+    "tertButylEthylEther",
+    "cyclohexane"
+   ],
+   "families": [
+    "alkane/cycloalkane",
+    "ether"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 0.8032273855254259,
+     "bias": 0.14572048938270799,
+     "max": 1.2561734213006626
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 0.8930636515615132,
+     "bias": -0.8930636515615132,
+     "max": 2.403940886699512
+    }
+   }
+  },
+  {
+   "pair": "cyclohexane-tetrahydrofuran",
+   "grade": "clean",
+   "components": [
+    "cyclohexane",
+    "tetrahydrofuran"
+   ],
+   "families": [
+    "alkane/cycloalkane",
+    "ether"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 20,
+     "aad": 0.13559999999999944,
+     "bias": 0.07750000000000341,
+     "max": 0.3340000000000032
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 20,
+     "aad": 0.5498499999999951,
+     "bias": 0.5498499999999951,
+     "max": 1.016999999999996
+    }
+   }
+  },
+  {
+   "pair": "diNButylEther-nHeptane",
+   "grade": "clean",
+   "components": [
+    "diNButylEther",
+    "nHeptane"
+   ],
+   "families": [
+    "alkane/cycloalkane",
+    "ether"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 0.3661861477751129,
+     "bias": -0.31048571027781,
+     "max": 0.5271235776660511
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 0.974741687510265,
+     "bias": 0.8966935124519896,
+     "max": 2.6758221225710024
+    }
+   }
+  },
+  {
+   "pair": "diNButylEther-nNDimethylacetamide",
+   "grade": "clean",
+   "components": [
+    "diNButylEther",
+    "nNDimethylacetamide"
+   ],
+   "families": [
+    "amide",
+    "ether"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 52,
+     "aad": 1.544330542619993,
+     "bias": 0.010538977629087395,
+     "max": 2.4475594493116444
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 52,
+     "aad": 12.397118149485916,
+     "bias": -12.397118149485916,
+     "max": 22.559702878365833
+    }
+   }
+  },
+  {
+   "pair": "diNButylEther-toluene",
+   "grade": "clean",
+   "components": [
+    "diNButylEther",
+    "toluene"
+   ],
+   "families": [
+    "aromatic hydrocarbon",
+    "ether"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 26,
+     "aad": 0.4984016856286072,
+     "bias": 0.1544723973994766,
+     "max": 0.821231422505314
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 26,
+     "aad": 0.9742377385052803,
+     "bias": -0.9057092394035327,
+     "max": 1.9502380952380918
+    }
+   }
+  },
+  {
+   "pair": "diethylSulfide-nPropylAcetate",
+   "grade": "clean",
+   "components": [
+    "diethylSulfide",
+    "nPropylAcetate"
+   ],
+   "families": [
+    "ester/carbonate",
+    "sulfur"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 9,
+     "aad": 0.11069297231488372,
+     "bias": 0.02665945891566945,
+     "max": 0.19076751946607343
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 9,
+     "aad": 1.0143755316950027,
+     "bias": -1.0103202105510733,
+     "max": 1.5015970515970551
+    }
+   }
+  },
+  {
+   "pair": "diisopropylEther-nButanol",
+   "grade": "clean",
+   "components": [
+    "diisopropylEther",
+    "nButanol"
+   ],
+   "families": [
+    "alcohol",
+    "ether"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 26,
+     "aad": 0.5422043350437147,
+     "bias": -0.32558571522501,
+     "max": 0.7760259420775986
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 26,
+     "aad": 18.81496928232529,
+     "bias": -18.814410185825235,
+     "max": 32.50545997328934
+    }
+   }
+  },
+  {
+   "pair": "dimethylDisulfide-tertButylEthylEther",
+   "grade": "clean",
+   "components": [
+    "dimethylDisulfide",
+    "tertButylEthylEther"
+   ],
+   "families": [
+    "ether",
+    "sulfur"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 10,
+     "aad": 0.3297614852272047,
+     "bias": -0.041139863316182745,
+     "max": 0.44387755102040816
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 10,
+     "aad": 8.088759886427699,
+     "bias": -8.088759886427699,
+     "max": 12.88795620437956
+    }
+   }
+  },
+  {
+   "pair": "dimethylDisulfide-toluene",
+   "grade": "clean",
+   "components": [
+    "dimethylDisulfide",
+    "toluene"
+   ],
+   "families": [
+    "aromatic hydrocarbon",
+    "sulfur"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 12,
+     "aad": 0.29221469871626027,
+     "bias": 0.020802951109899187,
+     "max": 0.4339421613394194
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 12,
+     "aad": 1.6631033239411241,
+     "bias": -1.6631033239411241,
+     "max": 2.2132530120481904
+    }
+   }
+  },
+  {
+   "pair": "ethylAcetate-methanol",
+   "grade": "clean",
+   "components": [
+    "ethylAcetate",
+    "methanol"
+   ],
+   "families": [
+    "alcohol",
+    "ester/carbonate"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 32,
+     "aad": 0.1105312499999993,
+     "bias": -0.06515625000000291,
+     "max": 0.49799999999999045
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 32,
+     "aad": 1.9511562500000021,
+     "bias": 1.9511562500000021,
+     "max": 3.204999999999984
+    }
+   }
+  },
+  {
+   "pair": "ethylBenzene-monochlorobenzene",
+   "grade": "clean",
+   "components": [
+    "ethylBenzene",
+    "monochlorobenzene"
+   ],
+   "families": [
+    "aromatic hydrocarbon",
+    "halogenated"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 26,
+     "aad": 0.13073076923076926,
+     "bias": 0.004576923076919788,
+     "max": 0.37700000000000955
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 26,
+     "aad": 0.13403846153846205,
+     "bias": 0.007269230769229405,
+     "max": 0.32900000000000773
+    }
+   }
+  },
+  {
+   "pair": "ethylBenzene-styrene",
+   "grade": "warning",
+   "components": [
+    "ethylBenzene",
+    "styrene"
+   ],
+   "families": [
+    "aromatic hydrocarbon",
+    "aromatic hydrocarbon"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 71,
+     "aad": 1.0751126760563383,
+     "bias": 0.8439295774647892,
+     "max": 1.9190000000000396
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 71,
+     "aad": 0.5902253521126753,
+     "bias": -0.49312676056338106,
+     "max": 2.1990000000000123
+    }
+   }
+  },
+  {
+   "pair": "isopropanol-isopropylAcetate",
+   "grade": "clean",
+   "components": [
+    "isopropylAcetate",
+    "isopropanol"
+   ],
+   "families": [
+    "alcohol",
+    "ester/carbonate"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 57,
+     "aad": 0.10989473684210145,
+     "bias": 0.041122807017540765,
+     "max": 0.4549999999999841
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 57,
+     "aad": 0.9576491228070108,
+     "bias": 0.9574035087719229,
+     "max": 1.649000000000001
+    }
+   }
+  },
+  {
+   "pair": "isopropanol-methanol",
+   "grade": "warning",
+   "components": [
+    "methanol",
+    "isopropanol"
+   ],
+   "families": [
+    "alcohol",
+    "alcohol"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 111,
+     "aad": 0.6310990990990957,
+     "bias": 0.05165765765765851,
+     "max": 1.73599999999999
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 111,
+     "aad": 0.6530180180180182,
+     "bias": -0.4087477477477486,
+     "max": 2.4950000000000045
+    }
+   }
+  },
+  {
+   "pair": "mXylene-nDecane",
+   "grade": "clean",
+   "components": [
+    "nDecane",
+    "mXylene"
+   ],
+   "families": [
+    "alkane/cycloalkane",
+    "aromatic hydrocarbon"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 12,
+     "aad": 0.06425000000000125,
+     "bias": 0.016083333333327232,
+     "max": 0.1069999999999709
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 12,
+     "aad": 0.0925833333333183,
+     "bias": 0.0925833333333183,
+     "max": 0.12299999999999045
+    }
+   }
+  },
+  {
+   "pair": "mXylene-nOctane",
+   "grade": "clean",
+   "components": [
+    "nOctane",
+    "mXylene"
+   ],
+   "families": [
+    "alkane/cycloalkane",
+    "aromatic hydrocarbon"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 24,
+     "aad": 0.2000833333333342,
+     "bias": -0.04225000000000042,
+     "max": 0.6349999999999909
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 24,
+     "aad": 0.6176666666666648,
+     "bias": -0.6176666666666648,
+     "max": 1.1639999999999873
+    }
+   }
+  },
+  {
+   "pair": "methanol-methylEthylKetone",
+   "grade": "clean",
+   "components": [
+    "methanol",
+    "methylEthylKetone"
+   ],
+   "families": [
+    "alcohol",
+    "ketone"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 36,
+     "aad": 0.29724999999999746,
+     "bias": -0.14441666666666542,
+     "max": 0.6589999999999918
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 36,
+     "aad": 1.7732777777777815,
+     "bias": 1.768833333333338,
+     "max": 2.86099999999999
+    }
+   }
+  },
+  {
+   "pair": "methanol-tetrahydrofuran",
+   "grade": "clean",
+   "components": [
+    "tetrahydrofuran",
+    "methanol"
+   ],
+   "families": [
+    "alcohol",
+    "ether"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 29,
+     "aad": 0.20741379310345762,
+     "bias": 0.1544482758620763,
+     "max": 0.4959999999999809
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 29,
+     "aad": 3.565862068965524,
+     "bias": 3.565862068965524,
+     "max": 4.587000000000046
+    }
+   }
+  },
+  {
+   "pair": "methylPropionate-nHeptane",
+   "grade": "warning",
+   "components": [
+    "methylPropionate",
+    "nHeptane"
+   ],
+   "families": [
+    "alkane/cycloalkane",
+    "ester/carbonate"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 64,
+     "aad": 0.5087500000000009,
+     "bias": 0.007468749999995694,
+     "max": 1.8490000000000464
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 64,
+     "aad": 1.1748437499999964,
+     "bias": -1.0524062499999962,
+     "max": 3.9360000000000355
+    }
+   }
+  },
+  {
+   "pair": "methylTertPentylEther-toluene",
+   "grade": "clean",
+   "components": [
+    "methylTertPentylEther",
+    "toluene"
+   ],
+   "families": [
+    "aromatic hydrocarbon",
+    "ether"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 11,
+     "aad": 1.0286968822253433,
+     "bias": -0.517363340459528,
+     "max": 1.689553496208924
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 11,
+     "aad": 2.8811900930428536,
+     "bias": -2.8811900930428536,
+     "max": 4.6724031960663845
+    }
+   }
+  },
+  {
+   "pair": "nButanol-nButylAcetate",
+   "grade": "clean",
+   "components": [
+    "nButanol",
+    "nButylAcetate"
+   ],
+   "families": [
+    "alcohol",
+    "ester/carbonate"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 28,
+     "aad": 0.2347499999999972,
+     "bias": 0.10375000000000105,
+     "max": 0.5810000000000173
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 28,
+     "aad": 0.8647857142857183,
+     "bias": 0.8597142857142879,
+     "max": 1.4149999999999636
+    }
+   }
+  },
+  {
+   "pair": "nButanol-nDodecane",
+   "grade": "clean",
+   "components": [
+    "nButanol",
+    "nDodecane"
+   ],
+   "families": [
+    "alcohol",
+    "alkane/cycloalkane"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 2.6199081102883515,
+     "bias": -1.1402796874794205,
+     "max": 4.167987321711574
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 24,
+     "aad": 5.220445550103018,
+     "bias": 5.179329560875427,
+     "max": 12.743796526054595
+    }
+   }
+  },
+  {
+   "pair": "nButanol-toluene",
+   "grade": "clean",
+   "components": [
+    "nButanol",
+    "toluene"
+   ],
+   "families": [
+    "alcohol",
+    "aromatic hydrocarbon"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 38,
+     "aad": 1.1280068328886679,
+     "bias": 0.4099110365307935,
+     "max": 2.6086178861788665
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 38,
+     "aad": 5.0738346731499675,
+     "bias": -4.720315875053404,
+     "max": 10.844060475161985
+    }
+   }
+  },
+  {
+   "pair": "nDecane-pXylene",
+   "grade": "warning",
+   "components": [
+    "pXylene",
+    "nDecane"
+   ],
+   "families": [
+    "alkane/cycloalkane",
+    "aromatic hydrocarbon"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 28,
+     "aad": 0.33350000000000485,
+     "bias": 0.04035714285714066,
+     "max": 1.4239999999999782
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 28,
+     "aad": 0.697499999999999,
+     "bias": -0.5328571428571455,
+     "max": 1.5989999999999895
+    }
+   }
+  },
+  {
+   "pair": "nHeptane-nNDimethylacetamide",
+   "grade": "clean",
+   "components": [
+    "nHeptane",
+    "nNDimethylacetamide"
+   ],
+   "families": [
+    "alkane/cycloalkane",
+    "amide"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 40,
+     "aad": 1.246000176880734,
+     "bias": -0.46815092566847777,
+     "max": 2.153697334479797
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 40,
+     "aad": 18.92531654665494,
+     "bias": -18.92531654665494,
+     "max": 41.195707530010914
+    }
+   }
+  },
+  {
+   "pair": "nHeptane-tertButylEthylEther",
+   "grade": "clean",
+   "components": [
+    "tertButylEthylEther",
+    "nHeptane"
+   ],
+   "families": [
+    "alkane/cycloalkane",
+    "ether"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 26,
+     "aad": 1.1114767875004805,
+     "bias": 0.33306148322604395,
+     "max": 1.69237012987013
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 26,
+     "aad": 1.0243925477350355,
+     "bias": 0.17809610736156886,
+     "max": 2.3055872291904245
+    }
+   }
+  },
+  {
+   "pair": "nHeptane-thiophene",
+   "grade": "clean",
+   "components": [
+    "thiophene",
+    "nHeptane"
+   ],
+   "families": [
+    "alkane/cycloalkane",
+    "sulfur"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 18,
+     "aad": 0.23916666666666705,
+     "bias": 0.0415000000000071,
+     "max": 0.39400000000000546
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 18,
+     "aad": 0.7145000000000058,
+     "bias": 0.7145000000000058,
+     "max": 1.0160000000000196
+    }
+   }
+  },
+  {
+   "pair": "nHeptane-toluene",
+   "grade": "clean",
+   "components": [
+    "nHeptane",
+    "toluene"
+   ],
+   "families": [
+    "alkane/cycloalkane",
+    "aromatic hydrocarbon"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 26,
+     "aad": 0.17746972966833777,
+     "bias": 0.04754204468695136,
+     "max": 0.2778004073319785
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 26,
+     "aad": 0.6619906961297543,
+     "bias": -0.6619906961297543,
+     "max": 0.9141706259037411
+    }
+   }
+  },
+  {
+   "pair": "nHexane-toluene",
+   "grade": "clean",
+   "components": [
+    "nHexane",
+    "toluene"
+   ],
+   "families": [
+    "alkane/cycloalkane",
+    "aromatic hydrocarbon"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 18,
+     "aad": 1.8254455462776127,
+     "bias": -0.3787582312815064,
+     "max": 3.1536764705882327
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 18,
+     "aad": 9.358262973303717,
+     "bias": -9.313805141978417,
+     "max": 15.491791044776118
+    }
+   }
+  },
+  {
+   "pair": "nNDimethylacetamide-nNDimethylformamide",
+   "grade": "warning",
+   "components": [
+    "nNDimethylformamide",
+    "nNDimethylacetamide"
+   ],
+   "families": [
+    "amide",
+    "amide"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 19,
+     "aad": 0.8616842105263165,
+     "bias": 0.3992631578947465,
+     "max": 1.4370000000000118
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 19,
+     "aad": 2.291368421052635,
+     "bias": 2.291368421052635,
+     "max": 2.877999999999986
+    }
+   }
+  },
+  {
+   "pair": "nNDimethylacetamide-toluene",
+   "grade": "clean",
+   "components": [
+    "toluene",
+    "nNDimethylacetamide"
+   ],
+   "families": [
+    "amide",
+    "aromatic hydrocarbon"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 42,
+     "aad": 0.842018522405746,
+     "bias": 0.3182714260079958,
+     "max": 1.7066398390341995
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 42,
+     "aad": 7.626086886943797,
+     "bias": -7.532655717888623,
+     "max": 17.252111760883693
+    }
+   }
+  },
+  {
+   "pair": "nOctane-oXylene",
+   "grade": "warning",
+   "components": [
+    "nOctane",
+    "oXylene"
+   ],
+   "families": [
+    "alkane/cycloalkane",
+    "aromatic hydrocarbon"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "T_bubble",
+     "n": 23,
+     "aad": 0.41004347826086884,
+     "bias": 0.025782608695648003,
+     "max": 1.1299999999999955
+    },
+    "COSMO": {
+     "kind": "T_bubble",
+     "n": 23,
+     "aad": 0.755130434782611,
+     "bias": -0.7391304347826086,
+     "max": 1.774000000000001
+    }
+   }
+  },
+  {
+   "pair": "tertButylEthylEther-toluene",
+   "grade": "clean",
+   "components": [
+    "tertButylEthylEther",
+    "toluene"
+   ],
+   "families": [
+    "aromatic hydrocarbon",
+    "ether"
+   ],
+   "scores": {
+    "NRTL": {
+     "kind": "P_bubble",
+     "n": 26,
+     "aad": 1.403987263260734,
+     "bias": 0.4497829746193507,
+     "max": 2.0869109261322647
+    },
+    "COSMO": {
+     "kind": "P_bubble",
+     "n": 26,
+     "aad": 6.2071978410926745,
+     "bias": -6.2071978410926745,
+     "max": 8.466151937129466
+    }
+   }
+  }
+ ],
+ "notPredictable": [
+  [
+   "1Hexene-2Butanol",
+   "no LVPP-HFTZVP-2018 profile for 2Butanol"
+  ],
+  [
+   "224Trimethylpentane-2Butanol",
+   "no LVPP-HFTZVP-2018 profile for 2Butanol"
+  ],
+  [
+   "2Butanol-benzene",
+   "no LVPP-HFTZVP-2018 profile for 2Butanol"
+  ],
+  [
+   "2Butanol-cyclohexane",
+   "no LVPP-HFTZVP-2018 profile for 2Butanol"
+  ],
+  [
+   "2Butanol-diisopropylEther",
+   "no LVPP-HFTZVP-2018 profile for 2Butanol"
+  ],
+  [
+   "2Butanol-dimethylCarbonate",
+   "no LVPP-HFTZVP-2018 profile for 2Butanol"
+  ],
+  [
+   "2Butanol-methanol",
+   "no LVPP-HFTZVP-2018 profile for 2Butanol"
+  ],
+  [
+   "2Butanol-nDodecane",
+   "no LVPP-HFTZVP-2018 profile for 2Butanol"
+  ],
+  [
+   "2Butanol-nHexane",
+   "no LVPP-HFTZVP-2018 profile for 2Butanol"
+  ],
+  [
+   "2Butanol-toluene",
+   "no LVPP-HFTZVP-2018 profile for 2Butanol"
+  ],
+  [
+   "2Methyl1Butanol-ethanol",
+   "no LVPP-HFTZVP-2018 profile for ethanol"
+  ],
+  [
+   "acetonitrile-ethanol",
+   "no LVPP-HFTZVP-2018 profile for ethanol"
+  ],
+  [
+   "chloroform-methylIsobutylKetone",
+   "no LVPP-HFTZVP-2018 profile for methylIsobutylKetone"
+  ],
+  [
+   "diethylSulfide-ethanol",
+   "no LVPP-HFTZVP-2018 profile for ethanol"
+  ],
+  [
+   "ethanol-ethyleneGlycol",
+   "no LVPP-HFTZVP-2018 profile for ethanol, ethyleneGlycol"
+  ],
+  [
+   "ethanol-methylEthylKetone",
+   "no LVPP-HFTZVP-2018 profile for ethanol"
+  ],
+  [
+   "ethanol-nNDimethylacetamide",
+   "no LVPP-HFTZVP-2018 profile for ethanol"
+  ]
+ ]
+}

@@ -1,0 +1,288 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: fluoroethane  (fluoroethane (R161); CAS 353-36-6)
+  NEW in the catalogue (DEV.md 4c C309, slice 3 of C287, 2026-11-11), built by
+  bin/curate/c287_new_components.py from the IUPAC critical-property series, the
+  Zabransky liquid heat-capacity review and the measurements the NIST/TRC
+  ThermoML Archive locates (the articles are the sources; every value's
+  citation or DOIs are in provenance).
+  IUPAC RECOMMENDED (critically evaluated measurements): Tc, Pc.
+  FITTED: vapour pressure (bin/choupo-curate vp), Vliq.
+  DERIVED: omega (from the fitted vapour pressure).
+  ESTIMATED (Joback): ideal-gas Cp, dHf_298; s_298 derived from Joback's dHf and dGf.
+  ESTIMATED (Rowlinson-Bondi, Poling 5e Eq. 6-6.4): liquid Cp -- no measurement or recommended correlation in hand.
+  No measured series is reproduced here.
+  reviewStatus autoPromoted, review by none: NO human has read it back.
+  Psat: fitted by `bin/choupo-curate vp`; its promotion replaced the
+  AmbroseWalton block this tool writes (provenance.vaporPressure).
+\*---------------------------------------------------------------------------*/
+
+name        fluoroethane;
+CAS         353-36-6;
+formula     C2H5F;
+reviewStatus autoPromoted;
+review      { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+MW          48.0600;      // kg/kmol, from the formula (IUPAC standard atomic weights)
+Tc          375.3;      // K, IUPAC recommended (provenance.Tc)
+Pc          50.4;      // bar, IUPAC recommended (provenance.Pc)
+omega       0.221883;      // [-] (provenance.omega)
+//  Tb: NOT DECLARED -- the archive reports no boiling temperature at
+//  101.3 kPa for it, and a Tb read back off the fitted Antoine would be
+//  the curve tested against itself (the fitted normal boiling point is
+//  in provenance.vaporPressure.acceptance.Tnb_fit).
+
+standardThermochemistry
+{
+    dHf_298   -280720;        // J/mol, ideal gas, Joback ESTIMATE (provenance.dHf_298)
+    s_298     265.60;        // J/(mol K), ideal gas, DERIVED from Joback (provenance.s_298)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C), FITTED by bin/choupo-curate vp to
+    // measured vapour pressures -- see provenance.vaporPressure
+    coefficients  (4.400566575  991.238925  -9.844240321);
+    Trange        (231.49  372.14);   // the fit's own span; outside it the engine announces the extrapolation
+}
+
+Vliq        6.925794e-05;      // m3/mol at 25 C, FITTED (provenance.Vliq)
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol K)] = a0 + a1 T + a2 T^2 + a3 T^3, Joback ESTIMATE
+    coefficients  (7.161  0.20562  -1.014000e-04  1.820000e-08);
+    Trange        (273  1000);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol K)] = a0 + a1 T + a2 T^2, Rowlinson-Bondi ESTIMATE (provenance.liquidHeatCapacity)
+    coefficients  (153.7906641  -0.6209238981  0.001626399933);
+    Trange        (231.49  300.24);
+}
+
+groups
+{
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group F; count 1; } );
+}
+
+provenance
+{
+    MW
+    {
+        origin        literature;
+        method        "sum of IUPAC standard atomic weights over the formula";
+    }
+    Tc
+    {
+        origin        measured;
+        method        "IUPAC recommended value: the critical evaluation of every published measurement by the IUPAC critical-properties group (375.3 K)";
+        uncertainty   "+-0.5 K, the evaluators' estimate";
+        source        "Marsh, K.N. et al. Vapor-Liquid Critical Properties of Elements and Compounds. 10. Organic Compounds Containing Halogens. J. Chem. Eng. Data 52 (2007) 1509-1538, Table 1 (recommended values)";
+        doi           "10.1021/je700336g";
+        transcribedBy "bin/curate/c287_new_components.py (IUPAC table, hand-transcribed from the PDF, one row per compound)";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+        reviewReason  "transcribed by a model from the article's Table 1 and re-read once; not yet read back by a human";
+    }
+    Pc
+    {
+        origin        measured;
+        method        "IUPAC recommended value: the critical evaluation of every published measurement by the IUPAC critical-properties group (5.04 MPa, stored as 50.4 bar)";
+        uncertainty   "+-0.02 MPa, the evaluators' estimate";
+        source        "Marsh, K.N. et al. Vapor-Liquid Critical Properties of Elements and Compounds. 10. Organic Compounds Containing Halogens. J. Chem. Eng. Data 52 (2007) 1509-1538, Table 1 (recommended values)";
+        doi           "10.1021/je700336g";
+        transcribedBy "bin/curate/c287_new_components.py (IUPAC table, hand-transcribed from the PDF, one row per compound)";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+        reviewReason  "transcribed by a model from the article's Table 1 and re-read once; not yet read back by a human";
+    }
+    omega
+    {
+        origin        regressed;
+        method        "DERIVED from a fit: omega = -log10(Psat(0.7 Tc)/Pc) - 1 from the Antoine the vapour-pressure pipeline fitted (data/curation/components/fluoroethane) and the IUPAC-recommended Tc, Pc; 0.7 Tc = 262.71 K, inside the fitted range; cross-check (C309): omega 0.2219 from the Antoine at 0.7 Tc against Lee-Kesler 0.2103 from the fitted Antoine's own normal boiling point 235.39 K, Tc and Pc (difference +0.0116)";
+        derivedBy     "bin/curate/c287_new_components.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+        reviewReason  "derived by a machine; read it with the fitGrade of the vapour pressure it comes from";
+    }
+    Vliq
+    {
+        origin        fitted;
+        method        "one-parameter fit of the engine's own liquid density, V(T) = Vliq Rackett(T)/Rackett(298.15 K) with this record's Tc, Pc, omega (ThermoPackage::density, liquid branch), to every measured liquid mass density at or below 200 kPa; least squares in the relative density error, then its largest value minimised";
+        fittedBy      "bin/curate/c287_new_components.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 %
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+        fitGradeMaxRelativeError_pct 0.808162;
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+        evidence
+        (
+            { doi "10.1021/je2000827"; articleSha256 "d186d5d553de717b5dec023533f20b4d6c6e1798d18a14cd9bb0e09e1625a8c3"; pointsKept 45; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            rule        "the default graded acceptance of DEV.md 4c C285 on the max relative error over the kept points (clean / warning / severe up to 5 / 10 / 20 %); every laboratory fitted, points beyond 15 % after the least-squares stage discarded by name (C283 amended)";
+            verdict     accepted;
+            studies     1;
+            pointsKept  45;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.476333;
+            max_pct     0.808162;
+            Trange      (231.49 343.01);   // K, the kept points
+        }
+    }
+    liquidHeatCapacity
+    {
+        origin           estimated;
+        method           "Rowlinson-Bondi corresponding states, Poling, Prausnitz & O'Connell, The Properties of Gases and Liquids, 5th ed. (2001), Eq. (6-6.4): (Cp_L - Cp_ig)/R = 1.586 + 0.49/(1 - Tr) + omega [4.2775 + 6.3 (1 - Tr)^(1/3)/Tr + 0.4355/(1 - Tr)], with this record's Joback Cp_ig, Tc (iupac) and omega; represented by a quadratic in T least-squares fitted to the equation over 231.49-300.24 K (the fitted vapour pressure's span within 0.40-0.80 Tc), max deviation 0.206 % from it";
+        computedBy       "bin/curate/c287_new_components.py (rowlinson_bondi)";
+        inputFingerprint "CH2:1,CH3:1,F:1";
+        reproducedInCase "data/curation/batches/new_components_c309";
+        uncertainty      { status unquantified; reason "Poling 5e p. 6.22: 2.5 % AAD on 194 substances at 298 K, more than 10 % on 18 others, most hydrogen-bonded (C1-C4 alcohols and acids, water, amines); the archive locates no liquid Cp for this compound and no Zabransky supplement in hand recommends one"; }
+        reviewStatus     autoPromoted;
+        review           { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+    }
+    idealGasHeatCapacity
+    {
+        origin           estimated;
+        method           "Joback";
+        methodVersion    "joback-poling5e-table2-2";
+        input            joback;
+        inputFingerprint "CH2:1,CH3:1,F:1";
+        reproducedInCase "data/curation/batches/new_components_c309";
+        uncertainty      { status unquantified; reason "Joback group contribution (Joback & Reid 1987); a few percent for Cp_ig of ordinary organics"; }
+    }
+    dHf_298
+    {
+        origin           estimated;
+        method           "Joback";
+        methodVersion    "joback-poling5e-table2-2";
+        input            joback;
+        inputFingerprint "CH2:1,CH3:1,F:1";
+        reproducedInCase "data/curation/batches/new_components_c309";
+        uncertainty      { status unquantified; reason "Joback group contribution (Joback & Reid 1987); several kJ/mol, more for polyfunctional molecules"; }
+        notes            "the ThermoML archive carries no enthalpy of formation or combustion block for this compound (searched)";
+    }
+    s_298
+    {
+        origin           estimated;
+        method           "derived from Joback: s_298 = (dHf_298 - dGf_298)/298.15 + the sum of the elements' standard entropies, with Joback's dGf_298 = -228850 J/mol (not stored: dGf derives from dHf and s_298)";
+        methodVersion    "joback-poling5e-table2-2";
+        input            joback;
+        inputFingerprint "CH2:1,CH3:1,F:1";
+        elementEntropies "CODATA Key Values for Thermodynamics (Cox, Wagman & Medvedev, 1989): S(C, graphite) 5.74, S(H2, g) 130.680, S(O2, g) 205.152, S(N2, g) 191.609, S(F2, g) 202.791, S(Cl2, g) 223.081, S(Br2, l) 152.206, S(I2, cr) 116.139 J/(mol K)";
+        reproducedInCase "data/curation/batches/new_components_c309";
+        uncertainty      { status unquantified; reason "inherits the errors of Joback's dHf_298 and dGf_298"; }
+    }
+    vaporPressure
+    {
+        origin        fitted;
+        method        "vaporPressureFit (three-parameter Antoine; objective twoStage: least squares in log10 P, then the largest relative error in P minimised from it; every usable study fitted, outliers above 15 % discarded by name)";
+        methodVersion "choupoProps Choupo-dev";
+        fittedInCase  "data/curation/components/fluoroethane";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+        fitGrade      clean;   // DEV.md 4c C285: the worse of the grades below
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+        fitGradeMaxRelativeError_pct 2.007580;   // grade clean
+        promotedBy    "bin/choupo-curate vp --promote";
+        promotedDate  "2026-11-11";
+        reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+        uncertainty   "the fit's maximum relative error over every kept measurement, below";
+        replaces      "model AmbroseWalton (a corresponding-states estimate from Tc, Pc, omega); `bin/choupo-curate revert <component>` restores it";
+        evidence
+        (
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/fluoroethane-vapourPressure-je050054u.dat";
+                doi       "10.1021/je050054u";
+                sha256    "fbadedc8a6895aa31a58574fc7010d98bce305d8eb3eed4c98d1987d7c68485d";
+                articleSha256 "15d8d5e7a7ceae612e2f6fa42298d6167399443d37bfa424dac5a781481f9674";
+                pointsKept    110;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/fluoroethane-vapourPressure-je2000827.dat";
+                doi       "10.1021/je2000827";
+                sha256    "8f0e8b1ecd1a88a0acf8b49132c071af0441127c9b6d5a8a4afd2f55434173cb";
+                articleSha256 "d186d5d553de717b5dec023533f20b4d6c6e1798d18a14cd9bb0e09e1625a8c3";
+                pointsKept    45;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/fluoroethane-vapourPressure-j.fluid.2006.04.014.dat";
+                doi       "10.1016/j.fluid.2006.04.014";
+                sha256    "cf79a1e549c3721ec88ce7ed320b956654616d81bbcb7ed4a17ed163f6d6cc2f";
+                articleSha256 "12c2e76ace2413c730748598bf75f97a0d541ab468ac2fe41e19bc822b26cb40";
+                pointsKept    27;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/fluoroethane-vapourPressure-j.fluid.2017.01.024.dat";
+                doi       "10.1016/j.fluid.2017.01.024";
+                sha256    "56b1f30247d4511e5c5acd8df4ef7e33086379ad92c2abbd805b0adb7d6bf613";
+                articleSha256 "d8a4e9f3d2208fcd4218894ac4a023f01de3f8a51e964e80b72b172b5855c6f3";
+                pointsKept    14;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/fluoroethane-vapourPressure-s10765-013-1546-4.dat";
+                doi       "10.1007/s10765-013-1546-4";
+                sha256    "a93330b92eee8d5e3cda60e54e387cffbfd75084f52ca94210de2c69976da939";
+                articleSha256 "711b01c1ba0258f9c9b95b07105bbfaf8ac25fd61985e13dd9d2189e0becebbb";
+                pointsKept    13;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/fluoroethane-vapourPressure-je050539i.dat";
+                doi       "10.1021/je050539i";
+                sha256    "607a7d66b5a340f429dfad7def29576cafd9e8f949fc9100541e53ac31d8abbe";
+                articleSha256 "b2b7ad3f7f335b083fea9b422dd63362c84f55ff193b7d0b27c2cc7986cfc758";
+                pointsKept    6;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/fluoroethane-vapourPressure-j.fluid.2015.02.014.dat";
+                doi       "10.1016/j.fluid.2015.02.014";
+                sha256    "3fd4548812e92b832ad12f8ab84c4a291375d015d4e185ef19898372d97bd2fc";
+                articleSha256 "2b16d2d97eab5978f2c70b1aeec91fd6557129e93768e12add32204a339313dd";
+                pointsKept    5;
+                pointsDropped 0;
+                provenance measured;
+            }
+        );
+        acceptance
+        {
+            rule        "the default of DEV.md 4c C285 (graded): max relative error in P over the kept points 5 / 10 / 20 %, and |Tnb - Tb| 1 / 2 / 4 K where Tb lies outside their range, are the upper limits of clean / warning / severe; above, refused; the grade is the worse of the two";
+            verdict     accepted;
+            studies     7;
+            pointsKept  220;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.838646;   // the fitted Antoine, every kept point
+            max_pct     2.007580;
+            awAad_pct   0.742004;   // the AmbroseWalton curve it replaces, the same points
+            awMax_pct   2.661770;
+            Tnb_fit     235.3898;   // K, the fitted curve at 101.325 kPa
+        }
+    }
+}

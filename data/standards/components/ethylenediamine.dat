@@ -143,3 +143,30 @@ provenance
         notes         "computed from ChemSep Tc/Pc/omega";
     }
 }
+
+cosmo
+{
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file ETHYLENEDIAMINE.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey PIICEJLVQHRZGT-UHFFFAOYSA-N (full match); formula C2H8N2; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        106.408658;   // sum of the profile below; GAMESS prints 106.41
+        volume      89.68;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.551454     2.549821     6.815671     1.562757     6.483838
+               4.803855     4.632950     6.172788     8.377096     9.330973     9.754843
+               8.052931     5.639194     3.273296     1.980722     2.086426     3.162484
+               1.001572     0.250644     2.139721     1.999791     0.421891     0.724533
+               2.238963     1.054640     0.114505     0.043880     0.604704     1.818066
+               2.748872     0.978760     0.577629     0.616888     0.945721     1.025148
+               1.368044     0.503587     0.000000
+        );
+    }
+}

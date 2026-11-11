@@ -1,0 +1,142 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of fluoroethane
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/fluoroethane-vapourPressure-je050054u.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je050054u";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je050054u.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je050054u.json";
+        articleFile   "je050054u.xml";
+        articleSha256 "15d8d5e7a7ceae612e2f6fa42298d6167399443d37bfa424dac5a781481f9674";
+        extractor     vapourPressure;
+        inchiKey      "UHCBBWUQDAVSMS-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey UHCBBWUQDAVSMS-UHFFFAOYSA-N --into <dir>";
+        sha256        "fbadedc8a6895aa31a58574fc7010d98bce305d8eb3eed4c98d1987d7c68485d";
+        identity
+        {
+            fluoroethane   { cas "353-36-6"; inchiKey "UHCBBWUQDAVSMS-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/fluoroethane-vapourPressure-je2000827.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je2000827";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je2000827.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je2000827.json";
+        articleFile   "je2000827.xml";
+        articleSha256 "d186d5d553de717b5dec023533f20b4d6c6e1798d18a14cd9bb0e09e1625a8c3";
+        extractor     vapourPressure;
+        inchiKey      "UHCBBWUQDAVSMS-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey UHCBBWUQDAVSMS-UHFFFAOYSA-N --into <dir>";
+        sha256        "8f0e8b1ecd1a88a0acf8b49132c071af0441127c9b6d5a8a4afd2f55434173cb";
+        identity
+        {
+            fluoroethane   { cas "353-36-6"; inchiKey "UHCBBWUQDAVSMS-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/fluoroethane-vapourPressure-j.fluid.2006.04.014.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1016/j.fluid.2006.04.014";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2006.04.014.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2006.04.014.json";
+        articleFile   "j.fluid.2006.04.014.xml";
+        articleSha256 "12c2e76ace2413c730748598bf75f97a0d541ab468ac2fe41e19bc822b26cb40";
+        extractor     vapourPressure;
+        inchiKey      "UHCBBWUQDAVSMS-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey UHCBBWUQDAVSMS-UHFFFAOYSA-N --into <dir>";
+        sha256        "cf79a1e549c3721ec88ce7ed320b956654616d81bbcb7ed4a17ed163f6d6cc2f";
+        identity
+        {
+            fluoroethane   { cas "353-36-6"; inchiKey "UHCBBWUQDAVSMS-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/fluoroethane-vapourPressure-j.fluid.2017.01.024.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1016/j.fluid.2017.01.024";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2017.01.024.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2017.01.024.json";
+        articleFile   "j.fluid.2017.01.024.xml";
+        articleSha256 "d8a4e9f3d2208fcd4218894ac4a023f01de3f8a51e964e80b72b172b5855c6f3";
+        extractor     vapourPressure;
+        inchiKey      "UHCBBWUQDAVSMS-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey UHCBBWUQDAVSMS-UHFFFAOYSA-N --into <dir>";
+        sha256        "56b1f30247d4511e5c5acd8df4ef7e33086379ad92c2abbd805b0adb7d6bf613";
+        identity
+        {
+            fluoroethane   { cas "353-36-6"; inchiKey "UHCBBWUQDAVSMS-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/fluoroethane-vapourPressure-s10765-013-1546-4.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1007/s10765-013-1546-4";
+        url           "https://trc.nist.gov/ThermoML/10.1007/s10765-013-1546-4.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1007/s10765-013-1546-4.json";
+        articleFile   "s10765-013-1546-4.xml";
+        articleSha256 "711b01c1ba0258f9c9b95b07105bbfaf8ac25fd61985e13dd9d2189e0becebbb";
+        extractor     vapourPressure;
+        inchiKey      "UHCBBWUQDAVSMS-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey UHCBBWUQDAVSMS-UHFFFAOYSA-N --into <dir>";
+        sha256        "a93330b92eee8d5e3cda60e54e387cffbfd75084f52ca94210de2c69976da939";
+        identity
+        {
+            fluoroethane   { cas "353-36-6"; inchiKey "UHCBBWUQDAVSMS-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/fluoroethane-vapourPressure-je050539i.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je050539i";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je050539i.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je050539i.json";
+        articleFile   "je050539i.xml";
+        articleSha256 "b2b7ad3f7f335b083fea9b422dd63362c84f55ff193b7d0b27c2cc7986cfc758";
+        extractor     vapourPressure;
+        inchiKey      "UHCBBWUQDAVSMS-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey UHCBBWUQDAVSMS-UHFFFAOYSA-N --into <dir>";
+        sha256        "607a7d66b5a340f429dfad7def29576cafd9e8f949fc9100541e53ac31d8abbe";
+        identity
+        {
+            fluoroethane   { cas "353-36-6"; inchiKey "UHCBBWUQDAVSMS-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/fluoroethane-vapourPressure-j.fluid.2015.02.014.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1016/j.fluid.2015.02.014";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2015.02.014.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2015.02.014.json";
+        articleFile   "j.fluid.2015.02.014.xml";
+        articleSha256 "2b16d2d97eab5978f2c70b1aeec91fd6557129e93768e12add32204a339313dd";
+        extractor     vapourPressure;
+        inchiKey      "UHCBBWUQDAVSMS-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey UHCBBWUQDAVSMS-UHFFFAOYSA-N --into <dir>";
+        sha256        "3fd4548812e92b832ad12f8ab84c4a291375d015d4e185ef19898372d97bd2fc";
+        identity
+        {
+            fluoroethane   { cas "353-36-6"; inchiKey "UHCBBWUQDAVSMS-UHFFFAOYSA-N"; }
+        }
+    }
+);

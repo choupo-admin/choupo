@@ -1,0 +1,80 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      nButylFormate;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        A  4.73031630104;
+        B  1658.74262166;
+        C  -28.3886146577;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "25636e412911812a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nButylFormate-vapourPressure-je0497350.dat";
+            doi       "10.1021/je0497350";
+            sha256    "325ac7b566e0f982b9d7b134a65b05f8f3d5fcc0fd84a2e8115ffc0dbb38fc30";
+            provenance measured;
+            archiveFile "je0497350.xml";
+            system    "nButylFormate";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nButylFormate-vapourPressure-je025566c.dat";
+            doi       "10.1021/je025566c";
+            sha256    "d4d208e9b33eeba94acafc540387dbf4487aeebc45e174786e4cfb5cffe91e1e";
+            provenance measured;
+            archiveFile "je025566c.xml";
+            system    "nButylFormate";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 313.16; max 395.48; n 104; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.999913501399;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);
