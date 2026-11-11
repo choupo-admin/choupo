@@ -253,6 +253,9 @@ const CosmoSacTheoryTool = lazy(() =>
 const LocalCompositionTool = lazy(() =>
   import("./methods/LocalCompositionTool.js")
     .then((m) => ({ default: m.LocalCompositionTool })));
+const SlePairTool = lazy(() =>
+  import("./methods/SlePairTool.js")
+    .then((m) => ({ default: m.SlePairTool })));
 const UnifacTheoryTool = lazy(() =>
   import("./methods/UnifacTheoryTool.js")
     .then((m) => ({ default: m.UnifacTheoryTool })));
@@ -609,6 +612,7 @@ export function MethodsWorkspace() {
             : tool === "four-ways-mixture" ? <FourWaysMixtureTool />
             : tool === "cosmo-sac-theory" ? <CosmoSacTheoryTool />
             : tool === "local-composition" ? <LocalCompositionTool />
+            : tool === "sle-pair" ? <SlePairTool />
             : tool === "unifac-theory" ? <UnifacTheoryTool />
             : tool === "pcsaft-theory" ? <PcSaftTheoryTool />
             : tool === "claus-gibbs" ? <ClausGibbsTool />

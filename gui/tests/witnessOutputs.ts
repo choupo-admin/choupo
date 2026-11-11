@@ -256,6 +256,15 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     readBy: ["phaseSplitScan.test.ts"],
     stdout: true,
   },
+  //  The sle-pair EduTool's NRTL (DEV.md 4c C316): the page transcribes the
+  //  engine's NRTL loop, and the test holds it to the gamma this run prints
+  //  (12 significant digits in the result block) for the catalogue pair.
+  {
+    caseDir: "tutorials/props/molecular/nrtl01_ethanol_water_package",
+    file: "log.choupoProps",
+    readBy: ["slePair.test.ts"],
+    stdout: true,
+  },
   //  A props run's VIEWS (DEV.md 4c C149): the result block's `postProcessing`
   //  description, held to the CSVs the same run wrote under postProcessing/.
   //  The CSV entries come first and the stdout one last, so the files on
