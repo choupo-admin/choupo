@@ -114,6 +114,7 @@ import {
   grandCompositeFromTable, type ProblemRow, type StreamRow, type PinchSummary,
 } from "../../case/pinch.js";
 import { OriginMark } from "./origin.js";
+import { gccPockets } from "../../case/gccPockets.js";
 
 // ---- Where the engine's pinch artefacts live in the run result --------------
 // csvFiles keys are case-root-relative (solverWorker.js walks /case and strips
@@ -378,29 +379,89 @@ function CompositeSvg({ hot: hotK, cold: coldK, offset: offsetK, qh: qhK, qc: qc
   );
 }
 
+/** An arrow along a horizontal line from the Q = 0 axis to a curve end. */
+function UtilityArrow({ x0, x1, y, label, below }: {
+  x0: number; x1: number; y: number; label: string; below: boolean;
+}): JSX.Element {
+  const dir = x1 >= x0 ? 1 : -1;
+  return (
+    <g>
+      <line x1={x0} y1={y} x2={x1 - 6 * dir} y2={y} stroke={INK} strokeWidth={1.4} />
+      <polygon points={`${x1},${y} ${x1 - 8 * dir},${y - 4} ${x1 - 8 * dir},${y + 4}`}
+        fill={INK} />
+      <text x={x0 + 4} y={below ? y + 14 : y - 6} fontSize={11}
+        fill="var(--mantine-color-text)">{label}</text>
+    </g>
+  );
+}
+
+export const GCC_CAPTION =
+  "Each temperature interval has a net surplus or a net deficit of heat, so the cascade moves left or right as T* falls. "
+  + "Where it moves back towards Q = 0 the process is feeding itself, and that is why the curve zig-zags.";
+
+export const GCC_POCKET_TEXT =
+  "pocket: heat the process exchanges with itself; no utility is placed here";
+
 /** The grand composite curve: the problem table's corrected cascade against
- *  the shifted T*, as the engine wrote it; a dot at every interior pinch. */
-function GccSvg({ gcc: gccK, pinchStars: starsK, u }: { gcc: CurvePoint[]; pinchStars: number[]; u: PinchUnits }): JSX.Element {
+ *  the shifted T*, as the engine wrote it; a dot at every interior pinch.
+ *  C301: the ends read as the utility targets, Q = 0 is a line, the pinch says
+ *  what it is, and the heat-recovery pockets (gccPockets.ts) are shaded. */
+export function GccSvg({ gcc: gccK, pinchStars: starsK, u }: { gcc: CurvePoint[]; pinchStars: number[]; u: PinchUnits }): JSX.Element {
   const gcc = gccK.map((p) => ({ T_K: u.tNum(p.T_K), H_kW: u.qNum(p.H_kW) }));
   const pinchStars = starsK.map((t) => u.tNum(t));
   const frame = makeFrame(gcc);
+  const pockets = gccPockets(gccK.map((p) => ({ T: p.T_K, Q: p.H_kW })));
+  const top = gccK[0], bottom = gccK[gccK.length - 1];
+  const toXY = (T: number, Q: number) =>
+    `${frame.toX(u.qNum(Q)).toFixed(2)},${frame.toY(u.tNum(T)).toFixed(2)}`;
+  const x0 = frame.toX(0);
+  const pinchY = pinchStars.length > 0 ? frame.toY(pinchStars[0]!) : (Y0 + Y1) / 2;
   return (
     <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="100%"
       preserveAspectRatio="xMidYMid meet"
       role="img" aria-label="grand composite curve">
       <Axes frame={frame} xLabel={`net heat flow, corrected cascade (${u.qLabel})`} yLabel={`shifted T* (${u.tLabel})`} u={u} />
-      <line x1={frame.toX(0)} y1={Y0} x2={frame.toX(0)} y2={Y1}
-        stroke={INK} strokeWidth={1.1} />
+      {pockets.map((pk, i) => {
+        const midT = (pk.crossing.T + pk.end.T) / 2;
+        return (
+          <g key={`pocket${i}`}>
+            <title>{GCC_POCKET_TEXT}</title>
+            <polygon points={pk.polygon.map((q) => toXY(q.T, q.Q)).join(" ")}
+              fill={GCC} fillOpacity={0.22} stroke={GCC} strokeDasharray="3 3"
+              strokeWidth={1} data-pocket={pk.side} />
+            <text x={frame.toX(u.qNum(pk.closeQ)) - 6} y={frame.toY(u.tNum(midT)) + 4}
+              textAnchor="end" fontSize={11} fill={INK}>pocket</text>
+          </g>
+        );
+      })}
+      <line x1={x0} y1={Y0} x2={x0} y2={Y1} stroke={INK} strokeWidth={1.6} data-q-zero="" />
+      <text x={x0 + 4} y={Y0 + 10} fontSize={10} fill={INK}>Q = 0</text>
       <polyline points={polyline(frame, gcc)} fill="none"
         stroke={GCC} strokeWidth={2.2} />
+      {top && (
+        <UtilityArrow x0={x0} x1={frame.toX(u.qNum(top.H_kW))} y={frame.toY(u.tNum(top.T_K))}
+          below={false} label={`Q_H,min ${u.Qt(top.H_kW)} ${u.qLabel} (hot utility)`} />
+      )}
+      {bottom && (
+        <UtilityArrow x0={x0} x1={frame.toX(u.qNum(bottom.H_kW))} y={frame.toY(u.tNum(bottom.T_K))}
+          below={true} label={`Q_C,min ${u.Qt(bottom.H_kW)} ${u.qLabel} (cold utility)`} />
+      )}
       {pinchStars.map((t) => (
         <g key={t}>
-          <circle cx={frame.toX(0)} cy={frame.toY(t)} r={5}
+          <circle cx={x0} cy={frame.toY(t)} r={5}
             fill={PINCH} stroke="var(--mantine-color-body)" strokeWidth={1.5} />
-          <text x={frame.toX(0) + 8} y={frame.toY(t) - 6}
-            fontSize={11} fill={PINCH}>pinch · T* = {t.toFixed(2)} {u.tLabel}</text>
+          <text x={x0 + 8} y={frame.toY(t) - 6}
+            fontSize={11} fill={PINCH}>pinch: no heat crosses here · T* = {t.toFixed(2)} {u.tLabel}</text>
         </g>
       ))}
+      <text x={X1 - 4} y={pinchY - 40} textAnchor="end" fontSize={11} fill={INK}>
+        net heat sink (takes hot utility)</text>
+      <text x={X1 - 4} y={pinchY + 40} textAnchor="end" fontSize={11} fill={INK}>
+        net heat source (rejects to cold utility)</text>
+      {pockets.length > 0 && (
+        <text x={X1 - 4} y={Y1 - 6} textAnchor="end" fontSize={10} fill={INK}>
+          shaded {GCC_POCKET_TEXT}</text>
+      )}
     </svg>
   );
 }
@@ -958,6 +1019,9 @@ export function PinchCompositeTool(
                 <Box style={{ flex: 1, minHeight: 0 }}>
                   <GccSvg gcc={gcc} pinchStars={pinchStars} u={u} />
                 </Box>
+                <Text size="xs" c="dimmed" style={{ flexShrink: 0 }}>
+                  {GCC_CAPTION}
+                </Text>
               </Stack>
             ) : (
               <Box p="xl">
