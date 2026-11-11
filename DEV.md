@@ -3417,6 +3417,41 @@ accepts today, and that is a policy call.
 > (check by grep) are listed, not silently left.  Status: recorded, general to
 > be dispatched (gui only; `--gui` is its validation).  Owner: architect.
 
+> **C300 (architect, 2026-11-11; step (c) of C298): the acceptance of a
+> fitted pair is tightened BEFORE any more pairs are generated.**  Measured on
+> main 2026-11-10 over the 132 public NRTL records: 84 `clean`, 19 `warning`,
+> 17 `severe`, 12 ungraded (hand-curated).  Of the 84 clean, 62 rest on ONE
+> stated temperature AND ONE laboratory with `heldOut none` (the P-x records of
+> C291): their "clean" is the in-sample residual of the points they were
+> fitted to, nothing that could have contradicted them.  Shipped cases outside
+> curation that NAME a severe pair: solvent03 (benzene-nButanol), temperature02
+> (ethyleneGlycol-water); a single-temperature clean pair: solvent03
+> (cyclohexane-nButanol), solubility01 and cosmoSAC01 (nHexane-toluene) --
+> name co-occurrence only, to be confirmed by a run.  RULES:
+> 1. The grade is labelled for what it is: `fitGradeBasis inSample;` in every
+>    graded record, and the engine's voice (src/thermo/FitGrade.H) says
+>    "in-sample".  A held-out residual, when one exists, is recorded beside it,
+>    never in place of it.
+> 2. `clean` needs evidence able to contradict it: at least two stated
+>    temperatures (isotherms, for P-x) AND at least two laboratories, OR a
+>    held-out set that itself grades clean.  Otherwise the grade is CAPPED at
+>    `warning` with the named reason (`fitGradeCap singleTemperature |
+>    singleLaboratory`).  The 62 records are re-graded, not refitted: no
+>    parameter moves.
+> 3. `severe` records leave the default catalogue: the record and its evidence
+>    stay in its curation case (data/curation/pairs/<a>-<b>/), the engine never
+>    loads it by default, and a case that needs one carries it in its own
+>    constant/ with the grade voiced.  The shipped cases that read one are
+>    measured first; their numbers must not move.
+> 4. Every tool that writes a record writes `review { by none; }` and stops
+>    writing `humanReviewed`.  The engine reads a legacy `humanReviewed true`
+>    as `by human` with no reviewer named, `false` as `by none` (C297's open
+>    item).
+> 5. Then C290's 466 pairs are graded by these rules and land; then C294 and
+>    the 117 multi-isotherm pairs (C291).
+> Validation: the re-grade moves no parameter; the voices change on the cases
+> that read a re-graded record, measured by a run before and after.
+
 > **C302 (Vitor, 2026-11-11: "porque raio ha tantas fabricas de amonia nos
 > tutoriais? ... Esta [greenAmmoniaPEQ_baseCase] nem sequer tem pinch!").**
 > Measured: tutorials/plant ships 14 plants, FIVE of them ammonia --
