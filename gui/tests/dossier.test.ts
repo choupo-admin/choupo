@@ -14,7 +14,7 @@ describe("dossiersFor — the corpus's own curation records", () => {
       //  EVERY ENTRY NAMES ITS CASE.  Without it the row reads as a property
       //  of the catalogue record rather than of one curation run.
       expect(d.caseName).not.toBe("");
-      expect(d.casePath.startsWith("tutorials/")).toBe(true);
+      expect(/^(tutorials|data\/curation)\//.test(d.casePath)).toBe(true);
     }
   });
 
@@ -38,11 +38,19 @@ describe("dossiersFor — the corpus's own curation records", () => {
     //  the property name the second would replace the first, and the half that
     //  disappears is `validationRefused` — the one a reader most needs to see.
     //  Narrowed to curate01, the case this test names: the pair-curation
-    //  cases (curate105, curate109, ...) carry their own water dossiers.
+    //  cases (data/curation/pairs/triethyleneGlycol-water, .../ethyleneGlycol-water, ...) carry their own water dossiers.
     const w = dossiersFor("water").filter((d) =>
       d.caseName === "curate01_water_evidence_partition");
     expect(w.map((d) => d.verdict).sort())
       .toEqual(["validated", "validationRefused"]);
+  });
+
+  it("the generated pair cases under data/curation are found, by their real path", () => {
+    const w = dossiersFor("water").filter((d) =>
+      d.casePath === "data/curation/pairs/triethyleneGlycol-water"
+      || d.casePath === "data/curation/pairs/ethyleneGlycol-water");
+    expect(new Set(w.map((d) => d.casePath)).size).toBe(2);
+    for (const d of w) expect(d.caseName).toMatch(/water$/);
   });
 
   it("a component nobody curated comes back empty, and that is a looked-at answer", () => {
