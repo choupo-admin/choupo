@@ -54,6 +54,8 @@ import { kernDatasheetHtml, kernDesignOf, kernView, type KernDesign }
   from "../case/hxDatasheet.js";
 import { PROVENANCE_WORD } from "../case/equipmentSchematic.js";
 import { downloadOds } from "../case/odsExport.js";
+import { dTText, dutyText, type ResultUnitPrefs } from "../case/resultUnits.js";
+import { DEFAULT_PREFS } from "../state/displayUnits.js";
 
 type Kpis = { [k: string]: number };
 interface SideStreams { inlet?: StreamResult; outlet?: StreamResult; name: string; }
@@ -190,7 +192,8 @@ function sizingAbsentRow(unitName: string, unreadable: number,
 }
 
 function buildDatasheetHtml(unit: UnitSpec, kpis: Kpis,
-  tube: SideStreams, shell: SideStreams, found: DesignSheetLookup): string {
+  tube: SideStreams, shell: SideStreams, found: DesignSheetLookup,
+  prefs: ResultUnitPrefs = DEFAULT_PREFS): string {
   const sheet = found.sheet;
   // The dict stores unit-bearing scalars as STRINGS ("4.88 m", "0.016 m"), not
   // numbers -- coerce each geometry value to its leading number so the number
@@ -240,8 +243,8 @@ function buildDatasheetHtml(unit: UnitSpec, kpis: Kpis,
 
   //  ---- RATING RESULT: what the unit published, a different question -------
   const thermal = sec("RATING RESULT  ·  the solved run", "#37536e", [
-    row("Duty Q", `${N((kpis["Q_kW"] ?? kpis["duty_kW"]))} kW`),
-    row("LMTD", `${N(kpis["LMTD"])} K`),
+    row("Duty Q", dutyText((kpis["Q_kW"] ?? kpis["duty_kW"]) as number, 1, prefs)),
+    row("LMTD", dTText(kpis["LMTD"] as number, 1, prefs)),
     row("Overall U", `<b>${N(kpis["U"])}</b> W/(m²·K)`),
     row("Area (outside)", `${N(kpis["area"], 2)} m²`),
     row("Controlling resistance", controlling),
@@ -318,6 +321,7 @@ function buildDatasheetHtml(unit: UnitSpec, kpis: Kpis,
 export function HeatExchangerDatasheet({ unit, kpis }: { unit: UnitSpec; kpis: Kpis }) {
   const streams = useStore((s) => s.runResult?.streams);
   const designFiles = useStore((s) => s.runResult?.designFiles);
+  const prefs = useStore((s) => s.displayPrefs);
   const sides = resolveSides(unit, streams)
     ?? { tube: { name: "tube" }, shell: { name: "shell" } };
   const found = lookupDesignSheet(designFiles, unit.name, EQUIPMENT);
@@ -334,7 +338,7 @@ export function HeatExchangerDatasheet({ unit, kpis }: { unit: UnitSpec; kpis: K
     let built: string;
     try {
       built = kern ? kernDatasheetHtml(unit.name, kern)
-                   : buildDatasheetHtml(unit, kpis, sides.tube, sides.shell, found);
+                   : buildDatasheetHtml(unit, kpis, sides.tube, sides.shell, found, prefs);
     }
     catch (e) {
       built = `<pre style="padding:16px;color:#900;font-family:monospace">`
@@ -377,6 +381,7 @@ export function datasheetOdsRows(kpis: Kpis, sheet: DesignSheet | null,
       w === "choupo" ? "sized by Choupo (design/)"
                      : `${PROVENANCE_WORD[w]} (design/)`]);
   }
+  //  The .ods stays in SI (kW, K): an export is not a display (C299).
   const rating: [string, string][] = [
     ["Q_kW", "kW"], ["LMTD", "K"], ["U", "W/(m2.K)"], ["area", "m2"],
     ["dP_tube_kPa", "kPa"], ["dP_shell_kPa", "kPa"], ["nBaffles", "-"],
@@ -396,7 +401,8 @@ export function datasheetOdsRows(kpis: Kpis, sheet: DesignSheet | null,
 export function heatExchangerDatasheetHtml(
   unit: UnitSpec, kpis: Kpis | undefined,
   streams: StreamResult[] | undefined,
-  designFiles?: { [relPath: string]: string }): string | null {
+  designFiles?: { [relPath: string]: string },
+  prefs: ResultUnitPrefs = DEFAULT_PREFS): string | null {
   const found = lookupDesignSheet(designFiles, unit.name, EQUIPMENT);
   const kern = kernDesignOf(found.sheet);
   if (kern) {
@@ -406,6 +412,6 @@ export function heatExchangerDatasheetHtml(
   const sides = resolveSides(unit, streams)
     ?? { tube: { name: "tube" }, shell: { name: "shell" } };
   try {
-    return buildDatasheetHtml(unit, kpis, sides.tube, sides.shell, found);
+    return buildDatasheetHtml(unit, kpis, sides.tube, sides.shell, found, prefs);
   } catch { return null; }
 }

@@ -74,6 +74,7 @@ import {
 } from "@tabler/icons-react";
 
 import { useStore } from "../state/store.js";
+import { dutyLabel } from "../state/displayUnits.js";
 import { popOutCurrentPlot } from "./plotPopOut.js";
 import { ConvergencePlot } from "./plotting/ConvergencePlot.js";
 import { EnergyBalancePlot } from "./plotting/EnergyBalancePlot.js";
@@ -269,7 +270,7 @@ export function PlotsWorkspace() {
           { key: "massBalance",   label: "Mass balance",   available: hasStreams,
             hint: "Plant-boundary INPUTS vs OUTPUTS in mass basis (kg/h), stacked by component.  Title shows the closure error." },
           { key: "energyBalance", label: "Energy balance", available: hasStreams,
-            hint: "Plant-boundary INPUTS vs OUTPUTS in enthalpy flow (kW), stacked per stream: what each stream CARRIES.  For whether the first law holds, and by how much it fails, see First law." },
+            hint: `Plant-boundary INPUTS vs OUTPUTS in enthalpy flow (${dutyLabel(prefs.duty)}), stacked per stream: what each stream CARRIES.  For whether the first law holds, and by how much it fails, see First law.` },
           //  A SECOND VIEW, not a replacement (2026-09-12).  The row above is
           //  the boundary's stream INVENTORY; this one is the BALANCE -- the
           //  equation dH = Q - W drawn so the identity, and its violation, are
@@ -319,7 +320,7 @@ export function PlotsWorkspace() {
       //  its units, and under a sectored plant its sectors -- is the UNITS
       //  tree drawn below these groups (`unitTree`).
     ];
-  }, [result, scanCsvs]);
+  }, [result, scanCsvs, prefs.duty]);
 
   // After a run lands, jump to the most informative GENUINE plot available.
   // Balances now live in the Streams-workspace summary band, so they are no
@@ -565,8 +566,8 @@ export function PlotsWorkspace() {
       //  missed every cooling duty no utility served (2026-09-05).
       //  Draws the engine's ledger and computes nothing of its own; when the
       //  block is absent the plot SAYS the report did not run.
-      case "firstLaw": return <FirstLawPlot boundary={result.globalEnergyBoundary} />;
-      case "energyBalance": return <EnergyBalancePlot streams={result.streams}
+      case "firstLaw": return <FirstLawPlot boundary={result.globalEnergyBoundary} duty={prefs.duty} />;
+      case "energyBalance": return <EnergyBalancePlot streams={result.streams} duty={prefs.duty}
         added={result.globalEnergyBoundary
           ? { qBoundaryKw: result.globalEnergyBoundary.Q_boundary_kW }
           : undefined} />;

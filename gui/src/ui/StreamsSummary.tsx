@@ -50,8 +50,11 @@ import { IconCircleCheck, IconAlertTriangle, IconArrowsSplit2 } from "@tabler/ic
 
 import type { RunResult } from "../adapters/SolverAdapter.js";
 import { massBalance } from "../case/balances.js";
+import { useStore } from "../state/store.js";
+import { dTText, dutyFixed, dutyText } from "../case/resultUnits.js";
 import { closureLine, closureWordOf, closureWords } from "../case/closureByConstruction.js";
 import {
+  dutyLabel,
   flowBasis,
   formatFlow,
   type FlowUnit,
@@ -100,6 +103,7 @@ export function StreamsSummary({
   result: RunResult;
   flow: FlowUnit;
 }) {
+  const prefs = useStore((st) => st.displayPrefs);
   const mb = massBalance(result.streams, result.componentMolarMass);
   // The first law over the plant boundary is the ENGINE's ledger
   // (`globalEnergyBoundary`, stamped by its energyBalance report).  Drawn,
@@ -255,7 +259,7 @@ export function StreamsSummary({
                   <Text span fw={600}>model boundary {b.producer}→{b.consumer} ({b.stream}):</Text>{" "}
                   {b.refused
                     ? <><Text span fw={700}>REFUSED</Text> — {b.reason ?? "speciation change"}</>
-                    : `ΔH ${b.dH_kJ_per_mol?.toFixed(3) ?? "—"} kJ/mol (${b.dH_kW?.toFixed(2) ?? "—"} kW), implied ΔT ${b.implied_dT_K?.toFixed(2) ?? "—"} K`}
+                    : `ΔH ${b.dH_kJ_per_mol?.toFixed(3) ?? "—"} kJ/mol (${b.dH_kW === undefined ? "—" : dutyText(b.dH_kW, 2, prefs)}), implied ΔT ${b.implied_dT_K === undefined ? "—" : dTText(b.implied_dT_K, 2, prefs)}`}
                 </Text>
               </Tooltip>
             </Group>
@@ -331,10 +335,10 @@ export function StreamsSummary({
           >
             <Text size="sm" ff="monospace" style={{ cursor: "help" }}>
               {gb
-                ? <>streams in {gb.H_feeds_kW.toFixed(1)} · out {gb.H_products_kW.toFixed(1)} kW
+                ? <>streams in {dutyFixed(gb.H_feeds_kW, 1, prefs)} · out {dutyFixed(gb.H_products_kW, 1, prefs)} {dutyLabel(prefs.duty)}
                     {Math.abs(gb.Q_boundary_kW) > 0.05 && (
                       <Text span size="sm" ff="monospace" c="dimmed">
-                        {"  + boundary Q "}{gb.Q_boundary_kW >= 0 ? "+" : "−"}{Math.abs(gb.Q_boundary_kW).toFixed(1)}{" kW"}
+                        {"  + boundary Q "}{gb.Q_boundary_kW >= 0 ? "+" : "−"}{dutyFixed(Math.abs(gb.Q_boundary_kW), 1, prefs)}{" " + dutyLabel(prefs.duty)}
                       </Text>
                     )}</>
                 : "energy report did not run"}
@@ -411,7 +415,7 @@ export function StreamsSummary({
                         {d.port === "reboiler" ? "♨" : "❄"} {d.unit}
                       </Text>
                     </Table.Td>
-                    <Table.Td ta="right"><Text size="xs" ff="monospace">{d.kW.toFixed(1)} kW</Text></Table.Td>
+                    <Table.Td ta="right"><Text size="xs" ff="monospace">{dutyText(d.kW, 1, prefs)}</Text></Table.Td>
                     <Table.Td>
                       {(() => {
                         //  The reboiler is the REMAINDER of the column's first

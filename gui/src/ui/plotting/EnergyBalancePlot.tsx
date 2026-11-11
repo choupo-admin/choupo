@@ -48,6 +48,7 @@ License
 
 import type { StreamResult } from "../../adapters/SolverAdapter.js";
 import { Plot, PLOT_COLORS, PLOT_CONFIG, darkLayout } from "./plotly.js";
+import { dutyLabel, formatSig, kWToDisplay, type DutyUnit } from "../../state/displayUnits.js";
 
 interface EnergyBalancePlotProps {
   streams: StreamResult[];
@@ -59,9 +60,14 @@ interface EnergyBalancePlotProps {
    *  2026-09-05 (it missed every cooling duty no utility served).  Absent when
    *  the report did not run: the bars then show streams only and say so. */
   added?: { qBoundaryKw: number };
+  /** The Units menu duty unit (C299).  Sums, shares and thresholds stay in
+   *  kW; only what is PRINTED (segment labels, hover, title) is converted. */
+  duty?: DutyUnit;
 }
 
-export function EnergyBalancePlot({ streams, added }: EnergyBalancePlotProps) {
+export function EnergyBalancePlot({ streams, added, duty = "kW" }: EnergyBalancePlotProps) {
+  const sc = kWToDisplay(1, duty);
+  const U = dutyLabel(duty);
   const feeds    = streams.filter((s) => s.role === "feed");
   const products = streams.filter((s) => s.role === "product");
 
@@ -95,6 +101,7 @@ export function EnergyBalancePlot({ streams, added }: EnergyBalancePlotProps) {
   // rounded net and the balance LOOKS broken though it closes.  Show more
   // decimals for small magnitudes.
   const fmtKw = (v: number) => {
+    if (duty !== "kW") return formatSig(v * sc, 4);
     const a = Math.abs(v);
     return a >= 1000 ? v.toFixed(0) : a >= 10 ? v.toFixed(1) : v.toFixed(2);
   };
@@ -107,7 +114,7 @@ export function EnergyBalancePlot({ streams, added }: EnergyBalancePlotProps) {
     // same-phase streams (feed/distillate/bottoms are all liquid -> same colour)
     // is readable from the bar itself, not only the legend.  Plotly hides the
     // label automatically on a segment too thin to hold it.
-    const seg = `${s.name}<br>${fmtKw(y)} kW`;
+    const seg = `${s.name}<br>${fmtKw(y)} ${U}`;
     return {
       type: "bar" as const,
       name: s.name,
@@ -121,7 +128,7 @@ export function EnergyBalancePlot({ streams, added }: EnergyBalancePlotProps) {
       hovertemplate:
         `<b>${s.name}</b><br>`
         + `H = ${(s.H ?? 0 / 1e3).toFixed(2)} kJ/mol<br>`
-        + `Ḣ = %{y:.4g} kW<extra></extra>`,
+        + `Ḣ = %{y:.4g} ${U}<extra></extra>`,
     };
   });
 
@@ -138,7 +145,7 @@ export function EnergyBalancePlot({ streams, added }: EnergyBalancePlotProps) {
   }
   for (const e of extras) {
     const isInput = e.side === "in";
-    const seg = `${e.label}<br>${fmtKw(e.kw)} kW`;
+    const seg = `${e.label}<br>${fmtKw(e.kw)} ${U}`;
     data.push({
       type: "bar" as const,
       name: e.label,
@@ -149,7 +156,7 @@ export function EnergyBalancePlot({ streams, added }: EnergyBalancePlotProps) {
       insidetextanchor: "middle" as const,
       textfont: { size: 11, color: "#ffffff" },
       marker: { color: e.color },
-      hovertemplate: `<b>${e.label}</b><br>%{y:.4g} kW<extra></extra>`,
+      hovertemplate: `<b>${e.label}</b><br>%{y:.4g} ${U}<extra></extra>`,
     });
   }
 
@@ -193,8 +200,8 @@ export function EnergyBalancePlot({ streams, added }: EnergyBalancePlotProps) {
   // (that reads as a lie).  Show both nets, the residual gap and its %, and one
   // verdict marker -- the gap IS the closure quality.
   const title =
-    `Energy balance — plant boundary (kW)`
-    + `  ·  IN ${fmtKw(netIn)} · OUT ${fmtKw(netOut)} · Δ ${fmtKw(gap)} kW (${pct.toFixed(1)}%) `
+    `Energy balance — plant boundary (${U})`
+    + `  ·  IN ${fmtKw(netIn)} · OUT ${fmtKw(netOut)} · Δ ${fmtKw(gap)} ${U} (${pct.toFixed(1)}%) `
     + (closes ? "✓ closes" : "⚠ does NOT close")
     + (skipped > 0 ? `  ·  ${skipped} skipped (no H)` : "")
     + mixedNote;
@@ -223,8 +230,8 @@ export function EnergyBalancePlot({ streams, added }: EnergyBalancePlotProps) {
     return {
       ...t,
       y: [Math.abs(vIn) / inTotal, Math.abs(vOut) / outTotal],
-      customdata: [vIn, vOut] as number[],
-      hovertemplate: `<b>${t.name}</b><br>%{customdata:.4g} kW (%{y:.0%} of side)<extra></extra>`,
+      customdata: [vIn * sc, vOut * sc] as number[],
+      hovertemplate: `<b>${t.name}</b><br>%{customdata:.4g} ${U} (%{y:.0%} of side)<extra></extra>`,
     };
   });
 

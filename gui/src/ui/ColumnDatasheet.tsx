@@ -48,6 +48,8 @@ import {
   PROVENANCE_INK, PROVENANCE_WORD,
 } from "../case/equipmentSchematic.js";
 import { downloadOds } from "../case/odsExport.js";
+import { dutyFixed, type ResultUnitPrefs } from "../case/resultUnits.js";
+import { DEFAULT_PREFS, dutyLabel } from "../state/displayUnits.js";
 
 type Kpis = { [k: string]: number };
 
@@ -83,6 +85,7 @@ export function columnDatasheetHtml(
   unit: UnitSpec,
   kpis: Kpis | undefined,
   designFiles?: { [relPath: string]: string },
+  prefs: ResultUnitPrefs = DEFAULT_PREFS,
 ): string {
   const k = kpis ?? {};
   const { sheets, unreadable } = unitDesignSheets(designFiles, unit.name);
@@ -212,7 +215,7 @@ export function columnDatasheetHtml(
           "<i>not checked — the case declares no K2 weep constant</i>")]),
     row("Column ΔP", `${N(k["dP_column_kPa"], 2)} kPa`),
     row("Condenser / reboiler duty",
-      `${N(k["Q_condenser_kW"])} / ${N(k["Q_reboiler_kW"])} kW`),
+      `${dutyFixed(k["Q_condenser_kW"] as number, 1, prefs)} / ${dutyFixed(k["Q_reboiler_kW"] as number, 1, prefs)} ${dutyLabel(prefs.duty)}`),
   ].join("");
   const rating = sec("RATING RESULT  ·  the tray-hydraulics pass", RATING_INK,
     ratingRows);
@@ -354,6 +357,7 @@ export function columnDatasheetOdsRows(
       rows.push([`${s.item || s.equipment}.${v.key}`, v.value,
                  v.unit === "-" ? "" : v.unit, "sized by Choupo (design/)"]);
   const k = kpis ?? {};
+  //  The .ods stays in SI (kW, K): an export is not a display (C299).
   const rating: [string, string][] = [
     ["nTrays", "-"], ["floodApproach_max", "-"], ["floodStage", "-"],
     ["downcomerBackup_max_mm", "mm"], ["downcomerFloodStages", "-"],
@@ -378,6 +382,7 @@ export function columnDatasheetOdsRows(
 /** The datasheet trigger, shown in the unit panel for a distillation column. */
 export function ColumnDatasheet({ unit, kpis }: { unit: UnitSpec; kpis: Kpis }) {
   const designFiles = useStore((s) => s.runResult?.designFiles);
+  const prefs = useStore((s) => s.displayPrefs);
   //  SHOWN ONLY WHEN THERE IS SOMETHING TO SHOW.  A button that opens a page
   //  explaining its own emptiness is the lit-but-dead control the credo
   //  forbids: 30 corpus cases declare a column and one ships a `postDict`.
@@ -386,7 +391,7 @@ export function ColumnDatasheet({ unit, kpis }: { unit: UnitSpec; kpis: Kpis }) 
 
   const openTab = () => {
     let built: string;
-    try { built = columnDatasheetHtml(unit, kpis, designFiles); }
+    try { built = columnDatasheetHtml(unit, kpis, designFiles, prefs); }
     catch (e) {
       built = `<pre style="padding:16px;color:#900;font-family:monospace">`
         + `Datasheet build failed:\n${String(e instanceof Error ? e.stack : e)}</pre>`;

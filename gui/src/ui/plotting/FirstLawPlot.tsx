@@ -61,19 +61,26 @@ import {
   firstLawFigure, stackedBars, fmtKw, SUBTRACT_OPACITY,
 } from "../../case/firstLaw.js";
 import { Plot, PLOT_COLORS, PLOT_CONFIG, darkLayout } from "./plotly.js";
+import { dutyLabel, formatSig, kWToDisplay, type DutyUnit } from "../../state/displayUnits.js";
 
 interface FirstLawPlotProps {
   /** The engine's ledger.  Absent when its energyBalance report did not run
    *  or refused -- the figure then SAYS so and draws nothing in its place. */
   boundary?: GlobalEnergyBoundary;
+  /** The Units menu's duty unit (C299).  Every number DRAWN is the engine's kW
+   *  scaled by one linear factor; the geometry (case/firstLaw.ts) stays in kW. */
+  duty?: DutyUnit;
 }
 
 /** Half-width of a column in category units -- the bars, and the level line
  *  that must span exactly the same span. */
 const HALF = 0.34;
 
-export function FirstLawPlot({ boundary }: FirstLawPlotProps) {
+export function FirstLawPlot({ boundary, duty = "kW" }: FirstLawPlotProps) {
   const fig = firstLawFigure(boundary);
+  const sc = kWToDisplay(1, duty);                 // 1 for kW: nothing moves
+  const U = dutyLabel(duty);
+  const fmtKwU = (v: number) => (duty === "kW" ? fmtKw(v) : formatSig(v * sc, 4));
 
   if (!fig) {
     return (
@@ -112,23 +119,23 @@ export function FirstLawPlot({ boundary }: FirstLawPlotProps) {
     fig.columns.forEach((col, ci) => {
       for (const { term, base, height } of stackedBars(col)) {
         if (term.subtracts !== subtracting) continue;
-        const y = categories.map((_, i) => (i === ci ? height : 0));
-        const b = categories.map((_, i) => (i === ci ? base : 0));
+        const y = categories.map((_, i) => (i === ci ? height * sc : 0));
+        const b = categories.map((_, i) => (i === ci ? base * sc : 0));
         data.push({
           type: "bar",
-          name: `${term.label} = ${fmtKw(term.kw)} kW`,
+          name: `${term.label} = ${fmtKwU(term.kw)} ${U}`,
           x: categories,
           y,
           base: b,
           width: categories.map((_, i) => (i === ci ? 2 * HALF : 0)),
           marker: { color: term.color, opacity: subtracting ? SUBTRACT_OPACITY : 1 },
           text: categories.map((_, i) =>
-            (i === ci ? `${term.label}  ${fmtKw(term.kw)} kW` : "")),
+            (i === ci ? `${term.label}  ${fmtKwU(term.kw)} ${U}` : "")),
           textposition: "inside",
           insidetextanchor: "middle",
           textfont: { size: 11, color: "#10242b" },
           hovertemplate:
-            `<b>${term.label} = ${fmtKw(term.kw)} kW</b><br>${term.detail}`
+            `<b>${term.label} = ${fmtKwU(term.kw)} ${U}</b><br>${term.detail}`
             + `<extra></extra>`,
         });
       }
@@ -146,7 +153,7 @@ export function FirstLawPlot({ boundary }: FirstLawPlotProps) {
     for (const [w, color, op] of [[6, "#000000", 0.5], [2.5, "#ffffff", 1]] as const) {
       shapes.push({
         type: "line", xref: "x", yref: "y",
-        x0: ci - HALF, x1: ci + HALF, y0: col.level, y1: col.level,
+        x0: ci - HALF, x1: ci + HALF, y0: col.level * sc, y1: col.level * sc,
         line: { color, width: w }, opacity: op, layer: "above",
       });
     }
@@ -160,7 +167,7 @@ export function FirstLawPlot({ boundary }: FirstLawPlotProps) {
     shapes.push({
       type: "line", xref: "x", yref: "y",
       x0: 0 + HALF, x1: 1 - HALF,
-      y0: enthalpy.level, y1: boundaryCol.level,
+      y0: enthalpy.level * sc, y1: boundaryCol.level * sc,
       line: { color: PLOT_COLORS.text, width: 1.5, dash: "dot" },
       layer: "above",
     });
@@ -169,8 +176,8 @@ export function FirstLawPlot({ boundary }: FirstLawPlotProps) {
   const annotations: Record<string, unknown>[] = [];
   fig.columns.forEach((col, ci) => {
     annotations.push({
-      xref: "x", yref: "y", x: ci, y: col.level,
-      text: `<b>${col.levelLabel} = ${fmtKw(col.level)} kW</b>`,
+      xref: "x", yref: "y", x: ci, y: col.level * sc,
+      text: `<b>${col.levelLabel} = ${fmtKwU(col.level)} ${U}</b>`,
       showarrow: false, yshift: 13,
       font: { ...darkLayout.font, size: 12, color: "#ffffff" },
       bgcolor: "rgba(0,0,0,0.62)", borderpad: 3,
@@ -179,8 +186,8 @@ export function FirstLawPlot({ boundary }: FirstLawPlotProps) {
   if (gapVisible) {
     annotations.push({
       xref: "x", yref: "y", x: 0.5,
-      y: 0.5 * (enthalpy.level + boundaryCol.level),
-      text: `residual ${fmtKw(fig.residualKw)} kW`,
+      y: 0.5 * (enthalpy.level + boundaryCol.level) * sc,
+      text: `residual ${fmtKwU(fig.residualKw)} ${U}`,
       showarrow: false, yshift: -12,
       font: { ...darkLayout.font, size: 11 },
       bgcolor: "rgba(0,0,0,0.45)", borderpad: 2,
@@ -191,7 +198,7 @@ export function FirstLawPlot({ boundary }: FirstLawPlotProps) {
   //  the reason the window is not the bars' own extent, and a reader who
   //  cannot see where a bar ends must be able to read where it ends.
   const datumNote =
-    `Σ H(in) = ${fmtKw(fig.H_in_kW)} kW · Σ H(out) = ${fmtKw(fig.H_out_kW)} kW`
+    `Σ H(in) = ${fmtKwU(fig.H_in_kW)} ${U} · Σ H(out) = ${fmtKwU(fig.H_out_kW)} ${U}`
     + `, on the ${fig.datum} datum — absolute values are set by that reference,`
     + ` only their difference is physical`
     + (fig.enthalpyCollapsed
@@ -207,9 +214,9 @@ export function FirstLawPlot({ boundary }: FirstLawPlotProps) {
 
   const title =
     `First law at the plant boundary — ΔH = Q − W`
-    + `  ·  ΔH ${fmtKw(enthalpy.level)} kW`
-    + `  ·  Q − W ${fmtKw(boundaryCol.level)} kW`
-    + `  ·  residual ${fmtKw(fig.residualKw)} kW`
+    + `  ·  ΔH ${fmtKwU(enthalpy.level)} ${U}`
+    + `  ·  Q − W ${fmtKwU(boundaryCol.level)} ${U}`
+    + `  ·  residual ${fmtKwU(fig.residualKw)} ${U}`
     + (fig.splitPublished ? "" : "  ·  ⚠ this engine published only Q − W, not Q and W apart")
     + (fig.vacuous ? "  ·  closed loop: nothing crosses the boundary, the law is vacuous here" : "");
 
@@ -240,8 +247,8 @@ export function FirstLawPlot({ boundary }: FirstLawPlotProps) {
         },
         yaxis: {
           ...darkLayout.yaxis,
-          title: { text: "kW  (window scaled to the process terms, not to Σ H)" },
-          range: fig.window,
+          title: { text: `${U}  (window scaled to the process terms, not to Σ H)` },
+          range: [fig.window[0] * sc, fig.window[1] * sc],
           zeroline: true,
         },
       }}
