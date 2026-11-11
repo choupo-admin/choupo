@@ -3417,6 +3417,28 @@ accepts today, and that is a policy call.
 > (check by grep) are listed, not silently left.  Status: recorded, general to
 > be dispatched (gui only; `--gui` is its validation).  Owner: architect.
 
+> **C303 (architect, 2026-11-11, from the reactor-limits investigation): a
+> case-local record that replaces a catalogue record of the same name takes
+> every key it LACKS from the catalogue, silently.**  Measured: cstr08's own
+> 12Propanediol.dat (no `overlayOf`) inherited the catalogue's fitted liquid
+> Cp and its Joback `dHf_298` once C292 added a catalogue 12Propanediol
+> (8b7fa758e); the engine announces only "case-local overrides the standard
+> catalogue entry", and the case's own `provenance` (Zaripov) then stands
+> beside a value that came from the catalogue's fit.  check_reactor_limits
+> went red because its probes no longer removed the data they claimed to
+> remove (gate fixed: the probe renames the component; branch
+> fix-reactor-limits).  DECIDED: every backfilled key is announced per key
+> (`[backfill] <component>.<key> from data/standards/... (origin, method)`),
+> once per run, and its provenance travels with it, not the case record's.
+> Implemented after C300 lands (both edit src/thermo/Database.cpp); the cases
+> that gain a line are listed in the commit.
+>
+> **C302 follow-up (open):** in greenAmmoniaPEQ the converter publishes only
+> `Q_kW` (30.3 MW), so its heat is outside the pinch population (announced by
+> name); FEL-3 includes it through the two interbed coolers.  The converter
+> must publish its segment (T in/out) so the reference plant's targets count
+> its hottest heat.
+
 > **C302 (Vitor, 2026-11-11: "porque raio ha tantas fabricas de amonia nos
 > tutoriais? ... Esta [greenAmmoniaPEQ_baseCase] nem sequer tem pinch!").**
 > Measured: tutorials/plant ships 14 plants, FIVE of them ammonia --
