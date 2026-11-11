@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of 2Ethyl1Hexanol-pXylene
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/pXylene-2Ethyl1Hexanol-bubble-je300848z.dat";
+        role          fit;   // C283: every laboratory is fitted
+        doi           "10.1021/je300848z";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je300848z.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je300848z.json";
+        articleFile   "je300848z.xml";
+        articleSha256 "bcd888ac67658e4c905458cc59940a1a54f5408848b24065e9ab0f58537b9a4c";
+        block         8;
+        filter        ( --interior-only );
+        extract       "bin/choupo-thermoml extract-vle <article file> --block 8 --interior-only --into <dir>";
+        sha256        "87a8feae49d01a0076db41d5f89982140bf16cb2cf5094ec7494cd29eb24641c";
+        identity
+        {
+            pXylene        { cas "106-42-3"; inchiKey "URLKBWYHVLBVBO-UHFFFAOYSA-N"; }
+            2Ethyl1Hexanol { cas "104-76-7"; inchiKey "YIWUKEYIRIRTPP-UHFFFAOYSA-N"; }
+        }
+    }
+);

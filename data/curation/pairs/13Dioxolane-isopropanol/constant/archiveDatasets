@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of 13Dioxolane-isopropanol
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/13Dioxolane-isopropanol-bubble-je900327x.dat";
+        role          fit;   // C283: every laboratory is fitted
+        doi           "10.1021/je900327x";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je900327x.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je900327x.json";
+        articleFile   "je900327x.xml";
+        articleSha256 "0821e94892b4b81c7a0e22171dff181e25ad8678046614261975be7679bfab7c";
+        block         6;
+        filter        ( --interior-only );
+        extract       "bin/choupo-thermoml extract-vle <article file> --block 6 --interior-only --into <dir>";
+        sha256        "b49ea4e9f79a2ed965458bce4e042eaed3fc55bc2d989d47730be5202c9bb638";
+        identity
+        {
+            13Dioxolane    { cas "646-06-0"; inchiKey "WNXJIVFYUVYPPR-UHFFFAOYSA-N"; }
+            isopropanol    { cas "67-63-0"; inchiKey "KFZMGEQAYNKOFK-UHFFFAOYSA-N"; }
+        }
+    }
+);
