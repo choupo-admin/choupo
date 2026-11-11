@@ -173,6 +173,71 @@
         }
       ]
     },
+    "salt-mixing": {
+      "pageSources": "Sources of the measured data",
+      "references": [
+        {
+          "text": "Farelo, F.; von Brachel, G.; Offermann, H. (1993). Solid-liquid equilibria in the ternary system NaCl-KCl-H2O. Can. J. Chem. Eng. 71, 141-146.",
+          "doi": "10.1002/cjce.5450710119",
+          "note": "The measured binary and ternary solubilities this page fits (Tables 1-4) and the Holmes theta(T) it quotes (eq. 10).",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/cjce.5450710119: authors, title, container, volume 71, pages 141-146, 1993 matched; PDF read in ~/Choupo-Literature/farelo1993-nacl-kcl-water-solid-liquid-equilibria.pdf (C316)",
+            "date": "2026-11-11"
+          }
+        },
+        {
+          "text": "Farelo, F.; Fernandes, C.; Avelino, A. (2005). Solubilities for six ternary systems: NaCl + NH4Cl + H2O, KCl + NH4Cl + H2O, NaCl + LiCl + H2O, KCl + LiCl + H2O, NaCl + AlCl3 + H2O, and KCl + AlCl3 + H2O at T = (298 to 333) K. J. Chem. Eng. Data 50, 1470-1477.",
+          "doi": "10.1021/je050111j",
+          "note": "The six systems of the third prediction.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/je050111j: authors, title, container, volume 50, pages 1470-1477, 2005 matched; DOI printed on p. 1470 of ~/Choupo-Literature/FatimaFarelo/farelo2005-solubilities-six-ternary-chloride-systems.pdf (C316)",
+            "date": "2026-11-11"
+          }
+        },
+        {
+          "text": "Pitzer, K. S.; Kim, J. J. (1974). Thermodynamics of electrolytes. IV. Activity and osmotic coefficients for mixed electrolytes. J. Am. Chem. Soc. 96, 5701-5707.",
+          "doi": "10.1021/ja00825a004",
+          "note": "Table I (p. 5704): theta and psi for NaCl-KCl, NaCl-LiCl and KCl-LiCl, set beside the fit.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ja00825a004: authors, title, container, volume 96, pages 5701-5707, 1974 matched; Table I read in ~/Choupo-Literature/pitzer1974-electrolytes-iv-mixed.pdf (C316)",
+            "date": "2026-11-11"
+          }
+        },
+        {
+          "text": "Pitzer, K. S. (1973). Thermodynamics of electrolytes. I. Theoretical basis and general equations. J. Phys. Chem. 77, 268-277.",
+          "doi": "10.1021/j100621a026",
+          "note": "The virial form of ln gamma used on this page.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/j100621a026: author, title, container, volume 77, pages 268-277, 1973 matched (C316)",
+            "date": "2026-11-11"
+          }
+        },
+        {
+          "text": "Harvie, C. E.; Møller, N.; Weare, J. H. (1984). The prediction of mineral solubilities in natural waters: the Na-K-Mg-Ca-H-Cl-SO4-OH-HCO3-CO3-CO2-H2O system to high ionic strengths at 25 °C. Geochim. Cosmochim. Acta 48, 723-751.",
+          "doi": "10.1016/0016-7037(84)90098-X",
+          "note": "The multi-ion assembly the engine evaluates, and the source the catalogue's theta(K,Na) and psi(K,Na,Cl) records name.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0016-7037(84)90098-X: authors, title, container, volume 48, pages 723-751, 1984 matched (C316)",
+            "date": "2026-11-11"
+          }
+        },
+        {
+          "text": "Holmes, H. F.; Baes, C. F., Jr.; Mesmer, R. E. (1979). Isopiestic studies of aqueous solutions at elevated temperatures. II. NaCl + KCl mixtures. J. Chem. Thermodyn. 11, 1035-1050.",
+          "doi": "10.1016/0021-9614(79)90134-4",
+          "note": "The theta_NaK(T) of the Holmes model, quoted through Farelo et al. (1993) eq. 10; the paper itself was not read.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works?query.bibliographic=Holmes Baes Mesmer isopiestic NaCl KCl mixtures: DOI 10.1016/0021-9614(79)90134-4, title and authors matched; volume and pages as cited by Farelo et al. 1993 (C316)",
+            "date": "2026-11-11"
+          }
+        }
+      ]
+    },
     "solvent-mixture": {
       "references": [
         {

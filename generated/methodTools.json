@@ -189,8 +189,8 @@
       ]
     }
   ],
-  "liveTools": 76,
-  "registryTools": 76,
+  "liveTools": 77,
+  "registryTools": 77,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -397,6 +397,20 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=bjerrum"
+    },
+    {
+      "id": "salt-mixing",
+      "label": "Salt mixtures: Pitzer mixing parameters from ternary solubility",
+      "blurb": "Fit Pitzer mixing parameters to a measured NaCl-KCl solubility curve.",
+      "discipline": "Thermodynamics",
+      "teaches": "Why a second salt with a common ion changes a salt's solubility (the common ion against the ionic strength), what the single-salt Pitzer parameters already predict for NaCl + KCl + water, and how the two mixing parameters theta and psi are read off a measured solubility curve by a linear least-squares fit -- in-sample at the temperature fitted, held out at the others.  Also: a solubility product from a record's van't Hoff enthalpy against one anchored on the measured binary, the eutonic point, six ternary chloride systems and where charge makes mixing matter, and cooling a saturated brine to crystallise KCl.",
+      "origins": [
+        "engine",
+        "page",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=salt-mixing"
     },
     {
       "id": "mccabe",

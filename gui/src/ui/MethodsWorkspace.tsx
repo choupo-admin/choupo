@@ -279,6 +279,8 @@ const FlashOperatingLineTool = lazy(() =>
     .then((m) => ({ default: m.FlashOperatingLineTool })));
 const BjerrumTool = lazy(() =>
   import("./methods/BjerrumTool.js").then((m) => ({ default: m.BjerrumTool })));
+const SaltMixingTool = lazy(() =>
+  import("./methods/SaltMixingTool.js").then((m) => ({ default: m.SaltMixingTool })));
 const BodeTool = lazy(() =>
   import("./methods/BodeTool.js").then((m) => ({ default: m.BodeTool })));
 const TearStreamsTool = lazy(() =>
@@ -617,6 +619,7 @@ export function MethodsWorkspace() {
             : tool === "ponchon-savarit" ? <PonchonSavaritTool />
             : tool === "flash-operating-line" ? <FlashOperatingLineTool />
             : tool === "bjerrum" ? <BjerrumTool />
+            : tool === "salt-mixing" ? <SaltMixingTool />
             : tool === "bode" ? <BodeTool />
             : tool === "tear-streams" ? <TearStreamsTool />
             : tool === "case-assembly" ? <CaseAssemblyTool />
