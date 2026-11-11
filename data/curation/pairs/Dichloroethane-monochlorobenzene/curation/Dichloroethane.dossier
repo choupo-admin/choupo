@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-monochlorobenzene.A_ij  -136.120583883;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-monochlorobenzene.A_ji  148.889646135;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "0cbbe574e3678d3a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/Dichloroethane-monochlorobenzene-bubble-je0301085.dat";
+            doi       "10.1021/je0301085";
+            sha256    "b1fe3f87feb94add0759ccbac63caabc818e5ec6803f846b16b1badbb1ca828e";
+            provenance measured;
+            archiveFile "je0301085.xml";
+            system    "Dichloroethane + monochlorobenzene";
+            pressure  "94600.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.155; max 0.899; n 7; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-monochlorobenzene.A_ij  6300.54457066;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-monochlorobenzene.A_ji  -3662.72078842;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "0cbbe574e3678d3a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/Dichloroethane-monochlorobenzene-bubble-je0301085.dat";
+            doi       "10.1021/je0301085";
+            sha256    "b1fe3f87feb94add0759ccbac63caabc818e5ec6803f846b16b1badbb1ca828e";
+            provenance measured;
+            archiveFile "je0301085.xml";
+            system    "Dichloroethane + monochlorobenzene";
+            pressure  "94600.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.155; max 0.899; n 7; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

@@ -28,19 +28,19 @@ propertyManifest
         "components/isopropanol.dat"
         {
             type          imported;
-            sha256        "c206190bf473636ab8661c95a2126b9088fc6a1b5013c5e1325470f8133691b0";
-            computationalSha256 "4ca8dc74e7851f893506b84d7a8e03b629f1794fd0132eed65e92c65cac2e9f9";
+            sha256        "61118a4a99021492caf6ad77788bb2bd987dab2f1160ad21534ae7ce688dae8a";
+            computationalSha256 "5c4f956b35dd2eaa9db4947f8fe641dea0228bf8ba7301d2369f0790871f65da";
             origin        "data/standards/components/isopropanol.dat";
-            originSha256  "510b474f696cf7952c89a27d0a48623266b8a79f3026cc348a934361bd763e07";
+            originSha256  "7338879f6f351e08c4ec91a02c86117d7f56faef9906c7e3174f954a4000d0d7";
             release       Choupo-2608;
         }
         "components/methylal.dat"
         {
             type          imported;
-            sha256        "fbdb96d75a57ee188d05ac1ac195896a65ee14695b565d4994b7acd8590b493e";
-            computationalSha256 "df2b77bd422abfabe26846550054b99c444393f5a8498b4003ffd4913a78b73f";
+            sha256        "d667a7e3c3e17feee4a41091f39d89641ae224d6b87f6068841f3fa494fb988a";
+            computationalSha256 "7bd87a716621cb88e4512f463a4a0259d8049ddb5999b86ff2bf9ddc6fb783f5";
             origin        "data/standards/components/methylal.dat";
-            originSha256  "10ac8d72145f06bc16bb46213fc74296d6f1c69a99bfeab6bf6e44a020fc2b51";
+            originSha256  "01fce124ec237cfef4f66da52485d13765f66671a156cb617c3ee79d7ad01e97";
             release       Choupo-2608;
         }
         "parameters/NRTL/isopropanol-methylal.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/isopropanol-methylal.dat"
+        {
+            type          imported;
+            sha256        "2ccf0fc29460033a9d38a8fddfa856482528ebbcb0dd5333ca54c0ce8db6e08e";
+            computationalSha256 "bff06bdea911c7f48af4effad559c8145c3135cd9a3307d5df21dc42f1fe3de0";
+            origin        "data/standards/parameters/UNIQUAC/isopropanol-methylal.dat";
+            originSha256  "6a2ddeeacd93c179393b4289b2b2037ad8e3a120e3f2534d59d3de485221577e";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/isopropanol-methylal.dat"
+        {
+            type          imported;
+            sha256        "5990917a0774bcc42bd8130145510e430047096f2f7962e7183e8af53c0b66fb";
+            computationalSha256 "7aebfb2ba8e3c3f4f2f3b6372603de9f4e99a904b806fe3177ceb99da291e913";
+            origin        "data/standards/parameters/Wilson/isopropanol-methylal.dat";
+            originSha256  "de723bf251d44c8c452cb955f4df8514126fb0653ffb54a0d551f21e3b72f46c";
             release       Choupo-2608;
         }
     }

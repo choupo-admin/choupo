@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "19ad9b47d191459405d0f9f7f16c03e7eee410b302a4a9adf1fd5bb9ef6fba2f";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diEthylCarbonate-ethanol.dat"
+        {
+            type          imported;
+            sha256        "c12f1f46bf376f5904e031136ce39f58173e3983bfff87c63b3df2e5b61b87c9";
+            computationalSha256 "551b5a86a0f42df47ef4a253bdd76cc37c4fc23d9a0224d5e5c79d335aea85c8";
+            origin        "data/standards/parameters/Wilson/diEthylCarbonate-ethanol.dat";
+            originSha256  "ec590025dfd90ec4fe43b8ab9786f0acebb9bb08170b1545075aa76be7174a53";
+            release       Choupo-2608;
+        }
     }
 }

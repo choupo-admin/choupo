@@ -28,10 +28,10 @@ propertyManifest
         "components/1Hexene.dat"
         {
             type          imported;
-            sha256        "f3f6034e2b70cdd43e4cb310f98078980f8bb43a1f29ba10550002e16efddb79";
-            computationalSha256 "4bb3257c1ee9df2672cd685a9d6064728e3775327be2f9c7993aefac1d89ad26";
+            sha256        "456ad357771c8add9a689b45c6d37bb2cb96925c14036f1e1b37c1009c2f6d8c";
+            computationalSha256 "1063f2def570c77ab491b0622470c087a986b63b335805e5ec1f999da4a70969";
             origin        "data/standards/components/1Hexene.dat";
-            originSha256  "5512ce3cac416444fb8400aa7b92dd95e1dd0b55037227404c5729c5304892ee";
+            originSha256  "648504a513eba0cd115c14609480dfd1536cb7e6398fe09728a45a0afdbedf6e";
             release       Choupo-2608;
         }
         "components/diEthylCarbonate.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "564afecd821034668665ea65f1ca5900e77a612f96b65ff9e2a78e8a25215cbf";
             origin        "data/standards/parameters/NRTL/1Hexene-diEthylCarbonate.dat";
             originSha256  "e75344faa04498c334ed7750d71015ad7f422d7e82fab20551121dbe3e890945";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Hexene-diEthylCarbonate.dat"
+        {
+            type          imported;
+            sha256        "6af1c93463d43770b9f9c623df61b9e194834ce9a56a86063c58fb60f63ab5f0";
+            computationalSha256 "12ffa03ad27b48b4844ba7ee88cd38b8d0872b7f669749e42d4ec83fb6875304";
+            origin        "data/standards/parameters/Wilson/1Hexene-diEthylCarbonate.dat";
+            originSha256  "7c572260e197db73fd9f1de632509e278426fdfbbb2773d65087073e78b6e74a";
             release       Choupo-2608;
         }
     }

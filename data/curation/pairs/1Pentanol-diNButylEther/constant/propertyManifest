@@ -28,19 +28,19 @@ propertyManifest
         "components/1Pentanol.dat"
         {
             type          imported;
-            sha256        "67c0add32a0365f5e7b1669e442fce34ca1fab7728982864212f471cea149ff4";
-            computationalSha256 "ef54b796ae70f47722ea40f25d897e9444289b0fc474d4d27a6ca111785c6a18";
+            sha256        "86c4addc505252ed263f53c07ca94ef9a158e34bfb5c32e992323eaa0c8df1d3";
+            computationalSha256 "831e21638f9c40c212865247a7342ab9080b1d897b9bece0cd5eaa0bd9f394c3";
             origin        "data/standards/components/1Pentanol.dat";
-            originSha256  "b5affaac9c1c791eb783bfdfc0669a3e8bf9a28e54efc09cbc866c5362af548c";
+            originSha256  "1b70bde782f9005b3b1776f286a59b76191371714b98aa89a8976851a2d0020a";
             release       Choupo-2608;
         }
         "components/diNButylEther.dat"
         {
             type          imported;
-            sha256        "537970d2ee2c419075c0e60d44f291a9e308dd2c5fb5d18a04ae9dd5dd0f0f2b";
-            computationalSha256 "2d5d88b4f35c15d610e2651a7e04d59a600b408d65f8b9e305a62a753f13c07b";
+            sha256        "1eb78d03a6e082a5069fdab042f3902927f770e97f7e03f5a3bc9d789cc1f1f3";
+            computationalSha256 "021120e8b3e2ae75d45f6e83d172d78e8421092f64ef00c67b8a95019c02998a";
             origin        "data/standards/components/diNButylEther.dat";
-            originSha256  "e943e71a195499eea4c36243b977aff1fe2a5602ccb7592874505a239160f212";
+            originSha256  "fb73ec09e85d833de864cddf6d119fe08f842110ee4edd6efce7075c195d8e84";
             release       Choupo-2608;
         }
         "parameters/NRTL/1Pentanol-diNButylEther.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/1Pentanol-diNButylEther.dat"
+        {
+            type          imported;
+            sha256        "2478a2e1c25501287716b19d0b979ed3ec0766c18ccc87f499fdd4b3041b627d";
+            computationalSha256 "6812a2bce03dd133b663015459e6bdcb75084fe9d56f74c188e07c9c31258dd5";
+            origin        "data/standards/parameters/UNIQUAC/1Pentanol-diNButylEther.dat";
+            originSha256  "3b13bd45bcb1ecc5910ea22a151b5f835e7daf2c757f4e3a68f49c24acd8f941";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Pentanol-diNButylEther.dat"
+        {
+            type          imported;
+            sha256        "ff05c779006880352b11dfb32a904a24195251cd83f624472f395f480b12e659";
+            computationalSha256 "8fc728cd0907286a7dbc6f7b8d39e219f4029948d7964564f47d4eaf90b27ea5";
+            origin        "data/standards/parameters/Wilson/1Pentanol-diNButylEther.dat";
+            originSha256  "c3bc434bcf7c54a147667c1c042d597e414c7e5e39e439d8462084a632132b0f";
             release       Choupo-2608;
         }
     }

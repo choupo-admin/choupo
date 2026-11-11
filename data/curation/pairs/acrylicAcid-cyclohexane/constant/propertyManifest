@@ -28,19 +28,19 @@ propertyManifest
         "components/acrylicAcid.dat"
         {
             type          imported;
-            sha256        "29d5b5eb8aaa20d0eab0d1446aef6b66033a23a58ed6172dc4510c7b769ee382";
-            computationalSha256 "ea7e3b553952bf00be6ad8e72ba805d8319e84e32c9743d67d8d265c32924fba";
+            sha256        "a64afea16e374c420c47d5d0d9493f7f21cff53e709384d8979f03d4bf350ae1";
+            computationalSha256 "3ace17dffd4cb0ca03c825607a94f91bcab44fbb02d2da73c21d0f9f5ec07bae";
             origin        "data/standards/components/acrylicAcid.dat";
-            originSha256  "290c0ce4e913a1189afa037ea2190f8f4317782a61da51b6fe29f2aa149b4b7a";
+            originSha256  "68ac07f3a9915976750d1d479d0675130117aa31a9786bf6b2408982e8780b97";
             release       Choupo-2608;
         }
         "components/cyclohexane.dat"
         {
             type          imported;
-            sha256        "54ac6c67fe0fa7f8d15744192b515efd56b05bf78dc8bf99b6dfc092f349f26c";
-            computationalSha256 "6f57b6ee7356428daa748404b1343309e762255b70baf430d387550ae4683431";
+            sha256        "04e20a9c3a1368072059505adbe555b180a674e96087a4c92af04cf5e42245b7";
+            computationalSha256 "e5dadd80ead0f1d8f44482b2596d2a2b5e7c060e9ed1181dbf1712af989938ef";
             origin        "data/standards/components/cyclohexane.dat";
-            originSha256  "c17d37ff35f43849e846d3f6a974ab7f2312085a349d1169494ad2374fd90d23";
+            originSha256  "9f3b642c76b10c5867f604ce4d741c21b1c8b9b25e700707e9cc49fdbcf079f5";
             release       Choupo-2608;
         }
         "parameters/NRTL/acrylicAcid-cyclohexane.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/acrylicAcid-cyclohexane.dat"
+        {
+            type          imported;
+            sha256        "947026bc6f29c3b1cf92c0b10b93919e1b89e28c85ff43ab412e78df371e3776";
+            computationalSha256 "8f7f2f28192dbc503561f21813ee8ba1b52c16114ced98abf37b063bbe3068ac";
+            origin        "data/standards/parameters/UNIQUAC/acrylicAcid-cyclohexane.dat";
+            originSha256  "7127620dd19e2b0ce5d6b450ea1c7be20f8c7ff4b9b6c4ba699fd0e0bce83953";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/acrylicAcid-cyclohexane.dat"
+        {
+            type          imported;
+            sha256        "b9991ad516d4424fb409c1e2db3c2ceea5ce99733b726133181fc8c9faba886b";
+            computationalSha256 "ad29e405be9871d6fd9d85f6d6a21336b247a5b6212e2ab867f80dbbe531be5b";
+            origin        "data/standards/parameters/Wilson/acrylicAcid-cyclohexane.dat";
+            originSha256  "e66c2ba67cb3f045e4731dac8dee3c2a40193fcd88ce6583d5a54d59fa0dda41";
             release       Choupo-2608;
         }
     }

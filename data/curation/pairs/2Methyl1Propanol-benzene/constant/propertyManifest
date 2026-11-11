@@ -28,19 +28,19 @@ propertyManifest
         "components/2Methyl1Propanol.dat"
         {
             type          imported;
-            sha256        "ee0bb35e8d706d7c4b0549d6ac51be77b89de4f5496fea7d9947d875b9bcdd35";
-            computationalSha256 "b1bfb84671b4f35f758f186af86d16cfe056fb1a54d6f2b5e2867328630848b3";
+            sha256        "778703d5a4716bbace0b8b3de0655393d4212cbd4ed4c809736558e732afbd5d";
+            computationalSha256 "5ebe04496878f4c4864b2b944848ca1130604cf7d11a684d2602c0fc4b37568d";
             origin        "data/standards/components/2Methyl1Propanol.dat";
-            originSha256  "f0afa6609184a85f9c63deb6555d81619d932cc9049178f6f783e25420e34db6";
+            originSha256  "c17b068f64a38ca32f8ee4f6516ed94a85019ee7a45a33ba4fceabdaaafc01bc";
             release       Choupo-2608;
         }
         "components/benzene.dat"
         {
             type          imported;
-            sha256        "af31cf9da05b7d34c657c430cef68abbf0f08db2402827a4867f7a64073225c9";
-            computationalSha256 "b8a586d23e8f38eb0b5c0f9534f7057eb2d4059de464edbdc18995094fdca93e";
+            sha256        "2c20d6d671dd5884ed8e3668529ddaad20bf3c2a02d1a5130aac02dd790aa62c";
+            computationalSha256 "d710160da938e1163f77e26b0cc49af7c2a2e4563b37f914ce4bb001500decc4";
             origin        "data/standards/components/benzene.dat";
-            originSha256  "77d7604645ff3a28b34d91023e497586af35fa74849c914378f858666a2b900e";
+            originSha256  "dc7869a494c8e333ed57af66fa4086592b32ac5330960750b5d2775030c9b6bc";
             release       Choupo-2608;
         }
         "parameters/NRTL/2Methyl1Propanol-benzene.dat"
@@ -50,6 +50,24 @@ propertyManifest
             computationalSha256 "b2961e21ea3b34caf7473bf18585b184d6a97e927dda712f951a45a301ced9c8";
             origin        "data/standards/parameters/NRTL/2Methyl1Propanol-benzene.dat";
             originSha256  "04b32a8f0788e618598aef6f575f337e1f969782c252f7343d98ede1fa6840ea";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/2Methyl1Propanol-benzene.dat"
+        {
+            type          imported;
+            sha256        "a7b886170df2ce954a0352b6fb36ec65f0b88c258c32a4bd1e5fee8976113245";
+            computationalSha256 "c48ad264c159c545adc34e2108024bd65a146818a072c60d6181286f8fc8f940";
+            origin        "data/standards/parameters/UNIQUAC/2Methyl1Propanol-benzene.dat";
+            originSha256  "3b53206f33d23b91a6728c247a6718ed982a70fcf7565501f1754ccfa5cf262c";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Methyl1Propanol-benzene.dat"
+        {
+            type          imported;
+            sha256        "47b1d2dee8b16a1148cea6fc24fbfa324da252eb66ee8baa46435fd4b0ec4dc0";
+            computationalSha256 "292cd2d2d63e7ff38f8de2f6b83b3d7a19d37fcc07dbedf0d34596256da6c359";
+            origin        "data/standards/parameters/Wilson/2Methyl1Propanol-benzene.dat";
+            originSha256  "779fe505fb81da83a0799f3fc10dc314ea83e531364953a72a4a9a332ba93574";
             release       Choupo-2608;
         }
     }

@@ -114,4 +114,188 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nUndecane-pXylene.a_ij  -25.1982797975;
+        equilibrium.liquid.activityModel.binaryParameters.nUndecane-pXylene.a_ji  27.3613140929;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "049c41b7cbf4aa2a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nUndecane-pXylene-bubble-j.fluid.2013.10.012.dat";
+            doi       "10.1016/j.fluid.2013.10.012";
+            sha256    "7a5ba087ea559e2e0781bb446121a973550e2da386cc41d0a566c6e368f58824";
+            provenance measured;
+            archiveFile "j.fluid.2013.10.012.xml";
+            system    "nUndecane + pXylene";
+            pressure  "10000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.039; max 0.967; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nUndecane-pXylene.a_ij  -5.07565342588;
+        equilibrium.liquid.activityModel.binaryParameters.nUndecane-pXylene.a_ji  6.34309815194;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "049c41b7cbf4aa2a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nUndecane-pXylene-bubble-j.fluid.2013.10.012.dat";
+            doi       "10.1016/j.fluid.2013.10.012";
+            sha256    "7a5ba087ea559e2e0781bb446121a973550e2da386cc41d0a566c6e368f58824";
+            provenance measured;
+            archiveFile "j.fluid.2013.10.012.xml";
+            system    "nUndecane + pXylene";
+            pressure  "10000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.039; max 0.967; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nUndecane-pXylene.A_ij  852.246213469;
+        equilibrium.liquid.activityModel.binaryParameters.nUndecane-pXylene.A_ji  -193.339885979;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "049c41b7cbf4aa2a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nUndecane-pXylene-bubble-j.fluid.2013.10.012.dat";
+            doi       "10.1016/j.fluid.2013.10.012";
+            sha256    "7a5ba087ea559e2e0781bb446121a973550e2da386cc41d0a566c6e368f58824";
+            provenance measured;
+            archiveFile "j.fluid.2013.10.012.xml";
+            system    "nUndecane + pXylene";
+            pressure  "10000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.039; max 0.967; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nUndecane-pXylene.A_ij  852.246203929;
+        equilibrium.liquid.activityModel.binaryParameters.nUndecane-pXylene.A_ji  -193.339880808;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "049c41b7cbf4aa2a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nUndecane-pXylene-bubble-j.fluid.2013.10.012.dat";
+            doi       "10.1016/j.fluid.2013.10.012";
+            sha256    "7a5ba087ea559e2e0781bb446121a973550e2da386cc41d0a566c6e368f58824";
+            provenance measured;
+            archiveFile "j.fluid.2013.10.012.xml";
+            system    "nUndecane + pXylene";
+            pressure  "10000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.039; max 0.967; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

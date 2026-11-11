@@ -134,4 +134,116 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-dimethylSulfoxide.A_ij  2213.52304022;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-dimethylSulfoxide.A_ji  1972.13564577;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "51f17cfb049204b3";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-dimethylSulfoxide-bubble-je100033s.dat";
+            doi       "10.1021/je100033s";
+            sha256    "63d0af97a2dfe7caf79d808b7e73911ea1011fdd1db317ad05e24ef2f49d86ae";
+            provenance measured;
+            archiveFile "je100033s.xml";
+            system    "acetonitrile + dimethylSulfoxide";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-dimethylSulfoxide-bubble-je400531a.dat";
+            doi       "10.1021/je400531a";
+            sha256    "edd47a0f561183a4e83930823356df31104086f2203e1fce79bd027d5848225e";
+            provenance measured;
+            archiveFile "je400531a.xml";
+            system    "acetonitrile + dimethylSulfoxide";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0295; max 0.97; n 17; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-dimethylSulfoxide.A_ij  2213.52300051;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-dimethylSulfoxide.A_ji  1972.13566124;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "51f17cfb049204b3";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-dimethylSulfoxide-bubble-je100033s.dat";
+            doi       "10.1021/je100033s";
+            sha256    "63d0af97a2dfe7caf79d808b7e73911ea1011fdd1db317ad05e24ef2f49d86ae";
+            provenance measured;
+            archiveFile "je100033s.xml";
+            system    "acetonitrile + dimethylSulfoxide";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-dimethylSulfoxide-bubble-je400531a.dat";
+            doi       "10.1021/je400531a";
+            sha256    "edd47a0f561183a4e83930823356df31104086f2203e1fce79bd027d5848225e";
+            provenance measured;
+            archiveFile "je400531a.xml";
+            system    "acetonitrile + dimethylSulfoxide";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0295; max 0.97; n 17; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "609982974d40f8fcc1e875124ae6d02f50251fab793b3bef82e008e04b66815b";
             release       Choupo-2608;
         }
+        "parameters/Wilson/monochlorobenzene-trichloroethylene.dat"
+        {
+            type          imported;
+            sha256        "6402edc9e15e08631dfcea54098e71dff922061fb3fad7e714ca4c3524b07ac2";
+            computationalSha256 "6ea9e30a2dc669468c9fa58d2ee05b90e13acb5f206022efd43ae20a1651b2a3";
+            origin        "data/standards/parameters/Wilson/monochlorobenzene-trichloroethylene.dat";
+            originSha256  "ed64408eaaffa558b7d3a23a48d0ceeecf97dddb0943f0f3ac3264e5c09e180f";
+            release       Choupo-2608;
+        }
     }
 }

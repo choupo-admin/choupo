@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "bbae1fcb3da3508b3e483394d7fd6d179e34fe2b38d15f4da46c4f39e7a7b25a";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diethyleneGlycol-ethyleneGlycol.dat"
+        {
+            type          imported;
+            sha256        "12efc1c2443a4bd536166546a9332eccf03fe44084418937e79f59d525a3633e";
+            computationalSha256 "905ad6b713838a80beea3118c76905e57ce2768eefd892219b2ce65402e719a9";
+            origin        "data/standards/parameters/Wilson/diethyleneGlycol-ethyleneGlycol.dat";
+            originSha256  "6bba5d96e5d2b54e3db24fe5b27ceee8599c027759f2c16fceec3c3b6ecac1a2";
+            release       Choupo-2608;
+        }
     }
 }

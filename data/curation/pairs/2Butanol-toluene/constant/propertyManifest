@@ -28,19 +28,19 @@ propertyManifest
         "components/2Butanol.dat"
         {
             type          imported;
-            sha256        "e50417c9ddeaeb5527166cf726410485df839fdb613b8555aa2b8958be5a5c46";
-            computationalSha256 "ad0f4e4cb272e208c3a8ee83b570fe72b60cd9ab1b2dd9a7d6011dbd28c4995b";
+            sha256        "1595f49de30edfac85305b324b1d45e6fc32514fb2f5c3102e1da25064e57de0";
+            computationalSha256 "094b9b7676472cb8ed2d135265cc88c5c65283778ec3ddfec01877bdc50a3057";
             origin        "data/standards/components/2Butanol.dat";
-            originSha256  "8c6ea94875403bbbd569f6facd5fdaefdcc5aee732ba499696802675d675202a";
+            originSha256  "f9a1e64e1b7104dbaa4e9a541716a88d08af19be38f80885c81d7df98640c91f";
             release       Choupo-2608;
         }
         "components/toluene.dat"
         {
             type          imported;
-            sha256        "025c441842aa1728935905ed8dfa50db5a6405ee082618c11673f665596d4911";
-            computationalSha256 "f66debfbcd493c4c7c4636809e784a1e07a6c482c3baed13ba34dce12ae63f79";
+            sha256        "5fb900674321baa67135bfeb2c8f80e63d9af183c35f1615477d751b4299f14b";
+            computationalSha256 "55e1e2986dd1c3fc08c951e842a86b062ee6a7bfbc1e1317387e69149a139e36";
             origin        "data/standards/components/toluene.dat";
-            originSha256  "fe5cb21ba09cf44b41de252f6a5a5dd21b6803fcd40666f6fed8d9de8e68563a";
+            originSha256  "ad1533cb0d94caade355d7149fd88ee1ad07c945f5d4c85f4bcce925766250b9";
             release       Choupo-2608;
         }
         "parameters/NRTL/2Butanol-toluene.dat"
@@ -50,6 +50,24 @@ propertyManifest
             computationalSha256 "0037387bde609f581a49014d377a2f4cc9d88ef1c03d18b6d6f3fb0c8a13f963";
             origin        "data/standards/parameters/NRTL/2Butanol-toluene.dat";
             originSha256  "4b4b03d08130b15a8ce9ec3cee4c2e79636c7026f3c2cfd763c9f8eff0f6d762";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/2Butanol-toluene.dat"
+        {
+            type          imported;
+            sha256        "9611c2f650ef69ccdab2ad6560b247c06e9b0c6abc68b1b83f2daeffbdfa99c4";
+            computationalSha256 "e5029e25c84789e4789c7263668cd29304b93b60cbb1c3c89d60797323cfe41a";
+            origin        "data/standards/parameters/UNIQUAC/2Butanol-toluene.dat";
+            originSha256  "8c7e124d786d2c40f4e68d237759f686c6f8d613134f74f55b0b63ce22bcf6d7";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Butanol-toluene.dat"
+        {
+            type          imported;
+            sha256        "5c59a4a55cc7df35740fd2e7bf91fc093e6e72fd86d070788c7c206b5bbe44b7";
+            computationalSha256 "380c2ad85839f09b97bcba3683da083892d2b51a93f19d2d744f65c4c6afe780";
+            origin        "data/standards/parameters/Wilson/2Butanol-toluene.dat";
+            originSha256  "6c3db5fd03ade02e0bf2bc36a4f62d778258541c0c6eb54d765048f9205cf71f";
             release       Choupo-2608;
         }
     }

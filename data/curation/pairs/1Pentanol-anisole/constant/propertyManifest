@@ -28,10 +28,10 @@ propertyManifest
         "components/1Pentanol.dat"
         {
             type          imported;
-            sha256        "67c0add32a0365f5e7b1669e442fce34ca1fab7728982864212f471cea149ff4";
-            computationalSha256 "ef54b796ae70f47722ea40f25d897e9444289b0fc474d4d27a6ca111785c6a18";
+            sha256        "86c4addc505252ed263f53c07ca94ef9a158e34bfb5c32e992323eaa0c8df1d3";
+            computationalSha256 "831e21638f9c40c212865247a7342ab9080b1d897b9bece0cd5eaa0bd9f394c3";
             origin        "data/standards/components/1Pentanol.dat";
-            originSha256  "b5affaac9c1c791eb783bfdfc0669a3e8bf9a28e54efc09cbc866c5362af548c";
+            originSha256  "1b70bde782f9005b3b1776f286a59b76191371714b98aa89a8976851a2d0020a";
             release       Choupo-2608;
         }
         "components/anisole.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "2b833e5a7f959b69febbfd094e8114b74f9c667e25495a91186dcf0c9fdb946a";
             origin        "data/standards/parameters/NRTL/1Pentanol-anisole.dat";
             originSha256  "ff49ce3342e50fa4a0e1cd8003b82389a16399584a84a3b4fc66631031ea2e0c";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Pentanol-anisole.dat"
+        {
+            type          imported;
+            sha256        "a80a88b0cbc9670d6cf07a0f369cecbd09ae9419f90bfeae35fb2f44c53afba4";
+            computationalSha256 "e9be36d032fa7063efe0ce3c2852d4f3761d9b14cff0d893bf1da14f6ca62ed0";
+            origin        "data/standards/parameters/Wilson/1Pentanol-anisole.dat";
+            originSha256  "9d10811a1cd79f818a850574bf57cb6fc02e301ebbb87da602afce690424f0de";
             release       Choupo-2608;
         }
     }

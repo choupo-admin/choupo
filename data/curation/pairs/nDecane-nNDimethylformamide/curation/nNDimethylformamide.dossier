@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-nDecane.A_ij  3874.03573016;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-nDecane.A_ji  4703.14083966;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "68cc139e676f147c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nNDimethylformamide-nDecane-bubble-j.fluid.2007.02.026.dat";
+            doi       "10.1016/j.fluid.2007.02.026";
+            sha256    "adac8772cff4f48919a62799e8a474272f8eaf98cd139cb8e6a91713f60cb30b";
+            provenance measured;
+            archiveFile "j.fluid.2007.02.026.xml";
+            system    "nNDimethylformamide + nDecane";
+            pressure  "95100.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.2192; max 0.9578; n 16; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-nDecane.A_ij  3874.03573013;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-nDecane.A_ji  4703.14084007;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "68cc139e676f147c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nNDimethylformamide-nDecane-bubble-j.fluid.2007.02.026.dat";
+            doi       "10.1016/j.fluid.2007.02.026";
+            sha256    "adac8772cff4f48919a62799e8a474272f8eaf98cd139cb8e6a91713f60cb30b";
+            provenance measured;
+            archiveFile "j.fluid.2007.02.026.xml";
+            system    "nNDimethylformamide + nDecane";
+            pressure  "95100.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.2192; max 0.9578; n 16; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

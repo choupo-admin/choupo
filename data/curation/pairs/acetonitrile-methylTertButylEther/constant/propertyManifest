@@ -37,10 +37,10 @@ propertyManifest
         "components/methylTertButylEther.dat"
         {
             type          imported;
-            sha256        "3ab4fc9f9327983ed432deddaaf6061975e40ac5921def969bbda74ee79584d8";
-            computationalSha256 "b1298108ed625d2ded4bbb653cacef55bab384b4f0fbcebe9718c8c3de5d157a";
+            sha256        "599fe8b76bf9dcefb9a049da27ad814b20f55ab6bd0e6fa77a8db9417dc52a31";
+            computationalSha256 "75223204b22e9d5f8a55a8f889fcae0d4fccc0e5f04a7c80bb00403b64fef00b";
             origin        "data/standards/components/methylTertButylEther.dat";
-            originSha256  "956b9c6cdfcb9eeaa8430150111c3743638477d7171c7b4271a1881802b0f0d5";
+            originSha256  "7929424decc80d01a8290f7f1ef09beb99ad05068b4deca3c673a4cb8f5f5c64";
             release       Choupo-2608;
         }
         "parameters/NRTL/acetonitrile-methylTertButylEther.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "6f643e9db78d9024b67ff597a6b833a2575c85d4dc50173b06c58860c0151a4c";
             origin        "data/standards/parameters/NRTL/acetonitrile-methylTertButylEther.dat";
             originSha256  "baf4f4fdf446adf8071e4163330960d767b9cbaeab3d2afe423ccd18eca7fba9";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/acetonitrile-methylTertButylEther.dat"
+        {
+            type          imported;
+            sha256        "529842429a5eb2b5cf2c2a6f4daa246e055bf60f8ff1f2ce8cf6102e9b584439";
+            computationalSha256 "d21078f4ba0aed6cbc5a6b1465f67d7214aa367478e57c1631a448776e05957b";
+            origin        "data/standards/parameters/Wilson/acetonitrile-methylTertButylEther.dat";
+            originSha256  "db7cf4702afa7d3066210294e62f423a45395d0a0cd8f0f0bee1a165418b3a61";
             release       Choupo-2608;
         }
     }

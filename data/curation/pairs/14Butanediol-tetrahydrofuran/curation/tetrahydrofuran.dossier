@@ -112,4 +112,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-14Butanediol.A_ij  5322.13507745;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-14Butanediol.A_ji  -2218.08672781;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "64fd26201045f2bf";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/tetrahydrofuran-14Butanediol-bubble-acs.jced.7b00584.dat";
+            doi       "10.1021/acs.jced.7b00584";
+            sha256    "afab8c6467e07b453f9e7b12210b6a8fafc7f8efb80500ce6fbc236f1cb1d41d";
+            provenance measured;
+            archiveFile "acs.jced.7b00584.xml";
+            system    "tetrahydrofuran + 14Butanediol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0415; max 0.8004; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-14Butanediol.A_ij  5322.13513634;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-14Butanediol.A_ji  -2218.08673652;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "64fd26201045f2bf";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/tetrahydrofuran-14Butanediol-bubble-acs.jced.7b00584.dat";
+            doi       "10.1021/acs.jced.7b00584";
+            sha256    "afab8c6467e07b453f9e7b12210b6a8fafc7f8efb80500ce6fbc236f1cb1d41d";
+            provenance measured;
+            archiveFile "acs.jced.7b00584.xml";
+            system    "tetrahydrofuran + 14Butanediol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0415; max 0.8004; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

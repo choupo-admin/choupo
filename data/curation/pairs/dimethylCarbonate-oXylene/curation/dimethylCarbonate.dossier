@@ -134,4 +134,116 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-oXylene.A_ij  4790.79333684;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-oXylene.A_ji  -180.889554539;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9a25858dba17743a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/dimethylCarbonate-oXylene-bubble-acs.jced.9b00414.dat";
+            doi       "10.1021/acs.jced.9b00414";
+            sha256    "08859773e230d7e51409d5d329c037ea6ec178042d4602aca05aa5470b4ea6d5";
+            provenance measured;
+            archiveFile "acs.jced.9b00414.xml";
+            system    "dimethylCarbonate + oXylene";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/dimethylCarbonate-oXylene-bubble-acs.jced.7b00372.dat";
+            doi       "10.1021/acs.jced.7b00372";
+            sha256    "d7db373526dce14490ebc7cd7c42f771c4b2aae1013b5b3e8a930cd4d5a5a0a5";
+            provenance measured;
+            archiveFile "acs.jced.7b00372.xml";
+            system    "dimethylCarbonate + oXylene";
+            pressure  "93130.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0091; max 0.9459; n 24; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-oXylene.A_ij  4790.79334858;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-oXylene.A_ji  -180.889557753;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9a25858dba17743a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/dimethylCarbonate-oXylene-bubble-acs.jced.9b00414.dat";
+            doi       "10.1021/acs.jced.9b00414";
+            sha256    "08859773e230d7e51409d5d329c037ea6ec178042d4602aca05aa5470b4ea6d5";
+            provenance measured;
+            archiveFile "acs.jced.9b00414.xml";
+            system    "dimethylCarbonate + oXylene";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/dimethylCarbonate-oXylene-bubble-acs.jced.7b00372.dat";
+            doi       "10.1021/acs.jced.7b00372";
+            sha256    "d7db373526dce14490ebc7cd7c42f771c4b2aae1013b5b3e8a930cd4d5a5a0a5";
+            provenance measured;
+            archiveFile "acs.jced.7b00372.xml";
+            system    "dimethylCarbonate + oXylene";
+            pressure  "93130.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0091; max 0.9459; n 24; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

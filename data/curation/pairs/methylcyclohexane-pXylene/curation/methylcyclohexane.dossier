@@ -114,4 +114,188 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylcyclohexane-pXylene.a_ij  168.418308664;
+        equilibrium.liquid.activityModel.binaryParameters.methylcyclohexane-pXylene.a_ji  -125.353640004;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1982e0adf6f51638";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylcyclohexane-pXylene-bubble-je0342318.dat";
+            doi       "10.1021/je0342318";
+            sha256    "0492f83334fe3a1cc389cb995b0f7bdc5bd5685169051b34899c5c379d63324e";
+            provenance measured;
+            archiveFile "je0342318.xml";
+            system    "methylcyclohexane + pXylene";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.056; max 0.98; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylcyclohexane-pXylene.a_ij  168.418308257;
+        equilibrium.liquid.activityModel.binaryParameters.methylcyclohexane-pXylene.a_ji  -125.35363972;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1982e0adf6f51638";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylcyclohexane-pXylene-bubble-je0342318.dat";
+            doi       "10.1021/je0342318";
+            sha256    "0492f83334fe3a1cc389cb995b0f7bdc5bd5685169051b34899c5c379d63324e";
+            provenance measured;
+            archiveFile "je0342318.xml";
+            system    "methylcyclohexane + pXylene";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.056; max 0.98; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylcyclohexane-pXylene.A_ij  -797.035210385;
+        equilibrium.liquid.activityModel.binaryParameters.methylcyclohexane-pXylene.A_ji  1537.04045718;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1982e0adf6f51638";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylcyclohexane-pXylene-bubble-je0342318.dat";
+            doi       "10.1021/je0342318";
+            sha256    "0492f83334fe3a1cc389cb995b0f7bdc5bd5685169051b34899c5c379d63324e";
+            provenance measured;
+            archiveFile "je0342318.xml";
+            system    "methylcyclohexane + pXylene";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.056; max 0.98; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylcyclohexane-pXylene.A_ij  -797.035232841;
+        equilibrium.liquid.activityModel.binaryParameters.methylcyclohexane-pXylene.A_ji  1537.04048678;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1982e0adf6f51638";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylcyclohexane-pXylene-bubble-je0342318.dat";
+            doi       "10.1021/je0342318";
+            sha256    "0492f83334fe3a1cc389cb995b0f7bdc5bd5685169051b34899c5c379d63324e";
+            provenance measured;
+            archiveFile "je0342318.xml";
+            system    "methylcyclohexane + pXylene";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.056; max 0.98; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

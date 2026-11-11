@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-nPentane.A_ij  2873.67936029;
+        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-nPentane.A_ji  90.9906004091;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "86a5fe7d52be202f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylPropionate-nPentane-bubble-je4009415.dat";
+            doi       "10.1021/je4009415";
+            sha256    "c7eb83e2dc95e5a893713ee18fede2761c1385cf1fb4f90cc1cb6bfd32c3c0ac";
+            provenance measured;
+            archiveFile "je4009415.xml";
+            system    "methylPropionate + nPentane";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.023; max 0.997; n 33; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-nPentane.A_ij  2873.67936296;
+        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-nPentane.A_ji  90.9905974117;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "86a5fe7d52be202f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylPropionate-nPentane-bubble-je4009415.dat";
+            doi       "10.1021/je4009415";
+            sha256    "c7eb83e2dc95e5a893713ee18fede2761c1385cf1fb4f90cc1cb6bfd32c3c0ac";
+            provenance measured;
+            archiveFile "je4009415.xml";
+            system    "methylPropionate + nPentane";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.023; max 0.997; n 33; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

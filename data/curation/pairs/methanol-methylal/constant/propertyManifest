@@ -37,10 +37,10 @@ propertyManifest
         "components/methylal.dat"
         {
             type          imported;
-            sha256        "fbdb96d75a57ee188d05ac1ac195896a65ee14695b565d4994b7acd8590b493e";
-            computationalSha256 "df2b77bd422abfabe26846550054b99c444393f5a8498b4003ffd4913a78b73f";
+            sha256        "d667a7e3c3e17feee4a41091f39d89641ae224d6b87f6068841f3fa494fb988a";
+            computationalSha256 "7bd87a716621cb88e4512f463a4a0259d8049ddb5999b86ff2bf9ddc6fb783f5";
             origin        "data/standards/components/methylal.dat";
-            originSha256  "10ac8d72145f06bc16bb46213fc74296d6f1c69a99bfeab6bf6e44a020fc2b51";
+            originSha256  "01fce124ec237cfef4f66da52485d13765f66671a156cb617c3ee79d7ad01e97";
             release       Choupo-2608;
         }
         "parameters/NRTL/methanol-methylal.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/methanol-methylal.dat"
+        {
+            type          imported;
+            sha256        "8d9de9223fec8d002db3a1004efc891cc57e9f0289532a2410075dad7d972c9b";
+            computationalSha256 "95e4d2dc9a94637f2945be2ee9aaa980170705a45739621970de91b98eeae693";
+            origin        "data/standards/parameters/UNIQUAC/methanol-methylal.dat";
+            originSha256  "1cbdf5d7fd8aacaf5314322a36f7452d8a1adc0eb8c00fdc2be206ee1b9c11a7";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/methanol-methylal.dat"
+        {
+            type          imported;
+            sha256        "8c7ab407ee54c64d2d3ffeb52cb07dc035193b50a2bc549026360132a390c848";
+            computationalSha256 "9acb0ee1ab65e334315eeca76897e5405c4ed17e9375b1bbafc59b8c15b69323";
+            origin        "data/standards/parameters/Wilson/methanol-methylal.dat";
+            originSha256  "357ab46270ce42bd6d207c534235ececcfb46ef8f0573093bacd42eb4f854839";
             release       Choupo-2608;
         }
     }

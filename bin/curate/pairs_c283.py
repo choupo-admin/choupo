@@ -679,7 +679,7 @@ def own_promotion(c1, c2, case_rel):
     """The catalogue record THIS pipeline promoted from THIS case, or None.
     A graded re-run regrades it in place; any other record of the pair is
     never overwritten."""
-    have = cc.existing_records(c1, c2)
+    have = cc.existing_records(c1, c2, model="NRTL")
     if len(have) != 1:
         return None
     p = ROOT / have[0]
@@ -693,6 +693,11 @@ def own_promotion(c1, c2, case_rel):
 def normalise(t):
     t = re.sub(r"@@RESULT-BEGIN@@.*?@@RESULT-END@@", "", t, flags=re.S)
     t = re.sub(r"@@OUTLIERS-BEGIN@@.*?@@OUTLIERS-END@@", "", t, flags=re.S)
+    #  DEV.md 4c C294: the other models' declaration, ops and result are a
+    #  later declaration on top of the NRTL one, never part of it.
+    t = re.sub(r"  @@MODELS-BEGIN@@.*?@@MODELS-RESULT-END@@\n\n", "", t, flags=re.S)
+    t = re.sub(r"    // @@C294-OPS-BEGIN@@.*?// @@C294-READBACK-END@@\n", "", t, flags=re.S)
+    t = re.sub(r"    // @@C294-OPS-BEGIN@@.*?// @@C294-OPS-END@@\n", "", t, flags=re.S)
     return re.sub(r"\n\s*discard  \([^)]*\);[^\n]*", "", t)
 
 
@@ -1007,7 +1012,7 @@ def promote(a, b):
         refuse(f"{cc.label(case)} carries {len(recs)} NRTL records; expected its one")
     rp = recs[0]
     text = rp.read_text()
-    have = cc.existing_records(a, b)
+    have = cc.existing_records(a, b, model="NRTL")
     if have:
         refuse(f"a catalogue record for {a} + {b} already exists ({', '.join(have)})")
     cur = crp.block(crp.strip_comments(text), "curation") or ""
@@ -1176,8 +1181,11 @@ def main(argv):
                    help="with --run/--promote: walk the C283 cases themselves "
                         "(promoted ones included) instead of the ranked queue")
     q.add_argument("--only", nargs="*", help="with --graded: these pairs only (record stems, e.g. acetone-methanol)")
+    q.add_argument("--models", action="store_true",
+                   help="DEV.md 4c C294: with --declare / --run / --promote, UNIQUAC and Wilson "
+                        "on every pair case's own NRTL evidence and kept points")
     q.add_argument("--jobs", type=int, default=1,
-                   help="with --graded --run: run up to N cases at once (cap 2), each a "
+                   help="with --graded --run: run up to N cases at once (cap 4), each a "
                         "separate process writing only inside its own case directory")
     q.add_argument("--no-commit", action="store_true")
     q.add_argument("--top", type=int, default=60)
@@ -1208,6 +1216,8 @@ def main(argv):
 
 
 def batch(a):
+    if a.models:
+        return batch_models(a)
     if a.redeclare or a.graded:
         return batch_graded(a)
     allc = candidates(a.pmax)
@@ -1287,7 +1297,10 @@ def batch(a):
     return 0
 
 
-JOBS_CAP = 2   # the laptop's budget (CLAUDE.md rule 4): one heavy job, cores left to Vitor
+JOBS_CAP = 4   # the architect, 2026-11-11 (C294): 10 cores, ~5 idle, 7 GB free; one pair-case fit
+#  process measured with /usr/bin/time -v at 14 MB peak (choupoProps, a whole P-x case,
+#  2.7 s) and its python driver at 32 MB -- memory is not the limit here; check `free -g`
+#  before a batch and drop to --jobs 2 below 3 GB available (CLAUDE.md rule 4)
 
 
 def run_parallel(a, cases):
@@ -1422,6 +1435,811 @@ def batch_graded(a):
                 "header as EARLIER."])
         cc.say(f"committed the declarations: {cc.git(['rev-parse', '--short', 'HEAD']).strip()}")
     return 0
+
+
+# --------------------------------------------------------------------------
+#  DEV.md 4c C294: THE OTHER ACTIVITY MODELS, ON THE SAME EVIDENCE
+# --------------------------------------------------------------------------
+#  Vitor, 2026-11-10: "Mas esse ajuste e rapido e devia ter sido feito!
+#  Eventualmente ate pode melhorar o ajuste!"  Every pair case this module
+#  (C283/C284/C290, bubble temperatures) or bin/curate/pairs_px.py (C291,
+#  bubble pressures) wrote fits UNIQUAC and Wilson TOO, in the SAME case, on
+#  the SAME datasets and the SAME kept points:
+#
+#    * the outlier discard is decided ONCE, on the NRTL least-squares stage,
+#      and reused -- each new fit op is the case's own `fit_nrtl` op copied
+#      verbatim (evidence, discards, objective, residual, weighting, options),
+#      with only its parameters, its `thermo {}` fragment and its outputs
+#      changed.  A model judged on points another model chose to drop is
+#      judged on the same footing as the NRTL fit, which is the comparison
+#      C294 asks for (never a second outlier pass that would let each model
+#      discard what it fits worst);
+#    * the fit op carries the model through its own `thermo {}` fragment
+#      (PropertyOperation::authoredV2For, the one ThermoOverride merge), so
+#      the case's system stays the NRTL one its declaration committed;
+#    * UNIQUAC, TWO parameters (the NRTL default's count): tau_ij =
+#      exp(-a_ij/T), a_ij and a_ji in K fitted, b and c (the T-linear and T^2
+#      terms of src/thermo/activityCoefficient/UNIQUAC.cpp) fixed at 0 -- the
+#      constant interaction energy, so the temperature dependence is 1/T as in
+#      NRTL's b/T.  r and q are each component's own record (tabulated, or the
+#      sum of its UNIFAC groups, bin/curate/uniquac_rq_from_groups.py); a
+#      component with neither is reported and UNIQUAC is not fitted;
+#    * Wilson, TWO parameters A_ij, A_ji (J/mol), Lambda_ij = (V_j/V_i)
+#      exp(-A_ij/RT), V the records' own Vliq.  Wilson CANNOT represent two
+#      liquids, so where the NRTL fit of the same evidence splits the liquid
+#      inside its validity span (curation `oneLiquid false`) Wilson is NOT
+#      fitted and the case says why; a component with no Vliq likewise;
+#    * each model gets its OWN record (constant/parameters/<MODEL>/<stem>.dat,
+#      `fittedInCase` the same case), its own grade on the kind's limits
+#      (1 / 2 / 4 K or 5 / 10 / 20 %), its own arm-(f) one-liquid test, and the
+#      C300 rules: `fitGradeBasis inSample`, the cap, `review { by none; }`,
+#      and `severe` is not promoted.
+#  The residuals of the three models are published side by side, never used
+#  to choose one for the student.
+MODELS = ("UNIQUAC", "Wilson")
+MODEL_MARK = "THE OTHER ACTIVITY MODELS (DEV.md 4c C294)"
+MODELS_RULE = "DEV.md 4c C294 (the NRTL case's own evidence and kept points, another activity model)"
+MODELS_PROMOTED_BY = "bin/choupo-curate pairs --models --promote"
+OPS_BEGIN = "    // @@C294-OPS-BEGIN@@ -- UNIQUAC and Wilson on the NRTL fit's own evidence (DEV.md 4c C294)\n"
+OPS_END = "    // @@C294-OPS-END@@\n"
+RB_BEGIN = "    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it\n"
+RB_END = "    // @@C294-READBACK-END@@\n"
+MSPEC = {
+    #  model: (keys, unit, bounds, start1, start2, inline extras)
+    "UNIQUAC": (("a_ij", "a_ji"), "K", (-3000, 3000), (0, 0), (300, -150)),
+    "Wilson": (("A_ij", "A_ji"), "J/mol", (-30000, 30000), (0, 0), (4000, -2000)),
+}
+EQUATION = {
+    "UNIQUAC": ("  EQUATION: UNIQUAC, tau_ij = exp(-(a_ij + b_ij T + c_ij T^2) / T) [a in K],\n"
+                "  Abrams & Prausnitz (src/thermo/activityCoefficient/UNIQUAC.cpp); r and q\n"
+                "  each component's own record.  b_ij = b_ji = c_ij = c_ji = 0 FIXED, not\n"
+                "  fitted: two parameters a_ij, a_ji (DEV.md 4c C294).\n"),
+    "Wilson": ("  EQUATION: Wilson, Lambda_ij = (V_j / V_i) exp(-A_ij / (R T)) [A in J/mol],\n"
+               "  V the components' own Vliq (src/thermo/activityCoefficient/Wilson.cpp).\n"
+               "  Two parameters A_ij, A_ji (DEV.md 4c C294).  Wilson cannot represent\n"
+               "  two liquids.\n"),
+}
+
+
+def case_kind(case):
+    t = (case / "system" / "propsDict").read_text()
+    if MARK in t:
+        return "tx"
+    import pairs_px as px
+    if px.MARK in t:
+        return "px"
+    return None
+
+
+def nrtl_op(t):
+    """The case's `fit_nrtl` op, verbatim (from its `{` line to its `}` line)."""
+    s = t.index("    {\n        name        fit_nrtl;\n")
+    e = t.index("    {\n        name        fit_nrtl_start2;\n", s)
+    return t[s:e]
+
+
+def op_pair(op):
+    m = re.search(r"binaryParameters\.(\w+)-(\w+)\.b_ij", op)
+    return m.group(1), m.group(2)
+
+
+def nrtl_record(case):
+    """(path, text) of the NRTL record this case's fit produced: its own
+    case-local record, or the catalogue's sealed copy once promoted."""
+    rps = list((case / "constant" / "parameters" / "NRTL").glob("*.dat"))
+    if len(rps) != 1:
+        refuse(f"{cc.label(case)} carries {len(rps)} NRTL records; expected its one")
+    return rps[0], rps[0].read_text()
+
+
+def component_text(case, comp):
+    p = case / "constant" / "components" / f"{comp}.dat"
+    if not p.exists():
+        p = COMP / f"{comp}.dat"
+    return p.read_text()
+
+
+def has_rq(text):
+    return re.search(r"(?m)^uniquac\s*\{", crp.strip_comments(text)) is not None
+
+
+def vliq(text):
+    m = re.search(r"^\s*Vliq\s+([0-9.eE+-]+)", crp.strip_comments(text), re.M)
+    return float(m.group(1)) if m else 0.0
+
+
+def eligibility(case, c1, c2):
+    """{model: None | the reason it is NOT fitted} -- read from the
+    component RECORDS in the standards (what a re-seal puts in the case) and
+    the NRTL fit's own arm (f) verdict."""
+    out = {}
+    std = {c: (COMP / f"{c}.dat").read_text() for c in (c1, c2)}
+    miss = [c for c in (c1, c2) if not has_rq(std[c])]
+    out["UNIQUAC"] = (None if not miss else
+                      f"{' and '.join(miss)} carr{'ies' if len(miss) == 1 else 'y'} no UNIQUAC r and q "
+                      "(no tabulated value, and no UNIFAC groups to sum them from, "
+                      "bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; "
+                      "nothing is estimated silently")
+    _, nt = nrtl_record(case)
+    cur = crp.block(crp.strip_comments(nt), "curation") or ""
+    noV = [c for c in (c1, c2) if vliq(std[c]) <= 0.0]
+    if noV:
+        out["Wilson"] = (f"{' and '.join(noV)} carr{'ies' if len(noV) == 1 else 'y'} no liquid "
+                         "molar volume Vliq, which Wilson's Lambda needs -- Wilson is not fitted")
+    elif crp.word(cur, "oneLiquid") != "true":
+        out["Wilson"] = ("the NRTL fit of this very evidence SPLITS the liquid inside its "
+                         "validity span (curation oneLiquid false, arm f); Wilson cannot "
+                         "represent two liquids, so a Wilson fit here would hide the split "
+                         "-- Wilson is not fitted")
+    else:
+        out["Wilson"] = None
+    return out
+
+
+def model_op(op, model, name, c1, c2, start, outputs):
+    """The NRTL op `op` with only its parameters, thermo fragment and outputs
+    changed: the evidence, discards, objective, residual and options stay
+    byte-identical (the discard decided once, on NRTL, C294)."""
+    keys, _, (lo, hi), _, _ = MSPEC[model]
+    path = f"equilibrium.liquid.activityModel.binaryParameters.{c1}-{c2}"
+    o = op.replace("        name        fit_nrtl;\n", f"        name        {name};\n", 1)
+    par = "".join(f"            {{ path  {path}.{k};  initial {s};  min {lo};  max {hi}; }}\n"
+                  for k, s in zip(keys, start))
+    o = re.sub(r"        parameters\n        \(\n.*?\n        \);\n",
+               lambda m: "        parameters\n        (\n" + par + "        );\n\n"
+               "        thermo   // the model, as a fragment of the case's system (C294)\n"
+               "        {\n"
+               "            equilibrium\n            {\n                liquid\n                {\n"
+               "                    activityModel\n                    {\n"
+               f"                        model {model};\n"
+               "                        binaryParameters   // the FIT'S starting point\n"
+               "                        {\n"
+               f"                            {c1}-{c2} {{ i {c1}; j {c2}; "
+               + " ".join(f"{k} 0;" for k in keys) + " }\n"
+               "                        }\n                    }\n"
+               "                    standardState pureLiquid;\n"
+               "                }\n            }\n        }\n", o, count=1, flags=re.S)
+    o = re.sub(r"(discard  \([^)]*\);)[^\n]*",
+               r"\1   // the NRTL fit's outliers, reused: decided once (C294)", o)
+    o = re.sub(r"        output\n        \{\n.*?\n        \}\n",
+               lambda m: "        output\n        {\n" + "".join(
+                   f"            {k:<10} {v};\n" for k, v in outputs) + "        }\n",
+               o, count=1, flags=re.S)
+    if f"name        {name};" not in o or "thermo   // the model" not in o:
+        refuse(f"the fit_nrtl op could not be carried to {name} -- its layout moved")
+    return o
+
+
+def model_ops(case, el):
+    t = (case / "system" / "propsDict").read_text()
+    op = nrtl_op(t)
+    c1, c2 = op_pair(op)
+    stem = "-".join(sorted((c1, c2)))
+    body = ""
+    for m in MODELS:
+        if el[m] is not None:
+            continue
+        low = m.lower()
+        _, _, _, s1, s2 = MSPEC[m]
+        body += model_op(op, m, f"fit_{low}", c1, c2, s1,
+                         [("fit_log", f"fit_history_{low}.csv"), ("parity", f"parity_{low}.csv"),
+                          ("proposal", f"{stem}.{m}.proposal.dat")])
+        body += model_op(op, m, f"fit_{low}_start2", c1, c2, s2,
+                         [("parity", f"parity_{low}_start2.csv")])
+    return body
+
+
+def ops_end(t):
+    """Index of the `);` that closes the operations list."""
+    k = t.find("\n);\n\nexperimental\n(")
+    if k < 0:
+        k = t.rstrip().rindex("\n);")
+    return k + 1
+
+
+def models_decl_text(el, kind):
+    lim = (f"{GRADE_K[0]:g} / {GRADE_K[1]:g} / {GRADE_K[2]:g} K (max |T_model - T|)" if kind == "tx"
+           else f"5 / 10 / 20 % (max |P_model - P|/P)")
+    lines = (f"{MODEL_MARK}, declared before their fits ran.  The SAME datasets and the "
+             "SAME kept points as fit_nrtl: each op below is fit_nrtl copied verbatim -- "
+             "evidence, discards, objective, residual, weighting, options -- with only its "
+             "parameters, its `thermo {}` fragment (the model) and its outputs changed; the "
+             "outlier discard was decided ONCE, on the NRTL least-squares stage, and is "
+             "reused, never re-decided per model.  UNIQUAC: two parameters a_ij, a_ji (K), "
+             "tau_ij = exp(-a_ij/T), b = c = 0 fixed (the NRTL default's count; temperature "
+             "dependence 1/T), r and q each component's own record.  Wilson: two parameters "
+             "A_ij, A_ji (J/mol), Lambda_ij = (V_j/V_i) exp(-A_ij/RT), V the records' Vliq.  "
+             "Two starts each.  Each model gets its own record (constant/parameters/<MODEL>/), "
+             f"its own grade at {lim}, its own one-liquid test (arm f), `fitGradeBasis "
+             "inSample`, the C300 cap and `review { by none; }`; a severe or refused grade, "
+             "or a split, is not promoted.  The three in-sample residuals are published side "
+             "by side, never used to choose a model for the student.")
+    for m in MODELS:
+        lines += f"  {m}: " + ("FITTED." if el[m] is None else "NOT FITTED -- " + el[m] + ".")
+    return ("  @@MODELS-BEGIN@@\n" + cc.wrap(lines) + "\n  @@MODELS-END@@\n\n"
+            "  @@MODELS-RESULT-BEGIN@@\n  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.\n"
+            "  @@MODELS-RESULT-END@@\n\n")
+
+
+def models_declare(case):
+    """Write the C294 declaration into the case (header paragraph + ops).
+    Returns the file touched, or None when declared already."""
+    pd = case / "system" / "propsDict"
+    t = pd.read_text()
+    if MODEL_MARK in t:
+        return None
+    kind = case_kind(case)
+    if kind is None:
+        refuse(f"{cc.label(case)} was written by neither pair tool (C283/C291) -- not a C294 case")
+    op = nrtl_op(t)
+    c1, c2 = op_pair(op)
+    el = eligibility(case, c1, c2)
+    k = t.index("  @@RESULT-BEGIN@@\n")
+    t = t[:k] + models_decl_text(el, kind) + t[k:]
+    body = model_ops(case, el) if any(v is None for v in el.values()) else ""
+    e = ops_end(t)
+    t = t[:e] + OPS_BEGIN + body + OPS_END + t[e:]
+    pd.write_text(t)
+    return pd
+
+
+def declared_models(case):
+    t = (case / "system" / "propsDict").read_text()
+    return [m for m in MODELS if f"name        fit_{m.lower()};" in t]
+
+
+def remove_op(t, name):
+    """The propsDict text without op `name` (its `{` line to the next op or
+    the C294 end marker)."""
+    s = t.index(f"    {{\n        name        {name};\n")
+    e = min(k for k in (t.find("    {\n        name", s + 10), t.find(OPS_END, s)) if k > 0)
+    return t[:s] + t[e:]
+
+
+def seal_without_models(case):
+    """Re-seal the case on the catalogue's records BEFORE its model fits run.
+    bin/choupo-import runs the case to prove the seal moves no number, and a
+    declared fit that does not converge would fail that run; so the C294 ops
+    are left out for the seal and put back after (the seal claims records,
+    never the propsDict)."""
+    pd = case / "system" / "propsDict"
+    t0 = pd.read_text()
+    t = re.sub(re.escape(OPS_BEGIN) + r".*?" + re.escape(OPS_END), OPS_BEGIN + OPS_END, t0, flags=re.S)
+    t = re.sub(re.escape(RB_BEGIN) + r".*?" + re.escape(RB_END), "", t, flags=re.S)
+    pd.write_text(t)
+    try:
+        cc.seal(case)
+    finally:
+        pd.write_text(t0)
+
+
+def model_fit_only(case, models):
+    """Run the fit ops of each model (both starts) in a scratch copy; return
+    (rc, output, {model: (rows, proposal text or None)}, {op: diagnostics})."""
+    work = Path(tempfile.mkdtemp(prefix="choupo-curate-c294-"))
+    try:
+        sc = work / case.name
+        shutil.copytree(case, sc, ignore=shutil.ignore_patterns("expected"))
+        t = (sc / "system" / "propsDict").read_text()
+        ops = ""
+        for m in models:
+            s = t.index(f"    {{\n        name        fit_{m.lower()};\n")
+            e = t.index(f"    {{\n        name        fit_{m.lower()}_start2;\n", s)
+            e = min(k for k in (t.find("    {\n        name", e + 10), t.find(OPS_END, e)) if k > 0)
+            ops += t[s:e]
+        b = t.index("operations\n(\n") + len("operations\n(\n")
+        t = t[:b] + ops + ");\n"
+        (sc / "system" / "propsDict").write_text(t)
+        for stale in sc.glob("*.proposal.dat"):
+            stale.unlink()
+        rc, out, js = cc.run_props(sc)
+        res = {}
+        for m in models:
+            par = sc / f"parity_{m.lower()}.csv"
+            rows = []
+            if par.exists():
+                for l in par.read_text().splitlines()[1:]:
+                    if l.strip():
+                        rows.append([float(v) for v in l.split(",")])
+            props = list(sc.glob(f"*.{m}.proposal.dat"))
+            res[m] = (rows, props[0].read_text() if props else None)
+        diag = {}
+        for m in models:
+            for n in (f"fit_{m.lower()}", f"fit_{m.lower()}_start2"):
+                diag[n] = (cc.op_result(js, n) or {}).get("diagnostics", {})
+        return rc, out, res, diag
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+
+
+def model_split(rec_text, model, case, tag):
+    """Arm (f) for UNIQUAC / Wilson on the record's own parameters and the
+    case's own component records (check_regressed_pairs computes it)."""
+    rf = crp.model_facts(rec_text, model)
+    comps = {c: component_text(case, c) for c in (rf["i"], rf["j"])}
+    return rf, crp.model_one_liquid_failures(rf, model, comps, tag)
+
+
+def evidence_counts(case, kind):
+    if kind == "tx":
+        return tx_evidence_counts(case)
+    import pairs_px as px
+    live = px.contributing(case)
+    return len({T for _, T in live}), len({d for d, _ in live})
+
+
+def model_curation_block(model, kind, verdict, n_kept, n_drop, mx, mean, nan, grade,
+                         one_liquid, nT, nL):
+    import pairs_px as px
+    if kind == "tx":
+        rule = MODELS_RULE + " on " + RULE_GRADED
+        res = (f"    outlierLimit    {OUTLIER_K:g} K;   // the NRTL least-squares stage's, reused\n"
+               f"    outliersDropped {n_drop};\n"
+               f"    pointsKept      {n_kept};\n"
+               f"    noBubblePoint   {nan};\n"
+               f"    maxAbsError     {mx:.4f} K;\n"
+               f"    meanAbsError    {mean:.4f} K;\n"
+               "    acceptance      graded;   // max |T_model - T| over the kept points, "
+               "DEV.md 4c C285 (C286)\n"
+               f"    gradeLimits_K   ({GRADE_K[0]:g} {GRADE_K[1]:g} {GRADE_K[2]:g});   "
+               "// upper limits of clean / warning / severe; above, refused\n")
+    else:
+        rule = MODELS_RULE + " on " + px.RULE
+        res = ("    residual        P_bubble;\n"
+               "    residualScale   relative;   // (P_model - P)/P at each point's stated T\n"
+               f"    outlierLimit_pct {px.OUTLIER_PCT:g};   // the NRTL least-squares stage's, reused\n"
+               f"    outliersDropped {n_drop};\n"
+               f"    pointsKept      {n_kept};\n"
+               f"    noBubblePoint   {nan};\n"
+               f"    maxRelError_pct {mx:.4f};\n"
+               f"    meanRelError_pct {mean:.4f};\n"
+               "    acceptance      graded;   // max relative pressure error over the kept "
+               "points, DEV.md 4c C285 (C291)\n"
+               f"    gradeLimits_pct ({px.GRADE_PCT[0]:g} {px.GRADE_PCT[1]:g} {px.GRADE_PCT[2]:g});   "
+               "// upper limits of clean / warning / severe; above, refused\n")
+    return (f"curation\n{{\n"
+            f'    rule            "{rule}";\n'
+            f"    model           {model};\n"
+            f"    discardsFrom    fit_nrtl;   // the outliers were decided ONCE, on the NRTL "
+            "least-squares stage, and reused (C294)\n"
+            f"    evidence        allLaboratories;   // every study fitted, none held out\n"
+            f"    objective       twoStage;\n"
+            + res +
+            f"    grade           {grade};\n"
+            f"    oneLiquid       {'true' if one_liquid else 'false'};   // arm (f) on this "
+            "model's own equation over the validity span\n"
+            f"    temperatures    {nT};   // distinct stated temperatures in the kept evidence\n"
+            f"    laboratories    {nL};   // distinct articles in the kept evidence\n"
+            f"    singleTemperature {'true' if nT == 1 else 'false'};\n"
+            f"    singleLaboratory  {'true' if nL == 1 else 'false'};\n"
+            f"    verdict         {verdict};\n}}\n")
+
+
+def model_record_header(model, stem, c1, c2, case_rel, reason_line, extra, kind):
+    hdr = cc.record_header(stem, c1, c2, case_rel, reason_line, extra)
+    hdr = hdr.replace("  NRTL binary interaction parameters ---",
+                      f"  {model} binary interaction parameters ---", 1)
+    hdr = re.sub(r"  EQUATION: tau_ij = a_ij \+ b_ij / T.*?not fitted\.\n",
+                 lambda _m: EQUATION[model], hdr, count=1, flags=re.S)
+    hdr = hdr.replace("its fit\n  writes", f"its fit_{model.lower()}\n  writes")
+    hdr = hdr.replace(f"writes {stem}.proposal.dat", f"writes {stem}.{model}.proposal.dat")
+    if kind == "px":
+        hdr = hdr.replace("to measured\n  bubble temperatures.",
+                          "to measured\n  bubble PRESSURES at stated temperatures (P-x, DEV.md 4c C291).")
+    hdr = hdr.replace("The two articles named under `evidence` are the",
+                      "The articles named under `evidence` are the")
+    hdr = hdr.replace("(bin/choupo-curate, DEV.md 4c C282;",
+                      "(bin/choupo-curate pairs --models, DEV.md 4c C294 on C282;")
+    if EQUATION[model].splitlines()[0] not in hdr or f"{model} binary" not in hdr:
+        refuse(f"{stem}: the record header template moved -- the {model} header cannot be derived")
+    return hdr
+
+
+def model_stats(kind, rows):
+    import pairs_px as px
+    return stats(rows) if kind == "tx" else px.stats(rows)
+
+
+def model_grade(kind, mx, nan):
+    import pairs_px as px
+    return grade_of(mx, nan) if kind == "tx" else px.grade_of(mx, nan)
+
+
+def unit_of(kind):
+    return ("K", "|dT|") if kind == "tx" else ("%", "|dP|/P")
+
+
+def readback_ops(case, models):
+    """txy_<model>: the txy_nrtl scan with the model swapped -- it loads the
+    record through the pair loader, so the engine voices its status."""
+    t = (case / "system" / "propsDict").read_text()
+    s = t.index("    {\n        name        txy_nrtl;\n")
+    e = t.index("\n    }\n", s) + len("\n    }\n")
+    base = t[s:e]
+    out = ""
+    for m in models:
+        o = base.replace("name        txy_nrtl;", f"name        txy_{m.lower()};")
+        o = o.replace("model NRTL;", f"model {m};").replace("file txy_nrtl.csv;",
+                                                            f"file txy_{m.lower()}.csv;")
+        out += o
+    return out
+
+
+def set_readback(case, models):
+    pd = case / "system" / "propsDict"
+    t = pd.read_text()
+    t = re.sub(re.escape(RB_BEGIN) + r".*?" + re.escape(RB_END), "", t, flags=re.S)
+    if models:
+        k = t.index(OPS_END) + len(OPS_END)
+        t = t[:k] + RB_BEGIN + readback_ops(case, models) + RB_END + t[k:]
+    pd.write_text(t)
+
+
+def models_run(case):
+    """Fit every declared model of the case, write its case-local record,
+    re-seal, run the whole case, and write the result paragraph."""
+    kind = case_kind(case)
+    case_rel = case.relative_to(ROOT).as_posix()
+    pd = case / "system" / "propsDict"
+    t = pd.read_text()
+    if MODEL_MARK not in t:
+        refuse(f"{cc.label(case)}: no C294 declaration -- declare (and commit) first")
+    op = nrtl_op(t)
+    c1, c2 = op_pair(op)
+    stem = "-".join(sorted((c1, c2)))
+    models = declared_models(case)
+    out = {"case": cc.label(case), "pair": [c1, c2], "kind": kind, "models": {}}
+    _, nt = nrtl_record(case)
+    ncur = crp.block(crp.strip_comments(nt), "curation") or ""
+    nmx = crp.num(ncur, "maxAbsError" if kind == "tx" else "maxRelError_pct")
+    out["nrtl"] = {"max": nmx, "grade": crp.word(ncur, "grade"),
+                   "oneLiquid": crp.word(ncur, "oneLiquid")}
+    el = eligibility(case, c1, c2)
+    for m in MODELS:
+        if m not in models:
+            out["models"][m] = {"fitted": False, "reason": el[m]}
+    if not models:
+        txt = ("WHAT THE UNIQUAC AND WILSON FITS FOUND: neither was fitted.  "
+               + "  ".join(f"{m}: {el[m]}." for m in MODELS))
+        t = re.sub(r"@@MODELS-RESULT-BEGIN@@.*?@@MODELS-RESULT-END@@",
+                   lambda _m: "@@MODELS-RESULT-BEGIN@@\n" + cc.wrap(txt)
+                   + "\n  @@MODELS-RESULT-END@@", t, flags=re.S)
+        pd.write_text(t)
+        out["outcome"] = "no model fitted"
+        return out
+    rc = cc.fetch(case, quiet=True)
+    if rc:
+        refuse(f"fetch of {case_rel} returned {rc}")
+    seal_without_models(case)   # the component records as the catalogue carries them now (r/q)
+    rc, o, res, diag = model_fit_only(case, models)
+    #  A FIT THAT DID NOT CONVERGE (a parameter run to its bound: for Wilson,
+    #  Lambda -> 0, no finite optimum on this evidence) is not a fit.  Its ops
+    #  are removed so the case runs, and the attempt is written into the
+    #  result paragraph -- never a record.  A second start that does not
+    #  converge where the first did is removed alone, and said.
+    notes = []
+    for m in list(models):
+        low = m.lower()
+        for n in (f"fit_{low}", f"fit_{low}_start2"):
+            d = diag.get(n, {})
+            if d.get("converged") == 1:
+                continue
+            ks = MSPEC[m][0]
+            bound = [ks[k] for k in range(len(ks)) if d.get(f"fit.{k}.at_bound") == 1]
+            why = (f"{n} was declared and run and did NOT CONVERGE"
+                   + (f" ({' and '.join(bound)} at its bound, {MSPEC[m][2][0]} .. {MSPEC[m][2][1]} "
+                      f"{MSPEC[m][1]}: no finite optimum inside the declared bounds)" if bound else "")
+                   + "; the op is removed so the case runs (C294)")
+            pt = pd.read_text()
+            if n == f"fit_{low}":
+                pt = remove_op(remove_op(pt, f"fit_{low}_start2"), n)
+                models.remove(m)
+                out["models"][m] = {"fitted": False, "reason": why, "nonConverged": True}
+                notes.append(f"{m}: not fitted -- {why}.")
+                pd.write_text(pt)
+                break
+            pd.write_text(remove_op(pt, n))
+            notes.append(f"{m}: {why}.")
+    if not models:
+        txt = ("WHAT THE UNIQUAC AND WILSON FITS FOUND: no record.  " + "  ".join(
+            notes + [f"{m}: not fitted -- {el[m]}." for m in MODELS if el[m]]))
+        t = re.sub(r"@@MODELS-RESULT-BEGIN@@.*?@@MODELS-RESULT-END@@",
+                   lambda _m: "@@MODELS-RESULT-BEGIN@@\n" + cc.wrap(txt)
+                   + "\n  @@MODELS-RESULT-END@@", pd.read_text(), flags=re.S)
+        pd.write_text(t)
+        out["outcome"] = "no model converged"
+        return out
+    n_drop = sum(len(v) for v in declared_discards(case).values())
+    nT, nL = evidence_counts(case, kind)
+    u, sym = unit_of(kind)
+    lines = []
+    for m in models:
+        rows, ptext = res[m]
+        rp = case / "constant" / "parameters" / m / f"{stem}.dat"
+        if ptext is None or not rows:
+            refuse(f"the {m} fit of {case_rel} exited {rc} / wrote no proposal: {o[-600:]}")
+        mx, mean, n_kept, nan = model_stats(kind, rows)
+        grade = model_grade(kind, mx, nan)
+        rf, split = model_split(ptext, m, case, stem)
+        accepted = grade != "refused"
+        verdict = "accepted" if accepted else "notAccepted"
+        if not accepted:
+            reason = (f"NOT PROMOTABLE: fit grade refused -- max {sym} {mx:.3f} {u} over the "
+                      f"{n_kept} kept points")
+        elif split:
+            reason = (f"NOT PROMOTABLE (fit grade {grade}, max {sym} {mx:.3f} {u}): the pair "
+                      f"splits ONE liquid inside its own validity span (arm f, {m}) -- "
+                      + split[0].split(": ", 1)[1])
+        elif promotion_refusal(grade):
+            reason = (f"NOT PROMOTED (max {sym} {mx:.3f} {u} over the {n_kept} kept points, one "
+                      "liquid across the validity span): " + promotion_refusal(grade))
+        else:
+            reason = (f"PROMOTABLE by `{MODELS_PROMOTED_BY}`: fit grade {grade} -- max {sym} "
+                      f"{mx:.3f} {u} over the {n_kept} kept points, one liquid across the "
+                      "validity span")
+        hdr = model_record_header(
+            m, stem, rf["i"], rf["j"], case_rel,
+            "reviewStatus interim: a case-local record, regressed and not read back.\n"
+            "  Fitted on EVERY laboratory with the NRTL fit's own kept points (C294), so\n"
+            "  the `validation {}` block says, truthfully, that nothing was held out;\n"
+            "  the acceptance is the `curation {}` block.",
+            cc.wrap(reason, indent="  ") + "\n", kind)
+        rec = cc.record_from_proposal(ptext, hdr, cc.case_record_fields(case_rel))
+        rec = rec.rstrip("\n") + "\n\n" + model_curation_block(
+            m, kind, verdict, n_kept, n_drop, mx, mean, nan, grade, not split, nT, nL)
+        rp.parent.mkdir(parents=True, exist_ok=True)
+        rp.write_text(rec)
+        out["models"][m] = {"fitted": True, "max": mx, "mean": mean, "kept": n_kept,
+                            "nan": nan, "grade": grade, "split": bool(split),
+                            "verdict": verdict, "reason": reason,
+                            "params": [rf[k] for k in MSPEC[m][0]]}
+    set_readback(case, models)
+    cc.seal(case)
+    rc, o, js = cc.run_props(case)
+    if rc != 0:
+        refuse(f"the sealed case {case_rel} exited {rc}: {o[-600:]}")
+    for m in models:
+        d1 = (cc.op_result(js, f"fit_{m.lower()}") or {}).get("diagnostics", {})
+        d2 = (cc.op_result(js, f"fit_{m.lower()}_start2") or {}).get("diagnostics", {})
+        keys = [k for k in d1 if k.rsplit(".", 1)[-1] in MSPEC[m][0]]
+        keys.sort(key=lambda k: MSPEC[m][0].index(k.rsplit(".", 1)[-1]))
+        p1, p2 = [d1[k] for k in keys], [d2.get(k) for k in keys]
+        sc = 1.0 if m == "UNIQUAC" else 10.0
+        same = bool(keys) and all(y is not None and abs(x - y) <= 1e-2 * max(sc, abs(x))
+                                  for x, y in zip(p1, p2))
+        r = out["models"][m]
+        r["same"] = same if d2 else None
+        kn = MSPEC[m][0]
+        lines.append(
+            f"fit_{m.lower()}: {kn[0]} = {p1[0]:.1f}, {kn[1]} = {p1[1]:.1f} {MSPEC[m][1]} over "
+            f"{r['kept']} kept points: max {sym} {r['max']:.3f} {u}, mean {r['mean']:.3f} {u}, "
+            f"graded {r['grade']} -> {r['verdict']}; "
+            + (f"fit_{m.lower()}_start2 lands on "
+               f"{'the same pair' if same else 'A DIFFERENT pair'} ({p2[0]:.1f}, {p2[1]:.1f}).  "
+               if d2 else f"fit_{m.lower()}_start2 removed (it did not converge).  ")
+            + r["reason"] + ".")
+    lines += notes
+    for m in MODELS:
+        if m not in models and el[m]:
+            lines.append(f"{m}: not fitted -- {el[m]}.")
+    nl = (f"Beside fit_nrtl's max {sym} {nmx:.3f} {u} ({crp.word(ncur, 'grade')}) on the same "
+          "kept points.  ")
+    txt = ("WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured, not "
+           "argued).  " + nl + "  ".join(lines))
+    t = pd.read_text()
+    t = re.sub(r"@@MODELS-RESULT-BEGIN@@.*?@@MODELS-RESULT-END@@",
+               lambda _m: "@@MODELS-RESULT-BEGIN@@\n" + cc.wrap(txt) + "\n  @@MODELS-RESULT-END@@",
+               t, flags=re.S)
+    pd.write_text(t)
+    out["outcome"] = "ran"
+    return out
+
+
+# --------------------------------------------------------------------------
+#  C294: promotion, by the same rules (C286, C300)
+# --------------------------------------------------------------------------
+def model_promoted_text(text, model, case, stem, i, j, kind):
+    import pairs_px as px
+    case_rel = case.relative_to(ROOT).as_posix()
+    cur = crp.block(crp.strip_comments(text), "curation") or ""
+    grade = crp.word(cur, "grade")
+    if grade not in GRADES[:3] or promotion_refusal(grade):
+        refuse(f"{model} {stem}: curation grade `{grade}` -- not promoted")
+    nT, nL = int(crp.num(cur, "temperatures") or 0), int(crp.num(cur, "laboratories") or 0)
+    applied, caps = cap_grade(grade, nT, nL)
+    if kind == "tx":
+        mx = crp.num(cur, "maxAbsError")
+        lim = f"{GRADE_K[0]:g} / {GRADE_K[1]:g} / {GRADE_K[2]:g} K"
+        gl_num = f"    fitGradeMaxTemperatureError_K {mx:.4f};\n"
+        what = f"max |T_model - T| over the kept points, graded {lim}"
+        mxs = f"{mx:.4f} K"
+    else:
+        mx = crp.num(cur, "maxRelError_pct")
+        lim = f"{px.GRADE_PCT[0]:g} / {px.GRADE_PCT[1]:g} / {px.GRADE_PCT[2]:g} %"
+        gl_num = f"    fitGradeMaxRelativeError_pct {mx:.4f};\n"
+        what = f"max |P_model - P|/P over the kept points, graded {lim}"
+        mxs = f"{mx:.4f} %"
+    hdr = model_record_header(
+        model, stem, i, j, case_rel,
+        "reviewStatus autoPromoted; review { by none; }: PROMOTED AUTOMATICALLY by\n"
+        "  its fitting pipeline (the NRTL case's own evidence and kept points, the\n"
+        f"  {what} -- DEV.md 4c C285, C294;\n"
+        f"  THIS fit: {grade} in-sample, {mxs}"
+        + (f", CAPPED at {applied} by C300 ({' and '.join(caps)})" if caps else "")
+        + "; one liquid across its\n"
+        "  validity span), and NO HUMAN HAS REVIEWED IT.  The engine says so on every\n"
+        "  run that reads it, and voices a warning or a severe grade beside it.\n"
+        "  Nothing was held out: the `validation {}` block says so, and the\n"
+        "  acceptance is the `curation {}` block.  A curator who reads the series\n"
+        "  back against the articles records it in the `review {}` block (DEV.md 4c\n"
+        "  C297).  Revert by reverting the commit that promoted it.",
+        "", kind)
+    body = cc.body_of(text)
+    gl = (f"    fitGrade      {applied};   // DEV.md 4c C285 (C294): {what}\n"
+          + BASIS_LINE + cap_line(caps) + gl_num)
+    body = re.sub(r"(\n    reviewStatus\s+)interim;",
+                  lambda mm: mm.group(1) + "autoPromoted;\n" + REVIEW_NONE + gl
+                  + f'    promotedBy    "{MODELS_PROMOTED_BY}";\n'
+                  + f'    promotedDate  "{date.today().isoformat()}";', body, count=1)
+    return hdr + body
+
+
+def promoting_case(case, c1, c2):
+    """C294: one pair, one case of evidence across its models.  When the
+    pair's NRTL is in the catalogue, only the case it names promotes the
+    pair's other models; otherwise the pair's cases in path order."""
+    nrec = cc.existing_records(c1, c2, model="NRTL")
+    if nrec:
+        named = crp.word(crp.strip_comments((ROOT / nrec[0]).read_text()), "fittedInCase")
+        return named == case.relative_to(ROOT).as_posix()
+    return True
+
+
+def models_promote(case, model):
+    kind = case_kind(case)
+    t = (case / "system" / "propsDict").read_text()
+    c1, c2 = op_pair(nrtl_op(t))
+    stem = "-".join(sorted((c1, c2)))
+    rp = case / "constant" / "parameters" / model / f"{stem}.dat"
+    if not rp.exists():
+        refuse(f"{cc.label(case)}: no case-local {model} record (not fitted, or promoted already)")
+    text = rp.read_text()
+    if crp.word(crp.strip_comments(text), "reviewStatus") != "interim":
+        refuse(f"{cc.label(case)}: its {model} record is not a case-local interim record")
+    cur = crp.block(crp.strip_comments(text), "curation") or ""
+    if crp.word(cur, "verdict") != "accepted":
+        refuse(f"{model} {stem}: curation verdict `{crp.word(cur, 'verdict')}`")
+    if promotion_refusal(crp.word(cur, "grade")):
+        refuse(f"{model} {stem}: NOT PROMOTED: " + promotion_refusal(crp.word(cur, "grade")))
+    rf, split = model_split(text, model, case, stem)
+    if split:
+        refuse(f"{model} {stem}: " + split[0])
+    if crp.word(cur, "oneLiquid") != "true":
+        refuse(f"{model} {stem}: curation oneLiquid `{crp.word(cur, 'oneLiquid')}`")
+    if cc.existing_records(c1, c2, model=model):
+        refuse(f"a catalogue {model} record for {c1} + {c2} already exists -- never overwritten")
+    if not promoting_case(case, c1, c2):
+        refuse(f"{model} {stem}: the pair's NRTL record names another case -- one pair, one "
+               "case of evidence across its models (C294)")
+    dest = cc.STD_PARAMS / model / f"{stem}.dat"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text(model_promoted_text(text, model, case, stem, rf["i"], rf["j"], kind))
+    rp.unlink()
+    try:
+        cc.seal(case)
+    except (SystemExit, Refused):
+        dest.unlink()
+        rp.write_text(text)
+        cc.seal(case)
+        raise
+    pd = case / "system" / "propsDict"
+    x = pd.read_text()
+    mm = re.search(r"@@MODELS-RESULT-BEGIN@@(.*?)@@MODELS-RESULT-END@@", x, re.S)
+    para = " ".join(mm.group(1).split())
+    old = f"PROMOTABLE by `{MODELS_PROMOTED_BY}`: fit grade"
+    k = para.find(f"fit_{model.lower()}:")
+    if k >= 0 and para.find(old, k) >= 0:
+        o = para.find(old, k)
+        para = (para[:o] + f"PROMOTED on {date.today().isoformat()} into "
+                f"{dest.relative_to(ROOT).as_posix()} as reviewStatus autoPromoted, review by "
+                "none, because: fit grade" + para[o + len(old):])
+        pd.write_text(x[:mm.start()] + "@@MODELS-RESULT-BEGIN@@\n" + cc.wrap(para)
+                      + "\n  @@MODELS-RESULT-END@@" + x[mm.end():])
+    return dest
+
+
+def batch_models(a):
+    """`choupo-curate pairs --models` (DEV.md 4c C294): --declare, --run,
+    --promote over every C283/C291 pair case (or --only <stem> ...)."""
+    cases = [(p, x, y) for p, x, y in cc.curation_roots.pair_cases()
+             if (p / cc.DECL).exists() and case_kind(p)]
+    if a.only:
+        want = set(a.only)
+        cases = [c for c in cases if cc.curation_roots.pair_stem_of(c[0]) in want
+                 or cc.label(c[0]) in want]
+    out = []
+    if a.run and a.jobs > 1:
+        out, cases = run_models_parallel(a, cases)
+    for case, x, y in cases:
+        rec = {"case": cc.label(case), "pair": [x, y]}
+        try:
+            if a.declare:
+                rec["outcome"] = "declared" if models_declare(case) else "declared already"
+            elif a.run:
+                if MODEL_MARK not in (case / "system" / "propsDict").read_text():
+                    rec["outcome"] = "not declared"
+                elif "WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run." not in \
+                        (case / "system" / "propsDict").read_text():
+                    rec["outcome"] = "ran already"
+                else:
+                    rec.update(models_run(case))
+            elif a.promote:
+                done = []
+                for m in MODELS:
+                    rp = case / "constant" / "parameters" / m
+                    if not list(rp.glob("*.dat")):
+                        continue
+                    try:
+                        if crp.word(crp.strip_comments(next(rp.glob("*.dat")).read_text()),
+                                    "reviewStatus") != "interim":
+                            continue
+                        d = models_promote(case, m)
+                        done.append(f"{m} promoted")
+                    except (Refused, SystemExit) as ex:
+                        done.append(f"{m} not promoted: {str(ex)[:160]}")
+                rec["outcome"] = "; ".join(done) or "nothing to promote"
+        except Refused as ex:
+            rec["outcome"] = "refused: " + str(ex)
+        except SystemExit as ex:
+            rec["outcome"] = f"refused (exit {ex.code})"
+        except Exception as ex:   # noqa: BLE001 -- one failure never stops the batch
+            rec["outcome"] = f"error: {type(ex).__name__}: {ex}"
+        summ = ""
+        for m, r in rec.get("models", {}).items():
+            summ += (f"  {m} {r['grade']} {r['max']:.3f}" if r.get("fitted") else f"  {m} -")
+        cc.say(f"[{rec['case']}] {rec['outcome'][:300]}{summ}")
+        out.append(rec)
+        if a.json:
+            Path(a.json).write_text(json.dumps(out, indent=1, default=str))
+    return 0
+
+
+def run_models_parallel(a, cases):
+    """`--models --run --jobs N`: each case run by a child of this command
+    (`--only <label> --jobs 1`), at most N at once; a child writes only inside
+    its own case directory (fetch, the fits, its case-local records, the
+    seal).  Promotion and commits never run here."""
+    import concurrent.futures as cf
+    jobs = min(a.jobs, JOBS_CAP)
+    if a.jobs > JOBS_CAP:
+        cc.say(f"--jobs {a.jobs} capped at {JOBS_CAP}")
+    tmp = Path(tempfile.mkdtemp(prefix="choupo-curate-c294-jobs-"))
+
+    def child(c):
+        lab = cc.label(c[0])
+        js = tmp / (lab.replace("/", "__") + ".json")
+        p = subprocess.run([sys.executable, str(ROOT / "bin" / "choupo-curate"), "pairs",
+                            "--models", "--run", "--only", lab, "--jobs", "1",
+                            "--json", str(js)], capture_output=True, text=True)
+        try:
+            rec = json.loads(js.read_text())[0]
+        except (OSError, ValueError, IndexError):
+            rec = {"case": lab, "pair": [c[1], c[2]],
+                   "outcome": f"error: child exited {p.returncode}: {(p.stdout + p.stderr)[-300:]}"}
+        return rec, p.stdout
+
+    out = []
+    try:
+        with cf.ThreadPoolExecutor(max_workers=jobs) as ex:
+            for rec, txt in ex.map(child, cases):
+                sys.stdout.write("".join(l + "\n" for l in txt.splitlines() if l.startswith("[")))
+                sys.stdout.flush()
+                out.append(rec)
+                if a.json:
+                    Path(a.json).write_text(json.dumps(out, indent=1, default=str))
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+    return out, []
 
 
 if __name__ == "__main__":

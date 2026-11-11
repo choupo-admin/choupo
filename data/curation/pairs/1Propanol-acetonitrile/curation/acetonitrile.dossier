@@ -154,4 +154,136 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Propanol.A_ij  3088.10203263;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Propanol.A_ji  899.619297874;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e6bfaf3c7d1fa8af";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-1Propanol-bubble-je100033s.dat";
+            doi       "10.1021/je100033s";
+            sha256    "63d0af97a2dfe7caf79d808b7e73911ea1011fdd1db317ad05e24ef2f49d86ae";
+            provenance measured;
+            archiveFile "je100033s.xml";
+            system    "acetonitrile + 1Propanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-1Propanol-bubble-j.jct.2013.08.011.dat";
+            doi       "10.1016/j.jct.2013.08.011";
+            sha256    "7e75eb47bc1acd43d33e038fb95c22ce1f360a62f152e49b288ceaa937404a21";
+            provenance measured;
+            archiveFile "j.jct.2013.08.011.xml";
+            system    "acetonitrile + 1Propanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-1Propanol-bubble-acs.jced.9b00015.dat";
+            doi       "10.1021/acs.jced.9b00015";
+            sha256    "9d88c47491adc0eb0b078348e4aff7d78fc0abd52fb2d48ef31246072b3d4941";
+            provenance measured;
+            archiveFile "acs.jced.9b00015.xml";
+            system    "acetonitrile + 1Propanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.052; max 0.996; n 58; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Propanol.A_ij  3088.10203429;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Propanol.A_ji  899.619294389;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e6bfaf3c7d1fa8af";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-1Propanol-bubble-je100033s.dat";
+            doi       "10.1021/je100033s";
+            sha256    "63d0af97a2dfe7caf79d808b7e73911ea1011fdd1db317ad05e24ef2f49d86ae";
+            provenance measured;
+            archiveFile "je100033s.xml";
+            system    "acetonitrile + 1Propanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-1Propanol-bubble-j.jct.2013.08.011.dat";
+            doi       "10.1016/j.jct.2013.08.011";
+            sha256    "7e75eb47bc1acd43d33e038fb95c22ce1f360a62f152e49b288ceaa937404a21";
+            provenance measured;
+            archiveFile "j.jct.2013.08.011.xml";
+            system    "acetonitrile + 1Propanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-1Propanol-bubble-acs.jced.9b00015.dat";
+            doi       "10.1021/acs.jced.9b00015";
+            sha256    "9d88c47491adc0eb0b078348e4aff7d78fc0abd52fb2d48ef31246072b3d4941";
+            provenance measured;
+            archiveFile "acs.jced.9b00015.xml";
+            system    "acetonitrile + 1Propanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.052; max 0.996; n 58; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

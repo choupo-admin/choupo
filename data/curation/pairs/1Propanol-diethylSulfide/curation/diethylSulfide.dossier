@@ -112,4 +112,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-1Propanol.A_ij  561.20432805;
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-1Propanol.A_ji  3328.7658704;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "ca23d63a0fc2a2b4";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diethylSulfide-1Propanol-bubbleP-j.fluid.2010.11.026-b9.dat";
+            doi       "10.1016/j.fluid.2010.11.026";
+            sha256    "eb52ee2098f75e25e57b87634501a20a630bb76b623e66c3b284e8e8e0dcabb2";
+            provenance measured;
+            archiveFile "j.fluid.2010.11.026.xml";
+            system    "diethylSulfide + 1Propanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.019; max 0.959; n 11; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-1Propanol.A_ij  561.204308799;
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-1Propanol.A_ji  3328.76588961;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "ca23d63a0fc2a2b4";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diethylSulfide-1Propanol-bubbleP-j.fluid.2010.11.026-b9.dat";
+            doi       "10.1016/j.fluid.2010.11.026";
+            sha256    "eb52ee2098f75e25e57b87634501a20a630bb76b623e66c3b284e8e8e0dcabb2";
+            provenance measured;
+            archiveFile "j.fluid.2010.11.026.xml";
+            system    "diethylSulfide + 1Propanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.019; max 0.959; n 11; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

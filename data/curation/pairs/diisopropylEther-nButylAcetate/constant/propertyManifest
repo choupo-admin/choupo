@@ -37,10 +37,10 @@ propertyManifest
         "components/nButylAcetate.dat"
         {
             type          imported;
-            sha256        "084932bd758db4f017fc9881a51dd1637c17f60a94d9cfc3c410c2602d6d47e5";
-            computationalSha256 "6f79df17bf29a43ef680863bc554ded0998a9d314858ecb8f06aa2750f38df1e";
+            sha256        "8c61277b05f83a67bf8cf5270f7a11fc676c13fde5363e72bfd9f31257adef7c";
+            computationalSha256 "7a57d5a9fe67bb77909133cc55bae73c14d8be75079dbcdf31b1f4ca910cbc74";
             origin        "data/standards/components/nButylAcetate.dat";
-            originSha256  "c3f3b0387a67b8d2d1c17e7a34b6e8aa0ad7804e4b75a639cf8df96183dcf9fb";
+            originSha256  "8442940b27e7eeddf632ee04e5f68bd1286cdf567ed9bfe16d7fa6fc37e3d7f3";
             release       Choupo-2608;
         }
         "parameters/NRTL/diisopropylEther-nButylAcetate.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "f350c4637ba7b4ab62b9e25eaebbd2fa2230ff32d67ce18e7c5864376a8f1ab9";
             origin        "data/standards/parameters/NRTL/diisopropylEther-nButylAcetate.dat";
             originSha256  "16a30248f4c93c268ae295728111384a9195720e0ec0d5604e3f910ae01c1d61";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/diisopropylEther-nButylAcetate.dat"
+        {
+            type          imported;
+            sha256        "92333e848c752e08298e3bdd1d6a974a42a908043d1158d298bc61116eb708ea";
+            computationalSha256 "8291cfcf84da1b3f95bd2cc217a5f2fcf7ef8911305b3fc6cd9c569c1346d92b";
+            origin        "data/standards/parameters/Wilson/diisopropylEther-nButylAcetate.dat";
+            originSha256  "cc63fd114ed2a5b1fe2cc8b695fa39663b95b0fcc50ab0a3c368f2bc4f344ed6";
             release       Choupo-2608;
         }
     }

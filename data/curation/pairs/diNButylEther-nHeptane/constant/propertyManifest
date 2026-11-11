@@ -28,19 +28,19 @@ propertyManifest
         "components/diNButylEther.dat"
         {
             type          imported;
-            sha256        "537970d2ee2c419075c0e60d44f291a9e308dd2c5fb5d18a04ae9dd5dd0f0f2b";
-            computationalSha256 "2d5d88b4f35c15d610e2651a7e04d59a600b408d65f8b9e305a62a753f13c07b";
+            sha256        "1eb78d03a6e082a5069fdab042f3902927f770e97f7e03f5a3bc9d789cc1f1f3";
+            computationalSha256 "021120e8b3e2ae75d45f6e83d172d78e8421092f64ef00c67b8a95019c02998a";
             origin        "data/standards/components/diNButylEther.dat";
-            originSha256  "e943e71a195499eea4c36243b977aff1fe2a5602ccb7592874505a239160f212";
+            originSha256  "fb73ec09e85d833de864cddf6d119fe08f842110ee4edd6efce7075c195d8e84";
             release       Choupo-2608;
         }
         "components/nHeptane.dat"
         {
             type          imported;
-            sha256        "25070332ac55ed31465bc842c2820fdfaad6f8148a03a841aca858978670b1d4";
-            computationalSha256 "125b2cbb0fb1a4182208bea7d0812526f79531b719a3e95c6555eb1eef5975b2";
+            sha256        "8c48efaaa9aa99b348c71a669b0004bae3abe91635a4fe1c401fc415b45e6b4d";
+            computationalSha256 "2f3b301c3cd1ef6d27fd35702b810c40ebcfc7fc573ec2dfb642d5981a6ed791";
             origin        "data/standards/components/nHeptane.dat";
-            originSha256  "d07d8e2aa11a5f1acb72593e0fcd1281a502b07ee6da32603bcc97d97b54abd4";
+            originSha256  "0e6ffd261eb07d90376837ad51670a939dfd10fc7e15c0bed37a675f034eeae0";
             release       Choupo-2608;
         }
         "parameters/NRTL/diNButylEther-nHeptane.dat"
@@ -50,6 +50,24 @@ propertyManifest
             computationalSha256 "386828ab37ab52608a0f5aab1bef19b6fdd2808c729f75fd9e253698e82df61f";
             origin        "data/standards/parameters/NRTL/diNButylEther-nHeptane.dat";
             originSha256  "bc60e98ba3840c7d5877dfdb6c20875878e2e6ddd51c7af79370c2792369c6d3";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/diNButylEther-nHeptane.dat"
+        {
+            type          imported;
+            sha256        "bc9ff1b16098186e2b746d09f2e407a159735e441ea3b72e6f729cdda46e3a75";
+            computationalSha256 "40c5a9461d3e28af731e78448806239042d1e6ae6a8220a2bfbb78d2712d85f3";
+            origin        "data/standards/parameters/UNIQUAC/diNButylEther-nHeptane.dat";
+            originSha256  "4163411d73f9941046e9275b884ba6cd365b262a7728e265a46afe91257e1c0e";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/diNButylEther-nHeptane.dat"
+        {
+            type          imported;
+            sha256        "269ba0e70d545a68196de92cac6b8944357231f59cd93c79044652a33b797922";
+            computationalSha256 "84ca900fd87c4dcacd81e3d6153f9c2c95d37efdd29497763200dcb71db1dd28";
+            origin        "data/standards/parameters/Wilson/diNButylEther-nHeptane.dat";
+            originSha256  "495073815b217483efed3458648b258c54783a0112dd85a53669386781cb14d2";
             release       Choupo-2608;
         }
     }

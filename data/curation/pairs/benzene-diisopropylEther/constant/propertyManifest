@@ -28,10 +28,10 @@ propertyManifest
         "components/benzene.dat"
         {
             type          imported;
-            sha256        "af31cf9da05b7d34c657c430cef68abbf0f08db2402827a4867f7a64073225c9";
-            computationalSha256 "b8a586d23e8f38eb0b5c0f9534f7057eb2d4059de464edbdc18995094fdca93e";
+            sha256        "2c20d6d671dd5884ed8e3668529ddaad20bf3c2a02d1a5130aac02dd790aa62c";
+            computationalSha256 "d710160da938e1163f77e26b0cc49af7c2a2e4563b37f914ce4bb001500decc4";
             origin        "data/standards/components/benzene.dat";
-            originSha256  "77d7604645ff3a28b34d91023e497586af35fa74849c914378f858666a2b900e";
+            originSha256  "dc7869a494c8e333ed57af66fa4086592b32ac5330960750b5d2775030c9b6bc";
             release       Choupo-2608;
         }
         "components/diisopropylEther.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "efbc7ade39cf98d7d45673ae904001c81843c780ba7ad7df2a92a216e2581a86";
             origin        "data/standards/parameters/NRTL/benzene-diisopropylEther.dat";
             originSha256  "9bb7a5bf817a5345bbb23b9fadfe4500d3213d9d482a340af7c751dc9af3db00";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/benzene-diisopropylEther.dat"
+        {
+            type          imported;
+            sha256        "d0f6d7a57417894a2db706a920f5960886a924017e525cb0ddbb8923cb2a2e4a";
+            computationalSha256 "a544ce59a8ad98f4dc926e6c4052f307d9974c9b8ef3951bec457c646a71e564";
+            origin        "data/standards/parameters/Wilson/benzene-diisopropylEther.dat";
+            originSha256  "58ef36da3ba45484d50def82dd223b290db7f79fa6b37145effe9e3411c67a83";
             release       Choupo-2608;
         }
     }

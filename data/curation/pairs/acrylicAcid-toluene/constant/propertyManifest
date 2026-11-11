@@ -28,19 +28,19 @@ propertyManifest
         "components/acrylicAcid.dat"
         {
             type          imported;
-            sha256        "29d5b5eb8aaa20d0eab0d1446aef6b66033a23a58ed6172dc4510c7b769ee382";
-            computationalSha256 "ea7e3b553952bf00be6ad8e72ba805d8319e84e32c9743d67d8d265c32924fba";
+            sha256        "a64afea16e374c420c47d5d0d9493f7f21cff53e709384d8979f03d4bf350ae1";
+            computationalSha256 "3ace17dffd4cb0ca03c825607a94f91bcab44fbb02d2da73c21d0f9f5ec07bae";
             origin        "data/standards/components/acrylicAcid.dat";
-            originSha256  "290c0ce4e913a1189afa037ea2190f8f4317782a61da51b6fe29f2aa149b4b7a";
+            originSha256  "68ac07f3a9915976750d1d479d0675130117aa31a9786bf6b2408982e8780b97";
             release       Choupo-2608;
         }
         "components/toluene.dat"
         {
             type          imported;
-            sha256        "025c441842aa1728935905ed8dfa50db5a6405ee082618c11673f665596d4911";
-            computationalSha256 "f66debfbcd493c4c7c4636809e784a1e07a6c482c3baed13ba34dce12ae63f79";
+            sha256        "5fb900674321baa67135bfeb2c8f80e63d9af183c35f1615477d751b4299f14b";
+            computationalSha256 "55e1e2986dd1c3fc08c951e842a86b062ee6a7bfbc1e1317387e69149a139e36";
             origin        "data/standards/components/toluene.dat";
-            originSha256  "fe5cb21ba09cf44b41de252f6a5a5dd21b6803fcd40666f6fed8d9de8e68563a";
+            originSha256  "ad1533cb0d94caade355d7149fd88ee1ad07c945f5d4c85f4bcce925766250b9";
             release       Choupo-2608;
         }
         "parameters/NRTL/acrylicAcid-toluene.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/acrylicAcid-toluene.dat"
+        {
+            type          imported;
+            sha256        "c35fc39c77c8565705451870ff26ff13c992f5ab0afa950df869b8485f324d10";
+            computationalSha256 "45486f41c4e9c578e08392f827224bb190c1bd421c8d4c8fb7de3fd9880dca9e";
+            origin        "data/standards/parameters/UNIQUAC/acrylicAcid-toluene.dat";
+            originSha256  "75e0592507c5a43dc283d2c5410d646e15ebe66d15d54b14ff0634d39c8951da";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/acrylicAcid-toluene.dat"
+        {
+            type          imported;
+            sha256        "7defa3e42747e3819ee97dc5dd39b2f1e0c5f5cf3b2ac83333971c07cbcaa287";
+            computationalSha256 "98210a68dc300a4e57b0597d937e8d8cd815f98aa63d28d5972941b4e3a399a5";
+            origin        "data/standards/parameters/Wilson/acrylicAcid-toluene.dat";
+            originSha256  "808af32f696bf21bd988449aef24aa29b148682faf263a89fac7b305b3762ecb";
             release       Choupo-2608;
         }
     }

@@ -134,4 +134,116 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-aniline.A_ij  -3629.02213523;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-aniline.A_ji  3804.9229646;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "29d21dabb52ec059";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nNDimethylformamide-aniline-bubble-j.fluid.2008.07.018.dat";
+            doi       "10.1016/j.fluid.2008.07.018";
+            sha256    "0aa99bef5ae1fa822f00ccf8f91676bd925a3498107e880eec2f684f33d877a4";
+            provenance measured;
+            archiveFile "j.fluid.2008.07.018.xml";
+            system    "nNDimethylformamide + aniline";
+            pressure  "95500.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nNDimethylformamide-aniline-bubble-acs.jced.6b00700.dat";
+            doi       "10.1021/acs.jced.6b00700";
+            sha256    "31517b08cb872c8b527209366d2cf3086d5f9373e37022a9af029a3c14686672";
+            provenance measured;
+            archiveFile "acs.jced.6b00700.xml";
+            system    "nNDimethylformamide + aniline";
+            pressure  "96150.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0696; max 0.9706; n 27; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-aniline.A_ij  30000;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-aniline.A_ji  -6379.3124699;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "29d21dabb52ec059";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nNDimethylformamide-aniline-bubble-j.fluid.2008.07.018.dat";
+            doi       "10.1016/j.fluid.2008.07.018";
+            sha256    "0aa99bef5ae1fa822f00ccf8f91676bd925a3498107e880eec2f684f33d877a4";
+            provenance measured;
+            archiveFile "j.fluid.2008.07.018.xml";
+            system    "nNDimethylformamide + aniline";
+            pressure  "95500.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nNDimethylformamide-aniline-bubble-acs.jced.6b00700.dat";
+            doi       "10.1021/acs.jced.6b00700";
+            sha256    "31517b08cb872c8b527209366d2cf3086d5f9373e37022a9af029a3c14686672";
+            provenance measured;
+            archiveFile "acs.jced.6b00700.xml";
+            system    "nNDimethylformamide + aniline";
+            pressure  "96150.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0696; max 0.9706; n 27; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

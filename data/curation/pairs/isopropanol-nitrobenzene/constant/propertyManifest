@@ -28,10 +28,10 @@ propertyManifest
         "components/isopropanol.dat"
         {
             type          imported;
-            sha256        "c206190bf473636ab8661c95a2126b9088fc6a1b5013c5e1325470f8133691b0";
-            computationalSha256 "4ca8dc74e7851f893506b84d7a8e03b629f1794fd0132eed65e92c65cac2e9f9";
+            sha256        "61118a4a99021492caf6ad77788bb2bd987dab2f1160ad21534ae7ce688dae8a";
+            computationalSha256 "5c4f956b35dd2eaa9db4947f8fe641dea0228bf8ba7301d2369f0790871f65da";
             origin        "data/standards/components/isopropanol.dat";
-            originSha256  "510b474f696cf7952c89a27d0a48623266b8a79f3026cc348a934361bd763e07";
+            originSha256  "7338879f6f351e08c4ec91a02c86117d7f56faef9906c7e3174f954a4000d0d7";
             release       Choupo-2608;
         }
         "components/nitrobenzene.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "0a594e3b6b606061324707bc0960afadb2c48b11c9359f23b258e8c0ac08c4b2";
             origin        "data/standards/parameters/NRTL/isopropanol-nitrobenzene.dat";
             originSha256  "2b937f84b6812dce3f02ece84c874fffe601fbeaaf76a5e1d36429f5fcd86021";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/isopropanol-nitrobenzene.dat"
+        {
+            type          imported;
+            sha256        "2ad71fe1920ca8f240547710131a08f882d12beec8f30457747119ec9fd43c0b";
+            computationalSha256 "70c748ef2c1f1523ce8b7e4c3e461e02e234443f20864e1f4d3feeddfb42e7ff";
+            origin        "data/standards/parameters/Wilson/isopropanol-nitrobenzene.dat";
+            originSha256  "b609857135d6bda81d578580e36fae5c4477c0a994d4bb66da8a23a199141b58";
             release       Choupo-2608;
         }
     }

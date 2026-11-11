@@ -134,4 +134,228 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.a_ij  67.1491037704;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.a_ji  6.51763677724;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "a3955337076e6895";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nButanol-pXylene-bubble-je201053v.dat";
+            doi       "10.1021/je201053v";
+            sha256    "0ff44efea037860210a7db02c91a41dfe92cd2753e01c3cb56a73c4948c2684c";
+            provenance measured;
+            archiveFile "je201053v.xml";
+            system    "nButanol + pXylene";
+            pressure  "101330.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nButanol-pXylene-bubble-s10765-006-0018-5.dat";
+            doi       "10.1007/s10765-006-0018-5";
+            sha256    "efe81b3dc411b2289f7d7f8f92efab145ff8222321ef98910e86cce2d4e8c02c";
+            provenance measured;
+            archiveFile "s10765-006-0018-5.xml";
+            system    "nButanol + pXylene";
+            pressure  "97300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0325; max 0.9819; n 34; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.a_ij  67.1491038568;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.a_ji  6.51763668913;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "a3955337076e6895";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nButanol-pXylene-bubble-je201053v.dat";
+            doi       "10.1021/je201053v";
+            sha256    "0ff44efea037860210a7db02c91a41dfe92cd2753e01c3cb56a73c4948c2684c";
+            provenance measured;
+            archiveFile "je201053v.xml";
+            system    "nButanol + pXylene";
+            pressure  "101330.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nButanol-pXylene-bubble-s10765-006-0018-5.dat";
+            doi       "10.1007/s10765-006-0018-5";
+            sha256    "efe81b3dc411b2289f7d7f8f92efab145ff8222321ef98910e86cce2d4e8c02c";
+            provenance measured;
+            archiveFile "s10765-006-0018-5.xml";
+            system    "nButanol + pXylene";
+            pressure  "97300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0325; max 0.9819; n 34; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.A_ij  2949.74015067;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.A_ji  1009.55024845;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "a3955337076e6895";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nButanol-pXylene-bubble-je201053v.dat";
+            doi       "10.1021/je201053v";
+            sha256    "0ff44efea037860210a7db02c91a41dfe92cd2753e01c3cb56a73c4948c2684c";
+            provenance measured;
+            archiveFile "je201053v.xml";
+            system    "nButanol + pXylene";
+            pressure  "101330.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nButanol-pXylene-bubble-s10765-006-0018-5.dat";
+            doi       "10.1007/s10765-006-0018-5";
+            sha256    "efe81b3dc411b2289f7d7f8f92efab145ff8222321ef98910e86cce2d4e8c02c";
+            provenance measured;
+            archiveFile "s10765-006-0018-5.xml";
+            system    "nButanol + pXylene";
+            pressure  "97300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0325; max 0.9819; n 34; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.A_ij  2949.74014575;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.A_ji  1009.55025332;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "a3955337076e6895";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nButanol-pXylene-bubble-je201053v.dat";
+            doi       "10.1021/je201053v";
+            sha256    "0ff44efea037860210a7db02c91a41dfe92cd2753e01c3cb56a73c4948c2684c";
+            provenance measured;
+            archiveFile "je201053v.xml";
+            system    "nButanol + pXylene";
+            pressure  "101330.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nButanol-pXylene-bubble-s10765-006-0018-5.dat";
+            doi       "10.1007/s10765-006-0018-5";
+            sha256    "efe81b3dc411b2289f7d7f8f92efab145ff8222321ef98910e86cce2d4e8c02c";
+            provenance measured;
+            archiveFile "s10765-006-0018-5.xml";
+            system    "nButanol + pXylene";
+            pressure  "97300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0325; max 0.9819; n 34; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

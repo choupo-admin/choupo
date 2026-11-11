@@ -1,0 +1,89 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      ethylLactate;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        A  4.3977611237;
+        B  1504.24379513;
+        C  -81.5619060972;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c8245ca8783a31da";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylLactate-vapourPressure-j.jct.2018.07.029.dat";
+            doi       "10.1016/j.jct.2018.07.029";
+            sha256    "faee2c764a6a0500a93844e5fe52bdc5175a7bc8bd4c3a226f9c2fc768c0191b";
+            provenance measured;
+            archiveFile "j.jct.2018.07.029.xml";
+            system    "ethylLactate";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylLactate-vapourPressure-j.tca.2013.11.010.dat";
+            doi       "10.1016/j.tca.2013.11.010";
+            sha256    "1258a5fe7a5af26ad3162da9bd6fc878c45644acf4f8740a4d5431a8de4e3747";
+            provenance measured;
+            archiveFile "j.tca.2013.11.010.xml";
+            system    "ethylLactate";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylLactate-vapourPressure-j.fluid.2015.12.029.dat";
+            doi       "10.1016/j.fluid.2015.12.029";
+            sha256    "8b4e8cfbfb31555d50ad40600466408a2c58ab3223317dbf12b22208576eb72c";
+            provenance measured;
+            archiveFile "j.fluid.2015.12.029.xml";
+            system    "ethylLactate";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 274.6; max 426.1; n 56; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.999766342686;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

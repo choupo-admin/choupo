@@ -28,19 +28,19 @@ propertyManifest
         "components/ethylBenzene.dat"
         {
             type          imported;
-            sha256        "ae0432cef7e9cc8d1a1c7669ce4a783ccf51218cff2404dd7ba093d0695d1922";
-            computationalSha256 "c4a5df3dd8cb1cd0dc6031be45ffdc38a34f227a8eb4b34bdecebd07b13b8b0e";
+            sha256        "a3770fc80542ebef6c1e967abe82aa77f1772855e3873575603dc3ec1c54ce74";
+            computationalSha256 "99065feb74f678d5fdc677c7b2f450910efa7af9990f15e931738055b6bda9ae";
             origin        "data/standards/components/ethylBenzene.dat";
-            originSha256  "e2ecbd5573ce3719ae530d1cd13978928548ca096b3666ad58321bcd8ca07505";
+            originSha256  "eb0e3c4909ad9a0859b769f78ba184bc73174b779765f33d3e2876a4600b2d0f";
             release       Choupo-2608;
         }
         "components/toluene.dat"
         {
             type          imported;
-            sha256        "025c441842aa1728935905ed8dfa50db5a6405ee082618c11673f665596d4911";
-            computationalSha256 "f66debfbcd493c4c7c4636809e784a1e07a6c482c3baed13ba34dce12ae63f79";
+            sha256        "5fb900674321baa67135bfeb2c8f80e63d9af183c35f1615477d751b4299f14b";
+            computationalSha256 "55e1e2986dd1c3fc08c951e842a86b062ee6a7bfbc1e1317387e69149a139e36";
             origin        "data/standards/components/toluene.dat";
-            originSha256  "fe5cb21ba09cf44b41de252f6a5a5dd21b6803fcd40666f6fed8d9de8e68563a";
+            originSha256  "ad1533cb0d94caade355d7149fd88ee1ad07c945f5d4c85f4bcce925766250b9";
             release       Choupo-2608;
         }
         "parameters/NRTL/ethylBenzene-toluene.dat"
@@ -50,6 +50,24 @@ propertyManifest
             computationalSha256 "7a56407762fdae546dc22d1b203ecd8d3dc21ad601e6c582f760913b6be86395";
             origin        "data/standards/parameters/NRTL/ethylBenzene-toluene.dat";
             originSha256  "ee8f49b599f0bb8bcde68a1efbd6bc13576844f0e7182dd5b9716442661ac28f";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/ethylBenzene-toluene.dat"
+        {
+            type          imported;
+            sha256        "e38eb0b0c0c9d7e9dd8600c84a160ca1002765680416cd95e585f5bc97eba14a";
+            computationalSha256 "6306f857c31025e4b341088c060f09039ae7f3c3f5a6570f4860ae8576f1dc40";
+            origin        "data/standards/parameters/UNIQUAC/ethylBenzene-toluene.dat";
+            originSha256  "de11da121c4fc2ba1d24cdd12248ad92e4f8e473aafccf8ccdc3ebc52e1e7c64";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/ethylBenzene-toluene.dat"
+        {
+            type          imported;
+            sha256        "391d7bab0e3bc35169f9193313e9ca5290cf8267894e43e0d6e8738a05661b41";
+            computationalSha256 "8fc0f2a78925b91dd697e6c77bea5b9f0f70fa6c70ea2658c04e9255f0fa0002";
+            origin        "data/standards/parameters/Wilson/ethylBenzene-toluene.dat";
+            originSha256  "f1cd9040015ecad2f7beb33c2575fe87f2a126de40fad58193f6b0b4b170f8ed";
             release       Choupo-2608;
         }
     }

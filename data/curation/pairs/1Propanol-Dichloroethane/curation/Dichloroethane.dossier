@@ -112,4 +112,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-1Propanol.A_ij  1138.55185415;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-1Propanol.A_ji  5308.14179486;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "fe1d936afdfc51b5";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/Dichloroethane-1Propanol-bubbleP-j.jct.2004.07.012-b9.dat";
+            doi       "10.1016/j.jct.2004.07.012";
+            sha256    "d655668fb23354b679cc69140855a56ccba1f64dd7e05a4408d4f990dcdb905d";
+            provenance measured;
+            archiveFile "j.jct.2004.07.012.xml";
+            system    "Dichloroethane + 1Propanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0992; max 0.8289; n 11; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-1Propanol.A_ij  1138.55190418;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-1Propanol.A_ji  5308.14156232;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "fe1d936afdfc51b5";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/Dichloroethane-1Propanol-bubbleP-j.jct.2004.07.012-b9.dat";
+            doi       "10.1016/j.jct.2004.07.012";
+            sha256    "d655668fb23354b679cc69140855a56ccba1f64dd7e05a4408d4f990dcdb905d";
+            provenance measured;
+            archiveFile "j.jct.2004.07.012.xml";
+            system    "Dichloroethane + 1Propanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0992; max 0.8289; n 11; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "003fb56e15ac3d21027d455c4ab30e1d655486052e821f321a8f118e9d7ab3cc";
             release       Choupo-2608;
         }
+        "parameters/Wilson/acetonitrile-bromobenzene.dat"
+        {
+            type          imported;
+            sha256        "d51265190427a4156639dd0a0491577f08ba8075709cb42921b54f80c16b8806";
+            computationalSha256 "976105f8baad57ecfa8598add4734d037a83df50bb9b74ed1fb92ea5004dffc6";
+            origin        "data/standards/parameters/Wilson/acetonitrile-bromobenzene.dat";
+            originSha256  "da32e8539c0942b1afa9f4f84aaea48b940e096bbe35273b6a5dc149525fd1d1";
+            release       Choupo-2608;
+        }
     }
 }

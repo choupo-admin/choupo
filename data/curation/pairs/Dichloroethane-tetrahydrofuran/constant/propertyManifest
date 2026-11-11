@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "2d8a496279960859f077d4694d54915916371816fd5f40406c7149c1348c5667";
             release       Choupo-2608;
         }
+        "parameters/Wilson/Dichloroethane-tetrahydrofuran.dat"
+        {
+            type          imported;
+            sha256        "fad7f729600ebbeeaf677b5c6771d996dd46a191a55a98a144a2e8b89e99b871";
+            computationalSha256 "83cb9858cdefffb2306a0dcd6ceb4e3b1d54a1c50c29ad22037ad53e5f942384";
+            origin        "data/standards/parameters/Wilson/Dichloroethane-tetrahydrofuran.dat";
+            originSha256  "191f7aa0bea645d35c161dbb8f39b9d929a2af409377aa7acd7f5653400ab72e";
+            release       Choupo-2608;
+        }
     }
 }

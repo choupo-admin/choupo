@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "674179336efd4e9a4ed3290a50cd610f0fda43076787e60494df2f30b5f55c77";
             release       Choupo-2608;
         }
+        "parameters/Wilson/ethanol-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "a1df112ffdb91a1b50310207c4bbc571fe618e3c5fc7a3569ef07e9ac704be6a";
+            computationalSha256 "5436839939aabf912be7de240321667242d4e70e096ef12a562897df703299b5";
+            origin        "data/standards/parameters/Wilson/ethanol-nNDimethylformamide.dat";
+            originSha256  "2f2ed4d5e224cc1b99eb4100e01006187136eb1d73bc1fadc5eb9b0c7d130f2e";
+            release       Choupo-2608;
+        }
     }
 }

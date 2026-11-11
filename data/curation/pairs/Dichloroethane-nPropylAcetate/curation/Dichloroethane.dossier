@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nPropylAcetate.A_ij  411.561534727;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nPropylAcetate.A_ji  475.266514944;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "31452b4c7a11138c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/Dichloroethane-nPropylAcetate-bubble-acs.jced.8b00434.dat";
+            doi       "10.1021/acs.jced.8b00434";
+            sha256    "cbace68858a4ada5a5ae27901d85bfeabd512a228bad811c3fe6096adc148d46";
+            provenance measured;
+            archiveFile "acs.jced.8b00434.xml";
+            system    "Dichloroethane + nPropylAcetate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0537; max 0.8674; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nPropylAcetate.A_ij  411.561551756;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nPropylAcetate.A_ji  475.266488995;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "31452b4c7a11138c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/Dichloroethane-nPropylAcetate-bubble-acs.jced.8b00434.dat";
+            doi       "10.1021/acs.jced.8b00434";
+            sha256    "cbace68858a4ada5a5ae27901d85bfeabd512a228bad811c3fe6096adc148d46";
+            provenance measured;
+            archiveFile "acs.jced.8b00434.xml";
+            system    "Dichloroethane + nPropylAcetate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0537; max 0.8674; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

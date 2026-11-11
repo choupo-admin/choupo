@@ -37,10 +37,10 @@ propertyManifest
         "components/mXylene.dat"
         {
             type          imported;
-            sha256        "31e05cfce81a4ad48a63993498067ba9335977201b7c08f73428ecb561233c33";
-            computationalSha256 "14aef5c18c81d0dc2c18d79c3d5122956e769c6e1250a11d7636f9dec649d2eb";
+            sha256        "c24a6c9ac4d388af9f8c2bf739601e19ef9c8d71b2be2683e845e2bbe02d3342";
+            computationalSha256 "6be7c972c0aa573b6dac04f2ee3b608577af2926c9509b2580627a2d55915b1b";
             origin        "data/standards/components/mXylene.dat";
-            originSha256  "b9df745d6fde70e82309ea2398df70cbaebffe5e09a8e7026d83c9cf5fe18921";
+            originSha256  "4d3c5a24e214e3030771078a8aa4d959e837268baf8b491e8a43ed61f0d00e90";
             release       Choupo-2608;
         }
         "parameters/NRTL/anisole-mXylene.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "c6221b0337e96fbb02b9d11c4b37bdc2611c66df227b6e55933cdebd3baeea41";
             origin        "data/standards/parameters/NRTL/anisole-mXylene.dat";
             originSha256  "778bdafe908ba71b639a70d95ca98d494d405a95ea190d5b38655d4bd91b80e7";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/anisole-mXylene.dat"
+        {
+            type          imported;
+            sha256        "12e4ed16e88480c13d741f440e13859789630be58ffc546a3e512f2e18cd82fa";
+            computationalSha256 "e6c197f5dc7e3ff6011a271f3a80def81efba75827488126c9069a538ececcb6";
+            origin        "data/standards/parameters/Wilson/anisole-mXylene.dat";
+            originSha256  "f155b59a084dc350faf7b67d1b30e923bc67517136ab7f052be6a45756dfd824";
             release       Choupo-2608;
         }
     }

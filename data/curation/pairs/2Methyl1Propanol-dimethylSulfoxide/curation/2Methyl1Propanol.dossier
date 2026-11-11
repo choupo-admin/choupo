@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-dimethylSulfoxide.A_ij  -2124.90555827;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-dimethylSulfoxide.A_ji  799.909387121;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "03603c0020121a0e";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methyl1Propanol-dimethylSulfoxide-bubble-acs.jced.7b00241.dat";
+            doi       "10.1021/acs.jced.7b00241";
+            sha256    "d4970a98abac735a96c0733db4da2b98ca1e61da48c74afb9930e58460b465e6";
+            provenance measured;
+            archiveFile "acs.jced.7b00241.xml";
+            system    "2Methyl1Propanol + dimethylSulfoxide";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.038; max 0.92; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-dimethylSulfoxide.A_ij  8950.1148169;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-dimethylSulfoxide.A_ji  -3568.41989389;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "03603c0020121a0e";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methyl1Propanol-dimethylSulfoxide-bubble-acs.jced.7b00241.dat";
+            doi       "10.1021/acs.jced.7b00241";
+            sha256    "d4970a98abac735a96c0733db4da2b98ca1e61da48c74afb9930e58460b465e6";
+            provenance measured;
+            archiveFile "acs.jced.7b00241.xml";
+            system    "2Methyl1Propanol + dimethylSulfoxide";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.038; max 0.92; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

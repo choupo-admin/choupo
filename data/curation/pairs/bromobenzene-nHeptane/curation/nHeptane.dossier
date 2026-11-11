@@ -112,4 +112,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-bromobenzene.A_ij  -2212.79541818;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-bromobenzene.A_ji  5267.43900892;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "95b453e519d54799";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nHeptane-bromobenzene-bubble-j.fluid.2005.11.020.dat";
+            doi       "10.1016/j.fluid.2005.11.020";
+            sha256    "776ea7f9ec1d17bca28cf46356efc0d3d36e8fa7a997386a8d51da338722e93d";
+            provenance measured;
+            archiveFile "j.fluid.2005.11.020.xml";
+            system    "nHeptane + bromobenzene";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0255; max 0.8943; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-bromobenzene.A_ij  -2212.79541752;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-bromobenzene.A_ji  5267.43900631;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "95b453e519d54799";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nHeptane-bromobenzene-bubble-j.fluid.2005.11.020.dat";
+            doi       "10.1016/j.fluid.2005.11.020";
+            sha256    "776ea7f9ec1d17bca28cf46356efc0d3d36e8fa7a997386a8d51da338722e93d";
+            provenance measured;
+            archiveFile "j.fluid.2005.11.020.xml";
+            system    "nHeptane + bromobenzene";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0255; max 0.8943; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

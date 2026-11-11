@@ -28,19 +28,19 @@ propertyManifest
         "components/2Methyl2Propanol.dat"
         {
             type          imported;
-            sha256        "85da846573aa8847cf253bb6a529bccb7cef7f6811f6f65be60476b507fc5442";
-            computationalSha256 "11753215451e3bf204fd6a69c6d95af63cdadf84fdfebe9aa516b4610a7ae366";
+            sha256        "17e181c16f08bfa8410737c8f6744b259b00d8c1d985b3ea8efdf9ecb14eaa48";
+            computationalSha256 "646148d2e0ba73b3da0e8baca650e1a51842a343e7909e987a6aabc68f622a9d";
             origin        "data/standards/components/2Methyl2Propanol.dat";
-            originSha256  "225442e6d92c7f5d9f6cd96593a5d8d958d8b0f65227d2eee965eac6e04747b2";
+            originSha256  "03c4dae4a65edde0ea277bc42cd644162b49728a8612095e20ffd3565c2944b2";
             release       Choupo-2608;
         }
         "components/nPropylAcetate.dat"
         {
             type          imported;
-            sha256        "bae5d694a37bfbe03d15627f0cb30337bf2fe4f53e411fd6241bbf08663bd720";
-            computationalSha256 "2c7f9840afa05762f6ea54030ca0f63c06c5a145138a3a1fc66405d5d64ecb1f";
+            sha256        "a4d98fa4268bc6a1079db72228e5677659b26a284e8bfa1fc380997fb7497afc";
+            computationalSha256 "62c9f54d2619d78e353dc006b570baf675a5c74819e7cbe941efd2470c427b46";
             origin        "data/standards/components/nPropylAcetate.dat";
-            originSha256  "d6441f89d965c47899449c155ee12a811238c3650307cbed703a2259c65126a9";
+            originSha256  "3ce435dbe5ebc3156e7a873351092b8814732d50e2fdd06e3684bba46a480d33";
             release       Choupo-2608;
         }
         "parameters/NRTL/2Methyl2Propanol-nPropylAcetate.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/2Methyl2Propanol-nPropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "ae0261789397ea74906d7f77af0728d8c5263a6fa8462e3093895c9f60b996d8";
+            computationalSha256 "720edb2c653066de50d2143a5d5e6a7f0552a96eef0aa43b572c27ea0c9f3ab0";
+            origin        "data/standards/parameters/UNIQUAC/2Methyl2Propanol-nPropylAcetate.dat";
+            originSha256  "8fcf3b667acb61189ac71cd58c80444820ad5d4f2cd834f4f2b62ca297feb6e9";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Methyl2Propanol-nPropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "7595581011f0b10268aa56da8a8e23cdf977542b89b220dd575993810bf64157";
+            computationalSha256 "ed9e48253a8d360d9433d176357e798928300e93927558eeec89a0e128ab338e";
+            origin        "data/standards/parameters/Wilson/2Methyl2Propanol-nPropylAcetate.dat";
+            originSha256  "83e489f0a3bc77615855410a326840a37340b6f86d85ad1562119144e3d68cc0";
             release       Choupo-2608;
         }
     }

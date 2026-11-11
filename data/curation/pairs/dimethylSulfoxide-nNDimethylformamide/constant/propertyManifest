@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "939dc752df004eb8aa26bccd4aaa6f23aa8c51b5987eeb39f2f37f75f2aba1a5";
             release       Choupo-2608;
         }
+        "parameters/Wilson/dimethylSulfoxide-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "759d0e556ee096e885a08fa169acbe280ec43dc330b012703284ca531f9427cc";
+            computationalSha256 "7e054d3c00b6470c7f919917c46a309d81135e85f70030b013fbcf2e32e2695c";
+            origin        "data/standards/parameters/Wilson/dimethylSulfoxide-nNDimethylformamide.dat";
+            originSha256  "65b3f65565e815a192f3f9fa21a75e3d8b4e1dbd6b30173f1418609fe57acabb";
+            release       Choupo-2608;
+        }
     }
 }

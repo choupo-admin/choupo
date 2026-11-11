@@ -1,0 +1,80 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      tertButylAcetate;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        A  4.30261849419;
+        B  1398.68654671;
+        C  -45.7852980572;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "62b28a4a35c5ac9d";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/tertButylAcetate-vapourPressure-j.fluid.2004.10.022.dat";
+            doi       "10.1016/j.fluid.2004.10.022";
+            sha256    "66776edd2f4be0c51cea9244299aad699241123fcba5ddc312b65355020e886d";
+            provenance measured;
+            archiveFile "j.fluid.2004.10.022.xml";
+            system    "tertButylAcetate";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/tertButylAcetate-vapourPressure-je060269j.dat";
+            doi       "10.1021/je060269j";
+            sha256    "02c8cb4d842126b8f3f721cab2b12b266f42b2da0534cbb9ac3acc39d86a0acf";
+            provenance measured;
+            archiveFile "je060269j.xml";
+            system    "tertButylAcetate";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 307.53; max 538.6; n 35; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.999983320915;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

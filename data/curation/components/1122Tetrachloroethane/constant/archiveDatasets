@@ -1,0 +1,91 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of 1122Tetrachloroethane
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/1122Tetrachloroethane-vapourPressure-j.jct.2006.01.010.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1016/j.jct.2006.01.010";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.jct.2006.01.010.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.jct.2006.01.010.json";
+        articleFile   "j.jct.2006.01.010.xml";
+        articleSha256 "27c844e78b3b151ebc51ac350728769f2eb96319a7c4c1f3f6b82101454c7cda";
+        extractor     vapourPressure;
+        inchiKey      "QPFMBZIOSGYJDE-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey QPFMBZIOSGYJDE-UHFFFAOYSA-N --into <dir>";
+        sha256        "2a792297dc8aff1fe0fd1af991588d01ab228eaca430814c13863bd1c5898d3f";
+        identity
+        {
+            1122Tetrachloroethane { cas "79-34-5"; inchiKey "QPFMBZIOSGYJDE-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/1122Tetrachloroethane-vapourPressure-j.fluid.2004.02.021.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1016/j.fluid.2004.02.021";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2004.02.021.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2004.02.021.json";
+        articleFile   "j.fluid.2004.02.021.xml";
+        articleSha256 "42886923df5836ca0d6431bd54b23f9e6b60134a57557dd8abe93b7affb46829";
+        extractor     vapourPressure;
+        inchiKey      "QPFMBZIOSGYJDE-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey QPFMBZIOSGYJDE-UHFFFAOYSA-N --into <dir>";
+        sha256        "c2436c53e5a35763782d067ac5257d35e39613d86072dc8dc2e3713eaebcaf5b";
+        identity
+        {
+            1122Tetrachloroethane { cas "79-34-5"; inchiKey "QPFMBZIOSGYJDE-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/1122Tetrachloroethane-vapourPressure-j.fluid.2004.10.025.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1016/j.fluid.2004.10.025";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2004.10.025.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2004.10.025.json";
+        articleFile   "j.fluid.2004.10.025.xml";
+        articleSha256 "7b79c0cb959854f02f974c4ae788a2e506e2b45c26b46b2cef49bb8657b07d23";
+        extractor     vapourPressure;
+        inchiKey      "QPFMBZIOSGYJDE-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey QPFMBZIOSGYJDE-UHFFFAOYSA-N --into <dir>";
+        sha256        "0c7822dcf6fa47665cadf186eb901ca0d88a0d7eba94bb5682bb6b69ded77d39";
+        identity
+        {
+            1122Tetrachloroethane { cas "79-34-5"; inchiKey "QPFMBZIOSGYJDE-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/1122Tetrachloroethane-vapourPressure-j.jct.2005.06.003.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1016/j.jct.2005.06.003";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.jct.2005.06.003.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.jct.2005.06.003.json";
+        articleFile   "j.jct.2005.06.003.xml";
+        articleSha256 "adc414420f9c92d6d274fd25e961a9bdd9558fbd155d9e61d926942fc29cdbfb";
+        extractor     vapourPressure;
+        inchiKey      "QPFMBZIOSGYJDE-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey QPFMBZIOSGYJDE-UHFFFAOYSA-N --into <dir>";
+        sha256        "85f1b45d5d3bb3c377e7af02dbd46d6b439dd2fee4cb6522f7da612457f9f0bf";
+        identity
+        {
+            1122Tetrachloroethane { cas "79-34-5"; inchiKey "QPFMBZIOSGYJDE-UHFFFAOYSA-N"; }
+        }
+    }
+);

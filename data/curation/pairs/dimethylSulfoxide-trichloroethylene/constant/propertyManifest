@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "1e857a4445d615e028118299c1165429ccb73e439d7b40f5429b26d4b194db74";
             release       Choupo-2608;
         }
+        "parameters/Wilson/dimethylSulfoxide-trichloroethylene.dat"
+        {
+            type          imported;
+            sha256        "579e31d9adfb803ae72accf0a54681712e9520b00eff4e3f483d957f893d56d0";
+            computationalSha256 "6d7762edca0973cb17f5116c0ce7b272f6264d18f727e1ad05895f2363e283ac";
+            origin        "data/standards/parameters/Wilson/dimethylSulfoxide-trichloroethylene.dat";
+            originSha256  "5865d25ed4af919dcce7fcad3f97b8be092483848c57c7adc406029fbe18ad14";
+            release       Choupo-2608;
+        }
     }
 }

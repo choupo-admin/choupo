@@ -43,5 +43,14 @@ propertyManifest
             originSha256  "4dfd083b1f44673d3672cb463555bdfa03068f10bec14bf97bce1e682ec0db07";
             release       Choupo-2608;
         }
+        "parameters/Wilson/methanol-nitrobenzene.dat"
+        {
+            type          imported;
+            sha256        "1a30bf45c6d2a89d98a4b025bd3389f1f7622bfb7fb3c0b43067944ed4af926c";
+            computationalSha256 "4c85d04ceeb06f7ae9493add485cad9f5d69dc4780c04ece434bf13b57044daf";
+            origin        "data/standards/parameters/Wilson/methanol-nitrobenzene.dat";
+            originSha256  "032c5955aa1982f24ac0760882d4d401dca6961a565d60a72442f9cbdf70db59";
+            release       Choupo-2608;
+        }
     }
 }

@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acetone-hexamethyldisiloxane.A_ij  4106.22524716;
+        equilibrium.liquid.activityModel.binaryParameters.acetone-hexamethyldisiloxane.A_ji  782.098680309;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "260589d1880ea8b2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetone-hexamethyldisiloxane-bubble-acs.jced.8b00488.dat";
+            doi       "10.1021/acs.jced.8b00488";
+            sha256    "166f6ea25fd6b36cb9529de7fa8f1cfbb2c19a7ab01285005a465c6ea1f9baad";
+            provenance measured;
+            archiveFile "acs.jced.8b00488.xml";
+            system    "acetone + hexamethyldisiloxane";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0164; max 0.9874; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acetone-hexamethyldisiloxane.A_ij  4106.22524553;
+        equilibrium.liquid.activityModel.binaryParameters.acetone-hexamethyldisiloxane.A_ji  782.098682524;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "260589d1880ea8b2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetone-hexamethyldisiloxane-bubble-acs.jced.8b00488.dat";
+            doi       "10.1021/acs.jced.8b00488";
+            sha256    "166f6ea25fd6b36cb9529de7fa8f1cfbb2c19a7ab01285005a465c6ea1f9baad";
+            provenance measured;
+            archiveFile "acs.jced.8b00488.xml";
+            system    "acetone + hexamethyldisiloxane";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0164; max 0.9874; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

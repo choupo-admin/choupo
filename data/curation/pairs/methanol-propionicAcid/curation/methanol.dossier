@@ -114,4 +114,188 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-propionicAcid.a_ij  -101.740285524;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-propionicAcid.a_ji  144.505216997;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f7ec846f10eba143";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-propionicAcid-bubble-je1000473.dat";
+            doi       "10.1021/je1000473";
+            sha256    "08be9fe6a573727069d6138f21ac012b3e6fb449585d7dc521e2633a505256a2";
+            provenance measured;
+            archiveFile "je1000473.xml";
+            system    "methanol + propionicAcid";
+            pressure  "101000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0763; max 0.9279; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-propionicAcid.a_ij  -101.735213106;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-propionicAcid.a_ji  144.497985383;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f7ec846f10eba143";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-propionicAcid-bubble-je1000473.dat";
+            doi       "10.1021/je1000473";
+            sha256    "08be9fe6a573727069d6138f21ac012b3e6fb449585d7dc521e2633a505256a2";
+            provenance measured;
+            archiveFile "je1000473.xml";
+            system    "methanol + propionicAcid";
+            pressure  "101000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0763; max 0.9279; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-propionicAcid.A_ij  5109.6162502;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-propionicAcid.A_ji  -4120.82704831;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f7ec846f10eba143";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-propionicAcid-bubble-je1000473.dat";
+            doi       "10.1021/je1000473";
+            sha256    "08be9fe6a573727069d6138f21ac012b3e6fb449585d7dc521e2633a505256a2";
+            provenance measured;
+            archiveFile "je1000473.xml";
+            system    "methanol + propionicAcid";
+            pressure  "101000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0763; max 0.9279; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-propionicAcid.A_ij  5109.61625037;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-propionicAcid.A_ji  -4120.82704792;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f7ec846f10eba143";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-propionicAcid-bubble-je1000473.dat";
+            doi       "10.1021/je1000473";
+            sha256    "08be9fe6a573727069d6138f21ac012b3e6fb449585d7dc521e2633a505256a2";
+            provenance measured;
+            archiveFile "je1000473.xml";
+            system    "methanol + propionicAcid";
+            pressure  "101000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0763; max 0.9279; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

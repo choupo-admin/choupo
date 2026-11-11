@@ -28,10 +28,10 @@ propertyManifest
         "components/isopropanol.dat"
         {
             type          imported;
-            sha256        "c206190bf473636ab8661c95a2126b9088fc6a1b5013c5e1325470f8133691b0";
-            computationalSha256 "4ca8dc74e7851f893506b84d7a8e03b629f1794fd0132eed65e92c65cac2e9f9";
+            sha256        "61118a4a99021492caf6ad77788bb2bd987dab2f1160ad21534ae7ce688dae8a";
+            computationalSha256 "5c4f956b35dd2eaa9db4947f8fe641dea0228bf8ba7301d2369f0790871f65da";
             origin        "data/standards/components/isopropanol.dat";
-            originSha256  "510b474f696cf7952c89a27d0a48623266b8a79f3026cc348a934361bd763e07";
+            originSha256  "7338879f6f351e08c4ec91a02c86117d7f56faef9906c7e3174f954a4000d0d7";
             release       Choupo-2608;
         }
         "components/nButanol.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/isopropanol-nButanol.dat"
+        {
+            type          imported;
+            sha256        "76d6f633567d915ea6363472b0cf821ee3d6a27eb97d338877d2c34d09f1cb8e";
+            computationalSha256 "1c4f6dcd9a81ecdf4ad7b6a1098e382dad61171cf8afd992ec48935e42969e6b";
+            origin        "data/standards/parameters/UNIQUAC/isopropanol-nButanol.dat";
+            originSha256  "5a308e12873bc2ce11cd8ef2375f49ca8ae6a8f43b4f5679d7b6404d64c1b538";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/isopropanol-nButanol.dat"
+        {
+            type          imported;
+            sha256        "0db0b4b99f6a24e6ed0ec80947b0a8281a1738be0620be294d97c7a352667970";
+            computationalSha256 "f67cbbbc3ad09fde6273117dc97fc174e6780f73bf2c59080e8bb7337476200e";
+            origin        "data/standards/parameters/Wilson/isopropanol-nButanol.dat";
+            originSha256  "afa5e444d922da843e3fc2c7974fd07101946591f11e2a770e64c5a79e011560";
             release       Choupo-2608;
         }
     }

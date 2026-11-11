@@ -154,4 +154,136 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylSulfoxide.A_ij  -3094.32939556;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylSulfoxide.A_ji  10538.3899269;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "23bdb4c9f9054836";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-dimethylSulfoxide-bubble-acs.jced.8b00225.dat";
+            doi       "10.1021/acs.jced.8b00225";
+            sha256    "2eaeb0074950be62406d0e6f3dfa86bb7f05ee724a156e3032eb815dcb419324";
+            provenance measured;
+            archiveFile "acs.jced.8b00225.xml";
+            system    "ethylBenzene + dimethylSulfoxide";
+            pressure  "100000.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-dimethylSulfoxide-bubble-je4006739.dat";
+            doi       "10.1021/je4006739";
+            sha256    "362d563ba0bb10b6cb2fb866f6b620e17a022b64f6845306d8a3e118f3354a96";
+            provenance measured;
+            archiveFile "je4006739.xml";
+            system    "ethylBenzene + dimethylSulfoxide";
+            pressure  "100000.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-dimethylSulfoxide-bubble-j.fluid.2007.08.001.dat";
+            doi       "10.1016/j.fluid.2007.08.001";
+            sha256    "c2a7c61167feece786b88d9a85f449ea166f2e80bd2c632328682a1cd7325fc2";
+            provenance measured;
+            archiveFile "j.fluid.2007.08.001.xml";
+            system    "ethylBenzene + dimethylSulfoxide";
+            pressure  "95300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0011; max 0.9238; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylSulfoxide.A_ij  -3094.32939641;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylSulfoxide.A_ji  10538.3899353;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "23bdb4c9f9054836";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-dimethylSulfoxide-bubble-acs.jced.8b00225.dat";
+            doi       "10.1021/acs.jced.8b00225";
+            sha256    "2eaeb0074950be62406d0e6f3dfa86bb7f05ee724a156e3032eb815dcb419324";
+            provenance measured;
+            archiveFile "acs.jced.8b00225.xml";
+            system    "ethylBenzene + dimethylSulfoxide";
+            pressure  "100000.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-dimethylSulfoxide-bubble-je4006739.dat";
+            doi       "10.1021/je4006739";
+            sha256    "362d563ba0bb10b6cb2fb866f6b620e17a022b64f6845306d8a3e118f3354a96";
+            provenance measured;
+            archiveFile "je4006739.xml";
+            system    "ethylBenzene + dimethylSulfoxide";
+            pressure  "100000.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-dimethylSulfoxide-bubble-j.fluid.2007.08.001.dat";
+            doi       "10.1016/j.fluid.2007.08.001";
+            sha256    "c2a7c61167feece786b88d9a85f449ea166f2e80bd2c632328682a1cd7325fc2";
+            provenance measured;
+            archiveFile "j.fluid.2007.08.001.xml";
+            system    "ethylBenzene + dimethylSulfoxide";
+            pressure  "95300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0011; max 0.9238; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

@@ -114,4 +114,188 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.a_ij  73.3528978118;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.a_ji  36.5576153391;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b4a4a8681e0daa87";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylAcetate-nDecane-bubble-je100832h.dat";
+            doi       "10.1021/je100832h";
+            sha256    "31832926e022cafa7293ca700a38facbcc7ceaed1c4ccc0746fbf2ab3d4bf7c3";
+            provenance measured;
+            archiveFile "je100832h.xml";
+            system    "ethylAcetate + nDecane";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.026; max 0.99; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.a_ij  73.3528967354;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.a_ji  36.5576163018;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b4a4a8681e0daa87";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylAcetate-nDecane-bubble-je100832h.dat";
+            doi       "10.1021/je100832h";
+            sha256    "31832926e022cafa7293ca700a38facbcc7ceaed1c4ccc0746fbf2ab3d4bf7c3";
+            provenance measured;
+            archiveFile "je100832h.xml";
+            system    "ethylAcetate + nDecane";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.026; max 0.99; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.A_ij  1715.47054077;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.A_ji  3365.90290741;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b4a4a8681e0daa87";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylAcetate-nDecane-bubble-je100832h.dat";
+            doi       "10.1021/je100832h";
+            sha256    "31832926e022cafa7293ca700a38facbcc7ceaed1c4ccc0746fbf2ab3d4bf7c3";
+            provenance measured;
+            archiveFile "je100832h.xml";
+            system    "ethylAcetate + nDecane";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.026; max 0.99; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.A_ij  1715.4705512;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.A_ji  3365.90285935;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b4a4a8681e0daa87";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylAcetate-nDecane-bubble-je100832h.dat";
+            doi       "10.1021/je100832h";
+            sha256    "31832926e022cafa7293ca700a38facbcc7ceaed1c4ccc0746fbf2ab3d4bf7c3";
+            provenance measured;
+            archiveFile "je100832h.xml";
+            system    "ethylAcetate + nDecane";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.026; max 0.99; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

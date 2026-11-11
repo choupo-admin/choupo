@@ -37,10 +37,10 @@ propertyManifest
         "components/nOctane.dat"
         {
             type          imported;
-            sha256        "bb8d866ae2a345667264d47bb499d49eafa1a76a17728e78ed2c256626b61777";
-            computationalSha256 "b281e3245fe2ce57ab504bbf223594f6184e2ad1d76fa4f8964807b6e0ddc953";
+            sha256        "7285e0f36fc937467563bf4b72b3bfe796dde113e188dd090c1308c066eaef19";
+            computationalSha256 "cee6abc667bc264800389300e47fad2af6a1412fb18c2dc3f84376e18e6ca150";
             origin        "data/standards/components/nOctane.dat";
-            originSha256  "99bde55672f9e84a9d7b55e91d646e13eb9d473696dd1c82d8d905228fca8608";
+            originSha256  "fb529641419f4f0361b39213a0b74ffbab235e4b4a3ddf2c2ddeb053a985ad6e";
             release       Choupo-2608;
         }
         "parameters/NRTL/nNDimethylformamide-nOctane.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "cdb36aaf4cff0170fa6a704d00a778528a0f928f85d9bda7c0716a14ae2e27d8";
             origin        "data/standards/parameters/NRTL/nNDimethylformamide-nOctane.dat";
             originSha256  "fe8058d3279f381c56c788d2c019c7d53720b096f1c569f36150c3dd905e8db3";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/nNDimethylformamide-nOctane.dat"
+        {
+            type          imported;
+            sha256        "ad4f296118a8be993b7989f79990d45f8f3eecb99e0ea5c8c7ae774b31e8f297";
+            computationalSha256 "d0af5ee1c8538f73491a3df60d2103dc4f69db72616c1890fe92e495d70f6fc4";
+            origin        "data/standards/parameters/Wilson/nNDimethylformamide-nOctane.dat";
+            originSha256  "d0764d8c2a6ed1d60d37f88e7b0bc82d405ee25162cac1bc630fe2a7516bc4c6";
             release       Choupo-2608;
         }
     }

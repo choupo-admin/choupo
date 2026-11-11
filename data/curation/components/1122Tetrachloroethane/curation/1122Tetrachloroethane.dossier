@@ -1,0 +1,98 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      1122Tetrachloroethane;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        A  4.23965049939;
+        B  1525.76448607;
+        C  -59.2147527157;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "8affd562b5d155a2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1122Tetrachloroethane-vapourPressure-j.jct.2006.01.010.dat";
+            doi       "10.1016/j.jct.2006.01.010";
+            sha256    "27c844e78b3b151ebc51ac350728769f2eb96319a7c4c1f3f6b82101454c7cda";
+            provenance measured;
+            archiveFile "j.jct.2006.01.010.xml";
+            system    "1122Tetrachloroethane";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1122Tetrachloroethane-vapourPressure-j.fluid.2004.02.021.dat";
+            doi       "10.1016/j.fluid.2004.02.021";
+            sha256    "42886923df5836ca0d6431bd54b23f9e6b60134a57557dd8abe93b7affb46829";
+            provenance measured;
+            archiveFile "j.fluid.2004.02.021.xml";
+            system    "1122Tetrachloroethane";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1122Tetrachloroethane-vapourPressure-j.fluid.2004.10.025.dat";
+            doi       "10.1016/j.fluid.2004.10.025";
+            sha256    "7b79c0cb959854f02f974c4ae788a2e506e2b45c26b46b2cef49bb8657b07d23";
+            provenance measured;
+            archiveFile "j.fluid.2004.10.025.xml";
+            system    "1122Tetrachloroethane";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1122Tetrachloroethane-vapourPressure-j.jct.2005.06.003.dat";
+            doi       "10.1016/j.jct.2005.06.003";
+            sha256    "adc414420f9c92d6d274fd25e961a9bdd9558fbd155d9e61d926942fc29cdbfb";
+            provenance measured;
+            archiveFile "j.jct.2005.06.003.xml";
+            system    "1122Tetrachloroethane";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 283.15; max 418.95; n 40; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.999976746804;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

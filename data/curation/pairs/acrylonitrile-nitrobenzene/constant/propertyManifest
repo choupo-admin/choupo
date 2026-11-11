@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "fb2a0c5c59aedb79cbab83b925f85c21e68ad27fc797bf77f83cddfa87d0ecbc";
             release       Choupo-2608;
         }
+        "parameters/Wilson/acrylonitrile-nitrobenzene.dat"
+        {
+            type          imported;
+            sha256        "16aab4c69dba25f85cdf8be323cb1c3dd2e76c16880bc3cccbe07b2bdfcab99a";
+            computationalSha256 "c651678229f3652b8eeb79847872ce7d4b4493db4723f30a25bcf9a7f3901e6b";
+            origin        "data/standards/parameters/Wilson/acrylonitrile-nitrobenzene.dat";
+            originSha256  "778954cf70f879e183f64a46571f5d31189fe3589cb3e0770387a4a1c7335aa1";
+            release       Choupo-2608;
+        }
     }
 }

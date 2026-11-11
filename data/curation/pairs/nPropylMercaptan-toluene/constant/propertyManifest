@@ -37,10 +37,10 @@ propertyManifest
         "components/toluene.dat"
         {
             type          imported;
-            sha256        "025c441842aa1728935905ed8dfa50db5a6405ee082618c11673f665596d4911";
-            computationalSha256 "f66debfbcd493c4c7c4636809e784a1e07a6c482c3baed13ba34dce12ae63f79";
+            sha256        "5fb900674321baa67135bfeb2c8f80e63d9af183c35f1615477d751b4299f14b";
+            computationalSha256 "55e1e2986dd1c3fc08c951e842a86b062ee6a7bfbc1e1317387e69149a139e36";
             origin        "data/standards/components/toluene.dat";
-            originSha256  "fe5cb21ba09cf44b41de252f6a5a5dd21b6803fcd40666f6fed8d9de8e68563a";
+            originSha256  "ad1533cb0d94caade355d7149fd88ee1ad07c945f5d4c85f4bcce925766250b9";
             release       Choupo-2608;
         }
         "parameters/NRTL/nPropylMercaptan-toluene.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "551041df4173d5f3f0bc7c66982f3875e7fb223e247843032ea900b1388d050b";
             origin        "data/standards/parameters/NRTL/nPropylMercaptan-toluene.dat";
             originSha256  "dafc133babad8bed1c0909fc10f01b21f4f4861fe2c5e4f5ec1d9868c353c208";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/nPropylMercaptan-toluene.dat"
+        {
+            type          imported;
+            sha256        "4cc021eb857d0cacd692c842883a5cdee194e7d0b20b5c26c37bb2455cb9d9aa";
+            computationalSha256 "52037b046ce63d4fc1bc24519e5f55014086b19519f1f30e46c20d02a81f0c20";
+            origin        "data/standards/parameters/Wilson/nPropylMercaptan-toluene.dat";
+            originSha256  "8b35356b7e56360723bcc42dcad6b2a343d642605db7656ec1bbd6a6ac50f725";
             release       Choupo-2608;
         }
     }

@@ -59,4 +59,27 @@ cosmo
         licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
         installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
     }
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file PHOSPHORIC_ACID.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey NBIIXXVUZAFLBC-UHFFFAOYSA-N (full match); formula H3O4P; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        102.691406;   // sum of the profile below; GAMESS prints 102.69
+        volume      85.35;
+        sigmaProfile  (
+               0.000000     0.000000     0.767424     2.382704     4.476259     2.890268
+               0.389957     1.938609     5.074548     3.349773     1.324461     0.455289
+               1.665212     1.952157     1.161998     0.227863     0.786493     2.038779
+               1.370058     1.222628     0.842161     0.476942     2.211899     2.975053
+               3.733414     3.470556     2.823526     2.232808     2.441495     2.268327
+               3.875810     3.489415     5.101130     2.830370     2.968821     2.895588
+               5.653836     2.754355     2.166411     1.595583     0.578297     0.622111
+               2.768212     7.148286     1.292520     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
+    }
 }

@@ -1,0 +1,55 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  cosmoSAC02_lvpp_selection_lin2002 -- the data the reading was CHOSEN on.
+
+  WHAT THIS CASE IS.  COSMO-SAC variant LVPP-HFTZVP-2018 (DEV.md 4c C310;
+  record docs/design/cosmo-sac-lvpp-hftzvp-2018.md) runs the 2002 equations
+  with the constants Ferrarini, Flores, Muniz & Soares fitted to the LVPP
+  GAMESS HF/TZVP profiles (AIChE J. 64 (2018) 3443, p. 11).  The paper leaves
+  two choices open -- the decay of the charge averaging and the area inside
+  the misfit constant alpha' -- and the four readings they allow were run
+  against the measured activity coefficients at infinite dilution in water
+  and in n-hexane at 298.15 K of Lin & Sandler, Ind. Eng. Chem. Res. 41
+  (2002) 899, Table 2 (the "expt" columns).  One reading was plausible
+  (f_decay 3.57 with distances in A, alpha' on pi r_eff^2); it is the one the
+  engine runs.
+
+  WHY IT IS NOT A VALIDATION.  These numbers CHOSE the reading, so agreement
+  with them proves nothing about prediction: it is selection data, and the
+  variant's acceptance is a held-out comparison on other measurements
+  (bin/curate/cosmo_lvpp_vs_nrtl.py, the catalogue NRTL pairs' own bubble
+  points).  What this case HOLDS is that the engine reproduces the selection
+  computed outside it: bin/curate/check_cosmo_lvpp_selection.py reads the two
+  CSVs below, forms ln gamma-inf at 298.15 K, and holds the mean absolute
+  deviation from Table 2 (water 32 solutes, n-hexane 18) to the value the
+  independent Python reading gave, within 1e-3.
+
+  HOW TO READ IT.  A mixture of pure water (or pure n-hexane) with every other
+  component at mole fraction ZERO: each gamma_<solute> is that solute's
+  activity coefficient at infinite dilution.  COSMO-SAC handles x = 0
+  exactly (the combinatorial term uses x-free ratios).  Water and ethanol are
+  case-local choices of LVPP file (their records say which and why); every
+  other profile is the catalogue's, joined by InChIKey.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    { name in_water;     type propertyScan1D;
+      vary { variable T; from 298.15 K; to 308.15 K; n 2; }
+      state { P 1 bar; composition { water 1.0; } }
+      properties ( gamma_Dichloroethane gamma_14Dioxane gamma_1Hexene gamma_1Nitropropane gamma_aceticAcid gamma_acetone gamma_acetonitrile gamma_aniline gamma_benzene gamma_carbonTetrachloride gamma_chloroform gamma_cyclohexane gamma_diethylEther gamma_ethylamine gamma_ethylAcetate gamma_methylAcetate gamma_methylEthylKetone gamma_nButane gamma_nButanol gamma_butanal gamma_nHeptane gamma_nHexane gamma_nOctane gamma_nPentane gamma_1Propanol gamma_nitroethane gamma_nitromethane gamma_propionitrile gamma_pyridine gamma_tetrahydrofuran gamma_triethylamine gamma_ethanol );
+      output { file in_water.csv; } }
+
+    { name in_hexane;    type propertyScan1D;
+      vary { variable T; from 298.15 K; to 308.15 K; n 2; }
+      state { P 1 bar; composition { nHexane 1.0; } }
+      properties ( gamma_nHeptane gamma_nOctane gamma_cyclohexane gamma_14Dioxane gamma_acetone gamma_methylEthylKetone gamma_ethylAcetate gamma_nitromethane gamma_nitroethane gamma_1Nitropropane gamma_acetonitrile gamma_propionitrile gamma_ethanol gamma_1Propanol gamma_nButanol gamma_chloroform gamma_carbonTetrachloride gamma_Dichloroethane );
+      output { file in_hexane.csv; } }
+);

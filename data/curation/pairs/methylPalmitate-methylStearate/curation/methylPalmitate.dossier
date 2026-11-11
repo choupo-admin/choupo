@@ -112,4 +112,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylPalmitate-methylStearate.a_ij  -248.073953611;
+        equilibrium.liquid.activityModel.binaryParameters.methylPalmitate-methylStearate.a_ji  388.667797233;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "aefb6067151b3a94";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylPalmitate-methylStearate-bubble-je3003699.dat";
+            doi       "10.1021/je3003699";
+            sha256    "6bb3ccd57dd7bed7a35a4a268b597080b9592be4ae2dc3ae68534ac8ccdbecc5";
+            provenance measured;
+            archiveFile "je3003699.xml";
+            system    "methylPalmitate + methylStearate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0953; max 0.9527; n 32; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylPalmitate-methylStearate.a_ij  -248.07395864;
+        equilibrium.liquid.activityModel.binaryParameters.methylPalmitate-methylStearate.a_ji  388.667807167;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "aefb6067151b3a94";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylPalmitate-methylStearate-bubble-je3003699.dat";
+            doi       "10.1021/je3003699";
+            sha256    "6bb3ccd57dd7bed7a35a4a268b597080b9592be4ae2dc3ae68534ac8ccdbecc5";
+            provenance measured;
+            archiveFile "je3003699.xml";
+            system    "methylPalmitate + methylStearate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0953; max 0.9527; n 32; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

@@ -152,4 +152,264 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-isopropanol.a_ij  -97.4812948253;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-isopropanol.a_ji  190.346897731;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b1766cc71ab2cf49";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-isopropanol-bubble-j.fluid.2015.07.023.dat";
+            doi       "10.1016/j.fluid.2015.07.023";
+            sha256    "241c2c7e53a29b4972e294043e0a89673c820bb9875cb14b3e4c5d8e9afb7244";
+            provenance measured;
+            archiveFile "j.fluid.2015.07.023.xml";
+            system    "methanol + isopropanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-isopropanol-bubble-je060476j.dat";
+            doi       "10.1021/je060476j";
+            sha256    "4bb52f5283cbac4a6f7d53ddd7f7cedcc7567a92dfeb8d5d3727be049e59d735";
+            provenance measured;
+            archiveFile "je060476j.xml";
+            system    "methanol + isopropanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-isopropanol-bubble-je201349k.dat";
+            doi       "10.1021/je201349k";
+            sha256    "7a865cc45d28094238d0deefd283f8c23f1a13678e113236a797fccae946f2c9";
+            provenance measured;
+            archiveFile "je201349k.xml";
+            system    "methanol + isopropanol";
+            pressure  "101000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.023; max 0.973; n 111; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-isopropanol.a_ij  -97.4812949958;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-isopropanol.a_ji  190.346897976;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b1766cc71ab2cf49";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-isopropanol-bubble-j.fluid.2015.07.023.dat";
+            doi       "10.1016/j.fluid.2015.07.023";
+            sha256    "241c2c7e53a29b4972e294043e0a89673c820bb9875cb14b3e4c5d8e9afb7244";
+            provenance measured;
+            archiveFile "j.fluid.2015.07.023.xml";
+            system    "methanol + isopropanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-isopropanol-bubble-je060476j.dat";
+            doi       "10.1021/je060476j";
+            sha256    "4bb52f5283cbac4a6f7d53ddd7f7cedcc7567a92dfeb8d5d3727be049e59d735";
+            provenance measured;
+            archiveFile "je060476j.xml";
+            system    "methanol + isopropanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-isopropanol-bubble-je201349k.dat";
+            doi       "10.1021/je201349k";
+            sha256    "7a865cc45d28094238d0deefd283f8c23f1a13678e113236a797fccae946f2c9";
+            provenance measured;
+            archiveFile "je201349k.xml";
+            system    "methanol + isopropanol";
+            pressure  "101000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.023; max 0.973; n 111; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-isopropanol.A_ij  1802.71738294;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-isopropanol.A_ji  -1653.18252298;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b1766cc71ab2cf49";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-isopropanol-bubble-j.fluid.2015.07.023.dat";
+            doi       "10.1016/j.fluid.2015.07.023";
+            sha256    "241c2c7e53a29b4972e294043e0a89673c820bb9875cb14b3e4c5d8e9afb7244";
+            provenance measured;
+            archiveFile "j.fluid.2015.07.023.xml";
+            system    "methanol + isopropanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-isopropanol-bubble-je060476j.dat";
+            doi       "10.1021/je060476j";
+            sha256    "4bb52f5283cbac4a6f7d53ddd7f7cedcc7567a92dfeb8d5d3727be049e59d735";
+            provenance measured;
+            archiveFile "je060476j.xml";
+            system    "methanol + isopropanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-isopropanol-bubble-je201349k.dat";
+            doi       "10.1021/je201349k";
+            sha256    "7a865cc45d28094238d0deefd283f8c23f1a13678e113236a797fccae946f2c9";
+            provenance measured;
+            archiveFile "je201349k.xml";
+            system    "methanol + isopropanol";
+            pressure  "101000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.023; max 0.973; n 111; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-isopropanol.A_ij  1778.85311835;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-isopropanol.A_ji  -1628.42906936;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b1766cc71ab2cf49";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-isopropanol-bubble-j.fluid.2015.07.023.dat";
+            doi       "10.1016/j.fluid.2015.07.023";
+            sha256    "241c2c7e53a29b4972e294043e0a89673c820bb9875cb14b3e4c5d8e9afb7244";
+            provenance measured;
+            archiveFile "j.fluid.2015.07.023.xml";
+            system    "methanol + isopropanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-isopropanol-bubble-je060476j.dat";
+            doi       "10.1021/je060476j";
+            sha256    "4bb52f5283cbac4a6f7d53ddd7f7cedcc7567a92dfeb8d5d3727be049e59d735";
+            provenance measured;
+            archiveFile "je060476j.xml";
+            system    "methanol + isopropanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-isopropanol-bubble-je201349k.dat";
+            doi       "10.1021/je201349k";
+            sha256    "7a865cc45d28094238d0deefd283f8c23f1a13678e113236a797fccae946f2c9";
+            provenance measured;
+            archiveFile "je201349k.xml";
+            system    "methanol + isopropanol";
+            pressure  "101000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.023; max 0.973; n 111; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

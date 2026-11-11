@@ -37,10 +37,10 @@ propertyManifest
         "components/nHeptane.dat"
         {
             type          imported;
-            sha256        "25070332ac55ed31465bc842c2820fdfaad6f8148a03a841aca858978670b1d4";
-            computationalSha256 "125b2cbb0fb1a4182208bea7d0812526f79531b719a3e95c6555eb1eef5975b2";
+            sha256        "8c48efaaa9aa99b348c71a669b0004bae3abe91635a4fe1c401fc415b45e6b4d";
+            computationalSha256 "2f3b301c3cd1ef6d27fd35702b810c40ebcfc7fc573ec2dfb642d5981a6ed791";
             origin        "data/standards/components/nHeptane.dat";
-            originSha256  "d07d8e2aa11a5f1acb72593e0fcd1281a502b07ee6da32603bcc97d97b54abd4";
+            originSha256  "0e6ffd261eb07d90376837ad51670a939dfd10fc7e15c0bed37a675f034eeae0";
             release       Choupo-2608;
         }
         "parameters/NRTL/methylPropionate-nHeptane.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "7a281a0d33aed009509d12f5d926146f3549922c60a6d95150f235e79128e362";
             origin        "data/standards/parameters/NRTL/methylPropionate-nHeptane.dat";
             originSha256  "515a46477f21c7d2ee6c3bb4f329bcf28002ae96701d8ab49f696609946125c0";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/methylPropionate-nHeptane.dat"
+        {
+            type          imported;
+            sha256        "fe580af624857247f5e82d6e0269ed81d6431b2af8cbe59086bdf0bec7b4eb86";
+            computationalSha256 "c74587cca9b49318a98c565d1fb2efddabab660e23a6d58469a924f662d8b010";
+            origin        "data/standards/parameters/Wilson/methylPropionate-nHeptane.dat";
+            originSha256  "dbbcded22eaa5f9c93896a52642d412a5700b1ca01c1940ef48eb0fd73b77ba4";
             release       Choupo-2608;
         }
     }

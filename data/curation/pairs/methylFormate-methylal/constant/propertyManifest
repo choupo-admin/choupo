@@ -46,10 +46,10 @@ propertyManifest
         "components/methylal.dat"
         {
             type          imported;
-            sha256        "fbdb96d75a57ee188d05ac1ac195896a65ee14695b565d4994b7acd8590b493e";
-            computationalSha256 "df2b77bd422abfabe26846550054b99c444393f5a8498b4003ffd4913a78b73f";
+            sha256        "d667a7e3c3e17feee4a41091f39d89641ae224d6b87f6068841f3fa494fb988a";
+            computationalSha256 "7bd87a716621cb88e4512f463a4a0259d8049ddb5999b86ff2bf9ddc6fb783f5";
             origin        "data/standards/components/methylal.dat";
-            originSha256  "10ac8d72145f06bc16bb46213fc74296d6f1c69a99bfeab6bf6e44a020fc2b51";
+            originSha256  "01fce124ec237cfef4f66da52485d13765f66671a156cb617c3ee79d7ad01e97";
             release       Choupo-2608;
         }
         "parameters/NRTL/methylFormate-methylal.dat"
@@ -59,6 +59,15 @@ propertyManifest
             computationalSha256 "25bf0658968f25f988e0f7c2045a87b75392403766836631035c884a39eea247";
             origin        "data/standards/parameters/NRTL/methylFormate-methylal.dat";
             originSha256  "162aea9413514cb8cef5470f2444296f013e7cd813d9a5fb909b5806304e148d";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/methylFormate-methylal.dat"
+        {
+            type          imported;
+            sha256        "a5731b611fc46fb8b7a06c63c9d9379933e73dafc979108325c4cedda0ec9465";
+            computationalSha256 "3362cf6102a1e39f5454020d0dea9c1d82c208b1bf809f4c8e7744158c64aff9";
+            origin        "data/standards/parameters/Wilson/methylFormate-methylal.dat";
+            originSha256  "9c2823a4bcadd9fcab0c4cbcd2d645d11e0ee51a2501d22be00868aafdd5dd43";
             release       Choupo-2608;
         }
     }

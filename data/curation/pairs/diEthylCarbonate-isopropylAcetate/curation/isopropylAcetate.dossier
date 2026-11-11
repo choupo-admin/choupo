@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-diEthylCarbonate.A_ij  1061.08811902;
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-diEthylCarbonate.A_ji  -1138.9437233;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5855350fc2991f53";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/isopropylAcetate-diEthylCarbonate-bubble-acs.jced.9b00430.dat";
+            doi       "10.1021/acs.jced.9b00430";
+            sha256    "72df180b4a951cd8c4a3904f56dc29cb1b9601743dce8267f38565299440cb71";
+            provenance measured;
+            archiveFile "acs.jced.9b00430.xml";
+            system    "isopropylAcetate + diEthylCarbonate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0276; max 0.9631; n 14; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-diEthylCarbonate.A_ij  1064.36790515;
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-diEthylCarbonate.A_ji  -1141.35590634;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5855350fc2991f53";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/isopropylAcetate-diEthylCarbonate-bubble-acs.jced.9b00430.dat";
+            doi       "10.1021/acs.jced.9b00430";
+            sha256    "72df180b4a951cd8c4a3904f56dc29cb1b9601743dce8267f38565299440cb71";
+            provenance measured;
+            archiveFile "acs.jced.9b00430.xml";
+            system    "isopropylAcetate + diEthylCarbonate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0276; max 0.9631; n 14; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

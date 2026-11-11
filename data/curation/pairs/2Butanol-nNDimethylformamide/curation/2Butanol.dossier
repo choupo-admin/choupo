@@ -134,4 +134,116 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-nNDimethylformamide.A_ij  -3294.13505523;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-nNDimethylformamide.A_ji  3581.38436474;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7b5df2c87399a732";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Butanol-nNDimethylformamide-bubble-j.fluid.2014.09.021.dat";
+            doi       "10.1016/j.fluid.2014.09.021";
+            sha256    "7d5e913c8e5e2fab06c7c0f21aaa052c92e42fe000524d1b2ef7b2cc1a191cfc";
+            provenance measured;
+            archiveFile "j.fluid.2014.09.021.xml";
+            system    "2Butanol + nNDimethylformamide";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Butanol-nNDimethylformamide-bubble-j.fluid.2006.08.018.dat";
+            doi       "10.1016/j.fluid.2006.08.018";
+            sha256    "efd075a1a7973909792b56e5f48979fc69b4de7609c3c07c261b8ab7be59e044";
+            provenance measured;
+            archiveFile "j.fluid.2006.08.018.xml";
+            system    "2Butanol + nNDimethylformamide";
+            pressure  "95500.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.016; max 0.969; n 40; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-nNDimethylformamide.A_ij  9539.20131668;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-nNDimethylformamide.A_ji  -3480.36619699;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7b5df2c87399a732";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Butanol-nNDimethylformamide-bubble-j.fluid.2014.09.021.dat";
+            doi       "10.1016/j.fluid.2014.09.021";
+            sha256    "7d5e913c8e5e2fab06c7c0f21aaa052c92e42fe000524d1b2ef7b2cc1a191cfc";
+            provenance measured;
+            archiveFile "j.fluid.2014.09.021.xml";
+            system    "2Butanol + nNDimethylformamide";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Butanol-nNDimethylformamide-bubble-j.fluid.2006.08.018.dat";
+            doi       "10.1016/j.fluid.2006.08.018";
+            sha256    "efd075a1a7973909792b56e5f48979fc69b4de7609c3c07c261b8ab7be59e044";
+            provenance measured;
+            archiveFile "j.fluid.2006.08.018.xml";
+            system    "2Butanol + nNDimethylformamide";
+            pressure  "95500.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.016; max 0.969; n 40; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

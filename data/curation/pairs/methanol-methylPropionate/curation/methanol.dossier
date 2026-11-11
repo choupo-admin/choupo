@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-methylPropionate.A_ij  3642.73074441;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-methylPropionate.A_ji  -204.597661548;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "0ec552ad4ed4d1b5";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-methylPropionate-bubble-j.jct.2019.01.004.dat";
+            doi       "10.1016/j.jct.2019.01.004";
+            sha256    "4ab6fdb91fed18b9e052e23ba1b17f800379b3594e369a2d95aac7b0d8a62eeb";
+            provenance measured;
+            archiveFile "j.jct.2019.01.004.xml";
+            system    "methanol + methylPropionate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.045; max 0.966; n 11; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-methylPropionate.A_ij  3642.73073815;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-methylPropionate.A_ji  -204.597648808;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "0ec552ad4ed4d1b5";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-methylPropionate-bubble-j.jct.2019.01.004.dat";
+            doi       "10.1016/j.jct.2019.01.004";
+            sha256    "4ab6fdb91fed18b9e052e23ba1b17f800379b3594e369a2d95aac7b0d8a62eeb";
+            provenance measured;
+            archiveFile "j.jct.2019.01.004.xml";
+            system    "methanol + methylPropionate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.045; max 0.966; n 11; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

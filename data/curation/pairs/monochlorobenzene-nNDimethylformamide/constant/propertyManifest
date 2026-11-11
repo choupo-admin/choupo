@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "82e60ed169644bd595e18b57d2b1547b1d3412491e90363e901256c9f542836b";
             release       Choupo-2608;
         }
+        "parameters/Wilson/monochlorobenzene-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "5d2c61ca74680e3f8b5831d81732278c1380fa4b63e01d006cff2091f1bb1a6b";
+            computationalSha256 "bbf84c85317729a6f1e55d1304f6e706a2f490da70057b0dfd07004e9f7196c6";
+            origin        "data/standards/parameters/Wilson/monochlorobenzene-nNDimethylformamide.dat";
+            originSha256  "8534783eb8aa7ffbbe3a50b1d90f6a41ef050530ce391876e57140dbfd3377c4";
+            release       Choupo-2608;
+        }
     }
 }

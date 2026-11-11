@@ -28,10 +28,10 @@ propertyManifest
         "components/cyclohexane.dat"
         {
             type          imported;
-            sha256        "54ac6c67fe0fa7f8d15744192b515efd56b05bf78dc8bf99b6dfc092f349f26c";
-            computationalSha256 "6f57b6ee7356428daa748404b1343309e762255b70baf430d387550ae4683431";
+            sha256        "04e20a9c3a1368072059505adbe555b180a674e96087a4c92af04cf5e42245b7";
+            computationalSha256 "e5dadd80ead0f1d8f44482b2596d2a2b5e7c060e9ed1181dbf1712af989938ef";
             origin        "data/standards/components/cyclohexane.dat";
-            originSha256  "c17d37ff35f43849e846d3f6a974ab7f2312085a349d1169494ad2374fd90d23";
+            originSha256  "9f3b642c76b10c5867f604ce4d741c21b1c8b9b25e700707e9cc49fdbcf079f5";
             release       Choupo-2608;
         }
         "components/tetrahydrofuran.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "6b314b101489e076e7faf91f894cd2f095eb5cd1f3043773cbd6fa7e820d2a05";
             origin        "data/standards/parameters/NRTL/cyclohexane-tetrahydrofuran.dat";
             originSha256  "e4f36aad69a31e701b5a491e4704857027ec6cc833053c7ea8686056b07c1475";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/cyclohexane-tetrahydrofuran.dat"
+        {
+            type          imported;
+            sha256        "4533f42add13920b703afc4220bf20e32c3b77d3332989e71ceaff3de35a2ef1";
+            computationalSha256 "19f821757f32734266fc7a1b335fb6e36decf7787c235cb3616b1ffcb80eb747";
+            origin        "data/standards/parameters/Wilson/cyclohexane-tetrahydrofuran.dat";
+            originSha256  "3a9d9153b738e4088b41d7afddaf323191f498cda6bc9cbd45ce66a7ee55477a";
             release       Choupo-2608;
         }
     }

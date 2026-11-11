@@ -1,0 +1,173 @@
+// [imported] origin "data/standards/components/nitroethane.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: nitroethane  (CAS 79-24-3)
+  PROPOSAL TIER -- UNVERIFIED. Imported from ChemSep v8.3
+  pure-component data under Artistic License 2.0.
+  Critical constants are source data; Psat is an explicitly
+  estimated Ambrose-Walton corresponding-states closure.
+\*---------------------------------------------------------------------------*/
+
+name        nitroethane;
+CAS         79-24-3;
+formula     C2H5NO2;      // counted from the ChemSep v8.3 structure formula "CH3CH2NO2" (derived 2026-09-03; reproduces MW to 0.001 %)
+reviewStatus interim;
+MW          75.0666;      // kg/kmol [origin=ChemSep v8.3]
+Tc          557.15;      // K [origin=ChemSep v8.3]
+Pc          51.6;      // bar; source Pa / 1e5 [origin=ChemSep v8.3]
+omega       0.672348;      // [-] [origin=ChemSep v8.3]
+Tb          387.22;      // K [origin=ChemSep v8.3]
+
+standardThermochemistry
+{
+    dHf_298   -102200;        // J/mol   [ChemSep v8.3, ideal gas]
+    s_298     315.4;        // J/(mol.K)  third-law absolute
+}
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)
+    // converted EXACTLY from ChemSep eqno 10, Psat[Pa] = exp(a - b/(T+c))
+    coefficients  (4.328645471  1468.740508  -47.509);
+    Trange        (334.45  500);
+}
+
+Vliq        7.19984e-05;      // m3/mol at 25 C  [ChemSep eqno 105]
+HvapTb      35683.4;      // J/mol at Tb  [ChemSep eqno 106]
+
+idealGasHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    // ChemSep states J/(kmol.K); A and the exp are scaled to per-mole here.
+    coefficients  (48.198  -581.79  5.375244721  2.3838e-05  -2.2739e-08);
+    Trange        (150  1500);
+}
+
+liquidHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    coefficients  (67.99  798.52  -4.420355279  0.02816  -2.7001e-05);
+    Trange        (183.63  387.22);
+}
+
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     15.403;
+        B     194.75;
+        C     -4.2217;
+        D     7.8126e-06;
+        E     2;
+        Tmin  200;
+        Tmax  457;
+    }
+}
+
+liquidThermalConductivity
+{
+    chemsepEq16
+    {
+        A     -0.1486;
+        B     6.324;
+        C     -1.0708;
+        D     9.663e-05;
+        E     -1.5981e-06;
+        Tmin  183.63;
+        Tmax  387.22;
+    }
+}
+solubilityParameter 23090;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
+
+source
+{
+    database      "ChemSep pure-component data v8.3";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "chemsep1.xml";
+    sourceSha256  "78b3e0c6408ff35f3b75fb71a1fdd70bb8e967d8996b49452a4a9fa2dd567c76";
+    sourceRecord  "Nitroethane";
+    importedBy    "chemsep_to_choupo";
+    review        { state pending; reviewer unassigned; }
+}
+
+provenance
+{
+    MW
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Pc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    omega
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tb
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    vaporPressure
+    {
+        origin        predictive;
+        method        "Ambrose-Walton corresponding states";
+        methodVersion "choupo-aw-1989";
+        uncertainty   "not quantified; validate against saturation data";
+        notes         "computed from ChemSep Tc/Pc/omega";
+    }
+}
+
+cosmo
+{
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file NITROETHANE.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey MCSAJNNLRCFZED-UHFFFAOYSA-N (full match); formula C2H5NO2; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        105.969110;   // sum of the profile below; GAMESS prints 105.97
+        volume      89.97;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.507240     0.785268     1.666578     4.526820     5.582571     4.465493
+               7.263181     8.441863     8.591215     5.249824     3.949230     3.568443
+               6.577990     4.495772     0.771741     2.445431     0.758791     1.173696
+               0.949405     2.966191     2.677752     3.048392     8.317622     8.486189
+               4.153811     3.069691     1.444720     0.034190     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
+    }
+}

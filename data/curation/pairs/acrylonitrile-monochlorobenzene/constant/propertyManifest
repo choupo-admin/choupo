@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "4ef24efce45af97f41977a4ffa2d35aa9163b45944df7bdaf4afbdb622e4d317";
             release       Choupo-2608;
         }
+        "parameters/Wilson/acrylonitrile-monochlorobenzene.dat"
+        {
+            type          imported;
+            sha256        "425d615674b8eca2d1fa07567dfe025eb52969593712d91c655e576be8802dd1";
+            computationalSha256 "c25056238b00d86dac542dc985097b6ca12d5dd7ae9392231fe99ea76e314c70";
+            origin        "data/standards/parameters/Wilson/acrylonitrile-monochlorobenzene.dat";
+            originSha256  "e9d7b0320c04dd65f450b4b616b534f224a67254730d9d359aa32de19de119b9";
+            release       Choupo-2608;
+        }
     }
 }

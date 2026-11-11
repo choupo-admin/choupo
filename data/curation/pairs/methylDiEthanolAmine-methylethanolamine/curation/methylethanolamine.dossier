@@ -112,4 +112,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylethanolamine-methylDiEthanolAmine.A_ij  8136.09268052;
+        equilibrium.liquid.activityModel.binaryParameters.methylethanolamine-methylDiEthanolAmine.A_ji  -4249.79830404;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d2b1ad0e24a8a20c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylethanolamine-methylDiEthanolAmine-bubble-je400373d.dat";
+            doi       "10.1021/je400373d";
+            sha256    "5fd41a9baa3403e420dbd131ccdfe658a984d48b0965881982e740966f424eda";
+            provenance measured;
+            archiveFile "je400373d.xml";
+            system    "methylethanolamine + methylDiEthanolAmine";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.053; max 0.926; n 36; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylethanolamine-methylDiEthanolAmine.A_ij  8136.09275405;
+        equilibrium.liquid.activityModel.binaryParameters.methylethanolamine-methylDiEthanolAmine.A_ji  -4249.79831355;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d2b1ad0e24a8a20c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylethanolamine-methylDiEthanolAmine-bubble-je400373d.dat";
+            doi       "10.1021/je400373d";
+            sha256    "5fd41a9baa3403e420dbd131ccdfe658a984d48b0965881982e740966f424eda";
+            provenance measured;
+            archiveFile "je400373d.xml";
+            system    "methylethanolamine + methylDiEthanolAmine";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.053; max 0.926; n 36; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

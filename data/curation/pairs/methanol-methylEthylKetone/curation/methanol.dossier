@@ -134,4 +134,228 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-methylEthylKetone.a_ij  -48.3348001978;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-methylEthylKetone.a_ji  255.634705351;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1eafc143f4186fb2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-methylEthylKetone-bubble-j.fluid.2016.06.048.dat";
+            doi       "10.1016/j.fluid.2016.06.048";
+            sha256    "768dc654eeac83aed73676cd997961779eb0ac24ba6649a41d71f68786548cce";
+            provenance measured;
+            archiveFile "j.fluid.2016.06.048.xml";
+            system    "methanol + methylEthylKetone";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-methylEthylKetone-bubble-je301062g.dat";
+            doi       "10.1021/je301062g";
+            sha256    "e0dea04b2db6beb771543d99889945bc491afd7e8f2fba306d132c79cc206b0b";
+            provenance measured;
+            archiveFile "je301062g.xml";
+            system    "methanol + methylEthylKetone";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.039; max 0.976; n 36; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-methylEthylKetone.a_ij  -48.3347994656;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-methylEthylKetone.a_ji  255.634704363;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1eafc143f4186fb2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-methylEthylKetone-bubble-j.fluid.2016.06.048.dat";
+            doi       "10.1016/j.fluid.2016.06.048";
+            sha256    "768dc654eeac83aed73676cd997961779eb0ac24ba6649a41d71f68786548cce";
+            provenance measured;
+            archiveFile "j.fluid.2016.06.048.xml";
+            system    "methanol + methylEthylKetone";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-methylEthylKetone-bubble-je301062g.dat";
+            doi       "10.1021/je301062g";
+            sha256    "e0dea04b2db6beb771543d99889945bc491afd7e8f2fba306d132c79cc206b0b";
+            provenance measured;
+            archiveFile "je301062g.xml";
+            system    "methanol + methylEthylKetone";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.039; max 0.976; n 36; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-methylEthylKetone.A_ij  2792.35408383;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-methylEthylKetone.A_ji  -511.004713949;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1eafc143f4186fb2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-methylEthylKetone-bubble-j.fluid.2016.06.048.dat";
+            doi       "10.1016/j.fluid.2016.06.048";
+            sha256    "768dc654eeac83aed73676cd997961779eb0ac24ba6649a41d71f68786548cce";
+            provenance measured;
+            archiveFile "j.fluid.2016.06.048.xml";
+            system    "methanol + methylEthylKetone";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-methylEthylKetone-bubble-je301062g.dat";
+            doi       "10.1021/je301062g";
+            sha256    "e0dea04b2db6beb771543d99889945bc491afd7e8f2fba306d132c79cc206b0b";
+            provenance measured;
+            archiveFile "je301062g.xml";
+            system    "methanol + methylEthylKetone";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.039; max 0.976; n 36; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-methylEthylKetone.A_ij  2792.35408923;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-methylEthylKetone.A_ji  -511.004721612;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1eafc143f4186fb2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-methylEthylKetone-bubble-j.fluid.2016.06.048.dat";
+            doi       "10.1016/j.fluid.2016.06.048";
+            sha256    "768dc654eeac83aed73676cd997961779eb0ac24ba6649a41d71f68786548cce";
+            provenance measured;
+            archiveFile "j.fluid.2016.06.048.xml";
+            system    "methanol + methylEthylKetone";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-methylEthylKetone-bubble-je301062g.dat";
+            doi       "10.1021/je301062g";
+            sha256    "e0dea04b2db6beb771543d99889945bc491afd7e8f2fba306d132c79cc206b0b";
+            provenance measured;
+            archiveFile "je301062g.xml";
+            system    "methanol + methylEthylKetone";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.039; max 0.976; n 36; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

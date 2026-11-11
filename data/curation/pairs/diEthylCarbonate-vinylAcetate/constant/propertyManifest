@@ -37,10 +37,10 @@ propertyManifest
         "components/vinylAcetate.dat"
         {
             type          imported;
-            sha256        "7a01b5fadbca767f032fc05788b2101ff0a4e6e4cb3e67bab970fd05c0d9deb2";
-            computationalSha256 "8c838d5e4f66ad4d5012ac33fa0f579bed652d41f336a7c827eac682534104ba";
+            sha256        "1140ba6ee65c8a183947c4fa69b52a1ff75799d4ed1d6ea3011436eb839afac7";
+            computationalSha256 "f64c1831a13bccd5aa7e4e8e02f4403aac5d318cf19cfaaafa46612156974be4";
             origin        "data/standards/components/vinylAcetate.dat";
-            originSha256  "cad58598b4ebd8ceeb7af1676f256a8c4c32c3fe41af01b0251b98e014fd3f39";
+            originSha256  "84ebd7132af579c645e55f5e7e465162641ae9f36dff7e09529126c1f94b469c";
             release       Choupo-2608;
         }
         "parameters/NRTL/diEthylCarbonate-vinylAcetate.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "d8e5f35773b470fd43c35417c251c75ec3fbf4736b75c4740921f84c56250857";
             origin        "data/standards/parameters/NRTL/diEthylCarbonate-vinylAcetate.dat";
             originSha256  "c5eeeccc446dd29a90eb7b75d52f6a7ae208623f1a479e9ef048fd937323876e";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/diEthylCarbonate-vinylAcetate.dat"
+        {
+            type          imported;
+            sha256        "15a999819939444fca62bf9d77cc1684bcc6276af14c60afea72ec92571f5739";
+            computationalSha256 "6eda1af06f0cf85eff41e7b4061ad879ad31ac431e2249c536b899f4997ef88f";
+            origin        "data/standards/parameters/Wilson/diEthylCarbonate-vinylAcetate.dat";
+            originSha256  "da6f6f74a0d3301482f28cae1d73ae141e6f7dd44966dc2070eca0ef9600fbd6";
             release       Choupo-2608;
         }
     }

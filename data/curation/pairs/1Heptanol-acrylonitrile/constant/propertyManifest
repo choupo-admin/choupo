@@ -28,10 +28,10 @@ propertyManifest
         "components/1Heptanol.dat"
         {
             type          imported;
-            sha256        "79fea1d323853bb2da8eac24d7824ee6194b141dd25d506f0071d5c7edca5457";
-            computationalSha256 "1195914da54fb5d51f6b730ea618434706056c761b7ebce979daa28274ce9bdf";
+            sha256        "ca88c1659a259e7e7eb8c5d30fd385b9cdac3744f4280e57ff10e12ad59cb737";
+            computationalSha256 "9b0e563e8b911fd7a6c6a7b43473e23f17f522628dd8d433698a8b67ff63b667";
             origin        "data/standards/components/1Heptanol.dat";
-            originSha256  "e2732fbe0aa55f2e557ebbbef1695df6211c1dbfc27e1bcd718c2fbc5e0c1867";
+            originSha256  "c4f185cc3a107c9adf024812d68f8b1c48c1150d9708f1e91213d5e61c5163f0";
             release       Choupo-2608;
         }
         "components/acrylonitrile.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "143af9937064b6cda2c52da8262c931d25979bfb2f821275585eb64af48b73b1";
             origin        "data/standards/parameters/NRTL/1Heptanol-acrylonitrile.dat";
             originSha256  "c9a9c781a97c45bed0038f24fa8155fb7a9abf14e5f24d285ac104197b1d1a1d";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Heptanol-acrylonitrile.dat"
+        {
+            type          imported;
+            sha256        "b5526033c03ffcd6d990aee561a0041282472dda7408dc5133b1324904239a45";
+            computationalSha256 "335812ab97ecdb1f66e179b604c3de85e74ec0e47ac603cb21759df72871c2ce";
+            origin        "data/standards/parameters/Wilson/1Heptanol-acrylonitrile.dat";
+            originSha256  "3fdf2033ebbd94d8e8db1149ac4136b2afc6b35b54a9d173a704be0adf819de4";
             release       Choupo-2608;
         }
     }

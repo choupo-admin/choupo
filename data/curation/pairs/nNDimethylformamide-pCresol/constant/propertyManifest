@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "9e3b0bd075631d591437933cfa417f2d6635f2768775a1662e6dd27cb75b58d0";
             release       Choupo-2608;
         }
+        "parameters/Wilson/nNDimethylformamide-pCresol.dat"
+        {
+            type          imported;
+            sha256        "7f5471c74624b06e074ca75caf7bcb61b2567258f82a12bec572e2c767f957b6";
+            computationalSha256 "565cdf1c89153dd9b3a19a96aecaf9856dbc2c8d09d96891d19d1099adc32d43";
+            origin        "data/standards/parameters/Wilson/nNDimethylformamide-pCresol.dat";
+            originSha256  "e01e6d6287be757a369bbb3080be2154dd142973ea5f04aff99a09e25b11c1a7";
+            release       Choupo-2608;
+        }
     }
 }

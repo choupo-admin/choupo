@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "3244641d7f028e115d5b1165d2ad294e0523ee16514e21f3f36feb2aeb18de3c";
             release       Choupo-2608;
         }
+        "parameters/Wilson/acetonitrile-methanol.dat"
+        {
+            type          imported;
+            sha256        "741043b7b9fa7da0417e4bcb8f7406aea21afe108515d95b5b8cbc06ac945687";
+            computationalSha256 "b15bb7a5248a3c0658f2074a87c777abdb7e2eabdcc94455d39a93078f8d7d00";
+            origin        "data/standards/parameters/Wilson/acetonitrile-methanol.dat";
+            originSha256  "88345f5d3bdff2be444b4c5be2b877de3d509d3149c1ec9afee497e4bc2e9bba";
+            release       Choupo-2608;
+        }
     }
 }

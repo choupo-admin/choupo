@@ -79,6 +79,15 @@ liquidThermalConductivity
     }
 }
 
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (1 CH2=CH + 1 COOH), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   2.6467;
+    q   2.4000;
+}
+
 groups
 {
     unifac ( { group CH2=CH; count 1; } { group COOH; count 1; } );
@@ -99,6 +108,12 @@ source
 
 provenance
 {
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 2.6467, q = sum nu_k Q_k = 2.4000 over the record's unifac groups (1 CH2=CH + 1 COOH)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
     MW
     {
         origin        literature;
@@ -146,5 +161,32 @@ provenance
         methodVersion "choupo-aw-1989";
         uncertainty   "not quantified; validate against saturation data";
         notes         "computed from ChemSep Tc/Pc/omega";
+    }
+}
+
+cosmo
+{
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file ACRYLIC_ACID.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey NIXOWILDQLNWCW-UHFFFAOYSA-N (full match); formula C3H4O2; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        106.018827;   // sum of the profile below; GAMESS prints 106.02
+        volume      89.40;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.289633     1.083952
+               0.894203     0.532159     1.299648     1.133241     0.361057     0.000000
+               0.222332     1.679230     0.653285     0.193628     2.368936     6.982938
+               4.963977     4.010064     4.279864     7.335181     6.070939     6.694537
+               6.642118     3.905692     4.757931     3.621032     3.894101     3.868002
+               2.458536     3.146605     2.045579     0.534949     1.548633     2.995516
+               3.861587     1.068968     1.933630     4.567445     3.689985     0.429714
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
     }
 }

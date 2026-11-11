@@ -28,10 +28,10 @@ propertyManifest
         "components/benzene.dat"
         {
             type          imported;
-            sha256        "af31cf9da05b7d34c657c430cef68abbf0f08db2402827a4867f7a64073225c9";
-            computationalSha256 "b8a586d23e8f38eb0b5c0f9534f7057eb2d4059de464edbdc18995094fdca93e";
+            sha256        "2c20d6d671dd5884ed8e3668529ddaad20bf3c2a02d1a5130aac02dd790aa62c";
+            computationalSha256 "d710160da938e1163f77e26b0cc49af7c2a2e4563b37f914ce4bb001500decc4";
             origin        "data/standards/components/benzene.dat";
-            originSha256  "77d7604645ff3a28b34d91023e497586af35fa74849c914378f858666a2b900e";
+            originSha256  "dc7869a494c8e333ed57af66fa4086592b32ac5330960750b5d2775030c9b6bc";
             release       Choupo-2608;
         }
         "components/cyclohexanone.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "cfd19f20c96d88aaefa02c6c04bc5eb937204aa22640b6e4fcd904f780cb3834";
             origin        "data/standards/parameters/NRTL/benzene-cyclohexanone.dat";
             originSha256  "c739b5f91a2531810463a8af8678efb90a2767ce5f669853bcb5c204208c5613";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/benzene-cyclohexanone.dat"
+        {
+            type          imported;
+            sha256        "d126516b4a2dbbfc13a5c1da4f00dbb17669686c9affd26b91761ff3a7e42e81";
+            computationalSha256 "3106119b121770659c284c0b0f95f105de17ee8d5d99e3a2a882627b37164305";
+            origin        "data/standards/parameters/Wilson/benzene-cyclohexanone.dat";
+            originSha256  "76230e9918307378bbef76ed2672425f6aaa5ef9f9975a408060c958a260111d";
             release       Choupo-2608;
         }
     }

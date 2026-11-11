@@ -112,4 +112,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylEthylKetone.A_ij  -1949.81949219;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylEthylKetone.A_ji  -400.545222918;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "4824d651c139622a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/chloroform-methylEthylKetone-bubbleP-je060150a-b8.dat";
+            doi       "10.1021/je060150a";
+            sha256    "c2cc118039454344624b1fa589162c1e1603e2579b52d63093e4dd8d3d3cada2";
+            provenance measured;
+            archiveFile "je060150a.xml";
+            system    "chloroform + methylEthylKetone";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.074; max 0.913; n 20; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylEthylKetone.A_ij  30000;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylEthylKetone.A_ji  -4989.99804902;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "4824d651c139622a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/chloroform-methylEthylKetone-bubbleP-je060150a-b8.dat";
+            doi       "10.1021/je060150a";
+            sha256    "c2cc118039454344624b1fa589162c1e1603e2579b52d63093e4dd8d3d3cada2";
+            provenance measured;
+            archiveFile "je060150a.xml";
+            system    "chloroform + methylEthylKetone";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.074; max 0.913; n 20; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

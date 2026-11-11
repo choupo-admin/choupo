@@ -28,10 +28,10 @@ propertyManifest
         "components/nNonane.dat"
         {
             type          imported;
-            sha256        "c6e230c3962584501169ad403a0503445df26695175139b9b9aa7f375908ce02";
-            computationalSha256 "e30086a65f8408a79d0e7437a9a7659bd8e52db983973fcb9ae84c4022c09606";
+            sha256        "8eb22a21343cc0d31c90a9cb14c5afa3c97168ac52fcbc4991b8b99771e08fed";
+            computationalSha256 "57fbdc20edd02c1ad7de179afe514d5dec7797c85be368066ca248a7cd9c1bdb";
             origin        "data/standards/components/nNonane.dat";
-            originSha256  "04a2c2a72fb0170f6e58dca0a4ced5760f40fbde24d6f7bdd0ffab546944f9f8";
+            originSha256  "b6375e78f76e6dca07a13fcb69894971e9a05f5d1c94352bd2772f10a067bf2f";
             release       Choupo-2608;
         }
         "components/nPropylFormate.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "56eab773db5eaf1d695a66de5db7a26cff1ab4988904d0ab00bca9893f709194";
             origin        "data/standards/parameters/NRTL/nNonane-nPropylFormate.dat";
             originSha256  "27cb972fcdf9988cd9bad51c1b7164309ff22b524cd073ae1ff862476521283a";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/nNonane-nPropylFormate.dat"
+        {
+            type          imported;
+            sha256        "8cf003ea924e0277425213f694164e4afabc285094df5f0cb8bc23cda7bf47bf";
+            computationalSha256 "7de9161df9e17890a50ad2a642e5891801c4d19c1ea1d2315c66e0c656e00abc";
+            origin        "data/standards/parameters/Wilson/nNonane-nPropylFormate.dat";
+            originSha256  "5dc4e83edf561e326967e57d58cde24ef7d6d5c9162158b4ad0ddf8fec3bca94";
             release       Choupo-2608;
         }
     }

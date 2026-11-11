@@ -112,4 +112,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-14Butanediol.A_ij  -185.257764725;
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-14Butanediol.A_ji  640.898024512;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "eb30cbf53de0274f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethyleneGlycol-14Butanediol-bubble-je401020e.dat";
+            doi       "10.1021/je401020e";
+            sha256    "7bad3139bf3363368aaef597e62ff78a955507b64b15bc3e89e819f860ed9fc3";
+            provenance measured;
+            archiveFile "je401020e.xml";
+            system    "ethyleneGlycol + 14Butanediol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.082; max 0.95; n 31; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-14Butanediol.A_ij  -187.048562421;
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-14Butanediol.A_ji  644.138293454;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "eb30cbf53de0274f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethyleneGlycol-14Butanediol-bubble-je401020e.dat";
+            doi       "10.1021/je401020e";
+            sha256    "7bad3139bf3363368aaef597e62ff78a955507b64b15bc3e89e819f860ed9fc3";
+            provenance measured;
+            archiveFile "je401020e.xml";
+            system    "ethyleneGlycol + 14Butanediol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.082; max 0.95; n 31; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

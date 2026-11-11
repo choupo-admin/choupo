@@ -112,4 +112,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.toluene-nNDimethylacetamide.A_ij  -1547.58357499;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-nNDimethylacetamide.A_ji  4494.14875713;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "86cde0bb48c448ac";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/toluene-nNDimethylacetamide-bubbleP-acs.jced.7b00119-b19.dat";
+            doi       "10.1021/acs.jced.7b00119";
+            sha256    "c57dbb0a0bf3405a8a631fa0f45bc2682f03b5dd1ee020e8b3f07b3a0dafe997";
+            provenance measured;
+            archiveFile "acs.jced.7b00119.xml";
+            system    "toluene + nNDimethylacetamide";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0014; max 0.9987; n 42; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.toluene-nNDimethylacetamide.A_ij  -1547.5821045;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-nNDimethylacetamide.A_ji  4494.14339388;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "86cde0bb48c448ac";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/toluene-nNDimethylacetamide-bubbleP-acs.jced.7b00119-b19.dat";
+            doi       "10.1021/acs.jced.7b00119";
+            sha256    "c57dbb0a0bf3405a8a631fa0f45bc2682f03b5dd1ee020e8b3f07b3a0dafe997";
+            provenance measured;
+            archiveFile "acs.jced.7b00119.xml";
+            system    "toluene + nNDimethylacetamide";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0014; max 0.9987; n 42; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

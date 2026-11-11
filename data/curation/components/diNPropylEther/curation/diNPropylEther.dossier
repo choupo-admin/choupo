@@ -1,0 +1,80 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      diNPropylEther;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        A  4.07500752346;
+        B  1263.64851509;
+        C  -52.5234484912;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9f00f3f9c3839e7a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diNPropylEther-vapourPressure-j.fluid.2006.06.017.dat";
+            doi       "10.1016/j.fluid.2006.06.017";
+            sha256    "d401b8185db8ece41d83c2d7aea8b9d6e3398e5a6e065d1eea7704065e51cb2f";
+            provenance measured;
+            archiveFile "j.fluid.2006.06.017.xml";
+            system    "diNPropylEther";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diNPropylEther-vapourPressure-acs.jced.6b00587.dat";
+            doi       "10.1021/acs.jced.6b00587";
+            sha256    "06357bf87a7c8a93b580a6eccbd282c239ddb4bb3e442872842ff4d035d7184b";
+            provenance measured;
+            archiveFile "acs.jced.6b00587.xml";
+            system    "diNPropylEther";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 302.6; max 363.16; n 42; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.999934880671;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

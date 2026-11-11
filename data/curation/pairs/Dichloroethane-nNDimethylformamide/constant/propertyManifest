@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "d4ab11af9024744e495ec79d174f84bd15726bd9927455fb48f46618d8a3481d";
             release       Choupo-2608;
         }
+        "parameters/Wilson/Dichloroethane-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "47d891cedd907bc46e832c2678240b0e540d2e069fc46d2b84f6bc50a29d4d34";
+            computationalSha256 "5f6a7dc6daf815f0fefcd8f5e7437556898f6900669565ea356595c9d2a03556";
+            origin        "data/standards/parameters/Wilson/Dichloroethane-nNDimethylformamide.dat";
+            originSha256  "06c99a68ea70f2ae9608858a9969cc08527a22326defdc0324fd8e757726c315";
+            release       Choupo-2608;
+        }
     }
 }

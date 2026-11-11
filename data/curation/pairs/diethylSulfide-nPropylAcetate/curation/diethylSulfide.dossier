@@ -112,4 +112,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-nPropylAcetate.A_ij  1512.67036304;
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-nPropylAcetate.A_ji  -813.259643624;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "113259cfb31b14c2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diethylSulfide-nPropylAcetate-bubbleP-j.fluid.2010.11.026-b11.dat";
+            doi       "10.1016/j.fluid.2010.11.026";
+            sha256    "eb52ee2098f75e25e57b87634501a20a630bb76b623e66c3b284e8e8e0dcabb2";
+            provenance measured;
+            archiveFile "j.fluid.2010.11.026.xml";
+            system    "diethylSulfide + nPropylAcetate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.142; max 0.906; n 9; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-nPropylAcetate.A_ij  1512.67030333;
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-nPropylAcetate.A_ji  -813.259599418;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "113259cfb31b14c2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diethylSulfide-nPropylAcetate-bubbleP-j.fluid.2010.11.026-b11.dat";
+            doi       "10.1016/j.fluid.2010.11.026";
+            sha256    "eb52ee2098f75e25e57b87634501a20a630bb76b623e66c3b284e8e8e0dcabb2";
+            provenance measured;
+            archiveFile "j.fluid.2010.11.026.xml";
+            system    "diethylSulfide + nPropylAcetate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.142; max 0.906; n 9; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

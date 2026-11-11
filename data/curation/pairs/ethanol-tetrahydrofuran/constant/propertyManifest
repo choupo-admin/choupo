@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "8724b2e857d75adfa781047a60b19ede68b3f31a183e321ac6305c769ce09494";
             release       Choupo-2608;
         }
+        "parameters/Wilson/ethanol-tetrahydrofuran.dat"
+        {
+            type          imported;
+            sha256        "c6221019302cf0ae71201cd30fde853fa5642fb1a4ec4791a28c8bb346c215b9";
+            computationalSha256 "0c1a94a6e88407a7ac5f4c1774761722bc0a625a739745f5f197f9353b83789d";
+            origin        "data/standards/parameters/Wilson/ethanol-tetrahydrofuran.dat";
+            originSha256  "a265281fb844564ace5a054b447f2152b26f70de91633e37645b46fc38d76518";
+            release       Choupo-2608;
+        }
     }
 }

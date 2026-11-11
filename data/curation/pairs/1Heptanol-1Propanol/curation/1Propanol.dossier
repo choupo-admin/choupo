@@ -114,4 +114,188 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-1Heptanol.a_ij  8.58515041942;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-1Heptanol.a_ji  167.706807323;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "618f9527581f021c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Propanol-1Heptanol-bubble-je300696c.dat";
+            doi       "10.1021/je300696c";
+            sha256    "b22a79689397722b740b53a595b2470dd580329efddc53f1690828247326662c";
+            provenance measured;
+            archiveFile "je300696c.xml";
+            system    "1Propanol + 1Heptanol";
+            pressure  "96500.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.2; max 0.904; n 8; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-1Heptanol.a_ij  8.58515048562;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-1Heptanol.a_ji  167.706807212;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "618f9527581f021c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Propanol-1Heptanol-bubble-je300696c.dat";
+            doi       "10.1021/je300696c";
+            sha256    "b22a79689397722b740b53a595b2470dd580329efddc53f1690828247326662c";
+            provenance measured;
+            archiveFile "je300696c.xml";
+            system    "1Propanol + 1Heptanol";
+            pressure  "96500.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.2; max 0.904; n 8; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-1Heptanol.A_ij  4477.57947889;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-1Heptanol.A_ji  2679.15132201;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "618f9527581f021c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Propanol-1Heptanol-bubble-je300696c.dat";
+            doi       "10.1021/je300696c";
+            sha256    "b22a79689397722b740b53a595b2470dd580329efddc53f1690828247326662c";
+            provenance measured;
+            archiveFile "je300696c.xml";
+            system    "1Propanol + 1Heptanol";
+            pressure  "96500.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.2; max 0.904; n 8; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-1Heptanol.A_ij  4477.5794829;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-1Heptanol.A_ji  2679.15131792;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "618f9527581f021c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Propanol-1Heptanol-bubble-je300696c.dat";
+            doi       "10.1021/je300696c";
+            sha256    "b22a79689397722b740b53a595b2470dd580329efddc53f1690828247326662c";
+            provenance measured;
+            archiveFile "je300696c.xml";
+            system    "1Propanol + 1Heptanol";
+            pressure  "96500.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.2; max 0.904; n 8; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

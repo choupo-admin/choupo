@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "95aa125357df071f8fb7d2201d2692a9ccb57f7d3cae20ea16f5b9a55435fc6f";
             release       Choupo-2608;
         }
+        "parameters/Wilson/dimethylSulfoxide-methanol.dat"
+        {
+            type          imported;
+            sha256        "cf977e1269795df48386b7b78834a660f30577daec0e8c815003d3c66a492c5d";
+            computationalSha256 "4b8cf2548fd767cab5f2f36584c77114f4f0943e2ca856da56fc3a5d67615ed0";
+            origin        "data/standards/parameters/Wilson/dimethylSulfoxide-methanol.dat";
+            originSha256  "7514a2157a2f9526368fc91eb93145f017f6463ea99c360c8f36c0bde9361c7e";
+            release       Choupo-2608;
+        }
     }
 }

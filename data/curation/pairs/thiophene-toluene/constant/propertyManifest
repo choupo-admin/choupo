@@ -37,10 +37,10 @@ propertyManifest
         "components/toluene.dat"
         {
             type          imported;
-            sha256        "025c441842aa1728935905ed8dfa50db5a6405ee082618c11673f665596d4911";
-            computationalSha256 "f66debfbcd493c4c7c4636809e784a1e07a6c482c3baed13ba34dce12ae63f79";
+            sha256        "5fb900674321baa67135bfeb2c8f80e63d9af183c35f1615477d751b4299f14b";
+            computationalSha256 "55e1e2986dd1c3fc08c951e842a86b062ee6a7bfbc1e1317387e69149a139e36";
             origin        "data/standards/components/toluene.dat";
-            originSha256  "fe5cb21ba09cf44b41de252f6a5a5dd21b6803fcd40666f6fed8d9de8e68563a";
+            originSha256  "ad1533cb0d94caade355d7149fd88ee1ad07c945f5d4c85f4bcce925766250b9";
             release       Choupo-2608;
         }
         "parameters/NRTL/thiophene-toluene.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "57f1bad5a67d58fe88c423a6efeb87a8637365fe9d125732d9a69939a8460a88";
             origin        "data/standards/parameters/NRTL/thiophene-toluene.dat";
             originSha256  "08af03efdc92a77583a38b914e8909ec282a80786d81289d0924a51f534831c8";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/thiophene-toluene.dat"
+        {
+            type          imported;
+            sha256        "b0eebf066ce6aa789bd3af0b3dee8a021f641da0ba1fa498a7924c89b9e54e93";
+            computationalSha256 "f435336bf0b8158a338178ae2f635a83cb8bf56cda8a62ff538e0e8ed564556a";
+            origin        "data/standards/parameters/Wilson/thiophene-toluene.dat";
+            originSha256  "90f6b0eeae8aece6d4ff8b3ea32c28689905333ff71f0755e0dfa18590c4a6dd";
             release       Choupo-2608;
         }
     }

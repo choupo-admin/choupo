@@ -28,19 +28,19 @@ propertyManifest
         "components/1Pentanol.dat"
         {
             type          imported;
-            sha256        "67c0add32a0365f5e7b1669e442fce34ca1fab7728982864212f471cea149ff4";
-            computationalSha256 "ef54b796ae70f47722ea40f25d897e9444289b0fc474d4d27a6ca111785c6a18";
+            sha256        "86c4addc505252ed263f53c07ca94ef9a158e34bfb5c32e992323eaa0c8df1d3";
+            computationalSha256 "831e21638f9c40c212865247a7342ab9080b1d897b9bece0cd5eaa0bd9f394c3";
             origin        "data/standards/components/1Pentanol.dat";
-            originSha256  "b5affaac9c1c791eb783bfdfc0669a3e8bf9a28e54efc09cbc866c5362af548c";
+            originSha256  "1b70bde782f9005b3b1776f286a59b76191371714b98aa89a8976851a2d0020a";
             release       Choupo-2608;
         }
         "components/ethylAcetate.dat"
         {
             type          imported;
-            sha256        "beb6e50741e964e6d1479f0f1e66284a50fee1aa86fd5d014b8cb0c886b66e1c";
-            computationalSha256 "4faa49d150d41d6e24527cf3a028f1705068d903407d67194fe6caa4731b4d1c";
+            sha256        "54a2177877292bf69c144e8501a70f5fbdd893d0d52c59b98a2751121bea1d6f";
+            computationalSha256 "a684b58c42fd149250d5211ca6545fa9f6968847122e1a9267a719a700deb26d";
             origin        "data/standards/components/ethylAcetate.dat";
-            originSha256  "9efe0bbeca4073450e352d99c60035ffd0f7cdabc8c708c372c9932cb5f95ba9";
+            originSha256  "882d88a79a8cf5677b7b9eb8d6c7eea180a82c7a6ac1c4a90e907913ca261cb6";
             release       Choupo-2608;
         }
         "parameters/NRTL/1Pentanol-ethylAcetate.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/1Pentanol-ethylAcetate.dat"
+        {
+            type          imported;
+            sha256        "897105a49809da2c74c10e70d31ad6860232a86ef918deede68249e370b26f3f";
+            computationalSha256 "f5e77f2c7f71ca467763b5b359dae9d60ce9bdaaa25533fbcc7cbcc57f5e70be";
+            origin        "data/standards/parameters/UNIQUAC/1Pentanol-ethylAcetate.dat";
+            originSha256  "6d70430029db96cd3f9736efa91d5e12e82fc28955619bda56e156d2c08d3035";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Pentanol-ethylAcetate.dat"
+        {
+            type          imported;
+            sha256        "3132e911e9867a47bfbe761e63d8837e37320ce5e93cd42c1262efcff063c6ba";
+            computationalSha256 "b9faea939591592fba3704bf2f2687ecaaa74c38b5c9d034871c0d4e963145f2";
+            origin        "data/standards/parameters/Wilson/1Pentanol-ethylAcetate.dat";
+            originSha256  "be329f007af075a2ac6cb37f67709cfb9d23b6577cb78ac6f744a11cacd275b2";
             release       Choupo-2608;
         }
     }

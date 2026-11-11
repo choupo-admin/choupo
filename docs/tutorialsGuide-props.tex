@@ -3622,6 +3622,76 @@ The card lists which properties the record has and which it lacks; it never prin
 \end{tutgolden}
 
 \clearpage
+\tutentry{cosmoSAC02\_lvpp\_selection\_lin2002}{tutorials/props/molecular/cosmoSAC02\_lvpp\_selection\_lin2002}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{in\_water}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{in\_hexane}\\[-1pt]{\tiny propertyScan1D}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{COSMO-SAC LVPP-HFTZVP-2018: activity coefficients at infinite dilution in water and in n-hexane, the SELECTION data of the variant's open choices (Lin \& Sandler 2002 Table 2).}
+\begin{tutnarrative}
+the data the reading was CHOSEN on.
+
+WHAT THIS CASE IS. COSMO-SAC variant LVPP-HFTZVP-2018 (DEV.md 4c C310; record docs/design/cosmo-sac-lvpp-hftzvp-2018.md) runs the 2002 equations with the constants Ferrarini, Flores, Muniz \& Soares fitted to the LVPP GAMESS HF/TZVP profiles (AIChE J. 64 (2018) 3443, p. 11). The paper leaves two choices open -- the decay of the charge averaging and the area inside the misfit constant alpha' -- and the four readings they allow were run against the measured activity coefficients at infinite dilution in water and in n-hexane at 298.15 K of Lin \& Sandler, Ind. Eng. Chem. Res. 41 (2002) 899, Table 2 (the "expt" columns). One reading was plausible (f\_decay 3.57 with distances in A, alpha' on pi r\_eff\textasciicircum{}2); it is the one the engine runs.
+
+WHY IT IS NOT A VALIDATION. These numbers CHOSE the reading, so agreement with them proves nothing about prediction: it is selection data, and the variant's acceptance is a held-out comparison on other measurements (bin/curate/cosmo\_lvpp\_vs\_nrtl.py, the catalogue NRTL pairs' own bubble points). What this case HOLDS is that the engine reproduces the selection computed outside it: bin/curate/check\_cosmo\_lvpp\_selection.py reads the two CSVs below, forms ln gamma-inf at 298.15 K, and holds the mean absolute deviation from Table 2 (water 32 solutes, n-hexane 18) to the value the independent Python reading gave, within 1e-3.
+
+HOW TO READ IT. A mixture of pure water (or pure n-hexane) with every other component at mole fraction ZERO: each gamma\_<solute> is that solute's activity coefficient at infinite dilution. COSMO-SAC handles x = 0 exactly (the combinatorial term uses x-free ratios). Water and ethanol are case-local choices of LVPP file (their records say which and why); every other profile is the catalogue's, joined by InChIKey.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{in\_water}{n\_emptyCurves}{0}
+\goldrow{diag}{in\_water}{n\_failures}{0}
+\goldrow{diag}{in\_water}{n\_points}{2}
+\goldrow{diag}{in\_hexane}{n\_emptyCurves}{0}
+\goldrow{diag}{in\_hexane}{n\_failures}{0}
+\goldrow{diag}{in\_hexane}{n\_points}{2}
+\end{tutgolden}
+
+\clearpage
+\tutentry{cosmoSAC03\_ethanol\_water\_predictive}{tutorials/props/molecular/cosmoSAC03\_ethanol\_water\_predictive}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{cosmo\_score}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{txy\_cosmo}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{txy\_nrtl}\\[-1pt]{\tiny propertyScan1D}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Predictive vs fitted: ethanol-water at 1 atm by COSMO-SAC LVPP-HFTZVP-2018 (no binary parameter), beside the fitted NRTL pair and the measured bubble temperatures.}
+\begin{tutnarrative}
+what a PREDICTIVE model is, shown on one system beside a FITTED one and the measurements.
+
+A FITTED model (NRTL here) has binary parameters regressed to measurements of THIS pair: it can only be as good as those data, and it says nothing about a pair nobody measured. A PREDICTIVE model computes the activity coefficients from properties of the PURE molecules alone. COSMO-SAC does it from each molecule's sigma profile -- the distribution of screening charge over its surface, from a quantum-chemistry calculation -- and a handful of UNIVERSAL constants fitted once, to many systems, and never to this one. Nothing in this case was adjusted to ethanol-water.
+
+THE PREDICTIVE MODEL: COSMO-SAC variant LVPP-HFTZVP-2018 -- the 2002 equations (Lin \& Sandler, Ind. Eng. Chem. Res. 41 (2002) 899) with the constants Ferrarini, Flores, Muniz \& Soares fitted to the LVPP sigma-profile database's GAMESS HF/TZVP profiles (AIChE J. 64 (2018) 3443). The paper leaves two choices open; the reading the engine uses was SELECTED on Lin \& Sandler's Table 2 and every run announces that (record: docs/design/cosmo-sac-lvpp-hftzvp-2018.md). The profiles are LVPP's (MIT); which file stands for water and for ethanol is stated in each component's record (the archive holds water twice and ethanol as three conformers).
+
+THE FITTED MODEL: the ethanol-water NRTL pair in constant/parameters/NRTL (Gmehling \& Onken, DECHEMA Vol. I Part 1), the pair the sibling case eval\_nrtl\_catalogue scores on these same points (aad 2.04 K).
+
+THE MEASUREMENTS: eleven 1-atm bubble temperatures, the pedagogical subset of the DECHEMA ethanol-water isobar already used by fitNRTL01 and eval\_nrtl\_catalogue.
+
+WHAT TO LOOK AT. 1. cosmo\_score -- the prediction scored against the measurements (aad, rms, max in K; the per-point parity in parity\_cosmo.csv). Nothing is fitted: `mode evaluate`. 2. txy\_cosmo / txy\_nrtl -- the two T-x-y curves at 1 atm on the same grid. Plot T\_bubble and y\_eq\_ethanol against x[ethanol] from both CSVs with the measured points of parity\_cosmo.csv on top. WHAT IT SHOWS (measured 2026-11-11, the numbers this case's golden pins). On these eleven points the prediction scores aad 0.98 K, max 1.78 K. The catalogue NRTL scores 2.04 K on the same points in eval\_nrtl\_catalogue, but that case seals its own pure-component records, so the two scores are not from one frame; the two T-x-y curves below ARE (same components, same vapour pressures, only gamma differs). And look at the SHAPE: the NRTL curve has the minimum-boiling azeotrope (T\_bubble lowest near x = 0.9), and the COSMO-SAC curve has NONE -- its lowest bubble point is pure ethanol. The prediction gets the average temperature right and the qualitative fact a distillation designer needs most wrong: gamma-inf of water in ethanol is 1.85 against NRTL's 2.58, and the curve never turns down into an azeotrope. One system proves nothing either way; the family-by-family comparison on the catalogue's own measured bubble points is in docs/design/cosmo-sac-lvpp-hftzvp-2018.md section 6.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{cosmo\_score}{aad}{0.982597286548}
+\goldrow{diag}{cosmo\_score}{chi2}{14.8354761504}
+\goldrow{diag}{cosmo\_score}{max\_abs\_resid}{1.77675451305}
+\goldrow{diag}{cosmo\_score}{max\_resid\_x1}{0.5}
+\goldrow{diag}{cosmo\_score}{mode\_evaluate}{1}
+\goldrow{diag}{cosmo\_score}{n\_data}{11}
+\goldrow{diag}{cosmo\_score}{n\_feasible}{11}
+\goldrow{diag}{cosmo\_score}{partial}{0}
+\goldrow{diag}{cosmo\_score}{penalised\_points}{0}
+\goldrow{diag}{cosmo\_score}{rms}{1.16132667671}
+\goldrow{diag}{cosmo\_score}{sse}{14.8354761504}
+\goldrow{diag}{cosmo\_score}{validity\_declared}{0}
+\goldrow{diag}{txy\_cosmo}{n\_emptyCurves}{0}
+\goldrow{diag}{txy\_cosmo}{n\_failures}{0}
+\goldmore{4}
+\end{tutgolden}
+
+\clearpage
 \tutentry{entropy01\_air\_ledger}{tutorials/props/molecular/entropy01\_air\_ledger}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

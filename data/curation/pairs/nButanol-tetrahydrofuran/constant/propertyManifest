@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "1e3352cd1ad51e067488219ed275c3fa0be3761d8ec3b19127fab62916c11b86";
             release       Choupo-2608;
         }
+        "parameters/Wilson/nButanol-tetrahydrofuran.dat"
+        {
+            type          imported;
+            sha256        "35de58d7bfe2063a27ac8f4ef5e3979e2685ab9d71ece85b9e13de7b015cbc7c";
+            computationalSha256 "05fc1f4a9b8b7c17fc8b9344da7f15be37bebe77906c52e0b91ae015e9608bd7";
+            origin        "data/standards/parameters/Wilson/nButanol-tetrahydrofuran.dat";
+            originSha256  "93ec55a45531801841f2bb33045a4556632a3422a3672c3b731a22406a216cfb";
+            release       Choupo-2608;
+        }
     }
 }

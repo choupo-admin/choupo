@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "8c8281540689b2694e0c1dd5969994983dd779a859e1986353befe176f22aaaf";
             release       Choupo-2608;
         }
+        "parameters/Wilson/ethyleneCarbonate-ethyleneGlycol.dat"
+        {
+            type          imported;
+            sha256        "837fb685e245b5e1c5310490a1eca6509c4275b9551a9738b70d0b13a4802a5b";
+            computationalSha256 "b5d96676338b94eee83766926d59819e86743b140995cb0417b2059a5bf91a3a";
+            origin        "data/standards/parameters/Wilson/ethyleneCarbonate-ethyleneGlycol.dat";
+            originSha256  "c48a5b5ea09af82f72599c29eab792b42b282d62613606bf7702a780551ed200";
+            release       Choupo-2608;
+        }
     }
 }

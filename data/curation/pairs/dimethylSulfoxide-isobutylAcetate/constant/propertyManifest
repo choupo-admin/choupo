@@ -37,10 +37,19 @@ propertyManifest
         "components/isobutylAcetate.dat"
         {
             type          imported;
-            sha256        "8d42f736396b740336fdbb5895c767f26a256fac743580052accb38c119bf130";
-            computationalSha256 "764dea06bea08f8fea4ba03acf1b3874f48c47c514d4d22f811102a0b9b6edf7";
+            sha256        "7a5513321a7f94197cd761fbcda255c75c419151bc192359b5732369c779569a";
+            computationalSha256 "1feca08966bf03786807fe2993c834ead77e0ca86bcc3d74517b22d84404ac6b";
             origin        "data/standards/components/isobutylAcetate.dat";
-            originSha256  "fc83aedc37a243b53683835301a4a8aaabc51fde333ec26b3b3b0ca011d118fa";
+            originSha256  "e76455ecb20132cba36ad3f3a307dcd0c54aa93202987729cabb50cc30626fa2";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/dimethylSulfoxide-isobutylAcetate.dat"
+        {
+            type          imported;
+            sha256        "579ddc8798ae85d110e87dece72b1eac0c16bff84b5683d36bd9e39f63aa5d7f";
+            computationalSha256 "d42b75b79d5bc49d5e60a5d0d1fccf878dedac5827bc02341e6ca5a4570ef224";
+            origin        "data/standards/parameters/Wilson/dimethylSulfoxide-isobutylAcetate.dat";
+            originSha256  "307d8f397b71d18615ccef272514fdd40c345d5eb81b12ed7df28a0639654f2b";
             release       Choupo-2608;
         }
     }

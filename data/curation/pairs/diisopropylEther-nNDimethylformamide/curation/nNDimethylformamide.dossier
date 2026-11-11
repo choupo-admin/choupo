@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-diisopropylEther.A_ij  7986.92469628;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-diisopropylEther.A_ji  -1097.01406648;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "4b6387e91adc80ae";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nNDimethylformamide-diisopropylEther-bubble-j.fluid.2007.02.026.dat";
+            doi       "10.1016/j.fluid.2007.02.026";
+            sha256    "adac8772cff4f48919a62799e8a474272f8eaf98cd139cb8e6a91713f60cb30b";
+            provenance measured;
+            archiveFile "j.fluid.2007.02.026.xml";
+            system    "nNDimethylformamide + diisopropylEther";
+            pressure  "95100.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1195; max 0.8953; n 15; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-diisopropylEther.A_ij  7986.92469539;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-diisopropylEther.A_ji  -1097.01406622;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "4b6387e91adc80ae";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nNDimethylformamide-diisopropylEther-bubble-j.fluid.2007.02.026.dat";
+            doi       "10.1016/j.fluid.2007.02.026";
+            sha256    "adac8772cff4f48919a62799e8a474272f8eaf98cd139cb8e6a91713f60cb30b";
+            provenance measured;
+            archiveFile "j.fluid.2007.02.026.xml";
+            system    "nNDimethylformamide + diisopropylEther";
+            pressure  "95100.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1195; max 0.8953; n 15; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

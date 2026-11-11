@@ -28,19 +28,19 @@ propertyManifest
         "components/cyclohexane.dat"
         {
             type          imported;
-            sha256        "54ac6c67fe0fa7f8d15744192b515efd56b05bf78dc8bf99b6dfc092f349f26c";
-            computationalSha256 "6f57b6ee7356428daa748404b1343309e762255b70baf430d387550ae4683431";
+            sha256        "04e20a9c3a1368072059505adbe555b180a674e96087a4c92af04cf5e42245b7";
+            computationalSha256 "e5dadd80ead0f1d8f44482b2596d2a2b5e7c060e9ed1181dbf1712af989938ef";
             origin        "data/standards/components/cyclohexane.dat";
-            originSha256  "c17d37ff35f43849e846d3f6a974ab7f2312085a349d1169494ad2374fd90d23";
+            originSha256  "9f3b642c76b10c5867f604ce4d741c21b1c8b9b25e700707e9cc49fdbcf079f5";
             release       Choupo-2608;
         }
         "components/nNonane.dat"
         {
             type          imported;
-            sha256        "c6e230c3962584501169ad403a0503445df26695175139b9b9aa7f375908ce02";
-            computationalSha256 "e30086a65f8408a79d0e7437a9a7659bd8e52db983973fcb9ae84c4022c09606";
+            sha256        "8eb22a21343cc0d31c90a9cb14c5afa3c97168ac52fcbc4991b8b99771e08fed";
+            computationalSha256 "57fbdc20edd02c1ad7de179afe514d5dec7797c85be368066ca248a7cd9c1bdb";
             origin        "data/standards/components/nNonane.dat";
-            originSha256  "04a2c2a72fb0170f6e58dca0a4ced5760f40fbde24d6f7bdd0ffab546944f9f8";
+            originSha256  "b6375e78f76e6dca07a13fcb69894971e9a05f5d1c94352bd2772f10a067bf2f";
             release       Choupo-2608;
         }
         "parameters/NRTL/cyclohexane-nNonane.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/cyclohexane-nNonane.dat"
+        {
+            type          imported;
+            sha256        "e469bc2ad338334b0685784fd6b554aa730f6f9b227b2ab4957e292695596eaf";
+            computationalSha256 "d5f04637ee9e0d4eb8a00621ca1621dee22da134c044337d82693dbdee71c9da";
+            origin        "data/standards/parameters/UNIQUAC/cyclohexane-nNonane.dat";
+            originSha256  "7c617539fecc203b314386d199f291e58ab84a0494fe11db6a8895aab5f1af0b";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/cyclohexane-nNonane.dat"
+        {
+            type          imported;
+            sha256        "b27d2d3390b461b1455dc50fab5fe277bc415a5b869069636aee6ef6c1e52930";
+            computationalSha256 "0c36cd631a9a86b5b820df3cf87712b26a2ae780365a7294feca40b744ccbc22";
+            origin        "data/standards/parameters/Wilson/cyclohexane-nNonane.dat";
+            originSha256  "b3db5a015cd4f8b49cbd120998ff235a00f2c835d2a7b69d5e1093a09e6c7e2c";
             release       Choupo-2608;
         }
     }

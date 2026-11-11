@@ -329,6 +329,10 @@ int main()
     add(testPair("UNIQUAC", "methanol",    "methylAcetate", 330.00));
     add(testPair("UNIQUAC", "methylAcetate", "water",       340.00));
     add(testPair("UNIQUAC", "aceticAcid",  "methylAcetate", 350.00));
+    //  DEV.md 4c C294: a UNIQUAC and a Wilson pair the pair cases FITTED and
+    //  promoted (r/q from UNIFAC group sums for nDecane; Vliq for Wilson).
+    add(testPair("UNIQUAC", "1Hexanol",    "nDecane",       405.00));
+    add(testPair("Wilson",  "acetone",     "methanol",      330.00));
     add(testPair("UNIFAC",  "ethanol",     "water",         328.15));
     add(testPair("UNIFAC",  "benzene",     "toluene",       365.00));
     add(testPair("ideal",   "ethanol",     "water",         328.15));
@@ -347,6 +351,14 @@ int main()
                  "pairs ( { i ethanol; j water; A_ij 1157.95; A_ji 4081.65; } );",
                  "Wilson[inline flash03]"));
     add(testPair("cosmoSAC", "ethanol", "water", 328.15));
+
+    //  COSMO-SAC variant LVPP-HFTZVP-2018 (DEV.md 4c C310): the catalogue now
+    //  ships these profiles (MIT), so the model is EXERCISED, not refused --
+    //  one polar/H-bonding pair and one pair with a strong cross H-bond.
+    add(testPair("cosmoSAC", "acetone", "chloroform", 330.00, false,
+                 "source LVPP-HFTZVP-2018;", "cosmoSAC[LVPP-HFTZVP-2018]"));
+    add(testPair("cosmoSAC", "methanol", "benzene", 330.00, false,
+                 "source LVPP-HFTZVP-2018;", "cosmoSAC[LVPP-HFTZVP-2018]"));
 
     //  The negative: the SAME model and pair, with gamma_2 replaced by
     //  gamma_1.  Must come back O(1), or this whole probe proves nothing.

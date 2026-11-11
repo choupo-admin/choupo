@@ -28,10 +28,10 @@ propertyManifest
         "components/2Pentanone.dat"
         {
             type          imported;
-            sha256        "0cb57d0aff3965552eca548644fa2c53134b58fd97911941a1e06eee49e6f83e";
-            computationalSha256 "8e32c39ee4a4b3347fd919ba8fe621bad5af2816899d004afe8462c6a3fe8ee9";
+            sha256        "8b22414162009ea2814749dc536fc1b8f3c06fbb23b1122d2fb32872b8a86d47";
+            computationalSha256 "b8dc2baf2abceb7e575b9e9035bb2f75c8e65d631b1070b4e8368f87b0027d72";
             origin        "data/standards/components/2Pentanone.dat";
-            originSha256  "bb5b2da20af3c2f47d04965cddfabc4e32d3bcc3aedad822e14df4497158c120";
+            originSha256  "d6ae8886518f66ec6aee0e591be98f29ed13214a29e1041d72d9d9c67830d7ab";
             release       Choupo-2608;
         }
         "components/3Pentanone.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "4cf80865098f36b7cdf10c29420e3ba8a65e230bd0fedad795f3d20bab2bd5ec";
             origin        "data/standards/parameters/NRTL/2Pentanone-3Pentanone.dat";
             originSha256  "e7c832081f7e716ed5a543e77d256df7e5cff7e321026fe26e0bea5669a4747a";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Pentanone-3Pentanone.dat"
+        {
+            type          imported;
+            sha256        "bb11b06b7e33d8dc55f9f44714ec872731c98b6abdbffac3d7f833a3f9cd962c";
+            computationalSha256 "2d4063cb9aa3145949805312a19ebaa3fc191c3339999135072524cb05ea58f1";
+            origin        "data/standards/parameters/Wilson/2Pentanone-3Pentanone.dat";
+            originSha256  "fdff506a382075f1a3b5673e65f88011daa00a178a155c9acedec91a71ae62d7";
             release       Choupo-2608;
         }
     }

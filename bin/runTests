@@ -7018,6 +7018,20 @@ PYEOF
     fi
     rm -f /tmp/csgate.$$
 
+    # COSMO-SAC LVPP-HFTZVP-2018 selection gate (DEV.md 4c C310): the engine
+    # reproduces, within 1e-3 in mean |d ln gamma-inf|, the reading of
+    # Ferrarini 2018 that was SELECTED outside it on Lin & Sandler 2002
+    # Table 2.  Selection data, not validation -- the gate says so.
+    if gate_exec "$ROOT/bin/curate/check_cosmo_lvpp_selection.py" > /tmp/cslvpp.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "cosmo-lvpp-selection-gate" "$(head -1 /tmp/cslvpp.$$ | cut -c1-160)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_cosmo_lvpp_selection.py)\n" "cosmo-lvpp-selection-gate"
+        cat /tmp/cslvpp.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/cslvpp.$$
+
     # Header self-containment gate: every src/**/*.H compiles ALONE with the
     # project flags (g++ -fsyntax-only) -- a header that only works through
     # an accidental transitive include couples the build graph invisibly.

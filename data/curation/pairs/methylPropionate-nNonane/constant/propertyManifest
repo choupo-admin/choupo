@@ -37,10 +37,10 @@ propertyManifest
         "components/nNonane.dat"
         {
             type          imported;
-            sha256        "c6e230c3962584501169ad403a0503445df26695175139b9b9aa7f375908ce02";
-            computationalSha256 "e30086a65f8408a79d0e7437a9a7659bd8e52db983973fcb9ae84c4022c09606";
+            sha256        "8eb22a21343cc0d31c90a9cb14c5afa3c97168ac52fcbc4991b8b99771e08fed";
+            computationalSha256 "57fbdc20edd02c1ad7de179afe514d5dec7797c85be368066ca248a7cd9c1bdb";
             origin        "data/standards/components/nNonane.dat";
-            originSha256  "04a2c2a72fb0170f6e58dca0a4ced5760f40fbde24d6f7bdd0ffab546944f9f8";
+            originSha256  "b6375e78f76e6dca07a13fcb69894971e9a05f5d1c94352bd2772f10a067bf2f";
             release       Choupo-2608;
         }
         "parameters/NRTL/methylPropionate-nNonane.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "a0d0f82b1fa117541095fe1be445d19187fcf133f4958af96f663f1d5789543b";
             origin        "data/standards/parameters/NRTL/methylPropionate-nNonane.dat";
             originSha256  "6163bc645266cc82efbe939adeac623811d9b78aaa368d1f08928014277b7b29";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/methylPropionate-nNonane.dat"
+        {
+            type          imported;
+            sha256        "a2a0b7962c4cc6a6504aed367b0db7abdf34b57aaf48ecdff331229739106a8f";
+            computationalSha256 "edf2be6c2d8ba64d6617965d056f8eba9316f983fe816c0181b099812032c92c";
+            origin        "data/standards/parameters/Wilson/methylPropionate-nNonane.dat";
+            originSha256  "87ad1ab1801268dd5dfdcb6c0f19f2042e889f10bbe5e5520c17614fd1a81d36";
             release       Choupo-2608;
         }
     }

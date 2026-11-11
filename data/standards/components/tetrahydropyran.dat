@@ -3,9 +3,13 @@
   NEW in the catalogue (DEV.md 4c C292, slice 2 of C287, 2026-11-10), built by
   bin/curate/c287_new_components.py from measurements the NIST/TRC ThermoML Archive
   locates (the articles are the sources; their DOIs are in provenance).
+  UPGRADED by DEV.md 4c C309 (2026-11-11): Tc and Pc replaced by the IUPAC
+  recommended value (critically evaluated measurements; citation in
+  provenance) and omega re-derived from them.  Nothing else refitted: Vliq
+  is the C292 fit, made with the Joback Tc/Pc, kept as it was.
   MEASURED: Tb.  FITTED: vapour pressure (bin/choupo-curate vp),
-  Vliq, liquid Cp.  DERIVED: omega (from the fitted vapour pressure at the ESTIMATED Tc).
-  ESTIMATED (Joback): Tc, Pc, ideal-gas Cp, dHf_298; s_298 derived from Joback's
+  Vliq, liquid Cp.  DERIVED: omega (from the fitted vapour pressure).
+  ESTIMATED (Joback): ideal-gas Cp, dHf_298; s_298 derived from Joback's
   dHf and dGf.  No measured series is reproduced here.
   reviewStatus autoPromoted, humanReviewed false: NO human has read it back.
   Psat: fitted by `bin/choupo-curate vp`; its promotion replaced the
@@ -18,9 +22,9 @@ formula     C5H10O;
 reviewStatus autoPromoted;
 humanReviewed false;
 MW          86.1340;      // kg/kmol, from the formula (IUPAC standard atomic weights)
-Tc          572.249308;      // K, Joback ESTIMATE (provenance.Tc)
-Pc          46.3400404;      // bar, Joback ESTIMATE (provenance.Pc)
-omega       0.185742;      // [-] (provenance.omega)
+Tc          572;      // K, IUPAC recommended (provenance.Tc)
+Pc          47.7;      // bar, IUPAC recommended (provenance.Pc)
+omega       0.200147;      // [-] (provenance.omega)
 Tb          361.36;      // K, measured (provenance.Tb)
 
 standardThermochemistry
@@ -70,25 +74,27 @@ provenance
     }
     Tc
     {
-        origin           estimated;
-        method           "Joback";
-        methodVersion    "joback-poling5e-table2-2";
-        input            joback;
-        inputFingerprint "etherRing:1,rCH2:5";
-        reproducedInCase "data/curation/batches/new_components_estimated";
-        uncertainty      { status unquantified; reason "Joback group contribution (Joback & Reid 1987); Tc within a few per cent and Pc within about 5-10 per cent for ordinary organics, worse for polyfunctional molecules"; }
-        notes            "the archive carries no critical temperature for this compound; all groups of the structure are in the Joback table";
+        origin        measured;
+        method        "IUPAC recommended value: the critical evaluation of every published measurement by the IUPAC critical-properties group (572 K)";
+        uncertainty   "+-2 K, the evaluators' estimate";
+        source        "Kudchadker, A.P.; Ambrose, D.; Tsonopoulos, C. Vapor-Liquid Critical Properties of Elements and Compounds. 7. Oxygen Compounds Other Than Alkanols and Cycloalkanols. J. Chem. Eng. Data 46 (2001) 457-479, Table 1 (recommended values)";
+        doi           "10.1021/je0001680";
+        transcribedBy "bin/curate/c287_new_components.py (IUPAC table, hand-transcribed from the PDF, one row per compound)";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+        reviewReason  "transcribed by a model from the article's Table 1 and re-read once; not yet read back by a human";
     }
     Pc
     {
-        origin           estimated;
-        method           "Joback";
-        methodVersion    "joback-poling5e-table2-2";
-        input            joback;
-        inputFingerprint "etherRing:1,rCH2:5";
-        reproducedInCase "data/curation/batches/new_components_estimated";
-        uncertainty      { status unquantified; reason "Joback group contribution (Joback & Reid 1987); Tc within a few per cent and Pc within about 5-10 per cent for ordinary organics, worse for polyfunctional molecules"; }
-        notes            "the archive carries no critical pressure for this compound; all groups of the structure are in the Joback table";
+        origin        measured;
+        method        "IUPAC recommended value: the critical evaluation of every published measurement by the IUPAC critical-properties group (4.77 MPa, stored as 47.7 bar)";
+        uncertainty   "+-0.1 MPa, the evaluators' estimate";
+        source        "Kudchadker, A.P.; Ambrose, D.; Tsonopoulos, C. Vapor-Liquid Critical Properties of Elements and Compounds. 7. Oxygen Compounds Other Than Alkanols and Cycloalkanols. J. Chem. Eng. Data 46 (2001) 457-479, Table 1 (recommended values)";
+        doi           "10.1021/je0001680";
+        transcribedBy "bin/curate/c287_new_components.py (IUPAC table, hand-transcribed from the PDF, one row per compound)";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+        reviewReason  "transcribed by a model from the article's Table 1 and re-read once; not yet read back by a human";
     }
     Tb
     {
@@ -104,10 +110,10 @@ provenance
     omega
     {
         origin        regressed;
-        method        "DERIVED from a fit: omega = -log10(Psat(0.7 Tc)/Pc) - 1 from the Antoine the vapour-pressure pipeline fitted (data/curation/components/tetrahydropyran) and the measured Tc, Pc; 0.7 Tc = 400.57 K, EXTRAPOLATED +39.0 K beyond the fitted range (257.96-361.55 K)";
+        method        "DERIVED from a fit: omega = -log10(Psat(0.7 Tc)/Pc) - 1 from the Antoine the vapour-pressure pipeline fitted (data/curation/components/tetrahydropyran) and the measured Tc, Pc; 0.7 Tc = 400.40 K, EXTRAPOLATED +38.8 K beyond the fitted range (257.96-361.55 K); cross-check (C309): omega 0.2001 from the Antoine at 0.7 Tc against Lee-Kesler 0.2173 from the measured Tb 361.36 K, Tc and Pc (difference -0.0172)";
         derivedBy     "bin/curate/c287_new_components.py";
         reviewStatus  autoPromoted;
-        humanReviewed false;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
         reviewReason  "derived by a machine; read it with the fitGrade of the vapour pressure it comes from";
     }
     Vliq
@@ -244,12 +250,12 @@ provenance
         methodVersion "choupoProps Choupo-dev";
         fittedInCase  "data/curation/components/tetrahydropyran";
         reviewStatus  autoPromoted;
-        humanReviewed false;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
         fitGrade      clean;   // DEV.md 4c C285: the worse of the grades below
         fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
         fitGradeMaxRelativeError_pct 2.523268;   // grade clean
         promotedBy    "bin/choupo-curate vp --promote";
-        promotedDate  "2026-11-10";
+        promotedDate  "2026-11-11";
         reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
         reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
         uncertainty   "the fit's maximum relative error over every kept measurement, below";
@@ -317,8 +323,8 @@ provenance
             dropped     "none";
             aad_pct     1.233670;   // the fitted Antoine, every kept point
             max_pct     2.523268;
-            awAad_pct   15.965192;   // the AmbroseWalton curve it replaces, the same points
-            awMax_pct   37.438680;
+            awAad_pct   11.600906;   // the AmbroseWalton curve it replaces, the same points
+            awMax_pct   25.565469;
             Tnb_fit     360.5895;   // K, the fitted curve at 101.325 kPa
         }
     }

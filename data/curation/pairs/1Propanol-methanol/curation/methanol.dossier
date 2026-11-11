@@ -112,4 +112,184 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-1Propanol.a_ij  22.2460637617;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-1Propanol.a_ji  31.9723808852;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "060af6f8baa00dbd";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-1Propanol-bubble-j.jct.2011.08.006.dat";
+            doi       "10.1016/j.jct.2011.08.006";
+            sha256    "682a55d05fe8902bbf42f1d947981fa35b0d90029fa727758bcfb6519f239cc6";
+            provenance measured;
+            archiveFile "j.jct.2011.08.006.xml";
+            system    "methanol + 1Propanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.058; max 0.949; n 95; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-1Propanol.a_ij  22.4050683599;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-1Propanol.a_ji  31.8166862286;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "060af6f8baa00dbd";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-1Propanol-bubble-j.jct.2011.08.006.dat";
+            doi       "10.1016/j.jct.2011.08.006";
+            sha256    "682a55d05fe8902bbf42f1d947981fa35b0d90029fa727758bcfb6519f239cc6";
+            provenance measured;
+            archiveFile "j.jct.2011.08.006.xml";
+            system    "methanol + 1Propanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.058; max 0.949; n 95; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-1Propanol.A_ij  251.908501315;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-1Propanol.A_ji  228.371743635;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "060af6f8baa00dbd";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-1Propanol-bubble-j.jct.2011.08.006.dat";
+            doi       "10.1016/j.jct.2011.08.006";
+            sha256    "682a55d05fe8902bbf42f1d947981fa35b0d90029fa727758bcfb6519f239cc6";
+            provenance measured;
+            archiveFile "j.jct.2011.08.006.xml";
+            system    "methanol + 1Propanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.058; max 0.949; n 95; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-1Propanol.A_ij  251.869263387;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-1Propanol.A_ji  228.44603913;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "060af6f8baa00dbd";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-1Propanol-bubble-j.jct.2011.08.006.dat";
+            doi       "10.1016/j.jct.2011.08.006";
+            sha256    "682a55d05fe8902bbf42f1d947981fa35b0d90029fa727758bcfb6519f239cc6";
+            provenance measured;
+            archiveFile "j.jct.2011.08.006.xml";
+            system    "methanol + 1Propanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.058; max 0.949; n 95; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

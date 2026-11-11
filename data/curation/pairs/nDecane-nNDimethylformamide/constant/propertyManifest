@@ -28,10 +28,10 @@ propertyManifest
         "components/nDecane.dat"
         {
             type          imported;
-            sha256        "1b64e0e7fef6e2b277d574f849ae687f5522f3671d704d8bed2d3f578db10059";
-            computationalSha256 "d6a9ee66d8d6dd1467ffb9f4f97b79ed9205af98255a2fa15428b87a73ec72fd";
+            sha256        "dc134490f41e3a8ac612df6c816894cd5d48d78c8de8e358d5d002bc1c168d16";
+            computationalSha256 "db998ca1a7ce1794eeb761efa4f902ab545998f122c5a40a55500321745de919";
             origin        "data/standards/components/nDecane.dat";
-            originSha256  "fd51ee55b3ce6dfe3519b2190919b7db462cab9dfc6e52a13c611da79e7c135b";
+            originSha256  "d3eb0769d43d0e76ccbdb97d3a106719a4635b848be11342b1d17f9231985544";
             release       Choupo-2608;
         }
         "components/nNDimethylformamide.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "51cc7bb1e0c2055228ab1f9f1ad7a14664361c5fe1fafe6123591b0614498a28";
             origin        "data/standards/parameters/NRTL/nDecane-nNDimethylformamide.dat";
             originSha256  "4fce0463180f5fc20331545b8d3a9b83b85a873a3447b83c5f9cb97d40f9241c";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/nDecane-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "cfcd9364e6e00975605c1bd954f8677ec25890c90dccb2f9b46ded4c6998aa12";
+            computationalSha256 "6a6cacd6703f1f32294508aaf695d753326c9dfc310363e45617ba24cd784a7c";
+            origin        "data/standards/parameters/Wilson/nDecane-nNDimethylformamide.dat";
+            originSha256  "288da92fb8eb740e14a5180f52b14cf412f3f1dfccc185192b09e2b84c6a0020";
             release       Choupo-2608;
         }
     }

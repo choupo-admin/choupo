@@ -28,10 +28,10 @@ propertyManifest
         "components/14Butanediol.dat"
         {
             type          imported;
-            sha256        "f1d3db89f6ed2fd01c4db5eda70d05beeaebca417537ef29015fde3268bc8567";
-            computationalSha256 "8b0a5b70ce6a9accb08332a66c87bbad838887de572f570583bedc27149e020b";
+            sha256        "a97d6872099d93b5f20993e052dc545d509d48666a1523608a5b6c480496d27e";
+            computationalSha256 "460172d774d0116ebb7786400f542f25010372c825f3f71148815cc86400b95e";
             origin        "data/standards/components/14Butanediol.dat";
-            originSha256  "9306dd597dae0d6f8dcadd7679df4f14e82a8b263e73ed588f838a13287f7e2f";
+            originSha256  "3ef5906abdbddd8960564eeeaf8ccf52e08324550d709aa0826fca388c7b52e5";
             release       Choupo-2608;
         }
         "components/diethyleneGlycol.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "b50ae8e088beda7b70da9fde58e0858464ab0f041a5f8fe7ef5871488d54bde6";
             origin        "data/standards/parameters/NRTL/14Butanediol-diethyleneGlycol.dat";
             originSha256  "c488b8048dc6c6aaec5b904a7fb30b2be1e09417f87fc832d30f08d89dfae4fb";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/14Butanediol-diethyleneGlycol.dat"
+        {
+            type          imported;
+            sha256        "a08eba3a0fefe8ce86c64f6eaa35326c658fb3af2a070488325cf75d5f48a28b";
+            computationalSha256 "4ec13db4a49578f5055f88ce3b495f724bcaeb951c489e4ffb9eadd6b4dd968a";
+            origin        "data/standards/parameters/Wilson/14Butanediol-diethyleneGlycol.dat";
+            originSha256  "4fcf3fe2b6cb2679b35ad837809dd232931a8bba0ce668a584b88048a31e0bfc";
             release       Choupo-2608;
         }
     }

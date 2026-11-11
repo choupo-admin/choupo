@@ -37,10 +37,10 @@ propertyManifest
         "components/toluene.dat"
         {
             type          imported;
-            sha256        "025c441842aa1728935905ed8dfa50db5a6405ee082618c11673f665596d4911";
-            computationalSha256 "f66debfbcd493c4c7c4636809e784a1e07a6c482c3baed13ba34dce12ae63f79";
+            sha256        "5fb900674321baa67135bfeb2c8f80e63d9af183c35f1615477d751b4299f14b";
+            computationalSha256 "55e1e2986dd1c3fc08c951e842a86b062ee6a7bfbc1e1317387e69149a139e36";
             origin        "data/standards/components/toluene.dat";
-            originSha256  "fe5cb21ba09cf44b41de252f6a5a5dd21b6803fcd40666f6fed8d9de8e68563a";
+            originSha256  "ad1533cb0d94caade355d7149fd88ee1ad07c945f5d4c85f4bcce925766250b9";
             release       Choupo-2608;
         }
         "parameters/NRTL/nNDimethylacetamide-toluene.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "33958c39c53ecc2827965d80da92fd47ba7b3e60a69d35779177a85d86c80719";
             origin        "data/standards/parameters/NRTL/nNDimethylacetamide-toluene.dat";
             originSha256  "f8ea5dca7b1c91b1e94e2e941e75646344cb59d7ff7b1cdb6ef1b0609995904b";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/nNDimethylacetamide-toluene.dat"
+        {
+            type          imported;
+            sha256        "1fe7969554b33333b4585fb116ae895b377c7bde96353cf8810636f69e35a1c2";
+            computationalSha256 "668bf7c7ca5a2811a422daf6e769cd774b37bf5dd7361d48faa037f425308af1";
+            origin        "data/standards/parameters/Wilson/nNDimethylacetamide-toluene.dat";
+            originSha256  "8a8d882b7320e41bff4ccf0a8c98a365b535d20fd997dea87b079e564c56f6cb";
             release       Choupo-2608;
         }
     }

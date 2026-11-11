@@ -114,4 +114,188 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-nButanol.a_ij  179.72544493;
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-nButanol.a_ji  -61.9206635951;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d6fb1e6dfee0d5e5";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/vinylAcetate-nButanol-bubble-je300835h.dat";
+            doi       "10.1021/je300835h";
+            sha256    "efa08e51ef7ed709dfd311bee65e32720155050f938fdbe3224d1856cbed66f0";
+            provenance measured;
+            archiveFile "je300835h.xml";
+            system    "vinylAcetate + nButanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.02; max 0.855; n 6; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-nButanol.a_ij  179.725445224;
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-nButanol.a_ji  -61.9206637348;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d6fb1e6dfee0d5e5";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/vinylAcetate-nButanol-bubble-je300835h.dat";
+            doi       "10.1021/je300835h";
+            sha256    "efa08e51ef7ed709dfd311bee65e32720155050f938fdbe3224d1856cbed66f0";
+            provenance measured;
+            archiveFile "je300835h.xml";
+            system    "vinylAcetate + nButanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.02; max 0.855; n 6; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-nButanol.A_ij  -191.103637773;
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-nButanol.A_ji  3700.52870486;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d6fb1e6dfee0d5e5";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/vinylAcetate-nButanol-bubble-je300835h.dat";
+            doi       "10.1021/je300835h";
+            sha256    "efa08e51ef7ed709dfd311bee65e32720155050f938fdbe3224d1856cbed66f0";
+            provenance measured;
+            archiveFile "je300835h.xml";
+            system    "vinylAcetate + nButanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.02; max 0.855; n 6; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-nButanol.A_ij  -191.103634159;
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-nButanol.A_ji  3700.52869714;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d6fb1e6dfee0d5e5";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/vinylAcetate-nButanol-bubble-je300835h.dat";
+            doi       "10.1021/je300835h";
+            sha256    "efa08e51ef7ed709dfd311bee65e32720155050f938fdbe3224d1856cbed66f0";
+            provenance measured;
+            archiveFile "je300835h.xml";
+            system    "vinylAcetate + nButanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.02; max 0.855; n 6; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

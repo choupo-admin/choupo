@@ -112,4 +112,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNDimethylacetamide.A_ij  477.462071108;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNDimethylacetamide.A_ji  5149.52047677;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5348cb4cccf8a9aa";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diNButylEther-nNDimethylacetamide-bubbleP-acs.jced.7b00119-b27.dat";
+            doi       "10.1021/acs.jced.7b00119";
+            sha256    "c57dbb0a0bf3405a8a631fa0f45bc2682f03b5dd1ee020e8b3f07b3a0dafe997";
+            provenance measured;
+            archiveFile "acs.jced.7b00119.xml";
+            system    "diNButylEther + nNDimethylacetamide";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0014; max 0.9988; n 52; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNDimethylacetamide.A_ij  477.462099515;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNDimethylacetamide.A_ji  5149.52045051;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5348cb4cccf8a9aa";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diNButylEther-nNDimethylacetamide-bubbleP-acs.jced.7b00119-b27.dat";
+            doi       "10.1021/acs.jced.7b00119";
+            sha256    "c57dbb0a0bf3405a8a631fa0f45bc2682f03b5dd1ee020e8b3f07b3a0dafe997";
+            provenance measured;
+            archiveFile "acs.jced.7b00119.xml";
+            system    "diNButylEther + nNDimethylacetamide";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0014; max 0.9988; n 52; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

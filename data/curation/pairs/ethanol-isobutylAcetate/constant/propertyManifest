@@ -37,10 +37,10 @@ propertyManifest
         "components/isobutylAcetate.dat"
         {
             type          imported;
-            sha256        "8d42f736396b740336fdbb5895c767f26a256fac743580052accb38c119bf130";
-            computationalSha256 "764dea06bea08f8fea4ba03acf1b3874f48c47c514d4d22f811102a0b9b6edf7";
+            sha256        "7a5513321a7f94197cd761fbcda255c75c419151bc192359b5732369c779569a";
+            computationalSha256 "1feca08966bf03786807fe2993c834ead77e0ca86bcc3d74517b22d84404ac6b";
             origin        "data/standards/components/isobutylAcetate.dat";
-            originSha256  "fc83aedc37a243b53683835301a4a8aaabc51fde333ec26b3b3b0ca011d118fa";
+            originSha256  "e76455ecb20132cba36ad3f3a307dcd0c54aa93202987729cabb50cc30626fa2";
             release       Choupo-2608;
         }
         "parameters/NRTL/ethanol-isobutylAcetate.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/ethanol-isobutylAcetate.dat"
+        {
+            type          imported;
+            sha256        "43553ac87d1e7fd6099fe2ed0fa592e7d4159b0a2bc74db29849dd28a6eaaeb1";
+            computationalSha256 "e2ee92fac6f55ef3427d570bb1e74fa39cf24cfcd60790a5babedb56973340a2";
+            origin        "data/standards/parameters/UNIQUAC/ethanol-isobutylAcetate.dat";
+            originSha256  "9914d8e96c8a025a929f6541254f68da069c2aeb05fb5894723d5d19f6324656";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/ethanol-isobutylAcetate.dat"
+        {
+            type          imported;
+            sha256        "e9d9da610b3456ecae44deb107a15c0312af706728c20a379de902fcb153427d";
+            computationalSha256 "e23f860869d99f2321c14ca84795651c5cfeb1ffcd4bf130ba7b1fa12682f8d3";
+            origin        "data/standards/parameters/Wilson/ethanol-isobutylAcetate.dat";
+            originSha256  "9c368d594046d0e19ef11caa0893fa12cb3ad390bf7eb3a0b70817af636ddfdf";
             release       Choupo-2608;
         }
     }

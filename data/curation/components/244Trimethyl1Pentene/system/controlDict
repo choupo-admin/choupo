@@ -1,0 +1,7 @@
+/*  244Trimethyl1Pentene: the vapour pressure of 244Trimethyl1Pentene refitted as an Antoine to MEASURED
+    vapour pressures from every usable laboratory (DEV.md 4c C281, C283).
+    See system/propsDict for the declaration and the result.  */
+
+application   choupoProps;
+description   "Antoine vapour pressure of 244Trimethyl1Pentene fitted by the curation pipeline to the measured vapour pressures of every usable laboratory (ThermoML locates, the articles source), outliers discarded by name";
+verbosity     2;

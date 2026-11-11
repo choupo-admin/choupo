@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nHexane.a_ij  13.9576315543;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nHexane.a_ji  342.761563386;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9d6f725b439775c6";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-nHexane-bubble-j.fluid.2018.07.013.dat";
+            doi       "10.1016/j.fluid.2018.07.013";
+            sha256    "bf89dc3bab99040fa861ace6d5ac84da32efae3e49783c85363a7686e5a8eac5";
+            provenance measured;
+            archiveFile "j.fluid.2018.07.013.xml";
+            system    "ethanol + nHexane";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0462; max 0.9987; n 16; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nHexane.a_ij  13.9576317489;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nHexane.a_ji  342.761563174;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9d6f725b439775c6";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-nHexane-bubble-j.fluid.2018.07.013.dat";
+            doi       "10.1016/j.fluid.2018.07.013";
+            sha256    "bf89dc3bab99040fa861ace6d5ac84da32efae3e49783c85363a7686e5a8eac5";
+            provenance measured;
+            archiveFile "j.fluid.2018.07.013.xml";
+            system    "ethanol + nHexane";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0462; max 0.9987; n 16; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

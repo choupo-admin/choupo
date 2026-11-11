@@ -28,19 +28,19 @@ propertyManifest
         "components/2Butanol.dat"
         {
             type          imported;
-            sha256        "e50417c9ddeaeb5527166cf726410485df839fdb613b8555aa2b8958be5a5c46";
-            computationalSha256 "ad0f4e4cb272e208c3a8ee83b570fe72b60cd9ab1b2dd9a7d6011dbd28c4995b";
+            sha256        "1595f49de30edfac85305b324b1d45e6fc32514fb2f5c3102e1da25064e57de0";
+            computationalSha256 "094b9b7676472cb8ed2d135265cc88c5c65283778ec3ddfec01877bdc50a3057";
             origin        "data/standards/components/2Butanol.dat";
-            originSha256  "8c6ea94875403bbbd569f6facd5fdaefdcc5aee732ba499696802675d675202a";
+            originSha256  "f9a1e64e1b7104dbaa4e9a541716a88d08af19be38f80885c81d7df98640c91f";
             release       Choupo-2608;
         }
         "components/methylTertPentylEther.dat"
         {
             type          imported;
-            sha256        "8d49a3e03607b4359c1556b50895b22bf2e38971fc9ae6f89cb4ad85de616aa8";
-            computationalSha256 "da6768e6f9929b523499696b6cbc2da3a7d704914d311e4ad62c74842198388d";
+            sha256        "1675210e3bfe6664c91fc9cca47751ccc022cb8f898d8cab115058d2a6053902";
+            computationalSha256 "adaf5876cab077de807e41233e6e5427d29c6d8238e2fe1cd768b5c24bfbb00a";
             origin        "data/standards/components/methylTertPentylEther.dat";
-            originSha256  "bec938fe37aaa40428154d9c2d84ab7a3a516f0cb87de71736eb7b6b72d11180";
+            originSha256  "27a7a10c84080cdc72baf70a5b4125af3c95829285952bc190e7da49d8a5b6b2";
             release       Choupo-2608;
         }
         "parameters/NRTL/2Butanol-methylTertPentylEther.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/2Butanol-methylTertPentylEther.dat"
+        {
+            type          imported;
+            sha256        "2923604d1ac9527ba55b8ac0b6cb923e87efd4beb03dc8e052706f565dc42365";
+            computationalSha256 "152ddb789c64664638a9989bb71285f9bdc980d17a98761603fc849ed8e3ad1d";
+            origin        "data/standards/parameters/UNIQUAC/2Butanol-methylTertPentylEther.dat";
+            originSha256  "da1f0e56df1d21efbe8f9f0b6ca9e0b60e0993b1da91756da8ecd995756d63e8";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Butanol-methylTertPentylEther.dat"
+        {
+            type          imported;
+            sha256        "7341c581360a5bfedf6326faa9bc4dc028f51c0b5f1a1c87a3dc9c379519bd02";
+            computationalSha256 "63d7be4d2695d4c85f38cccf40d55ac9a1d17e2c51be90b226ddff3bbf6ac72a";
+            origin        "data/standards/parameters/Wilson/2Butanol-methylTertPentylEther.dat";
+            originSha256  "f97aeb7cc8417a7ef78ec4d998c42561dd227f6e6f1b8917650eb7c582a4564e";
             release       Choupo-2608;
         }
     }
