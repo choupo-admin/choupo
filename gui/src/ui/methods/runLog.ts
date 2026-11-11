@@ -74,13 +74,13 @@ const WORKER = "gui/public/workers/solverWorker.js";
  *  prose and the page all reach a line through this map. */
 export const CITES = {
   // -- where the log goes ----------------------------------------------------
-  runCaseRedirect: { file: "bin/runCase", line: 342,
+  runCaseRedirect: { file: "bin/runCase", line: 356,
     contains: '"$RUN_BIN" "$CASE_ABS"  > "$LOG" 2>&1 || rc=$?' },
-  runCaseLog: { file: "bin/runCase", line: 288,
+  runCaseLog: { file: "bin/runCase", line: 302,
     contains: 'LOG="$CASE_ABS/log.$APP"' },
-  runCaseSummary: { file: "bin/runCase", line: 357,
+  runCaseSummary: { file: "bin/runCase", line: 371,
     contains: "tail -14" },
-  runCaseFailed: { file: "bin/runCase", line: 402,
+  runCaseFailed: { file: "bin/runCase", line: 416,
     contains: 'FAILED (exit $rc) -- last 20 lines of log:' },
   resultJson: { file: MAIN, line: 1613,
     contains: "emitResultJson(std::cout, result);" },
