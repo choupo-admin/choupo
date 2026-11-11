@@ -60,7 +60,7 @@ AND critical constants, it writes data/standards/components/<name>.dat:
                elements' standard entropies (CODATA Key Values).  The archive
                carries no enthalpy of formation or combustion block for any
                of them (searched; two articles name one in a title only).
-  * reviewStatus autoPromoted; humanReviewed false -- on the record AND on
+  * reviewStatus autoPromoted; review { by none; } (C300) -- on the record AND on
                every per-value entry a machine decided, so the loader voices
                each (src/thermo/Database.cpp).
 
@@ -653,8 +653,9 @@ def fit_entry(key, fit, sha, method, unit_word):
             f'        method        "{method}";\n'
             f'        fittedBy      "{TOOL}";\n'
             "        reviewStatus  autoPromoted;\n"
-            "        humanReviewed false;\n"
+            "        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it\n"
             f"        fitGrade      {g};   // DEV.md 4c C285 limits 5 / 10 / 20 %\n"
+            "        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to\n"
             f"        fitGradeMaxRelativeError_pct {fit['max']:.6f};\n"
             '        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";\n'
             '        reuse         "Choupo\'s own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";\n'
@@ -683,7 +684,7 @@ def constant_entry(key, val, dois, allv, unit, note=""):
             f'        doi           "{"; ".join(dois)}";\n'
             f'        combinedBy    "{TOOL}";\n'
             "        reviewStatus  autoPromoted;\n"
-            "        humanReviewed false;\n"
+            "        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it\n"
             '        reviewReason  "combined by a machine from archive-transcribed values; not yet read back against the articles";\n'
             "    }\n")
 
@@ -773,7 +774,7 @@ def build(c, data, sha, provisional):
             f'        method        "DERIVED from a fit: omega = -log10(Psat(0.7 Tc)/Pc) - 1 from the Antoine the vapour-pressure pipeline fitted ({case.relative_to(ROOT).as_posix()}) and the measured Tc, Pc; 0.7 Tc = {T7:.2f} K, {extra}";\n'
             f'        derivedBy     "{TOOL}";\n'
             "        reviewStatus  autoPromoted;\n"
-            "        humanReviewed false;\n"
+            "        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it\n"
             '        reviewReason  "derived by a machine; read it with the fitGrade of the vapour pressure it comes from";\n'
             "    }\n")
     rho = fit_vliq(d["rho"], MW, Tc, Pc, omega)
@@ -814,14 +815,14 @@ def build(c, data, sha, provisional):
   Vliq, liquid Cp.  DERIVED: omega (from the fitted vapour pressure{" at the ESTIMATED Tc" if est else ""}).
   ESTIMATED (Joback): {"Tc, Pc, " if est else ""}ideal-gas Cp, dHf_298; s_298 derived from Joback's
   dHf and dGf.  No measured series is reproduced here.
-  reviewStatus autoPromoted, humanReviewed false: NO human has read it back.
+  reviewStatus autoPromoted, review by none: NO human has read it back.
 {vp_note}\\*---------------------------------------------------------------------------*/
 
 name        {name};
 CAS         {cas};
 formula     {formula};
 reviewStatus autoPromoted;
-humanReviewed false;
+review      {{ by none; }}   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
 MW          {MW:.4f};      // kg/kmol, from the formula (IUPAC standard atomic weights)
 Tc          {Tc:{nf}};      // K, {"Joback ESTIMATE" if est else "measured"} (provenance.Tc)
 Pc          {Pc:{nf}};      // bar, {"Joback ESTIMATE" if est else "measured"} (provenance.Pc)
