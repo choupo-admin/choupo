@@ -102,8 +102,12 @@ import {
 
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
-import { DEFAULT_PREFS, formatSig } from "../../state/displayUnits.js";
+import { DEFAULT_PREFS } from "../../state/displayUnits.js";
 import { pinchUnits, type PinchUnits } from "../../case/pinchUnits.js";
+import {
+  excessLine, noInteriorPinchText, parseExcludedDuties, partialAnalysisHeadline,
+  pinchClassOf, recoveryLine,
+} from "../../case/pinchWording.js";
 import {
   KnobField, KnobNumber, PanelNote,
 } from "./knobPanel.js";
@@ -115,6 +119,7 @@ import {
 } from "../../case/pinch.js";
 import { OriginMark } from "./origin.js";
 import { gccPockets } from "../../case/gccPockets.js";
+import { SortTh, useSortable } from "../SortableTable.js";
 
 // ---- Where the engine's pinch artefacts live in the run result --------------
 // csvFiles keys are case-root-relative (solverWorker.js walks /case and strips
@@ -283,7 +288,7 @@ function Axes({ frame, xLabel, yLabel, u }: {
   frame: Frame; xLabel: string; yLabel: string; u: PinchUnits;
 }): JSX.Element {
   // kW keeps the integer ticks; another duty unit spans decades (MW: 0..40)
-  const hTickText = (h: number) => (u.qLabel === "kW" ? h.toFixed(0) : formatSig(h, 3));
+  const hTickText = (h: number) => u.n(h);
   const hTicks = [0, 0.25, 0.5, 0.75, 1].map(
     (f) => frame.hLo + f * (frame.hHi - frame.hLo));
   const tTicks = [0, 0.25, 0.5, 0.75, 1].map(
@@ -303,7 +308,7 @@ function Axes({ frame, xLabel, yLabel, u }: {
           <line x1={X0} y1={frame.toY(t)} x2={X1} y2={frame.toY(t)}
             stroke={GRID} strokeWidth={0.6} />
           <text x={X0 - 6} y={frame.toY(t) + 4} textAnchor="end"
-            fontSize={11} fill={INK}>{t.toFixed(0)}</text>
+            fontSize={11} fill={INK}>{u.n(t)}</text>
         </g>
       ))}
       <text x={(X0 + X1) / 2} y={H - 8} textAnchor="middle"
@@ -366,7 +371,7 @@ function CompositeSvg({ hot: hotK, cold: coldK, offset: offsetK, qh: qhK, qc: qc
           <circle cx={frame.toX(pinch.H)} cy={frame.toY(pinch.Tcold)} r={3.5} fill={PINCH} />
           <text x={frame.toX(pinch.H) + 8} y={frame.toY((pinch.Thot + pinch.Tcold) / 2) + 4}
             fontSize={10} fill={PINCH}>
-            pinch: ΔTmin = {u.dT(pinch.dT, 0)} {u.tLabel} ({pinch.Tcold.toFixed(1)} / {pinch.Thot.toFixed(1)} {u.tLabel})
+            pinch: ΔTmin = {u.dT(pinch.dT, 0)} {u.tLabel} ({u.n(pinch.Tcold)} / {u.n(pinch.Thot)} {u.tLabel})
           </text>
         </g>
       )}
@@ -451,7 +456,7 @@ export function GccSvg({ gcc: gccK, pinchStars: starsK, u }: { gcc: CurvePoint[]
           <circle cx={x0} cy={frame.toY(t)} r={5}
             fill={PINCH} stroke="var(--mantine-color-body)" strokeWidth={1.5} />
           <text x={x0 + 8} y={frame.toY(t) - 6}
-            fontSize={11} fill={PINCH}>pinch: no heat crosses here · T* = {t.toFixed(2)} {u.tLabel}</text>
+            fontSize={11} fill={PINCH}>pinch: no heat crosses here · T* = {u.n(t)} {u.tLabel}</text>
         </g>
       ))}
       <text x={X1 - 4} y={pinchY - 40} textAnchor="end" fontSize={11} fill={INK}>
@@ -468,31 +473,37 @@ export function GccSvg({ gcc: gccK, pinchStars: starsK, u }: { gcc: CurvePoint[]
 
 // ---- The stream table and the worked cascade (the engine's files, drawn) ---
 
+const roleText = (role: string) => (role === "utility"
+  ? "service side — not a process stream (left out)"
+  : role === "recovered" ? "heat already recovered (an exchanger side)"
+  : "process stream");
+
 function StreamTable({ rows, dTmin, u }: { rows: StreamRow[]; dTmin?: number; u: PinchUnits }): JSX.Element {
+  const s = useSortable(rows, {
+    unit: (r) => r.unit, side: (r) => r.side, Tin: (r) => r.Tin, Tout: (r) => r.Tout,
+    Q: (r) => Math.abs(r.Q_kW), CP: (r) => r.CP, role: (r) => roleText(r.role),
+  });
   return (
     <Box style={{ overflow: "auto" }}>
       <Table striped withTableBorder fz="xs">
         <Table.Thead>
           <Table.Tr>
-            <Table.Th>stream</Table.Th><Table.Th>kind</Table.Th>
-            <Table.Th>T_in ({u.tLabel})</Table.Th><Table.Th>T_out ({u.tLabel})</Table.Th>
-            <Table.Th>|Q| ({u.qLabel})</Table.Th><Table.Th>CP = |Q|/|ΔT| ({u.cpLabel})</Table.Th>
-            <Table.Th>role</Table.Th>
+            <SortTh s={s} k="unit">stream</SortTh><SortTh s={s} k="side">kind</SortTh>
+            <SortTh s={s} k="Tin">T_in ({u.tLabel})</SortTh><SortTh s={s} k="Tout">T_out ({u.tLabel})</SortTh>
+            <SortTh s={s} k="Q">|Q| ({u.qLabel})</SortTh><SortTh s={s} k="CP">CP = |Q|/|ΔT| ({u.cpLabel})</SortTh>
+            <SortTh s={s} k="role">role</SortTh>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {rows.map((r, i) => (
-            <Table.Tr key={i} style={r.role === "utility" ? { opacity: 0.6 } : undefined}>
+          {s.rows.map((r) => (
+            <Table.Tr key={`${r.unit}|${r.side}|${r.role}`} style={r.role === "utility" ? { opacity: 0.6 } : undefined}>
               <Table.Td>{r.unit}</Table.Td>
               <Table.Td>{r.side}</Table.Td>
               <Table.Td>{u.T(r.Tin, 2)}</Table.Td>
               <Table.Td>{u.T(r.Tout, 2)}</Table.Td>
               <Table.Td>{u.Q(Math.abs(r.Q_kW), 1)}</Table.Td>
               <Table.Td>{u.CP(r.CP, 3)}</Table.Td>
-              <Table.Td>{r.role === "utility"
-                ? "service side — not a process stream (left out)"
-                : r.role === "recovered" ? "heat already recovered (an exchanger side)"
-                : "process stream"}</Table.Td>
+              <Table.Td>{roleText(r.role)}</Table.Td>
             </Table.Tr>
           ))}
         </Table.Tbody>
@@ -509,22 +520,27 @@ function StreamTable({ rows, dTmin, u }: { rows: StreamRow[]; dTmin?: number; u:
 
 function CascadeTable({ rows, u }: { rows: ProblemRow[]; u: PinchUnits }): JSX.Element {
   const cpUnit = u.cpLabel === "kW/K" ? "" : ` (${u.cpLabel})`;
+  const s = useSortable(rows, {
+    interval: (r) => r.interval, T: (r) => r.Thi, cpHot: (r) => r.cpHot,
+    cpCold: (r) => r.cpCold, dH: (r) => r.dH, cas: (r) => r.casOut,
+    cor: (r) => r.corOut, streams: (r) => `${r.hotStreams} | ${r.coldStreams}`,
+  });
   return (
     <Box style={{ overflow: "auto" }}>
       <Table striped withTableBorder fz="xs">
         <Table.Thead>
           <Table.Tr>
-            <Table.Th>interval</Table.Th>
-            <Table.Th>T*_hi → T*_lo ({u.tLabel})</Table.Th>
-            <Table.Th>ΣCP hot{cpUnit}</Table.Th><Table.Th>ΣCP cold{cpUnit}</Table.Th>
-            <Table.Th>ΔH ({u.qLabel})</Table.Th>
-            <Table.Th>cascade ({u.qLabel})</Table.Th>
-            <Table.Th>corrected ({u.qLabel})</Table.Th>
-            <Table.Th>streams (hot | cold)</Table.Th>
+            <SortTh s={s} k="interval">interval</SortTh>
+            <SortTh s={s} k="T">T*_hi → T*_lo ({u.tLabel})</SortTh>
+            <SortTh s={s} k="cpHot">ΣCP hot{cpUnit}</SortTh><SortTh s={s} k="cpCold">ΣCP cold{cpUnit}</SortTh>
+            <SortTh s={s} k="dH">ΔH ({u.qLabel})</SortTh>
+            <SortTh s={s} k="cas">cascade ({u.qLabel})</SortTh>
+            <SortTh s={s} k="cor">corrected ({u.qLabel})</SortTh>
+            <SortTh s={s} k="streams">streams (hot | cold)</SortTh>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {rows.map((r) => (
+          {s.rows.map((r) => (
             <Table.Tr key={r.interval}>
               <Table.Td>{r.interval}</Table.Td>
               <Table.Td>{u.T(r.Thi, 2)} → {u.T(r.Tlo, 2)}</Table.Td>
@@ -557,22 +573,28 @@ function CascadeTable({ rows, u }: { rows: ProblemRow[]; u: PinchUnits }): JSX.E
 // ---- The candidate-matches table --------------------------------------------
 
 function MatchesTable({ matches, u }: { matches: CandidateMatch[]; u: PinchUnits }): JSX.Element {
+  //  Unsorted until the reader clicks: the engine's order ranks nothing.
+  const s = useSortable(matches, {
+    region: (m) => m.region, hot: (m) => m.hotStream, cold: (m) => m.coldStream,
+    Q: (m) => m.maximumCandidateDuty_kW, rule: (m) => m.pinchRule,
+    limit: (m) => m.limitingReason, rec: (m) => m.recommendation,
+  });
   return (
     <Box style={{ overflow: "auto", height: "100%" }}>
       <Table stickyHeader striped withTableBorder fz="xs">
         <Table.Thead>
           <Table.Tr>
-            <Table.Th>region</Table.Th>
-            <Table.Th>hot</Table.Th>
-            <Table.Th>cold</Table.Th>
-            <Table.Th>Q_max, this pair alone ({u.qLabel})</Table.Th>
-            <Table.Th>CP rule at the pinch (CP_hot ≤ CP_cold above, ≥ below)</Table.Th>
-            <Table.Th>limiting reason</Table.Th>
-            <Table.Th>engine&apos;s recommendation</Table.Th>
+            <SortTh s={s} k="region">region</SortTh>
+            <SortTh s={s} k="hot">hot</SortTh>
+            <SortTh s={s} k="cold">cold</SortTh>
+            <SortTh s={s} k="Q">Q_max, this pair alone ({u.qLabel})</SortTh>
+            <SortTh s={s} k="rule">CP rule at the pinch (CP_hot ≤ CP_cold above, ≥ below)</SortTh>
+            <SortTh s={s} k="limit">limiting reason</SortTh>
+            <SortTh s={s} k="rec">engine&apos;s recommendation</SortTh>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {matches.map((m, i) => {
+          {s.rows.map((m, i) => {
             const flag = candidateFlag(m);
             return (
               <Table.Tr key={i}
@@ -699,7 +721,8 @@ export function PinchCompositeTool(
   // classroom witness keeps its own K / kW sliders and reads K / kW.
   const dispPrefs = useStore((s) => s.displayPrefs);
   const u = useMemo(
-    () => pinchUnits(source === "current" ? dispPrefs : DEFAULT_PREFS),
+    () => pinchUnits(source === "current" ? dispPrefs
+      : { ...DEFAULT_PREFS, sigFigs: dispPrefs?.sigFigs ?? DEFAULT_PREFS.sigFigs }),
     [source, dispPrefs]);
   const [pane, setPane] = useState<Pane>("composite");
 
@@ -760,6 +783,13 @@ export function PinchCompositeTool(
     ? { Thot: kpis["T_pinch_hot_K"]!, Tcold: kpis["T_pinch_cold_K"]!,
         H: summary.Hpinch, dT: kpis["dTmin_K"] ?? 0 }
     : undefined;
+
+  //  C304: what the page SAYS about the engine's numbers (pinchWording.ts).
+  const pinchClass = pinchClassOf(kpis, summary?.class ?? null);
+  const excess = excessLine(kpis, pinchClass, u);
+  const recovery = recoveryLine(kpis, streamRows, u);
+  const partialHead = partialAnalysisHeadline(
+    kpis, parseExcludedDuties(popCsv), u);
 
   /* THE KNOBS AND THE VIEW SWITCH — the only surfaces here that SET anything.
      They sit in the page beside the curves, in a two-column grid; the engine's
@@ -825,7 +855,8 @@ export function PinchCompositeTool(
           {kpis
             ? `engine targets · Q_H,min ${u.Q(kpis["Q_H_min_kW"]!, 1)} ${u.qLabel} · `
               + `Q_C,min ${u.Q(kpis["Q_C_min_kW"]!, 1)} ${u.qLabel} · `
-              + (hasPinch ? `pinch T* ${u.T(kpis["T_pinch_K"]!, 2)} ${u.tLabel} · ` : "no pinch · ")
+              + (hasPinch ? `pinch T* ${u.T(kpis["T_pinch_K"]!, 2)} ${u.tLabel} · `
+                          : `${noInteriorPinchText(kpis["dTmin_K"], u)} · `)
               + `ΔTmin ${u.dT(kpis["dTmin_K"]!, 0)} ${u.tLabel}`
             : "no pinch KPI row in this run — curves shown, targets unverified"}
         </Badge>
@@ -846,17 +877,19 @@ export function PinchCompositeTool(
            cooling above" and that "the gap between them is the whole point of
            the exercise", then showed no gap.  All four numbers are already
            published by PinchPass; three of them reached no surface.  */}
-      {active && !emptyCurrentRun && kpis
-        && kpis["Q_heat_current_kW"] != null
-        && kpis["violation_heat_below_pinch_kW"] != null
-        && kpis["violation_cool_above_pinch_kW"] != null && (
+      {active && !emptyCurrentRun && excess && (
         <Badge variant="light" color="orange" size="lg"
-          styles={{ root: { textTransform: "none" } }}>
-          {`excess over target · ${u.Q(kpis["Q_heat_current_kW"]!, 1)}`
-            + ` − ${u.Q(kpis["Q_H_min_kW"]!, 1)}`
-            + ` = ${u.Q(kpis["Q_heat_current_kW"]! - kpis["Q_H_min_kW"]!, 1)} ${u.qLabel}`
-            + `  =  ${u.Q(kpis["violation_heat_below_pinch_kW"]!, 1)} heating below`
-            + ` + ${u.Q(kpis["violation_cool_above_pinch_kW"]!, 1)} cooling above`}
+          styles={{ root: { textTransform: "none", whiteSpace: "normal", height: "auto" } }}>
+          {excess}
+        </Badge>
+      )}
+      {/*  EXISTING vs TARGET (C304 B): the recovery the plant already has (its
+           process-to-process exchangers, `recovered` rows of population.csv),
+           the maximum the targets allow, and the difference.  */}
+      {active && !emptyCurrentRun && recovery && (
+        <Badge variant="light" color="teal" size="lg"
+          styles={{ root: { textTransform: "none", whiteSpace: "normal", height: "auto" } }}>
+          {recovery}
         </Badge>
       )}
       {classText && summary && (
@@ -918,6 +951,14 @@ export function PinchCompositeTool(
   return (
     <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
       <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
+
+        {/*  C304 A: a partial population is said FIRST, not in a chip.  The
+             case's Pinch tab (fixedSource) says it above both of its views. */}
+        {!fixedSource && active && !emptyCurrentRun && partialHead && (
+          <Alert color="red" variant="light" data-partial-analysis>
+            <Text size="sm" fw={600}>{partialHead}</Text>
+          </Alert>
+        )}
 
         {lessonHead}
 

@@ -39,13 +39,14 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
-import { Box, Group, NumberInput, SegmentedControl, Stack, Text, Tooltip } from "@mantine/core";
+import { Alert, Box, Group, NumberInput, SegmentedControl, Stack, Text, Tooltip } from "@mantine/core";
 
 import { useStore } from "../state/store.js";
 import { pinchFromEngine, PINCH_PASS_EXCERPT } from "../case/pinch.js";
 import { PinchGridPlot } from "./plotting/PinchGridPlot.js";
 import { pinchUnits, pinchStatusLine } from "../case/pinchUnits.js";
 import { PinchCompositeTool } from "./methods/PinchCompositeTool.js";
+import { parseExcludedDuties, partialAnalysisHeadline } from "../case/pinchWording.js";
 
 export function PinchView() {
   const runResult = useStore((s) => s.runResult);
@@ -68,8 +69,19 @@ export function PinchView() {
     );
   }
 
+  //  C304 A: a partial population is the FIRST line of the tab, above both
+  //  views, never only a chip beside the targets.
+  const partialHead = partialAnalysisHeadline(runResult?.kpis?.["pinch"],
+    parseExcludedDuties(runResult?.csvFiles?.["reports/pinch/population.csv"]),
+    pinchUnits(dispPrefs));
+
   return (
     <Stack gap="xs" h="100%" style={{ minHeight: 0 }} p="sm">
+      {partialHead && (
+        <Alert color="red" variant="light" p="xs" data-partial-analysis>
+          <Text size="sm" fw={600}>{partialHead}</Text>
+        </Alert>
+      )}
       <Group justify="space-between" align="center">
         <SegmentedControl size="xs" value={view}
           onChange={(v) => setView(v as "curves" | "grid")}
