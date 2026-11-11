@@ -360,6 +360,22 @@ int main()
         add(testElectrolyte("pitzerSalt", salt, 298.15));
         ENRTLSingleSalt en;
         add(testElectrolyte("eNRTLsalt", en, 298.15));
+
+        //  The default salt is 1:1, where the charge weighting X_j = x_j |z_j|
+        //  of the local-composition term is invisible.  Until C312 the kernel
+        //  omitted it, and this probe could not see that: on a 2:1 or 1:2
+        //  salt the omission makes gamma_pm and phi come from two different
+        //  surfaces (R ~ 1e-2).  So the probe also exercises one salt of each
+        //  unsymmetric charge type, on Chen & Evans 1986 Table 1's own
+        //  parameters (water-CaCl2 to 2.5 m; water-Na2SO4).
+        ENRTLSingleSalt en21;
+        en21.z_c = 2; en21.z_a = 1; en21.nu_c = 1; en21.nu_a = 2;
+        en21.tau_m_ca = 9.3732; en21.tau_ca_m = -4.8618;
+        add(testElectrolyte("eNRTLsalt 2:1 (CaCl2)", en21, 298.15));
+        ENRTLSingleSalt en12;
+        en12.z_c = 1; en12.z_a = 2; en12.nu_c = 2; en12.nu_a = 1;
+        en12.tau_m_ca = 7.9756; en12.tau_ca_m = -3.8760;
+        add(testElectrolyte("eNRTLsalt 1:2 (Na2SO4)", en12, 298.15));
     }
 
     std::cout << "<<<JSON\n[\n  " << out << "\n]\nJSON>>>\n";
