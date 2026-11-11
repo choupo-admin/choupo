@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/benzene-nNDimethylacetamide.dat"
         {
             type          imported;
-            sha256        "650d4e4307f7830b0ffab0e155eba58122b37ea9cc4dbf4244acc63f6f9c1ce8";
-            computationalSha256 "478a2eccf761ab25daa9cd19e5441dd45e76c5c88ec3392c71ad6d7c1681a689";
+            sha256        "fce1079257f41715d71677e31e7cc8665f97eb816dd842e0c6c6a83011142e02";
+            computationalSha256 "8e45e5d3d2c641414aa21e187559ea1283d891b7b2cca758422f4ead250179ea";
             origin        "data/standards/parameters/NRTL/benzene-nNDimethylacetamide.dat";
-            originSha256  "1052702973dd39f5a5d0f8b1d83d901985aacce300a3506189c1233e51c2514a";
+            originSha256  "18380b41f3c172b5d6fbddeb397846795fafcb17ec5ce4b70e1c57f52104c172";
             release       Choupo-2608;
         }
     }

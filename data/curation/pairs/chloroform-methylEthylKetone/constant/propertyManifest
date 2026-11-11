@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/chloroform-methylEthylKetone.dat"
         {
             type          imported;
-            sha256        "382955e434d4fa492f88d5c3236dd71daf6b9b9b915dd0db4040325ad1abec73";
-            computationalSha256 "ca66a5b3421a847d5f11f9a66c0b3d6ca3210d2f762925bb09a084e426787ff0";
+            sha256        "93e090f38e124943b448b29e2886eea88dd0b6fa1237eafdd883a24237bcdf7a";
+            computationalSha256 "132c83231d065ad8c8c765397094dabdb80d5ea03cdd6321962982bbfe878fb9";
             origin        "data/standards/parameters/NRTL/chloroform-methylEthylKetone.dat";
-            originSha256  "818ff9dd8d296338a6dd970bfbec765a2cc914470f8a017b5dd0fef3d4cc5132";
+            originSha256  "3755a3e14d4bcaf82582e0b260bee5051ae1b6c6f49b2da1e6cb49545fbcb094";
             release       Choupo-2608;
         }
     }

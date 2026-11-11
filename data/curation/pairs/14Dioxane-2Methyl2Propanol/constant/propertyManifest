@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/14Dioxane-2Methyl2Propanol.dat"
         {
             type          imported;
-            sha256        "8a8b81e71b44eed5b40cafecb0c22372826577417d4aef9716aa86b94da312b5";
-            computationalSha256 "09e2a08263f6b20f4bbd543a60297aa842a4519a8eeabdcd8fb301dacdcef29d";
+            sha256        "fcd044981459bd67b1b7d4562479cfdaed4b18a4882e0988bddc69c3a0eb3000";
+            computationalSha256 "8b2efc6bf10a3fbfc8ee515ceb85cc0dbd4e011b3e963363f0b955b323c6f39f";
             origin        "data/standards/parameters/NRTL/14Dioxane-2Methyl2Propanol.dat";
-            originSha256  "4c853fd160cad85a70c295d392dc430c21532236bddb18de05a9323bf7850d79";
+            originSha256  "ffb4e2e37e149deefd2beab18733a302d7dcb0ed849e336eff3b63b8da118c1d";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

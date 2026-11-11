@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/anisole.dat"
+        {
+            type          imported;
+            sha256        "409f3f1c28e88cf65e16ddd58c835d8ce346a7d7e1511438b2cfcd3f0badd48f";
+            computationalSha256 "aaa9917f4ffc56d9b1e0cc7324988b535e09c74124611ef83377f1305b0c1725";
+            origin        "data/standards/components/anisole.dat";
+            originSha256  "1eb4544ae67d18f6f2118ebbf32d59c7685e4b349d1bfd634e8b53d218d3e654";
+            release       Choupo-2608;
+        }
+        "components/nButylbenzene.dat"
+        {
+            type          imported;
+            sha256        "296c20e0678fd628f13f33cb91e65b23a7b1bdec86e2f206c3d1e3692543e7b2";
+            computationalSha256 "02eddd831fa9307caeb34fbf2e9d9dcdd4279c933a5d36769f44ebd4c89a9189";
+            origin        "data/standards/components/nButylbenzene.dat";
+            originSha256  "d76b54cf10a0ecb5da44b805b04c4a0bedbfdfea4a0b4670dbca755855b83735";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/anisole-nButylbenzene.dat"
+        {
+            type          imported;
+            sha256        "b177a1a5353686a25a1acada1dba5985995393a32daeaee2a644369472721260";
+            computationalSha256 "8faabcdd72c4f4bc0eaf6883749ebc59cc94015cd7040693b9b1c92ad839f92a";
+            origin        "data/standards/parameters/NRTL/anisole-nButylbenzene.dat";
+            originSha256  "3f7bd910c5d4304a217cfedd214c250417542328b22a9249dd05034b9e96fcef";
+            release       Choupo-2608;
+        }
+    }
+}

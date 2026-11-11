@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/2Methyl1Propanol-nNDimethylformamide.dat"
         {
             type          imported;
-            sha256        "a5cd3066315b85e776112f285866b1bb1545c1c56b29f42386b5ad197c42018e";
-            computationalSha256 "db67579f1d3b5012c4ff8839e615d83f2a6109359f237314bccc7eedc9c34480";
+            sha256        "00573df176ed4e07def9259d2bc8a07168d5dea4dbe85c52225be476d869d6d6";
+            computationalSha256 "f6f2fb5e469bebd73eb99a6aa6277e5caede16bbe916a76a15fc0f6585af158c";
             origin        "data/standards/parameters/NRTL/2Methyl1Propanol-nNDimethylformamide.dat";
-            originSha256  "cb30cdd4b847b4e8cb6d633d3436efc6cd1e3e4b8b6499628fa4d941b304a497";
+            originSha256  "dc4e9ca412876d7f7c6898da4ff064bd9001b74c91bcc1c51c74df7074700887";
             release       Choupo-2608;
         }
     }

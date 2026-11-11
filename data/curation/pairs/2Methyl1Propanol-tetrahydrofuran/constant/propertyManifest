@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/2Methyl1Propanol.dat"
+        {
+            type          imported;
+            sha256        "ee0bb35e8d706d7c4b0549d6ac51be77b89de4f5496fea7d9947d875b9bcdd35";
+            computationalSha256 "b1bfb84671b4f35f758f186af86d16cfe056fb1a54d6f2b5e2867328630848b3";
+            origin        "data/standards/components/2Methyl1Propanol.dat";
+            originSha256  "f0afa6609184a85f9c63deb6555d81619d932cc9049178f6f783e25420e34db6";
+            release       Choupo-2608;
+        }
+        "components/tetrahydrofuran.dat"
+        {
+            type          imported;
+            sha256        "12c449aa50631831604bc7f6ac312bffc9731cac4c4503fcec67827f1467c23f";
+            computationalSha256 "b45bc4cef4652bf7e4842149c988eb25ace04b00cb4aba62bb9d62542833bdb3";
+            origin        "data/standards/components/tetrahydrofuran.dat";
+            originSha256  "8bec66358e45034f813fc67f42dac3ffeca1c0e7204db03873fd8051bb3c2424";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Methyl1Propanol-tetrahydrofuran.dat"
+        {
+            type          imported;
+            sha256        "b74ce4ed244d98c765d0411a016f22032da3ee2e4e02e0c8a5803efccf06c330";
+            computationalSha256 "c3fde8de8cc45a1c1ce1e1245646439ab16a3097caeb9a180d132d6b4b1be404";
+            origin        "data/standards/parameters/NRTL/2Methyl1Propanol-tetrahydrofuran.dat";
+            originSha256  "dc59c6c07fc4abd03004096722d180b59d472c121205b78be9846a666418bc8e";
+            release       Choupo-2608;
+        }
+    }
+}

@@ -1,0 +1,117 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      2Methyl2Propanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-224Trimethylpentane.b_ij  -69.6522571594;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-224Trimethylpentane.b_ji  491.029472118;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "cca80baa4f3ea394";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methyl2Propanol-224Trimethylpentane-bubble-j.jct.2005.04.006.dat";
+            doi       "10.1016/j.jct.2005.04.006";
+            sha256    "e157abbd4d346d9ee5e79799e72fb16000d461970ab65ba327666624870901bc";
+            provenance measured;
+            archiveFile "j.jct.2005.04.006.xml";
+            system    "2Methyl2Propanol + 224Trimethylpentane";
+            pressure  "95800.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1189; max 0.958; n 7; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-224Trimethylpentane.b_ij  -69.652257118;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-224Trimethylpentane.b_ji  491.029472035;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "cca80baa4f3ea394";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methyl2Propanol-224Trimethylpentane-bubble-j.jct.2005.04.006.dat";
+            doi       "10.1016/j.jct.2005.04.006";
+            sha256    "e157abbd4d346d9ee5e79799e72fb16000d461970ab65ba327666624870901bc";
+            provenance measured;
+            archiveFile "j.jct.2005.04.006.xml";
+            system    "2Methyl2Propanol + 224Trimethylpentane";
+            pressure  "95800.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1189; max 0.958; n 7; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

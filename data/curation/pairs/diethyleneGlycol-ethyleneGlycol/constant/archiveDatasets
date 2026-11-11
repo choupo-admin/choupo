@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of diethyleneGlycol-ethyleneGlycol
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/ethyleneGlycol-diethyleneGlycol-bubble-je401020e.dat";
+        role          fit;   // C283: every laboratory is fitted
+        doi           "10.1021/je401020e";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je401020e.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je401020e.json";
+        articleFile   "je401020e.xml";
+        articleSha256 "7bad3139bf3363368aaef597e62ff78a955507b64b15bc3e89e819f860ed9fc3";
+        block         14;
+        filter        ( --interior-only );
+        extract       "bin/choupo-thermoml extract-vle <article file> --block 14 --interior-only --into <dir>";
+        sha256        "f8c4601b059986783e5026a7cc91811b6a07c611ea1be9914107bda60593cbba";
+        identity
+        {
+            ethyleneGlycol { cas "107-21-1"; inchiKey "LYCAIKOWRPUZTN-UHFFFAOYSA-N"; }
+            diethyleneGlycol { cas "111-46-6"; inchiKey "MTHSVFCYNBDYFN-UHFFFAOYSA-N"; }
+        }
+    }
+);

@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/aniline-nOctane.dat"
         {
             type          imported;
-            sha256        "9322d96050e20d1a0be90c68557eb2ddd03ccf0aaee4ee46d79e287123cf6591";
-            computationalSha256 "40ce9f58af573f81f00cf83be7e4a160a67f8cca4a689f75f647fdd7a56e4b19";
+            sha256        "4545e8da5b2243e6e79e38f5ef619101cf796f62a54e322be989ebaf8a6e98ca";
+            computationalSha256 "98f98c2efd454666d1be3486def9a9125b39bfcb6e405ea972b71b4c0a8c4941";
             origin        "data/standards/parameters/NRTL/aniline-nOctane.dat";
-            originSha256  "199ab711b67631295d9983fd461d048b8f0f8e9db75f34d551ad21cd3c6aba69";
+            originSha256  "f9a32b49a5f92cf4b0c668d1de91441a5647f9f7db2cf7d30326b13bcedc0c39";
             release       Choupo-2608;
         }
     }

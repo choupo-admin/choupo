@@ -1,0 +1,47 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/diisopropanolamine.dat"
+        {
+            type          imported;
+            sha256        "b138167ecc0d818c5d9e0ce0bd1c3f4b93b63ee97d96b5eeb24a362dcafd79d7";
+            computationalSha256 "02672c22ec9eff4091a6ac661061672415ae350a028f3640c7f2578133144032";
+            origin        "data/standards/components/diisopropanolamine.dat";
+            originSha256  "405dc7a853bfa6911ea8d24cc281674749d810b011ed8c17b914654c8d5d8270";
+            release       Choupo-2608;
+        }
+        "components/mCresol.dat"
+        {
+            type          imported;
+            sha256        "fcca7c90ed6267003198f47b10659aae7087812247649fab7459b36aae2d0839";
+            computationalSha256 "aa4e5480bc1ca3acda6fb2e775d945f8d0f3b026d54b603bbbd762435cc71152";
+            origin        "data/standards/components/mCresol.dat";
+            originSha256  "5f55ab7fbabf415fcaa36ab0aa005c673edeff6b42aa179f2a8889e9fbd28d1c";
+            release       Choupo-2608;
+        }
+    }
+}

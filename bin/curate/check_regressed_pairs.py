@@ -83,6 +83,19 @@ case-local one that did not earn promotion):
       inline pair carries no span, so nothing is announced) and must be
       identical.
 
+  AMENDED (DEV.md 4c C300, 2026-11-11): THE GRADE IS IN-SAMPLE AND A CLEAN
+      NEEDS EVIDENCE THAT COULD HAVE CONTRADICTED IT.  In arms (j) and (k) a
+      catalogue record must carry `fitGradeBasis inSample;`, and its
+      `fitGrade` is the curation block's in-sample grade CAPPED by
+      bin/curate/pairs_c283.py cap_grade: an in-sample clean resting on one
+      temperature or one laboratory (counted here from the case's kept
+      evidence) is `warning` with `fitGradeCap ( singleTemperature
+      singleLaboratory );` (the words that apply), and the pair loader's line
+      must name the cap.  A vapour pressure (arm i) carries the basis and no
+      cap.  And the review status of an autoPromoted record or value is the
+      legacy `humanReviewed false;` OR a `review {}` block (by none | model |
+      human) -- never both.
+
   AMENDED (DEV.md 4c C282, 2026-11-10): `reviewStatus autoPromoted`.  A
       record its fitting pipeline (bin/choupo-curate pair --promote)
       promoted WITHOUT a human reading it is accepted beside `interim` in
@@ -713,6 +726,64 @@ def vp_grade(x, limits):
 VP_OBJECTIVE = "twoStage"   # C281 step 3: the declared objective of every regression
 
 
+#  DEV.md 4c C300 (2026-11-11).  Rule 4: a record a machine promoted says
+#  nobody reviewed it -- in the legacy field (`humanReviewed false;`, every
+#  record promoted before C300) or in the `review {}` block C297 reads (what
+#  every tool writes since).  Never both: two homes for one fact.  A legacy
+#  `humanReviewed true` beside `autoPromoted` is refused as before; a human
+#  or a model review is recorded in the block, never by that field.
+REVIEW_BY = ("none", "model", "human")
+CAP_COUNT = {}
+
+
+def review_failures(ent, tag, what):
+    """[failure] for the review status of an autoPromoted entry (C300 rule 4)."""
+    hr, rv = word(ent, "humanReviewed"), block(ent, "review")
+    if hr is not None and rv is not None:
+        return [f"{tag}: {what} carries BOTH `humanReviewed {hr};` and a `review {{}}` "
+                "block -- one home for who reviewed it (DEV.md 4c C300 rule 4)"]
+    if rv is not None:
+        if word(rv, "by") not in REVIEW_BY:
+            return [f"{tag}: {what} `review {{ by {word(rv, 'by')}; }}` -- the allowed "
+                    "words are none, model and human (DEV.md 4c C297)"]
+        return []
+    if hr != "false":
+        return [f"{tag}: {what} is `reviewStatus autoPromoted` without `humanReviewed "
+                f"false;` or a `review {{}}` block (it reads humanReviewed {hr!r}) -- a "
+                "record a machine promoted must say who reviewed it, and that no "
+                "human did unless the block names one"]
+    return []
+
+
+def caps_of(ent):
+    """The words of `fitGradeCap ( ... );`, or [] when absent."""
+    m = re.search(r"(^|\s)fitGradeCap\s*\(([^)]*)\)\s*;", ent or "")
+    return m.group(2).split() if m else []
+
+
+def grade_label_failures(prov, grade_in_sample, nT, nL, tag, what="provenance"):
+    """C300 rules 1 and 2 on a catalogue entry: `fitGradeBasis inSample;`,
+    and the applied grade and its cap exactly what pairs_c283.cap_grade gives
+    for the in-sample grade and the evidence counts.  Returns (applied grade,
+    failures)."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import pairs_c283 as pc   # lazy, as in the arms below
+    out = []
+    if word(prov, "fitGradeBasis") != "inSample":
+        out.append(f"{tag}: {what} `fitGradeBasis {word(prov, 'fitGradeBasis')}` -- every "
+                   "graded record says `fitGradeBasis inSample;` (DEV.md 4c C300 rule 1)")
+    applied, caps = pc.cap_grade(grade_in_sample, nT, nL)
+    for c in caps:
+        CAP_COUNT[c] = CAP_COUNT.get(c, 0) + 1
+    if caps:
+        CAP_COUNT["capped"] = CAP_COUNT.get("capped", 0) + 1
+    if caps_of(prov) != caps:
+        out.append(f"{tag}: {what} fitGradeCap {caps_of(prov) or 'absent'}, the rule gives "
+                   f"{caps or 'none'} (in-sample {grade_in_sample}, {nT} temperature(s), "
+                   f"{nL} laboratory(ies); DEV.md 4c C300 rule 2)")
+    return applied, out
+
+
 def vp_entry(text):
     """The per-value provenance entry of `vaporPressure`, comment-stripped."""
     prov = block(strip_comments(text), "provenance") or ""
@@ -782,7 +853,7 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
         if ent is None:
             continue
         if word(ent, "fittedInCase") or word(ent, "reviewStatus") == "autoPromoted" \
-                or word(ent, "humanReviewed"):
+                or word(ent, "humanReviewed") or block(ent, "review") is not None:
             recs.append(p)
     if len(recs) < VP_FLOOR:
         fails.append(f"arm (i): only {len(recs)} regressed vapour-pressure record(s) "
@@ -799,12 +870,20 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
             if not word(ent, k):
                 fails.append(f"{tag}: provenance.vaporPressure has no `{k}` -- a "
                              "proposal moved, not promoted")
-        if word(ent, "reviewStatus") != "autoPromoted" or \
-                word(ent, "humanReviewed") != "false":
+        if word(ent, "reviewStatus") != "autoPromoted":
             fails.append(f"{tag}: provenance.vaporPressure reads reviewStatus "
-                         f"{word(ent, 'reviewStatus')!r}, humanReviewed "
-                         f"{word(ent, 'humanReviewed')!r} -- a value a machine "
-                         "promoted is `autoPromoted` with `humanReviewed false`")
+                         f"{word(ent, 'reviewStatus')!r} -- a value a machine "
+                         "promoted is `autoPromoted`")
+        else:
+            fails.extend(review_failures(ent, tag, "provenance.vaporPressure"))
+        if word(ent, "fitGrade") and word(ent, "fitGradeBasis") != "inSample":
+            fails.append(f"{tag}: provenance.vaporPressure `fitGradeBasis "
+                         f"{word(ent, 'fitGradeBasis')}` -- every graded value says "
+                         "`fitGradeBasis inSample;` (DEV.md 4c C300 rule 1)")
+        if caps_of(ent):
+            fails.append(f"{tag}: provenance.vaporPressure declares fitGradeCap -- the "
+                         "cap of DEV.md 4c C300 rule 2 is for pairs; a vapour pressure "
+                         "keeps the C285 rule")
         if rf["model"] != "Antoine" or not rf["coef"] or len(rf["coef"]) != 3 \
                 or not rf["Trange"]:
             fails.append(f"{tag}: the vaporPressure block is not a fitted Antoine "
@@ -1124,15 +1203,21 @@ def c283_failures(rec, cur, case, out, tag, fails, in_std=False):
         if grade == "refused":
             fails.append(f"{tag}: recomputed grade REFUSED (max |dT| {mx:.4f} K) -- promoted "
                          "anyway")
-        if word(prov, "fitGrade") != grade:
+        #  C300: the in-sample grade capped by the evidence the case keeps
+        #  (bubble temperatures: every distinct kept T, every DOI with a kept row).
+        nT, nL = pc.tx_evidence_counts(case)
+        applied, lf = grade_label_failures(prov, grade, nT, nL, tag)
+        fails.extend(lf)
+        if word(prov, "fitGrade") != applied:
             fails.append(f"{tag}: provenance fitGrade `{word(prov, 'fitGrade')}`, recomputed "
-                         f"`{grade}` (max |dT| {mx:.4f} K)")
+                         f"`{applied}` (max |dT| {mx:.4f} K, in-sample {grade}, "
+                         f"{nT} temperature(s), {nL} laboratory(ies); C285, C300)")
         g_mx = num(prov, "fitGradeMaxTemperatureError_K")
         if g_mx is None or abs(g_mx - mx) > 5e-5 * max(1.0, mx) + 1e-4:
             fails.append(f"{tag}: provenance fitGradeMaxTemperatureError_K {g_mx}, the run's "
                          f"max |dT| {mx:.6f} K")
         rf = facts(rec)
-        gword = {"warning": "warning", "severe": "SEVERE"}.get(grade)
+        gword = {"warning": "warning", "severe": "SEVERE"}.get(applied)
         names = (f"{rf['i']}-{rf['j']}", f"{rf['j']}-{rf['i']}")
         said = [f"[fit-grade] pair {n}: fitGrade " for n in names]
         adv = [a for a in js.get("advisories", [])
@@ -1145,6 +1230,10 @@ def c283_failures(rec, cur, case, out, tag, fails, in_std=False):
             if not any(f"fitGrade {gword}" in a.get("message", "") for a in adv):
                 fails.append(f"{tag}: the fitGrade {gword} line is not in the result JSON "
                              "advisories (the end-of-run caveat block)")
+            if caps_of(prov) and not any(s + gword + " -- CAPPED from an in-sample clean" in out
+                                         for s in said):
+                fails.append(f"{tag}: fitGrade {applied} capped ({' '.join(caps_of(prov))}) and "
+                             "the pair loader's line does not name the cap (DEV.md 4c C300)")
         elif any(s in out for s in said) or adv:
             fails.append(f"{tag}: fitGrade {grade} and the engine voiced a grade -- a clean "
                          "fit says nothing more")
@@ -1250,14 +1339,17 @@ def c291_failures(rec, cur, case, out, tag, fails, in_std=False):
     if in_std:
         if grade == "refused":
             fails.append(f"{tag}: recomputed grade REFUSED (max |dP|/P {mx:.4f} %) -- promoted anyway")
-        if word(prov, "fitGrade") != grade:
-            fails.append(f"{tag}: provenance fitGrade `{word(prov, 'fitGrade')}`, recomputed `{grade}` "
-                         f"(max |dP|/P {mx:.4f} %)")
+        applied, lf = grade_label_failures(prov, grade, len(temps), len(labs), tag)
+        fails.extend(lf)
+        if word(prov, "fitGrade") != applied:
+            fails.append(f"{tag}: provenance fitGrade `{word(prov, 'fitGrade')}`, recomputed "
+                         f"`{applied}` (max |dP|/P {mx:.4f} %, in-sample {grade}, "
+                         f"{len(temps)} temperature(s), {len(labs)} laboratory(ies); C285, C300)")
         g_mx = num(prov, "fitGradeMaxRelativeError_pct")
         if g_mx is None or abs(g_mx - mx) > 5e-5 * max(1.0, mx) + 1e-4:
             fails.append(f"{tag}: provenance fitGradeMaxRelativeError_pct {g_mx}, the run's {mx:.6f} %")
         rf = facts(rec)
-        gword = {"warning": "warning", "severe": "SEVERE"}.get(grade)
+        gword = {"warning": "warning", "severe": "SEVERE"}.get(applied)
         names = (f"{rf['i']}-{rf['j']}", f"{rf['j']}-{rf['i']}")
         said = [f"[fit-grade] pair {n}: fitGrade " for n in names]
         adv = [a for a in js.get("advisories", [])
@@ -1269,6 +1361,10 @@ def c291_failures(rec, cur, case, out, tag, fails, in_std=False):
                              "line -- the pair loader does not voice it")
             if not any(f"fitGrade {gword}" in a.get("message", "") for a in adv):
                 fails.append(f"{tag}: the fitGrade {gword} line is not in the result JSON advisories")
+            if caps_of(prov) and not any(s + gword + " -- CAPPED from an in-sample clean" in out
+                                         for s in said):
+                fails.append(f"{tag}: fitGrade {applied} capped ({' '.join(caps_of(prov))}) and "
+                             "the pair loader's line does not name the cap (DEV.md 4c C300)")
         elif any(s in out for s in said) or adv:
             fails.append(f"{tag}: fitGrade {grade} and the engine voiced a grade -- a clean fit "
                          "says nothing more")
@@ -1436,11 +1532,8 @@ def main():
                     f"[unreviewed] pair {rf['j']}-{rf['i']}"]
             status = word(rec, "reviewStatus")
             if status == "autoPromoted":
-                if word(rec, "humanReviewed") != "false":
-                    fails.append(f"{tag}: `reviewStatus autoPromoted` without "
-                                 "`humanReviewed false;` (it reads "
-                                 f"{word(rec, 'humanReviewed')!r}) -- a record a "
-                                 "machine promoted must say no human reviewed it")
+                fails.extend(review_failures(block(rec, "provenance") or "", tag,
+                                             "the record"))
                 if not word(rec, "promotedBy"):
                     fails.append(f"{tag}: `reviewStatus autoPromoted` names no "
                                  "`promotedBy` -- the pipeline that promoted it")
@@ -1488,7 +1581,7 @@ def main():
           f"reproduced by re-running the case each names ({'; '.join(checked)}): "
           "parameters, evidence identity, validity span and held-out verdict "
           "equal what the run regresses now; only validated fits are in the "
-          "catalogue; `interim` and `autoPromoted` (with `humanReviewed false`) are voiced at run time; every dataset carries "
+          "catalogue; `interim` and `autoPromoted` (with `humanReviewed false` or a `review {}` block, never both) are voiced at run time; every dataset carries "
           "DOI, archive sha256, CAS+InChIKey and per-point uncertainty; "
           f"{len(stable_checked)} catalogue pair(s) predict ONE liquid across "
           "their validity span (arm f, the record's NRTL recomputed); "
@@ -1511,6 +1604,11 @@ def main():
           "-- in the catalogue -- fitGrade and its number equal to it and a warning or SEVERE grade "
           "voiced by the pair loader, and the discarded rows exactly those the C291 rule re-derives "
           "(arm k); "
+          "every catalogue pair grade labelled `fitGradeBasis inSample` and an in-sample clean on one "
+          "temperature or one laboratory CAPPED at warning with its reason, named by the loader "
+          f"(DEV.md 4c C300: {CAP_COUNT.get('capped', 0)} capped -- "
+          f"{CAP_COUNT.get('singleTemperature', 0)} singleTemperature, "
+          f"{CAP_COUNT.get('singleLaboratory', 0)} singleLaboratory); "
           f"{len(vp_done)} catalogue vapour pressure(s) regressed by `choupo-curate vp` "
           f"({', '.join(vp_done) or 'none'}) reproduced by their cases -- Antoine "
           "coefficients under the declared twoStage objective, both curves' errors and the "

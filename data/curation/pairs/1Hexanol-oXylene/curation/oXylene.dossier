@@ -1,0 +1,117 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      oXylene;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.b_ij  496.168890122;
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.b_ji  -297.13689754;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7d8a8a7acc77f1bd";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/oXylene-1Hexanol-bubble-j.fluid.2010.08.010.dat";
+            doi       "10.1016/j.fluid.2010.08.010";
+            sha256    "8280bb357314349e892257135f44b2e55152f7ea4a688f1a011a318bed274870";
+            provenance measured;
+            archiveFile "j.fluid.2010.08.010.xml";
+            system    "oXylene + 1Hexanol";
+            pressure  "95600.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0625; max 0.935; n 14; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.b_ij  496.16888947;
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.b_ji  -297.136897272;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7d8a8a7acc77f1bd";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/oXylene-1Hexanol-bubble-j.fluid.2010.08.010.dat";
+            doi       "10.1016/j.fluid.2010.08.010";
+            sha256    "8280bb357314349e892257135f44b2e55152f7ea4a688f1a011a318bed274870";
+            provenance measured;
+            archiveFile "j.fluid.2010.08.010.xml";
+            system    "oXylene + 1Hexanol";
+            pressure  "95600.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0625; max 0.935; n 14; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

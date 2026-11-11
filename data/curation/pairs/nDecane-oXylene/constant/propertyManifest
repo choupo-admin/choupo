@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/nDecane-oXylene.dat"
         {
             type          imported;
-            sha256        "9771264fb11d3ff8c90878ae6d16bba068efb1276dd7606f7ef1143003e4b013";
-            computationalSha256 "4f182c64647f6837f21324db35e1f9e84e565ef24bc8c404b96b01f79105b96b";
+            sha256        "7aedcae0b97eee5fbf5a528ee6faac755b392f037181f80ae2faf635cd7177b7";
+            computationalSha256 "5fc91653fa593e8f3bd239ec59468b732fbaf577bbc37e9002dbdc9b9883306a";
             origin        "data/standards/parameters/NRTL/nDecane-oXylene.dat";
-            originSha256  "6aa6a277f8357a7ed010c848cdffc9120d4ab452c2a21454f4cd542848b8b890";
+            originSha256  "26e80acca64000c69abf177256023c76461ad0a4e1d1130556d1015a2ac41f70";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

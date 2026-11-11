@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 222 records already exist
+## 1. Why an index, when 223 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 222 design records, **159 state a rejected alternative and 63 do not** —
+- Of 223 design records, **160 state a rejected alternative and 63 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -324,6 +324,7 @@ is this index failing its own purpose; they move below with their rulings.
 | [`a-reaction-that-changes-the-number-of-moles.md`](../design/a-reaction-that-changes-the-number-of-moles.md) | ADR | yes | **SHIPPED 2026-11-06** -- commission C231, the architect's design: the FULL MESH gains the reaction extents (component rows -nu xi, total rows -Sum(nu) xi, NO heat-of-reaction term because the energy rows price on the elements datum), K_a(T) has one home with four spellings (`Ka`/`Ka298`, a written `lnKa` formula, `fromRecords`), the column is specified by (`bottomsRate`, `boilupRatio`) or (`refluxRatio`, `distillateRate`), the seed is the announced non-reactive MESH and the reaction enters by the existing K_a homotopy; witness `column19_mtbe_reactive_mesh`, nothing validated against a measurement; gate `check_reactive_mesh`. |
 | [`a-rate-law-in-the-full-mesh.md`](../design/a-rate-law-in-the-full-mesh.md) | ADR | yes | **SHIPPED 2026-11-06** -- commission C233: the full MESH computes each reactive stage's extent as r(T, x, gamma) x catalyst mass from a law written in the case (`kinetics { model expression; }` through the reaction factory), `a[i]` = gamma x added to the state a law may read and offered only by the column, the catalyst mass entering by an announced continuation, no floor hidden in the engine, no heat term; witness `column20_mtbe_kinetic_mesh`, gate `check_kinetic_mesh` (the proof is a limit: a mass-action twin converges on column19's equilibrium). |
 | [`the-evidence-card.md`](../design/the-evidence-card.md) | slice record | no | **BUILT 2026-11-05, slice (a) of C227; the provenance line added by ruling** — `pairLookup` and `componentLookup`: one tool call, one evidence card in a fixed 2048-byte budget, read from the INSTALLATION catalogue and never containing a number the catalogue does not hold; an honesty ladder (curated, regressed, UNIFAC estimate said to be an estimate, none).  Every card carries one provenance line naming the source, the catalogue release and the case's seal state, and says `differs` when a sealed case's release is not the installation's.  States no rejected alternative: the record is a build record with a "not done, said plainly" list (archive rung, brief rewrite, `autoPromoted` pairs), not an argument against another design.  Gate `check_lookup_budget` |
+| [`c288-measured-heat-of-reaction.md`](../design/c288-measured-heat-of-reaction.md) | ADR | yes | **DESIGN 2026-11-10, slice 1 LANDED 2026-11-10 (commission C288)** -- a reaction may declare a MEASURED heat of reaction (`heatOfReaction { value; T; phase; method; source; reason; }`, one shared parser); where every reacting species carries formation data the engine computes the formation-route heat at the same T and phase and adds `C = SUM_j xi_j delta_j` to the reactor duty as a NAMED term, published as KPIs, as its own column in the energy report and as its own record in the batch and ctrl ledgers, so the first law still closes.  REJECTED: letting the bare `dH_rxn` become the measured declaration (it carries no T, phase or source, so every cross-check warning would turn into a silent correction); applying the term in the equilibrium and Gibbs reactors (one has no extents, the other draws its composition from the datum the measurement contradicts -- refused, with a later K(T) slice); a single resolver for the duty (steady reactors price streams, so the term enters each duty site).  Slices 2-4 (reactors applying the term) open |
 
 ### Historical
 
@@ -376,7 +377,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**63 of 222 records state no rejected alternative.**  For a FORUM or a STUDY
+**63 of 223 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

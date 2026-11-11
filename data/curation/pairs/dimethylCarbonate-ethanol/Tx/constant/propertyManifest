@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/dimethylCarbonate-ethanol.dat"
         {
             type          imported;
-            sha256        "c1cf323fc6e9323df9f3cfdf49de2c791bff39b1eae4c0d450e991dbf28b4ddd";
-            computationalSha256 "6083409a8ff16e50c8b042964be9d5160f9e5b47c1d93889f4e3b31ee7aed064";
+            sha256        "4e5699ff2820f77e6146cd23368e207acfe05e63fee5ebd6f6fd6811038d9f3c";
+            computationalSha256 "8ecebfe6ef2e0a6166587cae0e0f469214fb5a05a51cd27a473f06a55e615f37";
             origin        "data/standards/parameters/NRTL/dimethylCarbonate-ethanol.dat";
-            originSha256  "b6ff7d6b4d48d010bcd980d5b7211ec05c4ce8e7cbe8dbfeca85d8f7b1c6149a";
+            originSha256  "68fb2ceb6957c2d7fca6da6159916eda1b4aff60e866dcb0f8b39c207e5e5dc1";
             release       Choupo-2608;
         }
     }

@@ -1,0 +1,117 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      pCresol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.pCresol-diethanolamine.b_ij  59.3196169543;
+        equilibrium.liquid.activityModel.binaryParameters.pCresol-diethanolamine.b_ji  -197.506196441;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "ce1d124372499a5c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/pCresol-diethanolamine-bubble-j.jct.2018.09.002.dat";
+            doi       "10.1016/j.jct.2018.09.002";
+            sha256    "f69d94c96414f96a72c11a3a651947a0a28e9e0dc8275bd59ca7a9f472c09910";
+            provenance measured;
+            archiveFile "j.jct.2018.09.002.xml";
+            system    "pCresol + diethanolamine";
+            pressure  "20000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1321; max 0.944; n 13; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.pCresol-diethanolamine.b_ij  765.659271718;
+        equilibrium.liquid.activityModel.binaryParameters.pCresol-diethanolamine.b_ji  -612.163398356;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "ce1d124372499a5c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/pCresol-diethanolamine-bubble-j.jct.2018.09.002.dat";
+            doi       "10.1016/j.jct.2018.09.002";
+            sha256    "f69d94c96414f96a72c11a3a651947a0a28e9e0dc8275bd59ca7a9f472c09910";
+            provenance measured;
+            archiveFile "j.jct.2018.09.002.xml";
+            system    "pCresol + diethanolamine";
+            pressure  "20000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1321; max 0.944; n 13; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

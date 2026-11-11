@@ -1,0 +1,137 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      methanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-diEthylCarbonate.b_ij  254.193108971;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-diEthylCarbonate.b_ji  149.532645502;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "732b919a9b6e1fbb";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-diEthylCarbonate-bubble-je0201018.dat";
+            doi       "10.1021/je0201018";
+            sha256    "32c5bc6543c484de3eda701cd93356c0c9be50b127f7099b2af1c7ac2b06dd8f";
+            provenance measured;
+            archiveFile "je0201018.xml";
+            system    "methanol + diEthylCarbonate";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-diEthylCarbonate-bubble-je049544x.dat";
+            doi       "10.1021/je049544x";
+            sha256    "1363403cae64d7b315d8a54daca22bce1c37fbf800b4d08d6118ffb735377ab3";
+            provenance measured;
+            archiveFile "je049544x.xml";
+            system    "methanol + diEthylCarbonate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0169; max 0.9837; n 50; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-diEthylCarbonate.b_ij  254.193110519;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-diEthylCarbonate.b_ji  149.532643507;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "732b919a9b6e1fbb";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-diEthylCarbonate-bubble-je0201018.dat";
+            doi       "10.1021/je0201018";
+            sha256    "32c5bc6543c484de3eda701cd93356c0c9be50b127f7099b2af1c7ac2b06dd8f";
+            provenance measured;
+            archiveFile "je0201018.xml";
+            system    "methanol + diEthylCarbonate";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-diEthylCarbonate-bubble-je049544x.dat";
+            doi       "10.1021/je049544x";
+            sha256    "1363403cae64d7b315d8a54daca22bce1c37fbf800b4d08d6118ffb735377ab3";
+            provenance measured;
+            archiveFile "je049544x.xml";
+            system    "methanol + diEthylCarbonate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0169; max 0.9837; n 50; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

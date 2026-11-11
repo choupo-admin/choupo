@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/acrylonitrile.dat"
+        {
+            type          imported;
+            sha256        "50e9a20506c0ca18d986e44002eda5712bc1d0b8dfda9a257cfe2af11d00fe3b";
+            computationalSha256 "08b73c7103c69084e44f5bc297fc2291b50066151b272bac0cc408ec87033cf2";
+            origin        "data/standards/components/acrylonitrile.dat";
+            originSha256  "cef27738a98dab0b4330d9a932721281388e126fa6223cd168b2298b1bce6648";
+            release       Choupo-2608;
+        }
+        "components/nitrobenzene.dat"
+        {
+            type          imported;
+            sha256        "7ca4a59b735550425138f28d1b5bca95a6ad5b19aa7c053c41e01f871c798193";
+            computationalSha256 "0b4a4231f87f80f41544b0e12087ccb13016c93e1b53475a9fe70cce95d732d1";
+            origin        "data/standards/components/nitrobenzene.dat";
+            originSha256  "4dfd083b1f44673d3672cb463555bdfa03068f10bec14bf97bce1e682ec0db07";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/acrylonitrile-nitrobenzene.dat"
+        {
+            type          imported;
+            sha256        "42e29b0e201846eddb6e90b79e22b3444f3647d0a24c6eb30f138f5b01c89c26";
+            computationalSha256 "9285fe307b7fd74369cfaff32c7decbda6dc152410eff170db8a75611ecf0d3c";
+            origin        "data/standards/parameters/NRTL/acrylonitrile-nitrobenzene.dat";
+            originSha256  "fb2a0c5c59aedb79cbab83b925f85c21e68ad27fc797bf77f83cddfa87d0ecbc";
+            release       Choupo-2608;
+        }
+    }
+}

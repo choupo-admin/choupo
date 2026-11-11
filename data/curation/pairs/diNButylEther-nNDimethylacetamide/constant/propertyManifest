@@ -21,17 +21,17 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
         "components/diNButylEther.dat"
         {
             type          imported;
-            sha256        "a3b818acd52aa4542d45437052d8e1419718cfee804ef8f67f0dba566cd4635a";
-            computationalSha256 "b715c512b98113de1eaa314d06a1f7bb1a2e21248674cd581d8633ba5f2e47a9";
+            sha256        "537970d2ee2c419075c0e60d44f291a9e308dd2c5fb5d18a04ae9dd5dd0f0f2b";
+            computationalSha256 "2d5d88b4f35c15d610e2651a7e04d59a600b408d65f8b9e305a62a753f13c07b";
             origin        "data/standards/components/diNButylEther.dat";
-            originSha256  "62a03e26d763570c05116ea98b22cde2cf77edb39e3d10a43f9972eabcadbbbb";
+            originSha256  "e943e71a195499eea4c36243b977aff1fe2a5602ccb7592874505a239160f212";
             release       Choupo-2608;
         }
         "components/nNDimethylacetamide.dat"
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/diNButylEther-nNDimethylacetamide.dat"
         {
             type          imported;
-            sha256        "52440ea526a45e926c0e95f77c3da456e8820a352199bb4edd54bb2d83cf6b08";
-            computationalSha256 "7ca697dd7081b2cdbe6b611fc5984fc1682f717ee6365d76b3a43d529610c5ba";
+            sha256        "39fbea20981fc83eac295057e568705452e7075cfc31da0d45c0b93763441e51";
+            computationalSha256 "d430b5e2e0175874e8adc5435587412e0e76bc268a57eea48ac26a652bfe67ae";
             origin        "data/standards/parameters/NRTL/diNButylEther-nNDimethylacetamide.dat";
-            originSha256  "97aea6ea739832651191e23d71998fd86783a634ee5857c9dcd4065fa2f1f000";
+            originSha256  "5afa7cb980d4e73e01fb0ae405e5e1b1e95a14cc5d11131a7d2685efd8d79363";
             release       Choupo-2608;
         }
     }

@@ -1,0 +1,47 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/ethyleneGlycol.dat"
+        {
+            type          imported;
+            sha256        "90ccbaaf3bce924c24126424206ef523e3a6377b4bac7bae6a4f55038ac55d7d";
+            computationalSha256 "535ebabab2b99be2309ed449cdea0a342ca26b3d0ae9cb5e0cc224f53589bb9c";
+            origin        "data/standards/components/ethyleneGlycol.dat";
+            originSha256  "409fc26748c4dd89998c0398c5023a4cc7143aeb481d53e119933d0d86b235d7";
+            release       Choupo-2608;
+        }
+        "components/methylDiEthanolAmine.dat"
+        {
+            type          imported;
+            sha256        "a6589b36aa49310cdb02a0535585481289b1f8099ddc59f4df3d27d7a17a8b11";
+            computationalSha256 "38b43886e6cc2dd7da699d5a8dfdce6eb441e8fae987bff01c1ca8cc51e48692";
+            origin        "data/standards/components/methylDiEthanolAmine.dat";
+            originSha256  "40cbce50d282e7b68cffe3c715a4fbc06a62b228c0e5ede3867731f06831040c";
+            release       Choupo-2608;
+        }
+    }
+}

@@ -1,0 +1,117 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      nPropylAcetate;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Methyl1Butanol.b_ij  -195.687924106;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Methyl1Butanol.b_ji  286.793900622;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "07ffb8e9234d3f9a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nPropylAcetate-2Methyl1Butanol-bubble-je500331g.dat";
+            doi       "10.1021/je500331g";
+            sha256    "8c1c3f58141e0b467d97b498dfef32768d15ab64344c001dfce0ef6dbc431b30";
+            provenance measured;
+            archiveFile "je500331g.xml";
+            system    "nPropylAcetate + 2Methyl1Butanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0355; max 0.9179; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Methyl1Butanol.b_ij  -195.687927287;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Methyl1Butanol.b_ji  286.793905692;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "07ffb8e9234d3f9a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nPropylAcetate-2Methyl1Butanol-bubble-je500331g.dat";
+            doi       "10.1021/je500331g";
+            sha256    "8c1c3f58141e0b467d97b498dfef32768d15ab64344c001dfce0ef6dbc431b30";
+            provenance measured;
+            archiveFile "je500331g.xml";
+            system    "nPropylAcetate + 2Methyl1Butanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0355; max 0.9179; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

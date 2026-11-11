@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/benzene-diisopropylEther.dat"
         {
             type          imported;
-            sha256        "f5bfa95a5f2436ed6458af4ab689e65813ccff20a0d347be71218bbf70ca177a";
-            computationalSha256 "31dcce7e215db0b6c7f48c204d8f465a5a130966d7a3c0ef420cc05c85bbeb86";
+            sha256        "8b14a2acb18eb345aff7c8de9943ea36c311451144a497fc5f2f2abf0c32100d";
+            computationalSha256 "efbc7ade39cf98d7d45673ae904001c81843c780ba7ad7df2a92a216e2581a86";
             origin        "data/standards/parameters/NRTL/benzene-diisopropylEther.dat";
-            originSha256  "c12a5e5a16bbb7c268109e979357f20d0ba4dce841c36e60a1cf5ab64e3f1a7f";
+            originSha256  "9bb7a5bf817a5345bbb23b9fadfe4500d3213d9d482a340af7c751dc9af3db00";
             release       Choupo-2608;
         }
     }

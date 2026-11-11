@@ -1,0 +1,117 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      dimethylCarbonate;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-ethyleneGlycol.b_ij  550.222984925;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-ethyleneGlycol.b_ji  556.438592162;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "8ab037cbc819936b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/dimethylCarbonate-ethyleneGlycol-bubble-je049859c.dat";
+            doi       "10.1021/je049859c";
+            sha256    "fa5de8cbd3e11da7225461abc305f4a4416340746f4352c2f31244092d3f272f";
+            provenance measured;
+            archiveFile "je049859c.xml";
+            system    "dimethylCarbonate + ethyleneGlycol";
+            pressure  "35330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0152; max 0.9523; n 11; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-ethyleneGlycol.b_ij  550.222984581;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-ethyleneGlycol.b_ji  556.438592376;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "8ab037cbc819936b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/dimethylCarbonate-ethyleneGlycol-bubble-je049859c.dat";
+            doi       "10.1021/je049859c";
+            sha256    "fa5de8cbd3e11da7225461abc305f4a4416340746f4352c2f31244092d3f272f";
+            provenance measured;
+            archiveFile "je049859c.xml";
+            system    "dimethylCarbonate + ethyleneGlycol";
+            pressure  "35330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0152; max 0.9523; n 11; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

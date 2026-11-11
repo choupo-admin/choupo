@@ -1,0 +1,117 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      vinylAcetate;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-diEthylCarbonate.b_ij  -241.243337736;
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-diEthylCarbonate.b_ji  197.511037637;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "973d6d554b1398f9";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/vinylAcetate-diEthylCarbonate-bubble-je049544x.dat";
+            doi       "10.1021/je049544x";
+            sha256    "1363403cae64d7b315d8a54daca22bce1c37fbf800b4d08d6118ffb735377ab3";
+            provenance measured;
+            archiveFile "je049544x.xml";
+            system    "vinylAcetate + diEthylCarbonate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.048; max 0.953; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-diEthylCarbonate.b_ij  1076.92522569;
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-diEthylCarbonate.b_ji  -609.926595912;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "973d6d554b1398f9";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/vinylAcetate-diEthylCarbonate-bubble-je049544x.dat";
+            doi       "10.1021/je049544x";
+            sha256    "1363403cae64d7b315d8a54daca22bce1c37fbf800b4d08d6118ffb735377ab3";
+            provenance measured;
+            archiveFile "je049544x.xml";
+            system    "vinylAcetate + diEthylCarbonate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.048; max 0.953; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

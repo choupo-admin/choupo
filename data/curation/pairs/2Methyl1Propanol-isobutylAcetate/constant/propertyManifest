@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/2Methyl1Propanol-isobutylAcetate.dat"
         {
             type          imported;
-            sha256        "dad0c9111ea647d3f648d7cce44875802d288d9de75e89f2fb1f98025561fb04";
-            computationalSha256 "a191c0212e71820b7c779c70960eeb0f0b4a27ab72c2a69495f4d9862b15e2bf";
+            sha256        "494a6d065fcc9664acab650486353ce7cca4562a24cc7483b50330bbfaabeaa4";
+            computationalSha256 "55ae63aca72e42b4844e4e30505221d4e5e6445efabe09311bdea1f6350ccd84";
             origin        "data/standards/parameters/NRTL/2Methyl1Propanol-isobutylAcetate.dat";
-            originSha256  "774574bac7e514f5be4869ff208ce50056c21c3a2192088952b3478c169fec7e";
+            originSha256  "28989a1de9557dbc3ab23c085130e115f1094b67a375da9fc58dcd295a450342";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

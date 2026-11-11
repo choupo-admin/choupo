@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/nButanol-nButylAcetate.dat"
         {
             type          imported;
-            sha256        "51a48af74a446c9bfcdececdf24b0ac155f3cd0e4c5c0295dc102d70801ec611";
-            computationalSha256 "5ac75fa5bdccf0840c4f6169892be19bd64d41d5aa19cad49b6b06e1eff47899";
+            sha256        "b2f5d9d548329d5576cb737f1f4e071882f833fdd07a68c2708bda4b10acf377";
+            computationalSha256 "a02a73fb866f1d83c11ba8fac354c8c2ea2cbd4097811bb5b397985fd0fb5869";
             origin        "data/standards/parameters/NRTL/nButanol-nButylAcetate.dat";
-            originSha256  "210bac8485daf3c0b14a0b71e095b9d0c5b21936e9bb2248aa6d81437d17d0c7";
+            originSha256  "237f09ecc02473d994e2c1e7b695a3a627a3e8973e956674bb3b5cabe113df34";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

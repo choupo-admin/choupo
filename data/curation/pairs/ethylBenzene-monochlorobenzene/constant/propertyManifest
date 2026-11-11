@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/ethylBenzene-monochlorobenzene.dat"
         {
             type          imported;
-            sha256        "d3a32ce0b0872167bf5db5f3e3cb6a3eaec262ab54b17f480a36910d605506d9";
-            computationalSha256 "c8e4330ac12699a13751e5fdaeea6854e313a0ae3e280ec8016eeb2b46e74cb7";
+            sha256        "64669c429d36569d03465c2e0e1f481b1b51c1b607eb226fe3dd64e8d58726a8";
+            computationalSha256 "31e6e6e21672158e872b30b9d85936e60fe233258a76e8d3088cf3be7c294451";
             origin        "data/standards/parameters/NRTL/ethylBenzene-monochlorobenzene.dat";
-            originSha256  "ef088c7fc7d4e83f5b5f6548b043c8103771e6b4c925aeca86add6f50beddba4";
+            originSha256  "acfa602ecccb4151cf3d6b0b69c87e80bc38fe51f56d037f3f1f8255e499cbc0";
             release       Choupo-2608;
         }
     }

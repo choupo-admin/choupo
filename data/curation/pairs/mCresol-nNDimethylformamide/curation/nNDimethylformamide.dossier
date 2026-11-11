@@ -1,0 +1,117 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      nNDimethylformamide;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-mCresol.b_ij  -675.60042514;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-mCresol.b_ji  441.697304622;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b453f4547058589d";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nNDimethylformamide-mCresol-bubble-j.fluid.2008.01.020.dat";
+            doi       "10.1016/j.fluid.2008.01.020";
+            sha256    "9f0315d6fee492b6a3c5922dcb1848ea90206d54b1923a4fe327bd591daa1461";
+            provenance measured;
+            archiveFile "j.fluid.2008.01.020.xml";
+            system    "nNDimethylformamide + mCresol";
+            pressure  "95100.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1014; max 0.9242; n 20; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-mCresol.b_ij  2090.39565233;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-mCresol.b_ji  -1020.09440522;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b453f4547058589d";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nNDimethylformamide-mCresol-bubble-j.fluid.2008.01.020.dat";
+            doi       "10.1016/j.fluid.2008.01.020";
+            sha256    "9f0315d6fee492b6a3c5922dcb1848ea90206d54b1923a4fe327bd591daa1461";
+            provenance measured;
+            archiveFile "j.fluid.2008.01.020.xml";
+            system    "nNDimethylformamide + mCresol";
+            pressure  "95100.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1014; max 0.9242; n 20; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

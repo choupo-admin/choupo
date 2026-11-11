@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/2Methyl1Butanol-ethanol.dat"
         {
             type          imported;
-            sha256        "b620fbf5b6efb8d0518206fbe3b8445db85505dec097317196972b4a8eaca0a5";
-            computationalSha256 "0d7fded171d0c5b0e10bd092f9794550e801e63d6dda33e31cc0debea3d7ee8f";
+            sha256        "002814cdbb6c4d68d47b02fbc7e8b9fd067de8bf5ae72674b1886d07d16326ef";
+            computationalSha256 "61900ed8edb7e395ada0434a2cd60680c816c9412b1a1320ad604a112b8c7b7d";
             origin        "data/standards/parameters/NRTL/2Methyl1Butanol-ethanol.dat";
-            originSha256  "9cd476ef700468c6ce1bee9e94e637d14b014c1e0104e30ff6c77da1b141a7ca";
+            originSha256  "47bf81c90915d643fa3a5e538fa6170bbbc72b4ab30d4b0b3422cd9361cbc847";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

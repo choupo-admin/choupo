@@ -1,0 +1,115 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      1Hexene;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.b_ij  1.6515333151;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.b_ji  12.0999338958;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5e491bbc81a85835";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Hexene-nHexane-bubble-j.fluid.2008.12.007.dat";
+            doi       "10.1016/j.fluid.2008.12.007";
+            sha256    "cf0d793affc5b6352afbf58c0a1c72440497104374abf390356e141c4c39b01b";
+            provenance measured;
+            archiveFile "j.fluid.2008.12.007.xml";
+            system    "1Hexene + nHexane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.005; max 0.975; n 63; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.b_ij  1.64475366989;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.b_ji  12.1067450103;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5e491bbc81a85835";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Hexene-nHexane-bubble-j.fluid.2008.12.007.dat";
+            doi       "10.1016/j.fluid.2008.12.007";
+            sha256    "cf0d793affc5b6352afbf58c0a1c72440497104374abf390356e141c4c39b01b";
+            provenance measured;
+            archiveFile "j.fluid.2008.12.007.xml";
+            system    "1Hexene + nHexane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.005; max 0.975; n 63; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

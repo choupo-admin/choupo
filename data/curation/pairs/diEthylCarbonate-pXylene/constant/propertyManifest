@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/diEthylCarbonate.dat"
+        {
+            type          imported;
+            sha256        "86baa50f61fe431c4078e3dd55efb3ee800736d6590c65afa2363ad325d977d3";
+            computationalSha256 "027e1f9813fc4774c3bee30becf628772b14ff4126f08ca66e36b303fba34c32";
+            origin        "data/standards/components/diEthylCarbonate.dat";
+            originSha256  "862ba0c41d14829128140cfb33804e3e42ea61abaebadb7f6adc8a891195ca27";
+            release       Choupo-2608;
+        }
+        "components/pXylene.dat"
+        {
+            type          imported;
+            sha256        "24c426099ea1243aa54d21cde64b34ed7312b8bf2bdde1af983f35795c260cce";
+            computationalSha256 "21ec82182e6c57257719624339c8912c2ab6ef6da558f01e7bcc4b9561706387";
+            origin        "data/standards/components/pXylene.dat";
+            originSha256  "c84be1d773e7fda137a6721e882622f7cd66ba63f6278257a98da939fe724bfc";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/diEthylCarbonate-pXylene.dat"
+        {
+            type          imported;
+            sha256        "59875d6f37b8d650ce7d25d4f735d47866c359186803968f604ad713e2a46622";
+            computationalSha256 "5a88d1c0be03e4b3e2da5853fd05a0fb4fe8c2bfe7d3d795f7ad17d7d90e1303";
+            origin        "data/standards/parameters/NRTL/diEthylCarbonate-pXylene.dat";
+            originSha256  "f181187a994f91d04ba742dc209fd8984c9582e46149eeb7df850ee38130654b";
+            release       Choupo-2608;
+        }
+    }
+}
