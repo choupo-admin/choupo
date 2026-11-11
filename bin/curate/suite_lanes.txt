@@ -254,6 +254,7 @@ PRE  | PAR    | bin/curate/check_origin_vocabulary.py              | traced: wri
 PRE  | SERIAL | bin/curate/check_standards_write_guard.py          | writes curation/ethanol.dossier (+12 more)
 PRE  | PAR    | bin/curate/check_no_symlinks.py                    | reads the git index only; writes nothing; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_pair_names.py                     | reads data/ only; writes nothing; no make, no node, no nested walk, no pool
+PRE  | PAR    | bin/curate/check_henry_records.py                  | reads data/ only; writes nothing; no make, no node, no nested walk, no pool
 PRE  | SERIAL | bin/curate/check_model_default_registered.py       | writes reports/utilities/utilityDemand.csv (+2 more)
 PRE  | PAR    | bin/curate/check_electrolyte_records.py            | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_groups.py                         | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
