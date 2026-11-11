@@ -1,0 +1,59 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of dimethylCarbonate-isopropanol
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/isopropanol-dimethylCarbonate-bubble-j.jct.2004.09.009.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1016/j.jct.2004.09.009";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.jct.2004.09.009.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.jct.2004.09.009.json";
+        articleFile   "j.jct.2004.09.009.xml";
+        articleSha256 "0be6ddde75d592d26de70cdbf06411e5d0bd2c5d9c882258a0fe98754cb80be3";
+        block         16;
+        filter        ( --interior-only );
+        extract       "bin/choupo-thermoml extract-vle <article file> --block 16 --interior-only --into <dir>";
+        sha256        "6ff43491d9b4b8485ca6cc4ef47d64cbd0054f6d60ddf883cd9028ac81c775d4";
+        identity
+        {
+            isopropanol    { cas "67-63-0"; inchiKey "KFZMGEQAYNKOFK-UHFFFAOYSA-N"; }
+            dimethylCarbonate { cas "616-38-6"; inchiKey "IEJIGPNLZYLLBP-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/isopropanol-dimethylCarbonate-bubble-je030131q.dat";
+        role          validation;   // informational: the operation declares it
+        doi           "10.1021/je030131q";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je030131q.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je030131q.json";
+        articleFile   "je030131q.xml";
+        articleSha256 "b41bca23136ec66aba1b6984f5c0f44a5fca02ba9d89bed1e374a726fb032c08";
+        block         25;
+        filter        ( --interior-only );
+        extract       "bin/choupo-thermoml extract-vle <article file> --block 25 --interior-only --into <dir>";
+        sha256        "35a2f915b005e3388cc330c61f86f886dc29c683f8665606c5a167b338a74885";
+        identity
+        {
+            isopropanol    { cas "67-63-0"; inchiKey "KFZMGEQAYNKOFK-UHFFFAOYSA-N"; }
+            dimethylCarbonate { cas "616-38-6"; inchiKey "IEJIGPNLZYLLBP-UHFFFAOYSA-N"; }
+        }
+    }
+);

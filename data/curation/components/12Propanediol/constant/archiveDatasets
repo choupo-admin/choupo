@@ -1,0 +1,142 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of 12Propanediol
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/12Propanediol-vapourPressure-je4004993.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je4004993";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je4004993.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je4004993.json";
+        articleFile   "je4004993.xml";
+        articleSha256 "7815d74f34d9dd83acd32741c64e67fdafac5a7ce9f7933d781c46d6f048e9a9";
+        extractor     vapourPressure;
+        inchiKey      "DNIAPMSPPWPWGF-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey DNIAPMSPPWPWGF-UHFFFAOYSA-N --into <dir>";
+        sha256        "768cebe22218cdc3f5489daa202f0a4eec4d88b9f271bef00f06934d33a08830";
+        identity
+        {
+            12Propanediol  { cas "57-55-6"; inchiKey "DNIAPMSPPWPWGF-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/12Propanediol-vapourPressure-j.jct.2016.01.019.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1016/j.jct.2016.01.019";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.jct.2016.01.019.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.jct.2016.01.019.json";
+        articleFile   "j.jct.2016.01.019.xml";
+        articleSha256 "67af4c62caba8fe9644d6ff093aebc32c6ebb933b139d8ff89e558561d21ba3a";
+        extractor     vapourPressure;
+        inchiKey      "DNIAPMSPPWPWGF-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey DNIAPMSPPWPWGF-UHFFFAOYSA-N --into <dir>";
+        sha256        "9bdc069da7a8ae8d5f331ec3a093d1b85b7b1e20f63e721bcdff3589e963b632";
+        identity
+        {
+            12Propanediol  { cas "57-55-6"; inchiKey "DNIAPMSPPWPWGF-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/12Propanediol-vapourPressure-j.fluid.2014.09.015.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1016/j.fluid.2014.09.015";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2014.09.015.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2014.09.015.json";
+        articleFile   "j.fluid.2014.09.015.xml";
+        articleSha256 "c915c8e5c543eb324df4dccdd4b61fefe8c48359a49da7b785b7fcf3f839feed";
+        extractor     vapourPressure;
+        inchiKey      "DNIAPMSPPWPWGF-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey DNIAPMSPPWPWGF-UHFFFAOYSA-N --into <dir>";
+        sha256        "7baf879e8b7ddf26222dabc48d1642d535d5510a7e8b5a9cb6c7ddb13bf0434a";
+        identity
+        {
+            12Propanediol  { cas "57-55-6"; inchiKey "DNIAPMSPPWPWGF-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/12Propanediol-vapourPressure-je4009014.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je4009014";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je4009014.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je4009014.json";
+        articleFile   "je4009014.xml";
+        articleSha256 "c5eac6f0f8b3da19f310f0c314d5b14644ef12d512a2a392befc5ce3d4f727af";
+        extractor     vapourPressure;
+        inchiKey      "DNIAPMSPPWPWGF-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey DNIAPMSPPWPWGF-UHFFFAOYSA-N --into <dir>";
+        sha256        "de563f2af526cb698de07df0f1160f2cf764da177c478aeff910fd4421750055";
+        identity
+        {
+            12Propanediol  { cas "57-55-6"; inchiKey "DNIAPMSPPWPWGF-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/12Propanediol-vapourPressure-je100803e.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je100803e";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je100803e.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je100803e.json";
+        articleFile   "je100803e.xml";
+        articleSha256 "ddf304812c4562713d4eed3173c86032fb293351f31bdf898e89a56685edaafd";
+        extractor     vapourPressure;
+        inchiKey      "DNIAPMSPPWPWGF-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey DNIAPMSPPWPWGF-UHFFFAOYSA-N --into <dir>";
+        sha256        "a8c2bab661a4fbc3db0264b4a2aefd33af0e5c666905a181559e09ecff2fbb29";
+        identity
+        {
+            12Propanediol  { cas "57-55-6"; inchiKey "DNIAPMSPPWPWGF-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/12Propanediol-vapourPressure-je034096z.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je034096z";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je034096z.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je034096z.json";
+        articleFile   "je034096z.xml";
+        articleSha256 "e1dace98786fd0312c9b1ccef3145b20889fa12b4c6cd772be59b4f28f6fbf4f";
+        extractor     vapourPressure;
+        inchiKey      "DNIAPMSPPWPWGF-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey DNIAPMSPPWPWGF-UHFFFAOYSA-N --into <dir>";
+        sha256        "735fb9c41f9d22a7697f246a5e81a1ff7dfdb9d0db467c6b0dee4c4f352ab90e";
+        identity
+        {
+            12Propanediol  { cas "57-55-6"; inchiKey "DNIAPMSPPWPWGF-UHFFFAOYSA-N"; }
+        }
+    }
+    {
+        file          "constant/archiveExtracts/12Propanediol-vapourPressure-je5010824.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je5010824";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je5010824.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je5010824.json";
+        articleFile   "je5010824.xml";
+        articleSha256 "244c7d3c2d7506d1914d46e14ff6706089ba194ab50a2f631e7cb95fbc4c9e3c";
+        extractor     vapourPressure;
+        inchiKey      "DNIAPMSPPWPWGF-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey DNIAPMSPPWPWGF-UHFFFAOYSA-N --into <dir>";
+        sha256        "d7871968b9284f2584edcca906ac71fb5028c45956e3c2704b523a2cbbabb704";
+        identity
+        {
+            12Propanediol  { cas "57-55-6"; inchiKey "DNIAPMSPPWPWGF-UHFFFAOYSA-N"; }
+        }
+    }
+);

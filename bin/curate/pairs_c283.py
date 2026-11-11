@@ -70,7 +70,6 @@ crp = cc.crp
 
 OUTLIER_K = 3.0          # C283 amended: three times the band, in temperature 3 K
 ACCEPT_K = 1.0           # C283: the maximum absolute error in T, kelvin
-FIRST_NUMBER = 100       # C284 cases start at curate100 (the vp cases own < 100)
 RULE = "DEV.md 4c C283 (amended) + C284"
 MARK = "THE RULE (DEV.md 4c C283 amended, C284)"
 COMP = ROOT / "data" / "standards" / "components"
@@ -326,12 +325,6 @@ def plan(a, b, pmax, work):
 # --------------------------------------------------------------------------
 #  the case
 # --------------------------------------------------------------------------
-def next_number():
-    n = [int(m.group(1)) for p in cc.CURATION.iterdir()
-         if (m := re.match(r"curate(\d+)_", p.name))]
-    return max([FIRST_NUMBER - 1] + n) + 1
-
-
 def decl_text(pl, case_rel):
     t = cc.decl_text(dict(pl, held=pl["studies"][1] if len(pl["studies"]) > 1 else pl["fit"]),
                      case_rel)
@@ -547,16 +540,17 @@ operations
     return hdr + body
 
 
-def write_case(pl, number):
+def write_case(pl, kind="Tx"):
     c1, c2 = pl["c1"], pl["c2"]
-    name = f"curate{number:02d}_nrtl_{c1}_{c2}"
-    case = cc.CURATION / name
-    if case.exists():
-        refuse(f"{case.relative_to(ROOT)} exists -- never overwritten")
+    try:
+        case = cc.curation_roots.new_pair_case_dir(c1, c2, kind)
+    except FileExistsError as ex:
+        refuse(str(ex))
+    name = cc.label(case)
     stem = "-".join(sorted((c1, c2)))
     (case / "system").mkdir(parents=True)
     (case / "constant").mkdir()
-    (case / f"{name}.cho").write_text("")
+    (case / f"{case.name}.cho").write_text("")
     (case / "system" / "controlDict").write_text(f"""/*  {name}: an NRTL pair for {c1} + {c2} regressed by bin/choupo-curate to
     EVERY laboratory's measured bubble temperatures (DEV.md 4c C283 amended,
     C284).  See system/propsDict for the declaration and the result.  */
@@ -591,9 +585,9 @@ verbosity     2;
 def case_of(c1, c2):
     """The C283 case of the pair (a C282 pilot case of the same pair is not
     it: it stays as the pilot wrote it)."""
-    for p in sorted(cc.CURATION.iterdir()):
-        if re.match(rf"curate\d+_nrtl_({re.escape(c1)}_{re.escape(c2)}|"
-                    rf"{re.escape(c2)}_{re.escape(c1)})$", p.name) \
+    stem = cc.curation_roots.pair_stem(c1, c2)
+    for p, a, b in cc.curation_roots.pair_cases():
+        if cc.curation_roots.pair_stem(a, b) == stem \
                 and (p / cc.DECL).exists() and is_c283(p):
             return p
     return None
@@ -681,7 +675,7 @@ def evidence_files(case):
 def outliers_of(case, rows, files):
     pm = point_map(case, files, {})
     if len(pm) != len(rows):
-        refuse(f"{case.name}: the least-squares stage loaded {len(rows)} points and the "
+        refuse(f"{cc.label(case)}: the least-squares stage loaded {len(rows)} points and the "
                f"extracts list {len(pm)} -- the outliers cannot be named")
     doi = {s["file"].split("/")[-1]: s["doi"] for s in cc.parse_decl(case)}
     found = {}
@@ -758,10 +752,10 @@ def run(case, pl, commit):
         f"none: every one of the {len(rows)} points lies within {OUTLIER_K:g} K after the least-squares stage."
     pd = case / "system" / "propsDict"
     unifac = cc.has_unifac(c1) and cc.has_unifac(c2)
-    new = props_text(pl, case.name, stem, unifac, discards=found, outlier_txt=otxt,
+    new = props_text(pl, cc.label(case), stem, unifac, discards=found, outlier_txt=otxt,
                      graded=graded, earlier=earlier)
     if normalise(new) != normalise(pd.read_text()):
-        refuse(f"{case.name}: the declaration on disk differs from the one the rules "
+        refuse(f"{cc.label(case)}: the declaration on disk differs from the one the rules "
                "give -- a declaration is never rewritten after it was committed")
     pd.write_text(new)
     #  STAGE B: twoStage on the kept points
@@ -812,7 +806,7 @@ def run(case, pl, commit):
         #  declaration: it is regraded IN PLACE.  The case carries the
         #  catalogue's sealed copy, never an authored record of its own.
         if not accepted or split:
-            refuse(f"{case.name}: the catalogue record {own.relative_to(ROOT)} was "
+            refuse(f"{cc.label(case)}: the catalogue record {own.relative_to(ROOT)} was "
                    f"promoted from this case and now {reason} -- revert it by hand "
                    f"(`bin/choupo-curate revert {own.stem}`); never regraded in place")
         old = own.read_text()
@@ -859,7 +853,7 @@ def run(case, pl, commit):
     pd.write_text(t)
     return {"verdict": verdict, "split": bool(split), "max": mx, "mean": mean,
             "kept": n_kept, "dropped": n_drop, "studies": len(pl["studies"]),
-            "reason": reason, "same": same, "b": b1, "case": case.name, "nan": nan,
+            "reason": reason, "same": same, "b": b1, "case": cc.label(case), "nan": nan,
             "grade": grade, "regraded": promoted_now is not None}
 
 
@@ -924,7 +918,7 @@ def promote(a, b):
         return cc.promote(a, b)
     recs = list((case / "constant" / "parameters" / "NRTL").glob("*.dat"))
     if len(recs) != 1:
-        refuse(f"{case.name} carries {len(recs)} NRTL records; expected its one")
+        refuse(f"{cc.label(case)} carries {len(recs)} NRTL records; expected its one")
     rp = recs[0]
     text = rp.read_text()
     have = cc.existing_records(a, b)
@@ -966,14 +960,10 @@ def promote(a, b):
 #  C286: the graded acceptance, declared again over the same evidence
 # --------------------------------------------------------------------------
 def c283_cases():
-    """Every case this module wrote (curate100 on), with its pair as the name
-    spells it, in number order."""
-    out = []
-    for p in sorted(cc.CURATION.iterdir(), key=lambda q: q.name):
-        m = re.match(r"curate(\d+)_nrtl_([^_]+)_([^_]+)$", p.name)
-        if m and int(m.group(1)) >= FIRST_NUMBER and (p / cc.DECL).exists() and is_c283(p):
-            out.append((int(m.group(1)), p, m.group(2), m.group(3)))
-    return [(p, a, b) for _, p, a, b in sorted(out)]
+    """Every case this module wrote, with its pair as the case declares it
+    (i, j), in path order."""
+    return [(p, a, b) for p, a, b in cc.curation_roots.pair_cases()
+            if (p / cc.DECL).exists() and is_c283(p)]
 
 
 def declared_discards(case):
@@ -996,9 +986,9 @@ def redeclare(case, pl):
     caller commits it before the case is run again."""
     case_rel = case.relative_to(ROOT).as_posix()
     if is_graded(case):
-        refuse(f"--redeclare: {case.name} already declares the graded acceptance")
+        refuse(f"--redeclare: {cc.label(case)} already declares the graded acceptance")
     if normalise((case / cc.DECL).read_text()) != normalise(decl_text(pl, case_rel)):
-        refuse(f"--redeclare: {case.name}'s dataset declaration differs from the one the "
+        refuse(f"--redeclare: {cc.label(case)}'s dataset declaration differs from the one the "
                "extraction rules give now -- C286 changes the acceptance only; the "
                "evidence is never re-partitioned")
     pd = case / "system" / "propsDict"
@@ -1009,9 +999,9 @@ def redeclare(case, pl):
     disc = declared_discards(case)
     m = re.search(r"@@OUTLIERS-BEGIN@@(.*?)@@OUTLIERS-END@@", old, re.S)
     otxt = " ".join(m.group(1).split()) if m else None
-    if normalise(props_text(pl, case.name, stem, unifac, discards=disc,
+    if normalise(props_text(pl, cc.label(case), stem, unifac, discards=disc,
                             outlier_txt=otxt)) != normalise(old):
-        refuse(f"--redeclare: {case.name}'s declaration on disk is not the one the C283 "
+        refuse(f"--redeclare: {cc.label(case)}'s declaration on disk is not the one the C283 "
                "rules give for these studies -- refused rather than rewritten")
     r = re.search(r"@@RESULT-BEGIN@@(.*?)@@RESULT-END@@", old, re.S)
     prev = " ".join(r.group(1).split()) if r else "(no result recorded)"
@@ -1020,7 +1010,7 @@ def redeclare(case, pl):
                f"below {ACCEPT_K:g} K (superseded by the graded acceptance of C285, applied "
                "to pairs by C286; this declaration keeps the same studies, the same "
                "outlier rule and the same discards -- nothing re-partitioned): " + prev)
-    new = props_text(pl, case.name, stem, unifac, discards=disc, outlier_txt=otxt,
+    new = props_text(pl, cc.label(case), stem, unifac, discards=disc, outlier_txt=otxt,
                      graded=True, earlier=earlier)
     pd.write_text(new)
     cd = case / "system" / "controlDict"
@@ -1050,20 +1040,20 @@ def one(a, b, args, work):
             refuse("--resume: no case for this pair")
         if normalise((case / cc.DECL).read_text()) != normalise(
                 decl_text(pl, case.relative_to(ROOT).as_posix())):
-            refuse(f"--resume: {case.name}'s dataset declaration differs from the one "
+            refuse(f"--resume: {cc.label(case)}'s dataset declaration differs from the one "
                    "the rules give now")
         for s in pl["studies"]:
             (case / cc.EXTRACTS).mkdir(parents=True, exist_ok=True)
             shutil.copy(s["path"], case / cc.EXTRACTS / s["path"].name)
     else:
-        case, stem = write_case(pl, args.number or next_number())
+        case, stem = write_case(pl)
         cc.say(f"  case     {case.relative_to(ROOT)}")
         if not args.no_commit and not args.declare_only:
             files = [p for p in case.rglob("*") if p.is_file()
                      and cc.EXTRACTS not in p.relative_to(case).as_posix()]
             cc.git(["add", "--"] + [str(p) for p in files])
             cc.git(["commit", "-q", "-m",
-                    f"C284: {case.name} -- the declaration, before any fit\n\n"
+                    f"C284: {cc.label(case)} -- the declaration, before any fit\n\n"
                     f"bin/choupo-curate pair {pl['c1']} {pl['c2']}: every laboratory "
                     f"({len(pl['studies'])} studies), the C283 outlier and acceptance "
                     "rule, written before the fit runs."])
@@ -1080,7 +1070,6 @@ def main(argv):
     p.add_argument("a")
     p.add_argument("b")
     p.add_argument("--pmax", type=float, default=110.0)
-    p.add_argument("--number", type=int)
     p.add_argument("--plan", action="store_true")
     p.add_argument("--no-commit", action="store_true")
     p.add_argument("--declare-only", action="store_true")
@@ -1097,7 +1086,7 @@ def main(argv):
     q.add_argument("--graded", action="store_true",
                    help="with --run/--promote: walk the C283 cases themselves "
                         "(promoted ones included) instead of the ranked queue")
-    q.add_argument("--only", nargs="*", help="with --graded: these case numbers only")
+    q.add_argument("--only", nargs="*", help="with --graded: these pairs only (record stems, e.g. acetone-methanol)")
     q.add_argument("--no-commit", action="store_true")
     q.add_argument("--top", type=int, default=60)
     q.add_argument("--pmax", type=float, default=110.0)
@@ -1154,13 +1143,13 @@ def batch(a):
         work = Path(tempfile.mkdtemp(prefix="choupo-curate-"))
         try:
             if a.declare:
-                ns = type("A", (), dict(pmax=a.pmax, plan=False, resume=False, number=None,
+                ns = type("A", (), dict(pmax=a.pmax, plan=False, resume=False,
                                         no_commit=True, declare_only=True))()
                 if case_of(x, y):
                     rec["outcome"] = "declared already"
                 else:
                     pl, case, _ = one(x, y, ns, work)
-                    rec["outcome"], rec["case"] = "declared", case.name
+                    rec["outcome"], rec["case"] = "declared", cc.label(case)
             elif a.run:
                 case = case_of(x, y)
                 if case is None:
@@ -1168,7 +1157,7 @@ def batch(a):
                 elif list((case / "constant" / "parameters" / "NRTL").glob("*.dat")):
                     rec["outcome"] = "ran already"
                 else:
-                    ns = type("A", (), dict(pmax=a.pmax, plan=False, resume=True, number=None,
+                    ns = type("A", (), dict(pmax=a.pmax, plan=False, resume=True,
                                             no_commit=True, declare_only=False))()
                     pl, case, res = one(x, y, ns, work)
                     rec.update(res)
@@ -1213,11 +1202,11 @@ def batch_graded(a):
     --promote (each newly accepted pair)."""
     cases = c283_cases()
     if a.only:
-        want = {int(x) for x in a.only}
-        cases = [c for c in cases if int(re.match(r"curate(\d+)_", c[0].name).group(1)) in want]
+        want = set(a.only)
+        cases = [c for c in cases if cc.curation_roots.pair_stem_of(c[0]) in want]
     out, touched = [], []
     for case, x, y in cases:
-        rec = {"case": case.name, "pair": [x, y]}
+        rec = {"case": cc.label(case), "pair": [x, y]}
         work = Path(tempfile.mkdtemp(prefix="choupo-curate-"))
         try:
             if a.redeclare:
@@ -1238,7 +1227,7 @@ def batch_graded(a):
                     pl = plan(x, y, a.pmax, work)
                     if normalise((case / cc.DECL).read_text()) != normalise(
                             decl_text(pl, case.relative_to(ROOT).as_posix())):
-                        refuse(f"{case.name}'s dataset declaration differs from the one "
+                        refuse(f"{cc.label(case)}'s dataset declaration differs from the one "
                                "the rules give now")
                     for s in pl["studies"]:
                         (case / cc.EXTRACTS).mkdir(parents=True, exist_ok=True)
@@ -1268,7 +1257,7 @@ def batch_graded(a):
             rec["outcome"] = f"error: {type(ex).__name__}: {ex}"
         finally:
             shutil.rmtree(work, ignore_errors=True)
-        cc.say(f"[{case.name}] {rec['outcome'][:300]}"
+        cc.say(f"[{cc.label(case)}] {rec['outcome'][:300]}"
                + (f"  {rec['verdict']} grade {rec['grade']} max {rec['max']:.3f} K"
                   f"{' SPLITS' if rec.get('split') else ''}" if "verdict" in rec else ""))
         out.append(rec)

@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/1Propanol.dat"
+        {
+            type          imported;
+            sha256        "6f8dab202717440a53ff49356dddaa632b8e71ad54a651d6c4f2513519864916";
+            computationalSha256 "c964d7a44b9335ec39b77584095dac5935998f8ccd1f814a9dbe51801adf4389";
+            origin        "data/standards/components/1Propanol.dat";
+            originSha256  "e576ef637c75dec43096777ad538d23ab32c8828de898339ba9226732172d96f";
+            release       Choupo-2608;
+        }
+        "components/Dichloroethane.dat"
+        {
+            type          imported;
+            sha256        "ccec8ed54dd89e5ada83fa9b95a1f1d6890306d0905c6f66d536b79262e6322c";
+            computationalSha256 "0f7fe4aedc3796a98e2c137ff1a0d520463954f8d6acd1d81e2233fc1cae86c7";
+            origin        "data/standards/components/Dichloroethane.dat";
+            originSha256  "8c4cad78bb756f1c81f8d50caf255bf5efd657a5f5c36d1ad767f265cc93e142";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1Propanol-Dichloroethane.dat"
+        {
+            type          imported;
+            sha256        "1d8cbb1c49d0c26d1248030b199c5489b7bcae6f98f068f07a3bbe9e5f990198";
+            computationalSha256 "585b7736f9f8b49700d3086a98d18122de389f149db5c33e79f3c5b954f9f0f4";
+            origin        "data/standards/parameters/NRTL/1Propanol-Dichloroethane.dat";
+            originSha256  "b9dc54606a778023860af52480dbd1b9d1062d3468fd1cfbfff3233d7ce8bc94";
+            release       Choupo-2608;
+        }
+    }
+}

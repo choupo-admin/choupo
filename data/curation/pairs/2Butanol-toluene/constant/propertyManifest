@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/2Butanol.dat"
+        {
+            type          imported;
+            sha256        "e50417c9ddeaeb5527166cf726410485df839fdb613b8555aa2b8958be5a5c46";
+            computationalSha256 "ad0f4e4cb272e208c3a8ee83b570fe72b60cd9ab1b2dd9a7d6011dbd28c4995b";
+            origin        "data/standards/components/2Butanol.dat";
+            originSha256  "8c6ea94875403bbbd569f6facd5fdaefdcc5aee732ba499696802675d675202a";
+            release       Choupo-2608;
+        }
+        "components/toluene.dat"
+        {
+            type          imported;
+            sha256        "025c441842aa1728935905ed8dfa50db5a6405ee082618c11673f665596d4911";
+            computationalSha256 "f66debfbcd493c4c7c4636809e784a1e07a6c482c3baed13ba34dce12ae63f79";
+            origin        "data/standards/components/toluene.dat";
+            originSha256  "fe5cb21ba09cf44b41de252f6a5a5dd21b6803fcd40666f6fed8d9de8e68563a";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Butanol-toluene.dat"
+        {
+            type          imported;
+            sha256        "39e17a8dcbd48be62aa28f6674c3db50f99266cf4d623d7991b0446ad7f9b7d1";
+            computationalSha256 "1be53faa31a4e7f028d3b11c73526f0b7a37ff5242a8022624f04f1dd60fed0d";
+            origin        "data/standards/parameters/NRTL/2Butanol-toluene.dat";
+            originSha256  "8697b1b912792903172fc5c70b479553fc147b34ebab8b34d976fea24bffa964";
+            release       Choupo-2608;
+        }
+    }
+}

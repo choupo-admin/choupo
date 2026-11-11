@@ -1,0 +1,228 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  2Butanol-nHexane -- AN NRTL PAIR FROM EVERY LABORATORY'S BUBBLE PRESSURES.
+
+  WRITTEN BY bin/curate/pairs_px.py (DEV.md 4c C291, the P-x mirror of the
+  C284 bubble-temperature pipeline; record
+  docs/design/binary-pairs-from-open-measurements.md section 12).
+
+  THE DECLARATION -- WRITTEN AND COMMITTED BEFORE ANY FIT RAN (several
+  declarations of a batch share one commit).
+
+  IDENTITY.  nHexane (CAS 110-54-3, InChIKey VLKZOEOYAKHREP-UHFFFAOYSA-N)
+  + 2Butanol (CAS 78-92-2, InChIKey BTANRVKWQNVYAZ-UHFFFAOYSA-N), joined
+  to the archive through identity.json -- never by name.  CLASS (C284): both
+  records are volatile molecular liquids (no role nonvolatile/solute, no
+  dissociatesTo, no charge, no solid, a vapour-pressure model), and every
+  measured temperature lies below both critical temperatures.
+
+  NO MEASURED SERIES IN THIS TREE.  constant/archiveDatasets names each
+  dataset (DOI, NIST URL, article sha256, extraction selector, extract
+  sha256); `bin/choupo-curate fetch` writes the points into
+  constant/archiveExtracts/, which is gitignored.
+
+  STUDIES: every isothermal bubble-pressure block of the pair at or below
+  110 kPa that states an uncertainty on every point.  FITTED, ALL OF THEM
+  (2 block(s), 2 laboratory(ies), 2 temperature(s)):
+      10.1021/acs.jced.9b00102       block 15   58 pts  329.15 K  14.56-68.68 kPa  U 0.29-0.63 kPa
+      10.1016/j.fluid.2011.08.009    block 6    26 pts  329.22 K  15.31-68.83 kPa  U 0.2-1.15 kPa
+        (reports x of the other member: written as x[nHexane] = 1 - x by --x-of)
+  SET ASIDE BY THE EXTRACTION RULES, BY NAME:
+      - doi 10.1021/acs.jced.7b00892 block 15: extract-px refused it: THE
+      TEMPERATURE VARIES ACROSS THE POINTS (2 values, 329.2 .. 329.21 K);
+      this reader takes one isotherm per block (a ruling is needed to
+      read a multi-isotherm block).
+      - doi 10.1021/acs.jced.9b00102 block 13: extract-px refused it: THE
+      TEMPERATURE VARIES ACROSS THE POINTS (3 values, 303.15 .. 343.15
+      K); this reader takes one isotherm per block (a ruling is needed to
+      read a multi-isotherm block).
+      - doi 10.1021/je900530f block 4: extract-px refused it: THE
+      TEMPERATURE VARIES ACROSS THE POINTS (3 values, 313.15 .. 333.15
+      K); this reader takes one isotherm per block (a ruling is needed to
+      read a multi-isotherm block).
+
+  THE RULE (DEV.md 4c C291, bubble-pressure pairs).  Every block above is
+  fitted together; none is held out.  NRTL, a_ij = a_ji = 0, alpha = 0.30
+  fixed: two parameters (b_ij, b_ji), so tau = b/T carries the temperature
+  dependence.  The residual is the bubble PRESSURE at each point's stated
+  temperature, RELATIVE, (P_model - P)/P; objective twoStage (least squares,
+  then minimax; P_bubble relative).  OUTLIERS: after a least-squares stage over
+  every point, a point with |P_model - P|/P > 20 % is discarded BY NAME
+  (`discard` on its evidence entry, listed below) and the fit repeated
+  without it; a STUDY with more than half of its points beyond 20 % is
+  discarded whole, by name (it contradicts the model and the other
+  laboratories as a whole, e.g. a composition labelled as the other member's).
+  THE GRADED ACCEPTANCE (DEV.md 4c C285, in per cent of P): max |P_model - P|/P over the KEPT points is GRADED -- clean up to 5 %, warning up to 10 %, severe up to 20 %, refused above; a point with no bubble pressure refuses.  Every grade but refused is accepted and promoted (autoPromoted, humanReviewed false) with `fitGrade` and its max relative error in the record's provenance; the engine voices a warning or a severe grade on every run that reads the pair.  A pair that splits ONE liquid inside its validity span is not promoted, whatever its grade (arm f).
+  Two starts: (0, 0) and (800, -400).  The per-point uncertainty U (kPa) is
+  kept in each dataset and is information: this residual is already relative.
+
+  OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
+  @@OUTLIERS-BEGIN@@
+      26 point(s) of 84: doi 10.1016/j.fluid.2011.08.009 row 1: x 0.9998,
+      T 329.22 K, P 15.310 kPa, dP/P +336.6 %; doi
+      10.1016/j.fluid.2011.08.009 row 2: x 0.9989, T 329.22 K, P 15.520
+      kPa, dP/P +330.6 %; doi 10.1016/j.fluid.2011.08.009 row 3: x
+      0.9981, T 329.22 K, P 15.840 kPa, dP/P +321.8 %; doi
+      10.1016/j.fluid.2011.08.009 row 4: x 0.9971, T 329.22 K, P 16.160
+      kPa, dP/P +313.3 %; doi 10.1016/j.fluid.2011.08.009 row 5: x
+      0.9927, T 329.22 K, P 17.580 kPa, dP/P +279.3 %; doi
+      10.1016/j.fluid.2011.08.009 row 6: x 0.9882, T 329.22 K, P 18.670
+      kPa, dP/P +256.7 %; doi 10.1016/j.fluid.2011.08.009 row 7: x
+      0.9703, T 329.22 K, P 22.750 kPa, dP/P +190.9 %; doi
+      10.1016/j.fluid.2011.08.009 row 8: x 0.9511, T 329.22 K, P 26.080
+      kPa, dP/P +152.0 %; doi 10.1016/j.fluid.2011.08.009 row 9: x
+      0.9315, T 329.22 K, P 28.760 kPa, dP/P +126.9 %; doi
+      10.1016/j.fluid.2011.08.009 row 10: x 0.8927, T 329.22 K, P 34.810
+      kPa, dP/P +84.7 %; doi 10.1016/j.fluid.2011.08.009 row 11: x
+      0.8518, T 329.22 K, P 40.950 kPa, dP/P +54.5 %; doi
+      10.1016/j.fluid.2011.08.009 row 12: x 0.7938, T 329.22 K, P 47.170
+      kPa, dP/P +31.0 %; doi 10.1016/j.fluid.2011.08.009 row 17: x
+      0.3991, T 329.22 K, P 66.120 kPa, dP/P -21.2 %; doi
+      10.1016/j.fluid.2011.08.009 row 18: x 0.3937, T 329.22 K, P 65.560
+      kPa, dP/P -20.7 %; doi 10.1016/j.fluid.2011.08.009 row 19: x
+      0.2868, T 329.22 K, P 67.400 kPa, dP/P -27.2 %; doi
+      10.1016/j.fluid.2011.08.009 row 20: x 0.1853, T 329.22 K, P 68.400
+      kPa, dP/P -34.4 %; doi 10.1016/j.fluid.2011.08.009 row 21: x
+      0.0996, T 329.22 K, P 68.830 kPa, dP/P -45.5 %; doi
+      10.1016/j.fluid.2011.08.009 row 22: x 0.0306, T 329.22 K, P 67.960
+      kPa, dP/P -63.4 %; doi 10.1016/j.fluid.2011.08.009 row 23: x
+      0.0199, T 329.22 K, P 67.460 kPa, dP/P -67.6 %; doi
+      10.1016/j.fluid.2011.08.009 row 24: x 0.0084, T 329.22 K, P 66.580
+      kPa, dP/P -72.6 %; doi 10.1016/j.fluid.2011.08.009 row 25: x
+      0.0048, T 329.22 K, P 66.100 kPa, dP/P -74.3 %; doi
+      10.1016/j.fluid.2011.08.009 row 26: x 0.0016, T 329.22 K, P 65.670
+      kPa, dP/P -75.9 %; doi 10.1016/j.fluid.2011.08.009: 22 of its 26
+      points lie beyond 20 % (more than half): the WHOLE study is
+      discarded
+  @@OUTLIERS-END@@
+
+  @@RESULT-BEGIN@@
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 736.5 K, b_ji = 38.9 K over 58 kept points of 2
+  block(s), 1 laboratory(ies), 1 temperature(s) (26 discarded): max
+  |dP|/P 4.90 %, mean 3.17 %, graded clean -> accepted. fit_nrtl_start2
+  lands on the same pair (736.5, 38.9). PROMOTED on 2026-11-10 into
+  data/standards/parameters/NRTL/2Butanol-nHexane.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade clean -- max
+  |dP|/P 4.90 % over the 58 kept points (limits 5 / 10 / 20 %), one
+  liquid across the validity span SINGLE TEMPERATURE: b/T was fitted at
+  one temperature; its extrapolation is untested. SINGLE LABORATORY: one
+  article's data, nothing to cross-check it.
+  @@RESULT-END@@
+
+  WHAT IS NOT CLAIMED.  The pair is correct at these temperatures in this
+  frame (ideal-gas vapour, the catalogue's own vapour-pressure records); the
+  measurements were transcribed by the archive and have NOT been read back
+  against the articles (the CHECKLIST that `fetch` writes is the aid).
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        fit_nrtl;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.nHexane-2Butanol.b_ij;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.nHexane-2Butanol.b_ji;  initial 0;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/nHexane-2Butanol-bubbleP-acs.jced.9b00102-b15.dat";
+                role     fit;
+            }
+            {
+                dataset  "constant/archiveExtracts/nHexane-2Butanol-bubbleP-j.fluid.2011.08.009-b6.dat";
+                role     fit;
+                discard  ( 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 );   // C291 outliers, by name in the header
+            }
+        );
+
+        objective { method twoStage;  scale { P_bubble relative; } }
+        residual
+        {
+            kind        P_bubble;
+            components  ( nHexane 2Butanol );
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_history.csv;
+            parity     parity.csv;
+            proposal   2Butanol-nHexane.proposal.dat;
+        }
+    }
+    {
+        name        fit_nrtl_start2;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.nHexane-2Butanol.b_ij;  initial 800;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.nHexane-2Butanol.b_ji;  initial -400;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/nHexane-2Butanol-bubbleP-acs.jced.9b00102-b15.dat";
+                role     fit;
+            }
+            {
+                dataset  "constant/archiveExtracts/nHexane-2Butanol-bubbleP-j.fluid.2011.08.009-b6.dat";
+                role     fit;
+                discard  ( 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 );   // C291 outliers, by name in the header
+            }
+        );
+
+        objective { method twoStage;  scale { P_bubble relative; } }
+        residual
+        {
+            kind        P_bubble;
+            components  ( nHexane 2Butanol );
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            parity     parity_start2.csv;
+        }
+    }
+    {
+        name        txy_nrtl;
+        type        propertyScan1D;
+        vary        { variable x[nHexane];  from 0.0;  to 1.0;  n 101; }
+        state       { P 56.79 kPa;  composition { nHexane 0.5;  2Butanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_nHexane );
+        output      { file txy_nrtl.csv; }
+    }
+);

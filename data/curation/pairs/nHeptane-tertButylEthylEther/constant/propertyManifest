@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/nHeptane.dat"
+        {
+            type          imported;
+            sha256        "25070332ac55ed31465bc842c2820fdfaad6f8148a03a841aca858978670b1d4";
+            computationalSha256 "125b2cbb0fb1a4182208bea7d0812526f79531b719a3e95c6555eb1eef5975b2";
+            origin        "data/standards/components/nHeptane.dat";
+            originSha256  "d07d8e2aa11a5f1acb72593e0fcd1281a502b07ee6da32603bcc97d97b54abd4";
+            release       Choupo-2608;
+        }
+        "components/tertButylEthylEther.dat"
+        {
+            type          imported;
+            sha256        "0515625aa369adc18f2ebf1064fbdd5a8f2bad7038b93ebbd070336edbd0809a";
+            computationalSha256 "0993927d157272b7fdb230d2dc047bb8c3be95d0e3432715377831bc5078cd1e";
+            origin        "data/standards/components/tertButylEthylEther.dat";
+            originSha256  "7d0879c69cddba5ed9e4ffcbea4cb417345376a3fd61f5626b78b53b4b5eb5fd";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/nHeptane-tertButylEthylEther.dat"
+        {
+            type          imported;
+            sha256        "ae6e0e2c83fde6e859d36cf83601dbbbecc8fb9490856cfb53e9e9e88aca31c6";
+            computationalSha256 "2fcb91990f5c2cbc56fbe88042d8700aefa95037e6afc31673d69fab1c94d0b3";
+            origin        "data/standards/parameters/NRTL/nHeptane-tertButylEthylEther.dat";
+            originSha256  "a8a3094e160042ff9ed2805577b074d90a7bc607fb739e2ecd0133bf4e76ac3e";
+            release       Choupo-2608;
+        }
+    }
+}

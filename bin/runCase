@@ -119,6 +119,20 @@ if [ ! -d "$CASE" ] && [[ "$CASE" == *tutorials/* ]]; then
     fi
 fi
 
+# A CURATION TRACE that left tutorials/props/curation/ (DEV.md 4c C295) is
+# not a renamed tutorial -- it is no tutorial -- so it is NOT aliased: the
+# refusal names where traces live now (the root's one home is
+# bin/curate/curation_roots.py; C296: named by what they fit, no number) and
+# runs nothing.
+if [ ! -d "$CASE" ] && [[ "$CASE" == *tutorials/props/curation/curate* ]]; then
+    _R="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+    echo "runCase: '$CASE' is not a tutorial: the generated curation traces live under" >&2
+    for _O in $(python3 "$_R/bin/curate/curation_roots.py" --origins 2>/dev/null); do
+        echo "         $_O/<name>  (pairs: <a>-<b>, the record's own stem; DEV.md 4c C295, C296)" >&2
+    done
+    exit 1
+fi
+
 CASE_ABS=$(cd "$CASE" 2>/dev/null && pwd) || {
     echo "runCase: '$CASE' is not a directory" >&2; exit 1; }
 

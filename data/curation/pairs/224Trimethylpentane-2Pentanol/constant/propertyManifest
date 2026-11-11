@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/224Trimethylpentane.dat"
+        {
+            type          imported;
+            sha256        "5b057df60fefe73acb28293096259f7e3d14028d57ee3c2f420e7113d1afa850";
+            computationalSha256 "c1edd3f9bcf353f5218a16b1df38c7d5ec8796e2c918c8d19725b47bc9d0a37c";
+            origin        "data/standards/components/224Trimethylpentane.dat";
+            originSha256  "0d42ea2f2bd777248e24738a81b4c9017b57f7a688113c719552dcb2423c1623";
+            release       Choupo-2608;
+        }
+        "components/2Pentanol.dat"
+        {
+            type          imported;
+            sha256        "10f691baeef2c7da6bc875224bc5eabb4679786777e59d4bbe142bded6ea69ac";
+            computationalSha256 "78538cfe4759e2e4d9e3da3647b400b498cdb899196e155200ec6b9f145fedb8";
+            origin        "data/standards/components/2Pentanol.dat";
+            originSha256  "0ae113f45b02dbe7e56de45f9fe98846a4fbcb4a130b6f2740337e67129fddbc";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/224Trimethylpentane-2Pentanol.dat"
+        {
+            type          imported;
+            sha256        "fae5a4207e4cf71966ae4c3b5c20f1c544fba5bcaac24c6d98e16847e32b7b36";
+            computationalSha256 "12438c2b9b62b6aa662c6e9973ea0aa2478b6d1a4e8ae69c25c2faf433a1d929";
+            origin        "data/standards/parameters/NRTL/224Trimethylpentane-2Pentanol.dat";
+            originSha256  "c36944ceb69b6c2721ce8b8b7f6e1dc68ca351a708331ab87ddaa300ef8da652";
+            release       Choupo-2608;
+        }
+    }
+}

@@ -96,7 +96,7 @@ provenance
     omega
     {
         origin        regressed;
-        method        "DERIVED from a fit: omega = -log10(Psat(0.7 Tc)/Pc) - 1 from the Antoine the vapour-pressure pipeline fitted (tutorials/props/curation/curate176_vp_methylLevulinate) and the measured Tc, Pc; 0.7 Tc = 467.60 K, EXTRAPOLATED +14.4 K beyond the fitted range (293.5-453.15 K)";
+        method        "DERIVED from a fit: omega = -log10(Psat(0.7 Tc)/Pc) - 1 from the Antoine the vapour-pressure pipeline fitted (data/curation/components/methylLevulinate) and the measured Tc, Pc; 0.7 Tc = 467.60 K, EXTRAPOLATED +14.4 K beyond the fitted range (293.5-453.15 K)";
         derivedBy     "bin/curate/c287_new_components.py";
         reviewStatus  autoPromoted;
         humanReviewed false;
@@ -166,7 +166,7 @@ provenance
         methodVersion    "joback-poling5e-table2-2";
         input            joback;
         inputFingerprint "CH2:2,CH3:2,ester:1,ketone:1";
-        reproducedInCase "tutorials/props/curation/curate287_new_components";
+        reproducedInCase "data/curation/batches/new_components";
         uncertainty      { status unquantified; reason "Joback group contribution (Joback & Reid 1987); a few percent for Cp_ig of ordinary organics"; }
     }
     dHf_298
@@ -176,7 +176,7 @@ provenance
         methodVersion    "joback-poling5e-table2-2";
         input            joback;
         inputFingerprint "CH2:2,CH3:2,ester:1,ketone:1";
-        reproducedInCase "tutorials/props/curation/curate287_new_components";
+        reproducedInCase "data/curation/batches/new_components";
         uncertainty      { status unquantified; reason "Joback group contribution (Joback & Reid 1987); several kJ/mol, more for polyfunctional molecules"; }
         notes            "the ThermoML archive carries no enthalpy of formation or combustion block for this compound (searched)";
     }
@@ -188,7 +188,7 @@ provenance
         input            joback;
         inputFingerprint "CH2:2,CH3:2,ester:1,ketone:1";
         elementEntropies "CODATA Key Values for Thermodynamics (Cox, Wagman & Medvedev, 1989): S(C, graphite) 5.74, S(H2, g) 130.680, S(O2, g) 205.152, S(N2, g) 191.609 J/(mol K)";
-        reproducedInCase "tutorials/props/curation/curate287_new_components";
+        reproducedInCase "data/curation/batches/new_components";
         uncertainty      { status unquantified; reason "inherits the errors of Joback's dHf_298 and dGf_298"; }
     }
     vaporPressure
@@ -196,7 +196,7 @@ provenance
         origin        fitted;
         method        "vaporPressureFit (three-parameter Antoine; objective twoStage: least squares in log10 P, then the largest relative error in P minimised from it; every usable study fitted, outliers above 15 % discarded by name)";
         methodVersion "choupoProps Choupo-dev";
-        fittedInCase  "tutorials/props/curation/curate176_vp_methylLevulinate";
+        fittedInCase  "data/curation/components/methylLevulinate";
         reviewStatus  autoPromoted;
         humanReviewed false;
         fitGrade      warning;   // DEV.md 4c C285: the worse of the grades below

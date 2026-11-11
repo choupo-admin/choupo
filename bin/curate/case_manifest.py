@@ -48,6 +48,12 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 TUT = os.path.join(ROOT, "tutorials")
+sys.path.insert(0, os.path.join(ROOT, "bin", "curate"))
+import curation_roots  # noqa: E402  (the second case root, DEV.md 4c C295)
+#  THE CURATION TRACES are cases (bin/runTests walks them, bin/integrate
+#  scopes a change to them through this manifest), not tutorials: they are
+#  indexed here like any case and carry the role `curationTrace`.
+CUR = os.path.join(ROOT, curation_roots.CURATION_REL)
 OUT = os.path.join(ROOT, "generated", "caseManifest.json")
 
 
@@ -168,11 +174,15 @@ def scan_case(case_dir, wmap):
 def build():
     wmap = witnesses()
     cases = {}
-    for dirpath, dirs, files in os.walk(TUT):
-        if os.path.basename(dirpath) == "system" and "controlDict" in files:
-            case_dir = os.path.dirname(dirpath)
-            cases[rel(case_dir)] = scan_case(case_dir, wmap)
-            dirs[:] = []
+    for top in (TUT, CUR):
+        for dirpath, dirs, files in os.walk(top):
+            if os.path.basename(dirpath) == "system" and "controlDict" in files:
+                case_dir = os.path.dirname(dirpath)
+                e = scan_case(case_dir, wmap)
+                if top == CUR:
+                    e["roles"] = e["roles"] + ["curationTrace"]
+                cases[rel(case_dir)] = e
+                dirs[:] = []
     cases = dict(sorted(cases.items()))
 
     by_unit, by_model, by_op, by_app = {}, {}, {}, {}

@@ -1,8 +1,0 @@
-/*  curate23_vp_diethylethanolamine: the vapour pressure of diethylethanolamine refitted as an Antoine to MEASURED
-    vapour pressures from one article and scored on another it never saw
-    (DEV.md 4c C281 step 2).  See system/propsDict for the declaration and
-    the result.  */
-
-application   choupoProps;
-description   "Antoine vapour pressure of diethylethanolamine fitted by the curation pipeline to measured vapour pressures (ThermoML locates, the article sources), held out against an independent study";
-verbosity     2;

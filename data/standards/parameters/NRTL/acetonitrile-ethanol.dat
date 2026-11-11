@@ -28,7 +28,7 @@
   articles marks it `reviewStatus reviewed; humanReviewed true;`.  Revert with
   `bin/choupo-curate revert acetonitrile-ethanol`.
 
-  REPRODUCE: run tutorials/props/curation/curate509_nrtl_ethanol_acetonitrile (after `bin/choupo-curate fetch` on it); its fit
+  REPRODUCE: run data/curation/pairs/acetonitrile-ethanol (after `bin/choupo-curate fetch` on it); its fit
   writes acetonitrile-ethanol.proposal.dat, which bin/curate/check_regressed_pairs.py holds
   equal to this record.
 \*---------------------------------------------------------------------------*/
@@ -57,7 +57,7 @@ provenance
     origin        fitted;
     method        "fitParameters(P_bubble), Levenberg-Marquardt";
     methodVersion "choupoProps Choupo-dev";
-    fittedInCase  "tutorials/props/curation/curate509_nrtl_ethanol_acetonitrile";
+    fittedInCase  "data/curation/pairs/acetonitrile-ethanol";
     reviewStatus  autoPromoted;
     humanReviewed false;
     fitGrade      clean;   // DEV.md 4c C285 (C291): max |P_model - P|/P over the kept points, graded 5 / 10 / 20 %

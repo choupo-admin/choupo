@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of hexafluorobenzene
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/hexafluorobenzene-vapourPressure-je050056e.dat";
+        role          fit;   // informational: the operation declares it
+        doi           "10.1021/je050056e";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je050056e.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je050056e.json";
+        articleFile   "je050056e.xml";
+        articleSha256 "dac8ea38ea8c1c85de34f3074ca3b0e7e923679796fa91160586aa7171f251d7";
+        extractor     vapourPressure;
+        inchiKey      "ZQBFAOFFOQMSGJ-UHFFFAOYSA-N";
+        extract       "bin/choupo-thermoml extract-vp <article file> --inchikey ZQBFAOFFOQMSGJ-UHFFFAOYSA-N --into <dir>";
+        sha256        "d7459cedd454c557bd48727303d62c23d47c79ce6458e1d8057c1f20b876f92e";
+        identity
+        {
+            hexafluorobenzene { cas "392-56-3"; inchiKey "ZQBFAOFFOQMSGJ-UHFFFAOYSA-N"; }
+        }
+    }
+);

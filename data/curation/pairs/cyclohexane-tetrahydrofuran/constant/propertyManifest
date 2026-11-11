@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/cyclohexane.dat"
+        {
+            type          imported;
+            sha256        "54ac6c67fe0fa7f8d15744192b515efd56b05bf78dc8bf99b6dfc092f349f26c";
+            computationalSha256 "6f57b6ee7356428daa748404b1343309e762255b70baf430d387550ae4683431";
+            origin        "data/standards/components/cyclohexane.dat";
+            originSha256  "c17d37ff35f43849e846d3f6a974ab7f2312085a349d1169494ad2374fd90d23";
+            release       Choupo-2608;
+        }
+        "components/tetrahydrofuran.dat"
+        {
+            type          imported;
+            sha256        "12c449aa50631831604bc7f6ac312bffc9731cac4c4503fcec67827f1467c23f";
+            computationalSha256 "b45bc4cef4652bf7e4842149c988eb25ace04b00cb4aba62bb9d62542833bdb3";
+            origin        "data/standards/components/tetrahydrofuran.dat";
+            originSha256  "8bec66358e45034f813fc67f42dac3ffeca1c0e7204db03873fd8051bb3c2424";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/cyclohexane-tetrahydrofuran.dat"
+        {
+            type          imported;
+            sha256        "8b7da6df35063beaf87d9b4e7e27f2c05f81c084eccfd317410fc4d796b660ee";
+            computationalSha256 "bd7f0aeec91339f413c7bf105b60faeba49fbbeb54ed9bf587094df82a7f3d76";
+            origin        "data/standards/parameters/NRTL/cyclohexane-tetrahydrofuran.dat";
+            originSha256  "35606c1a5f008600caae6f7a111c03bf61e9bc7bef964dcb17c92ebbc5b6f155";
+            release       Choupo-2608;
+        }
+    }
+}

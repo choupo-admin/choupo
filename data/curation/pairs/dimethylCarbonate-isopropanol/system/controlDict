@@ -1,0 +1,7 @@
+/*  dimethylCarbonate-isopropanol: an NRTL pair for isopropanol + dimethylCarbonate regressed by bin/choupo-curate to
+    MEASURED bubble temperatures from one article and scored on another it
+    never saw.  See system/propsDict for the declaration and the result.  */
+
+application   choupoProps;
+description   "NRTL isopropanol-dimethylCarbonate regressed by the curation pipeline to measured bubble temperatures (ThermoML locates, the article sources), held out against an independent study";
+verbosity     2;

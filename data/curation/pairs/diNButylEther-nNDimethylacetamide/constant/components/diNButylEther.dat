@@ -1,0 +1,218 @@
+// [imported] origin "data/standards/components/diNButylEther.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diNButylEther  (CAS 142-96-1)
+  PROPOSAL TIER -- UNVERIFIED. Imported from ChemSep v8.3
+  pure-component data under Artistic License 2.0.
+  Critical constants are source data.  Psat is an Antoine FITTED by
+  bin/choupo-curate vp to measured vapour pressures (DEV.md 4c C281;
+  provenance.vaporPressure): reviewStatus autoPromoted, NOT human-reviewed.
+\*---------------------------------------------------------------------------*/
+
+name        diNButylEther;
+CAS         142-96-1;
+formula     C8H18O;      // counted from the ChemSep v8.3 structure formula "(C4H9)2O" (derived 2026-09-03; reproduces MW to 0.002 %)
+reviewStatus interim;
+MW          130.2279;      // kg/kmol [origin=ChemSep v8.3]
+Tc          580.15;      // K [origin=ChemSep v8.3]
+Pc          23.8;      // bar; source Pa / 1e5 [origin=ChemSep v8.3]
+omega       0.447646;      // [-] [origin=ChemSep v8.3]
+Tb          415.35;      // K [origin=ChemSep v8.3]
+
+standardThermochemistry
+{
+    dHf_298   -333900;        // J/mol   [ChemSep v8.3, ideal gas]
+    s_298     481.2;        // J/(mol.K)  third-law absolute
+}
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C), FITTED by bin/choupo-curate vp to
+    // measured vapour pressures -- see provenance.vaporPressure
+    coefficients  (4.226259919  1490.073493  -60.62468694);
+    Trange        (263.15  508.15);   // the fit's own span; outside it the engine announces the extrapolation
+}
+
+Vliq        0.000170083;      // m3/mol at 25 C  [ChemSep eqno 105]
+HvapTb      36922.9;      // J/mol at Tb  [ChemSep eqno 106]
+
+idealGasHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    // ChemSep states J/(kmol.K); A and the exp are scaled to per-mole here.
+    coefficients  (152.99  -805.71  6.697244721  -0.00024656  5.3497e-08);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    coefficients  (198.76  65.432  2.904544721  0.0039694  8.4178e-07);
+    Trange        (175.3  450);
+}
+
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     20.743;
+        B     -83.003;
+        C     -4.9404;
+        D     4.096e-06;
+        E     2;
+        Tmin  175.3;
+        Tmax  473;
+    }
+}
+
+liquidThermalConductivity
+{
+    chemsepEq16
+    {
+        A     -0.067128;
+        B     2.4703;
+        C     -1.3291;
+        D     -0.0010011;
+        E     -2.5742e-07;
+        Tmin  175.3;
+        Tmax  523.15;
+    }
+}
+
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 5; } { group CH2O; count 1; } );
+}
+solubilityParameter 15830;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
+
+source
+{
+    database      "ChemSep pure-component data v8.3";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "chemsep1.xml";
+    sourceSha256  "78b3e0c6408ff35f3b75fb71a1fdd70bb8e967d8996b49452a4a9fa2dd567c76";
+    sourceRecord  "Di-n-butyl ether";
+    importedBy    "chemsep_to_choupo";
+    review        { state pending; reviewer unassigned; }
+}
+
+provenance
+{
+    MW
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Pc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    omega
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tb
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    vaporPressure
+    {
+        origin        fitted;
+        method        "vaporPressureFit (three-parameter Antoine; objective twoStage: least squares in log10 P, then the largest relative error in P minimised from it; every usable study fitted, outliers above 15 % discarded by name)";
+        methodVersion "choupoProps Choupo-dev";
+        fittedInCase  "data/curation/components/diNButylEther";
+        reviewStatus  autoPromoted;
+        humanReviewed false;
+        fitGrade      clean;   // DEV.md 4c C285: the worse of the grades below
+        fitGradeMaxRelativeError_pct 3.993426;   // grade clean
+        promotedBy    "bin/choupo-curate vp --promote";
+        promotedDate  "2026-11-10";
+        reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+        uncertainty   "the fit's maximum relative error over every kept measurement, below";
+        replaces      "model AmbroseWalton (a corresponding-states estimate from Tc, Pc, omega); `bin/choupo-curate revert <component>` restores it";
+        evidence
+        (
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/diNButylEther-vapourPressure-j.fluid.2006.06.017.dat";
+                doi       "10.1016/j.fluid.2006.06.017";
+                sha256    "76aafff72ba5c3df0f9bb4ebf2e933b04691d06ca92eabf74419785563bd9543";
+                articleSha256 "d401b8185db8ece41d83c2d7aea8b9d6e3398e5a6e065d1eea7704065e51cb2f";
+                pointsKept    26;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/diNButylEther-vapourPressure-j.fluid.2015.05.002.dat";
+                doi       "10.1016/j.fluid.2015.05.002";
+                sha256    "124ebbc698f48f7a21e0549e9bb58603bb42b8b4b74bca7cff3f154172ecc99d";
+                articleSha256 "4011ad3ec096730aca9e21dd96b2ae5e4dae45c1b9e2d4c75b480c6d85261145";
+                pointsKept    14;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/diNButylEther-vapourPressure-j.fluid.2007.09.002.dat";
+                doi       "10.1016/j.fluid.2007.09.002";
+                sha256    "01d2c5a07160c5f6c675fb1fbedc5e3192a88b2f7f003889ac024d256d9cd878";
+                articleSha256 "cce7a8570600ee9f4df212272220749a2dffe27a9fab8d95983e498f104300ef";
+                pointsKept    10;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/diNButylEther-vapourPressure-je7007523.dat";
+                doi       "10.1021/je7007523";
+                sha256    "6311d071b34f4b05f37970b423dc682efd90aab055cdde35e162394b5af482d7";
+                articleSha256 "c9b5b693d7e2459732b084f6fdb52e9529dbcdb0cdedc23dccfe2307e37dc22c";
+                pointsKept    7;
+                pointsDropped 0;
+                provenance measured;
+            }
+        );
+        acceptance
+        {
+            rule        "the default of DEV.md 4c C285 (graded): max relative error in P over the kept points 5 / 10 / 20 %, and |Tnb - Tb| 1 / 2 / 4 K where Tb lies outside their range, are the upper limits of clean / warning / severe; above, refused; the grade is the worse of the two";
+            verdict     accepted;
+            studies     4;
+            pointsKept  57;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     1.457977;   // the fitted Antoine, every kept point
+            max_pct     3.993426;
+            awAad_pct   4.528863;   // the AmbroseWalton curve it replaces, the same points
+            awMax_pct   8.294267;
+            Tnb_fit     413.6772;   // K, the fitted curve at 101.325 kPa
+        }
+    }
+}

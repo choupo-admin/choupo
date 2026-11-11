@@ -28,7 +28,7 @@
   back against the articles marks it `reviewStatus reviewed; humanReviewed
   true;`.  Revert with `bin/choupo-curate revert dimethylCarbonate-nButanol`.
 
-  REPRODUCE: run tutorials/props/curation/curate126_nrtl_nButanol_dimethylCarbonate (after `bin/choupo-curate fetch` on it); its fit
+  REPRODUCE: run data/curation/pairs/dimethylCarbonate-nButanol (after `bin/choupo-curate fetch` on it); its fit
   writes dimethylCarbonate-nButanol.proposal.dat, which bin/curate/check_regressed_pairs.py holds
   equal to this record.
 \*---------------------------------------------------------------------------*/
@@ -57,7 +57,7 @@ provenance
     origin        fitted;
     method        "fitParameters(T_bubble), Levenberg-Marquardt";
     methodVersion "choupoProps Choupo-dev";
-    fittedInCase  "tutorials/props/curation/curate126_nrtl_nButanol_dimethylCarbonate";
+    fittedInCase  "data/curation/pairs/dimethylCarbonate-nButanol";
     reviewStatus  autoPromoted;
     humanReviewed false;
     fitGrade      severe;   // DEV.md 4c C285 (C286): max |T_model - T| over the kept points, graded 1 / 2 / 4 K

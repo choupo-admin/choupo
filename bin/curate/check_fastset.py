@@ -22,7 +22,10 @@ review what it covers.
 THE FAMILY RULE, and it is the one thing here that is a SECOND HOME.  A family
 is a case's own parent directory, EXCEPT under `tutorials/plant/`, where each
 plant is a family (its sub-cases belong to it) because two plants share
-nothing but the folder they sit in.  Which cases the suite WALKS is restated
+nothing but the folder they sit in, and under `data/curation/`, where the
+family is the ORIGIN folder (`pairs`, `components`, `batches`; C296): a pair
+with two cases keeps them as siblings in its own folder, which is not a
+family of its own.  Which cases the suite WALKS is restated
 below from `bin/runTests`' gather -- the same restatement `check_mass_closure`
 and `check_energy_boundary_pinned` make for their own discoveries.  It is a
 copy, and a copy can drift: what keeps it honest is that a drift in the
@@ -87,6 +90,8 @@ EXCLUDED = re.compile(r"^#\s*EXCLUDED\s+(\S+)\s\s*(.+?)\s*$")
 def family(case: str) -> str:
     """The directory whose cases this one represents.  See THE FAMILY RULE."""
     parent = str(Path(case).parent)
+    if case.startswith("data/curation/"):
+        return "/".join(case.split("/")[:3])
     return case if parent == "tutorials/plant" else parent
 
 
@@ -108,6 +113,17 @@ def walked():
         for cd in sorted(p.glob("**/system/controlDict")):
             case = cd.parent.parent
             if (case / ".known-broken").is_file() or (case / "expected").is_file():
+                out.append(case)
+    #  The SECOND walk root (DEV.md 4c C295): the curation traces, any depth,
+    #  exactly as bin/runTests gathers them; the root's one home is
+    #  curation_roots.py.  Its origin folders are families like any other.
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import curation_roots
+    c = ROOT / curation_roots.CURATION_REL
+    if c.is_dir():
+        for cd in sorted(c.glob("**/system/controlDict")):
+            case = cd.parent.parent
+            if not (case.parent / "system" / "controlDict").is_file():
                 out.append(case)
     return [c.relative_to(ROOT).as_posix() for c in out]
 

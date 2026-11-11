@@ -1,0 +1,167 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  diNButylEther -- the vapour pressure of diNButylEther, REFITTED to
+  measurements (DEV.md 4c C281 and C283).  Written by `bin/choupo-curate vp
+  diNButylEther`; everything above the RESULT paragraph is the DECLARATION,
+  committed before any fit ran, so it can be read against the result.
+
+  WHY.  The catalogue record carried `vaporPressure { model AmbroseWalton; }`,
+  a corresponding-states ESTIMATE from Tc, Pc and omega that never reads the
+  record's own Tb (C279 measured a median 19.6 % AAD over the 25 such records
+  with archive data).  Here a three-parameter Antoine is fitted to EVERY
+  usable laboratory's measurements of it.
+
+  STUDIES (one per article, extracted by `choupo-thermoml extract-vp`; ranked
+  by points, ties by DOI):
+      10.1016/j.fluid.2006.06.017      26 pts  346.03-413.67 K  Lladosa; Monton; Burguet; Munoz
+      10.1016/j.fluid.2015.05.002      14 pts  430.15-508.15 K  Liebergesell; Kaminski; Pauls; de Loos et al.
+      10.1016/j.fluid.2007.09.002      10 pts  263.15-343.15 K  Boukais-Belaribi; Belaribi; Lohmann; Jose
+      10.1021/je7007523                 7 pts  313.15-313.15 K  Alonso-Tristan; Villamanan; Chamorro; Segovia
+  SET ASIDE BY NAME:
+      10.1016/j.fluid.2005.06.017: 1 pressure point(s), fewer than 5
+      10.1016/j.fluid.2005.11.026: 3 pressure point(s), fewer than 5
+      10.1016/j.fluid.2012.01.008: 1 pressure point(s), fewer than 5
+      10.1021/acs.jced.7b00119: 1 pressure point(s), fewer than 5
+      10.1021/je060237w: 4 pressure point(s), fewer than 5
+      10.1021/je100019r: 3 pressure point(s), fewer than 5
+
+  FIT AND GRADED ACCEPTANCE (DEV.md 4c C285, Vitor 2026-11-10; the evidence,
+  objective and outliers of C283; declared before the fit).
+  EVIDENCE: every study above is fitted; none is held out (C283 amended:
+  laboratories disagree with each other by more than they claim, so the
+  test is agreement across all of them, not one laboratory's claimed
+  precision).  OBJECTIVE: `objective { method twoStage; }` -- least
+  squares in log10 P for a first estimate, then the LARGEST relative error in
+  P, (P_model - P)/P, over the kept points minimised from it (Vitor's
+  practice, C280); both answers kept.  OUTLIERS: after the least-squares
+  stage a point with a relative P error above 15 % (three times
+  the acceptance) is DISCARDED BY NAME (its study DOI, T and P), listed in
+  the result and the record, and the fit repeated without it, once
+  (`outliers { maxRelativeError 15 percent; }`).  ACCEPTANCE,
+  GRADED, the DEFAULT of C285: the maximum relative P error over all kept
+  points is graded clean up to 5 %, warning up to
+  10 %, severe up to 20 % and refused above; where the
+  normal-boiling-point condition below applies, the absolute gap is graded
+  clean up to 1 K, warning up to 2 K, severe up to
+  4 K and refused above.  The fit's grade is the WORSE of the
+  two.  A clean, warning or severe fit is ACCEPTED and promoted (autoPromoted,
+  humanReviewed false) with `fitGrade <grade>;` and the deciding numbers in
+  its provenance entry, which the component loader voices on every run that
+  uses it (a warning or a severe grade); a refused one is not promoted.  This
+  case declares no `system/curationDict`, so the default applies; a case
+  that needs another acceptance declares it there, with its reason.  The
+  AmbroseWalton curve's errors on the same points are reported beside the
+  fit's, as information.
+
+  NORMAL BOILING POINT: the record's Tb 415.35 K is judged against the range of the KEPT points (all studies span 263.15-508.15 K before any outlier is discarded): if Tb lies OUTSIDE that range, the fitted Antoine's own normal boiling point (P = 101.325 kPa) is GRADED by its absolute gap to it (the temperature limits of the acceptance below); inside it, the gap is reported and is not a condition.
+
+  EARLIER FITS, SUPERSEDED BY THIS DECLARATION
+  @@EARLIER-BEGIN@@
+  C281 step 2, objective leastSquares (log10 P), the same partition and
+  band: WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Antoine log10(Psat/bar) = 4.546814 - 1697.1613/(T + -39.9108),
+  in-sample R2 0.999982 over 26 points, 346.03-413.67 K. HELD OUT: 14
+  points, AAD 4.7526 % against the band 0.36 % -> notValidated. Its own
+  normal boiling point (101.325 kPa): 413.64 K. NOT PROMOTED: held-out
+  verdict notValidated (AAD 4.753 % against the band 0.36 % declared
+  before the fit); the record keeps AmbroseWalton THEN C281 step 3,
+  objective twoStage, one study fitted and one held out, judged by the
+  band (superseded by C283): WHAT THE RUN FOUND (pinned in `expected`;
+  measured, not argued). Objective twoStage. Antoine log10(Psat/bar) =
+  4.644668 - 1764.4983/(T + -33.2244), in-sample R2 0.999980 over 26
+  points, 346.03-413.67 K. HELD OUT: 14 points, AAD 5.6372 % (max 12.1202
+  %) against the band 0.36 % -> notValidated; the stage-1 least-squares
+  answer on the same points: AAD 4.7526 %, max 10.3021 %. Its own normal
+  boiling point (101.325 kPa): 413.59 K. NOT PROMOTED: held-out verdict
+  notValidated (AAD 5.637 % against the band 0.36 % declared before the
+  fit); the record keeps AmbroseWalton. THEN C283, every usable study
+  fitted and none held out, accepted only at max relative error <= 5 %
+  and Tnb within 1 K (superseded by the graded acceptance of C285): WHAT
+  THE RUN FOUND (pinned in `expected`; measured, not argued). Objective
+  twoStage. Antoine log10(Psat/bar) = 4.226260 - 1490.0735/(T +
+  -60.6247), in-sample R2 0.999931 over 57 kept points, 263.15-508.15 K
+  (10.1016/j.fluid.2006.06.017 26/26 kept; 10.1016/j.fluid.2015.05.002
+  14/14 kept; 10.1016/j.fluid.2007.09.002 10/10 kept; 10.1021/je7007523
+  7/7 kept). Relative error in P over the kept points: mean 1.4580 %, max
+  3.9934 %; AmbroseWalton on the same points: mean 4.5289 %, max 8.2943
+  %. Outliers discarded: none. Its own normal boiling point (101.325
+  kPa): 413.68 K. PROMOTED on 2026-11-10 into
+  data/standards/components/diNButylEther.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: under the DEFAULT
+  acceptance of DEV.md 4c C283 (no system/curationDict), 4 studies, 57
+  points kept, 0 discarded as outliers; max relative error 3.993 % (mean
+  1.458 %) against 5 %; Tb inside the kept points' range, normal boiling
+  point 413.68 K, -1.67 K from the record's Tb 415.35 K (reported, not a
+  condition); AmbroseWalton on the same points mean 4.529 % / max 8.294 %
+  @@EARLIER-END@@
+
+  NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares every
+  series by DOI, NIST URL and sha256; `bin/choupo-curate fetch` regenerates
+  them into constant/archiveExtracts/ (gitignored).
+
+  RESULT
+  @@RESULT-BEGIN@@
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 4.226260 - 1490.0735/(T +
+  -60.6247), in-sample R2 0.999931 over 57 kept points, 263.15-508.15 K
+  (10.1016/j.fluid.2006.06.017 26/26 kept; 10.1016/j.fluid.2015.05.002
+  14/14 kept; 10.1016/j.fluid.2007.09.002 10/10 kept; 10.1021/je7007523
+  7/7 kept). Relative error in P over the kept points: mean 1.4580 %, max
+  3.9934 %; AmbroseWalton on the same points: mean 4.5289 %, max 8.2943
+  %. Outliers discarded: none. Its own normal boiling point (101.325
+  kPa): 413.68 K. PROMOTED on 2026-11-10 into
+  data/standards/components/diNButylEther.dat as reviewStatus
+  autoPromoted, humanReviewed false, because: fit grade clean under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 4
+  studies, 57 points kept, 0 discarded as outliers; max relative error
+  3.993 % (mean 1.458 %), grade clean (limits 5 / 10 / 20 %); Tb inside
+  the kept points' range, normal boiling point 413.68 K, -1.67 K from the
+  record's Tb 415.35 K (reported, not a condition); AmbroseWalton on the
+  same points mean 4.529 % / max 8.294 %
+  @@RESULT-END@@
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name       fit_antoine;
+        type       vaporPressureFit;
+        component  diNButylEther;
+
+        evidence
+        (
+            {
+                dataset   "constant/archiveExtracts/diNButylEther-vapourPressure-j.fluid.2006.06.017.dat";
+                identity  { doi "10.1016/j.fluid.2006.06.017"; }
+                role      fit;
+            }
+            {
+                dataset   "constant/archiveExtracts/diNButylEther-vapourPressure-j.fluid.2015.05.002.dat";
+                identity  { doi "10.1016/j.fluid.2015.05.002"; }
+                role      fit;
+            }
+            {
+                dataset   "constant/archiveExtracts/diNButylEther-vapourPressure-j.fluid.2007.09.002.dat";
+                identity  { doi "10.1016/j.fluid.2007.09.002"; }
+                role      fit;
+            }
+            {
+                dataset   "constant/archiveExtracts/diNButylEther-vapourPressure-je7007523.dat";
+                identity  { doi "10.1021/je7007523"; }
+                role      fit;
+            }
+        );
+
+        objective  { method twoStage; }
+        outliers   { maxRelativeError 15 percent; }
+
+        output     { file fit_antoine.csv; }
+    }
+);

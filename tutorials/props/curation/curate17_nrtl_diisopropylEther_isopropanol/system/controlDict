@@ -1,7 +1,0 @@
-/*  curate17_nrtl_diisopropylEther_isopropanol: an NRTL pair for diisopropylEther + isopropanol regressed by bin/choupo-curate to
-    MEASURED bubble temperatures from one article and scored on another it
-    never saw.  See system/propsDict for the declaration and the result.  */
-
-application   choupoProps;
-description   "NRTL diisopropylEther-isopropanol regressed by the curation pipeline to measured bubble temperatures (ThermoML locates, the article sources), held out against an independent study";
-verbosity     2;

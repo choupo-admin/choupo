@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/cyclohexane.dat"
+        {
+            type          imported;
+            sha256        "54ac6c67fe0fa7f8d15744192b515efd56b05bf78dc8bf99b6dfc092f349f26c";
+            computationalSha256 "6f57b6ee7356428daa748404b1343309e762255b70baf430d387550ae4683431";
+            origin        "data/standards/components/cyclohexane.dat";
+            originSha256  "c17d37ff35f43849e846d3f6a974ab7f2312085a349d1169494ad2374fd90d23";
+            release       Choupo-2608;
+        }
+        "components/diNButylEther.dat"
+        {
+            type          imported;
+            sha256        "a3b818acd52aa4542d45437052d8e1419718cfee804ef8f67f0dba566cd4635a";
+            computationalSha256 "b715c512b98113de1eaa314d06a1f7bb1a2e21248674cd581d8633ba5f2e47a9";
+            origin        "data/standards/components/diNButylEther.dat";
+            originSha256  "62a03e26d763570c05116ea98b22cde2cf77edb39e3d10a43f9972eabcadbbbb";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/cyclohexane-diNButylEther.dat"
+        {
+            type          imported;
+            sha256        "18e6b7d30436306ffe63ab8bb09a8f23997047b9743abb36de9226ec4aea756b";
+            computationalSha256 "64bb674802649317cf1d074a14e22d26260c213a7f4b1a3f03a12378e446f623";
+            origin        "data/standards/parameters/NRTL/cyclohexane-diNButylEther.dat";
+            originSha256  "6b87f2d7878fad7d32d769efc8f986bb2c17323eb35e627f9b190bd85c71f691";
+            release       Choupo-2608;
+        }
+    }
+}

@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/acetonitrile.dat"
+        {
+            type          imported;
+            sha256        "82f930c3a7f7b34ce170c7f8f26afbca4fa1b04a23eb603e1a8dd30074ace302";
+            computationalSha256 "6ab3ef667c9f265ab09fdf84c4f111a6ddb8ed8cdfc6fa4bb18b17e801f51492";
+            origin        "data/standards/components/acetonitrile.dat";
+            originSha256  "adb8c7d917c6094738a2f22df356534cac882fae333945f33a71a850ad233381";
+            release       Choupo-2608;
+        }
+        "components/isopropanol.dat"
+        {
+            type          imported;
+            sha256        "c206190bf473636ab8661c95a2126b9088fc6a1b5013c5e1325470f8133691b0";
+            computationalSha256 "4ca8dc74e7851f893506b84d7a8e03b629f1794fd0132eed65e92c65cac2e9f9";
+            origin        "data/standards/components/isopropanol.dat";
+            originSha256  "510b474f696cf7952c89a27d0a48623266b8a79f3026cc348a934361bd763e07";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/acetonitrile-isopropanol.dat"
+        {
+            type          imported;
+            sha256        "2160f8ac4d71de885e63ce47bc26f3322ee2182b62efdacf140ac106de5bb073";
+            computationalSha256 "4b9f43f4ddf5ab192863b5d5eeb69fbcad0caf49a62c33be9f3fe6e83b429306";
+            origin        "data/standards/parameters/NRTL/acetonitrile-isopropanol.dat";
+            originSha256  "1cf4dba2f7c46340c6dea5883f43fd21684c2a24a17901b595313aee94ff6163";
+            release       Choupo-2608;
+        }
+    }
+}

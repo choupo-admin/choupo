@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-10";
+    importerVersion    "3";
+    records
+    {
+        "components/224Trimethylpentane.dat"
+        {
+            type          imported;
+            sha256        "5b057df60fefe73acb28293096259f7e3d14028d57ee3c2f420e7113d1afa850";
+            computationalSha256 "c1edd3f9bcf353f5218a16b1df38c7d5ec8796e2c918c8d19725b47bc9d0a37c";
+            origin        "data/standards/components/224Trimethylpentane.dat";
+            originSha256  "0d42ea2f2bd777248e24738a81b4c9017b57f7a688113c719552dcb2423c1623";
+            release       Choupo-2608;
+        }
+        "components/nHeptane.dat"
+        {
+            type          imported;
+            sha256        "25070332ac55ed31465bc842c2820fdfaad6f8148a03a841aca858978670b1d4";
+            computationalSha256 "125b2cbb0fb1a4182208bea7d0812526f79531b719a3e95c6555eb1eef5975b2";
+            origin        "data/standards/components/nHeptane.dat";
+            originSha256  "d07d8e2aa11a5f1acb72593e0fcd1281a502b07ee6da32603bcc97d97b54abd4";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/224Trimethylpentane-nHeptane.dat"
+        {
+            type          imported;
+            sha256        "06d21c5c56f6e2b845017fc1a74ef4ed0b3819678d16e541dd679cc563d6e64c";
+            computationalSha256 "d3a8db96837a42321b4a332166884ef587ee34a8fd8907e34271e0c1ae2263a3";
+            origin        "data/standards/parameters/NRTL/224Trimethylpentane-nHeptane.dat";
+            originSha256  "7b419e4af151d2502db4f32adeeafa2707178baf57ba332143a9ba560b4e1534";
+            release       Choupo-2608;
+        }
+    }
+}

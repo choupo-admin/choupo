@@ -55,7 +55,7 @@ AND critical constants, it writes data/standards/components/<name>.dat:
   * idealGasHeatCapacity, standardThermochemistry  ESTIMATED by Joback
                (data/standards/parameters/Joback.dat, the table the engine's
                estimateComponent reads; the case
-               tutorials/props/curation/curate287_new_components reproduces
+               data/curation/batches/new_components reproduces
                every number); s_298 DERIVED as (dHf - dGf)/298.15 plus the
                elements' standard entropies (CODATA Key Values).  The archive
                carries no enthalpy of formation or combustion block for any
@@ -91,9 +91,10 @@ CACHE = (Path(os.environ["CHOUPO_THERMOML_HOME"]) if os.environ.get("CHOUPO_THER
          else ROOT / "thirdParty" / "thermoml")
 STD = ROOT / "data" / "standards" / "components"
 JOBACK = ROOT / "data" / "standards" / "parameters" / "Joback.dat"
-CURATION = ROOT / "tutorials" / "props" / "curation"
-REPRO_CASE = "tutorials/props/curation/curate287_new_components"
-REPRO_CASE2 = "tutorials/props/curation/curate699_new_components_estimated"
+sys.path.insert(0, str(ROOT / "bin" / "curate"))
+import curation_roots  # noqa: E402  (where a curation case lives: ONE home, DEV.md 4c C295)
+REPRO_CASE = f"{curation_roots.CURATION_REL}/batches/new_components"
+REPRO_CASE2 = f"{curation_roots.CURATION_REL}/batches/new_components_estimated"
 TOOL = "bin/curate/c287_new_components.py"
 
 #  name, InChIKey, formula, CAS (PubChem by InChIKey; the identity bridge
@@ -304,7 +305,7 @@ ATOMIC = {"C": 12.011, "H": 1.008, "O": 15.999, "N": 14.007, "F": 18.998,
 #  check_regressed_pairs arm (i) as if measured -- where it lies outside the kept
 #  vapour-pressure range the fitted curve is graded by its gap to it (tetradecanoic
 #  acid: -72.6 K, refused), so an estimate would veto a measured curve.  So the
-#  estimated Tb is NOT stored (the case curate699 prints it); flip this flag only
+#  estimated Tb is NOT stored (the case data/curation/batches/new_components_estimated prints it); flip this flag only
 #  together with a judge that ignores a Tb whose provenance origin is estimated.
 WRITE_ESTIMATED_TB = False
 TB_IMPLAUSIBLE_K = 60.0
@@ -611,9 +612,8 @@ def joback(groups):
 #  omega from the pipeline's fitted Antoine
 # --------------------------------------------------------------------------
 def vp_case(name):
-    for p in sorted(CURATION.glob(f"curate*_vp_{name}")):
-        return p
-    return None
+    p = curation_roots.COMPONENTS / name
+    return p if curation_roots.is_case(p) else None
 
 
 def fitted_antoine(name):
@@ -804,7 +804,7 @@ def build(c, data, sha, provisional):
                "//  in provenance.vaporPressure.acceptance.Tnb_fit)."
                + ("  Joback's Tb is NOT stored either: the vapour-pressure\n"
                   "//  grade would read an estimate as a measurement (WRITE_ESTIMATED_TB in\n"
-                  "//  the tool); the case curate699 prints it.\n" if est else "\n"))
+                  "//  the tool); the case data/curation/batches/new_components_estimated prints it.\n" if est else "\n"))
     head = f"""/*--------------------------------*- Choupo -*-----------------------*\\
   Component: {name}  ({label}; CAS {cas})
   NEW in the catalogue (DEV.md 4c {'C292, slice 2 of C287' if est else 'C287'}, {today}), built by
