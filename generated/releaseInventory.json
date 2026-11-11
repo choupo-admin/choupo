@@ -31,7 +31,7 @@
   },
   "curationTraces": {
     "cases": 683,
-    "regressionChecks": 201,
+    "regressionChecks": 683,
     "byOrigin": {
       "pairs": 616,
       "components": 65,
