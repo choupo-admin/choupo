@@ -3320,7 +3320,7 @@ accepts today, and that is a policy call.
 > nothing more"); the NEW passes it and `1Octanol` (vp severe, liquid Cp
 > warning); two by-hand sabotages of the gate, each caught: the filter reverted
 > (the as-shipped half fails) and the edit made a no-op (the edited-down half
-> reports "not refused").  HEXAFLUOROBENZENE (`curate639_vp_hexafluorobenzene`,
+> reports "not refused").  HEXAFLUOROBENZENE (`data/curation/components/hexafluorobenzene`,
 > declaration commit 954e122f5 before the fit; one study, 10 points, 288-333 K):
 > vapour pressure max 0.434 % (clean; AmbroseWalton 76.95 %), Vliq max 10.84 %
 > SEVERE (19 kept, 5 discarded; the Rackett shape follows the Joback Tc 542.6 K),
@@ -3608,7 +3608,7 @@ accepts today, and that is a policy call.
 > are ESTIMATED by Joback in the formulas of `estimateComponent` and marked
 > `origin estimated; method Joback` per value with the group list
 > (check_estimates reproduces them, 1e-6, so they are stored to nine
-> figures); the case `curate699_new_components_estimated` reproduces them and
+> figures); the case `data/curation/batches/new_components_estimated` reproduces them and
 > smoke-tests every record.  omega is read from the fitted Antoine at 0.7 Tc
 > of the ESTIMATED Tc only inside 50 K of the fitted data; beyond that the
 > component is HELD, not written, and listed with the distance (the omega
@@ -3885,7 +3885,7 @@ accepts today, and that is a policy call.
 > CODATA element entropies; check_estimates verifies the 8 dHf (48 from 40).
 > ENGINE: `rho_liquid_<comp>` in the props evaluator (the liquid density
 > through ThermoPackage::density, liquid branch).  SMOKE:
-> tutorials/props/curation/curate287_new_components reproduces the Joback
+> data/curation/batches/new_components reproduces the Joback
 > numbers and evaluates Psat, Cp_liquid and rho_liquid of all eight, 300-340
 > K, with no refusal.  FINDINGS: 2Ethoxyethanol's promoted Antoine has C =
 > +2973 K (A 54.0, B 182575) -- graded warning on its 345-408 K window, a
@@ -4006,7 +4006,7 @@ accepts today, and that is a policy call.
 > held-out AAD 5.89 % against a 7.2 % band; its normal boiling point 444.46 K
 > against the record's 444.65 K) -- its vaporPressure is an Antoine with Trange
 > = the fit's span, `provenance.vaporPressure` names both DOIs, the case
-> (`curate33_vp_nHexylAcetate`) and the verdict, `reviewStatus autoPromoted;
+> (`data/curation/components/nHexylAcetate`) and the verdict, `reviewStatus autoPromoted;
 > humanReviewed false;`.  The AmbroseWalton count is 47.  FOURTEEN components
 > had two author-disjoint studies of >= 5 pressure points with stated
 > uncertainty (curate20-33, each declaration committed before its fit); twelve
