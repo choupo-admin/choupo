@@ -59,11 +59,49 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      24 point(s) of 41: doi 10.1021/je100033s row 9: x 0.3314, P 101.300
+      kPa, T 372.81 K, dT +3.01 K; doi 10.1021/je100033s row 10: x
+      0.3727, P 101.300 kPa, T 370.01 K, dT +3.38 K; doi
+      10.1021/je100033s row 11: x 0.4237, P 101.300 kPa, T 367.35 K, dT
+      +3.55 K; doi 10.1021/je100033s row 12: x 0.5032, P 101.300 kPa, T
+      363.87 K, dT +3.96 K; doi 10.1021/je100033s row 13: x 0.5319, P
+      101.300 kPa, T 362.92 K, dT +3.97 K; doi 10.1021/je100033s row 14:
+      x 0.5800, P 101.300 kPa, T 361.58 K, dT +3.88 K; doi
+      10.1021/je100033s row 15: x 0.6331, P 101.300 kPa, T 360.32 K, dT
+      +3.71 K; doi 10.1021/je100033s row 16: x 0.7000, P 101.300 kPa, T
+      358.99 K, dT +3.39 K; doi 10.1021/je100033s row 17: x 0.7222, P
+      101.300 kPa, T 358.62 K, dT +3.23 K; doi 10.1021/je400531a row 1: x
+      0.0340, P 101.300 kPa, T 455.42 K, dT -19.18 K; doi
+      10.1021/je400531a row 2: x 0.0790, P 101.300 kPa, T 441.73 K, dT
+      -27.09 K; doi 10.1021/je400531a row 3: x 0.1350, P 101.300 kPa, T
+      424.08 K, dT -25.10 K; doi 10.1021/je400531a row 4: x 0.1690, P
+      101.300 kPa, T 415.37 K, dT -22.77 K; doi 10.1021/je400531a row 5:
+      x 0.2140, P 101.300 kPa, T 406.38 K, dT -20.15 K; doi
+      10.1021/je400531a row 6: x 0.2580, P 101.300 kPa, T 399.60 K, dT
+      -18.06 K; doi 10.1021/je400531a row 7: x 0.2920, P 101.300 kPa, T
+      395.50 K, dT -16.87 K; doi 10.1021/je400531a row 8: x 0.3370, P
+      101.300 kPa, T 390.92 K, dT -15.45 K; doi 10.1021/je400531a row 9:
+      x 0.3820, P 101.300 kPa, T 387.04 K, dT -14.15 K; doi
+      10.1021/je400531a row 10: x 0.4160, P 101.300 kPa, T 384.46 K, dT
+      -13.22 K; doi 10.1021/je400531a row 11: x 0.5060, P 101.300 kPa, T
+      378.42 K, dT -10.69 K; doi 10.1021/je400531a row 12: x 0.5840, P
+      101.300 kPa, T 373.77 K, dT -8.42 K; doi 10.1021/je400531a row 13:
+      x 0.6290, P 101.300 kPa, T 371.26 K, dT -7.12 K; doi
+      10.1021/je400531a row 14: x 0.6740, P 101.300 kPa, T 368.85 K, dT
+      -5.84 K; doi 10.1021/je400531a row 15: x 0.7190, P 101.300 kPa, T
+      366.53 K, dT -4.61 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 396.5 K, b_ji = 82.1 K over 17 kept points of 2
+  laboratories (24 discarded): max |dT| 2.957 K, mean 1.337 K, graded
+  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (396.5, 82.1). NOT PROMOTED (max |dT| 2.957 K over the 17
+  kept points, one liquid across the validity span): fit grade severe --
+  DEV.md 4c C300 rule 3: a severe pair does not enter the default
+  catalogue; its record stays in this curation case's constant/, and a
+  case that needs it carries it in its own constant/
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -89,10 +127,12 @@ operations
             {
                 dataset  "constant/archiveExtracts/acetonitrile-dimethylSulfoxide-bubble-je100033s.dat";
                 role     fit;
+                discard  ( 9 10 11 12 13 14 15 16 17 );   // C283 outliers, by name in the header
             }
             {
                 dataset  "constant/archiveExtracts/acetonitrile-dimethylSulfoxide-bubble-je400531a.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 );   // C283 outliers, by name in the header
             }
         );
 
@@ -134,10 +174,12 @@ operations
             {
                 dataset  "constant/archiveExtracts/acetonitrile-dimethylSulfoxide-bubble-je100033s.dat";
                 role     fit;
+                discard  ( 9 10 11 12 13 14 15 16 17 );   // C283 outliers, by name in the header
             }
             {
                 dataset  "constant/archiveExtracts/acetonitrile-dimethylSulfoxide-bubble-je400531a.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 );   // C283 outliers, by name in the header
             }
         );
 

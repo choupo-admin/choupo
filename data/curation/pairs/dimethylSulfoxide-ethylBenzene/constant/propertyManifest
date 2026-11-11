@@ -1,0 +1,47 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/dimethylSulfoxide.dat"
+        {
+            type          imported;
+            sha256        "146549d6b5fff7a0e57a607bd5f78f88f22f2fdc676aea18421963252b02137c";
+            computationalSha256 "f965b44ef5ea770b90f8e5d5263a5322ef24cd12c9fa213806688a4ccdb73e12";
+            origin        "data/standards/components/dimethylSulfoxide.dat";
+            originSha256  "705eb8c5af775aa597b0b092d2e795e71a47ee20518b93b04cdd533103253f17";
+            release       Choupo-2608;
+        }
+        "components/ethylBenzene.dat"
+        {
+            type          imported;
+            sha256        "ae0432cef7e9cc8d1a1c7669ce4a783ccf51218cff2404dd7ba093d0695d1922";
+            computationalSha256 "c4a5df3dd8cb1cd0dc6031be45ffdc38a34f227a8eb4b34bdecebd07b13b8b0e";
+            origin        "data/standards/components/ethylBenzene.dat";
+            originSha256  "e2ecbd5573ce3719ae530d1cd13978928548ca096b3666ad58321bcd8ca07505";
+            release       Choupo-2608;
+        }
+    }
+}

@@ -58,11 +58,20 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      none: every one of the 57 points lies within 3 K after the
+      least-squares stage.
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 51.5 K, b_ji = 336.4 K over 57 kept points of 1
+  laboratories (0 discarded): max |dT| 0.506 K, mean 0.207 K, graded
+  clean (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (51.5, 336.4). PROMOTED on 2026-11-11 into
+  data/standards/parameters/NRTL/ethanol-methylTertButylEther.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dT| 0.506 K over the 57 kept points (limits 1 / 2 / 4 K), one
+  liquid across the validity span
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

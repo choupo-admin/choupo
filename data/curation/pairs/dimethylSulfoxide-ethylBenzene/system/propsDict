@@ -60,11 +60,35 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      12 point(s) of 33: doi 10.1021/acs.jced.8b00225 row 2: x 0.0080, P
+      100.000 kPa, T 455.56 K, dT +5.79 K; doi 10.1021/acs.jced.8b00225
+      row 3: x 0.0215, P 100.000 kPa, T 448.33 K, dT +10.18 K; doi
+      10.1021/acs.jced.8b00225 row 4: x 0.0322, P 100.000 kPa, T 444.19
+      K, dT +12.20 K; doi 10.1021/acs.jced.8b00225 row 5: x 0.0648, P
+      100.000 kPa, T 436.65 K, dT +13.92 K; doi 10.1021/acs.jced.8b00225
+      row 6: x 0.1293, P 100.000 kPa, T 427.06 K, dT +14.27 K; doi
+      10.1021/acs.jced.8b00225 row 7: x 0.1670, P 100.000 kPa, T 423.72
+      K, dT +13.28 K; doi 10.1021/acs.jced.8b00225 row 8: x 0.2155, P
+      100.000 kPa, T 420.45 K, dT +11.88 K; doi 10.1021/acs.jced.8b00225
+      row 9: x 0.3497, P 100.000 kPa, T 414.95 K, dT +8.17 K; doi
+      10.1021/acs.jced.8b00225 row 10: x 0.4943, P 100.000 kPa, T 411.76
+      K, dT +5.40 K; doi 10.1016/j.fluid.2007.08.001 row 2: x 0.2651, P
+      95.300 kPa, T 430.45 K, dT -3.93 K; doi 10.1016/j.fluid.2007.08.001
+      row 3: x 0.3245, P 95.300 kPa, T 426.35 K, dT -3.68 K; doi
+      10.1016/j.fluid.2007.08.001 row 4: x 0.4195, P 95.300 kPa, T 421.05
+      K, dT -3.02 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 912.3 K, b_ji = -234.4 K over 21 kept points of 3
+  laboratories (12 discarded): max |dT| 3.254 K, mean 1.185 K, graded
+  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (912.3, -234.4). NOT PROMOTED (max |dT| 3.254 K over the 21
+  kept points, one liquid across the validity span): fit grade severe --
+  DEV.md 4c C300 rule 3: a severe pair does not enter the default
+  catalogue; its record stays in this curation case's constant/, and a
+  case that needs it carries it in its own constant/
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -90,6 +114,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/ethylBenzene-dimethylSulfoxide-bubble-acs.jced.8b00225.dat";
                 role     fit;
+                discard  ( 2 3 4 5 6 7 8 9 10 );   // C283 outliers, by name in the header
             }
             {
                 dataset  "constant/archiveExtracts/ethylBenzene-dimethylSulfoxide-bubble-je4006739.dat";
@@ -98,6 +123,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/ethylBenzene-dimethylSulfoxide-bubble-j.fluid.2007.08.001.dat";
                 role     fit;
+                discard  ( 2 3 4 );   // C283 outliers, by name in the header
             }
         );
 
@@ -139,6 +165,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/ethylBenzene-dimethylSulfoxide-bubble-acs.jced.8b00225.dat";
                 role     fit;
+                discard  ( 2 3 4 5 6 7 8 9 10 );   // C283 outliers, by name in the header
             }
             {
                 dataset  "constant/archiveExtracts/ethylBenzene-dimethylSulfoxide-bubble-je4006739.dat";
@@ -147,6 +174,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/ethylBenzene-dimethylSulfoxide-bubble-j.fluid.2007.08.001.dat";
                 role     fit;
+                discard  ( 2 3 4 );   // C283 outliers, by name in the header
             }
         );
 

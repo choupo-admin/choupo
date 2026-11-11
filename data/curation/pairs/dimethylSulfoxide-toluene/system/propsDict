@@ -59,11 +59,35 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      11 point(s) of 21: doi 10.1016/j.fluid.2014.04.025 row 2: x 0.0239,
+      P 101.300 kPa, T 450.22 K, dT +3.31 K; doi
+      10.1016/j.fluid.2014.04.025 row 3: x 0.0321, P 101.300 kPa, T
+      446.65 K, dT +3.82 K; doi 10.1016/j.fluid.2014.04.025 row 4: x
+      0.0514, P 101.300 kPa, T 439.23 K, dT +4.76 K; doi
+      10.1016/j.fluid.2014.04.025 row 5: x 0.0974, P 101.300 kPa, T
+      427.14 K, dT +4.64 K; doi 10.1016/j.fluid.2007.08.001 row 1: x
+      0.0478, P 95.300 kPa, T 454.05 K, dT -11.39 K; doi
+      10.1016/j.fluid.2007.08.001 row 2: x 0.0722, P 95.300 kPa, T 450.45
+      K, dT -14.97 K; doi 10.1016/j.fluid.2007.08.001 row 3: x 0.2264, P
+      95.300 kPa, T 430.75 K, dT -21.48 K; doi
+      10.1016/j.fluid.2007.08.001 row 4: x 0.3522, P 95.300 kPa, T 417.85
+      K, dT -18.58 K; doi 10.1016/j.fluid.2007.08.001 row 5: x 0.4709, P
+      95.300 kPa, T 408.05 K, dT -14.34 K; doi
+      10.1016/j.fluid.2007.08.001 row 6: x 0.6163, P 95.300 kPa, T 398.45
+      K, dT -8.98 K; doi 10.1016/j.fluid.2007.08.001 row 7: x 0.8007, P
+      95.300 kPa, T 389.15 K, dT -3.36 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 522.0 K, b_ji = -1.1 K over 10 kept points of 2
+  laboratories (11 discarded): max |dT| 1.904 K, mean 0.688 K, graded
+  warning (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (522.0, -1.1). PROMOTED on 2026-11-11 into
+  data/standards/parameters/NRTL/dimethylSulfoxide-toluene.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade warning
+  -- max |dT| 1.904 K over the 10 kept points (limits 1 / 2 / 4 K), one
+  liquid across the validity span
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -89,10 +113,12 @@ operations
             {
                 dataset  "constant/archiveExtracts/toluene-dimethylSulfoxide-bubble-j.fluid.2014.04.025.dat";
                 role     fit;
+                discard  ( 2 3 4 5 );   // C283 outliers, by name in the header
             }
             {
                 dataset  "constant/archiveExtracts/toluene-dimethylSulfoxide-bubble-j.fluid.2007.08.001.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 6 7 );   // C283 outliers, by name in the header
             }
         );
 
@@ -134,10 +160,12 @@ operations
             {
                 dataset  "constant/archiveExtracts/toluene-dimethylSulfoxide-bubble-j.fluid.2014.04.025.dat";
                 role     fit;
+                discard  ( 2 3 4 5 );   // C283 outliers, by name in the header
             }
             {
                 dataset  "constant/archiveExtracts/toluene-dimethylSulfoxide-bubble-j.fluid.2007.08.001.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 6 7 );   // C283 outliers, by name in the header
             }
         );
 

@@ -1,0 +1,101 @@
+// [imported] origin "data/standards/components/cyclopentane.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclopentane  (C5H10, CAS 287-92-3)
+  PROPOSAL TIER -- UNVERIFIED.  Imported from CoolProp 7.2.0 (MIT);
+  pure-fluid properties from the published reference EOS below.
+  Reference EOS: Gedanitz-JCED-2015
+  NOTE: formation properties (dHf, s_298) and group decompositions
+  are NOT provided by CoolProp -> omitted here (a gap, not fabricated).
+\*---------------------------------------------------------------------------*/
+
+name        cyclopentane;
+
+//  Review state, MACHINE-READABLE (AP2, 2026-08-05).  This used to
+//  live only in the banner above, which the parser discards -- so the
+//  engine could not announce it and a run said nothing.
+reviewStatus   interim;
+reviewReason   importedFromCoolProp720_notCheckedAgainstPrimaries;
+formula     C5H10;
+CAS         287-92-3;
+
+MW          70.1329;        // kg/kmol  [CoolProp]
+Tc          511.7201;        // K        [CoolProp EOS]
+Pc          45.82766;        // bar      [CoolProp EOS]
+omega       0.20193;        // [-]      [CoolProp EOS]
+Tb          322.3998;        // K  normal boiling [CoolProp]
+HvapTb      27304.6;        // J/mol  at Tb     [CoolProp]
+Vliq        9.4722e-05;        // m3/mol @298K     [CoolProp]
+//  ANCHOR, never an input.  The engine DERIVES the Hildebrand
+//  parameter from HvapTb and Vliq (the tree stores no derivative);
+//  this is what ChemSep v8.3 computed independently, so the
+//  derivation has something to be wrong against.
+solubilityParameter 16550;   // Pa^0.5  [anchor, ChemSep v8.3, Artistic-2.0]
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)   -- fitted to CoolProp EOS
+    coefficients  (4.12653   1185.01   -34.9928);
+    Trange        (230.27  501.49);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol.K)] = a0 + a1 T + a2 T^2 + a3 T^3   -- fitted to CoolProp cp0
+    coefficients  (-24.4185  0.385733  -3.47046e-05  -7.82194e-08);
+    Trange        (200  1000);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Cp_liq [J/(mol.K)]   -- fitted to CoolProp saturated-liquid cp
+    coefficients  (144.436  -0.653607  0.00265086  -2.1962e-06);
+    Trange        (256  322);
+}
+
+triplePoint
+{
+    T   179.7000;
+    P   8.9164;
+}
+
+standardThermochemistry
+{
+    dHf_298   -76400;      // J/mol ideal-gas, MEASURED -- see the structured dHf_298 block below
+    dGf_298   39640;      // J/mol  [DERIVED: dHf - 298.15*(s_298 - Sum S_elements), CODATA element S]
+    s_298     292.9;      // J/(mol*K) third-law absolute (TRC class; primary re-citation pending IST review)
+}
+
+groups { unifac ( { group CH2; count 5; } ); joback ( { group rCH2; count 5; } ); }
+
+provenance
+{
+    dHf_298
+    {
+        origin           measured;
+        method           "combustion calorimetry";
+        citation         "Prosen & Rossini (NBS heats of combustion of cyclopentane series), via NIST WebBook (gas-phase dHf = -76.4 kJ/mol); s_298 third-law, TRC class";
+        note             "PROMOTED 2026-08-03 from the Joback estimate (-65,710 -- the ~11 kJ/mol residual 5-ring strain) under the ratified ring-class ruling (docs/design/curation-backlog-estimated-records.md, ring section).  dGf derived from the measured dHf + third-law S + CODATA element entropies (literature tabulations sit ~38.8-39.6 kJ/mol; the derived value is inside that band).  FOR REVIEW.";
+    }
+
+    constants      "CoolProp 7.2.0 -- Gedanitz-JCED-2015";
+    vaporPressure  "Antoine fitted to CoolProp EOS saturation, AAD 0.71%";
+    idealGasCp     "polynomial fitted to CoolProp cp0, maxerr 6.47%";
+    liquidCp       "polynomial fitted to CoolProp sat-liquid cp, maxerr 0.00%";
+    triplePoint    "CoolProp reference EOS triple-point T,P";
+    preserved      "from prior proposal (NOT CoolProp): standardThermochemistry, groups";
+}
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0087-PROF.txt bundled in usnistgov/COSMOSAC; CAS 287-92-3";
+        licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
+        installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
+    }
+}

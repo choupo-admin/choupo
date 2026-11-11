@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/2Hexanone.dat"
+        {
+            type          imported;
+            sha256        "87364e4d3aaac414f333de83ae690c09fcc8500720ed1842e86b889afd0b4ab1";
+            computationalSha256 "cd6f9a821f0c15cef4514fa2046410724293062346eff56661ca89efc9800d45";
+            origin        "data/standards/components/2Hexanone.dat";
+            originSha256  "9800e57c8f9a9990a16ab9191eb57582ae5ac087f988c07e7ec74248f2680b01";
+            release       Choupo-2608;
+        }
+        "components/anisole.dat"
+        {
+            type          imported;
+            sha256        "409f3f1c28e88cf65e16ddd58c835d8ce346a7d7e1511438b2cfcd3f0badd48f";
+            computationalSha256 "aaa9917f4ffc56d9b1e0cc7324988b535e09c74124611ef83377f1305b0c1725";
+            origin        "data/standards/components/anisole.dat";
+            originSha256  "1eb4544ae67d18f6f2118ebbf32d59c7685e4b349d1bfd634e8b53d218d3e654";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Hexanone-anisole.dat"
+        {
+            type          imported;
+            sha256        "6a45dafb2c0333b1112d2159b5de5971f7a713ee627e8d7e6bbb0d7c4c9af710";
+            computationalSha256 "8996ea360a5f07a0be391f53b94c6a3dbbf4bc4ea3cc4d9e7b47c02c3bb89e06";
+            origin        "data/standards/parameters/NRTL/2Hexanone-anisole.dat";
+            originSha256  "911ee8892201bd07107964899a30a4f2831470f65657cac90a0a115435137dc1";
+            release       Choupo-2608;
+        }
+    }
+}

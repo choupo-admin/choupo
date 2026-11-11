@@ -58,11 +58,20 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      none: every one of the 28 points lies within 3 K after the
+      least-squares stage.
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 77.5 K, b_ji = 249.7 K over 28 kept points of 1
+  laboratories (0 discarded): max |dT| 0.540 K, mean 0.183 K, graded
+  clean (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (77.5, 249.7). PROMOTED on 2026-11-11 into
+  data/standards/parameters/NRTL/2Heptanone-nNonane.dat as reviewStatus
+  autoPromoted, review by none, because: fit grade clean -- max |dT|
+  0.540 K over the 28 kept points (limits 1 / 2 / 4 K), one liquid across
+  the validity span
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
