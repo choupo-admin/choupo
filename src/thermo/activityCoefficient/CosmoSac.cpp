@@ -155,7 +155,7 @@ CosmoSac::CosmoSac(const DictPtr& dict, const std::vector<Component>& comps)
                 " / eps0 = " << alphaP_ << " kcal A^4/(mol e^2), a_eff = " << aEff_
                 << " A^2.\n  That reading was SELECTED among the four on Lin & Sandler"
                 " 2002 Table 2 (ln gamma-inf in water and hexane, 298.15 K): that table"
-                " is selection data, not validation (docs/design/cosmo-sac-lvpp-hftzvp-2018.md).\n";
+                " CHOSE it, so agreeing with it proves no prediction (docs/design/cosmo-sac-lvpp-hftzvp-2018.md).\n";
         }
     }
 

@@ -1058,9 +1058,8 @@ void Component::readFromDict(const DictPtr& d)
             cs.volume  = s->lookupScalarOrDefault("volume", 0.0);
             if (s->found("sigmaProfile"))
                 cs.sigmaProfile = s->lookupList("sigmaProfile");
-            // LICENCE SEPARATION (VT-2005 scrub, 2026-07-26): a set marked
-            // `installed false;` ships as an external REFERENCE -- the public
-            // tree carries no values whose redistribution is unconfirmed.
+            // LICENCE SEPARATION (VT-2005 scrub, 2026-07-26): a set marked `installed
+            // false;` ships as an external REFERENCE (no unconfirmed values).
             // The user's own copy, installed by bin/choupo-import-cosmo,
             // lives in data/local/cosmo/<set>/<component>.dat (gitignored)
             // and is loaded here when present.  Absent -> the set stays
