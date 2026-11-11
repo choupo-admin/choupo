@@ -3417,6 +3417,50 @@ accepts today, and that is a policy call.
 > (check by grep) are listed, not silently left.  Status: recorded, general to
 > be dispatched (gui only; `--gui` is its validation).  Owner: architect.
 
+> **C304 (Vitor, 2026-11-11, an external reviewer's reading of the Pinch
+> report of greenAmmoniaPEQ_baseCase: "a normal case report must be an
+> engineering report, not a textbook chapter").**  DECIDED: every case view
+> follows three levels -- (1) a summary that answers what happened, whether
+> it is physically credible (closures) and what needs attention (critical
+> warnings, partial or missing analyses), first; (2) the engineering evidence
+> (tables, curves, cascades, matches) one click down; (3) method, symbols,
+> references, solver detail through the EduTools and the Log, never removed
+> (the glass box stays reachable).  The same summary is written as a
+> structured file an AI agent reads.  The engine is not changed to shorten a
+> presentation.  Slice 1 (running, branch c304-pinch-audit): the four
+> technical points of the review on the Pinch page -- (A) a partial
+> population said in the first line, (B) installed vs maximum vs additional
+> recovery in one line, (C) "no interior pinch -- threshold problem at dTmin
+> for this population", (D) the "81.6 kW below the pinch" wording in a
+> threshold problem.  Slice 2: the case summary view for every case.
+>
+> **C305 (Vitor, 2026-11-11, the same reviewer on the Pinch EduTool).**
+> DECIDED: EduTools are organised as Understand / Experiment / Verify;
+> Experiment asks for a PREDICTION before each run (dTmin 20 -> 10 K; make the
+> pinch disappear; design a network towards the targets, labelled a design
+> exercise); a "is it economic?" step says the thermodynamic target is not the
+> economic optimum and that Choupo does not price area (P3 unauthorised);
+> symbol definitions open on a click or in a folded panel (kept: they caught
+> eight defects in C259); engine file names and CSVs move to Verify, not out;
+> a witness network with a cross-pinch exchanger shows the term the
+> four-stream utility-only network hides (Q_H - Q_H,min = cross-pinch +
+> heating below + cooling above).  Pinch first, then the most used tools.
+>
+> **C306 (Vitor, 2026-11-11: "em que fase ... se passa de ter uma lista de
+> utilidades para ... a energia integrada ... e se numa fase final deve haver
+> tubagem a ligar as utilidades").**  Measured against the AACE deliverable
+> matrix (docs/design/how-a-process-design-is-staged.md 2.2-2.3): FEL-1 done;
+> FEL-2 done except the heat-exchanger NETWORK design (targets and candidate
+> matches only) and the utility flow diagram; FEL-3 half (datasheets, Kern,
+> relief, headers, plot plan, 3D) -- missing utility headers routed to every
+> consumer, the steam and condensate balance per header and per scenario, the
+> P&ID.  Detailed engineering is out of scope by design.  DECIDED, in order:
+> (1) utility headers on the rack, supply and return, one branch per consumer
+> (needs the line-between-two-items grammar of C268); (2) steam/condensate
+> balance per header, normal and start-up; (3) a network design step on the
+> pinch (the student picks the matches, Choupo checks the rules), tied to
+> C305's third challenge.  P&ID after these.
+
 > **C303 (architect, 2026-11-11, from the reactor-limits investigation): a
 > case-local record that replaces a catalogue record of the same name takes
 > every key it LACKS from the catalogue, silently.**  Measured: cstr08's own
