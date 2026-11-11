@@ -6,12 +6,25 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1324,
+  "cases": 1326,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 15
  },
  "cases": {
+  "data/curation/batches/henry_sander": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/batches/new_components": {
    "application": "choupoProps",
    "ops": [
@@ -15754,6 +15767,20 @@
    ],
    "hasGolden": true
   },
+  "tutorials/props/electrolyte/electrolyteFit01_nacl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/electrolyte/enrtl_mixed_nacl_ethanol_esteso": {
    "application": "choupoProps",
    "ops": [
@@ -21731,6 +21758,7 @@
     "tutorials/ctrl/ctrl22_reactor_level_and_temperature"
    ],
    "choupoProps": [
+    "data/curation/batches/henry_sander",
     "data/curation/batches/new_components",
     "data/curation/batches/new_components_c309",
     "data/curation/batches/new_components_estimated",
@@ -22559,6 +22587,7 @@
     "tutorials/props/electrolyte/edwards01_sour_water_activity",
     "tutorials/props/electrolyte/edwards02_table7_vle",
     "tutorials/props/electrolyte/edwards03_table8_vle",
+    "tutorials/props/electrolyte/electrolyteFit01_nacl",
     "tutorials/props/electrolyte/enrtl_mixed_nacl_ethanol_esteso",
     "tutorials/props/electrolyte/enrtl_multisalt_nacl_kcl",
     "tutorials/props/electrolyte/enthalpy_naoh_water",
@@ -24478,6 +24507,7 @@
     "tutorials/props/electrolyte/edwards01_sour_water_activity"
    ],
    "ideal": [
+    "data/curation/batches/henry_sander",
     "data/curation/batches/new_components",
     "data/curation/batches/new_components_c309",
     "data/curation/batches/new_components_estimated",
@@ -25303,6 +25333,7 @@
     "tutorials/props/curation/curate11_nrtl_acetone_ethanol",
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
     "tutorials/props/electrolyte/archer01_nacl_cold_to_hot",
+    "tutorials/props/electrolyte/electrolyteFit01_nacl",
     "tutorials/props/electrolyte/enrtl_mixed_nacl_ethanol_esteso",
     "tutorials/props/electrolyte/enrtl_multisalt_nacl_kcl",
     "tutorials/props/electrolyte/fpd01_nacl_freezing",
@@ -25672,7 +25703,8 @@
     "data/curation/electrolytes/Zn-Br",
     "data/curation/electrolytes/Zn-Cl",
     "data/curation/electrolytes/Zn-I",
-    "data/curation/electrolytes/Zn-NO3"
+    "data/curation/electrolytes/Zn-NO3",
+    "tutorials/props/electrolyte/electrolyteFit01_nacl"
    ],
    "elementalComposition": [
     "tutorials/props/thermoTest/atoms01_formula_parser"

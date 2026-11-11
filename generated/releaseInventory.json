@@ -8,7 +8,7 @@
     "nrtlPairs": 558,
     "wilsonPairs": 524,
     "uniquacPairs": 220,
-    "henryPairs": 206,
+    "henryPairs": 251,
     "pitzerPairs": 99,
     "enrtlPairs": 48,
     "materials": 4,
@@ -21,25 +21,25 @@
     "engines": 5
   },
   "tutorials": {
-    "runnableCases": 535,
-    "regressionChecks": 519,
+    "runnableCases": 536,
+    "regressionChecks": 520,
     "byTier": {
-      "witness": 477,
+      "witness": 478,
       "tutorial": 42,
       "showcase": 16
     }
   },
   "curationTraces": {
-    "cases": 789,
-    "regressionChecks": 789,
+    "cases": 790,
+    "regressionChecks": 790,
     "byOrigin": {
       "pairs": 616,
       "components": 103,
-      "batches": 3,
+      "batches": 4,
       "electrolytes": 67
     }
   },
   "totals": {
-    "mixtureParameterRecords": 1655
+    "mixtureParameterRecords": 1700
   }
 }
