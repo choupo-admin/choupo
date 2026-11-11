@@ -86,7 +86,20 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dT| 1.234 K (warning) on the same
+  kept points. fit_uniquac: a_ij = 91.6, a_ji = 394.3 K over 20 kept
+  points: max |dT| 1.209 K, mean 0.882 K, graded warning -> accepted;
+  fit_uniquac_start2 lands on the same pair (91.6, 394.3). NOT PROMOTABLE
+  (fit grade warning, max |dT| 1.209 K): the pair splits ONE liquid
+  inside its own validity span (arm f, UNIQUAC) -- predicts a
+  LIQUID-LIQUID SPLIT at 327.35 K (x_methanol 0.433 .. 0.936), inside its
+  own validity span 327.35-331.55 K -- its evidence is bubble points of
+  ONE liquid; a UNIQUAC pair that splits that liquid stays in its case.
+  Wilson: not fitted -- the NRTL fit of this very evidence SPLITS the
+  liquid inside its validity span (curation oneLiquid false, arm f);
+  Wilson cannot represent two liquids, so a Wilson fit here would hide
+  the split -- Wilson is not fitted.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -348,6 +361,20 @@ operations
         }
     }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_uniquac;
+        type        propertyScan1D;
+        vary        { variable x[methanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 85 kPa;  composition { methanol 0.5;  nHeptane 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_methanol );
+        output      { file txy_uniquac.csv; }
+    }
+    // @@C294-READBACK-END@@
 );
 
 experimental

@@ -28,19 +28,19 @@ propertyManifest
         "components/nButylAcetate.dat"
         {
             type          imported;
-            sha256        "084932bd758db4f017fc9881a51dd1637c17f60a94d9cfc3c410c2602d6d47e5";
-            computationalSha256 "6f79df17bf29a43ef680863bc554ded0998a9d314858ecb8f06aa2750f38df1e";
+            sha256        "8c61277b05f83a67bf8cf5270f7a11fc676c13fde5363e72bfd9f31257adef7c";
+            computationalSha256 "7a57d5a9fe67bb77909133cc55bae73c14d8be75079dbcdf31b1f4ca910cbc74";
             origin        "data/standards/components/nButylAcetate.dat";
-            originSha256  "c3f3b0387a67b8d2d1c17e7a34b6e8aa0ad7804e4b75a639cf8df96183dcf9fb";
+            originSha256  "8442940b27e7eeddf632ee04e5f68bd1286cdf567ed9bfe16d7fa6fc37e3d7f3";
             release       Choupo-2608;
         }
         "components/nOctane.dat"
         {
             type          imported;
-            sha256        "bb8d866ae2a345667264d47bb499d49eafa1a76a17728e78ed2c256626b61777";
-            computationalSha256 "b281e3245fe2ce57ab504bbf223594f6184e2ad1d76fa4f8964807b6e0ddc953";
+            sha256        "7285e0f36fc937467563bf4b72b3bfe796dde113e188dd090c1308c066eaef19";
+            computationalSha256 "cee6abc667bc264800389300e47fad2af6a1412fb18c2dc3f84376e18e6ca150";
             origin        "data/standards/components/nOctane.dat";
-            originSha256  "99bde55672f9e84a9d7b55e91d646e13eb9d473696dd1c82d8d905228fca8608";
+            originSha256  "fb529641419f4f0361b39213a0b74ffbab235e4b4a3ddf2c2ddeb053a985ad6e";
             release       Choupo-2608;
         }
         "parameters/NRTL/nButylAcetate-nOctane.dat"

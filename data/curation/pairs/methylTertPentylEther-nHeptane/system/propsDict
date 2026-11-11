@@ -83,7 +83,19 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dT| 0.308 K (clean) on the same
+  kept points. fit_uniquac: a_ij = -165.1, a_ji = 241.0 K over 54 kept
+  points: max |dT| 0.327 K, mean 0.139 K, graded clean -> accepted;
+  fit_uniquac_start2 lands on the same pair (-165.1, 241.0). PROMOTABLE
+  by `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
+  |dT| 0.327 K over the 54 kept points, one liquid across the validity
+  span. fit_wilson: A_ij = 3073.7, A_ji = -1333.0 J/mol over 54 kept
+  points: max |dT| 0.264 K, mean 0.136 K, graded clean -> accepted;
+  fit_wilson_start2 lands on the same pair (3073.7, -1333.0). PROMOTABLE
+  by `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
+  |dT| 0.264 K over the 54 kept points, one liquid across the validity
+  span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -460,6 +472,32 @@ operations
         }
     }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_uniquac;
+        type        propertyScan1D;
+        vary        { variable x[nHeptane];  from 0.0;  to 1.0;  n 101; }
+        state       { P 94 kPa;  composition { nHeptane 0.5;  methylTertPentylEther 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_nHeptane );
+        output      { file txy_uniquac.csv; }
+    }
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[nHeptane];  from 0.0;  to 1.0;  n 101; }
+        state       { P 94 kPa;  composition { nHeptane 0.5;  methylTertPentylEther 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_nHeptane );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );
 
 experimental

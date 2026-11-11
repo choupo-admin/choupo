@@ -28,19 +28,19 @@ propertyManifest
         "components/nOctane.dat"
         {
             type          imported;
-            sha256        "bb8d866ae2a345667264d47bb499d49eafa1a76a17728e78ed2c256626b61777";
-            computationalSha256 "b281e3245fe2ce57ab504bbf223594f6184e2ad1d76fa4f8964807b6e0ddc953";
+            sha256        "7285e0f36fc937467563bf4b72b3bfe796dde113e188dd090c1308c066eaef19";
+            computationalSha256 "cee6abc667bc264800389300e47fad2af6a1412fb18c2dc3f84376e18e6ca150";
             origin        "data/standards/components/nOctane.dat";
-            originSha256  "99bde55672f9e84a9d7b55e91d646e13eb9d473696dd1c82d8d905228fca8608";
+            originSha256  "fb529641419f4f0361b39213a0b74ffbab235e4b4a3ddf2c2ddeb053a985ad6e";
             release       Choupo-2608;
         }
         "components/nPropylAcetate.dat"
         {
             type          imported;
-            sha256        "bae5d694a37bfbe03d15627f0cb30337bf2fe4f53e411fd6241bbf08663bd720";
-            computationalSha256 "2c7f9840afa05762f6ea54030ca0f63c06c5a145138a3a1fc66405d5d64ecb1f";
+            sha256        "a4d98fa4268bc6a1079db72228e5677659b26a284e8bfa1fc380997fb7497afc";
+            computationalSha256 "62c9f54d2619d78e353dc006b570baf675a5c74819e7cbe941efd2470c427b46";
             origin        "data/standards/components/nPropylAcetate.dat";
-            originSha256  "d6441f89d965c47899449c155ee12a811238c3650307cbed703a2259c65126a9";
+            originSha256  "3ce435dbe5ebc3156e7a873351092b8814732d50e2fdd06e3684bba46a480d33";
             release       Choupo-2608;
         }
         "parameters/NRTL/nOctane-nPropylAcetate.dat"

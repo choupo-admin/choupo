@@ -87,7 +87,17 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dT| 1.849 K (warning) on the same
+  kept points. fit_wilson: A_ij = 1759.9, A_ji = 1565.4 J/mol over 64
+  kept points: max |dT| 1.849 K, mean 0.515 K, graded warning ->
+  accepted; fit_wilson_start2 lands on the same pair (1759.9, 1565.4).
+  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
+  warning -- max |dT| 1.849 K over the 64 kept points, one liquid across
+  the validity span. UNIQUAC: not fitted -- methylPropionate carries no
+  UNIQUAC r and q (no tabulated value, and no UNIFAC groups to sum them
+  from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted;
+  nothing is estimated silently.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -364,6 +374,20 @@ operations
         }
     }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[methylPropionate];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.32 kPa;  composition { methylPropionate 0.5;  nHeptane 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_methylPropionate );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );
 
 experimental

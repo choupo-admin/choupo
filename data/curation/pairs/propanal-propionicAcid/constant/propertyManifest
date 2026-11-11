@@ -28,19 +28,19 @@ propertyManifest
         "components/propanal.dat"
         {
             type          imported;
-            sha256        "3795d4909a6f1f3b2cb01e583aa73da6d8278d5c56bfe646f35b0a2b18910623";
-            computationalSha256 "eabb069ca8bf5f66632b644b1b8c8a326774a29626e8cc569ba71a24474038e4";
+            sha256        "d7bf99823bfc99bdcf6e50654afd8cd9911dfcc47859ba22e2add70b73c9b725";
+            computationalSha256 "0abd55317f6e1148a34a00053bbf724880066d31a1755bad2414063556ba5a1f";
             origin        "data/standards/components/propanal.dat";
-            originSha256  "e5a596dc9bbf7d4ce47dc29de4f21f7b6e0931bde31bf26df929f40f5abeff90";
+            originSha256  "19a4f421e4d073cb3a8fe2b47d794dfda9426e2f925c872ad1ae6c2830441be3";
             release       Choupo-2608;
         }
         "components/propionicAcid.dat"
         {
             type          imported;
-            sha256        "f39e4af64471843d21f5a05fefe85d49d6c4a8cda190544971d218e470030976";
-            computationalSha256 "55a403e283529827e0913492d91cbdc2bc377e5c0abf0c1e3e63d7b3a66ae6a5";
+            sha256        "54470f946d56e040a029e2dc7a42386bab0e06d76c4ba00b3b97d37ca21e7929";
+            computationalSha256 "78e6a0e3179fd99a5824633e8fef9dc6823849a78e96d903d6893e322892b97a";
             origin        "data/standards/components/propionicAcid.dat";
-            originSha256  "74be98a87e97423686e9debff43064dd787fc82406395de96177ace800e85554";
+            originSha256  "b9662f0c5dd4216942e9a3db544171e1e1562beed4cc442c9e0c23f729d0dcf6";
             release       Choupo-2608;
         }
         "parameters/NRTL/propanal-propionicAcid.dat"

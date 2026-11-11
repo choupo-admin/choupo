@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-propyleneCarbonate.A_ij  3138.76913524;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-propyleneCarbonate.A_ji  364.839601332;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "0d1cf1e5f59bb06b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nPropylAcetate-propyleneCarbonate-bubble-acs.jced.7b01107.dat";
+            doi       "10.1021/acs.jced.7b01107";
+            sha256    "a6e18cb8b37f596cb8f088046805b83c5689dfc7d5c22dd362248e341bdd4d10";
+            provenance measured;
+            archiveFile "acs.jced.7b01107.xml";
+            system    "nPropylAcetate + propyleneCarbonate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.018; max 0.95; n 17; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-propyleneCarbonate.A_ij  3138.76913508;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-propyleneCarbonate.A_ji  364.839601387;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "0d1cf1e5f59bb06b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nPropylAcetate-propyleneCarbonate-bubble-acs.jced.7b01107.dat";
+            doi       "10.1021/acs.jced.7b01107";
+            sha256    "a6e18cb8b37f596cb8f088046805b83c5689dfc7d5c22dd362248e341bdd4d10";
+            provenance measured;
+            archiveFile "acs.jced.7b01107.xml";
+            system    "nPropylAcetate + propyleneCarbonate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.018; max 0.95; n 17; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

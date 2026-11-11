@@ -77,7 +77,22 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dP|/P 4.168 % (clean) on the same
+  kept points. fit_uniquac: a_ij = -119.3, a_ji = 342.0 K over 24 kept
+  points: max |dP|/P 5.049 %, mean 3.149 %, graded warning -> accepted;
+  fit_uniquac_start2 lands on the same pair (-119.3, 342.0). NOT
+  PROMOTABLE (fit grade warning, max |dP|/P 5.049 %): the pair splits ONE
+  liquid inside its own validity span (arm f, UNIQUAC) -- predicts a
+  LIQUID-LIQUID SPLIT at 313.15 K (x_nButanol 0.339 .. 0.552), inside its
+  own validity span 313.15-313.15 K -- its evidence is bubble points of
+  ONE liquid; a UNIQUAC pair that splits that liquid stays in its case.
+  fit_wilson: A_ij = 7249.0, A_ji = 1268.1 J/mol over 24 kept points: max
+  |dP|/P 1.336 %, mean 0.885 %, graded clean -> accepted;
+  fit_wilson_start2 lands on the same pair (7249.0, 1268.1). PROMOTABLE
+  by `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
+  |dP|/P 1.336 % over the 24 kept points, one liquid across the validity
+  span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -426,4 +441,30 @@ operations
         }
     }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_uniquac;
+        type        propertyScan1D;
+        vary        { variable x[nButanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 2.097 kPa;  composition { nButanol 0.5;  nDodecane 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_nButanol );
+        output      { file txy_uniquac.csv; }
+    }
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[nButanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 2.097 kPa;  composition { nButanol 0.5;  nDodecane 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_nButanol );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );

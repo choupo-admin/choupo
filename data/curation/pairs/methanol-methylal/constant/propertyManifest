@@ -37,10 +37,10 @@ propertyManifest
         "components/methylal.dat"
         {
             type          imported;
-            sha256        "fbdb96d75a57ee188d05ac1ac195896a65ee14695b565d4994b7acd8590b493e";
-            computationalSha256 "df2b77bd422abfabe26846550054b99c444393f5a8498b4003ffd4913a78b73f";
+            sha256        "d667a7e3c3e17feee4a41091f39d89641ae224d6b87f6068841f3fa494fb988a";
+            computationalSha256 "7bd87a716621cb88e4512f463a4a0259d8049ddb5999b86ff2bf9ddc6fb783f5";
             origin        "data/standards/components/methylal.dat";
-            originSha256  "10ac8d72145f06bc16bb46213fc74296d6f1c69a99bfeab6bf6e44a020fc2b51";
+            originSha256  "01fce124ec237cfef4f66da52485d13765f66671a156cb617c3ee79d7ad01e97";
             release       Choupo-2608;
         }
         "parameters/NRTL/methanol-methylal.dat"

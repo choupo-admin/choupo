@@ -37,10 +37,10 @@ propertyManifest
         "components/nDodecane.dat"
         {
             type          imported;
-            sha256        "48b61f9a4d3d3297e5189006d07bd3d96ad1b22d0160e54ff80109d79d6b1898";
-            computationalSha256 "aaf80f10f513674d9f88ea77ef42a2aa82f25b92286e7b15563513c9abd14585";
+            sha256        "c7228038bd9f2dc282e4c95377a8b778afda5bb7873f6647fa9658b97dc79155";
+            computationalSha256 "8a4d59bf4d118a9ff410164db4f946a8d7d0db674721139612307a1c4e5f821c";
             origin        "data/standards/components/nDodecane.dat";
-            originSha256  "44d85430f2f217f1098d4c23d44b9207e6732d075cf20d2ef4bfcaee204e0156";
+            originSha256  "9d405c55385de50af77aa7f33666cea3e162b9eb19c03842c0f8279e6da3d1b4";
             release       Choupo-2608;
         }
         "parameters/NRTL/nButanol-nDodecane.dat"

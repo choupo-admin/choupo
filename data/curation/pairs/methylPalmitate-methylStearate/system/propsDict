@@ -90,7 +90,18 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dT| 3.213 K (severe) on the same
+  kept points. fit_uniquac: a_ij = -248.1, a_ji = 388.7 K over 32 kept
+  points: max |dT| 3.121 K, mean 1.366 K, graded severe -> accepted;
+  fit_uniquac_start2 lands on the same pair (-248.1, 388.7). NOT PROMOTED
+  (max |dT| 3.121 K over the 32 kept points, one liquid across the
+  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
+  pair does not enter the default catalogue; its record stays in this
+  curation case's constant/, and a case that needs it carries it in its
+  own constant/. Wilson: not fitted -- methylPalmitate and methylStearate
+  carry no liquid molar volume Vliq, which Wilson's Lambda needs --
+  Wilson is not fitted.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -341,6 +352,20 @@ operations
         }
     }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_uniquac;
+        type        propertyScan1D;
+        vary        { variable x[methylPalmitate];  from 0.0;  to 1.0;  n 101; }
+        state       { P 10 kPa;  composition { methylPalmitate 0.5;  methylStearate 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_methylPalmitate );
+        output      { file txy_uniquac.csv; }
+    }
+    // @@C294-READBACK-END@@
 );
 
 experimental

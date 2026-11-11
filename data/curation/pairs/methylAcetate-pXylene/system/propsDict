@@ -83,7 +83,23 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dT| 2.853 K (severe) on the same
+  kept points. fit_uniquac: a_ij = 150.5, a_ji = -39.5 K over 15 kept
+  points: max |dT| 2.902 K, mean 1.334 K, graded severe -> accepted;
+  fit_uniquac_start2 lands on the same pair (150.5, -39.5). NOT PROMOTED
+  (max |dT| 2.902 K over the 15 kept points, one liquid across the
+  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
+  pair does not enter the default catalogue; its record stays in this
+  curation case's constant/, and a case that needs it carries it in its
+  own constant/. fit_wilson: A_ij = 1367.3, A_ji = 2470.2 J/mol over 15
+  kept points: max |dT| 2.906 K, mean 1.286 K, graded severe -> accepted;
+  fit_wilson_start2 lands on the same pair (1367.3, 2470.2). NOT PROMOTED
+  (max |dT| 2.906 K over the 15 kept points, one liquid across the
+  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
+  pair does not enter the default catalogue; its record stays in this
+  curation case's constant/, and a case that needs it carries it in its
+  own constant/.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -460,6 +476,32 @@ operations
         }
     }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_uniquac;
+        type        propertyScan1D;
+        vary        { variable x[methylAcetate];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { methylAcetate 0.5;  pXylene 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_methylAcetate );
+        output      { file txy_uniquac.csv; }
+    }
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[methylAcetate];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { methylAcetate 0.5;  pXylene 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_methylAcetate );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );
 
 experimental

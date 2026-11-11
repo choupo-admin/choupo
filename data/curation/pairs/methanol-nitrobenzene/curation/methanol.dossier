@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-nitrobenzene.A_ij  -2815.71220169;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-nitrobenzene.A_ji  7114.99812525;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2a1efca9c4e684d5";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-nitrobenzene-bubble-j.jct.2005.08.011.dat";
+            doi       "10.1016/j.jct.2005.08.011";
+            sha256    "851cdb6ff7bdf3d7c26cd45d5747115356958c2a46697532260c787131a443cd";
+            provenance measured;
+            archiveFile "j.jct.2005.08.011.xml";
+            system    "methanol + nitrobenzene";
+            pressure  "94950.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0814; max 0.9538; n 13; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-nitrobenzene.A_ij  -2815.71219201;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-nitrobenzene.A_ji  7114.99795155;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2a1efca9c4e684d5";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-nitrobenzene-bubble-j.jct.2005.08.011.dat";
+            doi       "10.1016/j.jct.2005.08.011";
+            sha256    "851cdb6ff7bdf3d7c26cd45d5747115356958c2a46697532260c787131a443cd";
+            provenance measured;
+            archiveFile "j.jct.2005.08.011.xml";
+            system    "methanol + nitrobenzene";
+            pressure  "94950.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0814; max 0.9538; n 13; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

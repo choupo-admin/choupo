@@ -93,7 +93,16 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dT| 3.067 K (severe) on the same
+  kept points. fit_wilson: A_ij = 1931.5, A_ji = 7156.8 J/mol over 23
+  kept points: max |dT| 4.745 K, mean 1.553 K, graded refused ->
+  notAccepted; fit_wilson_start2 lands on the same pair (1931.5, 7156.8).
+  NOT PROMOTABLE: fit grade refused -- max |dT| 4.745 K over the 23 kept
+  points. UNIQUAC: not fitted -- styrene and sulfolane carry no UNIQUAC r
+  and q (no tabulated value, and no UNIFAC groups to sum them from,
+  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
+  is estimated silently.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -344,6 +353,20 @@ operations
         }
     }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[styrene];  from 0.0;  to 1.0;  n 101; }
+        state       { P 20 kPa;  composition { styrene 0.5;  sulfolane 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_styrene );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );
 
 experimental

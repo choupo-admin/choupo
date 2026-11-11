@@ -83,7 +83,19 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dT| 0.502 K (clean) on the same
+  kept points. fit_uniquac: a_ij = 175.7, a_ji = -99.4 K over 14 kept
+  points: max |dT| 0.521 K, mean 0.239 K, graded clean -> accepted;
+  fit_uniquac_start2 lands on the same pair (175.7, -99.4). PROMOTABLE by
+  `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
+  |dT| 0.521 K over the 14 kept points, one liquid across the validity
+  span. fit_wilson: A_ij = 626.9, A_ji = 1403.0 J/mol over 14 kept
+  points: max |dT| 0.518 K, mean 0.238 K, graded clean -> accepted;
+  fit_wilson_start2 lands on the same pair (626.9, 1403.0). PROMOTABLE by
+  `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
+  |dT| 0.518 K over the 14 kept points, one liquid across the validity
+  span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -460,6 +472,32 @@ operations
         }
     }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_uniquac;
+        type        propertyScan1D;
+        vary        { variable x[isopropanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101 kPa;  composition { isopropanol 0.5;  nPropylAcetate 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_isopropanol );
+        output      { file txy_uniquac.csv; }
+    }
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[isopropanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101 kPa;  composition { isopropanol 0.5;  nPropylAcetate 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_isopropanol );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );
 
 experimental

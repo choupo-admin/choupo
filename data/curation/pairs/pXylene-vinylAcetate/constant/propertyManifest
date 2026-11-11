@@ -28,19 +28,19 @@ propertyManifest
         "components/pXylene.dat"
         {
             type          imported;
-            sha256        "24c426099ea1243aa54d21cde64b34ed7312b8bf2bdde1af983f35795c260cce";
-            computationalSha256 "21ec82182e6c57257719624339c8912c2ab6ef6da558f01e7bcc4b9561706387";
+            sha256        "d6c1a35adcc2ecfb7fdd547613d094985aa02b5154eb86e2136893e5eb2b1081";
+            computationalSha256 "a12f3f6479aa3d4be6d976ca090188ab3b10b5671bb1a3fe568b547431a64d02";
             origin        "data/standards/components/pXylene.dat";
-            originSha256  "c84be1d773e7fda137a6721e882622f7cd66ba63f6278257a98da939fe724bfc";
+            originSha256  "ef3dffe3f5b93e45435a0e2b3d13566b4bd2a5c67451a02e52e75a55ac9de26b";
             release       Choupo-2608;
         }
         "components/vinylAcetate.dat"
         {
             type          imported;
-            sha256        "7a01b5fadbca767f032fc05788b2101ff0a4e6e4cb3e67bab970fd05c0d9deb2";
-            computationalSha256 "8c838d5e4f66ad4d5012ac33fa0f579bed652d41f336a7c827eac682534104ba";
+            sha256        "1140ba6ee65c8a183947c4fa69b52a1ff75799d4ed1d6ea3011436eb839afac7";
+            computationalSha256 "f64c1831a13bccd5aa7e4e8e02f4403aac5d318cf19cfaaafa46612156974be4";
             origin        "data/standards/components/vinylAcetate.dat";
-            originSha256  "cad58598b4ebd8ceeb7af1676f256a8c4c32c3fe41af01b0251b98e014fd3f39";
+            originSha256  "84ebd7132af579c645e55f5e7e465162641ae9f36dff7e09529126c1f94b469c";
             release       Choupo-2608;
         }
         "parameters/NRTL/pXylene-vinylAcetate.dat"

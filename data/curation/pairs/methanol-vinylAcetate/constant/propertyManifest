@@ -37,10 +37,10 @@ propertyManifest
         "components/vinylAcetate.dat"
         {
             type          imported;
-            sha256        "7a01b5fadbca767f032fc05788b2101ff0a4e6e4cb3e67bab970fd05c0d9deb2";
-            computationalSha256 "8c838d5e4f66ad4d5012ac33fa0f579bed652d41f336a7c827eac682534104ba";
+            sha256        "1140ba6ee65c8a183947c4fa69b52a1ff75799d4ed1d6ea3011436eb839afac7";
+            computationalSha256 "f64c1831a13bccd5aa7e4e8e02f4403aac5d318cf19cfaaafa46612156974be4";
             origin        "data/standards/components/vinylAcetate.dat";
-            originSha256  "cad58598b4ebd8ceeb7af1676f256a8c4c32c3fe41af01b0251b98e014fd3f39";
+            originSha256  "84ebd7132af579c645e55f5e7e465162641ae9f36dff7e09529126c1f94b469c";
             release       Choupo-2608;
         }
         "parameters/NRTL/methanol-vinylAcetate.dat"

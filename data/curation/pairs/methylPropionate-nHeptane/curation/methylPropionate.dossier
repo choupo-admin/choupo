@@ -134,4 +134,116 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-nHeptane.A_ij  1759.90414724;
+        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-nHeptane.A_ji  1565.41175661;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c756cc0f5ff1272c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylPropionate-nHeptane-bubble-je4009415.dat";
+            doi       "10.1021/je4009415";
+            sha256    "c7eb83e2dc95e5a893713ee18fede2761c1385cf1fb4f90cc1cb6bfd32c3c0ac";
+            provenance measured;
+            archiveFile "je4009415.xml";
+            system    "methylPropionate + nHeptane";
+            pressure  "101320.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylPropionate-nHeptane-bubble-je030117d.dat";
+            doi       "10.1021/je030117d";
+            sha256    "6a61bbeb74a4593cd945e8c9a97315a44ceea57c18c715f6a034e2403bca3f09";
+            provenance measured;
+            archiveFile "je030117d.xml";
+            system    "methylPropionate + nHeptane";
+            pressure  "101325.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.016; max 0.992; n 64; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-nHeptane.A_ij  1759.90418899;
+        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-nHeptane.A_ji  1565.41167348;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c756cc0f5ff1272c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylPropionate-nHeptane-bubble-je4009415.dat";
+            doi       "10.1021/je4009415";
+            sha256    "c7eb83e2dc95e5a893713ee18fede2761c1385cf1fb4f90cc1cb6bfd32c3c0ac";
+            provenance measured;
+            archiveFile "je4009415.xml";
+            system    "methylPropionate + nHeptane";
+            pressure  "101320.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylPropionate-nHeptane-bubble-je030117d.dat";
+            doi       "10.1021/je030117d";
+            sha256    "6a61bbeb74a4593cd945e8c9a97315a44ceea57c18c715f6a034e2403bca3f09";
+            provenance measured;
+            archiveFile "je030117d.xml";
+            system    "methylPropionate + nHeptane";
+            pressure  "101325.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.016; max 0.992; n 64; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

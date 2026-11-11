@@ -37,10 +37,10 @@ propertyManifest
         "components/nPentane.dat"
         {
             type          imported;
-            sha256        "0192a7a72e572931b34ed2ca5d716e726212adfcb5589b7d2b1f999eab5f3e76";
-            computationalSha256 "40c410de6d3e844afb5a87474c71f128d20e96400e1536ea9dc041f9c5f28e5d";
+            sha256        "2d6b5b1f0d16d65efd14ea193052e52034996f226dcd107431e30908130e216e";
+            computationalSha256 "b67fa918fb3a7876733185d784fa2e6d9f636f2b806d4792edb1ff5d2344fcb6";
             origin        "data/standards/components/nPentane.dat";
-            originSha256  "e0c83e4f36c30c45a745b592d704a73066cf6b78985aaac90982889a54c6d1f9";
+            originSha256  "4cc639f66c0552ab0135ade9dc25f88df5261f7708406e5153b05e1d01bdf5d0";
             release       Choupo-2608;
         }
         "parameters/NRTL/methylPropionate-nPentane.dat"
