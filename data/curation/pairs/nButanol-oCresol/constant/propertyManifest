@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "e1392a78a7a747071b6fd4f45bcc77c1180becef829fdd5f744aa6012ab581fd";
             release       Choupo-2608;
         }
+        "parameters/Wilson/nButanol-oCresol.dat"
+        {
+            type          imported;
+            sha256        "cadfc346314d559d7021c6340d58ab4c8ca174e85696aea6ed765586ff6bf422";
+            computationalSha256 "1879ff16972ff5518e5e789fe4f8196a15964b1f76611fc1010cab2b31683e86";
+            origin        "data/standards/parameters/Wilson/nButanol-oCresol.dat";
+            originSha256  "02d2196aaf8756d378a8a02d5c844cf260ff9919281f94a93aa971940999f1df";
+            release       Choupo-2608;
+        }
     }
 }

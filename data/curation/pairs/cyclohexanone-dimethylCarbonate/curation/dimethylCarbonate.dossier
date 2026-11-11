@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-cyclohexanone.A_ij  2120.75365975;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-cyclohexanone.A_ji  769.216072611;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "a7c1cb80ef1587ca";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/dimethylCarbonate-cyclohexanone-bubble-acs.jced.9b00414.dat";
+            doi       "10.1021/acs.jced.9b00414";
+            sha256    "08859773e230d7e51409d5d329c037ea6ec178042d4602aca05aa5470b4ea6d5";
+            provenance measured;
+            archiveFile "acs.jced.9b00414.xml";
+            system    "dimethylCarbonate + cyclohexanone";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0092; max 0.9241; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-cyclohexanone.A_ij  2120.75365649;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-cyclohexanone.A_ji  769.216075838;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "a7c1cb80ef1587ca";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/dimethylCarbonate-cyclohexanone-bubble-acs.jced.9b00414.dat";
+            doi       "10.1021/acs.jced.9b00414";
+            sha256    "08859773e230d7e51409d5d329c037ea6ec178042d4602aca05aa5470b4ea6d5";
+            provenance measured;
+            archiveFile "acs.jced.9b00414.xml";
+            system    "dimethylCarbonate + cyclohexanone";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0092; max 0.9241; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

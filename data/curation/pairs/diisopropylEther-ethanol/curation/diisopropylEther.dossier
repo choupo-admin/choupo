@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-ethanol.A_ij  -915.255774457;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-ethanol.A_ji  5265.63631796;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f9da9e16be5c7ffa";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diisopropylEther-ethanol-bubble-j.fluid.2006.08.004.dat";
+            doi       "10.1016/j.fluid.2006.08.004";
+            sha256    "c3a918b682ac27088acb3ef773ba0203a90a86bccf99acb83efd395479ed77cd";
+            provenance measured;
+            archiveFile "j.fluid.2006.08.004.xml";
+            system    "diisopropylEther + ethanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.044; max 0.954; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-ethanol.A_ij  -915.255775448;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-ethanol.A_ji  5265.63631887;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f9da9e16be5c7ffa";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diisopropylEther-ethanol-bubble-j.fluid.2006.08.004.dat";
+            doi       "10.1016/j.fluid.2006.08.004";
+            sha256    "c3a918b682ac27088acb3ef773ba0203a90a86bccf99acb83efd395479ed77cd";
+            provenance measured;
+            archiveFile "j.fluid.2006.08.004.xml";
+            system    "diisopropylEther + ethanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.044; max 0.954; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

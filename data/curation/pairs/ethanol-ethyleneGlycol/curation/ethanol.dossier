@@ -134,4 +134,116 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethyleneGlycol.A_ij  1440.11037134;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethyleneGlycol.A_ji  558.18858996;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "38a1765573116961";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-ethyleneGlycol-bubble-acs.jced.6b00384.dat";
+            doi       "10.1021/acs.jced.6b00384";
+            sha256    "013420b4ac9ade5e7aa11e3508fb6ebfaf8dad602cee350988986840b7736d26";
+            provenance measured;
+            archiveFile "acs.jced.6b00384.xml";
+            system    "ethanol + ethyleneGlycol";
+            pressure  "101000.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-ethyleneGlycol-bubble-je2008704.dat";
+            doi       "10.1021/je2008704";
+            sha256    "f24eca1286fb3d1fc4611eaf05bc771813d0dc41e81cf37c0c49b3ea9b871758";
+            provenance measured;
+            archiveFile "je2008704.xml";
+            system    "ethanol + ethyleneGlycol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.177; max 0.9584; n 34; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethyleneGlycol.A_ij  1440.11037866;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethyleneGlycol.A_ji  558.188583674;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "38a1765573116961";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-ethyleneGlycol-bubble-acs.jced.6b00384.dat";
+            doi       "10.1021/acs.jced.6b00384";
+            sha256    "013420b4ac9ade5e7aa11e3508fb6ebfaf8dad602cee350988986840b7736d26";
+            provenance measured;
+            archiveFile "acs.jced.6b00384.xml";
+            system    "ethanol + ethyleneGlycol";
+            pressure  "101000.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-ethyleneGlycol-bubble-je2008704.dat";
+            doi       "10.1021/je2008704";
+            sha256    "f24eca1286fb3d1fc4611eaf05bc771813d0dc41e81cf37c0c49b3ea9b871758";
+            provenance measured;
+            archiveFile "je2008704.xml";
+            system    "ethanol + ethyleneGlycol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.177; max 0.9584; n 34; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

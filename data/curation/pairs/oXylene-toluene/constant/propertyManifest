@@ -28,19 +28,19 @@ propertyManifest
         "components/oXylene.dat"
         {
             type          imported;
-            sha256        "d6bdb61163c015dec26d2cefff15a2c919b7a57896b8592d3605374a272dffa0";
-            computationalSha256 "a8ffc32a52cd609309dfebd10675e693ad9127c62d05bf6ddf8603f0a78620a2";
+            sha256        "1360348dc25bac70a331fc7d65535e3d3cd15689dc0b3bb225194d2687ce957f";
+            computationalSha256 "1c533f2710b61bc84d7205b1850b2db3326e00d5d45dc4ffccbb534ca41574f8";
             origin        "data/standards/components/oXylene.dat";
-            originSha256  "b6c6ede5d7ff713e82c02f27faf3ced0b49ef4762c4baa0eae22702c78888efe";
+            originSha256  "4421f5f2225fb65f840043469d7083f59ada5f6066c48198fbbc56e163c28da5";
             release       Choupo-2608;
         }
         "components/toluene.dat"
         {
             type          imported;
-            sha256        "025c441842aa1728935905ed8dfa50db5a6405ee082618c11673f665596d4911";
-            computationalSha256 "f66debfbcd493c4c7c4636809e784a1e07a6c482c3baed13ba34dce12ae63f79";
+            sha256        "5fb900674321baa67135bfeb2c8f80e63d9af183c35f1615477d751b4299f14b";
+            computationalSha256 "55e1e2986dd1c3fc08c951e842a86b062ee6a7bfbc1e1317387e69149a139e36";
             origin        "data/standards/components/toluene.dat";
-            originSha256  "fe5cb21ba09cf44b41de252f6a5a5dd21b6803fcd40666f6fed8d9de8e68563a";
+            originSha256  "ad1533cb0d94caade355d7149fd88ee1ad07c945f5d4c85f4bcce925766250b9";
             release       Choupo-2608;
         }
         "parameters/NRTL/oXylene-toluene.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/oXylene-toluene.dat"
+        {
+            type          imported;
+            sha256        "64d9932915317fa4ab239adf1f1fa30f2f2392314c604cd8a3631717036377eb";
+            computationalSha256 "2d51b1331212ae63bf8c3325b292f5f3c6ae561b9693a9cf7424fc490769ca93";
+            origin        "data/standards/parameters/UNIQUAC/oXylene-toluene.dat";
+            originSha256  "36442e1a4cabd04208a5c2d38d543c6ae66382dddeddbc5defad60160e4f534c";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/oXylene-toluene.dat"
+        {
+            type          imported;
+            sha256        "4ebee579a00ed9a4eb00ffa82c2b56ec4e71adcf88a22a1f161a172d1ecf3a30";
+            computationalSha256 "b3282956bc7cd87c651e70dd500abaeae963c61ab96c1389eec522b6cc1236a5";
+            origin        "data/standards/parameters/Wilson/oXylene-toluene.dat";
+            originSha256  "18498194cd8a31c4b0c9545a0fb03936bc7e6e5b52061857e55f4322b480f856";
             release       Choupo-2608;
         }
     }

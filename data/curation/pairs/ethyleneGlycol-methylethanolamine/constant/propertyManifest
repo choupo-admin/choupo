@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "e8b0bd5e5df82172c5f0aa73356d207093e8985ed43aeb597ebd1059332f7e2e";
             release       Choupo-2608;
         }
+        "parameters/Wilson/ethyleneGlycol-methylethanolamine.dat"
+        {
+            type          imported;
+            sha256        "f4f4b57299b85cbad404c766281932b43e1579af1d29046da75e7ade7550b3c3";
+            computationalSha256 "9a4d9b5b99af53b0f9355ee31670b98256d75aa768a31d40c8c6d01ba13456fc";
+            origin        "data/standards/parameters/Wilson/ethyleneGlycol-methylethanolamine.dat";
+            originSha256  "89bf2cc497107c5cb4690444637ecb06f3d7efb96b4277167decba49de04ec12";
+            release       Choupo-2608;
+        }
     }
 }

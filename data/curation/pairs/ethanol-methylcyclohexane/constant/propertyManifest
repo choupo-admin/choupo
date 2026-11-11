@@ -37,10 +37,10 @@ propertyManifest
         "components/methylcyclohexane.dat"
         {
             type          imported;
-            sha256        "bec74f2bb6ff56fa7efee961603069a79f9e6b4d74df42a0b6b8924d082a595f";
-            computationalSha256 "1894bfa9933f335c189d0aef3bf4c70dedc72e74030eca78ba8053b036fad30b";
+            sha256        "f5cf35f95a419f17cb66ff472f2c27262423e1d2af6a0cba999124502d6eaf6f";
+            computationalSha256 "9b8c2d09dff14ecf45f292acaf95cfc9a04d81e67e25636f5e5a80e4aa48efbf";
             origin        "data/standards/components/methylcyclohexane.dat";
-            originSha256  "26c0d5098ca3923a659b8ce99b28d712880964f7b07dd8647c597ba668ab7981";
+            originSha256  "3230628ddc5af91246d5f4f458e5fce0511f1b25c53f5a70578738d07945ba20";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

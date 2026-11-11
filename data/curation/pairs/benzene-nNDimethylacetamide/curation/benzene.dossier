@@ -112,4 +112,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.benzene-nNDimethylacetamide.A_ij  -2106.80894228;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-nNDimethylacetamide.A_ji  4729.00271702;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "84935a94a4188c61";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/benzene-nNDimethylacetamide-bubbleP-acs.jced.7b00119-b17.dat";
+            doi       "10.1021/acs.jced.7b00119";
+            sha256    "c57dbb0a0bf3405a8a631fa0f45bc2682f03b5dd1ee020e8b3f07b3a0dafe997";
+            provenance measured;
+            archiveFile "acs.jced.7b00119.xml";
+            system    "benzene + nNDimethylacetamide";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0013; max 0.9989; n 49; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.benzene-nNDimethylacetamide.A_ij  -2095.73689851;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-nNDimethylacetamide.A_ji  4667.36729708;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "84935a94a4188c61";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/benzene-nNDimethylacetamide-bubbleP-acs.jced.7b00119-b17.dat";
+            doi       "10.1021/acs.jced.7b00119";
+            sha256    "c57dbb0a0bf3405a8a631fa0f45bc2682f03b5dd1ee020e8b3f07b3a0dafe997";
+            provenance measured;
+            archiveFile "acs.jced.7b00119.xml";
+            system    "benzene + nNDimethylacetamide";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0013; max 0.9989; n 49; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

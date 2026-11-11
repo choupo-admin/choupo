@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "1b23a300df0b042783073fef59bcff54aa92cf72b64e8976d5a08fdcf102fc36";
             release       Choupo-2608;
         }
+        "parameters/Wilson/anisole-methylAcetate.dat"
+        {
+            type          imported;
+            sha256        "af96120cfad01266cb47ccab083a9fe2d0399077b3e3e12d501583cc81c9d680";
+            computationalSha256 "7e66a96e0b55896343c9af32cd4fa9e6883dc343664f266238ea81c9aa5f64bc";
+            origin        "data/standards/parameters/Wilson/anisole-methylAcetate.dat";
+            originSha256  "ce28b9ebfc297a081cf64158b7ee3370ca82905c4cf22a2f488e2e541a88ea2b";
+            release       Choupo-2608;
+        }
     }
 }

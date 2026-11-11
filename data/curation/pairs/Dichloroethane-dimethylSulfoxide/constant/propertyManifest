@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "2f8eb2d1be33ba2f8c0a4fc9845ebc47456d4f7b3c282106256f747af80c4a66";
             release       Choupo-2608;
         }
+        "parameters/Wilson/Dichloroethane-dimethylSulfoxide.dat"
+        {
+            type          imported;
+            sha256        "0bfbbb0a6e5a715a00adb5b40d28b5552721273ae0073a2085e936e66c2b7ecd";
+            computationalSha256 "ce8bf130d8309183f6b8eea74847321986747ad24bac039f74e6860761f880ec";
+            origin        "data/standards/parameters/Wilson/Dichloroethane-dimethylSulfoxide.dat";
+            originSha256  "79e86eaf40fa8b4e7dfe2f9c8813e2bdcc4a72cb1939ba228fdc3c9a9526db93";
+            release       Choupo-2608;
+        }
     }
 }

@@ -28,10 +28,10 @@ propertyManifest
         "components/1Hexanol.dat"
         {
             type          imported;
-            sha256        "ff92f5582d2dd1ba667f3d466054ce752b793a12050556496d6521f08fef7c91";
-            computationalSha256 "6363abe381b95dabcba93eb20cca67bd715fbcf43e6d5b0fb6a78766b1500711";
+            sha256        "56c4231bc9a181e47909ed63aa4e9fce3611035b32d920276965dc874f42d9a0";
+            computationalSha256 "babb0f8da2e12886df84dc04b197ccd3fee3a2bf29319c24a0cdcde72a28d2a7";
             origin        "data/standards/components/1Hexanol.dat";
-            originSha256  "ab4dc5089f2f1bec42920a8f7b7301da49a9ac935c439900666185ba0de805c4";
+            originSha256  "45415f58f5f9b2bb79389cafffc6bd334c7010b417c03527393aa5f519c88388";
             release       Choupo-2608;
         }
         "components/Dichloroethane.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "dabc5473ea8d60c28a338cc0182303c7ca073564f3b2e4393c979ca893929804";
             origin        "data/standards/parameters/NRTL/1Hexanol-Dichloroethane.dat";
             originSha256  "bee7d78e0cb284ad9bbb98deb69301b5e186aebf388416a72758fa4e04dd8647";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Hexanol-Dichloroethane.dat"
+        {
+            type          imported;
+            sha256        "1ca1e78560e41cd13442b99a7b633ff718a7dec2241a349060e740cba6cb596c";
+            computationalSha256 "c0682887664a175a4c1df3e1a9020b87311337b2158bf49ef0b95e6e1ce301c5";
+            origin        "data/standards/parameters/Wilson/1Hexanol-Dichloroethane.dat";
+            originSha256  "5b9bcd5bdac4cb0aa94d3a87ea0be13cd1f6c0c7c1d89692a0d3205e22ab95b3";
             release       Choupo-2608;
         }
     }

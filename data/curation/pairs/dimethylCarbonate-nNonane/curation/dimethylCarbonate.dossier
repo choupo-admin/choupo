@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-nNonane.A_ij  3163.35953684;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-nNonane.A_ji  2961.80062665;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "0a932f2b4bbf63d7";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/dimethylCarbonate-nNonane-bubble-je0301794.dat";
+            doi       "10.1021/je0301794";
+            sha256    "e071e6378997b241fc70b5936c14b49dfe36b765824dd2fec45863af4e8f107c";
+            provenance measured;
+            archiveFile "je0301794.xml";
+            system    "dimethylCarbonate + nNonane";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0022; max 0.9778; n 37; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-nNonane.A_ij  3163.35950908;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-nNonane.A_ji  2961.80064968;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "0a932f2b4bbf63d7";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/dimethylCarbonate-nNonane-bubble-je0301794.dat";
+            doi       "10.1021/je0301794";
+            sha256    "e071e6378997b241fc70b5936c14b49dfe36b765824dd2fec45863af4e8f107c";
+            provenance measured;
+            archiveFile "je0301794.xml";
+            system    "dimethylCarbonate + nNonane";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0022; max 0.9778; n 37; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

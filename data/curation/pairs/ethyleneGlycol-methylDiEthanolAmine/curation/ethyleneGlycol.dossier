@@ -130,4 +130,112 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-methylDiEthanolAmine.A_ij  3308.64532968;
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-methylDiEthanolAmine.A_ji  -4557.79473247;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7d22702ff3413d84";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethyleneGlycol-methylDiEthanolAmine-bubble-je400373d.dat";
+            doi       "10.1021/je400373d";
+            sha256    "5fd41a9baa3403e420dbd131ccdfe658a984d48b0965881982e740966f424eda";
+            provenance measured;
+            archiveFile "je400373d.xml";
+            system    "ethyleneGlycol + methylDiEthanolAmine";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethyleneGlycol-methylDiEthanolAmine-bubble-acs.jced.8b00054.dat";
+            doi       "10.1021/acs.jced.8b00054";
+            sha256    "87fdfe4ce4455970e1a0d55c274cb156e01b4f7f3922db74ae4e4ff88b26f625";
+            provenance measured;
+            archiveFile "acs.jced.8b00054.xml";
+            system    "ethyleneGlycol + methylDiEthanolAmine";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.075; max 0.969; n 64; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-methylDiEthanolAmine.A_ij  3308.64529452;
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-methylDiEthanolAmine.A_ji  -4557.79470557;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7d22702ff3413d84";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethyleneGlycol-methylDiEthanolAmine-bubble-je400373d.dat";
+            doi       "10.1021/je400373d";
+            sha256    "5fd41a9baa3403e420dbd131ccdfe658a984d48b0965881982e740966f424eda";
+            provenance measured;
+            archiveFile "je400373d.xml";
+            system    "ethyleneGlycol + methylDiEthanolAmine";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethyleneGlycol-methylDiEthanolAmine-bubble-acs.jced.8b00054.dat";
+            doi       "10.1021/acs.jced.8b00054";
+            sha256    "87fdfe4ce4455970e1a0d55c274cb156e01b4f7f3922db74ae4e4ff88b26f625";
+            provenance measured;
+            archiveFile "acs.jced.8b00054.xml";
+            system    "ethyleneGlycol + methylDiEthanolAmine";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.075; max 0.969; n 64; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

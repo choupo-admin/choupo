@@ -28,10 +28,10 @@ propertyManifest
         "components/nHeptane.dat"
         {
             type          imported;
-            sha256        "25070332ac55ed31465bc842c2820fdfaad6f8148a03a841aca858978670b1d4";
-            computationalSha256 "125b2cbb0fb1a4182208bea7d0812526f79531b719a3e95c6555eb1eef5975b2";
+            sha256        "8c48efaaa9aa99b348c71a669b0004bae3abe91635a4fe1c401fc415b45e6b4d";
+            computationalSha256 "2f3b301c3cd1ef6d27fd35702b810c40ebcfc7fc573ec2dfb642d5981a6ed791";
             origin        "data/standards/components/nHeptane.dat";
-            originSha256  "d07d8e2aa11a5f1acb72593e0fcd1281a502b07ee6da32603bcc97d97b54abd4";
+            originSha256  "0e6ffd261eb07d90376837ad51670a939dfd10fc7e15c0bed37a675f034eeae0";
             release       Choupo-2608;
         }
         "components/thiophene.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "60620006433a55884629379b0bfa707bbbb2dadaf60a483fb886ddb3a0454efc";
             origin        "data/standards/parameters/NRTL/nHeptane-thiophene.dat";
             originSha256  "13fac740421784c0fda08701c02452d40a9698ca5001c52722df6dbe16d71b8d";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/nHeptane-thiophene.dat"
+        {
+            type          imported;
+            sha256        "1bfccd546681ba41b1eac6a97426973520315f7a2567c4cfc454afbc97d16809";
+            computationalSha256 "fa925186f3c33f7a96b88917b8c74e649707d2a733c513e4d03f75524d8600e0";
+            origin        "data/standards/parameters/Wilson/nHeptane-thiophene.dat";
+            originSha256  "99b9c7ad2b52f596c331fa2b3592ab135f08f85a0da119a05c9fb1540d4710fc";
             release       Choupo-2608;
         }
     }

@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-oCresol.A_ij  -2716.27287614;
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-oCresol.A_ji  9629.86611258;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2d771bb17339774d";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/pXylene-oCresol-bubble-j.fluid.2005.09.012.dat";
+            doi       "10.1016/j.fluid.2005.09.012";
+            sha256    "8d576b09c152731f488ef5ca477c825da08189f3bd20efec499def20bf5e6d77";
+            provenance measured;
+            archiveFile "j.fluid.2005.09.012.xml";
+            system    "pXylene + oCresol";
+            pressure  "95750.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0503; max 0.9505; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-oCresol.A_ij  -2716.2728743;
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-oCresol.A_ji  9629.86609473;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2d771bb17339774d";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/pXylene-oCresol-bubble-j.fluid.2005.09.012.dat";
+            doi       "10.1016/j.fluid.2005.09.012";
+            sha256    "8d576b09c152731f488ef5ca477c825da08189f3bd20efec499def20bf5e6d77";
+            provenance measured;
+            archiveFile "j.fluid.2005.09.012.xml";
+            system    "pXylene + oCresol";
+            pressure  "95750.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0503; max 0.9505; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

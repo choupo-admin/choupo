@@ -28,10 +28,10 @@ propertyManifest
         "components/2Methyl1Propanol.dat"
         {
             type          imported;
-            sha256        "ee0bb35e8d706d7c4b0549d6ac51be77b89de4f5496fea7d9947d875b9bcdd35";
-            computationalSha256 "b1bfb84671b4f35f758f186af86d16cfe056fb1a54d6f2b5e2867328630848b3";
+            sha256        "778703d5a4716bbace0b8b3de0655393d4212cbd4ed4c809736558e732afbd5d";
+            computationalSha256 "5ebe04496878f4c4864b2b944848ca1130604cf7d11a684d2602c0fc4b37568d";
             origin        "data/standards/components/2Methyl1Propanol.dat";
-            originSha256  "f0afa6609184a85f9c63deb6555d81619d932cc9049178f6f783e25420e34db6";
+            originSha256  "c17b068f64a38ca32f8ee4f6516ed94a85019ee7a45a33ba4fceabdaaafc01bc";
             release       Choupo-2608;
         }
         "components/acetonitrile.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "4d5b4798ca843c5589ac20d58a2454a7baef4b1656ec65b107b70849a673f8ba";
             origin        "data/standards/parameters/NRTL/2Methyl1Propanol-acetonitrile.dat";
             originSha256  "7cae2901b6fb18a80dadb3d76db710f4ad02e7cbc3bd7dff4a05ac8e10edaa38";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Methyl1Propanol-acetonitrile.dat"
+        {
+            type          imported;
+            sha256        "2efcb236b6a6107a1b4b56391aa66e4f3af4dc247d06c4f8f3ad3b594f13d4ea";
+            computationalSha256 "534b46599b6312160dc463341d111f86e9be45aa090a6ba836a78145846e9315";
+            origin        "data/standards/parameters/Wilson/2Methyl1Propanol-acetonitrile.dat";
+            originSha256  "c1f7b8dc940f24fe121433b62047fc58fd201376717b00283b3e68e13b95f6ce";
             release       Choupo-2608;
         }
     }

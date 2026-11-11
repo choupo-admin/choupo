@@ -134,4 +134,116 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-isopropanol.A_ij  3757.17505096;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-isopropanol.A_ji  -501.637237321;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e01593cb2bb85f6d";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-isopropanol-bubble-j.jct.2007.03.007.dat";
+            doi       "10.1016/j.jct.2007.03.007";
+            sha256    "1e51e148a411dd6d0f92e2bdb90371ad41472fab6ab57c1c895e50f71d8517c5";
+            provenance measured;
+            archiveFile "j.jct.2007.03.007.xml";
+            system    "acetonitrile + isopropanol";
+            pressure  "95500.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-isopropanol-bubble-j.fluid.2015.10.035.dat";
+            doi       "10.1016/j.fluid.2015.10.035";
+            sha256    "5617d2a65b872b8e2bd91b07ea48975117a45969d783db1032ea446760f93d6b";
+            provenance measured;
+            archiveFile "j.fluid.2015.10.035.xml";
+            system    "acetonitrile + isopropanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.035; max 0.967; n 20; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-isopropanol.A_ij  3757.17507404;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-isopropanol.A_ji  -501.637254944;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e01593cb2bb85f6d";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-isopropanol-bubble-j.jct.2007.03.007.dat";
+            doi       "10.1016/j.jct.2007.03.007";
+            sha256    "1e51e148a411dd6d0f92e2bdb90371ad41472fab6ab57c1c895e50f71d8517c5";
+            provenance measured;
+            archiveFile "j.jct.2007.03.007.xml";
+            system    "acetonitrile + isopropanol";
+            pressure  "95500.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-isopropanol-bubble-j.fluid.2015.10.035.dat";
+            doi       "10.1016/j.fluid.2015.10.035";
+            sha256    "5617d2a65b872b8e2bd91b07ea48975117a45969d783db1032ea446760f93d6b";
+            provenance measured;
+            archiveFile "j.fluid.2015.10.035.xml";
+            system    "acetonitrile + isopropanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.035; max 0.967; n 20; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

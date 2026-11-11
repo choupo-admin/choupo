@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "98008ede7ac64f2eb07f69fdf4804fd4afd563c3f37e9704e1a530a53d811a03";
             release       Choupo-2608;
         }
+        "parameters/Wilson/Dichloroethane-nButanol.dat"
+        {
+            type          imported;
+            sha256        "ad5b52fb6558642d9bff5213ce6efcb266b25933f6aeee2133aca908d65a58d3";
+            computationalSha256 "6d0d0cf4627b1da0465005333ea083e82dd319a3823f9d68f112cbcb52e1c142";
+            origin        "data/standards/parameters/Wilson/Dichloroethane-nButanol.dat";
+            originSha256  "b218bf52cda78744c335f99094d3316318edda30a8f49ffce028b34138facb34";
+            release       Choupo-2608;
+        }
     }
 }

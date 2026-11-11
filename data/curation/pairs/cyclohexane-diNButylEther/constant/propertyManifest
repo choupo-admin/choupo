@@ -28,19 +28,19 @@ propertyManifest
         "components/cyclohexane.dat"
         {
             type          imported;
-            sha256        "54ac6c67fe0fa7f8d15744192b515efd56b05bf78dc8bf99b6dfc092f349f26c";
-            computationalSha256 "6f57b6ee7356428daa748404b1343309e762255b70baf430d387550ae4683431";
+            sha256        "04e20a9c3a1368072059505adbe555b180a674e96087a4c92af04cf5e42245b7";
+            computationalSha256 "e5dadd80ead0f1d8f44482b2596d2a2b5e7c060e9ed1181dbf1712af989938ef";
             origin        "data/standards/components/cyclohexane.dat";
-            originSha256  "c17d37ff35f43849e846d3f6a974ab7f2312085a349d1169494ad2374fd90d23";
+            originSha256  "9f3b642c76b10c5867f604ce4d741c21b1c8b9b25e700707e9cc49fdbcf079f5";
             release       Choupo-2608;
         }
         "components/diNButylEther.dat"
         {
             type          imported;
-            sha256        "537970d2ee2c419075c0e60d44f291a9e308dd2c5fb5d18a04ae9dd5dd0f0f2b";
-            computationalSha256 "2d5d88b4f35c15d610e2651a7e04d59a600b408d65f8b9e305a62a753f13c07b";
+            sha256        "1eb78d03a6e082a5069fdab042f3902927f770e97f7e03f5a3bc9d789cc1f1f3";
+            computationalSha256 "021120e8b3e2ae75d45f6e83d172d78e8421092f64ef00c67b8a95019c02998a";
             origin        "data/standards/components/diNButylEther.dat";
-            originSha256  "e943e71a195499eea4c36243b977aff1fe2a5602ccb7592874505a239160f212";
+            originSha256  "fb73ec09e85d833de864cddf6d119fe08f842110ee4edd6efce7075c195d8e84";
             release       Choupo-2608;
         }
         "parameters/NRTL/cyclohexane-diNButylEther.dat"
@@ -50,6 +50,24 @@ propertyManifest
             computationalSha256 "fad99cfeb807a1d89e864ff0982693b0b32d1379c1a11dadea59c762c1aa51b5";
             origin        "data/standards/parameters/NRTL/cyclohexane-diNButylEther.dat";
             originSha256  "a3e5d50375c9dfea2f53016927a6a7942ca669d2b160365b418b50a5f68c39c0";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/cyclohexane-diNButylEther.dat"
+        {
+            type          imported;
+            sha256        "f514fcd224a96f160271d588fb4cec932ce6d8c113b8d307360d970a186ac8cf";
+            computationalSha256 "25e7a975c54eb3c3ecd275af7c8b7e29de8cb5406b943e4ba29befc4f8fe8aab";
+            origin        "data/standards/parameters/UNIQUAC/cyclohexane-diNButylEther.dat";
+            originSha256  "bc4e55f9d9ccf8f0d18b4fd635d19bc306a363aa71d4cc209cb26a6510fff785";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/cyclohexane-diNButylEther.dat"
+        {
+            type          imported;
+            sha256        "2c596ca5ed9ef6cf30d27164bf604f1e277f984b8aaa00b4159a89af190b73c1";
+            computationalSha256 "b782d58a5cc8939204276171441426aa1b9a87fa09394b263c90732dd5f8248f";
+            origin        "data/standards/parameters/Wilson/cyclohexane-diNButylEther.dat";
+            originSha256  "8bdb4acdc30e24244ecdd04cb93cea3f12f4b492236a6824ea574b2e86700696";
             release       Choupo-2608;
         }
     }

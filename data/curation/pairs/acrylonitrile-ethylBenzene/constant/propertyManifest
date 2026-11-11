@@ -37,10 +37,10 @@ propertyManifest
         "components/ethylBenzene.dat"
         {
             type          imported;
-            sha256        "ae0432cef7e9cc8d1a1c7669ce4a783ccf51218cff2404dd7ba093d0695d1922";
-            computationalSha256 "c4a5df3dd8cb1cd0dc6031be45ffdc38a34f227a8eb4b34bdecebd07b13b8b0e";
+            sha256        "a3770fc80542ebef6c1e967abe82aa77f1772855e3873575603dc3ec1c54ce74";
+            computationalSha256 "99065feb74f678d5fdc677c7b2f450910efa7af9990f15e931738055b6bda9ae";
             origin        "data/standards/components/ethylBenzene.dat";
-            originSha256  "e2ecbd5573ce3719ae530d1cd13978928548ca096b3666ad58321bcd8ca07505";
+            originSha256  "eb0e3c4909ad9a0859b769f78ba184bc73174b779765f33d3e2876a4600b2d0f";
             release       Choupo-2608;
         }
         "parameters/NRTL/acrylonitrile-ethylBenzene.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "dac6d5052627e93206deb6c2395c1e0d1f48e4134bd7245a2bdd2bf60f44d58e";
             origin        "data/standards/parameters/NRTL/acrylonitrile-ethylBenzene.dat";
             originSha256  "ac5df15452ff799d9468f5350d49baf50c18d02ac73fe558b9e8f8a45d7d56ac";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/acrylonitrile-ethylBenzene.dat"
+        {
+            type          imported;
+            sha256        "55323169b80624784209395aa09327fddcbe890a7185e00f35ba7418a007a88e";
+            computationalSha256 "0ac22e30c569039f1f1b920b109bbe26ec22436e4c0d84b27d5848311a4f0b4c";
+            origin        "data/standards/parameters/Wilson/acrylonitrile-ethylBenzene.dat";
+            originSha256  "b0e4a2dbbf1d4bca048155207e9440e6b19787ee3fca35c72e8649877f9ff58e";
             release       Choupo-2608;
         }
     }

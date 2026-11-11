@@ -28,10 +28,10 @@ propertyManifest
         "components/cyclohexene.dat"
         {
             type          imported;
-            sha256        "0f91438afe315eea9a2c909c336166a1e103fb7a04d459b2f2409def340d6630";
-            computationalSha256 "1e8fb94519c7576ae958ab1e3b9d3011f5b3e54b3c29ff0158ddd192454475ce";
+            sha256        "c68c4e3df47db86a7e2ff4c0aa440c9f4e93f085cd4b65847d2302d259d828e2";
+            computationalSha256 "57cfa647b4dee2cccb4a29ce6d28af7dd2b7b55e4819e85d39e107a45f44cb10";
             origin        "data/standards/components/cyclohexene.dat";
-            originSha256  "342747afb1925b35c8c63af9101e6a5f1a47d91884c529a5668ead87427de35d";
+            originSha256  "66136b7074ebd5dba85e2e4e5be6c2ea12fea4bb226c985a07469a268fa6f5d5";
             release       Choupo-2608;
         }
         "components/diEthylCarbonate.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "e556f92aace591e1b89cbdcb603d3d5f978a3d2a898469f534422869a816b750";
             origin        "data/standards/parameters/NRTL/cyclohexene-diEthylCarbonate.dat";
             originSha256  "ea6c51f584765552e2860d5733bf1f71da596af39a2b446aabae896bcc678100";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/cyclohexene-diEthylCarbonate.dat"
+        {
+            type          imported;
+            sha256        "266a39c648f35878d3e752ac3b9c0fba67c5d3270aae4adc4894a8c534691b37";
+            computationalSha256 "51827a8f068f6670a127c611fe9554b85668140d020685c2acf86bfc0b07156b";
+            origin        "data/standards/parameters/Wilson/cyclohexene-diEthylCarbonate.dat";
+            originSha256  "43cf123e5cf5f7f4fa7748a499ccfc03d936b2a1182d854e128a874e688271a3";
             release       Choupo-2608;
         }
     }

@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "29629b7c15eb7a57f6932e308aa11e3a93b9483c80265074527e96efa281f899";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diisopropylEther-nButanol.dat"
+        {
+            type          imported;
+            sha256        "9c40a27780687941ba76c60d3454db7f6e729b202d718744854628714ce6bac1";
+            computationalSha256 "9c9bb144777e74513de68374bca18142be339a664033426b95e076dfc90fe8b3";
+            origin        "data/standards/parameters/Wilson/diisopropylEther-nButanol.dat";
+            originSha256  "3f5b2fed1c83c4980a883472c3370a82d96fdc3abb8e9ecf0c5e38e3284853be";
+            release       Choupo-2608;
+        }
     }
 }

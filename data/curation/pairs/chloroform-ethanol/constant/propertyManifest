@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "91f28625c27bae0a3af119ae29cc6490e33cec1a6a77193dc7dced2ee34f8a3c";
             release       Choupo-2608;
         }
+        "parameters/Wilson/chloroform-ethanol.dat"
+        {
+            type          imported;
+            sha256        "d0ccc236ebb49d77dd49429993023a8ccc6835667e5ba16cda8397295f72de35";
+            computationalSha256 "b4a27434141c75e2739a28f8c4afbc5fdb1458ca2d0a22f465495fcd7ebae180";
+            origin        "data/standards/parameters/Wilson/chloroform-ethanol.dat";
+            originSha256  "33e10fc2dc26db09a9f1abab1713e1668faf401be3aaed4c8be8c20a89687b43";
+            release       Choupo-2608;
+        }
     }
 }

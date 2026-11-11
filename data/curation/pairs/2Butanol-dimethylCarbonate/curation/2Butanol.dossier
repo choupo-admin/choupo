@@ -152,4 +152,134 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-dimethylCarbonate.A_ij  1112.94066098;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-dimethylCarbonate.A_ji  1641.64602436;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "0d44971a22334799";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Butanol-dimethylCarbonate-bubble-j.jct.2011.08.006.dat";
+            doi       "10.1016/j.jct.2011.08.006";
+            sha256    "682a55d05fe8902bbf42f1d947981fa35b0d90029fa727758bcfb6519f239cc6";
+            provenance measured;
+            archiveFile "j.jct.2011.08.006.xml";
+            system    "2Butanol + dimethylCarbonate";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Butanol-dimethylCarbonate-bubble-j.jct.2004.09.009.dat";
+            doi       "10.1016/j.jct.2004.09.009";
+            sha256    "0be6ddde75d592d26de70cdbf06411e5d0bd2c5d9c882258a0fe98754cb80be3";
+            provenance measured;
+            archiveFile "j.jct.2004.09.009.xml";
+            system    "2Butanol + dimethylCarbonate";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Butanol-dimethylCarbonate-bubble-je030131q.dat";
+            doi       "10.1021/je030131q";
+            sha256    "b41bca23136ec66aba1b6984f5c0f44a5fca02ba9d89bed1e374a726fb032c08";
+            provenance measured;
+            archiveFile "je030131q.xml";
+            system    "2Butanol + dimethylCarbonate";
+            pressure  "95800.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0452; max 0.968; n 111; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-dimethylCarbonate.A_ij  1112.94066295;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-dimethylCarbonate.A_ji  1641.6460219;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "0d44971a22334799";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Butanol-dimethylCarbonate-bubble-j.jct.2011.08.006.dat";
+            doi       "10.1016/j.jct.2011.08.006";
+            sha256    "682a55d05fe8902bbf42f1d947981fa35b0d90029fa727758bcfb6519f239cc6";
+            provenance measured;
+            archiveFile "j.jct.2011.08.006.xml";
+            system    "2Butanol + dimethylCarbonate";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Butanol-dimethylCarbonate-bubble-j.jct.2004.09.009.dat";
+            doi       "10.1016/j.jct.2004.09.009";
+            sha256    "0be6ddde75d592d26de70cdbf06411e5d0bd2c5d9c882258a0fe98754cb80be3";
+            provenance measured;
+            archiveFile "j.jct.2004.09.009.xml";
+            system    "2Butanol + dimethylCarbonate";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Butanol-dimethylCarbonate-bubble-je030131q.dat";
+            doi       "10.1021/je030131q";
+            sha256    "b41bca23136ec66aba1b6984f5c0f44a5fca02ba9d89bed1e374a726fb032c08";
+            provenance measured;
+            archiveFile "je030131q.xml";
+            system    "2Butanol + dimethylCarbonate";
+            pressure  "95800.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0452; max 0.968; n 111; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

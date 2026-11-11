@@ -114,4 +114,188 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylTertButylEther-1Propanol.a_ij  230.497428993;
+        equilibrium.liquid.activityModel.binaryParameters.methylTertButylEther-1Propanol.a_ji  -115.591275065;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e805ba447bbce558";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylTertButylEther-1Propanol-bubble-je900274n.dat";
+            doi       "10.1021/je900274n";
+            sha256    "9ef64bbb664b896609d538ab3d5610187315eaafc9414b4bc86cf199cde0b2d0";
+            provenance measured;
+            archiveFile "je900274n.xml";
+            system    "methylTertButylEther + 1Propanol";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0055; max 0.9657; n 30; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylTertButylEther-1Propanol.a_ij  230.497428682;
+        equilibrium.liquid.activityModel.binaryParameters.methylTertButylEther-1Propanol.a_ji  -115.591274888;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e805ba447bbce558";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylTertButylEther-1Propanol-bubble-je900274n.dat";
+            doi       "10.1021/je900274n";
+            sha256    "9ef64bbb664b896609d538ab3d5610187315eaafc9414b4bc86cf199cde0b2d0";
+            provenance measured;
+            archiveFile "je900274n.xml";
+            system    "methylTertButylEther + 1Propanol";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0055; max 0.9657; n 30; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylTertButylEther-1Propanol.A_ij  -1293.94844803;
+        equilibrium.liquid.activityModel.binaryParameters.methylTertButylEther-1Propanol.A_ji  3800.6477017;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e805ba447bbce558";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylTertButylEther-1Propanol-bubble-je900274n.dat";
+            doi       "10.1021/je900274n";
+            sha256    "9ef64bbb664b896609d538ab3d5610187315eaafc9414b4bc86cf199cde0b2d0";
+            provenance measured;
+            archiveFile "je900274n.xml";
+            system    "methylTertButylEther + 1Propanol";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0055; max 0.9657; n 30; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylTertButylEther-1Propanol.A_ij  -1293.94844206;
+        equilibrium.liquid.activityModel.binaryParameters.methylTertButylEther-1Propanol.A_ji  3800.64769271;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e805ba447bbce558";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylTertButylEther-1Propanol-bubble-je900274n.dat";
+            doi       "10.1021/je900274n";
+            sha256    "9ef64bbb664b896609d538ab3d5610187315eaafc9414b4bc86cf199cde0b2d0";
+            provenance measured;
+            archiveFile "je900274n.xml";
+            system    "methylTertButylEther + 1Propanol";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0055; max 0.9657; n 30; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

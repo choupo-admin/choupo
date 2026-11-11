@@ -28,19 +28,19 @@ propertyManifest
         "components/2Butanol.dat"
         {
             type          imported;
-            sha256        "e50417c9ddeaeb5527166cf726410485df839fdb613b8555aa2b8958be5a5c46";
-            computationalSha256 "ad0f4e4cb272e208c3a8ee83b570fe72b60cd9ab1b2dd9a7d6011dbd28c4995b";
+            sha256        "1595f49de30edfac85305b324b1d45e6fc32514fb2f5c3102e1da25064e57de0";
+            computationalSha256 "094b9b7676472cb8ed2d135265cc88c5c65283778ec3ddfec01877bdc50a3057";
             origin        "data/standards/components/2Butanol.dat";
-            originSha256  "8c6ea94875403bbbd569f6facd5fdaefdcc5aee732ba499696802675d675202a";
+            originSha256  "f9a1e64e1b7104dbaa4e9a541716a88d08af19be38f80885c81d7df98640c91f";
             release       Choupo-2608;
         }
         "components/nHeptane.dat"
         {
             type          imported;
-            sha256        "25070332ac55ed31465bc842c2820fdfaad6f8148a03a841aca858978670b1d4";
-            computationalSha256 "125b2cbb0fb1a4182208bea7d0812526f79531b719a3e95c6555eb1eef5975b2";
+            sha256        "8c48efaaa9aa99b348c71a669b0004bae3abe91635a4fe1c401fc415b45e6b4d";
+            computationalSha256 "2f3b301c3cd1ef6d27fd35702b810c40ebcfc7fc573ec2dfb642d5981a6ed791";
             origin        "data/standards/components/nHeptane.dat";
-            originSha256  "d07d8e2aa11a5f1acb72593e0fcd1281a502b07ee6da32603bcc97d97b54abd4";
+            originSha256  "0e6ffd261eb07d90376837ad51670a939dfd10fc7e15c0bed37a675f034eeae0";
             release       Choupo-2608;
         }
         "parameters/NRTL/2Butanol-nHeptane.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/2Butanol-nHeptane.dat"
+        {
+            type          imported;
+            sha256        "691fb4a20bd94d5eaee34e29779544f71f653edea39877d2863bd0744e6fec27";
+            computationalSha256 "297cb7730d098d71a8c64894f54bd9c7f36a72a629b7170dc8a3fb201c20350f";
+            origin        "data/standards/parameters/UNIQUAC/2Butanol-nHeptane.dat";
+            originSha256  "dea58b39eb2dea319644166bdeb74637efde1d8638978713e20c85596281c6a6";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Butanol-nHeptane.dat"
+        {
+            type          imported;
+            sha256        "6590bd3a50fafe8db0d293da79e44a63c356f74caf6592c2f926253c8c95fbb3";
+            computationalSha256 "13316e81690212b611d0b78ede41514a596507c14247e457134cf810ce961148";
+            origin        "data/standards/parameters/Wilson/2Butanol-nHeptane.dat";
+            originSha256  "b99faef84dc041dad39cd81f2c6a2bdb2fb469f9c2ef4fd5f958354031b480a3";
             release       Choupo-2608;
         }
     }

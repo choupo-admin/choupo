@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-oCresol.A_ij  3985.00040108;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-oCresol.A_ji  -2437.25311923;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "464f9a5ae40607f5";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/Dichloroethane-oCresol-bubble-j.fluid.2005.09.012.dat";
+            doi       "10.1016/j.fluid.2005.09.012";
+            sha256    "8d576b09c152731f488ef5ca477c825da08189f3bd20efec499def20bf5e6d77";
+            provenance measured;
+            archiveFile "j.fluid.2005.09.012.xml";
+            system    "Dichloroethane + oCresol";
+            pressure  "95750.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0503; max 0.9505; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-oCresol.A_ij  3985.0004049;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-oCresol.A_ji  -2437.25312104;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "464f9a5ae40607f5";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/Dichloroethane-oCresol-bubble-j.fluid.2005.09.012.dat";
+            doi       "10.1016/j.fluid.2005.09.012";
+            sha256    "8d576b09c152731f488ef5ca477c825da08189f3bd20efec499def20bf5e6d77";
+            provenance measured;
+            archiveFile "j.fluid.2005.09.012.xml";
+            system    "Dichloroethane + oCresol";
+            pressure  "95750.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0503; max 0.9505; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

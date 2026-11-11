@@ -28,19 +28,19 @@ propertyManifest
         "components/ethylAcetate.dat"
         {
             type          imported;
-            sha256        "beb6e50741e964e6d1479f0f1e66284a50fee1aa86fd5d014b8cb0c886b66e1c";
-            computationalSha256 "4faa49d150d41d6e24527cf3a028f1705068d903407d67194fe6caa4731b4d1c";
+            sha256        "54a2177877292bf69c144e8501a70f5fbdd893d0d52c59b98a2751121bea1d6f";
+            computationalSha256 "a684b58c42fd149250d5211ca6545fa9f6968847122e1a9267a719a700deb26d";
             origin        "data/standards/components/ethylAcetate.dat";
-            originSha256  "9efe0bbeca4073450e352d99c60035ffd0f7cdabc8c708c372c9932cb5f95ba9";
+            originSha256  "882d88a79a8cf5677b7b9eb8d6c7eea180a82c7a6ac1c4a90e907913ca261cb6";
             release       Choupo-2608;
         }
         "components/nHeptane.dat"
         {
             type          imported;
-            sha256        "25070332ac55ed31465bc842c2820fdfaad6f8148a03a841aca858978670b1d4";
-            computationalSha256 "125b2cbb0fb1a4182208bea7d0812526f79531b719a3e95c6555eb1eef5975b2";
+            sha256        "8c48efaaa9aa99b348c71a669b0004bae3abe91635a4fe1c401fc415b45e6b4d";
+            computationalSha256 "2f3b301c3cd1ef6d27fd35702b810c40ebcfc7fc573ec2dfb642d5981a6ed791";
             origin        "data/standards/components/nHeptane.dat";
-            originSha256  "d07d8e2aa11a5f1acb72593e0fcd1281a502b07ee6da32603bcc97d97b54abd4";
+            originSha256  "0e6ffd261eb07d90376837ad51670a939dfd10fc7e15c0bed37a675f034eeae0";
             release       Choupo-2608;
         }
         "parameters/NRTL/ethylAcetate-nHeptane.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/ethylAcetate-nHeptane.dat"
+        {
+            type          imported;
+            sha256        "f19c562a4a4fd04fa4d57a962ceb5cc16b202038484e5fc9f89b04666c793dcc";
+            computationalSha256 "53244482a3fcd6678680595686ddb5b0e2c0338d0cc461c7a7dbcc34e26255bc";
+            origin        "data/standards/parameters/UNIQUAC/ethylAcetate-nHeptane.dat";
+            originSha256  "3e7770556a1989f8acfa168ffc878816faef44e40445fdaa20a3a2c83fb1c3c3";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/ethylAcetate-nHeptane.dat"
+        {
+            type          imported;
+            sha256        "2db9bacc3e2ab6af6f2306da9977b1cd2e1fa07b651aea49580c0d953d72f653";
+            computationalSha256 "7929b47b19afdc1fbd43e79260196390d7a3de5361d30cf3fbf3b08c07e47e02";
+            origin        "data/standards/parameters/Wilson/ethylAcetate-nHeptane.dat";
+            originSha256  "833bdae6a31350d7dfa6a417cabb1f5caf8353c53f318b6d1d7d342596139caf";
             release       Choupo-2608;
         }
     }

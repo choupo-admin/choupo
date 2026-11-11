@@ -28,10 +28,10 @@ propertyManifest
         "components/nHeptane.dat"
         {
             type          imported;
-            sha256        "25070332ac55ed31465bc842c2820fdfaad6f8148a03a841aca858978670b1d4";
-            computationalSha256 "125b2cbb0fb1a4182208bea7d0812526f79531b719a3e95c6555eb1eef5975b2";
+            sha256        "8c48efaaa9aa99b348c71a669b0004bae3abe91635a4fe1c401fc415b45e6b4d";
+            computationalSha256 "2f3b301c3cd1ef6d27fd35702b810c40ebcfc7fc573ec2dfb642d5981a6ed791";
             origin        "data/standards/components/nHeptane.dat";
-            originSha256  "d07d8e2aa11a5f1acb72593e0fcd1281a502b07ee6da32603bcc97d97b54abd4";
+            originSha256  "0e6ffd261eb07d90376837ad51670a939dfd10fc7e15c0bed37a675f034eeae0";
             release       Choupo-2608;
         }
         "components/nNDimethylacetamide.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "4f7ae262f096b632cd520a2ebe3adc57c21453a3cb749aa21caf1b579874b9eb";
             origin        "data/standards/parameters/NRTL/nHeptane-nNDimethylacetamide.dat";
             originSha256  "b7a87e0e0f48dc09ceb7d172f00eaec3af90771484650870f0a586427a77df1e";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/nHeptane-nNDimethylacetamide.dat"
+        {
+            type          imported;
+            sha256        "8444d6b472dabd221bb6dc7862ec5f0120ae9a3788b47b9a565e86b3aa682d6b";
+            computationalSha256 "aeb530fbc88041dc2b97f0bef03b30d81cc194607e66cce41b9e880988e4b9ac";
+            origin        "data/standards/parameters/Wilson/nHeptane-nNDimethylacetamide.dat";
+            originSha256  "8fab499af513812f27855fa09757304c249ab87ebd8badfc3a040a21c41e3d92";
             release       Choupo-2608;
         }
     }

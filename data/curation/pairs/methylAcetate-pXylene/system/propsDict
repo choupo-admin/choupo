@@ -62,6 +62,46 @@
       least-squares stage.
   @@OUTLIERS-END@@
 
+  @@MODELS-BEGIN@@
+  THE OTHER ACTIVITY MODELS (DEV.md 4c C294), declared before their fits
+  ran. The SAME datasets and the SAME kept points as fit_nrtl: each op
+  below is fit_nrtl copied verbatim -- evidence, discards, objective,
+  residual, weighting, options -- with only its parameters, its `thermo
+  {}` fragment (the model) and its outputs changed; the outlier discard
+  was decided ONCE, on the NRTL least-squares stage, and is reused, never
+  re-decided per model. UNIQUAC: two parameters a_ij, a_ji (K), tau_ij =
+  exp(-a_ij/T), b = c = 0 fixed (the NRTL default's count; temperature
+  dependence 1/T), r and q each component's own record. Wilson: two
+  parameters A_ij, A_ji (J/mol), Lambda_ij = (V_j/V_i) exp(-A_ij/RT), V
+  the records' Vliq. Two starts each. Each model gets its own record
+  (constant/parameters/<MODEL>/), its own grade at 1 / 2 / 4 K (max
+  |T_model - T|), its own one-liquid test (arm f), `fitGradeBasis
+  inSample`, the C300 cap and `review { by none; }`; a severe or refused
+  grade, or a split, is not promoted. The three in-sample residuals are
+  published side by side, never used to choose a model for the student.
+  UNIQUAC: FITTED. Wilson: FITTED.
+  @@MODELS-END@@
+
+  @@MODELS-RESULT-BEGIN@@
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dT| 2.853 K (severe) on the same
+  kept points. fit_uniquac: a_ij = 150.5, a_ji = -39.5 K over 15 kept
+  points: max |dT| 2.902 K, mean 1.334 K, graded severe -> accepted;
+  fit_uniquac_start2 lands on the same pair (150.5, -39.5). NOT PROMOTED
+  (max |dT| 2.902 K over the 15 kept points, one liquid across the
+  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
+  pair does not enter the default catalogue; its record stays in this
+  curation case's constant/, and a case that needs it carries it in its
+  own constant/. fit_wilson: A_ij = 1367.3, A_ji = 2470.2 J/mol over 15
+  kept points: max |dT| 2.906 K, mean 1.286 K, graded severe -> accepted;
+  fit_wilson_start2 lands on the same pair (1367.3, 2470.2). NOT PROMOTED
+  (max |dT| 2.906 K over the 15 kept points, one liquid across the
+  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
+  pair does not enter the default catalogue; its record stays in this
+  curation case's constant/, and a case that needs it carries it in its
+  own constant/.
+  @@MODELS-RESULT-END@@
+
   @@RESULT-BEGIN@@
   WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
   fit_nrtl: b_ij = 548.7 K, b_ji = -96.2 K over 15 kept points of 1
@@ -198,6 +238,270 @@ operations
         properties  ( T_bubble  y_eq_methylAcetate );
         output      { file txy_nrtl.csv; }
     }
+    // @@C294-OPS-BEGIN@@ -- UNIQUAC and Wilson on the NRTL fit's own evidence (DEV.md 4c C294)
+    {
+        name        fit_uniquac;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.methylAcetate-pXylene.a_ij;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.methylAcetate-pXylene.a_ji;  initial 0;  min -3000;  max 3000; }
+        );
+
+        thermo   // the model, as a fragment of the case's system (C294)
+        {
+            equilibrium
+            {
+                liquid
+                {
+                    activityModel
+                    {
+                        model UNIQUAC;
+                        binaryParameters   // the FIT'S starting point
+                        {
+                            methylAcetate-pXylene { i methylAcetate; j pXylene; a_ij 0; a_ji 0; }
+                        }
+                    }
+                    standardState pureLiquid;
+                }
+            }
+        }
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/methylAcetate-pXylene-bubble-acs.jced.8b00807.dat";
+                role     fit;
+            }
+        );
+
+        objective { method twoStage;  scale { T_bubble absolute; } }
+        residual
+        {
+            kind        T_bubble;
+            components  ( methylAcetate pXylene );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_history_uniquac.csv;
+            parity     parity_uniquac.csv;
+            proposal   methylAcetate-pXylene.UNIQUAC.proposal.dat;
+        }
+    }
+    {
+        name        fit_uniquac_start2;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.methylAcetate-pXylene.a_ij;  initial 300;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.methylAcetate-pXylene.a_ji;  initial -150;  min -3000;  max 3000; }
+        );
+
+        thermo   // the model, as a fragment of the case's system (C294)
+        {
+            equilibrium
+            {
+                liquid
+                {
+                    activityModel
+                    {
+                        model UNIQUAC;
+                        binaryParameters   // the FIT'S starting point
+                        {
+                            methylAcetate-pXylene { i methylAcetate; j pXylene; a_ij 0; a_ji 0; }
+                        }
+                    }
+                    standardState pureLiquid;
+                }
+            }
+        }
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/methylAcetate-pXylene-bubble-acs.jced.8b00807.dat";
+                role     fit;
+            }
+        );
+
+        objective { method twoStage;  scale { T_bubble absolute; } }
+        residual
+        {
+            kind        T_bubble;
+            components  ( methylAcetate pXylene );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            parity     parity_uniquac_start2.csv;
+        }
+    }
+    {
+        name        fit_wilson;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.methylAcetate-pXylene.A_ij;  initial 0;  min -30000;  max 30000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.methylAcetate-pXylene.A_ji;  initial 0;  min -30000;  max 30000; }
+        );
+
+        thermo   // the model, as a fragment of the case's system (C294)
+        {
+            equilibrium
+            {
+                liquid
+                {
+                    activityModel
+                    {
+                        model Wilson;
+                        binaryParameters   // the FIT'S starting point
+                        {
+                            methylAcetate-pXylene { i methylAcetate; j pXylene; A_ij 0; A_ji 0; }
+                        }
+                    }
+                    standardState pureLiquid;
+                }
+            }
+        }
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/methylAcetate-pXylene-bubble-acs.jced.8b00807.dat";
+                role     fit;
+            }
+        );
+
+        objective { method twoStage;  scale { T_bubble absolute; } }
+        residual
+        {
+            kind        T_bubble;
+            components  ( methylAcetate pXylene );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_history_wilson.csv;
+            parity     parity_wilson.csv;
+            proposal   methylAcetate-pXylene.Wilson.proposal.dat;
+        }
+    }
+    {
+        name        fit_wilson_start2;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.methylAcetate-pXylene.A_ij;  initial 4000;  min -30000;  max 30000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.methylAcetate-pXylene.A_ji;  initial -2000;  min -30000;  max 30000; }
+        );
+
+        thermo   // the model, as a fragment of the case's system (C294)
+        {
+            equilibrium
+            {
+                liquid
+                {
+                    activityModel
+                    {
+                        model Wilson;
+                        binaryParameters   // the FIT'S starting point
+                        {
+                            methylAcetate-pXylene { i methylAcetate; j pXylene; A_ij 0; A_ji 0; }
+                        }
+                    }
+                    standardState pureLiquid;
+                }
+            }
+        }
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/methylAcetate-pXylene-bubble-acs.jced.8b00807.dat";
+                role     fit;
+            }
+        );
+
+        objective { method twoStage;  scale { T_bubble absolute; } }
+        residual
+        {
+            kind        T_bubble;
+            components  ( methylAcetate pXylene );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            parity     parity_wilson_start2.csv;
+        }
+    }
+    // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_uniquac;
+        type        propertyScan1D;
+        vary        { variable x[methylAcetate];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { methylAcetate 0.5;  pXylene 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_methylAcetate );
+        output      { file txy_uniquac.csv; }
+    }
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[methylAcetate];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { methylAcetate 0.5;  pXylene 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_methylAcetate );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );
 
 experimental

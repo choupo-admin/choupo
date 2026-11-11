@@ -37,10 +37,10 @@ propertyManifest
         "components/pXylene.dat"
         {
             type          imported;
-            sha256        "24c426099ea1243aa54d21cde64b34ed7312b8bf2bdde1af983f35795c260cce";
-            computationalSha256 "21ec82182e6c57257719624339c8912c2ab6ef6da558f01e7bcc4b9561706387";
+            sha256        "d6c1a35adcc2ecfb7fdd547613d094985aa02b5154eb86e2136893e5eb2b1081";
+            computationalSha256 "a12f3f6479aa3d4be6d976ca090188ab3b10b5671bb1a3fe568b547431a64d02";
             origin        "data/standards/components/pXylene.dat";
-            originSha256  "c84be1d773e7fda137a6721e882622f7cd66ba63f6278257a98da939fe724bfc";
+            originSha256  "ef3dffe3f5b93e45435a0e2b3d13566b4bd2a5c67451a02e52e75a55ac9de26b";
             release       Choupo-2608;
         }
         "parameters/NRTL/cyclohexanone-pXylene.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "f865f2e30bec13c9bf852c26ad3ce9b8da4a6ed0312b34ccd5d3711a6afa7d05";
             origin        "data/standards/parameters/NRTL/cyclohexanone-pXylene.dat";
             originSha256  "af9264e5a0d4c39ca7a150649e3d905b41d4b527f1e1db4cfcb32515b41f2194";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/cyclohexanone-pXylene.dat"
+        {
+            type          imported;
+            sha256        "31b9cea4e6ade83dbaf1079c16db3cff6abba2a41cbb9457a6bc9e09136f720b";
+            computationalSha256 "bd9e81d976394544d09dd2f62538365892e2a3028ce9904c933d7616ad84cccf";
+            origin        "data/standards/parameters/Wilson/cyclohexanone-pXylene.dat";
+            originSha256  "f035e28717b48f3210cd3a96577442f635c45fc32dd7431a6e438bb178b50107";
             release       Choupo-2608;
         }
     }

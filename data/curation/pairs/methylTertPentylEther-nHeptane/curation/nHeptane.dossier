@@ -112,4 +112,184 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.a_ij  -165.06983751;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.a_ji  240.958504202;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f4e7fc985c7401d5";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nHeptane-methylTertPentylEther-bubble-je101250d.dat";
+            doi       "10.1021/je101250d";
+            sha256    "6669b12035e317cc29bb9ffe16bf70870f3d4766ed9b0dc05b0b6709dcfbc736";
+            provenance measured;
+            archiveFile "je101250d.xml";
+            system    "nHeptane + methylTertPentylEther";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.057; max 0.885; n 54; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.a_ij  -165.069837778;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.a_ji  240.958504638;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f4e7fc985c7401d5";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nHeptane-methylTertPentylEther-bubble-je101250d.dat";
+            doi       "10.1021/je101250d";
+            sha256    "6669b12035e317cc29bb9ffe16bf70870f3d4766ed9b0dc05b0b6709dcfbc736";
+            provenance measured;
+            archiveFile "je101250d.xml";
+            system    "nHeptane + methylTertPentylEther";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.057; max 0.885; n 54; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.A_ij  3073.65153815;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.A_ji  -1333.04194959;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f4e7fc985c7401d5";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nHeptane-methylTertPentylEther-bubble-je101250d.dat";
+            doi       "10.1021/je101250d";
+            sha256    "6669b12035e317cc29bb9ffe16bf70870f3d4766ed9b0dc05b0b6709dcfbc736";
+            provenance measured;
+            archiveFile "je101250d.xml";
+            system    "nHeptane + methylTertPentylEther";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.057; max 0.885; n 54; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.A_ij  3073.65153372;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.A_ji  -1333.0419477;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f4e7fc985c7401d5";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nHeptane-methylTertPentylEther-bubble-je101250d.dat";
+            doi       "10.1021/je101250d";
+            sha256    "6669b12035e317cc29bb9ffe16bf70870f3d4766ed9b0dc05b0b6709dcfbc736";
+            provenance measured;
+            archiveFile "je101250d.xml";
+            system    "nHeptane + methylTertPentylEther";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.057; max 0.885; n 54; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

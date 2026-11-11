@@ -28,10 +28,10 @@ propertyManifest
         "components/2Methyl2Butanol.dat"
         {
             type          imported;
-            sha256        "41b67d8503cd462c0f4eaf12658194998edaf79e3e0094fa9121af61c972dce3";
-            computationalSha256 "3522fbb1b1e8180db8f907267733e4ecab249df19c5713bda18a3f5e83202358";
+            sha256        "cb3c4b9e871655be77ec7ca845ad473f7cbfca6f5c58e52e60afc0549d0c5f1b";
+            computationalSha256 "8c6110c6f34ee292e94bb49cae46d3169fae286121c377ed91f1716daf514600";
             origin        "data/standards/components/2Methyl2Butanol.dat";
-            originSha256  "67ef3b27783251b9636818108d8171b2a526a24a49fba0734c5b1a646683202b";
+            originSha256  "0a0b562a2e0a4a8ac6456b95228c6941feb3d560395f851de8f70b943e54a06f";
             release       Choupo-2608;
         }
         "components/methanol.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/2Methyl2Butanol-methanol.dat"
+        {
+            type          imported;
+            sha256        "98f941aaeeae785d0ae9ebe5b430d41ec9b16195c4e88a83f56a8d8bb19dc221";
+            computationalSha256 "9ba49f9973e9b417091d1f8f9e7362b23416d89c4c7821dd423eae1711e554c6";
+            origin        "data/standards/parameters/UNIQUAC/2Methyl2Butanol-methanol.dat";
+            originSha256  "e92505e6aa86499c7be00e20168d3505a077b8926762aec535096fb697ed2cc9";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Methyl2Butanol-methanol.dat"
+        {
+            type          imported;
+            sha256        "a12233a1abbadc36c7d61de559e6b487a5d1e26ca4923cd69e0d2b1ccedcd385";
+            computationalSha256 "c152ce1848fb239eed4b4b7bdb8b38b95a1d150b34d8d437814889731de8dfa2";
+            origin        "data/standards/parameters/Wilson/2Methyl2Butanol-methanol.dat";
+            originSha256  "76e60750fe3f6b8b66fbf99d66c455509db8c22c8f92c511dd987bf84d4d5415";
             release       Choupo-2608;
         }
     }

@@ -28,10 +28,10 @@ propertyManifest
         "components/2Methyl1Propanol.dat"
         {
             type          imported;
-            sha256        "ee0bb35e8d706d7c4b0549d6ac51be77b89de4f5496fea7d9947d875b9bcdd35";
-            computationalSha256 "b1bfb84671b4f35f758f186af86d16cfe056fb1a54d6f2b5e2867328630848b3";
+            sha256        "778703d5a4716bbace0b8b3de0655393d4212cbd4ed4c809736558e732afbd5d";
+            computationalSha256 "5ebe04496878f4c4864b2b944848ca1130604cf7d11a684d2602c0fc4b37568d";
             origin        "data/standards/components/2Methyl1Propanol.dat";
-            originSha256  "f0afa6609184a85f9c63deb6555d81619d932cc9049178f6f783e25420e34db6";
+            originSha256  "c17b068f64a38ca32f8ee4f6516ed94a85019ee7a45a33ba4fceabdaaafc01bc";
             release       Choupo-2608;
         }
         "components/mCresol.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "70fe22d0e5df479444028ad4d806c35eb833bd4e4f89bafcb734dd50f493ddd1";
             origin        "data/standards/parameters/NRTL/2Methyl1Propanol-mCresol.dat";
             originSha256  "d0417df27784e191eea1e40798ead313f46e13512ed6d62e0e2a2987b08c8e8c";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Methyl1Propanol-mCresol.dat"
+        {
+            type          imported;
+            sha256        "4a1a808690aa570fe2d2a3b6596c19769cbd8ce7de73f3f0ac226373d8594465";
+            computationalSha256 "8f2cd027788d9fd03a193498a962e43f0d8012e7641748c7b6c521f243e58fd9";
+            origin        "data/standards/parameters/Wilson/2Methyl1Propanol-mCresol.dat";
+            originSha256  "129892d5f2ad3c994282d49ba1a51f889f35dceaf85cdb73053b10f4d0a3e6cd";
             release       Choupo-2608;
         }
     }

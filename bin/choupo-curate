@@ -158,12 +158,15 @@ def identity(name):
     return r["component"], r["cas"], r["inchiKey"]
 
 
-def existing_records(a, b):
+def existing_records(a, b, model=None):
     """Every record in ANY model directory of data/standards/parameters/ for
-    the pair -- by file name (either order, any prefix) and by `pair {}`."""
+    the pair -- by file name (either order, any prefix) and by `pair {}`.
+    With `model`, that model's directory only (DEV.md 4c C294: one pair now
+    carries NRTL, UNIQUAC and Wilson records, and each model's promotion asks
+    about its own)."""
     out = []
     pat = re.compile(r"pair\s*\{\s*i\s+(\S+?)\s*;\s*j\s+(\S+?)\s*;")
-    for p in sorted(STD_PARAMS.rglob("*.dat")):
+    for p in sorted((STD_PARAMS / model if model else STD_PARAMS).rglob("*.dat")):
         parts = p.stem.split("-")
         hit = len(parts) >= 2 and {parts[-2], parts[-1]} == {a, b}
         m = pat.search(p.read_text(errors="replace"))
@@ -1192,7 +1195,7 @@ def promote(a, b):
         refuse(f"{label(case)} carries {len(recs)} NRTL records; expected its one")
     rp = recs[0]
     text = rp.read_text()
-    have = existing_records(a, b)
+    have = existing_records(a, b, model="NRTL")
     if have:
         refuse(f"a catalogue record for {a} + {b} already exists ({', '.join(have)}) "
                "-- never overwritten")

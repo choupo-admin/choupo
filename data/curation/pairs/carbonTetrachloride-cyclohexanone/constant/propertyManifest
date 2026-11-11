@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "cc8e0df5fb12c41652b972159e51a50ab252d72d4a271cc04e70edfbd5396e2d";
             release       Choupo-2608;
         }
+        "parameters/Wilson/carbonTetrachloride-cyclohexanone.dat"
+        {
+            type          imported;
+            sha256        "a1174e1ab20fe263b283910c728f0f97aa03c060270609d9758d6b45f161ef1a";
+            computationalSha256 "c4f3c30f75a5192c9efc72f8068ffe8902ace4414c8bb18bcda300e2a2161d8f";
+            origin        "data/standards/parameters/Wilson/carbonTetrachloride-cyclohexanone.dat";
+            originSha256  "affca2759642a5289f9f10f844bd609733c0cab6ce53917e057c1dfa7f027026";
+            release       Choupo-2608;
+        }
     }
 }

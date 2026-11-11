@@ -112,4 +112,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nButanol.A_ij  1720.08337318;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nButanol.A_ji  1925.92084943;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5c1bde399b7aa4bd";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/Dichloroethane-nButanol-bubble-acs.jced.9b00484.dat";
+            doi       "10.1021/acs.jced.9b00484";
+            sha256    "015da0197afc81a1288049010e1f5b9e01718b75eaaf1f0bb3585dbcaca1fbe7";
+            provenance measured;
+            archiveFile "acs.jced.9b00484.xml";
+            system    "Dichloroethane + nButanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.088; max 0.912; n 54; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nButanol.A_ij  1720.08335944;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nButanol.A_ji  1925.92086092;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5c1bde399b7aa4bd";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/Dichloroethane-nButanol-bubble-acs.jced.9b00484.dat";
+            doi       "10.1021/acs.jced.9b00484";
+            sha256    "015da0197afc81a1288049010e1f5b9e01718b75eaaf1f0bb3585dbcaca1fbe7";
+            provenance measured;
+            archiveFile "acs.jced.9b00484.xml";
+            system    "Dichloroethane + nButanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.088; max 0.912; n 54; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

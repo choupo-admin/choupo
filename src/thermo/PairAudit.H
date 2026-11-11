@@ -101,14 +101,22 @@ inline void fillPairAudit(PairResolution&    r,
     //  must be able to tell "fitted by a machine" from "fitted, not yet read
     //  back", and neither from a reviewed record.  Any other word is, as
     //  before, read and not announced.
-    else if (provDict->lookupWordOrDefault("reviewStatus", "") == "autoPromoted"
-             && !announceReviewBlock("pair " + pairName, "pair:" + pairName, "", provDict))
+    //  ONE PAIR, SEVERAL MODELS (DEV.md 4c C294): the catalogue carries a
+    //  pair's NRTL, UNIQUAC and Wilson records side by side, and a run may
+    //  read more than one.  A machine-promoted record of a model other than
+    //  NRTL is named WITH its model ("pair a-b (Wilson)"), so each record's
+    //  status and grade are voiced once and nobody reads the NRTL record's
+    //  grade as the Wilson one's.  The NRTL wording is unchanged.
+    const std::string modelTag = (r.model.empty() || r.model == "NRTL")
+                               ? pairName : pairName + " (" + r.model + ")";
+    if (provDict->lookupWordOrDefault("reviewStatus", "") == "autoPromoted"
+             && !announceReviewBlock("pair " + modelTag, "pair:" + modelTag, "", provDict))
     {
-        if (AdvisoryLog::instance().addAnnouncedOnce("autoPromoted:pair:" + pairName,
-                "provenance", "warning", "pair " + pairName,
+        if (AdvisoryLog::instance().addAnnouncedOnce("autoPromoted:pair:" + modelTag,
+                "provenance", "warning", "pair " + modelTag,
                 "reviewStatus autoPromoted -- promoted AUTOMATICALLY by its fitting"
                 " pipeline; NO human has reviewed it"))
-            std::cerr << "[unreviewed] pair " << pairName
+            std::cerr << "[unreviewed] pair " << modelTag
                       << ": reviewStatus autoPromoted -- this pair was promoted"
                          " into the catalogue AUTOMATICALLY by its fitting pipeline"
                          " (accepted by the acceptance its case declared before"
@@ -122,7 +130,7 @@ inline void fillPairAudit(PairResolution&    r,
     //  `fitGrade clean|warning|severe;` beside the review status, with the
     //  number that decided it.  The sentence has ONE home, shared with the
     //  component loader (FitGrade.H); a clean grade says nothing more.
-    announceFitGrade("pair " + pairName, "", provDict);
+    announceFitGrade("pair " + modelTag, "", provDict);
 
     auto readRange = [&](const DictPtr& blk, const char* lo, const char* hi,
                          const Dimensions& dims) -> std::optional<Range>

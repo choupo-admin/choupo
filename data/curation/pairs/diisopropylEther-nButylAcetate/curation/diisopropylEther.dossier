@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButylAcetate.A_ij  4174.17249614;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButylAcetate.A_ji  -1787.60963068;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "fbfd2c804209bcaf";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diisopropylEther-nButylAcetate-bubble-j.jct.2018.11.013.dat";
+            doi       "10.1016/j.jct.2018.11.013";
+            sha256    "41b94834e8edd281aecb470938028a5bb98300047fb3a2b701378f79c20f955c";
+            provenance measured;
+            archiveFile "j.jct.2018.11.013.xml";
+            system    "diisopropylEther + nButylAcetate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0182; max 0.8534; n 13; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButylAcetate.A_ij  4174.1724927;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButylAcetate.A_ji  -1787.60963008;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "fbfd2c804209bcaf";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diisopropylEther-nButylAcetate-bubble-j.jct.2018.11.013.dat";
+            doi       "10.1016/j.jct.2018.11.013";
+            sha256    "41b94834e8edd281aecb470938028a5bb98300047fb3a2b701378f79c20f955c";
+            provenance measured;
+            archiveFile "j.jct.2018.11.013.xml";
+            system    "diisopropylEther + nButylAcetate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0182; max 0.8534; n 13; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

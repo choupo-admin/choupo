@@ -28,10 +28,10 @@ propertyManifest
         "components/2Butanol.dat"
         {
             type          imported;
-            sha256        "e50417c9ddeaeb5527166cf726410485df839fdb613b8555aa2b8958be5a5c46";
-            computationalSha256 "ad0f4e4cb272e208c3a8ee83b570fe72b60cd9ab1b2dd9a7d6011dbd28c4995b";
+            sha256        "1595f49de30edfac85305b324b1d45e6fc32514fb2f5c3102e1da25064e57de0";
+            computationalSha256 "094b9b7676472cb8ed2d135265cc88c5c65283778ec3ddfec01877bdc50a3057";
             origin        "data/standards/components/2Butanol.dat";
-            originSha256  "8c6ea94875403bbbd569f6facd5fdaefdcc5aee732ba499696802675d675202a";
+            originSha256  "f9a1e64e1b7104dbaa4e9a541716a88d08af19be38f80885c81d7df98640c91f";
             release       Choupo-2608;
         }
         "components/diisopropylEther.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "6d7d3337e539ba30142dfd03b2ce10496ccd64ba5bf9c6977562c5049a000f81";
             origin        "data/standards/parameters/NRTL/2Butanol-diisopropylEther.dat";
             originSha256  "e5693c93294de3fec58aa7117892f47179eb82015632fec9e84d9b3c0690fb2e";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Butanol-diisopropylEther.dat"
+        {
+            type          imported;
+            sha256        "dccc21b0f43e3d39f8b5453e60fc6d40ce205da35dcdef2ce4c6d215a13eb23d";
+            computationalSha256 "cb9596adc344e1825f1d1d3a49720b0a3b68c1776b4687e85a163d74fc1e116f";
+            origin        "data/standards/parameters/Wilson/2Butanol-diisopropylEther.dat";
+            originSha256  "74d1f51684c0ed03f8386083e663f8873af322f8ab6cb01216993083eb6357e8";
             release       Choupo-2608;
         }
     }

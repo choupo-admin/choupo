@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "dabe6035fced40471ca2420504bdec6a1f61c71690fded9b1ee5639dad7e4352";
             release       Choupo-2608;
         }
+        "parameters/Wilson/bromobenzene-nitrobenzene.dat"
+        {
+            type          imported;
+            sha256        "ff59048d8853c9bb805d00c9f063142a4f5d84c8158989d2ccd81b816b1864ea";
+            computationalSha256 "84a7eed540a4872f823d8fb96ee1ed3128db5a95a3fdc9ce6b1fd9475b06be20";
+            origin        "data/standards/parameters/Wilson/bromobenzene-nitrobenzene.dat";
+            originSha256  "6e69f7e5d9f769be5e121600d7a66f0dd6d302c11f74cacc0d2c318bcf2f6a10";
+            release       Choupo-2608;
+        }
     }
 }

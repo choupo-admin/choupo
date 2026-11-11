@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "1c8b71d080bca3e25cf6e47a6ff146e76de81eb5f24822d561abe714ee719bd3";
             release       Choupo-2608;
         }
+        "parameters/Wilson/methanol-methylPropionate.dat"
+        {
+            type          imported;
+            sha256        "018301d83694d63fa9b6f1d2cf199f25ee5cc7edbce734ac64a96ccbbe0ff715";
+            computationalSha256 "21cabe94325c1f2311a948ecf3f6f94087acd9ccdf24304f9f0f7690df5a2ca2";
+            origin        "data/standards/parameters/Wilson/methanol-methylPropionate.dat";
+            originSha256  "b134176b8422f21db485510e0e03fa5d9e25fb2c1815c9a9184894f0c6a3e03f";
+            release       Choupo-2608;
+        }
     }
 }

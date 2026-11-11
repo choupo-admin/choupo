@@ -28,10 +28,10 @@ propertyManifest
         "components/ethylBenzene.dat"
         {
             type          imported;
-            sha256        "ae0432cef7e9cc8d1a1c7669ce4a783ccf51218cff2404dd7ba093d0695d1922";
-            computationalSha256 "c4a5df3dd8cb1cd0dc6031be45ffdc38a34f227a8eb4b34bdecebd07b13b8b0e";
+            sha256        "a3770fc80542ebef6c1e967abe82aa77f1772855e3873575603dc3ec1c54ce74";
+            computationalSha256 "99065feb74f678d5fdc677c7b2f450910efa7af9990f15e931738055b6bda9ae";
             origin        "data/standards/components/ethylBenzene.dat";
-            originSha256  "e2ecbd5573ce3719ae530d1cd13978928548ca096b3666ad58321bcd8ca07505";
+            originSha256  "eb0e3c4909ad9a0859b769f78ba184bc73174b779765f33d3e2876a4600b2d0f";
             release       Choupo-2608;
         }
         "components/nButanol.dat"
@@ -50,6 +50,24 @@ propertyManifest
             computationalSha256 "973aae2824ee0a464bfc106a17ef53a625152159c16d154db9037596c5d27323";
             origin        "data/standards/parameters/NRTL/ethylBenzene-nButanol.dat";
             originSha256  "2a23ef74ade161208949fbbbecd022be9ab03a5671f11cc92fc0f83b3602665e";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/ethylBenzene-nButanol.dat"
+        {
+            type          imported;
+            sha256        "a0176603984f02fc02808dd4b582aa1f5a0c3baa354dd2b3c33ba6ddcc31362c";
+            computationalSha256 "89174c3cc28015d0aad6760d7c13f78e3c5f7a24fbdb82a71f63a855a0687d1d";
+            origin        "data/standards/parameters/UNIQUAC/ethylBenzene-nButanol.dat";
+            originSha256  "89e824234f26b7a92223c1fd2f964179b911c76e07d49f7e78feecb472f231c2";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/ethylBenzene-nButanol.dat"
+        {
+            type          imported;
+            sha256        "b08f339aa2baf83d6d429f39f67605e1310e8f94a6e3cae606cce47a06b3a0a6";
+            computationalSha256 "8724d305e6f04935c62b065d68758e28d58e4e408b55ac21613b9e29b844b62b";
+            origin        "data/standards/parameters/Wilson/ethylBenzene-nButanol.dat";
+            originSha256  "f515336049029e5752d23c2f50c2460ba95eea16a80a553006b3a6a693f40230";
             release       Choupo-2608;
         }
     }

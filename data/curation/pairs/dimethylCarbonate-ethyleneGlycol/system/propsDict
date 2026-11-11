@@ -62,6 +62,43 @@
       least-squares stage.
   @@OUTLIERS-END@@
 
+  @@MODELS-BEGIN@@
+  THE OTHER ACTIVITY MODELS (DEV.md 4c C294), declared before their fits
+  ran. The SAME datasets and the SAME kept points as fit_nrtl: each op
+  below is fit_nrtl copied verbatim -- evidence, discards, objective,
+  residual, weighting, options -- with only its parameters, its `thermo
+  {}` fragment (the model) and its outputs changed; the outlier discard
+  was decided ONCE, on the NRTL least-squares stage, and is reused, never
+  re-decided per model. UNIQUAC: two parameters a_ij, a_ji (K), tau_ij =
+  exp(-a_ij/T), b = c = 0 fixed (the NRTL default's count; temperature
+  dependence 1/T), r and q each component's own record. Wilson: two
+  parameters A_ij, A_ji (J/mol), Lambda_ij = (V_j/V_i) exp(-A_ij/RT), V
+  the records' Vliq. Two starts each. Each model gets its own record
+  (constant/parameters/<MODEL>/), its own grade at 1 / 2 / 4 K (max
+  |T_model - T|), its own one-liquid test (arm f), `fitGradeBasis
+  inSample`, the C300 cap and `review { by none; }`; a severe or refused
+  grade, or a split, is not promoted. The three in-sample residuals are
+  published side by side, never used to choose a model for the student.
+  UNIQUAC: NOT FITTED -- dimethylCarbonate and ethyleneGlycol carry no
+  UNIQUAC r and q (no tabulated value, and no UNIFAC groups to sum them
+  from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted;
+  nothing is estimated silently. Wilson: NOT FITTED -- the NRTL fit of
+  this very evidence SPLITS the liquid inside its validity span (curation
+  oneLiquid false, arm f); Wilson cannot represent two liquids, so a
+  Wilson fit here would hide the split -- Wilson is not fitted.
+  @@MODELS-END@@
+
+  @@MODELS-RESULT-BEGIN@@
+  WHAT THE UNIQUAC AND WILSON FITS FOUND: neither was fitted. UNIQUAC:
+  dimethylCarbonate and ethyleneGlycol carry no UNIQUAC r and q (no
+  tabulated value, and no UNIFAC groups to sum them from,
+  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
+  is estimated silently. Wilson: the NRTL fit of this very evidence
+  SPLITS the liquid inside its validity span (curation oneLiquid false,
+  arm f); Wilson cannot represent two liquids, so a Wilson fit here would
+  hide the split -- Wilson is not fitted.
+  @@MODELS-RESULT-END@@
+
   @@RESULT-BEGIN@@
   WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
   fit_nrtl: b_ij = 550.2 K, b_ji = 556.4 K over 11 kept points of 1
@@ -189,6 +226,8 @@ operations
         properties  ( T_bubble  y_eq_dimethylCarbonate );
         output      { file txy_nrtl.csv; }
     }
+    // @@C294-OPS-BEGIN@@ -- UNIQUAC and Wilson on the NRTL fit's own evidence (DEV.md 4c C294)
+    // @@C294-OPS-END@@
 );
 
 experimental

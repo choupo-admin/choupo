@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "a3ce54c54a75142c0b302ddece4fd827e265c7a473c532d85acea73cfbc991a3";
             release       Choupo-2608;
         }
+        "parameters/Wilson/aniline-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "6609daf5182059fbab055f5f0205d9f869405e415afc9778096002eb19511de2";
+            computationalSha256 "f99b321a48b7858e7a54ac0fa68dd1989e1ad2fb78953ffd7560ba2b3ed19193";
+            origin        "data/standards/parameters/Wilson/aniline-nNDimethylformamide.dat";
+            originSha256  "a413ce959000b457ab90f7b8df021c8e392c4daeba63571495a18661fd50464f";
+            release       Choupo-2608;
+        }
     }
 }

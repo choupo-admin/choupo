@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "33280f095b3d58bea40323c0a9ba4c3875acbc90feacb949b8cbe7de20803cab";
             release       Choupo-2608;
         }
+        "parameters/Wilson/dimethylDisulfide-methanol.dat"
+        {
+            type          imported;
+            sha256        "acaef740f1674b42c38cfabf8b24dc29d4d827ff16cd702b0f4569b9e8d1dcdc";
+            computationalSha256 "6a3afed29c7e00442ac67c1792cb851f82c7275fae008627a7ef4e5df761f8c8";
+            origin        "data/standards/parameters/Wilson/dimethylDisulfide-methanol.dat";
+            originSha256  "4b7684338dd3689aeef6cf7d2ef61035c2de3ecf51396290d313e0b930aaae78";
+            release       Choupo-2608;
+        }
     }
 }

@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "3fcc79807a40c157b43ffdb0cfb657b44021248acdff75ae4d17b6873d29f7d7";
             release       Choupo-2608;
         }
+        "parameters/Wilson/dimethylSulfoxide-monochlorobenzene.dat"
+        {
+            type          imported;
+            sha256        "9a17e846a9b6a0e3a00ea8a9c78b0c847ebf76a7b694ee32eaeb45878558c355";
+            computationalSha256 "eb11621e83b438506bdf91421e85b8ff80d8ce458be44203c305d447e64d5a52";
+            origin        "data/standards/parameters/Wilson/dimethylSulfoxide-monochlorobenzene.dat";
+            originSha256  "9fdc5737b98d0612fcc1b6bfdeb375a8e07300a12d07f8ae7a8a709f559294c9";
+            release       Choupo-2608;
+        }
     }
 }

@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-nNDimethylacetamide.A_ij  -2458.41694459;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-nNDimethylacetamide.A_ji  984.553716569;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "99e509d61946a638";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Butanol-nNDimethylacetamide-bubble-j.fluid.2015.03.013.dat";
+            doi       "10.1016/j.fluid.2015.03.013";
+            sha256    "4f88316a736018a785cfa7c1874fed609c1ceb57399f65c7b517757b6e1a2567";
+            provenance measured;
+            archiveFile "j.fluid.2015.03.013.xml";
+            system    "2Butanol + nNDimethylacetamide";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.019; max 0.938; n 29; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-nNDimethylacetamide.A_ij  14289.3637721;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-nNDimethylacetamide.A_ji  -5154.11593063;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "99e509d61946a638";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Butanol-nNDimethylacetamide-bubble-j.fluid.2015.03.013.dat";
+            doi       "10.1016/j.fluid.2015.03.013";
+            sha256    "4f88316a736018a785cfa7c1874fed609c1ceb57399f65c7b517757b6e1a2567";
+            provenance measured;
+            archiveFile "j.fluid.2015.03.013.xml";
+            system    "2Butanol + nNDimethylacetamide";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.019; max 0.938; n 29; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

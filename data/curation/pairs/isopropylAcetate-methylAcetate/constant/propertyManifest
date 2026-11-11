@@ -28,10 +28,10 @@ propertyManifest
         "components/isopropylAcetate.dat"
         {
             type          imported;
-            sha256        "2328fd502eebc591dc0d81570786331f2d6647eb2b71bfe7172809332c8e3fe0";
-            computationalSha256 "1c866ebe928bb3a9819829800fbff05561232d4be946665e4b122aac3e9f145f";
+            sha256        "e7ac260d88cf4a0bfa207e4911233608a56c4d10a61c24e4f7747ea6e7c0f438";
+            computationalSha256 "b0aad9448ce9dd1414628dc55a1e66f00915a1d484ade9e5aa47fe646ee093c7";
             origin        "data/standards/components/isopropylAcetate.dat";
-            originSha256  "b4165a2c125255c87da7f45e828cad88381ca66d9b8bb23696bd173c77aae660";
+            originSha256  "72e882241e06e02aeea5b7957fc17349db5a3ac5b52a361372ead9ddfd714662";
             release       Choupo-2608;
         }
         "components/methylAcetate.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/isopropylAcetate-methylAcetate.dat"
+        {
+            type          imported;
+            sha256        "4d037ad74dcd3a3e56a4eb417a59c3cde005d380a550700a511f45c4fe39954d";
+            computationalSha256 "bd43f03c3b825b39b5de1d60ed28067da92e4ecc40fb5bbf7df776b7663b5982";
+            origin        "data/standards/parameters/UNIQUAC/isopropylAcetate-methylAcetate.dat";
+            originSha256  "cd54a1dedfa04acd2a7eaea099a006991e8d4da71c1b5259092acd2ccbfa6e0c";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/isopropylAcetate-methylAcetate.dat"
+        {
+            type          imported;
+            sha256        "78134dfc80ab3e7f5d2e832f5e0ea25d3ee48a1f5efe1e7680b3215a7bd81a73";
+            computationalSha256 "28b0d6089291044748177931975c716df2e255c6ac271fe9d7d0998c75a5eb59";
+            origin        "data/standards/parameters/Wilson/isopropylAcetate-methylAcetate.dat";
+            originSha256  "f7860bd2aecb7bcef1de07d878d1bc7367701371ccf39cdadb09456d0eeed332";
             release       Choupo-2608;
         }
     }

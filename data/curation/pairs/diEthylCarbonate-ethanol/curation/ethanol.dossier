@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-diEthylCarbonate.A_ij  2609.73773751;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-diEthylCarbonate.A_ji  820.843160249;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1d720d57b6b24d71";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-diEthylCarbonate-bubble-je0201018.dat";
+            doi       "10.1021/je0201018";
+            sha256    "32c5bc6543c484de3eda701cd93356c0c9be50b127f7099b2af1c7ac2b06dd8f";
+            provenance measured;
+            archiveFile "je0201018.xml";
+            system    "ethanol + diEthylCarbonate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0157; max 0.9861; n 34; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-diEthylCarbonate.A_ij  2609.73773971;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-diEthylCarbonate.A_ji  820.843154868;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1d720d57b6b24d71";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-diEthylCarbonate-bubble-je0201018.dat";
+            doi       "10.1021/je0201018";
+            sha256    "32c5bc6543c484de3eda701cd93356c0c9be50b127f7099b2af1c7ac2b06dd8f";
+            provenance measured;
+            archiveFile "je0201018.xml";
+            system    "ethanol + diEthylCarbonate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0157; max 0.9861; n 34; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

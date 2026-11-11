@@ -440,6 +440,113 @@ def one_liquid_failures(rf, tag):
     return []
 
 
+#  DEV.md 4c C294: UNIQUAC and Wilson pairs fitted on an NRTL case's own
+#  evidence.  The facts and arm (f) for them, recomputed here from the
+#  record's own equation (src/thermo/activityCoefficient/UNIQUAC.cpp,
+#  Wilson.cpp) and the case's own component records -- no call into the engine.
+MODEL_KEYS = {"UNIQUAC": ("a_ij", "b_ij", "c_ij", "a_ji", "b_ji", "c_ji"),
+              "Wilson": ("A_ij", "A_ji")}
+R_GAS = 8.31446261815324
+
+
+def model_facts(text, model):
+    t = strip_comments(text)
+    par = block(t, "parameters") or ""
+    val = block(t, "validation") or ""
+    vd = block(block(t, "provenance") or "", "validity") or ""
+    return {"i": word(par, "i"), "j": word(par, "j"),
+            **{k: num(par, k) for k in MODEL_KEYS[model]},
+            "evidence": evidence(t),
+            "T": (block(vd, "temperature") or "").split(),
+            "P": (block(vd, "pressure") or "").split(),
+            "verdict": word(val, "verdict")}
+
+
+def _hull_split(g, n=4000):
+    """The x1 interval over which g(x1) (the Gibbs energy of mixing over RT)
+    lies ABOVE its lower convex hull, or None -- arm (f)'s test, any model."""
+    pts = [(k / n, g(k / n)) for k in range(1, n)]
+    hull = []
+    for p in pts:
+        while len(hull) >= 2 and ((hull[-1][0] - hull[-2][0]) * (p[1] - hull[-2][1])
+                                  - (hull[-1][1] - hull[-2][1]) * (p[0] - hull[-2][0])) <= 0:
+            hull.pop()
+        hull.append(p)
+    for (xa, ga), (xb, gb) in zip(hull, hull[1:]):
+        if xb - xa > 2.5 / n and any(
+                gg - (ga + (gb - ga) * (x - xa) / (xb - xa)) > 1e-9
+                for x, gg in pts if xa < x < xb):
+            return (xa, xb)
+    return None
+
+
+def component_rq(text):
+    m = re.search(r"(?m)^uniquac\s*\{([^{}]*)\}", strip_comments(text))
+    if not m:
+        return None
+    r, q = num(m.group(1), "r"), num(m.group(1), "q")
+    return (r, q) if r and q else None
+
+
+def component_vliq(text):
+    m = re.search(r"^\s*Vliq\s+([0-9.eE+-]+)", strip_comments(text), re.M)
+    return float(m.group(1)) if m else None
+
+
+def model_gmix(rf, model, comps, T):
+    """g_mix/RT(x1) of the record's own equation at T, x1 the record's i."""
+    i, j = rf["i"], rf["j"]
+    if model == "UNIQUAC":
+        (r1, q1), (r2, q2) = component_rq(comps[i]), component_rq(comps[j])
+        t12 = math.exp(-(rf["a_ij"] + (rf["b_ij"] or 0) * T + (rf["c_ij"] or 0) * T * T) / T)
+        t21 = math.exp(-(rf["a_ji"] + (rf["b_ji"] or 0) * T + (rf["c_ji"] or 0) * T * T) / T)
+
+        def g(x1):
+            x2 = 1.0 - x1
+            sr, sq = r1 * x1 + r2 * x2, q1 * x1 + q2 * x2
+            p1, p2 = r1 * x1 / sr, r2 * x2 / sr
+            h1, h2 = q1 * x1 / sq, q2 * x2 / sq
+            return (x1 * math.log(x1) + x2 * math.log(x2)
+                    + x1 * math.log(p1 / x1) + x2 * math.log(p2 / x2)
+                    + 5.0 * (q1 * x1 * math.log(h1 / p1) + q2 * x2 * math.log(h2 / p2))
+                    - q1 * x1 * math.log(h1 + h2 * t21) - q2 * x2 * math.log(h2 + h1 * t12))
+        return g
+    v1, v2 = component_vliq(comps[i]), component_vliq(comps[j])
+    L12 = v2 / v1 * math.exp(-rf["A_ij"] / (R_GAS * T))
+    L21 = v1 / v2 * math.exp(-rf["A_ji"] / (R_GAS * T))
+
+    def g(x1):
+        x2 = 1.0 - x1
+        return (x1 * math.log(x1) + x2 * math.log(x2)
+                - x1 * math.log(x1 + L12 * x2) - x2 * math.log(x2 + L21 * x1))
+    return g
+
+
+def model_one_liquid_failures(rf, model, comps, tag):
+    """Arm (f) for a UNIQUAC or Wilson record: no liquid-liquid split at six
+    temperatures across its validity span, on its own equation."""
+    tlo, thi = validity_T(rf["T"])
+    need = ("a_ij", "a_ji") if model == "UNIQUAC" else ("A_ij", "A_ji")
+    if tlo is None or thi is None or any(rf.get(k) is None for k in need):
+        return [f"{tag}: no readable validity span or {model} parameters -- arm (f) "
+                "cannot run, so it must not pass"]
+    if model == "UNIQUAC" and (component_rq(comps.get(rf["i"], "")) is None
+                               or component_rq(comps.get(rf["j"], "")) is None):
+        return [f"{tag}: a component carries no UNIQUAC r/q -- arm (f) cannot run"]
+    if model == "Wilson" and not (component_vliq(comps.get(rf["i"], "")) and
+                                  component_vliq(comps.get(rf["j"], ""))):
+        return [f"{tag}: a component carries no Vliq -- arm (f) cannot run"]
+    for k in range(6):
+        T = tlo + (thi - tlo) * k / 5
+        cut = _hull_split(model_gmix(rf, model, comps, T))
+        if cut:
+            return [f"{tag}: predicts a LIQUID-LIQUID SPLIT at {T:.2f} K "
+                    f"(x_{rf['i']} {cut[0]:.3f} .. {cut[1]:.3f}), inside its own validity "
+                    f"span {tlo}-{thi} K -- its evidence is bubble points of ONE liquid; "
+                    f"a {model} pair that splits that liquid stays in its case"]
+    return []
+
+
 def validity_T(tokens):
     """(min, max) in K from the validity block's temperature tokens."""
     vals = re.findall(r"(min|max)\s+([0-9.eE+-]+)", " ".join(tokens))
@@ -1392,6 +1499,221 @@ def c291_failures(rec, cur, case, out, tag, fails, in_std=False):
                      f"discards {sum(len(v) for v in declared.values())} row(s)")
 
 
+MODEL_GRADE_COUNT = {}
+MODEL_FLOOR = {"UNIQUAC": 1, "Wilson": 1}   # C294: the folders exist because pairs were promoted
+
+
+def check_model_records(tmp, runs, fetched, fails, not_run):
+    """Arm (m), DEV.md 4c C294: a UNIQUAC or Wilson record fitted on an NRTL
+    pair case's own evidence (`curation { model UNIQUAC|Wilson; }`).
+      * its fit op is the case's fit_nrtl op with ONLY its parameters, its
+        thermo fragment and its outputs changed -- regenerated here by
+        pairs_c283.model_op from the fit_nrtl op and required byte-equal, so
+        the evidence, the discards (decided once, on NRTL; arm j / k re-derive
+        them), the objective and the residual cannot drift apart;
+      * REPRODUCTION: the case's run writes <stem>.<MODEL>.proposal.dat, equal
+        to the record on the parameters, evidence, validity span and verdict;
+      * the curation block held to the run: max error and kept points equal
+        the run's fit_<model>, the grade recomputed on the kind's limits, the
+        verdict, oneLiquid = arm (f) on the record's own equation and the
+        case's component records, temperatures / laboratories recounted;
+      * a UNIQUAC r/q of `origin definition` reproduced from the component's
+        UNIFAC groups (bin/curate/uniquac_rq_from_groups.py --check);
+      * in the CATALOGUE: accepted, never severe or refused (C300 rule 3), one
+        liquid across the span, fitGrade / basis / cap by C300, its number, the
+        review block, promotedBy, and the loader voicing autoPromoted and a
+        warning or SEVERE grade.
+    Returns the list of records checked."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import pairs_c283 as pc
+    import pairs_px as px
+    import uniquac_rq_from_groups as urq
+    import curation_roots
+    done = []
+    params = ROOT / "data" / "standards" / "parameters"
+    n_def, rq_fails = urq.check()
+    fails.extend(rq_fails)
+    for model in pc.MODELS:
+        std = sorted((params / model).glob("*.dat")) if (params / model).is_dir() else []
+        std = [p for p in std if "fittedInCase" in p.read_text()
+               and pc.MODELS_PROMOTED_BY in p.read_text()]
+        if len(std) < MODEL_FLOOR[model]:
+            fails.append(f"only {len(std)} {model} record(s) promoted by C294 under "
+                         f"data/standards/parameters/{model}/ -- the floor is "
+                         f"{MODEL_FLOOR[model]}; the scan surface has collapsed")
+        names = {p.name: word(strip_comments(p.read_text()), "fittedInCase") for p in std}
+        local = [p for r in curation_roots.case_roots()
+                 for p in sorted(r.rglob(f"constant/parameters/{model}/*.dat"))
+                 if "curation" in p.read_text() and "fittedInCase" in p.read_text()]
+        local = [p for p in local if names.get(p.name, "\0")
+                 != word(strip_comments(p.read_text()), "fittedInCase")]
+        for rec_path in std + local:
+            rec = strip_comments(rec_path.read_text())
+            cur = block(rec, "curation")
+            if cur is None or word(cur, "model") != model:
+                continue      # not a C294 record (a hand-curated one keeps its own checks)
+            in_std = rec_path.parent == params / model
+            tag = rec_path.relative_to(ROOT).as_posix()
+            case_rel = word(rec, "fittedInCase")
+            for k in PROMOTION_FIELDS:
+                if not word(rec, k):
+                    fails.append(f"{tag}: no `{k}` -- a proposal moved, not promoted")
+            case = ROOT / case_rel if case_rel else None
+            if case is None or not (case / "system" / "propsDict").exists():
+                fails.append(f"{tag}: fittedInCase `{case_rel}` is not a case")
+                continue
+            kind = pc.case_kind(case)
+            if kind is None:
+                fails.append(f"{tag}: fittedInCase {case_rel} is not a C283/C291 pair case")
+                continue
+            if case_rel not in fetched:
+                fetched[case_rel] = fetch_case(case)
+            code, msg = fetched[case_rel]
+            if code == 2:
+                not_run.append(f"{tag}: {msg.splitlines()[-1] if msg else 'fetch could not run'}")
+                continue
+            if code != 0:
+                fails.append(f"{tag}: its case's datasets could not be regenerated: {msg[-300:]}")
+                continue
+            t = (case / "system" / "propsDict").read_text()
+            nop = pc.nrtl_op(t)
+            c1, c2 = pc.op_pair(nop)
+            stem = "-".join(sorted((c1, c2)))
+            low = model.lower()
+            _, _, _, s1, _ = pc.MSPEC[model]
+            want = pc.model_op(nop, model, f"fit_{low}", c1, c2, s1,
+                               [("fit_log", f"fit_history_{low}.csv"),
+                                ("parity", f"parity_{low}.csv"),
+                                ("proposal", f"{stem}.{model}.proposal.dat")])
+            if want not in t:
+                fails.append(f"{tag}: its case's fit_{low} op is not fit_nrtl with only the "
+                             "parameters, the thermo fragment and the outputs changed -- the "
+                             "evidence, discards, objective or residual differ (C294)")
+            work = tmp / case.relative_to(ROOT).as_posix().replace("/", "__")
+            if case_rel not in runs:
+                if work.exists():
+                    shutil.rmtree(work)
+                shutil.copytree(case, work)
+                for stale in work.glob("*.proposal.dat"):
+                    stale.unlink()
+                p = subprocess.run([str(PROPS), "."], cwd=str(work),
+                                   capture_output=True, text=True, timeout=1800)
+                runs[case_rel] = (p.returncode, p.stdout + p.stderr)
+            rc, out = runs[case_rel]
+            if rc != 0:
+                fails.append(f"{tag}: its case {case_rel} exited {rc}")
+                continue
+            prop = work / f"{stem}.{model}.proposal.dat"
+            if not prop.exists():
+                fails.append(f"{tag}: {case_rel} wrote no {prop.name}")
+                continue
+            rf, pf = model_facts(rec, model), model_facts(prop.read_text(), model)
+            for k in ("i", "j", "verdict", "evidence", "T", "P"):
+                if rf[k] != pf[k]:
+                    fails.append(f"{tag}: `{k}` differs from what its case regresses now -- "
+                                 f"record {rf[k]!r}, run {pf[k]!r}")
+            for k in MODEL_KEYS[model]:
+                if not close(rf[k], pf[k]):
+                    fails.append(f"{tag}: `{k}` = {rf[k]} in the record, {pf[k]} from its "
+                                 "case -- the record has drifted from its evidence")
+            if model == "UNIQUAC" and any(rf[k] not in (0.0, None) for k in
+                                          ("b_ij", "b_ji", "c_ij", "c_ji")):
+                fails.append(f"{tag}: b/c terms not zero -- C294 fits a_ij, a_ji only")
+            m = re.search(r"<<<Choupo:result-begin>>>(.*?)<<<Choupo:result-end>>>", out, re.S)
+            try:
+                js = json.loads(m.group(1)) if m else {}
+            except json.JSONDecodeError:
+                js = {}
+            op = next((o for o in js.get("operationResults", [])
+                       if o.get("name") == f"fit_{low}"), {})
+            dg = op.get("diagnostics", {})
+            mx, nk = dg.get("bubble_max_fit"), dg.get("n_data")
+            if mx is None or nk is None:
+                fails.append(f"{tag}: its case published no fit_{low} bubble_max_fit / n_data")
+                continue
+            if kind == "px":
+                mx = 100.0 * mx
+                rmx, lim_words = num(cur, "maxRelError_pct"), ("%", px.grade_of)
+            else:
+                rmx, lim_words = num(cur, "maxAbsError"), ("K", pc.grade_of)
+            if rmx is None or abs(rmx - mx) > 5e-5 * max(1.0, mx) + 1e-4:
+                fails.append(f"{tag}: curation max error {rmx}, the run's {mx:.6f} {lim_words[0]}")
+            nan = num(cur, "noBubblePoint") or 0
+            #  The tool counts in pointsKept the kept points the model prices
+            #  and in noBubblePoint those it finds no bubble point for; the
+            #  run fits both, so their sum is its n_data.
+            if (num(cur, "pointsKept") or 0) + nan != nk:
+                fails.append(f"{tag}: curation pointsKept {num(cur, 'pointsKept')} + "
+                             f"noBubblePoint {nan:g}, the run fitted {nk}")
+            grade = lim_words[1](mx, nan)
+            MODEL_GRADE_COUNT[(model, grade)] = MODEL_GRADE_COUNT.get((model, grade), 0) + 1
+            if word(cur, "grade") != grade:
+                fails.append(f"{tag}: curation grade `{word(cur, 'grade')}`, recomputed `{grade}`")
+            if word(cur, "verdict") != ("accepted" if grade != "refused" else "notAccepted"):
+                fails.append(f"{tag}: curation verdict `{word(cur, 'verdict')}` with grade {grade}")
+            if word(cur, "discardsFrom") != "fit_nrtl":
+                fails.append(f"{tag}: curation discardsFrom `{word(cur, 'discardsFrom')}` -- the "
+                             "outliers are decided once, on NRTL (C294)")
+            comps = {}
+            for c in (rf["i"], rf["j"]):
+                cp = case / "constant" / "components" / f"{c}.dat"
+                comps[c] = cp.read_text() if cp.exists() else ""
+            if model == "UNIQUAC":
+                bad = [c for c in comps if urq.is_definition(comps[c])
+                       and urq.check_text(comps[c]) is not None]
+                for c in bad:
+                    fails.append(f"{tag}: {c}'s sealed r/q in the case is not its UNIFAC group "
+                                 "sum: " + urq.check_text(comps[c]))
+            split = model_one_liquid_failures(rf, model, comps, tag)
+            if word(cur, "oneLiquid") != ("false" if split else "true"):
+                fails.append(f"{tag}: curation oneLiquid `{word(cur, 'oneLiquid')}`, arm (f) on "
+                             f"the record's own {model} equation says "
+                             f"{'it SPLITS' if split else 'one liquid'}")
+            nT, nL = pc.evidence_counts(case, kind)
+            if num(cur, "temperatures") != nT or num(cur, "laboratories") != nL:
+                fails.append(f"{tag}: curation temperatures/laboratories "
+                             f"{num(cur, 'temperatures')}/{num(cur, 'laboratories')}, the kept "
+                             f"evidence gives {nT}/{nL}")
+            prov = block(rec, "provenance") or ""
+            status = word(rec, "reviewStatus")
+            names = (f"{rf['i']}-{rf['j']} ({model})", f"{rf['j']}-{rf['i']} ({model})")   # the loader names a non-NRTL record with its model (C294)
+            if in_std:
+                if word(cur, "verdict") != "accepted" or pc.promotion_refusal(grade):
+                    fails.append(f"{tag}: grade {grade} / verdict {word(cur, 'verdict')} in the "
+                                 "CATALOGUE -- severe and refused stay in their case (C300 rule 3)")
+                fails.extend(split)
+                applied, lf = grade_label_failures(prov, grade, nT, nL, tag)
+                fails.extend(lf)
+                if word(prov, "fitGrade") != applied:
+                    fails.append(f"{tag}: provenance fitGrade `{word(prov, 'fitGrade')}`, "
+                                 f"recomputed `{applied}`")
+                key = ("fitGradeMaxRelativeError_pct" if kind == "px"
+                       else "fitGradeMaxTemperatureError_K")
+                g_mx = num(prov, key)
+                if g_mx is None or abs(g_mx - mx) > 5e-5 * max(1.0, mx) + 1e-4:
+                    fails.append(f"{tag}: provenance {key} {g_mx}, the run's {mx:.6f}")
+                if status != "autoPromoted" or word(rec, "promotedBy") != pc.MODELS_PROMOTED_BY:
+                    fails.append(f"{tag}: a C294 catalogue record must be `reviewStatus "
+                                 f"autoPromoted` promoted by `{pc.MODELS_PROMOTED_BY}`")
+                fails.extend(review_failures(prov, tag, "the record"))
+                said = [f"[unreviewed] pair {n}: reviewStatus autoPromoted" for n in names]
+                if not any(s in out for s in said):
+                    fails.append(f"{tag}: its case printed no `{said[0]}` line -- the "
+                                 "engine does not voice it")
+                gword = {"warning": "warning", "severe": "SEVERE"}.get(applied)
+                gsaid = [f"[fit-grade] pair {n}: fitGrade " for n in names]
+                if gword and not any(s + gword in out for s in gsaid):
+                    fails.append(f"{tag}: fitGrade {applied} and its case printed no "
+                                 f"`{gsaid[0]}{gword}` line")
+            else:
+                if word(prov, "fitGrade"):
+                    fails.append(f"{tag}: a case-local record declares provenance fitGrade")
+                if status != "interim":
+                    fails.append(f"{tag}: a case-local C294 record must be `reviewStatus interim`")
+            done.append(f"{model} {rec_path.stem}")
+    return done
+
+
 def main():
     if not PROPS.exists():
         print("check_regressed_pairs: FAILED\n  choupoProps is not built -- "
@@ -1553,6 +1875,7 @@ def main():
             where = ("catalogue" if in_std
                      else "case-local in " + rec_path.parents[3].name)
             checked.append(f"{rec_path.stem} ({where}, {rf['verdict']})")
+        model_done = check_model_records(tmp, runs, fetched, fails, not_run)
         vp_done = check_vapour_pressures(tmp, fails, not_run, fetched)
         check_vp_grade_channel(tmp, fails)
         vp_grades = ", ".join(f"{VP_GRADE_COUNT.get(g, 0)} {g}" for g in VP_GRADES[:3])
@@ -1616,6 +1939,14 @@ def main():
           f"({vp_grades}; none refused) with its deciding numbers, Trange = the kept span, "
           "evidence -- autoPromoted with humanReviewed false, and a warning or SEVERE "
           "grade voiced by the component loader into the caveat block (arm i); "
+          f"{len(model_done)} UNIQUAC / Wilson record(s) fitted on their NRTL case's own "
+          "evidence and kept points (DEV.md 4c C294, arm m) reproduced by their cases -- the "
+          "fit op byte-equal to fit_nrtl but for parameters, thermo fragment and outputs, the "
+          "grade recomputed ("
+          + ", ".join(f"{m} {g} {n}" for (m, g), n in sorted(MODEL_GRADE_COUNT.items()))
+          + "), oneLiquid on each model's own equation, r/q of `origin definition` equal to "
+          "the UNIFAC group sum, and in the catalogue never severe, fitGrade/basis/cap by C300, "
+          "voiced; "
           f"{span_held} water pair(s) used BELOW their span announce it once "
           "per run, into the caveat block, say nothing inside it, and publish "
           "the same gammas as a span-less inline twin (arm g).  NOT "

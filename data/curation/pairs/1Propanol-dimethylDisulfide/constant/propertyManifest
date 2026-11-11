@@ -28,10 +28,10 @@ propertyManifest
         "components/1Propanol.dat"
         {
             type          imported;
-            sha256        "6f8dab202717440a53ff49356dddaa632b8e71ad54a651d6c4f2513519864916";
-            computationalSha256 "c964d7a44b9335ec39b77584095dac5935998f8ccd1f814a9dbe51801adf4389";
+            sha256        "de3f1162278fc2d5ee4995ee4887b3f1c0f3669920483a314461b227ac825867";
+            computationalSha256 "d50d84215a5e98b6539bb27d9c7d0d58bb7fc2a8cf3f66c2f943a76cd6b6d056";
             origin        "data/standards/components/1Propanol.dat";
-            originSha256  "e576ef637c75dec43096777ad538d23ab32c8828de898339ba9226732172d96f";
+            originSha256  "ddcf4f1180bb27e9b6dfa2adb55a9ac88396a36d6a68cb8c48df90d2f04bcfd1";
             release       Choupo-2608;
         }
         "components/dimethylDisulfide.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "7da3cb2e3f9261a054bec4ebdb93b59df67bd3f5deea4ce541b8ebd49a085c6a";
             origin        "data/standards/parameters/NRTL/1Propanol-dimethylDisulfide.dat";
             originSha256  "c1f5e835abb18b1306d4f7ac125892cbe28c11d9d4a1f2af9a4b7c401431f4db";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Propanol-dimethylDisulfide.dat"
+        {
+            type          imported;
+            sha256        "41fdcd5c5ca63fb1e77aa182e1f00968e3339e8d14f0f41ecf2f3907fc387801";
+            computationalSha256 "5161bd43c0c2c7ddf3e071191c5b794c6f8bd2e7eacdcbed143d2e1f5fb87c31";
+            origin        "data/standards/parameters/Wilson/1Propanol-dimethylDisulfide.dat";
+            originSha256  "6e10f509fbdeedda1b9d1c8070c4281fe8625fc49107e802283c5c807f7e1ce5";
             release       Choupo-2608;
         }
     }

@@ -28,10 +28,10 @@ propertyManifest
         "components/diNButylEther.dat"
         {
             type          imported;
-            sha256        "537970d2ee2c419075c0e60d44f291a9e308dd2c5fb5d18a04ae9dd5dd0f0f2b";
-            computationalSha256 "2d5d88b4f35c15d610e2651a7e04d59a600b408d65f8b9e305a62a753f13c07b";
+            sha256        "1eb78d03a6e082a5069fdab042f3902927f770e97f7e03f5a3bc9d789cc1f1f3";
+            computationalSha256 "021120e8b3e2ae75d45f6e83d172d78e8421092f64ef00c67b8a95019c02998a";
             origin        "data/standards/components/diNButylEther.dat";
-            originSha256  "e943e71a195499eea4c36243b977aff1fe2a5602ccb7592874505a239160f212";
+            originSha256  "fb73ec09e85d833de864cddf6d119fe08f842110ee4edd6efce7075c195d8e84";
             release       Choupo-2608;
         }
         "components/nButanol.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/diNButylEther-nButanol.dat"
+        {
+            type          imported;
+            sha256        "af27e34efbf39e2fd00d6ad65fa58387c3d99a89b8ed80ca5a7e19fce68598c9";
+            computationalSha256 "793545c8e57ae981ad6d5abf1d5ab5cbd9e2321aa679d909422666f5e874408f";
+            origin        "data/standards/parameters/UNIQUAC/diNButylEther-nButanol.dat";
+            originSha256  "118345f2c5673dac0a8f764b89225610f03769979f84d36a858ba347f60928bb";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/diNButylEther-nButanol.dat"
+        {
+            type          imported;
+            sha256        "a946a1e32c1bcff3a17caffaeb5244b90b58168fe765ee0bfe9a365c82e5fb7b";
+            computationalSha256 "cf3307bb6aa22323b213df42dcbe9a44a417f71f7fb4751067d6659c8d9461ce";
+            origin        "data/standards/parameters/Wilson/diNButylEther-nButanol.dat";
+            originSha256  "8397d8d7cab6d7713c4906ac34513e7daa6459e4db412881ab16527d828d7e6d";
             release       Choupo-2608;
         }
     }

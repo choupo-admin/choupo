@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "e5fed05b4ab4cdb856117cd43072a617b9acd78e0dbfd4d91fa55f3977491e54";
             release       Choupo-2608;
         }
+        "parameters/Wilson/dimethylSulfoxide-water.dat"
+        {
+            type          imported;
+            sha256        "20b609480140255eb9961255db90dcd0112a1bc97506825419ef936d180aa612";
+            computationalSha256 "284dae47ae9d70c0a1dc75433a37a8b18492d0fe7f6c471113ebc4b42e17ebe2";
+            origin        "data/standards/parameters/Wilson/dimethylSulfoxide-water.dat";
+            originSha256  "841c7f7246234d79111164fde40985a95ef6f19831083d3683c7e5610611c05c";
+            release       Choupo-2608;
+        }
     }
 }

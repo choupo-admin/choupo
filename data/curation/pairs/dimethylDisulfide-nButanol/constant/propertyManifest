@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "6b5f2e227263bf4d28b4e619be40057f4a75cdd15dd41edfcb430950470fdb80";
             release       Choupo-2608;
         }
+        "parameters/Wilson/dimethylDisulfide-nButanol.dat"
+        {
+            type          imported;
+            sha256        "620863f6a2f8f6af882180fe1fbac146107b1c6d7a01399f7cd8489e4700dfca";
+            computationalSha256 "ee36677bb421ddbcc2f216a8251e5698f231cf0a20966993b0713ac87561ac04";
+            origin        "data/standards/parameters/Wilson/dimethylDisulfide-nButanol.dat";
+            originSha256  "1f5b8a0999afda5d1fc392549be448fbde8b5940caba95fc36a2cd108f751d38";
+            release       Choupo-2608;
+        }
     }
 }

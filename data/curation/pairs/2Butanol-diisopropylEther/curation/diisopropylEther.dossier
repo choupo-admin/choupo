@@ -112,4 +112,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-2Butanol.A_ij  -428.706127639;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-2Butanol.A_ji  3364.26340838;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2daec1890d865a8e";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diisopropylEther-2Butanol-bubbleP-je0502896-b3.dat";
+            doi       "10.1021/je0502896";
+            sha256    "b2135ef6887f98e20d44c0241320ee16c9f7b30fce76774f0bed2d0d89760318";
+            provenance measured;
+            archiveFile "je0502896.xml";
+            system    "diisopropylEther + 2Butanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0558; max 0.9531; n 26; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-2Butanol.A_ij  -428.706151017;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-2Butanol.A_ji  3364.26344961;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2daec1890d865a8e";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diisopropylEther-2Butanol-bubbleP-je0502896-b3.dat";
+            doi       "10.1021/je0502896";
+            sha256    "b2135ef6887f98e20d44c0241320ee16c9f7b30fce76774f0bed2d0d89760318";
+            provenance measured;
+            archiveFile "je0502896.xml";
+            system    "diisopropylEther + 2Butanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0558; max 0.9531; n 26; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

@@ -112,4 +112,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-anisole.A_ij  1812.198215;
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-anisole.A_ji  1479.46673576;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b2fca89d0cd207db";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nNonane-anisole-bubble-je700594n.dat";
+            doi       "10.1021/je700594n";
+            sha256    "7b512b206820a896626fa4fe3bfac6be1fa539588544d4b1f7b0f59a43b30844";
+            provenance measured;
+            archiveFile "je700594n.xml";
+            system    "nNonane + anisole";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.106; max 0.891; n 39; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-anisole.A_ij  1812.19821808;
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-anisole.A_ji  1479.46673427;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b2fca89d0cd207db";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nNonane-anisole-bubble-je700594n.dat";
+            doi       "10.1021/je700594n";
+            sha256    "7b512b206820a896626fa4fe3bfac6be1fa539588544d4b1f7b0f59a43b30844";
+            provenance measured;
+            archiveFile "je700594n.xml";
+            system    "nNonane + anisole";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.106; max 0.891; n 39; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "cc1c4ab66445ee2c644c795025120e96b23694171bb9784b7e301859e6bf10b5";
             release       Choupo-2608;
         }
+        "parameters/Wilson/tetrahydrofuran-trichloroethylene.dat"
+        {
+            type          imported;
+            sha256        "3089a66d797d4fa3d2b1288367ae6b2b7697304b46bf9ced1934ecac4e265ad9";
+            computationalSha256 "68bc7d1a78244be3948b48bc609038999a9a5cef16b44e83699e6765eab4868d";
+            origin        "data/standards/parameters/Wilson/tetrahydrofuran-trichloroethylene.dat";
+            originSha256  "fd4d4beda0cdcdf1fafecf178cf782e973541b8de575588de1c9d02a4881cad3";
+            release       Choupo-2608;
+        }
     }
 }

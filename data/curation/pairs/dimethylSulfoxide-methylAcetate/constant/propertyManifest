@@ -43,5 +43,14 @@ propertyManifest
             originSha256  "03876631024ae93115fdb03586ab95e3720389bc0e68f5f8cf0b2b5aae74789e";
             release       Choupo-2608;
         }
+        "parameters/Wilson/dimethylSulfoxide-methylAcetate.dat"
+        {
+            type          imported;
+            sha256        "3cfca051938999cba57791151a27b0f14d8ba0939016095e2b0f22eee1e77d50";
+            computationalSha256 "eaf7c5f256ea2f83ae386dbd454cd9431f009950fa110c2dd17a07da20cd1a03";
+            origin        "data/standards/parameters/Wilson/dimethylSulfoxide-methylAcetate.dat";
+            originSha256  "ce901441c5c517398f7671e82b02067fb8aa31aa3c22ff7c2fb55b98bab674de";
+            release       Choupo-2608;
+        }
     }
 }

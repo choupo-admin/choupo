@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-nitrobenzene.A_ij  -392.865662829;
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-nitrobenzene.A_ji  3570.98622713;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2320927f129c6728";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acrylonitrile-nitrobenzene-bubble-j.fluid.2008.03.020.dat";
+            doi       "10.1016/j.fluid.2008.03.020";
+            sha256    "f9762997c3a8e2caed558dc0086fcd6e432eb02b667299840a9ac1b61849bcd0";
+            provenance measured;
+            archiveFile "j.fluid.2008.03.020.xml";
+            system    "acrylonitrile + nitrobenzene";
+            pressure  "95500.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1001; max 0.9447; n 14; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-nitrobenzene.A_ij  -392.865661002;
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-nitrobenzene.A_ji  3570.98621937;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2320927f129c6728";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acrylonitrile-nitrobenzene-bubble-j.fluid.2008.03.020.dat";
+            doi       "10.1016/j.fluid.2008.03.020";
+            sha256    "f9762997c3a8e2caed558dc0086fcd6e432eb02b667299840a9ac1b61849bcd0";
+            provenance measured;
+            archiveFile "j.fluid.2008.03.020.xml";
+            system    "acrylonitrile + nitrobenzene";
+            pressure  "95500.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1001; max 0.9447; n 14; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

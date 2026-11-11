@@ -28,10 +28,10 @@ propertyManifest
         "components/1Propanol.dat"
         {
             type          imported;
-            sha256        "6f8dab202717440a53ff49356dddaa632b8e71ad54a651d6c4f2513519864916";
-            computationalSha256 "c964d7a44b9335ec39b77584095dac5935998f8ccd1f814a9dbe51801adf4389";
+            sha256        "de3f1162278fc2d5ee4995ee4887b3f1c0f3669920483a314461b227ac825867";
+            computationalSha256 "d50d84215a5e98b6539bb27d9c7d0d58bb7fc2a8cf3f66c2f943a76cd6b6d056";
             origin        "data/standards/components/1Propanol.dat";
-            originSha256  "e576ef637c75dec43096777ad538d23ab32c8828de898339ba9226732172d96f";
+            originSha256  "ddcf4f1180bb27e9b6dfa2adb55a9ac88396a36d6a68cb8c48df90d2f04bcfd1";
             release       Choupo-2608;
         }
         "components/dimethylCarbonate.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "a859ebe749d7f8c0cd49be4676fc848712345a5114c2c892df47f15dc1f8b994";
             origin        "data/standards/parameters/NRTL/1Propanol-dimethylCarbonate.dat";
             originSha256  "c508d9858c20d1be880c73978544cfeaa1deeb5bfe9638dbcf46aaaaf685eded";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Propanol-dimethylCarbonate.dat"
+        {
+            type          imported;
+            sha256        "17ad6181e951da0c34ae14fd056f65029d6f91b3c328021ba13f65e0f12a8b69";
+            computationalSha256 "afa45043cb786e0cbc7ccdbc4ef202165d2adbd83e4630be75abfd7e6a937c54";
+            origin        "data/standards/parameters/Wilson/1Propanol-dimethylCarbonate.dat";
+            originSha256  "066949637b945dd748bfc47d7dddab2ab0edc2167d9fd8fe09d1274ad0a1ee82";
             release       Choupo-2608;
         }
     }

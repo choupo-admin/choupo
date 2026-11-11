@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "9681b27983f72fa2d13e824653e1b533ec014c6a204eca44b0a98670637e168a";
             release       Choupo-2608;
         }
+        "parameters/Wilson/nitrobenzene-trichloroethylene.dat"
+        {
+            type          imported;
+            sha256        "a5f5c98503081c0b72df4c7c850fb6ae5b9b622146e86b5bc93693838ad57d54";
+            computationalSha256 "f31ecb000e8718b2f4582250675a88aaecb849f9e418632225a9f21294250e85";
+            origin        "data/standards/parameters/Wilson/nitrobenzene-trichloroethylene.dat";
+            originSha256  "8c69b443bb5c07926197f32f934729c7601daccbbd2936c95aa4dde55ce7e7ee";
+            release       Choupo-2608;
+        }
     }
 }

@@ -114,4 +114,188 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-oXylene.a_ij  92.001592262;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-oXylene.a_ji  -91.281966184;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e69b58db2285f903";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diNButylEther-oXylene-bubble-je100019r.dat";
+            doi       "10.1021/je100019r";
+            sha256    "5e3619a3c3d728bdd9022a8ffdc96e956c9c07ab2efb0298d07e1d4e6cd6c9b5";
+            provenance measured;
+            archiveFile "je100019r.xml";
+            system    "diNButylEther + oXylene";
+            pressure  "50600.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0299; max 0.9567; n 14; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-oXylene.a_ij  92.2007492168;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-oXylene.a_ji  -91.4395611858;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e69b58db2285f903";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diNButylEther-oXylene-bubble-je100019r.dat";
+            doi       "10.1021/je100019r";
+            sha256    "5e3619a3c3d728bdd9022a8ffdc96e956c9c07ab2efb0298d07e1d4e6cd6c9b5";
+            provenance measured;
+            archiveFile "je100019r.xml";
+            system    "diNButylEther + oXylene";
+            pressure  "50600.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0299; max 0.9567; n 14; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-oXylene.A_ij  6379.95642067;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-oXylene.A_ji  -2069.87281478;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e69b58db2285f903";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diNButylEther-oXylene-bubble-je100019r.dat";
+            doi       "10.1021/je100019r";
+            sha256    "5e3619a3c3d728bdd9022a8ffdc96e956c9c07ab2efb0298d07e1d4e6cd6c9b5";
+            provenance measured;
+            archiveFile "je100019r.xml";
+            system    "diNButylEther + oXylene";
+            pressure  "50600.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0299; max 0.9567; n 14; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-oXylene.A_ij  6379.95643399;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-oXylene.A_ji  -2069.87281892;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e69b58db2285f903";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diNButylEther-oXylene-bubble-je100019r.dat";
+            doi       "10.1021/je100019r";
+            sha256    "5e3619a3c3d728bdd9022a8ffdc96e956c9c07ab2efb0298d07e1d4e6cd6c9b5";
+            provenance measured;
+            archiveFile "je100019r.xml";
+            system    "diNButylEther + oXylene";
+            pressure  "50600.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0299; max 0.9567; n 14; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

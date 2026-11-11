@@ -28,19 +28,19 @@ propertyManifest
         "components/1Pentanol.dat"
         {
             type          imported;
-            sha256        "67c0add32a0365f5e7b1669e442fce34ca1fab7728982864212f471cea149ff4";
-            computationalSha256 "ef54b796ae70f47722ea40f25d897e9444289b0fc474d4d27a6ca111785c6a18";
+            sha256        "86c4addc505252ed263f53c07ca94ef9a158e34bfb5c32e992323eaa0c8df1d3";
+            computationalSha256 "831e21638f9c40c212865247a7342ab9080b1d897b9bece0cd5eaa0bd9f394c3";
             origin        "data/standards/components/1Pentanol.dat";
-            originSha256  "b5affaac9c1c791eb783bfdfc0669a3e8bf9a28e54efc09cbc866c5362af548c";
+            originSha256  "1b70bde782f9005b3b1776f286a59b76191371714b98aa89a8976851a2d0020a";
             release       Choupo-2608;
         }
         "components/1Propanol.dat"
         {
             type          imported;
-            sha256        "6f8dab202717440a53ff49356dddaa632b8e71ad54a651d6c4f2513519864916";
-            computationalSha256 "c964d7a44b9335ec39b77584095dac5935998f8ccd1f814a9dbe51801adf4389";
+            sha256        "de3f1162278fc2d5ee4995ee4887b3f1c0f3669920483a314461b227ac825867";
+            computationalSha256 "d50d84215a5e98b6539bb27d9c7d0d58bb7fc2a8cf3f66c2f943a76cd6b6d056";
             origin        "data/standards/components/1Propanol.dat";
-            originSha256  "e576ef637c75dec43096777ad538d23ab32c8828de898339ba9226732172d96f";
+            originSha256  "ddcf4f1180bb27e9b6dfa2adb55a9ac88396a36d6a68cb8c48df90d2f04bcfd1";
             release       Choupo-2608;
         }
         "parameters/NRTL/1Pentanol-1Propanol.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/1Pentanol-1Propanol.dat"
+        {
+            type          imported;
+            sha256        "01424ab7cccb04bdbae6eb5e5374fd1d3f43b92e5b0e62c0ea7a8d71e4c61524";
+            computationalSha256 "67348052b437aef9ed8b32220312a62b0a9ace03d15cc00679dc89d7ad06e204";
+            origin        "data/standards/parameters/UNIQUAC/1Pentanol-1Propanol.dat";
+            originSha256  "1d528c641568b8393ec825a4bb75cc9d72bd2991c446ee86ac9de3fe36873ee6";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Pentanol-1Propanol.dat"
+        {
+            type          imported;
+            sha256        "ab69e810b3a60e0bdf95babc7c5da1423af8829fa2f75560991c5b9208fd2aa1";
+            computationalSha256 "950cdb03e75bad1671fd70ead3574ce4c53f0dd34aacd5bab86fb6e0e648205d";
+            origin        "data/standards/parameters/Wilson/1Pentanol-1Propanol.dat";
+            originSha256  "225cb5cf33f6bf9db62fed8c0b11876ce35c902a71a105a6e8607ad8d8aeb629";
             release       Choupo-2608;
         }
     }

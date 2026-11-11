@@ -28,10 +28,10 @@ propertyManifest
         "components/1Propanol.dat"
         {
             type          imported;
-            sha256        "6f8dab202717440a53ff49356dddaa632b8e71ad54a651d6c4f2513519864916";
-            computationalSha256 "c964d7a44b9335ec39b77584095dac5935998f8ccd1f814a9dbe51801adf4389";
+            sha256        "de3f1162278fc2d5ee4995ee4887b3f1c0f3669920483a314461b227ac825867";
+            computationalSha256 "d50d84215a5e98b6539bb27d9c7d0d58bb7fc2a8cf3f66c2f943a76cd6b6d056";
             origin        "data/standards/components/1Propanol.dat";
-            originSha256  "e576ef637c75dec43096777ad538d23ab32c8828de898339ba9226732172d96f";
+            originSha256  "ddcf4f1180bb27e9b6dfa2adb55a9ac88396a36d6a68cb8c48df90d2f04bcfd1";
             release       Choupo-2608;
         }
         "components/nitrobenzene.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "8c23bbde86269c519e4501449c85b85f527bd52ba36914a41e97a426e894d95d";
             origin        "data/standards/parameters/NRTL/1Propanol-nitrobenzene.dat";
             originSha256  "6f5ba54c188ce9de56d64f8111309abe08a9a59a05233622d5e5800317f2fde5";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Propanol-nitrobenzene.dat"
+        {
+            type          imported;
+            sha256        "a9daf57eb5dc78b94366eba5b64d050182dfee6caf100056ab4bb36400fc28f2";
+            computationalSha256 "6d3c89a6529dbba92cced62cb357546db6bf2daf3153ea5cc7a3a293197f98b5";
+            origin        "data/standards/parameters/Wilson/1Propanol-nitrobenzene.dat";
+            originSha256  "1a489a3086d25f42a1a5e6fb8d9dcb1acce2cf25f1ae94d117f9eda05c24e83f";
             release       Choupo-2608;
         }
     }

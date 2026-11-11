@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "475025708941890bff382607db82e2d73fd427667528e444cfabb74cab37f0fb";
             release       Choupo-2608;
         }
+        "parameters/Wilson/bromobenzene-dimethylSulfoxide.dat"
+        {
+            type          imported;
+            sha256        "8e2699c636f107aab7be4c0d27cbf74c8e5dcb869fc1f404feb1d8e07ac3c711";
+            computationalSha256 "853dec2013059595ab7bc0ccef2b6191b47fd228b1604d902885666e513d4b97";
+            origin        "data/standards/parameters/Wilson/bromobenzene-dimethylSulfoxide.dat";
+            originSha256  "4bf124d5f076aa3c56cdd3052cb764fb4055bc56bb1b4891f2421fef36a701a4";
+            release       Choupo-2608;
+        }
     }
 }

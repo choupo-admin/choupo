@@ -37,10 +37,10 @@ propertyManifest
         "components/pXylene.dat"
         {
             type          imported;
-            sha256        "24c426099ea1243aa54d21cde64b34ed7312b8bf2bdde1af983f35795c260cce";
-            computationalSha256 "21ec82182e6c57257719624339c8912c2ab6ef6da558f01e7bcc4b9561706387";
+            sha256        "d6c1a35adcc2ecfb7fdd547613d094985aa02b5154eb86e2136893e5eb2b1081";
+            computationalSha256 "a12f3f6479aa3d4be6d976ca090188ab3b10b5671bb1a3fe568b547431a64d02";
             origin        "data/standards/components/pXylene.dat";
-            originSha256  "c84be1d773e7fda137a6721e882622f7cd66ba63f6278257a98da939fe724bfc";
+            originSha256  "ef3dffe3f5b93e45435a0e2b3d13566b4bd2a5c67451a02e52e75a55ac9de26b";
             release       Choupo-2608;
         }
         "parameters/NRTL/pCresol-pXylene.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "b78f285a29e4b1145c196737b75b9999cb1532ccfe8289e42f703c4d6d7c2742";
             origin        "data/standards/parameters/NRTL/pCresol-pXylene.dat";
             originSha256  "03c8e7656e0726cce59186fa2fd9fe56086ee803f0ec9fd1d8bc06eb3f0851d5";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/pCresol-pXylene.dat"
+        {
+            type          imported;
+            sha256        "901d90c153524a4792ea93739b082a4908ff759b2095dfe5c36b8e4c1ae1f533";
+            computationalSha256 "e9461d4006d1329737bd937a3ba2f6825ce70e15c6621e3e99f95f969ec40d3f";
+            origin        "data/standards/parameters/Wilson/pCresol-pXylene.dat";
+            originSha256  "3d5b5d167cce268d8b44da32ea850c4070db96bca158dfa05746eb5f4272526f";
             release       Choupo-2608;
         }
     }

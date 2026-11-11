@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "78ed5bc3e6aa439ded3cdd7c440c5a289bed3c1ee5a3731a9ae34df5e14239cc";
             release       Choupo-2608;
         }
+        "parameters/Wilson/tetraethyleneGlycol-water.dat"
+        {
+            type          imported;
+            sha256        "da22440951c8582f48b301845e34873816a554381e0e3ab2c0ced833c485ee35";
+            computationalSha256 "b6345aa1c4a6b10685d04404a91265719927c5a6547dc86b0b92587f05764d30";
+            origin        "data/standards/parameters/Wilson/tetraethyleneGlycol-water.dat";
+            originSha256  "76768259714e92a6584f8fab7b73a3b8f9b62eb7a07202a30d117c6fab7e252c";
+            release       Choupo-2608;
+        }
     }
 }

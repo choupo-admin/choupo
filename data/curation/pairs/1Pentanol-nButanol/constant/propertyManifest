@@ -28,10 +28,10 @@ propertyManifest
         "components/1Pentanol.dat"
         {
             type          imported;
-            sha256        "67c0add32a0365f5e7b1669e442fce34ca1fab7728982864212f471cea149ff4";
-            computationalSha256 "ef54b796ae70f47722ea40f25d897e9444289b0fc474d4d27a6ca111785c6a18";
+            sha256        "86c4addc505252ed263f53c07ca94ef9a158e34bfb5c32e992323eaa0c8df1d3";
+            computationalSha256 "831e21638f9c40c212865247a7342ab9080b1d897b9bece0cd5eaa0bd9f394c3";
             origin        "data/standards/components/1Pentanol.dat";
-            originSha256  "b5affaac9c1c791eb783bfdfc0669a3e8bf9a28e54efc09cbc866c5362af548c";
+            originSha256  "1b70bde782f9005b3b1776f286a59b76191371714b98aa89a8976851a2d0020a";
             release       Choupo-2608;
         }
         "components/nButanol.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/1Pentanol-nButanol.dat"
+        {
+            type          imported;
+            sha256        "8abd28d4ad2c7cd01bc671b399c9b4922f0526abb772c9ce73fc8bc6f59f62f8";
+            computationalSha256 "f9d77e5302b17427bd51ea2657e610850f86b5ef4e837172f565ab9ffb755f57";
+            origin        "data/standards/parameters/UNIQUAC/1Pentanol-nButanol.dat";
+            originSha256  "ae0b7f18263ee88f7f45724b029db055892f2b1731a1f637079eeebd5eb4744e";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Pentanol-nButanol.dat"
+        {
+            type          imported;
+            sha256        "9486541b83640df236c36ddb16f506e3799cbc0ef1024e244b60f1a58d8ba95a";
+            computationalSha256 "9f209e8f6738e6b578e9b8f82e1170e70ce0879afd48f7b9ad2a50f768ff1411";
+            origin        "data/standards/parameters/Wilson/1Pentanol-nButanol.dat";
+            originSha256  "60da50edeea1e707e1e5bff092852eb9d972817a1ad094779b17692118e029af";
             release       Choupo-2608;
         }
     }

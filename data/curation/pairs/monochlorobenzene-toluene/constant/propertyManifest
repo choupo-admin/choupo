@@ -37,10 +37,10 @@ propertyManifest
         "components/toluene.dat"
         {
             type          imported;
-            sha256        "025c441842aa1728935905ed8dfa50db5a6405ee082618c11673f665596d4911";
-            computationalSha256 "f66debfbcd493c4c7c4636809e784a1e07a6c482c3baed13ba34dce12ae63f79";
+            sha256        "5fb900674321baa67135bfeb2c8f80e63d9af183c35f1615477d751b4299f14b";
+            computationalSha256 "55e1e2986dd1c3fc08c951e842a86b062ee6a7bfbc1e1317387e69149a139e36";
             origin        "data/standards/components/toluene.dat";
-            originSha256  "fe5cb21ba09cf44b41de252f6a5a5dd21b6803fcd40666f6fed8d9de8e68563a";
+            originSha256  "ad1533cb0d94caade355d7149fd88ee1ad07c945f5d4c85f4bcce925766250b9";
             release       Choupo-2608;
         }
         "parameters/NRTL/monochlorobenzene-toluene.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "b87dfdb8f22fba5d40373a307503a6fbb19be1232bc17f43645ab0480476e5ee";
             origin        "data/standards/parameters/NRTL/monochlorobenzene-toluene.dat";
             originSha256  "a49fd38378e9d041e15af72f4351c42cb5f9aa65d6f553cb33df1dd163834ac0";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/monochlorobenzene-toluene.dat"
+        {
+            type          imported;
+            sha256        "7c3c552c7481d467e1d4124c583bd604644e17f99b64bac1633d1b522ce7a8d1";
+            computationalSha256 "6bcc1572160389319451c838019d6cf247bb82e1339d575e1a9f8e4f54789850";
+            origin        "data/standards/parameters/Wilson/monochlorobenzene-toluene.dat";
+            originSha256  "c62f1c420b0e571657b69129b86538610304a00f59b6c40994dedf1a0e6cd6e0";
             release       Choupo-2608;
         }
     }

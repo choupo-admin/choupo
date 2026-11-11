@@ -28,19 +28,19 @@ propertyManifest
         "components/2Butanol.dat"
         {
             type          imported;
-            sha256        "e50417c9ddeaeb5527166cf726410485df839fdb613b8555aa2b8958be5a5c46";
-            computationalSha256 "ad0f4e4cb272e208c3a8ee83b570fe72b60cd9ab1b2dd9a7d6011dbd28c4995b";
+            sha256        "1595f49de30edfac85305b324b1d45e6fc32514fb2f5c3102e1da25064e57de0";
+            computationalSha256 "094b9b7676472cb8ed2d135265cc88c5c65283778ec3ddfec01877bdc50a3057";
             origin        "data/standards/components/2Butanol.dat";
-            originSha256  "8c6ea94875403bbbd569f6facd5fdaefdcc5aee732ba499696802675d675202a";
+            originSha256  "f9a1e64e1b7104dbaa4e9a541716a88d08af19be38f80885c81d7df98640c91f";
             release       Choupo-2608;
         }
         "components/cyclohexane.dat"
         {
             type          imported;
-            sha256        "54ac6c67fe0fa7f8d15744192b515efd56b05bf78dc8bf99b6dfc092f349f26c";
-            computationalSha256 "6f57b6ee7356428daa748404b1343309e762255b70baf430d387550ae4683431";
+            sha256        "04e20a9c3a1368072059505adbe555b180a674e96087a4c92af04cf5e42245b7";
+            computationalSha256 "e5dadd80ead0f1d8f44482b2596d2a2b5e7c060e9ed1181dbf1712af989938ef";
             origin        "data/standards/components/cyclohexane.dat";
-            originSha256  "c17d37ff35f43849e846d3f6a974ab7f2312085a349d1169494ad2374fd90d23";
+            originSha256  "9f3b642c76b10c5867f604ce4d741c21b1c8b9b25e700707e9cc49fdbcf079f5";
             release       Choupo-2608;
         }
         "parameters/NRTL/2Butanol-cyclohexane.dat"
@@ -50,6 +50,24 @@ propertyManifest
             computationalSha256 "573a049108fdf3293a34132bcd7072d682600ebb16ac265e9ae450c09d57236d";
             origin        "data/standards/parameters/NRTL/2Butanol-cyclohexane.dat";
             originSha256  "c847fb9ac3421115e80076c210e8ac839b01e294747b0b155be81fa75b6b7f91";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/2Butanol-cyclohexane.dat"
+        {
+            type          imported;
+            sha256        "b72dc8f4ba638e396ac8e18665c65fb73ad241e195a8634bd6f55e46e4132a0e";
+            computationalSha256 "bc8ed78928f1d99c6c6d640e8e4c9b2622703f651d0a912d4a72368a49d9408b";
+            origin        "data/standards/parameters/UNIQUAC/2Butanol-cyclohexane.dat";
+            originSha256  "aca590f18a832374c909851f8794b0f652b8a9e6cc9415a4a76555c0a6e6a897";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Butanol-cyclohexane.dat"
+        {
+            type          imported;
+            sha256        "921b456490bb370f79c254b32d5455ee72b8f9a2b39f2da29ed0df86b97cd65e";
+            computationalSha256 "641d813eab48709668d3eeb686cb850bb69436797698f36d863297e73b1bc0cc";
+            origin        "data/standards/parameters/Wilson/2Butanol-cyclohexane.dat";
+            originSha256  "4703dfd5fd8b1b0a30ccaf5ea9aa965320518188b6131846b1b80cd356d5782a";
             release       Choupo-2608;
         }
     }

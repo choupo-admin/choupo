@@ -37,10 +37,10 @@ propertyManifest
         "components/methylIsobutylKetone.dat"
         {
             type          imported;
-            sha256        "883dca67acc7aabffa681e76e5b38194a93fc68f78d4a3433df849a68718372f";
-            computationalSha256 "3b343b8cff791a127701ce6eadd23f8a9a7b015e0678246d7007a3416d2d7c49";
+            sha256        "2e3acb08825da9dd98c7356c310fa1568645534ff964d8a152b44a2eda019677";
+            computationalSha256 "73e7b67b8341fa8156ac9d0f1d5e1c69987593b9579095bd87a1ec117d301d5f";
             origin        "data/standards/components/methylIsobutylKetone.dat";
-            originSha256  "8e66af3abd6102965d13c7772247cf28d37eeb7439927a2af07c69a09dae2718";
+            originSha256  "f0a81cb1eea4e0a10242eb39346555280cb08424e505a5d16d84107ca22f2955";
             release       Choupo-2608;
         }
         "parameters/NRTL/chloroform-methylIsobutylKetone.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "b43f4efad06defd292d1abbc8bc1c3b23ee1313e94176df9fd361ac6bc819811";
             origin        "data/standards/parameters/NRTL/chloroform-methylIsobutylKetone.dat";
             originSha256  "a69bb8f9f41b52e19632098e55b3b88f814e7edc6ba57ca70582973644eb6044";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/chloroform-methylIsobutylKetone.dat"
+        {
+            type          imported;
+            sha256        "a87ead7d3f037dbb53e451f2f2024db5c2a61dff59cebb2cbed2f4f6081200b3";
+            computationalSha256 "4ad90a433cd34d1b669523aa373906f4c27b32008b20a5d3c21c6b11a84d4259";
+            origin        "data/standards/parameters/Wilson/chloroform-methylIsobutylKetone.dat";
+            originSha256  "2b231561ae843f0165967bed0e2cf8965076025277ed449ec6c7bfb438e93688";
             release       Choupo-2608;
         }
     }

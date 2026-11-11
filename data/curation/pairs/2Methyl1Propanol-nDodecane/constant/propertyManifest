@@ -28,19 +28,19 @@ propertyManifest
         "components/2Methyl1Propanol.dat"
         {
             type          imported;
-            sha256        "ee0bb35e8d706d7c4b0549d6ac51be77b89de4f5496fea7d9947d875b9bcdd35";
-            computationalSha256 "b1bfb84671b4f35f758f186af86d16cfe056fb1a54d6f2b5e2867328630848b3";
+            sha256        "778703d5a4716bbace0b8b3de0655393d4212cbd4ed4c809736558e732afbd5d";
+            computationalSha256 "5ebe04496878f4c4864b2b944848ca1130604cf7d11a684d2602c0fc4b37568d";
             origin        "data/standards/components/2Methyl1Propanol.dat";
-            originSha256  "f0afa6609184a85f9c63deb6555d81619d932cc9049178f6f783e25420e34db6";
+            originSha256  "c17b068f64a38ca32f8ee4f6516ed94a85019ee7a45a33ba4fceabdaaafc01bc";
             release       Choupo-2608;
         }
         "components/nDodecane.dat"
         {
             type          imported;
-            sha256        "48b61f9a4d3d3297e5189006d07bd3d96ad1b22d0160e54ff80109d79d6b1898";
-            computationalSha256 "aaf80f10f513674d9f88ea77ef42a2aa82f25b92286e7b15563513c9abd14585";
+            sha256        "c7228038bd9f2dc282e4c95377a8b778afda5bb7873f6647fa9658b97dc79155";
+            computationalSha256 "8a4d59bf4d118a9ff410164db4f946a8d7d0db674721139612307a1c4e5f821c";
             origin        "data/standards/components/nDodecane.dat";
-            originSha256  "44d85430f2f217f1098d4c23d44b9207e6732d075cf20d2ef4bfcaee204e0156";
+            originSha256  "9d405c55385de50af77aa7f33666cea3e162b9eb19c03842c0f8279e6da3d1b4";
             release       Choupo-2608;
         }
         "parameters/NRTL/2Methyl1Propanol-nDodecane.dat"
@@ -50,6 +50,24 @@ propertyManifest
             computationalSha256 "6293b39e31e605afe02678e1e615e4fe3af30b7db06629596c5efec11dd63cb0";
             origin        "data/standards/parameters/NRTL/2Methyl1Propanol-nDodecane.dat";
             originSha256  "f8aa78bafddf192c6a6e888c2352c51f93a79809f20d793d3db9bb68c43488fd";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/2Methyl1Propanol-nDodecane.dat"
+        {
+            type          imported;
+            sha256        "27f08f506b70abd2f47d9ebff24808f30e9b031fff498169ce8bd12baab2336f";
+            computationalSha256 "8144305cb31385f405fd03314a9779dc817eb6864e8c3a26916db154b74e06ab";
+            origin        "data/standards/parameters/UNIQUAC/2Methyl1Propanol-nDodecane.dat";
+            originSha256  "5bea16781c389abab5c3ab505de6f050e1040c56b34b58c97c4f55358bbc7499";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Methyl1Propanol-nDodecane.dat"
+        {
+            type          imported;
+            sha256        "eb424ffccdaca7eedbeab3f0a2b7f828de2dd5c2f2c67199adf0eaf0161abfea";
+            computationalSha256 "d17162936b0ee1656963a6d7b0aeeda6c8997a4233b9ee051d0fa3c1afa3608a";
+            origin        "data/standards/parameters/Wilson/2Methyl1Propanol-nDodecane.dat";
+            originSha256  "21e93f637b97b102b62cd7bad06693d02dd0d36ef6d3443394e4dffc670e059f";
             release       Choupo-2608;
         }
     }

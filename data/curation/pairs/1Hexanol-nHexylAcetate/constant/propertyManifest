@@ -28,19 +28,19 @@ propertyManifest
         "components/1Hexanol.dat"
         {
             type          imported;
-            sha256        "ff92f5582d2dd1ba667f3d466054ce752b793a12050556496d6521f08fef7c91";
-            computationalSha256 "6363abe381b95dabcba93eb20cca67bd715fbcf43e6d5b0fb6a78766b1500711";
+            sha256        "56c4231bc9a181e47909ed63aa4e9fce3611035b32d920276965dc874f42d9a0";
+            computationalSha256 "babb0f8da2e12886df84dc04b197ccd3fee3a2bf29319c24a0cdcde72a28d2a7";
             origin        "data/standards/components/1Hexanol.dat";
-            originSha256  "ab4dc5089f2f1bec42920a8f7b7301da49a9ac935c439900666185ba0de805c4";
+            originSha256  "45415f58f5f9b2bb79389cafffc6bd334c7010b417c03527393aa5f519c88388";
             release       Choupo-2608;
         }
         "components/nHexylAcetate.dat"
         {
             type          imported;
-            sha256        "bd6998779c7b7166c5238607141d0b608d77b1d01cfcabc7f83705c83d261fd5";
-            computationalSha256 "7ce191330a8a0cdffa55c9a4e3b2e882e727a77f9cc81373c78fb35e6b340b8b";
+            sha256        "831f1d7ab87ffef1c2c52611a4a739f58fae00759289642fa9a10f47500776ce";
+            computationalSha256 "4bad1409dc97e7eb6773a2bd5eca04aefe0bfcabd7025b92281b266e43bdea7c";
             origin        "data/standards/components/nHexylAcetate.dat";
-            originSha256  "11ea8b3de9ae9be50682f06cee9d1446ac210a9f5215c04198816896fe3649cd";
+            originSha256  "a4c4281a61df84ab0708e7b55e45f08fe0c546bbb294468acda66a0ecbad91d5";
             release       Choupo-2608;
         }
         "parameters/NRTL/1Hexanol-nHexylAcetate.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/1Hexanol-nHexylAcetate.dat"
+        {
+            type          imported;
+            sha256        "3d7c546194d9c854a40c0d035a168e8dff212da391eb49cb0af88b30b8cb5807";
+            computationalSha256 "c7779a5f77c0a514fc75907f4b1d5a23d5e5fbf7bb0695a1bb8de159125564e2";
+            origin        "data/standards/parameters/UNIQUAC/1Hexanol-nHexylAcetate.dat";
+            originSha256  "533fdcff5314a1631fa6b37a7ea9044792df4b5443a76cab9fe781dde2e63e5d";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Hexanol-nHexylAcetate.dat"
+        {
+            type          imported;
+            sha256        "1734973924ed2ea8fb3204f8333a2616b4f1935c14bbd663cfc5d6813ed56d4a";
+            computationalSha256 "c3293acd58593c8eeb689fd12b0d6005ee90ace4637ae3509c1c6b6b02e366b7";
+            origin        "data/standards/parameters/Wilson/1Hexanol-nHexylAcetate.dat";
+            originSha256  "695d547e873fa7eb36f04e94f1c818727874fd8d1bf02307fb8f93f98551a8e5";
             release       Choupo-2608;
         }
     }

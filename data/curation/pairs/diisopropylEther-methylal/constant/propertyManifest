@@ -37,10 +37,10 @@ propertyManifest
         "components/methylal.dat"
         {
             type          imported;
-            sha256        "fbdb96d75a57ee188d05ac1ac195896a65ee14695b565d4994b7acd8590b493e";
-            computationalSha256 "df2b77bd422abfabe26846550054b99c444393f5a8498b4003ffd4913a78b73f";
+            sha256        "d667a7e3c3e17feee4a41091f39d89641ae224d6b87f6068841f3fa494fb988a";
+            computationalSha256 "7bd87a716621cb88e4512f463a4a0259d8049ddb5999b86ff2bf9ddc6fb783f5";
             origin        "data/standards/components/methylal.dat";
-            originSha256  "10ac8d72145f06bc16bb46213fc74296d6f1c69a99bfeab6bf6e44a020fc2b51";
+            originSha256  "01fce124ec237cfef4f66da52485d13765f66671a156cb617c3ee79d7ad01e97";
             release       Choupo-2608;
         }
         "parameters/NRTL/diisopropylEther-methylal.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "ef2f410f7bc676b4af8d926db2a88605f314efc14f84b29ca2570ff276ffadde";
             origin        "data/standards/parameters/NRTL/diisopropylEther-methylal.dat";
             originSha256  "596d64de154aed60adb6d33162aebf774d228d7d1ad93ab21e70ac1c53458c41";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/diisopropylEther-methylal.dat"
+        {
+            type          imported;
+            sha256        "333be25c549f9dde318b6bda49a6c2e4e9c8e2d7d7b7f291f5d8adf791441332";
+            computationalSha256 "8e50e737c65442f2bdfd66c41bdbdc1152e4463f7bcc72cf8d8b9a55311c42c5";
+            origin        "data/standards/parameters/Wilson/diisopropylEther-methylal.dat";
+            originSha256  "cdb078a7d074405797a478dc43c3dc26222abb621d7d02ff88226af5969eab6e";
             release       Choupo-2608;
         }
     }

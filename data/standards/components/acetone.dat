@@ -56,6 +56,12 @@ liquidHeatCapacity
 
 provenance
 {
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 2.5735, q = sum nu_k Q_k = 2.3360 over the record's unifac groups (1 CH3 + 1 CH3CO)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
     vaporPressure  "cross-checked against CoolProp 7.2.0 (MIT) within ~1%";
     constants      "cross-checked against CoolProp 7.2.0 (MIT) within ~1%";
     standardThermochemistry "individual literature value -- primary re-citation pending (IST review)";
@@ -64,6 +70,15 @@ provenance
 // Molecular group decomposition, per method (the curation RECIPE: a group-
 // contribution estimator / UNIFAC reads it from HERE instead of re-typed per
 // case).  Method-keyed because Joback groups != UNIFAC groups.  Acetone = CH3-CO-CH3.
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (1 CH3 + 1 CH3CO), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   2.5735;
+    q   2.3360;
+}
+
 groups
 {
     joback ( { group CH3; count 2; } { group ketone; count 1; } );

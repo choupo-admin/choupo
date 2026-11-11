@@ -28,19 +28,19 @@ propertyManifest
         "components/1Propanol.dat"
         {
             type          imported;
-            sha256        "6f8dab202717440a53ff49356dddaa632b8e71ad54a651d6c4f2513519864916";
-            computationalSha256 "c964d7a44b9335ec39b77584095dac5935998f8ccd1f814a9dbe51801adf4389";
+            sha256        "de3f1162278fc2d5ee4995ee4887b3f1c0f3669920483a314461b227ac825867";
+            computationalSha256 "d50d84215a5e98b6539bb27d9c7d0d58bb7fc2a8cf3f66c2f943a76cd6b6d056";
             origin        "data/standards/components/1Propanol.dat";
-            originSha256  "e576ef637c75dec43096777ad538d23ab32c8828de898339ba9226732172d96f";
+            originSha256  "ddcf4f1180bb27e9b6dfa2adb55a9ac88396a36d6a68cb8c48df90d2f04bcfd1";
             release       Choupo-2608;
         }
         "components/nPropylAcetate.dat"
         {
             type          imported;
-            sha256        "bae5d694a37bfbe03d15627f0cb30337bf2fe4f53e411fd6241bbf08663bd720";
-            computationalSha256 "2c7f9840afa05762f6ea54030ca0f63c06c5a145138a3a1fc66405d5d64ecb1f";
+            sha256        "a4d98fa4268bc6a1079db72228e5677659b26a284e8bfa1fc380997fb7497afc";
+            computationalSha256 "62c9f54d2619d78e353dc006b570baf675a5c74819e7cbe941efd2470c427b46";
             origin        "data/standards/components/nPropylAcetate.dat";
-            originSha256  "d6441f89d965c47899449c155ee12a811238c3650307cbed703a2259c65126a9";
+            originSha256  "3ce435dbe5ebc3156e7a873351092b8814732d50e2fdd06e3684bba46a480d33";
             release       Choupo-2608;
         }
         "parameters/NRTL/1Propanol-nPropylAcetate.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/1Propanol-nPropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "a0b392549ea92a4cf67040fbebb164ee2f3e463da17db6f12dfe7e1cbdf94ccc";
+            computationalSha256 "a11ef6a978380a94a9fdac61038a68b3dff6f19d6a913610c2014b7d29ba96a5";
+            origin        "data/standards/parameters/UNIQUAC/1Propanol-nPropylAcetate.dat";
+            originSha256  "eb9259f1a7d29d69e16e2db233fa2425093022914a2cd06f7d0ac00d5d1cd17d";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Propanol-nPropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "a0e954f8078e188db3a0b3350fa75d46f41a33d583ae2065368d8595d081b12d";
+            computationalSha256 "6a7c53eb8e6b4e0a8964cc5c2975b227f6202ef1b94a4252e00ba7101c1b618c";
+            origin        "data/standards/parameters/Wilson/1Propanol-nPropylAcetate.dat";
+            originSha256  "125a9e3a06af4b08a60aa5080c752fa2cad1b3f7f8cbd916133d0f0c2aef638c";
             release       Choupo-2608;
         }
     }

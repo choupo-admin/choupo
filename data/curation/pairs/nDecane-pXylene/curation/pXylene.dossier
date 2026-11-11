@@ -154,4 +154,268 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.a_ij  -134.211621798;
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.a_ji  162.583882433;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5153c4c1bcab46ec";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/pXylene-nDecane-bubble-je0501585.dat";
+            doi       "10.1021/je0501585";
+            sha256    "c8f3887eb200b38ce0f63cff8de869e3c46f9f60f088b9e18b2805b1196cffd0";
+            provenance measured;
+            archiveFile "je0501585.xml";
+            system    "pXylene + nDecane";
+            pressure  "97300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/pXylene-nDecane-bubble-j.fluid.2012.09.019.dat";
+            doi       "10.1016/j.fluid.2012.09.019";
+            sha256    "7ab32e1e73d47ffb72cce97fbd8aed01dd70cc88c73c7e45957aadf589cfd90b";
+            provenance measured;
+            archiveFile "j.fluid.2012.09.019.xml";
+            system    "pXylene + nDecane";
+            pressure  "20000.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/pXylene-nDecane-bubble-j.fluid.2004.10.027.dat";
+            doi       "10.1016/j.fluid.2004.10.027";
+            sha256    "dedfec1f89c424222eb64267c206a4a687646def0a2f935f68318ea9398d71d6";
+            provenance measured;
+            archiveFile "j.fluid.2004.10.027.xml";
+            system    "pXylene + nDecane";
+            pressure  "95800.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.071; max 0.99; n 28; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.a_ij  241.774140252;
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.a_ji  -181.910317649;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5153c4c1bcab46ec";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/pXylene-nDecane-bubble-je0501585.dat";
+            doi       "10.1021/je0501585";
+            sha256    "c8f3887eb200b38ce0f63cff8de869e3c46f9f60f088b9e18b2805b1196cffd0";
+            provenance measured;
+            archiveFile "je0501585.xml";
+            system    "pXylene + nDecane";
+            pressure  "97300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/pXylene-nDecane-bubble-j.fluid.2012.09.019.dat";
+            doi       "10.1016/j.fluid.2012.09.019";
+            sha256    "7ab32e1e73d47ffb72cce97fbd8aed01dd70cc88c73c7e45957aadf589cfd90b";
+            provenance measured;
+            archiveFile "j.fluid.2012.09.019.xml";
+            system    "pXylene + nDecane";
+            pressure  "20000.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/pXylene-nDecane-bubble-j.fluid.2004.10.027.dat";
+            doi       "10.1016/j.fluid.2004.10.027";
+            sha256    "dedfec1f89c424222eb64267c206a4a687646def0a2f935f68318ea9398d71d6";
+            provenance measured;
+            archiveFile "j.fluid.2004.10.027.xml";
+            system    "pXylene + nDecane";
+            pressure  "95800.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.071; max 0.99; n 28; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.A_ij  -599.737612262;
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.A_ji  1726.82422709;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5153c4c1bcab46ec";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/pXylene-nDecane-bubble-je0501585.dat";
+            doi       "10.1021/je0501585";
+            sha256    "c8f3887eb200b38ce0f63cff8de869e3c46f9f60f088b9e18b2805b1196cffd0";
+            provenance measured;
+            archiveFile "je0501585.xml";
+            system    "pXylene + nDecane";
+            pressure  "97300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/pXylene-nDecane-bubble-j.fluid.2012.09.019.dat";
+            doi       "10.1016/j.fluid.2012.09.019";
+            sha256    "7ab32e1e73d47ffb72cce97fbd8aed01dd70cc88c73c7e45957aadf589cfd90b";
+            provenance measured;
+            archiveFile "j.fluid.2012.09.019.xml";
+            system    "pXylene + nDecane";
+            pressure  "20000.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/pXylene-nDecane-bubble-j.fluid.2004.10.027.dat";
+            doi       "10.1016/j.fluid.2004.10.027";
+            sha256    "dedfec1f89c424222eb64267c206a4a687646def0a2f935f68318ea9398d71d6";
+            provenance measured;
+            archiveFile "j.fluid.2004.10.027.xml";
+            system    "pXylene + nDecane";
+            pressure  "95800.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.071; max 0.99; n 28; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.A_ij  3371.00359206;
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.A_ji  -2908.79707792;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5153c4c1bcab46ec";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/pXylene-nDecane-bubble-je0501585.dat";
+            doi       "10.1021/je0501585";
+            sha256    "c8f3887eb200b38ce0f63cff8de869e3c46f9f60f088b9e18b2805b1196cffd0";
+            provenance measured;
+            archiveFile "je0501585.xml";
+            system    "pXylene + nDecane";
+            pressure  "97300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/pXylene-nDecane-bubble-j.fluid.2012.09.019.dat";
+            doi       "10.1016/j.fluid.2012.09.019";
+            sha256    "7ab32e1e73d47ffb72cce97fbd8aed01dd70cc88c73c7e45957aadf589cfd90b";
+            provenance measured;
+            archiveFile "j.fluid.2012.09.019.xml";
+            system    "pXylene + nDecane";
+            pressure  "20000.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/pXylene-nDecane-bubble-j.fluid.2004.10.027.dat";
+            doi       "10.1016/j.fluid.2004.10.027";
+            sha256    "dedfec1f89c424222eb64267c206a4a687646def0a2f935f68318ea9398d71d6";
+            provenance measured;
+            archiveFile "j.fluid.2004.10.027.xml";
+            system    "pXylene + nDecane";
+            pressure  "95800.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.071; max 0.99; n 28; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

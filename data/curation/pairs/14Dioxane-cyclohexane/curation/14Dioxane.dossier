@@ -132,4 +132,224 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.a_ij  15.4100690349;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.a_ji  141.645808686;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f607cd5a70c65101";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/14Dioxane-cyclohexane-bubble-j.fluid.2005.09.010.dat";
+            doi       "10.1016/j.fluid.2005.09.010";
+            sha256    "3d608029b54f529f68fad74ed0fbf641e57ee081fd948e7d76ada2ff2a97c02b";
+            provenance measured;
+            archiveFile "j.fluid.2005.09.010.xml";
+            system    "14Dioxane + cyclohexane";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/14Dioxane-cyclohexane-bubble-je020148t.dat";
+            doi       "10.1021/je020148t";
+            sha256    "d050eca5b9e079c12efbc563ccbe13ba0767c44a1d625df7ba1b8c73d98b46fa";
+            provenance measured;
+            archiveFile "je020148t.xml";
+            system    "14Dioxane + cyclohexane";
+            pressure  "94700.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.036; max 0.957; n 49; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.a_ij  15.4100690732;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.a_ji  141.645808637;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f607cd5a70c65101";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/14Dioxane-cyclohexane-bubble-j.fluid.2005.09.010.dat";
+            doi       "10.1016/j.fluid.2005.09.010";
+            sha256    "3d608029b54f529f68fad74ed0fbf641e57ee081fd948e7d76ada2ff2a97c02b";
+            provenance measured;
+            archiveFile "j.fluid.2005.09.010.xml";
+            system    "14Dioxane + cyclohexane";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/14Dioxane-cyclohexane-bubble-je020148t.dat";
+            doi       "10.1021/je020148t";
+            sha256    "d050eca5b9e079c12efbc563ccbe13ba0767c44a1d625df7ba1b8c73d98b46fa";
+            provenance measured;
+            archiveFile "je020148t.xml";
+            system    "14Dioxane + cyclohexane";
+            pressure  "94700.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.036; max 0.957; n 49; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.A_ij  2677.06882887;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.A_ji  1462.74114683;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f607cd5a70c65101";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/14Dioxane-cyclohexane-bubble-j.fluid.2005.09.010.dat";
+            doi       "10.1016/j.fluid.2005.09.010";
+            sha256    "3d608029b54f529f68fad74ed0fbf641e57ee081fd948e7d76ada2ff2a97c02b";
+            provenance measured;
+            archiveFile "j.fluid.2005.09.010.xml";
+            system    "14Dioxane + cyclohexane";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/14Dioxane-cyclohexane-bubble-je020148t.dat";
+            doi       "10.1021/je020148t";
+            sha256    "d050eca5b9e079c12efbc563ccbe13ba0767c44a1d625df7ba1b8c73d98b46fa";
+            provenance measured;
+            archiveFile "je020148t.xml";
+            system    "14Dioxane + cyclohexane";
+            pressure  "94700.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.036; max 0.957; n 49; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.A_ij  2677.06881896;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.A_ji  1462.74115376;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f607cd5a70c65101";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/14Dioxane-cyclohexane-bubble-j.fluid.2005.09.010.dat";
+            doi       "10.1016/j.fluid.2005.09.010";
+            sha256    "3d608029b54f529f68fad74ed0fbf641e57ee081fd948e7d76ada2ff2a97c02b";
+            provenance measured;
+            archiveFile "j.fluid.2005.09.010.xml";
+            system    "14Dioxane + cyclohexane";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/14Dioxane-cyclohexane-bubble-je020148t.dat";
+            doi       "10.1021/je020148t";
+            sha256    "d050eca5b9e079c12efbc563ccbe13ba0767c44a1d625df7ba1b8c73d98b46fa";
+            provenance measured;
+            archiveFile "je020148t.xml";
+            system    "14Dioxane + cyclohexane";
+            pressure  "94700.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.036; max 0.957; n 49; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

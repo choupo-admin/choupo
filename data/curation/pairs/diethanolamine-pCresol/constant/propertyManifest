@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "fdc303b249434cf38935fd7400602d05bf82827c2016383a04febf0209749414";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diethanolamine-pCresol.dat"
+        {
+            type          imported;
+            sha256        "84c1e4a9df0996bc997fda2a3108a4e8ffaf9c6299cc8ce1b054ee2be3b34d46";
+            computationalSha256 "8496ceb14a770e7ca46cabace7edfd4531306dc231e8f85bf173719d97f0ff7c";
+            origin        "data/standards/parameters/Wilson/diethanolamine-pCresol.dat";
+            originSha256  "fe0c4030b7a46ca47a4a80e5a516ac8a34ca00ab1892d5b453796cf2ebb19326";
+            release       Choupo-2608;
+        }
     }
 }

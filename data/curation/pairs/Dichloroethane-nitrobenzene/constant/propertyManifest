@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "981ec3be61822d6e44110aecf592cc81557562e9568c64a6748ab42d8b3e557b";
             release       Choupo-2608;
         }
+        "parameters/Wilson/Dichloroethane-nitrobenzene.dat"
+        {
+            type          imported;
+            sha256        "09e251c6d3c4a7600a016de2bd5e577691987de4963f64a430581cd961115d24";
+            computationalSha256 "ad3a549baf6924d1a5fe52013b52d0d588b023eb3ed603c349043054975e1d7d";
+            origin        "data/standards/parameters/Wilson/Dichloroethane-nitrobenzene.dat";
+            originSha256  "9890667227a10f2c4b7b4644c6aa5ad720933891af4624c74e1b5630591acaa8";
+            release       Choupo-2608;
+        }
     }
 }

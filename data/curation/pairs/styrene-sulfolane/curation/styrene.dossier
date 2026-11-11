@@ -112,4 +112,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.styrene-sulfolane.A_ij  1931.46204659;
+        equilibrium.liquid.activityModel.binaryParameters.styrene-sulfolane.A_ji  7156.76522224;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c460250cc25afc15";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/styrene-sulfolane-bubble-je200098d.dat";
+            doi       "10.1021/je200098d";
+            sha256    "97dcfdc89bc224473ec4eda70c0b694993ef025bd398181a5f734c77e767e829";
+            provenance measured;
+            archiveFile "je200098d.xml";
+            system    "styrene + sulfolane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.077; max 0.923; n 23; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.styrene-sulfolane.A_ij  1931.462072;
+        equilibrium.liquid.activityModel.binaryParameters.styrene-sulfolane.A_ji  7156.7652004;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c460250cc25afc15";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/styrene-sulfolane-bubble-je200098d.dat";
+            doi       "10.1021/je200098d";
+            sha256    "97dcfdc89bc224473ec4eda70c0b694993ef025bd398181a5f734c77e767e829";
+            provenance measured;
+            archiveFile "je200098d.xml";
+            system    "styrene + sulfolane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.077; max 0.923; n 23; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

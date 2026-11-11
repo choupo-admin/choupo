@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "963944da183da4fbee1aa2d60f1b1d98bfd6aefc71fd5ec55ca36e2fdb556710";
             release       Choupo-2608;
         }
+        "parameters/Wilson/ethanol-ethyleneGlycol.dat"
+        {
+            type          imported;
+            sha256        "9d6b22acde8c414291ee457962d9ec30909f421dc707cdcbb0dc440875b2ca97";
+            computationalSha256 "f7cfa9309a0f86e63b1590e514fba35245cb2317d36d36febde88f1159e2ed35";
+            origin        "data/standards/parameters/Wilson/ethanol-ethyleneGlycol.dat";
+            originSha256  "2a93548ff7cbdad99ebb4ccf1cd01e33e771aff499a4038c9226e1026d39fb3d";
+            release       Choupo-2608;
+        }
     }
 }

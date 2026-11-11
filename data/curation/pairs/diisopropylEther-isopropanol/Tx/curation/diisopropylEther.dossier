@@ -170,4 +170,152 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.A_ij  402.931431441;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.A_ji  3808.67368506;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "55fdc48e7191b791";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diisopropylEther-isopropanol-bubble-j.fluid.2014.09.014.dat";
+            doi       "10.1016/j.fluid.2014.09.014";
+            sha256    "d41cda01c43a3cc76aeaf4a625ed8e978cc642c74d02ad242d7a042b8a1ec367";
+            provenance measured;
+            archiveFile "j.fluid.2014.09.014.xml";
+            system    "diisopropylEther + isopropanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diisopropylEther-isopropanol-bubble-j.fluid.2007.09.014.dat";
+            doi       "10.1016/j.fluid.2007.09.014";
+            sha256    "1a941fcef044b10b910fb6eb431a005076144b4b9414d6581ff49e84e1c6dcdb";
+            provenance measured;
+            archiveFile "j.fluid.2007.09.014.xml";
+            system    "diisopropylEther + isopropanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diisopropylEther-isopropanol-bubble-je300994y.dat";
+            doi       "10.1021/je300994y";
+            sha256    "8c1682c6dd6f8ff2d44ad5b8ab25cc70777931d2f330498695f7f60ee0cc160a";
+            provenance measured;
+            archiveFile "je300994y.xml";
+            system    "diisopropylEther + isopropanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diisopropylEther-isopropanol-bubble-j.jct.2018.11.013.dat";
+            doi       "10.1016/j.jct.2018.11.013";
+            sha256    "41b94834e8edd281aecb470938028a5bb98300047fb3a2b701378f79c20f955c";
+            provenance measured;
+            archiveFile "j.jct.2018.11.013.xml";
+            system    "diisopropylEther + isopropanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.025; max 0.977; n 126; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.A_ij  402.931435831;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.A_ji  3808.67368031;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "55fdc48e7191b791";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diisopropylEther-isopropanol-bubble-j.fluid.2014.09.014.dat";
+            doi       "10.1016/j.fluid.2014.09.014";
+            sha256    "d41cda01c43a3cc76aeaf4a625ed8e978cc642c74d02ad242d7a042b8a1ec367";
+            provenance measured;
+            archiveFile "j.fluid.2014.09.014.xml";
+            system    "diisopropylEther + isopropanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diisopropylEther-isopropanol-bubble-j.fluid.2007.09.014.dat";
+            doi       "10.1016/j.fluid.2007.09.014";
+            sha256    "1a941fcef044b10b910fb6eb431a005076144b4b9414d6581ff49e84e1c6dcdb";
+            provenance measured;
+            archiveFile "j.fluid.2007.09.014.xml";
+            system    "diisopropylEther + isopropanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diisopropylEther-isopropanol-bubble-je300994y.dat";
+            doi       "10.1021/je300994y";
+            sha256    "8c1682c6dd6f8ff2d44ad5b8ab25cc70777931d2f330498695f7f60ee0cc160a";
+            provenance measured;
+            archiveFile "je300994y.xml";
+            system    "diisopropylEther + isopropanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diisopropylEther-isopropanol-bubble-j.jct.2018.11.013.dat";
+            doi       "10.1016/j.jct.2018.11.013";
+            sha256    "41b94834e8edd281aecb470938028a5bb98300047fb3a2b701378f79c20f955c";
+            provenance measured;
+            archiveFile "j.jct.2018.11.013.xml";
+            system    "diisopropylEther + isopropanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.025; max 0.977; n 126; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

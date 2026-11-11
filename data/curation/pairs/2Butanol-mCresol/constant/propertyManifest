@@ -28,10 +28,10 @@ propertyManifest
         "components/2Butanol.dat"
         {
             type          imported;
-            sha256        "e50417c9ddeaeb5527166cf726410485df839fdb613b8555aa2b8958be5a5c46";
-            computationalSha256 "ad0f4e4cb272e208c3a8ee83b570fe72b60cd9ab1b2dd9a7d6011dbd28c4995b";
+            sha256        "1595f49de30edfac85305b324b1d45e6fc32514fb2f5c3102e1da25064e57de0";
+            computationalSha256 "094b9b7676472cb8ed2d135265cc88c5c65283778ec3ddfec01877bdc50a3057";
             origin        "data/standards/components/2Butanol.dat";
-            originSha256  "8c6ea94875403bbbd569f6facd5fdaefdcc5aee732ba499696802675d675202a";
+            originSha256  "f9a1e64e1b7104dbaa4e9a541716a88d08af19be38f80885c81d7df98640c91f";
             release       Choupo-2608;
         }
         "components/mCresol.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "342c10decf6cc7b80e39f52d52c359178e9469e39bac770bcd80eab54645f32f";
             origin        "data/standards/parameters/NRTL/2Butanol-mCresol.dat";
             originSha256  "750495ec9599f48244c69febd4e6e46e2e089ed11f37a6dc8619803e92dd8f5a";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Butanol-mCresol.dat"
+        {
+            type          imported;
+            sha256        "af0079e1c698900e7bc2f931e311b0373c03ebce80c82359c7611050c983d981";
+            computationalSha256 "0d01cf62b3a323e433eac72a96472832a49fc877d2a32d7f4f72acf9112c2450";
+            origin        "data/standards/parameters/Wilson/2Butanol-mCresol.dat";
+            originSha256  "63f7c731f8dcef0a9cb667af7b89c7f36e4a0ef072bfcd0fe0fe47039c921993";
             release       Choupo-2608;
         }
     }

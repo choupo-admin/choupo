@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-3Heptanone.A_ij  1689.64771574;
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-3Heptanone.A_ji  696.11504591;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "4116191e1257c24a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nOctane-3Heptanone-bubble-je500731x.dat";
+            doi       "10.1021/je500731x";
+            sha256    "4605b878883fb6c43c8f3ca98b7af6e5200100738f2d7ce46f5595239abc43a9";
+            provenance measured;
+            archiveFile "je500731x.xml";
+            system    "nOctane + 3Heptanone";
+            pressure  "40000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.022; max 0.921; n 28; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-3Heptanone.A_ij  1689.64772572;
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-3Heptanone.A_ji  696.115040748;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "4116191e1257c24a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nOctane-3Heptanone-bubble-je500731x.dat";
+            doi       "10.1021/je500731x";
+            sha256    "4605b878883fb6c43c8f3ca98b7af6e5200100738f2d7ce46f5595239abc43a9";
+            provenance measured;
+            archiveFile "je500731x.xml";
+            system    "nOctane + 3Heptanone";
+            pressure  "40000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.022; max 0.921; n 28; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

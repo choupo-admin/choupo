@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "974cf93318c9428556485dcb37efe2ca9c5c537336c946fc46484082d1e512d4";
             release       Choupo-2608;
         }
+        "parameters/Wilson/ethanol-nNDimethylacetamide.dat"
+        {
+            type          imported;
+            sha256        "b7bd5cb8d5fdd069be1329ec69e4137a9220e9c75c5ebf8e35f62b3dfeda0997";
+            computationalSha256 "4b3ea763915d5a3e9e7450ac2a0f157825b31358911cc633ed00a45b489f5daf";
+            origin        "data/standards/parameters/Wilson/ethanol-nNDimethylacetamide.dat";
+            originSha256  "4fdae1048fb0a37b785bf669abd8e03218ffbaf3bc2a47455042ee6f624fcd3f";
+            release       Choupo-2608;
+        }
     }
 }

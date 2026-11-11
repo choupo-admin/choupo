@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "1621430e40cc1a865416eb0aa39e0e41d8fedba855b838c43da5782bc1600623";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diisopropylEther-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "1e9924748eadcc65a770481cdd9f07e407395024f680a9585c4d0602890ce95b";
+            computationalSha256 "c28bf736b03aa9f5b216d2c9cc0e6b367117a0692f0d53b2d3a2df09313f463f";
+            origin        "data/standards/parameters/Wilson/diisopropylEther-nNDimethylformamide.dat";
+            originSha256  "918ae0235cb9d4f12683474746b01567b24538d96860575c6b270786885403e6";
+            release       Choupo-2608;
+        }
     }
 }

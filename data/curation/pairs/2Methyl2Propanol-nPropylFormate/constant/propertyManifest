@@ -28,10 +28,10 @@ propertyManifest
         "components/2Methyl2Propanol.dat"
         {
             type          imported;
-            sha256        "85da846573aa8847cf253bb6a529bccb7cef7f6811f6f65be60476b507fc5442";
-            computationalSha256 "11753215451e3bf204fd6a69c6d95af63cdadf84fdfebe9aa516b4610a7ae366";
+            sha256        "17e181c16f08bfa8410737c8f6744b259b00d8c1d985b3ea8efdf9ecb14eaa48";
+            computationalSha256 "646148d2e0ba73b3da0e8baca650e1a51842a343e7909e987a6aabc68f622a9d";
             origin        "data/standards/components/2Methyl2Propanol.dat";
-            originSha256  "225442e6d92c7f5d9f6cd96593a5d8d958d8b0f65227d2eee965eac6e04747b2";
+            originSha256  "03c4dae4a65edde0ea277bc42cd644162b49728a8612095e20ffd3565c2944b2";
             release       Choupo-2608;
         }
         "components/nPropylFormate.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "e697032e421e394edd547e2f1776b47fe5d86c659e1ca550c3c7bdbfa09a9eaa";
             origin        "data/standards/parameters/NRTL/2Methyl2Propanol-nPropylFormate.dat";
             originSha256  "a0ecf16aa465104deb547e9fd0939a7bc8017ad0c9b8f453cb97e5afcb77ad72";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Methyl2Propanol-nPropylFormate.dat"
+        {
+            type          imported;
+            sha256        "052795b81b9fe28c4bbc4386af8778d131362cce75f64f0a9382d1a5a8b6bdac";
+            computationalSha256 "01eeda64caa921173d992722169ae29a548127db185cc474236c816c4a11f280";
+            origin        "data/standards/parameters/Wilson/2Methyl2Propanol-nPropylFormate.dat";
+            originSha256  "b0f95f3fea8df944b955a70b61851384546c0c5970a1cc0560f4d8512c52db21";
             release       Choupo-2608;
         }
     }

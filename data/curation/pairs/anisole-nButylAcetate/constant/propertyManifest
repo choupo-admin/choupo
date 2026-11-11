@@ -37,10 +37,10 @@ propertyManifest
         "components/nButylAcetate.dat"
         {
             type          imported;
-            sha256        "084932bd758db4f017fc9881a51dd1637c17f60a94d9cfc3c410c2602d6d47e5";
-            computationalSha256 "6f79df17bf29a43ef680863bc554ded0998a9d314858ecb8f06aa2750f38df1e";
+            sha256        "8c61277b05f83a67bf8cf5270f7a11fc676c13fde5363e72bfd9f31257adef7c";
+            computationalSha256 "7a57d5a9fe67bb77909133cc55bae73c14d8be75079dbcdf31b1f4ca910cbc74";
             origin        "data/standards/components/nButylAcetate.dat";
-            originSha256  "c3f3b0387a67b8d2d1c17e7a34b6e8aa0ad7804e4b75a639cf8df96183dcf9fb";
+            originSha256  "8442940b27e7eeddf632ee04e5f68bd1286cdf567ed9bfe16d7fa6fc37e3d7f3";
             release       Choupo-2608;
         }
         "parameters/NRTL/anisole-nButylAcetate.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "4ecd01dde81114dac86304ab6407341871bd3c41d00b69e56402b4b4af0a4c02";
             origin        "data/standards/parameters/NRTL/anisole-nButylAcetate.dat";
             originSha256  "0cd66e34af9fb40ab9e97a50ad8e272752b108422538efc902d97b0250d8f2dc";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/anisole-nButylAcetate.dat"
+        {
+            type          imported;
+            sha256        "3feb8798fa379e999f85f68df3f0135ae06fe336177de2c3280bff8d0d4979cf";
+            computationalSha256 "21c2ebd8e93ececc57879cdf108d675ebeefa170f47a7a8acd37609910b95834";
+            origin        "data/standards/parameters/Wilson/anisole-nButylAcetate.dat";
+            originSha256  "3eb8d74553346b1a964428642a8f2c20de336fa437e5ac585f9020a2479fcf15";
             release       Choupo-2608;
         }
     }

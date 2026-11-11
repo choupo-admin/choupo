@@ -28,19 +28,19 @@ propertyManifest
         "components/1Propanol.dat"
         {
             type          imported;
-            sha256        "6f8dab202717440a53ff49356dddaa632b8e71ad54a651d6c4f2513519864916";
-            computationalSha256 "c964d7a44b9335ec39b77584095dac5935998f8ccd1f814a9dbe51801adf4389";
+            sha256        "de3f1162278fc2d5ee4995ee4887b3f1c0f3669920483a314461b227ac825867";
+            computationalSha256 "d50d84215a5e98b6539bb27d9c7d0d58bb7fc2a8cf3f66c2f943a76cd6b6d056";
             origin        "data/standards/components/1Propanol.dat";
-            originSha256  "e576ef637c75dec43096777ad538d23ab32c8828de898339ba9226732172d96f";
+            originSha256  "ddcf4f1180bb27e9b6dfa2adb55a9ac88396a36d6a68cb8c48df90d2f04bcfd1";
             release       Choupo-2608;
         }
         "components/224Trimethylpentane.dat"
         {
             type          imported;
-            sha256        "5b057df60fefe73acb28293096259f7e3d14028d57ee3c2f420e7113d1afa850";
-            computationalSha256 "c1edd3f9bcf353f5218a16b1df38c7d5ec8796e2c918c8d19725b47bc9d0a37c";
+            sha256        "45ef34d7494b709dd1146c7bc96bd0b3b3d9ff468541536e8b6bd1b8e2238a30";
+            computationalSha256 "4c9f32f2002b37f51767912d30027c39b15b6549e6c720692289468ebbbdc119";
             origin        "data/standards/components/224Trimethylpentane.dat";
-            originSha256  "0d42ea2f2bd777248e24738a81b4c9017b57f7a688113c719552dcb2423c1623";
+            originSha256  "b9b9956b3378c0aaeef27ecce001346e2c5a7d7cfc64c8911914ff376065b630";
             release       Choupo-2608;
         }
         "parameters/NRTL/1Propanol-224Trimethylpentane.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "b40f97c3a61d27b5a96ebf57ca1895a677e998c08cf7be780059aa2a13c5547a";
             origin        "data/standards/parameters/NRTL/1Propanol-224Trimethylpentane.dat";
             originSha256  "5d8c420ca544c0c2fc2fa8f548c95ccbdbf4781c817cb1ca541d8c0292f6cdee";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Propanol-224Trimethylpentane.dat"
+        {
+            type          imported;
+            sha256        "30579cd48d3bbd86a121ee638efde9908165e54d0eeb60f2fa252323a458ee7f";
+            computationalSha256 "c8ba153708896dcb49bd06b6ace6facb1c090ae1d0aad756853bd3ba1a01ed24";
+            origin        "data/standards/parameters/Wilson/1Propanol-224Trimethylpentane.dat";
+            originSha256  "fd7dee78175c3ab57728134289f83eee1f5dde18090912aebac38f0e5dce6147";
             release       Choupo-2608;
         }
     }

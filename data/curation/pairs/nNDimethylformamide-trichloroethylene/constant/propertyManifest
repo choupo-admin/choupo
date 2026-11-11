@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "836b117d646135c11d8e230afb31b57deb9ad80ae0bcc79f810b3edbe5600bde";
             release       Choupo-2608;
         }
+        "parameters/Wilson/nNDimethylformamide-trichloroethylene.dat"
+        {
+            type          imported;
+            sha256        "246eddaab2dbc18b35bad365c3d9d144bd2bce723b6d0cc0f5490f90acafb1f9";
+            computationalSha256 "3f59cb9a2bc15e55e5bd7a9511bd67a46888be0a99fd406ac3cb7e560b937d30";
+            origin        "data/standards/parameters/Wilson/nNDimethylformamide-trichloroethylene.dat";
+            originSha256  "f8941a7f060cb192f02c64fe82330fad7562484735e65474f4dd4388d220f9b3";
+            release       Choupo-2608;
+        }
     }
 }

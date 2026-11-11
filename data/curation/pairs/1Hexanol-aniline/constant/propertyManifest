@@ -28,10 +28,10 @@ propertyManifest
         "components/1Hexanol.dat"
         {
             type          imported;
-            sha256        "ff92f5582d2dd1ba667f3d466054ce752b793a12050556496d6521f08fef7c91";
-            computationalSha256 "6363abe381b95dabcba93eb20cca67bd715fbcf43e6d5b0fb6a78766b1500711";
+            sha256        "56c4231bc9a181e47909ed63aa4e9fce3611035b32d920276965dc874f42d9a0";
+            computationalSha256 "babb0f8da2e12886df84dc04b197ccd3fee3a2bf29319c24a0cdcde72a28d2a7";
             origin        "data/standards/components/1Hexanol.dat";
-            originSha256  "ab4dc5089f2f1bec42920a8f7b7301da49a9ac935c439900666185ba0de805c4";
+            originSha256  "45415f58f5f9b2bb79389cafffc6bd334c7010b417c03527393aa5f519c88388";
             release       Choupo-2608;
         }
         "components/aniline.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "ce292b72a5f87ec77f3f320ebe6938fa0ec9c524d8debf49a74a2d1413bb8b46";
             origin        "data/standards/parameters/NRTL/1Hexanol-aniline.dat";
             originSha256  "67317ae8c68c74face275b30f1e37775146a766901ecda1878bcc08e37826bf7";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Hexanol-aniline.dat"
+        {
+            type          imported;
+            sha256        "d67eec7699e8857a81d9a04caadde7da6af8128f5260b57758893cc70baeb71b";
+            computationalSha256 "92de70522ef731b6ff0c04015dd0a90b8e121e56f5cffb42dcc7124283cbc90a";
+            origin        "data/standards/parameters/Wilson/1Hexanol-aniline.dat";
+            originSha256  "dd928f2c4a83b301df6f11430f4c677c692a7f99098ebe047d208c18be41cd36";
             release       Choupo-2608;
         }
     }

@@ -28,19 +28,19 @@ propertyManifest
         "components/1Heptanol.dat"
         {
             type          imported;
-            sha256        "79fea1d323853bb2da8eac24d7824ee6194b141dd25d506f0071d5c7edca5457";
-            computationalSha256 "1195914da54fb5d51f6b730ea618434706056c761b7ebce979daa28274ce9bdf";
+            sha256        "ca88c1659a259e7e7eb8c5d30fd385b9cdac3744f4280e57ff10e12ad59cb737";
+            computationalSha256 "9b0e563e8b911fd7a6c6a7b43473e23f17f522628dd8d433698a8b67ff63b667";
             origin        "data/standards/components/1Heptanol.dat";
-            originSha256  "e2732fbe0aa55f2e557ebbbef1695df6211c1dbfc27e1bcd718c2fbc5e0c1867";
+            originSha256  "c4f185cc3a107c9adf024812d68f8b1c48c1150d9708f1e91213d5e61c5163f0";
             release       Choupo-2608;
         }
         "components/nPropylAcetate.dat"
         {
             type          imported;
-            sha256        "bae5d694a37bfbe03d15627f0cb30337bf2fe4f53e411fd6241bbf08663bd720";
-            computationalSha256 "2c7f9840afa05762f6ea54030ca0f63c06c5a145138a3a1fc66405d5d64ecb1f";
+            sha256        "a4d98fa4268bc6a1079db72228e5677659b26a284e8bfa1fc380997fb7497afc";
+            computationalSha256 "62c9f54d2619d78e353dc006b570baf675a5c74819e7cbe941efd2470c427b46";
             origin        "data/standards/components/nPropylAcetate.dat";
-            originSha256  "d6441f89d965c47899449c155ee12a811238c3650307cbed703a2259c65126a9";
+            originSha256  "3ce435dbe5ebc3156e7a873351092b8814732d50e2fdd06e3684bba46a480d33";
             release       Choupo-2608;
         }
         "parameters/NRTL/1Heptanol-nPropylAcetate.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/1Heptanol-nPropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "5f64f76b3bb333af00a4abcec6f514d4f8f7df4e88288986db041f95ba0bbbc6";
+            computationalSha256 "f08b3057bb3f1d70c998f0569e3722cc6b68e138a9b4ebbee513a44071ec9377";
+            origin        "data/standards/parameters/UNIQUAC/1Heptanol-nPropylAcetate.dat";
+            originSha256  "c32a35513723f1186abee857a2adf26ac18780ac8693b659259db94f920037a6";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Heptanol-nPropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "458653d95a744e43737a743e4e90d2588b1dd1eda811450ebda4b3307232c1d3";
+            computationalSha256 "6d77394431a19a904ab366ccbc7646dc2ec6b46e6ce780c241408d318f67a3cf";
+            origin        "data/standards/parameters/Wilson/1Heptanol-nPropylAcetate.dat";
+            originSha256  "3200b5d6834af0183552a00869e0036a7d9430a556b5c50ad7cb5a34783b7f0f";
             release       Choupo-2608;
         }
     }
