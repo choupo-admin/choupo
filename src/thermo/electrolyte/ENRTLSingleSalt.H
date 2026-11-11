@@ -44,7 +44,13 @@ License
   validated 25 C kernel (golden masters unchanged); off 25 C it is physical.
 
   PRIMARY: Chen & Evans, AIChE J. 32 (1986) 444 (model + water-NaCl tau =
-  (8.885, -4.549), alpha = 0.2).  Water eps(T)/rho(T): Malmberg-Maryott 1956 /
+  (8.885, -4.549), alpha = 0.2).  The local-composition term runs on the
+  EFFECTIVE mole fractions X_j = x_j C_j (C_j = |z_j| for ions, 1 for the
+  solvent; Chen & Evans Eq 5, p. 445, the change from Chen et al. 1982 that
+  "affects treatment of non-uni-univalent electrolytes").  Until 2026-11-11
+  this kernel used x_j there: identical for 1:1 salts, wrong for any other
+  (gamma_pm of CaCl2 at 2 mol/kg 37 % low against ENRTLMultiSalt, and the
+  gamma/phi pair Gibbs-Duhem inconsistent by up to 0.04 in phi; DEV.md 4c C312).  Water eps(T)/rho(T): Malmberg-Maryott 1956 /
   Kell 1975 (public).  SCOPE: single salt; mixed-solvent Born radius calibrated
   to KCl water+ethanol; the antisolvent permittivity is taken at the value the
   caller supplies (evaluate it at T upstream if a temperature coefficient exists).
@@ -128,7 +134,13 @@ public:
             return Z * (t1 + t2 + t3);
         };
 
-        const double Xact[3] = { nw/ntot, nu_c*m/ntot, nu_a*m/ntot };
+        // EFFECTIVE (charge-weighted) mole fractions of the local-composition
+        // term, X_j = x_j C_j with C_j = |z_j| for an ion and 1 for the
+        // solvent (Chen & Evans 1986 Eq 5; Song & Chen 2009 Eq 21).  The PDH
+        // ionic strength above stays on the TRUE mole fractions x_j.  For a
+        // 1:1 salt X = x exactly; without C_j a 2:1 or 1:2 salt is a
+        // different model, and not the derivative of its own G^ex.
+        const double Xact[3] = { nw/ntot, z_c*nu_c*m/ntot, z_a*nu_a*m/ntot };
         const double Xref[3] = { 1.0, 0.0, 0.0 };          // unsymmetric: ion in pure water
         const double lcC = lc(1, Xact) - lc(1, Xref);
         const double lcA = lc(2, Xact) - lc(2, Xref);
@@ -149,8 +161,10 @@ public:
     {
         if (m <= 0.0) return 1.0;
         const double nw = 1000.0 / Mw, ntot = nw + (nu_c + nu_a) * m;
-        const double X[3] = { nw/ntot, nu_c*m/ntot, nu_a*m/ntot };
-        const double Ix = 0.5 * (X[1]*z_c*z_c + X[2]*z_a*z_a);
+        // true mole fractions for the PDH ionic strength, the charge-weighted
+        // X_j = x_j C_j for the local-composition term (as in lnGammaX).
+        const double Ix = 0.5 * ((nu_c*m/ntot)*z_c*z_c + (nu_a*m/ntot)*z_a*z_a);
+        const double X[3] = { nw/ntot, z_c*nu_c*m/ntot, z_a*nu_a*m/ntot };
         const double t_mca = tauMCa(T), t_cam = tauCaM(T);
         const double Gcm = std::exp(-alpha * t_cam), Gmc = std::exp(-alpha * t_mca);
         double G[3][3], tau[3][3];
