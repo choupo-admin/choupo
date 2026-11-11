@@ -385,3 +385,122 @@ export const PINCH_LIMITS: readonly { id: string; title: string; body: string }[
       + "declared dTmin, and the two are not the same number.",
   },
 ];
+
+/*---------------------------------------------------------------------------*\
+  EXPERIMENT (DEV.md 4c C305): the page asks for a PREDICTION before each run
+  and then puts the engine's number beside the student's guess.  The prompts
+  are data for the same reason the steps are; the comparison is drawn by the
+  tool and is never a grade -- a guess and a result side by side, and the
+  reader judges.
+\*---------------------------------------------------------------------------*/
+
+export interface PinchPrediction {
+  id: "dTmin" | "noPinch" | "network";
+  title: string;
+  prompt: string;
+  /** What the page then does with the engine, said before it does it. */
+  check: string;
+  /** Set on the one prompt the tool cannot run for the student. */
+  designExercise?: boolean;
+}
+
+export const PINCH_PREDICTIONS: readonly PinchPrediction[] = [
+  {
+    id: "dTmin",
+    title: "Prediction 1 · Halve the approach",
+    prompt: "Reduce ΔT_min from 20 K to 10 K on the witness streams.  Will "
+      + "Q_H,min rise, fall or stay the same?  By about how many kW?  Write "
+      + "your guess before you press the button.",
+    check: "The engine is run twice on the streams as they are set now, once "
+      + "at 20 K and once at 10 K, and both targets are printed beside your "
+      + "guess.  Look at Q_C,min as well: step 3 says what it must do.",
+  },
+  {
+    id: "noPinch",
+    title: "Prediction 2 · Make the pinch disappear",
+    prompt: "Change one supply temperature (the knobs above) until the engine "
+      + "reports no interior pinch.  Before you turn the knob, write which "
+      + "stream you will move, in which direction, and why physically the "
+      + "point of closest approach should then leave the interior of the "
+      + "range.",
+    check: "The engine's classification of the problem at your knob values "
+      + "is printed beside your explanation as soon as it answers.  A "
+      + "threshold problem has a zero only at an end of the cascade: one of "
+      + "the two utilities is then not needed at all.",
+  },
+  {
+    id: "network",
+    title: "Design exercise · A network that approaches the targets",
+    prompt: "On paper, design a heat-exchanger network for the four witness "
+      + "streams whose hot utility comes as close to Q_H,min as you can.  "
+      + "The candidate table (view: Candidates) lists every admissible pair "
+      + "and the duty that pair alone allows.  When you have it, type the "
+      + "hot and cold utility your network uses.",
+    check: "This tool does not build networks.  It prints the engine's two "
+      + "targets beside your two numbers and checks one thing any network "
+      + "must satisfy, whatever its matches: the first law, "
+      + "Q_H − Q_C = Q_H,min − Q_C,min.  Whether your network respects "
+      + "ΔT_min in every exchanger is for you to check.",
+    designExercise: true,
+  },
+];
+
+/** IS IT ECONOMIC?  The capital half of step 4's trade, said as a question
+ *  the student has to answer, because the engine does not answer it: the
+ *  pinch pass reports energy targets only, and area targeting, the
+ *  units count and a cost target (supertargeting) are not built. */
+export const PINCH_ECONOMIC_STEP: LessonStep = {
+  n: 6,
+  title: "Is it economic?",
+  body: "The targets are thermodynamic: the least utility the streams admit "
+    + "at the approach you chose.  They are not the cheapest plant.  A "
+    + "smaller ΔT_min lowers the energy bill and raises the exchanger area, "
+    + "because every exchanger then works on a smaller driving force, and "
+    + "the ΔT_min of least total cost sits where the falling energy cost "
+    + "and the rising capital cost add up to the smallest sum.  Choupo does "
+    + "not compute that point: its pinch pass prices no area, so this page "
+    + "shows the energy half of the trade and says so.  Before you open the "
+    + "list below, write down which data you would need to find it.",
+  formula: String.raw`\begin{aligned}
+\text{annual cost}(\Delta T_\mathrm{min}) &= c_H\,Q_\mathrm{H,min} + c_C\,Q_\mathrm{C,min} + f_A \sum_k C_A(A_k)\\[4pt]
+A_k &= \frac{Q_k}{U_k\,\Delta T_{\mathrm{lm},k}}
+\end{aligned}`,
+  where: [
+    { sym: "c_H", means: "The price of hot utility per unit of duty and "
+      + "year — steam, fired heat.  Choupo's pinch pass reads none.",
+      unit: "currency per kW and year" },
+    { sym: "c_C", means: "The price of cold utility, the same way — cooling "
+      + "water, refrigeration.", unit: "currency per kW and year" },
+    { sym: "f_A", means: "The annualisation factor that turns a capital "
+      + "cost into a cost per year (interest rate and plant life).",
+      unit: "1/year" },
+    { sym: "C_A", means: "The installed cost of one exchanger as a function "
+      + "of its area, typically a + b·A^c from a costing correlation.",
+      unit: "currency" },
+    { sym: "k", means: "The index of one exchanger of the network: the sum "
+      + "runs over every unit, so the number of units matters as much as "
+      + "the area.", unit: "none" },
+    { sym: "A_k", means: "The heat-transfer area of exchanger k.",
+      unit: "m²" },
+    { sym: "Q_k", means: "The duty of exchanger k, in watts when U_k is in "
+      + "W/(m²·K).", unit: "W" },
+    { sym: "U_k", means: "The overall heat-transfer coefficient of exchanger "
+      + "k, from the two film coefficients and any fouling.",
+      unit: "W/(m²·K)" },
+    { sym: "\\Delta T_{\\mathrm{lm},k}", means: "The log-mean temperature "
+      + "difference of exchanger k.  It shrinks as ΔT_min shrinks, which is "
+      + "how a smaller approach buys area.", unit: "K" },
+  ],
+  note: "What you would need, at least: a U for every match (or film "
+    + "coefficients per stream), a cost law for an exchanger against its "
+    + "area (cost per m² or a + b·A^c), the price of each utility and the "
+    + "hours the plant runs a year, and the interest rate and life that "
+    + "annualise the capital.  With them, the total annual cost can be "
+    + "evaluated at several ΔT_min values and the lowest one read off — the "
+    + "supertargeting step this tool has not built.",
+};
+
+/** The Experiment moment's steps as a LIST, the shape every lesson module
+ *  exports: tests/lessonTex.test.ts finds steps by that shape and parses
+ *  every formula and glossed symbol in them. */
+export const PINCH_EXPERIMENT_STEPS: readonly LessonStep[] = [PINCH_ECONOMIC_STEP];

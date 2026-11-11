@@ -200,8 +200,25 @@ export function TexText({ text }: { text: string }): JSX.Element {
   );
 }
 
+/** The definitions of a step's symbols, one line each. */
+function glosses(where: readonly SymbolGloss[]): JSX.Element[] {
+  return where.map((g) => (
+    <Text key={g.sym} size="xs" c="dimmed" style={{ lineHeight: 1.6 }}>
+      <Tex src={g.sym} mode="inline" />
+      {"  "}{g.means}
+      {g.unit ? <Text span c="dimmed"> [{g.unit}]</Text> : null}
+    </Text>
+  ));
+}
+
+/** How a page wants its steps drawn.  `foldSymbols` puts each step's
+ *  definitions in a folded "Symbols" panel under its equation (C305). */
+export interface LessonStepOptions { foldSymbols?: boolean }
+
 /** Draw one step.  Every EduTool calls THIS; none of them draws its own. */
-export function LessonStepView({ step }: { step: LessonStep }): JSX.Element {
+export function LessonStepView(
+  { step, foldSymbols = false }: { step: LessonStep } & LessonStepOptions,
+): JSX.Element {
   return (
     <Box>
       <Title order={5}>{step.n} · {step.title}</Title>
@@ -228,17 +245,22 @@ export function LessonStepView({ step }: { step: LessonStep }): JSX.Element {
       {step.formula && (
         <Box my={8} px="sm" py={6} style={{ borderLeft: `3px solid ${BORDER}` }}>
           <Tex src={step.formula} mode="display" />
-          {step.where && step.where.length > 0 && (
-            <Box mt={8}>
-              {step.where.map((g) => (
-                <Text key={g.sym} size="xs" c="dimmed" style={{ lineHeight: 1.6 }}>
-                  <Tex src={g.sym} mode="inline" />
-                  {"  "}{g.means}
-                  {g.unit ? <Text span c="dimmed"> [{g.unit}]</Text> : null}
+          {step.where && step.where.length > 0 && (foldSymbols ? (
+            /*  FOLDED (DEV.md 4c C305): the definitions are one click away
+                instead of standing under every equation.  A native
+                <details> keeps every word in the page (Find, print, the
+                static render the tests read) -- folded, not removed. */
+            <Box component="details" mt={8} data-symbols-panel="">
+              <Box component="summary" style={{ cursor: "pointer" }}>
+                <Text span size="xs" c="dimmed" fw={600}>
+                  Symbols ({step.where.length}) — click to open their definitions
                 </Text>
-              ))}
+              </Box>
+              <Box mt={4}>{glosses(step.where)}</Box>
             </Box>
-          )}
+          ) : (
+            <Box mt={8}>{glosses(step.where)}</Box>
+          ))}
         </Box>
       )}
       {step.note && <Text size="sm" c="dimmed"><TexText text={step.note} /></Text>}
@@ -276,11 +298,11 @@ export function LessonStepView({ step }: { step: LessonStep }): JSX.Element {
  *  Returning null rather than throwing is deliberate -- a page that asks for
  *  a step it does not have should lose a paragraph, not the whole tool. */
 export function lessonStepper(
-  steps: readonly LessonStep[],
+  steps: readonly LessonStep[], opts: LessonStepOptions = {},
 ): (n: number) => JSX.Element | null {
   return (n: number) => {
     const st = steps.find((s) => s.n === n);
-    return st ? <LessonStepView key={n} step={st} /> : null;
+    return st ? <LessonStepView key={n} step={st} {...opts} /> : null;
   };
 }
 
