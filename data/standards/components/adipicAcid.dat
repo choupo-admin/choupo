@@ -144,3 +144,30 @@ provenance
         notes         "computed from ChemSep Tc/Pc/omega";
     }
 }
+
+cosmo
+{
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file ADIPIC_ACID.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey WNLRTRBMVRJNCN-UHFFFAOYSA-N (full match); formula C6H10O4; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        180.308383;   // sum of the profile below; GAMESS prints 180.31
+        volume      175.52;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.221405     0.758802     2.102036
+               1.566940     1.194600     2.540314     2.615916     1.079381     0.203979
+               0.513255     2.053899     3.232120     2.359773     3.868507     7.228253
+               8.346326     8.540333    10.623042    16.980804    15.243728     9.506429
+               6.120302     4.269076     4.836634     2.342679     1.056331     2.254145
+               3.944511     4.769708     3.905198     2.219414     1.938159     4.816313
+               6.563012     4.577196     6.353519     7.919542     7.987991     3.115635
+               0.539176     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
+    }
+}

@@ -148,3 +148,30 @@ provenance
         notes         "computed from ChemSep Tc/Pc/omega";
     }
 }
+
+cosmo
+{
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file 1,4-BUTANEDIOL.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey WERYXYBDKMZEQL-UHFFFAOYSA-N (full match); formula C4H10O2; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        129.067687;   // sum of the profile below; GAMESS prints 129.07
+        volume      120.60;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.461789     1.395433     1.197717     0.402559     0.648189
+               1.401494     0.993274     0.469982     0.463322     1.034324     0.869108
+               0.596558     2.280240     8.254826    17.414166    21.642730    14.523944
+              10.414761     6.489692     7.320470     3.324474     1.369525     1.230306
+               1.441993     1.755950     2.001266     1.215163     1.088567     0.797218
+               1.946042     1.966835     2.191543     1.579836     1.407885     1.801574
+               1.705400     1.747553     1.877264     0.344715     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
+    }
+}
