@@ -1536,7 +1536,7 @@ def check_model_records(tmp, runs, fetched, fails, not_run):
     for model in pc.MODELS:
         std = sorted((params / model).glob("*.dat")) if (params / model).is_dir() else []
         std = [p for p in std if "fittedInCase" in p.read_text()
-               and pc.MODEL_PROMOTED_BY in p.read_text()]
+               and pc.MODELS_PROMOTED_BY in p.read_text()]
         if len(std) < MODEL_FLOOR[model]:
             fails.append(f"only {len(std)} {model} record(s) promoted by C294 under "
                          f"data/standards/parameters/{model}/ -- the floor is "
@@ -1673,7 +1673,7 @@ def check_model_records(tmp, runs, fetched, fails, not_run):
                              f"evidence gives {nT}/{nL}")
             prov = block(rec, "provenance") or ""
             status = word(rec, "reviewStatus")
-            names = (f"{rf['i']}-{rf['j']}", f"{rf['j']}-{rf['i']}")
+            names = (f"{rf['i']}-{rf['j']} ({model})", f"{rf['j']}-{rf['i']} ({model})")   # the loader names a non-NRTL record with its model (C294)
             if in_std:
                 if word(cur, "verdict") != "accepted" or pc.promotion_refusal(grade):
                     fails.append(f"{tag}: grade {grade} / verdict {word(cur, 'verdict')} in the "
