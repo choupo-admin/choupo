@@ -3417,6 +3417,45 @@ accepts today, and that is a policy call.
 > (check by grep) are listed, not silently left.  Status: recorded, general to
 > be dispatched (gui only; `--gui` is its validation).  Owner: architect.
 
+> **C302 (Vitor, 2026-11-11: "porque raio ha tantas fabricas de amonia nos
+> tutoriais? ... Esta [greenAmmoniaPEQ_baseCase] nem sequer tem pinch!").**
+> Measured: tutorials/plant ships 14 plants, FIVE of them ammonia --
+> ammonia02_full_plant (the SITE-method witness: roads, trucks, bunds),
+> greenAmmonia02_feasibility50bar and ...150bar (FEL-2, the loop-pressure
+> decision; their flowsheets differ, not only a number), greenAmmonia03_basicDesign
+> (FEL-3) and greenAmmoniaPEQ_baseCase (the reference plant, BRAIN.md).  The
+> reactor ladder (steady/reactors ammoniaReactor01..04, quench converter,
+> routes screening) is a separate, deliberate lesson.  The pinch pass is
+> declared ONLY at FEL-2: FEL-3 and the reference plant have none, though they
+> carry the FEHE, the water cooler and the chiller where pinch teaches most.
+> (The extra ammonia folders a local checkout may show under tutorials/plant
+> are untracked run outputs, not shipped.)  DECIDED: (1) greenAmmoniaPEQ and
+> greenAmmonia03 declare `pinchPass` (dTmin stated with its reason); existing
+> golden rows must not move, the new pinch rows are recorded and listed;
+> (2) the five plants are presented as what they are -- one green-ammonia
+> project at three design stages plus one site witness -- in the tutorials
+> catalogue and each README's first line, so a student meets ONE project, not
+> five plants; (3) whether 50/150 bar fold into one case with the pressure as
+> a declared study is judged after (2), on the two flowsheets side by side.
+
+> **C301 (Vitor, 2026-11-11, a screenshot of the Grand composite of
+> `steady/heat/pinch01_four_stream_classic` with a reviewer's reading: "the
+> presentation is not intuitive").**  Measured the same turn: the NUMBERS are
+> right -- the problem table recomputed by hand from the four streams (H1
+> 150->60 C CP 2, H2 90->60 CP 8, C1 20->125 CP 2.5, C2 25->100 CP 3, dTmin
+> 20 K) gives the same six intervals, Q_H,min 107.5 kW, Q_C,min 40 kW, pinch
+> T* 80 C, and the plotted points sit where the cascade puts them.  One real
+> imprecision: the status line rounds 107.5 to "108 kW" (toFixed(0)).  The
+> rest is pedagogy, decided by the architect: the grand composite shall NAME
+> what a student must read on it -- Q_H,min at the top end and Q_C,min at the
+> bottom end as labelled arrows; the Q = 0 axis drawn; the pinch marked as
+> the place heat cannot cross; the heat-recovery POCKETS (where the curve
+> turns back) shaded and named, with one sentence saying a pocket is heat the
+> process exchanges with itself and no utility is placed there; above the
+> pinch "net heat sink", below "net heat source"; a short caption explaining
+> why the curve zig-zags (each interval's net surplus or deficit).  No
+> number changes.  Status: general to be dispatched (gui only).
+
 > **C297 engine half LANDED 2026-11-10 (5f8bc2df1 via integ merge).**  Decision
 > on validation: NO full sweep, reason written per rule 4: the new parser is
 > reached only inside the `reviewStatus autoPromoted` branch and prints nothing
