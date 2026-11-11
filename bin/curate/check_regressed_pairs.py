@@ -1638,10 +1638,13 @@ def check_model_records(tmp, runs, fetched, fails, not_run):
                 rmx, lim_words = num(cur, "maxAbsError"), ("K", pc.grade_of)
             if rmx is None or abs(rmx - mx) > 5e-5 * max(1.0, mx) + 1e-4:
                 fails.append(f"{tag}: curation max error {rmx}, the run's {mx:.6f} {lim_words[0]}")
-            if num(cur, "pointsKept") != nk:
-                fails.append(f"{tag}: curation pointsKept {num(cur, 'pointsKept')}, the run "
-                             f"fitted {nk}")
             nan = num(cur, "noBubblePoint") or 0
+            #  The tool counts in pointsKept the kept points the model prices
+            #  and in noBubblePoint those it finds no bubble point for; the
+            #  run fits both, so their sum is its n_data.
+            if (num(cur, "pointsKept") or 0) + nan != nk:
+                fails.append(f"{tag}: curation pointsKept {num(cur, 'pointsKept')} + "
+                             f"noBubblePoint {nan:g}, the run fitted {nk}")
             grade = lim_words[1](mx, nan)
             MODEL_GRADE_COUNT[(model, grade)] = MODEL_GRADE_COUNT.get((model, grade), 0) + 1
             if word(cur, "grade") != grade:
