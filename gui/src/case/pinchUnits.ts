@@ -28,6 +28,9 @@ export interface PinchUnits {
   dTraw(K: number): string;
   /** duty [kW] -> picked unit */
   Q(kW: number, d?: number): string;
+  /** a TARGET duty [kW]: 107.5 stays 107.5 (one decimal below 1000 in the
+   *  default unit; other units keep four significant figures) */
+  Qt(kW: number): string;
   /** CP [kW/K] -> picked unit */
   CP(kWperK: number, d?: number): string;
   /** numeric converters, for axes */
@@ -54,6 +57,12 @@ export function pinchUnits(
     dT: (K, d = 0) => fix(dKToDisplay(K, t), d),
     dTraw: (K) => String(dKToDisplay(K, t)),
     Q: (kW, d = 0) => qfmt(kWToDisplay(kW, q), d),
+    Qt: (kW) => {
+      if (!Number.isFinite(kW)) return "—";
+      const v = kWToDisplay(kW, q);
+      if (!fixedQ) return formatSig(v, 4);
+      return Math.abs(v) >= 1000 ? v.toFixed(0) : String(Number(v.toFixed(1)));
+    },
     CP: (c, d = 2) => qfmt(cpToDisplay(c, q, t), d),
     qNum: (kW) => kWToDisplay(kW, q),
     tNum: (K) => kToDisplay(K, t),
@@ -69,7 +78,7 @@ export function pinchStatusLine(
 ): string {
   return `${pinch.streams.length} process streams in the engine's population `
     + `(reports/pinch/population.csv) · ΔTmin ${u.dTraw(pinch.dTmin)} ${u.tLabel} · targets `
-    + `${u.Q(pinch.QhMin)} ${u.qLabel} hot / ${u.Q(pinch.QcMin)} ${u.qLabel} cold · `
+    + `${u.Qt(pinch.QhMin)} ${u.qLabel} hot / ${u.Qt(pinch.QcMin)} ${u.qLabel} cold · `
     + (pinch.pinchShift == null ? "no pinch (threshold problem)"
                                 : `pinch T* ${u.T(pinch.pinchShift, 1)} ${u.tLabel}`) + ".";
 }
