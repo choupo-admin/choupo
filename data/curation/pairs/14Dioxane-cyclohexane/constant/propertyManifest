@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/14Dioxane-cyclohexane.dat"
         {
             type          imported;
-            sha256        "af4796834c0d500f70dd0f89084cb2127343b7629620e5424641cbcb1d070d1f";
-            computationalSha256 "96974eaf322c480f36354883aebaca3b3586ae271fd0d3395aeee8ac3547dff5";
+            sha256        "f79b516fe8ccf449e80d6b39185cc0136bf4dd0a19998da5a3069e56926ea4ba";
+            computationalSha256 "599c52f33e439db37ef8c408c24b46e771eafa48cc71c29a2f77accb5428fc0e";
             origin        "data/standards/parameters/NRTL/14Dioxane-cyclohexane.dat";
-            originSha256  "ac239b79d69a67460c6f80d8d5800c6e9592fe3298f87ce6fadc1e0b0dd48577";
+            originSha256  "7a61e0fa7fb8f193701615b48414530daa437fd815201d3fc0361c84e3430604";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

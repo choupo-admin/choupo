@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/1Propanol-propionicAcid.dat"
         {
             type          imported;
-            sha256        "0cd7069a4098a853a388051baa8c8eed50f0c6149dc46c84bc67565c08e14aeb";
-            computationalSha256 "b46a8075e1c344825697344082adfd4a9ee130f7b137f7d218cdda2f9aabf51f";
+            sha256        "b0a57649a189976ff5058f5929b116a79a16a0c771d8fe21e61af717e0a067a8";
+            computationalSha256 "e87971662453b3e4bd82f568fbf3c62126ec24f608faee3faea3e35e2762926f";
             origin        "data/standards/parameters/NRTL/1Propanol-propionicAcid.dat";
-            originSha256  "6308f2500339613733cd4f1ceadaae3a4ce3a2832e2259f732a21014a1f88ef9";
+            originSha256  "3b2940c261089d25634bed245c06e98e3daa7fbaa5663b53307ed8d841b80b19";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/1Propanol-diisopropylEther.dat"
         {
             type          imported;
-            sha256        "24765dd64da270016a2d8c7f5608c2cb78dd98acf13b71319ed11f32d0def363";
-            computationalSha256 "a2ee46f352bac46cd3cc2546adbf61acb0645eaf2ea6faad12b99eaa9c602b66";
+            sha256        "8638cccd6434fe1860e143f0604ec3c20cfc7ce352b2144ad84dd4fc01597bdc";
+            computationalSha256 "ff21e7b5a3ff212e0a82749e3449a9b9d10d172d6afc817672b211f6857667cf";
             origin        "data/standards/parameters/NRTL/1Propanol-diisopropylEther.dat";
-            originSha256  "493e9ab1daa1b17f5b44f118ef5a9fc4aea8118309d66c138377d30beb22245a";
+            originSha256  "944dda9c30c051d0301dd9d098226ddaa3709132978ffda3b15fdcfa9a33e401";
             release       Choupo-2608;
         }
     }

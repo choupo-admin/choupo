@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/2Butanol-dimethylCarbonate.dat"
         {
             type          imported;
-            sha256        "9fed8ca23bd4c546bca0320229a9d855aec8b76b220523373455aff615c19a12";
-            computationalSha256 "8420cae5a00c3a44667425063b313141427f59943c5a01f0d97c524bf3758e82";
+            sha256        "cb5a92704ef478d7a35c2892e0f182aca0beef87d82dbb4eb582364986157076";
+            computationalSha256 "5364646be498c3ecb4ee984faa8f537da21100e4d2093271bb45278ab1a6da76";
             origin        "data/standards/parameters/NRTL/2Butanol-dimethylCarbonate.dat";
-            originSha256  "8754f68d70aaa6f89d63526efaf1762be22aa8f0b0012f1d9d46905017e85233";
+            originSha256  "494d1a99a66783440e7a60b7bd6ee65d7ef2af45934abd8d4b80b89e45d10e75";
             release       Choupo-2608;
         }
     }

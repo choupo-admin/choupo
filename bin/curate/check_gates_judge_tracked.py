@@ -74,11 +74,12 @@ PROBES = {
     #  The engine falls back to data/local/ for a pair the standards lack, so a
     #  private acetone pair turned this gate's "uncurated pair" probes into
     #  curated ones and the gate FAILED on the machine (C170).  The probe is a
-    #  copy of a real pair file under the two names the gate leaves uncurated.
+    #  copy of a real pair file under the two names the gate leaves uncurated (its own case-local probe
+    #  component zzprobeacetone, which no catalogue carries).
     "check_problem_divergence.py": [
-        ("data/local/parameters/NRTL/acetone-water.dat",
+        ("data/local/parameters/NRTL/water-zzprobeacetone.dat",
          "@copy:data/standards/parameters/NRTL/ethanol-water.dat"),
-        ("data/local/parameters/NRTL/acetone-methanol.dat",
+        ("data/local/parameters/NRTL/methanol-zzprobeacetone.dat",
          "@copy:data/standards/parameters/NRTL/ethanol-water.dat"),
     ],
     "check_registry_scan.py": [
@@ -93,7 +94,7 @@ CONTROL = {
     "check_glossary_bans.py": "docs/{T}.md",
     "check_source_licence.py": "data/standards/components/{T}.dat",
     "check_registry_scan.py": "data/standards/parameters/NRTL/{T}b-{T}a.dat",
-    "check_problem_divergence.py": "data/standards/parameters/NRTL/acetone-water.dat",
+    "check_problem_divergence.py": "data/standards/parameters/NRTL/water-zzprobeacetone.dat",
 }
 
 #  The claim line must say what was NOT judged.

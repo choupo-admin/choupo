@@ -1295,3 +1295,42 @@ the provenance: "provenance fitGrade `None`, recomputed `warning`").
 * The pairs a parallel general holds under the bubble-temperature route (38 of
   the ranked ones) can be refitted on T-x plus P-x evidence together later;
   not done.
+
+## 13. The grade says in-sample, and a clean needs evidence that could contradict it (2026-11-11, DEV.md 4c C300)
+
+Measured on the catalogue before the change: of 120 graded NRTL records, 84
+`clean`, 19 `warning`, 17 `severe`.  Of the 84 clean, 62 are C291 P-x records
+resting on ONE stated temperature and ONE laboratory, and 3 are C283 T-x
+records resting on ONE laboratory, all with `heldOut none`: their clean was the
+curve reproducing the very points it was fitted to, and nothing in the evidence
+could have contradicted it.
+
+What changed, and nothing else (no parameter moved; the curation block keeps
+the in-sample `grade` the residual earned):
+
+* Rule 1.  Every graded value carries `fitGradeBasis inSample;` beside
+  `fitGrade` (pairs and component values alike), and the loader's voice
+  (src/thermo/FitGrade.H) says "in-sample, the fitted curve misses some of the
+  measurements it was fitted to by up to ...".  Any other basis word refuses.
+* Rule 2, pairs only.  `clean` needs at least two temperatures AND at least two
+  laboratories in the KEPT evidence, or a held-out set that itself grades clean
+  (the pipelines hold nothing out today).  Otherwise the provenance `fitGrade`
+  is `warning` and `fitGradeCap ( singleTemperature singleLaboratory );` names
+  the words that apply; the voice reads "fitGrade warning -- CAPPED from an
+  in-sample clean: it rests on ONE stated temperature and ONE laboratory with
+  nothing held out ...".  One rule, `cap_grade` in bin/curate/pairs_c283.py,
+  used by both pair tools, by the migration and by check_regressed_pairs
+  (arms j and k).  Temperatures are the C291 isotherms, or the distinct kept
+  bubble temperatures of a C283 isobar; laboratories are the distinct DOIs
+  with at least one kept point.
+* Rule 4.  The tools write `review { by none; }` and no longer
+  `humanReviewed`.  The 179 catalogue records that carry `humanReviewed false;` keep it;
+  the engine (src/thermo/ReviewRecord.cpp) reads a legacy `humanReviewed true`
+  as `by human` and `false` as `by none`, only when no `review {}` block
+  exists.  The gate accepts either home, never both.
+
+After the migration (bin/curate/migrate_c300_grade_labels.py, idempotent):
+19 clean, 84 warning, 17 severe; 65 capped (62 both words, 3
+singleLaboratory).  Vapour pressures keep the C285 rule and gained the basis
+line only.  Rule 3 (severe records out of the default catalogue) is measured,
+not done: see DEV.md 4c C300.

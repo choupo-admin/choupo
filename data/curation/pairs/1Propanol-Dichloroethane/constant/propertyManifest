@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/1Propanol-Dichloroethane.dat"
         {
             type          imported;
-            sha256        "1d8cbb1c49d0c26d1248030b199c5489b7bcae6f98f068f07a3bbe9e5f990198";
-            computationalSha256 "585b7736f9f8b49700d3086a98d18122de389f149db5c33e79f3c5b954f9f0f4";
+            sha256        "9153a11f0f7d188a22ecd08b09f4f297f5de679fae9555d33576e6195783ce91";
+            computationalSha256 "877f65ed9ac947b7cdaf6c2bab84a43d480064b2960cf77dcb6529f379778a85";
             origin        "data/standards/parameters/NRTL/1Propanol-Dichloroethane.dat";
-            originSha256  "b9dc54606a778023860af52480dbd1b9d1062d3468fd1cfbfff3233d7ce8bc94";
+            originSha256  "1188e64c5e506b3160205e17876ba193468cb542e688a3eef4a31dd4188e1db5";
             release       Choupo-2608;
         }
     }

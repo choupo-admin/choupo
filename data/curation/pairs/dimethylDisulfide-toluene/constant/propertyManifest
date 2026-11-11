@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/dimethylDisulfide-toluene.dat"
         {
             type          imported;
-            sha256        "a6fd56231b4e4a0e98dc9547c13d283e6e2d1c97ef1051be3b1b2fadf44da7a8";
-            computationalSha256 "2bdb15c1385472d9ee53e42fc545ff316e9571383640978e42d9c6ba0916f3bf";
+            sha256        "5d89247fcb0a11e07b4c4640aa2324a0fccaa550c17966e68b6979e53df8db18";
+            computationalSha256 "35c96b72b90806a3bab90fd2a4b33f4b60728a89d0d4ff4ef0173aa1c6eae26c";
             origin        "data/standards/parameters/NRTL/dimethylDisulfide-toluene.dat";
-            originSha256  "910f7858016173ce03d9e6a748d7efdc556b179ed6295a2c7b69c3e2a21ca848";
+            originSha256  "9df4b714e6588cd404cea2a032380e486ae0c64f77c618a7aaffaae15e8770f7";
             release       Choupo-2608;
         }
     }

@@ -20,7 +20,18 @@
     property) and the pair loaders through fillPairAudit
     (src/thermo/PairAudit.H, the record's own provenance, `key` empty).  A
     second copy of the wording is how the two kinds of record would come to
-    say two different things about the same fact.  */
+    say two different things about the same fact.
+
+    THE GRADE IS IN-SAMPLE, AND A CLEAN NEEDS EVIDENCE THAT COULD HAVE
+    CONTRADICTED IT (DEV.md 4c C300, 2026-11-11).  Every graded record says
+    `fitGradeBasis inSample;` -- the residual is the curve reproducing the
+    very points it was fitted to -- and the voice says "in-sample".  A pair
+    fitted at ONE stated temperature or on ONE laboratory, with nothing held
+    out, cannot be `clean`: its curation tool caps it at `warning` and names
+    the reason, `fitGradeCap ( singleTemperature singleLaboratory );` (one
+    or both words), and the voice names the cap.  A basis or a cap word this
+    reader does not know refuses by name, and so does a cap beside any grade
+    but warning (a cap that lowered nothing is a contradiction).  */
 
 #pragma once
 
@@ -31,6 +42,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace Choupo
 {
@@ -45,23 +57,54 @@ inline void announceFitGrade(const std::string& subject, const std::string& key,
 {
     if (!entry || !entry->found("fitGrade")) return;
     const std::string grade = entry->lookupWordOrDefault("fitGrade", "");
-    if (grade == "clean") return;
-    if (grade != "warning" && grade != "severe")
+    const std::string where = subject + ": provenance" + (key.empty() ? "" : "." + key);
+    if (grade != "clean" && grade != "warning" && grade != "severe")
         throw std::runtime_error(
-            subject + ": provenance" + (key.empty() ? "" : "." + key)
-            + " declares `fitGrade " + grade + ";` -- the grades a catalogue"
+            where + " declares `fitGrade " + grade + ";` -- the grades a catalogue"
             " value may carry are clean, warning and severe (DEV.md 4c C285);"
             " a refused fit is not promoted");
+    if (entry->found("fitGradeBasis"))
+    {
+        const std::string basis = entry->lookupWordOrDefault("fitGradeBasis", "");
+        if (basis != "inSample")
+            throw std::runtime_error(
+                where + " declares `fitGradeBasis " + basis + ";` -- the only basis"
+                " is inSample: the grade is the fit reproducing its own points,"
+                " and a held-out residual is recorded beside it, never in its"
+                " place (DEV.md 4c C300)");
+    }
+    std::vector<std::string> caps;
+    if (entry->found("fitGradeCap"))
+    {
+        caps = entry->lookupWordList("fitGradeCap");
+        if (caps.empty())
+            throw std::runtime_error(where + " declares an empty `fitGradeCap ( );`"
+                " -- name the reason: singleTemperature, singleLaboratory"
+                " (DEV.md 4c C300)");
+        for (const std::string& c : caps)
+            if (c != "singleTemperature" && c != "singleLaboratory")
+                throw std::runtime_error(
+                    where + " declares `fitGradeCap ( ... " + c + " ... );` -- the"
+                    " allowed words are singleTemperature and singleLaboratory"
+                    " (DEV.md 4c C300)");
+        if (grade != "warning")
+            throw std::runtime_error(
+                where + " declares `fitGradeCap` beside `fitGrade " + grade + ";`"
+                " -- a cap lowers an in-sample clean to warning and goes with"
+                " warning only (DEV.md 4c C300)");
+    }
+    if (grade == "clean") return;
     std::ostringstream miss;
     miss.precision(4);
     const bool hasP = entry->found("fitGradeMaxRelativeError_pct");
     const bool hasK = entry->found("fitGradeMaxTemperatureError_K");
     const bool hasT = entry->found("fitGradeBoilingPointGap_K");
     if (hasP)
-        miss << "misses some of its measurements by up to "
+        miss << "misses some of the measurements it was fitted to by up to "
              << entry->lookupScalar("fitGradeMaxRelativeError_pct") << " %";
     if (hasK)
-        miss << (hasP ? ", and " : "") << "misses some of its measurements by up to "
+        miss << (hasP ? ", and " : "") << "misses some of the measurements it was"
+                " fitted to by up to "
              << entry->lookupScalar("fitGradeMaxTemperatureError_K") << " K";
     if (hasT)
         miss << (hasP || hasK ? ", and " : "") << "places its normal boiling point "
@@ -70,8 +113,25 @@ inline void announceFitGrade(const std::string& subject, const std::string& key,
     if (!hasP && !hasK && !hasT)
         miss << "records no deciding number";
     const bool severe = (grade == "severe");
+    std::string capped;
+    if (!caps.empty())
+    {
+        bool T1 = false, L1 = false;
+        for (const std::string& c : caps)
+        {
+            T1 = T1 || c == "singleTemperature";
+            L1 = L1 || c == "singleLaboratory";
+        }
+        capped = std::string(" CAPPED from an in-sample clean: it rests on ")
+            + (T1 ? "ONE stated temperature" : "")
+            + (T1 && L1 ? " and " : "")
+            + (L1 ? "ONE laboratory" : "")
+            + " with nothing held out, so no measurement could have contradicted"
+              " it (DEV.md 4c C300);";
+    }
     const std::string msg = (key.empty() ? std::string() : "`" + key + "` ")
-        + "fitGrade " + (severe ? "SEVERE" : "warning") + " -- the fitted curve "
+        + "fitGrade " + (severe ? "SEVERE" : "warning") + " --" + capped
+        + " in-sample, the fitted curve "
         + miss.str()
         + (severe ? "; it is WEAK and was accepted only with a SEVERE warning"
                   : "; it was accepted with a WARNING");

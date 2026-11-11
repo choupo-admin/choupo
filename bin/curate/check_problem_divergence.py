@@ -209,17 +209,21 @@ PROPSDICT = """operations
     }
 );
 """
-#  THE TERNARY PROBE: methanol + water + acetone.  methanol-water is curated
-#  and the two acetone pairs are not, so the refusal must name exactly two of
-#  three pairs.  It was ethanol + water + acetone until 2026-10-05, when C16
-#  slice 2 (4790973a8) promoted acetone-ethanol into the catalogue -- correct
-#  curation, and it turned A1/A4 red with a message that read like an engine
-#  regression.  So the premise is no longer TRUSTED: PREMISE below derives it
-#  from the catalogue on every run, and a pair that gains a record fails the
-#  gate naming the stale fixture, never the engine.
-PROBE3 = "methanol  water  acetone"
-UNCURATED3 = {"methanol-acetone", "water-acetone"}
-TERNARY = "methanol 0.4; water 0.4; acetone 0.2;"
+#  THE TERNARY PROBE: methanol + water + PROBE_COMP.  methanol-water is
+#  curated; the two pairs with the third component must be uncurated, so the
+#  refusal must name exactly two of three pairs.  The third component used to
+#  be acetone (ethanol until 2026-10-05, when C16 promoted acetone-ethanol;
+#  acetone itself on 2026-11-11, when C290 curated methanol-acetone).  Each time
+#  a REAL component's pairs were curated the gate went red with a message that
+#  read like an engine regression.  So the gate now CREATES its own uncurated
+#  situation: the third component is a case-local clone of acetone under a name
+#  no catalogue can carry (PROBE_COMP), written into each probe case's
+#  constant/components/.  PREMISE below fails by name if that name ever
+#  appears under data/standards.
+PROBE_COMP = "zzprobeacetone"
+PROBE3 = "methanol  water  " + PROBE_COMP
+UNCURATED3 = {"methanol-" + PROBE_COMP, "water-" + PROBE_COMP}
+TERNARY = "methanol 0.4; water 0.4; %s 0.2;" % PROBE_COMP
 BINARY = "ethanol 0.5; water 0.5;"
 
 #  PER-MODEL COMPONENT SETS.  A model can only reach the ideal-pair default
@@ -255,7 +259,7 @@ approximations
 {
     idealBinaryPair
     {
-        pairs  ( methanol-acetone water-acetone );
+        pairs  ( methanol-zzprobeacetone water-zzprobeacetone );
         reason "gate probe";
     }
 }
@@ -266,7 +270,7 @@ approximations
 {
     idealBinaryPair
     {
-        pairs  ( methanol-acetone );
+        pairs  ( methanol-zzprobeacetone );
         reason "gate probe -- deliberately partial";
     }
 }
@@ -278,7 +282,10 @@ def probe_case(tmp: Path, tag: str, model: str, approx: str,
                x: str = None) -> Path:
     d = tmp / tag
     (d / "system").mkdir(parents=True)
-    (d / "constant").mkdir(parents=True)
+    (d / "constant" / "components").mkdir(parents=True)
+    (d / "constant" / "components" / (PROBE_COMP + ".dat")).write_text(
+        PROBE_DAT_SRC.read_text().replace("name        acetone;",
+                                          "name        %s;" % PROBE_COMP))
     if approx_inside:
         #  The same block, filed where it does NOT belong: inside the
         #  activityModel sub-dict.  A2's negative.
@@ -312,6 +319,9 @@ def result_json(out: str) -> dict:
         return {}
 
 
+PROBE_DAT_SRC = ROOT / "data" / "standards" / "components" / "acetone.dat"
+
+
 def nrtl_pair_curated(a: str, b: str) -> bool:
     """A standards NRTL record for the pair, in either order (file names are
     `<a>-<b>.dat`).  Read from the tree, never remembered."""
@@ -324,6 +334,10 @@ def nrtl_pair_curated(a: str, b: str) -> bool:
 #  PREMISE: the ternary probe's two pairs are uncurated and its third is not
 #  in question.  If curation moves either, A1/A3/A4 would fail as if the
 #  ENGINE had stopped refusing -- so the stale fixture is named instead.
+if any(PROBE_COMP in f.name.lower()
+       for f in (ROOT / "data" / "standards").rglob("*")):
+    failures.append("PREMISE: the probe component name %r now appears under "
+                    "data/standards -- rename PROBE_COMP in this gate" % PROBE_COMP)
 stale = sorted(p for p in UNCURATED3 if nrtl_pair_curated(*p.split("-")))
 if stale:
     failures.append("PREMISE: the probe expects %s to be uncurated, and the "
@@ -349,7 +363,7 @@ with tempfile.TemporaryDirectory() as td:
         refused, offered = refused_and_offered(out)
         if refused != UNCURATED3:
             failures.append("A1: the refusal named %s, expected the two"
-                            " uncurated acetone pairs" % sorted(refused))
+                            " uncurated probe pairs" % sorted(refused))
         if refused != offered:
             failures.append("A1: the offered block lists %s, not the pairs it"
                             " refused (%s)" % (sorted(offered), sorted(refused)))
@@ -368,14 +382,14 @@ with tempfile.TemporaryDirectory() as td:
     rc, out = run(PROPS, probe_case(tmp, "a3", "NRTL", AUTH_ONE))
     if rc == 0:
         failures.append("A3: authorising one pair let the other through")
-    elif "water-acetone" not in out or "methanol-acetone" in out.split(
+    elif "water-" + PROBE_COMP not in out or "methanol-" + PROBE_COMP in out.split(
             "would therefore run as IDEAL:")[-1].split("\n")[0]:
         failures.append("A3: the partial refusal does not name water-acetone"
                         " alone")
 
     # ---- A4: all three pair models answer the same way --------------------
     for model, (comps, want_pairs) in MODEL_PROBE.items():
-        x = BINARY if "acetone" not in comps else TERNARY
+        x = BINARY if PROBE_COMP not in comps else TERNARY
         rc, out = run(PROPS, probe_case(tmp, "a4" + model, model, "",
                                         comps=comps, x=x))
         if rc == 0:

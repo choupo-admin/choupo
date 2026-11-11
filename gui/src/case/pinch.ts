@@ -64,9 +64,9 @@ export const PINCH_PASS_EXCERPT = "pinchPass { dTmin 20 K; }";
 export const PINCH_CLASS_TEXT: { [word: string]: string } = {
   interiorPinch: "interior pinch: the cascade touches zero at one interior temperature, so heat cannot cross it",
   severalPinches: "several pinches: the cascade touches zero at more than one interior temperature, so the problem splits into independent sub-problems",
-  thresholdNoHotUtility: "threshold problem, no hot utility needed: the cascade touches zero only at the top of the range, so there is no pinch",
-  thresholdNoColdUtility: "threshold problem, no cold utility needed: the cascade touches zero only at the bottom of the range, so there is no pinch",
-  thresholdNoUtility: "threshold problem, no utility needed: the streams exchange all their heat with each other, so there is no pinch",
+  thresholdNoHotUtility: "threshold problem, no hot utility needed: the cascade touches zero only at the top of the range, so there is no interior pinch",
+  thresholdNoColdUtility: "threshold problem, no cold utility needed: the cascade touches zero only at the bottom of the range, so there is no interior pinch",
+  thresholdNoUtility: "threshold problem, no utility needed: the streams exchange all their heat with each other, so there is no interior pinch",
 };
 
 /** One row of reports/pinch/problemTable.csv, exactly as the engine wrote it. */

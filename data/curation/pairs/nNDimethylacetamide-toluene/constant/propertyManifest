@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/nNDimethylacetamide-toluene.dat"
         {
             type          imported;
-            sha256        "ba0c4c5aa576d544e510258ad33a8d0a6eac8e98067ea18f6ea1a9fce8e2b2fb";
-            computationalSha256 "a9fbcfdc25183233c3a2f09c3cd4e8f4d6bae2fb48f13e1c2c8c13e0e4b6d072";
+            sha256        "0afce493a200a680f18e2393e4ec8cdf46c8caaf434aad90167048510fa9c018";
+            computationalSha256 "33958c39c53ecc2827965d80da92fd47ba7b3e60a69d35779177a85d86c80719";
             origin        "data/standards/parameters/NRTL/nNDimethylacetamide-toluene.dat";
-            originSha256  "2686bbfba42bb6810e3b681a50d8b87231eee9874395c7bff22835a4cb988678";
+            originSha256  "f8ea5dca7b1c91b1e94e2e941e75646344cb59d7ff7b1cdb6ef1b0609995904b";
             release       Choupo-2608;
         }
     }

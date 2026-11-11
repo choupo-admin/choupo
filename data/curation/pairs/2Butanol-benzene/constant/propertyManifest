@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/2Butanol-benzene.dat"
         {
             type          imported;
-            sha256        "ebd359b4a928c727e632613061cc8cf18d029150abdfeed44815ff4ea4bb775b";
-            computationalSha256 "19310a07689938a072ca7de691c862076b43127eb5a1ed60d3c81615fb60ddc6";
+            sha256        "fe7035bb29fa47df2a99c2a15095bf4632e29db5a002791c0883a891082315b2";
+            computationalSha256 "407dc9883df7bde334d3d55d913494640e87fe4b36d1ce427685307fdccd3860";
             origin        "data/standards/parameters/NRTL/2Butanol-benzene.dat";
-            originSha256  "2c126b1188b075797e2e8769f65a15c8b42b840bd9c2b6071ab9865898a74df1";
+            originSha256  "9c97281085e5a42065e6e0014a02789ce984afd11534e3c78cb9616b8304b3c4";
             release       Choupo-2608;
         }
     }

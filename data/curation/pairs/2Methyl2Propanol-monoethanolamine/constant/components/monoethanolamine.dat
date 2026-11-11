@@ -1,0 +1,227 @@
+// [imported] origin "data/standards/components/monoethanolamine.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: monoethanolamine  (CAS 141-43-5)
+  PROPOSAL TIER -- UNVERIFIED. Imported from ChemSep v8.3
+  pure-component data under Artistic License 2.0.
+  Critical constants are source data.  Psat is an Antoine FITTED by
+  bin/choupo-curate vp to measured vapour pressures (DEV.md 4c C281;
+  provenance.vaporPressure): reviewStatus autoPromoted, NOT human-reviewed.
+\*---------------------------------------------------------------------------*/
+
+name        monoethanolamine;
+CAS         141-43-5;
+formula     C2H7NO;      // counted from the ChemSep v8.3 structure formula "HOCH2CH2NH2" (derived 2026-09-03; reproduces MW to 0.002 %)
+reviewStatus interim;
+MW          61.08308;      // kg/kmol [origin=ChemSep v8.3]
+Tc          671.4;      // K [origin=ChemSep v8.3]
+Pc          80.3;      // bar; source Pa / 1e5 [origin=ChemSep v8.3]
+omega       0.550815;      // [-] [origin=ChemSep v8.3]
+Tb          444.15;      // K [origin=ChemSep v8.3]
+
+standardThermochemistry
+{
+    dHf_298   -196000;        // J/mol   [ChemSep v8.3, ideal gas]
+    s_298     320;        // J/(mol.K)  third-law absolute
+}
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C), FITTED by bin/choupo-curate vp to
+    // measured vapour pressures -- see provenance.vaporPressure
+    coefficients  (5.379683127  2089.088654  -55.21793172);
+    Trange        (273.65  441.9);   // the fit's own span; outside it the engine announces the extrapolation
+}
+
+Vliq        6.03726e-05;      // m3/mol at 25 C  [ChemSep eqno 105]
+HvapTb      50049.4;      // J/mol at Tb  [ChemSep eqno 106]
+
+idealGasHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    // ChemSep states J/(kmol.K); A and the exp are scaled to per-mole here.
+    coefficients  (50.668  -516.86  5.259244721  8.641e-05  2.8656e-10);
+    Trange        (273  1500);
+}
+
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     -370.3;
+        B     17780;
+        C     54.624;
+        D     -5.1065e-05;
+        E     2;
+        Tmin  283.65;
+        Tmax  542.56;
+    }
+}
+
+liquidThermalConductivity
+{
+    chemsepEq16
+    {
+        A     -0.37218;
+        B     78.8;
+        C     -1.5916;
+        D     0.0043895;
+        E     -5.3291e-06;
+        Tmin  283.65;
+        Tmax  583.15;
+    }
+}
+solubilityParameter 31830;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
+
+source
+{
+    database      "ChemSep pure-component data v8.3";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "chemsep1.xml";
+    sourceSha256  "78b3e0c6408ff35f3b75fb71a1fdd70bb8e967d8996b49452a4a9fa2dd567c76";
+    sourceRecord  "Monoethanolamine";
+    importedBy    "chemsep_to_choupo";
+    review        { state pending; reviewer unassigned; }
+}
+
+provenance
+{
+    MW
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Pc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    omega
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tb
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    vaporPressure
+    {
+        origin        fitted;
+        method        "vaporPressureFit (three-parameter Antoine; objective twoStage: least squares in log10 P, then the largest relative error in P minimised from it; every usable study fitted, outliers above 15 % discarded by name)";
+        methodVersion "choupoProps Choupo-dev";
+        fittedInCase  "data/curation/components/monoethanolamine";
+        reviewStatus  autoPromoted;
+        humanReviewed false;
+        fitGrade      clean;   // DEV.md 4c C285: the worse of the grades below
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+        fitGradeMaxRelativeError_pct 4.529183;   // grade clean
+        fitGradeBoilingPointGap_K    -0.1897;   // grade clean (Tb outside the kept points' range)
+        promotedBy    "bin/choupo-curate vp --promote";
+        promotedDate  "2026-11-10";
+        reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+        uncertainty   "the fit's maximum relative error over every kept measurement, below";
+        replaces      "model AmbroseWalton (a corresponding-states estimate from Tc, Pc, omega); `bin/choupo-curate revert <component>` restores it";
+        evidence
+        (
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/monoethanolamine-vapourPressure-j.fluid.2015.06.045.dat";
+                doi       "10.1016/j.fluid.2015.06.045";
+                sha256    "287b92defce7bbe086cb4e5717138daaeda9e1cb98c6c6c3aef975699c7aebc4";
+                articleSha256 "303c336c3afdc7089d2dc0a623f5d811e5eba30d067b6d2420a4b0d84177db70";
+                pointsKept    38;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/monoethanolamine-vapourPressure-je800530u.dat";
+                doi       "10.1021/je800530u";
+                sha256    "7e92bbb9b7f4c074b9fb0b473ad80413e32fa518e37a653cc9b59075f0db96ab";
+                articleSha256 "1c90a9fd7513387b393b9a27ececebe92573fe5000e9c4f203694f8161743221";
+                pointsKept    26;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/monoethanolamine-vapourPressure-je800290k.dat";
+                doi       "10.1021/je800290k";
+                sha256    "4ac3391b4d88e7be2418cc0b0be41d1139b2a0c28642faddfb13d349e1258bf4";
+                articleSha256 "51baf217f8b5f257b4c5c26ec4713d84bc714c8775fffbd01af931591160e9c7";
+                pointsKept    16;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/monoethanolamine-vapourPressure-je049761y.dat";
+                doi       "10.1021/je049761y";
+                sha256    "fb99d82fecdc84ff4a5a78933e0c9f4be6a3cde700ad878810132bf8dbc6fb50";
+                articleSha256 "df002e21a6af81808fc0ab6df77965b06bff0babbf3a176469fe95f2234618c4";
+                pointsKept    0;
+                pointsDropped 13;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/monoethanolamine-vapourPressure-je101259r.dat";
+                doi       "10.1021/je101259r";
+                sha256    "e3ef1f988e1d384c78c41ab1dbeb00c69d19af4c2b1ae4613fd67dcb597c57e4";
+                articleSha256 "3963c4cf50d9b279a449dc923dd5a4301188be5d3ddeb2ee32ea2dd4eaecd626";
+                pointsKept    7;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/monoethanolamine-vapourPressure-je400885z.dat";
+                doi       "10.1021/je400885z";
+                sha256    "52eb3eb4732be9e9c6c1bdcf8bae6aeac4810952f00a4197849bacde1882df78";
+                articleSha256 "952b467f5ae68dc2fe34f089f817c7d0b847bb356e15e4423d40a319b3965575";
+                pointsKept    6;
+                pointsDropped 0;
+                provenance measured;
+            }
+        );
+        acceptance
+        {
+            rule        "the default of DEV.md 4c C285 (graded): max relative error in P over the kept points 5 / 10 / 20 %, and |Tnb - Tb| 1 / 2 / 4 K where Tb lies outside their range, are the upper limits of clean / warning / severe; above, refused; the grade is the worse of the two";
+            verdict     accepted;
+            studies     6;
+            pointsKept  93;
+            pointsDropped 13;
+            dropped     "10.1021/je049761y T=279 K P=8.48 Pa err=23.33 %; 10.1021/je049761y T=281.1 K P=10.55 Pa err=20.67 %; 10.1021/je049761y T=294 K P=32.21 Pa err=23.25 %; 10.1021/je049761y T=297.2 K P=40.9 Pa err=26.47 %; 10.1021/je049761y T=300.2 K P=53.03 Pa err=24.29 %; 10.1021/je049761y T=303.2 K P=63.3 Pa err=31.95 %; 10.1021/je049761y T=306.3 K P=83.66 Pa err=26.82 %; 10.1021/je049761y T=309.4 K P=105.6 Pa err=26.93 %; 10.1021/je049761y T=312.4 K P=133.7 Pa err=25.07 %; 10.1021/je049761y T=315.4 K P=168.9 Pa err=22.93 %; 10.1021/je049761y T=318.4 K P=202.7 Pa err=26.61 %; 10.1021/je049761y T=321.4 K P=255.9 Pa err=23.4 %; 10.1021/je049761y T=324.5 K P=313.4 Pa err=24.27 %";
+            aad_pct     2.855329;   // the fitted Antoine, every kept point
+            max_pct     4.529183;
+            awAad_pct   6.364376;   // the AmbroseWalton curve it replaces, the same points
+            awMax_pct   15.843348;
+            Tnb_fit     443.9603;   // K, the fitted curve at 101.325 kPa
+        }
+    }
+}

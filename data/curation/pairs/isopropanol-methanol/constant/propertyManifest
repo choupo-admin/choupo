@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/isopropanol-methanol.dat"
         {
             type          imported;
-            sha256        "dd82ce093251e2e9bb6ea69b6c8b97382531452ffe41821096fe8fd32faef945";
-            computationalSha256 "aa1a37f8c4156019f9f5d69159aaeaf1ee00a4e83b07e1d71d131ba9a4edaab6";
+            sha256        "4ec832406f1d320b234ff98a14ca1e632ab8c3f7a3213dc063181f704f64e3c7";
+            computationalSha256 "208943a1b9520a14a76bcf6f28a981bba22eaca684a93bf439c65610c441d260";
             origin        "data/standards/parameters/NRTL/isopropanol-methanol.dat";
-            originSha256  "ed91b2a5603daef89d91c7b7ca9e1c24e2de7d627f568042e5ff7abf07cd6656";
+            originSha256  "b8e954f9fbc93bc263b6d7938f991e8d6bd8dc14e2437b600bc75455a92dbe9d";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

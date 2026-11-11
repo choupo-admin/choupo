@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of anisole-methylAcetate
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/methylAcetate-anisole-bubble-acs.jced.8b00063.dat";
+        role          fit;   // C283: every laboratory is fitted
+        doi           "10.1021/acs.jced.8b00063";
+        url           "https://trc.nist.gov/ThermoML/10.1021/acs.jced.8b00063.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/acs.jced.8b00063.json";
+        articleFile   "acs.jced.8b00063.xml";
+        articleSha256 "3ab7caa144273fc1cd8d0e0116995f3ddb2922c398185b0affea3d0b5ced5537";
+        block         15;
+        filter        ( --interior-only );
+        extract       "bin/choupo-thermoml extract-vle <article file> --block 15 --interior-only --into <dir>";
+        sha256        "abc4169dc40eaef41ebedae4a0a0010d92171641bf94c58d0b7dedcf540e0a34";
+        identity
+        {
+            methylAcetate  { cas "79-20-9"; inchiKey "KXKVLQRXCPHEJC-UHFFFAOYSA-N"; }
+            anisole        { cas "100-66-3"; inchiKey "RDOXTESZEPMUJZ-UHFFFAOYSA-N"; }
+        }
+    }
+);

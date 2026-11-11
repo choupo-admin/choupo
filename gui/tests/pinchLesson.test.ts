@@ -278,27 +278,23 @@ describe("the tool renders it as a scrolling lesson", () => {
     //  The Rayleigh tool shipped with its explanation inside the branch that
     //  HAD a diagram, so it vanished exactly when there was nothing to
     //  explain.  One definition, one call site per step.
+    //  C305: the EduTool and the case's Pinch tab PLACE the same step
+    //  elements in two layouts; each step is still drawn by ONE call.
     expect((TOOL_SRC.match(/const lessonStep = /g) ?? []).length).toBe(1);
     for (const n of [1, 2, 3, 4, 5])
-      expect((TOOL_SRC.match(new RegExp(`\\{lessonStep\\(${n}\\)\\}`, "g")) ?? []).length,
-        `step ${n} is rendered from more than one site`).toBe(1);
-    expect((TOOL_SRC.match(/\{lessonLimits\}/g) ?? []).length).toBe(1);
+      expect((TOOL_SRC.match(new RegExp(`lessonStep\\(${n}\\)`, "g")) ?? []).length,
+        `step ${n} is drawn from more than one call`).toBe(1);
+    expect((TOOL_SRC.match(/const lessonLimits = /g) ?? []).length).toBe(1);
+    //  And the plot is drawn by one definition, placed where each layout wants it.
+    expect((TOOL_SRC.match(/<CompositeSvg hot=/g) ?? []).length).toBe(1);
   });
 
   it("renders the definitions before the plot and the consequences after", () => {
-    //  The RENDER site, not a definition or an import: what matters is where
-    //  the picture appears on the page.
-    const plot = TOOL_SRC.indexOf("<CompositeSvg hot=");
-    expect(plot).toBeGreaterThan(0);
-    //  DEV.md 4c C277: the figure comes second -- step 1 opens the page and
-    //  steps 2-5 explain what the student has just watched.
-    expect(TOOL_SRC.indexOf("{lessonStep(1)}"), "step 1 is after the plot")
-      .toBeLessThan(plot);
-    for (const n of [2, 3, 4, 5])
-      expect(TOOL_SRC.indexOf(`{lessonStep(${n})}`), `step ${n} is before the plot`)
-        .toBeGreaterThan(plot);
-    //  The limits close the page.
-    expect(TOOL_SRC.indexOf("{lessonLimits}")).toBeGreaterThan(plot);
+    //  The RENDERED order (C277: step 1, then the figure, then steps 2-5)
+    //  is held on the page itself by tests/pinchEduTool.test.ts, now that
+    //  the source places pre-built elements rather than calling in order.
+    const edu = readFileSync(new URL("./pinchEduTool.test.ts", import.meta.url), "utf-8");
+    expect(edu).toContain("step 1, then the figure, then steps 2-5");
   });
 
   it("puts the knobs in a two-column grid beside the plot", () => {
@@ -314,7 +310,7 @@ describe("the tool renders it as a scrolling lesson", () => {
     //  stronger claim, and the one that survives the next change to
     //  how a step is drawn, is that the tool uses the shared
     //  renderer rather than a seventeenth private one.
-    expect(TOOL_SRC).toContain("lessonStepper(PINCH_STEPS)");
+    expect(TOOL_SRC).toMatch(/lessonStepper\(PINCH_STEPS[,)]/);
     expect(TOOL_SRC).not.toContain("PINCH_STEPS.find");
   });
 

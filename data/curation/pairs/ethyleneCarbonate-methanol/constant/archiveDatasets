@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of ethyleneCarbonate-methanol
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/methanol-ethyleneCarbonate-bubble-je049859c.dat";
+        role          fit;   // C283: every laboratory is fitted
+        doi           "10.1021/je049859c";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je049859c.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/je049859c.json";
+        articleFile   "je049859c.xml";
+        articleSha256 "fa5de8cbd3e11da7225461abc305f4a4416340746f4352c2f31244092d3f272f";
+        block         2;
+        filter        ( --interior-only );
+        extract       "bin/choupo-thermoml extract-vle <article file> --block 2 --interior-only --into <dir>";
+        sha256        "230f63c5e7845c85f500eab8bab5696aedee03d12c1e49230e26bb603a90242e";
+        identity
+        {
+            methanol       { cas "67-56-1"; inchiKey "OKKJLVBELUTLKV-UHFFFAOYSA-N"; }
+            ethyleneCarbonate { cas "96-49-1"; inchiKey "KMTRUDSVKNLOMY-UHFFFAOYSA-N"; }
+        }
+    }
+);

@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/dimethylDisulfide.dat"
+        {
+            type          imported;
+            sha256        "f426242e62951a5d5ec36757f9455c4645af005f07d220dd90fd07b7369c21fc";
+            computationalSha256 "1111d561995268960399eeff9fd1f31ccecaadcc9c5b189bb52f816449da64b5";
+            origin        "data/standards/components/dimethylDisulfide.dat";
+            originSha256  "dbd1511cacfbd9aed9deeb323c7ff2c1131727d8520991a55808e3a51431a5a3";
+            release       Choupo-2608;
+        }
+        "components/methanol.dat"
+        {
+            type          imported;
+            sha256        "8a5d7eada35ef18aafd03f99eaeaa45a0837da565ac71b4ffb3574e7a99df54a";
+            computationalSha256 "687725d9dfbbd996959983f08041d099f4b76c6b1a639d19d9a43a0209f04ab6";
+            origin        "data/standards/components/methanol.dat";
+            originSha256  "8cedd68cbab3194cfb72728ae31e42118e256931e9e166b4c53ace9dbbe27376";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/dimethylDisulfide-methanol.dat"
+        {
+            type          imported;
+            sha256        "5e8f72c5a25ba1c01184e774fa79f577098b86789a105272d1e0a43851d05a0a";
+            computationalSha256 "6b5fb037a2b08a09376a8be0487c9458d3e81eb152bdae4c1bcde069f312da9c";
+            origin        "data/standards/parameters/NRTL/dimethylDisulfide-methanol.dat";
+            originSha256  "33280f095b3d58bea40323c0a9ba4c3875acbc90feacb949b8cbe7de20803cab";
+            release       Choupo-2608;
+        }
+    }
+}

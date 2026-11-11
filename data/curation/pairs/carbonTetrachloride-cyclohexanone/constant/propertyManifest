@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/carbonTetrachloride.dat"
+        {
+            type          imported;
+            sha256        "3cf0a2f180f91d2c560b74b4297474c2a55707c617e391df175d4b96ddefdd51";
+            computationalSha256 "caed6aa27ae236216353a5096cc77aa9a87ec559ee72ccba1dadd963b782aeb4";
+            origin        "data/standards/components/carbonTetrachloride.dat";
+            originSha256  "4a08b3f3b9092457d343293cb9434a6bee4a94f970cdf87cc596af4e7d091907";
+            release       Choupo-2608;
+        }
+        "components/cyclohexanone.dat"
+        {
+            type          imported;
+            sha256        "1e4519245193afda7f728ddb14e9c75b5343ec8dddb2ae5565bb3e8d950cb1ba";
+            computationalSha256 "1f1657ea5d3f8ae7b10ea461e51a4f60f1304246c02321065d6d4c49a2e2318d";
+            origin        "data/standards/components/cyclohexanone.dat";
+            originSha256  "ed667b1045fd29921c9522455ff03f16a024f7ddf487373d277c7db9bb80b621";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/carbonTetrachloride-cyclohexanone.dat"
+        {
+            type          imported;
+            sha256        "2b9164c8a58dc0fe3fa74a417ba885c8b0c1698cd11ea96918eaa96b5834c861";
+            computationalSha256 "906a1d70b860a1fab487669ff9e8401390a95c06e7e0671456010bad6655b8f2";
+            origin        "data/standards/parameters/NRTL/carbonTetrachloride-cyclohexanone.dat";
+            originSha256  "cc8e0df5fb12c41652b972159e51a50ab252d72d4a271cc04e70edfbd5396e2d";
+            release       Choupo-2608;
+        }
+    }
+}

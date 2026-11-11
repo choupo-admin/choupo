@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/methylPropionate-nHeptane.dat"
         {
             type          imported;
-            sha256        "8bf4da3dcf3d0fc162417ff2a6af2a7e175a982150d39553f5a32833f04915ca";
-            computationalSha256 "6783a3f16ba90f945643225a591dc674a21a76a922b6fe8c5e1f2835b96ca73c";
+            sha256        "4ec29555ea2a92d1c6f3ad1cffec2b08ff9624e8a29b316563e7cefec3024513";
+            computationalSha256 "7a281a0d33aed009509d12f5d926146f3549922c60a6d95150f235e79128e362";
             origin        "data/standards/parameters/NRTL/methylPropionate-nHeptane.dat";
-            originSha256  "51063f471529fa078274003aac9220fb1db250cc825f1b580cc2a9b518d61371";
+            originSha256  "515a46477f21c7d2ee6c3bb4f329bcf28002ae96701d8ab49f696609946125c0";
             release       Choupo-2608;
         }
     }

@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/224Trimethylpentane-isopropanol.dat"
         {
             type          imported;
-            sha256        "fc5eb5d086089d6dc05b9424f8ad943ac6f394d31afe0e2cda3898d48fbe7cc2";
-            computationalSha256 "92e8dfe27c2b190e1d074b13b7fb8906b0f6a0c7554dd9c8a0fadd552692b069";
+            sha256        "0bc86cd5cee7d283d6c6c003e0e8593ccd7b71e04a936bbc15f7d5214807ca9f";
+            computationalSha256 "661682a3636c98328a2a4ac7dcb2d0020bfa5a2ce97862fbe290720d237fe5d1";
             origin        "data/standards/parameters/NRTL/224Trimethylpentane-isopropanol.dat";
-            originSha256  "9d0628fc0b632ff78089b145ce5ccf8c4ed57ba53d4aa262a14df54356319fc0";
+            originSha256  "ec4aabf1179e26ea9c886efeca1bcbc0e18c9bccd1ecd05b19e9a040e1a4fd6d";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

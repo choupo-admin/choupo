@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/diethylSulfide-ethanol.dat"
         {
             type          imported;
-            sha256        "90cbbb867de06dd8f6b9bb17b4370d542829e5a852c457d5cc6473a1a8c84801";
-            computationalSha256 "dc836b957c29e9300f38970b06f37b7e4906eaede87c6e0d28e741ab36c9b40a";
+            sha256        "5b29a9159d28417f4ecc70895d4df8252c4853d06aaa4c3be15f2796be6bbd55";
+            computationalSha256 "5635d84c531797774df1af555045a14a4dfa135c3cba93ddaa1f696e1ee7425f";
             origin        "data/standards/parameters/NRTL/diethylSulfide-ethanol.dat";
-            originSha256  "b12847d084d0a3fa96eba9fe6a1b2b824bc469384348ea9a78d3537dd867feca";
+            originSha256  "b553e44278c5233c93ea96481ff92ed537819ee5c367c5400361c2314db01a3f";
             release       Choupo-2608;
         }
     }

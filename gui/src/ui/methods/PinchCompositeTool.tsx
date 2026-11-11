@@ -91,6 +91,21 @@ License
   carried is kept: the engine's targets chip, the engine's classification,
   the verbatim engine refusal, the candidate table's own wording and the
   limits list.
+
+  THREE MOMENTS (DEV.md 4c C305).  The EduTool reads in three parts, each an
+  <h4> of the page: UNDERSTAND (step 1, the composite figure and the engine's
+  targets, steps 2-5, and a witness network with one exchanger across the
+  pinch so the cross-pinch term of the excess identity is seen nonzero),
+  EXPERIMENT (the knobs beside the figure, a PREDICTION asked before each
+  run and printed beside the engine's answer, the design exercise, "is it
+  economic?"), VERIFY (the files and the engine source the numbers come
+  from, the stream table, the worked cascade, the assumptions, the
+  references).  Nothing was removed to make the parts: the file names moved
+  to VERIFY, and each step's symbol definitions are folded under its
+  equation ("Symbols", one click).  The witness network's account is the
+  one computation the page owns, and it lives in case/pinchViolations.ts,
+  pure and tested; the case's own Pinch tab (`fixedSource`) keeps the
+  instrument layout and shows none of the EduTool parts.
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
@@ -100,10 +115,20 @@ import {
   Text, Title,
 } from "@mantine/core";
 
-import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
+import {
+  useMethodRun, useMethodRunSweep, type ScalarOverride,
+} from "../../case/methodRun.js";
+import {
+  DtminPrediction, EconomicStep, Moment, MomentsNav, NetworkExercise,
+  NoPinchPrediction, WitnessNetwork,
+} from "./pinchMoments.js";
 import { useStore } from "../../state/store.js";
-import { DEFAULT_PREFS, formatSig } from "../../state/displayUnits.js";
+import { DEFAULT_PREFS } from "../../state/displayUnits.js";
 import { pinchUnits, type PinchUnits } from "../../case/pinchUnits.js";
+import {
+  excessLine, noInteriorPinchText, parseExcludedDuties, partialAnalysisHeadline,
+  pinchClassOf, recoveryLine,
+} from "../../case/pinchWording.js";
 import {
   KnobField, KnobNumber, PanelNote,
 } from "./knobPanel.js";
@@ -115,6 +140,7 @@ import {
 } from "../../case/pinch.js";
 import { OriginMark } from "./origin.js";
 import { gccPockets } from "../../case/gccPockets.js";
+import { SortTh, useSortable } from "../SortableTable.js";
 
 // ---- Where the engine's pinch artefacts live in the run result --------------
 // csvFiles keys are case-root-relative (solverWorker.js walks /case and strips
@@ -283,7 +309,7 @@ function Axes({ frame, xLabel, yLabel, u }: {
   frame: Frame; xLabel: string; yLabel: string; u: PinchUnits;
 }): JSX.Element {
   // kW keeps the integer ticks; another duty unit spans decades (MW: 0..40)
-  const hTickText = (h: number) => (u.qLabel === "kW" ? h.toFixed(0) : formatSig(h, 3));
+  const hTickText = (h: number) => u.n(h);
   const hTicks = [0, 0.25, 0.5, 0.75, 1].map(
     (f) => frame.hLo + f * (frame.hHi - frame.hLo));
   const tTicks = [0, 0.25, 0.5, 0.75, 1].map(
@@ -303,7 +329,7 @@ function Axes({ frame, xLabel, yLabel, u }: {
           <line x1={X0} y1={frame.toY(t)} x2={X1} y2={frame.toY(t)}
             stroke={GRID} strokeWidth={0.6} />
           <text x={X0 - 6} y={frame.toY(t) + 4} textAnchor="end"
-            fontSize={11} fill={INK}>{t.toFixed(0)}</text>
+            fontSize={11} fill={INK}>{u.n(t)}</text>
         </g>
       ))}
       <text x={(X0 + X1) / 2} y={H - 8} textAnchor="middle"
@@ -366,7 +392,7 @@ function CompositeSvg({ hot: hotK, cold: coldK, offset: offsetK, qh: qhK, qc: qc
           <circle cx={frame.toX(pinch.H)} cy={frame.toY(pinch.Tcold)} r={3.5} fill={PINCH} />
           <text x={frame.toX(pinch.H) + 8} y={frame.toY((pinch.Thot + pinch.Tcold) / 2) + 4}
             fontSize={10} fill={PINCH}>
-            pinch: ΔTmin = {u.dT(pinch.dT, 0)} {u.tLabel} ({pinch.Tcold.toFixed(1)} / {pinch.Thot.toFixed(1)} {u.tLabel})
+            pinch: ΔTmin = {u.dT(pinch.dT, 0)} {u.tLabel} ({u.n(pinch.Tcold)} / {u.n(pinch.Thot)} {u.tLabel})
           </text>
         </g>
       )}
@@ -451,7 +477,7 @@ export function GccSvg({ gcc: gccK, pinchStars: starsK, u }: { gcc: CurvePoint[]
           <circle cx={x0} cy={frame.toY(t)} r={5}
             fill={PINCH} stroke="var(--mantine-color-body)" strokeWidth={1.5} />
           <text x={x0 + 8} y={frame.toY(t) - 6}
-            fontSize={11} fill={PINCH}>pinch: no heat crosses here · T* = {t.toFixed(2)} {u.tLabel}</text>
+            fontSize={11} fill={PINCH}>pinch: no heat crosses here · T* = {u.n(t)} {u.tLabel}</text>
         </g>
       ))}
       <text x={X1 - 4} y={pinchY - 40} textAnchor="end" fontSize={11} fill={INK}>
@@ -468,31 +494,37 @@ export function GccSvg({ gcc: gccK, pinchStars: starsK, u }: { gcc: CurvePoint[]
 
 // ---- The stream table and the worked cascade (the engine's files, drawn) ---
 
+const roleText = (role: string) => (role === "utility"
+  ? "service side — not a process stream (left out)"
+  : role === "recovered" ? "heat already recovered (an exchanger side)"
+  : "process stream");
+
 function StreamTable({ rows, dTmin, u }: { rows: StreamRow[]; dTmin?: number; u: PinchUnits }): JSX.Element {
+  const s = useSortable(rows, {
+    unit: (r) => r.unit, side: (r) => r.side, Tin: (r) => r.Tin, Tout: (r) => r.Tout,
+    Q: (r) => Math.abs(r.Q_kW), CP: (r) => r.CP, role: (r) => roleText(r.role),
+  });
   return (
     <Box style={{ overflow: "auto" }}>
       <Table striped withTableBorder fz="xs">
         <Table.Thead>
           <Table.Tr>
-            <Table.Th>stream</Table.Th><Table.Th>kind</Table.Th>
-            <Table.Th>T_in ({u.tLabel})</Table.Th><Table.Th>T_out ({u.tLabel})</Table.Th>
-            <Table.Th>|Q| ({u.qLabel})</Table.Th><Table.Th>CP = |Q|/|ΔT| ({u.cpLabel})</Table.Th>
-            <Table.Th>role</Table.Th>
+            <SortTh s={s} k="unit">stream</SortTh><SortTh s={s} k="side">kind</SortTh>
+            <SortTh s={s} k="Tin">T_in ({u.tLabel})</SortTh><SortTh s={s} k="Tout">T_out ({u.tLabel})</SortTh>
+            <SortTh s={s} k="Q">|Q| ({u.qLabel})</SortTh><SortTh s={s} k="CP">CP = |Q|/|ΔT| ({u.cpLabel})</SortTh>
+            <SortTh s={s} k="role">role</SortTh>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {rows.map((r, i) => (
-            <Table.Tr key={i} style={r.role === "utility" ? { opacity: 0.6 } : undefined}>
+          {s.rows.map((r) => (
+            <Table.Tr key={`${r.unit}|${r.side}|${r.role}`} style={r.role === "utility" ? { opacity: 0.6 } : undefined}>
               <Table.Td>{r.unit}</Table.Td>
               <Table.Td>{r.side}</Table.Td>
               <Table.Td>{u.T(r.Tin, 2)}</Table.Td>
               <Table.Td>{u.T(r.Tout, 2)}</Table.Td>
               <Table.Td>{u.Q(Math.abs(r.Q_kW), 1)}</Table.Td>
               <Table.Td>{u.CP(r.CP, 3)}</Table.Td>
-              <Table.Td>{r.role === "utility"
-                ? "service side — not a process stream (left out)"
-                : r.role === "recovered" ? "heat already recovered (an exchanger side)"
-                : "process stream"}</Table.Td>
+              <Table.Td>{roleText(r.role)}</Table.Td>
             </Table.Tr>
           ))}
         </Table.Tbody>
@@ -509,22 +541,27 @@ function StreamTable({ rows, dTmin, u }: { rows: StreamRow[]; dTmin?: number; u:
 
 function CascadeTable({ rows, u }: { rows: ProblemRow[]; u: PinchUnits }): JSX.Element {
   const cpUnit = u.cpLabel === "kW/K" ? "" : ` (${u.cpLabel})`;
+  const s = useSortable(rows, {
+    interval: (r) => r.interval, T: (r) => r.Thi, cpHot: (r) => r.cpHot,
+    cpCold: (r) => r.cpCold, dH: (r) => r.dH, cas: (r) => r.casOut,
+    cor: (r) => r.corOut, streams: (r) => `${r.hotStreams} | ${r.coldStreams}`,
+  });
   return (
     <Box style={{ overflow: "auto" }}>
       <Table striped withTableBorder fz="xs">
         <Table.Thead>
           <Table.Tr>
-            <Table.Th>interval</Table.Th>
-            <Table.Th>T*_hi → T*_lo ({u.tLabel})</Table.Th>
-            <Table.Th>ΣCP hot{cpUnit}</Table.Th><Table.Th>ΣCP cold{cpUnit}</Table.Th>
-            <Table.Th>ΔH ({u.qLabel})</Table.Th>
-            <Table.Th>cascade ({u.qLabel})</Table.Th>
-            <Table.Th>corrected ({u.qLabel})</Table.Th>
-            <Table.Th>streams (hot | cold)</Table.Th>
+            <SortTh s={s} k="interval">interval</SortTh>
+            <SortTh s={s} k="T">T*_hi → T*_lo ({u.tLabel})</SortTh>
+            <SortTh s={s} k="cpHot">ΣCP hot{cpUnit}</SortTh><SortTh s={s} k="cpCold">ΣCP cold{cpUnit}</SortTh>
+            <SortTh s={s} k="dH">ΔH ({u.qLabel})</SortTh>
+            <SortTh s={s} k="cas">cascade ({u.qLabel})</SortTh>
+            <SortTh s={s} k="cor">corrected ({u.qLabel})</SortTh>
+            <SortTh s={s} k="streams">streams (hot | cold)</SortTh>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {rows.map((r) => (
+          {s.rows.map((r) => (
             <Table.Tr key={r.interval}>
               <Table.Td>{r.interval}</Table.Td>
               <Table.Td>{u.T(r.Thi, 2)} → {u.T(r.Tlo, 2)}</Table.Td>
@@ -557,22 +594,28 @@ function CascadeTable({ rows, u }: { rows: ProblemRow[]; u: PinchUnits }): JSX.E
 // ---- The candidate-matches table --------------------------------------------
 
 function MatchesTable({ matches, u }: { matches: CandidateMatch[]; u: PinchUnits }): JSX.Element {
+  //  Unsorted until the reader clicks: the engine's order ranks nothing.
+  const s = useSortable(matches, {
+    region: (m) => m.region, hot: (m) => m.hotStream, cold: (m) => m.coldStream,
+    Q: (m) => m.maximumCandidateDuty_kW, rule: (m) => m.pinchRule,
+    limit: (m) => m.limitingReason, rec: (m) => m.recommendation,
+  });
   return (
     <Box style={{ overflow: "auto", height: "100%" }}>
       <Table stickyHeader striped withTableBorder fz="xs">
         <Table.Thead>
           <Table.Tr>
-            <Table.Th>region</Table.Th>
-            <Table.Th>hot</Table.Th>
-            <Table.Th>cold</Table.Th>
-            <Table.Th>Q_max, this pair alone ({u.qLabel})</Table.Th>
-            <Table.Th>CP rule at the pinch (CP_hot ≤ CP_cold above, ≥ below)</Table.Th>
-            <Table.Th>limiting reason</Table.Th>
-            <Table.Th>engine&apos;s recommendation</Table.Th>
+            <SortTh s={s} k="region">region</SortTh>
+            <SortTh s={s} k="hot">hot</SortTh>
+            <SortTh s={s} k="cold">cold</SortTh>
+            <SortTh s={s} k="Q">Q_max, this pair alone ({u.qLabel})</SortTh>
+            <SortTh s={s} k="rule">CP rule at the pinch (CP_hot ≤ CP_cold above, ≥ below)</SortTh>
+            <SortTh s={s} k="limit">limiting reason</SortTh>
+            <SortTh s={s} k="rec">engine&apos;s recommendation</SortTh>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {matches.map((m, i) => {
+          {s.rows.map((m, i) => {
             const flag = candidateFlag(m);
             return (
               <Table.Tr key={i}
@@ -699,7 +742,8 @@ export function PinchCompositeTool(
   // classroom witness keeps its own K / kW sliders and reads K / kW.
   const dispPrefs = useStore((s) => s.displayPrefs);
   const u = useMemo(
-    () => pinchUnits(source === "current" ? dispPrefs : DEFAULT_PREFS),
+    () => pinchUnits(source === "current" ? dispPrefs
+      : { ...DEFAULT_PREFS, sigFigs: dispPrefs?.sigFigs ?? DEFAULT_PREFS.sigFigs }),
     [source, dispPrefs]);
   const [pane, setPane] = useState<Pane>("composite");
 
@@ -719,6 +763,19 @@ export function PinchCompositeTool(
   const method = useMethodRun(
     source === "classroom" ? PINCH_WITNESS : null,
     overrides, overridesKey, "choupoSolve");
+
+  // ---- Prediction 1 (C305): the witness at 20 K and at 10 K, run only when
+  //      the student has written a guess and pressed the button.  The other
+  //      knobs are frozen at the values they had at that press. -------------
+  const [dtSnap, setDtSnap] = useState<string | null>(null);
+  const dtSets = useMemo(() => {
+    if (!dtSnap) return [];
+    const v = JSON.parse(dtSnap) as { [id: string]: number };
+    return [pinchOverrides({ ...v, dTmin: 20 }), pinchOverrides({ ...v, dTmin: 10 })];
+  }, [dtSnap]);
+  const dtSweep = useMethodRunSweep(
+    source === "classroom" && !fixedSource && dtSnap ? PINCH_WITNESS : null,
+    dtSets, dtSnap ?? "", "choupoSolve");
 
   // ---- The active result feeds the EXISTING rendering, unchanged. ----------
   const active = source === "classroom" ? method.result : appRun;
@@ -760,6 +817,13 @@ export function PinchCompositeTool(
     ? { Thot: kpis["T_pinch_hot_K"]!, Tcold: kpis["T_pinch_cold_K"]!,
         H: summary.Hpinch, dT: kpis["dTmin_K"] ?? 0 }
     : undefined;
+
+  //  C304: what the page SAYS about the engine's numbers (pinchWording.ts).
+  const pinchClass = pinchClassOf(kpis, summary?.class ?? null);
+  const excess = excessLine(kpis, pinchClass, u);
+  const recovery = recoveryLine(kpis, streamRows, u);
+  const partialHead = partialAnalysisHeadline(
+    kpis, parseExcludedDuties(popCsv), u);
 
   /* THE KNOBS AND THE VIEW SWITCH — the only surfaces here that SET anything.
      They sit in the page beside the curves, in a two-column grid; the engine's
@@ -806,9 +870,9 @@ export function PinchCompositeTool(
           </Button>
           <PanelNote>
             Classroom mode — standalone: choupoSolve (WASM) runs in the browser
-            on the witness case <code>tutorials/{PINCH_WITNESS}</code>, with the
-            knob values written into its own dicts; every number beside the
-            curves is the engine&apos;s output.
+            on the four-stream witness case, with the knob values written into
+            its own dicts; every number beside the curves is the engine&apos;s
+            output.  The case and the files are named under Verify.
           </PanelNote>
         </>
       )}
@@ -825,7 +889,8 @@ export function PinchCompositeTool(
           {kpis
             ? `engine targets · Q_H,min ${u.Q(kpis["Q_H_min_kW"]!, 1)} ${u.qLabel} · `
               + `Q_C,min ${u.Q(kpis["Q_C_min_kW"]!, 1)} ${u.qLabel} · `
-              + (hasPinch ? `pinch T* ${u.T(kpis["T_pinch_K"]!, 2)} ${u.tLabel} · ` : "no pinch · ")
+              + (hasPinch ? `pinch T* ${u.T(kpis["T_pinch_K"]!, 2)} ${u.tLabel} · `
+                          : `${noInteriorPinchText(kpis["dTmin_K"], u)} · `)
               + `ΔTmin ${u.dT(kpis["dTmin_K"]!, 0)} ${u.tLabel}`
             : "no pinch KPI row in this run — curves shown, targets unverified"}
         </Badge>
@@ -846,17 +911,19 @@ export function PinchCompositeTool(
            cooling above" and that "the gap between them is the whole point of
            the exercise", then showed no gap.  All four numbers are already
            published by PinchPass; three of them reached no surface.  */}
-      {active && !emptyCurrentRun && kpis
-        && kpis["Q_heat_current_kW"] != null
-        && kpis["violation_heat_below_pinch_kW"] != null
-        && kpis["violation_cool_above_pinch_kW"] != null && (
+      {active && !emptyCurrentRun && excess && (
         <Badge variant="light" color="orange" size="lg"
-          styles={{ root: { textTransform: "none" } }}>
-          {`excess over target · ${u.Q(kpis["Q_heat_current_kW"]!, 1)}`
-            + ` − ${u.Q(kpis["Q_H_min_kW"]!, 1)}`
-            + ` = ${u.Q(kpis["Q_heat_current_kW"]! - kpis["Q_H_min_kW"]!, 1)} ${u.qLabel}`
-            + `  =  ${u.Q(kpis["violation_heat_below_pinch_kW"]!, 1)} heating below`
-            + ` + ${u.Q(kpis["violation_cool_above_pinch_kW"]!, 1)} cooling above`}
+          styles={{ root: { textTransform: "none", whiteSpace: "normal", height: "auto" } }}>
+          {excess}
+        </Badge>
+      )}
+      {/*  EXISTING vs TARGET (C304 B): the recovery the plant already has (its
+           process-to-process exchangers, `recovered` rows of population.csv),
+           the maximum the targets allow, and the difference.  */}
+      {active && !emptyCurrentRun && recovery && (
+        <Badge variant="light" color="teal" size="lg"
+          styles={{ root: { textTransform: "none", whiteSpace: "normal", height: "auto" } }}>
+          {recovery}
         </Badge>
       )}
       {classText && summary && (
@@ -868,9 +935,15 @@ export function PinchCompositeTool(
       {kpis && kpis["Q_recovery_max_kW"] != null && (
         <Badge variant="light" color="gray" size="lg"
           styles={{ root: { textTransform: "none" } }}>
-          {`Q_recovery,max ${u.Q(kpis["Q_recovery_max_kW"]!, 1)} ${u.qLabel}`
-            + ` · Q_H,min − Q_C,min = ${u.Q(kpis["Q_H_min_kW"]! - kpis["Q_C_min_kW"]!, 1)} ${u.qLabel}`
-            + ` = cold total − hot total (${u.Q(kpis["Q_cold_total_kW"]!, 1)} − ${u.Q(kpis["Q_hot_total_kW"]!, 1)})`}
+          {(() => {
+            //  an identity on one line: ONE absolute precision (u.group)
+            const rec = kpis["Q_recovery_max_kW"]!, dQ = kpis["Q_H_min_kW"]! - kpis["Q_C_min_kW"]!;
+            const ct = kpis["Q_cold_total_kW"]!, ht = kpis["Q_hot_total_kW"]!;
+            const g = u.group([rec, dQ, ct, ht]);
+            return `Q_recovery,max ${g(rec)} ${u.qLabel}`
+              + ` · Q_H,min − Q_C,min = ${g(dQ)} ${u.qLabel}`
+              + ` = cold total − hot total (${g(ct)} − ${g(ht)})`;
+          })()}
         </Badge>
       )}
     </Group>
@@ -885,9 +958,16 @@ export function PinchCompositeTool(
   //  of steps 1-3 do not stand above them (Vitor, 2026-11-06: "aparece-me uma
   //  especie de tutorial").  The EduTool, with no fixedSource, keeps the page.
   //  ONE definition, one call site per step (pinchLesson.test.ts holds it):
-  //  the filter lives HERE, never at the call sites.
-  const stepOf = lessonStepper(PINCH_STEPS);
+  //  the filter lives HERE, never at the call sites.  The two layouts below
+  //  PLACE these elements; neither draws a step of its own.
+  //  C305: the symbol definitions are folded under each equation.
+  const stepOf = lessonStepper(PINCH_STEPS, { foldSymbols: true });
   const lessonStep = (n: number) => (fixedSource && n <= 3 ? null : stepOf(n));
+  const step1 = lessonStep(1);
+  const step2 = lessonStep(2);
+  const step3 = lessonStep(3);
+  const step4 = lessonStep(4);
+  const step5 = lessonStep(5);
 
   const lessonHead = fixedSource ? null : (
     <Box>
@@ -896,8 +976,10 @@ export function PinchCompositeTool(
       </Title>
       <Text size="sm" c="dimmed" mt={4}>
         Two curves, one temperature difference you choose, and three rules that
-        turn out to be the same rule.
+        turn out to be the same rule.  The page is in three parts: understand
+        the problem, experiment with it, verify every number.
       </Text>
+      <Box mt={8}><MomentsNav /></Box>
     </Box>
   );
 
@@ -915,181 +997,288 @@ export function PinchCompositeTool(
     </Box>
   );
 
+  const watchText = (
+    <Box>
+      <Title order={5}>Watch the curves the engine published</Title>
+      <Text size="sm" mt={4}>
+        The two composites are the engine&apos;s own: the horizontal overlap
+        of the two curves is what the process can recover from itself
+        (the green bracket), and the two overhangs are the utility targets
+        (the coloured brackets, Q_C,min at the cold end and Q_H,min at the
+        hot end).  The cold curve is drawn slid right by Q_C,min, which is
+        what makes the overlap the maximum recovery; the horizontal axis is
+        a heat flow rate in kW, and a stream of constant CP is a straight
+        line of slope 1/CP on it.  The yellow bar is the pinch, where the
+        curves are ΔTmin apart.  The grand composite is the corrected
+        cascade of the worked-cascade table plotted against the shifted temperature:
+        it touches zero at a pinch and only at an end of the range when
+        there is none.  The candidate table is the engine&apos;s
+        feasibility assessment of each hot × cold pair, in its own words.
+      </Text>
+    </Box>
+  );
+
+  const origin = (
+    <OriginMark of={["engine", "page"]} note="the targets, the composite curves and the candidate matches are the pinch pass run in this browser (choupoSolve); the stream table, the worked cascade, the grand composite and the classification are the engine's files, drawn here" />
+  );
+
+  const refusal = source === "classroom" && method.err && (
+    /* The engine's refusal, VERBATIM — a refusal is a teaching surface
+       and is never paraphrased away by a layout change. */
+    <Alert color="red" variant="light" title="choupoSolve (WASM)">
+      <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
+        {method.err}
+      </Text>
+    </Alert>
+  );
+
+  /* The figure, with its empty states, for one view.  The EduTool draws it
+     twice -- the composites alone in Understand, the switchable view beside
+     the knobs in Experiment -- from this ONE definition. */
+  const figure = (show: Pane, height: number) => (
+    <Box pos="relative" style={{ minWidth: 0, height }}>
+      {/* Honest empty state — ONLY for the "Current run" source; the
+          classroom source feeds itself. */}
+      {emptyCurrentRun && (
+        <Box style={{ height: "100%", display: "flex", alignItems: "center",
+          justifyContent: "center", padding: 24 }}>
+          <Text size="sm" c="dimmed" ta="center" maw={520}>
+            No pinch targets in this run.  This tool reads the
+            engine&apos;s own pinch pass: declare <code>pinchPass</code>{" "}
+            in the case&apos;s <code>system/postDict</code> chain
+            (<code>{PINCH_PASS_EXCERPT}</code>) and run
+            a converged steady case — the engine then writes{" "}
+            <code>reports/pinch/compositeCurves.csv</code> +{" "}
+            <code>candidateMatches.csv</code> and publishes the{" "}
+            <code>pinch</code> KPI row.  Witness case:{" "}
+            <code>tutorials/{PINCH_WITNESS}</code>.
+          </Text>
+        </Box>
+      )}
+      {/* Classroom source before its first result: the run is in flight
+          (Loader) or it refused (the red alert carries the words). */}
+      {source === "classroom" && !active && (
+        <Box style={{ height: "100%", display: "flex", alignItems: "center",
+          justifyContent: "center", padding: 24 }}>
+          {method.busy
+            ? <Loader size="lg" />
+            : (
+              <Text size="sm" c="dimmed" ta="center" maw={520}>
+                {method.err
+                  ? "The classroom run did not produce a result — the engine's own words are in the red alert beside the knobs."
+                  : "Waiting for the classroom engine run."}
+              </Text>
+            )}
+        </Box>
+      )}
+      {!emptyCurrentRun && active && (<>
+      {show === "composite" && (hot && cold ? (
+        <CompositeSvg hot={hot} cold={cold}
+          offset={summary?.coldOffset ?? kpis?.["Q_C_min_kW"] ?? 0}
+          qh={kpis?.["Q_H_min_kW"]} qc={kpis?.["Q_C_min_kW"]}
+          qrec={kpis?.["Q_recovery_max_kW"]} pinch={pinchGeom} u={u} />
+      ) : (
+        <Box p="xl">
+          <Text size="sm" c="dimmed">
+            This run carries no <code>{COMPOSITE_CURVES_CSV_PATH}</code> with
+            hot + cold curves — the pinch pass writes both on every run that
+            finds duty-carrying units; re-run the case.
+          </Text>
+        </Box>
+      ))}
+      {show === "gcc" && (gcc.length > 1 ? (
+        <Stack gap={4} h="100%" style={{ minHeight: 0 }}>
+          <Text size="xs" c="dimmed" style={{ flexShrink: 0 }}>
+            The corrected-cascade column of the engine&apos;s problem table
+            (the worked cascade, further down) against the shifted
+            temperature T*.  It touches zero at a pinch, and only at an end
+            of the range when there is none.
+          </Text>
+          <Box style={{ flex: 1, minHeight: 0 }}>
+            <GccSvg gcc={gcc} pinchStars={pinchStars} u={u} />
+          </Box>
+          <Text size="xs" c="dimmed" style={{ flexShrink: 0 }}>
+            {GCC_CAPTION}
+          </Text>
+        </Stack>
+      ) : (
+        <Box p="xl">
+          <Text size="sm" c="dimmed">
+            This run carries no <code>{PROBLEM_TABLE_CSV_PATH}</code> — the
+            pinch pass writes it with the targets; re-run the case.
+          </Text>
+        </Box>
+      ))}
+      {show === "matches" && (matches.length > 0 ? (
+        <MatchesTable matches={matches} u={u} />
+      ) : (
+        <Box p="xl">
+          <Text size="sm" c="dimmed">
+            No <code>{CANDIDATE_MATCHES_CSV_PATH}</code> in this run — the
+            pinch pass writes the exhaustive hot×cold analysis table on every
+            run that finds duty-carrying units; re-run the case.
+          </Text>
+        </Box>
+      ))}
+      </>)}
+      {/* A knob changed while a previous result is on screen: the stale
+          curves stay visible under the loader until the engine answers. */}
+      {source === "classroom" && method.busy && active && (
+        <Box style={{ position: "absolute", inset: 0, display: "flex",
+          alignItems: "center", justifyContent: "center",
+          pointerEvents: "none" }}>
+          <Loader size="lg" />
+        </Box>
+      )}
+    </Box>
+  );
+
+  const knobsBesideFigure = (
+    <Box style={{ display: "grid", gap: 14,
+      gridTemplateColumns: "minmax(220px, 300px) 1fr" }}>
+      <Stack gap={8} style={{ minWidth: 0 }}>{controls}</Stack>
+      {figure(pane, 460)}
+    </Box>
+  );
+
+  const streamsBlock = streamRows.length > 0 && (
+    <Box>
+      <Title order={5}>The streams</Title>
+      <StreamTable rows={streamRows} dTmin={kpis?.["dTmin_K"]} u={u} />
+    </Box>
+  );
+
+  const cascadeBlock = tableRows.length > 0 && (
+    <Box>
+      <Title order={5}>The worked cascade</Title>
+      <CascadeTable rows={tableRows} u={u} />
+    </Box>
+  );
+
+  const engineNote = (
+    <Text size="xs" c="dimmed">
+      Every target here is the engine&apos;s (PinchPass, whose problem table
+      is printed cascade row by cascade row in the run log and written to
+      reports/pinch/problemTable.csv); this view draws the engine&apos;s
+      files and computes nothing.  The targets are an energy bound, not a
+      network: a design that reaches them is a separate problem.
+      The pass analyses the network the case declares — it designs nothing
+      and rewrites nothing.
+    </Text>
+  );
+
+  // ---- The case's own Pinch tab: the instrument layout, unchanged. ---------
+  if (fixedSource) {
+    return (
+      <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
+        <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
+          {watchText}
+          {origin}
+          {chips}
+          {knobsBesideFigure}
+          {streamsBlock}
+          {cascadeBlock}
+          {engineNote}
+          {step4}
+          {step5}
+          {lessonLimits}
+          <LessonReferences tool="pinch-composite" />
+        </Stack>
+      </Box>
+    );
+  }
+
+  // ---- The EduTool: Understand / Experiment / Verify (DEV.md 4c C305). -----
+  const changedKnobs = PINCH_KNOBS
+    .filter((k) => (knobValues[k.id] ?? k.value) !== k.value)
+    .map((k) => `${k.label} ${k.value} → ${knobValues[k.id]} ${k.unit}`);
+  const sources = (
+    <Box data-sources="">
+      <Title order={5}>Where every number comes from</Title>
+      <Text size="sm" mt={4}>
+        In Classroom mode choupoSolve, compiled to WebAssembly, runs in this
+        browser on the witness case <code>tutorials/{PINCH_WITNESS}</code>,
+        with the knob values written into its own dicts (methodRun&apos;s
+        scalar override); in Current-run mode the page reads the files of
+        the case you ran.  The engine&apos;s pinch pass is{" "}
+        <code>src/postProcessing/PinchPass.H</code> /{" "}
+        <code>PinchPass.cpp</code>; it is declared in the case&apos;s{" "}
+        <code>system/postDict</code> (<code>{PINCH_PASS_EXCERPT}</code>) and
+        writes:
+      </Text>
+      <Box component="ul" mt={4} mb={0} pl={22}>
+        <li><Text size="sm"><code>{POPULATION_CSV_PATH}</code> — the stream table below (T_in, T_out, Q and CP of every segment, and every duty left out)</Text></li>
+        <li><Text size="sm"><code>{PROBLEM_TABLE_CSV_PATH}</code> — the worked Linnhoff-Flower cascade below; the grand composite is its corrected column</Text></li>
+        <li><Text size="sm"><code>{SUMMARY_CSV_PATH}</code> — the class of the problem, the pinches and the cold-curve offset</Text></li>
+        <li><Text size="sm"><code>{COMPOSITE_CURVES_CSV_PATH}</code> — the hot and cold composites, plain and shifted</Text></li>
+        <li><Text size="sm"><code>{CANDIDATE_MATCHES_CSV_PATH}</code> — the candidate table, one row per hot × cold pair and region</Text></li>
+        <li><Text size="sm">the KPI row <code>pinch</code> — Q_H_min_kW, Q_C_min_kW, Q_recovery_max_kW, T_pinch_*_K, dTmin_K and the violation terms</Text></li>
+      </Box>
+      <Text size="sm" mt={4}>
+        The one number on this page the engine does not publish is the
+        witness network&apos;s account under Understand: arithmetic on the
+        engine&apos;s straight segments and pinch temperatures, in{" "}
+        <code>gui/src/case/pinchViolations.ts</code>, whose utility-only case
+        reproduces the engine&apos;s two violation KPIs.
+      </Text>
+    </Box>
+  );
+
   return (
     <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
       <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
 
-        {lessonHead}
-
-        {lessonStep(1)}
-        <Box>
-          <Title order={5}>Watch the curves the engine published</Title>
-          <Text size="sm" mt={4}>
-            The two composites below are the engine&apos;s own, straight off{" "}
-            <code>{COMPOSITE_CURVES_CSV_PATH}</code>: the horizontal overlap
-            of the two curves is what the process can recover from itself
-            (the green bracket), and the two overhangs are the utility targets
-            (the coloured brackets, Q_C,min at the cold end and Q_H,min at the
-            hot end).  The cold curve is drawn slid right by Q_C,min, which is
-            what makes the overlap the maximum recovery; the horizontal axis is
-            a heat flow rate in kW, and a stream of constant CP is a straight
-            line of slope 1/CP on it.  The yellow bar is the pinch, where the
-            curves are ΔTmin apart.  The grand composite is the corrected
-            cascade of the worked-cascade table below plotted against the shifted temperature:
-            it touches zero at a pinch and only at an end of the range when
-            there is none.  The candidate table is the engine&apos;s
-            feasibility assessment of each hot × cold pair, in its own words.
-          </Text>
-        </Box>
-
-        <OriginMark of={["engine", "page"]} note="the targets, the composite curves and the candidate matches are the pinch pass run in this browser (choupoSolve); the stream table, the worked cascade, the grand composite and the classification are the engine's files, drawn here" />
-        {chips}
-
-        {source === "classroom" && method.err && (
-          /* The engine's refusal, VERBATIM — a refusal is a teaching surface
-             and is never paraphrased away by a layout change. */
-          <Alert color="red" variant="light" title="choupoSolve (WASM)">
-            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
-              {method.err}
-            </Text>
+        {/*  C304 A: a partial population is said FIRST, not in a chip. */}
+        {active && !emptyCurrentRun && partialHead && (
+          <Alert color="red" variant="light" data-partial-analysis>
+            <Text size="sm" fw={600}>{partialHead}</Text>
           </Alert>
         )}
 
-        <Box style={{ display: "grid", gap: 14,
-          gridTemplateColumns: "minmax(220px, 300px) 1fr" }}>
-          <Stack gap={8} style={{ minWidth: 0 }}>{controls}</Stack>
-          <Box pos="relative" style={{ minWidth: 0, height: 460 }}>
-            {/* Honest empty state — ONLY for the "Current run" source; the
-                classroom source feeds itself. */}
-            {emptyCurrentRun && (
-              <Box style={{ height: "100%", display: "flex", alignItems: "center",
-                justifyContent: "center", padding: 24 }}>
-                <Text size="sm" c="dimmed" ta="center" maw={520}>
-                  No pinch targets in this run.  This tool reads the
-                  engine&apos;s own pinch pass: declare <code>pinchPass</code>{" "}
-                  in the case&apos;s <code>system/postDict</code> chain
-                  (<code>{PINCH_PASS_EXCERPT}</code>) and run
-                  a converged steady case — the engine then writes{" "}
-                  <code>reports/pinch/compositeCurves.csv</code> +{" "}
-                  <code>candidateMatches.csv</code> and publishes the{" "}
-                  <code>pinch</code> KPI row.  Witness case:{" "}
-                  <code>tutorials/{PINCH_WITNESS}</code>.
-                </Text>
-              </Box>
-            )}
-            {/* Classroom source before its first result: the run is in flight
-                (Loader) or it refused (the Alert above carries the words). */}
-            {source === "classroom" && !active && (
-              <Box style={{ height: "100%", display: "flex", alignItems: "center",
-                justifyContent: "center", padding: 24 }}>
-                {method.busy
-                  ? <Loader size="lg" />
-                  : (
-                    <Text size="sm" c="dimmed" ta="center" maw={520}>
-                      {method.err
-                        ? "The classroom run did not produce a result — the engine's own words are in the alert above."
-                        : "Waiting for the classroom engine run."}
-                    </Text>
-                  )}
-              </Box>
-            )}
-            {!emptyCurrentRun && active && (<>
-            {pane === "composite" && (hot && cold ? (
-              <CompositeSvg hot={hot} cold={cold}
-                offset={summary?.coldOffset ?? kpis?.["Q_C_min_kW"] ?? 0}
-                qh={kpis?.["Q_H_min_kW"]} qc={kpis?.["Q_C_min_kW"]}
-                qrec={kpis?.["Q_recovery_max_kW"]} pinch={pinchGeom} u={u} />
-            ) : (
-              <Box p="xl">
-                <Text size="sm" c="dimmed">
-                  This run carries no <code>{COMPOSITE_CURVES_CSV_PATH}</code> with
-                  hot + cold curves — the pinch pass writes both on every run that
-                  finds duty-carrying units; re-run the case.
-                </Text>
-              </Box>
-            ))}
-            {pane === "gcc" && (gcc.length > 1 ? (
-              <Stack gap={4} h="100%" style={{ minHeight: 0 }}>
-                <Text size="xs" c="dimmed" style={{ flexShrink: 0 }}>
-                  The corrected-cascade column of the engine&apos;s problem table
-                  (<code>{PROBLEM_TABLE_CSV_PATH}</code>) against the shifted
-                  temperature T*.  It touches zero at a pinch, and only at an end
-                  of the range when there is none.
-                </Text>
-                <Box style={{ flex: 1, minHeight: 0 }}>
-                  <GccSvg gcc={gcc} pinchStars={pinchStars} u={u} />
-                </Box>
-                <Text size="xs" c="dimmed" style={{ flexShrink: 0 }}>
-                  {GCC_CAPTION}
-                </Text>
-              </Stack>
-            ) : (
-              <Box p="xl">
-                <Text size="sm" c="dimmed">
-                  This run carries no <code>{PROBLEM_TABLE_CSV_PATH}</code> — the
-                  pinch pass writes it with the targets; re-run the case.
-                </Text>
-              </Box>
-            ))}
-                        {pane === "matches" && (matches.length > 0 ? (
-              <MatchesTable matches={matches} u={u} />
-            ) : (
-              <Box p="xl">
-                <Text size="sm" c="dimmed">
-                  No <code>{CANDIDATE_MATCHES_CSV_PATH}</code> in this run — the
-                  pinch pass writes the exhaustive hot×cold analysis table on every
-                  run that finds duty-carrying units; re-run the case.
-                </Text>
-              </Box>
-            ))}
-            </>)}
-            {/* A knob changed while a previous result is on screen: the stale
-                curves stay visible under the loader until the engine answers. */}
-            {source === "classroom" && method.busy && active && (
-              <Box style={{ position: "absolute", inset: 0, display: "flex",
-                alignItems: "center", justifyContent: "center",
-                pointerEvents: "none" }}>
-                <Loader size="lg" />
-              </Box>
-            )}
-          </Box>
-        </Box>
+        {lessonHead}
 
-        {/* The figure comes second (DEV.md 4c C277): the steps, the stream
-            table and the worked cascade now explain what has just been drawn. */}
-        {lessonStep(2)}
-        {lessonStep(3)}
+        <Moment id="understand">
+          {step1}
+          {watchText}
+          {origin}
+          {chips}
+          {figure("composite", 420)}
+          {/* The figure comes second (DEV.md 4c C277): the steps explain
+              what has just been drawn. */}
+          {step2}
+          {step3}
+          {step4}
+          {step5}
+          {source === "classroom" && (
+            <WitnessNetwork streamRows={streamRows} kpis={kpis}
+              pinchClass={pinchClass} u={u} />
+          )}
+        </Moment>
 
-        {streamRows.length > 0 && (
-          <Box>
-            <Title order={5}>The streams</Title>
-            <StreamTable rows={streamRows} dTmin={kpis?.["dTmin_K"]} u={u} />
-          </Box>
-        )}
+        <Moment id="experiment">
+          {refusal}
+          {knobsBesideFigure}
+          <DtminPrediction enabled={source === "classroom"}
+            onRun={() => setDtSnap(JSON.stringify(knobValues))}
+            busy={dtSweep.busy} err={dtSweep.errs.find((e) => !!e) ?? null}
+            at20={dtSweep.results[0]?.kpis?.["pinch"]}
+            at10={dtSweep.results[1]?.kpis?.["pinch"]} u={u} />
+          <NoPinchPrediction
+            engineClass={summary?.class ?? null} classText={classText}
+            changed={changedKnobs}
+            live={source === "classroom" && !method.busy && !!active} />
+          <NetworkExercise QHmin={kpis?.["Q_H_min_kW"]} QCmin={kpis?.["Q_C_min_kW"]} u={u} />
+          <EconomicStep foldSymbols />
+        </Moment>
 
-        {tableRows.length > 0 && (
-          <Box>
-            <Title order={5}>The worked cascade</Title>
-            <CascadeTable rows={tableRows} u={u} />
-          </Box>
-        )}
-
-        <Text size="xs" c="dimmed">
-          Every target here is the engine&apos;s (PinchPass, whose problem table
-          is printed cascade row by cascade row in the run log and written to
-          reports/pinch/problemTable.csv); this view draws the engine&apos;s
-          files and computes nothing.  The targets are an energy bound, not a
-          network: a design that reaches them is a separate problem.
-          The pass analyses the network the case declares — it designs nothing
-          and rewrites nothing.
-        </Text>
-
-        {lessonStep(4)}
-        {lessonStep(5)}
-
-        {lessonLimits}
-
-        <LessonReferences tool="pinch-composite" />
+        <Moment id="verify">
+          {sources}
+          {streamsBlock}
+          {cascadeBlock}
+          {engineNote}
+          {lessonLimits}
+          <LessonReferences tool="pinch-composite" />
+        </Moment>
       </Stack>
     </Box>
   );

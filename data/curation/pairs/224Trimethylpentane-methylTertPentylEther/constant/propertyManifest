@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -37,19 +37,19 @@ propertyManifest
         "components/methylTertPentylEther.dat"
         {
             type          imported;
-            sha256        "cb8f593e52445a20068ab491ba8dfe3b5ebfae8a6f9b33cc95416e9d4b7b41cf";
-            computationalSha256 "fbddcd5de6d16d704e2111e53fa18e8d5540f4289343e285cc19e64d812b9adf";
+            sha256        "8d49a3e03607b4359c1556b50895b22bf2e38971fc9ae6f89cb4ad85de616aa8";
+            computationalSha256 "da6768e6f9929b523499696b6cbc2da3a7d704914d311e4ad62c74842198388d";
             origin        "data/standards/components/methylTertPentylEther.dat";
-            originSha256  "bb297a4d34069b56e24984295d855a8b10fd97a4a4a6844ef9eda77e60bbf0ef";
+            originSha256  "bec938fe37aaa40428154d9c2d84ab7a3a516f0cb87de71736eb7b6b72d11180";
             release       Choupo-2608;
         }
         "parameters/NRTL/224Trimethylpentane-methylTertPentylEther.dat"
         {
             type          imported;
-            sha256        "6f28a604ba9b59d103fee02616968fe74e0af115f7270adce4964532aa1ba0ee";
-            computationalSha256 "99a3605cbbf308f26b5c216c354e3068e809d6074bf60f029ce864da59406709";
+            sha256        "9652a22da68727b05bc34a442000a1b7434ca4b16f3c5f243e15540ca4c47e41";
+            computationalSha256 "836ce16065489bbd3f52c988a6fb5f9233a3fe16bba2225b3bcc2025883d7d9e";
             origin        "data/standards/parameters/NRTL/224Trimethylpentane-methylTertPentylEther.dat";
-            originSha256  "03bc082fa981b2312ab6f1d4d467946df2662da794e854699fb974286e877b80";
+            originSha256  "06cabaffde576c7cf0cd8ceaa341f5c186ab33c88bfd03003a8a99b51edbd036";
             release       Choupo-2608;
         }
     }

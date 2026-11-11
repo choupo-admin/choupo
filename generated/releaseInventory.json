@@ -5,12 +5,12 @@
   "catalogue": {
     "components": 649,
     "aqueousSpecies": 53,
-    "nrtlPairs": 132,
+    "nrtlPairs": 558,
     "wilsonPairs": 0,
     "uniquacPairs": 3,
     "henryPairs": 206,
     "pitzerPairs": 99,
-    "enrtlPairs": 45,
+    "enrtlPairs": 48,
     "materials": 4,
     "membranes": 4,
     "adsorbents": 3,
@@ -30,16 +30,16 @@
     }
   },
   "curationTraces": {
-    "cases": 268,
-    "regressionChecks": 268,
+    "cases": 750,
+    "regressionChecks": 750,
     "byOrigin": {
-      "pairs": 134,
+      "pairs": 616,
       "components": 65,
       "batches": 2,
       "electrolytes": 67
     }
   },
   "totals": {
-    "mixtureParameterRecords": 485
+    "mixtureParameterRecords": 914
   }
 }

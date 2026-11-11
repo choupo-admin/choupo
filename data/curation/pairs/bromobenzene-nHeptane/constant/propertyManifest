@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/bromobenzene.dat"
+        {
+            type          imported;
+            sha256        "8d8e43c717aa31fdb4403bcd2e38d46f524a024a1a0c56479fe8a144ee6141bc";
+            computationalSha256 "7d69e484b1c8756232842894b0caa6002e1bc13eaf049cbc1c7dac2798f2bfae";
+            origin        "data/standards/components/bromobenzene.dat";
+            originSha256  "17a58a4a0975d8f4654b1f2b33bc22fcc48ffa58921e1b36ea868f256b442a6b";
+            release       Choupo-2608;
+        }
+        "components/nHeptane.dat"
+        {
+            type          imported;
+            sha256        "25070332ac55ed31465bc842c2820fdfaad6f8148a03a841aca858978670b1d4";
+            computationalSha256 "125b2cbb0fb1a4182208bea7d0812526f79531b719a3e95c6555eb1eef5975b2";
+            origin        "data/standards/components/nHeptane.dat";
+            originSha256  "d07d8e2aa11a5f1acb72593e0fcd1281a502b07ee6da32603bcc97d97b54abd4";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/bromobenzene-nHeptane.dat"
+        {
+            type          imported;
+            sha256        "bc105c8c4cea17c2f115f4835a9fc224a736f66bb749399aab1a48aa1f359c30";
+            computationalSha256 "1bbd9b3f122ed46ff3352648db907e30ec21a9bb4006db12e8ba67202968eda8";
+            origin        "data/standards/parameters/NRTL/bromobenzene-nHeptane.dat";
+            originSha256  "8bad10339023efc873827efbe330b102fdae67095b7608c25b769f46508d3d5e";
+            release       Choupo-2608;
+        }
+    }
+}

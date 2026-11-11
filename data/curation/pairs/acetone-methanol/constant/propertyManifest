@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/acetone-methanol.dat"
         {
             type          imported;
-            sha256        "5f3213a32a4dcc80b4c6be333874cf26daad80158fbeaa9d70089ad6e0c72101";
-            computationalSha256 "34f9dd774fc1dd993238476d0a23c2a24837c97c5f1d633cc2af022f0afa738f";
+            sha256        "113ca150ff8935deb84d6a1044588b94bf283b119e93bddb9ffd061a80874983";
+            computationalSha256 "af6185c0413e51acd77d744a19a30c968f518af6dba6553989d7cc922408cd54";
             origin        "data/standards/parameters/NRTL/acetone-methanol.dat";
-            originSha256  "834ebe11c050a9a0c37fe292646923b75cdb9804307eeed3f0a026fabc7940e7";
+            originSha256  "4376d58f46030162a2b02ae81d3c785a4ca3e14821b4765bd2f8bd2be7b80a63";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

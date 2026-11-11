@@ -106,6 +106,7 @@ provenance
         reviewStatus  autoPromoted;
         humanReviewed false;
         fitGrade      severe;   // DEV.md 4c C285: the worse of the grades below
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
         fitGradeMaxRelativeError_pct 8.816588;   // grade warning
         fitGradeBoilingPointGap_K    -3.7632;   // grade severe (Tb outside the kept points' range)
         promotedBy    "bin/choupo-curate vp --promote";

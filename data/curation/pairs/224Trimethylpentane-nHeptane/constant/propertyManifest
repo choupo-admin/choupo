@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/224Trimethylpentane-nHeptane.dat"
         {
             type          imported;
-            sha256        "06d21c5c56f6e2b845017fc1a74ef4ed0b3819678d16e541dd679cc563d6e64c";
-            computationalSha256 "d3a8db96837a42321b4a332166884ef587ee34a8fd8907e34271e0c1ae2263a3";
+            sha256        "dc5981c8cf140320abe00bc3cbf61cd482e2aa42c977b9bebc8feee0a1b7a551";
+            computationalSha256 "3960e3888f30d31d099667ec97b53e40a31d250b5818ca8b53cad6e242655234";
             origin        "data/standards/parameters/NRTL/224Trimethylpentane-nHeptane.dat";
-            originSha256  "7b419e4af151d2502db4f32adeeafa2707178baf57ba332143a9ba560b4e1534";
+            originSha256  "cfa3d73976e3c5e657abfdf9ff9ec76e75110eb136d05877d3e700618b1ce56a";
             release       Choupo-2608;
         }
     }

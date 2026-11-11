@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of diEthylCarbonate-ethylBenzene
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/diEthylCarbonate-ethylBenzene-bubble-acs.jced.6b00085.dat";
+        role          fit;   // C283: every laboratory is fitted
+        doi           "10.1021/acs.jced.6b00085";
+        url           "https://trc.nist.gov/ThermoML/10.1021/acs.jced.6b00085.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/acs.jced.6b00085.json";
+        articleFile   "acs.jced.6b00085.xml";
+        articleSha256 "d79e918de4c01376551513b29595c07048c20e87c60fac997f9648d6dd90b705";
+        block         10;
+        filter        ( --interior-only );
+        extract       "bin/choupo-thermoml extract-vle <article file> --block 10 --interior-only --into <dir>";
+        sha256        "3603fecaf501e8556472d98c81b04faefbfbfe398fe70a171978982d661dd4f7";
+        identity
+        {
+            diEthylCarbonate { cas "105-58-8"; inchiKey "OIFBSDVPJOWBCH-UHFFFAOYSA-N"; }
+            ethylBenzene   { cas "100-41-4"; inchiKey "YNQLUTRBYVCPMQ-UHFFFAOYSA-N"; }
+        }
+    }
+);

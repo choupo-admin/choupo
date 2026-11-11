@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/methanol-tetrahydrofuran.dat"
         {
             type          imported;
-            sha256        "1701b84a88d88a110c278a92d812c57e136a9b69d572eab476ea97448fbce8e4";
-            computationalSha256 "a3b956a0acb262864ebed97ef01c16ea2219fd1ffbcc392a9a678efa00766c77";
+            sha256        "1f94628f161022c44edeac13c16104f47e9d8b5c59f7c194080d9805e9875a78";
+            computationalSha256 "659fbb1a58560dfc9d3b76cd0440070f5ef45eea933d1b74b18bdb9f4d0a3c3a";
             origin        "data/standards/parameters/NRTL/methanol-tetrahydrofuran.dat";
-            originSha256  "43b925daaf76adf599ae85e6b0292fb1cf6c3d299df467bd66c4c5956645d82c";
+            originSha256  "86294f0ef9c5eca07aca97ff302d80d0277c59c6619b99075c3479ab4f2ac8f0";
             release       Choupo-2608;
         }
     }

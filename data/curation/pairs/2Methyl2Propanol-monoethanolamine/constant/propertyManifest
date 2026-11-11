@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/2Methyl2Propanol.dat"
+        {
+            type          imported;
+            sha256        "85da846573aa8847cf253bb6a529bccb7cef7f6811f6f65be60476b507fc5442";
+            computationalSha256 "11753215451e3bf204fd6a69c6d95af63cdadf84fdfebe9aa516b4610a7ae366";
+            origin        "data/standards/components/2Methyl2Propanol.dat";
+            originSha256  "225442e6d92c7f5d9f6cd96593a5d8d958d8b0f65227d2eee965eac6e04747b2";
+            release       Choupo-2608;
+        }
+        "components/monoethanolamine.dat"
+        {
+            type          imported;
+            sha256        "d7ea20717dae4147c09c28e2edfe35e2d5592163e0a3ab69050731a3c5e3263e";
+            computationalSha256 "d3e4790afc0caae362a2c303338be7fecc08f7cef757a57588b208aa93a16f39";
+            origin        "data/standards/components/monoethanolamine.dat";
+            originSha256  "0b10f333c4173fac9f038ed3644ae0ea6817afe4bd5fa89946c99e9e2f38dd60";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Methyl2Propanol-monoethanolamine.dat"
+        {
+            type          imported;
+            sha256        "c5b043f98d9abac578a497ae50a18a543b70810fe729cd23308a315c97f50083";
+            computationalSha256 "466875b11060bf96e0ce675883cf0bdf3d28dc61e7b72cc62409b5e5435e211f";
+            origin        "data/standards/parameters/NRTL/2Methyl2Propanol-monoethanolamine.dat";
+            originSha256  "3311005b77ecd7a8253d309ab7204157ac9d502871b31d6c73ddfa62d65e90be";
+            release       Choupo-2608;
+        }
+    }
+}

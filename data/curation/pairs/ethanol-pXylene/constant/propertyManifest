@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/ethanol-pXylene.dat"
         {
             type          imported;
-            sha256        "74073c77c76b507a5074524c3fc4635917f23d742082c833f3fb119c7f0a170c";
-            computationalSha256 "16daef1f477a5b730b62cd886b39e10ee2f35861b5f03e6a2e07819159759614";
+            sha256        "59328e36b61d4d0f36a45ecb9b71c3d288e34db3d2e27fc8988656822213d48b";
+            computationalSha256 "9c2c37a1d16da7383b6d3b6a225102e009fd3ec13d14dfc925bc5beead452de7";
             origin        "data/standards/parameters/NRTL/ethanol-pXylene.dat";
-            originSha256  "746c70816d73d2832dc91cbdb178e2fce541cf0968891995cf05d87d01c9016c";
+            originSha256  "56516670dc6a08f32af5eb320af31c21b82107deec3f734e81e6c4337f6a6333";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

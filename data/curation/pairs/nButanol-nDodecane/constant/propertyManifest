@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/nButanol-nDodecane.dat"
         {
             type          imported;
-            sha256        "709aee05fce25c19cdb6a88e02726efedf9b4eb0861ba77f89106fcc95459ac3";
-            computationalSha256 "efbcdffbbd678d71b3bea433fbac63e23fe64d74654b331893d024ee87e27ca6";
+            sha256        "9e65553d9f23a02ef60082239b2f16ee0d09acfcadf8111801c2943b99f214f0";
+            computationalSha256 "8b78f3a041e1252f645ba3a672c8cf778d8fdc1cfbd002e5e0248fcd4db1703b";
             origin        "data/standards/parameters/NRTL/nButanol-nDodecane.dat";
-            originSha256  "8903d3df01edda8a4b31f1bee40f7b1e61eec56514a184d50ae01392fc1d11e8";
+            originSha256  "23b4c9c5e7ef6cd053f03912245bb6897bfdb40d78260093ebe33e40757658e8";
             release       Choupo-2608;
         }
     }

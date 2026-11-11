@@ -185,7 +185,7 @@ describe("the engine's classification reaches the page as a word", () => {
                      "thresholdNoColdUtility", "thresholdNoUtility"]) {
       expect(PINCH_CLASS_TEXT[w], w).toBeTruthy();
     }
-    expect(PINCH_CLASS_TEXT["thresholdNoColdUtility"]).toContain("no pinch");
+    expect(PINCH_CLASS_TEXT["thresholdNoColdUtility"]).toContain("no interior pinch");
   });
   it("the engine's pinch_exists decides; the top-of-range geometry does not", () => {
     const run = (k: object) => ({ status: "done", log: "", streams: [],
@@ -364,7 +364,7 @@ describe("populationScope words the engine's population, never computes it", () 
     const s = populationScope({ segments: 2, duties_excluded: 1, Q_excluded_kW: 1.8795 })!;
     expect(s.partial).toBe(true);
     expect(s.label).toContain("not of the plant");
-    expect(s.label).toContain("1 heat duty (1.9 kW)");
+    expect(s.label).toContain("1 heat duty (1.88 kW)");
     expect(s.label).toContain("reports/pinch/population.csv");
   });
   it("claims nothing for a run without the KPIs", () => {
