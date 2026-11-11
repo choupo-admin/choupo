@@ -2,13 +2,13 @@
     SPDX-License-Identifier: GPL-3.0-or-later
     Part of Choupo.  Credit: see AUTHORS ; Notices: see NOTICE.
 
-    COSMO-SAC 2002 (Lin & Sandler) -- NIST benchmark variant (Bell 2019).
+    COSMO-SAC 2002 (Lin & Sandler, Bell 2020) + LVPP-HFTZVP-2018 (Ferrarini 2018).
 \*---------------------------------------------------------------------------*/
 
 #include "CosmoSac.H"
 #include "thermo/Component.H"
-
 #include <cmath>
+#include <iostream>
 #include <stdexcept>
 
 namespace Choupo {
@@ -25,6 +25,25 @@ constexpr scalar Q0_NORM  = 79.53;      // area normalisation [A^2]
 constexpr scalar R_GAS    = 0.001987;   // gas constant [kcal/(mol K)] (Mullins-consistent)
 constexpr scalar SIGMA_MIN = -0.025;    // grid [e/A^2]
 constexpr scalar DSIGMA    = 0.001;
+
+// ---- LVPP-HFTZVP-2018 constants (Ferrarini, Flores, Muniz & Soares, AIChE J.
+//      64 (2018) 3443, p. 11: the HF/TZVP refit of the 2002 equations) --------
+//  The SAME equations as 2002, refitted to LVPP's GAMESS HF/TZVP profiles.
+//  The paper leaves two choices open; the reading used here, and how it was
+//  chosen, is in docs/design/cosmo-sac-lvpp-hftzvp-2018.md and is announced on
+//  every run that uses it.  z, r0, q0 and R are the 2002 ones (the paper:
+//  "the original COSMO-SAC model ... the only modification ... r_avg").
+constexpr scalar LVPP18_R_EFF    = 1.1565;      // standard segment radius [A]
+constexpr scalar LVPP18_F_POL    = 0.8041;      // polarisation factor [-]
+constexpr scalar LVPP18_C_HB     = 58250.49;    // hydrogen-bond constant [kcal A^4 / (mol e^2)]
+constexpr scalar LVPP18_SIGMA_HB = 0.01008;     // hydrogen-bond cutoff [e/A^2]
+constexpr scalar EPS0            = 2.395e-4;    // vacuum permittivity [e^2 mol / (kcal A)]
+const char* const LVPP18_VARIANT  = "LVPP-HFTZVP-2018";
+//  The profile protocol these constants were fitted with; a set under this
+//  variant must declare exactly this `protocol` (averaging radius and decay
+//  are profile-construction constants, applied by bin/curate/lvpp_sigma_profile.py).
+const char* const LVPP18_PROTOCOL =
+    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
 } // namespace
 
 CosmoSac::CosmoSac(const DictPtr& dict, const std::vector<Component>& comps)
@@ -64,14 +83,37 @@ CosmoSac::CosmoSac(const DictPtr& dict, const std::vector<Component>& comps)
                 + "' has no COSMO set '" + set + "' (add it, or pick a set it carries).");
 
         const Component::CosmoSet& cs = c.cosmoSet(set);
-        // The COSMOSAC-2002 family: `model COSMOSAC; variant "2002";`.  Only this family
-        // is implemented -- never pair a profile with another variant's constants (a
-        // foreign family REFUSES, per the don't-mix-families rule).
-        if (cs.model != "COSMOSAC" || cs.variant != "2002")
+        // TWO variants, ONE set of equations: `variant "2002"` (Lin & Sandler,
+        // VT-2005 profiles) and `variant "LVPP-HFTZVP-2018"` (Ferrarini 2018,
+        // LVPP 18.07 GAMESS HF/TZVP profiles).  A profile is NEVER paired with
+        // another variant's constants: the constants were fitted together with
+        // the profiles' quantum protocol (an LVPP profile under the 2002
+        // constants flips the sign of G^E on water/acetone,
+        // data/tmp/COSMO_VALIDATION_STUDY.md).  So every mismatch REFUSES.
+        if (cs.model != "COSMOSAC"
+            || (cs.variant != "2002" && cs.variant != LVPP18_VARIANT))
             throw std::runtime_error("cosmoSAC: component '" + c.name() + "' set '" + set
                 + "' declares model/variant '" + cs.model + "/" + cs.variant + "', but only "
-                  "COSMOSAC variant 2002 is implemented (do not mix a profile with the wrong "
-                  "variant's constants).");
+                  "COSMOSAC variants 2002 and " + LVPP18_VARIANT + " are implemented (do not "
+                  "mix a profile with the wrong variant's constants).");
+        if (i == 0) variant_ = cs.variant;
+        else if (cs.variant != variant_)
+            throw std::runtime_error("cosmoSAC: component '" + c.name() + "' set '" + set
+                + "' is variant '" + cs.variant + "' but '" + comps[0].name()
+                + "' is variant '" + variant_ + "' -- one mixture, one set of "
+                  "constants: every component must carry a profile of the same variant.");
+        if (cs.variant == "2002"
+            && (!cs.protocol.empty() || cs.source.find("LVPP") != std::string::npos))
+            throw std::runtime_error("cosmoSAC: component '" + c.name() + "' set '" + set
+                + "' is labelled variant 2002 but its profile declares a foreign protocol"
+                  " or source ('" + (cs.protocol.empty() ? cs.source : cs.protocol)
+                + "'): the 2002 constants were fitted to VT-2005 (DMol3) profiles only.");
+        if (cs.variant == LVPP18_VARIANT && cs.protocol != LVPP18_PROTOCOL)
+            throw std::runtime_error("cosmoSAC: component '" + c.name() + "' set '" + set
+                + "' is variant " + LVPP18_VARIANT + " but declares protocol '"
+                + cs.protocol + "'; these constants were fitted to profiles built as '"
+                + LVPP18_PROTOCOL + "' and refuse any other (regenerate the profile with "
+                  "bin/curate/lvpp_sigma_profile.py gamess).");
         if (cs.sigmaProfile.empty())
             throw std::runtime_error("cosmoSAC: component '" + c.name()
                 + "' set '" + set + "' is an EXTERNAL REFERENCE (licence"
@@ -92,6 +134,31 @@ CosmoSac::CosmoSac(const DictPtr& dict, const std::vector<Component>& comps)
         pArea_[i] = cs.sigmaProfile;
     }
 
+    // The variant's constants (the 2002 ones unless every set is LVPP-HFTZVP-2018).
+    aEff_ = A_EFF;  alphaP_ = ALPHA_P;  cHB_ = C_HB;  sigmaHB_ = SIGMA_HB;
+    if (variant_ == LVPP18_VARIANT)
+    {
+        aEff_    = 3.14159265358979323846 * LVPP18_R_EFF * LVPP18_R_EFF;
+        alphaP_  = 0.3 * LVPP18_F_POL * std::pow(aEff_, 1.5) / EPS0;
+        cHB_     = LVPP18_C_HB;
+        sigmaHB_ = LVPP18_SIGMA_HB;
+        static bool announced = false;      // once per run, not per rebuild
+        if (!announced)
+        {
+            announced = true;
+            std::cerr << "[cosmoSAC] variant " << LVPP18_VARIANT << " (Ferrarini et al.,"
+                " AIChE J. 64 (2018) 3443; profiles: LVPP sigma-profile database 18.07,"
+                " GAMESS HF/TZVP, MIT).  PREDICTIVE: no binary parameter is fitted.\n"
+                "  The paper leaves TWO choices open: the decay f_decay of the charge"
+                " averaging, and the area in the misfit constant alpha'.  Reading used:"
+                " f_decay 3.57 with distances in A, and alpha' = 0.3 f_pol (pi r_eff^2)^1.5"
+                " / eps0 = " << alphaP_ << " kcal A^4/(mol e^2), a_eff = " << aEff_
+                << " A^2.\n  That reading was SELECTED among the four on Lin & Sandler"
+                " 2002 Table 2 (ln gamma-inf in water and hexane, 298.15 K): that table"
+                " is selection data, not validation (docs/design/cosmo-sac-lvpp-hftzvp-2018.md).\n";
+        }
+    }
+
     // The sigma grid + the (temperature-independent) exchange-energy matrix.
     for (int m = 0; m < NGRID; ++m) sigma_[m] = SIGMA_MIN + DSIGMA * m;
     for (int m = 0; m < NGRID; ++m)
@@ -100,9 +167,9 @@ CosmoSac::CosmoSac(const DictPtr& dict, const std::vector<Component>& comps)
             const scalar sm = sigma_[m], sn = sigma_[nn];
             const scalar s_acc = std::max(sm, sn);
             const scalar s_don = std::min(sm, sn);
-            dW_[m][nn] = 0.5 * ALPHA_P * (sm + sn) * (sm + sn)
-                       + C_HB * std::max(0.0, s_acc - SIGMA_HB)
-                             * std::min(0.0, s_don + SIGMA_HB);
+            dW_[m][nn] = 0.5 * alphaP_ * (sm + sn) * (sm + sn)
+                       + cHB_ * std::max(0.0, s_acc - sigmaHB_)
+                             * std::min(0.0, s_don + sigmaHB_);
         }
 }
 
@@ -171,7 +238,7 @@ sVector CosmoSac::gamma(scalar T_K, const sVector& x) const
         const std::vector<scalar> lnGI = lnSegmentGamma(T_K, pI);
         scalar res = 0.0;
         for (int k = 0; k < NGRID; ++k) res += pI[k] * (lnGS[k] - lnGI[k]);
-        res *= area_[i] / A_EFF;
+        res *= area_[i] / aEff_;
 
         // combinatorial (x-free ratios, so infinite dilution x_i=0 is finite)
         const scalar phi_over_x   = (sumRx > 0.0) ? r[i] / sumRx : 0.0;

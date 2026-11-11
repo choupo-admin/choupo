@@ -1053,6 +1053,7 @@ void Component::readFromDict(const DictPtr& d)
             cs.model   = s->lookupWordOrDefault("model", "COSMOSAC");
             cs.variant = s->lookupWordOrDefault("variant", "2002");
             cs.source  = s->lookupWordOrDefault("source", "undeclared");
+            cs.protocol = s->lookupWordOrDefault("protocol", "");
             cs.area    = s->lookupScalarOrDefault("area", 0.0);
             cs.volume  = s->lookupScalarOrDefault("volume", 0.0);
             if (s->found("sigmaProfile"))

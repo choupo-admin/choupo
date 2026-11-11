@@ -53,12 +53,20 @@ Description
     lacking the `cosmo` block, or the requested set, is a LOUD error (no
     silent crutch).
 
-    ONE variant only: a set must declare `model COSMOSAC; variant "2002";` and
-    any other family REFUSES -- constants and profiles are never mixed across
-    variants (never mix a profile with the wrong variant's constants).  That
-    guard is the ONLY thing between a foreign profile and a silently wrong
-    gamma, which is why a `variant "2002"` label on a non-VT-2005 profile is
-    refused by the scrub gate (check_cosmo_scrub) before it can reach here.
+    TWO variants on ONE set of equations, never mixed:
+      * `variant "2002"` -- the constants below, fitted to VT-2005 profiles.
+      * `variant "LVPP-HFTZVP-2018"` -- Ferrarini, Flores, Muniz & Soares,
+        AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194: the 2002 equations
+        refitted to the LVPP sigma-profile database 18.07 (GAMESS HF/TZVP,
+        MIT, (c) 2017 LVPP).  The paper leaves the averaging decay and the
+        area in alpha' open; the reading used, and that it was SELECTED on
+        Lin & Sandler 2002 Table 2, is announced on every run and recorded in
+        docs/design/cosmo-sac-lvpp-hftzvp-2018.md.
+    A set's variant picks the constants; every component of a mixture must
+    carry the same variant; a 2002 set carrying a foreign `protocol` or an
+    LVPP source REFUSES, and an LVPP-HFTZVP-2018 set whose `protocol` is not
+    the exact one its constants were fitted with REFUSES.  The scrub gate
+    (check_cosmo_scrub) holds the same rule over the tree.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -98,6 +106,9 @@ private:
     std::vector<scalar>              area_;   // A_i  [A^2]
     std::vector<scalar>              vol_;    // V_i  [A^3]
     std::vector<std::vector<scalar>> pArea_;  // p_i(sigma) area per bin [A^2], n_ x NGRID
+
+    std::string variant_;            // "2002" or "LVPP-HFTZVP-2018" (all sets agree)
+    scalar aEff_ = 0.0, alphaP_ = 0.0, cHB_ = 0.0, sigmaHB_ = 0.0;   // the variant's constants
 
     scalar sigma_[NGRID];            // grid nodes [e/A^2]
     scalar dW_[NGRID][NGRID];        // exchange energy DELTAW(m,n) [kcal/mol]
