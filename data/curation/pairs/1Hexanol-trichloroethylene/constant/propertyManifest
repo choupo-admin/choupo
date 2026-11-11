@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/1Hexanol.dat"
+        {
+            type          imported;
+            sha256        "ff92f5582d2dd1ba667f3d466054ce752b793a12050556496d6521f08fef7c91";
+            computationalSha256 "6363abe381b95dabcba93eb20cca67bd715fbcf43e6d5b0fb6a78766b1500711";
+            origin        "data/standards/components/1Hexanol.dat";
+            originSha256  "ab4dc5089f2f1bec42920a8f7b7301da49a9ac935c439900666185ba0de805c4";
+            release       Choupo-2608;
+        }
+        "components/trichloroethylene.dat"
+        {
+            type          imported;
+            sha256        "7d07dc4e8253dcb4cc40928e2aa367ee7bb66b1a6464a9831a2735cdca04f915";
+            computationalSha256 "4ce83dfe6fa7e3926465a1a2ac03556160ec7f5f9670b34f2c9e5962801d9efd";
+            origin        "data/standards/components/trichloroethylene.dat";
+            originSha256  "ea852920e7231d91a6cbea83e6c13df3f73dbd63ba46111c1338eba1f0ef271e";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1Hexanol-trichloroethylene.dat"
+        {
+            type          imported;
+            sha256        "e5a8916dee28f2d94066e546423ba57ce4a2d9f5fbbb4ae67463bcdf80966ec8";
+            computationalSha256 "92c092707adf69dd4fdb727d0df0006769f8c79d0471cdc4c77b1498976cd288";
+            origin        "data/standards/parameters/NRTL/1Hexanol-trichloroethylene.dat";
+            originSha256  "78e97eee3decba8f1905a58c41db520c1f85bf901959a1fcb0ad1a9b97725f6d";
+            release       Choupo-2608;
+        }
+    }
+}

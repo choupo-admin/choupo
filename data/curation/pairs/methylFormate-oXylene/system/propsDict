@@ -58,11 +58,33 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      9 point(s) of 17: doi 10.1021/je200974r row 2: x 0.0037, P 101.330
+      kPa, T 411.14 K, dT +4.13 K; doi 10.1021/je200974r row 3: x 0.0071,
+      P 101.330 kPa, T 406.53 K, dT +6.47 K; doi 10.1021/je200974r row 4:
+      x 0.0089, P 101.330 kPa, T 403.20 K, dT +8.59 K; doi
+      10.1021/je200974r row 5: x 0.0134, P 101.330 kPa, T 397.29 K, dT
+      +11.42 K; doi 10.1021/je200974r row 6: x 0.0157, P 101.330 kPa, T
+      394.72 K, dT +12.40 K; doi 10.1021/je200974r row 7: x 0.0327, P
+      101.330 kPa, T 378.59 K, dT +16.63 K; doi 10.1021/je200974r row 8:
+      x 0.0584, P 101.330 kPa, T 362.49 K, dT +15.37 K; doi
+      10.1021/je200974r row 9: x 0.1038, P 101.330 kPa, T 345.70 K, dT
+      +7.48 K; doi 10.1021/je200974r row 11: x 0.3227, P 101.330 kPa, T
+      318.45 K, dT -4.12 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 690.9 K, b_ji = 145.3 K over 8 kept points of 1
+  laboratories (9 discarded): max |dT| 3.162 K, mean 1.780 K, graded
+  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (690.9, 145.3). NOT PROMOTABLE (fit grade severe, max |dT|
+  3.162 K): the pair splits ONE liquid inside its own validity span
+  (check_regressed_pairs arm f) -- predicts a LIQUID-LIQUID SPLIT at
+  305.99 K (x_methylFormate 0.527 .. 0.821), inside its own validity span
+  305.99-412.92 K -- its evidence is bubble temperatures of ONE liquid,
+  which a bubble scan cannot contradict; a pair that splits that liquid
+  stays in its case, not the catalogue (or it DECLARES `liquidLiquid
+  true;` with tie-line evidence and a gap band)
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -88,6 +110,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/methylFormate-oXylene-bubble-je200974r.dat";
                 role     fit;
+                discard  ( 2 3 4 5 6 7 8 9 11 );   // C283 outliers, by name in the header
             }
         );
 
@@ -129,6 +152,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/methylFormate-oXylene-bubble-je200974r.dat";
                 role     fit;
+                discard  ( 2 3 4 5 6 7 8 9 11 );   // C283 outliers, by name in the header
             }
         );
 

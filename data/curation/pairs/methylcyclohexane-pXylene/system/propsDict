@@ -58,11 +58,20 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      none: every one of the 18 points lies within 3 K after the
+      least-squares stage.
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 240.5 K, b_ji = -144.6 K over 18 kept points of 1
+  laboratories (0 discarded): max |dT| 0.234 K, mean 0.115 K, graded
+  clean (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (240.5, -144.6). PROMOTED on 2026-11-11 into
+  data/standards/parameters/NRTL/methylcyclohexane-pXylene.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean --
+  max |dT| 0.234 K over the 18 kept points (limits 1 / 2 / 4 K), one
+  liquid across the validity span
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

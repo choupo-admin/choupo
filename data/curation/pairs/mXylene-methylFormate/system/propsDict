@@ -58,11 +58,24 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      7 point(s) of 21: doi 10.1021/je200974r row 2: x 0.0134, P 101.330
+      kPa, T 399.05 K, dT +6.90 K; doi 10.1021/je200974r row 3: x 0.0268,
+      P 101.330 kPa, T 388.20 K, dT +10.91 K; doi 10.1021/je200974r row
+      4: x 0.0403, P 101.330 kPa, T 379.77 K, dT +12.25 K; doi
+      10.1021/je200974r row 5: x 0.0537, P 101.330 kPa, T 372.88 K, dT
+      +12.14 K; doi 10.1021/je200974r row 6: x 0.0738, P 101.330 kPa, T
+      364.28 K, dT +10.68 K; doi 10.1021/je200974r row 7: x 0.0940, P
+      101.330 kPa, T 357.50 K, dT +8.24 K; doi 10.1021/je200974r row 11:
+      x 0.3474, P 101.330 kPa, T 321.90 K, dT -3.54 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 581.8 K, b_ji = 140.9 K over 14 kept points of 1
+  laboratories (7 discarded): max |dT| 4.317 K, mean 1.615 K, graded
+  refused (limits 1 / 2 / 4 K) -> notAccepted. fit_nrtl_start2 lands on
+  the same pair (581.8, 140.9). NOT PROMOTABLE: fit grade refused -- max
+  |dT| 4.317 K over the 14 kept points is above 4 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -88,6 +101,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/methylFormate-mXylene-bubble-je200974r.dat";
                 role     fit;
+                discard  ( 2 3 4 5 6 7 11 );   // C283 outliers, by name in the header
             }
         );
 
@@ -129,6 +143,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/methylFormate-mXylene-bubble-je200974r.dat";
                 role     fit;
+                discard  ( 2 3 4 5 6 7 11 );   // C283 outliers, by name in the header
             }
         );
 

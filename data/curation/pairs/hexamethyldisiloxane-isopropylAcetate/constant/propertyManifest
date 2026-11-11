@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/hexamethyldisiloxane.dat"
+        {
+            type          imported;
+            sha256        "848d231159a9e55e4c0da85c95a3219bfcdd20d69473115a414b0429da875244";
+            computationalSha256 "3ea2cec08b2f005b9214aa5f26d589bab5c1be262417097bdb32e7ad5816bfd4";
+            origin        "data/standards/components/hexamethyldisiloxane.dat";
+            originSha256  "b5fb88ce86b040f5639d22a6e80fa5a03f08736437d60f80ddcdf9a96e5e0072";
+            release       Choupo-2608;
+        }
+        "components/isopropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "2328fd502eebc591dc0d81570786331f2d6647eb2b71bfe7172809332c8e3fe0";
+            computationalSha256 "1c866ebe928bb3a9819829800fbff05561232d4be946665e4b122aac3e9f145f";
+            origin        "data/standards/components/isopropylAcetate.dat";
+            originSha256  "b4165a2c125255c87da7f45e828cad88381ca66d9b8bb23696bd173c77aae660";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/hexamethyldisiloxane-isopropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "b48f40053fb3061909b77e1e027e041ca85449f62e9e1a37a324c38c23a694c5";
+            computationalSha256 "693e186ff348f6db1b10851f38e81571317e58648b76b3fc9bf3977739224165";
+            origin        "data/standards/parameters/NRTL/hexamethyldisiloxane-isopropylAcetate.dat";
+            originSha256  "db62396d938d34dc608f6c33667ec79519c3d5a8ef5ce3f553af97a78105acac";
+            release       Choupo-2608;
+        }
+    }
+}

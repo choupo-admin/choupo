@@ -58,11 +58,30 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      9 point(s) of 20: doi 10.1021/je200974r row 1: x 0.0101, P 101.330
+      kPa, T 401.32 K, dT +4.27 K; doi 10.1021/je200974r row 2: x 0.0197,
+      P 101.330 kPa, T 395.33 K, dT +6.28 K; doi 10.1021/je200974r row 3:
+      x 0.0311, P 101.330 kPa, T 387.52 K, dT +9.13 K; doi
+      10.1021/je200974r row 4: x 0.0500, P 101.330 kPa, T 379.06 K, dT
+      +9.14 K; doi 10.1021/je200974r row 5: x 0.0698, P 101.330 kPa, T
+      370.68 K, dT +8.76 K; doi 10.1021/je200974r row 6: x 0.0895, P
+      101.330 kPa, T 364.08 K, dT +7.12 K; doi 10.1021/je200974r row 7: x
+      0.1190, P 101.330 kPa, T 355.69 K, dT +4.49 K; doi
+      10.1021/je200974r row 9: x 0.2967, P 101.330 kPa, T 328.37 K, dT
+      -3.30 K; doi 10.1021/je200974r row 15: x 0.7657, P 101.330 kPa, T
+      307.66 K, dT +3.22 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 670.4 K, b_ji = 42.8 K over 11 kept points of 1
+  laboratories (9 discarded): max |dT| 3.543 K, mean 1.631 K, graded
+  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (670.4, 42.8). NOT PROMOTED (max |dT| 3.543 K over the 11
+  kept points, one liquid across the validity span): fit grade severe --
+  DEV.md 4c C300 rule 3: a severe pair does not enter the default
+  catalogue; its record stays in this curation case's constant/, and a
+  case that needs it carries it in its own constant/
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -88,6 +107,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/methylFormate-ethylBenzene-bubble-je200974r.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 6 7 9 15 );   // C283 outliers, by name in the header
             }
         );
 
@@ -129,6 +149,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/methylFormate-ethylBenzene-bubble-je200974r.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 6 7 9 15 );   // C283 outliers, by name in the header
             }
         );
 

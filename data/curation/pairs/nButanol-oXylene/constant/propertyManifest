@@ -1,0 +1,74 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/nButanol.dat"
+        {
+            type          imported;
+            sha256        "b94c5a927292040755a5310af8d6b2b35eab4b09a5d42feca3c9079cf7cb05dc";
+            computationalSha256 "84b146c0b864097e855611306486ba58bbca0f893ff1cf743ffd992b673ed825";
+            origin        "data/standards/components/nButanol.dat";
+            originSha256  "5b25d70fce421e7c0496c1e6d83620f20a4ee7ca35e9e0cc4762f9059c7ec3d1";
+            release       Choupo-2608;
+        }
+        "components/oXylene.dat"
+        {
+            type          imported;
+            sha256        "d6bdb61163c015dec26d2cefff15a2c919b7a57896b8592d3605374a272dffa0";
+            computationalSha256 "a8ffc32a52cd609309dfebd10675e693ad9127c62d05bf6ddf8603f0a78620a2";
+            origin        "data/standards/components/oXylene.dat";
+            originSha256  "b6c6ede5d7ff713e82c02f27faf3ced0b49ef4762c4baa0eae22702c78888efe";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/nButanol-oXylene.dat"
+        {
+            type          imported;
+            sha256        "5f345d860b4e0a66262de5699bf49dbcd45d09a4287512e7c5229b442ffcf492";
+            computationalSha256 "62a0c20fa451bfa17d0841ab3a463a5a356ae897aced5b74d77befe841d33a5f";
+            origin        "data/standards/parameters/NRTL/nButanol-oXylene.dat";
+            originSha256  "dd492a92ab948736d956416f5bef0be04193e0f43d5973af612cd448618ce693";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+    }
+}

@@ -58,11 +58,30 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      7 point(s) of 18: doi 10.1021/je200974r row 1: x 0.0057, P 101.330
+      kPa, T 402.18 K, dT +6.18 K; doi 10.1021/je200974r row 2: x 0.0109,
+      P 101.330 kPa, T 394.44 K, dT +10.77 K; doi 10.1021/je200974r row
+      3: x 0.0146, P 101.330 kPa, T 389.11 K, dT +13.78 K; doi
+      10.1021/je200974r row 4: x 0.0302, P 101.330 kPa, T 374.24 K, dT
+      +18.49 K; doi 10.1021/je200974r row 5: x 0.0440, P 101.330 kPa, T
+      364.04 K, dT +19.60 K; doi 10.1021/je200974r row 6: x 0.0546, P
+      101.330 kPa, T 358.19 K, dT +18.67 K; doi 10.1021/je200974r row 7:
+      x 0.0985, P 101.330 kPa, T 342.47 K, dT +10.66 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 651.7 K, b_ji = 148.8 K over 11 kept points of 1
+  laboratories (7 discarded): max |dT| 1.513 K, mean 0.955 K, graded
+  warning (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (651.7, 148.8). NOT PROMOTABLE (fit grade warning, max |dT|
+  1.513 K): the pair splits ONE liquid inside its own validity span
+  (check_regressed_pairs arm f) -- predicts a LIQUID-LIQUID SPLIT at
+  306.10 K (x_methylFormate 0.617 .. 0.734), inside its own validity span
+  306.1-319.44 K -- its evidence is bubble temperatures of ONE liquid,
+  which a bubble scan cannot contradict; a pair that splits that liquid
+  stays in its case, not the catalogue (or it DECLARES `liquidLiquid
+  true;` with tie-line evidence and a gap band)
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -88,6 +107,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/methylFormate-pXylene-bubble-je200974r.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 6 7 );   // C283 outliers, by name in the header
             }
         );
 
@@ -129,6 +149,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/methylFormate-pXylene-bubble-je200974r.dat";
                 role     fit;
+                discard  ( 1 2 3 4 5 6 7 );   // C283 outliers, by name in the header
             }
         );
 

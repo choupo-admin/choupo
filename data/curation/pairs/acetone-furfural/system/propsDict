@@ -58,11 +58,28 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      7 point(s) of 17: doi 10.1016/j.jct.2018.03.019 row 1: x 0.0286, P
+      101.300 kPa, T 426.54 K, dT -4.10 K; doi 10.1016/j.jct.2018.03.019
+      row 2: x 0.0606, P 101.300 kPa, T 417.69 K, dT -4.90 K; doi
+      10.1016/j.jct.2018.03.019 row 3: x 0.0963, P 101.300 kPa, T 408.12
+      K, dT -4.58 K; doi 10.1016/j.jct.2018.03.019 row 7: x 0.2401, P
+      101.300 kPa, T 373.68 K, dT +3.62 K; doi 10.1016/j.jct.2018.03.019
+      row 8: x 0.2944, P 101.300 kPa, T 365.94 K, dT +4.43 K; doi
+      10.1016/j.jct.2018.03.019 row 9: x 0.3632, P 101.300 kPa, T 358.91
+      K, dT +4.14 K; doi 10.1016/j.jct.2018.03.019 row 10: x 0.4247, P
+      101.300 kPa, T 354.22 K, dT +3.33 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = -232.8 K, b_ji = 185.6 K over 10 kept points of 1
+  laboratories (7 discarded): max |dT| 2.475 K, mean 1.171 K, graded
+  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on A
+  DIFFERENT pair (1291.8, -603.3). NOT PROMOTED (max |dT| 2.475 K over
+  the 10 kept points, one liquid across the validity span): fit grade
+  severe -- DEV.md 4c C300 rule 3: a severe pair does not enter the
+  default catalogue; its record stays in this curation case's constant/,
+  and a case that needs it carries it in its own constant/
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -88,6 +105,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/acetone-furfural-bubble-j.jct.2018.03.019.dat";
                 role     fit;
+                discard  ( 1 2 3 7 8 9 10 );   // C283 outliers, by name in the header
             }
         );
 
@@ -129,6 +147,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/acetone-furfural-bubble-j.jct.2018.03.019.dat";
                 role     fit;
+                discard  ( 1 2 3 7 8 9 10 );   // C283 outliers, by name in the header
             }
         );
 

@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/1Propanol.dat"
+        {
+            type          imported;
+            sha256        "6f8dab202717440a53ff49356dddaa632b8e71ad54a651d6c4f2513519864916";
+            computationalSha256 "c964d7a44b9335ec39b77584095dac5935998f8ccd1f814a9dbe51801adf4389";
+            origin        "data/standards/components/1Propanol.dat";
+            originSha256  "e576ef637c75dec43096777ad538d23ab32c8828de898339ba9226732172d96f";
+            release       Choupo-2608;
+        }
+        "components/cyclohexanone.dat"
+        {
+            type          imported;
+            sha256        "1e4519245193afda7f728ddb14e9c75b5343ec8dddb2ae5565bb3e8d950cb1ba";
+            computationalSha256 "1f1657ea5d3f8ae7b10ea461e51a4f60f1304246c02321065d6d4c49a2e2318d";
+            origin        "data/standards/components/cyclohexanone.dat";
+            originSha256  "ed667b1045fd29921c9522455ff03f16a024f7ddf487373d277c7db9bb80b621";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1Propanol-cyclohexanone.dat"
+        {
+            type          imported;
+            sha256        "8151ceded6520952d5181732f4a56458f8989218facdb467829c3d26621564f8";
+            computationalSha256 "b30112e6b5dbf8431f7267919debaf4facda6b5d81b77c167e326c445d92c020";
+            origin        "data/standards/parameters/NRTL/1Propanol-cyclohexanone.dat";
+            originSha256  "7b477a2a8ef1b35e737678976925fdb1e647235bffa1d152149e94c6a3f4d379";
+            release       Choupo-2608;
+        }
+    }
+}
