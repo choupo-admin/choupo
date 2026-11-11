@@ -1,0 +1,249 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  surfacetension01 -- THE MEASURED CURVE BESIDE THE ESTIMATE (DEV.md 4c C328).
+
+  For each of five liquids (methanol, ethanol, 1-propanol, triethanolamine,
+  n-hexane) the sigma(T) of two models is evaluated at three temperatures
+  inside the window the record declares:
+
+    StoredCorrelation   sigma = A (1 - T/Tc)^n + B (1 - T/Tc)^(n+1), read from
+                        the component's own `surfaceTension {}` block.  The
+                        numbers are a regression Choupo made on every
+                        laboratory the ThermoML archive holds for the pure
+                        liquid (A, n fitted; B = 0; the largest relative error
+                        over the data is the record's own fitGradeMaxRelative
+                        Error_pct: 4.3 % methanol, 4.0 % ethanol, 3.9 %
+                        1-propanol, 3.6 % triethanolamine, 2.8 % n-hexane).
+                        It is graded inSample and reviewed by nobody; the
+                        measured points are not stored in this tree.
+    BrockBird           the corresponding-states estimate from Tc, Pc and Tb
+                        (Reid-Prausnitz-Poling eq. 12-3.5), no sigma datum.
+
+  Read the pairs: n-hexane, a hydrocarbon, is where Brock-Bird works (its
+  largest deviation from the fitted curve over the data is 3.8 %); methanol
+  (108 %), ethanol (88 %), 1-propanol (72 %) and triethanolamine (76 %) are
+  where it does not.  A property op prints sigma [N/m]; the deviation of the
+  estimate from the stored curve is brockBird / stored - 1, read off the two
+  columns of each pair.  The golden master locks every sigma at reltol 1e-5.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        sigma_methanol_280K_stored;
+        type        propertyPoint;
+        state       { T 280 K;  P 1 bar;  composition { methanol 1.0; } }
+        thermo      { transport { interface { surfaceTension { model StoredCorrelation; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_methanol_280K_brockBird;
+        type        propertyPoint;
+        state       { T 280 K;  P 1 bar;  composition { methanol 1.0; } }
+        thermo      { transport { interface { surfaceTension { model BrockBird; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_methanol_310K_stored;
+        type        propertyPoint;
+        state       { T 310 K;  P 1 bar;  composition { methanol 1.0; } }
+        thermo      { transport { interface { surfaceTension { model StoredCorrelation; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_methanol_310K_brockBird;
+        type        propertyPoint;
+        state       { T 310 K;  P 1 bar;  composition { methanol 1.0; } }
+        thermo      { transport { interface { surfaceTension { model BrockBird; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_methanol_340K_stored;
+        type        propertyPoint;
+        state       { T 340 K;  P 1 bar;  composition { methanol 1.0; } }
+        thermo      { transport { interface { surfaceTension { model StoredCorrelation; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_methanol_340K_brockBird;
+        type        propertyPoint;
+        state       { T 340 K;  P 1 bar;  composition { methanol 1.0; } }
+        thermo      { transport { interface { surfaceTension { model BrockBird; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_ethanol_280K_stored;
+        type        propertyPoint;
+        state       { T 280 K;  P 1 bar;  composition { ethanol 1.0; } }
+        thermo      { transport { interface { surfaceTension { model StoredCorrelation; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_ethanol_280K_brockBird;
+        type        propertyPoint;
+        state       { T 280 K;  P 1 bar;  composition { ethanol 1.0; } }
+        thermo      { transport { interface { surfaceTension { model BrockBird; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_ethanol_310K_stored;
+        type        propertyPoint;
+        state       { T 310 K;  P 1 bar;  composition { ethanol 1.0; } }
+        thermo      { transport { interface { surfaceTension { model StoredCorrelation; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_ethanol_310K_brockBird;
+        type        propertyPoint;
+        state       { T 310 K;  P 1 bar;  composition { ethanol 1.0; } }
+        thermo      { transport { interface { surfaceTension { model BrockBird; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_ethanol_330K_stored;
+        type        propertyPoint;
+        state       { T 330 K;  P 1 bar;  composition { ethanol 1.0; } }
+        thermo      { transport { interface { surfaceTension { model StoredCorrelation; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_ethanol_330K_brockBird;
+        type        propertyPoint;
+        state       { T 330 K;  P 1 bar;  composition { ethanol 1.0; } }
+        thermo      { transport { interface { surfaceTension { model BrockBird; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_1Propanol_280K_stored;
+        type        propertyPoint;
+        state       { T 280 K;  P 1 bar;  composition { 1Propanol 1.0; } }
+        thermo      { transport { interface { surfaceTension { model StoredCorrelation; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_1Propanol_280K_brockBird;
+        type        propertyPoint;
+        state       { T 280 K;  P 1 bar;  composition { 1Propanol 1.0; } }
+        thermo      { transport { interface { surfaceTension { model BrockBird; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_1Propanol_315K_stored;
+        type        propertyPoint;
+        state       { T 315 K;  P 1 bar;  composition { 1Propanol 1.0; } }
+        thermo      { transport { interface { surfaceTension { model StoredCorrelation; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_1Propanol_315K_brockBird;
+        type        propertyPoint;
+        state       { T 315 K;  P 1 bar;  composition { 1Propanol 1.0; } }
+        thermo      { transport { interface { surfaceTension { model BrockBird; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_1Propanol_345K_stored;
+        type        propertyPoint;
+        state       { T 345 K;  P 1 bar;  composition { 1Propanol 1.0; } }
+        thermo      { transport { interface { surfaceTension { model StoredCorrelation; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_1Propanol_345K_brockBird;
+        type        propertyPoint;
+        state       { T 345 K;  P 1 bar;  composition { 1Propanol 1.0; } }
+        thermo      { transport { interface { surfaceTension { model BrockBird; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_triethanolamine_290K_stored;
+        type        propertyPoint;
+        state       { T 290 K;  P 1 bar;  composition { triethanolamine 1.0; } }
+        thermo      { transport { interface { surfaceTension { model StoredCorrelation; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_triethanolamine_290K_brockBird;
+        type        propertyPoint;
+        state       { T 290 K;  P 1 bar;  composition { triethanolamine 1.0; } }
+        thermo      { transport { interface { surfaceTension { model BrockBird; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_triethanolamine_315K_stored;
+        type        propertyPoint;
+        state       { T 315 K;  P 1 bar;  composition { triethanolamine 1.0; } }
+        thermo      { transport { interface { surfaceTension { model StoredCorrelation; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_triethanolamine_315K_brockBird;
+        type        propertyPoint;
+        state       { T 315 K;  P 1 bar;  composition { triethanolamine 1.0; } }
+        thermo      { transport { interface { surfaceTension { model BrockBird; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_triethanolamine_340K_stored;
+        type        propertyPoint;
+        state       { T 340 K;  P 1 bar;  composition { triethanolamine 1.0; } }
+        thermo      { transport { interface { surfaceTension { model StoredCorrelation; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_triethanolamine_340K_brockBird;
+        type        propertyPoint;
+        state       { T 340 K;  P 1 bar;  composition { triethanolamine 1.0; } }
+        thermo      { transport { interface { surfaceTension { model BrockBird; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_nHexane_290K_stored;
+        type        propertyPoint;
+        state       { T 290 K;  P 1 bar;  composition { nHexane 1.0; } }
+        thermo      { transport { interface { surfaceTension { model StoredCorrelation; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_nHexane_290K_brockBird;
+        type        propertyPoint;
+        state       { T 290 K;  P 1 bar;  composition { nHexane 1.0; } }
+        thermo      { transport { interface { surfaceTension { model BrockBird; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_nHexane_370K_stored;
+        type        propertyPoint;
+        state       { T 370 K;  P 1 bar;  composition { nHexane 1.0; } }
+        thermo      { transport { interface { surfaceTension { model StoredCorrelation; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_nHexane_370K_brockBird;
+        type        propertyPoint;
+        state       { T 370 K;  P 1 bar;  composition { nHexane 1.0; } }
+        thermo      { transport { interface { surfaceTension { model BrockBird; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_nHexane_470K_stored;
+        type        propertyPoint;
+        state       { T 470 K;  P 1 bar;  composition { nHexane 1.0; } }
+        thermo      { transport { interface { surfaceTension { model StoredCorrelation; } } } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigma_nHexane_470K_brockBird;
+        type        propertyPoint;
+        state       { T 470 K;  P 1 bar;  composition { nHexane 1.0; } }
+        thermo      { transport { interface { surfaceTension { model BrockBird; } } } }
+        properties  ( surface_tension );
+    }
+);

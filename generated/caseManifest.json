@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1258,
+  "cases": 1259,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 15
@@ -16097,6 +16097,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/transport/surfacetension01_stored_vs_brockbird": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/transport/transport01_gas_bench": {
    "application": "choupoProps",
    "ops": [
@@ -21544,6 +21558,7 @@
     "tutorials/props/thermoTest/atoms01_formula_parser",
     "tutorials/props/thermoTest/h_surface_identity",
     "tutorials/props/thermoTest/model4_speciation_scaling",
+    "tutorials/props/transport/surfacetension01_stored_vs_brockbird",
     "tutorials/props/transport/transport01_gas_bench",
     "tutorials/props/transport/transport02_chapman_enskog",
     "tutorials/steady/optimisation/fitNRTL01_ethanol_water",
@@ -24181,6 +24196,7 @@
     "tutorials/props/thermo/temperature02_engineers_ladder",
     "tutorials/props/thermoTest/atoms01_formula_parser",
     "tutorials/props/thermoTest/h_surface_identity",
+    "tutorials/props/transport/surfacetension01_stored_vs_brockbird",
     "tutorials/props/transport/transport01_gas_bench",
     "tutorials/props/transport/transport02_chapman_enskog",
     "tutorials/steady/crystallisation/crystalliser01_sugar",
@@ -25191,7 +25207,8 @@
     "tutorials/props/steam/steam02_water_transport",
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
     "tutorials/props/thermo/temperature01_gas_thermometer",
-    "tutorials/props/thermo/temperature02_engineers_ladder"
+    "tutorials/props/thermo/temperature02_engineers_ladder",
+    "tutorials/props/transport/surfacetension01_stored_vs_brockbird"
    ],
    "propertyScan1D": [
     "data/curation/batches/new_components",
