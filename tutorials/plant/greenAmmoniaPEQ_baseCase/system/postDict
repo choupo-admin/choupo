@@ -296,7 +296,27 @@
                       are assumed, not derived.  The hydrogen the full
                       buffer holds is RAW-MATERIAL STOCK in the working
                       capital, at its purchase price.
+
+  PINCH TARGETS (C302).  A `pinchPass` below reads the converged result only
+  and changes none of it: the Linnhoff-Flower targets of the duties the
+  units publish as a generic `Q` (the four water coolers, the chiller,
+  the three flash drums; the FEHE's two
+  sides as recovered heat), as in the FEL-2 case, with the same dTmin of
+  10 K.  The Gibbs converter publishes `Q_kW` only and is NOT in the
+  population: the pass names it and its 30.3 MW, and says that the targets
+  are those of the 10 extracted segments, not of the plant.
 \*---------------------------------------------------------------------------*/
+pinchPass
+{
+    dTmin   10 K;      // process-process approach -- AUTHOR-SET, the same value
+                       // as the FEL-2 case (greenAmmonia02_feasibility150bar)
+                       // and the utility allocation's own default approach
+                       // (UTILITIES C_UT, base case header).  This plant's
+                       // exchangers state no approach of their own: each
+                       // Kern design RESULTS in its approach, so nothing
+                       // here overrides 10 K.  A TARGET, not a design: it
+                       // reads the converged result only and changes none.
+}
 sizing
 {
     units

@@ -103,8 +103,25 @@
   moved to FEL-3 here is the PROCESS fidelity, not the cost estimate.  The
   class is the author's statement of how far the project is defined; it
   never follows from the model used or the design stage illustrated.
+
+  PINCH TARGETS (C302).  The same `pinchPass` as the FEL-2 case and the base
+  case, dTmin 10 K, reading the converged result only.  Here EVERY heat duty
+  is in the population (12 segments, none excluded): the two interbed
+  coolers publish a generic `Q`, so the converter's heat is a stream segment
+  of this case's pinch, which the feasibility pass could not say.
 \*---------------------------------------------------------------------------*/
 
+pinchPass
+{
+    dTmin   10 K;      // process-process approach -- AUTHOR-SET, the same value
+                       // as the FEL-2 case (greenAmmonia02_feasibility150bar)
+                       // and the utility allocation's own default approach
+                       // (UTILITIES C_UT, base case header).  This plant's
+                       // exchangers state no approach of their own: each
+                       // Kern design RESULTS in its approach, so nothing
+                       // here overrides 10 K.  A TARGET, not a design: it
+                       // reads the converged result only and changes none.
+}
 sizing
 {
     units

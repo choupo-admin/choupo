@@ -78,6 +78,28 @@ catalyst volumes need a rate law: a plug-flow reactor
 | compression | 13.7 MW, ~280 kWh/t |
 | plant first law | closes to ~9 kW |
 
+### The pinch: what the heat targets of this plant show
+
+`system/postDict` runs the pinch pass on the converged result (dTmin 10 K,
+as in the feasibility case; `reports/pinch/`). It reads 10 segments:
+the four water coolers, the chiller, the three flash drums and the FEHE's two sides.
+The Gibbs converter publishes only `Q_kW`, so its 30.3 MW is **not** in the
+population, and the run says so: these are the targets of the 10 segments,
+not of the plant.
+
+| | |
+|---|---|
+| minimum heating, Q_H,min | **0** (0.08 MW bought today, on the two cold flash drums) |
+| minimum cooling, Q_C,min | 41.05 MW (against 41.13 MW cooled today) |
+| class | threshold problem, no hot utility, **no interior pinch** (the cascade touches zero only at the top of the range, 728.15 K shifted) |
+
+The plant has no heat to buy and nothing left to recover: the FEHE already
+carries 61.4 MW of the 61.49 MW maximum recovery of this population (all
+but the 0.08 MW the two flash drums draw), and the cooling it buys is within 0.2 % of its target. The
+pinch says this base case is thermally tight on the process side; what is
+left is the converter's 30.3 MW, served by the steam generation, which no
+pinch of generic duties can see.
+
 ## What a group should notice
 
 * **The base data's 18 % per pass is kinetic.** At 460 °C the equilibrium
