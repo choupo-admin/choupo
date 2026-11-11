@@ -28,10 +28,10 @@ propertyManifest
         "components/2Pentanone.dat"
         {
             type          imported;
-            sha256        "0cb57d0aff3965552eca548644fa2c53134b58fd97911941a1e06eee49e6f83e";
-            computationalSha256 "8e32c39ee4a4b3347fd919ba8fe621bad5af2816899d004afe8462c6a3fe8ee9";
+            sha256        "8b22414162009ea2814749dc536fc1b8f3c06fbb23b1122d2fb32872b8a86d47";
+            computationalSha256 "b8dc2baf2abceb7e575b9e9035bb2f75c8e65d631b1070b4e8368f87b0027d72";
             origin        "data/standards/components/2Pentanone.dat";
-            originSha256  "bb5b2da20af3c2f47d04965cddfabc4e32d3bcc3aedad822e14df4497158c120";
+            originSha256  "d6ae8886518f66ec6aee0e591be98f29ed13214a29e1041d72d9d9c67830d7ab";
             release       Choupo-2608;
         }
         "components/3Pentanone.dat"

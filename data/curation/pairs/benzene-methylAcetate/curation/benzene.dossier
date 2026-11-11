@@ -114,4 +114,188 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.a_ij  121.481406994;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.a_ji  -97.5691584065;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "6497b9d1bffc6d64";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/benzene-methylAcetate-bubble-je800915d.dat";
+            doi       "10.1021/je800915d";
+            sha256    "201b89a6ab7adecfd45e74868b6f7770c8f84d31cc174c0c41d44be657e19d69";
+            provenance measured;
+            archiveFile "je800915d.xml";
+            system    "benzene + methylAcetate";
+            pressure  "101310.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0261; max 0.9769; n 17; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.a_ij  121.481410512;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.a_ji  -97.569161007;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "6497b9d1bffc6d64";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/benzene-methylAcetate-bubble-je800915d.dat";
+            doi       "10.1021/je800915d";
+            sha256    "201b89a6ab7adecfd45e74868b6f7770c8f84d31cc174c0c41d44be657e19d69";
+            provenance measured;
+            archiveFile "je800915d.xml";
+            system    "benzene + methylAcetate";
+            pressure  "101310.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0261; max 0.9769; n 17; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.A_ij  -277.544300047;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.A_ji  1141.13865228;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "6497b9d1bffc6d64";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/benzene-methylAcetate-bubble-je800915d.dat";
+            doi       "10.1021/je800915d";
+            sha256    "201b89a6ab7adecfd45e74868b6f7770c8f84d31cc174c0c41d44be657e19d69";
+            provenance measured;
+            archiveFile "je800915d.xml";
+            system    "benzene + methylAcetate";
+            pressure  "101310.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0261; max 0.9769; n 17; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.A_ij  -277.544290829;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.A_ji  1141.13864248;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "6497b9d1bffc6d64";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/benzene-methylAcetate-bubble-je800915d.dat";
+            doi       "10.1021/je800915d";
+            sha256    "201b89a6ab7adecfd45e74868b6f7770c8f84d31cc174c0c41d44be657e19d69";
+            provenance measured;
+            archiveFile "je800915d.xml";
+            system    "benzene + methylAcetate";
+            pressure  "101310.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0261; max 0.9769; n 17; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

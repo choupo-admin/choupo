@@ -37,10 +37,10 @@ propertyManifest
         "components/methylTertButylEther.dat"
         {
             type          imported;
-            sha256        "3ab4fc9f9327983ed432deddaaf6061975e40ac5921def969bbda74ee79584d8";
-            computationalSha256 "b1298108ed625d2ded4bbb653cacef55bab384b4f0fbcebe9718c8c3de5d157a";
+            sha256        "599fe8b76bf9dcefb9a049da27ad814b20f55ab6bd0e6fa77a8db9417dc52a31";
+            computationalSha256 "75223204b22e9d5f8a55a8f889fcae0d4fccc0e5f04a7c80bb00403b64fef00b";
             origin        "data/standards/components/methylTertButylEther.dat";
-            originSha256  "956b9c6cdfcb9eeaa8430150111c3743638477d7171c7b4271a1881802b0f0d5";
+            originSha256  "7929424decc80d01a8290f7f1ef09beb99ad05068b4deca3c673a4cb8f5f5c64";
             release       Choupo-2608;
         }
         "parameters/NRTL/chloroform-methylTertButylEther.dat"

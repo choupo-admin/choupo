@@ -28,19 +28,19 @@ propertyManifest
         "components/benzene.dat"
         {
             type          imported;
-            sha256        "af31cf9da05b7d34c657c430cef68abbf0f08db2402827a4867f7a64073225c9";
-            computationalSha256 "b8a586d23e8f38eb0b5c0f9534f7057eb2d4059de464edbdc18995094fdca93e";
+            sha256        "2c20d6d671dd5884ed8e3668529ddaad20bf3c2a02d1a5130aac02dd790aa62c";
+            computationalSha256 "d710160da938e1163f77e26b0cc49af7c2a2e4563b37f914ce4bb001500decc4";
             origin        "data/standards/components/benzene.dat";
-            originSha256  "77d7604645ff3a28b34d91023e497586af35fa74849c914378f858666a2b900e";
+            originSha256  "dc7869a494c8e333ed57af66fa4086592b32ac5330960750b5d2775030c9b6bc";
             release       Choupo-2608;
         }
         "components/nButylAcetate.dat"
         {
             type          imported;
-            sha256        "084932bd758db4f017fc9881a51dd1637c17f60a94d9cfc3c410c2602d6d47e5";
-            computationalSha256 "6f79df17bf29a43ef680863bc554ded0998a9d314858ecb8f06aa2750f38df1e";
+            sha256        "8c61277b05f83a67bf8cf5270f7a11fc676c13fde5363e72bfd9f31257adef7c";
+            computationalSha256 "7a57d5a9fe67bb77909133cc55bae73c14d8be75079dbcdf31b1f4ca910cbc74";
             origin        "data/standards/components/nButylAcetate.dat";
-            originSha256  "c3f3b0387a67b8d2d1c17e7a34b6e8aa0ad7804e4b75a639cf8df96183dcf9fb";
+            originSha256  "8442940b27e7eeddf632ee04e5f68bd1286cdf567ed9bfe16d7fa6fc37e3d7f3";
             release       Choupo-2608;
         }
         "parameters/NRTL/benzene-nButylAcetate.dat"

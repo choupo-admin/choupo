@@ -114,4 +114,188 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-2Methyl1Propanol.a_ij  -24.0263347173;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-2Methyl1Propanol.a_ji  66.2833886426;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "ac4a1b6fe21b9012";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylAcetate-2Methyl1Propanol-bubble-je050420+.dat";
+            doi       "10.1021/je050420+";
+            sha256    "53cb73a6175afdfb7f60e483f8bf1681edb8e1e2c1113757183f59d49d284ab7";
+            provenance measured;
+            archiveFile "je050420+.xml";
+            system    "ethylAcetate + 2Methyl1Propanol";
+            pressure  "101000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.016; max 0.879; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-2Methyl1Propanol.a_ij  -24.0263346957;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-2Methyl1Propanol.a_ji  66.2833886175;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "ac4a1b6fe21b9012";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylAcetate-2Methyl1Propanol-bubble-je050420+.dat";
+            doi       "10.1021/je050420+";
+            sha256    "53cb73a6175afdfb7f60e483f8bf1681edb8e1e2c1113757183f59d49d284ab7";
+            provenance measured;
+            archiveFile "je050420+.xml";
+            system    "ethylAcetate + 2Methyl1Propanol";
+            pressure  "101000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.016; max 0.879; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-2Methyl1Propanol.A_ij  299.950803644;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-2Methyl1Propanol.A_ji  873.277623222;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "ac4a1b6fe21b9012";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylAcetate-2Methyl1Propanol-bubble-je050420+.dat";
+            doi       "10.1021/je050420+";
+            sha256    "53cb73a6175afdfb7f60e483f8bf1681edb8e1e2c1113757183f59d49d284ab7";
+            provenance measured;
+            archiveFile "je050420+.xml";
+            system    "ethylAcetate + 2Methyl1Propanol";
+            pressure  "101000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.016; max 0.879; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-2Methyl1Propanol.A_ij  299.950807396;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-2Methyl1Propanol.A_ji  873.277619767;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "ac4a1b6fe21b9012";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylAcetate-2Methyl1Propanol-bubble-je050420+.dat";
+            doi       "10.1021/je050420+";
+            sha256    "53cb73a6175afdfb7f60e483f8bf1681edb8e1e2c1113757183f59d49d284ab7";
+            provenance measured;
+            archiveFile "je050420+.xml";
+            system    "ethylAcetate + 2Methyl1Propanol";
+            pressure  "101000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.016; max 0.879; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

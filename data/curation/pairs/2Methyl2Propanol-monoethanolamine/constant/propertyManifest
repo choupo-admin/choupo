@@ -28,10 +28,10 @@ propertyManifest
         "components/2Methyl2Propanol.dat"
         {
             type          imported;
-            sha256        "85da846573aa8847cf253bb6a529bccb7cef7f6811f6f65be60476b507fc5442";
-            computationalSha256 "11753215451e3bf204fd6a69c6d95af63cdadf84fdfebe9aa516b4610a7ae366";
+            sha256        "17e181c16f08bfa8410737c8f6744b259b00d8c1d985b3ea8efdf9ecb14eaa48";
+            computationalSha256 "646148d2e0ba73b3da0e8baca650e1a51842a343e7909e987a6aabc68f622a9d";
             origin        "data/standards/components/2Methyl2Propanol.dat";
-            originSha256  "225442e6d92c7f5d9f6cd96593a5d8d958d8b0f65227d2eee965eac6e04747b2";
+            originSha256  "03c4dae4a65edde0ea277bc42cd644162b49728a8612095e20ffd3565c2944b2";
             release       Choupo-2608;
         }
         "components/monoethanolamine.dat"

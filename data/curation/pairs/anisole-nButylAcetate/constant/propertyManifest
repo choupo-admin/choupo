@@ -37,10 +37,10 @@ propertyManifest
         "components/nButylAcetate.dat"
         {
             type          imported;
-            sha256        "084932bd758db4f017fc9881a51dd1637c17f60a94d9cfc3c410c2602d6d47e5";
-            computationalSha256 "6f79df17bf29a43ef680863bc554ded0998a9d314858ecb8f06aa2750f38df1e";
+            sha256        "8c61277b05f83a67bf8cf5270f7a11fc676c13fde5363e72bfd9f31257adef7c";
+            computationalSha256 "7a57d5a9fe67bb77909133cc55bae73c14d8be75079dbcdf31b1f4ca910cbc74";
             origin        "data/standards/components/nButylAcetate.dat";
-            originSha256  "c3f3b0387a67b8d2d1c17e7a34b6e8aa0ad7804e4b75a639cf8df96183dcf9fb";
+            originSha256  "8442940b27e7eeddf632ee04e5f68bd1286cdf567ed9bfe16d7fa6fc37e3d7f3";
             release       Choupo-2608;
         }
         "parameters/NRTL/anisole-nButylAcetate.dat"

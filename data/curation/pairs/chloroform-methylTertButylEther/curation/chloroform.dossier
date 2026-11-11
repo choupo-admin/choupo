@@ -112,4 +112,49 @@ properties
     }
 }
 
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylTertButylEther.A_ij  -1211.58788315;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylTertButylEther.A_ji  -1387.17985752;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "eb3ea95196419fdc";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/chloroform-methylTertButylEther-bubbleP-je100821g-b11.dat";
+            doi       "10.1021/je100821g";
+            sha256    "dde12749754a2af3b6a4dc07f0dbdd2ca9f4dbdf613ad8d7ec7dec6f03a227cd";
+            provenance measured;
+            archiveFile "je100821g.xml";
+            system    "chloroform + methylTertButylEther";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.057; max 0.95; n 48; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

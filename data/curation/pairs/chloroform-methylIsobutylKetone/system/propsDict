@@ -80,7 +80,20 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dP|/P 1.419 % (clean) on the same
+  kept points. fit_wilson: A_ij = -620.0, A_ji = -2386.3 J/mol over 14
+  kept points: max |dP|/P 1.663 %, mean 1.000 %, graded clean ->
+  accepted; fit_wilson_start2 removed (it did not converge). PROMOTABLE
+  by `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
+  |dP|/P 1.663 % over the 14 kept points, one liquid across the validity
+  span. Wilson: fit_wilson_start2 was declared and run and did NOT
+  CONVERGE (A_ij at its bound, -30000 .. 30000 J/mol: no finite optimum
+  inside the declared bounds); the op is removed so the case runs (C294).
+  UNIQUAC: not fitted -- chloroform carries no UNIQUAC r and q (no
+  tabulated value, and no UNIFAC groups to sum them from,
+  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
+  is estimated silently.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -255,62 +268,19 @@ operations
             proposal   chloroform-methylIsobutylKetone.Wilson.proposal.dat;
         }
     }
-    {
-        name        fit_wilson_start2;
-        type        fitParameters;
-
-        parameters
-        (
-            { path  equilibrium.liquid.activityModel.binaryParameters.chloroform-methylIsobutylKetone.A_ij;  initial 4000;  min -30000;  max 30000; }
-            { path  equilibrium.liquid.activityModel.binaryParameters.chloroform-methylIsobutylKetone.A_ji;  initial -2000;  min -30000;  max 30000; }
-        );
-
-        thermo   // the model, as a fragment of the case's system (C294)
-        {
-            equilibrium
-            {
-                liquid
-                {
-                    activityModel
-                    {
-                        model Wilson;
-                        binaryParameters   // the FIT'S starting point
-                        {
-                            chloroform-methylIsobutylKetone { i chloroform; j methylIsobutylKetone; A_ij 0; A_ji 0; }
-                        }
-                    }
-                    standardState pureLiquid;
-                }
-            }
-        }
-
-        evidence
-        (
-            {
-                dataset  "constant/archiveExtracts/chloroform-methylIsobutylKetone-bubbleP-j.jct.2006.07.004-b6.dat";
-                role     fit;
-            }
-        );
-
-        objective { method twoStage;  scale { P_bubble relative; } }
-        residual
-        {
-            kind        P_bubble;
-            components  ( chloroform methylIsobutylKetone );
-        }
-
-        options
-        {
-            maxIter      80;
-            tolerance    1.0e-6;
-            fdStep       1.0e-4;
-            lambda0      1.0e-3;
-        }
-
-        output
-        {
-            parity     parity_wilson_start2.csv;
-        }
-    }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[chloroform];  from 0.0;  to 1.0;  n 101; }
+        state       { P 17.7 kPa;  composition { chloroform 0.5;  methylIsobutylKetone 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_chloroform );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );

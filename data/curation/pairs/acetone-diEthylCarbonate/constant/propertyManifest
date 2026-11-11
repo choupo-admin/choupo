@@ -28,10 +28,10 @@ propertyManifest
         "components/acetone.dat"
         {
             type          imported;
-            sha256        "1ffcb93f04e400ce3c14c699d492d6a54dbbdcc0661a8615b070120e0c30c5de";
-            computationalSha256 "e79971eb4b0b83af1212ea7a2be71a27685f009edac150a9585086d4b3da7fdc";
+            sha256        "484d860fa5b649ff773be3ed0fe422eab9957c8c665dfae88f9b50754f45fa18";
+            computationalSha256 "cc35b7672e63775056198ac55648e04bb92e5eb53eed1fc49436c87b1590072a";
             origin        "data/standards/components/acetone.dat";
-            originSha256  "afe7aeb3c241b3d92312919dd3049e42185c1d8e41e93651a827aaef78c0936a";
+            originSha256  "dec7ac911299d04f8b3ec284051dc0898d10087426317982647c16dda6c292bb";
             release       Choupo-2608;
         }
         "components/diEthylCarbonate.dat"

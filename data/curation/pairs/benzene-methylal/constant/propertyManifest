@@ -28,19 +28,19 @@ propertyManifest
         "components/benzene.dat"
         {
             type          imported;
-            sha256        "af31cf9da05b7d34c657c430cef68abbf0f08db2402827a4867f7a64073225c9";
-            computationalSha256 "b8a586d23e8f38eb0b5c0f9534f7057eb2d4059de464edbdc18995094fdca93e";
+            sha256        "2c20d6d671dd5884ed8e3668529ddaad20bf3c2a02d1a5130aac02dd790aa62c";
+            computationalSha256 "d710160da938e1163f77e26b0cc49af7c2a2e4563b37f914ce4bb001500decc4";
             origin        "data/standards/components/benzene.dat";
-            originSha256  "77d7604645ff3a28b34d91023e497586af35fa74849c914378f858666a2b900e";
+            originSha256  "dc7869a494c8e333ed57af66fa4086592b32ac5330960750b5d2775030c9b6bc";
             release       Choupo-2608;
         }
         "components/methylal.dat"
         {
             type          imported;
-            sha256        "fbdb96d75a57ee188d05ac1ac195896a65ee14695b565d4994b7acd8590b493e";
-            computationalSha256 "df2b77bd422abfabe26846550054b99c444393f5a8498b4003ffd4913a78b73f";
+            sha256        "d667a7e3c3e17feee4a41091f39d89641ae224d6b87f6068841f3fa494fb988a";
+            computationalSha256 "7bd87a716621cb88e4512f463a4a0259d8049ddb5999b86ff2bf9ddc6fb783f5";
             origin        "data/standards/components/methylal.dat";
-            originSha256  "10ac8d72145f06bc16bb46213fc74296d6f1c69a99bfeab6bf6e44a020fc2b51";
+            originSha256  "01fce124ec237cfef4f66da52485d13765f66671a156cb617c3ee79d7ad01e97";
             release       Choupo-2608;
         }
         "parameters/NRTL/benzene-methylal.dat"

@@ -28,19 +28,19 @@ propertyManifest
         "components/2Pentanol.dat"
         {
             type          imported;
-            sha256        "10f691baeef2c7da6bc875224bc5eabb4679786777e59d4bbe142bded6ea69ac";
-            computationalSha256 "78538cfe4759e2e4d9e3da3647b400b498cdb899196e155200ec6b9f145fedb8";
+            sha256        "418a095eafb88453b89306be24b15411679ca472428acb942e4d5a34be2827db";
+            computationalSha256 "7c03c4941c839ce61547c8e8f015fccadd85f721ff3d175d3f9aea61621412d2";
             origin        "data/standards/components/2Pentanol.dat";
-            originSha256  "0ae113f45b02dbe7e56de45f9fe98846a4fbcb4a130b6f2740337e67129fddbc";
+            originSha256  "3ce4bd074554ea74ef27a23a3f7ac9d104684f715f81239b69804ede0f9581eb";
             release       Choupo-2608;
         }
         "components/cyclohexane.dat"
         {
             type          imported;
-            sha256        "54ac6c67fe0fa7f8d15744192b515efd56b05bf78dc8bf99b6dfc092f349f26c";
-            computationalSha256 "6f57b6ee7356428daa748404b1343309e762255b70baf430d387550ae4683431";
+            sha256        "04e20a9c3a1368072059505adbe555b180a674e96087a4c92af04cf5e42245b7";
+            computationalSha256 "e5dadd80ead0f1d8f44482b2596d2a2b5e7c060e9ed1181dbf1712af989938ef";
             origin        "data/standards/components/cyclohexane.dat";
-            originSha256  "c17d37ff35f43849e846d3f6a974ab7f2312085a349d1169494ad2374fd90d23";
+            originSha256  "9f3b642c76b10c5867f604ce4d741c21b1c8b9b25e700707e9cc49fdbcf079f5";
             release       Choupo-2608;
         }
         "parameters/NRTL/2Pentanol-cyclohexane.dat"

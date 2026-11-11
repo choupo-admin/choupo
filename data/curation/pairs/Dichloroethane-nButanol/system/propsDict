@@ -86,7 +86,17 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dT| 1.504 K (warning) on the same
+  kept points. fit_wilson: A_ij = 1720.1, A_ji = 1925.9 J/mol over 54
+  kept points: max |dT| 1.281 K, mean 0.389 K, graded warning ->
+  accepted; fit_wilson_start2 lands on the same pair (1720.1, 1925.9).
+  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
+  warning -- max |dT| 1.281 K over the 54 kept points, one liquid across
+  the validity span. UNIQUAC: not fitted -- Dichloroethane carries no
+  UNIQUAC r and q (no tabulated value, and no UNIFAC groups to sum them
+  from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted;
+  nothing is estimated silently.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -333,6 +343,20 @@ operations
         }
     }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[Dichloroethane];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.37 kPa;  composition { Dichloroethane 0.5;  nButanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_Dichloroethane );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );
 
 experimental

@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.R32-benzene.A_ij  2836.05399937;
+        equilibrium.liquid.activityModel.binaryParameters.R32-benzene.A_ji  1217.23888852;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "27f53cb34eb6f74a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/R32-benzene-bubble-j.fluid.2012.09.013.dat";
+            doi       "10.1016/j.fluid.2012.09.013";
+            sha256    "ba7e99d1ffe6f4a04414bfee1c8c12b0b36ba067f3fc95921f7900acd2e0352a";
+            provenance measured;
+            archiveFile "j.fluid.2012.09.013.xml";
+            system    "R32 + benzene";
+            pressure  "101325.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0141; max 0.0162; n 5; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.R32-benzene.A_ij  2836.85261528;
+        equilibrium.liquid.activityModel.binaryParameters.R32-benzene.A_ji  1215.18195866;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "27f53cb34eb6f74a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/R32-benzene-bubble-j.fluid.2012.09.013.dat";
+            doi       "10.1016/j.fluid.2012.09.013";
+            sha256    "ba7e99d1ffe6f4a04414bfee1c8c12b0b36ba067f3fc95921f7900acd2e0352a";
+            provenance measured;
+            archiveFile "j.fluid.2012.09.013.xml";
+            system    "R32 + benzene";
+            pressure  "101325.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0141; max 0.0162; n 5; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

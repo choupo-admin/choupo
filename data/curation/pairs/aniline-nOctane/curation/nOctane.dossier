@@ -112,4 +112,49 @@ properties
     }
 }
 
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-aniline.A_ij  4751.17375532;
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-aniline.A_ji  4990.50743498;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5d96066705b656fe";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nOctane-aniline-bubbleP-je0505366-b12.dat";
+            doi       "10.1021/je0505366";
+            sha256    "fa9f20bc7b2549171a81ef7af4bceae9819a3e74b5345879182570777b656f76";
+            provenance measured;
+            archiveFile "je0505366.xml";
+            system    "nOctane + aniline";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.089; max 0.938; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

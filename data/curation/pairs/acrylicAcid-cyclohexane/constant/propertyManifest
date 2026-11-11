@@ -28,19 +28,19 @@ propertyManifest
         "components/acrylicAcid.dat"
         {
             type          imported;
-            sha256        "29d5b5eb8aaa20d0eab0d1446aef6b66033a23a58ed6172dc4510c7b769ee382";
-            computationalSha256 "ea7e3b553952bf00be6ad8e72ba805d8319e84e32c9743d67d8d265c32924fba";
+            sha256        "a64afea16e374c420c47d5d0d9493f7f21cff53e709384d8979f03d4bf350ae1";
+            computationalSha256 "3ace17dffd4cb0ca03c825607a94f91bcab44fbb02d2da73c21d0f9f5ec07bae";
             origin        "data/standards/components/acrylicAcid.dat";
-            originSha256  "290c0ce4e913a1189afa037ea2190f8f4317782a61da51b6fe29f2aa149b4b7a";
+            originSha256  "68ac07f3a9915976750d1d479d0675130117aa31a9786bf6b2408982e8780b97";
             release       Choupo-2608;
         }
         "components/cyclohexane.dat"
         {
             type          imported;
-            sha256        "54ac6c67fe0fa7f8d15744192b515efd56b05bf78dc8bf99b6dfc092f349f26c";
-            computationalSha256 "6f57b6ee7356428daa748404b1343309e762255b70baf430d387550ae4683431";
+            sha256        "04e20a9c3a1368072059505adbe555b180a674e96087a4c92af04cf5e42245b7";
+            computationalSha256 "e5dadd80ead0f1d8f44482b2596d2a2b5e7c060e9ed1181dbf1712af989938ef";
             origin        "data/standards/components/cyclohexane.dat";
-            originSha256  "c17d37ff35f43849e846d3f6a974ab7f2312085a349d1169494ad2374fd90d23";
+            originSha256  "9f3b642c76b10c5867f604ce4d741c21b1c8b9b25e700707e9cc49fdbcf079f5";
             release       Choupo-2608;
         }
         "parameters/NRTL/acrylicAcid-cyclohexane.dat"

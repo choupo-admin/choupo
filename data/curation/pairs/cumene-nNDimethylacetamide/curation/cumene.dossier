@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.cumene-nNDimethylacetamide.A_ij  2564.94805699;
+        equilibrium.liquid.activityModel.binaryParameters.cumene-nNDimethylacetamide.A_ji  3628.32445897;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "48b3f4d712d26d05";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/cumene-nNDimethylacetamide-bubble-je800481n.dat";
+            doi       "10.1021/je800481n";
+            sha256    "0bccf82fbdb6626c87cf6c007e3dca4f9b91b3f4b7f9013071a1ae425c11911a";
+            provenance measured;
+            archiveFile "je800481n.xml";
+            system    "cumene + nNDimethylacetamide";
+            pressure  "97300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0122; max 0.9964; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.cumene-nNDimethylacetamide.A_ij  2564.94805154;
+        equilibrium.liquid.activityModel.binaryParameters.cumene-nNDimethylacetamide.A_ji  3628.32445974;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "48b3f4d712d26d05";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/cumene-nNDimethylacetamide-bubble-je800481n.dat";
+            doi       "10.1021/je800481n";
+            sha256    "0bccf82fbdb6626c87cf6c007e3dca4f9b91b3f4b7f9013071a1ae425c11911a";
+            provenance measured;
+            archiveFile "je800481n.xml";
+            system    "cumene + nNDimethylacetamide";
+            pressure  "97300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0122; max 0.9964; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

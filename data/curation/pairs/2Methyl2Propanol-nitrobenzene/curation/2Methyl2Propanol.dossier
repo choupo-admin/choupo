@@ -114,4 +114,50 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-nitrobenzene.A_ij  -5127.07933125;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-nitrobenzene.A_ji  9222.23171939;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "ce24882a81270c5f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methyl2Propanol-nitrobenzene-bubble-j.jct.2005.08.011.dat";
+            doi       "10.1016/j.jct.2005.08.011";
+            sha256    "851cdb6ff7bdf3d7c26cd45d5747115356958c2a46697532260c787131a443cd";
+            provenance measured;
+            archiveFile "j.jct.2005.08.011.xml";
+            system    "2Methyl2Propanol + nitrobenzene";
+            pressure  "94950.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1007; max 0.9501; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

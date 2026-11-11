@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methanol.A_ij  -1361.40557107;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methanol.A_ji  6912.68473191;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "02f4346ec1a127b6";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/chloroform-methanol-bubble-je400324w.dat";
+            doi       "10.1021/je400324w";
+            sha256    "158bb17975551272005f665869b53f28946a1328eb6c0be4611a0dfe5f1379fa";
+            provenance measured;
+            archiveFile "je400324w.xml";
+            system    "chloroform + methanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.046; max 0.935; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methanol.A_ij  -1361.40556779;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methanol.A_ji  6912.68471747;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "02f4346ec1a127b6";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/chloroform-methanol-bubble-je400324w.dat";
+            doi       "10.1021/je400324w";
+            sha256    "158bb17975551272005f665869b53f28946a1328eb6c0be4611a0dfe5f1379fa";
+            provenance measured;
+            archiveFile "je400324w.xml";
+            system    "chloroform + methanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.046; max 0.935; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

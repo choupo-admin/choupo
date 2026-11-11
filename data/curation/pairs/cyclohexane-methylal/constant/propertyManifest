@@ -28,19 +28,19 @@ propertyManifest
         "components/cyclohexane.dat"
         {
             type          imported;
-            sha256        "54ac6c67fe0fa7f8d15744192b515efd56b05bf78dc8bf99b6dfc092f349f26c";
-            computationalSha256 "6f57b6ee7356428daa748404b1343309e762255b70baf430d387550ae4683431";
+            sha256        "04e20a9c3a1368072059505adbe555b180a674e96087a4c92af04cf5e42245b7";
+            computationalSha256 "e5dadd80ead0f1d8f44482b2596d2a2b5e7c060e9ed1181dbf1712af989938ef";
             origin        "data/standards/components/cyclohexane.dat";
-            originSha256  "c17d37ff35f43849e846d3f6a974ab7f2312085a349d1169494ad2374fd90d23";
+            originSha256  "9f3b642c76b10c5867f604ce4d741c21b1c8b9b25e700707e9cc49fdbcf079f5";
             release       Choupo-2608;
         }
         "components/methylal.dat"
         {
             type          imported;
-            sha256        "fbdb96d75a57ee188d05ac1ac195896a65ee14695b565d4994b7acd8590b493e";
-            computationalSha256 "df2b77bd422abfabe26846550054b99c444393f5a8498b4003ffd4913a78b73f";
+            sha256        "d667a7e3c3e17feee4a41091f39d89641ae224d6b87f6068841f3fa494fb988a";
+            computationalSha256 "7bd87a716621cb88e4512f463a4a0259d8049ddb5999b86ff2bf9ddc6fb783f5";
             origin        "data/standards/components/methylal.dat";
-            originSha256  "10ac8d72145f06bc16bb46213fc74296d6f1c69a99bfeab6bf6e44a020fc2b51";
+            originSha256  "01fce124ec237cfef4f66da52485d13765f66671a156cb617c3ee79d7ad01e97";
             release       Choupo-2608;
         }
         "parameters/NRTL/cyclohexane-methylal.dat"

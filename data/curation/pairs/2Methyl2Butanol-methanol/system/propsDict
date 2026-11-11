@@ -83,7 +83,19 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dT| 0.088 K (clean) on the same
+  kept points. fit_uniquac: a_ij = -68.1, a_ji = 188.6 K over 24 kept
+  points: max |dT| 0.054 K, mean 0.027 K, graded clean -> accepted;
+  fit_uniquac_start2 lands on the same pair (-68.1, 188.6). PROMOTABLE by
+  `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
+  |dT| 0.054 K over the 24 kept points, one liquid across the validity
+  span. fit_wilson: A_ij = 2279.7, A_ji = -2213.3 J/mol over 24 kept
+  points: max |dT| 0.051 K, mean 0.020 K, graded clean -> accepted;
+  fit_wilson_start2 lands on the same pair (2279.7, -2213.3). PROMOTABLE
+  by `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
+  |dT| 0.051 K over the 24 kept points, one liquid across the validity
+  span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -460,6 +472,32 @@ operations
         }
     }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_uniquac;
+        type        propertyScan1D;
+        vary        { variable x[methanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { methanol 0.5;  2Methyl2Butanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_methanol );
+        output      { file txy_uniquac.csv; }
+    }
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[methanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { methanol 0.5;  2Methyl2Butanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_methanol );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );
 
 experimental

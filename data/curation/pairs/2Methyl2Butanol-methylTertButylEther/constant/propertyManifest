@@ -28,19 +28,19 @@ propertyManifest
         "components/2Methyl2Butanol.dat"
         {
             type          imported;
-            sha256        "41b67d8503cd462c0f4eaf12658194998edaf79e3e0094fa9121af61c972dce3";
-            computationalSha256 "3522fbb1b1e8180db8f907267733e4ecab249df19c5713bda18a3f5e83202358";
+            sha256        "cb3c4b9e871655be77ec7ca845ad473f7cbfca6f5c58e52e60afc0549d0c5f1b";
+            computationalSha256 "8c6110c6f34ee292e94bb49cae46d3169fae286121c377ed91f1716daf514600";
             origin        "data/standards/components/2Methyl2Butanol.dat";
-            originSha256  "67ef3b27783251b9636818108d8171b2a526a24a49fba0734c5b1a646683202b";
+            originSha256  "0a0b562a2e0a4a8ac6456b95228c6941feb3d560395f851de8f70b943e54a06f";
             release       Choupo-2608;
         }
         "components/methylTertButylEther.dat"
         {
             type          imported;
-            sha256        "3ab4fc9f9327983ed432deddaaf6061975e40ac5921def969bbda74ee79584d8";
-            computationalSha256 "b1298108ed625d2ded4bbb653cacef55bab384b4f0fbcebe9718c8c3de5d157a";
+            sha256        "599fe8b76bf9dcefb9a049da27ad814b20f55ab6bd0e6fa77a8db9417dc52a31";
+            computationalSha256 "75223204b22e9d5f8a55a8f889fcae0d4fccc0e5f04a7c80bb00403b64fef00b";
             origin        "data/standards/components/methylTertButylEther.dat";
-            originSha256  "956b9c6cdfcb9eeaa8430150111c3743638477d7171c7b4271a1881802b0f0d5";
+            originSha256  "7929424decc80d01a8290f7f1ef09beb99ad05068b4deca3c673a4cb8f5f5c64";
             release       Choupo-2608;
         }
         "parameters/NRTL/2Methyl2Butanol-methylTertButylEther.dat"

@@ -80,7 +80,23 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dP|/P 11.247 % (severe) on the same
+  kept points. fit_uniquac: a_ij = 32.7, a_ji = 103.6 K over 37 kept
+  points: max |dP|/P 11.256 %, mean 5.029 %, graded severe -> accepted;
+  fit_uniquac_start2 lands on the same pair (32.7, 103.6). NOT PROMOTED
+  (max |dP|/P 11.256 % over the 37 kept points, one liquid across the
+  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
+  pair does not enter the default catalogue; its record stays in this
+  curation case's constant/, and a case that needs it carries it in its
+  own constant/. fit_wilson: A_ij = 1250.2, A_ji = 5298.6 J/mol over 37
+  kept points: max |dP|/P 11.364 %, mean 5.136 %, graded severe ->
+  accepted; fit_wilson_start2 lands on the same pair (1250.2, 5298.6).
+  NOT PROMOTED (max |dP|/P 11.364 % over the 37 kept points, one liquid
+  across the validity span): fit grade severe -- DEV.md 4c C300 rule 3: a
+  severe pair does not enter the default catalogue; its record stays in
+  this curation case's constant/, and a case that needs it carries it in
+  its own constant/.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -457,4 +473,30 @@ operations
         }
     }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_uniquac;
+        type        propertyScan1D;
+        vary        { variable x[benzene];  from 0.0;  to 1.0;  n 101; }
+        state       { P 20.402 kPa;  composition { benzene 0.5;  nButanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_benzene );
+        output      { file txy_uniquac.csv; }
+    }
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[benzene];  from 0.0;  to 1.0;  n 101; }
+        state       { P 20.402 kPa;  composition { benzene 0.5;  nButanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_benzene );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );

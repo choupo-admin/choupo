@@ -84,7 +84,23 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dT| 1.904 K (warning) on the same
+  kept points. fit_uniquac: a_ij = 457.8, a_ji = -203.0 K over 20 kept
+  points: max |dT| 2.007 K, mean 0.833 K, graded severe -> accepted;
+  fit_uniquac_start2 lands on the same pair (457.8, -203.0). NOT PROMOTED
+  (max |dT| 2.007 K over the 20 kept points, one liquid across the
+  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
+  pair does not enter the default catalogue; its record stays in this
+  curation case's constant/, and a case that needs it carries it in its
+  own constant/. fit_wilson: A_ij = -1169.1, A_ji = 9629.3 J/mol over 20
+  kept points: max |dT| 2.152 K, mean 0.952 K, graded severe -> accepted;
+  fit_wilson_start2 lands on the same pair (-1169.1, 9629.3). NOT
+  PROMOTED (max |dT| 2.152 K over the 20 kept points, one liquid across
+  the validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
+  pair does not enter the default catalogue; its record stays in this
+  curation case's constant/, and a case that needs it carries it in its
+  own constant/.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -467,6 +483,32 @@ operations
         }
     }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_uniquac;
+        type        propertyScan1D;
+        vary        { variable x[cyclohexane];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.6 kPa;  composition { cyclohexane 0.5;  cyclohexanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_cyclohexane );
+        output      { file txy_uniquac.csv; }
+    }
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[cyclohexane];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.6 kPa;  composition { cyclohexane 0.5;  cyclohexanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_cyclohexane );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );
 
 experimental

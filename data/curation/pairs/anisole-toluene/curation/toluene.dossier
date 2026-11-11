@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.toluene-anisole.A_ij  -1154.0711121;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-anisole.A_ji  2278.10304341;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e19dd0f5d7248505";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/toluene-anisole-bubble-j.fluid.2014.02.025.dat";
+            doi       "10.1016/j.fluid.2014.02.025";
+            sha256    "438f599551b2a3c9e356c51bfc88b408c3e360a892906a2197f484c1f39697b7";
+            provenance measured;
+            archiveFile "j.fluid.2014.02.025.xml";
+            system    "toluene + anisole";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0051; max 0.9532; n 13; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.toluene-anisole.A_ij  -1154.07110606;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-anisole.A_ji  2278.10303342;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e19dd0f5d7248505";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/toluene-anisole-bubble-j.fluid.2014.02.025.dat";
+            doi       "10.1016/j.fluid.2014.02.025";
+            sha256    "438f599551b2a3c9e356c51bfc88b408c3e360a892906a2197f484c1f39697b7";
+            provenance measured;
+            archiveFile "j.fluid.2014.02.025.xml";
+            system    "toluene + anisole";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0051; max 0.9532; n 13; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

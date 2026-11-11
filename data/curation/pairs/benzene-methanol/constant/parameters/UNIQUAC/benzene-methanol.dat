@@ -1,0 +1,136 @@
+/*---------------------------------------------------------------------------*\
+  UNIQUAC binary interaction parameters --- benzene(i) + methanol(j)
+
+  REGRESSED BY CHOUPO'S CURATION PIPELINE (bin/choupo-curate pairs --models, DEV.md 4c C294 on C282;
+  record docs/design/binary-pairs-from-open-measurements.md) to measured
+  bubble temperatures.  The articles named under `evidence` are the
+  SOURCE of the measurements; the NIST/TRC ThermoML Archive located them.
+  NO MEASURED POINT IS IN THIS RECORD OR THIS TREE: the case regenerates
+  them from the DOIs and sha256 sums it declares (constant/archiveDatasets).
+  The PARAMETERS are Choupo's own work.
+
+  EQUATION: UNIQUAC, tau_ij = exp(-(a_ij + b_ij T + c_ij T^2) / T) [a in K],
+  Abrams & Prausnitz (src/thermo/activityCoefficient/UNIQUAC.cpp); r and q
+  each component's own record.  b_ij = b_ji = c_ij = c_ji = 0 FIXED, not
+  fitted: two parameters a_ij, a_ji (DEV.md 4c C294).
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
+  vapour-pressure records for both pure components.
+
+  reviewStatus interim: a case-local record, regressed and not read back.
+  Fitted on EVERY laboratory with the NRTL fit's own kept points (C294), so
+  the `validation {}` block says, truthfully, that nothing was held out;
+  the acceptance is the `curation {}` block.
+  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
+  clean -- max |dT| 0.911 K over the 23 kept points, one liquid across
+  the validity span
+
+  REPRODUCE: run data/curation/pairs/benzene-methanol (after `bin/choupo-curate fetch` on it); its fit_uniquac
+  writes benzene-methanol.UNIQUAC.proposal.dat, which bin/curate/check_regressed_pairs.py holds
+  equal to this record.
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i benzene; j methanol; }
+
+components  ( benzene  methanol );
+model       UNIQUAC;
+
+parameters
+{
+    i           benzene;
+    j           methanol;
+    a_ij        555.82260069;
+    b_ij        0.00000000;
+    c_ij        0.00000000;
+    a_ji        -40.41206366;
+    b_ji        0.00000000;
+    c_ji        0.00000000;
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "data/curation/pairs/benzene-methanol";
+    reviewStatus  interim;
+    reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+    fitDate       "2026-11-11";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/benzene-methanol-bubble-j.fluid.2019.03.022.dat";
+            doi       "10.1016/j.fluid.2019.03.022";
+            sha256    "403cce80c8f10e5b36634d0f14afdbfaaf79df47733366051304441025e32dc0";
+            provenance measured;
+            archiveFile "j.fluid.2019.03.022.xml";
+            system    "benzene + methanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/benzene-methanol-bubble-j.jct.2006.06.002.dat";
+            doi       "10.1016/j.jct.2006.06.002";
+            sha256    "07a8e406199bcaeb30b2a918bd5f38a9c8373e5ca928c93aff166a9c3f4f131f";
+            provenance measured;
+            archiveFile "j.jct.2006.06.002.xml";
+            system    "benzene + methanol";
+        }
+    );
+    fingerprint "528077f305f8cdda";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          36.87233727;
+    rms_K         0.38601861;
+    nDataPoints   23;
+    identifiable  true;
+    maxAbsCorr    0.95860379;
+
+    validity
+    {
+        temperature { min 331.56 K; max 343.83 K; }
+        pressure    { min 99500 Pa; max 101300 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validationRefused;
+
+    heldOut     none;   // every declared dataset carried `role fit`
+
+    acceptance  none;   // no band was declared before the fit, so no
+                        // pass/fail may be read out of the residual above
+}
+
+curation
+{
+    rule            "DEV.md 4c C294 (the NRTL case's own evidence and kept points, another activity model) on DEV.md 4c C283 (amended) + C284, graded by C285 (C286)";
+    model           UNIQUAC;
+    discardsFrom    fit_nrtl;   // the outliers were decided ONCE, on the NRTL least-squares stage, and reused (C294)
+    evidence        allLaboratories;   // every study fitted, none held out
+    objective       twoStage;
+    outlierLimit    3 K;   // the NRTL least-squares stage's, reused
+    outliersDropped 0;
+    pointsKept      23;
+    noBubblePoint   0;
+    maxAbsError     0.9107 K;
+    meanAbsError    0.2915 K;
+    acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
+    gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
+    grade           clean;
+    oneLiquid       true;   // arm (f) on this model's own equation over the validity span
+    temperatures    23;   // distinct stated temperatures in the kept evidence
+    laboratories    2;   // distinct articles in the kept evidence
+    singleTemperature false;
+    singleLaboratory  false;
+    verdict         accepted;
+}

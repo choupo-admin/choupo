@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.cumene-sulfolane.A_ij  1100.45705724;
+        equilibrium.liquid.activityModel.binaryParameters.cumene-sulfolane.A_ji  7085.86672397;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "17b672a3d8e89c3b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/cumene-sulfolane-bubble-j.jct.2011.06.015.dat";
+            doi       "10.1016/j.jct.2011.06.015";
+            sha256    "6ca560d21b83b024a39de412edb51563482ad9044e16ea1adecd62f8c790d7b5";
+            provenance measured;
+            archiveFile "j.jct.2011.06.015.xml";
+            system    "cumene + sulfolane";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1838; max 0.8577; n 9; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.cumene-sulfolane.A_ij  1100.45705262;
+        equilibrium.liquid.activityModel.binaryParameters.cumene-sulfolane.A_ji  7085.86673219;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "17b672a3d8e89c3b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/cumene-sulfolane-bubble-j.jct.2011.06.015.dat";
+            doi       "10.1016/j.jct.2011.06.015";
+            sha256    "6ca560d21b83b024a39de412edb51563482ad9044e16ea1adecd62f8c790d7b5";
+            provenance measured;
+            archiveFile "j.jct.2011.06.015.xml";
+            system    "cumene + sulfolane";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1838; max 0.8577; n 9; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

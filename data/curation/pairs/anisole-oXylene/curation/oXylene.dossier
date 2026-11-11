@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-anisole.A_ij  2474.79911333;
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-anisole.A_ji  -1009.44185928;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "313a8ee354f7764b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/oXylene-anisole-bubble-acs.jced.8b00348.dat";
+            doi       "10.1021/acs.jced.8b00348";
+            sha256    "e77331c92505dd7cbd27a57b18c3ce0d849ebb9e656f0bba3a34cd2d32973bd1";
+            provenance measured;
+            archiveFile "acs.jced.8b00348.xml";
+            system    "oXylene + anisole";
+            pressure  "93130.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.059; max 0.95; n 11; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-anisole.A_ij  2474.79910961;
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-anisole.A_ji  -1009.44185761;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "313a8ee354f7764b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/oXylene-anisole-bubble-acs.jced.8b00348.dat";
+            doi       "10.1021/acs.jced.8b00348";
+            sha256    "e77331c92505dd7cbd27a57b18c3ce0d849ebb9e656f0bba3a34cd2d32973bd1";
+            provenance measured;
+            archiveFile "acs.jced.8b00348.xml";
+            system    "oXylene + anisole";
+            pressure  "93130.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.059; max 0.95; n 11; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

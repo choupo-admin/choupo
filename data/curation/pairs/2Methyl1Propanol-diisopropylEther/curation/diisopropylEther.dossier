@@ -112,4 +112,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-2Methyl1Propanol.A_ij  -432.822960549;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-2Methyl1Propanol.A_ji  3105.17394102;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2f9ed79b2cc1f5ab";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diisopropylEther-2Methyl1Propanol-bubbleP-j.fluid.2005.11.017-b3.dat";
+            doi       "10.1016/j.fluid.2005.11.017";
+            sha256    "bdd27e2405e1e270a7e173d7d14fefbc5cd0ac0bf877faac4fac8fd7614d13a5";
+            provenance measured;
+            archiveFile "j.fluid.2005.11.017.xml";
+            system    "diisopropylEther + 2Methyl1Propanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0582; max 0.9505; n 26; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-2Methyl1Propanol.A_ij  -432.822970114;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-2Methyl1Propanol.A_ji  3105.17396384;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2f9ed79b2cc1f5ab";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diisopropylEther-2Methyl1Propanol-bubbleP-j.fluid.2005.11.017-b3.dat";
+            doi       "10.1016/j.fluid.2005.11.017";
+            sha256    "bdd27e2405e1e270a7e173d7d14fefbc5cd0ac0bf877faac4fac8fd7614d13a5";
+            provenance measured;
+            archiveFile "j.fluid.2005.11.017.xml";
+            system    "diisopropylEther + 2Methyl1Propanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0582; max 0.9505; n 26; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

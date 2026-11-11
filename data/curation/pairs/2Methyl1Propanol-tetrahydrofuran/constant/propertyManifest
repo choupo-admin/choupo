@@ -28,10 +28,10 @@ propertyManifest
         "components/2Methyl1Propanol.dat"
         {
             type          imported;
-            sha256        "ee0bb35e8d706d7c4b0549d6ac51be77b89de4f5496fea7d9947d875b9bcdd35";
-            computationalSha256 "b1bfb84671b4f35f758f186af86d16cfe056fb1a54d6f2b5e2867328630848b3";
+            sha256        "778703d5a4716bbace0b8b3de0655393d4212cbd4ed4c809736558e732afbd5d";
+            computationalSha256 "5ebe04496878f4c4864b2b944848ca1130604cf7d11a684d2602c0fc4b37568d";
             origin        "data/standards/components/2Methyl1Propanol.dat";
-            originSha256  "f0afa6609184a85f9c63deb6555d81619d932cc9049178f6f783e25420e34db6";
+            originSha256  "c17b068f64a38ca32f8ee4f6516ed94a85019ee7a45a33ba4fceabdaaafc01bc";
             release       Choupo-2608;
         }
         "components/tetrahydrofuran.dat"

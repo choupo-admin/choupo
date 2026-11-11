@@ -1,0 +1,131 @@
+/*---------------------------------------------------------------------------*\
+  Wilson binary interaction parameters --- cyclohexane(i) + cyclohexene(j)
+
+  REGRESSED BY CHOUPO'S CURATION PIPELINE (bin/choupo-curate pairs --models, DEV.md 4c C294 on C282;
+  record docs/design/binary-pairs-from-open-measurements.md) to measured
+  bubble temperatures.  The articles named under `evidence` are the
+  SOURCE of the measurements; the NIST/TRC ThermoML Archive located them.
+  NO MEASURED POINT IS IN THIS RECORD OR THIS TREE: the case regenerates
+  them from the DOIs and sha256 sums it declares (constant/archiveDatasets).
+  The PARAMETERS are Choupo's own work.
+
+  EQUATION: Wilson, Lambda_ij = (V_j / V_i) exp(-A_ij / (R T)) [A in J/mol],
+  V the components' own Vliq (src/thermo/activityCoefficient/Wilson.cpp).
+  Two parameters A_ij, A_ji (DEV.md 4c C294).  Wilson cannot represent
+  two liquids.
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
+  vapour-pressure records for both pure components.
+
+  reviewStatus interim: a case-local record, regressed and not read back.
+  Fitted on EVERY laboratory with the NRTL fit's own kept points (C294), so
+  the `validation {}` block says, truthfully, that nothing was held out;
+  the acceptance is the `curation {}` block.
+  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
+  warning -- max |dT| 1.748 K over the 81 kept points, one liquid across
+  the validity span
+
+  REPRODUCE: run data/curation/pairs/cyclohexane-cyclohexene (after `bin/choupo-curate fetch` on it); its fit_wilson
+  writes cyclohexane-cyclohexene.Wilson.proposal.dat, which bin/curate/check_regressed_pairs.py holds
+  equal to this record.
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i cyclohexane; j cyclohexene; }
+
+components  ( cyclohexane  cyclohexene );
+model       Wilson;
+
+parameters
+{
+    i           cyclohexane;
+    j           cyclohexene;
+    A_ij        -2544.47134050;   // J/mol
+    A_ji        4893.51435510;   // J/mol
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "data/curation/pairs/cyclohexane-cyclohexene";
+    reviewStatus  interim;
+    reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+    fitDate       "2026-11-11";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/cyclohexane-cyclohexene-bubble-j.fluid.2008.12.007.dat";
+            doi       "10.1016/j.fluid.2008.12.007";
+            sha256    "cf0d793affc5b6352afbf58c0a1c72440497104374abf390356e141c4c39b01b";
+            provenance measured;
+            archiveFile "j.fluid.2008.12.007.xml";
+            system    "cyclohexane + cyclohexene";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/cyclohexane-cyclohexene-bubble-je049902w.dat";
+            doi       "10.1021/je049902w";
+            sha256    "700ed9dde1b67bc4ae2b590616c2c068f2048c8536f0b054e43cff33e7458379";
+            provenance measured;
+            archiveFile "je049902w.xml";
+            system    "cyclohexane + cyclohexene";
+        }
+    );
+    fingerprint "dc212783b0ded590";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          191.73376828;
+    rms_K         0.33719604;
+    nDataPoints   81;
+    identifiable  true;
+    maxAbsCorr    0.98603143;
+
+    validity
+    {
+        temperature { min 318.11 K; max 356.10 K; }
+        pressure    { min 30000 Pa; max 101300 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validationRefused;
+
+    heldOut     none;   // every declared dataset carried `role fit`
+
+    acceptance  none;   // no band was declared before the fit, so no
+                        // pass/fail may be read out of the residual above
+}
+
+curation
+{
+    rule            "DEV.md 4c C294 (the NRTL case's own evidence and kept points, another activity model) on DEV.md 4c C283 (amended) + C284, graded by C285 (C286)";
+    model           Wilson;
+    discardsFrom    fit_nrtl;   // the outliers were decided ONCE, on the NRTL least-squares stage, and reused (C294)
+    evidence        allLaboratories;   // every study fitted, none held out
+    objective       twoStage;
+    outlierLimit    3 K;   // the NRTL least-squares stage's, reused
+    outliersDropped 0;
+    pointsKept      81;
+    noBubblePoint   0;
+    maxAbsError     1.7482 K;
+    meanAbsError    0.2458 K;
+    acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
+    gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
+    grade           warning;
+    oneLiquid       true;   // arm (f) on this model's own equation over the validity span
+    temperatures    77;   // distinct stated temperatures in the kept evidence
+    laboratories    2;   // distinct articles in the kept evidence
+    singleTemperature false;
+    singleLaboratory  false;
+    verdict         accepted;
+}

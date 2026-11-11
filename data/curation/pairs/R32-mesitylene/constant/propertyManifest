@@ -37,10 +37,10 @@ propertyManifest
         "components/mesitylene.dat"
         {
             type          imported;
-            sha256        "c6db465f0bf9317fe05c6a14fe7ad4c1a60f3965b15a487bfb9f3c6479053a9b";
-            computationalSha256 "8b4d6e783be3df51f72a10f1746c5240610a4b3774c38bf337957d1b1164fefb";
+            sha256        "9f7df399fbedf21eea6e8ecb0b54079c66671ff684c383df471087e3852fdbc8";
+            computationalSha256 "d0616a57430b2f4791174445f3c9694fd46904033ce9ccf8d280231a99a6339c";
             origin        "data/standards/components/mesitylene.dat";
-            originSha256  "1061002afd4be7af5763c2205a2b12df8cffb0259d8c062987a4ab9844c25b8f";
+            originSha256  "3a027b3cbea6ed940724e03e1b687c122ef2f1c9cbae4b76390c5ed2a57fd375";
             release       Choupo-2608;
         }
     }
