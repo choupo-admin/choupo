@@ -58,11 +58,21 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      2 point(s) of 21: doi 10.1021/je300994y row 6: x 0.1020, P 101.300
+      kPa, T 388.26 K, dT -3.46 K; doi 10.1021/je300994y row 7: x 0.1580,
+      P 101.300 kPa, T 375.56 K, dT -3.30 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 1046.5 K, b_ji = -110.0 K over 19 kept points of 1
+  laboratories (2 discarded): max |dT| 1.600 K, mean 0.720 K, graded
+  warning (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (1046.5, -110.0). PROMOTED on 2026-11-11 into
+  data/standards/parameters/NRTL/diisopropylEther-nNDimethylacetamide.dat
+  as reviewStatus autoPromoted, review by none, because: fit grade
+  warning -- max |dT| 1.600 K over the 19 kept points (limits 1 / 2 / 4
+  K), one liquid across the validity span
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -88,6 +98,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/diisopropylEther-nNDimethylacetamide-bubble-je300994y.dat";
                 role     fit;
+                discard  ( 6 7 );   // C283 outliers, by name in the header
             }
         );
 
@@ -129,6 +140,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/diisopropylEther-nNDimethylacetamide-bubble-je300994y.dat";
                 role     fit;
+                discard  ( 6 7 );   // C283 outliers, by name in the header
             }
         );
 

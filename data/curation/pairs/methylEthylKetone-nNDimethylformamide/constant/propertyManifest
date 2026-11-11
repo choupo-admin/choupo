@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/methylEthylKetone.dat"
+        {
+            type          imported;
+            sha256        "586be099c39ea991906a44b6e4174465bc5e616d454876c74d82213df9047df8";
+            computationalSha256 "9482c1f6a07785e2c4edc34219616f07e0c69837a8d3d2343ead92c064a412cb";
+            origin        "data/standards/components/methylEthylKetone.dat";
+            originSha256  "94912c130c9f2e982c8024d262432ce98809290bc68daaad011926f80f84413a";
+            release       Choupo-2608;
+        }
+        "components/nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "5dc5e624ec26f7584374f1c24564d0750fe6035d6d04806c118cacafdbb9a9cf";
+            computationalSha256 "a54dfb01aa4f8ccf4cd36ebaaa39c04ad37254ae34c4fd4f112690de9f1d0425";
+            origin        "data/standards/components/nNDimethylformamide.dat";
+            originSha256  "9c683ee45a5fcc273e4186865d45184b187b080ff179cec4f0ac16d72933fc21";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/methylEthylKetone-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "bd04471f9c8c21049b4e08dc27e4ce49b5353623c6529259746ef3af19f006ee";
+            computationalSha256 "ae895846fd6d15eca43e5a5a7cf72b4bd09358e1928d07fb6efa085969940ab3";
+            origin        "data/standards/parameters/NRTL/methylEthylKetone-nNDimethylformamide.dat";
+            originSha256  "e1a4e159836714f7512f4db8b6e29891bcd6936b093c76a7356abb99caf0645a";
+            release       Choupo-2608;
+        }
+    }
+}

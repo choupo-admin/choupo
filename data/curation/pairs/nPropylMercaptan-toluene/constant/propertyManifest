@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/nPropylMercaptan.dat"
+        {
+            type          imported;
+            sha256        "d5272b84b3285c08e554b3787edf1eeac0510f68a9fbea9fabf119e9cb9f952c";
+            computationalSha256 "985fead59e6e140cd8c60bfe82bf549a2a22b108f11ae2b9d249fcfa8f8fe020";
+            origin        "data/standards/components/nPropylMercaptan.dat";
+            originSha256  "b7266d2980f5aa15f7ad80dda293b11522fca6fc1d32c4c1ef8ecc857b47c7be";
+            release       Choupo-2608;
+        }
+        "components/toluene.dat"
+        {
+            type          imported;
+            sha256        "025c441842aa1728935905ed8dfa50db5a6405ee082618c11673f665596d4911";
+            computationalSha256 "f66debfbcd493c4c7c4636809e784a1e07a6c482c3baed13ba34dce12ae63f79";
+            origin        "data/standards/components/toluene.dat";
+            originSha256  "fe5cb21ba09cf44b41de252f6a5a5dd21b6803fcd40666f6fed8d9de8e68563a";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/nPropylMercaptan-toluene.dat"
+        {
+            type          imported;
+            sha256        "729bb324a4d803864974789cb528b4021db3ea7cbc7aa4a56778b59af342073b";
+            computationalSha256 "551041df4173d5f3f0bc7c66982f3875e7fb223e247843032ea900b1388d050b";
+            origin        "data/standards/parameters/NRTL/nPropylMercaptan-toluene.dat";
+            originSha256  "dafc133babad8bed1c0909fc10f01b21f4f4861fe2c5e4f5ec1d9868c353c208";
+            release       Choupo-2608;
+        }
+    }
+}

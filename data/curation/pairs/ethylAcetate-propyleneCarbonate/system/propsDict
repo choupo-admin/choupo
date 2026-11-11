@@ -58,11 +58,21 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      2 point(s) of 22: doi 10.1021/acs.jced.7b01107 row 1: x 0.0300, P
+      101.300 kPa, T 468.60 K, dT -7.32 K; doi 10.1021/acs.jced.7b01107
+      row 2: x 0.0330, P 101.300 kPa, T 461.10 K, dT -3.41 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = -202.5 K, b_ji = 548.4 K over 20 kept points of 1
+  laboratories (2 discarded): max |dT| 2.148 K, mean 0.392 K, graded
+  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (-202.5, 548.4). NOT PROMOTED (max |dT| 2.148 K over the 20
+  kept points, one liquid across the validity span): fit grade severe --
+  DEV.md 4c C300 rule 3: a severe pair does not enter the default
+  catalogue; its record stays in this curation case's constant/, and a
+  case that needs it carries it in its own constant/
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -88,6 +98,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/ethylAcetate-propyleneCarbonate-bubble-acs.jced.7b01107.dat";
                 role     fit;
+                discard  ( 1 2 );   // C283 outliers, by name in the header
             }
         );
 
@@ -129,6 +140,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/ethylAcetate-propyleneCarbonate-bubble-acs.jced.7b01107.dat";
                 role     fit;
+                discard  ( 1 2 );   // C283 outliers, by name in the header
             }
         );
 

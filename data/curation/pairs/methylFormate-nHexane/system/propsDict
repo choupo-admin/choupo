@@ -58,11 +58,27 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      4 point(s) of 23: doi 10.1021/je060355j row 1: x 0.0220, P 101.320
+      kPa, T 333.45 K, dT +6.54 K; doi 10.1021/je060355j row 2: x 0.0325,
+      P 101.320 kPa, T 331.00 K, dT +7.31 K; doi 10.1021/je060355j row 3:
+      x 0.0634, P 101.320 kPa, T 325.36 K, dT +6.72 K; doi
+      10.1021/je060355j row 4: x 0.1218, P 101.320 kPa, T 315.65 K, dT
+      +4.99 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 590.7 K, b_ji = 262.1 K over 19 kept points of 1
+  laboratories (4 discarded): max |dT| 1.849 K, mean 0.709 K, graded
+  warning (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (590.7, 262.1). NOT PROMOTABLE (fit grade warning, max |dT|
+  1.849 K): the pair splits ONE liquid inside its own validity span
+  (check_regressed_pairs arm f) -- predicts a LIQUID-LIQUID SPLIT at
+  302.73 K (x_methylFormate 0.384 .. 0.819), inside its own validity span
+  302.73-311.55 K -- its evidence is bubble temperatures of ONE liquid,
+  which a bubble scan cannot contradict; a pair that splits that liquid
+  stays in its case, not the catalogue (or it DECLARES `liquidLiquid
+  true;` with tie-line evidence and a gap band)
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -88,6 +104,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/methylFormate-nHexane-bubble-je060355j.dat";
                 role     fit;
+                discard  ( 1 2 3 4 );   // C283 outliers, by name in the header
             }
         );
 
@@ -129,6 +146,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/methylFormate-nHexane-bubble-je060355j.dat";
                 role     fit;
+                discard  ( 1 2 3 4 );   // C283 outliers, by name in the header
             }
         );
 
