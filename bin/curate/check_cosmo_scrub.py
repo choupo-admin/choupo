@@ -248,10 +248,13 @@ if bad:
     for b in bad:
         print("  " + b)
     sys.exit(1)
-print(f"cosmo-scrub gate: {refs} external references (no values shipped),"
+print(f"cosmo-scrub: OK -- {refs} external references (no values shipped),"
       f" {synth} open-licence profiles; 0 restricted values in the public tree;"
       f" every variant-\"2002\" set names VT-2005 or a SYNTHETIC surrogate,"
       f" every {LVPP18} set carries the engine's protocol, and"
       f" no VT2005 set is installed"
-      f" ({ndat} records enumerated; an absent or collapsed scan root REFUSES)")
+      f" ({ndat} records enumerated; an absent or collapsed scan root REFUSES)."
+      f"  NOT checked: a `source` string that lies about where its numbers came"
+      f" from, and whether a profile was really built under the protocol it"
+      f" declares (check_cosmo_lvpp_selection holds the shipped ones by result).")
 sys.exit(0)
