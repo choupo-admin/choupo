@@ -78,6 +78,30 @@ uniquac
 
 groups { unifac ( { group CH3; count 2; } { group CH2; count 10; } ); joback ( { group CH3; count 2; } { group CH2; count 10; } ); }
 
+liquidThermalConductivity
+{
+    chemsepEq16
+    {
+        A     0;
+        B     502.086392;
+        C     -4.360281673;
+        D     0.002464163938;
+        E     0;
+        Tmin  318.2;
+        Tmax  352.8;
+    }
+}
+
+surfaceTension
+{
+    A     0.04993681551;
+    B     0;
+    Tc    658.1;
+    n     1.198714173;
+    Tmin  293.15;
+    Tmax  573.15;
+}
+
 provenance
 {
     uniquac
@@ -136,5 +160,74 @@ cosmo
                0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
                0.000000     0.000000     0.000000
         );
+    }
+    liquidThermalConductivity
+    {
+        origin        fitted;
+        method        "least squares on ln y of ln(k/(W/m/K)) = C + B/T + D T (chemsepEq16 with A = 0, E = 0), 3 parameter(s), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      warning;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeCap   ( singleLaboratory );   // DEV.md 4c C300 rule 2
+        fitGradeMaxRelativeError_pct 0.420023;
+        Trange        (318.2 352.8);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C327)";
+        evidence
+        (
+                { doi "10.1016/j.fluid.2018.08.016"; articleSha256 "8f39e1bfadfaca5233613e3d894108b951db5d48b8faa82780e01e7f36f3c9bd"; pointsKept 8; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     1;
+            pointsKept  8;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.279547;
+            max_pct     0.420023;
+        }
+    }
+    surfaceTension
+    {
+        origin        fitted;
+        method        "least squares on ln sigma of sigma/(N/m) = A tau^n, tau = 1 - T/Tc (A, n; B = 0; Tc the record's own), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeMaxRelativeError_pct 3.663284;
+        Trange        (293.15 573.15);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C328)";
+        evidence
+        (
+                { doi "10.1016/j.fluid.2014.07.039"; articleSha256 "1b7634f19613498da80e74b207408c7642b2697bd1bd602b8939bed21c17a155"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.fluid.2015.07.022"; articleSha256 "e678dc6e57b787e2da7b4a56a45d9854ed41325ff4d242d765804edca9df6c2a"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2011.04.005"; articleSha256 "a7b05586197ad0a0a6f228b7b556b4f1e0880db94e2f12c836a6c578e90148ad"; pointsKept 2; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2014.02.012"; articleSha256 "6d56adbb984c97e19c53c3a03ad10b7049944eb0fa44c6844048b00b730fc948"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2019.02.025"; articleSha256 "12cf93e3d2eaecb2f7ee5dd945261dda34b5cb45a8949d9b5629f53483205504"; pointsKept 7; pointsDropped 0; provenance measured; }
+                { doi "10.1021/acs.jced.6b00542"; articleSha256 "4e55e2cd9d0d4ef4aed166e2715585421ed5e345056c725153d20b3560798ce8"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/acs.jced.7b00363"; articleSha256 "1eb482df452f2f3e9b2e45861365722f60acb4dddea4f83f434800f6fee66694"; pointsKept 11; pointsDropped 0; provenance measured; }
+                { doi "10.1021/acs.jced.7b00466"; articleSha256 "5c21071d7434f279bf462402195898f05b719e2123be8bf36fef29016de2fc86"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/acs.jced.8b00008"; articleSha256 "484a4a636469b88998cd88d58aea0ae5e24a181f6393a27779452e7f9ba3afb3"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/acs.jced.8b01233"; articleSha256 "f6b7ed8a2b0020ea872678c25266c2e960189334b84797b89f2692aadb40e30e"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je200757a"; articleSha256 "d272189dfd107e2f1f98921e6caae6bfb8d1f7aee05814e575dbd13324de9309"; pointsKept 2; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je5000132"; articleSha256 "b3fc9f3d8258ff4d65248f9611125bc6f1413f14d9a4b61119d9c83eb9e78bbc"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je8004112"; articleSha256 "c1b89179bbc3eb571691e7935d3a32955d94a134945f58ec5e245606da1f7da1"; pointsKept 7; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     13;
+            pointsKept  37;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     2.129521;
+            max_pct     3.663284;
+        }
     }
 }

@@ -1,0 +1,688 @@
+component	inchikey	visc_pts	visc_dois	visc_origin	cond_pts	cond_dois	cond_origin	sigma_pts	sigma_dois
+1122Tetrachloroethane	QPFMBZIOSGYJDE-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+112Trichloroethane	UBOXGVDOUJQMTN-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+11Dichloroethane	SCYULBFZEHDVBN-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+11Diethoxyethane	DHKHKXVYLBGOIT-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+11Dimethylcyclohexane	QEGNUYASOUJEHD-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+11Dimethylcyclopentane	QWHNJUXXYKPLQM-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+1234Tetramethylbenzene	UOHMMEJUHBCKEE-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+1235Tetramethylbenzene	BFIMMTCNYPIMRN-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+123Trimethylbenzene	FYGHSUNMUKGBRK-UHFFFAOYSA-N	0	0	literature	18	1	literature	0	0
+1245Tetramethylbenzene	SQNZJJAZBFDUTD-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+124Trichlorobenzene	PBKONEOXTCPAFI-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+124Trimethylbenzene	GWHJZXXIDMPWGX-UHFFFAOYSA-N	9	2	literature	18	1	literature	0	0
+12Butadiene	QNRMTGGDHLBXQZ-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+12Butanediol	BMRWNKZVCUKKSR-UHFFFAOYSA-N	21	7	none	0	0	none	0	0
+12Propanediol	DNIAPMSPPWPWGF-UHFFFAOYSA-N	120	18	none	13	2	none	0	0
+12PropyleneOxide	GOOHAUXETOMSMM-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+13Butadiene	KAKZBPTYRLMSJV-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+13Butanediol	PUPZLCDOIYMWBV-UHFFFAOYSA-N	15	6	none	0	0	none	0	0
+13Dioxolane	WNXJIVFYUVYPPR-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+13Propanediol	YPFDHNVEDLHUCE-UHFFFAOYSA-N	75	13	none	0	0	none	0	0
+14Butanediol	WERYXYBDKMZEQL-UHFFFAOYSA-N	32	8	literature	0	0	literature	0	0
+14Dioxane	RYHBNJHYFVUHQT-UHFFFAOYSA-N	78	23	literature	0	0	literature	0	0
+16Hexanediol	XXMIOPMDWAUFGU-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+1Butene	VXNZUUAINFGPBY-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+1Chlorobutane	VFWCMGCRMGJXDK-UHFFFAOYSA-N	28	7	none	0	0	none	12	4
+1Decanol	MWKFXSUHUHTGQN-UHFFFAOYSA-N	86	20	none	0	0	none	0	0
+1HPerfluorooctane	KBHBUUBXEQUIMV-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+1Heptanol	BBMCTIGTTCKYKF-UHFFFAOYSA-N	105	21	literature	0	0	literature	11	6
+1Heptene	ZGEGCLOFRBLKSE-UHFFFAOYSA-N	8	1	literature	12	1	literature	0	0
+1Hexanol	ZSIAUFGUXNUGDI-UHFFFAOYSA-N	114	24	literature	0	0	literature	32	9
+1Hexene	LIKMAJRDDDTEIG-UHFFFAOYSA-N	0	0	literature	18	1	literature	0	0
+1Methoxy2Propanol	ARXJGSRGQADJSQ-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+1Methoxy2PropylAcetate	LLHKCFNBLRBOGN-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+1Methyl1Ethylcyclopentane	LETYIFNDQBJGPJ-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+1Methyl3NPropylbenzene	QUEBYVKXYIKVSO-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+1Methyl4NPropylbenzene	JXFVMNFKABWTHD-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+1Methylindene	LRTOHSLOFCWHRF-UHFFFAOYSA-N	0	0	none	0	0	literature	0	0
+1Methylnaphthalene	QPUYECUOLPXSFR-UHFFFAOYSA-N	16	1	literature	0	0	literature	0	0
+1Nitrobutane	NALZTFARIYUCBY-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+1Nitropropane	JSZOAYXJRCEYSX-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+1Nonene	JRZJOMJEPLMPRA-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+1Octanol	KBPLFHHGFOOTCA-UHFFFAOYSA-N	106	25	none	6	1	none	12	5
+1Octene	KWKAKUADMBZCLK-UHFFFAOYSA-N	0	0	literature	21	2	literature	0	0
+1Pentanamine	DPBLXKKOBLCELK-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+1Pentanol	AMQJEAYHLZJPGS-UHFFFAOYSA-N	123	24	literature	0	0	literature	24	8
+1Pentene	YWAKXRMUMFPDSH-UHFFFAOYSA-N	0	0	literature	12	1	literature	0	0
+1Phenylnaphthalene	IYDMICQAKLQHLA-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+1Propanol	BDERNNFJNOPAEC-UHFFFAOYSA-N	297	70	literature	0	0	literature	67	15
+1Propoxy2Propanol	FENFUOGYJVOCRY-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+1Undecene	DCTOHCCUXLBQMS-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+2233Tetramethylbutane	OMMLUKLXGSRPHK-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+2233Tetramethylpentane	QUKOJKFJIHSBKV-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+2234Tetramethylpentane	VZFMYOCAEQDWDY-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+223Trimethylbutane	ZISSAWUMDACLOM-UHFFFAOYSA-N	0	0	literature	15	1	literature	0	0
+223Trimethylpentane	XTDQDBVBDLYELW-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+2244Tetramethylpentane	GUMULFRCHLJNDY-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+224Trimethylpentane	NHTMVDHEPJAVLT-UHFFFAOYSA-N	72	16	literature	22	3	literature	28	7
+225Trimethylhexane	HHOSMYBYIHNXNO-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+22Dimethyl1Propanol	KPSSIOMAKSHJJG-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+22Dimethylbutane	HNRMPXKDFBEGFZ-UHFFFAOYSA-N	0	0	literature	15	1	literature	30	1
+22Dimethylheptane	PSABUFWDVWCFDP-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+22Dimethylhexane	FLTJDUOFAQWHDF-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+22Dimethyloctane	GPBUTTSWJNPYJL-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+22Dimethylpentane	CXOWYJMDMMMMJO-UHFFFAOYSA-N	0	0	literature	15	1	literature	0	0
+2334Tetramethylpentane	JLCYYQOQSAMWTA-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+233Trimethylpentane	OKVWYBALHQFVFP-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+234Trimethylpentane	RLPGDEORIPLBNF-UHFFFAOYSA-N	0	0	literature	15	1	literature	0	0
+23Dimethylbutane	ZFFMLCVRJBZUDZ-UHFFFAOYSA-N	0	0	literature	15	1	literature	0	0
+23Dimethylhexane	JXPOLSKBTUYKJB-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+23Dimethylpentane	WGECXQBGLLYSFP-UHFFFAOYSA-N	6	1	literature	24	1	literature	0	0
+244Trimethyl1Pentene	FXNDIJDIPNCZQJ-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+244Trimethylhexane	SVEMKBCPZYWEPH-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+246Trinitrotoluene	SPSSULHKWOKEEL-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+24Dimethylhexane	HDGQICNBXPAKLR-UHFFFAOYSA-N	5	1	literature	0	0	literature	0	0
+24Dimethylpentane	BZHMBWZPUJHVEE-UHFFFAOYSA-N	0	0	literature	15	1	literature	0	0
+24Dinitrotoluene	RMBFBMJGBANMMK-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+25Dimethylhexane	UWNADWZGEHDQAB-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+25Dinitrotoluene	KZBOXYKTSUUBTO-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+26Dinitrotoluene	XTRDKALNCIHHNI-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+2Amino2Methyl1Propanol	CBTVGIZVANVGBH-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+2Butanol	BTANRVKWQNVYAZ-UHFFFAOYSA-N	198	47	literature	0	0	literature	18	5
+2Butoxyethanol	POAOYUHQDCAZBD-UHFFFAOYSA-N	32	10	none	16	2	none	0	0
+2Chlorobutane	BSPCSKHALVHRSR-UHFFFAOYSA-N	16	3	none	0	0	none	0	0
+2Chlorotoluene	IBSQPLPBRSHTTG-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+2Ethoxyethanol	ZNQVEEAIQZEUHB-UHFFFAOYSA-N	59	10	none	0	0	none	0	0
+2Ethoxypropene	FSGHEPDRMHVUCQ-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+2Ethyl1Hexanol	YIWUKEYIRIRTPP-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+2EthylMXylene	CHIKRULMSSADAF-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+2EthylPXylene	AXIUBBVSOWPLDA-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+2Ethylthiophene	JCCCMAAJYSNBPR-UHFFFAOYSA-N	25	1	none	0	0	none	25	1
+2Heptanone	CATSNJVOTSVZJV-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+2Hexanone	QQZOPKMRPOGIEB-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+2Methoxy2MethylHeptane		0	0	none	0	0	none	0	0
+2Methoxyethanol	XNWFRZJHXBZDAG-UHFFFAOYSA-N	61	12	none	0	0	none	15	3
+2Methyl1Butanol	QPRQEDXDYOZYLA-UHFFFAOYSA-N	20	2	literature	0	0	literature	7	1
+2Methyl1Butene	MHNNAWXXUZQSNM-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+2Methyl1Heptene	RCBGGJURENJHKV-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+2Methyl1Pentene	WWUVJRULCWHUSA-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+2Methyl1Propanol	ZXEKIIBDNHEJCQ-UHFFFAOYSA-N	105	22	literature	0	0	literature	0	0
+2Methyl2Butanol	MSXVEPNJUHWQHW-UHFFFAOYSA-N	15	4	literature	0	0	literature	7	1
+2Methyl2Butene	BKOOMYPCSUNDGP-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+2Methyl2Heptanol	ACBMYYVZWKYLIP-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+2Methyl2Propanol	DKGAVHZHDRPRBM-UHFFFAOYSA-N	31	9	literature	0	0	literature	0	0
+2Methyl3Ethylpentane	DUPUVYJQZSLSJB-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+2Methylfuran	VQKFNUFAXTZWDK-UHFFFAOYSA-N	0	0	none	0	0	none	25	1
+2Methylheptane	JVSWJIKNEAIKJW-UHFFFAOYSA-N	0	0	literature	15	1	literature	0	0
+2Methylhexane	GXDHCNNESPLIKD-UHFFFAOYSA-N	0	0	literature	15	1	literature	0	0
+2Methylindene	YSAXEHWHSLANOM-UHFFFAOYSA-N	0	0	none	0	0	literature	0	0
+2Methylnaphthalene	QIMMUPPBPVKWKM-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+2Methylnonane	SGVYKUFIHHTIFL-UHFFFAOYSA-N	17	2	literature	0	0	literature	7	1
+2Methyloctane	ZUBZATZOEPUUQF-UHFFFAOYSA-N	10	1	literature	0	0	literature	0	0
+2Methylpropanal	AMIMRNSIRUDHCM-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+2Methyltetrahydrofuran	JWUJQDFVADABEY-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+2Nitropropane	FGLBSLMDCBOPQK-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+2Pentanol	JYVLIDXNZAXMDK-UHFFFAOYSA-N	95	19	literature	0	0	literature	7	1
+2Pentanone	XNLICIUVMPYHGG-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+2Propoxyethanol	YEYKMVJDLWJFOA-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+335Trimethylheptane	VRVRZZWPKABUOE-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+33Diethylpentane	BGXXXYLRPIRDHJ-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+33Dimethyl2Butanone	PJGSXYOJTGTZAV-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+33Dimethylhexane	KUMXLFIBWFCMOJ-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+33Dimethylpentane	AEXMKKGTQYQZCS-UHFFFAOYSA-N	0	0	literature	16	1	literature	0	0
+33Oxydipropanol	SZXQTJUDPRGNJN-UHFFFAOYSA-N	9	1	none	10	1	none	0	0
+34Dimethylhexane	RNTWWGNZUXGTAX-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+34Dinitrotoluene	INYDMNPNDHRJQJ-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+35Dinitrotoluene	RUIFULUFLANOCI-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+3Ethylheptane	PSVQKOKKLWHNRP-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+3Ethylhexane	SFRKSDZMZHIISH-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+3Ethylpentane	AORMDLNPRGXHHL-UHFFFAOYSA-N	0	0	literature	15	1	literature	0	0
+3Heptanone	NGAZZOYFWWSOGK-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+3Hexanone	PFCHFHIRKBAQGU-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+3Methyl1Butanol	PHTQWCKDNZKARW-UHFFFAOYSA-N	21	6	none	0	0	none	11	2
+3Methyl1Butene	YHQXBTXEYZIYOV-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+3Methyl2Butanol	MXLMTQWGSQIYOW-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+3Methyl3Ethylpentane	GIEZWIDCIFCQPS-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+3Methylheptane	LAIUFBWHERIJIH-UHFFFAOYSA-N	5	1	literature	15	1	literature	0	0
+3Methylhexane	VLJXXKKOSFGPHI-UHFFFAOYSA-N	0	0	literature	26	1	literature	0	0
+3Methylnonane	PLZDDPSCZHRBOY-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+3Methyloctane	SEEOMASXHIJCDV-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+3Methylpentane	PFEOZHBOMNWTJB-UHFFFAOYSA-N	0	0	literature	15	1	literature	0	0
+3Methylthiophene	QENGPZGAWFQWCZ-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+3Pentanol	AQIXEPGDORPWBJ-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+3Pentanone	FDPIMTJIUBPUKL-UHFFFAOYSA-N	40	6	literature	0	0	literature	24	1
+4Chlorotoluene	NPDACUSDTOMAMK-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+4EthylMXylene	MEMBJMDZWKVOTB-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+4EthylOXylene	SBUYFICWQNHBCM-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+4Heptanone	HCFAJYNVAYBARA-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+4MethylCis2Pentene	LGAQJENWWYGFSN-PLNGDYQASA-N	0	0	literature	0	0	literature	0	0
+4MethylTrans2Pentene	LGAQJENWWYGFSN-SNAWJCMRSA-N	0	0	literature	0	0	literature	0	0
+4Methylheptane	CHBAWFGIXDBEBT-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+4Methylnonane	IALRSQMWHFKJJA-UHFFFAOYSA-N	7	1	literature	0	0	literature	7	1
+4Methyloctane	DOGIHOCMZJUJNR-UHFFFAOYSA-N	10	1	literature	0	0	literature	0	0
+5Methyl2Hexanone	FFWSICBKRCICMR-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+5Methylnonane	TYSIILFJZXHVPU-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+Ar	XKRFYHLGVUSROY-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+C	OKTJSMMVPCPJKN-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+C2H		0	0	none	0	0	none	0	0
+C2H3		0	0	none	0	0	none	0	0
+C2H5		0	0	none	0	0	none	0	0
+C2O		0	0	none	0	0	none	0	0
+C3H3		0	0	none	0	0	none	0	0
+C3H5		0	0	none	0	0	none	0	0
+C3H7		0	0	none	0	0	none	0	0
+C4H2	LLCSWKVOHICRDD-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+C4H4	WFYPICNXBKQZGB-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+C5H5		0	0	none	0	0	none	0	0
+C6H5		0	0	none	0	0	none	0	0
+CH		0	0	none	0	0	none	0	0
+CH2		0	0	none	0	0	none	0	0
+CH2OH		0	0	none	0	0	none	0	0
+CH3	WCYWZMWISLQXQU-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+CH3CO		0	0	none	0	0	none	0	0
+CH3O		0	0	none	0	0	none	0	0
+CH3O2		0	0	none	0	0	none	0	0
+CH4	VNWKTOKETHGBQD-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+CN		0	0	none	0	0	none	0	0
+CO	UGFAIRIUMAVXCW-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+CO2	CURLTUGMZLYLDI-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+CS		0	0	none	0	0	none	0	0
+CS2	QGJOPFRUJISHPQ-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+CaCO3	VTYYLEPIZMXCLO-UHFFFAOYSA-L	0	0	none	0	0	none	0	0
+CaCl2	UXVMQQNJUSDDNG-UHFFFAOYSA-L	0	0	none	0	0	none	0	0
+CaO	ODINCKMPIJJUCX-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+CaSO4	OSGAYBCDTDRGGQ-UHFFFAOYSA-L	0	0	none	0	0	none	0	0
+Cl		0	0	none	0	0	none	0	0
+Cl2	KZBUYRJDOAKODT-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+ClO		0	0	none	0	0	none	0	0
+D2		0	0	none	0	0	none	0	0
+Dichloroethane	WSLDOOZREJYCGB-UHFFFAOYSA-N	20	7	none	0	0	none	5	1
+H		0	0	none	0	0	none	0	0
+H2		0	0	none	0	0	none	0	0
+H2O2	MHAJPDPJQMAIIY-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+H2S	RWSOTUBLDIXVET-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+H2SO4	QAOWNCQODCNURD-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+H3PO4	NBIIXXVUZAFLBC-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+HCCO		0	0	none	0	0	none	0	0
+HCHO	WSFSSNUMVMOOMR-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+HCN	LELOWRISYMNNSU-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+HCO		0	0	none	0	0	none	0	0
+HCl	VEXZGXHMUGYJMC-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+HNO		0	0	none	0	0	none	0	0
+HNO3	GRYLNZFGIOXLOG-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+HO2		0	0	none	0	0	none	0	0
+HOCl		0	0	none	0	0	none	0	0
+HONO	IOVCWXUNBOPUCH-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+HSO		0	0	none	0	0	none	0	0
+HSO3		0	0	none	0	0	none	0	0
+He	SWQJXJOGLNCZEY-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+K2SO4	OTYBMLCTZGSZBG-UHFFFAOYSA-L	0	0	none	0	0	none	0	0
+KBr	IOLCXVTUBQKXJR-UHFFFAOYSA-M	0	0	none	0	0	none	0	0
+KCl	WCUXLLCKKVVCTQ-UHFFFAOYSA-M	0	0	none	0	0	none	0	0
+KNO3	FGIUAXJPYTZDNR-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+KOH	KWYUFKZDYYNOTN-UHFFFAOYSA-M	0	0	none	0	0	none	0	0
+LiCl	KWGKDLIKAYFUFQ-UHFFFAOYSA-M	0	0	none	0	0	none	0	0
+MD3M	FBZANXDWQAVSTQ-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+MD4M	ADANNTOYRVPQLJ-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+MDM	CXQXSVUQTKDNFP-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+MgCl2	TWRXJAOTZQYOKJ-UHFFFAOYSA-L	0	0	none	0	0	none	0	0
+MgSO4	CSNNHWWHGAXBCP-UHFFFAOYSA-L	0	0	none	0	0	none	0	0
+N		0	0	none	0	0	none	0	0
+N2	IJGRMHOSHXDMSA-UHFFFAOYSA-N	0	0	none	0	0	none	5	1
+N2H2		0	0	none	0	0	none	0	0
+N2H3		0	0	none	0	0	none	0	0
+N2H4	OAKJQQAXSVQMHS-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+N2O	GQPLMRYTRLFLPF-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+NCO		0	0	none	0	0	none	0	0
+NH		0	0	none	0	0	none	0	0
+NH2	MDFFNEOEWAXZRQ-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+NH3	QGZKDVFQNNGYKY-UHFFFAOYSA-N	0	0	fitted	0	0	none	0	0
+NH4Cl	NLXLAEXVIDQMFP-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+NMethyl13Diaminopropane	QHJABUZHRJTCAR-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+NO		0	0	none	0	0	none	0	0
+NO2	JCXJVPUVTGWSNB-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+NO3	YPJKMVATUPSWOH-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+Na2CO3	CDBYLPFSWZWCQE-UHFFFAOYSA-L	0	0	none	0	0	none	0	0
+Na2SO4	PMZURENOXWZQFD-UHFFFAOYSA-L	0	0	none	0	0	none	0	0
+NaBr	JHJLBTNAGRQEKS-UHFFFAOYSA-M	0	0	none	0	0	none	0	0
+NaCl	FAPWRFPIFSIZLT-UHFFFAOYSA-M	0	0	none	0	0	none	0	0
+NaF	PUZPDOWCWNUUKD-UHFFFAOYSA-M	0	0	none	0	0	none	0	0
+NaHCO3	UIIMBOGNXHQVGW-UHFFFAOYSA-M	0	0	none	0	0	none	0	0
+NaNO3	VWDWKYIASSYTQR-UHFFFAOYSA-N	14	1	none	0	0	none	0	0
+NaOH	HEMHJVSKTPXQMS-UHFFFAOYSA-M	0	0	none	0	0	none	0	0
+O		0	0	none	0	0	none	0	0
+O2	MYMOFIZGZYHOMD-UHFFFAOYSA-N	0	0	none	0	0	none	8	1
+O3	CBENFWSGALASAD-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+OH		0	0	none	0	0	none	0	0
+OrthoDeuterium		0	0	none	0	0	none	0	0
+OrthoHydrogen		0	0	none	0	0	none	0	0
+PET		0	0	none	0	0	none	0	0
+PMMA		0	0	none	0	0	none	0	0
+PVC		0	0	none	0	0	none	0	0
+ParaDeuterium		0	0	none	0	0	none	0	0
+ParaHydrogen		0	0	none	0	0	none	0	0
+R11	CYRMSUTZVYGINF-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+R113	AJDIZQLSFPQPEY-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+R12	PXBRQCKWGAHEHS-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+R1234yf		0	0	none	0	0	none	0	0
+R1234zeE		0	0	none	0	0	none	0	0
+R1234zeZ		0	0	none	0	0	none	0	0
+R134a	LVGUZGTVOIAKKC-UHFFFAOYSA-N	0	0	none	0	0	none	8	1
+R13I1	VPAYJEUHKVESSD-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+R143a	UJPMYEOUBPIPHQ-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+R21	UMNKXPULIDJLSU-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+R218	QYSGYZVSCZSLHT-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+R22	VOPWNXZWBYDODV-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+R236EA	FYIRUPZTYPILDH-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+R245fa	MSSNHSVIGIHOJA-UHFFFAOYSA-N	0	0	none	105	2	none	30	1
+R32	RWRIWBAIICGTTQ-UHFFFAOYSA-N	0	0	none	0	0	none	47	2
+R365MFC	WZLFPVPRZGTCKP-UHFFFAOYSA-N	0	0	none	0	0	none	20	1
+RC318	BCCOBQSFUDVTJQ-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+S		0	0	none	0	0	none	0	0
+S2	MAHNFPMIPQKPPI-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+SF6	SFZCNBIFKDRMGX-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+SH		0	0	none	0	0	none	0	0
+SO		0	0	none	0	0	none	0	0
+SO2	RAHZWNYVWXNFOC-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+SO3	AKEJUJNQAAGONA-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+Xe	FHNFHKCVQCLJFQ-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+acenaphthene	CWRYPZZKDGJXCA-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+acetaldehyde	IKHGUXGNUITLKF-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+aceticAcid	QTBSBXVTEAMEQO-UHFFFAOYSA-N	34	6	none	0	0	none	8	2
+aceticAnhydride	WFDIJRYMOXRFFG-UHFFFAOYSA-N	10	1	literature	0	0	literature	0	0
+acetone	CSCPPACGZOOCGX-UHFFFAOYSA-N	31	10	none	0	0	none	14	6
+acetonitrile	WEVYAHXRMPXWCK-UHFFFAOYSA-N	104	25	literature	0	0	literature	26	7
+acetylChloride	WETWJCDKMRHUPV-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+acetylene	HSFWRNGVRCDJHI-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+acrylicAcid	NIXOWILDQLNWCW-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+acrylonitrile	NLHHRLWOUZZQLW-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+adipicAcid	WNLRTRBMVRJNCN-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+air		0	0	literature	0	0	literature	0	0
+akermanite		0	0	none	0	0	none	0	0
+allylAlcohol	XXROGKLTLUQVRX-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+aniline	PAYRUJLWNCNPSJ-UHFFFAOYSA-N	28	5	literature	0	0	literature	0	0
+anisole	RDOXTESZEPMUJZ-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+anthophyllite		0	0	none	0	0	none	0	0
+artinite		0	0	none	0	0	none	0	0
+barite		0	0	none	0	0	none	0	0
+benzene	UHOVQNZJYSORNB-UHFFFAOYSA-N	74	24	literature	16	2	none	45	5
+benzoBThiophene	FCEHBMOGCRZNNI-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+benzoicAcid	WPYMKLBDIGXBTP-UHFFFAOYSA-N	6	1	literature	0	0	literature	0	0
+biphenyl	ZUOUZKKEUPVFJK-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+bischofite		0	0	none	0	0	none	0	0
+bloedite		0	0	none	0	0	none	0	0
+bromine		0	0	literature	0	0	literature	0	0
+bromobenzene	QARVLSVVCXYDNA-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+burkeite		0	0	none	0	0	none	0	0
+butanal	ZTQSAGDEMFDKMZ-UHFFFAOYSA-N	6	1	literature	0	0	literature	0	0
+butylVinylEther	UZKWTJUDCOPSNM-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+calciumHydroxide	AXCZMVOFGPJBDE-UHFFFAOYSA-L	0	0	none	0	0	none	0	0
+calciumNitrate	ZCCIPPOKBCJFDN-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+calciumTartrate		0	0	none	0	0	none	0	0
+carbonTetrachloride	VZGDMQKNWNREIO-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+carbonylSulfide	JJWKPURADFRFRB-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+carnallite		0	0	none	0	0	none	0	0
+celestite		0	0	none	0	0	none	0	0
+chloroform	HEDRZPFGACZZDS-UHFFFAOYSA-N	42	15	literature	0	0	literature	0	0
+chrysene	WDECIBYCCFPHNR-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+chrysotile		0	0	none	0	0	none	0	0
+cis12Dimethylcyclohexane	KVZJLSYJROEPSQ-OCAPTIKFSA-N	0	0	literature	0	0	literature	0	0
+cis12Dimethylcyclopentane	RIRARCHMRDHZAR-KNVOCYPGSA-N	0	0	literature	0	0	literature	0	0
+cis13Dimethylcyclohexane	SGVUHPSBDNVHKL-OCAPTIKFSA-N	0	0	literature	0	0	literature	0	0
+cis13Dimethylcyclopentane	XAZKFISIRYLAEE-KNVOCYPGSA-N	0	0	literature	0	0	literature	0	0
+cis14Dimethylcyclohexane	QRMPKOFEUHIBNM-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+cis2Butene	IAQRGUVFOMOMEM-ARJAWSKDSA-N	0	0	none	0	0	none	0	0
+cis2Hexene	RYPKRALMXUUNKS-HYXAFXHYSA-N	0	0	literature	0	0	literature	0	0
+cis2Pentene	QMMOXUPEWRXHJS-HYXAFXHYSA-N	0	0	literature	0	0	literature	0	0
+cisDecahydronaphthalene	NNBZCPXTIHJBJL-UHFFFAOYSA-N	10	2	literature	0	0	literature	0	0
+compA		0	0	none	0	0	none	0	0
+compB		0	0	none	0	0	none	0	0
+compC		0	0	none	0	0	none	0	0
+cumene	RWGFKTVRMDUZSP-UHFFFAOYSA-N	0	0	literature	15	1	literature	0	0
+cumeneHydroperoxide	YQHLDYVWEZKEOX-UHFFFAOYSA-N	0	0	none	0	0	literature	0	0
+cyclobutane	PMPVIKIVABFJJI-UHFFFAOYSA-N	0	0	none	0	0	literature	0	0
+cyclohexane	XDTMQSROBMDMFD-UHFFFAOYSA-N	80	26	none	12	1	none	32	7
+cyclohexanol	HPXRVTGHNJAIIH-UHFFFAOYSA-N	18	2	literature	0	0	literature	7	1
+cyclohexanone	JHIVVAPYMSGYDF-UHFFFAOYSA-N	35	10	literature	0	0	literature	0	0
+cyclohexene	HGCIXCUEYOPUTN-UHFFFAOYSA-N	0	0	literature	18	1	literature	0	0
+cyclopentane	RGSFGYAAUTVSQA-UHFFFAOYSA-N	66	7	none	15	1	none	0	0
+cyclopentanol	XCIXKGXIYUWCLL-UHFFFAOYSA-N	35	3	none	0	0	none	0	0
+cyclopentanone	BGTOWKSIORTVQH-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+cyclopropane	LVZWSLJZHVFIQJ-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+diButylCarbonate	QLVWOKQMDLQXNN-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+diEthylCarbonate	OIFBSDVPJOWBCH-UHFFFAOYSA-N	62	13	literature	0	0	none	23	3
+diIsobutylEther	SZNYYWIUQFZLLT-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+diNButylEther	DURPTKYDGMDSBL-UHFFFAOYSA-N	17	2	literature	24	1	literature	23	1
+diNPropylDisulfide	ALVPFGSHPUPROW-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+diNPropylEther	POLCUAVZOMRGSN-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+diNPropylSulfide	ZERULLAPCVRMCO-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+diPhenylCarbonate	ROORDVPLFPIABK-UHFFFAOYSA-N	0	0	literature	0	0	none	0	0
+diSecButylEther	HHBZZTKMMLDNDN-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+diTertButylDisulfide	BKCNDTDWDGQHSD-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+dichloroacetaldehyde	NWQWQKUXRJYXFH-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+dichloroacetylChloride	FBCCMZVIWNDFMO-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+dichloromethane	YMWUJEATGCHHMB-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+dicyclopentadiene	HECLRDQVFMWTQS-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+diethanolamine	ZBCBWPMODOFKDW-UHFFFAOYSA-N	44	7	literature	0	0	literature	11	3
+diethylDisulfide	CETBSQOFQKLHHZ-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+diethylEther	RTZKZFJDLAIYFH-UHFFFAOYSA-N	7	2	none	18	1	none	24	1
+diethylSuccinate	DKMROQRQHGEIOW-UHFFFAOYSA-N	9	2	none	21	1	none	10	1
+diethylSulfide	LJSQFQKUNVCTIA-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+diethylamine	HPNMFZURTQLUMO-UHFFFAOYSA-N	10	2	literature	0	0	literature	0	0
+diethyleneGlycol	MTHSVFCYNBDYFN-UHFFFAOYSA-N	97	13	literature	5	1	literature	0	0
+diethyleneGlycolDibutylEther	KZVBBTZJMSWGTK-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+diethyleneGlycolDiethylEther	RRQYJINTUHWNHW-UHFFFAOYSA-N	19	2	none	0	0	none	0	0
+diethyleneGlycolMonohexylEther	GZMAAYIALGURDQ-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+diethylenetriamine	RPNUMPOLZDHAAY-UHFFFAOYSA-N	16	4	literature	0	0	literature	0	0
+diethylethanolamine	BFSVOASYOCHEOV-UHFFFAOYSA-N	10	2	literature	0	0	literature	5	1
+diisobutylKetone	PTTPXKJBFFKCEK-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+diisopropanolamine	LVTYICIALWPMFW-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+diisopropylEther	ZAFNJMIOTHYJRJ-UHFFFAOYSA-N	35	7	literature	18	1	literature	32	5
+diisopropylKetone	HXVNBWAKAOHACI-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+diisopropylamine	UAOMVDZJSHZZME-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+dimethylCarbonate	IEJIGPNLZYLLBP-UHFFFAOYSA-N	55	11	none	0	0	none	0	0
+dimethylDisulfide	WQOXQRCZOLPYPM-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+dimethylEther	LCGLNKUTAGEVQW-UHFFFAOYSA-N	27	1	none	6	1	none	72	3
+dimethylSulfide	QMMFVYPAHWMCMS-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+dimethylSulfoxide	IAZDPXIOMUYVGZ-UHFFFAOYSA-N	157	37	literature	10	1	literature	30	7
+dimethylTerephthalate	WOZVHXUHUFLZGK-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+dimethylacetylene	XNMQEEKYCVKGBD-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+dimethylethanolamine	UEEJHVSXFDXPFK-UHFFFAOYSA-N	6	2	literature	0	0	literature	0	0
+diopside		0	0	none	0	0	none	0	0
+diphenylDisulfide	GUUVPOWQJOLRAS-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+diphenylmethane	CZZYITDELCSZES-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+dolomite		0	0	none	0	0	none	0	0
+dowthermA	MHCVCKDNQYMGEX-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+enstatite		0	0	none	0	0	none	0	0
+epsomite		0	0	none	0	0	none	0	0
+ethane	OTMSDBZUPAUEDD-UHFFFAOYSA-N	0	0	none	0	0	none	12	1
+ethanol	LFQSCWFLJHTTHZ-UHFFFAOYSA-N	435	111	literature	39	7	none	114	32
+ethylAcetate	XEKOWRVHYACXOJ-UHFFFAOYSA-N	42	19	none	21	1	none	7	3
+ethylBenzene	YNQLUTRBYVCPMQ-UHFFFAOYSA-N	62	16	none	15	1	none	0	0
+ethylButanoate	OBNCKNCVKJNDBV-UHFFFAOYSA-N	21	3	none	20	1	none	0	0
+ethylChloride	HRYZWHHZPQKTII-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+ethylDecanoate	RGXWDWUGBIJHDO-UHFFFAOYSA-N	36	4	none	15	1	none	7	1
+ethylFormate	WBJINCZRORDGAQ-UHFFFAOYSA-N	20	5	literature	0	0	literature	0	0
+ethylHexanoate	SHZIWNPUGXLXDT-UHFFFAOYSA-N	26	4	none	14	1	none	19	3
+ethylLactate	LZCLXQDLBQLTDK-UHFFFAOYSA-N	37	4	none	0	0	none	25	1
+ethylMercaptan	DNJIEGIFACGWOD-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+ethylMethylDisulfide	XLTBPTGNNLIKRW-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+ethylOctanoate	YYZUSRORWSJGET-UHFFFAOYSA-N	31	5	none	17	1	none	19	3
+ethylPhenylCarbonate	YCNSGSUGQPDYTK-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+ethylPropionate	FKRCODPIKNYEAC-UHFFFAOYSA-N	11	1	none	20	1	none	0	0
+ethylPropylDisulfide	SNGRPWPVGSSZGV-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+ethylTertPentylEther	KFRVYYGHSPLXSZ-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+ethylacetylene	KDKYADYSIPSCCQ-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+ethylamine	QUSNBJAOOMFDIB-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+ethylcyclohexane	IIEWJVIFRVWJOD-UHFFFAOYSA-N	36	5	literature	0	0	literature	0	0
+ethylcyclopentane	IFTRQJLVEBNKJK-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+ethylene	VGGSQFUCUMXWEO-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+ethyleneCarbonate	KMTRUDSVKNLOMY-UHFFFAOYSA-N	9	1	literature	0	0	literature	0	0
+ethyleneGlycol	LYCAIKOWRPUZTN-UHFFFAOYSA-N	173	34	literature	26	9	literature	42	9
+ethyleneOxide	IAYPIBMASNFSPL-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+ethylenediamine	PIICEJLVQHRZGT-UHFFFAOYSA-N	14	6	literature	0	0	literature	0	0
+fluoranthene	GVEPBJHOBDJJJI-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+fluorene	NIHNNTQXNPWCJQ-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+fluorine	PXGOKWXKJXAPGV-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+fluorite		0	0	none	0	0	none	0	0
+fluoroethane	UHCBBWUQDAVSMS-UHFFFAOYSA-N	13	1	none	167	1	none	88	2
+forsterite		0	0	none	0	0	none	0	0
+furan	YLQBMQCUIZJEEH-UHFFFAOYSA-N	0	0	none	0	0	none	11	1
+furfural	HYBBIBNJHNGZAN-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+gaylussite		0	0	none	0	0	none	0	0
+glaserite		0	0	none	0	0	none	0	0
+glauberite		0	0	none	0	0	none	0	0
+glucose		0	0	none	0	0	none	0	0
+glycerol	PEDCQBHIVMGVHV-UHFFFAOYSA-N	55	10	none	7	2	literature	15	3
+goergeyite		0	0	none	0	0	none	0	0
+graphite		0	0	none	0	0	none	0	0
+gypsum		0	0	none	0	0	none	0	0
+heavyWater		0	0	none	0	0	none	0	0
+heptanal	FXHGMKSSBGDXIY-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+hexafluorobenzene	ZQBFAOFFOQMSGJ-UHFFFAOYSA-N	0	0	none	0	0	none	7	1
+hexahydrite		0	0	none	0	0	none	0	0
+hexamethyldisiloxane	UQEAIHBTYFGYIE-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+hexanal	JARKCYVAAOWBJS-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+hfe143m	JRHMNRMPVRXNOS-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+hitecSalt		0	0	none	0	0	none	0	0
+huntite		0	0	none	0	0	none	0	0
+hydrogenIodide	XMBWDFGMSWQBCA-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+hydroxyapatite		0	0	none	0	0	none	0	0
+indane	PQNFLJBBNBOBRQ-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+indene	YBYIRNPNPLQARY-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+iodobenzene	SNHMUERNLJLMHN-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+isoButane	NNPPMTNAJDCUHE-UHFFFAOYSA-N	0	0	none	0	0	none	127	4
+isoButene	VQTUBCCKSQIDNK-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+isobutylAcetate	GJRQTCIYDGXPES-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+isobutylMercaptan	BDFAOUQQXJIZDG-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+isobutylbenzene	KXUHSQYYJYAXGZ-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+isohexane	AFABGHUZZDYHJO-UHFFFAOYSA-N	0	0	none	15	1	none	0	0
+isopentane	QWTDNUCVQCZILF-UHFFFAOYSA-N	21	1	none	0	0	none	0	0
+isopentylAcetate	MLFHJEHSLIIPHL-UHFFFAOYSA-N	27	5	none	0	0	none	12	2
+isoprene	RRHGJUQNOFWUDK-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+isopropanol	KFZMGEQAYNKOFK-UHFFFAOYSA-N	216	57	literature	0	0	literature	69	16
+isopropylAcetate	JMMWKPVZQRWMSS-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+isopropylButylEther	GPDFVOVLOXMSBT-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+isopropylMercaptan	KJRCEJOSASVSRA-UHFFFAOYSA-N	0	0	none	0	0	literature	0	0
+isopropylcyclopentane	TVSBRLGQVHJIKT-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+kainite		0	0	none	0	0	none	0	0
+kalicinite		0	0	none	0	0	none	0	0
+kieserite		0	0	none	0	0	none	0	0
+krypton	DNNSSWSSYDEUBZ-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+labile_S		0	0	none	0	0	none	0	0
+leonhardite		0	0	none	0	0	none	0	0
+leonite		0	0	none	0	0	none	0	0
+lithiumChlorideH2O		0	0	none	0	0	none	0	0
+mCresol	RLSSMJSEOOYNOY-UHFFFAOYSA-N	8	1	literature	0	0	literature	0	0
+mCymene	XCYJPXQACVEIOS-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+mDichlorobenzene	ZPQOPVIELGIULI-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+mDiethylbenzene	AFZZYIJIWUTJFO-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+mEthyltoluene	ZLCSFXXPPANWQY-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+mNitrotoluene	QZYHIOPPLUPUJF-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+mXylene	IVSZLXZYQVIEFR-UHFFFAOYSA-N	92	21	none	18	1	none	21	9
+magnesite		0	0	none	0	0	none	0	0
+magnesiumHydroxide	VTHJTEIRLNZDEV-UHFFFAOYSA-L	0	0	none	0	0	none	0	0
+maleicAcid		0	0	literature	0	0	literature	0	0
+maleicAnhydride	FPYJFEHAWHCUMM-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+melanterite		0	0	none	0	0	none	0	0
+mesitylene	AUHZEENZYGFFBQ-UHFFFAOYSA-N	39	7	literature	15	1	literature	0	0
+methacrylicAcid	CERQOIWHTDAKMF-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+methacrylonitrile	GYCMBHHDWRMZGG-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+methanol	OKKJLVBELUTLKV-UHFFFAOYSA-N	264	70	literature	0	0	none	55	14
+methylAcetate	KXKVLQRXCPHEJC-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+methylButanoate	UUIQMZJEGPQKFD-UHFFFAOYSA-N	0	0	none	18	1	none	10	2
+methylChloride	NEHMKBQYUWJMIP-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+methylDecanoate	YRHYCMZPEVDGFQ-UHFFFAOYSA-N	36	4	none	28	1	none	7	1
+methylDiEthanolAmine	CRVGTESFCCXCTH-UHFFFAOYSA-N	79	16	literature	0	0	literature	13	4
+methylEthylCarbonate		0	0	none	0	0	none	0	0
+methylEthylEther	XOBKSJJDNFUZPF-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+methylEthylKetone	ZWEHNKRNPOVVGH-UHFFFAOYSA-N	64	21	literature	10	1	literature	0	0
+methylEthylSulfide	WXEHBUMAEPOYKP-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+methylFormate	TZIHFWKZFHZASV-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+methylHeptanoate	XNCNNDVCAUWAIT-UHFFFAOYSA-N	11	2	none	0	0	none	8	2
+methylHexanoate	NUKZAGXMHTUAFE-UHFFFAOYSA-N	0	0	none	21	1	none	8	2
+methylIodide	INQOMBQAUSQDDS-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+methylIsobutylEther	ZYVYEJXMYBUCMN-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+methylIsobutylKetone	NTIZESTWPVYFNL-UHFFFAOYSA-N	14	5	literature	0	0	literature	0	0
+methylIsopropylEther	RMGHERXMTMUMMV-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+methylIsopropylKetone	SYBYTAAJFKOIEJ-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+methylLactate	LPEKGGXMPWTOCB-UHFFFAOYSA-N	25	1	none	0	0	none	25	1
+methylLevulinate	UAGJVSRUFNSIHR-UHFFFAOYSA-N	25	1	none	0	0	none	25	1
+methylLinoleate	WTTJVINHCBCLGX-NQLNTKRDSA-N	22	2	none	0	0	none	0	0
+methylLinolenate	DVWSXZIHSUZZKJ-YSTUJMKBSA-N	26	2	none	0	0	none	0	0
+methylMercaptan	LSDPWZHWYPCBBB-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+methylMethacrylate	VVQNEPGJFQJSBK-UHFFFAOYSA-N	31	3	literature	0	0	literature	0	0
+methylNPropylEther	VNKYTQGIUYNRMY-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+methylNPropylSulfide	ZOASGOXWEHUTKZ-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+methylOctanoate	JGHZJRVDZXSNKQ-UHFFFAOYSA-N	23	2	none	25	1	none	7	1
+methylOleate		0	0	none	0	0	none	0	0
+methylPalmitate	FLIACVVOZYBSBS-UHFFFAOYSA-N	16	2	none	0	0	none	0	0
+methylPentanoate	HNBDRPTVWVGKBR-UHFFFAOYSA-N	5	1	none	13	1	none	0	0
+methylPhenylCarbonate	XTBFPVLHGVYOQH-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+methylPropionate	RJUFJBKOKNCXHH-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+methylStearate	HPEUJPJOZXNMSJ-UHFFFAOYSA-N	11	1	none	0	0	none	0	0
+methylTButylSulfide	CJFVCTVYZFTORU-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+methylTPentylSulfide		0	0	literature	0	0	literature	0	0
+methylTertButylEther	BZLVMXJERCGZMT-UHFFFAOYSA-N	22	5	literature	0	0	literature	35	5
+methylTertPentylEther	HVZJRWJGKQPSFL-UHFFFAOYSA-N	5	1	literature	0	0	literature	7	3
+methylal	NKDDWNXOKDWJAK-UHFFFAOYSA-N	77	2	literature	0	0	literature	31	1
+methylamine	BAVYZALUXZFZLV-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+methylcyclohexane	UAEPNZWRGJTJPN-UHFFFAOYSA-N	91	18	literature	18	1	literature	0	0
+methylcyclopentane	GDOPTJXRTPNYNR-UHFFFAOYSA-N	0	0	literature	12	1	literature	0	0
+methylethanolamine	OPKOKAMJFNKNAS-UHFFFAOYSA-N	32	4	literature	0	0	literature	0	0
+mirabilite		0	0	none	0	0	none	0	0
+misenite		0	0	none	0	0	none	0	0
+monochlorobenzene	MVPPADPHJFYWMZ-UHFFFAOYSA-N	46	14	literature	0	0	literature	0	0
+monoethanolamine	HZAXFHJVJLSVMW-UHFFFAOYSA-N	104	22	literature	0	0	literature	0	0
+morpholine	YNAVUWVOSKDBBP-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+nAminoethylEthanolamine	LHIJANUOQQMGNT-UHFFFAOYSA-N	22	4	literature	0	0	literature	0	0
+nAminoethylPiperazine	IMUDHTPIFIBORV-UHFFFAOYSA-N	5	1	literature	0	0	literature	0	0
+nButane	IJDNQMDRQITEOD-UHFFFAOYSA-N	0	0	none	0	0	none	38	1
+nButanol	LRHPLDYGYMQRHN-UHFFFAOYSA-N	317	72	none	0	0	none	40	14
+nButylAcetate	DKPFZGUDAPQIHT-UHFFFAOYSA-N	45	14	literature	0	0	literature	0	0
+nButylButanoate	XUPYJHCZDLZNFP-UHFFFAOYSA-N	11	1	none	0	0	none	0	0
+nButylFormate	NMJJFJNHVMGPGM-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+nButylPropionate	BTMVHUNTONAYDX-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+nButylbenzene	OCKPCBLVNKHBMX-UHFFFAOYSA-N	35	7	literature	0	0	literature	0	0
+nButylcyclohexane	GGBJHURWWWLEQH-UHFFFAOYSA-N	65	9	literature	0	0	literature	0	0
+nButylcyclopentane	ZAGHKONXGGSVDV-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+nButyricAcid	FERIUCNNQQJTOY-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+nDecane	DIOQZVSQGTUSAI-UHFFFAOYSA-N	115	26	none	0	0	none	33	7
+nDocosane	HOWGUJZVBDQJKV-UHFFFAOYSA-N	0	0	literature	8	1	literature	0	0
+nDodecane	SNRUBQQJIBEYMU-UHFFFAOYSA-N	200	23	none	8	1	none	37	13
+nEicosane	CBFCDTFDPHXCNY-UHFFFAOYSA-N	0	0	literature	0	0	none	0	0
+nHeneicosane	FNAZRRHPUDJQCJ-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+nHeptacosane	BJQWYEJQWHSSCJ-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+nHeptadecane	NDJKXXJCMXVBJW-UHFFFAOYSA-N	8	1	literature	0	0	literature	0	0
+nHeptane	IMNFDUFMRHMDMM-UHFFFAOYSA-N	136	27	none	0	0	none	74	13
+nHexacosane	HMSWAIKSFDFLKN-UHFFFAOYSA-N	0	0	literature	5	1	literature	0	0
+nHexadecane	DCAYPVUWAIABOU-UHFFFAOYSA-N	112	17	literature	0	0	literature	20	7
+nHexane	VLKZOEOYAKHREP-UHFFFAOYSA-N	83	26	none	22	1	none	51	13
+nHexylAcetate	AOGQPLXWSUTHQB-UHFFFAOYSA-N	16	2	literature	0	0	literature	0	0
+nHexylMercaptan	PMBXCGGQNSVESQ-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+nNDimethylacetamide	FXHOOIRPVKKKFG-UHFFFAOYSA-N	69	18	literature	0	0	literature	0	0
+nNDimethylformamide	ZMXDDKWLCZADIW-UHFFFAOYSA-N	175	42	literature	0	0	literature	16	5
+nNonacosane	IGGUPRCHHJZPBS-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+nNonadecane	LQERIDTXQFOHKA-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+nNonane	BKIMMITUMNQMOS-UHFFFAOYSA-N	67	12	none	0	0	none	19	4
+nOctacosane	ZYURHZPYMFLWSH-UHFFFAOYSA-N	8	1	literature	0	0	literature	8	1
+nOctadecane	RZJRJXONCZWCBN-UHFFFAOYSA-N	361	1	literature	0	0	literature	0	0
+nOctane	TVMXDCGIABBOFY-UHFFFAOYSA-N	213	33	none	9	2	none	25	7
+nPentacosane	YKNWIILGEFFOPE-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+nPentadecane	YCOZIPAWZNQLMR-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+nPentane	OFBQJSOFQDEBGM-UHFFFAOYSA-N	0	0	none	0	0	none	6	2
+nPentylAcetate	PGMYKACGEOXYJE-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+nPropylAcetate	YKYONYBAUNKHLG-UHFFFAOYSA-N	0	0	literature	0	0	literature	9	3
+nPropylFormate	KFNNIILCVOLYIR-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+nPropylMercaptan	SUVIGLJNEAMWEG-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+nPropylPropionate	MCSINKKTEDDPNK-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+nPropylbenzene	ODLMAHJVESYWTB-UHFFFAOYSA-N	10	2	literature	15	1	literature	0	0
+nPropylcyclohexane	DEDZSLCZHWTGOR-UHFFFAOYSA-N	13	2	literature	20	1	literature	0	0
+nPropylcyclopentane	KDIAMAVWIJYWHN-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+nTetracosane	POOSGDOYLQNASK-UHFFFAOYSA-N	0	0	literature	7	1	literature	0	0
+nTetradecane	BGHCVCJVXZWKCC-UHFFFAOYSA-N	72	5	literature	0	0	literature	0	0
+nTricosane	FIGVVZUWCLSUEI-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+nTridecane	IIYFAKIEWZDVMP-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+nUndecane	RSJKGSCJYJTIGS-UHFFFAOYSA-N	45	4	none	0	0	none	0	0
+naphthalene	UFWIBTONFRDIAS-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+natron		0	0	none	0	0	none	0	0
+neon	GKAOGPIIYCISHV-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+neopentane	CRSOQBOWXPBRES-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+nesquehonite		0	0	none	0	0	none	0	0
+nitrobenzene	LQNUZADURLCDLV-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+nitroethane	MCSAJNNLRCFZED-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+nitrogenTetroxide	WFPZPJSADLPSON-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+nitrogenTrioxide	LZDSILRDTDCIQT-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+nitromethane	LYGJENNIWJXYER-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+novec649		0	0	none	0	0	none	0	0
+oCresol	QWVGKYWNOKOFNN-UHFFFAOYSA-N	5	1	literature	0	0	literature	0	0
+oCymene	WWRCMNKATXZARA-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+oDichlorobenzene	RFFLAFLAYFXFSW-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+oDiethylbenzene	KVNYFPKFSJIPBJ-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+oEthyltoluene	HYFLWBNQFMXCPA-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+oNitrotoluene	PLAZTCDQAHEYBI-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+oToluicAcid	ZWLPBLYKEWSWPD-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+oXylene	CTQNGGLPUBDAKN-UHFFFAOYSA-N	81	21	none	15	1	none	17	7
+oxalicAcid	MUBZPKHOEPUJKR-UHFFFAOYSA-N	0	0	none	0	0	literature	0	0
+pCresol	IWDCLRJOBJJRNH-UHFFFAOYSA-N	8	1	literature	0	0	literature	0	0
+pCymene	HFPZCAJZSCWRBC-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+pDichlorobenzene	OCJBOOLMMGQPQU-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+pDiethylbenzene	DSNHSQKRULAAEI-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+pDiisopropylbenzene	SPPWGCYEYAMHDT-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+pEthyltoluene	JRLPEMVDPFPYPJ-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+pNitrotoluene	ZPTVNYMJQHSSEA-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+pPhenylenediamine	CBCKQZAAMUWICA-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+pToluicAcid	LPNBBFKOUUSUDB-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+pXylene	URLKBWYHVLBVBO-UHFFFAOYSA-N	93	24	none	12	1	none	0	0
+pentahydrite		0	0	none	0	0	none	0	0
+pentanal	HGBOYTHUEUWSSQ-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+pentanenitrile	RFFFKMOABOFIDF-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+pentanoicAcid	NQPDZGIKBAWPEJ-UHFFFAOYSA-N	8	1	none	8	1	none	0	0
+perfluorooctane	YVBBRRALBYAZBM-UHFFFAOYSA-N	0	0	none	0	0	none	7	1
+phenanthrene	YNPNZTXNASCQKK-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+phenol	ISWSIDIOOBJBQZ-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+phosgene	YGYAWVDWMABLBF-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+phthalicAcid	XNGIFLGASWRNHJ-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+piperazine	GLUUGHFHXGJENI-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+pirssonite		0	0	none	0	0	none	0	0
+polyethylene		0	0	none	0	0	none	0	0
+polyhalite		0	0	none	0	0	none	0	0
+polypropylene		0	0	none	0	0	none	0	0
+polystyrene		0	0	none	0	0	none	0	0
+potassiumBitartrate	KYKNRZGSIGMXFH-ZVGUSBNCSA-M	0	0	none	0	0	none	0	0
+propadiene	IYABWNGZIDDRAK-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+propanal	NBBJYMSMWIIQGU-UHFFFAOYSA-N	7	1	literature	0	0	literature	0	0
+propane	ATUOYWHBWRKTHZ-UHFFFAOYSA-N	0	0	none	0	0	none	94	4
+propionicAcid	XBDQKXXYIPTUBI-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+propionitrile	FVSKHRXBFJPNKK-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+propylene	QQONPFPTGQHPMA-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+propyleneCarbonate	RUOJZAUFBMNUDX-UHFFFAOYSA-N	39	10	literature	0	0	literature	0	0
+propyleneGlycol30		0	0	none	0	0	none	0	0
+propyne	MWWATHDPGQKSAR-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+pyrene	BBEAQIROQSPTKN-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+pyridine	JUJWROOIHBZHMG-UHFFFAOYSA-N	33	4	literature	0	0	literature	0	0
+pyrochroite		0	0	none	0	0	none	0	0
+pyrrole	KAESVJOAVNADME-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+rhodochrosite		0	0	none	0	0	none	0	0
+salicylicAcid	YGSDEFSMJLZEOE-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+schoenite		0	0	none	0	0	none	0	0
+secButylMercaptan	LOCHFZBWPCLPAN-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+secButylbenzene	ZJMWRROPUADPEA-UHFFFAOYSA-N	0	0	none	0	0	literature	0	0
+sepiolite		0	0	none	0	0	none	0	0
+sepiolite_d		0	0	none	0	0	none	0	0
+siderite		0	0	none	0	0	none	0	0
+silica	VYPSYNLAJGMNEJ-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+squalane	PRAKJMSDJKAYCZ-UHFFFAOYSA-N	69	8	none	0	0	literature	0	0
+strontianite		0	0	none	0	0	none	0	0
+styrene	PPBRXRYQALVLMV-UHFFFAOYSA-N	13	2	literature	0	0	literature	0	0
+sucrose	CZMRCDWAGMRECN-UGDNZRGBSA-N	0	0	none	0	0	none	0	0
+sulfolane	HXJUTPCZVOIRIF-UHFFFAOYSA-N	69	10	literature	6	1	literature	5	1
+syngenite		0	0	none	0	0	none	0	0
+talc		0	0	none	0	0	none	0	0
+tartaricAcid		0	0	none	0	0	none	0	0
+terephthalicAcid	KKEYFWRCBNTPAC-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+tertButylAcetate	WMOVHXAZOJBABW-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+tertButylEthylEther	NUMQCACRALPSHD-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+tertButylMercaptan	WMXCDAVJEZZYLT-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+tertButylbenzene	YTZKOQUCBOVLHL-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+tertButylcyclohexane	XTVMZZBLCLWBPM-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+tetradecanoicAcid	TUNFSRHWOTWDNC-UHFFFAOYSA-N	9	1	none	7	1	none	0	0
+tetraethyleneGlycol	UWHCKJMYHZGTIT-UHFFFAOYSA-N	26	2	literature	5	1	literature	0	0
+tetrahydrofuran	WYURNTSHIVDZCO-UHFFFAOYSA-N	53	20	literature	0	0	literature	0	0
+tetrahydropyran	DHXVGJBLRPWPCS-UHFFFAOYSA-N	14	4	none	0	0	none	23	7
+thiophene	YTPLMLYBLZKORZ-UHFFFAOYSA-N	13	2	literature	0	0	literature	0	0
+toluene	YXFVVABEGXRONW-UHFFFAOYSA-N	169	47	literature	85	6	none	35	8
+trans12Dimethylcyclohexane		0	0	literature	0	0	literature	0	0
+trans12Dimethylcyclopentane	RIRARCHMRDHZAR-RNFRBKRXSA-N	0	0	literature	0	0	literature	0	0
+trans13Dimethylcyclohexane		0	0	literature	0	0	literature	0	0
+trans13Dimethylcyclopentane	XAZKFISIRYLAEE-RNFRBKRXSA-N	0	0	literature	0	0	literature	0	0
+trans14Dimethylcyclohexane	QRMPKOFEUHIBNM-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+trans2Butene	IAQRGUVFOMOMEM-ONEGZZNKSA-N	0	0	none	0	0	none	0	0
+trans2Hexene	RYPKRALMXUUNKS-HWKANZROSA-N	0	0	literature	0	0	literature	0	0
+trans2Pentene	QMMOXUPEWRXHJS-HWKANZROSA-N	0	0	literature	0	0	literature	0	0
+transDecahydronaphthalene	NNBZCPXTIHJBJL-UHFFFAOYSA-N	10	2	literature	0	0	literature	0	0
+trichloroacetaldehyde	HFFLGKNGCAIQMO-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+trichloroacetylChloride	PVFOMCVHYWHZJE-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+trichloroethylene	XSTXAVWGXDQKEL-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+triethanolamine	GSEJCLTVZPLZKY-UHFFFAOYSA-N	25	6	literature	0	0	literature	19	4
+triethylamine	ZMANZCXQSJIPKH-UHFFFAOYSA-N	20	7	literature	0	0	literature	0	0
+triethyleneGlycol	ZIBGPFATKBEMQZ-UHFFFAOYSA-N	110	13	literature	5	1	literature	0	0
+trimethylamine	GETQZCLCWQTVFV-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+trona		0	0	none	0	0	none	0	0
+vinylAcetate	XTXRWKRVRITETP-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+vinylChloride	BZHJMEDXRYGGRV-UHFFFAOYSA-N	0	0	literature	0	0	literature	0	0
+vinylPropionate	UIWXSTHGICQLQT-UHFFFAOYSA-N	0	0	none	0	0	none	0	0
+vivianite		0	0	none	0	0	none	0	0
+water	XLYOFNOQVPJJNP-UHFFFAOYSA-N	594	124	literature	117	20	fitted	368	55
+witherite		0	0	none	0	0	none	0	0
