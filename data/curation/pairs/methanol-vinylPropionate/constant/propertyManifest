@@ -1,0 +1,92 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/methanol.dat"
+        {
+            type          imported;
+            sha256        "c31b411d7bdd0857e1a2998503dd5170f75f9a417a9d47306b4095fd28bcebd6";
+            computationalSha256 "d51b98bd9ea6675087f0be387bcb63782ea8fc394f1962cb648ad92e39752faa";
+            origin        "data/standards/components/methanol.dat";
+            originSha256  "3e584446eb5b5ffd4ee5547099679b01254cc19dad31a8db909a2068fe9cad43";
+            release       Choupo-2608;
+        }
+        "components/vinylPropionate.dat"
+        {
+            type          imported;
+            sha256        "9a70d9249f1389e427134a1468c1d22689dca84cf16df55a37d694a7bd124dd9";
+            computationalSha256 "8be86a6cdcaf1c4dd2c194f15d4dd30b1220681e207f52fb5249a8d0d71827c2";
+            origin        "data/standards/components/vinylPropionate.dat";
+            originSha256  "e5688e5cc48e3278c4bd72dcc6baab3b35b421938a2dc2b8dcf0a5b13f992da7";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/methanol-vinylPropionate.dat"
+        {
+            type          imported;
+            sha256        "fe571e2c32102cb2700320940cd763e7fbac89231bd510f6e3fa6d603f9d5ab2";
+            computationalSha256 "57e4d8b8fbc21bc9a42a6123c4ad5c8667fc0ba287100d6aefed1310a1c19ba5";
+            origin        "data/standards/parameters/NRTL/methanol-vinylPropionate.dat";
+            originSha256  "3e0ad3a4cee0919b5bdc44d6e3f670f18e3bb77c556515be0a3f095150481036";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/methanol-vinylPropionate.dat"
+        {
+            type          imported;
+            sha256        "18bf21dafe88ec11ab12af9d00ac84cc222669663b18435b2ce3ebe8e51bf4cb";
+            computationalSha256 "bf64177545e62f116b789d2688f310508173edb088fd29ed686f6d6eb0618ae4";
+            origin        "data/standards/parameters/UNIQUAC/methanol-vinylPropionate.dat";
+            originSha256  "77ba4ce0dcc0f07c871da32b9e2ac10595ddbd885f2ebe9f80919f6e510ff303";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/methanol-vinylPropionate.dat"
+        {
+            type          imported;
+            sha256        "63d2291cbc0e11348702fa94cd90cf0f056ca54bfb2db4aa83586143269ebf2b";
+            computationalSha256 "c964fc675245c24aa0563d8417f139815edf41c9ec2df95e40233a2528b1319d";
+            origin        "data/standards/parameters/Wilson/methanol-vinylPropionate.dat";
+            originSha256  "b99e6300a9784f89402d8f3a390b0845162d4ee634d31c21db90b0ae7edb8faf";
+            release       Choupo-2608;
+        }
+    }
+}

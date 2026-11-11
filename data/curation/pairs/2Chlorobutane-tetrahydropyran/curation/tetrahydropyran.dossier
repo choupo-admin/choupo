@@ -1,0 +1,205 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      tetrahydropyran;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-2Chlorobutane.b_ij  102.252344388;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-2Chlorobutane.b_ji  -125.303753208;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "417090c4fe30fa94";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/tetrahydropyran-2Chlorobutane-bubble-j.fluid.2005.02.014.dat";
+            doi       "10.1016/j.fluid.2005.02.014";
+            sha256    "2e20f7f93853787f45f54b6021f65428aa068d9b1409912ca4d3c93839693bd3";
+            provenance measured;
+            archiveFile "j.fluid.2005.02.014.xml";
+            system    "tetrahydropyran + 2Chlorobutane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0615; max 0.9635; n 22; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-2Chlorobutane.b_ij  102.251743548;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-2Chlorobutane.b_ji  -125.303260899;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "417090c4fe30fa94";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/tetrahydropyran-2Chlorobutane-bubble-j.fluid.2005.02.014.dat";
+            doi       "10.1016/j.fluid.2005.02.014";
+            sha256    "2e20f7f93853787f45f54b6021f65428aa068d9b1409912ca4d3c93839693bd3";
+            provenance measured;
+            archiveFile "j.fluid.2005.02.014.xml";
+            system    "tetrahydropyran + 2Chlorobutane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0615; max 0.9635; n 22; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-2Chlorobutane.A_ij  -806.559643678;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-2Chlorobutane.A_ji  701.687878351;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "417090c4fe30fa94";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/tetrahydropyran-2Chlorobutane-bubble-j.fluid.2005.02.014.dat";
+            doi       "10.1016/j.fluid.2005.02.014";
+            sha256    "2e20f7f93853787f45f54b6021f65428aa068d9b1409912ca4d3c93839693bd3";
+            provenance measured;
+            archiveFile "j.fluid.2005.02.014.xml";
+            system    "tetrahydropyran + 2Chlorobutane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0615; max 0.9635; n 22; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-2Chlorobutane.A_ij  -806.56169872;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-2Chlorobutane.A_ji  701.690806407;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "417090c4fe30fa94";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/tetrahydropyran-2Chlorobutane-bubble-j.fluid.2005.02.014.dat";
+            doi       "10.1016/j.fluid.2005.02.014";
+            sha256    "2e20f7f93853787f45f54b6021f65428aa068d9b1409912ca4d3c93839693bd3";
+            provenance measured;
+            archiveFile "j.fluid.2005.02.014.xml";
+            system    "tetrahydropyran + 2Chlorobutane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0615; max 0.9635; n 22; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

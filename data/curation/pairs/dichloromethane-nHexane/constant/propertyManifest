@@ -1,0 +1,92 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/dichloromethane.dat"
+        {
+            type          imported;
+            sha256        "b8783ee2fc6a551d7289f9204aac5d1978edff6eec61b9c03677abda4da2a679";
+            computationalSha256 "db652ed78ab67a1c63e3745f372cd7e9f47e081d6a3caf3fdfc8dd08f7034c50";
+            origin        "data/standards/components/dichloromethane.dat";
+            originSha256  "0f35222ac2105f02df21450bb857e60cc5d15bdcbbe5b981a491e24f2261dcbc";
+            release       Choupo-2608;
+        }
+        "components/nHexane.dat"
+        {
+            type          imported;
+            sha256        "21c74d8d3e29050dc993812dd30b2cd64cbeefd036bc8d367abd6ee25436fc55";
+            computationalSha256 "7aa52217b06fd08229d256e222efda0ade6a6599a73899eae054b7a50a3da8de";
+            origin        "data/standards/components/nHexane.dat";
+            originSha256  "f37d7199cc0bb8577ba1a79797185a9cf0e9b65f2ecce764f079a3f480ddb81c";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/dichloromethane-nHexane.dat"
+        {
+            type          imported;
+            sha256        "3b3a6a443495d3c4a770e983e9be60ddfd4d3155f912a22195d57220d66193f8";
+            computationalSha256 "5209c217a3c3482c6f08e72784ae7fb874437f964b796e8981636476b47caee0";
+            origin        "data/standards/parameters/NRTL/dichloromethane-nHexane.dat";
+            originSha256  "533ab911921f647232f7075bf209e2bb56923886c0809c7f0050d1bb8047b75c";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/dichloromethane-nHexane.dat"
+        {
+            type          imported;
+            sha256        "175ae1a0d0e8994d74485b1a4146380bf962ceb33ef31f4214aeb0cc965880a2";
+            computationalSha256 "ea1e93135d8d3e861a56a148a02a07ba4e5eebdcb11ac96f848182a2e94cb606";
+            origin        "data/standards/parameters/UNIQUAC/dichloromethane-nHexane.dat";
+            originSha256  "a9d1fe55a3445b23a22ecb3043cadaf9103194b776b81afa9054ce4caf24fab6";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/dichloromethane-nHexane.dat"
+        {
+            type          imported;
+            sha256        "f34e390ce890150bceadcfd8967bae624d42bfd11d1677f34c141404abd74b6c";
+            computationalSha256 "3cf5aa8e9ca158a5f40769ba648c61ef74cfed3d1cfa72f2fd792bbfd3e0ae4a";
+            origin        "data/standards/parameters/Wilson/dichloromethane-nHexane.dat";
+            originSha256  "fb59ada2ea22bd4e685a19f5135a8e61770bb3cf6ff2ed3f819617d2ec161ad5";
+            release       Choupo-2608;
+        }
+    }
+}

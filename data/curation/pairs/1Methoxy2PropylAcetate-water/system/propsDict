@@ -79,10 +79,8 @@
   inSample`, the C300 cap and `review { by none; }`; a severe or refused
   grade, or a split, is not promoted. The three in-sample residuals are
   published side by side, never used to choose a model for the student.
-  UNIQUAC: NOT FITTED -- 1Methoxy2PropylAcetate carries no UNIQUAC r and
-  q (no tabulated value, and no UNIFAC groups to sum them from,
-  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
-  is estimated silently. Wilson: NOT FITTED -- the NRTL fit of this very
+  UNIQUAC: FITTED (r and q written afterwards into the components by
+  bin/curate/uniquac_rq_from_groups.py, C325; declared here after the Wilson fit). Wilson: NOT FITTED -- the NRTL fit of this very
   evidence SPLITS the liquid inside its validity span (curation oneLiquid
   false, arm f); Wilson cannot represent two liquids, so a Wilson fit
   here would hide the split -- Wilson is not fitted.
@@ -239,6 +237,124 @@ operations
         output      { file txy_nrtl.csv; }
     }
     // @@C294-OPS-BEGIN@@ -- UNIQUAC and Wilson on the NRTL fit's own evidence (DEV.md 4c C294)
+    {
+        name        fit_uniquac;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2PropylAcetate.a_ij;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2PropylAcetate.a_ji;  initial 0;  min -3000;  max 3000; }
+        );
+
+        thermo   // the model, as a fragment of the case's system (C294)
+        {
+            equilibrium
+            {
+                liquid
+                {
+                    activityModel
+                    {
+                        model UNIQUAC;
+                        binaryParameters   // the FIT'S starting point
+                        {
+                            water-1Methoxy2PropylAcetate { i water; j 1Methoxy2PropylAcetate; a_ij 0; a_ji 0; }
+                        }
+                    }
+                    standardState pureLiquid;
+                }
+            }
+        }
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/water-1Methoxy2PropylAcetate-bubble-j.fluid.2007.06.006.dat";
+                role     fit;
+            }
+        );
+
+        objective { method twoStage;  scale { T_bubble absolute; } }
+        residual
+        {
+            kind        T_bubble;
+            components  ( water 1Methoxy2PropylAcetate );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_history_uniquac.csv;
+            parity     parity_uniquac.csv;
+            proposal   1Methoxy2PropylAcetate-water.UNIQUAC.proposal.dat;
+        }
+    }
+    {
+        name        fit_uniquac_start2;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2PropylAcetate.a_ij;  initial 300;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2PropylAcetate.a_ji;  initial -150;  min -3000;  max 3000; }
+        );
+
+        thermo   // the model, as a fragment of the case's system (C294)
+        {
+            equilibrium
+            {
+                liquid
+                {
+                    activityModel
+                    {
+                        model UNIQUAC;
+                        binaryParameters   // the FIT'S starting point
+                        {
+                            water-1Methoxy2PropylAcetate { i water; j 1Methoxy2PropylAcetate; a_ij 0; a_ji 0; }
+                        }
+                    }
+                    standardState pureLiquid;
+                }
+            }
+        }
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/water-1Methoxy2PropylAcetate-bubble-j.fluid.2007.06.006.dat";
+                role     fit;
+            }
+        );
+
+        objective { method twoStage;  scale { T_bubble absolute; } }
+        residual
+        {
+            kind        T_bubble;
+            components  ( water 1Methoxy2PropylAcetate );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            parity     parity_uniquac_start2.csv;
+        }
+    }
     // @@C294-OPS-END@@
 );
 

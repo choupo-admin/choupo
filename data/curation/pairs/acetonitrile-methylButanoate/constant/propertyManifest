@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/acetonitrile.dat"
+        {
+            type          imported;
+            sha256        "1648c3e6159adeb40051fa6b622de5ac06367d838d5e29c6c8d2cc5b7e16811d";
+            computationalSha256 "6bf2a55b8cf4c013cb4b9998ffee32b981017af473f039714cd4536f58d46b9f";
+            origin        "data/standards/components/acetonitrile.dat";
+            originSha256  "41ad3f70fe71ab5138b8c5c0e56a6ad7edecf567cb1ae3a64dda50c04e266e6e";
+            release       Choupo-2608;
+        }
+        "components/methylButanoate.dat"
+        {
+            type          imported;
+            sha256        "03efed63bd7b7785c681103bfe0f5bdd6566ab0c01ec164f6643a3cd5876bcc6";
+            computationalSha256 "05dcd7da193ea255cdcdb92fce81fd1f947868e22ca6f52b4e76ca897cc944ed";
+            origin        "data/standards/components/methylButanoate.dat";
+            originSha256  "9383c5f0c7cb995d33c3f50843fd5e8f2fbf7dce0af5eeed090a3501a79c15c5";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/acetonitrile-methylButanoate.dat"
+        {
+            type          imported;
+            sha256        "37aeeaac4b7f1a7bb1e0e28795747ca61b50449cc82bbb6b7217372758fdd0b6";
+            computationalSha256 "14665fac5be3076847608ebdd6e217ca3090261668bc02e7491c3d398a01b156";
+            origin        "data/standards/parameters/NRTL/acetonitrile-methylButanoate.dat";
+            originSha256  "4565158c9f66c766bdeaacaceb81f48ac87f88ce3dbf36a2b9958bd60a8de16b";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/acetonitrile-methylButanoate.dat"
+        {
+            type          imported;
+            sha256        "54a8c2568ec177a000de920276bef8858e58164700a82aebbf050a8dbfe45508";
+            computationalSha256 "9b1a7a7ba23540f7c8f23f5d81dc4b303342d4503fdc192ae345e60901333653";
+            origin        "data/standards/parameters/Wilson/acetonitrile-methylButanoate.dat";
+            originSha256  "e7be76aef1c6e2eceb29348d3d2c28eba35600ea8c1dc6b3df8f8b4913bf1d10";
+            release       Choupo-2608;
+        }
+    }
+}

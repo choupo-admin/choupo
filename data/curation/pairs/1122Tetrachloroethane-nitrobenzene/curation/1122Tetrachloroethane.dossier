@@ -1,0 +1,209 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      1122Tetrachloroethane;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-nitrobenzene.b_ij  99.2565383432;
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-nitrobenzene.b_ji  -153.409232317;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "4201f343621a4e2f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1122Tetrachloroethane-nitrobenzene-bubble-je0301085.dat";
+            doi       "10.1021/je0301085";
+            sha256    "b1fe3f87feb94add0759ccbac63caabc818e5ec6803f846b16b1badbb1ca828e";
+            provenance measured;
+            archiveFile "je0301085.xml";
+            system    "1122Tetrachloroethane + nitrobenzene";
+            pressure  "94600.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1395; max 0.8537; n 6; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-nitrobenzene.b_ij  497.56276597;
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-nitrobenzene.b_ji  -422.951614098;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "4201f343621a4e2f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1122Tetrachloroethane-nitrobenzene-bubble-je0301085.dat";
+            doi       "10.1021/je0301085";
+            sha256    "b1fe3f87feb94add0759ccbac63caabc818e5ec6803f846b16b1badbb1ca828e";
+            provenance measured;
+            archiveFile "je0301085.xml";
+            system    "1122Tetrachloroethane + nitrobenzene";
+            pressure  "94600.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1395; max 0.8537; n 6; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-nitrobenzene.A_ij  -947.057481871;
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-nitrobenzene.A_ji  460.378739031;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "4201f343621a4e2f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1122Tetrachloroethane-nitrobenzene-bubble-je0301085.dat";
+            doi       "10.1021/je0301085";
+            sha256    "b1fe3f87feb94add0759ccbac63caabc818e5ec6803f846b16b1badbb1ca828e";
+            provenance measured;
+            archiveFile "je0301085.xml";
+            system    "1122Tetrachloroethane + nitrobenzene";
+            pressure  "94600.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1395; max 0.8537; n 6; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-nitrobenzene.A_ij  4336.47654137;
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-nitrobenzene.A_ji  -3026.18523709;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "4201f343621a4e2f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1122Tetrachloroethane-nitrobenzene-bubble-je0301085.dat";
+            doi       "10.1021/je0301085";
+            sha256    "b1fe3f87feb94add0759ccbac63caabc818e5ec6803f846b16b1badbb1ca828e";
+            provenance measured;
+            archiveFile "je0301085.xml";
+            system    "1122Tetrachloroethane + nitrobenzene";
+            pressure  "94600.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1395; max 0.8537; n 6; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

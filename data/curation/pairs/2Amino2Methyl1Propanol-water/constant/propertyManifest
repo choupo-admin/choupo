@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/2Amino2Methyl1Propanol.dat"
+        {
+            type          imported;
+            sha256        "276bf7a1ac4e21c5c03a7a2c43eb2d29e3edc92ef20d1d5d0638e395b0761886";
+            computationalSha256 "35c1bb79838f152648a18e1108568217a3b30210dcad6741d6767e04651d20ab";
+            origin        "data/standards/components/2Amino2Methyl1Propanol.dat";
+            originSha256  "aa056661081df932672f5b20daf950a7202abe6575e96d8c8250207da79dd798";
+            release       Choupo-2608;
+        }
+        "components/water.dat"
+        {
+            type          imported;
+            sha256        "434214d874e17a076ce391a9d1dbca47321b4285429660688db4e64237ee0b2a";
+            computationalSha256 "ce55eca4e8c4f234b2633edec3fb54de5e630256ace48491a44357db2aaacf5c";
+            origin        "data/standards/components/water.dat";
+            originSha256  "3723b03d86ab148fd084c01f9fc3cce1bb4398a3dc6b6914e0336c40d4ade16d";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Amino2Methyl1Propanol-water.dat"
+        {
+            type          imported;
+            sha256        "60d2f79ed824b075af183bb0cfb184d77c44b94a55c85bdb420aedc79384ef94";
+            computationalSha256 "8f8cfc708aec68db695097ebfa55c33ebff4356cd7d223e39ba21e2e5f637c91";
+            origin        "data/standards/parameters/NRTL/2Amino2Methyl1Propanol-water.dat";
+            originSha256  "a22c074a3d1c4d867e1854951dbc7a7130130922586f0e06c6d38b0ad032b420";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Amino2Methyl1Propanol-water.dat"
+        {
+            type          imported;
+            sha256        "ed3ccfdc334ca5866648f7c1a482727950731d8c4ada2df28881083a69eb065f";
+            computationalSha256 "8e23489298c84bfa7f5e52e18ab7a3cf5d1e55c4ca572f6dfa9e8ca61a827c41";
+            origin        "data/standards/parameters/Wilson/2Amino2Methyl1Propanol-water.dat";
+            originSha256  "521ee49295173e4da69469709d1dc1a4bdfdb2f0b3ae8631eaacbedb433b9853";
+            release       Choupo-2608;
+        }
+    }
+}

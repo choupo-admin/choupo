@@ -1,0 +1,117 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      acetonitrile;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-diethylSuccinate.b_ij  -411.773165394;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-diethylSuccinate.b_ji  1029.66069171;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "72b4a913e91f4e8b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-diethylSuccinate-bubble-acs.jced.7b00005.dat";
+            doi       "10.1021/acs.jced.7b00005";
+            sha256    "2df72144ace170d67e9d1a83b819774d789e0d197c4cd9967f275ac830b5669c";
+            provenance measured;
+            archiveFile "acs.jced.7b00005.xml";
+            system    "acetonitrile + diethylSuccinate";
+            pressure  "10000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1506; max 0.7919; n 5; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-diethylSuccinate.b_ij  153.054650275;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-diethylSuccinate.b_ji  -139.929502402;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "72b4a913e91f4e8b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetonitrile-diethylSuccinate-bubble-acs.jced.7b00005.dat";
+            doi       "10.1021/acs.jced.7b00005";
+            sha256    "2df72144ace170d67e9d1a83b819774d789e0d197c4cd9967f275ac830b5669c";
+            provenance measured;
+            archiveFile "acs.jced.7b00005.xml";
+            system    "acetonitrile + diethylSuccinate";
+            pressure  "10000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1506; max 0.7919; n 5; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

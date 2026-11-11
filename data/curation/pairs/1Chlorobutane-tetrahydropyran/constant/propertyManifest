@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/1Chlorobutane.dat"
+        {
+            type          imported;
+            sha256        "0b1ed4a37c72f538bc59d5e0fc4f512309ec9eb4e0aa391d7ac94f4c7f538772";
+            computationalSha256 "657b7a24dc9fc4f9fc23fe73221076c75bee37ed22ea62e37ff2a50826cb862e";
+            origin        "data/standards/components/1Chlorobutane.dat";
+            originSha256  "847de1b69ae86a6de3e32f9d30b985a7e1c0a2431963dd42ebcd7fd4f9736bdb";
+            release       Choupo-2608;
+        }
+        "components/tetrahydropyran.dat"
+        {
+            type          imported;
+            sha256        "ba04df8e3e3920a41b108aa23f7d65733b2bda1b12a017b8422de1152bfd2ed0";
+            computationalSha256 "a1f8003988e5db50c8e44fc873eda989cfa1f6eb34be05424bd528cacb407a5a";
+            origin        "data/standards/components/tetrahydropyran.dat";
+            originSha256  "0ecb5a8368235280bf149259f9e5941ddce69c1266c9a16b5afe280abbe2dace";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1Chlorobutane-tetrahydropyran.dat"
+        {
+            type          imported;
+            sha256        "ca91d6ec97a88cdbf0fb952be1a3bd689194d4737f69d3a5d029356891130ae0";
+            computationalSha256 "2b15153f06d85d763942ac940595d726cbf1ea22c145f8a1701b796a4a74414f";
+            origin        "data/standards/parameters/NRTL/1Chlorobutane-tetrahydropyran.dat";
+            originSha256  "324dd81a1243f6449219b47def0d82e7c4851e660361574c6dc8ca20a9294bc3";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Chlorobutane-tetrahydropyran.dat"
+        {
+            type          imported;
+            sha256        "42774f15c23e179e72a594b110f11578ddb554b3b9667ef6278646206bc4bea6";
+            computationalSha256 "22d0c62736ae4ee2ab1d916d8d6b25e911a05f00fb8d7356f3d3a1e087a82cd2";
+            origin        "data/standards/parameters/Wilson/1Chlorobutane-tetrahydropyran.dat";
+            originSha256  "d896bacdedb562f103d4aa4a03f9d054167a2ec70e65676c3ff7e1b09399c4ed";
+            release       Choupo-2608;
+        }
+    }
+}

@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/13Dioxolane.dat"
+        {
+            type          imported;
+            sha256        "02ccd8e072602eda6d670bc38dbaf020c22fa09e1c6837ae3b6b89b93d35ecd9";
+            computationalSha256 "05c0fe809074bcc49c42f1f12d95cfe917dd7825a3903eb632063322d6b72793";
+            origin        "data/standards/components/13Dioxolane.dat";
+            originSha256  "024cf5ef6ebf36cd8db1791dc64ddf22c4d78393285d946b28a3fae1a38835fa";
+            release       Choupo-2608;
+        }
+        "components/2Methyl1Propanol.dat"
+        {
+            type          imported;
+            sha256        "302d63c2d5294f2a66a931d03f2ae6f5241608d0dd68dfd80263a7b3878c6878";
+            computationalSha256 "7b7b4caa9d9314aee96c16a9effee19654118fc926ce6a25c347096ceebd11b8";
+            origin        "data/standards/components/2Methyl1Propanol.dat";
+            originSha256  "e7a6c6f4d20452337d9c111ed9a3de6e052f27789deb177f0a460975f822918c";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/13Dioxolane-2Methyl1Propanol.dat"
+        {
+            type          imported;
+            sha256        "8c0709f9f679ed997f6d182f20fe48d680b46aad5f4dd3fb779fb1360286ec20";
+            computationalSha256 "704236be6704fd9a1a27c7249b87444b47497cd68daf27ff53711bb1a8ff1b1f";
+            origin        "data/standards/parameters/NRTL/13Dioxolane-2Methyl1Propanol.dat";
+            originSha256  "4da2782c838a6af1afb94764b9722f3379bf7266e620608d5c064a943bd362ca";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/13Dioxolane-2Methyl1Propanol.dat"
+        {
+            type          imported;
+            sha256        "b1d6aba16b91383bd433b8b9d3966096cad21379d91b5e901eb700e06d9eaadb";
+            computationalSha256 "8b52cd2c61371ee9bcd36b5996cee6cc75a3f4aeacd3a2f84d2ba820efe92d8e";
+            origin        "data/standards/parameters/Wilson/13Dioxolane-2Methyl1Propanol.dat";
+            originSha256  "bcc5cc9deaf4bb50bc66a6b7003be70e95676742408bb5e368347de718d3ca64";
+            release       Choupo-2608;
+        }
+    }
+}

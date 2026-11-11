@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/1122Tetrachloroethane.dat"
+        {
+            type          imported;
+            sha256        "ceaf75c88666dc0535c0b68bccaa520eaaee25ce3f5c99ed60117faf5d759af1";
+            computationalSha256 "198d7d857a25ec951e052faa80e091770880c6e53f7c4a26d551a1cb8ee782da";
+            origin        "data/standards/components/1122Tetrachloroethane.dat";
+            originSha256  "6634649d343fe9f78d2f9a3e798cb5b500568dc19d387e81d6aca1b85ac6bcff";
+            release       Choupo-2608;
+        }
+        "components/monochlorobenzene.dat"
+        {
+            type          imported;
+            sha256        "58bdafc8463f63c3cfdf682c6bc16ae5caf884aa45c09fccedddccbc35836522";
+            computationalSha256 "895276b8faa5c42e172d14ea56b3799454e5f0bc1d6aec65102ae8b518a15021";
+            origin        "data/standards/components/monochlorobenzene.dat";
+            originSha256  "4ab38d04e9a84a5ec87862dd53b1cf639cc70ccf8eec9daa7f8eafed276fe8a9";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1122Tetrachloroethane-monochlorobenzene.dat"
+        {
+            type          imported;
+            sha256        "a83dc2d6afc0d4816978d2b494bcb69d01ce42139ea9c2998f7fe1f51151d891";
+            computationalSha256 "e310707d814f00483a0acb2ad6a452db8e095f39a92893f739a3c2ee9ca15e88";
+            origin        "data/standards/parameters/NRTL/1122Tetrachloroethane-monochlorobenzene.dat";
+            originSha256  "b5e7d12efeeb93429938a577a0da87a1a89f05fa9627010bb6999a3dd9a1caa6";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1122Tetrachloroethane-monochlorobenzene.dat"
+        {
+            type          imported;
+            sha256        "b485d82a9598dd60549adaa289c5b91bc673c15b93c767c4ab6d2fde3a94d092";
+            computationalSha256 "c31fe63e34f8c0438a388f1c7b1dab4afe73d9c116515497a00da4199817336c";
+            origin        "data/standards/parameters/Wilson/1122Tetrachloroethane-monochlorobenzene.dat";
+            originSha256  "f605188e2e7807ea7c699f768de41f97fb4e8c6f100a18a36ac91c7e6b7a5ae4";
+            release       Choupo-2608;
+        }
+    }
+}

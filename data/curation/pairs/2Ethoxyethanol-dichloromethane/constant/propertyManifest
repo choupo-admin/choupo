@@ -28,19 +28,19 @@ propertyManifest
         "components/2Ethoxyethanol.dat"
         {
             type          imported;
-            sha256        "2b520ea3ec694be6226a910534f306def4ab82a6574202374d0a340c37acad40";
-            computationalSha256 "1d44df950672d5174ef993726cdc10f7a06dfcbff5c35d141714da4988bd7487";
+            sha256        "0b7ecb49920f6b53fdfdd5833eec28ebd57f446c44aa65e53fc982857d80093d";
+            computationalSha256 "5955f830963288748eece85ecea04f20c410c4ac0e2f65c944fee74acba96858";
             origin        "data/standards/components/2Ethoxyethanol.dat";
-            originSha256  "967c792d6872c0f8b1f5d84a3078ddb3805feddcd451dcf4b7920271226afb4f";
+            originSha256  "98e5caef249c63cbb2cd7b95d48e9e54cf81cb40ddeacbf7a1845271d8fc0c6a";
             release       Choupo-2608;
         }
         "components/dichloromethane.dat"
         {
             type          imported;
-            sha256        "6af35e44df114bc925e33244db50160b8d122f8bf3e98fd653835db93d29db04";
-            computationalSha256 "890ee7fa4f32182d7e259d936f035ec62a60e9a7bbc52a7215dd6b2be7c2e2ee";
+            sha256        "b8783ee2fc6a551d7289f9204aac5d1978edff6eec61b9c03677abda4da2a679";
+            computationalSha256 "db652ed78ab67a1c63e3745f372cd7e9f47e081d6a3caf3fdfc8dd08f7034c50";
             origin        "data/standards/components/dichloromethane.dat";
-            originSha256  "b8ba0a1e7c64705bffe568d66f32f52ffaefee800eeff47989540075a788cf8b";
+            originSha256  "0f35222ac2105f02df21450bb857e60cc5d15bdcbbe5b981a491e24f2261dcbc";
             release       Choupo-2608;
         }
     }

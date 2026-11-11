@@ -1,0 +1,301 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      ethanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-2Methoxyethanol.b_ij  39.8529325465;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-2Methoxyethanol.b_ji  -36.8264923264;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "736e752a6aec9f88";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-2Methoxyethanol-bubble-je400791n.dat";
+            doi       "10.1021/je400791n";
+            sha256    "1bdc9f4cb2920907919b64ec3c2c9dbcd186d090a985623891577597239b695c";
+            provenance measured;
+            archiveFile "je400791n.xml";
+            system    "ethanol + 2Methoxyethanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.052; max 0.979; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-2Methoxyethanol.b_ij  39.4049203258;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-2Methoxyethanol.b_ji  -36.404948205;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "736e752a6aec9f88";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-2Methoxyethanol-bubble-je400791n.dat";
+            doi       "10.1021/je400791n";
+            sha256    "1bdc9f4cb2920907919b64ec3c2c9dbcd186d090a985623891577597239b695c";
+            provenance measured;
+            archiveFile "je400791n.xml";
+            system    "ethanol + 2Methoxyethanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.052; max 0.979; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-2Methoxyethanol.a_ij  -190.600117571;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-2Methoxyethanol.a_ji  289.58993078;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "736e752a6aec9f88";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-2Methoxyethanol-bubble-je400791n.dat";
+            doi       "10.1021/je400791n";
+            sha256    "1bdc9f4cb2920907919b64ec3c2c9dbcd186d090a985623891577597239b695c";
+            provenance measured;
+            archiveFile "je400791n.xml";
+            system    "ethanol + 2Methoxyethanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.052; max 0.979; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-2Methoxyethanol.a_ij  -199.136122653;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-2Methoxyethanol.a_ji  309.499989561;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "736e752a6aec9f88";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-2Methoxyethanol-bubble-je400791n.dat";
+            doi       "10.1021/je400791n";
+            sha256    "1bdc9f4cb2920907919b64ec3c2c9dbcd186d090a985623891577597239b695c";
+            provenance measured;
+            archiveFile "je400791n.xml";
+            system    "ethanol + 2Methoxyethanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.052; max 0.979; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-2Methoxyethanol.A_ij  1478.00335114;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-2Methoxyethanol.A_ji  -1403.43125584;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "736e752a6aec9f88";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-2Methoxyethanol-bubble-je400791n.dat";
+            doi       "10.1021/je400791n";
+            sha256    "1bdc9f4cb2920907919b64ec3c2c9dbcd186d090a985623891577597239b695c";
+            provenance measured;
+            archiveFile "je400791n.xml";
+            system    "ethanol + 2Methoxyethanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.052; max 0.979; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-2Methoxyethanol.A_ij  1421.99273924;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-2Methoxyethanol.A_ji  -1357.21471146;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "736e752a6aec9f88";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-2Methoxyethanol-bubble-je400791n.dat";
+            doi       "10.1021/je400791n";
+            sha256    "1bdc9f4cb2920907919b64ec3c2c9dbcd186d090a985623891577597239b695c";
+            provenance measured;
+            archiveFile "je400791n.xml";
+            system    "ethanol + 2Methoxyethanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.052; max 0.979; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

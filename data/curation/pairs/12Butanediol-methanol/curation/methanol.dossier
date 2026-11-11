@@ -1,0 +1,301 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      methanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-12Butanediol.b_ij  -662.235449484;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-12Butanediol.b_ji  439.05441163;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "52d6c47db384ab4f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-12Butanediol-bubble-acs.jced.8b00918.dat";
+            doi       "10.1021/acs.jced.8b00918";
+            sha256    "7ef4655a5cd38b76d5f95f1ceab6ebd77e72940d1eaf9067daf629074077cab1";
+            provenance measured;
+            archiveFile "acs.jced.8b00918.xml";
+            system    "methanol + 12Butanediol";
+            pressure  "101325.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0188; max 0.9089; n 13; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-12Butanediol.b_ij  1787.40542423;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-12Butanediol.b_ji  -850.314624885;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "52d6c47db384ab4f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-12Butanediol-bubble-acs.jced.8b00918.dat";
+            doi       "10.1021/acs.jced.8b00918";
+            sha256    "7ef4655a5cd38b76d5f95f1ceab6ebd77e72940d1eaf9067daf629074077cab1";
+            provenance measured;
+            archiveFile "acs.jced.8b00918.xml";
+            system    "methanol + 12Butanediol";
+            pressure  "101325.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0188; max 0.9089; n 13; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-12Butanediol.a_ij  -53.2240175759;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-12Butanediol.a_ji  43.8018100092;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "52d6c47db384ab4f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-12Butanediol-bubble-acs.jced.8b00918.dat";
+            doi       "10.1021/acs.jced.8b00918";
+            sha256    "7ef4655a5cd38b76d5f95f1ceab6ebd77e72940d1eaf9067daf629074077cab1";
+            provenance measured;
+            archiveFile "acs.jced.8b00918.xml";
+            system    "methanol + 12Butanediol";
+            pressure  "101325.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0188; max 0.9089; n 13; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-12Butanediol.a_ij  520.607866444;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-12Butanediol.a_ji  -304.16862602;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "52d6c47db384ab4f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-12Butanediol-bubble-acs.jced.8b00918.dat";
+            doi       "10.1021/acs.jced.8b00918";
+            sha256    "7ef4655a5cd38b76d5f95f1ceab6ebd77e72940d1eaf9067daf629074077cab1";
+            provenance measured;
+            archiveFile "acs.jced.8b00918.xml";
+            system    "methanol + 12Butanediol";
+            pressure  "101325.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0188; max 0.9089; n 13; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-12Butanediol.A_ij  3088.95148414;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-12Butanediol.A_ji  -6055.03202565;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "52d6c47db384ab4f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-12Butanediol-bubble-acs.jced.8b00918.dat";
+            doi       "10.1021/acs.jced.8b00918";
+            sha256    "7ef4655a5cd38b76d5f95f1ceab6ebd77e72940d1eaf9067daf629074077cab1";
+            provenance measured;
+            archiveFile "acs.jced.8b00918.xml";
+            system    "methanol + 12Butanediol";
+            pressure  "101325.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0188; max 0.9089; n 13; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-12Butanediol.A_ij  3088.95147312;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-12Butanediol.A_ji  -6055.03200269;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "52d6c47db384ab4f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-12Butanediol-bubble-acs.jced.8b00918.dat";
+            doi       "10.1021/acs.jced.8b00918";
+            sha256    "7ef4655a5cd38b76d5f95f1ceab6ebd77e72940d1eaf9067daf629074077cab1";
+            provenance measured;
+            archiveFile "acs.jced.8b00918.xml";
+            system    "methanol + 12Butanediol";
+            pressure  "101325.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0188; max 0.9089; n 13; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

@@ -1,0 +1,47 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/monochlorobenzene.dat"
+        {
+            type          imported;
+            sha256        "58bdafc8463f63c3cfdf682c6bc16ae5caf884aa45c09fccedddccbc35836522";
+            computationalSha256 "895276b8faa5c42e172d14ea56b3799454e5f0bc1d6aec65102ae8b518a15021";
+            origin        "data/standards/components/monochlorobenzene.dat";
+            originSha256  "4ab38d04e9a84a5ec87862dd53b1cf639cc70ccf8eec9daa7f8eafed276fe8a9";
+            release       Choupo-2608;
+        }
+        "components/tertButylAcetate.dat"
+        {
+            type          imported;
+            sha256        "a792dcd113133313caf9a21da1541a999ac5329492fefe642dc07335f788eb2f";
+            computationalSha256 "b030c46222f31439cbe4aa4c88da815302d75a8b328af83991ee4a7948a10ce5";
+            origin        "data/standards/components/tertButylAcetate.dat";
+            originSha256  "f97c77cfda5f49ef0cf089ed36280919ba78d2f91ac2f17e7c39d8d794ac3cd8";
+            release       Choupo-2608;
+        }
+    }
+}

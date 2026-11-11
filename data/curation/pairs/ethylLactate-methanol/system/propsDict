@@ -99,10 +99,8 @@
   inSample`, the C300 cap and `review { by none; }`; a severe or refused
   grade, or a split, is not promoted. The three in-sample residuals are
   published side by side, never used to choose a model for the student.
-  UNIQUAC: NOT FITTED -- ethylLactate carries no UNIQUAC r and q (no
-  tabulated value, and no UNIFAC groups to sum them from,
-  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
-  is estimated silently. Wilson: FITTED.
+  UNIQUAC: FITTED (r and q written afterwards into the components by
+  bin/curate/uniquac_rq_from_groups.py, C325; declared here after the Wilson fit). Wilson: FITTED.
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
@@ -398,6 +396,136 @@ operations
         output
         {
             parity     parity_wilson_start2.csv;
+        }
+    }
+    {
+        name        fit_uniquac;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.a_ij;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.a_ji;  initial 0;  min -3000;  max 3000; }
+        );
+
+        thermo   // the model, as a fragment of the case's system (C294)
+        {
+            equilibrium
+            {
+                liquid
+                {
+                    activityModel
+                    {
+                        model UNIQUAC;
+                        binaryParameters   // the FIT'S starting point
+                        {
+                            methanol-ethylLactate { i methanol; j ethylLactate; a_ij 0; a_ji 0; }
+                        }
+                    }
+                    standardState pureLiquid;
+                }
+            }
+        }
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/methanol-ethylLactate-bubble-j.fluid.2015.12.029.dat";
+                role     fit;
+                discard  ( 5 6 );   // the NRTL fit's outliers, reused: decided once (C294)
+            }
+            {
+                dataset  "constant/archiveExtracts/methanol-ethylLactate-bubble-je900481e.dat";
+                role     fit;
+                discard  ( 3 4 5 6 7 8 9 10 11 12 13 14 15 );   // the NRTL fit's outliers, reused: decided once (C294)
+            }
+        );
+
+        objective { method twoStage;  scale { T_bubble absolute; } }
+        residual
+        {
+            kind        T_bubble;
+            components  ( methanol ethylLactate );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_history_uniquac.csv;
+            parity     parity_uniquac.csv;
+            proposal   ethylLactate-methanol.UNIQUAC.proposal.dat;
+        }
+    }
+    {
+        name        fit_uniquac_start2;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.a_ij;  initial 300;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.a_ji;  initial -150;  min -3000;  max 3000; }
+        );
+
+        thermo   // the model, as a fragment of the case's system (C294)
+        {
+            equilibrium
+            {
+                liquid
+                {
+                    activityModel
+                    {
+                        model UNIQUAC;
+                        binaryParameters   // the FIT'S starting point
+                        {
+                            methanol-ethylLactate { i methanol; j ethylLactate; a_ij 0; a_ji 0; }
+                        }
+                    }
+                    standardState pureLiquid;
+                }
+            }
+        }
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/methanol-ethylLactate-bubble-j.fluid.2015.12.029.dat";
+                role     fit;
+                discard  ( 5 6 );   // the NRTL fit's outliers, reused: decided once (C294)
+            }
+            {
+                dataset  "constant/archiveExtracts/methanol-ethylLactate-bubble-je900481e.dat";
+                role     fit;
+                discard  ( 3 4 5 6 7 8 9 10 11 12 13 14 15 );   // the NRTL fit's outliers, reused: decided once (C294)
+            }
+        );
+
+        objective { method twoStage;  scale { T_bubble absolute; } }
+        residual
+        {
+            kind        T_bubble;
+            components  ( methanol ethylLactate );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            parity     parity_uniquac_start2.csv;
         }
     }
     // @@C294-OPS-END@@

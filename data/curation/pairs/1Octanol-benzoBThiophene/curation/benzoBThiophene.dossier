@@ -1,0 +1,295 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      benzoBThiophene;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.b_ij  -450.852586957;
+        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.b_ji  1175.79896218;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e9ebbf68f24057e2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/benzoBThiophene-1Octanol-bubble-j.fluid.2011.04.024.dat";
+            doi       "10.1016/j.fluid.2011.04.024";
+            sha256    "f695b9de005b0fbb1168e244bcfb9665c5663e235f5586fa47cdb2ece4699899";
+            provenance measured;
+            archiveFile "j.fluid.2011.04.024.xml";
+            system    "benzoBThiophene + 1Octanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.113; max 0.887; n 6; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.b_ij  -450.852587103;
+        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.b_ji  1175.79896285;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e9ebbf68f24057e2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/benzoBThiophene-1Octanol-bubble-j.fluid.2011.04.024.dat";
+            doi       "10.1016/j.fluid.2011.04.024";
+            sha256    "f695b9de005b0fbb1168e244bcfb9665c5663e235f5586fa47cdb2ece4699899";
+            provenance measured;
+            archiveFile "j.fluid.2011.04.024.xml";
+            system    "benzoBThiophene + 1Octanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.113; max 0.887; n 6; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.a_ij  -448.896759597;
+        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.a_ji  879.592240655;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e9ebbf68f24057e2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/benzoBThiophene-1Octanol-bubble-j.fluid.2011.04.024.dat";
+            doi       "10.1016/j.fluid.2011.04.024";
+            sha256    "f695b9de005b0fbb1168e244bcfb9665c5663e235f5586fa47cdb2ece4699899";
+            provenance measured;
+            archiveFile "j.fluid.2011.04.024.xml";
+            system    "benzoBThiophene + 1Octanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.113; max 0.887; n 6; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.a_ij  -448.896759488;
+        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.a_ji  879.59224027;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e9ebbf68f24057e2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/benzoBThiophene-1Octanol-bubble-j.fluid.2011.04.024.dat";
+            doi       "10.1016/j.fluid.2011.04.024";
+            sha256    "f695b9de005b0fbb1168e244bcfb9665c5663e235f5586fa47cdb2ece4699899";
+            provenance measured;
+            archiveFile "j.fluid.2011.04.024.xml";
+            system    "benzoBThiophene + 1Octanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.113; max 0.887; n 6; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.A_ij  10733.4670282;
+        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.A_ji  -3630.0146711;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e9ebbf68f24057e2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/benzoBThiophene-1Octanol-bubble-j.fluid.2011.04.024.dat";
+            doi       "10.1016/j.fluid.2011.04.024";
+            sha256    "f695b9de005b0fbb1168e244bcfb9665c5663e235f5586fa47cdb2ece4699899";
+            provenance measured;
+            archiveFile "j.fluid.2011.04.024.xml";
+            system    "benzoBThiophene + 1Octanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.113; max 0.887; n 6; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.A_ij  10733.4670177;
+        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.A_ji  -3630.01466928;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e9ebbf68f24057e2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/benzoBThiophene-1Octanol-bubble-j.fluid.2011.04.024.dat";
+            doi       "10.1016/j.fluid.2011.04.024";
+            sha256    "f695b9de005b0fbb1168e244bcfb9665c5663e235f5586fa47cdb2ece4699899";
+            provenance measured;
+            archiveFile "j.fluid.2011.04.024.xml";
+            system    "benzoBThiophene + 1Octanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.113; max 0.887; n 6; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

@@ -1,0 +1,92 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/13Propanediol.dat"
+        {
+            type          imported;
+            sha256        "320d900f270b568334355ee7238930b99fbc95639be07c404581008f74b51fcf";
+            computationalSha256 "bf1cdc2a5dbeda5bda4f40795e13f7a8666219a985f82c809c35d13f56c3aa7b";
+            origin        "data/standards/components/13Propanediol.dat";
+            originSha256  "b67489e9c3bbcf486e506cdc38511968e7ce03aa985a705e8ffac0d20958c0d0";
+            release       Choupo-2608;
+        }
+        "components/1Heptanol.dat"
+        {
+            type          imported;
+            sha256        "d9deb98e431bf1633293a66dfce1b5c298c3c7609506fabcd3e0755f38ab50ca";
+            computationalSha256 "d3dd36e6075a8451f98e546e2aa941c07fd96621f18bf41b1b90817b2fbc1eac";
+            origin        "data/standards/components/1Heptanol.dat";
+            originSha256  "5cd0b00673b4f5041128ce87e64b5e5ac6e1dc40af85115b5fdd00bfe3f3fd57";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/13Propanediol-1Heptanol.dat"
+        {
+            type          imported;
+            sha256        "155afcc25f39ddb5f567e2acb1ce7d2caf01b35c30219501c686527de2503cb2";
+            computationalSha256 "13382e53927dca47f148439800ae0ac0aeb12b8032ca9a8146fa7d6e27a94dfe";
+            origin        "data/standards/parameters/NRTL/13Propanediol-1Heptanol.dat";
+            originSha256  "6d3289b588b53f77457b4df9954e119ee4c7c41a0b135ddad7d5b6823ab943ac";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/13Propanediol-1Heptanol.dat"
+        {
+            type          imported;
+            sha256        "d613f501948c258d9805692d5c0fa1cd89447e46fc87b2c9ea734730b50a3427";
+            computationalSha256 "045a1970c462a9675fe234b9d396583b476f44585c294dcd48dca3513cf9c4b0";
+            origin        "data/standards/parameters/UNIQUAC/13Propanediol-1Heptanol.dat";
+            originSha256  "a965f1697485bd8ac4b6c7912f3d66e32ff18b036255992b85e21e2f3d6a6e0b";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/13Propanediol-1Heptanol.dat"
+        {
+            type          imported;
+            sha256        "484d48b7ba1bfb95c81f65807815be6797bd05b928a4d815a0c9379a1304e086";
+            computationalSha256 "c08feee6ffd9d6124a8f7fcd130d4ce4649b18a2e254020f425ba91f31a1b783";
+            origin        "data/standards/parameters/Wilson/13Propanediol-1Heptanol.dat";
+            originSha256  "d65361a0a06b7f941abdb87b7f0ef263b9456ed37c0b98daf83be794f02f34e7";
+            release       Choupo-2608;
+        }
+    }
+}

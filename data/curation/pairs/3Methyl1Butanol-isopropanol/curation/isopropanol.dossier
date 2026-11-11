@@ -1,0 +1,295 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      isopropanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.b_ij  207.633686177;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.b_ji  -213.744117551;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9cbf5b3264543337";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/isopropanol-3Methyl1Butanol-bubble-je400581e.dat";
+            doi       "10.1021/je400581e";
+            sha256    "76d66ff99408673963d45c1b8926ccc18f0ba9f6a7e3b7b27e90cb1fd766d595";
+            provenance measured;
+            archiveFile "je400581e.xml";
+            system    "isopropanol + 3Methyl1Butanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0095; max 0.95; n 23; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.b_ij  207.633769209;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.b_ji  -213.744176949;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9cbf5b3264543337";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/isopropanol-3Methyl1Butanol-bubble-je400581e.dat";
+            doi       "10.1021/je400581e";
+            sha256    "76d66ff99408673963d45c1b8926ccc18f0ba9f6a7e3b7b27e90cb1fd766d595";
+            provenance measured;
+            archiveFile "je400581e.xml";
+            system    "isopropanol + 3Methyl1Butanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0095; max 0.95; n 23; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.a_ij  110.611144823;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.a_ji  -103.152309346;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9cbf5b3264543337";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/isopropanol-3Methyl1Butanol-bubble-je400581e.dat";
+            doi       "10.1021/je400581e";
+            sha256    "76d66ff99408673963d45c1b8926ccc18f0ba9f6a7e3b7b27e90cb1fd766d595";
+            provenance measured;
+            archiveFile "je400581e.xml";
+            system    "isopropanol + 3Methyl1Butanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0095; max 0.95; n 23; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.a_ij  110.657617204;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.a_ji  -103.187239368;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9cbf5b3264543337";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/isopropanol-3Methyl1Butanol-bubble-je400581e.dat";
+            doi       "10.1021/je400581e";
+            sha256    "76d66ff99408673963d45c1b8926ccc18f0ba9f6a7e3b7b27e90cb1fd766d595";
+            provenance measured;
+            archiveFile "je400581e.xml";
+            system    "isopropanol + 3Methyl1Butanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0095; max 0.95; n 23; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.A_ij  -432.019607244;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.A_ji  461.723782543;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9cbf5b3264543337";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/isopropanol-3Methyl1Butanol-bubble-je400581e.dat";
+            doi       "10.1021/je400581e";
+            sha256    "76d66ff99408673963d45c1b8926ccc18f0ba9f6a7e3b7b27e90cb1fd766d595";
+            provenance measured;
+            archiveFile "je400581e.xml";
+            system    "isopropanol + 3Methyl1Butanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0095; max 0.95; n 23; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.A_ij  7051.56006779;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.A_ji  -4061.80733404;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9cbf5b3264543337";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/isopropanol-3Methyl1Butanol-bubble-je400581e.dat";
+            doi       "10.1021/je400581e";
+            sha256    "76d66ff99408673963d45c1b8926ccc18f0ba9f6a7e3b7b27e90cb1fd766d595";
+            provenance measured;
+            archiveFile "je400581e.xml";
+            system    "isopropanol + 3Methyl1Butanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0095; max 0.95; n 23; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

@@ -1,0 +1,143 @@
+// [imported] origin "data/standards/components/nDecane.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: nDecane  (C10H22, CAS 124-18-5)
+  PROPOSAL TIER -- UNVERIFIED.  Imported from CoolProp 7.2.0 (MIT);
+  pure-fluid properties from the published reference EOS below.
+  Reference EOS: Lemmon-JCED-2006
+  NOTE: formation properties (dHf, s_298) and group decompositions
+  are NOT provided by CoolProp -> omitted here (a gap, not fabricated).
+\*---------------------------------------------------------------------------*/
+
+name        nDecane;
+
+//  Review state, MACHINE-READABLE (AP2, 2026-08-05).  This used to
+//  live only in the banner above, which the parser discards -- so the
+//  engine could not announce it and a run said nothing.
+reviewStatus   interim;
+reviewReason   importedFromCoolProp720_notCheckedAgainstPrimaries;
+formula     C10H22;
+CAS         124-18-5;
+
+MW          142.2817;        // kg/kmol  [CoolProp]
+Tc          617.6988;        // K        [CoolProp EOS]
+Pc          21.01337;        // bar      [CoolProp EOS]
+omega       0.48840;        // [-]      [CoolProp EOS]
+Tb          447.2702;        // K  normal boiling [CoolProp]
+HvapTb      39325.8;        // J/mol  at Tb     [CoolProp]
+Vliq        1.9586e-04;        // m3/mol @298K     [CoolProp]
+//  ANCHOR, never an input.  The engine DERIVES the Hildebrand
+//  parameter from HvapTb and Vliq (the tree stores no derivative);
+//  this is what ChemSep v8.3 computed independently, so the
+//  derivation has something to be wrong against.
+solubilityParameter 15720;   // Pa^0.5  [anchor, ChemSep v8.3, Artistic-2.0]
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)   -- fitted to CoolProp EOS
+    coefficients  (4.18804   1575.96   -70.576);
+    Trange        (277.96  605.34);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol.K)] = a0 + a1 T + a2 T^2 + a3 T^3   -- fitted to CoolProp cp0
+    coefficients  (28.0461  0.757235  -0.000162103  -9.4378e-08);
+    Trange        (200  1000);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Cp_liq [J/(mol.K)]   -- fitted to CoolProp saturated-liquid cp
+    coefficients  (220.811  -0.0169941  0.00137459  -9.85251e-07);
+    Trange        (309  447);
+}
+
+triplePoint
+{
+    T   243.5000;
+    P   1.4042;
+}
+
+standardThermochemistry
+{
+    dHf_298   -249730;      // J/mol ideal-gas -- provenance: see the structured dHf_298 block below
+    dGf_298   33320;      // J/mol  ideal-gas [Joback]
+    s_298     545.526;      // J/(mol*K) third-law [DERIVED: (dHf-dGf)/T + CODATA element S]
+}
+
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (2 CH3 + 8 CH2), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   7.1974;
+    q   6.0160;
+}
+
+groups
+{
+    joback ( { group CH3; count 2; } { group CH2; count 8; } );
+    unifac ( { group CH3; count 2; } { group CH2; count 8; } );
+}
+provenance
+{
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 7.1974, q = sum nu_k Q_k = 6.0160 over the record's unifac groups (2 CH3 + 8 CH2)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
+    dHf_298
+    {
+        origin           estimated;
+        method           "Joback";
+        methodVersion    "joback-poling5e-table2-2";
+        input            joback;
+        inputFingerprint "CH2:8,CH3:2";
+        uncertainty      { status unquantified; reason "bulk-import band ~9 kJ/mol, primary basis not verified"; }
+    }
+
+    constants      "CoolProp 7.2.0 -- Lemmon-JCED-2006";
+    vaporPressure  "Antoine fitted to CoolProp EOS saturation, AAD 0.57%";
+    idealGasCp     "polynomial fitted to CoolProp cp0, maxerr 3.82%";
+    liquidCp       "polynomial fitted to CoolProp sat-liquid cp, maxerr 0.01%";
+    triplePoint    "CoolProp reference EOS triple-point T,P";
+    preserved      "from prior proposal (NOT CoolProp): standardThermochemistry, groups";
+}
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0051-PROF.txt bundled in usnistgov/COSMOSAC; CAS 124-18-5";
+        licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
+        installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
+    }
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file N-DECANE.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey DIOQZVSQGTUSAI-UHFFFAOYSA-N (full match); formula C10H22; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        234.501355;   // sum of the profile below; GAMESS prints 234.50
+        volume      232.00;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     1.659978    16.345058    42.206993
+              55.637409    40.353081    30.319627    24.834254    23.039526     0.105429
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
+    }
+}

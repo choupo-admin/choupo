@@ -1,0 +1,74 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/benzoBThiophene.dat"
+        {
+            type          imported;
+            sha256        "c2dd661f6e7f00842b95fbd6ec65c3491c11386ab16dde7c7801756a33259c9d";
+            computationalSha256 "34f57109b8db02f67b6aa22a6839775aeebcf62cbece0caa56d4ec432585fb42";
+            origin        "data/standards/components/benzoBThiophene.dat";
+            originSha256  "73481b47c54e42ea571ff75dd69e11f8d4542749243464b85bf5bac29fd3128c";
+            release       Choupo-2608;
+        }
+        "components/nDodecane.dat"
+        {
+            type          imported;
+            sha256        "11571a86c648c411ef94baf16d02af5f49bd5257314ea64784c330972adc272c";
+            computationalSha256 "a734114b6284ce91955acc05f5412cb22b284615ed6f67eeeb73bd9d446fd750";
+            origin        "data/standards/components/nDodecane.dat";
+            originSha256  "6c2800e32ba6d9eaf11fa872a23de39839387597536d8487c01998b89862cb4b";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/benzoBThiophene-nDodecane.dat"
+        {
+            type          imported;
+            sha256        "94f55bc502f1e0982cd901dedad455d8adb1defac9ba4a563abf737b8a97258c";
+            computationalSha256 "4ad73e52a95bc2090087f9627dec97afe64a7a398be300a3a43318759eb02c0a";
+            origin        "data/standards/parameters/NRTL/benzoBThiophene-nDodecane.dat";
+            originSha256  "557055cab8bf73ef47d28a99d455501ddc1082ae0dddead93b19fb1cebba0ce9";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/benzoBThiophene-nDodecane.dat"
+        {
+            type          imported;
+            sha256        "77d121a78a098a7967e02f1f53cd72ca43678db0fb76486bfcaeb5693f0b91c1";
+            computationalSha256 "f061c41ab34a625e354ea7cbe000067c69e600d8e18bef1914732289dd660f7c";
+            origin        "data/standards/parameters/UNIQUAC/benzoBThiophene-nDodecane.dat";
+            originSha256  "0acd7301d60f5123b62dbeb5d73f8a74d624683aa39681da8b5b43000fa491c8";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/benzoBThiophene-nDodecane.dat"
+        {
+            type          imported;
+            sha256        "e28a532fdfad8e56263255dcfbe6e8452ab59849ab47388c797df4450d8798eb";
+            computationalSha256 "eed4642dba871afab8c0a3ad70abb8ed747dedc2f83042e64c71cdeacbcc664a";
+            origin        "data/standards/parameters/Wilson/benzoBThiophene-nDodecane.dat";
+            originSha256  "5586656602afa9896c24c122afba043c3c402e305f731e9210e13190eb35c8d1";
+            release       Choupo-2608;
+        }
+    }
+}

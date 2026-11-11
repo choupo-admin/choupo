@@ -1,0 +1,209 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      1122Tetrachloroethane;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-pCresol.b_ij  526.206191294;
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-pCresol.b_ji  -577.45764168;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d9959f49e2fd1d7d";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1122Tetrachloroethane-pCresol-bubble-j.jct.2006.12.017.dat";
+            doi       "10.1016/j.jct.2006.12.017";
+            sha256    "7ba8e22852100570d12f88eb467c03b133f18106c8bf1effea9bc164e0a62ed7";
+            provenance measured;
+            archiveFile "j.jct.2006.12.017.xml";
+            system    "1122Tetrachloroethane + pCresol";
+            pressure  "95230.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0515; max 0.9002; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-pCresol.b_ij  526.206140945;
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-pCresol.b_ji  -577.457617533;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d9959f49e2fd1d7d";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1122Tetrachloroethane-pCresol-bubble-j.jct.2006.12.017.dat";
+            doi       "10.1016/j.jct.2006.12.017";
+            sha256    "7ba8e22852100570d12f88eb467c03b133f18106c8bf1effea9bc164e0a62ed7";
+            provenance measured;
+            archiveFile "j.jct.2006.12.017.xml";
+            system    "1122Tetrachloroethane + pCresol";
+            pressure  "95230.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0515; max 0.9002; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-pCresol.A_ij  -3506.56830701;
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-pCresol.A_ji  2750.7664923;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d9959f49e2fd1d7d";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1122Tetrachloroethane-pCresol-bubble-j.jct.2006.12.017.dat";
+            doi       "10.1016/j.jct.2006.12.017";
+            sha256    "7ba8e22852100570d12f88eb467c03b133f18106c8bf1effea9bc164e0a62ed7";
+            provenance measured;
+            archiveFile "j.jct.2006.12.017.xml";
+            system    "1122Tetrachloroethane + pCresol";
+            pressure  "95230.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0515; max 0.9002; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-pCresol.A_ij  30000;
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-pCresol.A_ji  -5548.57059632;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d9959f49e2fd1d7d";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1122Tetrachloroethane-pCresol-bubble-j.jct.2006.12.017.dat";
+            doi       "10.1016/j.jct.2006.12.017";
+            sha256    "7ba8e22852100570d12f88eb467c03b133f18106c8bf1effea9bc164e0a62ed7";
+            provenance measured;
+            archiveFile "j.jct.2006.12.017.xml";
+            system    "1122Tetrachloroethane + pCresol";
+            pressure  "95230.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0515; max 0.9002; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

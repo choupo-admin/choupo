@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/1122Tetrachloroethane.dat"
+        {
+            type          imported;
+            sha256        "ceaf75c88666dc0535c0b68bccaa520eaaee25ce3f5c99ed60117faf5d759af1";
+            computationalSha256 "198d7d857a25ec951e052faa80e091770880c6e53f7c4a26d551a1cb8ee782da";
+            origin        "data/standards/components/1122Tetrachloroethane.dat";
+            originSha256  "6634649d343fe9f78d2f9a3e798cb5b500568dc19d387e81d6aca1b85ac6bcff";
+            release       Choupo-2608;
+        }
+        "components/acrylonitrile.dat"
+        {
+            type          imported;
+            sha256        "53f48c82eb6dbd6f118ca58269054e5977bcc07faaa6c6d11ba525f098b97467";
+            computationalSha256 "71d45d9cdc3767bcabda31c31088e5d385ba44239dfe162d436754cefaef898f";
+            origin        "data/standards/components/acrylonitrile.dat";
+            originSha256  "ac0ca2c27b3c4a9f493aa40d30f8ce770de8cbfa9a60ef4f5f0ff996f551a642";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1122Tetrachloroethane-acrylonitrile.dat"
+        {
+            type          imported;
+            sha256        "73d10defc1f5ba5f9a5f2486e17510d0ca2b717c8f2be4457787b5ae6d14c095";
+            computationalSha256 "40ef3841189ec8b9881aa0e7169beb73abf0f0390dd721d2ef9183cf774d32c8";
+            origin        "data/standards/parameters/NRTL/1122Tetrachloroethane-acrylonitrile.dat";
+            originSha256  "04fd51a6d483de460a6b3b1526581728ce5bab5444d43391fe6ab8176207d6c4";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1122Tetrachloroethane-acrylonitrile.dat"
+        {
+            type          imported;
+            sha256        "cfffc5a3414fa9c68950c7b25ad84e9d62a4c6d15abed685b22176f3bb7f425e";
+            computationalSha256 "a49c1487fc909f7d03d912a731099739ada3ea3705b1696c15bbb01b7047bcbb";
+            origin        "data/standards/parameters/Wilson/1122Tetrachloroethane-acrylonitrile.dat";
+            originSha256  "d66d1c6c63555ec6b1e17c44408445b78e4384a7887a7315756b07a6210cee9e";
+            release       Choupo-2608;
+        }
+    }
+}

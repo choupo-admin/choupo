@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/allylAlcohol.dat"
+        {
+            type          imported;
+            sha256        "191ab207e5829dd2e148e0b31cab2193023b57895dabb696171e490519763f4b";
+            computationalSha256 "a68d87e0a76731ff44002648a4e399843bab742901a006901d2ef26334eeb0a9";
+            origin        "data/standards/components/allylAlcohol.dat";
+            originSha256  "ad889fe302e1a314414860d2ddc5c03a3f32f3b66f3923e4e61d36afbfb98bda";
+            release       Choupo-2608;
+        }
+        "components/ethyleneGlycol.dat"
+        {
+            type          imported;
+            sha256        "90ccbaaf3bce924c24126424206ef523e3a6377b4bac7bae6a4f55038ac55d7d";
+            computationalSha256 "535ebabab2b99be2309ed449cdea0a342ca26b3d0ae9cb5e0cc224f53589bb9c";
+            origin        "data/standards/components/ethyleneGlycol.dat";
+            originSha256  "409fc26748c4dd89998c0398c5023a4cc7143aeb481d53e119933d0d86b235d7";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/allylAlcohol-ethyleneGlycol.dat"
+        {
+            type          imported;
+            sha256        "46da83ee333b41beb545011cd8c16e68d9d1de38ea79e6e1ff71458dbdb83a17";
+            computationalSha256 "1f3706581e0a40bc1d4eeba27ffe3a88c92e4803186cfc9dba3933c739ba109d";
+            origin        "data/standards/parameters/NRTL/allylAlcohol-ethyleneGlycol.dat";
+            originSha256  "67c6291bd4f73318767260f20a5cb0e4dc00524ce2072507621e0f13f4217282";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/allylAlcohol-ethyleneGlycol.dat"
+        {
+            type          imported;
+            sha256        "66a96b8c73503c231342b50927f1a2ca77ff068e256672f96538c06fdc760eea";
+            computationalSha256 "c48f108cb17ffbc3a5154f5b6eab804c607786698f86a171b8f23275949add9f";
+            origin        "data/standards/parameters/Wilson/allylAlcohol-ethyleneGlycol.dat";
+            originSha256  "d000785aa74ef2929c161a9f491c2c5bdfc0aa6f579f33a4f49cbe1723d38846";
+            release       Choupo-2608;
+        }
+    }
+}

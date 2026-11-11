@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/furan.dat"
+        {
+            type          imported;
+            sha256        "2f6a589d1fe1c00150a2c9cf69a7b2ad817a7ad52082885c3a8f760436503378";
+            computationalSha256 "be9cf3e63603613c99083b7636381c48048f906abe56b1e872a61b0294684d86";
+            origin        "data/standards/components/furan.dat";
+            originSha256  "656d31d92867385d6e0897a73306e3e467ecf5f0c8b50c8ea462aeda36e83cb4";
+            release       Choupo-2608;
+        }
+        "components/nHexane.dat"
+        {
+            type          imported;
+            sha256        "21c74d8d3e29050dc993812dd30b2cd64cbeefd036bc8d367abd6ee25436fc55";
+            computationalSha256 "7aa52217b06fd08229d256e222efda0ade6a6599a73899eae054b7a50a3da8de";
+            origin        "data/standards/components/nHexane.dat";
+            originSha256  "f37d7199cc0bb8577ba1a79797185a9cf0e9b65f2ecce764f079a3f480ddb81c";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/furan-nHexane.dat"
+        {
+            type          imported;
+            sha256        "a5ce3b4cead1dd9972aa6eb2691d0982cb3daec42df54a0eb826e4bed76dbba8";
+            computationalSha256 "8b3565ff498a0dd890bed01709a6227e1d3d827e5dea4cf83a183b1ea70aa017";
+            origin        "data/standards/parameters/NRTL/furan-nHexane.dat";
+            originSha256  "bb3e07f22e99fa13be8a9eb9a7bb6736ec4ef6b1df07962788d5abe1414ddf1c";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/furan-nHexane.dat"
+        {
+            type          imported;
+            sha256        "f32ea8fb8ad6934c8234cf3b952676d72e37fc1eecb92f99bf89e61e6a6c260f";
+            computationalSha256 "66230e7ce7aec8c9079ce19672b7674abf3223b7420284fe09b49a31f406e05e";
+            origin        "data/standards/parameters/Wilson/furan-nHexane.dat";
+            originSha256  "36e8234a012d2bd16847287f3e789e712201a80c17107a541bdfc4c081303934";
+            release       Choupo-2608;
+        }
+    }
+}

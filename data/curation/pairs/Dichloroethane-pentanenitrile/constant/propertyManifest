@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/Dichloroethane.dat"
+        {
+            type          imported;
+            sha256        "94c5aac10347cd06b9fd90380be605c4c7193f95dac011343e03fab50ce81d0e";
+            computationalSha256 "ba02e8b3f6499c5571a7fb5ab9ea0c560ef1db3dc604186fa6108e61ca7ff2f5";
+            origin        "data/standards/components/Dichloroethane.dat";
+            originSha256  "8b34d3129f4dd6a2d2d127d3f010d70bdcef1c259b056f89c92ce4b889b8786e";
+            release       Choupo-2608;
+        }
+        "components/pentanenitrile.dat"
+        {
+            type          imported;
+            sha256        "825891781982bd8339ea535ee0e019a5ffdf6a9a361bc9c43005f2cef3d11464";
+            computationalSha256 "ef466d20a2d24e45222841e7c24f5cf5b79dedbbbe22ef2095aa8faecc349520";
+            origin        "data/standards/components/pentanenitrile.dat";
+            originSha256  "2d795231fb1f7331a7239c43e02ddcaa2dd0682ba27ff2f91dffdc1c76620f48";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/Dichloroethane-pentanenitrile.dat"
+        {
+            type          imported;
+            sha256        "4d06055f4913a37331e0b21e66b31f12921d54fd441b1add3569170cc80e25c1";
+            computationalSha256 "8e18605ac8c7dd378f4dbf48e60ee71bd03af62a512466f8e90d9afbd6d584cb";
+            origin        "data/standards/parameters/NRTL/Dichloroethane-pentanenitrile.dat";
+            originSha256  "855c00842f0ab3a929ebb7537c85befda25a3e0ffb1242001bd2582e55b4cced";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/Dichloroethane-pentanenitrile.dat"
+        {
+            type          imported;
+            sha256        "91a9168548a96952cc047547e0973042bdd7c3e59a471dc3ac4da01130a78647";
+            computationalSha256 "bdde08f4263ccc3aefd964e2f4038d2653a9e2a7b3cc53a264b5b72e4721caea";
+            origin        "data/standards/parameters/Wilson/Dichloroethane-pentanenitrile.dat";
+            originSha256  "a9db906422ecdde2fea58e89b7ff97503770e25b6b06c8499a35d5666acf8ccc";
+            release       Choupo-2608;
+        }
+    }
+}

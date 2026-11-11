@@ -1,0 +1,92 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/allylAlcohol.dat"
+        {
+            type          imported;
+            sha256        "191ab207e5829dd2e148e0b31cab2193023b57895dabb696171e490519763f4b";
+            computationalSha256 "a68d87e0a76731ff44002648a4e399843bab742901a006901d2ef26334eeb0a9";
+            origin        "data/standards/components/allylAlcohol.dat";
+            originSha256  "ad889fe302e1a314414860d2ddc5c03a3f32f3b66f3923e4e61d36afbfb98bda";
+            release       Choupo-2608;
+        }
+        "components/ethylAcetate.dat"
+        {
+            type          imported;
+            sha256        "4ee06f30aae70c1eab14da7bffce60be14bbdddc957964087e3f055599649351";
+            computationalSha256 "80dbe1d46a9004f4170f6e26b03368a10cea61d8233a38611ffce770e21e4914";
+            origin        "data/standards/components/ethylAcetate.dat";
+            originSha256  "3d9d32e87fd2417113925a18dbfb0d833a5ef7033a1a0acd05f1cd80c0ab174f";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/allylAlcohol-ethylAcetate.dat"
+        {
+            type          imported;
+            sha256        "55b2092917af5db6e3281ccb58a609fe0cbaf6fcd85951234b232e73a833b027";
+            computationalSha256 "4992d5480c48608c70d0c8e3046820a6f54633c402f19782e3118e4c28cff2f0";
+            origin        "data/standards/parameters/NRTL/allylAlcohol-ethylAcetate.dat";
+            originSha256  "c50886a2ec12d7b813b724e23cb71a8f1714625881016cebf647c29727596956";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/allylAlcohol-ethylAcetate.dat"
+        {
+            type          imported;
+            sha256        "4b04235c8d855f6b64b172af61c4d6b27e39ff6dc2c686e1ca715b626df86f48";
+            computationalSha256 "267469403df24f339865aca618e32ed896b6d3b11405da592eaba06106d2cbed";
+            origin        "data/standards/parameters/UNIQUAC/allylAlcohol-ethylAcetate.dat";
+            originSha256  "1f4d84ae40533e25e481b7a6e95fe7c7fe797dd5c6df4235d1ebd27d15d57c0e";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/allylAlcohol-ethylAcetate.dat"
+        {
+            type          imported;
+            sha256        "ae3bdf69c326748704c5aeeffe35895a7699da4cf6956e75df23f2f55da26a72";
+            computationalSha256 "ec4cc7c27dd4e7910c95a8723a7d5f117e8f2d456a94f2667471e1fa3fd7d41b";
+            origin        "data/standards/parameters/Wilson/allylAlcohol-ethylAcetate.dat";
+            originSha256  "ff4dac8800658fbd7275599d0387b2dfa98fae169b832f594f0018f3eb91b18d";
+            release       Choupo-2608;
+        }
+    }
+}

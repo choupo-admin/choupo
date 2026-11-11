@@ -58,11 +58,56 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      3 point(s) of 8: doi 10.1021/acs.jced.7b00005 row 1: x 0.1346, P
+      10.000 kPa, T 346.65 K, dT -7.93 K; doi 10.1021/acs.jced.7b00005
+      row 3: x 0.2849, P 10.000 kPa, T 320.05 K, dT +3.34 K; doi
+      10.1021/acs.jced.7b00005 row 7: x 0.7694, P 10.000 kPa, T 304.52 K,
+      dT -4.89 K
   @@OUTLIERS-END@@
 
+  @@MODELS-BEGIN@@
+  THE OTHER ACTIVITY MODELS (DEV.md 4c C294), declared before their fits
+  ran. The SAME datasets and the SAME kept points as fit_nrtl: each op
+  below is fit_nrtl copied verbatim -- evidence, discards, objective,
+  residual, weighting, options -- with only its parameters, its `thermo
+  {}` fragment (the model) and its outputs changed; the outlier discard
+  was decided ONCE, on the NRTL least-squares stage, and is reused, never
+  re-decided per model. UNIQUAC: two parameters a_ij, a_ji (K), tau_ij =
+  exp(-a_ij/T), b = c = 0 fixed (the NRTL default's count; temperature
+  dependence 1/T), r and q each component's own record. Wilson: two
+  parameters A_ij, A_ji (J/mol), Lambda_ij = (V_j/V_i) exp(-A_ij/RT), V
+  the records' Vliq. Two starts each. Each model gets its own record
+  (constant/parameters/<MODEL>/), its own grade at 1 / 2 / 4 K (max
+  |T_model - T|), its own one-liquid test (arm f), `fitGradeBasis
+  inSample`, the C300 cap and `review { by none; }`; a severe or refused
+  grade, or a split, is not promoted. The three in-sample residuals are
+  published side by side, never used to choose a model for the student.
+  UNIQUAC: NOT FITTED -- acetonitrile carries no UNIQUAC r and q (no
+  tabulated value, and no UNIFAC groups to sum them from,
+  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
+  is estimated silently. Wilson: FITTED.
+  @@MODELS-END@@
+
+  @@MODELS-RESULT-BEGIN@@
+  WHAT THE UNIQUAC AND WILSON FITS FOUND: no record. Wilson: not fitted
+  -- fit_wilson was declared and run and did NOT CONVERGE (A_ij at its
+  bound, -30000 .. 30000 J/mol: no finite optimum inside the declared
+  bounds); the op is removed so the case runs (C294). UNIQUAC: not fitted
+  -- acetonitrile carries no UNIQUAC r and q (no tabulated value, and no
+  UNIFAC groups to sum them from, bin/curate/uniquac_rq_from_groups.py)
+  -- UNIQUAC is not fitted; nothing is estimated silently.
+  @@MODELS-RESULT-END@@
+
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = -411.8 K, b_ji = 1029.7 K over 5 kept points of 1
+  laboratories (3 discarded): max |dT| 3.249 K, mean 1.575 K, graded
+  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on A
+  DIFFERENT pair (153.1, -139.9). NOT PROMOTED (max |dT| 3.249 K over the
+  5 kept points, one liquid across the validity span): fit grade severe
+  -- DEV.md 4c C300 rule 3: a severe pair does not enter the default
+  catalogue; its record stays in this curation case's constant/, and a
+  case that needs it carries it in its own constant/
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -88,6 +133,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/acetonitrile-diethylSuccinate-bubble-acs.jced.7b00005.dat";
                 role     fit;
+                discard  ( 1 3 7 );   // C283 outliers, by name in the header
             }
         );
 
@@ -129,6 +175,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/acetonitrile-diethylSuccinate-bubble-acs.jced.7b00005.dat";
                 role     fit;
+                discard  ( 1 3 7 );   // C283 outliers, by name in the header
             }
         );
 
@@ -177,6 +224,8 @@ operations
         properties  ( T_bubble  y_eq_acetonitrile );
         output      { file txy_nrtl.csv; }
     }
+    // @@C294-OPS-BEGIN@@ -- UNIQUAC and Wilson on the NRTL fit's own evidence (DEV.md 4c C294)
+    // @@C294-OPS-END@@
 );
 
 experimental

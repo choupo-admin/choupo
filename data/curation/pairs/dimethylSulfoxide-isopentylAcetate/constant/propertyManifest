@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/dimethylSulfoxide.dat"
+        {
+            type          imported;
+            sha256        "17f9b99ac0c913e567614c63c159770bbc0a1913df97026d01fffbe3b04cf774";
+            computationalSha256 "d843f0b7b938772a1d29d5515b33b2c59fadc96f846788d5aded7916bf16c994";
+            origin        "data/standards/components/dimethylSulfoxide.dat";
+            originSha256  "a9b5f0fee39f8c1914eedda69137802495adf06e015450e16ae426392208ba86";
+            release       Choupo-2608;
+        }
+        "components/isopentylAcetate.dat"
+        {
+            type          imported;
+            sha256        "ffc39b5640deced42d62133dd87ba4486d8993a5d45c43f9a5816ac23e225a21";
+            computationalSha256 "9172e8aae43c3489d38d8e7563fef2c4c9e456bc2fadcf270c9c3e59967ea2cb";
+            origin        "data/standards/components/isopentylAcetate.dat";
+            originSha256  "0714539bdb62e9818604ebf7d43a258bd9b428859b55ee2e7e6660076207baca";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/dimethylSulfoxide-isopentylAcetate.dat"
+        {
+            type          imported;
+            sha256        "fd6ab7861fa907cb521468f5c7f4a452ba78cdd825ce06e521c4e06a22fa5376";
+            computationalSha256 "4233154211e2acd17ab5ad548bd4ad2d89d01d492511d5d51263bd4c2da796e9";
+            origin        "data/standards/parameters/NRTL/dimethylSulfoxide-isopentylAcetate.dat";
+            originSha256  "8d4cdda90b9a22355c734248cf22acb86df099a55707559e7d248d20eb731f12";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/dimethylSulfoxide-isopentylAcetate.dat"
+        {
+            type          imported;
+            sha256        "a7048ca3c21ec46d43a409c3bb40c5cee622ab1a67daff4030dc5fb40d918a5a";
+            computationalSha256 "f8832667f8277f6c3d2963f1db52932e95d60c2bd02944921ea8c8d7fa746ee4";
+            origin        "data/standards/parameters/Wilson/dimethylSulfoxide-isopentylAcetate.dat";
+            originSha256  "2906f71d395d001d93f307d5c148a2413b3ad79a3e67c208ce232add12cf7fd3";
+            release       Choupo-2608;
+        }
+    }
+}

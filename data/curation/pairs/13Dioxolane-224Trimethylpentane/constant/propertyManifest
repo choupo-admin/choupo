@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/13Dioxolane.dat"
+        {
+            type          imported;
+            sha256        "02ccd8e072602eda6d670bc38dbaf020c22fa09e1c6837ae3b6b89b93d35ecd9";
+            computationalSha256 "05c0fe809074bcc49c42f1f12d95cfe917dd7825a3903eb632063322d6b72793";
+            origin        "data/standards/components/13Dioxolane.dat";
+            originSha256  "024cf5ef6ebf36cd8db1791dc64ddf22c4d78393285d946b28a3fae1a38835fa";
+            release       Choupo-2608;
+        }
+        "components/224Trimethylpentane.dat"
+        {
+            type          imported;
+            sha256        "5bc42a28bbed118ca84b1ce224106a3cf7ca57285a2b4bfa3da1bff9790d941a";
+            computationalSha256 "746441a94fdf1abf8ca5a1fc1142b064ff44c9c1210cb0eb7e9ca71fa3f60e07";
+            origin        "data/standards/components/224Trimethylpentane.dat";
+            originSha256  "106123056b46c83324a8defd357d2de09b9914d8408241e44412011aa5823bb3";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/13Dioxolane-224Trimethylpentane.dat"
+        {
+            type          imported;
+            sha256        "4be39da28da8ff66f361ceff2a2c574e17c4bd704ce0351e1a560c4ec477d7ba";
+            computationalSha256 "722eb282d2f6b118f16c7b30871e9a692ff30b625a057ce38ef8c255593b6b38";
+            origin        "data/standards/parameters/NRTL/13Dioxolane-224Trimethylpentane.dat";
+            originSha256  "757c65d4b158466c62d90f4c264d2133d299aee7bfc6fe48cb1ac22f759bc470";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/13Dioxolane-224Trimethylpentane.dat"
+        {
+            type          imported;
+            sha256        "09561a5800bdbb3ea9cba1374acbf4cbe2d8bc9f6235cacc5214bca2b2fc5884";
+            computationalSha256 "36dc17df39d807a6d25d7a64bdd2655e5058ae49694141f696f20683baf4cfc9";
+            origin        "data/standards/parameters/Wilson/13Dioxolane-224Trimethylpentane.dat";
+            originSha256  "36c8bfbde322c8d958d6d2debd777018af214631858749f15ffcffec52be5410";
+            release       Choupo-2608;
+        }
+    }
+}

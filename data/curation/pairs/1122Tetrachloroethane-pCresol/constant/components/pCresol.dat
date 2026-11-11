@@ -1,0 +1,173 @@
+// [imported] origin "data/standards/components/pCresol.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pCresol  (CAS 106-44-5)
+  PROPOSAL TIER -- UNVERIFIED. Imported from ChemSep v8.3
+  pure-component data under Artistic License 2.0.
+  Critical constants are source data; Psat is an explicitly
+  estimated Ambrose-Walton corresponding-states closure.
+\*---------------------------------------------------------------------------*/
+
+name        pCresol;
+CAS         106-44-5;
+formula     C7H8O;      // counted from the ChemSep v8.3 structure formula "CH3(C6H4)OH" (derived 2026-09-03; reproduces MW to 0.002 %)
+reviewStatus interim;
+MW          108.1378;      // kg/kmol [origin=ChemSep v8.3]
+Tc          704.5;      // K [origin=ChemSep v8.3]
+Pc          51.5;      // bar; source Pa / 1e5 [origin=ChemSep v8.3]
+omega       0.51;      // [-] [origin=ChemSep v8.3]
+Tb          475.12;      // K [origin=ChemSep v8.3]
+
+standardThermochemistry
+{
+    dHf_298   -125350;        // J/mol   [ChemSep v8.3, ideal gas]
+    s_298     350.75;        // J/(mol.K)  third-law absolute
+}
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)
+    // converted EXACTLY from ChemSep eqno 10, Psat[Pa] = exp(a - b/(T+c))
+    coefficients  (4.365994797  1664.694179  -93.483);
+    Trange        (425  633.15);
+}
+
+Vliq        0.000104734;      // m3/mol at 25 C  [ChemSep eqno 105]
+HvapTb      47878.9;      // J/mol at Tb  [ChemSep eqno 106]
+
+idealGasHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    // ChemSep states J/(kmol.K); A and the exp are scaled to per-mole here.
+    coefficients  (58.748  -529.02  5.979244721  -3.51e-05  -1.6131e-09);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    coefficients  (142.4  625.27  -3.613355279  0.02818  -2.7958e-05);
+    Trange        (307.93  400);
+}
+
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     -820.7853;
+        B     35522.87;
+        C     124.3969;
+        D     -0.000127538;
+        E     2;
+        Tmin  273.15;
+        Tmax  563.72;
+    }
+}
+
+liquidThermalConductivity
+{
+    chemsepEq16
+    {
+        A     0.061771;
+        B     -123.88;
+        C     -1.1823;
+        D     -0.0033339;
+        E     1.0151e-06;
+        Tmin  293.15;
+        Tmax  475.13;
+    }
+}
+solubilityParameter 24030;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
+
+source
+{
+    database      "ChemSep pure-component data v8.3";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "chemsep1.xml";
+    sourceSha256  "78b3e0c6408ff35f3b75fb71a1fdd70bb8e967d8996b49452a4a9fa2dd567c76";
+    sourceRecord  "P-cresol";
+    importedBy    "chemsep_to_choupo";
+    review        { state pending; reviewer unassigned; }
+}
+
+provenance
+{
+    MW
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Pc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    omega
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tb
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    vaporPressure
+    {
+        origin        predictive;
+        method        "Ambrose-Walton corresponding states";
+        methodVersion "choupo-aw-1989";
+        uncertainty   "not quantified; validate against saturation data";
+        notes         "computed from ChemSep Tc/Pc/omega";
+    }
+}
+
+cosmo
+{
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file P-CRESOL.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey IWDCLRJOBJJRNH-UHFFFAOYSA-N (full match); formula C7H8O; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        148.747670;   // sum of the profile below; GAMESS prints 148.75
+        volume      141.37;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.283376
+               0.819751     1.136375     0.758697     0.560282     1.136675     0.893495
+               0.850117     0.288865     0.698140     0.843232     1.666026     1.906917
+               6.193523     7.419940     9.614539     9.669239     9.754467     7.537243
+               7.849871     9.174341    12.261748     5.067556     9.342379     7.067458
+               7.564585    10.271852     7.338711     0.865762     2.200108     2.008824
+               0.332971     0.466583     1.836249     2.076666     0.991107     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
+    }
+}

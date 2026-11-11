@@ -1,0 +1,209 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      3Methyl1Butanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-dimethylSulfoxide.b_ij  -482.761177986;
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-dimethylSulfoxide.b_ji  344.626797094;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b9036c907a22811b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methyl1Butanol-dimethylSulfoxide-bubble-acs.jced.6b00733.dat";
+            doi       "10.1021/acs.jced.6b00733";
+            sha256    "20ad7a24fd13632a8fff0018d32452b4282dd27c731ba67efd5f4465463415f1";
+            provenance measured;
+            archiveFile "acs.jced.6b00733.xml";
+            system    "3Methyl1Butanol + dimethylSulfoxide";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.015; max 0.9471; n 23; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-dimethylSulfoxide.b_ij  1404.23426214;
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-dimethylSulfoxide.b_ji  -820.503563128;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b9036c907a22811b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methyl1Butanol-dimethylSulfoxide-bubble-acs.jced.6b00733.dat";
+            doi       "10.1021/acs.jced.6b00733";
+            sha256    "20ad7a24fd13632a8fff0018d32452b4282dd27c731ba67efd5f4465463415f1";
+            provenance measured;
+            archiveFile "acs.jced.6b00733.xml";
+            system    "3Methyl1Butanol + dimethylSulfoxide";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.015; max 0.9471; n 23; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-dimethylSulfoxide.A_ij  -570.222377516;
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-dimethylSulfoxide.A_ji  -1079.49486023;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b9036c907a22811b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methyl1Butanol-dimethylSulfoxide-bubble-acs.jced.6b00733.dat";
+            doi       "10.1021/acs.jced.6b00733";
+            sha256    "20ad7a24fd13632a8fff0018d32452b4282dd27c731ba67efd5f4465463415f1";
+            provenance measured;
+            archiveFile "acs.jced.6b00733.xml";
+            system    "3Methyl1Butanol + dimethylSulfoxide";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.015; max 0.9471; n 23; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-dimethylSulfoxide.A_ij  6892.65592613;
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-dimethylSulfoxide.A_ji  -3427.43867897;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b9036c907a22811b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methyl1Butanol-dimethylSulfoxide-bubble-acs.jced.6b00733.dat";
+            doi       "10.1021/acs.jced.6b00733";
+            sha256    "20ad7a24fd13632a8fff0018d32452b4282dd27c731ba67efd5f4465463415f1";
+            provenance measured;
+            archiveFile "acs.jced.6b00733.xml";
+            system    "3Methyl1Butanol + dimethylSulfoxide";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.015; max 0.9471; n 23; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

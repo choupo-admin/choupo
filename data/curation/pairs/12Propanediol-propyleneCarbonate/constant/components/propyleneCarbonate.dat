@@ -1,0 +1,173 @@
+// [imported] origin "data/standards/components/propyleneCarbonate.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: propyleneCarbonate  (CAS 108-32-7)
+  PROPOSAL TIER -- UNVERIFIED. Imported from ChemSep v8.3
+  pure-component data under Artistic License 2.0.
+  Critical constants are source data; Psat is an explicitly
+  estimated Ambrose-Walton corresponding-states closure.
+\*---------------------------------------------------------------------------*/
+
+name        propyleneCarbonate;
+CAS         108-32-7;
+formula     C4H6O3;      // counted from the ChemSep v8.3 structure formula "-OCH(CH3)CH2OCO-" (derived 2026-09-03; reproduces MW to 0.000 %)
+reviewStatus interim;
+MW          102.0886;      // kg/kmol [origin=ChemSep v8.3]
+Tc          778;      // K [origin=ChemSep v8.3]
+Pc          54.1;      // bar; source Pa / 1e5 [origin=ChemSep v8.3]
+omega       0.449764;      // [-] [origin=ChemSep v8.3]
+Tb          514.9;      // K [origin=ChemSep v8.3]
+
+standardThermochemistry
+{
+    dHf_298   -601160;        // J/mol   [ChemSep v8.3, ideal gas]
+    s_298     296.3;        // J/(mol.K)  third-law absolute
+}
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)
+    // converted EXACTLY from ChemSep eqno 10, Psat[Pa] = exp(a - b/(T+c))
+    coefficients  (4.487162957  1977.125629  -73.662);
+    Trange        (471.91  690.66);
+}
+
+Vliq        8.52769e-05;      // m3/mol at 25 C  [ChemSep eqno 105]
+HvapTb      49752.4;      // J/mol at Tb  [ChemSep eqno 106]
+
+idealGasHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    // ChemSep states J/(kmol.K); A and the exp are scaled to per-mole here.
+    coefficients  (51.696  -502.59  5.747244721  -7.6494e-05  1.3781e-08);
+    Trange        (273  1500);
+}
+
+liquidHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    coefficients  (121.75  105.89  -0.399455279  0.016964  -1.4577e-05);
+    Trange        (298.15  425);
+}
+
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     -818.33;
+        B     28057;
+        C     129.62;
+        D     -0.00022812;
+        E     2;
+        Tmin  219;
+        Tmax  622.4;
+    }
+}
+
+liquidThermalConductivity
+{
+    chemsepEq16
+    {
+        A     -0.096241;
+        B     6.7832;
+        C     -1.0385;
+        D     -0.00032841;
+        E     -6.9782e-07;
+        Tmin  224.85;
+        Tmax  514.85;
+    }
+}
+solubilityParameter 27300;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
+
+source
+{
+    database      "ChemSep pure-component data v8.3";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "chemsep1.xml";
+    sourceSha256  "78b3e0c6408ff35f3b75fb71a1fdd70bb8e967d8996b49452a4a9fa2dd567c76";
+    sourceRecord  "Propylene carbonate";
+    importedBy    "chemsep_to_choupo";
+    review        { state pending; reviewer unassigned; }
+}
+
+provenance
+{
+    MW
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Pc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    omega
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tb
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    vaporPressure
+    {
+        origin        predictive;
+        method        "Ambrose-Walton corresponding states";
+        methodVersion "choupo-aw-1989";
+        uncertainty   "not quantified; validate against saturation data";
+        notes         "computed from ChemSep Tc/Pc/omega";
+    }
+}
+
+cosmo
+{
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file PROPYLENE_CARBONATE.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey connectivity block RUOJZAUFBMNUDX matches; the LVPP geometry is one stereoisomer (RUOJZAUFBMNUDX-GSVOUGTGSA-N), the catalogue record carries no stereo layer; formula C4H6O3; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        126.394799;   // sum of the profile below; GAMESS prints 126.39
+        volume      114.51;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.156592     0.662790     2.296791    12.945977    12.021131
+               6.990503     7.887950    11.458116     6.755144     4.039801     4.757619
+               6.984851     3.522103     2.137812     2.394794     2.098634     1.902430
+               1.881055     1.481087     3.395202     1.349421     3.705130     5.690839
+               3.237234     2.634300     1.627994     5.679384     4.404738     2.295377
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
+    }
+}

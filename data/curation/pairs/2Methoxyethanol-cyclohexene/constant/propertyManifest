@@ -1,0 +1,92 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/2Methoxyethanol.dat"
+        {
+            type          imported;
+            sha256        "45ed71ba96d41aae2e54fadea97c736727e1d8a5eb945dddb261b86a47acf3e8";
+            computationalSha256 "627a45ea86d8b1b13284c00f93100d356dbfb646d40b8102bcaf4efc83e51015";
+            origin        "data/standards/components/2Methoxyethanol.dat";
+            originSha256  "3cb143ff0f17c455dedd66e2193480b3db5682765d7f6895073788c4bd0a3bae";
+            release       Choupo-2608;
+        }
+        "components/cyclohexene.dat"
+        {
+            type          imported;
+            sha256        "c6f8fb3f5fb432fca60ea6edde0314c4da2088d9f5df2d1ae2855ea9fac1459d";
+            computationalSha256 "eef5b696bc2de4200b2acd245e1dc370c82249d760e1627c7fd8f31c81485392";
+            origin        "data/standards/components/cyclohexene.dat";
+            originSha256  "f806422ad43eea1136ad2667c36af0957a8446600d2cf8f43a02de9fd0145a04";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Methoxyethanol-cyclohexene.dat"
+        {
+            type          imported;
+            sha256        "3475e03dad8bbe1d2d8d7cda4f3ed0279fd47abb26ad29a8b90c48e57fcda326";
+            computationalSha256 "955f1c04f6e5706a204695a610ef3b80059343ca4cb10b13359556fef7d261db";
+            origin        "data/standards/parameters/NRTL/2Methoxyethanol-cyclohexene.dat";
+            originSha256  "456437fd16b9113d3498dbd79d40e5e0eea2d144949f8893fc395e887b1ba7fb";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/2Methoxyethanol-cyclohexene.dat"
+        {
+            type          imported;
+            sha256        "6fde02285d294f0c0f5090899ce68735441a5063f103508063c07482d08063cc";
+            computationalSha256 "7bc056648a2f628e7aa0ae887f7fb138aa21c75ac6e3d862dcd3bd99be152bd2";
+            origin        "data/standards/parameters/UNIQUAC/2Methoxyethanol-cyclohexene.dat";
+            originSha256  "e69bb0d5ba1e3db5f4f26b1a87d7a8df1eb051ce3df0cfb49b6883c61b706b75";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Methoxyethanol-cyclohexene.dat"
+        {
+            type          imported;
+            sha256        "28959503cca8f9eadd7ccebb11b289b9f89e9ae45c620e6a1e2043b568b89f3d";
+            computationalSha256 "45f62e1842724cb328fbe66628b0ab470ed05ea99d1e3ff8654db965ce68c8fa";
+            origin        "data/standards/parameters/Wilson/2Methoxyethanol-cyclohexene.dat";
+            originSha256  "8b3fbfdad274ad77bd04289fe9a7fbf63c040a1805c1079c2c7e37502eb34750";
+            release       Choupo-2608;
+        }
+    }
+}

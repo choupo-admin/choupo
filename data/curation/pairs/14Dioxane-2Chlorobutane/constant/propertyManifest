@@ -1,0 +1,92 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/14Dioxane.dat"
+        {
+            type          imported;
+            sha256        "b4a154c172ccece7277e5514b338380e6e37e0175ae652dd6af3466fe5b0ee55";
+            computationalSha256 "aede3c35fa6da3606f4448a548b0b8f5d0f58b83ebeb3ac3c42ffb1ceaca5d11";
+            origin        "data/standards/components/14Dioxane.dat";
+            originSha256  "a35cf193048135597d346a2971dfa2563d3ee4a57ac2b359e8753935f3c399ed";
+            release       Choupo-2608;
+        }
+        "components/2Chlorobutane.dat"
+        {
+            type          imported;
+            sha256        "5c12fca7a18bfe26a63a018fc265beca927a26a9212d25d25fcdeea9857afa65";
+            computationalSha256 "586e029718f5feaef2ec65f6309eb62f3aadb41d269274f5b386c6d564e7a3a2";
+            origin        "data/standards/components/2Chlorobutane.dat";
+            originSha256  "3245cca33b46ab9cb895903f4c931df7deb043ccfce5d962143cc2910ff3a5cb";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/14Dioxane-2Chlorobutane.dat"
+        {
+            type          imported;
+            sha256        "3553938f87c6339b62de248d575f8a72cf7da5b5cd95c105503fddabf205e42e";
+            computationalSha256 "57b791a82327197aaf44ba17d4aba8a8f285ab6d0a53c47eeb0056d7bde380d8";
+            origin        "data/standards/parameters/NRTL/14Dioxane-2Chlorobutane.dat";
+            originSha256  "186bd94e5af4f6dbc25525f2e99e3f392ba31a03a7431fd44fb4ea851ba3d767";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/14Dioxane-2Chlorobutane.dat"
+        {
+            type          imported;
+            sha256        "5f33ce86dec3759c2e797fe25e2324aa1a7358a27f920d8ebf3db88a76eb6807";
+            computationalSha256 "5c0cc4bcfa015e2308c154845f14078c76ff06a31c49a00f5075ad491fd4b844";
+            origin        "data/standards/parameters/UNIQUAC/14Dioxane-2Chlorobutane.dat";
+            originSha256  "4f16d9b527927fbc40af4ee8e66d1540555d850323a33e2a6746d957552cd60b";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/14Dioxane-2Chlorobutane.dat"
+        {
+            type          imported;
+            sha256        "806484f2fe9b7c5b4c085aef0f970d42bfd7dc477bbee5b6e1dbc7a6e72a2f71";
+            computationalSha256 "6dd9a4fbb972290b16dbef9bb45a323f88cacbb0ce22e930c72a8a3321dc0801";
+            origin        "data/standards/parameters/Wilson/14Dioxane-2Chlorobutane.dat";
+            originSha256  "0d3cd824c9ccc945e2af24863058bba0b3bc9e0ffedd1c1c130d712ee05baac8";
+            release       Choupo-2608;
+        }
+    }
+}

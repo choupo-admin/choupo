@@ -1,0 +1,301 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      1Propanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.b_ij  367.317495677;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.b_ji  -243.540511159;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e02efd2057f52bee";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Propanol-ethylLactate-bubble-je900481e.dat";
+            doi       "10.1021/je900481e";
+            sha256    "489fc61a2f8557726ad685881ef8de5f8557a003b3beb4a5fef1912c4e7351a2";
+            provenance measured;
+            archiveFile "je900481e.xml";
+            system    "1Propanol + ethylLactate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.008; max 0.935; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.b_ij  367.368633641;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.b_ji  -243.572063847;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e02efd2057f52bee";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Propanol-ethylLactate-bubble-je900481e.dat";
+            doi       "10.1021/je900481e";
+            sha256    "489fc61a2f8557726ad685881ef8de5f8557a003b3beb4a5fef1912c4e7351a2";
+            provenance measured;
+            archiveFile "je900481e.xml";
+            system    "1Propanol + ethylLactate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.008; max 0.935; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.a_ij  84.3409270153;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.a_ji  -54.1318121235;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e02efd2057f52bee";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Propanol-ethylLactate-bubble-je900481e.dat";
+            doi       "10.1021/je900481e";
+            sha256    "489fc61a2f8557726ad685881ef8de5f8557a003b3beb4a5fef1912c4e7351a2";
+            provenance measured;
+            archiveFile "je900481e.xml";
+            system    "1Propanol + ethylLactate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.008; max 0.935; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.a_ij  90.7285890465;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.a_ji  -59.3443812993;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e02efd2057f52bee";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Propanol-ethylLactate-bubble-je900481e.dat";
+            doi       "10.1021/je900481e";
+            sha256    "489fc61a2f8557726ad685881ef8de5f8557a003b3beb4a5fef1912c4e7351a2";
+            provenance measured;
+            archiveFile "je900481e.xml";
+            system    "1Propanol + ethylLactate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.008; max 0.935; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.A_ij  -1033.34637883;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.A_ji  3987.64901055;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e02efd2057f52bee";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Propanol-ethylLactate-bubble-je900481e.dat";
+            doi       "10.1021/je900481e";
+            sha256    "489fc61a2f8557726ad685881ef8de5f8557a003b3beb4a5fef1912c4e7351a2";
+            provenance measured;
+            archiveFile "je900481e.xml";
+            system    "1Propanol + ethylLactate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.008; max 0.935; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.A_ij  -1030.69645033;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.A_ji  3975.54586788;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e02efd2057f52bee";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Propanol-ethylLactate-bubble-je900481e.dat";
+            doi       "10.1021/je900481e";
+            sha256    "489fc61a2f8557726ad685881ef8de5f8557a003b3beb4a5fef1912c4e7351a2";
+            provenance measured;
+            archiveFile "je900481e.xml";
+            system    "1Propanol + ethylLactate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.008; max 0.935; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

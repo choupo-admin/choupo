@@ -1,0 +1,301 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      nButylFormate;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nHexane.b_ij  -20.5271659313;
+        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nHexane.b_ji  327.557086676;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9ffa2e9fde5c7aa2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nButylFormate-nHexane-bubble-je060355j.dat";
+            doi       "10.1021/je060355j";
+            sha256    "bba746eeb35ea6aef15b23e8c9324b9c61d47c99fdd6decb9735500c22150490";
+            provenance measured;
+            archiveFile "je060355j.xml";
+            system    "nButylFormate + nHexane";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0198; max 0.9951; n 23; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nHexane.b_ij  -20.5271674633;
+        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nHexane.b_ji  327.557089024;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9ffa2e9fde5c7aa2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nButylFormate-nHexane-bubble-je060355j.dat";
+            doi       "10.1021/je060355j";
+            sha256    "bba746eeb35ea6aef15b23e8c9324b9c61d47c99fdd6decb9735500c22150490";
+            provenance measured;
+            archiveFile "je060355j.xml";
+            system    "nButylFormate + nHexane";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0198; max 0.9951; n 23; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nHexane.a_ij  -76.15637643;
+        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nHexane.a_ji  169.24376009;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9ffa2e9fde5c7aa2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nButylFormate-nHexane-bubble-je060355j.dat";
+            doi       "10.1021/je060355j";
+            sha256    "bba746eeb35ea6aef15b23e8c9324b9c61d47c99fdd6decb9735500c22150490";
+            provenance measured;
+            archiveFile "je060355j.xml";
+            system    "nButylFormate + nHexane";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0198; max 0.9951; n 23; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nHexane.a_ij  -76.156376057;
+        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nHexane.a_ji  169.243759539;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9ffa2e9fde5c7aa2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nButylFormate-nHexane-bubble-je060355j.dat";
+            doi       "10.1021/je060355j";
+            sha256    "bba746eeb35ea6aef15b23e8c9324b9c61d47c99fdd6decb9735500c22150490";
+            provenance measured;
+            archiveFile "je060355j.xml";
+            system    "nButylFormate + nHexane";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0198; max 0.9951; n 23; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nHexane.A_ij  2678.6524991;
+        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nHexane.A_ji  -77.1308271471;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9ffa2e9fde5c7aa2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nButylFormate-nHexane-bubble-je060355j.dat";
+            doi       "10.1021/je060355j";
+            sha256    "bba746eeb35ea6aef15b23e8c9324b9c61d47c99fdd6decb9735500c22150490";
+            provenance measured;
+            archiveFile "je060355j.xml";
+            system    "nButylFormate + nHexane";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0198; max 0.9951; n 23; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nHexane.A_ij  2678.65249757;
+        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nHexane.A_ji  -77.1308264926;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9ffa2e9fde5c7aa2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nButylFormate-nHexane-bubble-je060355j.dat";
+            doi       "10.1021/je060355j";
+            sha256    "bba746eeb35ea6aef15b23e8c9324b9c61d47c99fdd6decb9735500c22150490";
+            provenance measured;
+            archiveFile "je060355j.xml";
+            system    "nButylFormate + nHexane";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0198; max 0.9951; n 23; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

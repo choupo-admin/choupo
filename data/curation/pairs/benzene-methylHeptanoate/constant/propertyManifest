@@ -1,0 +1,92 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/benzene.dat"
+        {
+            type          imported;
+            sha256        "34549cda3bccf7c3fcd588c3214c8e64eeb82ad04fa98e937d0a0d0e78bec79c";
+            computationalSha256 "0bc5933b55cb37454fbe448c32d812467a6d596a55f769d2458f74c45e19aaf1";
+            origin        "data/standards/components/benzene.dat";
+            originSha256  "eedcd4d99e2834d35d50986465798362cf7096e6ed29c789716c21d1333e8574";
+            release       Choupo-2608;
+        }
+        "components/methylHeptanoate.dat"
+        {
+            type          imported;
+            sha256        "e2037230b0d847c5d875f005dd0c94184330fec944907eb09b10b910075c1f43";
+            computationalSha256 "58eca656891cdc682a8bf8574dd56098c35cb486eee132b80ba399c7f67a2ac0";
+            origin        "data/standards/components/methylHeptanoate.dat";
+            originSha256  "1b799ee57c1f8a8374cc66dbd9bdbca7c7dfec5491f89ee3856be61db80778fb";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/benzene-methylHeptanoate.dat"
+        {
+            type          imported;
+            sha256        "dd6f5c46e9a84db1c20ad61bc565b4655ba0c2f3e2a68bdeeafcf53680eb0aeb";
+            computationalSha256 "e5bb99005acf0a0c7aa489caef383d0afad7bec99adf5cc2c995691427e0daea";
+            origin        "data/standards/parameters/NRTL/benzene-methylHeptanoate.dat";
+            originSha256  "b2f9f9d7cefe2661be632067f9fbeac8c0b8129ef3a2535a02e4a7c023f7a086";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/benzene-methylHeptanoate.dat"
+        {
+            type          imported;
+            sha256        "f3078ac6c598c32661796a29fc7342598f43eda2738ade5483dd68c52dccdb19";
+            computationalSha256 "24c3dafb44f53b740d686945fbaf57349396562675ec8a0cf07ceef66a26669e";
+            origin        "data/standards/parameters/UNIQUAC/benzene-methylHeptanoate.dat";
+            originSha256  "a524a45530911251eb492bd2acc008aa622076139acb2d3183a53bb657d0e38c";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/benzene-methylHeptanoate.dat"
+        {
+            type          imported;
+            sha256        "d8b9520433a22bd906734bbeb8afdc500c79cd19c6d28c3d3a7de240dbcd8016";
+            computationalSha256 "f71ebde0404334acfb81a3aab8bfc1ec298f0241548eb3387bd105676c3f3f36";
+            origin        "data/standards/parameters/Wilson/benzene-methylHeptanoate.dat";
+            originSha256  "3cc3b59f3fa943c1abdb95ba13e75182f9420cd61b6b804745b4317e75638695";
+            release       Choupo-2608;
+        }
+    }
+}

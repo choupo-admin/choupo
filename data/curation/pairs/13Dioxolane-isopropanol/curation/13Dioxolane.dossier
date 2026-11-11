@@ -1,0 +1,209 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      13Dioxolane;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-isopropanol.b_ij  58.3399515698;
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-isopropanol.b_ji  231.367970086;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d404f7f72907b133";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/13Dioxolane-isopropanol-bubble-je900327x.dat";
+            doi       "10.1021/je900327x";
+            sha256    "0821e94892b4b81c7a0e22171dff181e25ad8678046614261975be7679bfab7c";
+            provenance measured;
+            archiveFile "je900327x.xml";
+            system    "13Dioxolane + isopropanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.074; max 0.932; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-isopropanol.b_ij  58.3399510178;
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-isopropanol.b_ji  231.367970756;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d404f7f72907b133";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/13Dioxolane-isopropanol-bubble-je900327x.dat";
+            doi       "10.1021/je900327x";
+            sha256    "0821e94892b4b81c7a0e22171dff181e25ad8678046614261975be7679bfab7c";
+            provenance measured;
+            archiveFile "je900327x.xml";
+            system    "13Dioxolane + isopropanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.074; max 0.932; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-isopropanol.A_ij  2012.8974811;
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-isopropanol.A_ji  492.54552903;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d404f7f72907b133";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/13Dioxolane-isopropanol-bubble-je900327x.dat";
+            doi       "10.1021/je900327x";
+            sha256    "0821e94892b4b81c7a0e22171dff181e25ad8678046614261975be7679bfab7c";
+            provenance measured;
+            archiveFile "je900327x.xml";
+            system    "13Dioxolane + isopropanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.074; max 0.932; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-isopropanol.A_ij  2012.89748035;
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-isopropanol.A_ji  492.545529545;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d404f7f72907b133";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/13Dioxolane-isopropanol-bubble-je900327x.dat";
+            doi       "10.1021/je900327x";
+            sha256    "0821e94892b4b81c7a0e22171dff181e25ad8678046614261975be7679bfab7c";
+            provenance measured;
+            archiveFile "je900327x.xml";
+            system    "13Dioxolane + isopropanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.074; max 0.932; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);
