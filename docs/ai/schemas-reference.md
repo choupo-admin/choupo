@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*111 of 111 registered operations carry a schema and are documented below.*
+*112 of 112 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -408,6 +408,23 @@ Mean-ionic activity and osmotic coefficients of the salt the CASE's declared the
 | `molality` |   | object | — | `{ from ...; to ...; n ...; }` — the molality range to sweep. |
 | `temperature` |   | number | K | Defaults to 298.15 K. |
 | `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+
+## `electrolyteFit`  (electrolyteFit operation)
+
+Regresses the parameters of ONE fully dissociated salt in water against its mean ionic activity coefficient gamma_pm and osmotic coefficient phi at one stated temperature, with the engine's own closed forms (PitzerSingleSalt: beta0, beta1, Cphi, and beta2 for a 2:2 salt; ENRTLSingleSalt: tau_m_ca, tau_ca_m with alpha fixed). The residual is ln gamma_pm and phi, equal weight; the search is Levenberg-Marquardt. Optionally holds out every N-th point (interleaved points of the same source, reported beside the in-sample errors and never called a validation), grades the in-sample maximum relative error, and writes a proposal file a catalogue record is held equal to (DEV.md 4c C311).
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `cation` | ✓ | string | — | Species key of the cation, e.g. Na; its charge comes from its species record. |
+| `anion` | ✓ | string | — | Species key of the anion, e.g. NO3. |
+| `model` | ✓ | string | — |  |
+| `dataset` | ✓ | string | — | A dataset file with columns m (mol/kg), gamma and phi, and a held-constant `temperature`. |
+| `heldOut` |   | object | — | `{ every N; offset k; }` -- the points whose 0-based position in the file satisfies index % N == k are never handed to the fitter. |
+| `pitzer` |   | object | — |  |
+| `eNRTL` |   | object | — |  |
+| `grade` |   | object | — | `{ limits_pct ( c w s ); }` -- upper limits, in per cent, of clean, warning and severe for the in-sample maximum relative error of gamma_… |
+| `proposal` |   | object | — |  |
+| `objective` |   | object | — | Only `method leastSquares;` is built for this op. |
 
 ## `elementalComposition`  (elementalComposition operation)
 
