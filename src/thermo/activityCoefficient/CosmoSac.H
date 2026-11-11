@@ -15,8 +15,8 @@ Class
 
 Description
     COSMO-SAC activity-coefficient model, the 2002 (Lin & Sandler) variant as
-    implemented in the NIST benchmark (Bell et al., AIChE J. 65 (2019) e16194,
-    doi:10.1002/aic.16194; reference CODE usnistgov/COSMOSAC, MIT / not subject
+    implemented in the NIST benchmark (Bell et al., J. Chem. Theory Comput. 16
+    (2020) 2635, doi:10.1021/acs.jctc.9b01016; CODE usnistgov/COSMOSAC, MIT / not subject
     to copyright in the USA -- the code, NOT the profile folders it bundles).
     Each component carries its OWN COSMO surface data in its `component.dat`
     `cosmo { <setName> { model; variant; source; licence; installed; area;
