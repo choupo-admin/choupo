@@ -310,6 +310,38 @@ def brock_bird(Tc, Pc_bar, Tb, T):
     return 1e-3 * Pc_bar ** (2 / 3) * Tc ** (1 / 3) * Q * (1 - Tr) ** (11 / 9)
 
 
+def read_block(text, block, sub):
+    """{A: .., B: ..} of `block { sub { ... } }` in a record, or None."""
+    t = strip_comments(text)
+    m = re.search(r"^" + block + r"\s*\{", t, re.M)
+    if not m:
+        return None
+    seg = t[m.start():]
+    sm = re.search(sub + r"\s*\{([^}]*)\}", seg)
+    if not sm:
+        return None
+    return {k: float(v) for k, v in re.findall(r"(\w+)\s+([-+0-9.eE]+)\s*;", sm.group(1))}
+
+
+def existing_value(text, prop, T):
+    """The stored record evaluated with the engine's own form, or None."""
+    if prop == "visc":
+        d = read_block(text, "liquidViscosity", "chemsepEq101")
+        if d:
+            return math.exp(d["A"] + d["B"] / T + d.get("C", 0) * math.log(T) + (d.get("D", 0) * T ** d.get("E", 0) if d.get("D", 0) else 0))
+        d = read_block(text, "liquidViscosity", "andrade")
+        if d:
+            return math.exp(d["A"] + d["B"] / T)
+        d = read_block(text, "liquidViscosity", "vogel")
+        if d:
+            return math.exp(d["A"] + d["B"] / (T - d.get("C", 0)))
+    else:
+        d = read_block(text, "liquidThermalConductivity", "chemsepEq16")
+        if d:
+            return d["A"] + math.exp(d["B"] / T + d["C"] + d.get("D", 0) * T + d.get("E", 0) * T * T)
+    return None
+
+
 def cap_words(kept):
     ws = []
     if len({r["T"] for r in kept}) < 2:
@@ -412,6 +444,19 @@ def cmd_fit():
             g, caps = final_grade(f["max"], f["kept"])
             f["grade"], f["caps"] = g, caps
             f["nDois"] = len({r["doi"] for r in f["kept"]})
+            f["dois"] = sorted({r["doi"] for r in f["kept"]})
+            kc = collections.Counter(r["doi"] for r in f["kept"]); dc = collections.Counter(r["doi"] for r in f["dropped"])
+            f["perDoi"] = {d: [kc.get(d, 0), dc.get(d, 0)] for d in sorted(set(kc) | set(dc))}
+            f["nKept"] = len(f["kept"])
+            f["nTemps"] = len({r["T"] for r in f["kept"]})
+            if p != "sigma" and record_origin(c["text"], p) != "none":
+                dev = []
+                for r in f["kept"]:
+                    ev = existing_value(c["text"], p, r["T"])
+                    if ev:
+                        dev.append(abs(ev / r["val"] - 1) * 100)
+                if dev:
+                    f["existingRecord"] = {"origin": record_origin(c["text"], p), "maxDevPct": max(dev), "meanDevPct": sum(dev) / len(dev), "n": len(dev)}
             ent[p] = f
             used |= {r["doi"] for r in f["kept"]} | {r["doi"] for r in f["dropped"]}
             if p == "sigma" and c["Tb"] and c["Pc"]:
@@ -420,6 +465,9 @@ def cmd_fit():
         if ent:
             ds["components"][name] = ent
     ds["sha"] = {d: hashlib.sha256((CACHE / (d + ".xml")).read_bytes()).hexdigest() for d in sorted(used)}
+    for e in ds["components"].values():       # NO measured series in the tree (C287): the points are regenerated from the archive cache
+        for f in e.values():
+            f.pop("kept", None); f.pop("paramsLS", None)
     DATASET.parent.mkdir(parents=True, exist_ok=True)
     json.dump(ds, open(DATASET, "w"), indent=1, sort_keys=True)
     cnt = collections.Counter()
@@ -429,12 +477,248 @@ def cmd_fit():
     print(len(ds["components"]), "components fitted;", sorted(cnt.items()))
 
 
+FIELDS = {"visc": ("liquidViscosity", "chemsepEq101"), "cond": ("liquidThermalConductivity", "chemsepEq16")}
+
+
+def f10(x):
+    return f"{x:.10g}"
+
+
+def shippable(f, origin):
+    return origin == "none" and f["grade"] in ("clean", "warning") and f["npar"] >= 2
+
+
+def block_text(prop, f):
+    bn, sub = FIELDS[prop]
+    p = f["params"]
+    if prop == "visc":
+        A, B, C = (list(p) + [0.0, 0.0])[:3]
+        rows = [("A", A), ("B", B), ("C", C), ("D", 0), ("E", 0)]
+    else:
+        C, B, D = (list(p) + [0.0, 0.0])[:3]
+        rows = [("A", 0), ("B", B), ("C", C), ("D", D), ("E", 0)]
+    body = "".join(f"        {k:<5} {f10(v)};\n" for k, v in rows)
+    body += f"        Tmin  {f10(f['Tmin'])};\n        Tmax  {f10(f['Tmax'])};\n"
+    return f"{bn}\n{{\n    {sub}\n    {{\n{body}    }}\n}}\n"
+
+
+def prov_text(prop, f, sha):
+    bn, sub = FIELDS[prop]
+    unit = {"visc": "Pa.s", "cond": "W/(m.K)"}[prop]
+    ev = "".join(f'                {{ doi "{d}"; articleSha256 "{sha[d]}"; pointsKept {k}; pointsDropped {x}; provenance measured; }}\n'
+                 for d, (k, x) in sorted(f["perDoi"].items()))
+    drop = "; ".join(f"{r['doi']} T={r['T']:g} K {unit}={r['val']:g} err {r['err']:+.1f} %" for r in f["dropped"]) or "none"
+    form = ("ln(mu/Pa.s) = A + B/T + C ln T (chemsepEq101 with D = 0)" if prop == "visc"
+            else "ln(k/(W/m/K)) = C + B/T + D T (chemsepEq16 with A = 0, E = 0)")
+    cap = f"        fitGradeCap   ( {' '.join(f['caps'])} );   // DEV.md 4c C300 rule 2\n" if f["caps"] else ""
+    return (f"    {bn}\n    {{\n"
+            "        origin        fitted;\n"
+            f'        method        "least squares on ln y of {form}, {f["npar"]} parameter(s), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";\n'
+            f'        fittedBy      "{TOOL}";\n'
+            "        reviewStatus  autoPromoted;\n"
+            "        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it\n"
+            f"        fitGrade      {f['grade']};   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error\n"
+            "        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1\n"
+            + cap +
+            f"        fitGradeMaxRelativeError_pct {f['max']:.6f};\n"
+            f"        Trange        ({f10(f['Tmin'])} {f10(f['Tmax'])});   // K, the kept points -- outside it the engine announces an extrapolation\n"
+            '        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";\n'
+            '        reuse         "Choupo\'s own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C327)";\n'
+            f"        evidence\n        (\n{ev}        );\n"
+            "        acceptance\n        {\n"
+            "            verdict     accepted;\n"
+            f"            studies     {f['nDois']};\n"
+            f"            pointsKept  {f['nKept']};\n"
+            f"            pointsDropped {len(f['dropped'])};\n"
+            f'            dropped     "{drop}";\n'
+            f"            aad_pct     {f['aad']:.6f};\n"
+            f"            max_pct     {f['max']:.6f};\n"
+            "        }\n    }\n")
+
+
+def cmd_write(dry=False):
+    ds = json.load(open(DATASET))
+    nw = 0
+    held = collections.Counter()
+    written = []
+    for name, ent in sorted(ds["components"].items()):
+        path = STD / f"{name}.dat"
+        text = path.read_text(encoding="utf-8")
+        for prop in ("visc", "cond"):
+            f = ent.get(prop)
+            if not f:
+                continue
+            orig = record_origin(text, prop)
+            if not shippable(f, orig):
+                why = ("record exists" if orig != "none" else
+                       f"grade {f['grade']}" if f["grade"] not in ("clean", "warning") else "single temperature")
+                held[(prop, why)] += 1
+                continue
+            bt = block_text(prop, f)
+            pt = prov_text(prop, f, ds["sha"])
+            m = re.search(r"^provenance\s*\{", text, re.M)
+            if m:
+                text = text[:m.start()] + bt + "\n" + text[m.start():]
+                k = text.rstrip().rfind("}")
+                text = text[:k] + pt + text[k:]
+            else:
+                text = text.rstrip("\n") + "\n\n" + bt + "\nprovenance\n{\n" + pt + "}\n"
+            written.append([name, prop, f["grade"]])
+        if not dry:
+            path.write_text(text, encoding="utf-8")
+    print("written", len(written), dict(collections.Counter((p, g) for _, p, g in written)), "held", dict(held))
+    if not dry:
+        json.dump(written, open(BATCH / "constant" / "written.json", "w"))
+
+
+def cmd_case():
+    """The batch case: every written record loaded and evaluated at its window's ends and middle."""
+    ds = json.load(open(DATASET))
+    written = json.load(open(BATCH / "constant" / "written.json"))
+    names = sorted({n for n, _, _ in written})
+    (BATCH / "system").mkdir(parents=True, exist_ok=True)
+    hdr = (ROOT / "data/curation/batches/new_components_c309/system/controlDict").read_text().split("*/")[0] + "*/\n"
+    (BATCH / "transport_c327.cho").write_text("")
+    (BATCH / "system" / "controlDict").write_text(
+        hdr + 'application   choupoProps;\n'
+        f'description   "C327: the {len(written)} liquid-transport records fitted from the ThermoML archive (viscosity chemsepEq101, conductivity chemsepEq16), each evaluated at the ends and the middle of its own window";\n'
+        'verbosity     2;\n')
+    (BATCH / "constant" / "thermoPhysPropDict").write_text(
+        hdr + "/*  C327: components that received a fitted liquidViscosity / liquidThermalConductivity.  An ideal liquid:\n"
+        "    every property asked is a pure-component one.  NOT sealed.  */\n\n"
+        "recordType    thermophysicalPropertySystem;\nschemaVersion 2;\n\n"
+        "components       ( " + "  ".join(names) + " );\n\n"
+        "equilibrium\n{\n    formulation gammaPhi;\n    liquid { activityModel { model ideal; } }\n    vapour { fugacityModel idealGas; }\n}\n")
+    ops = ""
+    for n, p, _ in written:
+        f = ds["components"][n][p]
+        key, model_, mk = (("viscosity_liquid", "chemsepEq101", "viscosity") if p == "visc"
+                           else ("thermal_conductivity_liquid", "chemsepEq16", "thermalConductivity"))
+        ops += ("    {\n"
+                f"        name        {p}_{n};\n        type        propertyScan1D;\n"
+                f"        vary        {{ variable T;  from {f10(f['Tmin'])} K;  to {f10(f['Tmax'])} K;  n 3; }}\n"
+                f"        state       {{ P 1 bar;  composition {{ {n} 1.0; }} }}\n"
+                f"        thermo      {{ transport {{ liquid {{ {mk} {{ model {model_}; }} }} }} }}\n"
+                f"        properties  ( {key} );\n"
+                f"        output      {{ file {p}_{n}.csv; }}\n    }}\n")
+    (BATCH / "system" / "propsDict").write_text(
+        hdr + "/*  transport_c327 -- DEV.md 4c C327.  Written by `bin/curate/transport_fit.py case`.\n"
+        "    Each record the tool added to data/standards/components is loaded and evaluated at the two ends and the\n"
+        "    middle of its own validity window (Tmin, Tmid, Tmax): every value must evaluate with NO extrapolation\n"
+        "    announcement, which is the engine reading the window the record declares.  The records are reproduced\n"
+        "    from the archive by `transport_fit.py verify` (gate check_transport_records).  Surface tension fits are\n"
+        "    in constant/transportDataset.json only: the engine has no reader of a stored sigma(T) yet.  */\n\n"
+        "operations\n(\n" + ops + ");\n")
+    print("case written:", len(written), "scans,", len(names), "components")
+
+
+def _parse_entry(text, bn):
+    t = strip_comments(text)
+    m = re.search(r"^provenance\s*\{", t, re.M)
+    if not m:
+        return None
+    pm = re.search(r"^    " + bn + r"\s*\{(.*?)\n    \}", t[m.start():], re.M | re.S)
+    return pm.group(1) if pm else None
+
+
+def cmd_verify(refit=True):
+    """Return non-zero on any failure; prints one line per failure."""
+    fails = []
+    ds = json.load(open(DATASET))
+    written = json.load(open(BATCH / "constant" / "written.json"))
+    cat = catalogue()
+    refits = {}
+    if refit and (CACHE / "index.json").exists() and (CACHE / "identity.json").exists():
+        n2k = identity()
+        keys = {n2k[n] for n, _, _ in written if n in n2k}
+        data, sha, _ = harvest(keys)
+        refits = {"data": data, "n2k": n2k, "sha": sha}
+    for name, prop, grade_w in written:
+        tag = f"{name}.{prop}"
+        text = cat[name]["text"]
+        f = ds["components"][name][prop]
+        bn, sub = FIELDS[prop]
+        d = read_block(text, bn, sub)
+        ent = _parse_entry(text, bn)
+        if d is None or ent is None:
+            fails.append(f"{tag}: record or provenance entry missing"); continue
+        p = f["params"]
+        want = (dict(zip("ABC", (list(p) + [0, 0])[:3])) if prop == "visc" else
+                dict(zip("CBD", (list(p) + [0, 0])[:3])))
+        if prop == "cond":
+            want["A"] = 0.0
+        for k, v in want.items():
+            if abs(d.get(k, 0) - v) > 1e-8 * (1 + abs(v)):
+                fails.append(f"{tag}: {k} {d.get(k)} != dataset {v}")
+        if abs(d["Tmin"] - f["Tmin"]) > 1e-9 or abs(d["Tmax"] - f["Tmax"]) > 1e-9:
+            fails.append(f"{tag}: Tmin/Tmax differ from the data's range")
+        if d.get("D", 0) != 0 and prop == "visc" or d.get("E", 0) != 0:
+            fails.append(f"{tag}: D/E written non-zero")
+        m = re.search(r"fitGrade\s+(\w+);", ent)
+        g = grade(f["max"])
+        caps = sorted(f["caps"])
+        gg = "warning" if (g == "clean" and caps) else g
+        if not m or m.group(1) != gg or gg != f["grade"]:
+            fails.append(f"{tag}: fitGrade {m and m.group(1)} != rule {gg}")
+        cm = re.search(r"fitGradeCap\s*\(([^)]*)\)", ent)
+        if sorted(cm.group(1).split() if cm else []) != (caps if g == "clean" else []):
+            fails.append(f"{tag}: fitGradeCap label disagrees with the evidence")
+        if "fitGradeBasis inSample" not in ent.replace("  ", " ") and not re.search(r"fitGradeBasis\s+inSample", ent):
+            fails.append(f"{tag}: fitGradeBasis inSample missing")
+        if not re.search(r"review\s*\{\s*by\s+none;", ent):
+            fails.append(f"{tag}: review {{ by none; }} missing")
+        if not re.search(r"origin\s+fitted;", ent):
+            fails.append(f"{tag}: origin fitted missing")
+        tr = re.search(r"Trange\s*\(\s*(\S+)\s+(\S+)\s*\)", ent)
+        if not tr or abs(float(tr.group(1)) - d["Tmin"]) > 1e-9 or abs(float(tr.group(2)) - d["Tmax"]) > 1e-9:
+            fails.append(f"{tag}: provenance Trange differs from the record window")
+        if f["grade"] not in ("clean", "warning") or f["npar"] < 2:
+            fails.append(f"{tag}: shipped though grade {f['grade']} / {f['npar']} parameter(s)")
+        # the stored curve must reproduce the stated max error at the window's ends (self-consistency of the written numbers)
+        mp = re.search(r"fitGradeMaxRelativeError_pct\s+(\S+);", ent)
+        if not mp or abs(float(mp.group(1)) - f["max"]) > 1e-5:
+            fails.append(f"{tag}: stated max error differs from the dataset")
+        if refits:
+            k = refits["n2k"].get(name)
+            u, _ = eligible(refits["data"].get(k, {}).get(prop, []), cat[name]["Tc"])
+            r = fit_prop(prop, u)
+            if not r:
+                fails.append(f"{tag}: refit impossible"); continue
+            for a, b in zip(r["params"], f["params"]):
+                if abs(a - b) > 1e-6 * (1 + abs(b)):
+                    fails.append(f"{tag}: refit param {a} != stored {b}"); break
+            if abs(r["max"] - f["max"]) > 1e-4 or r["Tmin"] != f["Tmin"] or r["Tmax"] != f["Tmax"]:
+                fails.append(f"{tag}: refit max/window differ (max {r['max']:.4f} vs {f['max']:.4f})")
+    for n, prop, _ in written:
+        pass
+    arm = ("each record REFIT from the ThermoML archive cache (parameters, window and max error equal the stored ones at 1e-6)"
+           if refits else "the archive refit arm was NOT RUN (no ThermoML cache reachable) -- only the dataset-vs-record arms ran")
+    if fails:
+        print(f"check_transport_records: FAIL -- {len(fails)} failure(s) over {len(written)} record(s)")
+    else:
+        print(f"check_transport_records: OK -- {len(written)} fitted liquid-viscosity / liquid-thermal-conductivity record(s) held to the dataset "
+              f"(parameters, window, D/E written as zero, review by none, fitGradeBasis inSample, grade limits 5/10/20 %, C300 cap words, "
+              f"Trange = window, nothing below warning or with one parameter), and, when the ThermoML archive cache is reachable, each "
+              "refit from it (parameters, window and max error equal the stored ones at 1e-6).  NOT CHECKED: that a fit agrees with the "
+              "articles' own tables (a machine read them), surface tension (no reader), any molecule outside the written records.")
+        print("  " + arm)
+    for x in fails:
+        print("  FAIL", x)
+    return 1 if fails else 0
+
+
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else ""
     if cmd == "census":
         cmd_census()
     elif cmd == "fit":
         cmd_fit()
+    elif cmd == "write":
+        cmd_write("--dry" in sys.argv)
+    elif cmd == "case":
+        cmd_case()
+    elif cmd == "verify":
+        sys.exit(cmd_verify("--no-refit" not in sys.argv))
     else:
         print(__doc__)
         sys.exit(2 if cmd else 0)

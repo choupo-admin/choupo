@@ -71,6 +71,20 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 5; } { group ester; count 1; } );
 }
 
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     -19.96217295;
+        B     1735.966026;
+        C     1.246387191;
+        D     0;
+        E     0;
+        Tmin  293.15;
+        Tmax  343.15;
+    }
+}
+
 provenance
 {
     MW
@@ -227,6 +241,35 @@ provenance
             awAad_pct   1.308204;   // the AmbroseWalton curve it replaces, the same points
             awMax_pct   3.192786;
             Tnb_fit     438.1405;   // K, the fitted curve at 101.325 kPa
+        }
+    }
+    liquidViscosity
+    {
+        origin        fitted;
+        method        "least squares on ln y of ln(mu/Pa.s) = A + B/T + C ln T (chemsepEq101 with D = 0), 3 parameter(s), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      warning;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeCap   ( singleLaboratory );   // DEV.md 4c C300 rule 2
+        fitGradeMaxRelativeError_pct 0.266301;
+        Trange        (293.15 343.15);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C327)";
+        evidence
+        (
+                { doi "10.1021/je050001c"; articleSha256 "d62bb9517b1406f7ac2e3797b7c6b9b5718c88c3d8a33a3a8d354909c1032ee4"; pointsKept 11; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     1;
+            pointsKept  11;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.176330;
+            max_pct     0.266301;
         }
     }
 }
