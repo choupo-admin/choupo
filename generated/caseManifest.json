@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1354,
+  "cases": 1490,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 15
@@ -1711,6 +1711,240 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/1122Tetrachloroethane-1Hexanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/1122Tetrachloroethane-2Methyl1Butanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/1122Tetrachloroethane-acrylonitrile": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/1122Tetrachloroethane-cyclohexane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/1122Tetrachloroethane-dimethylSulfoxide": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/1122Tetrachloroethane-ethylBenzene": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/1122Tetrachloroethane-monochlorobenzene": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/1122Tetrachloroethane-nHeptane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/1122Tetrachloroethane-nNDimethylformamide": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/1122Tetrachloroethane-nitrobenzene": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/1122Tetrachloroethane-oCresol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/1122Tetrachloroethane-pCresol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/1122Tetrachloroethane-tetrahydrofuran": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/124Trimethylbenzene-1Pentanol": {
    "application": "choupoProps",
    "ops": [
@@ -1852,7 +2086,79 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/12Butanediol-methanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/12Propanediol-13Butanediol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/12Propanediol-13Propanediol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/12Propanediol-cyclohexane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/12Propanediol-diEthylCarbonate": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -1888,6 +2194,114 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/12Propanediol-propyleneCarbonate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/12Propanediol-tetrahydrofuran": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/13Butanediol-ethyleneGlycol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/13Dioxolane-224Trimethylpentane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/13Dioxolane-2Methyl1Propanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/13Dioxolane-2Methyl2Propanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/13Dioxolane-aniline": {
    "application": "choupoProps",
    "ops": [
@@ -1898,6 +2312,150 @@
     "formulation": "gammaPhi",
     "activityModels": [
      "NRTL"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/13Dioxolane-isopropanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/13Dioxolane-methanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/13Dioxolane-water": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/13Propanediol-1Heptanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/13Propanediol-1Hexanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/13Propanediol-ethanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/13Propanediol-isopropanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/13Propanediol-water": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
     ]
    },
    "roles": [
@@ -1978,6 +2536,42 @@
    "hasGolden": true
   },
   "data/curation/pairs/14Butanediol-tetrahydrofuran": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/14Dioxane-1Chlorobutane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/14Dioxane-2Chlorobutane": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -2155,6 +2749,24 @@
    "hasGolden": true
   },
   "data/curation/pairs/1Chlorobutane-nHeptane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/1Chlorobutane-tetrahydropyran": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -2371,6 +2983,24 @@
    "hasGolden": true
   },
   "data/curation/pairs/1Heptanol-nitrobenzene": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/1Hexanol-1Propoxy2Propanol": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -2796,6 +3426,24 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/1Hexene-ethylButanoate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/1Hexene-methylIsobutylKetone": {
    "application": "choupoProps",
    "ops": [
@@ -2956,6 +3604,42 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/1Octanol-benzoBThiophene": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/1Octanol-furan": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/1Octanol-nDodecane": {
    "application": "choupoProps",
    "ops": [
@@ -3099,6 +3783,24 @@
    "hasGolden": true
   },
   "data/curation/pairs/1Pentanol-diNButylEther": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/1Pentanol-diNPropylEther": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -3277,6 +3979,24 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/1Pentanol-pyrrole": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/1Pentanol-toluene": {
    "application": "choupoProps",
    "ops": [
@@ -3311,6 +4031,42 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/1Propanol-2Ethoxyethanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/1Propanol-2Methoxyethanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/1Propanol-2Methyl1Butanol": {
    "application": "choupoProps",
    "ops": [
@@ -3330,6 +4086,24 @@
    "hasGolden": true
   },
   "data/curation/pairs/1Propanol-2Propoxyethanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/1Propanol-3Methyl1Butanol": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -3541,6 +4315,24 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/1Propanol-ethylLactate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/1Propanol-ethyleneGlycol": {
    "application": "choupoProps",
    "ops": [
@@ -3649,6 +4441,24 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/1Propanol-nButylPropionate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/1Propanol-nDodecane": {
    "application": "choupoProps",
    "ops": [
@@ -3686,6 +4496,24 @@
    "hasGolden": true
   },
   "data/curation/pairs/1Propanol-nPropylAcetate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/1Propanol-nPropylPropionate": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -3793,6 +4621,24 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/1Propanol-pyrrole": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/1Propanol-tertButylEthylEther": {
    "application": "choupoProps",
    "ops": [
@@ -3812,6 +4658,60 @@
    "hasGolden": true
   },
   "data/curation/pairs/1Propanol-tetrahydropyran": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/1Propoxy2Propanol-2Butanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/1Propoxy2Propanol-ethanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/1Propoxy2Propanol-methanol": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -4201,7 +5101,43 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/224Trimethylpentane-tetrahydropyran": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/244Trimethyl1Pentene-2Butanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/244Trimethyl1Pentene-2Methyl2Propanol": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -4255,6 +5191,42 @@
    "hasGolden": true
   },
   "data/curation/pairs/244Trimethyl1Pentene-isopropanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/2Amino2Methyl1Propanol-methanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/2Amino2Methyl1Propanol-water": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -4680,6 +5652,24 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/2Butoxyethanol-2Ethoxyethanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/2Chlorobutane-cyclohexane": {
    "application": "choupoProps",
    "ops": [
@@ -4699,6 +5689,24 @@
    "hasGolden": true
   },
   "data/curation/pairs/2Chlorobutane-nHeptane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/2Chlorobutane-tetrahydropyran": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -4768,6 +5776,24 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/2Ethoxyethanol-diNPropylEther": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/2Ethoxyethanol-dichloromethane": {
    "application": "choupoProps",
    "ops": [
@@ -4778,6 +5804,42 @@
     "formulation": "gammaPhi",
     "activityModels": [
      "NRTL"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/2Ethoxyethanol-diisopropylEther": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/2Ethoxyethanol-dimethylSulfoxide": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
     ]
    },
    "roles": [
@@ -4802,6 +5864,24 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/2Ethoxyethanol-ethylBenzene": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/2Ethoxyethanol-ethylPropionate": {
    "application": "choupoProps",
    "ops": [
@@ -4812,6 +5892,24 @@
     "formulation": "gammaPhi",
     "activityModels": [
      "NRTL"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/2Ethoxyethanol-isopropanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
     ]
    },
    "roles": [
@@ -4872,6 +5970,114 @@
    "hasGolden": true
   },
   "data/curation/pairs/2Ethoxypropene-methylEthylKetone": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/2Ethyl1Hexanol-2Methyl2Propanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/2Ethyl1Hexanol-nButanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/2Ethyl1Hexanol-pXylene": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/2Ethylthiophene-mesitylene": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/2Ethylthiophene-nDecane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/2Ethylthiophene-nOctane": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -4979,7 +6185,133 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/2Methoxyethanol-cyclohexane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/2Methoxyethanol-cyclohexene": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/2Methoxyethanol-diisopropylEther": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/2Methoxyethanol-dimethylSulfoxide": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/2Methoxyethanol-ethanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/2Methoxyethanol-ethylBenzene": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/2Methoxyethanol-isopropanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/2Methoxyethanol-toluene": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -5374,6 +6706,24 @@
    "hasGolden": true
   },
   "data/curation/pairs/2Methyl1Propanol-mCresol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/2Methyl1Propanol-nButylPropionate": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -6143,6 +7493,24 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/2Pentanone-3Pentanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/2Pentanone-3Pentanone": {
    "application": "choupoProps",
    "ops": [
@@ -6323,6 +7691,60 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/3Methyl1Butanol-dimethylSulfoxide": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/3Methyl1Butanol-isopentylAcetate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/3Methyl1Butanol-isopropanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/3Methyl1Butanol-morpholine": {
    "application": "choupoProps",
    "ops": [
@@ -6367,6 +7789,24 @@
     "formulation": "gammaPhi",
     "activityModels": [
      "NRTL"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/3Methyl1Butanol-nPropylAcetate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
     ]
    },
    "roles": [
@@ -6469,6 +7909,24 @@
     "formulation": "gammaPhi",
     "activityModels": [
      "NRTL"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/3Pentanol-3Pentanone": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
     ]
    },
    "roles": [
@@ -6745,6 +8203,42 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/Dichloroethane-pentanenitrile": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/Dichloroethane-tertButylAcetate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/Dichloroethane-tetrahydrofuran": {
    "application": "choupoProps",
    "ops": [
@@ -6997,6 +8491,24 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/acetonitrile-diethylSuccinate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/acetonitrile-dimethylSulfoxide": {
    "application": "choupoProps",
    "ops": [
@@ -7087,6 +8599,60 @@
    "hasGolden": true
   },
   "data/curation/pairs/acetonitrile-methanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/acetonitrile-methylButanoate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/acetonitrile-methylHexanoate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/acetonitrile-methylPentanoate": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -7249,6 +8815,186 @@
    "hasGolden": true
   },
   "data/curation/pairs/acrylonitrile-nitrobenzene": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/allylAlcohol-benzene": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/allylAlcohol-chloroform": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/allylAlcohol-ethanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/allylAlcohol-ethylAcetate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/allylAlcohol-ethyleneGlycol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/allylAlcohol-isobutylAcetate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/allylAlcohol-methanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/allylAlcohol-methylPropionate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/allylAlcohol-nButylAcetate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/allylAlcohol-nButylPropionate": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -7711,6 +9457,24 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/benzene-methylHeptanoate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/benzene-methylal": {
    "application": "choupoProps",
    "ops": [
@@ -7818,6 +9582,24 @@
    "hasGolden": true
   },
   "data/curation/pairs/benzene-thiophene": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/benzoBThiophene-nDodecane": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -8227,6 +10009,24 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/cyclohexane-ethylPropionate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/cyclohexane-methylIsobutylKetone": {
    "application": "choupoProps",
    "ops": [
@@ -8246,6 +10046,24 @@
    "hasGolden": true
   },
   "data/curation/pairs/cyclohexane-methylal": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/cyclohexane-morpholine": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -8621,6 +10439,24 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/cyclohexene-morpholine": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/diButylCarbonate-methanol": {
    "application": "choupoProps",
    "ops": [
@@ -8676,6 +10512,24 @@
    "hasGolden": true
   },
   "data/curation/pairs/diEthylCarbonate-ethylBenzene": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/diEthylCarbonate-isopentylAcetate": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -9032,7 +10886,61 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/diNPropylEther-nButylPropionate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/diNPropylEther-nHeptane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/diNPropylEther-nNDimethylformamide": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/dichloromethane-nHexane": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -9638,6 +11546,24 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/dimethylCarbonate-isopentylAcetate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/dimethylCarbonate-isopropanol": {
    "application": "choupoProps",
    "ops": [
@@ -9819,6 +11745,42 @@
    "hasGolden": true
   },
   "data/curation/pairs/dimethylCarbonate-nButylAcetate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/dimethylCarbonate-nButylButanoate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/dimethylCarbonate-nButylPropionate": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -10051,6 +12013,24 @@
    "hasGolden": true
   },
   "data/curation/pairs/dimethylSulfoxide-isobutylAcetate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/dimethylSulfoxide-isopentylAcetate": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -10338,6 +12318,24 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/ethanol-ethylPropionate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/ethanol-ethylTertPentylEther": {
    "application": "choupoProps",
    "ops": [
@@ -10357,6 +12355,24 @@
    "hasGolden": true
   },
   "data/curation/pairs/ethanol-ethyleneGlycol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/ethanol-furan": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -10501,6 +12517,24 @@
    "hasGolden": true
   },
   "data/curation/pairs/ethanol-nButanol": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/ethanol-nButylPropionate": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -10698,6 +12732,24 @@
    "hasGolden": true
   },
   "data/curation/pairs/ethanol-tetrahydropyran": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/ethylAcetate-ethylLactate": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -11219,6 +13271,24 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/ethylButanoate-nHexane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/ethylButanoate-nNonane": {
    "application": "choupoProps",
    "ops": [
@@ -11399,6 +13469,42 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/ethylPropionate-nHexane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/ethylPropionate-nOctane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/ethylPropionate-nPentane": {
    "application": "choupoProps",
    "ops": [
@@ -11525,6 +13631,60 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/furan-furfural": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/furan-nHexane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/furan-toluene": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/furfural-water": {
    "application": "choupoProps",
    "ops": [
@@ -11579,7 +13739,43 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/isobutylAcetate-nButylPropionate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/isobutylAcetate-nNDimethylformamide": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/isopentylAcetate-methylAcetate": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -12353,6 +14549,24 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/methanol-vinylPropionate": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/methylAcetate-nHeptane": {
    "application": "choupoProps",
    "ops": [
@@ -12425,6 +14639,24 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/methylButanoate-propionitrile": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/methylDecanoate-methylOctanoate": {
    "application": "choupoProps",
    "ops": [
@@ -12462,6 +14694,24 @@
    "hasGolden": true
   },
   "data/curation/pairs/methylDiEthanolAmine-water": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/methylEthylKetone-nButylPropionate": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -12659,6 +14909,24 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/methylHexanoate-propionitrile": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/methylIsobutylKetone-nHexane": {
    "application": "choupoProps",
    "ops": [
@@ -12732,6 +15000,24 @@
    "hasGolden": true
   },
   "data/curation/pairs/methylPentanoate-nOctane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/methylPentanoate-propionitrile": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -12911,6 +15197,24 @@
    "hasGolden": true
   },
   "data/curation/pairs/monochlorobenzene-nNDimethylformamide": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/monochlorobenzene-tertButylAcetate": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -13125,6 +15429,24 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/nButanol-pyrrole": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/nButanol-tetrahydrofuran": {
    "application": "choupoProps",
    "ops": [
@@ -13232,7 +15554,61 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/nButylFormate-nHexane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/nButylFormate-nNonane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/nButylFormate-nOctane": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/nButylFormate-nPentane": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -14019,6 +16395,42 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/nPropylPropionate-propionicAcid": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/nPropylPropionate-water": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/nUndecane-oXylene": {
    "application": "choupoProps",
    "ops": [
@@ -14307,6 +16719,24 @@
    ],
    "hasGolden": true
   },
+  "data/curation/pairs/pentanoicAcid-propionicAcid": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
   "data/curation/pairs/propanal-propionicAcid": {
    "application": "choupoProps",
    "ops": [
@@ -14433,6 +16863,24 @@
    "hasGolden": true
   },
   "data/curation/pairs/triethyleneGlycol-water": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/pairs/vinylAcetate-vinylPropionate": {
    "application": "choupoProps",
    "ops": [
     "fitParameters",
@@ -22485,6 +24933,19 @@
     "data/curation/components/triethanolamine",
     "data/curation/components/triethylamine",
     "data/curation/components/vinylPropionate",
+    "data/curation/pairs/1122Tetrachloroethane-1Hexanol",
+    "data/curation/pairs/1122Tetrachloroethane-2Methyl1Butanol",
+    "data/curation/pairs/1122Tetrachloroethane-acrylonitrile",
+    "data/curation/pairs/1122Tetrachloroethane-cyclohexane",
+    "data/curation/pairs/1122Tetrachloroethane-dimethylSulfoxide",
+    "data/curation/pairs/1122Tetrachloroethane-ethylBenzene",
+    "data/curation/pairs/1122Tetrachloroethane-monochlorobenzene",
+    "data/curation/pairs/1122Tetrachloroethane-nHeptane",
+    "data/curation/pairs/1122Tetrachloroethane-nNDimethylformamide",
+    "data/curation/pairs/1122Tetrachloroethane-nitrobenzene",
+    "data/curation/pairs/1122Tetrachloroethane-oCresol",
+    "data/curation/pairs/1122Tetrachloroethane-pCresol",
+    "data/curation/pairs/1122Tetrachloroethane-tetrahydrofuran",
     "data/curation/pairs/124Trimethylbenzene-1Pentanol",
     "data/curation/pairs/124Trimethylbenzene-2Pentanol",
     "data/curation/pairs/124Trimethylbenzene-3Methylthiophene",
@@ -22493,14 +24954,34 @@
     "data/curation/pairs/124Trimethylbenzene-pEthyltoluene",
     "data/curation/pairs/12Butanediol-12Propanediol",
     "data/curation/pairs/12Butanediol-ethyleneGlycol",
+    "data/curation/pairs/12Butanediol-methanol",
+    "data/curation/pairs/12Propanediol-13Butanediol",
     "data/curation/pairs/12Propanediol-13Propanediol",
+    "data/curation/pairs/12Propanediol-cyclohexane",
+    "data/curation/pairs/12Propanediol-diEthylCarbonate",
     "data/curation/pairs/12Propanediol-ethyleneGlycol",
+    "data/curation/pairs/12Propanediol-propyleneCarbonate",
+    "data/curation/pairs/12Propanediol-tetrahydrofuran",
+    "data/curation/pairs/13Butanediol-ethyleneGlycol",
+    "data/curation/pairs/13Dioxolane-224Trimethylpentane",
+    "data/curation/pairs/13Dioxolane-2Methyl1Propanol",
+    "data/curation/pairs/13Dioxolane-2Methyl2Propanol",
     "data/curation/pairs/13Dioxolane-aniline",
+    "data/curation/pairs/13Dioxolane-isopropanol",
+    "data/curation/pairs/13Dioxolane-methanol",
+    "data/curation/pairs/13Dioxolane-water",
+    "data/curation/pairs/13Propanediol-1Heptanol",
+    "data/curation/pairs/13Propanediol-1Hexanol",
+    "data/curation/pairs/13Propanediol-ethanol",
+    "data/curation/pairs/13Propanediol-isopropanol",
+    "data/curation/pairs/13Propanediol-water",
     "data/curation/pairs/14Butanediol-3Methyl1Butanol",
     "data/curation/pairs/14Butanediol-diethyleneGlycol",
     "data/curation/pairs/14Butanediol-ethyleneGlycol",
     "data/curation/pairs/14Butanediol-nButanol",
     "data/curation/pairs/14Butanediol-tetrahydrofuran",
+    "data/curation/pairs/14Dioxane-1Chlorobutane",
+    "data/curation/pairs/14Dioxane-2Chlorobutane",
     "data/curation/pairs/14Dioxane-2Methyl1Propanol",
     "data/curation/pairs/14Dioxane-2Methyl2Propanol",
     "data/curation/pairs/14Dioxane-benzene",
@@ -22511,6 +24992,7 @@
     "data/curation/pairs/1Chlorobutane-cyclohexane",
     "data/curation/pairs/1Chlorobutane-ethanol",
     "data/curation/pairs/1Chlorobutane-nHeptane",
+    "data/curation/pairs/1Chlorobutane-tetrahydropyran",
     "data/curation/pairs/1Chlorobutane-toluene",
     "data/curation/pairs/1Decanol-morpholine",
     "data/curation/pairs/1Decanol-nTetradecane",
@@ -22523,6 +25005,7 @@
     "data/curation/pairs/1Heptanol-nPropylAcetate",
     "data/curation/pairs/1Heptanol-nUndecane",
     "data/curation/pairs/1Heptanol-nitrobenzene",
+    "data/curation/pairs/1Hexanol-1Propoxy2Propanol",
     "data/curation/pairs/1Hexanol-2Methyl1Propanol",
     "data/curation/pairs/1Hexanol-3Methyl1Butanol",
     "data/curation/pairs/1Hexanol-Dichloroethane",
@@ -22546,6 +25029,7 @@
     "data/curation/pairs/1Hexene-2Pentanol",
     "data/curation/pairs/1Hexene-diEthylCarbonate",
     "data/curation/pairs/1Hexene-diNButylEther",
+    "data/curation/pairs/1Hexene-ethylButanoate",
     "data/curation/pairs/1Hexene-methylIsobutylKetone",
     "data/curation/pairs/1Hexene-nButanol",
     "data/curation/pairs/1Hexene-nHexane",
@@ -22555,6 +25039,8 @@
     "data/curation/pairs/1Methoxy2PropylAcetate-methanol",
     "data/curation/pairs/1Methoxy2PropylAcetate-nNDimethylformamide",
     "data/curation/pairs/1Methoxy2PropylAcetate-water",
+    "data/curation/pairs/1Octanol-benzoBThiophene",
+    "data/curation/pairs/1Octanol-furan",
     "data/curation/pairs/1Octanol-nDodecane",
     "data/curation/pairs/1Pentanol-1Propanol",
     "data/curation/pairs/1Pentanol-224Trimethylpentane",
@@ -22564,6 +25050,7 @@
     "data/curation/pairs/1Pentanol-cyclohexane",
     "data/curation/pairs/1Pentanol-diEthylCarbonate",
     "data/curation/pairs/1Pentanol-diNButylEther",
+    "data/curation/pairs/1Pentanol-diNPropylEther",
     "data/curation/pairs/1Pentanol-ethylAcetate",
     "data/curation/pairs/1Pentanol-ethylBenzene",
     "data/curation/pairs/1Pentanol-isopropanol",
@@ -22573,10 +25060,14 @@
     "data/curation/pairs/1Pentanol-nNonane",
     "data/curation/pairs/1Pentanol-nPropylAcetate",
     "data/curation/pairs/1Pentanol-propionicAcid",
+    "data/curation/pairs/1Pentanol-pyrrole",
     "data/curation/pairs/1Pentanol-toluene",
     "data/curation/pairs/1Propanol-224Trimethylpentane",
+    "data/curation/pairs/1Propanol-2Ethoxyethanol",
+    "data/curation/pairs/1Propanol-2Methoxyethanol",
     "data/curation/pairs/1Propanol-2Methyl1Butanol",
     "data/curation/pairs/1Propanol-2Propoxyethanol",
+    "data/curation/pairs/1Propanol-3Methyl1Butanol",
     "data/curation/pairs/1Propanol-Dichloroethane",
     "data/curation/pairs/1Propanol-acetonitrile",
     "data/curation/pairs/1Propanol-benzene",
@@ -22588,22 +25079,29 @@
     "data/curation/pairs/1Propanol-dimethylCarbonate",
     "data/curation/pairs/1Propanol-dimethylDisulfide",
     "data/curation/pairs/1Propanol-dimethylSulfoxide",
+    "data/curation/pairs/1Propanol-ethylLactate",
     "data/curation/pairs/1Propanol-ethyleneGlycol",
     "data/curation/pairs/1Propanol-isopropylAcetate",
     "data/curation/pairs/1Propanol-methanol",
     "data/curation/pairs/1Propanol-methylTertButylEther",
     "data/curation/pairs/1Propanol-methylTertPentylEther",
     "data/curation/pairs/1Propanol-nButanol",
+    "data/curation/pairs/1Propanol-nButylPropionate",
     "data/curation/pairs/1Propanol-nDodecane",
     "data/curation/pairs/1Propanol-nNDimethylformamide",
     "data/curation/pairs/1Propanol-nPropylAcetate",
+    "data/curation/pairs/1Propanol-nPropylPropionate",
     "data/curation/pairs/1Propanol-nitrobenzene",
     "data/curation/pairs/1Propanol-oCresol",
     "data/curation/pairs/1Propanol-pCresol",
     "data/curation/pairs/1Propanol-propanal",
     "data/curation/pairs/1Propanol-propionicAcid",
+    "data/curation/pairs/1Propanol-pyrrole",
     "data/curation/pairs/1Propanol-tertButylEthylEther",
     "data/curation/pairs/1Propanol-tetrahydropyran",
+    "data/curation/pairs/1Propoxy2Propanol-2Butanol",
+    "data/curation/pairs/1Propoxy2Propanol-ethanol",
+    "data/curation/pairs/1Propoxy2Propanol-methanol",
     "data/curation/pairs/224Trimethylpentane-2Butanol",
     "data/curation/pairs/224Trimethylpentane-2Methyl2Propanol",
     "data/curation/pairs/224Trimethylpentane-2Pentanol",
@@ -22625,10 +25123,14 @@
     "data/curation/pairs/224Trimethylpentane-nHeptane",
     "data/curation/pairs/224Trimethylpentane-nHexane",
     "data/curation/pairs/224Trimethylpentane-pXylene",
+    "data/curation/pairs/224Trimethylpentane-tetrahydropyran",
     "data/curation/pairs/244Trimethyl1Pentene-2Butanol",
+    "data/curation/pairs/244Trimethyl1Pentene-2Methyl2Propanol",
     "data/curation/pairs/244Trimethyl1Pentene-dimethylDisulfide",
     "data/curation/pairs/244Trimethyl1Pentene-ethanol",
     "data/curation/pairs/244Trimethyl1Pentene-isopropanol",
+    "data/curation/pairs/2Amino2Methyl1Propanol-methanol",
+    "data/curation/pairs/2Amino2Methyl1Propanol-water",
     "data/curation/pairs/2Butanol-2Propoxyethanol",
     "data/curation/pairs/2Butanol-acetonitrile",
     "data/curation/pairs/2Butanol-benzene",
@@ -22652,24 +25154,44 @@
     "data/curation/pairs/2Butanol-tetrahydrofuran",
     "data/curation/pairs/2Butanol-tetrahydropyran",
     "data/curation/pairs/2Butanol-toluene",
+    "data/curation/pairs/2Butoxyethanol-2Ethoxyethanol",
     "data/curation/pairs/2Chlorobutane-cyclohexane",
     "data/curation/pairs/2Chlorobutane-nHeptane",
+    "data/curation/pairs/2Chlorobutane-tetrahydropyran",
     "data/curation/pairs/2Chlorobutane-toluene",
     "data/curation/pairs/2Ethoxyethanol-carbonTetrachloride",
     "data/curation/pairs/2Ethoxyethanol-chloroform",
+    "data/curation/pairs/2Ethoxyethanol-diNPropylEther",
     "data/curation/pairs/2Ethoxyethanol-dichloromethane",
+    "data/curation/pairs/2Ethoxyethanol-diisopropylEther",
+    "data/curation/pairs/2Ethoxyethanol-dimethylSulfoxide",
     "data/curation/pairs/2Ethoxyethanol-ethylAcetate",
+    "data/curation/pairs/2Ethoxyethanol-ethylBenzene",
     "data/curation/pairs/2Ethoxyethanol-ethylPropionate",
+    "data/curation/pairs/2Ethoxyethanol-isopropanol",
     "data/curation/pairs/2Ethoxyethanol-methylAcetate",
     "data/curation/pairs/2Ethoxyethanol-nPropylAcetate",
     "data/curation/pairs/2Ethoxypropene-acetone",
     "data/curation/pairs/2Ethoxypropene-methylEthylKetone",
+    "data/curation/pairs/2Ethyl1Hexanol-2Methyl2Propanol",
+    "data/curation/pairs/2Ethyl1Hexanol-nButanol",
+    "data/curation/pairs/2Ethyl1Hexanol-pXylene",
+    "data/curation/pairs/2Ethylthiophene-mesitylene",
+    "data/curation/pairs/2Ethylthiophene-nDecane",
+    "data/curation/pairs/2Ethylthiophene-nOctane",
     "data/curation/pairs/2Heptanone-nDecane",
     "data/curation/pairs/2Heptanone-nNonane",
     "data/curation/pairs/2Heptanone-nOctane",
     "data/curation/pairs/2Hexanone-anisole",
     "data/curation/pairs/2Hexanone-cyclohexanol",
+    "data/curation/pairs/2Methoxyethanol-cyclohexane",
+    "data/curation/pairs/2Methoxyethanol-cyclohexene",
+    "data/curation/pairs/2Methoxyethanol-diisopropylEther",
     "data/curation/pairs/2Methoxyethanol-dimethylSulfoxide",
+    "data/curation/pairs/2Methoxyethanol-ethanol",
+    "data/curation/pairs/2Methoxyethanol-ethylBenzene",
+    "data/curation/pairs/2Methoxyethanol-isopropanol",
+    "data/curation/pairs/2Methoxyethanol-toluene",
     "data/curation/pairs/2Methoxyethanol-water",
     "data/curation/pairs/2Methyl1Butanol-2Methyl1Propanol",
     "data/curation/pairs/2Methyl1Butanol-Dichloroethane",
@@ -22692,6 +25214,7 @@
     "data/curation/pairs/2Methyl1Propanol-ethylAcetate",
     "data/curation/pairs/2Methyl1Propanol-isobutylAcetate",
     "data/curation/pairs/2Methyl1Propanol-mCresol",
+    "data/curation/pairs/2Methyl1Propanol-nButylPropionate",
     "data/curation/pairs/2Methyl1Propanol-nDodecane",
     "data/curation/pairs/2Methyl1Propanol-nNDimethylformamide",
     "data/curation/pairs/2Methyl1Propanol-nitrobenzene",
@@ -22734,6 +25257,7 @@
     "data/curation/pairs/2Pentanol-nHexane",
     "data/curation/pairs/2Pentanol-nPropylAcetate",
     "data/curation/pairs/2Pentanol-toluene",
+    "data/curation/pairs/2Pentanone-3Pentanol",
     "data/curation/pairs/2Pentanone-3Pentanone",
     "data/curation/pairs/2Pentanone-diEthylCarbonate",
     "data/curation/pairs/2Pentanone-dimethylCarbonate",
@@ -22744,15 +25268,20 @@
     "data/curation/pairs/3Heptanone-nDecane",
     "data/curation/pairs/3Heptanone-nNonane",
     "data/curation/pairs/3Heptanone-nOctane",
+    "data/curation/pairs/3Methyl1Butanol-dimethylSulfoxide",
+    "data/curation/pairs/3Methyl1Butanol-isopentylAcetate",
+    "data/curation/pairs/3Methyl1Butanol-isopropanol",
     "data/curation/pairs/3Methyl1Butanol-morpholine",
     "data/curation/pairs/3Methyl1Butanol-nButanol",
     "data/curation/pairs/3Methyl1Butanol-nButylAcetate",
+    "data/curation/pairs/3Methyl1Butanol-nPropylAcetate",
     "data/curation/pairs/3Methylthiophene-isohexane",
     "data/curation/pairs/3Methylthiophene-methylcyclohexane",
     "data/curation/pairs/3Methylthiophene-methylcyclopentane",
     "data/curation/pairs/3Methylthiophene-nHexane",
     "data/curation/pairs/3Methylthiophene-oXylene",
     "data/curation/pairs/3Methylthiophene-toluene",
+    "data/curation/pairs/3Pentanol-3Pentanone",
     "data/curation/pairs/4Heptanone-nDecane",
     "data/curation/pairs/4Heptanone-nNonane",
     "data/curation/pairs/4Heptanone-nOctane",
@@ -22768,6 +25297,8 @@
     "data/curation/pairs/Dichloroethane-nitrobenzene",
     "data/curation/pairs/Dichloroethane-oCresol",
     "data/curation/pairs/Dichloroethane-pCresol",
+    "data/curation/pairs/Dichloroethane-pentanenitrile",
+    "data/curation/pairs/Dichloroethane-tertButylAcetate",
     "data/curation/pairs/Dichloroethane-tetrahydrofuran",
     "data/curation/pairs/Dichloroethane-toluene",
     "data/curation/pairs/R32-benzene",
@@ -22782,12 +25313,16 @@
     "data/curation/pairs/acetone-methanol",
     "data/curation/pairs/acetonitrile-anisole",
     "data/curation/pairs/acetonitrile-bromobenzene",
+    "data/curation/pairs/acetonitrile-diethylSuccinate",
     "data/curation/pairs/acetonitrile-dimethylSulfoxide",
     "data/curation/pairs/acetonitrile-ethanol",
     "data/curation/pairs/acetonitrile-ethylAcetate",
     "data/curation/pairs/acetonitrile-ethyleneGlycol",
     "data/curation/pairs/acetonitrile-isopropanol",
     "data/curation/pairs/acetonitrile-methanol",
+    "data/curation/pairs/acetonitrile-methylButanoate",
+    "data/curation/pairs/acetonitrile-methylHexanoate",
+    "data/curation/pairs/acetonitrile-methylPentanoate",
     "data/curation/pairs/acetonitrile-methylTertButylEther",
     "data/curation/pairs/acetonitrile-nButanol",
     "data/curation/pairs/acrylicAcid-cyclohexane",
@@ -22797,6 +25332,16 @@
     "data/curation/pairs/acrylonitrile-ethylBenzene",
     "data/curation/pairs/acrylonitrile-monochlorobenzene",
     "data/curation/pairs/acrylonitrile-nitrobenzene",
+    "data/curation/pairs/allylAlcohol-benzene",
+    "data/curation/pairs/allylAlcohol-chloroform",
+    "data/curation/pairs/allylAlcohol-ethanol",
+    "data/curation/pairs/allylAlcohol-ethylAcetate",
+    "data/curation/pairs/allylAlcohol-ethyleneGlycol",
+    "data/curation/pairs/allylAlcohol-isobutylAcetate",
+    "data/curation/pairs/allylAlcohol-methanol",
+    "data/curation/pairs/allylAlcohol-methylPropionate",
+    "data/curation/pairs/allylAlcohol-nButylAcetate",
+    "data/curation/pairs/allylAlcohol-nButylPropionate",
     "data/curation/pairs/aniline-nButanol",
     "data/curation/pairs/aniline-nNDimethylformamide",
     "data/curation/pairs/aniline-nOctane",
@@ -22822,6 +25367,7 @@
     "data/curation/pairs/benzene-isopropanol",
     "data/curation/pairs/benzene-methanol",
     "data/curation/pairs/benzene-methylAcetate",
+    "data/curation/pairs/benzene-methylHeptanoate",
     "data/curation/pairs/benzene-methylal",
     "data/curation/pairs/benzene-nButanol",
     "data/curation/pairs/benzene-nButylAcetate",
@@ -22829,6 +25375,7 @@
     "data/curation/pairs/benzene-nNonane",
     "data/curation/pairs/benzene-oXylene",
     "data/curation/pairs/benzene-thiophene",
+    "data/curation/pairs/benzoBThiophene-nDodecane",
     "data/curation/pairs/bromobenzene-dimethylSulfoxide",
     "data/curation/pairs/bromobenzene-nHeptane",
     "data/curation/pairs/bromobenzene-nNDimethylformamide",
@@ -22851,8 +25398,10 @@
     "data/curation/pairs/cyclohexane-diEthylCarbonate",
     "data/curation/pairs/cyclohexane-diNButylEther",
     "data/curation/pairs/cyclohexane-ethanol",
+    "data/curation/pairs/cyclohexane-ethylPropionate",
     "data/curation/pairs/cyclohexane-methylIsobutylKetone",
     "data/curation/pairs/cyclohexane-methylal",
+    "data/curation/pairs/cyclohexane-morpholine",
     "data/curation/pairs/cyclohexane-nButanol",
     "data/curation/pairs/cyclohexane-nButylAcetate",
     "data/curation/pairs/cyclohexane-nHeptane",
@@ -22873,10 +25422,12 @@
     "data/curation/pairs/cyclohexanone-toluene",
     "data/curation/pairs/cyclohexene-diEthylCarbonate",
     "data/curation/pairs/cyclohexene-methylIsobutylKetone",
+    "data/curation/pairs/cyclohexene-morpholine",
     "data/curation/pairs/diButylCarbonate-methanol",
     "data/curation/pairs/diButylCarbonate-nButanol",
     "data/curation/pairs/diEthylCarbonate-ethanol",
     "data/curation/pairs/diEthylCarbonate-ethylBenzene",
+    "data/curation/pairs/diEthylCarbonate-isopentylAcetate",
     "data/curation/pairs/diEthylCarbonate-isopropylAcetate",
     "data/curation/pairs/diEthylCarbonate-mXylene",
     "data/curation/pairs/diEthylCarbonate-methanol",
@@ -22896,7 +25447,10 @@
     "data/curation/pairs/diNButylEther-nNonane",
     "data/curation/pairs/diNButylEther-oXylene",
     "data/curation/pairs/diNButylEther-toluene",
+    "data/curation/pairs/diNPropylEther-nButylPropionate",
     "data/curation/pairs/diNPropylEther-nHeptane",
+    "data/curation/pairs/diNPropylEther-nNDimethylformamide",
+    "data/curation/pairs/dichloromethane-nHexane",
     "data/curation/pairs/diethanolamine-mCresol",
     "data/curation/pairs/diethanolamine-pCresol",
     "data/curation/pairs/diethylSuccinate-ethanol",
@@ -22930,6 +25484,7 @@
     "data/curation/pairs/dimethylCarbonate-ethyleneCarbonate",
     "data/curation/pairs/dimethylCarbonate-ethyleneGlycol",
     "data/curation/pairs/dimethylCarbonate-isobutylAcetate",
+    "data/curation/pairs/dimethylCarbonate-isopentylAcetate",
     "data/curation/pairs/dimethylCarbonate-isopropanol",
     "data/curation/pairs/dimethylCarbonate-isopropylAcetate",
     "data/curation/pairs/dimethylCarbonate-mXylene",
@@ -22941,6 +25496,8 @@
     "data/curation/pairs/dimethylCarbonate-methylal",
     "data/curation/pairs/dimethylCarbonate-nButanol",
     "data/curation/pairs/dimethylCarbonate-nButylAcetate",
+    "data/curation/pairs/dimethylCarbonate-nButylButanoate",
+    "data/curation/pairs/dimethylCarbonate-nButylPropionate",
     "data/curation/pairs/dimethylCarbonate-nDecane",
     "data/curation/pairs/dimethylCarbonate-nNonane",
     "data/curation/pairs/dimethylCarbonate-nPropylAcetate",
@@ -22954,6 +25511,7 @@
     "data/curation/pairs/dimethylSulfoxide-ethylAcetate",
     "data/curation/pairs/dimethylSulfoxide-ethylBenzene",
     "data/curation/pairs/dimethylSulfoxide-isobutylAcetate",
+    "data/curation/pairs/dimethylSulfoxide-isopentylAcetate",
     "data/curation/pairs/dimethylSulfoxide-isopropanol",
     "data/curation/pairs/dimethylSulfoxide-isopropylAcetate",
     "data/curation/pairs/dimethylSulfoxide-methanol",
@@ -22969,8 +25527,10 @@
     "data/curation/pairs/dimethylSulfoxide-trichloroethylene",
     "data/curation/pairs/dimethylSulfoxide-water",
     "data/curation/pairs/ethanol-ethylHexanoate",
+    "data/curation/pairs/ethanol-ethylPropionate",
     "data/curation/pairs/ethanol-ethylTertPentylEther",
     "data/curation/pairs/ethanol-ethyleneGlycol",
+    "data/curation/pairs/ethanol-furan",
     "data/curation/pairs/ethanol-isobutylAcetate",
     "data/curation/pairs/ethanol-isopropylAcetate",
     "data/curation/pairs/ethanol-mCresol",
@@ -22979,6 +25539,7 @@
     "data/curation/pairs/ethanol-methylTertPentylEther",
     "data/curation/pairs/ethanol-methylcyclohexane",
     "data/curation/pairs/ethanol-nButanol",
+    "data/curation/pairs/ethanol-nButylPropionate",
     "data/curation/pairs/ethanol-nHexane",
     "data/curation/pairs/ethanol-nNDimethylacetamide",
     "data/curation/pairs/ethanol-nNDimethylformamide",
@@ -22990,6 +25551,7 @@
     "data/curation/pairs/ethanol-phenol",
     "data/curation/pairs/ethanol-tetrahydrofuran",
     "data/curation/pairs/ethanol-tetrahydropyran",
+    "data/curation/pairs/ethylAcetate-ethylLactate",
     "data/curation/pairs/ethylAcetate-hexamethyldisiloxane",
     "data/curation/pairs/ethylAcetate-isopentylAcetate",
     "data/curation/pairs/ethylAcetate-isopropanol",
@@ -23018,6 +25580,7 @@
     "data/curation/pairs/ethylBenzene-toluene",
     "data/curation/pairs/ethylBenzene-trichloroethylene",
     "data/curation/pairs/ethylButanoate-nHeptane",
+    "data/curation/pairs/ethylButanoate-nHexane",
     "data/curation/pairs/ethylButanoate-nNonane",
     "data/curation/pairs/ethylButanoate-nOctane",
     "data/curation/pairs/ethylFormate-nHeptane",
@@ -23028,6 +25591,8 @@
     "data/curation/pairs/ethylLactate-methanol",
     "data/curation/pairs/ethylLactate-methylAcetate",
     "data/curation/pairs/ethylPropionate-nHeptane",
+    "data/curation/pairs/ethylPropionate-nHexane",
+    "data/curation/pairs/ethylPropionate-nOctane",
     "data/curation/pairs/ethylPropionate-nPentane",
     "data/curation/pairs/ethylTertPentylEther-methanol",
     "data/curation/pairs/ethyleneCarbonate-ethyleneGlycol",
@@ -23035,10 +25600,15 @@
     "data/curation/pairs/ethyleneGlycol-methylDiEthanolAmine",
     "data/curation/pairs/ethyleneGlycol-methylethanolamine",
     "data/curation/pairs/ethyleneGlycol-water",
+    "data/curation/pairs/furan-furfural",
+    "data/curation/pairs/furan-nHexane",
+    "data/curation/pairs/furan-toluene",
     "data/curation/pairs/furfural-water",
     "data/curation/pairs/hexamethyldisiloxane-isopropylAcetate",
     "data/curation/pairs/isobutylAcetate-methylAcetate",
+    "data/curation/pairs/isobutylAcetate-nButylPropionate",
     "data/curation/pairs/isobutylAcetate-nNDimethylformamide",
+    "data/curation/pairs/isopentylAcetate-methylAcetate",
     "data/curation/pairs/isopropanol-isopropylAcetate",
     "data/curation/pairs/isopropanol-methanol",
     "data/curation/pairs/isopropanol-methylal",
@@ -23081,13 +25651,16 @@
     "data/curation/pairs/methanol-tetrahydrofuran",
     "data/curation/pairs/methanol-tetrahydropyran",
     "data/curation/pairs/methanol-vinylAcetate",
+    "data/curation/pairs/methanol-vinylPropionate",
     "data/curation/pairs/methylAcetate-nHeptane",
     "data/curation/pairs/methylAcetate-pXylene",
     "data/curation/pairs/methylButanoate-nHeptane",
     "data/curation/pairs/methylButanoate-nNonane",
+    "data/curation/pairs/methylButanoate-propionitrile",
     "data/curation/pairs/methylDecanoate-methylOctanoate",
     "data/curation/pairs/methylDiEthanolAmine-methylethanolamine",
     "data/curation/pairs/methylDiEthanolAmine-water",
+    "data/curation/pairs/methylEthylKetone-nButylPropionate",
     "data/curation/pairs/methylEthylKetone-nHeptane",
     "data/curation/pairs/methylEthylKetone-nNDimethylformamide",
     "data/curation/pairs/methylFormate-methylal",
@@ -23098,11 +25671,13 @@
     "data/curation/pairs/methylFormate-nPentane",
     "data/curation/pairs/methylFormate-oXylene",
     "data/curation/pairs/methylFormate-pXylene",
+    "data/curation/pairs/methylHexanoate-propionitrile",
     "data/curation/pairs/methylIsobutylKetone-nHexane",
     "data/curation/pairs/methylIsobutylKetone-nNDimethylacetamide",
     "data/curation/pairs/methylPalmitate-methylStearate",
     "data/curation/pairs/methylPentanoate-nHeptane",
     "data/curation/pairs/methylPentanoate-nOctane",
+    "data/curation/pairs/methylPentanoate-propionitrile",
     "data/curation/pairs/methylPropionate-nHeptane",
     "data/curation/pairs/methylPropionate-nNonane",
     "data/curation/pairs/methylPropionate-nPentane",
@@ -23113,6 +25688,7 @@
     "data/curation/pairs/methylcyclohexane-pXylene",
     "data/curation/pairs/monochlorobenzene-nHeptane",
     "data/curation/pairs/monochlorobenzene-nNDimethylformamide",
+    "data/curation/pairs/monochlorobenzene-tertButylAcetate",
     "data/curation/pairs/monochlorobenzene-toluene",
     "data/curation/pairs/monochlorobenzene-trichloroethylene",
     "data/curation/pairs/nButanol-nButylAcetate",
@@ -23124,13 +25700,17 @@
     "data/curation/pairs/nButanol-oXylene",
     "data/curation/pairs/nButanol-pCresol",
     "data/curation/pairs/nButanol-pXylene",
+    "data/curation/pairs/nButanol-pyrrole",
     "data/curation/pairs/nButanol-tetrahydrofuran",
     "data/curation/pairs/nButanol-tetrahydropyran",
     "data/curation/pairs/nButanol-toluene",
     "data/curation/pairs/nButanol-vinylAcetate",
     "data/curation/pairs/nButylAcetate-nOctane",
     "data/curation/pairs/nButylFormate-nHeptane",
+    "data/curation/pairs/nButylFormate-nHexane",
     "data/curation/pairs/nButylFormate-nNonane",
+    "data/curation/pairs/nButylFormate-nOctane",
+    "data/curation/pairs/nButylFormate-nPentane",
     "data/curation/pairs/nDecane-nNDimethylformamide",
     "data/curation/pairs/nDecane-nPropylAcetate",
     "data/curation/pairs/nDecane-oXylene",
@@ -23174,6 +25754,8 @@
     "data/curation/pairs/nPentane-nPropylFormate",
     "data/curation/pairs/nPropylAcetate-propyleneCarbonate",
     "data/curation/pairs/nPropylMercaptan-toluene",
+    "data/curation/pairs/nPropylPropionate-propionicAcid",
+    "data/curation/pairs/nPropylPropionate-water",
     "data/curation/pairs/nUndecane-oXylene",
     "data/curation/pairs/nUndecane-pXylene",
     "data/curation/pairs/nitrobenzene-oCresol",
@@ -23190,6 +25772,7 @@
     "data/curation/pairs/pCresol-trichloroethylene",
     "data/curation/pairs/pXylene-styrene",
     "data/curation/pairs/pXylene-vinylAcetate",
+    "data/curation/pairs/pentanoicAcid-propionicAcid",
     "data/curation/pairs/propanal-propionicAcid",
     "data/curation/pairs/styrene-sulfolane",
     "data/curation/pairs/sulfolane-toluene",
@@ -23198,6 +25781,7 @@
     "data/curation/pairs/tetrahydrofuran-trichloroethylene",
     "data/curation/pairs/thiophene-toluene",
     "data/curation/pairs/triethyleneGlycol-water",
+    "data/curation/pairs/vinylAcetate-vinylPropionate",
     "tutorials/plant/polycaprolactonePlant/properties",
     "tutorials/props/adsorption/isotherm01_eval_13x_co2",
     "tutorials/props/adsorption/isotherm02_fit_jaschik",
@@ -24383,6 +26967,19 @@
   },
   "byModel": {
    "NRTL": [
+    "data/curation/pairs/1122Tetrachloroethane-1Hexanol",
+    "data/curation/pairs/1122Tetrachloroethane-2Methyl1Butanol",
+    "data/curation/pairs/1122Tetrachloroethane-acrylonitrile",
+    "data/curation/pairs/1122Tetrachloroethane-cyclohexane",
+    "data/curation/pairs/1122Tetrachloroethane-dimethylSulfoxide",
+    "data/curation/pairs/1122Tetrachloroethane-ethylBenzene",
+    "data/curation/pairs/1122Tetrachloroethane-monochlorobenzene",
+    "data/curation/pairs/1122Tetrachloroethane-nHeptane",
+    "data/curation/pairs/1122Tetrachloroethane-nNDimethylformamide",
+    "data/curation/pairs/1122Tetrachloroethane-nitrobenzene",
+    "data/curation/pairs/1122Tetrachloroethane-oCresol",
+    "data/curation/pairs/1122Tetrachloroethane-pCresol",
+    "data/curation/pairs/1122Tetrachloroethane-tetrahydrofuran",
     "data/curation/pairs/124Trimethylbenzene-1Pentanol",
     "data/curation/pairs/124Trimethylbenzene-2Pentanol",
     "data/curation/pairs/124Trimethylbenzene-3Methylthiophene",
@@ -24391,14 +26988,34 @@
     "data/curation/pairs/124Trimethylbenzene-pEthyltoluene",
     "data/curation/pairs/12Butanediol-12Propanediol",
     "data/curation/pairs/12Butanediol-ethyleneGlycol",
+    "data/curation/pairs/12Butanediol-methanol",
+    "data/curation/pairs/12Propanediol-13Butanediol",
     "data/curation/pairs/12Propanediol-13Propanediol",
+    "data/curation/pairs/12Propanediol-cyclohexane",
+    "data/curation/pairs/12Propanediol-diEthylCarbonate",
     "data/curation/pairs/12Propanediol-ethyleneGlycol",
+    "data/curation/pairs/12Propanediol-propyleneCarbonate",
+    "data/curation/pairs/12Propanediol-tetrahydrofuran",
+    "data/curation/pairs/13Butanediol-ethyleneGlycol",
+    "data/curation/pairs/13Dioxolane-224Trimethylpentane",
+    "data/curation/pairs/13Dioxolane-2Methyl1Propanol",
+    "data/curation/pairs/13Dioxolane-2Methyl2Propanol",
     "data/curation/pairs/13Dioxolane-aniline",
+    "data/curation/pairs/13Dioxolane-isopropanol",
+    "data/curation/pairs/13Dioxolane-methanol",
+    "data/curation/pairs/13Dioxolane-water",
+    "data/curation/pairs/13Propanediol-1Heptanol",
+    "data/curation/pairs/13Propanediol-1Hexanol",
+    "data/curation/pairs/13Propanediol-ethanol",
+    "data/curation/pairs/13Propanediol-isopropanol",
+    "data/curation/pairs/13Propanediol-water",
     "data/curation/pairs/14Butanediol-3Methyl1Butanol",
     "data/curation/pairs/14Butanediol-diethyleneGlycol",
     "data/curation/pairs/14Butanediol-ethyleneGlycol",
     "data/curation/pairs/14Butanediol-nButanol",
     "data/curation/pairs/14Butanediol-tetrahydrofuran",
+    "data/curation/pairs/14Dioxane-1Chlorobutane",
+    "data/curation/pairs/14Dioxane-2Chlorobutane",
     "data/curation/pairs/14Dioxane-2Methyl1Propanol",
     "data/curation/pairs/14Dioxane-2Methyl2Propanol",
     "data/curation/pairs/14Dioxane-benzene",
@@ -24409,6 +27026,7 @@
     "data/curation/pairs/1Chlorobutane-cyclohexane",
     "data/curation/pairs/1Chlorobutane-ethanol",
     "data/curation/pairs/1Chlorobutane-nHeptane",
+    "data/curation/pairs/1Chlorobutane-tetrahydropyran",
     "data/curation/pairs/1Chlorobutane-toluene",
     "data/curation/pairs/1Decanol-morpholine",
     "data/curation/pairs/1Decanol-nTetradecane",
@@ -24421,6 +27039,7 @@
     "data/curation/pairs/1Heptanol-nPropylAcetate",
     "data/curation/pairs/1Heptanol-nUndecane",
     "data/curation/pairs/1Heptanol-nitrobenzene",
+    "data/curation/pairs/1Hexanol-1Propoxy2Propanol",
     "data/curation/pairs/1Hexanol-2Methyl1Propanol",
     "data/curation/pairs/1Hexanol-3Methyl1Butanol",
     "data/curation/pairs/1Hexanol-Dichloroethane",
@@ -24444,6 +27063,7 @@
     "data/curation/pairs/1Hexene-2Pentanol",
     "data/curation/pairs/1Hexene-diEthylCarbonate",
     "data/curation/pairs/1Hexene-diNButylEther",
+    "data/curation/pairs/1Hexene-ethylButanoate",
     "data/curation/pairs/1Hexene-methylIsobutylKetone",
     "data/curation/pairs/1Hexene-nButanol",
     "data/curation/pairs/1Hexene-nHexane",
@@ -24453,6 +27073,8 @@
     "data/curation/pairs/1Methoxy2PropylAcetate-methanol",
     "data/curation/pairs/1Methoxy2PropylAcetate-nNDimethylformamide",
     "data/curation/pairs/1Methoxy2PropylAcetate-water",
+    "data/curation/pairs/1Octanol-benzoBThiophene",
+    "data/curation/pairs/1Octanol-furan",
     "data/curation/pairs/1Octanol-nDodecane",
     "data/curation/pairs/1Pentanol-1Propanol",
     "data/curation/pairs/1Pentanol-224Trimethylpentane",
@@ -24462,6 +27084,7 @@
     "data/curation/pairs/1Pentanol-cyclohexane",
     "data/curation/pairs/1Pentanol-diEthylCarbonate",
     "data/curation/pairs/1Pentanol-diNButylEther",
+    "data/curation/pairs/1Pentanol-diNPropylEther",
     "data/curation/pairs/1Pentanol-ethylAcetate",
     "data/curation/pairs/1Pentanol-ethylBenzene",
     "data/curation/pairs/1Pentanol-isopropanol",
@@ -24471,10 +27094,14 @@
     "data/curation/pairs/1Pentanol-nNonane",
     "data/curation/pairs/1Pentanol-nPropylAcetate",
     "data/curation/pairs/1Pentanol-propionicAcid",
+    "data/curation/pairs/1Pentanol-pyrrole",
     "data/curation/pairs/1Pentanol-toluene",
     "data/curation/pairs/1Propanol-224Trimethylpentane",
+    "data/curation/pairs/1Propanol-2Ethoxyethanol",
+    "data/curation/pairs/1Propanol-2Methoxyethanol",
     "data/curation/pairs/1Propanol-2Methyl1Butanol",
     "data/curation/pairs/1Propanol-2Propoxyethanol",
+    "data/curation/pairs/1Propanol-3Methyl1Butanol",
     "data/curation/pairs/1Propanol-Dichloroethane",
     "data/curation/pairs/1Propanol-acetonitrile",
     "data/curation/pairs/1Propanol-benzene",
@@ -24486,22 +27113,29 @@
     "data/curation/pairs/1Propanol-dimethylCarbonate",
     "data/curation/pairs/1Propanol-dimethylDisulfide",
     "data/curation/pairs/1Propanol-dimethylSulfoxide",
+    "data/curation/pairs/1Propanol-ethylLactate",
     "data/curation/pairs/1Propanol-ethyleneGlycol",
     "data/curation/pairs/1Propanol-isopropylAcetate",
     "data/curation/pairs/1Propanol-methanol",
     "data/curation/pairs/1Propanol-methylTertButylEther",
     "data/curation/pairs/1Propanol-methylTertPentylEther",
     "data/curation/pairs/1Propanol-nButanol",
+    "data/curation/pairs/1Propanol-nButylPropionate",
     "data/curation/pairs/1Propanol-nDodecane",
     "data/curation/pairs/1Propanol-nNDimethylformamide",
     "data/curation/pairs/1Propanol-nPropylAcetate",
+    "data/curation/pairs/1Propanol-nPropylPropionate",
     "data/curation/pairs/1Propanol-nitrobenzene",
     "data/curation/pairs/1Propanol-oCresol",
     "data/curation/pairs/1Propanol-pCresol",
     "data/curation/pairs/1Propanol-propanal",
     "data/curation/pairs/1Propanol-propionicAcid",
+    "data/curation/pairs/1Propanol-pyrrole",
     "data/curation/pairs/1Propanol-tertButylEthylEther",
     "data/curation/pairs/1Propanol-tetrahydropyran",
+    "data/curation/pairs/1Propoxy2Propanol-2Butanol",
+    "data/curation/pairs/1Propoxy2Propanol-ethanol",
+    "data/curation/pairs/1Propoxy2Propanol-methanol",
     "data/curation/pairs/224Trimethylpentane-2Butanol",
     "data/curation/pairs/224Trimethylpentane-2Methyl2Propanol",
     "data/curation/pairs/224Trimethylpentane-2Pentanol",
@@ -24523,10 +27157,14 @@
     "data/curation/pairs/224Trimethylpentane-nHeptane",
     "data/curation/pairs/224Trimethylpentane-nHexane",
     "data/curation/pairs/224Trimethylpentane-pXylene",
+    "data/curation/pairs/224Trimethylpentane-tetrahydropyran",
     "data/curation/pairs/244Trimethyl1Pentene-2Butanol",
+    "data/curation/pairs/244Trimethyl1Pentene-2Methyl2Propanol",
     "data/curation/pairs/244Trimethyl1Pentene-dimethylDisulfide",
     "data/curation/pairs/244Trimethyl1Pentene-ethanol",
     "data/curation/pairs/244Trimethyl1Pentene-isopropanol",
+    "data/curation/pairs/2Amino2Methyl1Propanol-methanol",
+    "data/curation/pairs/2Amino2Methyl1Propanol-water",
     "data/curation/pairs/2Butanol-2Propoxyethanol",
     "data/curation/pairs/2Butanol-acetonitrile",
     "data/curation/pairs/2Butanol-benzene",
@@ -24550,24 +27188,44 @@
     "data/curation/pairs/2Butanol-tetrahydrofuran",
     "data/curation/pairs/2Butanol-tetrahydropyran",
     "data/curation/pairs/2Butanol-toluene",
+    "data/curation/pairs/2Butoxyethanol-2Ethoxyethanol",
     "data/curation/pairs/2Chlorobutane-cyclohexane",
     "data/curation/pairs/2Chlorobutane-nHeptane",
+    "data/curation/pairs/2Chlorobutane-tetrahydropyran",
     "data/curation/pairs/2Chlorobutane-toluene",
     "data/curation/pairs/2Ethoxyethanol-carbonTetrachloride",
     "data/curation/pairs/2Ethoxyethanol-chloroform",
+    "data/curation/pairs/2Ethoxyethanol-diNPropylEther",
     "data/curation/pairs/2Ethoxyethanol-dichloromethane",
+    "data/curation/pairs/2Ethoxyethanol-diisopropylEther",
+    "data/curation/pairs/2Ethoxyethanol-dimethylSulfoxide",
     "data/curation/pairs/2Ethoxyethanol-ethylAcetate",
+    "data/curation/pairs/2Ethoxyethanol-ethylBenzene",
     "data/curation/pairs/2Ethoxyethanol-ethylPropionate",
+    "data/curation/pairs/2Ethoxyethanol-isopropanol",
     "data/curation/pairs/2Ethoxyethanol-methylAcetate",
     "data/curation/pairs/2Ethoxyethanol-nPropylAcetate",
     "data/curation/pairs/2Ethoxypropene-acetone",
     "data/curation/pairs/2Ethoxypropene-methylEthylKetone",
+    "data/curation/pairs/2Ethyl1Hexanol-2Methyl2Propanol",
+    "data/curation/pairs/2Ethyl1Hexanol-nButanol",
+    "data/curation/pairs/2Ethyl1Hexanol-pXylene",
+    "data/curation/pairs/2Ethylthiophene-mesitylene",
+    "data/curation/pairs/2Ethylthiophene-nDecane",
+    "data/curation/pairs/2Ethylthiophene-nOctane",
     "data/curation/pairs/2Heptanone-nDecane",
     "data/curation/pairs/2Heptanone-nNonane",
     "data/curation/pairs/2Heptanone-nOctane",
     "data/curation/pairs/2Hexanone-anisole",
     "data/curation/pairs/2Hexanone-cyclohexanol",
+    "data/curation/pairs/2Methoxyethanol-cyclohexane",
+    "data/curation/pairs/2Methoxyethanol-cyclohexene",
+    "data/curation/pairs/2Methoxyethanol-diisopropylEther",
     "data/curation/pairs/2Methoxyethanol-dimethylSulfoxide",
+    "data/curation/pairs/2Methoxyethanol-ethanol",
+    "data/curation/pairs/2Methoxyethanol-ethylBenzene",
+    "data/curation/pairs/2Methoxyethanol-isopropanol",
+    "data/curation/pairs/2Methoxyethanol-toluene",
     "data/curation/pairs/2Methoxyethanol-water",
     "data/curation/pairs/2Methyl1Butanol-2Methyl1Propanol",
     "data/curation/pairs/2Methyl1Butanol-Dichloroethane",
@@ -24590,6 +27248,7 @@
     "data/curation/pairs/2Methyl1Propanol-ethylAcetate",
     "data/curation/pairs/2Methyl1Propanol-isobutylAcetate",
     "data/curation/pairs/2Methyl1Propanol-mCresol",
+    "data/curation/pairs/2Methyl1Propanol-nButylPropionate",
     "data/curation/pairs/2Methyl1Propanol-nDodecane",
     "data/curation/pairs/2Methyl1Propanol-nNDimethylformamide",
     "data/curation/pairs/2Methyl1Propanol-nitrobenzene",
@@ -24632,6 +27291,7 @@
     "data/curation/pairs/2Pentanol-nHexane",
     "data/curation/pairs/2Pentanol-nPropylAcetate",
     "data/curation/pairs/2Pentanol-toluene",
+    "data/curation/pairs/2Pentanone-3Pentanol",
     "data/curation/pairs/2Pentanone-3Pentanone",
     "data/curation/pairs/2Pentanone-diEthylCarbonate",
     "data/curation/pairs/2Pentanone-dimethylCarbonate",
@@ -24642,15 +27302,20 @@
     "data/curation/pairs/3Heptanone-nDecane",
     "data/curation/pairs/3Heptanone-nNonane",
     "data/curation/pairs/3Heptanone-nOctane",
+    "data/curation/pairs/3Methyl1Butanol-dimethylSulfoxide",
+    "data/curation/pairs/3Methyl1Butanol-isopentylAcetate",
+    "data/curation/pairs/3Methyl1Butanol-isopropanol",
     "data/curation/pairs/3Methyl1Butanol-morpholine",
     "data/curation/pairs/3Methyl1Butanol-nButanol",
     "data/curation/pairs/3Methyl1Butanol-nButylAcetate",
+    "data/curation/pairs/3Methyl1Butanol-nPropylAcetate",
     "data/curation/pairs/3Methylthiophene-isohexane",
     "data/curation/pairs/3Methylthiophene-methylcyclohexane",
     "data/curation/pairs/3Methylthiophene-methylcyclopentane",
     "data/curation/pairs/3Methylthiophene-nHexane",
     "data/curation/pairs/3Methylthiophene-oXylene",
     "data/curation/pairs/3Methylthiophene-toluene",
+    "data/curation/pairs/3Pentanol-3Pentanone",
     "data/curation/pairs/4Heptanone-nDecane",
     "data/curation/pairs/4Heptanone-nNonane",
     "data/curation/pairs/4Heptanone-nOctane",
@@ -24666,6 +27331,8 @@
     "data/curation/pairs/Dichloroethane-nitrobenzene",
     "data/curation/pairs/Dichloroethane-oCresol",
     "data/curation/pairs/Dichloroethane-pCresol",
+    "data/curation/pairs/Dichloroethane-pentanenitrile",
+    "data/curation/pairs/Dichloroethane-tertButylAcetate",
     "data/curation/pairs/Dichloroethane-tetrahydrofuran",
     "data/curation/pairs/Dichloroethane-toluene",
     "data/curation/pairs/R32-benzene",
@@ -24680,12 +27347,16 @@
     "data/curation/pairs/acetone-methanol",
     "data/curation/pairs/acetonitrile-anisole",
     "data/curation/pairs/acetonitrile-bromobenzene",
+    "data/curation/pairs/acetonitrile-diethylSuccinate",
     "data/curation/pairs/acetonitrile-dimethylSulfoxide",
     "data/curation/pairs/acetonitrile-ethanol",
     "data/curation/pairs/acetonitrile-ethylAcetate",
     "data/curation/pairs/acetonitrile-ethyleneGlycol",
     "data/curation/pairs/acetonitrile-isopropanol",
     "data/curation/pairs/acetonitrile-methanol",
+    "data/curation/pairs/acetonitrile-methylButanoate",
+    "data/curation/pairs/acetonitrile-methylHexanoate",
+    "data/curation/pairs/acetonitrile-methylPentanoate",
     "data/curation/pairs/acetonitrile-methylTertButylEther",
     "data/curation/pairs/acetonitrile-nButanol",
     "data/curation/pairs/acrylicAcid-cyclohexane",
@@ -24695,6 +27366,16 @@
     "data/curation/pairs/acrylonitrile-ethylBenzene",
     "data/curation/pairs/acrylonitrile-monochlorobenzene",
     "data/curation/pairs/acrylonitrile-nitrobenzene",
+    "data/curation/pairs/allylAlcohol-benzene",
+    "data/curation/pairs/allylAlcohol-chloroform",
+    "data/curation/pairs/allylAlcohol-ethanol",
+    "data/curation/pairs/allylAlcohol-ethylAcetate",
+    "data/curation/pairs/allylAlcohol-ethyleneGlycol",
+    "data/curation/pairs/allylAlcohol-isobutylAcetate",
+    "data/curation/pairs/allylAlcohol-methanol",
+    "data/curation/pairs/allylAlcohol-methylPropionate",
+    "data/curation/pairs/allylAlcohol-nButylAcetate",
+    "data/curation/pairs/allylAlcohol-nButylPropionate",
     "data/curation/pairs/aniline-nButanol",
     "data/curation/pairs/aniline-nNDimethylformamide",
     "data/curation/pairs/aniline-nOctane",
@@ -24720,6 +27401,7 @@
     "data/curation/pairs/benzene-isopropanol",
     "data/curation/pairs/benzene-methanol",
     "data/curation/pairs/benzene-methylAcetate",
+    "data/curation/pairs/benzene-methylHeptanoate",
     "data/curation/pairs/benzene-methylal",
     "data/curation/pairs/benzene-nButanol",
     "data/curation/pairs/benzene-nButylAcetate",
@@ -24727,6 +27409,7 @@
     "data/curation/pairs/benzene-nNonane",
     "data/curation/pairs/benzene-oXylene",
     "data/curation/pairs/benzene-thiophene",
+    "data/curation/pairs/benzoBThiophene-nDodecane",
     "data/curation/pairs/bromobenzene-dimethylSulfoxide",
     "data/curation/pairs/bromobenzene-nHeptane",
     "data/curation/pairs/bromobenzene-nNDimethylformamide",
@@ -24749,8 +27432,10 @@
     "data/curation/pairs/cyclohexane-diEthylCarbonate",
     "data/curation/pairs/cyclohexane-diNButylEther",
     "data/curation/pairs/cyclohexane-ethanol",
+    "data/curation/pairs/cyclohexane-ethylPropionate",
     "data/curation/pairs/cyclohexane-methylIsobutylKetone",
     "data/curation/pairs/cyclohexane-methylal",
+    "data/curation/pairs/cyclohexane-morpholine",
     "data/curation/pairs/cyclohexane-nButanol",
     "data/curation/pairs/cyclohexane-nButylAcetate",
     "data/curation/pairs/cyclohexane-nHeptane",
@@ -24771,10 +27456,12 @@
     "data/curation/pairs/cyclohexanone-toluene",
     "data/curation/pairs/cyclohexene-diEthylCarbonate",
     "data/curation/pairs/cyclohexene-methylIsobutylKetone",
+    "data/curation/pairs/cyclohexene-morpholine",
     "data/curation/pairs/diButylCarbonate-methanol",
     "data/curation/pairs/diButylCarbonate-nButanol",
     "data/curation/pairs/diEthylCarbonate-ethanol",
     "data/curation/pairs/diEthylCarbonate-ethylBenzene",
+    "data/curation/pairs/diEthylCarbonate-isopentylAcetate",
     "data/curation/pairs/diEthylCarbonate-isopropylAcetate",
     "data/curation/pairs/diEthylCarbonate-mXylene",
     "data/curation/pairs/diEthylCarbonate-methanol",
@@ -24794,7 +27481,10 @@
     "data/curation/pairs/diNButylEther-nNonane",
     "data/curation/pairs/diNButylEther-oXylene",
     "data/curation/pairs/diNButylEther-toluene",
+    "data/curation/pairs/diNPropylEther-nButylPropionate",
     "data/curation/pairs/diNPropylEther-nHeptane",
+    "data/curation/pairs/diNPropylEther-nNDimethylformamide",
+    "data/curation/pairs/dichloromethane-nHexane",
     "data/curation/pairs/diethanolamine-mCresol",
     "data/curation/pairs/diethanolamine-pCresol",
     "data/curation/pairs/diethylSuccinate-ethanol",
@@ -24828,6 +27518,7 @@
     "data/curation/pairs/dimethylCarbonate-ethyleneCarbonate",
     "data/curation/pairs/dimethylCarbonate-ethyleneGlycol",
     "data/curation/pairs/dimethylCarbonate-isobutylAcetate",
+    "data/curation/pairs/dimethylCarbonate-isopentylAcetate",
     "data/curation/pairs/dimethylCarbonate-isopropanol",
     "data/curation/pairs/dimethylCarbonate-isopropylAcetate",
     "data/curation/pairs/dimethylCarbonate-mXylene",
@@ -24839,6 +27530,8 @@
     "data/curation/pairs/dimethylCarbonate-methylal",
     "data/curation/pairs/dimethylCarbonate-nButanol",
     "data/curation/pairs/dimethylCarbonate-nButylAcetate",
+    "data/curation/pairs/dimethylCarbonate-nButylButanoate",
+    "data/curation/pairs/dimethylCarbonate-nButylPropionate",
     "data/curation/pairs/dimethylCarbonate-nDecane",
     "data/curation/pairs/dimethylCarbonate-nNonane",
     "data/curation/pairs/dimethylCarbonate-nPropylAcetate",
@@ -24852,6 +27545,7 @@
     "data/curation/pairs/dimethylSulfoxide-ethylAcetate",
     "data/curation/pairs/dimethylSulfoxide-ethylBenzene",
     "data/curation/pairs/dimethylSulfoxide-isobutylAcetate",
+    "data/curation/pairs/dimethylSulfoxide-isopentylAcetate",
     "data/curation/pairs/dimethylSulfoxide-isopropanol",
     "data/curation/pairs/dimethylSulfoxide-isopropylAcetate",
     "data/curation/pairs/dimethylSulfoxide-methanol",
@@ -24867,8 +27561,10 @@
     "data/curation/pairs/dimethylSulfoxide-trichloroethylene",
     "data/curation/pairs/dimethylSulfoxide-water",
     "data/curation/pairs/ethanol-ethylHexanoate",
+    "data/curation/pairs/ethanol-ethylPropionate",
     "data/curation/pairs/ethanol-ethylTertPentylEther",
     "data/curation/pairs/ethanol-ethyleneGlycol",
+    "data/curation/pairs/ethanol-furan",
     "data/curation/pairs/ethanol-isobutylAcetate",
     "data/curation/pairs/ethanol-isopropylAcetate",
     "data/curation/pairs/ethanol-mCresol",
@@ -24877,6 +27573,7 @@
     "data/curation/pairs/ethanol-methylTertPentylEther",
     "data/curation/pairs/ethanol-methylcyclohexane",
     "data/curation/pairs/ethanol-nButanol",
+    "data/curation/pairs/ethanol-nButylPropionate",
     "data/curation/pairs/ethanol-nHexane",
     "data/curation/pairs/ethanol-nNDimethylacetamide",
     "data/curation/pairs/ethanol-nNDimethylformamide",
@@ -24888,6 +27585,7 @@
     "data/curation/pairs/ethanol-phenol",
     "data/curation/pairs/ethanol-tetrahydrofuran",
     "data/curation/pairs/ethanol-tetrahydropyran",
+    "data/curation/pairs/ethylAcetate-ethylLactate",
     "data/curation/pairs/ethylAcetate-hexamethyldisiloxane",
     "data/curation/pairs/ethylAcetate-isopentylAcetate",
     "data/curation/pairs/ethylAcetate-isopropanol",
@@ -24916,6 +27614,7 @@
     "data/curation/pairs/ethylBenzene-toluene",
     "data/curation/pairs/ethylBenzene-trichloroethylene",
     "data/curation/pairs/ethylButanoate-nHeptane",
+    "data/curation/pairs/ethylButanoate-nHexane",
     "data/curation/pairs/ethylButanoate-nNonane",
     "data/curation/pairs/ethylButanoate-nOctane",
     "data/curation/pairs/ethylFormate-nHeptane",
@@ -24926,6 +27625,8 @@
     "data/curation/pairs/ethylLactate-methanol",
     "data/curation/pairs/ethylLactate-methylAcetate",
     "data/curation/pairs/ethylPropionate-nHeptane",
+    "data/curation/pairs/ethylPropionate-nHexane",
+    "data/curation/pairs/ethylPropionate-nOctane",
     "data/curation/pairs/ethylPropionate-nPentane",
     "data/curation/pairs/ethylTertPentylEther-methanol",
     "data/curation/pairs/ethyleneCarbonate-ethyleneGlycol",
@@ -24933,10 +27634,15 @@
     "data/curation/pairs/ethyleneGlycol-methylDiEthanolAmine",
     "data/curation/pairs/ethyleneGlycol-methylethanolamine",
     "data/curation/pairs/ethyleneGlycol-water",
+    "data/curation/pairs/furan-furfural",
+    "data/curation/pairs/furan-nHexane",
+    "data/curation/pairs/furan-toluene",
     "data/curation/pairs/furfural-water",
     "data/curation/pairs/hexamethyldisiloxane-isopropylAcetate",
     "data/curation/pairs/isobutylAcetate-methylAcetate",
+    "data/curation/pairs/isobutylAcetate-nButylPropionate",
     "data/curation/pairs/isobutylAcetate-nNDimethylformamide",
+    "data/curation/pairs/isopentylAcetate-methylAcetate",
     "data/curation/pairs/isopropanol-isopropylAcetate",
     "data/curation/pairs/isopropanol-methanol",
     "data/curation/pairs/isopropanol-methylal",
@@ -24979,13 +27685,16 @@
     "data/curation/pairs/methanol-tetrahydrofuran",
     "data/curation/pairs/methanol-tetrahydropyran",
     "data/curation/pairs/methanol-vinylAcetate",
+    "data/curation/pairs/methanol-vinylPropionate",
     "data/curation/pairs/methylAcetate-nHeptane",
     "data/curation/pairs/methylAcetate-pXylene",
     "data/curation/pairs/methylButanoate-nHeptane",
     "data/curation/pairs/methylButanoate-nNonane",
+    "data/curation/pairs/methylButanoate-propionitrile",
     "data/curation/pairs/methylDecanoate-methylOctanoate",
     "data/curation/pairs/methylDiEthanolAmine-methylethanolamine",
     "data/curation/pairs/methylDiEthanolAmine-water",
+    "data/curation/pairs/methylEthylKetone-nButylPropionate",
     "data/curation/pairs/methylEthylKetone-nHeptane",
     "data/curation/pairs/methylEthylKetone-nNDimethylformamide",
     "data/curation/pairs/methylFormate-methylal",
@@ -24996,11 +27705,13 @@
     "data/curation/pairs/methylFormate-nPentane",
     "data/curation/pairs/methylFormate-oXylene",
     "data/curation/pairs/methylFormate-pXylene",
+    "data/curation/pairs/methylHexanoate-propionitrile",
     "data/curation/pairs/methylIsobutylKetone-nHexane",
     "data/curation/pairs/methylIsobutylKetone-nNDimethylacetamide",
     "data/curation/pairs/methylPalmitate-methylStearate",
     "data/curation/pairs/methylPentanoate-nHeptane",
     "data/curation/pairs/methylPentanoate-nOctane",
+    "data/curation/pairs/methylPentanoate-propionitrile",
     "data/curation/pairs/methylPropionate-nHeptane",
     "data/curation/pairs/methylPropionate-nNonane",
     "data/curation/pairs/methylPropionate-nPentane",
@@ -25011,6 +27722,7 @@
     "data/curation/pairs/methylcyclohexane-pXylene",
     "data/curation/pairs/monochlorobenzene-nHeptane",
     "data/curation/pairs/monochlorobenzene-nNDimethylformamide",
+    "data/curation/pairs/monochlorobenzene-tertButylAcetate",
     "data/curation/pairs/monochlorobenzene-toluene",
     "data/curation/pairs/monochlorobenzene-trichloroethylene",
     "data/curation/pairs/nButanol-nButylAcetate",
@@ -25022,13 +27734,17 @@
     "data/curation/pairs/nButanol-oXylene",
     "data/curation/pairs/nButanol-pCresol",
     "data/curation/pairs/nButanol-pXylene",
+    "data/curation/pairs/nButanol-pyrrole",
     "data/curation/pairs/nButanol-tetrahydrofuran",
     "data/curation/pairs/nButanol-tetrahydropyran",
     "data/curation/pairs/nButanol-toluene",
     "data/curation/pairs/nButanol-vinylAcetate",
     "data/curation/pairs/nButylAcetate-nOctane",
     "data/curation/pairs/nButylFormate-nHeptane",
+    "data/curation/pairs/nButylFormate-nHexane",
     "data/curation/pairs/nButylFormate-nNonane",
+    "data/curation/pairs/nButylFormate-nOctane",
+    "data/curation/pairs/nButylFormate-nPentane",
     "data/curation/pairs/nDecane-nNDimethylformamide",
     "data/curation/pairs/nDecane-nPropylAcetate",
     "data/curation/pairs/nDecane-oXylene",
@@ -25072,6 +27788,8 @@
     "data/curation/pairs/nPentane-nPropylFormate",
     "data/curation/pairs/nPropylAcetate-propyleneCarbonate",
     "data/curation/pairs/nPropylMercaptan-toluene",
+    "data/curation/pairs/nPropylPropionate-propionicAcid",
+    "data/curation/pairs/nPropylPropionate-water",
     "data/curation/pairs/nUndecane-oXylene",
     "data/curation/pairs/nUndecane-pXylene",
     "data/curation/pairs/nitrobenzene-oCresol",
@@ -25088,6 +27806,7 @@
     "data/curation/pairs/pCresol-trichloroethylene",
     "data/curation/pairs/pXylene-styrene",
     "data/curation/pairs/pXylene-vinylAcetate",
+    "data/curation/pairs/pentanoicAcid-propionicAcid",
     "data/curation/pairs/propanal-propionicAcid",
     "data/curation/pairs/styrene-sulfolane",
     "data/curation/pairs/sulfolane-toluene",
@@ -25096,6 +27815,7 @@
     "data/curation/pairs/tetrahydrofuran-trichloroethylene",
     "data/curation/pairs/thiophene-toluene",
     "data/curation/pairs/triethyleneGlycol-water",
+    "data/curation/pairs/vinylAcetate-vinylPropionate",
     "tutorials/batch/still/still02_ethanol_water_azeo",
     "tutorials/props/compare/evidence01_methanol_water_points",
     "tutorials/props/curation/curate02_vle_heldout_ethanol_water",
@@ -25359,18 +28079,51 @@
     "data/curation/components/triethanolamine",
     "data/curation/components/triethylamine",
     "data/curation/components/vinylPropionate",
+    "data/curation/pairs/1122Tetrachloroethane-1Hexanol",
+    "data/curation/pairs/1122Tetrachloroethane-2Methyl1Butanol",
+    "data/curation/pairs/1122Tetrachloroethane-acrylonitrile",
+    "data/curation/pairs/1122Tetrachloroethane-cyclohexane",
+    "data/curation/pairs/1122Tetrachloroethane-dimethylSulfoxide",
+    "data/curation/pairs/1122Tetrachloroethane-ethylBenzene",
+    "data/curation/pairs/1122Tetrachloroethane-monochlorobenzene",
+    "data/curation/pairs/1122Tetrachloroethane-nHeptane",
+    "data/curation/pairs/1122Tetrachloroethane-nNDimethylformamide",
+    "data/curation/pairs/1122Tetrachloroethane-nitrobenzene",
+    "data/curation/pairs/1122Tetrachloroethane-oCresol",
+    "data/curation/pairs/1122Tetrachloroethane-pCresol",
+    "data/curation/pairs/1122Tetrachloroethane-tetrahydrofuran",
     "data/curation/pairs/124Trimethylbenzene-mEthyltoluene",
     "data/curation/pairs/124Trimethylbenzene-oEthyltoluene",
     "data/curation/pairs/124Trimethylbenzene-pEthyltoluene",
     "data/curation/pairs/12Butanediol-12Propanediol",
     "data/curation/pairs/12Butanediol-ethyleneGlycol",
+    "data/curation/pairs/12Butanediol-methanol",
+    "data/curation/pairs/12Propanediol-13Butanediol",
     "data/curation/pairs/12Propanediol-13Propanediol",
+    "data/curation/pairs/12Propanediol-cyclohexane",
+    "data/curation/pairs/12Propanediol-diEthylCarbonate",
     "data/curation/pairs/12Propanediol-ethyleneGlycol",
+    "data/curation/pairs/12Propanediol-propyleneCarbonate",
+    "data/curation/pairs/12Propanediol-tetrahydrofuran",
+    "data/curation/pairs/13Butanediol-ethyleneGlycol",
+    "data/curation/pairs/13Dioxolane-224Trimethylpentane",
+    "data/curation/pairs/13Dioxolane-2Methyl1Propanol",
+    "data/curation/pairs/13Dioxolane-2Methyl2Propanol",
+    "data/curation/pairs/13Dioxolane-isopropanol",
+    "data/curation/pairs/13Dioxolane-methanol",
+    "data/curation/pairs/13Dioxolane-water",
+    "data/curation/pairs/13Propanediol-1Heptanol",
+    "data/curation/pairs/13Propanediol-1Hexanol",
+    "data/curation/pairs/13Propanediol-ethanol",
+    "data/curation/pairs/13Propanediol-isopropanol",
+    "data/curation/pairs/13Propanediol-water",
     "data/curation/pairs/14Butanediol-3Methyl1Butanol",
     "data/curation/pairs/14Butanediol-diethyleneGlycol",
     "data/curation/pairs/14Butanediol-ethyleneGlycol",
     "data/curation/pairs/14Butanediol-nButanol",
     "data/curation/pairs/14Butanediol-tetrahydrofuran",
+    "data/curation/pairs/14Dioxane-1Chlorobutane",
+    "data/curation/pairs/14Dioxane-2Chlorobutane",
     "data/curation/pairs/14Dioxane-2Methyl1Propanol",
     "data/curation/pairs/14Dioxane-2Methyl2Propanol",
     "data/curation/pairs/14Dioxane-benzene",
@@ -25378,6 +28131,7 @@
     "data/curation/pairs/14Dioxane-cyclopentane",
     "data/curation/pairs/1Chlorobutane-cyclohexane",
     "data/curation/pairs/1Chlorobutane-nHeptane",
+    "data/curation/pairs/1Chlorobutane-tetrahydropyran",
     "data/curation/pairs/1Chlorobutane-toluene",
     "data/curation/pairs/1Decanol-morpholine",
     "data/curation/pairs/1Decanol-nTetradecane",
@@ -25390,6 +28144,7 @@
     "data/curation/pairs/1Heptanol-nPropylAcetate",
     "data/curation/pairs/1Heptanol-nUndecane",
     "data/curation/pairs/1Heptanol-nitrobenzene",
+    "data/curation/pairs/1Hexanol-1Propoxy2Propanol",
     "data/curation/pairs/1Hexanol-2Methyl1Propanol",
     "data/curation/pairs/1Hexanol-Dichloroethane",
     "data/curation/pairs/1Hexanol-acetonitrile",
@@ -25407,6 +28162,7 @@
     "data/curation/pairs/1Hexanol-trichloroethylene",
     "data/curation/pairs/1Hexene-2Pentanol",
     "data/curation/pairs/1Hexene-diEthylCarbonate",
+    "data/curation/pairs/1Hexene-ethylButanoate",
     "data/curation/pairs/1Hexene-methylIsobutylKetone",
     "data/curation/pairs/1Hexene-nHexane",
     "data/curation/pairs/1Methoxy2Propanol-1Methoxy2PropylAcetate",
@@ -25414,6 +28170,8 @@
     "data/curation/pairs/1Methoxy2PropylAcetate-methanol",
     "data/curation/pairs/1Methoxy2PropylAcetate-nNDimethylformamide",
     "data/curation/pairs/1Methoxy2PropylAcetate-water",
+    "data/curation/pairs/1Octanol-benzoBThiophene",
+    "data/curation/pairs/1Octanol-furan",
     "data/curation/pairs/1Octanol-nDodecane",
     "data/curation/pairs/1Pentanol-1Propanol",
     "data/curation/pairs/1Pentanol-2Hexanone",
@@ -25421,6 +28179,7 @@
     "data/curation/pairs/1Pentanol-anisole",
     "data/curation/pairs/1Pentanol-diEthylCarbonate",
     "data/curation/pairs/1Pentanol-diNButylEther",
+    "data/curation/pairs/1Pentanol-diNPropylEther",
     "data/curation/pairs/1Pentanol-ethylAcetate",
     "data/curation/pairs/1Pentanol-ethylBenzene",
     "data/curation/pairs/1Pentanol-isopropanol",
@@ -25429,8 +28188,12 @@
     "data/curation/pairs/1Pentanol-nNonane",
     "data/curation/pairs/1Pentanol-nPropylAcetate",
     "data/curation/pairs/1Pentanol-propionicAcid",
+    "data/curation/pairs/1Pentanol-pyrrole",
+    "data/curation/pairs/1Propanol-2Ethoxyethanol",
+    "data/curation/pairs/1Propanol-2Methoxyethanol",
     "data/curation/pairs/1Propanol-2Methyl1Butanol",
     "data/curation/pairs/1Propanol-2Propoxyethanol",
+    "data/curation/pairs/1Propanol-3Methyl1Butanol",
     "data/curation/pairs/1Propanol-acetonitrile",
     "data/curation/pairs/1Propanol-cyclohexanone",
     "data/curation/pairs/1Propanol-diEthylCarbonate",
@@ -25438,22 +28201,29 @@
     "data/curation/pairs/1Propanol-dimethylCarbonate",
     "data/curation/pairs/1Propanol-dimethylDisulfide",
     "data/curation/pairs/1Propanol-dimethylSulfoxide",
+    "data/curation/pairs/1Propanol-ethylLactate",
     "data/curation/pairs/1Propanol-ethyleneGlycol",
     "data/curation/pairs/1Propanol-isopropylAcetate",
     "data/curation/pairs/1Propanol-methanol",
     "data/curation/pairs/1Propanol-methylTertButylEther",
     "data/curation/pairs/1Propanol-methylTertPentylEther",
     "data/curation/pairs/1Propanol-nButanol",
+    "data/curation/pairs/1Propanol-nButylPropionate",
     "data/curation/pairs/1Propanol-nDodecane",
     "data/curation/pairs/1Propanol-nNDimethylformamide",
     "data/curation/pairs/1Propanol-nPropylAcetate",
+    "data/curation/pairs/1Propanol-nPropylPropionate",
     "data/curation/pairs/1Propanol-nitrobenzene",
     "data/curation/pairs/1Propanol-oCresol",
     "data/curation/pairs/1Propanol-pCresol",
     "data/curation/pairs/1Propanol-propanal",
     "data/curation/pairs/1Propanol-propionicAcid",
+    "data/curation/pairs/1Propanol-pyrrole",
     "data/curation/pairs/1Propanol-tertButylEthylEther",
     "data/curation/pairs/1Propanol-tetrahydropyran",
+    "data/curation/pairs/1Propoxy2Propanol-2Butanol",
+    "data/curation/pairs/1Propoxy2Propanol-ethanol",
+    "data/curation/pairs/1Propoxy2Propanol-methanol",
     "data/curation/pairs/224Trimethylpentane-2Methyl2Propanol",
     "data/curation/pairs/224Trimethylpentane-acetone",
     "data/curation/pairs/224Trimethylpentane-diNButylEther",
@@ -25469,9 +28239,13 @@
     "data/curation/pairs/224Trimethylpentane-nButanol",
     "data/curation/pairs/224Trimethylpentane-nHexane",
     "data/curation/pairs/224Trimethylpentane-pXylene",
+    "data/curation/pairs/224Trimethylpentane-tetrahydropyran",
     "data/curation/pairs/244Trimethyl1Pentene-2Butanol",
+    "data/curation/pairs/244Trimethyl1Pentene-2Methyl2Propanol",
     "data/curation/pairs/244Trimethyl1Pentene-ethanol",
     "data/curation/pairs/244Trimethyl1Pentene-isopropanol",
+    "data/curation/pairs/2Amino2Methyl1Propanol-methanol",
+    "data/curation/pairs/2Amino2Methyl1Propanol-water",
     "data/curation/pairs/2Butanol-2Propoxyethanol",
     "data/curation/pairs/2Butanol-acetonitrile",
     "data/curation/pairs/2Butanol-dimethylCarbonate",
@@ -25489,17 +28263,37 @@
     "data/curation/pairs/2Butanol-pCresol",
     "data/curation/pairs/2Butanol-tetrahydrofuran",
     "data/curation/pairs/2Butanol-tetrahydropyran",
+    "data/curation/pairs/2Butoxyethanol-2Ethoxyethanol",
     "data/curation/pairs/2Chlorobutane-cyclohexane",
     "data/curation/pairs/2Chlorobutane-nHeptane",
+    "data/curation/pairs/2Chlorobutane-tetrahydropyran",
     "data/curation/pairs/2Chlorobutane-toluene",
+    "data/curation/pairs/2Ethoxyethanol-diNPropylEther",
+    "data/curation/pairs/2Ethoxyethanol-diisopropylEther",
+    "data/curation/pairs/2Ethoxyethanol-dimethylSulfoxide",
+    "data/curation/pairs/2Ethoxyethanol-ethylBenzene",
+    "data/curation/pairs/2Ethoxyethanol-isopropanol",
     "data/curation/pairs/2Ethoxypropene-acetone",
     "data/curation/pairs/2Ethoxypropene-methylEthylKetone",
+    "data/curation/pairs/2Ethyl1Hexanol-2Methyl2Propanol",
+    "data/curation/pairs/2Ethyl1Hexanol-nButanol",
+    "data/curation/pairs/2Ethyl1Hexanol-pXylene",
+    "data/curation/pairs/2Ethylthiophene-mesitylene",
+    "data/curation/pairs/2Ethylthiophene-nDecane",
+    "data/curation/pairs/2Ethylthiophene-nOctane",
     "data/curation/pairs/2Heptanone-nDecane",
     "data/curation/pairs/2Heptanone-nNonane",
     "data/curation/pairs/2Heptanone-nOctane",
     "data/curation/pairs/2Hexanone-anisole",
     "data/curation/pairs/2Hexanone-cyclohexanol",
+    "data/curation/pairs/2Methoxyethanol-cyclohexane",
+    "data/curation/pairs/2Methoxyethanol-cyclohexene",
+    "data/curation/pairs/2Methoxyethanol-diisopropylEther",
     "data/curation/pairs/2Methoxyethanol-dimethylSulfoxide",
+    "data/curation/pairs/2Methoxyethanol-ethanol",
+    "data/curation/pairs/2Methoxyethanol-ethylBenzene",
+    "data/curation/pairs/2Methoxyethanol-isopropanol",
+    "data/curation/pairs/2Methoxyethanol-toluene",
     "data/curation/pairs/2Methoxyethanol-water",
     "data/curation/pairs/2Methyl1Butanol-2Methyl1Propanol",
     "data/curation/pairs/2Methyl1Butanol-Dichloroethane",
@@ -25520,6 +28314,7 @@
     "data/curation/pairs/2Methyl1Propanol-ethylAcetate",
     "data/curation/pairs/2Methyl1Propanol-isobutylAcetate",
     "data/curation/pairs/2Methyl1Propanol-mCresol",
+    "data/curation/pairs/2Methyl1Propanol-nButylPropionate",
     "data/curation/pairs/2Methyl1Propanol-nDodecane",
     "data/curation/pairs/2Methyl1Propanol-nNDimethylformamide",
     "data/curation/pairs/2Methyl1Propanol-nitrobenzene",
@@ -25558,6 +28353,7 @@
     "data/curation/pairs/2Methyl2Propanol-tetrahydropyran",
     "data/curation/pairs/2Methyl2Propanol-water",
     "data/curation/pairs/2Pentanol-nPropylAcetate",
+    "data/curation/pairs/2Pentanone-3Pentanol",
     "data/curation/pairs/2Pentanone-3Pentanone",
     "data/curation/pairs/2Pentanone-diEthylCarbonate",
     "data/curation/pairs/2Pentanone-dimethylCarbonate",
@@ -25568,6 +28364,11 @@
     "data/curation/pairs/3Heptanone-nDecane",
     "data/curation/pairs/3Heptanone-nNonane",
     "data/curation/pairs/3Heptanone-nOctane",
+    "data/curation/pairs/3Methyl1Butanol-dimethylSulfoxide",
+    "data/curation/pairs/3Methyl1Butanol-isopentylAcetate",
+    "data/curation/pairs/3Methyl1Butanol-isopropanol",
+    "data/curation/pairs/3Methyl1Butanol-nPropylAcetate",
+    "data/curation/pairs/3Pentanol-3Pentanone",
     "data/curation/pairs/4Heptanone-nDecane",
     "data/curation/pairs/4Heptanone-nNonane",
     "data/curation/pairs/4Heptanone-nOctane",
@@ -25582,6 +28383,8 @@
     "data/curation/pairs/Dichloroethane-nitrobenzene",
     "data/curation/pairs/Dichloroethane-oCresol",
     "data/curation/pairs/Dichloroethane-pCresol",
+    "data/curation/pairs/Dichloroethane-pentanenitrile",
+    "data/curation/pairs/Dichloroethane-tertButylAcetate",
     "data/curation/pairs/Dichloroethane-tetrahydrofuran",
     "data/curation/pairs/Dichloroethane-toluene",
     "data/curation/pairs/R32-benzene",
@@ -25596,11 +28399,15 @@
     "data/curation/pairs/acetone-methanol",
     "data/curation/pairs/acetonitrile-anisole",
     "data/curation/pairs/acetonitrile-bromobenzene",
+    "data/curation/pairs/acetonitrile-diethylSuccinate",
     "data/curation/pairs/acetonitrile-dimethylSulfoxide",
     "data/curation/pairs/acetonitrile-ethylAcetate",
     "data/curation/pairs/acetonitrile-ethyleneGlycol",
     "data/curation/pairs/acetonitrile-isopropanol",
     "data/curation/pairs/acetonitrile-methanol",
+    "data/curation/pairs/acetonitrile-methylButanoate",
+    "data/curation/pairs/acetonitrile-methylHexanoate",
+    "data/curation/pairs/acetonitrile-methylPentanoate",
     "data/curation/pairs/acetonitrile-methylTertButylEther",
     "data/curation/pairs/acetonitrile-nButanol",
     "data/curation/pairs/acrylicAcid-cyclohexane",
@@ -25610,6 +28417,16 @@
     "data/curation/pairs/acrylonitrile-ethylBenzene",
     "data/curation/pairs/acrylonitrile-monochlorobenzene",
     "data/curation/pairs/acrylonitrile-nitrobenzene",
+    "data/curation/pairs/allylAlcohol-benzene",
+    "data/curation/pairs/allylAlcohol-chloroform",
+    "data/curation/pairs/allylAlcohol-ethanol",
+    "data/curation/pairs/allylAlcohol-ethylAcetate",
+    "data/curation/pairs/allylAlcohol-ethyleneGlycol",
+    "data/curation/pairs/allylAlcohol-isobutylAcetate",
+    "data/curation/pairs/allylAlcohol-methanol",
+    "data/curation/pairs/allylAlcohol-methylPropionate",
+    "data/curation/pairs/allylAlcohol-nButylAcetate",
+    "data/curation/pairs/allylAlcohol-nButylPropionate",
     "data/curation/pairs/aniline-nButanol",
     "data/curation/pairs/aniline-nNDimethylformamide",
     "data/curation/pairs/anisole-ethylAcetate",
@@ -25630,11 +28447,13 @@
     "data/curation/pairs/benzene-ethanol",
     "data/curation/pairs/benzene-methanol",
     "data/curation/pairs/benzene-methylAcetate",
+    "data/curation/pairs/benzene-methylHeptanoate",
     "data/curation/pairs/benzene-methylal",
     "data/curation/pairs/benzene-nButylAcetate",
     "data/curation/pairs/benzene-nNonane",
     "data/curation/pairs/benzene-oXylene",
     "data/curation/pairs/benzene-thiophene",
+    "data/curation/pairs/benzoBThiophene-nDodecane",
     "data/curation/pairs/bromobenzene-dimethylSulfoxide",
     "data/curation/pairs/bromobenzene-nHeptane",
     "data/curation/pairs/bromobenzene-nNDimethylformamide",
@@ -25653,8 +28472,10 @@
     "data/curation/pairs/cyclohexane-cyclohexene",
     "data/curation/pairs/cyclohexane-diEthylCarbonate",
     "data/curation/pairs/cyclohexane-ethanol",
+    "data/curation/pairs/cyclohexane-ethylPropionate",
     "data/curation/pairs/cyclohexane-methylIsobutylKetone",
     "data/curation/pairs/cyclohexane-methylal",
+    "data/curation/pairs/cyclohexane-morpholine",
     "data/curation/pairs/cyclohexane-nButylAcetate",
     "data/curation/pairs/cyclohexane-nHeptane",
     "data/curation/pairs/cyclohexane-nNDimethylacetamide",
@@ -25673,10 +28494,12 @@
     "data/curation/pairs/cyclohexanone-toluene",
     "data/curation/pairs/cyclohexene-diEthylCarbonate",
     "data/curation/pairs/cyclohexene-methylIsobutylKetone",
+    "data/curation/pairs/cyclohexene-morpholine",
     "data/curation/pairs/diButylCarbonate-methanol",
     "data/curation/pairs/diButylCarbonate-nButanol",
     "data/curation/pairs/diEthylCarbonate-ethanol",
     "data/curation/pairs/diEthylCarbonate-ethylBenzene",
+    "data/curation/pairs/diEthylCarbonate-isopentylAcetate",
     "data/curation/pairs/diEthylCarbonate-isopropylAcetate",
     "data/curation/pairs/diEthylCarbonate-mXylene",
     "data/curation/pairs/diEthylCarbonate-methanol",
@@ -25693,7 +28516,10 @@
     "data/curation/pairs/diNButylEther-nButanol",
     "data/curation/pairs/diNButylEther-nNonane",
     "data/curation/pairs/diNButylEther-oXylene",
+    "data/curation/pairs/diNPropylEther-nButylPropionate",
     "data/curation/pairs/diNPropylEther-nHeptane",
+    "data/curation/pairs/diNPropylEther-nNDimethylformamide",
+    "data/curation/pairs/dichloromethane-nHexane",
     "data/curation/pairs/diethanolamine-mCresol",
     "data/curation/pairs/diethanolamine-pCresol",
     "data/curation/pairs/diethylSulfide-toluene",
@@ -25722,6 +28548,7 @@
     "data/curation/pairs/dimethylCarbonate-ethyleneCarbonate",
     "data/curation/pairs/dimethylCarbonate-ethyleneGlycol",
     "data/curation/pairs/dimethylCarbonate-isobutylAcetate",
+    "data/curation/pairs/dimethylCarbonate-isopentylAcetate",
     "data/curation/pairs/dimethylCarbonate-isopropanol",
     "data/curation/pairs/dimethylCarbonate-isopropylAcetate",
     "data/curation/pairs/dimethylCarbonate-mXylene",
@@ -25733,6 +28560,8 @@
     "data/curation/pairs/dimethylCarbonate-methylal",
     "data/curation/pairs/dimethylCarbonate-nButanol",
     "data/curation/pairs/dimethylCarbonate-nButylAcetate",
+    "data/curation/pairs/dimethylCarbonate-nButylButanoate",
+    "data/curation/pairs/dimethylCarbonate-nButylPropionate",
     "data/curation/pairs/dimethylCarbonate-nDecane",
     "data/curation/pairs/dimethylCarbonate-nNonane",
     "data/curation/pairs/dimethylCarbonate-nPropylAcetate",
@@ -25744,6 +28573,7 @@
     "data/curation/pairs/dimethylSulfoxide-ethylAcetate",
     "data/curation/pairs/dimethylSulfoxide-ethylBenzene",
     "data/curation/pairs/dimethylSulfoxide-isobutylAcetate",
+    "data/curation/pairs/dimethylSulfoxide-isopentylAcetate",
     "data/curation/pairs/dimethylSulfoxide-isopropanol",
     "data/curation/pairs/dimethylSulfoxide-isopropylAcetate",
     "data/curation/pairs/dimethylSulfoxide-methanol",
@@ -25759,8 +28589,10 @@
     "data/curation/pairs/dimethylSulfoxide-trichloroethylene",
     "data/curation/pairs/dimethylSulfoxide-water",
     "data/curation/pairs/ethanol-ethylHexanoate",
+    "data/curation/pairs/ethanol-ethylPropionate",
     "data/curation/pairs/ethanol-ethylTertPentylEther",
     "data/curation/pairs/ethanol-ethyleneGlycol",
+    "data/curation/pairs/ethanol-furan",
     "data/curation/pairs/ethanol-isobutylAcetate",
     "data/curation/pairs/ethanol-isopropylAcetate",
     "data/curation/pairs/ethanol-mCresol",
@@ -25769,6 +28601,7 @@
     "data/curation/pairs/ethanol-methylTertPentylEther",
     "data/curation/pairs/ethanol-methylcyclohexane",
     "data/curation/pairs/ethanol-nButanol",
+    "data/curation/pairs/ethanol-nButylPropionate",
     "data/curation/pairs/ethanol-nHexane",
     "data/curation/pairs/ethanol-nNDimethylformamide",
     "data/curation/pairs/ethanol-nOctane",
@@ -25779,6 +28612,7 @@
     "data/curation/pairs/ethanol-phenol",
     "data/curation/pairs/ethanol-tetrahydrofuran",
     "data/curation/pairs/ethanol-tetrahydropyran",
+    "data/curation/pairs/ethylAcetate-ethylLactate",
     "data/curation/pairs/ethylAcetate-hexamethyldisiloxane",
     "data/curation/pairs/ethylAcetate-isopentylAcetate",
     "data/curation/pairs/ethylAcetate-isopropanol",
@@ -25807,6 +28641,7 @@
     "data/curation/pairs/ethylBenzene-toluene",
     "data/curation/pairs/ethylBenzene-trichloroethylene",
     "data/curation/pairs/ethylButanoate-nHeptane",
+    "data/curation/pairs/ethylButanoate-nHexane",
     "data/curation/pairs/ethylButanoate-nNonane",
     "data/curation/pairs/ethylButanoate-nOctane",
     "data/curation/pairs/ethylFormate-nHeptane",
@@ -25817,6 +28652,8 @@
     "data/curation/pairs/ethylLactate-methanol",
     "data/curation/pairs/ethylLactate-methylAcetate",
     "data/curation/pairs/ethylPropionate-nHeptane",
+    "data/curation/pairs/ethylPropionate-nHexane",
+    "data/curation/pairs/ethylPropionate-nOctane",
     "data/curation/pairs/ethylPropionate-nPentane",
     "data/curation/pairs/ethylTertPentylEther-methanol",
     "data/curation/pairs/ethyleneCarbonate-ethyleneGlycol",
@@ -25824,10 +28661,15 @@
     "data/curation/pairs/ethyleneGlycol-methylDiEthanolAmine",
     "data/curation/pairs/ethyleneGlycol-methylethanolamine",
     "data/curation/pairs/ethyleneGlycol-water",
+    "data/curation/pairs/furan-furfural",
+    "data/curation/pairs/furan-nHexane",
+    "data/curation/pairs/furan-toluene",
     "data/curation/pairs/furfural-water",
     "data/curation/pairs/hexamethyldisiloxane-isopropylAcetate",
     "data/curation/pairs/isobutylAcetate-methylAcetate",
+    "data/curation/pairs/isobutylAcetate-nButylPropionate",
     "data/curation/pairs/isobutylAcetate-nNDimethylformamide",
+    "data/curation/pairs/isopentylAcetate-methylAcetate",
     "data/curation/pairs/isopropanol-isopropylAcetate",
     "data/curation/pairs/isopropanol-methanol",
     "data/curation/pairs/isopropanol-methylal",
@@ -25870,13 +28712,16 @@
     "data/curation/pairs/methanol-tetrahydrofuran",
     "data/curation/pairs/methanol-tetrahydropyran",
     "data/curation/pairs/methanol-vinylAcetate",
+    "data/curation/pairs/methanol-vinylPropionate",
     "data/curation/pairs/methylAcetate-nHeptane",
     "data/curation/pairs/methylAcetate-pXylene",
     "data/curation/pairs/methylButanoate-nHeptane",
     "data/curation/pairs/methylButanoate-nNonane",
+    "data/curation/pairs/methylButanoate-propionitrile",
     "data/curation/pairs/methylDecanoate-methylOctanoate",
     "data/curation/pairs/methylDiEthanolAmine-methylethanolamine",
     "data/curation/pairs/methylDiEthanolAmine-water",
+    "data/curation/pairs/methylEthylKetone-nButylPropionate",
     "data/curation/pairs/methylEthylKetone-nHeptane",
     "data/curation/pairs/methylEthylKetone-nNDimethylformamide",
     "data/curation/pairs/methylFormate-methylal",
@@ -25887,11 +28732,13 @@
     "data/curation/pairs/methylFormate-nPentane",
     "data/curation/pairs/methylFormate-oXylene",
     "data/curation/pairs/methylFormate-pXylene",
+    "data/curation/pairs/methylHexanoate-propionitrile",
     "data/curation/pairs/methylIsobutylKetone-nHexane",
     "data/curation/pairs/methylIsobutylKetone-nNDimethylacetamide",
     "data/curation/pairs/methylPalmitate-methylStearate",
     "data/curation/pairs/methylPentanoate-nHeptane",
     "data/curation/pairs/methylPentanoate-nOctane",
+    "data/curation/pairs/methylPentanoate-propionitrile",
     "data/curation/pairs/methylPropionate-nHeptane",
     "data/curation/pairs/methylPropionate-nNonane",
     "data/curation/pairs/methylPropionate-nPentane",
@@ -25901,6 +28748,7 @@
     "data/curation/pairs/methylcyclohexane-pXylene",
     "data/curation/pairs/monochlorobenzene-nHeptane",
     "data/curation/pairs/monochlorobenzene-nNDimethylformamide",
+    "data/curation/pairs/monochlorobenzene-tertButylAcetate",
     "data/curation/pairs/monochlorobenzene-toluene",
     "data/curation/pairs/monochlorobenzene-trichloroethylene",
     "data/curation/pairs/nButanol-nButylAcetate",
@@ -25911,12 +28759,16 @@
     "data/curation/pairs/nButanol-oXylene",
     "data/curation/pairs/nButanol-pCresol",
     "data/curation/pairs/nButanol-pXylene",
+    "data/curation/pairs/nButanol-pyrrole",
     "data/curation/pairs/nButanol-tetrahydrofuran",
     "data/curation/pairs/nButanol-tetrahydropyran",
     "data/curation/pairs/nButanol-vinylAcetate",
     "data/curation/pairs/nButylAcetate-nOctane",
     "data/curation/pairs/nButylFormate-nHeptane",
+    "data/curation/pairs/nButylFormate-nHexane",
     "data/curation/pairs/nButylFormate-nNonane",
+    "data/curation/pairs/nButylFormate-nOctane",
+    "data/curation/pairs/nButylFormate-nPentane",
     "data/curation/pairs/nDecane-nNDimethylformamide",
     "data/curation/pairs/nDecane-nPropylAcetate",
     "data/curation/pairs/nDecane-oXylene",
@@ -25955,6 +28807,8 @@
     "data/curation/pairs/nPentane-nPropylFormate",
     "data/curation/pairs/nPropylAcetate-propyleneCarbonate",
     "data/curation/pairs/nPropylMercaptan-toluene",
+    "data/curation/pairs/nPropylPropionate-propionicAcid",
+    "data/curation/pairs/nPropylPropionate-water",
     "data/curation/pairs/nUndecane-oXylene",
     "data/curation/pairs/nUndecane-pXylene",
     "data/curation/pairs/nitrobenzene-oCresol",
@@ -25971,6 +28825,7 @@
     "data/curation/pairs/pCresol-trichloroethylene",
     "data/curation/pairs/pXylene-styrene",
     "data/curation/pairs/pXylene-vinylAcetate",
+    "data/curation/pairs/pentanoicAcid-propionicAcid",
     "data/curation/pairs/propanal-propionicAcid",
     "data/curation/pairs/styrene-sulfolane",
     "data/curation/pairs/sulfolane-toluene",
@@ -25978,6 +28833,7 @@
     "data/curation/pairs/tetrahydrofuran-trichloroethylene",
     "data/curation/pairs/thiophene-toluene",
     "data/curation/pairs/triethyleneGlycol-water",
+    "data/curation/pairs/vinylAcetate-vinylPropionate",
     "tutorials/batch/adsorber/batch09_adsorber_co2",
     "tutorials/batch/adsorber/batch10_adsorber_co2_n2",
     "tutorials/batch/adsorber/batch11_adsorber_henry",
@@ -26422,6 +29278,19 @@
     "tutorials/props/compare/extractionShortcut01_perry_example15_1"
    ],
    "fitParameters": [
+    "data/curation/pairs/1122Tetrachloroethane-1Hexanol",
+    "data/curation/pairs/1122Tetrachloroethane-2Methyl1Butanol",
+    "data/curation/pairs/1122Tetrachloroethane-acrylonitrile",
+    "data/curation/pairs/1122Tetrachloroethane-cyclohexane",
+    "data/curation/pairs/1122Tetrachloroethane-dimethylSulfoxide",
+    "data/curation/pairs/1122Tetrachloroethane-ethylBenzene",
+    "data/curation/pairs/1122Tetrachloroethane-monochlorobenzene",
+    "data/curation/pairs/1122Tetrachloroethane-nHeptane",
+    "data/curation/pairs/1122Tetrachloroethane-nNDimethylformamide",
+    "data/curation/pairs/1122Tetrachloroethane-nitrobenzene",
+    "data/curation/pairs/1122Tetrachloroethane-oCresol",
+    "data/curation/pairs/1122Tetrachloroethane-pCresol",
+    "data/curation/pairs/1122Tetrachloroethane-tetrahydrofuran",
     "data/curation/pairs/124Trimethylbenzene-1Pentanol",
     "data/curation/pairs/124Trimethylbenzene-2Pentanol",
     "data/curation/pairs/124Trimethylbenzene-3Methylthiophene",
@@ -26430,14 +29299,34 @@
     "data/curation/pairs/124Trimethylbenzene-pEthyltoluene",
     "data/curation/pairs/12Butanediol-12Propanediol",
     "data/curation/pairs/12Butanediol-ethyleneGlycol",
+    "data/curation/pairs/12Butanediol-methanol",
+    "data/curation/pairs/12Propanediol-13Butanediol",
     "data/curation/pairs/12Propanediol-13Propanediol",
+    "data/curation/pairs/12Propanediol-cyclohexane",
+    "data/curation/pairs/12Propanediol-diEthylCarbonate",
     "data/curation/pairs/12Propanediol-ethyleneGlycol",
+    "data/curation/pairs/12Propanediol-propyleneCarbonate",
+    "data/curation/pairs/12Propanediol-tetrahydrofuran",
+    "data/curation/pairs/13Butanediol-ethyleneGlycol",
+    "data/curation/pairs/13Dioxolane-224Trimethylpentane",
+    "data/curation/pairs/13Dioxolane-2Methyl1Propanol",
+    "data/curation/pairs/13Dioxolane-2Methyl2Propanol",
     "data/curation/pairs/13Dioxolane-aniline",
+    "data/curation/pairs/13Dioxolane-isopropanol",
+    "data/curation/pairs/13Dioxolane-methanol",
+    "data/curation/pairs/13Dioxolane-water",
+    "data/curation/pairs/13Propanediol-1Heptanol",
+    "data/curation/pairs/13Propanediol-1Hexanol",
+    "data/curation/pairs/13Propanediol-ethanol",
+    "data/curation/pairs/13Propanediol-isopropanol",
+    "data/curation/pairs/13Propanediol-water",
     "data/curation/pairs/14Butanediol-3Methyl1Butanol",
     "data/curation/pairs/14Butanediol-diethyleneGlycol",
     "data/curation/pairs/14Butanediol-ethyleneGlycol",
     "data/curation/pairs/14Butanediol-nButanol",
     "data/curation/pairs/14Butanediol-tetrahydrofuran",
+    "data/curation/pairs/14Dioxane-1Chlorobutane",
+    "data/curation/pairs/14Dioxane-2Chlorobutane",
     "data/curation/pairs/14Dioxane-2Methyl1Propanol",
     "data/curation/pairs/14Dioxane-2Methyl2Propanol",
     "data/curation/pairs/14Dioxane-benzene",
@@ -26448,6 +29337,7 @@
     "data/curation/pairs/1Chlorobutane-cyclohexane",
     "data/curation/pairs/1Chlorobutane-ethanol",
     "data/curation/pairs/1Chlorobutane-nHeptane",
+    "data/curation/pairs/1Chlorobutane-tetrahydropyran",
     "data/curation/pairs/1Chlorobutane-toluene",
     "data/curation/pairs/1Decanol-morpholine",
     "data/curation/pairs/1Decanol-nTetradecane",
@@ -26460,6 +29350,7 @@
     "data/curation/pairs/1Heptanol-nPropylAcetate",
     "data/curation/pairs/1Heptanol-nUndecane",
     "data/curation/pairs/1Heptanol-nitrobenzene",
+    "data/curation/pairs/1Hexanol-1Propoxy2Propanol",
     "data/curation/pairs/1Hexanol-2Methyl1Propanol",
     "data/curation/pairs/1Hexanol-3Methyl1Butanol",
     "data/curation/pairs/1Hexanol-Dichloroethane",
@@ -26483,6 +29374,7 @@
     "data/curation/pairs/1Hexene-2Pentanol",
     "data/curation/pairs/1Hexene-diEthylCarbonate",
     "data/curation/pairs/1Hexene-diNButylEther",
+    "data/curation/pairs/1Hexene-ethylButanoate",
     "data/curation/pairs/1Hexene-methylIsobutylKetone",
     "data/curation/pairs/1Hexene-nButanol",
     "data/curation/pairs/1Hexene-nHexane",
@@ -26492,6 +29384,8 @@
     "data/curation/pairs/1Methoxy2PropylAcetate-methanol",
     "data/curation/pairs/1Methoxy2PropylAcetate-nNDimethylformamide",
     "data/curation/pairs/1Methoxy2PropylAcetate-water",
+    "data/curation/pairs/1Octanol-benzoBThiophene",
+    "data/curation/pairs/1Octanol-furan",
     "data/curation/pairs/1Octanol-nDodecane",
     "data/curation/pairs/1Pentanol-1Propanol",
     "data/curation/pairs/1Pentanol-224Trimethylpentane",
@@ -26501,6 +29395,7 @@
     "data/curation/pairs/1Pentanol-cyclohexane",
     "data/curation/pairs/1Pentanol-diEthylCarbonate",
     "data/curation/pairs/1Pentanol-diNButylEther",
+    "data/curation/pairs/1Pentanol-diNPropylEther",
     "data/curation/pairs/1Pentanol-ethylAcetate",
     "data/curation/pairs/1Pentanol-ethylBenzene",
     "data/curation/pairs/1Pentanol-isopropanol",
@@ -26510,10 +29405,14 @@
     "data/curation/pairs/1Pentanol-nNonane",
     "data/curation/pairs/1Pentanol-nPropylAcetate",
     "data/curation/pairs/1Pentanol-propionicAcid",
+    "data/curation/pairs/1Pentanol-pyrrole",
     "data/curation/pairs/1Pentanol-toluene",
     "data/curation/pairs/1Propanol-224Trimethylpentane",
+    "data/curation/pairs/1Propanol-2Ethoxyethanol",
+    "data/curation/pairs/1Propanol-2Methoxyethanol",
     "data/curation/pairs/1Propanol-2Methyl1Butanol",
     "data/curation/pairs/1Propanol-2Propoxyethanol",
+    "data/curation/pairs/1Propanol-3Methyl1Butanol",
     "data/curation/pairs/1Propanol-Dichloroethane",
     "data/curation/pairs/1Propanol-acetonitrile",
     "data/curation/pairs/1Propanol-benzene",
@@ -26525,22 +29424,29 @@
     "data/curation/pairs/1Propanol-dimethylCarbonate",
     "data/curation/pairs/1Propanol-dimethylDisulfide",
     "data/curation/pairs/1Propanol-dimethylSulfoxide",
+    "data/curation/pairs/1Propanol-ethylLactate",
     "data/curation/pairs/1Propanol-ethyleneGlycol",
     "data/curation/pairs/1Propanol-isopropylAcetate",
     "data/curation/pairs/1Propanol-methanol",
     "data/curation/pairs/1Propanol-methylTertButylEther",
     "data/curation/pairs/1Propanol-methylTertPentylEther",
     "data/curation/pairs/1Propanol-nButanol",
+    "data/curation/pairs/1Propanol-nButylPropionate",
     "data/curation/pairs/1Propanol-nDodecane",
     "data/curation/pairs/1Propanol-nNDimethylformamide",
     "data/curation/pairs/1Propanol-nPropylAcetate",
+    "data/curation/pairs/1Propanol-nPropylPropionate",
     "data/curation/pairs/1Propanol-nitrobenzene",
     "data/curation/pairs/1Propanol-oCresol",
     "data/curation/pairs/1Propanol-pCresol",
     "data/curation/pairs/1Propanol-propanal",
     "data/curation/pairs/1Propanol-propionicAcid",
+    "data/curation/pairs/1Propanol-pyrrole",
     "data/curation/pairs/1Propanol-tertButylEthylEther",
     "data/curation/pairs/1Propanol-tetrahydropyran",
+    "data/curation/pairs/1Propoxy2Propanol-2Butanol",
+    "data/curation/pairs/1Propoxy2Propanol-ethanol",
+    "data/curation/pairs/1Propoxy2Propanol-methanol",
     "data/curation/pairs/224Trimethylpentane-2Butanol",
     "data/curation/pairs/224Trimethylpentane-2Methyl2Propanol",
     "data/curation/pairs/224Trimethylpentane-2Pentanol",
@@ -26562,10 +29468,14 @@
     "data/curation/pairs/224Trimethylpentane-nHeptane",
     "data/curation/pairs/224Trimethylpentane-nHexane",
     "data/curation/pairs/224Trimethylpentane-pXylene",
+    "data/curation/pairs/224Trimethylpentane-tetrahydropyran",
     "data/curation/pairs/244Trimethyl1Pentene-2Butanol",
+    "data/curation/pairs/244Trimethyl1Pentene-2Methyl2Propanol",
     "data/curation/pairs/244Trimethyl1Pentene-dimethylDisulfide",
     "data/curation/pairs/244Trimethyl1Pentene-ethanol",
     "data/curation/pairs/244Trimethyl1Pentene-isopropanol",
+    "data/curation/pairs/2Amino2Methyl1Propanol-methanol",
+    "data/curation/pairs/2Amino2Methyl1Propanol-water",
     "data/curation/pairs/2Butanol-2Propoxyethanol",
     "data/curation/pairs/2Butanol-acetonitrile",
     "data/curation/pairs/2Butanol-benzene",
@@ -26589,24 +29499,44 @@
     "data/curation/pairs/2Butanol-tetrahydrofuran",
     "data/curation/pairs/2Butanol-tetrahydropyran",
     "data/curation/pairs/2Butanol-toluene",
+    "data/curation/pairs/2Butoxyethanol-2Ethoxyethanol",
     "data/curation/pairs/2Chlorobutane-cyclohexane",
     "data/curation/pairs/2Chlorobutane-nHeptane",
+    "data/curation/pairs/2Chlorobutane-tetrahydropyran",
     "data/curation/pairs/2Chlorobutane-toluene",
     "data/curation/pairs/2Ethoxyethanol-carbonTetrachloride",
     "data/curation/pairs/2Ethoxyethanol-chloroform",
+    "data/curation/pairs/2Ethoxyethanol-diNPropylEther",
     "data/curation/pairs/2Ethoxyethanol-dichloromethane",
+    "data/curation/pairs/2Ethoxyethanol-diisopropylEther",
+    "data/curation/pairs/2Ethoxyethanol-dimethylSulfoxide",
     "data/curation/pairs/2Ethoxyethanol-ethylAcetate",
+    "data/curation/pairs/2Ethoxyethanol-ethylBenzene",
     "data/curation/pairs/2Ethoxyethanol-ethylPropionate",
+    "data/curation/pairs/2Ethoxyethanol-isopropanol",
     "data/curation/pairs/2Ethoxyethanol-methylAcetate",
     "data/curation/pairs/2Ethoxyethanol-nPropylAcetate",
     "data/curation/pairs/2Ethoxypropene-acetone",
     "data/curation/pairs/2Ethoxypropene-methylEthylKetone",
+    "data/curation/pairs/2Ethyl1Hexanol-2Methyl2Propanol",
+    "data/curation/pairs/2Ethyl1Hexanol-nButanol",
+    "data/curation/pairs/2Ethyl1Hexanol-pXylene",
+    "data/curation/pairs/2Ethylthiophene-mesitylene",
+    "data/curation/pairs/2Ethylthiophene-nDecane",
+    "data/curation/pairs/2Ethylthiophene-nOctane",
     "data/curation/pairs/2Heptanone-nDecane",
     "data/curation/pairs/2Heptanone-nNonane",
     "data/curation/pairs/2Heptanone-nOctane",
     "data/curation/pairs/2Hexanone-anisole",
     "data/curation/pairs/2Hexanone-cyclohexanol",
+    "data/curation/pairs/2Methoxyethanol-cyclohexane",
+    "data/curation/pairs/2Methoxyethanol-cyclohexene",
+    "data/curation/pairs/2Methoxyethanol-diisopropylEther",
     "data/curation/pairs/2Methoxyethanol-dimethylSulfoxide",
+    "data/curation/pairs/2Methoxyethanol-ethanol",
+    "data/curation/pairs/2Methoxyethanol-ethylBenzene",
+    "data/curation/pairs/2Methoxyethanol-isopropanol",
+    "data/curation/pairs/2Methoxyethanol-toluene",
     "data/curation/pairs/2Methoxyethanol-water",
     "data/curation/pairs/2Methyl1Butanol-2Methyl1Propanol",
     "data/curation/pairs/2Methyl1Butanol-Dichloroethane",
@@ -26629,6 +29559,7 @@
     "data/curation/pairs/2Methyl1Propanol-ethylAcetate",
     "data/curation/pairs/2Methyl1Propanol-isobutylAcetate",
     "data/curation/pairs/2Methyl1Propanol-mCresol",
+    "data/curation/pairs/2Methyl1Propanol-nButylPropionate",
     "data/curation/pairs/2Methyl1Propanol-nDodecane",
     "data/curation/pairs/2Methyl1Propanol-nNDimethylformamide",
     "data/curation/pairs/2Methyl1Propanol-nitrobenzene",
@@ -26671,6 +29602,7 @@
     "data/curation/pairs/2Pentanol-nHexane",
     "data/curation/pairs/2Pentanol-nPropylAcetate",
     "data/curation/pairs/2Pentanol-toluene",
+    "data/curation/pairs/2Pentanone-3Pentanol",
     "data/curation/pairs/2Pentanone-3Pentanone",
     "data/curation/pairs/2Pentanone-diEthylCarbonate",
     "data/curation/pairs/2Pentanone-dimethylCarbonate",
@@ -26681,15 +29613,20 @@
     "data/curation/pairs/3Heptanone-nDecane",
     "data/curation/pairs/3Heptanone-nNonane",
     "data/curation/pairs/3Heptanone-nOctane",
+    "data/curation/pairs/3Methyl1Butanol-dimethylSulfoxide",
+    "data/curation/pairs/3Methyl1Butanol-isopentylAcetate",
+    "data/curation/pairs/3Methyl1Butanol-isopropanol",
     "data/curation/pairs/3Methyl1Butanol-morpholine",
     "data/curation/pairs/3Methyl1Butanol-nButanol",
     "data/curation/pairs/3Methyl1Butanol-nButylAcetate",
+    "data/curation/pairs/3Methyl1Butanol-nPropylAcetate",
     "data/curation/pairs/3Methylthiophene-isohexane",
     "data/curation/pairs/3Methylthiophene-methylcyclohexane",
     "data/curation/pairs/3Methylthiophene-methylcyclopentane",
     "data/curation/pairs/3Methylthiophene-nHexane",
     "data/curation/pairs/3Methylthiophene-oXylene",
     "data/curation/pairs/3Methylthiophene-toluene",
+    "data/curation/pairs/3Pentanol-3Pentanone",
     "data/curation/pairs/4Heptanone-nDecane",
     "data/curation/pairs/4Heptanone-nNonane",
     "data/curation/pairs/4Heptanone-nOctane",
@@ -26705,6 +29642,8 @@
     "data/curation/pairs/Dichloroethane-nitrobenzene",
     "data/curation/pairs/Dichloroethane-oCresol",
     "data/curation/pairs/Dichloroethane-pCresol",
+    "data/curation/pairs/Dichloroethane-pentanenitrile",
+    "data/curation/pairs/Dichloroethane-tertButylAcetate",
     "data/curation/pairs/Dichloroethane-tetrahydrofuran",
     "data/curation/pairs/Dichloroethane-toluene",
     "data/curation/pairs/R32-benzene",
@@ -26719,12 +29658,16 @@
     "data/curation/pairs/acetone-methanol",
     "data/curation/pairs/acetonitrile-anisole",
     "data/curation/pairs/acetonitrile-bromobenzene",
+    "data/curation/pairs/acetonitrile-diethylSuccinate",
     "data/curation/pairs/acetonitrile-dimethylSulfoxide",
     "data/curation/pairs/acetonitrile-ethanol",
     "data/curation/pairs/acetonitrile-ethylAcetate",
     "data/curation/pairs/acetonitrile-ethyleneGlycol",
     "data/curation/pairs/acetonitrile-isopropanol",
     "data/curation/pairs/acetonitrile-methanol",
+    "data/curation/pairs/acetonitrile-methylButanoate",
+    "data/curation/pairs/acetonitrile-methylHexanoate",
+    "data/curation/pairs/acetonitrile-methylPentanoate",
     "data/curation/pairs/acetonitrile-methylTertButylEther",
     "data/curation/pairs/acetonitrile-nButanol",
     "data/curation/pairs/acrylicAcid-cyclohexane",
@@ -26734,6 +29677,16 @@
     "data/curation/pairs/acrylonitrile-ethylBenzene",
     "data/curation/pairs/acrylonitrile-monochlorobenzene",
     "data/curation/pairs/acrylonitrile-nitrobenzene",
+    "data/curation/pairs/allylAlcohol-benzene",
+    "data/curation/pairs/allylAlcohol-chloroform",
+    "data/curation/pairs/allylAlcohol-ethanol",
+    "data/curation/pairs/allylAlcohol-ethylAcetate",
+    "data/curation/pairs/allylAlcohol-ethyleneGlycol",
+    "data/curation/pairs/allylAlcohol-isobutylAcetate",
+    "data/curation/pairs/allylAlcohol-methanol",
+    "data/curation/pairs/allylAlcohol-methylPropionate",
+    "data/curation/pairs/allylAlcohol-nButylAcetate",
+    "data/curation/pairs/allylAlcohol-nButylPropionate",
     "data/curation/pairs/aniline-nButanol",
     "data/curation/pairs/aniline-nNDimethylformamide",
     "data/curation/pairs/aniline-nOctane",
@@ -26759,6 +29712,7 @@
     "data/curation/pairs/benzene-isopropanol",
     "data/curation/pairs/benzene-methanol",
     "data/curation/pairs/benzene-methylAcetate",
+    "data/curation/pairs/benzene-methylHeptanoate",
     "data/curation/pairs/benzene-methylal",
     "data/curation/pairs/benzene-nButanol",
     "data/curation/pairs/benzene-nButylAcetate",
@@ -26766,6 +29720,7 @@
     "data/curation/pairs/benzene-nNonane",
     "data/curation/pairs/benzene-oXylene",
     "data/curation/pairs/benzene-thiophene",
+    "data/curation/pairs/benzoBThiophene-nDodecane",
     "data/curation/pairs/bromobenzene-dimethylSulfoxide",
     "data/curation/pairs/bromobenzene-nHeptane",
     "data/curation/pairs/bromobenzene-nNDimethylformamide",
@@ -26788,8 +29743,10 @@
     "data/curation/pairs/cyclohexane-diEthylCarbonate",
     "data/curation/pairs/cyclohexane-diNButylEther",
     "data/curation/pairs/cyclohexane-ethanol",
+    "data/curation/pairs/cyclohexane-ethylPropionate",
     "data/curation/pairs/cyclohexane-methylIsobutylKetone",
     "data/curation/pairs/cyclohexane-methylal",
+    "data/curation/pairs/cyclohexane-morpholine",
     "data/curation/pairs/cyclohexane-nButanol",
     "data/curation/pairs/cyclohexane-nButylAcetate",
     "data/curation/pairs/cyclohexane-nHeptane",
@@ -26810,10 +29767,12 @@
     "data/curation/pairs/cyclohexanone-toluene",
     "data/curation/pairs/cyclohexene-diEthylCarbonate",
     "data/curation/pairs/cyclohexene-methylIsobutylKetone",
+    "data/curation/pairs/cyclohexene-morpholine",
     "data/curation/pairs/diButylCarbonate-methanol",
     "data/curation/pairs/diButylCarbonate-nButanol",
     "data/curation/pairs/diEthylCarbonate-ethanol",
     "data/curation/pairs/diEthylCarbonate-ethylBenzene",
+    "data/curation/pairs/diEthylCarbonate-isopentylAcetate",
     "data/curation/pairs/diEthylCarbonate-isopropylAcetate",
     "data/curation/pairs/diEthylCarbonate-mXylene",
     "data/curation/pairs/diEthylCarbonate-methanol",
@@ -26833,7 +29792,10 @@
     "data/curation/pairs/diNButylEther-nNonane",
     "data/curation/pairs/diNButylEther-oXylene",
     "data/curation/pairs/diNButylEther-toluene",
+    "data/curation/pairs/diNPropylEther-nButylPropionate",
     "data/curation/pairs/diNPropylEther-nHeptane",
+    "data/curation/pairs/diNPropylEther-nNDimethylformamide",
+    "data/curation/pairs/dichloromethane-nHexane",
     "data/curation/pairs/diethanolamine-mCresol",
     "data/curation/pairs/diethanolamine-pCresol",
     "data/curation/pairs/diethylSuccinate-ethanol",
@@ -26867,6 +29829,7 @@
     "data/curation/pairs/dimethylCarbonate-ethyleneCarbonate",
     "data/curation/pairs/dimethylCarbonate-ethyleneGlycol",
     "data/curation/pairs/dimethylCarbonate-isobutylAcetate",
+    "data/curation/pairs/dimethylCarbonate-isopentylAcetate",
     "data/curation/pairs/dimethylCarbonate-isopropanol",
     "data/curation/pairs/dimethylCarbonate-isopropylAcetate",
     "data/curation/pairs/dimethylCarbonate-mXylene",
@@ -26878,6 +29841,8 @@
     "data/curation/pairs/dimethylCarbonate-methylal",
     "data/curation/pairs/dimethylCarbonate-nButanol",
     "data/curation/pairs/dimethylCarbonate-nButylAcetate",
+    "data/curation/pairs/dimethylCarbonate-nButylButanoate",
+    "data/curation/pairs/dimethylCarbonate-nButylPropionate",
     "data/curation/pairs/dimethylCarbonate-nDecane",
     "data/curation/pairs/dimethylCarbonate-nNonane",
     "data/curation/pairs/dimethylCarbonate-nPropylAcetate",
@@ -26891,6 +29856,7 @@
     "data/curation/pairs/dimethylSulfoxide-ethylAcetate",
     "data/curation/pairs/dimethylSulfoxide-ethylBenzene",
     "data/curation/pairs/dimethylSulfoxide-isobutylAcetate",
+    "data/curation/pairs/dimethylSulfoxide-isopentylAcetate",
     "data/curation/pairs/dimethylSulfoxide-isopropanol",
     "data/curation/pairs/dimethylSulfoxide-isopropylAcetate",
     "data/curation/pairs/dimethylSulfoxide-methanol",
@@ -26906,8 +29872,10 @@
     "data/curation/pairs/dimethylSulfoxide-trichloroethylene",
     "data/curation/pairs/dimethylSulfoxide-water",
     "data/curation/pairs/ethanol-ethylHexanoate",
+    "data/curation/pairs/ethanol-ethylPropionate",
     "data/curation/pairs/ethanol-ethylTertPentylEther",
     "data/curation/pairs/ethanol-ethyleneGlycol",
+    "data/curation/pairs/ethanol-furan",
     "data/curation/pairs/ethanol-isobutylAcetate",
     "data/curation/pairs/ethanol-isopropylAcetate",
     "data/curation/pairs/ethanol-mCresol",
@@ -26916,6 +29884,7 @@
     "data/curation/pairs/ethanol-methylTertPentylEther",
     "data/curation/pairs/ethanol-methylcyclohexane",
     "data/curation/pairs/ethanol-nButanol",
+    "data/curation/pairs/ethanol-nButylPropionate",
     "data/curation/pairs/ethanol-nHexane",
     "data/curation/pairs/ethanol-nNDimethylacetamide",
     "data/curation/pairs/ethanol-nNDimethylformamide",
@@ -26927,6 +29896,7 @@
     "data/curation/pairs/ethanol-phenol",
     "data/curation/pairs/ethanol-tetrahydrofuran",
     "data/curation/pairs/ethanol-tetrahydropyran",
+    "data/curation/pairs/ethylAcetate-ethylLactate",
     "data/curation/pairs/ethylAcetate-hexamethyldisiloxane",
     "data/curation/pairs/ethylAcetate-isopentylAcetate",
     "data/curation/pairs/ethylAcetate-isopropanol",
@@ -26955,6 +29925,7 @@
     "data/curation/pairs/ethylBenzene-toluene",
     "data/curation/pairs/ethylBenzene-trichloroethylene",
     "data/curation/pairs/ethylButanoate-nHeptane",
+    "data/curation/pairs/ethylButanoate-nHexane",
     "data/curation/pairs/ethylButanoate-nNonane",
     "data/curation/pairs/ethylButanoate-nOctane",
     "data/curation/pairs/ethylFormate-nHeptane",
@@ -26965,6 +29936,8 @@
     "data/curation/pairs/ethylLactate-methanol",
     "data/curation/pairs/ethylLactate-methylAcetate",
     "data/curation/pairs/ethylPropionate-nHeptane",
+    "data/curation/pairs/ethylPropionate-nHexane",
+    "data/curation/pairs/ethylPropionate-nOctane",
     "data/curation/pairs/ethylPropionate-nPentane",
     "data/curation/pairs/ethylTertPentylEther-methanol",
     "data/curation/pairs/ethyleneCarbonate-ethyleneGlycol",
@@ -26972,10 +29945,15 @@
     "data/curation/pairs/ethyleneGlycol-methylDiEthanolAmine",
     "data/curation/pairs/ethyleneGlycol-methylethanolamine",
     "data/curation/pairs/ethyleneGlycol-water",
+    "data/curation/pairs/furan-furfural",
+    "data/curation/pairs/furan-nHexane",
+    "data/curation/pairs/furan-toluene",
     "data/curation/pairs/furfural-water",
     "data/curation/pairs/hexamethyldisiloxane-isopropylAcetate",
     "data/curation/pairs/isobutylAcetate-methylAcetate",
+    "data/curation/pairs/isobutylAcetate-nButylPropionate",
     "data/curation/pairs/isobutylAcetate-nNDimethylformamide",
+    "data/curation/pairs/isopentylAcetate-methylAcetate",
     "data/curation/pairs/isopropanol-isopropylAcetate",
     "data/curation/pairs/isopropanol-methanol",
     "data/curation/pairs/isopropanol-methylal",
@@ -27018,13 +29996,16 @@
     "data/curation/pairs/methanol-tetrahydrofuran",
     "data/curation/pairs/methanol-tetrahydropyran",
     "data/curation/pairs/methanol-vinylAcetate",
+    "data/curation/pairs/methanol-vinylPropionate",
     "data/curation/pairs/methylAcetate-nHeptane",
     "data/curation/pairs/methylAcetate-pXylene",
     "data/curation/pairs/methylButanoate-nHeptane",
     "data/curation/pairs/methylButanoate-nNonane",
+    "data/curation/pairs/methylButanoate-propionitrile",
     "data/curation/pairs/methylDecanoate-methylOctanoate",
     "data/curation/pairs/methylDiEthanolAmine-methylethanolamine",
     "data/curation/pairs/methylDiEthanolAmine-water",
+    "data/curation/pairs/methylEthylKetone-nButylPropionate",
     "data/curation/pairs/methylEthylKetone-nHeptane",
     "data/curation/pairs/methylEthylKetone-nNDimethylformamide",
     "data/curation/pairs/methylFormate-methylal",
@@ -27035,11 +30016,13 @@
     "data/curation/pairs/methylFormate-nPentane",
     "data/curation/pairs/methylFormate-oXylene",
     "data/curation/pairs/methylFormate-pXylene",
+    "data/curation/pairs/methylHexanoate-propionitrile",
     "data/curation/pairs/methylIsobutylKetone-nHexane",
     "data/curation/pairs/methylIsobutylKetone-nNDimethylacetamide",
     "data/curation/pairs/methylPalmitate-methylStearate",
     "data/curation/pairs/methylPentanoate-nHeptane",
     "data/curation/pairs/methylPentanoate-nOctane",
+    "data/curation/pairs/methylPentanoate-propionitrile",
     "data/curation/pairs/methylPropionate-nHeptane",
     "data/curation/pairs/methylPropionate-nNonane",
     "data/curation/pairs/methylPropionate-nPentane",
@@ -27050,6 +30033,7 @@
     "data/curation/pairs/methylcyclohexane-pXylene",
     "data/curation/pairs/monochlorobenzene-nHeptane",
     "data/curation/pairs/monochlorobenzene-nNDimethylformamide",
+    "data/curation/pairs/monochlorobenzene-tertButylAcetate",
     "data/curation/pairs/monochlorobenzene-toluene",
     "data/curation/pairs/monochlorobenzene-trichloroethylene",
     "data/curation/pairs/nButanol-nButylAcetate",
@@ -27061,13 +30045,17 @@
     "data/curation/pairs/nButanol-oXylene",
     "data/curation/pairs/nButanol-pCresol",
     "data/curation/pairs/nButanol-pXylene",
+    "data/curation/pairs/nButanol-pyrrole",
     "data/curation/pairs/nButanol-tetrahydrofuran",
     "data/curation/pairs/nButanol-tetrahydropyran",
     "data/curation/pairs/nButanol-toluene",
     "data/curation/pairs/nButanol-vinylAcetate",
     "data/curation/pairs/nButylAcetate-nOctane",
     "data/curation/pairs/nButylFormate-nHeptane",
+    "data/curation/pairs/nButylFormate-nHexane",
     "data/curation/pairs/nButylFormate-nNonane",
+    "data/curation/pairs/nButylFormate-nOctane",
+    "data/curation/pairs/nButylFormate-nPentane",
     "data/curation/pairs/nDecane-nNDimethylformamide",
     "data/curation/pairs/nDecane-nPropylAcetate",
     "data/curation/pairs/nDecane-oXylene",
@@ -27111,6 +30099,8 @@
     "data/curation/pairs/nPentane-nPropylFormate",
     "data/curation/pairs/nPropylAcetate-propyleneCarbonate",
     "data/curation/pairs/nPropylMercaptan-toluene",
+    "data/curation/pairs/nPropylPropionate-propionicAcid",
+    "data/curation/pairs/nPropylPropionate-water",
     "data/curation/pairs/nUndecane-oXylene",
     "data/curation/pairs/nUndecane-pXylene",
     "data/curation/pairs/nitrobenzene-oCresol",
@@ -27127,6 +30117,7 @@
     "data/curation/pairs/pCresol-trichloroethylene",
     "data/curation/pairs/pXylene-styrene",
     "data/curation/pairs/pXylene-vinylAcetate",
+    "data/curation/pairs/pentanoicAcid-propionicAcid",
     "data/curation/pairs/propanal-propionicAcid",
     "data/curation/pairs/styrene-sulfolane",
     "data/curation/pairs/sulfolane-toluene",
@@ -27135,6 +30126,7 @@
     "data/curation/pairs/tetrahydrofuran-trichloroethylene",
     "data/curation/pairs/thiophene-toluene",
     "data/curation/pairs/triethyleneGlycol-water",
+    "data/curation/pairs/vinylAcetate-vinylPropionate",
     "tutorials/props/adsorption/isotherm02_fit_jaschik",
     "tutorials/props/adsorption/isotherm03_fit_refusals",
     "tutorials/props/curation/curate02_vle_heldout_ethanol_water",
@@ -27262,6 +30254,19 @@
     "data/curation/batches/new_components",
     "data/curation/batches/new_components_c309",
     "data/curation/batches/new_components_estimated",
+    "data/curation/pairs/1122Tetrachloroethane-1Hexanol",
+    "data/curation/pairs/1122Tetrachloroethane-2Methyl1Butanol",
+    "data/curation/pairs/1122Tetrachloroethane-acrylonitrile",
+    "data/curation/pairs/1122Tetrachloroethane-cyclohexane",
+    "data/curation/pairs/1122Tetrachloroethane-dimethylSulfoxide",
+    "data/curation/pairs/1122Tetrachloroethane-ethylBenzene",
+    "data/curation/pairs/1122Tetrachloroethane-monochlorobenzene",
+    "data/curation/pairs/1122Tetrachloroethane-nHeptane",
+    "data/curation/pairs/1122Tetrachloroethane-nNDimethylformamide",
+    "data/curation/pairs/1122Tetrachloroethane-nitrobenzene",
+    "data/curation/pairs/1122Tetrachloroethane-oCresol",
+    "data/curation/pairs/1122Tetrachloroethane-pCresol",
+    "data/curation/pairs/1122Tetrachloroethane-tetrahydrofuran",
     "data/curation/pairs/124Trimethylbenzene-1Pentanol",
     "data/curation/pairs/124Trimethylbenzene-2Pentanol",
     "data/curation/pairs/124Trimethylbenzene-3Methylthiophene",
@@ -27270,14 +30275,34 @@
     "data/curation/pairs/124Trimethylbenzene-pEthyltoluene",
     "data/curation/pairs/12Butanediol-12Propanediol",
     "data/curation/pairs/12Butanediol-ethyleneGlycol",
+    "data/curation/pairs/12Butanediol-methanol",
+    "data/curation/pairs/12Propanediol-13Butanediol",
     "data/curation/pairs/12Propanediol-13Propanediol",
+    "data/curation/pairs/12Propanediol-cyclohexane",
+    "data/curation/pairs/12Propanediol-diEthylCarbonate",
     "data/curation/pairs/12Propanediol-ethyleneGlycol",
+    "data/curation/pairs/12Propanediol-propyleneCarbonate",
+    "data/curation/pairs/12Propanediol-tetrahydrofuran",
+    "data/curation/pairs/13Butanediol-ethyleneGlycol",
+    "data/curation/pairs/13Dioxolane-224Trimethylpentane",
+    "data/curation/pairs/13Dioxolane-2Methyl1Propanol",
+    "data/curation/pairs/13Dioxolane-2Methyl2Propanol",
     "data/curation/pairs/13Dioxolane-aniline",
+    "data/curation/pairs/13Dioxolane-isopropanol",
+    "data/curation/pairs/13Dioxolane-methanol",
+    "data/curation/pairs/13Dioxolane-water",
+    "data/curation/pairs/13Propanediol-1Heptanol",
+    "data/curation/pairs/13Propanediol-1Hexanol",
+    "data/curation/pairs/13Propanediol-ethanol",
+    "data/curation/pairs/13Propanediol-isopropanol",
+    "data/curation/pairs/13Propanediol-water",
     "data/curation/pairs/14Butanediol-3Methyl1Butanol",
     "data/curation/pairs/14Butanediol-diethyleneGlycol",
     "data/curation/pairs/14Butanediol-ethyleneGlycol",
     "data/curation/pairs/14Butanediol-nButanol",
     "data/curation/pairs/14Butanediol-tetrahydrofuran",
+    "data/curation/pairs/14Dioxane-1Chlorobutane",
+    "data/curation/pairs/14Dioxane-2Chlorobutane",
     "data/curation/pairs/14Dioxane-2Methyl1Propanol",
     "data/curation/pairs/14Dioxane-2Methyl2Propanol",
     "data/curation/pairs/14Dioxane-benzene",
@@ -27288,6 +30313,7 @@
     "data/curation/pairs/1Chlorobutane-cyclohexane",
     "data/curation/pairs/1Chlorobutane-ethanol",
     "data/curation/pairs/1Chlorobutane-nHeptane",
+    "data/curation/pairs/1Chlorobutane-tetrahydropyran",
     "data/curation/pairs/1Chlorobutane-toluene",
     "data/curation/pairs/1Decanol-morpholine",
     "data/curation/pairs/1Decanol-nTetradecane",
@@ -27300,6 +30326,7 @@
     "data/curation/pairs/1Heptanol-nPropylAcetate",
     "data/curation/pairs/1Heptanol-nUndecane",
     "data/curation/pairs/1Heptanol-nitrobenzene",
+    "data/curation/pairs/1Hexanol-1Propoxy2Propanol",
     "data/curation/pairs/1Hexanol-2Methyl1Propanol",
     "data/curation/pairs/1Hexanol-3Methyl1Butanol",
     "data/curation/pairs/1Hexanol-Dichloroethane",
@@ -27323,6 +30350,7 @@
     "data/curation/pairs/1Hexene-2Pentanol",
     "data/curation/pairs/1Hexene-diEthylCarbonate",
     "data/curation/pairs/1Hexene-diNButylEther",
+    "data/curation/pairs/1Hexene-ethylButanoate",
     "data/curation/pairs/1Hexene-methylIsobutylKetone",
     "data/curation/pairs/1Hexene-nButanol",
     "data/curation/pairs/1Hexene-nHexane",
@@ -27332,6 +30360,8 @@
     "data/curation/pairs/1Methoxy2PropylAcetate-methanol",
     "data/curation/pairs/1Methoxy2PropylAcetate-nNDimethylformamide",
     "data/curation/pairs/1Methoxy2PropylAcetate-water",
+    "data/curation/pairs/1Octanol-benzoBThiophene",
+    "data/curation/pairs/1Octanol-furan",
     "data/curation/pairs/1Octanol-nDodecane",
     "data/curation/pairs/1Pentanol-1Propanol",
     "data/curation/pairs/1Pentanol-224Trimethylpentane",
@@ -27341,6 +30371,7 @@
     "data/curation/pairs/1Pentanol-cyclohexane",
     "data/curation/pairs/1Pentanol-diEthylCarbonate",
     "data/curation/pairs/1Pentanol-diNButylEther",
+    "data/curation/pairs/1Pentanol-diNPropylEther",
     "data/curation/pairs/1Pentanol-ethylAcetate",
     "data/curation/pairs/1Pentanol-ethylBenzene",
     "data/curation/pairs/1Pentanol-isopropanol",
@@ -27350,10 +30381,14 @@
     "data/curation/pairs/1Pentanol-nNonane",
     "data/curation/pairs/1Pentanol-nPropylAcetate",
     "data/curation/pairs/1Pentanol-propionicAcid",
+    "data/curation/pairs/1Pentanol-pyrrole",
     "data/curation/pairs/1Pentanol-toluene",
     "data/curation/pairs/1Propanol-224Trimethylpentane",
+    "data/curation/pairs/1Propanol-2Ethoxyethanol",
+    "data/curation/pairs/1Propanol-2Methoxyethanol",
     "data/curation/pairs/1Propanol-2Methyl1Butanol",
     "data/curation/pairs/1Propanol-2Propoxyethanol",
+    "data/curation/pairs/1Propanol-3Methyl1Butanol",
     "data/curation/pairs/1Propanol-Dichloroethane",
     "data/curation/pairs/1Propanol-acetonitrile",
     "data/curation/pairs/1Propanol-benzene",
@@ -27365,22 +30400,29 @@
     "data/curation/pairs/1Propanol-dimethylCarbonate",
     "data/curation/pairs/1Propanol-dimethylDisulfide",
     "data/curation/pairs/1Propanol-dimethylSulfoxide",
+    "data/curation/pairs/1Propanol-ethylLactate",
     "data/curation/pairs/1Propanol-ethyleneGlycol",
     "data/curation/pairs/1Propanol-isopropylAcetate",
     "data/curation/pairs/1Propanol-methanol",
     "data/curation/pairs/1Propanol-methylTertButylEther",
     "data/curation/pairs/1Propanol-methylTertPentylEther",
     "data/curation/pairs/1Propanol-nButanol",
+    "data/curation/pairs/1Propanol-nButylPropionate",
     "data/curation/pairs/1Propanol-nDodecane",
     "data/curation/pairs/1Propanol-nNDimethylformamide",
     "data/curation/pairs/1Propanol-nPropylAcetate",
+    "data/curation/pairs/1Propanol-nPropylPropionate",
     "data/curation/pairs/1Propanol-nitrobenzene",
     "data/curation/pairs/1Propanol-oCresol",
     "data/curation/pairs/1Propanol-pCresol",
     "data/curation/pairs/1Propanol-propanal",
     "data/curation/pairs/1Propanol-propionicAcid",
+    "data/curation/pairs/1Propanol-pyrrole",
     "data/curation/pairs/1Propanol-tertButylEthylEther",
     "data/curation/pairs/1Propanol-tetrahydropyran",
+    "data/curation/pairs/1Propoxy2Propanol-2Butanol",
+    "data/curation/pairs/1Propoxy2Propanol-ethanol",
+    "data/curation/pairs/1Propoxy2Propanol-methanol",
     "data/curation/pairs/224Trimethylpentane-2Butanol",
     "data/curation/pairs/224Trimethylpentane-2Methyl2Propanol",
     "data/curation/pairs/224Trimethylpentane-2Pentanol",
@@ -27402,10 +30444,14 @@
     "data/curation/pairs/224Trimethylpentane-nHeptane",
     "data/curation/pairs/224Trimethylpentane-nHexane",
     "data/curation/pairs/224Trimethylpentane-pXylene",
+    "data/curation/pairs/224Trimethylpentane-tetrahydropyran",
     "data/curation/pairs/244Trimethyl1Pentene-2Butanol",
+    "data/curation/pairs/244Trimethyl1Pentene-2Methyl2Propanol",
     "data/curation/pairs/244Trimethyl1Pentene-dimethylDisulfide",
     "data/curation/pairs/244Trimethyl1Pentene-ethanol",
     "data/curation/pairs/244Trimethyl1Pentene-isopropanol",
+    "data/curation/pairs/2Amino2Methyl1Propanol-methanol",
+    "data/curation/pairs/2Amino2Methyl1Propanol-water",
     "data/curation/pairs/2Butanol-2Propoxyethanol",
     "data/curation/pairs/2Butanol-acetonitrile",
     "data/curation/pairs/2Butanol-benzene",
@@ -27429,24 +30475,44 @@
     "data/curation/pairs/2Butanol-tetrahydrofuran",
     "data/curation/pairs/2Butanol-tetrahydropyran",
     "data/curation/pairs/2Butanol-toluene",
+    "data/curation/pairs/2Butoxyethanol-2Ethoxyethanol",
     "data/curation/pairs/2Chlorobutane-cyclohexane",
     "data/curation/pairs/2Chlorobutane-nHeptane",
+    "data/curation/pairs/2Chlorobutane-tetrahydropyran",
     "data/curation/pairs/2Chlorobutane-toluene",
     "data/curation/pairs/2Ethoxyethanol-carbonTetrachloride",
     "data/curation/pairs/2Ethoxyethanol-chloroform",
+    "data/curation/pairs/2Ethoxyethanol-diNPropylEther",
     "data/curation/pairs/2Ethoxyethanol-dichloromethane",
+    "data/curation/pairs/2Ethoxyethanol-diisopropylEther",
+    "data/curation/pairs/2Ethoxyethanol-dimethylSulfoxide",
     "data/curation/pairs/2Ethoxyethanol-ethylAcetate",
+    "data/curation/pairs/2Ethoxyethanol-ethylBenzene",
     "data/curation/pairs/2Ethoxyethanol-ethylPropionate",
+    "data/curation/pairs/2Ethoxyethanol-isopropanol",
     "data/curation/pairs/2Ethoxyethanol-methylAcetate",
     "data/curation/pairs/2Ethoxyethanol-nPropylAcetate",
     "data/curation/pairs/2Ethoxypropene-acetone",
     "data/curation/pairs/2Ethoxypropene-methylEthylKetone",
+    "data/curation/pairs/2Ethyl1Hexanol-2Methyl2Propanol",
+    "data/curation/pairs/2Ethyl1Hexanol-nButanol",
+    "data/curation/pairs/2Ethyl1Hexanol-pXylene",
+    "data/curation/pairs/2Ethylthiophene-mesitylene",
+    "data/curation/pairs/2Ethylthiophene-nDecane",
+    "data/curation/pairs/2Ethylthiophene-nOctane",
     "data/curation/pairs/2Heptanone-nDecane",
     "data/curation/pairs/2Heptanone-nNonane",
     "data/curation/pairs/2Heptanone-nOctane",
     "data/curation/pairs/2Hexanone-anisole",
     "data/curation/pairs/2Hexanone-cyclohexanol",
+    "data/curation/pairs/2Methoxyethanol-cyclohexane",
+    "data/curation/pairs/2Methoxyethanol-cyclohexene",
+    "data/curation/pairs/2Methoxyethanol-diisopropylEther",
     "data/curation/pairs/2Methoxyethanol-dimethylSulfoxide",
+    "data/curation/pairs/2Methoxyethanol-ethanol",
+    "data/curation/pairs/2Methoxyethanol-ethylBenzene",
+    "data/curation/pairs/2Methoxyethanol-isopropanol",
+    "data/curation/pairs/2Methoxyethanol-toluene",
     "data/curation/pairs/2Methoxyethanol-water",
     "data/curation/pairs/2Methyl1Butanol-2Methyl1Propanol",
     "data/curation/pairs/2Methyl1Butanol-Dichloroethane",
@@ -27469,6 +30535,7 @@
     "data/curation/pairs/2Methyl1Propanol-ethylAcetate",
     "data/curation/pairs/2Methyl1Propanol-isobutylAcetate",
     "data/curation/pairs/2Methyl1Propanol-mCresol",
+    "data/curation/pairs/2Methyl1Propanol-nButylPropionate",
     "data/curation/pairs/2Methyl1Propanol-nDodecane",
     "data/curation/pairs/2Methyl1Propanol-nNDimethylformamide",
     "data/curation/pairs/2Methyl1Propanol-nitrobenzene",
@@ -27511,6 +30578,7 @@
     "data/curation/pairs/2Pentanol-nHexane",
     "data/curation/pairs/2Pentanol-nPropylAcetate",
     "data/curation/pairs/2Pentanol-toluene",
+    "data/curation/pairs/2Pentanone-3Pentanol",
     "data/curation/pairs/2Pentanone-3Pentanone",
     "data/curation/pairs/2Pentanone-diEthylCarbonate",
     "data/curation/pairs/2Pentanone-dimethylCarbonate",
@@ -27521,15 +30589,20 @@
     "data/curation/pairs/3Heptanone-nDecane",
     "data/curation/pairs/3Heptanone-nNonane",
     "data/curation/pairs/3Heptanone-nOctane",
+    "data/curation/pairs/3Methyl1Butanol-dimethylSulfoxide",
+    "data/curation/pairs/3Methyl1Butanol-isopentylAcetate",
+    "data/curation/pairs/3Methyl1Butanol-isopropanol",
     "data/curation/pairs/3Methyl1Butanol-morpholine",
     "data/curation/pairs/3Methyl1Butanol-nButanol",
     "data/curation/pairs/3Methyl1Butanol-nButylAcetate",
+    "data/curation/pairs/3Methyl1Butanol-nPropylAcetate",
     "data/curation/pairs/3Methylthiophene-isohexane",
     "data/curation/pairs/3Methylthiophene-methylcyclohexane",
     "data/curation/pairs/3Methylthiophene-methylcyclopentane",
     "data/curation/pairs/3Methylthiophene-nHexane",
     "data/curation/pairs/3Methylthiophene-oXylene",
     "data/curation/pairs/3Methylthiophene-toluene",
+    "data/curation/pairs/3Pentanol-3Pentanone",
     "data/curation/pairs/4Heptanone-nDecane",
     "data/curation/pairs/4Heptanone-nNonane",
     "data/curation/pairs/4Heptanone-nOctane",
@@ -27545,6 +30618,8 @@
     "data/curation/pairs/Dichloroethane-nitrobenzene",
     "data/curation/pairs/Dichloroethane-oCresol",
     "data/curation/pairs/Dichloroethane-pCresol",
+    "data/curation/pairs/Dichloroethane-pentanenitrile",
+    "data/curation/pairs/Dichloroethane-tertButylAcetate",
     "data/curation/pairs/Dichloroethane-tetrahydrofuran",
     "data/curation/pairs/Dichloroethane-toluene",
     "data/curation/pairs/R32-benzene",
@@ -27559,12 +30634,16 @@
     "data/curation/pairs/acetone-methanol",
     "data/curation/pairs/acetonitrile-anisole",
     "data/curation/pairs/acetonitrile-bromobenzene",
+    "data/curation/pairs/acetonitrile-diethylSuccinate",
     "data/curation/pairs/acetonitrile-dimethylSulfoxide",
     "data/curation/pairs/acetonitrile-ethanol",
     "data/curation/pairs/acetonitrile-ethylAcetate",
     "data/curation/pairs/acetonitrile-ethyleneGlycol",
     "data/curation/pairs/acetonitrile-isopropanol",
     "data/curation/pairs/acetonitrile-methanol",
+    "data/curation/pairs/acetonitrile-methylButanoate",
+    "data/curation/pairs/acetonitrile-methylHexanoate",
+    "data/curation/pairs/acetonitrile-methylPentanoate",
     "data/curation/pairs/acetonitrile-methylTertButylEther",
     "data/curation/pairs/acetonitrile-nButanol",
     "data/curation/pairs/acrylicAcid-cyclohexane",
@@ -27574,6 +30653,16 @@
     "data/curation/pairs/acrylonitrile-ethylBenzene",
     "data/curation/pairs/acrylonitrile-monochlorobenzene",
     "data/curation/pairs/acrylonitrile-nitrobenzene",
+    "data/curation/pairs/allylAlcohol-benzene",
+    "data/curation/pairs/allylAlcohol-chloroform",
+    "data/curation/pairs/allylAlcohol-ethanol",
+    "data/curation/pairs/allylAlcohol-ethylAcetate",
+    "data/curation/pairs/allylAlcohol-ethyleneGlycol",
+    "data/curation/pairs/allylAlcohol-isobutylAcetate",
+    "data/curation/pairs/allylAlcohol-methanol",
+    "data/curation/pairs/allylAlcohol-methylPropionate",
+    "data/curation/pairs/allylAlcohol-nButylAcetate",
+    "data/curation/pairs/allylAlcohol-nButylPropionate",
     "data/curation/pairs/aniline-nButanol",
     "data/curation/pairs/aniline-nNDimethylformamide",
     "data/curation/pairs/aniline-nOctane",
@@ -27599,6 +30688,7 @@
     "data/curation/pairs/benzene-isopropanol",
     "data/curation/pairs/benzene-methanol",
     "data/curation/pairs/benzene-methylAcetate",
+    "data/curation/pairs/benzene-methylHeptanoate",
     "data/curation/pairs/benzene-methylal",
     "data/curation/pairs/benzene-nButanol",
     "data/curation/pairs/benzene-nButylAcetate",
@@ -27606,6 +30696,7 @@
     "data/curation/pairs/benzene-nNonane",
     "data/curation/pairs/benzene-oXylene",
     "data/curation/pairs/benzene-thiophene",
+    "data/curation/pairs/benzoBThiophene-nDodecane",
     "data/curation/pairs/bromobenzene-dimethylSulfoxide",
     "data/curation/pairs/bromobenzene-nHeptane",
     "data/curation/pairs/bromobenzene-nNDimethylformamide",
@@ -27628,8 +30719,10 @@
     "data/curation/pairs/cyclohexane-diEthylCarbonate",
     "data/curation/pairs/cyclohexane-diNButylEther",
     "data/curation/pairs/cyclohexane-ethanol",
+    "data/curation/pairs/cyclohexane-ethylPropionate",
     "data/curation/pairs/cyclohexane-methylIsobutylKetone",
     "data/curation/pairs/cyclohexane-methylal",
+    "data/curation/pairs/cyclohexane-morpholine",
     "data/curation/pairs/cyclohexane-nButanol",
     "data/curation/pairs/cyclohexane-nButylAcetate",
     "data/curation/pairs/cyclohexane-nHeptane",
@@ -27650,10 +30743,12 @@
     "data/curation/pairs/cyclohexanone-toluene",
     "data/curation/pairs/cyclohexene-diEthylCarbonate",
     "data/curation/pairs/cyclohexene-methylIsobutylKetone",
+    "data/curation/pairs/cyclohexene-morpholine",
     "data/curation/pairs/diButylCarbonate-methanol",
     "data/curation/pairs/diButylCarbonate-nButanol",
     "data/curation/pairs/diEthylCarbonate-ethanol",
     "data/curation/pairs/diEthylCarbonate-ethylBenzene",
+    "data/curation/pairs/diEthylCarbonate-isopentylAcetate",
     "data/curation/pairs/diEthylCarbonate-isopropylAcetate",
     "data/curation/pairs/diEthylCarbonate-mXylene",
     "data/curation/pairs/diEthylCarbonate-methanol",
@@ -27673,7 +30768,10 @@
     "data/curation/pairs/diNButylEther-nNonane",
     "data/curation/pairs/diNButylEther-oXylene",
     "data/curation/pairs/diNButylEther-toluene",
+    "data/curation/pairs/diNPropylEther-nButylPropionate",
     "data/curation/pairs/diNPropylEther-nHeptane",
+    "data/curation/pairs/diNPropylEther-nNDimethylformamide",
+    "data/curation/pairs/dichloromethane-nHexane",
     "data/curation/pairs/diethanolamine-mCresol",
     "data/curation/pairs/diethanolamine-pCresol",
     "data/curation/pairs/diethylSuccinate-ethanol",
@@ -27706,6 +30804,7 @@
     "data/curation/pairs/dimethylCarbonate-ethyleneCarbonate",
     "data/curation/pairs/dimethylCarbonate-ethyleneGlycol",
     "data/curation/pairs/dimethylCarbonate-isobutylAcetate",
+    "data/curation/pairs/dimethylCarbonate-isopentylAcetate",
     "data/curation/pairs/dimethylCarbonate-isopropanol",
     "data/curation/pairs/dimethylCarbonate-isopropylAcetate",
     "data/curation/pairs/dimethylCarbonate-mXylene",
@@ -27717,6 +30816,8 @@
     "data/curation/pairs/dimethylCarbonate-methylal",
     "data/curation/pairs/dimethylCarbonate-nButanol",
     "data/curation/pairs/dimethylCarbonate-nButylAcetate",
+    "data/curation/pairs/dimethylCarbonate-nButylButanoate",
+    "data/curation/pairs/dimethylCarbonate-nButylPropionate",
     "data/curation/pairs/dimethylCarbonate-nDecane",
     "data/curation/pairs/dimethylCarbonate-nNonane",
     "data/curation/pairs/dimethylCarbonate-nPropylAcetate",
@@ -27730,6 +30831,7 @@
     "data/curation/pairs/dimethylSulfoxide-ethylAcetate",
     "data/curation/pairs/dimethylSulfoxide-ethylBenzene",
     "data/curation/pairs/dimethylSulfoxide-isobutylAcetate",
+    "data/curation/pairs/dimethylSulfoxide-isopentylAcetate",
     "data/curation/pairs/dimethylSulfoxide-isopropanol",
     "data/curation/pairs/dimethylSulfoxide-isopropylAcetate",
     "data/curation/pairs/dimethylSulfoxide-methanol",
@@ -27745,8 +30847,10 @@
     "data/curation/pairs/dimethylSulfoxide-trichloroethylene",
     "data/curation/pairs/dimethylSulfoxide-water",
     "data/curation/pairs/ethanol-ethylHexanoate",
+    "data/curation/pairs/ethanol-ethylPropionate",
     "data/curation/pairs/ethanol-ethylTertPentylEther",
     "data/curation/pairs/ethanol-ethyleneGlycol",
+    "data/curation/pairs/ethanol-furan",
     "data/curation/pairs/ethanol-isobutylAcetate",
     "data/curation/pairs/ethanol-isopropylAcetate",
     "data/curation/pairs/ethanol-mCresol",
@@ -27755,6 +30859,7 @@
     "data/curation/pairs/ethanol-methylTertPentylEther",
     "data/curation/pairs/ethanol-methylcyclohexane",
     "data/curation/pairs/ethanol-nButanol",
+    "data/curation/pairs/ethanol-nButylPropionate",
     "data/curation/pairs/ethanol-nHexane",
     "data/curation/pairs/ethanol-nNDimethylacetamide",
     "data/curation/pairs/ethanol-nNDimethylformamide",
@@ -27766,6 +30871,7 @@
     "data/curation/pairs/ethanol-phenol",
     "data/curation/pairs/ethanol-tetrahydrofuran",
     "data/curation/pairs/ethanol-tetrahydropyran",
+    "data/curation/pairs/ethylAcetate-ethylLactate",
     "data/curation/pairs/ethylAcetate-hexamethyldisiloxane",
     "data/curation/pairs/ethylAcetate-isopentylAcetate",
     "data/curation/pairs/ethylAcetate-isopropanol",
@@ -27794,6 +30900,7 @@
     "data/curation/pairs/ethylBenzene-toluene",
     "data/curation/pairs/ethylBenzene-trichloroethylene",
     "data/curation/pairs/ethylButanoate-nHeptane",
+    "data/curation/pairs/ethylButanoate-nHexane",
     "data/curation/pairs/ethylButanoate-nNonane",
     "data/curation/pairs/ethylButanoate-nOctane",
     "data/curation/pairs/ethylFormate-nHeptane",
@@ -27804,6 +30911,8 @@
     "data/curation/pairs/ethylLactate-methanol",
     "data/curation/pairs/ethylLactate-methylAcetate",
     "data/curation/pairs/ethylPropionate-nHeptane",
+    "data/curation/pairs/ethylPropionate-nHexane",
+    "data/curation/pairs/ethylPropionate-nOctane",
     "data/curation/pairs/ethylPropionate-nPentane",
     "data/curation/pairs/ethylTertPentylEther-methanol",
     "data/curation/pairs/ethyleneCarbonate-ethyleneGlycol",
@@ -27811,10 +30920,15 @@
     "data/curation/pairs/ethyleneGlycol-methylDiEthanolAmine",
     "data/curation/pairs/ethyleneGlycol-methylethanolamine",
     "data/curation/pairs/ethyleneGlycol-water",
+    "data/curation/pairs/furan-furfural",
+    "data/curation/pairs/furan-nHexane",
+    "data/curation/pairs/furan-toluene",
     "data/curation/pairs/furfural-water",
     "data/curation/pairs/hexamethyldisiloxane-isopropylAcetate",
     "data/curation/pairs/isobutylAcetate-methylAcetate",
+    "data/curation/pairs/isobutylAcetate-nButylPropionate",
     "data/curation/pairs/isobutylAcetate-nNDimethylformamide",
+    "data/curation/pairs/isopentylAcetate-methylAcetate",
     "data/curation/pairs/isopropanol-isopropylAcetate",
     "data/curation/pairs/isopropanol-methanol",
     "data/curation/pairs/isopropanol-methylal",
@@ -27857,13 +30971,16 @@
     "data/curation/pairs/methanol-tetrahydrofuran",
     "data/curation/pairs/methanol-tetrahydropyran",
     "data/curation/pairs/methanol-vinylAcetate",
+    "data/curation/pairs/methanol-vinylPropionate",
     "data/curation/pairs/methylAcetate-nHeptane",
     "data/curation/pairs/methylAcetate-pXylene",
     "data/curation/pairs/methylButanoate-nHeptane",
     "data/curation/pairs/methylButanoate-nNonane",
+    "data/curation/pairs/methylButanoate-propionitrile",
     "data/curation/pairs/methylDecanoate-methylOctanoate",
     "data/curation/pairs/methylDiEthanolAmine-methylethanolamine",
     "data/curation/pairs/methylDiEthanolAmine-water",
+    "data/curation/pairs/methylEthylKetone-nButylPropionate",
     "data/curation/pairs/methylEthylKetone-nHeptane",
     "data/curation/pairs/methylEthylKetone-nNDimethylformamide",
     "data/curation/pairs/methylFormate-methylal",
@@ -27874,11 +30991,13 @@
     "data/curation/pairs/methylFormate-nPentane",
     "data/curation/pairs/methylFormate-oXylene",
     "data/curation/pairs/methylFormate-pXylene",
+    "data/curation/pairs/methylHexanoate-propionitrile",
     "data/curation/pairs/methylIsobutylKetone-nHexane",
     "data/curation/pairs/methylIsobutylKetone-nNDimethylacetamide",
     "data/curation/pairs/methylPalmitate-methylStearate",
     "data/curation/pairs/methylPentanoate-nHeptane",
     "data/curation/pairs/methylPentanoate-nOctane",
+    "data/curation/pairs/methylPentanoate-propionitrile",
     "data/curation/pairs/methylPropionate-nHeptane",
     "data/curation/pairs/methylPropionate-nNonane",
     "data/curation/pairs/methylPropionate-nPentane",
@@ -27889,6 +31008,7 @@
     "data/curation/pairs/methylcyclohexane-pXylene",
     "data/curation/pairs/monochlorobenzene-nHeptane",
     "data/curation/pairs/monochlorobenzene-nNDimethylformamide",
+    "data/curation/pairs/monochlorobenzene-tertButylAcetate",
     "data/curation/pairs/monochlorobenzene-toluene",
     "data/curation/pairs/monochlorobenzene-trichloroethylene",
     "data/curation/pairs/nButanol-nButylAcetate",
@@ -27900,13 +31020,17 @@
     "data/curation/pairs/nButanol-oXylene",
     "data/curation/pairs/nButanol-pCresol",
     "data/curation/pairs/nButanol-pXylene",
+    "data/curation/pairs/nButanol-pyrrole",
     "data/curation/pairs/nButanol-tetrahydrofuran",
     "data/curation/pairs/nButanol-tetrahydropyran",
     "data/curation/pairs/nButanol-toluene",
     "data/curation/pairs/nButanol-vinylAcetate",
     "data/curation/pairs/nButylAcetate-nOctane",
     "data/curation/pairs/nButylFormate-nHeptane",
+    "data/curation/pairs/nButylFormate-nHexane",
     "data/curation/pairs/nButylFormate-nNonane",
+    "data/curation/pairs/nButylFormate-nOctane",
+    "data/curation/pairs/nButylFormate-nPentane",
     "data/curation/pairs/nDecane-nNDimethylformamide",
     "data/curation/pairs/nDecane-nPropylAcetate",
     "data/curation/pairs/nDecane-oXylene",
@@ -27950,6 +31074,8 @@
     "data/curation/pairs/nPentane-nPropylFormate",
     "data/curation/pairs/nPropylAcetate-propyleneCarbonate",
     "data/curation/pairs/nPropylMercaptan-toluene",
+    "data/curation/pairs/nPropylPropionate-propionicAcid",
+    "data/curation/pairs/nPropylPropionate-water",
     "data/curation/pairs/nUndecane-oXylene",
     "data/curation/pairs/nUndecane-pXylene",
     "data/curation/pairs/nitrobenzene-oCresol",
@@ -27966,6 +31092,7 @@
     "data/curation/pairs/pCresol-trichloroethylene",
     "data/curation/pairs/pXylene-styrene",
     "data/curation/pairs/pXylene-vinylAcetate",
+    "data/curation/pairs/pentanoicAcid-propionicAcid",
     "data/curation/pairs/propanal-propionicAcid",
     "data/curation/pairs/styrene-sulfolane",
     "data/curation/pairs/sulfolane-toluene",
@@ -27974,6 +31101,7 @@
     "data/curation/pairs/tetrahydrofuran-trichloroethylene",
     "data/curation/pairs/thiophene-toluene",
     "data/curation/pairs/triethyleneGlycol-water",
+    "data/curation/pairs/vinylAcetate-vinylPropionate",
     "tutorials/props/compare/aceticWater01_txy_association",
     "tutorials/props/compare/acetone01_ipa_water_azeotrope",
     "tutorials/props/compare/acetone04_acetone_water_vle",

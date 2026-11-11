@@ -5,9 +5,9 @@
   "catalogue": {
     "components": 687,
     "aqueousSpecies": 53,
-    "nrtlPairs": 612,
-    "wilsonPairs": 603,
-    "uniquacPairs": 220,
+    "nrtlPairs": 730,
+    "wilsonPairs": 723,
+    "uniquacPairs": 348,
     "henryPairs": 206,
     "pitzerPairs": 55,
     "enrtlPairs": 3,
@@ -30,15 +30,15 @@
     }
   },
   "curationTraces": {
-    "cases": 819,
-    "regressionChecks": 722,
+    "cases": 955,
+    "regressionChecks": 955,
     "byOrigin": {
-      "pairs": 713,
+      "pairs": 849,
       "components": 103,
       "batches": 3
     }
   },
   "totals": {
-    "mixtureParameterRecords": 1699
+    "mixtureParameterRecords": 2065
   }
 }
