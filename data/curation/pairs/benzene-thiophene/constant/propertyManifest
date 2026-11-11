@@ -28,10 +28,10 @@ propertyManifest
         "components/benzene.dat"
         {
             type          imported;
-            sha256        "af31cf9da05b7d34c657c430cef68abbf0f08db2402827a4867f7a64073225c9";
-            computationalSha256 "b8a586d23e8f38eb0b5c0f9534f7057eb2d4059de464edbdc18995094fdca93e";
+            sha256        "2c20d6d671dd5884ed8e3668529ddaad20bf3c2a02d1a5130aac02dd790aa62c";
+            computationalSha256 "d710160da938e1163f77e26b0cc49af7c2a2e4563b37f914ce4bb001500decc4";
             origin        "data/standards/components/benzene.dat";
-            originSha256  "77d7604645ff3a28b34d91023e497586af35fa74849c914378f858666a2b900e";
+            originSha256  "dc7869a494c8e333ed57af66fa4086592b32ac5330960750b5d2775030c9b6bc";
             release       Choupo-2608;
         }
         "components/thiophene.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "5f7dc5dc1bcefc6b4abaa40c717b02dac1a9e80ee67d8579012a6d307a22d960";
             origin        "data/standards/parameters/NRTL/benzene-thiophene.dat";
             originSha256  "8048285049de7c770038ad56f228b3a988350e93e4c52f9da188ca800e0453dd";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/benzene-thiophene.dat"
+        {
+            type          imported;
+            sha256        "460f19666b13b0e9926cdb93c2f73d56f6cf4f966498ea4624ce19bf0c8d65c7";
+            computationalSha256 "9f74768108883b2ae351ef6655dc152cab0ded6d5c671bdc720bedc50ddb3212";
+            origin        "data/standards/parameters/Wilson/benzene-thiophene.dat";
+            originSha256  "0e98844c3dda072a5c29685d85d7824ee32d28e5194ad9e98a2020e6b591b729";
             release       Choupo-2608;
         }
     }

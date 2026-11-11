@@ -37,10 +37,10 @@ propertyManifest
         "components/oXylene.dat"
         {
             type          imported;
-            sha256        "d6bdb61163c015dec26d2cefff15a2c919b7a57896b8592d3605374a272dffa0";
-            computationalSha256 "a8ffc32a52cd609309dfebd10675e693ad9127c62d05bf6ddf8603f0a78620a2";
+            sha256        "1360348dc25bac70a331fc7d65535e3d3cd15689dc0b3bb225194d2687ce957f";
+            computationalSha256 "1c533f2710b61bc84d7205b1850b2db3326e00d5d45dc4ffccbb534ca41574f8";
             origin        "data/standards/components/oXylene.dat";
-            originSha256  "b6c6ede5d7ff713e82c02f27faf3ced0b49ef4762c4baa0eae22702c78888efe";
+            originSha256  "4421f5f2225fb65f840043469d7083f59ada5f6066c48198fbbc56e163c28da5";
             release       Choupo-2608;
         }
         "parameters/NRTL/nButanol-oXylene.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/nButanol-oXylene.dat"
+        {
+            type          imported;
+            sha256        "d08d2b43ccf9554f62bb57e3295991a9bbced1f85a5d44c0bcfce2659b749586";
+            computationalSha256 "c9f55e62538a6b4aef1d25404da69815dc8914a8b3ae416a6a37a333df5b0401";
+            origin        "data/standards/parameters/UNIQUAC/nButanol-oXylene.dat";
+            originSha256  "5e34b0bb81fc0fbad5bf0c89eec05af5df227f0e8cc595ae499c86afa2c3206d";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/nButanol-oXylene.dat"
+        {
+            type          imported;
+            sha256        "f89527e49cb10a88bb29e99b3620eb0262a7d054c32e01f276a53cd3a9e97264";
+            computationalSha256 "635453b9241aaa7dfcaec966bf816476e2fe6fd13f97c66bded8faa011aec5da";
+            origin        "data/standards/parameters/Wilson/nButanol-oXylene.dat";
+            originSha256  "65feb3be575ffe48fdaacdc4dcb742f516fa614fc7d5725a28e2e2f8b64b19d0";
             release       Choupo-2608;
         }
     }

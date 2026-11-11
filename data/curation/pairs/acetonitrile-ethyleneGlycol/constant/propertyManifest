@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "19c47fce12d0018a4b11e9b93d1b3ade3c0b5ccaafc8e7d3345ec70bfc494f83";
             release       Choupo-2608;
         }
+        "parameters/Wilson/acetonitrile-ethyleneGlycol.dat"
+        {
+            type          imported;
+            sha256        "69f0815ea9390d446e3b073acba9eae08cfb57b5cc9bae8605bf7f821cd0e7fb";
+            computationalSha256 "701e44fed764ab7f7ce5b5fd4a76aaaad6cd8f2f457b0655a08c9f5f6e3b92b2";
+            origin        "data/standards/parameters/Wilson/acetonitrile-ethyleneGlycol.dat";
+            originSha256  "9ce1591a79047db1ba95a4808d614fc788cda73b408f255af0528af29a704fb2";
+            release       Choupo-2608;
+        }
     }
 }

@@ -114,4 +114,188 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-224Trimethylpentane.a_ij  -12.8508527957;
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-224Trimethylpentane.a_ji  12.0282643161;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c99bb92c43fee89b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nHexane-224Trimethylpentane-bubble-j.jct.2005.04.006.dat";
+            doi       "10.1016/j.jct.2005.04.006";
+            sha256    "e157abbd4d346d9ee5e79799e72fb16000d461970ab65ba327666624870901bc";
+            provenance measured;
+            archiveFile "j.jct.2005.04.006.xml";
+            system    "nHexane + 224Trimethylpentane";
+            pressure  "95800.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1138; max 0.8833; n 6; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-224Trimethylpentane.a_ij  401.550764805;
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-224Trimethylpentane.a_ji  -253.852399684;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c99bb92c43fee89b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nHexane-224Trimethylpentane-bubble-j.jct.2005.04.006.dat";
+            doi       "10.1016/j.jct.2005.04.006";
+            sha256    "e157abbd4d346d9ee5e79799e72fb16000d461970ab65ba327666624870901bc";
+            provenance measured;
+            archiveFile "j.jct.2005.04.006.xml";
+            system    "nHexane + 224Trimethylpentane";
+            pressure  "95800.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1138; max 0.8833; n 6; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-224Trimethylpentane.A_ij  1179.72645232;
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-224Trimethylpentane.A_ji  -1271.28789555;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c99bb92c43fee89b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nHexane-224Trimethylpentane-bubble-j.jct.2005.04.006.dat";
+            doi       "10.1016/j.jct.2005.04.006";
+            sha256    "e157abbd4d346d9ee5e79799e72fb16000d461970ab65ba327666624870901bc";
+            provenance measured;
+            archiveFile "j.jct.2005.04.006.xml";
+            system    "nHexane + 224Trimethylpentane";
+            pressure  "95800.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1138; max 0.8833; n 6; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-224Trimethylpentane.A_ij  1179.72706835;
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-224Trimethylpentane.A_ji  -1271.28840868;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c99bb92c43fee89b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nHexane-224Trimethylpentane-bubble-j.jct.2005.04.006.dat";
+            doi       "10.1016/j.jct.2005.04.006";
+            sha256    "e157abbd4d346d9ee5e79799e72fb16000d461970ab65ba327666624870901bc";
+            provenance measured;
+            archiveFile "j.jct.2005.04.006.xml";
+            system    "nHexane + 224Trimethylpentane";
+            pressure  "95800.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1138; max 0.8833; n 6; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

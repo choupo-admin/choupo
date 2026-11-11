@@ -37,10 +37,10 @@ propertyManifest
         "components/isopropylAcetate.dat"
         {
             type          imported;
-            sha256        "2328fd502eebc591dc0d81570786331f2d6647eb2b71bfe7172809332c8e3fe0";
-            computationalSha256 "1c866ebe928bb3a9819829800fbff05561232d4be946665e4b122aac3e9f145f";
+            sha256        "e7ac260d88cf4a0bfa207e4911233608a56c4d10a61c24e4f7747ea6e7c0f438";
+            computationalSha256 "b0aad9448ce9dd1414628dc55a1e66f00915a1d484ade9e5aa47fe646ee093c7";
             origin        "data/standards/components/isopropylAcetate.dat";
-            originSha256  "b4165a2c125255c87da7f45e828cad88381ca66d9b8bb23696bd173c77aae660";
+            originSha256  "72e882241e06e02aeea5b7957fc17349db5a3ac5b52a361372ead9ddfd714662";
             release       Choupo-2608;
         }
         "parameters/NRTL/anisole-isopropylAcetate.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "a6c4fef1db3bc0ebcc91adbab639c2a21b690867c2a3ad915e04b7b42e5414bf";
             origin        "data/standards/parameters/NRTL/anisole-isopropylAcetate.dat";
             originSha256  "22115d01ec340c5966d28927f2e98825c86af769d55356d921eace5507ed8eca";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/anisole-isopropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "7c9e7e9e5db76c5f2556aa34660a6a60481e8d2d774bd50b6e8b7a97754ffce2";
+            computationalSha256 "82ebb7a419ae89ccfee1a7b6625d7a22991603edeb169dd583f0a0f76d0418ec";
+            origin        "data/standards/parameters/Wilson/anisole-isopropylAcetate.dat";
+            originSha256  "2dd642ed52116892424b610a9ee924a215a686ce6297bd3b3da66fc5177b2f9d";
             release       Choupo-2608;
         }
     }

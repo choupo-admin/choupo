@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "d522984f78c0b2f268a6119864c5435974cd33966383d389ae48faf9e304ba26";
             release       Choupo-2608;
         }
+        "parameters/Wilson/dimethylCarbonate-ethyleneCarbonate.dat"
+        {
+            type          imported;
+            sha256        "17c58e9c7db246a81391eba3843c8a0a8989aa9864a0d0766d812144209460ba";
+            computationalSha256 "f1666b5722ebbe326531c7a4f40f9eb1b98e99408f497ccfd20b82e2e1691088";
+            origin        "data/standards/parameters/Wilson/dimethylCarbonate-ethyleneCarbonate.dat";
+            originSha256  "b7598c50519d60b4299734efde6c858150f02ba31eb0c09063f69159ae66ad9c";
+            release       Choupo-2608;
+        }
     }
 }

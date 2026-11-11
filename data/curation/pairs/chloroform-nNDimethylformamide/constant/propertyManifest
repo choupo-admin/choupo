@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "3c0c2a7bd21f97e1c4666ced8251d19724d40d0b48af26ec9044bf2ef479ca2e";
             release       Choupo-2608;
         }
+        "parameters/Wilson/chloroform-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "7611e9b4d2fde8f167108d7569b95f749e4f546863b5384e328a999d489613c4";
+            computationalSha256 "793e4fc7c7d3ba30fd95617b9bf1e9514bbacf3cfc4b01511dd0cc156b02345f";
+            origin        "data/standards/parameters/Wilson/chloroform-nNDimethylformamide.dat";
+            originSha256  "1c7025e670ab717d07bb63aff403985a488ec83b6344d1c81d7da22d642dc912";
+            release       Choupo-2608;
+        }
     }
 }

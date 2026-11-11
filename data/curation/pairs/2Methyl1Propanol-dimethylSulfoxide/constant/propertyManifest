@@ -28,10 +28,10 @@ propertyManifest
         "components/2Methyl1Propanol.dat"
         {
             type          imported;
-            sha256        "ee0bb35e8d706d7c4b0549d6ac51be77b89de4f5496fea7d9947d875b9bcdd35";
-            computationalSha256 "b1bfb84671b4f35f758f186af86d16cfe056fb1a54d6f2b5e2867328630848b3";
+            sha256        "778703d5a4716bbace0b8b3de0655393d4212cbd4ed4c809736558e732afbd5d";
+            computationalSha256 "5ebe04496878f4c4864b2b944848ca1130604cf7d11a684d2602c0fc4b37568d";
             origin        "data/standards/components/2Methyl1Propanol.dat";
-            originSha256  "f0afa6609184a85f9c63deb6555d81619d932cc9049178f6f783e25420e34db6";
+            originSha256  "c17b068f64a38ca32f8ee4f6516ed94a85019ee7a45a33ba4fceabdaaafc01bc";
             release       Choupo-2608;
         }
         "components/dimethylSulfoxide.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "78ba7b7f11ad9f53da0a55e7fa2bbf9a4f3f21e6a8a8b76db081c4aaa002782b";
             origin        "data/standards/parameters/NRTL/2Methyl1Propanol-dimethylSulfoxide.dat";
             originSha256  "22e7f4170f9da5da3dc03204ad0ccec76e4cfd900cef644712921db91d5ac76e";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Methyl1Propanol-dimethylSulfoxide.dat"
+        {
+            type          imported;
+            sha256        "d36c7f5b7ebe60c2ffb8fc6c1eb93cb6ab3eb6aa9473e59d928714e7a38cf120";
+            computationalSha256 "2da0f6ad09828501db6600e1cc28495f89bd1d413e3374082b44f2ac943003a7";
+            origin        "data/standards/parameters/Wilson/2Methyl1Propanol-dimethylSulfoxide.dat";
+            originSha256  "f24b0e16d2fa58689aced148827bce42f1dd3591df03ccd2d026ded747ce9153";
             release       Choupo-2608;
         }
     }

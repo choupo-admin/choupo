@@ -28,19 +28,19 @@ propertyManifest
         "components/methylPalmitate.dat"
         {
             type          imported;
-            sha256        "2ed1797ee105713181fa8a76e20a2609c452a41c01bf1fdc1491461c0e8e813d";
-            computationalSha256 "2b32e9ecf1aea84ad669495fc1847189b5816fbaa5dac12c0891f99af222e7f3";
+            sha256        "62f3c57be9ecb1d9e7754c166dc08a2efb687758b3df1b82b97a2a070c1a507c";
+            computationalSha256 "69465db75f45e8384801a423a5ed86a6a4cfd20755bab3cbcab02d74b7fb0a9b";
             origin        "data/standards/components/methylPalmitate.dat";
-            originSha256  "a1ee95a13b6820e0936874694dac4f78d7a6853991db5da79d16b0da41ca917a";
+            originSha256  "401ec7f766ec343778804a052832fd8c06fc03db48405cd3db114baf049f6eed";
             release       Choupo-2608;
         }
         "components/methylStearate.dat"
         {
             type          imported;
-            sha256        "e62cb879869d96e9248a9392e1a7276f17e30bee524fbc6e3122b847e2039a4c";
-            computationalSha256 "ba38b31b933dc61010d1892e2485153a4bbd7d8ec353f960ebe5de9a051c8a51";
+            sha256        "75521209faf694ef774256c9b7a3f92faca1c91e7df772d003676eebdd8fae02";
+            computationalSha256 "c77f8e49aae3fadc031b2d1d9c5cd354df65ca30646c01781e8d5d72ccdc858a";
             origin        "data/standards/components/methylStearate.dat";
-            originSha256  "8d29dfd3a191bf366bb77cf300d294ce895a59e2cd9274e12ccd34329a92a47c";
+            originSha256  "6a353531dfc5a2967952c7a8bd8d44ae223a20a81b04b342777cca76265bf34d";
             release       Choupo-2608;
         }
     }

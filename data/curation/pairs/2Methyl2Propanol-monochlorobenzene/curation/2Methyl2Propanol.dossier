@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-monochlorobenzene.A_ij  1075.78901941;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-monochlorobenzene.A_ji  2568.87900759;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c762a1491eb16fb3";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methyl2Propanol-monochlorobenzene-bubble-acs.jced.7b01021.dat";
+            doi       "10.1021/acs.jced.7b01021";
+            sha256    "b6ab62f5a5bb60f455ea237d0f1f24689fac551070a6c9199720824f29683c35";
+            provenance measured;
+            archiveFile "acs.jced.7b01021.xml";
+            system    "2Methyl2Propanol + monochlorobenzene";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0073; max 0.8859; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-monochlorobenzene.A_ij  1075.78901883;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-monochlorobenzene.A_ji  2568.8790083;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c762a1491eb16fb3";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methyl2Propanol-monochlorobenzene-bubble-acs.jced.7b01021.dat";
+            doi       "10.1021/acs.jced.7b01021";
+            sha256    "b6ab62f5a5bb60f455ea237d0f1f24689fac551070a6c9199720824f29683c35";
+            provenance measured;
+            archiveFile "acs.jced.7b01021.xml";
+            system    "2Methyl2Propanol + monochlorobenzene";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0073; max 0.8859; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

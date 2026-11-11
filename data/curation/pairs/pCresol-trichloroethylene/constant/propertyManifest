@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "a1cc3687b3b17ac35c2b3468ae16afab93fc0655c7a45811ed6be65daa6518da";
             release       Choupo-2608;
         }
+        "parameters/Wilson/pCresol-trichloroethylene.dat"
+        {
+            type          imported;
+            sha256        "bc213c90041b05853497968e4a7bd5b1377e48e218cfe35cd53c93ad1071aa92";
+            computationalSha256 "de3e3185e5e7db35caba67228ce630412122eae6018873983083b9ef2fb9cc24";
+            origin        "data/standards/parameters/Wilson/pCresol-trichloroethylene.dat";
+            originSha256  "f247208b0c4a91c1e1c763976e1b3032578d54b95e2d60d3a439d2e7427a6e96";
+            release       Choupo-2608;
+        }
     }
 }

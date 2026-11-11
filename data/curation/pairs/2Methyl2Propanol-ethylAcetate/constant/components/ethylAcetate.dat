@@ -57,6 +57,15 @@ liquidHeatCapacity
     Trange        (280  350);
 }
 
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (1 CH3 + 1 CH2 + 1 CH3COO), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   3.4786;
+    q   3.1160;
+}
+
 groups
 {
     unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH3COO; count 1; } );
@@ -72,5 +81,15 @@ cosmo
         source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0639-PROF.txt bundled in usnistgov/COSMOSAC; CAS 141-78-6";
         licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
         installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
+    }
+}
+
+provenance
+{
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 3.4786, q = sum nu_k Q_k = 3.1160 over the record's unifac groups (1 CH3 + 1 CH2 + 1 CH3COO)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
     }
 }

@@ -37,10 +37,10 @@ propertyManifest
         "components/methylTertButylEther.dat"
         {
             type          imported;
-            sha256        "3ab4fc9f9327983ed432deddaaf6061975e40ac5921def969bbda74ee79584d8";
-            computationalSha256 "b1298108ed625d2ded4bbb653cacef55bab384b4f0fbcebe9718c8c3de5d157a";
+            sha256        "599fe8b76bf9dcefb9a049da27ad814b20f55ab6bd0e6fa77a8db9417dc52a31";
+            computationalSha256 "75223204b22e9d5f8a55a8f889fcae0d4fccc0e5f04a7c80bb00403b64fef00b";
             origin        "data/standards/components/methylTertButylEther.dat";
-            originSha256  "956b9c6cdfcb9eeaa8430150111c3743638477d7171c7b4271a1881802b0f0d5";
+            originSha256  "7929424decc80d01a8290f7f1ef09beb99ad05068b4deca3c673a4cb8f5f5c64";
             release       Choupo-2608;
         }
         "parameters/NRTL/ethanol-methylTertButylEther.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/ethanol-methylTertButylEther.dat"
+        {
+            type          imported;
+            sha256        "52aff2a8bb4fb0ef684fd878f36bfa40d14f45779c1262b9c0bd059ea77c7c7b";
+            computationalSha256 "76a7b4359405d5ff52bf84bd4289fbcebd8f860f2c61d7903f239da89fe7e502";
+            origin        "data/standards/parameters/UNIQUAC/ethanol-methylTertButylEther.dat";
+            originSha256  "5aae7fc915e1d0c5134d7f6514e73d25fb5f28e799dd46085e3e150cca29cffb";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/ethanol-methylTertButylEther.dat"
+        {
+            type          imported;
+            sha256        "bde9022494f44bf5fb4545b31463709fecac5163fef1e783727d0c01e11e621e";
+            computationalSha256 "9dd5738fb9e283905403b6bd4f4890b7a8bfd8e281831c54b106c3807cc15133";
+            origin        "data/standards/parameters/Wilson/ethanol-methylTertButylEther.dat";
+            originSha256  "54bad9265ece303a5f4cf026511961f69cf49fc16e078b41b762996a8115ca38";
             release       Choupo-2608;
         }
     }

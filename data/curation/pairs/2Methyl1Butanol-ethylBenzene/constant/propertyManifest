@@ -28,19 +28,19 @@ propertyManifest
         "components/2Methyl1Butanol.dat"
         {
             type          imported;
-            sha256        "c9ab8aee6e4b669e02e65ee3a6579c57e883133a1851177388705a66bdde60b9";
-            computationalSha256 "a9485fdc17ea9e25851a2a332f2c3226a701891ce7badb72ef8316ae3bde36bc";
+            sha256        "f90b494a8391fb588d9a2b470f293cfdbb2c2145a1ced61950e3c46242cf96fe";
+            computationalSha256 "d36cb54138d36743c14cb391fa2b5ab4fed5588fec6ada659da1083710c5152c";
             origin        "data/standards/components/2Methyl1Butanol.dat";
-            originSha256  "8539ec36a4bbea4015b16011168542b122b7f689d6c3fe9fbfbb213bac47ef8e";
+            originSha256  "576312a58a7313515df67a7ff33d373cf4659854074ea6b3dfe2923ab94a8cf9";
             release       Choupo-2608;
         }
         "components/ethylBenzene.dat"
         {
             type          imported;
-            sha256        "ae0432cef7e9cc8d1a1c7669ce4a783ccf51218cff2404dd7ba093d0695d1922";
-            computationalSha256 "c4a5df3dd8cb1cd0dc6031be45ffdc38a34f227a8eb4b34bdecebd07b13b8b0e";
+            sha256        "a3770fc80542ebef6c1e967abe82aa77f1772855e3873575603dc3ec1c54ce74";
+            computationalSha256 "99065feb74f678d5fdc677c7b2f450910efa7af9990f15e931738055b6bda9ae";
             origin        "data/standards/components/ethylBenzene.dat";
-            originSha256  "e2ecbd5573ce3719ae530d1cd13978928548ca096b3666ad58321bcd8ca07505";
+            originSha256  "eb0e3c4909ad9a0859b769f78ba184bc73174b779765f33d3e2876a4600b2d0f";
             release       Choupo-2608;
         }
         "parameters/NRTL/2Methyl1Butanol-ethylBenzene.dat"
@@ -50,6 +50,24 @@ propertyManifest
             computationalSha256 "2f7dbc98da4484900f8023c191c4a86cf2a03d57e9643180c5ddf4c4ef4f235f";
             origin        "data/standards/parameters/NRTL/2Methyl1Butanol-ethylBenzene.dat";
             originSha256  "eb7696d69d75ca361f03ab76d3d3a7e2fb7667ec47816f69cb3aa2901f2c2c7d";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/2Methyl1Butanol-ethylBenzene.dat"
+        {
+            type          imported;
+            sha256        "d0f118ac38e77f8c1a3a0653cc07cb3460e98bb323afc7bc617c7d876b3ed167";
+            computationalSha256 "754a8e97ccf5c36d99e2f02a9bb5982b1472ddd809b5a55b53f9482f010ce987";
+            origin        "data/standards/parameters/UNIQUAC/2Methyl1Butanol-ethylBenzene.dat";
+            originSha256  "e2c0570315184ac45f4a83d294945b151698227bf18b780e620fc2d5e63b02d8";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Methyl1Butanol-ethylBenzene.dat"
+        {
+            type          imported;
+            sha256        "c981a6e7d834e4c2bf0ae08420229335a599157170820a29bd3290fcb6b62c5f";
+            computationalSha256 "84a6caa399c3e01636af44de925af8a184b947836f86df1ee16964061c72179c";
+            origin        "data/standards/parameters/Wilson/2Methyl1Butanol-ethylBenzene.dat";
+            originSha256  "707fee896b7d8dbe52678df452aec5a4e0b3a692039566bf710fb6c4bf52807b";
             release       Choupo-2608;
         }
     }

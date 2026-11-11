@@ -28,19 +28,19 @@ propertyManifest
         "components/ethylAcetate.dat"
         {
             type          imported;
-            sha256        "beb6e50741e964e6d1479f0f1e66284a50fee1aa86fd5d014b8cb0c886b66e1c";
-            computationalSha256 "4faa49d150d41d6e24527cf3a028f1705068d903407d67194fe6caa4731b4d1c";
+            sha256        "54a2177877292bf69c144e8501a70f5fbdd893d0d52c59b98a2751121bea1d6f";
+            computationalSha256 "a684b58c42fd149250d5211ca6545fa9f6968847122e1a9267a719a700deb26d";
             origin        "data/standards/components/ethylAcetate.dat";
-            originSha256  "9efe0bbeca4073450e352d99c60035ffd0f7cdabc8c708c372c9932cb5f95ba9";
+            originSha256  "882d88a79a8cf5677b7b9eb8d6c7eea180a82c7a6ac1c4a90e907913ca261cb6";
             release       Choupo-2608;
         }
         "components/isopropanol.dat"
         {
             type          imported;
-            sha256        "c206190bf473636ab8661c95a2126b9088fc6a1b5013c5e1325470f8133691b0";
-            computationalSha256 "4ca8dc74e7851f893506b84d7a8e03b629f1794fd0132eed65e92c65cac2e9f9";
+            sha256        "61118a4a99021492caf6ad77788bb2bd987dab2f1160ad21534ae7ce688dae8a";
+            computationalSha256 "5c4f956b35dd2eaa9db4947f8fe641dea0228bf8ba7301d2369f0790871f65da";
             origin        "data/standards/components/isopropanol.dat";
-            originSha256  "510b474f696cf7952c89a27d0a48623266b8a79f3026cc348a934361bd763e07";
+            originSha256  "7338879f6f351e08c4ec91a02c86117d7f56faef9906c7e3174f954a4000d0d7";
             release       Choupo-2608;
         }
         "parameters/NRTL/ethylAcetate-isopropanol.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/ethylAcetate-isopropanol.dat"
+        {
+            type          imported;
+            sha256        "d0da47fbb92193b96b3d9cf4780ffa6771cda4cfff2705169ff707cf85ec4b99";
+            computationalSha256 "b122c0e00615b5d3d77f2f4a510a83c3d49942949a43a569ac597c035ed68324";
+            origin        "data/standards/parameters/UNIQUAC/ethylAcetate-isopropanol.dat";
+            originSha256  "e573b8e91d29594e6583d524f1005174b57220c939131662fbc6a1283eadb4e1";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/ethylAcetate-isopropanol.dat"
+        {
+            type          imported;
+            sha256        "527c1a0c28a1fee0778a46f6bc962854c358f5db9d63b83634ce4af58fa1687f";
+            computationalSha256 "a729672e544845a978307bfeb6f520e87f813eaccdcd8791a4a058a641349d22";
+            origin        "data/standards/parameters/Wilson/ethylAcetate-isopropanol.dat";
+            originSha256  "95efb7bd61297c2ce5d1c71f493018159b66920a7d4dbafed4db57bfbcaf81ce";
             release       Choupo-2608;
         }
     }

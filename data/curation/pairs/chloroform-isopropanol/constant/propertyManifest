@@ -37,10 +37,10 @@ propertyManifest
         "components/isopropanol.dat"
         {
             type          imported;
-            sha256        "c206190bf473636ab8661c95a2126b9088fc6a1b5013c5e1325470f8133691b0";
-            computationalSha256 "4ca8dc74e7851f893506b84d7a8e03b629f1794fd0132eed65e92c65cac2e9f9";
+            sha256        "61118a4a99021492caf6ad77788bb2bd987dab2f1160ad21534ae7ce688dae8a";
+            computationalSha256 "5c4f956b35dd2eaa9db4947f8fe641dea0228bf8ba7301d2369f0790871f65da";
             origin        "data/standards/components/isopropanol.dat";
-            originSha256  "510b474f696cf7952c89a27d0a48623266b8a79f3026cc348a934361bd763e07";
+            originSha256  "7338879f6f351e08c4ec91a02c86117d7f56faef9906c7e3174f954a4000d0d7";
             release       Choupo-2608;
         }
         "parameters/NRTL/chloroform-isopropanol.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "a6afde51451404f218dc759ee6ba6578fe7cecc48ab0c6c6368c5c82e3a81fec";
             origin        "data/standards/parameters/NRTL/chloroform-isopropanol.dat";
             originSha256  "ec9c25115a4baaa75abaee15ec2fb278e1e5ddfcc85ccb66dacd0d99cad12eb3";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/chloroform-isopropanol.dat"
+        {
+            type          imported;
+            sha256        "1f075263c9c50f258fe09c273cfcf6636b3249443bcc8cb8528ea0c285a9fb2f";
+            computationalSha256 "b0c48d7c43537718611ce06ddf193e918e90641d2a0cdd316c4f70bdce69ec01";
+            origin        "data/standards/parameters/Wilson/chloroform-isopropanol.dat";
+            originSha256  "c5a3ccd7927b2b90f2ded9614e6835ab9af3b76d2ee4d08ad9ac350922ca4fbc";
             release       Choupo-2608;
         }
     }

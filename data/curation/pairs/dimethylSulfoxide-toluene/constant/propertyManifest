@@ -37,10 +37,10 @@ propertyManifest
         "components/toluene.dat"
         {
             type          imported;
-            sha256        "025c441842aa1728935905ed8dfa50db5a6405ee082618c11673f665596d4911";
-            computationalSha256 "f66debfbcd493c4c7c4636809e784a1e07a6c482c3baed13ba34dce12ae63f79";
+            sha256        "5fb900674321baa67135bfeb2c8f80e63d9af183c35f1615477d751b4299f14b";
+            computationalSha256 "55e1e2986dd1c3fc08c951e842a86b062ee6a7bfbc1e1317387e69149a139e36";
             origin        "data/standards/components/toluene.dat";
-            originSha256  "fe5cb21ba09cf44b41de252f6a5a5dd21b6803fcd40666f6fed8d9de8e68563a";
+            originSha256  "ad1533cb0d94caade355d7149fd88ee1ad07c945f5d4c85f4bcce925766250b9";
             release       Choupo-2608;
         }
         "parameters/NRTL/dimethylSulfoxide-toluene.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "0082517251ed1f3743ab1ec8cad3d890a959bd8807434ad7023c4ca8fa2a8a4c";
             origin        "data/standards/parameters/NRTL/dimethylSulfoxide-toluene.dat";
             originSha256  "5a835a856e0558e88ee7ea99d10cf48b29b013471f7638f8c163d1bfe4d6134d";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/dimethylSulfoxide-toluene.dat"
+        {
+            type          imported;
+            sha256        "17a8654ecc5a28ee5a88d4c20d7c1208d3c67602b9118968510446cb040a1ef3";
+            computationalSha256 "84a2b6323b7be47ef84e0b87051bfd1af84378e5f3162b7a43cf8dcdfd232819";
+            origin        "data/standards/parameters/Wilson/dimethylSulfoxide-toluene.dat";
+            originSha256  "5a0f93512b1a0bc0b4d4457512dca67f66bb9a4274d496988a6132f7665ea1f3";
             release       Choupo-2608;
         }
     }

@@ -37,10 +37,10 @@ propertyManifest
         "components/ethylBenzene.dat"
         {
             type          imported;
-            sha256        "ae0432cef7e9cc8d1a1c7669ce4a783ccf51218cff2404dd7ba093d0695d1922";
-            computationalSha256 "c4a5df3dd8cb1cd0dc6031be45ffdc38a34f227a8eb4b34bdecebd07b13b8b0e";
+            sha256        "a3770fc80542ebef6c1e967abe82aa77f1772855e3873575603dc3ec1c54ce74";
+            computationalSha256 "99065feb74f678d5fdc677c7b2f450910efa7af9990f15e931738055b6bda9ae";
             origin        "data/standards/components/ethylBenzene.dat";
-            originSha256  "e2ecbd5573ce3719ae530d1cd13978928548ca096b3666ad58321bcd8ca07505";
+            originSha256  "eb0e3c4909ad9a0859b769f78ba184bc73174b779765f33d3e2876a4600b2d0f";
             release       Choupo-2608;
         }
         "parameters/NRTL/dimethylCarbonate-ethylBenzene.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "df3a58d066ecf37d8daade9356717a9a24570035e321286a5eceade823b952e7";
             origin        "data/standards/parameters/NRTL/dimethylCarbonate-ethylBenzene.dat";
             originSha256  "2103ca2ed29cc5183e163b91dbe588fa1a2025969aac058d8c8ed73337287623";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/dimethylCarbonate-ethylBenzene.dat"
+        {
+            type          imported;
+            sha256        "e2e15781d3c1cb740c4e3b7e238021c8facc943cfdd443f5c78c69cf7d679e6f";
+            computationalSha256 "b0d0cb7b5fb605804deb2c85f48062b14ad36ed427302e794adece4946ce75d8";
+            origin        "data/standards/parameters/Wilson/dimethylCarbonate-ethylBenzene.dat";
+            originSha256  "ba97855dfdf42bee160c9d174d178c16f93bfee41a5a2ac7e41cd0387ee753b2";
             release       Choupo-2608;
         }
     }

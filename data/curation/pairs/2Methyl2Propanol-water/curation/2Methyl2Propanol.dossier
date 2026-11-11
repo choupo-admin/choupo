@@ -154,4 +154,136 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-water.a_ij  131.908824303;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-water.a_ji  142.973804051;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "48036981150d39ed";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methyl2Propanol-water-bubble-j.jct.2019.07.008.dat";
+            doi       "10.1016/j.jct.2019.07.008";
+            sha256    "fe56f331a99be9a46eb976844dd8cd7dd433d44a5f815d6db06fe8d3704d38a3";
+            provenance measured;
+            archiveFile "j.jct.2019.07.008.xml";
+            system    "2Methyl2Propanol + water";
+            pressure  "100000.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methyl2Propanol-water-bubble-je501098j.dat";
+            doi       "10.1021/je501098j";
+            sha256    "37ed31bcb0d0d72cca0afcee07002554c0cbd97e78992a7172cd20dbb5ec39b5";
+            provenance measured;
+            archiveFile "je501098j.xml";
+            system    "2Methyl2Propanol + water";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methyl2Propanol-water-bubble-j.jct.2016.03.013.dat";
+            doi       "10.1016/j.jct.2016.03.013";
+            sha256    "26cd24b1bf9c931b5866dfc98e4c0954342701f6a626a2d5e30d3d4145d69383";
+            provenance measured;
+            archiveFile "j.jct.2016.03.013.xml";
+            system    "2Methyl2Propanol + water";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.001; max 0.978; n 63; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-water.a_ij  131.908824433;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-water.a_ji  142.973803943;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "48036981150d39ed";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methyl2Propanol-water-bubble-j.jct.2019.07.008.dat";
+            doi       "10.1016/j.jct.2019.07.008";
+            sha256    "fe56f331a99be9a46eb976844dd8cd7dd433d44a5f815d6db06fe8d3704d38a3";
+            provenance measured;
+            archiveFile "j.jct.2019.07.008.xml";
+            system    "2Methyl2Propanol + water";
+            pressure  "100000.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methyl2Propanol-water-bubble-je501098j.dat";
+            doi       "10.1021/je501098j";
+            sha256    "37ed31bcb0d0d72cca0afcee07002554c0cbd97e78992a7172cd20dbb5ec39b5";
+            provenance measured;
+            archiveFile "je501098j.xml";
+            system    "2Methyl2Propanol + water";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methyl2Propanol-water-bubble-j.jct.2016.03.013.dat";
+            doi       "10.1016/j.jct.2016.03.013";
+            sha256    "26cd24b1bf9c931b5866dfc98e4c0954342701f6a626a2d5e30d3d4145d69383";
+            provenance measured;
+            archiveFile "j.jct.2016.03.013.xml";
+            system    "2Methyl2Propanol + water";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.001; max 0.978; n 63; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

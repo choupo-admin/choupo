@@ -853,7 +853,7 @@ def promote(a, b):
         refuse(f"{cc.label(case)} carries {len(recs)} NRTL records; expected its one")
     rp = recs[0]
     text = rp.read_text()
-    if cc.existing_records(a, b):
+    if cc.existing_records(a, b, model="NRTL"):
         refuse(f"a catalogue record for {a} + {b} already exists")
     cur = crp.block(crp.strip_comments(text), "curation") or ""
     if crp.word(cur, "verdict") != "accepted":
@@ -971,7 +971,7 @@ def main(argv):
         work = Path(tempfile.mkdtemp(prefix="pairs-px-"))
         try:
             rps = list((case / "constant" / "parameters" / "NRTL").glob("*.dat"))
-            promoted = cc.existing_records(x, y)
+            promoted = cc.existing_records(x, y, model="NRTL")
             if a.cmd == "run":
                 if rps or promoted:
                     rec["outcome"] = "ran already"

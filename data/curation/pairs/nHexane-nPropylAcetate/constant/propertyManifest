@@ -28,19 +28,19 @@ propertyManifest
         "components/nHexane.dat"
         {
             type          imported;
-            sha256        "7a4f2c4ed3cbd1b5ba81e8385b99102ef376db27d62150a59fa1e3176fab1cfb";
-            computationalSha256 "43880946bf7394379147ea46119961e161682f5f265cb5e74b04a645fa24b3f0";
+            sha256        "c8c83e260653963f8cb65889ff6b6507684ae02fea70c8e35c12ea963dbf9d76";
+            computationalSha256 "92fbd4009ead0d3968cd5b258f2da092e18ea6e033b1b1e9b227a6de4d1b9598";
             origin        "data/standards/components/nHexane.dat";
-            originSha256  "37329be508de9ee60a05046cde1b405990560ec6c629c8c75294cce5bdf022fd";
+            originSha256  "0d4ed8a93f772a53ab30bf84df2b366e8aadc20a144f39bcfda4907ea2cd0470";
             release       Choupo-2608;
         }
         "components/nPropylAcetate.dat"
         {
             type          imported;
-            sha256        "bae5d694a37bfbe03d15627f0cb30337bf2fe4f53e411fd6241bbf08663bd720";
-            computationalSha256 "2c7f9840afa05762f6ea54030ca0f63c06c5a145138a3a1fc66405d5d64ecb1f";
+            sha256        "a4d98fa4268bc6a1079db72228e5677659b26a284e8bfa1fc380997fb7497afc";
+            computationalSha256 "62c9f54d2619d78e353dc006b570baf675a5c74819e7cbe941efd2470c427b46";
             origin        "data/standards/components/nPropylAcetate.dat";
-            originSha256  "d6441f89d965c47899449c155ee12a811238c3650307cbed703a2259c65126a9";
+            originSha256  "3ce435dbe5ebc3156e7a873351092b8814732d50e2fdd06e3684bba46a480d33";
             release       Choupo-2608;
         }
         "parameters/NRTL/nHexane-nPropylAcetate.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/nHexane-nPropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "9d03978fc5067acc03d7461ea7f2758e00dcad5242b809f9d0be74b3dbccc137";
+            computationalSha256 "736889dfb01ac03e1c9b7b23bab77ad3dcc24e8306467150944642937916dd9a";
+            origin        "data/standards/parameters/UNIQUAC/nHexane-nPropylAcetate.dat";
+            originSha256  "352ddaaf0ad32e575b4e9321bab4f32cba5920a0a670557cd0b709d1a9bbc451";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/nHexane-nPropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "1e36d72afffa45f50d711c486cbda06669bf0ebc526bd0c633dcf11dcb385552";
+            computationalSha256 "ff3af3990f5dcdd39c8917f7164b7c43f960376c08a0125268473f82581e68b3";
+            origin        "data/standards/parameters/Wilson/nHexane-nPropylAcetate.dat";
+            originSha256  "de09f0fb810c00d0b9bc49b988cd433b1f14aab32149188d3866e39b26e643d2";
             release       Choupo-2608;
         }
     }

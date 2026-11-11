@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "aa79a9dcf5b03c1d4d2dd5941226d5239d3225d749ba0616617d7610de3488c9";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diEthylCarbonate-nButanol.dat"
+        {
+            type          imported;
+            sha256        "eadd6b28083e2a62ddf0e9457ad5556802f71058ca8de3bd7492e5dcc5df5650";
+            computationalSha256 "cd45550fac146877797e77e5b35890dc9917b067ed765f5d0b895dfdcb0ecb34";
+            origin        "data/standards/parameters/Wilson/diEthylCarbonate-nButanol.dat";
+            originSha256  "fd08f39234fb2fe93ccb2379ae4a5153a45df4a537914f9182155ce869008a92";
+            release       Choupo-2608;
+        }
     }
 }

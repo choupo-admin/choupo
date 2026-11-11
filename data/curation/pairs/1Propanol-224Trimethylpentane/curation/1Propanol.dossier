@@ -112,4 +112,184 @@ properties
     }
 }
 
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-224Trimethylpentane.a_ij  -80.8911591099;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-224Trimethylpentane.a_ji  324.80263647;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f2954d9611f5876d";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Propanol-224Trimethylpentane-bubbleP-je200279q-b6.dat";
+            doi       "10.1021/je200279q";
+            sha256    "55b99b218f4d48bc2036ebb36b6a030828720cf6f3ae1a190a3a2ad084b18b73";
+            provenance measured;
+            archiveFile "je200279q.xml";
+            system    "1Propanol + 224Trimethylpentane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0539; max 0.9182; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-224Trimethylpentane.a_ij  -80.8911602661;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-224Trimethylpentane.a_ji  324.802638687;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f2954d9611f5876d";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Propanol-224Trimethylpentane-bubbleP-je200279q-b6.dat";
+            doi       "10.1021/je200279q";
+            sha256    "55b99b218f4d48bc2036ebb36b6a030828720cf6f3ae1a190a3a2ad084b18b73";
+            provenance measured;
+            archiveFile "je200279q.xml";
+            system    "1Propanol + 224Trimethylpentane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0539; max 0.9182; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-224Trimethylpentane.A_ij  7153.13593392;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-224Trimethylpentane.A_ji  1345.7862054;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f2954d9611f5876d";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Propanol-224Trimethylpentane-bubbleP-je200279q-b6.dat";
+            doi       "10.1021/je200279q";
+            sha256    "55b99b218f4d48bc2036ebb36b6a030828720cf6f3ae1a190a3a2ad084b18b73";
+            provenance measured;
+            archiveFile "je200279q.xml";
+            system    "1Propanol + 224Trimethylpentane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0539; max 0.9182; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-224Trimethylpentane.A_ij  7153.13589622;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-224Trimethylpentane.A_ji  1345.7862038;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f2954d9611f5876d";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Propanol-224Trimethylpentane-bubbleP-je200279q-b6.dat";
+            doi       "10.1021/je200279q";
+            sha256    "55b99b218f4d48bc2036ebb36b6a030828720cf6f3ae1a190a3a2ad084b18b73";
+            provenance measured;
+            archiveFile "je200279q.xml";
+            system    "1Propanol + 224Trimethylpentane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0539; max 0.9182; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

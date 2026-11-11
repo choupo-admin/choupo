@@ -28,19 +28,19 @@ propertyManifest
         "components/nNonane.dat"
         {
             type          imported;
-            sha256        "c6e230c3962584501169ad403a0503445df26695175139b9b9aa7f375908ce02";
-            computationalSha256 "e30086a65f8408a79d0e7437a9a7659bd8e52db983973fcb9ae84c4022c09606";
+            sha256        "8eb22a21343cc0d31c90a9cb14c5afa3c97168ac52fcbc4991b8b99771e08fed";
+            computationalSha256 "57fbdc20edd02c1ad7de179afe514d5dec7797c85be368066ca248a7cd9c1bdb";
             origin        "data/standards/components/nNonane.dat";
-            originSha256  "04a2c2a72fb0170f6e58dca0a4ced5760f40fbde24d6f7bdd0ffab546944f9f8";
+            originSha256  "b6375e78f76e6dca07a13fcb69894971e9a05f5d1c94352bd2772f10a067bf2f";
             release       Choupo-2608;
         }
         "components/pXylene.dat"
         {
             type          imported;
-            sha256        "24c426099ea1243aa54d21cde64b34ed7312b8bf2bdde1af983f35795c260cce";
-            computationalSha256 "21ec82182e6c57257719624339c8912c2ab6ef6da558f01e7bcc4b9561706387";
+            sha256        "d6c1a35adcc2ecfb7fdd547613d094985aa02b5154eb86e2136893e5eb2b1081";
+            computationalSha256 "a12f3f6479aa3d4be6d976ca090188ab3b10b5671bb1a3fe568b547431a64d02";
             origin        "data/standards/components/pXylene.dat";
-            originSha256  "c84be1d773e7fda137a6721e882622f7cd66ba63f6278257a98da939fe724bfc";
+            originSha256  "ef3dffe3f5b93e45435a0e2b3d13566b4bd2a5c67451a02e52e75a55ac9de26b";
             release       Choupo-2608;
         }
         "parameters/NRTL/nNonane-pXylene.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/nNonane-pXylene.dat"
+        {
+            type          imported;
+            sha256        "7cab291625bc02cdf9e2a8310e3f6557de06b052b2c926298c39cbb227276b34";
+            computationalSha256 "7dc2c38cde98e4c1741f84cc62dae9469a12fdf285389f38a3ee34b2b75a5a42";
+            origin        "data/standards/parameters/UNIQUAC/nNonane-pXylene.dat";
+            originSha256  "0af96062028dafb323dcd5ed44c19351aed99d51ab2ba59d32c791f2c0ed1679";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/nNonane-pXylene.dat"
+        {
+            type          imported;
+            sha256        "e0132ec7a26a52ed1e312115e9357d5af904e40aa975edccca67574215dd08b5";
+            computationalSha256 "2f716c3e3c4cfeb61902dd9ea671d2ad1476d0c70be976cc71d45f6f1315ebe6";
+            origin        "data/standards/parameters/Wilson/nNonane-pXylene.dat";
+            originSha256  "3cd5f5ec0c84411d310dca1baa36289f37b4ee16dba81786293fbbfe697c22fa";
             release       Choupo-2608;
         }
     }

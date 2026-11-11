@@ -28,19 +28,19 @@ propertyManifest
         "components/1Propanol.dat"
         {
             type          imported;
-            sha256        "6f8dab202717440a53ff49356dddaa632b8e71ad54a651d6c4f2513519864916";
-            computationalSha256 "c964d7a44b9335ec39b77584095dac5935998f8ccd1f814a9dbe51801adf4389";
+            sha256        "de3f1162278fc2d5ee4995ee4887b3f1c0f3669920483a314461b227ac825867";
+            computationalSha256 "d50d84215a5e98b6539bb27d9c7d0d58bb7fc2a8cf3f66c2f943a76cd6b6d056";
             origin        "data/standards/components/1Propanol.dat";
-            originSha256  "e576ef637c75dec43096777ad538d23ab32c8828de898339ba9226732172d96f";
+            originSha256  "ddcf4f1180bb27e9b6dfa2adb55a9ac88396a36d6a68cb8c48df90d2f04bcfd1";
             release       Choupo-2608;
         }
         "components/tertButylEthylEther.dat"
         {
             type          imported;
-            sha256        "0515625aa369adc18f2ebf1064fbdd5a8f2bad7038b93ebbd070336edbd0809a";
-            computationalSha256 "0993927d157272b7fdb230d2dc047bb8c3be95d0e3432715377831bc5078cd1e";
+            sha256        "75ca8e2e8bf4184a7ce02deac1c0a514a975f69535298593bad9cc4e70472b0d";
+            computationalSha256 "9c9f6ed9cb008aab8f2f12e3a4b25a91ee4f336a2031d385f435ab0e2a34add3";
             origin        "data/standards/components/tertButylEthylEther.dat";
-            originSha256  "7d0879c69cddba5ed9e4ffcbea4cb417345376a3fd61f5626b78b53b4b5eb5fd";
+            originSha256  "e6a13f4a2e4da79f280e0640caf1570c2afecdce1059a917375613ff0a5a3e18";
             release       Choupo-2608;
         }
         "parameters/NRTL/1Propanol-tertButylEthylEther.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/1Propanol-tertButylEthylEther.dat"
+        {
+            type          imported;
+            sha256        "0d12d7f243fa4a776328975aabafe9a6ad401ac5866c283cae444f283a8d1b6f";
+            computationalSha256 "6b62e4c75620cac79fc0b52613845603e4b49cdb886b011cb5197ffaefc384f3";
+            origin        "data/standards/parameters/UNIQUAC/1Propanol-tertButylEthylEther.dat";
+            originSha256  "66ff365525390206bb8a7215aa8dc01459453469265173a65f3cf265af79389a";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Propanol-tertButylEthylEther.dat"
+        {
+            type          imported;
+            sha256        "56714e59f46d6d1bb4f7672464bc354856b8f78462b29dd13c4da5db1c2a7623";
+            computationalSha256 "c5edeb915de2399f64ace865839bc9f81d5f8466af48817b8ea8b748f36d5f66";
+            origin        "data/standards/parameters/Wilson/1Propanol-tertButylEthylEther.dat";
+            originSha256  "84c616b0becf50390df94314a1ad7ec637f5c8c875f2650002498454b1d686ef";
             release       Choupo-2608;
         }
     }

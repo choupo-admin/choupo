@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-nDecane.A_ij  940.949396948;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-nDecane.A_ji  -1026.5458681;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "a7d520c70acfcbee";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/tetrahydrofuran-nDecane-bubble-j.fluid.2004.10.027.dat";
+            doi       "10.1016/j.fluid.2004.10.027";
+            sha256    "dedfec1f89c424222eb64267c206a4a687646def0a2f935f68318ea9398d71d6";
+            provenance measured;
+            archiveFile "j.fluid.2004.10.027.xml";
+            system    "tetrahydrofuran + nDecane";
+            pressure  "95800.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.2859; max 0.9057; n 5; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-nDecane.A_ij  962.280157034;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-nDecane.A_ji  -1063.67218431;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "a7d520c70acfcbee";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/tetrahydrofuran-nDecane-bubble-j.fluid.2004.10.027.dat";
+            doi       "10.1016/j.fluid.2004.10.027";
+            sha256    "dedfec1f89c424222eb64267c206a4a687646def0a2f935f68318ea9398d71d6";
+            provenance measured;
+            archiveFile "j.fluid.2004.10.027.xml";
+            system    "tetrahydrofuran + nDecane";
+            pressure  "95800.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.2859; max 0.9057; n 5; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

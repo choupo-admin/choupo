@@ -28,10 +28,10 @@ propertyManifest
         "components/ethylTertPentylEther.dat"
         {
             type          imported;
-            sha256        "da57c2ac6e2118689e38c2fcddf3325b80f209863037a534c240baa8ff0ab355";
-            computationalSha256 "4fb16c993b502cb7be009d887849e51a7150c5638a2421f25f855b251399a4c2";
+            sha256        "0baa4623f85856139d4326e058d7c5b249c340dbe640621a39a1ed9ebd724282";
+            computationalSha256 "f66fe064ca5521954e931b8e1d3058ad739d41e05b82f0418eeb5b8a08fdb16d";
             origin        "data/standards/components/ethylTertPentylEther.dat";
-            originSha256  "0e034eb8bc6b92535c590c7f37279419a5a9fb3d6ca9dacb86d849e67542158e";
+            originSha256  "d0bc4cd873f9d1471c81cd9350b73dcb8bf07250ef6fedb65a68b01d808d68e2";
             release       Choupo-2608;
         }
         "components/methanol.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/ethylTertPentylEther-methanol.dat"
+        {
+            type          imported;
+            sha256        "c0d0abecda6da2376741ba36a447dc9156b368c3828c39f1ccd85f04d9dab735";
+            computationalSha256 "d881a17160b40c84f5b404d457d49b1525fbbbcacac43a1e8f7786e5650b9695";
+            origin        "data/standards/parameters/UNIQUAC/ethylTertPentylEther-methanol.dat";
+            originSha256  "85e80de4e84faa3102e4091bf1abf5fabb841004daf3a790e3494245eb943fe2";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/ethylTertPentylEther-methanol.dat"
+        {
+            type          imported;
+            sha256        "5bf7e0d9a6878b63550a9643430b4e7972e45e1c013c3e7a487ee2e73dfe7138";
+            computationalSha256 "2f62feb2774ecc86dfc7ed43f71b7ec0da74bf2f43347c962cc6ef1f842405ea";
+            origin        "data/standards/parameters/Wilson/ethylTertPentylEther-methanol.dat";
+            originSha256  "5f88c9788e64c114aee18082d7ed919ffcf8098592006c2e1e7b5bfe6e9b2662";
             release       Choupo-2608;
         }
     }

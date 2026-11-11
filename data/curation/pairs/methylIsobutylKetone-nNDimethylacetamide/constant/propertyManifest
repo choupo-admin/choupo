@@ -28,10 +28,10 @@ propertyManifest
         "components/methylIsobutylKetone.dat"
         {
             type          imported;
-            sha256        "883dca67acc7aabffa681e76e5b38194a93fc68f78d4a3433df849a68718372f";
-            computationalSha256 "3b343b8cff791a127701ce6eadd23f8a9a7b015e0678246d7007a3416d2d7c49";
+            sha256        "2e3acb08825da9dd98c7356c310fa1568645534ff964d8a152b44a2eda019677";
+            computationalSha256 "73e7b67b8341fa8156ac9d0f1d5e1c69987593b9579095bd87a1ec117d301d5f";
             origin        "data/standards/components/methylIsobutylKetone.dat";
-            originSha256  "8e66af3abd6102965d13c7772247cf28d37eeb7439927a2af07c69a09dae2718";
+            originSha256  "f0a81cb1eea4e0a10242eb39346555280cb08424e505a5d16d84107ca22f2955";
             release       Choupo-2608;
         }
         "components/nNDimethylacetamide.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "fef9218c60521186a9110960a7a03abab80ced48c1fb2f2a14f9831febc62b7f";
             origin        "data/standards/parameters/NRTL/methylIsobutylKetone-nNDimethylacetamide.dat";
             originSha256  "031699d97eaf442e94ab720d806ebbaa29ed918a80980ae4c9c28dedeba6286d";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/methylIsobutylKetone-nNDimethylacetamide.dat"
+        {
+            type          imported;
+            sha256        "174f5a2ab6a7a7219e80677b1f2efbe9b1c56624c37a0bba521f869a0903497d";
+            computationalSha256 "a4b95a24aec92fca3066fb9f809635dc0a05c9d9d28e2deba8a71d27963a6b8d";
+            origin        "data/standards/parameters/Wilson/methylIsobutylKetone-nNDimethylacetamide.dat";
+            originSha256  "96855d11c0fe740ba0f83a7d51e7a1e13be2f2735d2c00a1552f38831329841f";
             release       Choupo-2608;
         }
     }

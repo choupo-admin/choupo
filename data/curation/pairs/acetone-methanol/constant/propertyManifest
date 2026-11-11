@@ -28,10 +28,10 @@ propertyManifest
         "components/acetone.dat"
         {
             type          imported;
-            sha256        "1ffcb93f04e400ce3c14c699d492d6a54dbbdcc0661a8615b070120e0c30c5de";
-            computationalSha256 "e79971eb4b0b83af1212ea7a2be71a27685f009edac150a9585086d4b3da7fdc";
+            sha256        "484d860fa5b649ff773be3ed0fe422eab9957c8c665dfae88f9b50754f45fa18";
+            computationalSha256 "cc35b7672e63775056198ac55648e04bb92e5eb53eed1fc49436c87b1590072a";
             origin        "data/standards/components/acetone.dat";
-            originSha256  "afe7aeb3c241b3d92312919dd3049e42185c1d8e41e93651a827aaef78c0936a";
+            originSha256  "dec7ac911299d04f8b3ec284051dc0898d10087426317982647c16dda6c292bb";
             release       Choupo-2608;
         }
         "components/methanol.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/acetone-methanol.dat"
+        {
+            type          imported;
+            sha256        "0689b35bdf5d333136b93b30a30532bdf10c77f6071223fc7eaabcbafd1e4ae8";
+            computationalSha256 "10c94b007e084e1868b49b97182d1ac6cc85f2085ecea3819e528b34dc26015d";
+            origin        "data/standards/parameters/UNIQUAC/acetone-methanol.dat";
+            originSha256  "ac3c7cd6ba6c2229040d625be7ef10c2ac7d4d30d88a9e08d2bfa51af0dc90a9";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/acetone-methanol.dat"
+        {
+            type          imported;
+            sha256        "ad66722d311765bf90e04b96309a324c8ae63b3bcf8373c98aa55e4a07a16283";
+            computationalSha256 "8eb6044f4da00b54f8bcf8bf914a126c4463eb218abc2b15f7e55b719856bab1";
+            origin        "data/standards/parameters/Wilson/acetone-methanol.dat";
+            originSha256  "0ca506948c3323beb1122107e927b736b3993a62c2dc92560176f9e86fe04ad8";
             release       Choupo-2608;
         }
     }

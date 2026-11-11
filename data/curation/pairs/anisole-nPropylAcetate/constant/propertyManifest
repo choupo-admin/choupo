@@ -37,10 +37,10 @@ propertyManifest
         "components/nPropylAcetate.dat"
         {
             type          imported;
-            sha256        "bae5d694a37bfbe03d15627f0cb30337bf2fe4f53e411fd6241bbf08663bd720";
-            computationalSha256 "2c7f9840afa05762f6ea54030ca0f63c06c5a145138a3a1fc66405d5d64ecb1f";
+            sha256        "a4d98fa4268bc6a1079db72228e5677659b26a284e8bfa1fc380997fb7497afc";
+            computationalSha256 "62c9f54d2619d78e353dc006b570baf675a5c74819e7cbe941efd2470c427b46";
             origin        "data/standards/components/nPropylAcetate.dat";
-            originSha256  "d6441f89d965c47899449c155ee12a811238c3650307cbed703a2259c65126a9";
+            originSha256  "3ce435dbe5ebc3156e7a873351092b8814732d50e2fdd06e3684bba46a480d33";
             release       Choupo-2608;
         }
         "parameters/NRTL/anisole-nPropylAcetate.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "828d09eee504968a55bf37e02d6e2300ddeb78e6d2d89d4f5b7dd272293a032c";
             origin        "data/standards/parameters/NRTL/anisole-nPropylAcetate.dat";
             originSha256  "1a02aeb22d7122e831b687bb1aaf3e287485421df46edf22cff2be960147568a";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/anisole-nPropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "42aa5aece8d3d9002611395008abf3ecdb3bdcc0aa5a2e5719fb4f7e2dfe37ec";
+            computationalSha256 "db1016392f5f10a9863af664af7b89599a29a6a0c8df28baf0313ac4a02431a1";
+            origin        "data/standards/parameters/Wilson/anisole-nPropylAcetate.dat";
+            originSha256  "3bd7a8a750c110f06f133bbd83979ff7f2a2c8c0ef4fef7cfdb95f2ab03428bf";
             release       Choupo-2608;
         }
     }

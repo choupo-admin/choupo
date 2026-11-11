@@ -28,10 +28,10 @@ propertyManifest
         "components/1Propanol.dat"
         {
             type          imported;
-            sha256        "6f8dab202717440a53ff49356dddaa632b8e71ad54a651d6c4f2513519864916";
-            computationalSha256 "c964d7a44b9335ec39b77584095dac5935998f8ccd1f814a9dbe51801adf4389";
+            sha256        "de3f1162278fc2d5ee4995ee4887b3f1c0f3669920483a314461b227ac825867";
+            computationalSha256 "d50d84215a5e98b6539bb27d9c7d0d58bb7fc2a8cf3f66c2f943a76cd6b6d056";
             origin        "data/standards/components/1Propanol.dat";
-            originSha256  "e576ef637c75dec43096777ad538d23ab32c8828de898339ba9226732172d96f";
+            originSha256  "ddcf4f1180bb27e9b6dfa2adb55a9ac88396a36d6a68cb8c48df90d2f04bcfd1";
             release       Choupo-2608;
         }
         "components/Dichloroethane.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "877f65ed9ac947b7cdaf6c2bab84a43d480064b2960cf77dcb6529f379778a85";
             origin        "data/standards/parameters/NRTL/1Propanol-Dichloroethane.dat";
             originSha256  "1188e64c5e506b3160205e17876ba193468cb542e688a3eef4a31dd4188e1db5";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Propanol-Dichloroethane.dat"
+        {
+            type          imported;
+            sha256        "ce33e4643af9e5a89c2c61a8437d4c7d08f930ccc8c4af7546457966f5ea24d6";
+            computationalSha256 "e9e24f31c6a8807cab91ed0fe87ac524231ccef41a74e5177b44c6d36377f354";
+            origin        "data/standards/parameters/Wilson/1Propanol-Dichloroethane.dat";
+            originSha256  "9da387eac97077d9c48f1ca728dad35827f58b269095e7de2b9b6d8bc750db2b";
             release       Choupo-2608;
         }
     }

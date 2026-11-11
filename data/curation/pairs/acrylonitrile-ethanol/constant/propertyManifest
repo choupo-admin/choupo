@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "e787816f88d406272d51881dcb2bcbcbae0265600ed844993de222c2592d0a62";
             release       Choupo-2608;
         }
+        "parameters/Wilson/acrylonitrile-ethanol.dat"
+        {
+            type          imported;
+            sha256        "3ddcde5684dac61aad72ee88fb1a9b04a94ff81062c920b99bd38e9690da936e";
+            computationalSha256 "4171d4797517262e2b352bd7de8c02a4fc459785275f18552c2205a8296e784f";
+            origin        "data/standards/parameters/Wilson/acrylonitrile-ethanol.dat";
+            originSha256  "01c8ce4fb18dee1622f5cc78df41e859f3c714606534ce6c509336f0eb6eb62f";
+            release       Choupo-2608;
+        }
     }
 }

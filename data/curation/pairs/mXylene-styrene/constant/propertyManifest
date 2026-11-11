@@ -28,10 +28,10 @@ propertyManifest
         "components/mXylene.dat"
         {
             type          imported;
-            sha256        "31e05cfce81a4ad48a63993498067ba9335977201b7c08f73428ecb561233c33";
-            computationalSha256 "14aef5c18c81d0dc2c18d79c3d5122956e769c6e1250a11d7636f9dec649d2eb";
+            sha256        "c24a6c9ac4d388af9f8c2bf739601e19ef9c8d71b2be2683e845e2bbe02d3342";
+            computationalSha256 "6be7c972c0aa573b6dac04f2ee3b608577af2926c9509b2580627a2d55915b1b";
             origin        "data/standards/components/mXylene.dat";
-            originSha256  "b9df745d6fde70e82309ea2398df70cbaebffe5e09a8e7026d83c9cf5fe18921";
+            originSha256  "4d3c5a24e214e3030771078a8aa4d959e837268baf8b491e8a43ed61f0d00e90";
             release       Choupo-2608;
         }
         "components/styrene.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "39af8edb63f046870cd51dca8dbe32e4eee5e6e0463a81306ce22f67eb215119";
             origin        "data/standards/parameters/NRTL/mXylene-styrene.dat";
             originSha256  "d3f9e230db43f5521c407dd713aed7c3ec5ee43a4f0e00aa96f8687ad3c2065c";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/mXylene-styrene.dat"
+        {
+            type          imported;
+            sha256        "a3e550f7497dbb78264ecb30e1cedc0d2abba44fb376009d84b4672952cfaab8";
+            computationalSha256 "0ecf0dc3854de54c4c019f89a6a6c97bb7a7b896a7b0b907b8757ef4f76f024a";
+            origin        "data/standards/parameters/Wilson/mXylene-styrene.dat";
+            originSha256  "9d006b5948f51793c32347dc4a06eff81f833f56f836ec2f73dbd329ffcb763c";
             release       Choupo-2608;
         }
     }

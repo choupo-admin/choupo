@@ -28,10 +28,10 @@ propertyManifest
         "components/2Methyl1Propanol.dat"
         {
             type          imported;
-            sha256        "ee0bb35e8d706d7c4b0549d6ac51be77b89de4f5496fea7d9947d875b9bcdd35";
-            computationalSha256 "b1bfb84671b4f35f758f186af86d16cfe056fb1a54d6f2b5e2867328630848b3";
+            sha256        "778703d5a4716bbace0b8b3de0655393d4212cbd4ed4c809736558e732afbd5d";
+            computationalSha256 "5ebe04496878f4c4864b2b944848ca1130604cf7d11a684d2602c0fc4b37568d";
             origin        "data/standards/components/2Methyl1Propanol.dat";
-            originSha256  "f0afa6609184a85f9c63deb6555d81619d932cc9049178f6f783e25420e34db6";
+            originSha256  "c17b068f64a38ca32f8ee4f6516ed94a85019ee7a45a33ba4fceabdaaafc01bc";
             release       Choupo-2608;
         }
         "components/tetrahydrofuran.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "c3fde8de8cc45a1c1ce1e1245646439ab16a3097caeb9a180d132d6b4b1be404";
             origin        "data/standards/parameters/NRTL/2Methyl1Propanol-tetrahydrofuran.dat";
             originSha256  "dc59c6c07fc4abd03004096722d180b59d472c121205b78be9846a666418bc8e";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Methyl1Propanol-tetrahydrofuran.dat"
+        {
+            type          imported;
+            sha256        "5d7dab72406cc04aa4887bf72725aac83e7c73ed886ec6bd3d1bece6634a8bcb";
+            computationalSha256 "5b31011d69cda0f708ed3af122999b3b738a8842f9d58880c24fc978e97d3cd2";
+            origin        "data/standards/parameters/Wilson/2Methyl1Propanol-tetrahydrofuran.dat";
+            originSha256  "21083b7a972100232364b607b9303e8042441aaed1f15b81c9f960b1f502c6d3";
             release       Choupo-2608;
         }
     }

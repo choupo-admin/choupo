@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexanone-dimethylSulfoxide.A_ij  -1433.19166152;
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexanone-dimethylSulfoxide.A_ji  3726.97957102;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c637e626111988c1";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/cyclohexanone-dimethylSulfoxide-bubble-j.jct.2007.04.004.dat";
+            doi       "10.1016/j.jct.2007.04.004";
+            sha256    "b6be3b8664b234a8a61ae6a158adb350a9ac4ca1d1b42a247a99c7725c232845";
+            provenance measured;
+            archiveFile "j.jct.2007.04.004.xml";
+            system    "cyclohexanone + dimethylSulfoxide";
+            pressure  "95300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0932; max 0.9239; n 8; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexanone-dimethylSulfoxide.A_ij  -1433.191661;
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexanone-dimethylSulfoxide.A_ji  3726.97956664;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c637e626111988c1";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/cyclohexanone-dimethylSulfoxide-bubble-j.jct.2007.04.004.dat";
+            doi       "10.1016/j.jct.2007.04.004";
+            sha256    "b6be3b8664b234a8a61ae6a158adb350a9ac4ca1d1b42a247a99c7725c232845";
+            provenance measured;
+            archiveFile "j.jct.2007.04.004.xml";
+            system    "cyclohexanone + dimethylSulfoxide";
+            pressure  "95300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0932; max 0.9239; n 8; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

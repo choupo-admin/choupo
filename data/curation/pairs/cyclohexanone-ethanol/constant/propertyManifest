@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "7af8b8b412bc1a72a3746a81f8c84436ef4c095beaba7a9eb81f050a09ff8a66";
             release       Choupo-2608;
         }
+        "parameters/Wilson/cyclohexanone-ethanol.dat"
+        {
+            type          imported;
+            sha256        "9f5ebbb90e4ca169f351ba6c4847b606622a9ae3504e85bfe5e6ea6e6c1d5e6a";
+            computationalSha256 "bfb63a8d52588a544a3a844c4d5e8760914cb0cd8040a819fd4be22a0be4e09a";
+            origin        "data/standards/parameters/Wilson/cyclohexanone-ethanol.dat";
+            originSha256  "d47fed2ffb8ddc02d2a908ec7aba915a6cfb603f03a2cf9d0513902e9c684bf6";
+            release       Choupo-2608;
+        }
     }
 }

@@ -28,10 +28,10 @@ propertyManifest
         "components/1Hexanol.dat"
         {
             type          imported;
-            sha256        "ff92f5582d2dd1ba667f3d466054ce752b793a12050556496d6521f08fef7c91";
-            computationalSha256 "6363abe381b95dabcba93eb20cca67bd715fbcf43e6d5b0fb6a78766b1500711";
+            sha256        "56c4231bc9a181e47909ed63aa4e9fce3611035b32d920276965dc874f42d9a0";
+            computationalSha256 "babb0f8da2e12886df84dc04b197ccd3fee3a2bf29319c24a0cdcde72a28d2a7";
             origin        "data/standards/components/1Hexanol.dat";
-            originSha256  "ab4dc5089f2f1bec42920a8f7b7301da49a9ac935c439900666185ba0de805c4";
+            originSha256  "45415f58f5f9b2bb79389cafffc6bd334c7010b417c03527393aa5f519c88388";
             release       Choupo-2608;
         }
         "components/nitrobenzene.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "b1274fdabb7b0cd12b3bb175f622bed94257d5a811692689d44b20f87e280a4d";
             origin        "data/standards/parameters/NRTL/1Hexanol-nitrobenzene.dat";
             originSha256  "e56b85c90a8763a4c74e381e79f60f809971b0d0ccc3c977dae8c1ad992bd553";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Hexanol-nitrobenzene.dat"
+        {
+            type          imported;
+            sha256        "be3681161a71f380c899ff8d189a023fd2f645ff30bdb9f9bbb899591cf798fb";
+            computationalSha256 "406e38e55d4077f1043b1e195db16d3518e6eea25a77c4a2021a8d85e91f673a";
+            origin        "data/standards/parameters/Wilson/1Hexanol-nitrobenzene.dat";
+            originSha256  "b4b88b8c8b0e318e0c81df11b0906280df1cda827bdaddbe0a8946d19f1c5a47";
             release       Choupo-2608;
         }
     }

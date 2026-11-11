@@ -21,26 +21,26 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
         "components/124Trimethylbenzene.dat"
         {
             type          imported;
-            sha256        "a610b89ab2e979191a60401b152ecd1256a9c20f6ecb1b9779104c81322992eb";
-            computationalSha256 "17d2955022e14e5718a502c8d6f37ee07ac5f8b0ede4ae27fd963a2e9fe57989";
+            sha256        "c69a1ead705980aa5742ee4861bda08eee3a883a419f8ce13edc99b5059be183";
+            computationalSha256 "871145bb8a5e1fc3759aa5b4bb84de39dba0f553ef3a6faa4629fe01dbca6dce";
             origin        "data/standards/components/124Trimethylbenzene.dat";
-            originSha256  "e2241b6ba6289ae25581787306519e47b0d32884a595e53bbe4872350a59c36f";
+            originSha256  "a705245a7c3d39c935422b8a30ce803cc48f6d24242a992c40f88fc7f4adeb15";
             release       Choupo-2608;
         }
         "components/1Pentanol.dat"
         {
             type          imported;
-            sha256        "67c0add32a0365f5e7b1669e442fce34ca1fab7728982864212f471cea149ff4";
-            computationalSha256 "ef54b796ae70f47722ea40f25d897e9444289b0fc474d4d27a6ca111785c6a18";
+            sha256        "86c4addc505252ed263f53c07ca94ef9a158e34bfb5c32e992323eaa0c8df1d3";
+            computationalSha256 "831e21638f9c40c212865247a7342ab9080b1d897b9bece0cd5eaa0bd9f394c3";
             origin        "data/standards/components/1Pentanol.dat";
-            originSha256  "b5affaac9c1c791eb783bfdfc0669a3e8bf9a28e54efc09cbc866c5362af548c";
+            originSha256  "1b70bde782f9005b3b1776f286a59b76191371714b98aa89a8976851a2d0020a";
             release       Choupo-2608;
         }
     }

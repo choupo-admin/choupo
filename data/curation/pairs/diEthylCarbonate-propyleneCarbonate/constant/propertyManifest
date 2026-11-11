@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "12ab278e2bc5f106c7365764a6ba72e9809c9c9458619cdcaf2bc437918e337d";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diEthylCarbonate-propyleneCarbonate.dat"
+        {
+            type          imported;
+            sha256        "70760fbb508f28987fd8386e409a171ea5f266bf6d587102169634d6edaf7d39";
+            computationalSha256 "0ae35f70a15b31b2e682192e7d4624cce123fd0346217a8473c465443253cb77";
+            origin        "data/standards/parameters/Wilson/diEthylCarbonate-propyleneCarbonate.dat";
+            originSha256  "219b231c14811efe0ddd0e1288dadfbb793e7ac3cefa62739ff15fce458d991c";
+            release       Choupo-2608;
+        }
     }
 }

@@ -132,4 +132,114 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethanol.a_ij  566.992084821;
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethanol.a_ji  -86.9677446866;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7cd0d3b7372ceded";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nOctane-ethanol-bubble-je400238j.dat";
+            doi       "10.1021/je400238j";
+            sha256    "b6cdd8126de68ebe83eed932f5c4bfc71f3bfdde95aa91ab3f43adc8a70d5fb3";
+            provenance measured;
+            archiveFile "je400238j.xml";
+            system    "nOctane + ethanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nOctane-ethanol-bubble-j.fluid.2018.07.013.dat";
+            doi       "10.1016/j.fluid.2018.07.013";
+            sha256    "bf89dc3bab99040fa861ace6d5ac84da32efae3e49783c85363a7686e5a8eac5";
+            provenance measured;
+            archiveFile "j.fluid.2018.07.013.xml";
+            system    "nOctane + ethanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.005; max 0.9542; n 99; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethanol.a_ij  566.992084828;
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethanol.a_ji  -86.9677447199;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7cd0d3b7372ceded";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nOctane-ethanol-bubble-je400238j.dat";
+            doi       "10.1021/je400238j";
+            sha256    "b6cdd8126de68ebe83eed932f5c4bfc71f3bfdde95aa91ab3f43adc8a70d5fb3";
+            provenance measured;
+            archiveFile "je400238j.xml";
+            system    "nOctane + ethanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nOctane-ethanol-bubble-j.fluid.2018.07.013.dat";
+            doi       "10.1016/j.fluid.2018.07.013";
+            sha256    "bf89dc3bab99040fa861ace6d5ac84da32efae3e49783c85363a7686e5a8eac5";
+            provenance measured;
+            archiveFile "j.fluid.2018.07.013.xml";
+            system    "nOctane + ethanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.005; max 0.9542; n 99; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

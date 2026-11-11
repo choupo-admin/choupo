@@ -114,4 +114,188 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-mXylene.a_ij  98.2767598406;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-mXylene.a_ji  -46.3622012899;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7421a60272cefd08";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methyl1Butanol-mXylene-bubble-je301220s.dat";
+            doi       "10.1021/je301220s";
+            sha256    "3d68a33dd50b22c219fdd65d0c371f5f6b1347424e9ec2ef68d6a1d54b575018";
+            provenance measured;
+            archiveFile "je301220s.xml";
+            system    "2Methyl1Butanol + mXylene";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0754; max 0.9601; n 20; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-mXylene.a_ij  98.2767594979;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-mXylene.a_ji  -46.3622010072;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7421a60272cefd08";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methyl1Butanol-mXylene-bubble-je301220s.dat";
+            doi       "10.1021/je301220s";
+            sha256    "3d68a33dd50b22c219fdd65d0c371f5f6b1347424e9ec2ef68d6a1d54b575018";
+            provenance measured;
+            archiveFile "je301220s.xml";
+            system    "2Methyl1Butanol + mXylene";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0754; max 0.9601; n 20; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-mXylene.A_ij  1974.05554764;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-mXylene.A_ji  872.912555365;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7421a60272cefd08";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methyl1Butanol-mXylene-bubble-je301220s.dat";
+            doi       "10.1021/je301220s";
+            sha256    "3d68a33dd50b22c219fdd65d0c371f5f6b1347424e9ec2ef68d6a1d54b575018";
+            provenance measured;
+            archiveFile "je301220s.xml";
+            system    "2Methyl1Butanol + mXylene";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0754; max 0.9601; n 20; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-mXylene.A_ij  1974.05554247;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-mXylene.A_ji  872.912559305;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7421a60272cefd08";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methyl1Butanol-mXylene-bubble-je301220s.dat";
+            doi       "10.1021/je301220s";
+            sha256    "3d68a33dd50b22c219fdd65d0c371f5f6b1347424e9ec2ef68d6a1d54b575018";
+            provenance measured;
+            archiveFile "je301220s.xml";
+            system    "2Methyl1Butanol + mXylene";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0754; max 0.9601; n 20; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

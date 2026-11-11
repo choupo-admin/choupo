@@ -114,4 +114,188 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nHeptane.a_ij  -60.3266296543;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nHeptane.a_ji  169.711741912;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7f67d6bd2c8f235a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylAcetate-nHeptane-bubble-je100832h.dat";
+            doi       "10.1021/je100832h";
+            sha256    "31832926e022cafa7293ca700a38facbcc7ceaed1c4ccc0746fbf2ab3d4bf7c3";
+            provenance measured;
+            archiveFile "je100832h.xml";
+            system    "ethylAcetate + nHeptane";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.007; max 0.977; n 29; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nHeptane.a_ij  -60.3266298836;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nHeptane.a_ji  169.711742259;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7f67d6bd2c8f235a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylAcetate-nHeptane-bubble-je100832h.dat";
+            doi       "10.1021/je100832h";
+            sha256    "31832926e022cafa7293ca700a38facbcc7ceaed1c4ccc0746fbf2ab3d4bf7c3";
+            provenance measured;
+            archiveFile "je100832h.xml";
+            system    "ethylAcetate + nHeptane";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.007; max 0.977; n 29; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nHeptane.A_ij  2643.43835948;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nHeptane.A_ji  257.405603442;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7f67d6bd2c8f235a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylAcetate-nHeptane-bubble-je100832h.dat";
+            doi       "10.1021/je100832h";
+            sha256    "31832926e022cafa7293ca700a38facbcc7ceaed1c4ccc0746fbf2ab3d4bf7c3";
+            provenance measured;
+            archiveFile "je100832h.xml";
+            system    "ethylAcetate + nHeptane";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.007; max 0.977; n 29; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nHeptane.A_ij  2643.43836067;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nHeptane.A_ji  257.405602337;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7f67d6bd2c8f235a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylAcetate-nHeptane-bubble-je100832h.dat";
+            doi       "10.1021/je100832h";
+            sha256    "31832926e022cafa7293ca700a38facbcc7ceaed1c4ccc0746fbf2ab3d4bf7c3";
+            provenance measured;
+            archiveFile "je100832h.xml";
+            system    "ethylAcetate + nHeptane";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.007; max 0.977; n 29; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

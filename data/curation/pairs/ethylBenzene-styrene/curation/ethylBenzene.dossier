@@ -130,4 +130,112 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-styrene.A_ij  2148.502279;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-styrene.A_ji  -2083.26735165;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5f9c810ca1807d11";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-styrene-bubble-je200098d.dat";
+            doi       "10.1021/je200098d";
+            sha256    "97dcfdc89bc224473ec4eda70c0b694993ef025bd398181a5f734c77e767e829";
+            provenance measured;
+            archiveFile "je200098d.xml";
+            system    "ethylBenzene + styrene";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-styrene-bubble-je050523s.dat";
+            doi       "10.1021/je050523s";
+            sha256    "77750542f622a743df24a092c8974c7815eaff06331052039c056f802d75e527";
+            provenance measured;
+            archiveFile "je050523s.xml";
+            system    "ethylBenzene + styrene";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.026; max 0.978; n 71; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-styrene.A_ij  2148.55480487;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-styrene.A_ji  -2083.29136204;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5f9c810ca1807d11";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-styrene-bubble-je200098d.dat";
+            doi       "10.1021/je200098d";
+            sha256    "97dcfdc89bc224473ec4eda70c0b694993ef025bd398181a5f734c77e767e829";
+            provenance measured;
+            archiveFile "je200098d.xml";
+            system    "ethylBenzene + styrene";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-styrene-bubble-je050523s.dat";
+            doi       "10.1021/je050523s";
+            sha256    "77750542f622a743df24a092c8974c7815eaff06331052039c056f802d75e527";
+            provenance measured;
+            archiveFile "je050523s.xml";
+            system    "ethylBenzene + styrene";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.026; max 0.978; n 71; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

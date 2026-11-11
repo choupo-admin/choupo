@@ -28,10 +28,10 @@ propertyManifest
         "components/224Trimethylpentane.dat"
         {
             type          imported;
-            sha256        "5b057df60fefe73acb28293096259f7e3d14028d57ee3c2f420e7113d1afa850";
-            computationalSha256 "c1edd3f9bcf353f5218a16b1df38c7d5ec8796e2c918c8d19725b47bc9d0a37c";
+            sha256        "45ef34d7494b709dd1146c7bc96bd0b3b3d9ff468541536e8b6bd1b8e2238a30";
+            computationalSha256 "4c9f32f2002b37f51767912d30027c39b15b6549e6c720692289468ebbbdc119";
             origin        "data/standards/components/224Trimethylpentane.dat";
-            originSha256  "0d42ea2f2bd777248e24738a81b4c9017b57f7a688113c719552dcb2423c1623";
+            originSha256  "b9b9956b3378c0aaeef27ecce001346e2c5a7d7cfc64c8911914ff376065b630";
             release       Choupo-2608;
         }
         "components/nButanol.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/224Trimethylpentane-nButanol.dat"
+        {
+            type          imported;
+            sha256        "e39990e227c7a559fa870eabe47ae26c00cc50033a370f51c7c233eca44cb42c";
+            computationalSha256 "3164d3654d4665bb09acebbc079a0a87010238d346d97b431190d2bcbc76ae67";
+            origin        "data/standards/parameters/UNIQUAC/224Trimethylpentane-nButanol.dat";
+            originSha256  "86279d33541ed7c564a57478e0d0f316ed1b704423b46a0a45f58c8c6c9d21ff";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/224Trimethylpentane-nButanol.dat"
+        {
+            type          imported;
+            sha256        "72a32e92231612eb29277f28c284e2125ed0125fa5fdb10158adb5190e1dd4de";
+            computationalSha256 "e97fc8de1fe2c7f865f83117e817a907103b417548ea7a8d58227d03a9ddcb98";
+            origin        "data/standards/parameters/Wilson/224Trimethylpentane-nButanol.dat";
+            originSha256  "52003992bde03e52bacd15e458448a1691125b0b62c1e1c6e129473bb00e3058";
             release       Choupo-2608;
         }
     }

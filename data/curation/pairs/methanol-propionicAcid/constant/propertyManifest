@@ -37,10 +37,10 @@ propertyManifest
         "components/propionicAcid.dat"
         {
             type          imported;
-            sha256        "f39e4af64471843d21f5a05fefe85d49d6c4a8cda190544971d218e470030976";
-            computationalSha256 "55a403e283529827e0913492d91cbdc2bc377e5c0abf0c1e3e63d7b3a66ae6a5";
+            sha256        "54470f946d56e040a029e2dc7a42386bab0e06d76c4ba00b3b97d37ca21e7929";
+            computationalSha256 "78e6a0e3179fd99a5824633e8fef9dc6823849a78e96d903d6893e322892b97a";
             origin        "data/standards/components/propionicAcid.dat";
-            originSha256  "74be98a87e97423686e9debff43064dd787fc82406395de96177ace800e85554";
+            originSha256  "b9662f0c5dd4216942e9a3db544171e1e1562beed4cc442c9e0c23f729d0dcf6";
             release       Choupo-2608;
         }
         "parameters/NRTL/methanol-propionicAcid.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/methanol-propionicAcid.dat"
+        {
+            type          imported;
+            sha256        "f8e87f8d206ed3bf9fc50c629b1870a8077b0685dc32ce776c0f5b496f715334";
+            computationalSha256 "f9bb9e1c47acfd178af891efd66235cb77ea1d8623f1dbc6577f4675b866594c";
+            origin        "data/standards/parameters/UNIQUAC/methanol-propionicAcid.dat";
+            originSha256  "55f19c8f9a6db7220a44b3e5b1f2f06c5216877bd5599fed46fb1634198e7a5d";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/methanol-propionicAcid.dat"
+        {
+            type          imported;
+            sha256        "c128a5854039e7a7133cbd79180442bc112651dc19fabaa7e8e2e963ff32c853";
+            computationalSha256 "10e86495c10a0ae13c0bd1a0839cfc78f5151b0bb9034da56f7f5692bda0998c";
+            origin        "data/standards/parameters/Wilson/methanol-propionicAcid.dat";
+            originSha256  "32180679d2e8e40894c9544369ccb96d0792164150f21396356d43d24a3f73bd";
             release       Choupo-2608;
         }
     }

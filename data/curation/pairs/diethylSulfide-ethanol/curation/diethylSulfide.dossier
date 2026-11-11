@@ -130,4 +130,112 @@ properties
     }
 }
 
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-ethanol.A_ij  290.874794764;
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-ethanol.A_ji  4938.1154907;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "66b3cc1213704e07";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diethylSulfide-ethanol-bubbleP-j.fluid.2015.10.041-b3.dat";
+            doi       "10.1016/j.fluid.2015.10.041";
+            sha256    "acb1b5e336311344ac044b8a5c190b805532fa909ae5db83ad7fbdbc8e0bf081";
+            provenance measured;
+            archiveFile "j.fluid.2015.10.041.xml";
+            system    "diethylSulfide + ethanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diethylSulfide-ethanol-bubbleP-j.fluid.2010.11.026-b5.dat";
+            doi       "10.1016/j.fluid.2010.11.026";
+            sha256    "eb52ee2098f75e25e57b87634501a20a630bb76b623e66c3b284e8e8e0dcabb2";
+            provenance measured;
+            archiveFile "j.fluid.2010.11.026.xml";
+            system    "diethylSulfide + ethanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.024; max 0.991; n 25; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-ethanol.A_ij  290.874799902;
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-ethanol.A_ji  4938.11548736;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "66b3cc1213704e07";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diethylSulfide-ethanol-bubbleP-j.fluid.2015.10.041-b3.dat";
+            doi       "10.1016/j.fluid.2015.10.041";
+            sha256    "acb1b5e336311344ac044b8a5c190b805532fa909ae5db83ad7fbdbc8e0bf081";
+            provenance measured;
+            archiveFile "j.fluid.2015.10.041.xml";
+            system    "diethylSulfide + ethanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diethylSulfide-ethanol-bubbleP-j.fluid.2010.11.026-b5.dat";
+            doi       "10.1016/j.fluid.2010.11.026";
+            sha256    "eb52ee2098f75e25e57b87634501a20a630bb76b623e66c3b284e8e8e0dcabb2";
+            provenance measured;
+            archiveFile "j.fluid.2010.11.026.xml";
+            system    "diethylSulfide + ethanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.024; max 0.991; n 25; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

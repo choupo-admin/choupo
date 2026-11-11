@@ -28,10 +28,10 @@ propertyManifest
         "components/mXylene.dat"
         {
             type          imported;
-            sha256        "31e05cfce81a4ad48a63993498067ba9335977201b7c08f73428ecb561233c33";
-            computationalSha256 "14aef5c18c81d0dc2c18d79c3d5122956e769c6e1250a11d7636f9dec649d2eb";
+            sha256        "c24a6c9ac4d388af9f8c2bf739601e19ef9c8d71b2be2683e845e2bbe02d3342";
+            computationalSha256 "6be7c972c0aa573b6dac04f2ee3b608577af2926c9509b2580627a2d55915b1b";
             origin        "data/standards/components/mXylene.dat";
-            originSha256  "b9df745d6fde70e82309ea2398df70cbaebffe5e09a8e7026d83c9cf5fe18921";
+            originSha256  "4d3c5a24e214e3030771078a8aa4d959e837268baf8b491e8a43ed61f0d00e90";
             release       Choupo-2608;
         }
         "components/nNDimethylformamide.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "808a7647e31706fb0db36bd50bea55eaed4954b70332821a6345552f43ffc79a";
             origin        "data/standards/parameters/NRTL/mXylene-nNDimethylformamide.dat";
             originSha256  "b5b370b55b84b3170461c3a205e81602921b9f4803d9ea5288521487f425dfe3";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/mXylene-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "1854d9adc9735e4cd0a0c664ee8f2c1f5f0fbb6436f8c24c7f20d27180ecdd34";
+            computationalSha256 "cbe9c7bab8fe54b0daf34dcf01ffa0f26a7a6ab1b7dfec6816d0a21b50bb8775";
+            origin        "data/standards/parameters/Wilson/mXylene-nNDimethylformamide.dat";
+            originSha256  "a4d7c107f909702e7022cdc74fac36d98f02b29cd4fef460e479a38d5f845f8f";
             release       Choupo-2608;
         }
     }

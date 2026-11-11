@@ -112,4 +112,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diethylDisulfide-224Trimethylpentane.A_ij  2224.91967876;
+        equilibrium.liquid.activityModel.binaryParameters.diethylDisulfide-224Trimethylpentane.A_ji  -201.118211968;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c806e3a929653bbc";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diethylDisulfide-224Trimethylpentane-bubbleP-j.fluid.2010.02.043-b14.dat";
+            doi       "10.1016/j.fluid.2010.02.043";
+            sha256    "5be56e39820f0cc4910d3dcbfcdb5e4a54f65227a1dbd768d2229cc9a5768918";
+            provenance measured;
+            archiveFile "j.fluid.2010.02.043.xml";
+            system    "diethylDisulfide + 224Trimethylpentane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.049; max 0.939; n 8; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diethylDisulfide-224Trimethylpentane.A_ij  2224.91964145;
+        equilibrium.liquid.activityModel.binaryParameters.diethylDisulfide-224Trimethylpentane.A_ji  -201.118187932;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c806e3a929653bbc";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diethylDisulfide-224Trimethylpentane-bubbleP-j.fluid.2010.02.043-b14.dat";
+            doi       "10.1016/j.fluid.2010.02.043";
+            sha256    "5be56e39820f0cc4910d3dcbfcdb5e4a54f65227a1dbd768d2229cc9a5768918";
+            provenance measured;
+            archiveFile "j.fluid.2010.02.043.xml";
+            system    "diethylDisulfide + 224Trimethylpentane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.049; max 0.939; n 8; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

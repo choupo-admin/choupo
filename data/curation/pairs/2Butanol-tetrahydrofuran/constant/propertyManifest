@@ -28,10 +28,10 @@ propertyManifest
         "components/2Butanol.dat"
         {
             type          imported;
-            sha256        "e50417c9ddeaeb5527166cf726410485df839fdb613b8555aa2b8958be5a5c46";
-            computationalSha256 "ad0f4e4cb272e208c3a8ee83b570fe72b60cd9ab1b2dd9a7d6011dbd28c4995b";
+            sha256        "1595f49de30edfac85305b324b1d45e6fc32514fb2f5c3102e1da25064e57de0";
+            computationalSha256 "094b9b7676472cb8ed2d135265cc88c5c65283778ec3ddfec01877bdc50a3057";
             origin        "data/standards/components/2Butanol.dat";
-            originSha256  "8c6ea94875403bbbd569f6facd5fdaefdcc5aee732ba499696802675d675202a";
+            originSha256  "f9a1e64e1b7104dbaa4e9a541716a88d08af19be38f80885c81d7df98640c91f";
             release       Choupo-2608;
         }
         "components/tetrahydrofuran.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "25f1457bb834354a6b94f42fb20d5a704911fca35e666604ecf16baf3e5c6c65";
             origin        "data/standards/parameters/NRTL/2Butanol-tetrahydrofuran.dat";
             originSha256  "6f2c3198191d54d434712d2a882b07c61feb05fc52ec440944bcf34cefcd7c1f";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Butanol-tetrahydrofuran.dat"
+        {
+            type          imported;
+            sha256        "9dee46cbe235927c7f7a30a9c64b553f26fcc7974074ff9975cb6f7a3d1d8403";
+            computationalSha256 "b43fa0b4d2fa7149a6ed4ec897cccb902ef3bece231a5523017d416d7dc7a796";
+            origin        "data/standards/parameters/Wilson/2Butanol-tetrahydrofuran.dat";
+            originSha256  "35ec5507f3325101baac6c14f37d46236b16ec1dcec5d9d22f08d0ee7d2a844e";
             release       Choupo-2608;
         }
     }

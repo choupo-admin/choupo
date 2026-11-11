@@ -37,10 +37,10 @@ propertyManifest
         "components/toluene.dat"
         {
             type          imported;
-            sha256        "025c441842aa1728935905ed8dfa50db5a6405ee082618c11673f665596d4911";
-            computationalSha256 "f66debfbcd493c4c7c4636809e784a1e07a6c482c3baed13ba34dce12ae63f79";
+            sha256        "5fb900674321baa67135bfeb2c8f80e63d9af183c35f1615477d751b4299f14b";
+            computationalSha256 "55e1e2986dd1c3fc08c951e842a86b062ee6a7bfbc1e1317387e69149a139e36";
             origin        "data/standards/components/toluene.dat";
-            originSha256  "fe5cb21ba09cf44b41de252f6a5a5dd21b6803fcd40666f6fed8d9de8e68563a";
+            originSha256  "ad1533cb0d94caade355d7149fd88ee1ad07c945f5d4c85f4bcce925766250b9";
             release       Choupo-2608;
         }
         "parameters/NRTL/anisole-toluene.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "5f53693c2497182ecba7df64395a4dba8bb2b10b83bc3fe05fa488cb325f7aec";
             origin        "data/standards/parameters/NRTL/anisole-toluene.dat";
             originSha256  "59d9601a52982ea386fb0ae8df311e651a5901a9c66114439abe01b91ab8180f";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/anisole-toluene.dat"
+        {
+            type          imported;
+            sha256        "658ac40d5938d3f31567792d7409f7a225259936aa50b61a7c3c9aa341a135d5";
+            computationalSha256 "21c2405871089cbfd76423a970a1f9bb863b0edb0514d56dbc587fd4c0c95947";
+            origin        "data/standards/parameters/Wilson/anisole-toluene.dat";
+            originSha256  "69d55bd4ca25256c5e1c56c4be44cbc0c122fc0c15b7bfd536035335914fefcd";
             release       Choupo-2608;
         }
     }

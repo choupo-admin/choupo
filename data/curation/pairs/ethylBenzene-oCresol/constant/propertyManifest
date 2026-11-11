@@ -28,10 +28,10 @@ propertyManifest
         "components/ethylBenzene.dat"
         {
             type          imported;
-            sha256        "ae0432cef7e9cc8d1a1c7669ce4a783ccf51218cff2404dd7ba093d0695d1922";
-            computationalSha256 "c4a5df3dd8cb1cd0dc6031be45ffdc38a34f227a8eb4b34bdecebd07b13b8b0e";
+            sha256        "a3770fc80542ebef6c1e967abe82aa77f1772855e3873575603dc3ec1c54ce74";
+            computationalSha256 "99065feb74f678d5fdc677c7b2f450910efa7af9990f15e931738055b6bda9ae";
             origin        "data/standards/components/ethylBenzene.dat";
-            originSha256  "e2ecbd5573ce3719ae530d1cd13978928548ca096b3666ad58321bcd8ca07505";
+            originSha256  "eb0e3c4909ad9a0859b769f78ba184bc73174b779765f33d3e2876a4600b2d0f";
             release       Choupo-2608;
         }
         "components/oCresol.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "66bc4c7e4e01c0ed46029cba6b665bd744058dc1e2d9310b921eaa16372fccf3";
             origin        "data/standards/parameters/NRTL/ethylBenzene-oCresol.dat";
             originSha256  "cd7c597d26c2801a4408ca380bac86c6de9ad6813448042275495c73818425bb";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/ethylBenzene-oCresol.dat"
+        {
+            type          imported;
+            sha256        "56098eabab58db16ac36c62aaa0e10d41ea22857f56cde8913b64d11c82fa79a";
+            computationalSha256 "13a3f935d16b7039f201fa8a64470973891dad652b0144911cd4fa9562079536";
+            origin        "data/standards/parameters/Wilson/ethylBenzene-oCresol.dat";
+            originSha256  "c2e5a8612cf496bb72d7a8d0a101e0dfaca5875d3648add890d2cbbcfbcf6c24";
             release       Choupo-2608;
         }
     }

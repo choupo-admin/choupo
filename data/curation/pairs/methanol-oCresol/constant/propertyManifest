@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "2e614210c19e252ccf64947e6db689d1e096980832497838272bc9e2235cae05";
             release       Choupo-2608;
         }
+        "parameters/Wilson/methanol-oCresol.dat"
+        {
+            type          imported;
+            sha256        "8ca526a36265336607c0fc8a5016c1eebf4e849000324ea6941646d24aa7209b";
+            computationalSha256 "fd1c111bc12accda3325c086d192acae1bc3ab7445a9662d97d5a3ad61eb0001";
+            origin        "data/standards/parameters/Wilson/methanol-oCresol.dat";
+            originSha256  "b190191c00547e34f8c1e562f9fd416cb4682097c0a8fff97cf1aa90b9201631";
+            release       Choupo-2608;
+        }
     }
 }

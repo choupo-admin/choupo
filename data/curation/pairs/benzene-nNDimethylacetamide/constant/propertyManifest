@@ -28,10 +28,10 @@ propertyManifest
         "components/benzene.dat"
         {
             type          imported;
-            sha256        "af31cf9da05b7d34c657c430cef68abbf0f08db2402827a4867f7a64073225c9";
-            computationalSha256 "b8a586d23e8f38eb0b5c0f9534f7057eb2d4059de464edbdc18995094fdca93e";
+            sha256        "2c20d6d671dd5884ed8e3668529ddaad20bf3c2a02d1a5130aac02dd790aa62c";
+            computationalSha256 "d710160da938e1163f77e26b0cc49af7c2a2e4563b37f914ce4bb001500decc4";
             origin        "data/standards/components/benzene.dat";
-            originSha256  "77d7604645ff3a28b34d91023e497586af35fa74849c914378f858666a2b900e";
+            originSha256  "dc7869a494c8e333ed57af66fa4086592b32ac5330960750b5d2775030c9b6bc";
             release       Choupo-2608;
         }
         "components/nNDimethylacetamide.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "8e45e5d3d2c641414aa21e187559ea1283d891b7b2cca758422f4ead250179ea";
             origin        "data/standards/parameters/NRTL/benzene-nNDimethylacetamide.dat";
             originSha256  "18380b41f3c172b5d6fbddeb397846795fafcb17ec5ce4b70e1c57f52104c172";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/benzene-nNDimethylacetamide.dat"
+        {
+            type          imported;
+            sha256        "694735209f4adab1e517c659bfa78ea41627c8fafc3f958c2cf80eb13c859f06";
+            computationalSha256 "0a34b97f527fabc1946840a8a955e46b808723740c04ed258353900b2e957ee5";
+            origin        "data/standards/parameters/Wilson/benzene-nNDimethylacetamide.dat";
+            originSha256  "0aa824580e1f4a41a0e64e91b189922292b265ad027073e30e2e5e4148dfd3c2";
             release       Choupo-2608;
         }
     }

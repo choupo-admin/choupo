@@ -134,4 +134,228 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.a_ij  -210.564655484;
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.a_ji  298.53082951;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "924eceb6d619b44f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nDecane-oXylene-bubble-j.fluid.2012.09.019.dat";
+            doi       "10.1016/j.fluid.2012.09.019";
+            sha256    "7ab32e1e73d47ffb72cce97fbd8aed01dd70cc88c73c7e45957aadf589cfd90b";
+            provenance measured;
+            archiveFile "j.fluid.2012.09.019.xml";
+            system    "nDecane + oXylene";
+            pressure  "20000.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nDecane-oXylene-bubble-j.fluid.2004.10.027.dat";
+            doi       "10.1016/j.fluid.2004.10.027";
+            sha256    "dedfec1f89c424222eb64267c206a4a687646def0a2f935f68318ea9398d71d6";
+            provenance measured;
+            archiveFile "j.fluid.2004.10.027.xml";
+            system    "nDecane + oXylene";
+            pressure  "95800.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.051; max 0.958; n 15; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.a_ij  211.853895474;
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.a_ji  -164.950126569;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "924eceb6d619b44f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nDecane-oXylene-bubble-j.fluid.2012.09.019.dat";
+            doi       "10.1016/j.fluid.2012.09.019";
+            sha256    "7ab32e1e73d47ffb72cce97fbd8aed01dd70cc88c73c7e45957aadf589cfd90b";
+            provenance measured;
+            archiveFile "j.fluid.2012.09.019.xml";
+            system    "nDecane + oXylene";
+            pressure  "20000.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nDecane-oXylene-bubble-j.fluid.2004.10.027.dat";
+            doi       "10.1016/j.fluid.2004.10.027";
+            sha256    "dedfec1f89c424222eb64267c206a4a687646def0a2f935f68318ea9398d71d6";
+            provenance measured;
+            archiveFile "j.fluid.2004.10.027.xml";
+            system    "nDecane + oXylene";
+            pressure  "95800.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.051; max 0.958; n 15; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.A_ij  -3472.21341489;
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.A_ji  4449.60615901;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "924eceb6d619b44f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nDecane-oXylene-bubble-j.fluid.2012.09.019.dat";
+            doi       "10.1016/j.fluid.2012.09.019";
+            sha256    "7ab32e1e73d47ffb72cce97fbd8aed01dd70cc88c73c7e45957aadf589cfd90b";
+            provenance measured;
+            archiveFile "j.fluid.2012.09.019.xml";
+            system    "nDecane + oXylene";
+            pressure  "20000.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nDecane-oXylene-bubble-j.fluid.2004.10.027.dat";
+            doi       "10.1016/j.fluid.2004.10.027";
+            sha256    "dedfec1f89c424222eb64267c206a4a687646def0a2f935f68318ea9398d71d6";
+            provenance measured;
+            archiveFile "j.fluid.2004.10.027.xml";
+            system    "nDecane + oXylene";
+            pressure  "95800.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.051; max 0.958; n 15; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.A_ij  -3472.21339188;
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.A_ji  4449.60611219;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "924eceb6d619b44f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nDecane-oXylene-bubble-j.fluid.2012.09.019.dat";
+            doi       "10.1016/j.fluid.2012.09.019";
+            sha256    "7ab32e1e73d47ffb72cce97fbd8aed01dd70cc88c73c7e45957aadf589cfd90b";
+            provenance measured;
+            archiveFile "j.fluid.2012.09.019.xml";
+            system    "nDecane + oXylene";
+            pressure  "20000.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nDecane-oXylene-bubble-j.fluid.2004.10.027.dat";
+            doi       "10.1016/j.fluid.2004.10.027";
+            sha256    "dedfec1f89c424222eb64267c206a4a687646def0a2f935f68318ea9398d71d6";
+            provenance measured;
+            archiveFile "j.fluid.2004.10.027.xml";
+            system    "nDecane + oXylene";
+            pressure  "95800.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.051; max 0.958; n 15; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

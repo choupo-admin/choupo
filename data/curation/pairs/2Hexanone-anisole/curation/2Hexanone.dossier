@@ -112,4 +112,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Hexanone-anisole.A_ij  -1248.07218416;
+        equilibrium.liquid.activityModel.binaryParameters.2Hexanone-anisole.A_ji  1596.36899331;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "958059a01b7b843a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Hexanone-anisole-bubble-je900058p.dat";
+            doi       "10.1021/je900058p";
+            sha256    "60ee278277a3b7dc9d96214f7d63ff569e6663b61875855e60bc38fea824b588";
+            provenance measured;
+            archiveFile "je900058p.xml";
+            system    "2Hexanone + anisole";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.218; max 0.9; n 32; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Hexanone-anisole.A_ij  -1248.07214671;
+        equilibrium.liquid.activityModel.binaryParameters.2Hexanone-anisole.A_ji  1596.36894352;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "958059a01b7b843a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Hexanone-anisole-bubble-je900058p.dat";
+            doi       "10.1021/je900058p";
+            sha256    "60ee278277a3b7dc9d96214f7d63ff569e6663b61875855e60bc38fea824b588";
+            provenance measured;
+            archiveFile "je900058p.xml";
+            system    "2Hexanone + anisole";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.218; max 0.9; n 32; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

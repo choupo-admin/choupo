@@ -28,19 +28,19 @@ propertyManifest
         "components/diNButylEther.dat"
         {
             type          imported;
-            sha256        "537970d2ee2c419075c0e60d44f291a9e308dd2c5fb5d18a04ae9dd5dd0f0f2b";
-            computationalSha256 "2d5d88b4f35c15d610e2651a7e04d59a600b408d65f8b9e305a62a753f13c07b";
+            sha256        "1eb78d03a6e082a5069fdab042f3902927f770e97f7e03f5a3bc9d789cc1f1f3";
+            computationalSha256 "021120e8b3e2ae75d45f6e83d172d78e8421092f64ef00c67b8a95019c02998a";
             origin        "data/standards/components/diNButylEther.dat";
-            originSha256  "e943e71a195499eea4c36243b977aff1fe2a5602ccb7592874505a239160f212";
+            originSha256  "fb73ec09e85d833de864cddf6d119fe08f842110ee4edd6efce7075c195d8e84";
             release       Choupo-2608;
         }
         "components/nNonane.dat"
         {
             type          imported;
-            sha256        "c6e230c3962584501169ad403a0503445df26695175139b9b9aa7f375908ce02";
-            computationalSha256 "e30086a65f8408a79d0e7437a9a7659bd8e52db983973fcb9ae84c4022c09606";
+            sha256        "8eb22a21343cc0d31c90a9cb14c5afa3c97168ac52fcbc4991b8b99771e08fed";
+            computationalSha256 "57fbdc20edd02c1ad7de179afe514d5dec7797c85be368066ca248a7cd9c1bdb";
             origin        "data/standards/components/nNonane.dat";
-            originSha256  "04a2c2a72fb0170f6e58dca0a4ced5760f40fbde24d6f7bdd0ffab546944f9f8";
+            originSha256  "b6375e78f76e6dca07a13fcb69894971e9a05f5d1c94352bd2772f10a067bf2f";
             release       Choupo-2608;
         }
         "parameters/NRTL/diNButylEther-nNonane.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/diNButylEther-nNonane.dat"
+        {
+            type          imported;
+            sha256        "6ec3b8f12c453022ebdd0dbef2bcc4d4ec6585d8589a805d9ed4849db4db3e36";
+            computationalSha256 "ee2e89884a9c7cfba303e410a3dfe8c51ef4bb5282a51fc4681ff580988d2aed";
+            origin        "data/standards/parameters/UNIQUAC/diNButylEther-nNonane.dat";
+            originSha256  "25a57ad6db9041895acc97177855d2e2298544faa499047729bea9f7b44c2b44";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/diNButylEther-nNonane.dat"
+        {
+            type          imported;
+            sha256        "10bb75e40f1010a75cefdb0c956a7626341903aabc49906fa89db6b706b4b874";
+            computationalSha256 "3a1df5ddb478bcb6dc6632eb33332dd2e5123dbc69dec9de07251dec42ca661d";
+            origin        "data/standards/parameters/Wilson/diNButylEther-nNonane.dat";
+            originSha256  "53d915bebfa0dfc41363d5b142ceabbcc9dfb39afa95bea7ec001bfa950f32be";
             release       Choupo-2608;
         }
     }

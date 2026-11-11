@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "9336d5e647debcfd5bb6102da5ad04dadbafc3903f99e2f7779a9ce04e913e84";
             release       Choupo-2608;
         }
+        "parameters/Wilson/cumene-ethylFormate.dat"
+        {
+            type          imported;
+            sha256        "213ece011e59d1ee327829954e1aafd24fcd1ffe1d635e543b1207a1fd0e7cd0";
+            computationalSha256 "bee2edbecda6fc9c5fe5a090c9083f18b68ff3f6b87ade2eea79cab1f394f992";
+            origin        "data/standards/parameters/Wilson/cumene-ethylFormate.dat";
+            originSha256  "9aacee0c949bbe84d633c1094e7463f1b3032f616bc784a6fa7cbb0c1b20e3ca";
+            release       Choupo-2608;
+        }
     }
 }

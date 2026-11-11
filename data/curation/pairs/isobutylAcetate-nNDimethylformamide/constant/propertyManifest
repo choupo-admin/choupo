@@ -28,10 +28,10 @@ propertyManifest
         "components/isobutylAcetate.dat"
         {
             type          imported;
-            sha256        "8d42f736396b740336fdbb5895c767f26a256fac743580052accb38c119bf130";
-            computationalSha256 "764dea06bea08f8fea4ba03acf1b3874f48c47c514d4d22f811102a0b9b6edf7";
+            sha256        "7a5513321a7f94197cd761fbcda255c75c419151bc192359b5732369c779569a";
+            computationalSha256 "1feca08966bf03786807fe2993c834ead77e0ca86bcc3d74517b22d84404ac6b";
             origin        "data/standards/components/isobutylAcetate.dat";
-            originSha256  "fc83aedc37a243b53683835301a4a8aaabc51fde333ec26b3b3b0ca011d118fa";
+            originSha256  "e76455ecb20132cba36ad3f3a307dcd0c54aa93202987729cabb50cc30626fa2";
             release       Choupo-2608;
         }
         "components/nNDimethylformamide.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "589ca509a0250d3e1a8e994290dfd72a7f86cfaa64d5b28f208a1ec0369dd385";
             origin        "data/standards/parameters/NRTL/isobutylAcetate-nNDimethylformamide.dat";
             originSha256  "4e5c75b79aa007b65927b4e3589f0275823e8aaabe9b71a78dbd364b11b5ab80";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/isobutylAcetate-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "173906dea86a7b3dd2625daaff0cb1ff4e65583457a317a8c8c8b7026dbed5e8";
+            computationalSha256 "f98d7fde356e784b6248ecca67716d504c3c8a4f39c34b55b2c93ad850941665";
+            origin        "data/standards/parameters/Wilson/isobutylAcetate-nNDimethylformamide.dat";
+            originSha256  "74971c65a8ee527d32293f0137a70915200a32c4281edb2a461c9cdc9a432cee";
             release       Choupo-2608;
         }
     }

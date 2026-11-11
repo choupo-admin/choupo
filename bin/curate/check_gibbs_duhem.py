@@ -56,9 +56,10 @@ WHAT THIS DOES NOT CHECK, stated plainly:
     gammas to each other, this one ties the SOLVENT side to the ION side.  The
     PER-ION models (Davies, PitzerHMW, EdwardsPitzer) are NOT: they work on a
     molality-and-charge basis this probe does not reach.
-  * `Wilson` IS REGISTERED AND CANNOT BE TESTED -- there is no
-    data/standards/parameters/Wilson/ directory, so it always returns ideal.
-    The gate reports that rather than silently passing it.
+  * `Wilson` ethanol/water has no catalogue pair, so that row returns ideal
+    and is reported VACUOUS rather than silently passed.  Since DEV.md 4c
+    C294 the catalogue carries Wilson pairs the pair cases fitted, and one of
+    them (acetone/methanol) is tested; so is one fitted UNIQUAC pair.
 """
 import json
 import os

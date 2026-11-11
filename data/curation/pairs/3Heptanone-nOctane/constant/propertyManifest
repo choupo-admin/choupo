@@ -37,10 +37,10 @@ propertyManifest
         "components/nOctane.dat"
         {
             type          imported;
-            sha256        "bb8d866ae2a345667264d47bb499d49eafa1a76a17728e78ed2c256626b61777";
-            computationalSha256 "b281e3245fe2ce57ab504bbf223594f6184e2ad1d76fa4f8964807b6e0ddc953";
+            sha256        "7285e0f36fc937467563bf4b72b3bfe796dde113e188dd090c1308c066eaef19";
+            computationalSha256 "cee6abc667bc264800389300e47fad2af6a1412fb18c2dc3f84376e18e6ca150";
             origin        "data/standards/components/nOctane.dat";
-            originSha256  "99bde55672f9e84a9d7b55e91d646e13eb9d473696dd1c82d8d905228fca8608";
+            originSha256  "fb529641419f4f0361b39213a0b74ffbab235e4b4a3ddf2c2ddeb053a985ad6e";
             release       Choupo-2608;
         }
         "parameters/NRTL/3Heptanone-nOctane.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "5f4702214bb5fa04dab22c906dc9cc07f6cc02fe6f97d5854b88ce39912fd517";
             origin        "data/standards/parameters/NRTL/3Heptanone-nOctane.dat";
             originSha256  "a4a1fae5938457344d795b869547b1ee4387a49927b0b10b9ca9fa9a6fe8c0b2";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/3Heptanone-nOctane.dat"
+        {
+            type          imported;
+            sha256        "786754a07c2775b961a1c84d3f1b415f20a59b76f8fd5881edfd2a3fa3333b67";
+            computationalSha256 "c3349a6f7e55e75c9735b7266c1aac0c86287951a79568218385676b79dd14f1";
+            origin        "data/standards/parameters/Wilson/3Heptanone-nOctane.dat";
+            originSha256  "9a11cb77a54c38ab419cf7a4c348c771483e50c347198acb694eca9bf6ad3134";
             release       Choupo-2608;
         }
     }

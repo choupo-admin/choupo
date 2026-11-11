@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "f68d84fa95141c802f7b61cc898dfc60cf60980dcbc89380857c365f7af595a5";
             release       Choupo-2608;
         }
+        "parameters/Wilson/diethylamine-ethanol.dat"
+        {
+            type          imported;
+            sha256        "baf63ef1bf2566de43354c9fb238e8dd88fec75106aa02750050fa2ec5832776";
+            computationalSha256 "b95d749c290d8725bf94f133fc287e28a1c6a79580da704bba08f4522d29621a";
+            origin        "data/standards/parameters/Wilson/diethylamine-ethanol.dat";
+            originSha256  "94c9f7fe01d9de3021d89ae5515b1b72eb8fe6b6f1d8e5ecf57f9829700d7079";
+            release       Choupo-2608;
+        }
     }
 }

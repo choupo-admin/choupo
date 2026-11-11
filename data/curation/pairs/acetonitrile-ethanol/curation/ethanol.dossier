@@ -112,4 +112,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-acetonitrile.A_ij  154.758705602;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-acetonitrile.A_ji  3975.849388;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "563279132b3faee8";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-acetonitrile-bubbleP-je800535c-b13.dat";
+            doi       "10.1021/je800535c";
+            sha256    "b936ec60ecb4d987ff9b9ae630c23851eb127999e550127382ca762a4e9b3be6";
+            provenance measured;
+            archiveFile "je800535c.xml";
+            system    "ethanol + acetonitrile";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0839; max 0.9219; n 34; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-acetonitrile.A_ij  154.758704111;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-acetonitrile.A_ji  3975.84939058;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "563279132b3faee8";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-acetonitrile-bubbleP-je800535c-b13.dat";
+            doi       "10.1021/je800535c";
+            sha256    "b936ec60ecb4d987ff9b9ae630c23851eb127999e550127382ca762a4e9b3be6";
+            provenance measured;
+            archiveFile "je800535c.xml";
+            system    "ethanol + acetonitrile";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0839; max 0.9219; n 34; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

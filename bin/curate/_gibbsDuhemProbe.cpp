@@ -329,6 +329,10 @@ int main()
     add(testPair("UNIQUAC", "methanol",    "methylAcetate", 330.00));
     add(testPair("UNIQUAC", "methylAcetate", "water",       340.00));
     add(testPair("UNIQUAC", "aceticAcid",  "methylAcetate", 350.00));
+    //  DEV.md 4c C294: a UNIQUAC and a Wilson pair the pair cases FITTED and
+    //  promoted (r/q from UNIFAC group sums for nDecane; Vliq for Wilson).
+    add(testPair("UNIQUAC", "1Hexanol",    "nDecane",       405.00));
+    add(testPair("Wilson",  "acetone",     "methanol",      330.00));
     add(testPair("UNIFAC",  "ethanol",     "water",         328.15));
     add(testPair("UNIFAC",  "benzene",     "toluene",       365.00));
     add(testPair("ideal",   "ethanol",     "water",         328.15));

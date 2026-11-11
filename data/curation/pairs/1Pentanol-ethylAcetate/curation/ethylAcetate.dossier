@@ -114,4 +114,188 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-1Pentanol.a_ij  54.1401853935;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-1Pentanol.a_ji  -14.9802521391;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "58091e374e6fbe8c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylAcetate-1Pentanol-bubble-je030218b.dat";
+            doi       "10.1021/je030218b";
+            sha256    "f3fb2f0ecd2eebabca9f3d291d83311158485919da2610c48cef96be19ae417d";
+            provenance measured;
+            archiveFile "je030218b.xml";
+            system    "ethylAcetate + 1Pentanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.022; max 0.936; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-1Pentanol.a_ij  54.1401852749;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-1Pentanol.a_ji  -14.9802520243;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "58091e374e6fbe8c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylAcetate-1Pentanol-bubble-je030218b.dat";
+            doi       "10.1021/je030218b";
+            sha256    "f3fb2f0ecd2eebabca9f3d291d83311158485919da2610c48cef96be19ae417d";
+            provenance measured;
+            archiveFile "je030218b.xml";
+            system    "ethylAcetate + 1Pentanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.022; max 0.936; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-1Pentanol.A_ij  -347.843089504;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-1Pentanol.A_ji  1678.59097743;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "58091e374e6fbe8c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylAcetate-1Pentanol-bubble-je030218b.dat";
+            doi       "10.1021/je030218b";
+            sha256    "f3fb2f0ecd2eebabca9f3d291d83311158485919da2610c48cef96be19ae417d";
+            provenance measured;
+            archiveFile "je030218b.xml";
+            system    "ethylAcetate + 1Pentanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.022; max 0.936; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-1Pentanol.A_ij  -347.843089563;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-1Pentanol.A_ji  1678.59097668;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "58091e374e6fbe8c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylAcetate-1Pentanol-bubble-je030218b.dat";
+            doi       "10.1021/je030218b";
+            sha256    "f3fb2f0ecd2eebabca9f3d291d83311158485919da2610c48cef96be19ae417d";
+            provenance measured;
+            archiveFile "je030218b.xml";
+            system    "ethylAcetate + 1Pentanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.022; max 0.936; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

@@ -28,10 +28,10 @@ propertyManifest
         "components/isopropanol.dat"
         {
             type          imported;
-            sha256        "c206190bf473636ab8661c95a2126b9088fc6a1b5013c5e1325470f8133691b0";
-            computationalSha256 "4ca8dc74e7851f893506b84d7a8e03b629f1794fd0132eed65e92c65cac2e9f9";
+            sha256        "61118a4a99021492caf6ad77788bb2bd987dab2f1160ad21534ae7ce688dae8a";
+            computationalSha256 "5c4f956b35dd2eaa9db4947f8fe641dea0228bf8ba7301d2369f0790871f65da";
             origin        "data/standards/components/isopropanol.dat";
-            originSha256  "510b474f696cf7952c89a27d0a48623266b8a79f3026cc348a934361bd763e07";
+            originSha256  "7338879f6f351e08c4ec91a02c86117d7f56faef9906c7e3174f954a4000d0d7";
             release       Choupo-2608;
         }
         "components/pCresol.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "1a244b6db99aa040da23796aa82a6b00683bfd2a23cb3d8edd30e2fa6ac80450";
             origin        "data/standards/parameters/NRTL/isopropanol-pCresol.dat";
             originSha256  "13649b5756e93e9d24b2ac3aba8352da2541057dd77849e4327a81fb9d74d915";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/isopropanol-pCresol.dat"
+        {
+            type          imported;
+            sha256        "567ca8a7bf13437ed93ff1180a71c099eb6d3bae7f62f8d515580330c48498b8";
+            computationalSha256 "2f77a06aabb0918764982dd5bb325f6ce7e24130581a39779b7212bcd13e8e63";
+            origin        "data/standards/parameters/Wilson/isopropanol-pCresol.dat";
+            originSha256  "544cdb9a5b106cbe6776d442ab822495a10f2ed12ae85e5e4ddc7bd99d07f096";
             release       Choupo-2608;
         }
     }

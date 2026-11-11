@@ -112,4 +112,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-tertButylEthylEther.A_ij  1326.30457672;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-tertButylEthylEther.A_ji  111.795558447;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2b612179215e857c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/dimethylDisulfide-tertButylEthylEther-bubbleP-je200039y-b17.dat";
+            doi       "10.1021/je200039y";
+            sha256    "d53ef5347311d14b7e319ad0c343bd39a3e9eba3bc73ef931739278ba89120e8";
+            provenance measured;
+            archiveFile "je200039y.xml";
+            system    "dimethylDisulfide + tertButylEthylEther";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.093; max 0.974; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-tertButylEthylEther.A_ij  1326.30447546;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-tertButylEthylEther.A_ji  111.795709358;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2b612179215e857c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/dimethylDisulfide-tertButylEthylEther-bubbleP-je200039y-b17.dat";
+            doi       "10.1021/je200039y";
+            sha256    "d53ef5347311d14b7e319ad0c343bd39a3e9eba3bc73ef931739278ba89120e8";
+            provenance measured;
+            archiveFile "je200039y.xml";
+            system    "dimethylDisulfide + tertButylEthylEther";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.093; max 0.974; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

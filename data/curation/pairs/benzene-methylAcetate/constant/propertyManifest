@@ -28,10 +28,10 @@ propertyManifest
         "components/benzene.dat"
         {
             type          imported;
-            sha256        "af31cf9da05b7d34c657c430cef68abbf0f08db2402827a4867f7a64073225c9";
-            computationalSha256 "b8a586d23e8f38eb0b5c0f9534f7057eb2d4059de464edbdc18995094fdca93e";
+            sha256        "2c20d6d671dd5884ed8e3668529ddaad20bf3c2a02d1a5130aac02dd790aa62c";
+            computationalSha256 "d710160da938e1163f77e26b0cc49af7c2a2e4563b37f914ce4bb001500decc4";
             origin        "data/standards/components/benzene.dat";
-            originSha256  "77d7604645ff3a28b34d91023e497586af35fa74849c914378f858666a2b900e";
+            originSha256  "dc7869a494c8e333ed57af66fa4086592b32ac5330960750b5d2775030c9b6bc";
             release       Choupo-2608;
         }
         "components/methylAcetate.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/benzene-methylAcetate.dat"
+        {
+            type          imported;
+            sha256        "23a63f7ab89049d1c31c28bc10359af964b8d5ac47ed69cac0b6aef9cc3bd9d5";
+            computationalSha256 "bc4059f447864a1f023f727300ff2185d002e1947528281834c43352ba36512d";
+            origin        "data/standards/parameters/UNIQUAC/benzene-methylAcetate.dat";
+            originSha256  "5fb7e4d17166370014b75113c4bef56a60c202fa789171e888816d91009a727d";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/benzene-methylAcetate.dat"
+        {
+            type          imported;
+            sha256        "2bb9b6030bca1a00f89282d3168796890f72fe72829ba4f42d3161c66df8975a";
+            computationalSha256 "8e9b39f2b978572f7102ff06e783e6a6dc8c3be57c4971fa80919e0b423a0ea5";
+            origin        "data/standards/parameters/Wilson/benzene-methylAcetate.dat";
+            originSha256  "d6c02ff1a91deb9e461165881c4c111961bc0fcd80e9b17aec037c7c13538b4c";
             release       Choupo-2608;
         }
     }

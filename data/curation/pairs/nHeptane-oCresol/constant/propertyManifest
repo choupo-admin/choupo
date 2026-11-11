@@ -28,10 +28,10 @@ propertyManifest
         "components/nHeptane.dat"
         {
             type          imported;
-            sha256        "25070332ac55ed31465bc842c2820fdfaad6f8148a03a841aca858978670b1d4";
-            computationalSha256 "125b2cbb0fb1a4182208bea7d0812526f79531b719a3e95c6555eb1eef5975b2";
+            sha256        "8c48efaaa9aa99b348c71a669b0004bae3abe91635a4fe1c401fc415b45e6b4d";
+            computationalSha256 "2f3b301c3cd1ef6d27fd35702b810c40ebcfc7fc573ec2dfb642d5981a6ed791";
             origin        "data/standards/components/nHeptane.dat";
-            originSha256  "d07d8e2aa11a5f1acb72593e0fcd1281a502b07ee6da32603bcc97d97b54abd4";
+            originSha256  "0e6ffd261eb07d90376837ad51670a939dfd10fc7e15c0bed37a675f034eeae0";
             release       Choupo-2608;
         }
         "components/oCresol.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "19c793be2417de57714823999e82b006f690b3d3c9d5e490b9f09adbd5c87040";
             origin        "data/standards/parameters/NRTL/nHeptane-oCresol.dat";
             originSha256  "e50fabefbbb29c568b8793ee19e9070ca9e01172d68cd2e9346ced15fe567c56";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/nHeptane-oCresol.dat"
+        {
+            type          imported;
+            sha256        "48155dd8af438484ce1ac97d1226a0c594dfc0c828fc4d1c16db5aa9797c189f";
+            computationalSha256 "67b6a1a4a214d11356bfd93370dd3f333bfc5c4c4b88a1d9503d214eb73cbee1";
+            origin        "data/standards/parameters/Wilson/nHeptane-oCresol.dat";
+            originSha256  "5a6e7c078309dec5a301478e5e92c3b3e49bc79bf475b9acfa15718b77b4ca6e";
             release       Choupo-2608;
         }
     }

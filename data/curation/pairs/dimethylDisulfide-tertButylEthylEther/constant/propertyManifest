@@ -37,10 +37,10 @@ propertyManifest
         "components/tertButylEthylEther.dat"
         {
             type          imported;
-            sha256        "0515625aa369adc18f2ebf1064fbdd5a8f2bad7038b93ebbd070336edbd0809a";
-            computationalSha256 "0993927d157272b7fdb230d2dc047bb8c3be95d0e3432715377831bc5078cd1e";
+            sha256        "75ca8e2e8bf4184a7ce02deac1c0a514a975f69535298593bad9cc4e70472b0d";
+            computationalSha256 "9c9f6ed9cb008aab8f2f12e3a4b25a91ee4f336a2031d385f435ab0e2a34add3";
             origin        "data/standards/components/tertButylEthylEther.dat";
-            originSha256  "7d0879c69cddba5ed9e4ffcbea4cb417345376a3fd61f5626b78b53b4b5eb5fd";
+            originSha256  "e6a13f4a2e4da79f280e0640caf1570c2afecdce1059a917375613ff0a5a3e18";
             release       Choupo-2608;
         }
         "parameters/NRTL/dimethylDisulfide-tertButylEthylEther.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "bfead1215cade3a827c092090932c2afa48b543c2c480d8f8e62f1c6ba5e7ea7";
             origin        "data/standards/parameters/NRTL/dimethylDisulfide-tertButylEthylEther.dat";
             originSha256  "10017559b320cf5ee65d625e53ae321145ef44180cb4337136b6cbb9637aeebf";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/dimethylDisulfide-tertButylEthylEther.dat"
+        {
+            type          imported;
+            sha256        "7d4f3e9a6a5350984d56db9cc696c7cf3d41f845b158fcd918b36fbbab03edf2";
+            computationalSha256 "060c01137671425bfb3c6f1c65ca55c286c52f368eafdbf8f33e20a84b0843f3";
+            origin        "data/standards/parameters/Wilson/dimethylDisulfide-tertButylEthylEther.dat";
+            originSha256  "87a350db19e46d9f81c4579c479c378782d889b5cc422339d83f8c820f4214e5";
             release       Choupo-2608;
         }
     }

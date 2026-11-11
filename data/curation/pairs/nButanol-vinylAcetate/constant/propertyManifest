@@ -37,10 +37,10 @@ propertyManifest
         "components/vinylAcetate.dat"
         {
             type          imported;
-            sha256        "7a01b5fadbca767f032fc05788b2101ff0a4e6e4cb3e67bab970fd05c0d9deb2";
-            computationalSha256 "8c838d5e4f66ad4d5012ac33fa0f579bed652d41f336a7c827eac682534104ba";
+            sha256        "1140ba6ee65c8a183947c4fa69b52a1ff75799d4ed1d6ea3011436eb839afac7";
+            computationalSha256 "f64c1831a13bccd5aa7e4e8e02f4403aac5d318cf19cfaaafa46612156974be4";
             origin        "data/standards/components/vinylAcetate.dat";
-            originSha256  "cad58598b4ebd8ceeb7af1676f256a8c4c32c3fe41af01b0251b98e014fd3f39";
+            originSha256  "84ebd7132af579c645e55f5e7e465162641ae9f36dff7e09529126c1f94b469c";
             release       Choupo-2608;
         }
         "parameters/NRTL/nButanol-vinylAcetate.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/nButanol-vinylAcetate.dat"
+        {
+            type          imported;
+            sha256        "1f7d827976956d271815f82a582acac17f4f2ff9988094ee992f833802a8208c";
+            computationalSha256 "94f6e7fb1b72d3d64e68a0e9153ccb85c4a47013e8cd86b0c6431312f8a9322f";
+            origin        "data/standards/parameters/UNIQUAC/nButanol-vinylAcetate.dat";
+            originSha256  "799fe0bbd47d5e09f5d45cd12c18d754a5370214ce8968ca4051d29e45fa4c1b";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/nButanol-vinylAcetate.dat"
+        {
+            type          imported;
+            sha256        "4c64d93b59866b1a5b75128593396b1213bb8c6fd8114699fd790a05a1868958";
+            computationalSha256 "ab8ff8fc0271ef3f58fcfd76ef5984b2a9765bde6ee453427d83d72b2d2756b0";
+            origin        "data/standards/parameters/Wilson/nButanol-vinylAcetate.dat";
+            originSha256  "6307adaa003104fb37b44d46b54cc68b764e6714df1897d18e560eadf236ef68";
             release       Choupo-2608;
         }
     }

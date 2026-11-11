@@ -28,10 +28,10 @@ propertyManifest
         "components/1Propanol.dat"
         {
             type          imported;
-            sha256        "6f8dab202717440a53ff49356dddaa632b8e71ad54a651d6c4f2513519864916";
-            computationalSha256 "c964d7a44b9335ec39b77584095dac5935998f8ccd1f814a9dbe51801adf4389";
+            sha256        "de3f1162278fc2d5ee4995ee4887b3f1c0f3669920483a314461b227ac825867";
+            computationalSha256 "d50d84215a5e98b6539bb27d9c7d0d58bb7fc2a8cf3f66c2f943a76cd6b6d056";
             origin        "data/standards/components/1Propanol.dat";
-            originSha256  "e576ef637c75dec43096777ad538d23ab32c8828de898339ba9226732172d96f";
+            originSha256  "ddcf4f1180bb27e9b6dfa2adb55a9ac88396a36d6a68cb8c48df90d2f04bcfd1";
             release       Choupo-2608;
         }
         "components/cyclohexanone.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "b30112e6b5dbf8431f7267919debaf4facda6b5d81b77c167e326c445d92c020";
             origin        "data/standards/parameters/NRTL/1Propanol-cyclohexanone.dat";
             originSha256  "7b477a2a8ef1b35e737678976925fdb1e647235bffa1d152149e94c6a3f4d379";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Propanol-cyclohexanone.dat"
+        {
+            type          imported;
+            sha256        "8cd1b7343aa7bd449b535659f94850f1be46282baf26ae9f31092efb99e52b44";
+            computationalSha256 "c3f5b1ab678d4a6952731a4f2732c480330cdc423820171110189adcc60f4932";
+            origin        "data/standards/parameters/Wilson/1Propanol-cyclohexanone.dat";
+            originSha256  "a35b6aaed73dcb1431089e1d6e302621957b1300a36aec690656ecfa87aa85bf";
             release       Choupo-2608;
         }
     }

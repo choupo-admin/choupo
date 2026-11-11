@@ -37,10 +37,10 @@ propertyManifest
         "components/methylal.dat"
         {
             type          imported;
-            sha256        "fbdb96d75a57ee188d05ac1ac195896a65ee14695b565d4994b7acd8590b493e";
-            computationalSha256 "df2b77bd422abfabe26846550054b99c444393f5a8498b4003ffd4913a78b73f";
+            sha256        "d667a7e3c3e17feee4a41091f39d89641ae224d6b87f6068841f3fa494fb988a";
+            computationalSha256 "7bd87a716621cb88e4512f463a4a0259d8049ddb5999b86ff2bf9ddc6fb783f5";
             origin        "data/standards/components/methylal.dat";
-            originSha256  "10ac8d72145f06bc16bb46213fc74296d6f1c69a99bfeab6bf6e44a020fc2b51";
+            originSha256  "01fce124ec237cfef4f66da52485d13765f66671a156cb617c3ee79d7ad01e97";
             release       Choupo-2608;
         }
         "parameters/NRTL/dimethylCarbonate-methylal.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "1a8f8c7795c3062ec03f2a5b20134509a9e8003433143976395780834d377edc";
             origin        "data/standards/parameters/NRTL/dimethylCarbonate-methylal.dat";
             originSha256  "ece608080064e274bf93d1b4431791bc19bfe0c68ca60e316fbd8286af54c19e";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/dimethylCarbonate-methylal.dat"
+        {
+            type          imported;
+            sha256        "194ab12186e024097f5dcf4464436b197f0e78d28ad3dbfcefd03125e9b32777";
+            computationalSha256 "ec88e527c970c01db0cdd6c2e2a037d79e324ea09d5d4021e8896faaf5a35fcd";
+            origin        "data/standards/parameters/Wilson/dimethylCarbonate-methylal.dat";
+            originSha256  "8134c297dec4566c27114bf39e4d5d5ce454c65e56f5ba40a648aa3b8d26c35d";
             release       Choupo-2608;
         }
     }

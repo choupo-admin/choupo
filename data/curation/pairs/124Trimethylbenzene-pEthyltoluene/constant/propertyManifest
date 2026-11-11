@@ -28,19 +28,19 @@ propertyManifest
         "components/124Trimethylbenzene.dat"
         {
             type          imported;
-            sha256        "a610b89ab2e979191a60401b152ecd1256a9c20f6ecb1b9779104c81322992eb";
-            computationalSha256 "17d2955022e14e5718a502c8d6f37ee07ac5f8b0ede4ae27fd963a2e9fe57989";
+            sha256        "c69a1ead705980aa5742ee4861bda08eee3a883a419f8ce13edc99b5059be183";
+            computationalSha256 "871145bb8a5e1fc3759aa5b4bb84de39dba0f553ef3a6faa4629fe01dbca6dce";
             origin        "data/standards/components/124Trimethylbenzene.dat";
-            originSha256  "e2241b6ba6289ae25581787306519e47b0d32884a595e53bbe4872350a59c36f";
+            originSha256  "a705245a7c3d39c935422b8a30ce803cc48f6d24242a992c40f88fc7f4adeb15";
             release       Choupo-2608;
         }
         "components/pEthyltoluene.dat"
         {
             type          imported;
-            sha256        "349f6b5489b3757073c9ae427a35187fc437c3a66ffee359163e7e357b24b74f";
-            computationalSha256 "5012d668e193ec218a6c453b47b9e247d55c00a66a2162ff41835be7170b8895";
+            sha256        "17628a5c62a2fc6409dcf009977323530656ccfb1d983a392cd8de13f0d4fbe8";
+            computationalSha256 "46b725bc13b1dc9c2a2c788940b474ff12e52d35e708ef5a73cc4b095e807ad9";
             origin        "data/standards/components/pEthyltoluene.dat";
-            originSha256  "082b0983c54488da649152484003f6fe26abf11e35ce4178690e7065420255d6";
+            originSha256  "e91d89a691707e434cba4891cb845893dc3c0fcafe869996ae26aadcad21f3a0";
             release       Choupo-2608;
         }
         "parameters/NRTL/124Trimethylbenzene-pEthyltoluene.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/124Trimethylbenzene-pEthyltoluene.dat"
+        {
+            type          imported;
+            sha256        "9e7d76007e6417293f92501523b9f67b798b7c824859850ffe30a1258ecd8337";
+            computationalSha256 "5c75ac41edc068ac4a86d9ee64108972d2720111de0f4ec2ed0480919072733b";
+            origin        "data/standards/parameters/UNIQUAC/124Trimethylbenzene-pEthyltoluene.dat";
+            originSha256  "01d09a349298fdf4d21ca96823ceed4954933713117de4855e4df1fe583f2cd5";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/124Trimethylbenzene-pEthyltoluene.dat"
+        {
+            type          imported;
+            sha256        "3e1ae069bc63713c56d13d0c19e4ed4d527c11fecf9ce5eb13e7f9e3a59c1706";
+            computationalSha256 "e85fbca4dc8e19bec7a8bca9faeb4e97d470d5d8f3120e6e74247995b8f3c0e2";
+            origin        "data/standards/parameters/Wilson/124Trimethylbenzene-pEthyltoluene.dat";
+            originSha256  "f51c8e9425e9639ae22e70767f65211f463fc748a5449d7cf7cd6a72d00ab759";
             release       Choupo-2608;
         }
     }

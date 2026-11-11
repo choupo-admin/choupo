@@ -37,10 +37,10 @@ propertyManifest
         "components/mXylene.dat"
         {
             type          imported;
-            sha256        "31e05cfce81a4ad48a63993498067ba9335977201b7c08f73428ecb561233c33";
-            computationalSha256 "14aef5c18c81d0dc2c18d79c3d5122956e769c6e1250a11d7636f9dec649d2eb";
+            sha256        "c24a6c9ac4d388af9f8c2bf739601e19ef9c8d71b2be2683e845e2bbe02d3342";
+            computationalSha256 "6be7c972c0aa573b6dac04f2ee3b608577af2926c9509b2580627a2d55915b1b";
             origin        "data/standards/components/mXylene.dat";
-            originSha256  "b9df745d6fde70e82309ea2398df70cbaebffe5e09a8e7026d83c9cf5fe18921";
+            originSha256  "4d3c5a24e214e3030771078a8aa4d959e837268baf8b491e8a43ed61f0d00e90";
             release       Choupo-2608;
         }
         "parameters/NRTL/diEthylCarbonate-mXylene.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "cc6d95a5c5cac112e71fe6e398ac2cb8dc9d1414d4e2ed7390e48e0625f8e503";
             origin        "data/standards/parameters/NRTL/diEthylCarbonate-mXylene.dat";
             originSha256  "aa800829cfb2f79f49286b073b3be256682c76df156c743a3f6f87fa2e379b1a";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/diEthylCarbonate-mXylene.dat"
+        {
+            type          imported;
+            sha256        "3c97066e38beb9e2eb705d472f5a171f937f1f9af1a58e624bd21e892daa9c24";
+            computationalSha256 "308a7cfcfd35453a2227cb0cb8b8ae648dc2fe2380afafc315279e1f09839279";
+            origin        "data/standards/parameters/Wilson/diEthylCarbonate-mXylene.dat";
+            originSha256  "692c53014ff1b1cd1ca4b893005668979262d5c3b56b6ace2b167b9f723ccd05";
             release       Choupo-2608;
         }
     }

@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "53e76e090400db64f109511e3e94565ff8ed8206bebbbc66562a08ec536d147e";
             release       Choupo-2608;
         }
+        "parameters/Wilson/cumene-nNDimethylacetamide.dat"
+        {
+            type          imported;
+            sha256        "efcdbaf793b46856bab0172e087dded3bcc5b0437f1d6af6dbf83e1cc96a3d23";
+            computationalSha256 "1c28dea784dfea951e43f711f57556a04507281a16422d8e5f54b93aa238162e";
+            origin        "data/standards/parameters/Wilson/cumene-nNDimethylacetamide.dat";
+            originSha256  "21f38f1719dd73def1bb37d094e25e80fea952883e1d14eb3844e57a5d82b445";
+            release       Choupo-2608;
+        }
     }
 }

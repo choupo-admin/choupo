@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "aa9b657fca1cb511ab65bc5f1c9a5d9a14d273221f08b230e0d5966ebb38a1ef";
             release       Choupo-2608;
         }
+        "parameters/Wilson/mCresol-nitrobenzene.dat"
+        {
+            type          imported;
+            sha256        "b3d6055b5abf142c5f173ab135521e27a8a9192d94a591155e30d449e8d2798c";
+            computationalSha256 "b508ed020350181c15d6939e944ba40eba063312134345c342325083f60bfac4";
+            origin        "data/standards/parameters/Wilson/mCresol-nitrobenzene.dat";
+            originSha256  "055deb2a6df7713402dbdffb32e55f1004daba2cb7d63c79a9cfbc98bcc339cf";
+            release       Choupo-2608;
+        }
     }
 }

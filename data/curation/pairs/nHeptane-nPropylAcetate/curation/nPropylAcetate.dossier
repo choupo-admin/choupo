@@ -114,4 +114,188 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nHeptane.a_ij  -11.7808371367;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nHeptane.a_ji  83.8179766034;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2bdf755dcc4c1019";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nPropylAcetate-nHeptane-bubble-je3011979.dat";
+            doi       "10.1021/je3011979";
+            sha256    "eff0ced76a511184daff418f2b586c5c3bca99e7e4230e70665bdfaa60fc20f3";
+            provenance measured;
+            archiveFile "je3011979.xml";
+            system    "nPropylAcetate + nHeptane";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0298; max 0.9912; n 32; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nHeptane.a_ij  -11.7808369278;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nHeptane.a_ji  83.8179763515;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2bdf755dcc4c1019";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nPropylAcetate-nHeptane-bubble-je3011979.dat";
+            doi       "10.1021/je3011979";
+            sha256    "eff0ced76a511184daff418f2b586c5c3bca99e7e4230e70665bdfaa60fc20f3";
+            provenance measured;
+            archiveFile "je3011979.xml";
+            system    "nPropylAcetate + nHeptane";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0298; max 0.9912; n 32; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nHeptane.A_ij  1810.70984727;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nHeptane.A_ji  641.188212172;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2bdf755dcc4c1019";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nPropylAcetate-nHeptane-bubble-je3011979.dat";
+            doi       "10.1021/je3011979";
+            sha256    "eff0ced76a511184daff418f2b586c5c3bca99e7e4230e70665bdfaa60fc20f3";
+            provenance measured;
+            archiveFile "je3011979.xml";
+            system    "nPropylAcetate + nHeptane";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0298; max 0.9912; n 32; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nHeptane.A_ij  1810.70987466;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nHeptane.A_ji  641.188188293;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2bdf755dcc4c1019";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nPropylAcetate-nHeptane-bubble-je3011979.dat";
+            doi       "10.1021/je3011979";
+            sha256    "eff0ced76a511184daff418f2b586c5c3bca99e7e4230e70665bdfaa60fc20f3";
+            provenance measured;
+            archiveFile "je3011979.xml";
+            system    "nPropylAcetate + nHeptane";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0298; max 0.9912; n 32; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

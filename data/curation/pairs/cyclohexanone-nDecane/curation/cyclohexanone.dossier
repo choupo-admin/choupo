@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexanone-nDecane.A_ij  10195.724153;
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexanone-nDecane.A_ji  -4721.54930029;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "0b24a7c3072d9e78";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/cyclohexanone-nDecane-bubble-j.fluid.2004.10.027.dat";
+            doi       "10.1016/j.fluid.2004.10.027";
+            sha256    "dedfec1f89c424222eb64267c206a4a687646def0a2f935f68318ea9398d71d6";
+            provenance measured;
+            archiveFile "j.fluid.2004.10.027.xml";
+            system    "cyclohexanone + nDecane";
+            pressure  "95800.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.135; max 0.918; n 5; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexanone-nDecane.A_ij  10195.724617;
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexanone-nDecane.A_ji  -4721.5493878;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "0b24a7c3072d9e78";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/cyclohexanone-nDecane-bubble-j.fluid.2004.10.027.dat";
+            doi       "10.1016/j.fluid.2004.10.027";
+            sha256    "dedfec1f89c424222eb64267c206a4a687646def0a2f935f68318ea9398d71d6";
+            provenance measured;
+            archiveFile "j.fluid.2004.10.027.xml";
+            system    "cyclohexanone + nDecane";
+            pressure  "95800.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.135; max 0.918; n 5; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

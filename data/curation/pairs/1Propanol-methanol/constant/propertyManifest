@@ -28,10 +28,10 @@ propertyManifest
         "components/1Propanol.dat"
         {
             type          imported;
-            sha256        "6f8dab202717440a53ff49356dddaa632b8e71ad54a651d6c4f2513519864916";
-            computationalSha256 "c964d7a44b9335ec39b77584095dac5935998f8ccd1f814a9dbe51801adf4389";
+            sha256        "de3f1162278fc2d5ee4995ee4887b3f1c0f3669920483a314461b227ac825867";
+            computationalSha256 "d50d84215a5e98b6539bb27d9c7d0d58bb7fc2a8cf3f66c2f943a76cd6b6d056";
             origin        "data/standards/components/1Propanol.dat";
-            originSha256  "e576ef637c75dec43096777ad538d23ab32c8828de898339ba9226732172d96f";
+            originSha256  "ddcf4f1180bb27e9b6dfa2adb55a9ac88396a36d6a68cb8c48df90d2f04bcfd1";
             release       Choupo-2608;
         }
         "components/methanol.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/1Propanol-methanol.dat"
+        {
+            type          imported;
+            sha256        "1c0c1fccfd0093762fe6899359420c2c0ae87eda84a2f9086d10e026252ba1e5";
+            computationalSha256 "aa6cf323d5a7f4c76a1a9513567a382b7d109977b685dc7f25025a16387311a9";
+            origin        "data/standards/parameters/UNIQUAC/1Propanol-methanol.dat";
+            originSha256  "2044a90fb4f239d618483ed9c7241d575ed763280be62765c1d6c318be69e4c0";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Propanol-methanol.dat"
+        {
+            type          imported;
+            sha256        "4343e6d5cab433df4e81828c87ba759ae4392c78410cf782b96595d4d2ae3e37";
+            computationalSha256 "4ecd4b697b24a308eef01896914b1ae38c1d55c5c4e4ab4915583b40033f771a";
+            origin        "data/standards/parameters/Wilson/1Propanol-methanol.dat";
+            originSha256  "4b514dd71bac65f2c9d105f45dff64e808a5063eb68e0bd1fb1971aba72ea0ad";
             release       Choupo-2608;
         }
     }

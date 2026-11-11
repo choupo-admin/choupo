@@ -28,19 +28,19 @@ propertyManifest
         "components/benzene.dat"
         {
             type          imported;
-            sha256        "af31cf9da05b7d34c657c430cef68abbf0f08db2402827a4867f7a64073225c9";
-            computationalSha256 "b8a586d23e8f38eb0b5c0f9534f7057eb2d4059de464edbdc18995094fdca93e";
+            sha256        "2c20d6d671dd5884ed8e3668529ddaad20bf3c2a02d1a5130aac02dd790aa62c";
+            computationalSha256 "d710160da938e1163f77e26b0cc49af7c2a2e4563b37f914ce4bb001500decc4";
             origin        "data/standards/components/benzene.dat";
-            originSha256  "77d7604645ff3a28b34d91023e497586af35fa74849c914378f858666a2b900e";
+            originSha256  "dc7869a494c8e333ed57af66fa4086592b32ac5330960750b5d2775030c9b6bc";
             release       Choupo-2608;
         }
         "components/oXylene.dat"
         {
             type          imported;
-            sha256        "d6bdb61163c015dec26d2cefff15a2c919b7a57896b8592d3605374a272dffa0";
-            computationalSha256 "a8ffc32a52cd609309dfebd10675e693ad9127c62d05bf6ddf8603f0a78620a2";
+            sha256        "1360348dc25bac70a331fc7d65535e3d3cd15689dc0b3bb225194d2687ce957f";
+            computationalSha256 "1c533f2710b61bc84d7205b1850b2db3326e00d5d45dc4ffccbb534ca41574f8";
             origin        "data/standards/components/oXylene.dat";
-            originSha256  "b6c6ede5d7ff713e82c02f27faf3ced0b49ef4762c4baa0eae22702c78888efe";
+            originSha256  "4421f5f2225fb65f840043469d7083f59ada5f6066c48198fbbc56e163c28da5";
             release       Choupo-2608;
         }
         "parameters/NRTL/benzene-oXylene.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/benzene-oXylene.dat"
+        {
+            type          imported;
+            sha256        "67b97cebc698bc491fd7dc5145e2b24578aad99a4a3151a19dddc78b8021306a";
+            computationalSha256 "72fdf364b24ae58923dccc86fee738f3efe94b5b46b337c3bf2a14c02444cfd3";
+            origin        "data/standards/parameters/UNIQUAC/benzene-oXylene.dat";
+            originSha256  "55f8e4fd9bffc0e202a94712cc828f6d180254e264692e381bded777296e4f0a";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/benzene-oXylene.dat"
+        {
+            type          imported;
+            sha256        "f09d6537fdbfd5b3221238838a7a04d112aacdbf6c9e5607ec1c775a319100c2";
+            computationalSha256 "8a02de6a3dc7e825e695710648f55890c1a245f95b0bddcf1f1780feeed97e59";
+            origin        "data/standards/parameters/Wilson/benzene-oXylene.dat";
+            originSha256  "f0d5271584c1674abf0620a5b876be382c98c7633f0f8b053e735abd3cac585d";
             release       Choupo-2608;
         }
     }

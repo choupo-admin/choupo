@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "4337a268e557eaf2a2eddc07a61faac9b00213fc56ee0735bf3ff8cbebd74152";
             release       Choupo-2608;
         }
+        "parameters/Wilson/dimethylSulfoxide-nNDimethylacetamide.dat"
+        {
+            type          imported;
+            sha256        "9e104c5518e095ae9b45af04b7394c057d9f81410a7683f450e1f758119c3e1b";
+            computationalSha256 "477935779b4c023d3f224d17a98d26563a7aee951c5eb9b161ca4885db52e00e";
+            origin        "data/standards/parameters/Wilson/dimethylSulfoxide-nNDimethylacetamide.dat";
+            originSha256  "c96f56509dd103b5078c83cf030803289be2387157e5d906b38588ff80e6a919";
+            release       Choupo-2608;
+        }
     }
 }

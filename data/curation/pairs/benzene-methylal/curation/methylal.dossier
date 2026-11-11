@@ -114,4 +114,188 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.a_ij  -12.9063485975;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.a_ji  114.912873029;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "cf3f4b9406b710e8";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylal-benzene-bubble-je049681u.dat";
+            doi       "10.1021/je049681u";
+            sha256    "d519c60fbcb19891b0d34e3181e1724b3573e6532ffffc6e1777483cd6b85c5d";
+            provenance measured;
+            archiveFile "je049681u.xml";
+            system    "methylal + benzene";
+            pressure  "95960.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0615; max 0.8607; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.a_ij  -12.9063485472;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.a_ji  114.912872965;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "cf3f4b9406b710e8";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylal-benzene-bubble-je049681u.dat";
+            doi       "10.1021/je049681u";
+            sha256    "d519c60fbcb19891b0d34e3181e1724b3573e6532ffffc6e1777483cd6b85c5d";
+            provenance measured;
+            archiveFile "je049681u.xml";
+            system    "methylal + benzene";
+            pressure  "95960.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0615; max 0.8607; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.A_ij  2327.06482793;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.A_ji  805.305532589;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "cf3f4b9406b710e8";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylal-benzene-bubble-je049681u.dat";
+            doi       "10.1021/je049681u";
+            sha256    "d519c60fbcb19891b0d34e3181e1724b3573e6532ffffc6e1777483cd6b85c5d";
+            provenance measured;
+            archiveFile "je049681u.xml";
+            system    "methylal + benzene";
+            pressure  "95960.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0615; max 0.8607; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.A_ij  2327.06483025;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.A_ji  805.305530131;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "cf3f4b9406b710e8";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylal-benzene-bubble-je049681u.dat";
+            doi       "10.1021/je049681u";
+            sha256    "d519c60fbcb19891b0d34e3181e1724b3573e6532ffffc6e1777483cd6b85c5d";
+            provenance measured;
+            archiveFile "je049681u.xml";
+            system    "methylal + benzene";
+            pressure  "95960.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0615; max 0.8607; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

@@ -177,6 +177,12 @@ public:
     void setAuthoredV2(const DictPtr& d) { authoredV2_ = d; }
     void setDatabase(const Database* db) { database_ = db; }
     DictPtr        authoredV2() const { return authoredV2_; }
+    //  The authored system AS THIS OP SEES IT: the case's, with the op's own
+    //  `thermo {}` fragment merged on (the ONE merge, ThermoOverride.H) when
+    //  it declares one -- so a fitParameters op can regress a UNIQUAC or a
+    //  Wilson pair in a case whose system declares NRTL (DEV.md 4c C294).
+    //  An op with no `thermo {}` gets authoredV2() itself, unchanged.
+    DictPtr        authoredV2For(const DictPtr& opDict) const;
     const Database* database()  const { return database_;   }
 
     using Factory = std::function<std::unique_ptr<PropertyOperation>()>;

@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-ethylBenzene.a_ij  1007.46334671;
+        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-ethylBenzene.a_ji  -343.539330375;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "bbd17a35293dd092";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Pentanol-ethylBenzene-bubble-j.jct.2004.11.015.dat";
+            doi       "10.1016/j.jct.2004.11.015";
+            sha256    "0b0ecaf961c36dd7300bf4c0ee8640cbba1c9a07e2d75b74fedbd59150174849";
+            provenance measured;
+            archiveFile "j.jct.2004.11.015.xml";
+            system    "1Pentanol + ethylBenzene";
+            pressure  "94700.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1399; max 0.8884; n 6; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-ethylBenzene.a_ij  1007.46334612;
+        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-ethylBenzene.a_ji  -343.539330302;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "bbd17a35293dd092";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Pentanol-ethylBenzene-bubble-j.jct.2004.11.015.dat";
+            doi       "10.1016/j.jct.2004.11.015";
+            sha256    "0b0ecaf961c36dd7300bf4c0ee8640cbba1c9a07e2d75b74fedbd59150174849";
+            provenance measured;
+            archiveFile "j.jct.2004.11.015.xml";
+            system    "1Pentanol + ethylBenzene";
+            pressure  "94700.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1399; max 0.8884; n 6; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

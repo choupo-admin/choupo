@@ -28,19 +28,19 @@ propertyManifest
         "components/1Hexanol.dat"
         {
             type          imported;
-            sha256        "ff92f5582d2dd1ba667f3d466054ce752b793a12050556496d6521f08fef7c91";
-            computationalSha256 "6363abe381b95dabcba93eb20cca67bd715fbcf43e6d5b0fb6a78766b1500711";
+            sha256        "56c4231bc9a181e47909ed63aa4e9fce3611035b32d920276965dc874f42d9a0";
+            computationalSha256 "babb0f8da2e12886df84dc04b197ccd3fee3a2bf29319c24a0cdcde72a28d2a7";
             origin        "data/standards/components/1Hexanol.dat";
-            originSha256  "ab4dc5089f2f1bec42920a8f7b7301da49a9ac935c439900666185ba0de805c4";
+            originSha256  "45415f58f5f9b2bb79389cafffc6bd334c7010b417c03527393aa5f519c88388";
             release       Choupo-2608;
         }
         "components/nDecane.dat"
         {
             type          imported;
-            sha256        "1b64e0e7fef6e2b277d574f849ae687f5522f3671d704d8bed2d3f578db10059";
-            computationalSha256 "d6a9ee66d8d6dd1467ffb9f4f97b79ed9205af98255a2fa15428b87a73ec72fd";
+            sha256        "dc134490f41e3a8ac612df6c816894cd5d48d78c8de8e358d5d002bc1c168d16";
+            computationalSha256 "db998ca1a7ce1794eeb761efa4f902ab545998f122c5a40a55500321745de919";
             origin        "data/standards/components/nDecane.dat";
-            originSha256  "fd51ee55b3ce6dfe3519b2190919b7db462cab9dfc6e52a13c611da79e7c135b";
+            originSha256  "d3eb0769d43d0e76ccbdb97d3a106719a4635b848be11342b1d17f9231985544";
             release       Choupo-2608;
         }
         "parameters/NRTL/1Hexanol-nDecane.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/1Hexanol-nDecane.dat"
+        {
+            type          imported;
+            sha256        "2501464543b51913a07d069b3577ca41ec2850a32c5dc165b82c6c70d970d04c";
+            computationalSha256 "3470e8f0adf2e8749c8c97af653a5cd42fad7fe10b04ecd7b56c422400912561";
+            origin        "data/standards/parameters/UNIQUAC/1Hexanol-nDecane.dat";
+            originSha256  "92aefabfe48114e05e7ea8286fa24fc1fad0a7bc57dababe06d55a08d1cb483c";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Hexanol-nDecane.dat"
+        {
+            type          imported;
+            sha256        "5d75188c9654864c34a33bc2949fe61de0a0b7c4e349891c74a4590a15a3c9fc";
+            computationalSha256 "f31e095cbf15312fffca6ae084f38f62736ea1cc1626e0dbac325555068327ae";
+            origin        "data/standards/parameters/Wilson/1Hexanol-nDecane.dat";
+            originSha256  "a8b550ea5af452697ce190962570142c16adb92f6e11d87113a6ce93521d0937";
             release       Choupo-2608;
         }
     }

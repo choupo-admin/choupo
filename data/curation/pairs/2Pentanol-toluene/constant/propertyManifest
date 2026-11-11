@@ -28,19 +28,19 @@ propertyManifest
         "components/2Pentanol.dat"
         {
             type          imported;
-            sha256        "10f691baeef2c7da6bc875224bc5eabb4679786777e59d4bbe142bded6ea69ac";
-            computationalSha256 "78538cfe4759e2e4d9e3da3647b400b498cdb899196e155200ec6b9f145fedb8";
+            sha256        "418a095eafb88453b89306be24b15411679ca472428acb942e4d5a34be2827db";
+            computationalSha256 "7c03c4941c839ce61547c8e8f015fccadd85f721ff3d175d3f9aea61621412d2";
             origin        "data/standards/components/2Pentanol.dat";
-            originSha256  "0ae113f45b02dbe7e56de45f9fe98846a4fbcb4a130b6f2740337e67129fddbc";
+            originSha256  "3ce4bd074554ea74ef27a23a3f7ac9d104684f715f81239b69804ede0f9581eb";
             release       Choupo-2608;
         }
         "components/toluene.dat"
         {
             type          imported;
-            sha256        "025c441842aa1728935905ed8dfa50db5a6405ee082618c11673f665596d4911";
-            computationalSha256 "f66debfbcd493c4c7c4636809e784a1e07a6c482c3baed13ba34dce12ae63f79";
+            sha256        "5fb900674321baa67135bfeb2c8f80e63d9af183c35f1615477d751b4299f14b";
+            computationalSha256 "55e1e2986dd1c3fc08c951e842a86b062ee6a7bfbc1e1317387e69149a139e36";
             origin        "data/standards/components/toluene.dat";
-            originSha256  "fe5cb21ba09cf44b41de252f6a5a5dd21b6803fcd40666f6fed8d9de8e68563a";
+            originSha256  "ad1533cb0d94caade355d7149fd88ee1ad07c945f5d4c85f4bcce925766250b9";
             release       Choupo-2608;
         }
         "parameters/NRTL/2Pentanol-toluene.dat"
@@ -50,6 +50,24 @@ propertyManifest
             computationalSha256 "c4c449f5d0d0c21f1a6eb5a4b8c9acd8016c0bf1d318d48e798e6a03742643f5";
             origin        "data/standards/parameters/NRTL/2Pentanol-toluene.dat";
             originSha256  "c1e7783b285eb48f3d99f909bb1ea44476e4e5392e8233177d7476a7f15b8ad3";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/2Pentanol-toluene.dat"
+        {
+            type          imported;
+            sha256        "8c039712b4086c025fd159d48a9bbe0d4d20e08c167c914b48674d92a28291c0";
+            computationalSha256 "48e8f91e73e3bfe8c82cf70186a471da419511b6416c91145fc387245c5bae65";
+            origin        "data/standards/parameters/UNIQUAC/2Pentanol-toluene.dat";
+            originSha256  "3b36bd42c972ff13509a9a4a1482a4c351ae1f89af7c175f2407a2d699440090";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Pentanol-toluene.dat"
+        {
+            type          imported;
+            sha256        "6975fb87be06eedb20552b3714219bff6dbe8c68353ba0a731ec09cb67b6320b";
+            computationalSha256 "2b4ef97067cf03298bf78966c6915dd89480c5de949c870754a1fd395f6da711";
+            origin        "data/standards/parameters/Wilson/2Pentanol-toluene.dat";
+            originSha256  "98f44e0cc6ae9b3f05aba40c5d724902eb7cb18fd84962860552b3cf84356182";
             release       Choupo-2608;
         }
     }

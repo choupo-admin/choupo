@@ -129,6 +129,27 @@ std::vector<std::string> PropertyOperation::availableTypes()
     return out;
 }
 
+DictPtr PropertyOperation::authoredV2For(const DictPtr& opDict) const
+{
+    if (!authoredV2_ || !opDict || !opDict->found("thermo"))
+        return authoredV2_;
+    auto frag = opDict->subDict("thermo");
+    auto merged = mergeThermoOverride(authoredV2_, frag, "op thermo{} override");
+    //  The fragment's inline pair (`binaryParameters`) is read by the fit on
+    //  its PRIVATE working copy (FitParameters deep-copies this system and
+    //  rebuilds it every iteration), so the unread-key audit, which watches
+    //  this op dict, never sees the read.  That reader is named here; any
+    //  other key of the fragment stays audited.
+    if (frag->found("equilibrium"))
+    {
+        auto e = frag->subDict("equilibrium");
+        if (e->found("liquid") && e->subDict("liquid")->found("activityModel"))
+            e->subDict("liquid")->subDict("activityModel")
+             ->noteForeignBlock("binaryParameters");
+    }
+    return merged;
+}
+
 std::unique_ptr<ThermoPackage>
 PropertyOperation::thermoForOp(const DictPtr& opDict) const
 {

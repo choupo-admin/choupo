@@ -37,10 +37,10 @@ propertyManifest
         "components/nButylbenzene.dat"
         {
             type          imported;
-            sha256        "296c20e0678fd628f13f33cb91e65b23a7b1bdec86e2f206c3d1e3692543e7b2";
-            computationalSha256 "02eddd831fa9307caeb34fbf2e9d9dcdd4279c933a5d36769f44ebd4c89a9189";
+            sha256        "d6081b2d7f7c6cd9013659b1a5ee084d9c2b778961f5b8b47013162cad15dbfc";
+            computationalSha256 "cc9e908125da1306d169300cc178593bd1e93f089aaee54f5f556bab8759832a";
             origin        "data/standards/components/nButylbenzene.dat";
-            originSha256  "d76b54cf10a0ecb5da44b805b04c4a0bedbfdfea4a0b4670dbca755855b83735";
+            originSha256  "b86e629b1cdb95d459bad9f0d8a8cee793c98c1062d08b03c380cba54cd7577b";
             release       Choupo-2608;
         }
         "parameters/NRTL/anisole-nButylbenzene.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "8faabcdd72c4f4bc0eaf6883749ebc59cc94015cd7040693b9b1c92ad839f92a";
             origin        "data/standards/parameters/NRTL/anisole-nButylbenzene.dat";
             originSha256  "3f7bd910c5d4304a217cfedd214c250417542328b22a9249dd05034b9e96fcef";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/anisole-nButylbenzene.dat"
+        {
+            type          imported;
+            sha256        "68556e8910fb023980eadc3d8f16f2471349fd1e2f5874a9a4d66aa755957fb4";
+            computationalSha256 "8e0a031ac07181b030061b7f2669afbb20c2d895e97e18c50f76df0a44fd2127";
+            origin        "data/standards/parameters/Wilson/anisole-nButylbenzene.dat";
+            originSha256  "9eab04c638b6f874aaf599e6a042ee568525d5a591c9f0b353ee22eddb817464";
             release       Choupo-2608;
         }
     }

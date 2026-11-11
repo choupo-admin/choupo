@@ -28,19 +28,19 @@ propertyManifest
         "components/isopropylAcetate.dat"
         {
             type          imported;
-            sha256        "2328fd502eebc591dc0d81570786331f2d6647eb2b71bfe7172809332c8e3fe0";
-            computationalSha256 "1c866ebe928bb3a9819829800fbff05561232d4be946665e4b122aac3e9f145f";
+            sha256        "e7ac260d88cf4a0bfa207e4911233608a56c4d10a61c24e4f7747ea6e7c0f438";
+            computationalSha256 "b0aad9448ce9dd1414628dc55a1e66f00915a1d484ade9e5aa47fe646ee093c7";
             origin        "data/standards/components/isopropylAcetate.dat";
-            originSha256  "b4165a2c125255c87da7f45e828cad88381ca66d9b8bb23696bd173c77aae660";
+            originSha256  "72e882241e06e02aeea5b7957fc17349db5a3ac5b52a361372ead9ddfd714662";
             release       Choupo-2608;
         }
         "components/methylEthylKetone.dat"
         {
             type          imported;
-            sha256        "586be099c39ea991906a44b6e4174465bc5e616d454876c74d82213df9047df8";
-            computationalSha256 "9482c1f6a07785e2c4edc34219616f07e0c69837a8d3d2343ead92c064a412cb";
+            sha256        "6b6f56d29c752e24d3899c2a834a66f02f010ca805f04e1f5d58d35e0d6009ca";
+            computationalSha256 "e1531518f0c1539f271be7ef1817207bbd884c73ace0d04f8b6b27b8d14fec5b";
             origin        "data/standards/components/methylEthylKetone.dat";
-            originSha256  "94912c130c9f2e982c8024d262432ce98809290bc68daaad011926f80f84413a";
+            originSha256  "57244b57a11a3f2abbac09ca3c9cacb9c8a6445185e0888404e59cb3ee10e6a5";
             release       Choupo-2608;
         }
         "parameters/NRTL/isopropylAcetate-methylEthylKetone.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/isopropylAcetate-methylEthylKetone.dat"
+        {
+            type          imported;
+            sha256        "5bdf92a609ba4648380dfb210f7f5126c571fbae649e62c485360527ac5a4d1f";
+            computationalSha256 "624b45def1e25280506230f53ce7714246a53296ce0b289bc8a59ec0cd7107b7";
+            origin        "data/standards/parameters/UNIQUAC/isopropylAcetate-methylEthylKetone.dat";
+            originSha256  "218b75c1de277c9f8ef6c6a87f7e73eed985ccc5cade19f406afb0a32856e468";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/isopropylAcetate-methylEthylKetone.dat"
+        {
+            type          imported;
+            sha256        "c6c285ed67cd99d30d00bcba835bb32cae53206832d26b037ca4a5e8f2ce3272";
+            computationalSha256 "e7f89c5eb01b17ce63d2f219958eeeebae93c77da38b2e8d06f36bf260784f59";
+            origin        "data/standards/parameters/Wilson/isopropylAcetate-methylEthylKetone.dat";
+            originSha256  "8a812514212582256b364c42d5e0cbc2500344071530740e33b53c744c09afa8";
             release       Choupo-2608;
         }
     }

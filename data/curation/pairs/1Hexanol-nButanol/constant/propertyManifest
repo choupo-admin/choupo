@@ -28,10 +28,10 @@ propertyManifest
         "components/1Hexanol.dat"
         {
             type          imported;
-            sha256        "ff92f5582d2dd1ba667f3d466054ce752b793a12050556496d6521f08fef7c91";
-            computationalSha256 "6363abe381b95dabcba93eb20cca67bd715fbcf43e6d5b0fb6a78766b1500711";
+            sha256        "56c4231bc9a181e47909ed63aa4e9fce3611035b32d920276965dc874f42d9a0";
+            computationalSha256 "babb0f8da2e12886df84dc04b197ccd3fee3a2bf29319c24a0cdcde72a28d2a7";
             origin        "data/standards/components/1Hexanol.dat";
-            originSha256  "ab4dc5089f2f1bec42920a8f7b7301da49a9ac935c439900666185ba0de805c4";
+            originSha256  "45415f58f5f9b2bb79389cafffc6bd334c7010b417c03527393aa5f519c88388";
             release       Choupo-2608;
         }
         "components/nButanol.dat"
@@ -50,6 +50,24 @@ propertyManifest
             computationalSha256 "d6d84ec69680dd185ddfdb83c657307d54a37e7996f70f634d2c3fb924c74885";
             origin        "data/standards/parameters/NRTL/1Hexanol-nButanol.dat";
             originSha256  "50e37171a72cfcbcaffd820579f71bc790fedae9b5ddf07022abefbbd9f61566";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/1Hexanol-nButanol.dat"
+        {
+            type          imported;
+            sha256        "05098d27dce2318932fcb60ef618fda6c44fa42a06890cc8a7eb728f36f5c7cd";
+            computationalSha256 "a11d020b4f81587cf5fbbe3ece312541b83681ad0c0d28a1eb8e4301aaef1fb9";
+            origin        "data/standards/parameters/UNIQUAC/1Hexanol-nButanol.dat";
+            originSha256  "9ff852bb7c94cf7d94886c7b5b436d3104566b56d8a86a2fe46aedef8e929f02";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Hexanol-nButanol.dat"
+        {
+            type          imported;
+            sha256        "896a8e73456d8c069f009476c29a0f3cffb2654423b5a855b40d6dea56e8ada6";
+            computationalSha256 "2a4b2466824cd6fdd913e58dd7eb2ef49e420274639c2f405350a2eddbeb3e6e";
+            origin        "data/standards/parameters/Wilson/1Hexanol-nButanol.dat";
+            originSha256  "dc43035accde1083806d5fc84fc1f06bf7994b9b464e176deaac81ca5b63e18e";
             release       Choupo-2608;
         }
     }

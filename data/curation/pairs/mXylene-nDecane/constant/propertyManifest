@@ -28,19 +28,19 @@ propertyManifest
         "components/mXylene.dat"
         {
             type          imported;
-            sha256        "31e05cfce81a4ad48a63993498067ba9335977201b7c08f73428ecb561233c33";
-            computationalSha256 "14aef5c18c81d0dc2c18d79c3d5122956e769c6e1250a11d7636f9dec649d2eb";
+            sha256        "c24a6c9ac4d388af9f8c2bf739601e19ef9c8d71b2be2683e845e2bbe02d3342";
+            computationalSha256 "6be7c972c0aa573b6dac04f2ee3b608577af2926c9509b2580627a2d55915b1b";
             origin        "data/standards/components/mXylene.dat";
-            originSha256  "b9df745d6fde70e82309ea2398df70cbaebffe5e09a8e7026d83c9cf5fe18921";
+            originSha256  "4d3c5a24e214e3030771078a8aa4d959e837268baf8b491e8a43ed61f0d00e90";
             release       Choupo-2608;
         }
         "components/nDecane.dat"
         {
             type          imported;
-            sha256        "1b64e0e7fef6e2b277d574f849ae687f5522f3671d704d8bed2d3f578db10059";
-            computationalSha256 "d6a9ee66d8d6dd1467ffb9f4f97b79ed9205af98255a2fa15428b87a73ec72fd";
+            sha256        "dc134490f41e3a8ac612df6c816894cd5d48d78c8de8e358d5d002bc1c168d16";
+            computationalSha256 "db998ca1a7ce1794eeb761efa4f902ab545998f122c5a40a55500321745de919";
             origin        "data/standards/components/nDecane.dat";
-            originSha256  "fd51ee55b3ce6dfe3519b2190919b7db462cab9dfc6e52a13c611da79e7c135b";
+            originSha256  "d3eb0769d43d0e76ccbdb97d3a106719a4635b848be11342b1d17f9231985544";
             release       Choupo-2608;
         }
         "parameters/NRTL/mXylene-nDecane.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/mXylene-nDecane.dat"
+        {
+            type          imported;
+            sha256        "d8ce81971436c04e9f71111186353aea6cc2b3970197529ca7f1915b849662f6";
+            computationalSha256 "527ae0824fd713436873cd1e681effaae7831a8c301e6557c6a31c4b7feaf4f3";
+            origin        "data/standards/parameters/UNIQUAC/mXylene-nDecane.dat";
+            originSha256  "2f6540062eac8dfe20e115d0e930a002bb031f376e621cba31d0c1ec44e48717";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/mXylene-nDecane.dat"
+        {
+            type          imported;
+            sha256        "0d3f78e8a4b02d5d5b77ba1842e193c3653411ae50981726bf1d0463d33fdaf7";
+            computationalSha256 "3ba8d2fcb0bda9e9f536e0f8c88b8501cbed10f413f597109e0aa9b383796d5b";
+            origin        "data/standards/parameters/Wilson/mXylene-nDecane.dat";
+            originSha256  "03fc51fe82cd3266d18939e7a37e37d018bf5c1ef66c68f26cc70d738eb9b16d";
             release       Choupo-2608;
         }
     }

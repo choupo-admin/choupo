@@ -37,10 +37,10 @@ propertyManifest
         "components/oXylene.dat"
         {
             type          imported;
-            sha256        "d6bdb61163c015dec26d2cefff15a2c919b7a57896b8592d3605374a272dffa0";
-            computationalSha256 "a8ffc32a52cd609309dfebd10675e693ad9127c62d05bf6ddf8603f0a78620a2";
+            sha256        "1360348dc25bac70a331fc7d65535e3d3cd15689dc0b3bb225194d2687ce957f";
+            computationalSha256 "1c533f2710b61bc84d7205b1850b2db3326e00d5d45dc4ffccbb534ca41574f8";
             origin        "data/standards/components/oXylene.dat";
-            originSha256  "b6c6ede5d7ff713e82c02f27faf3ced0b49ef4762c4baa0eae22702c78888efe";
+            originSha256  "4421f5f2225fb65f840043469d7083f59ada5f6066c48198fbbc56e163c28da5";
             release       Choupo-2608;
         }
         "parameters/NRTL/diEthylCarbonate-oXylene.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "a479bb28b2914a55f0e99c8ec29ad806c314eb18c1200381d9f640ea19b72f51";
             origin        "data/standards/parameters/NRTL/diEthylCarbonate-oXylene.dat";
             originSha256  "3a4b62d31c223b43a5e3ed4d1664ab18f912ed7c97a86eb49a161bf1415ebdb9";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/diEthylCarbonate-oXylene.dat"
+        {
+            type          imported;
+            sha256        "b24adc4f6603fdecb5308a49e000d06198f1fbf5e9bb38513bda66db8eee9eb7";
+            computationalSha256 "6492689dde7a3bd83b7cfd7b8165e9c0fe57e9acf0a15ba2980e80370989e1d4";
+            origin        "data/standards/parameters/Wilson/diEthylCarbonate-oXylene.dat";
+            originSha256  "b615973a3f62e1730cd6b6646fedb71d3875e8c9849f8882aee804d5914fd378";
             release       Choupo-2608;
         }
     }

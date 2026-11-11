@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "4781c21edf2233a303f0fc644b4cc7c8d8f3815aa89c1d6f6bb95e27c236178d";
             release       Choupo-2608;
         }
+        "parameters/Wilson/cyclohexanone-dimethylCarbonate.dat"
+        {
+            type          imported;
+            sha256        "90094b2429272fc6385af1328c60978a3a2ab4cd449109f8479c356ca77e1f83";
+            computationalSha256 "40604eecbe3ab179da40b6d135c5af1748b370e348f2b0397bf353aa63f94c18";
+            origin        "data/standards/parameters/Wilson/cyclohexanone-dimethylCarbonate.dat";
+            originSha256  "48dd583eaf62b659b709e6db8b1f4c66aa769682aa74686c071563ebf9ee8f32";
+            release       Choupo-2608;
+        }
     }
 }

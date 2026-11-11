@@ -52,5 +52,14 @@ propertyManifest
             originSha256  "990499ed3498de9beb829ae0da35841c58da71f96444e318ca1a876cfd46d5f6";
             release       Choupo-2608;
         }
+        "parameters/Wilson/Dichloroethane-monochlorobenzene.dat"
+        {
+            type          imported;
+            sha256        "ac8215587262f9747d49814aac204c42466d97198cfce0a0dc89d647ca12a3ef";
+            computationalSha256 "7e71e599432a743af2eefc7a5b96980f883f29d9147701030ef2a259cccbbda6";
+            origin        "data/standards/parameters/Wilson/Dichloroethane-monochlorobenzene.dat";
+            originSha256  "a23800022bdadb2071c844af851397ab18f73e9a73d5996ec4eec1616c40d10e";
+            release       Choupo-2608;
+        }
     }
 }

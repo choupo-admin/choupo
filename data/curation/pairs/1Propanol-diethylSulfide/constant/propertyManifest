@@ -28,10 +28,10 @@ propertyManifest
         "components/1Propanol.dat"
         {
             type          imported;
-            sha256        "6f8dab202717440a53ff49356dddaa632b8e71ad54a651d6c4f2513519864916";
-            computationalSha256 "c964d7a44b9335ec39b77584095dac5935998f8ccd1f814a9dbe51801adf4389";
+            sha256        "de3f1162278fc2d5ee4995ee4887b3f1c0f3669920483a314461b227ac825867";
+            computationalSha256 "d50d84215a5e98b6539bb27d9c7d0d58bb7fc2a8cf3f66c2f943a76cd6b6d056";
             origin        "data/standards/components/1Propanol.dat";
-            originSha256  "e576ef637c75dec43096777ad538d23ab32c8828de898339ba9226732172d96f";
+            originSha256  "ddcf4f1180bb27e9b6dfa2adb55a9ac88396a36d6a68cb8c48df90d2f04bcfd1";
             release       Choupo-2608;
         }
         "components/diethylSulfide.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "b0915bc13a819243b8423693f1951b581864b9f09736e12138f697afbb2bc2cd";
             origin        "data/standards/parameters/NRTL/1Propanol-diethylSulfide.dat";
             originSha256  "f014000a38428bf1844d90935201d31798aedea6900602ae8827d7f0d31ec011";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Propanol-diethylSulfide.dat"
+        {
+            type          imported;
+            sha256        "6632ccadbcc578f378f9c8d7be09f67e414df52d296fe4026461447c8d1cdbab";
+            computationalSha256 "6b87a225aa1e779e34876af1cf77ed3b7c0b7ea7619ededa1d2b233af929b008";
+            origin        "data/standards/parameters/Wilson/1Propanol-diethylSulfide.dat";
+            originSha256  "3fafce9be79a64b2b837d6d05ec44d7cbc6b52e5764e1b23a3a2e2ba530be2d6";
             release       Choupo-2608;
         }
     }

@@ -28,19 +28,19 @@ propertyManifest
         "components/benzene.dat"
         {
             type          imported;
-            sha256        "af31cf9da05b7d34c657c430cef68abbf0f08db2402827a4867f7a64073225c9";
-            computationalSha256 "b8a586d23e8f38eb0b5c0f9534f7057eb2d4059de464edbdc18995094fdca93e";
+            sha256        "2c20d6d671dd5884ed8e3668529ddaad20bf3c2a02d1a5130aac02dd790aa62c";
+            computationalSha256 "d710160da938e1163f77e26b0cc49af7c2a2e4563b37f914ce4bb001500decc4";
             origin        "data/standards/components/benzene.dat";
-            originSha256  "77d7604645ff3a28b34d91023e497586af35fa74849c914378f858666a2b900e";
+            originSha256  "dc7869a494c8e333ed57af66fa4086592b32ac5330960750b5d2775030c9b6bc";
             release       Choupo-2608;
         }
         "components/nNonane.dat"
         {
             type          imported;
-            sha256        "c6e230c3962584501169ad403a0503445df26695175139b9b9aa7f375908ce02";
-            computationalSha256 "e30086a65f8408a79d0e7437a9a7659bd8e52db983973fcb9ae84c4022c09606";
+            sha256        "8eb22a21343cc0d31c90a9cb14c5afa3c97168ac52fcbc4991b8b99771e08fed";
+            computationalSha256 "57fbdc20edd02c1ad7de179afe514d5dec7797c85be368066ca248a7cd9c1bdb";
             origin        "data/standards/components/nNonane.dat";
-            originSha256  "04a2c2a72fb0170f6e58dca0a4ced5760f40fbde24d6f7bdd0ffab546944f9f8";
+            originSha256  "b6375e78f76e6dca07a13fcb69894971e9a05f5d1c94352bd2772f10a067bf2f";
             release       Choupo-2608;
         }
         "parameters/NRTL/benzene-nNonane.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/benzene-nNonane.dat"
+        {
+            type          imported;
+            sha256        "f4d8a738efa836c6ae83f20b8855a0f5289f258175e6ac33e8cb76c6c2a92bfe";
+            computationalSha256 "3ac2c10c9a07994895ffff70003f2e5c509ce3295c51d6d7e7a735ad4b7e858d";
+            origin        "data/standards/parameters/UNIQUAC/benzene-nNonane.dat";
+            originSha256  "0e0c70d401b3d25c4252a88be9338caa4d5505606256f1a93ee06b119c722979";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/benzene-nNonane.dat"
+        {
+            type          imported;
+            sha256        "00236061d0c79b717b14430038e3f1cc21a2927ab6fb6e1c781a4387eb9b60d1";
+            computationalSha256 "c098a8850a79eea8137ebb5e09090d859a78f4f2ea640ddeb38e79442f8bad2c";
+            origin        "data/standards/parameters/Wilson/benzene-nNonane.dat";
+            originSha256  "e5457b98d9707c4f16850ee30eeaae81735a55f0f44eec8ae7a59214e738408a";
             release       Choupo-2608;
         }
     }

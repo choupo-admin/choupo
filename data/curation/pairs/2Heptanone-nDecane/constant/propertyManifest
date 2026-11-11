@@ -28,19 +28,19 @@ propertyManifest
         "components/2Heptanone.dat"
         {
             type          imported;
-            sha256        "970091c32a5827797afe2d9020b0c650f8aa7039751f20649be153fc27d45a9c";
-            computationalSha256 "49d644b45dabebff709edc09ab8f5e1675ab2d495a409b40529dd44027830a47";
+            sha256        "37f0456f8dbbfa6d74525b9d61544a9dab2ded6cc65c37615f50e095b1fd3208";
+            computationalSha256 "b91fa0154e97eabc72fb423f7f11522af077be5f7fbe6c80ba274ba909a3688c";
             origin        "data/standards/components/2Heptanone.dat";
-            originSha256  "b3791fbe24bbacb22b9cc738dfa0b2b8254ac6bc30809a431ccb56ead4d9a0aa";
+            originSha256  "6f168e06c142b6cad791dd377a923a97ab4b1ea9b52d2f78890eca114c35824e";
             release       Choupo-2608;
         }
         "components/nDecane.dat"
         {
             type          imported;
-            sha256        "1b64e0e7fef6e2b277d574f849ae687f5522f3671d704d8bed2d3f578db10059";
-            computationalSha256 "d6a9ee66d8d6dd1467ffb9f4f97b79ed9205af98255a2fa15428b87a73ec72fd";
+            sha256        "dc134490f41e3a8ac612df6c816894cd5d48d78c8de8e358d5d002bc1c168d16";
+            computationalSha256 "db998ca1a7ce1794eeb761efa4f902ab545998f122c5a40a55500321745de919";
             origin        "data/standards/components/nDecane.dat";
-            originSha256  "fd51ee55b3ce6dfe3519b2190919b7db462cab9dfc6e52a13c611da79e7c135b";
+            originSha256  "d3eb0769d43d0e76ccbdb97d3a106719a4635b848be11342b1d17f9231985544";
             release       Choupo-2608;
         }
         "parameters/NRTL/2Heptanone-nDecane.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/2Heptanone-nDecane.dat"
+        {
+            type          imported;
+            sha256        "182a387f7b0471ae63875c1898bcebd9e0377013aa72af71299f2d8950bf92f0";
+            computationalSha256 "48ebf8a7fa00d293626db6c68b50bafea724d081be2b24ec26a5c6fe332525ce";
+            origin        "data/standards/parameters/UNIQUAC/2Heptanone-nDecane.dat";
+            originSha256  "837cafb2c19588d86adad361c41e839275eb0904009d09aeb0dcf7d74d3082f8";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Heptanone-nDecane.dat"
+        {
+            type          imported;
+            sha256        "caf7b0df9cc8c1ae63aad1e8f737e8995b977d3fbcd0975186f4b90ed520f287";
+            computationalSha256 "8b8ab931604328a7586eccdeda17a383614183a1cb3535e92b093c7ee8faf294";
+            origin        "data/standards/parameters/Wilson/2Heptanone-nDecane.dat";
+            originSha256  "1d61475cddf6c7a488c6123d560f12f03c4c306e052779aceb09cbbc961a0f7b";
             release       Choupo-2608;
         }
     }

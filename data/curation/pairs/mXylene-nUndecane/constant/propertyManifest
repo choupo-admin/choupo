@@ -28,19 +28,19 @@ propertyManifest
         "components/mXylene.dat"
         {
             type          imported;
-            sha256        "31e05cfce81a4ad48a63993498067ba9335977201b7c08f73428ecb561233c33";
-            computationalSha256 "14aef5c18c81d0dc2c18d79c3d5122956e769c6e1250a11d7636f9dec649d2eb";
+            sha256        "c24a6c9ac4d388af9f8c2bf739601e19ef9c8d71b2be2683e845e2bbe02d3342";
+            computationalSha256 "6be7c972c0aa573b6dac04f2ee3b608577af2926c9509b2580627a2d55915b1b";
             origin        "data/standards/components/mXylene.dat";
-            originSha256  "b9df745d6fde70e82309ea2398df70cbaebffe5e09a8e7026d83c9cf5fe18921";
+            originSha256  "4d3c5a24e214e3030771078a8aa4d959e837268baf8b491e8a43ed61f0d00e90";
             release       Choupo-2608;
         }
         "components/nUndecane.dat"
         {
             type          imported;
-            sha256        "a5fae856fd72b6771ac00f3a7ce0ad5a0116a803d819b312ba986439825ec59d";
-            computationalSha256 "3f115ea2cdc1c057dbcb025d472dc769d513190d133c8f106e42a07216b473ee";
+            sha256        "4c8f46718d143c4481ea06d11662285a12b2957f4bf811b4ab8b9275b2e54802";
+            computationalSha256 "5ef484fdb4ed754d2a9001b779e716d052e68c85e1ed343a3ef8f210f1abb9d7";
             origin        "data/standards/components/nUndecane.dat";
-            originSha256  "f8f8b76396af095cb86b0a64e1a274905626181597cb27e70ea3c169f673c36f";
+            originSha256  "5d5be5371675f61b87b20b3bf1820b076587fed058eca1efdbd658671fc0e8e4";
             release       Choupo-2608;
         }
         "parameters/NRTL/mXylene-nUndecane.dat"
@@ -50,6 +50,24 @@ propertyManifest
             computationalSha256 "7ea04fe7a6275b37fb093b60a9f6defeda1f82c6cc4dbbf49d3ff811dada8459";
             origin        "data/standards/parameters/NRTL/mXylene-nUndecane.dat";
             originSha256  "409b034c30e3aa06dfca73ca4d797299d5d53509cf7603f29d2051609d659cbd";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/mXylene-nUndecane.dat"
+        {
+            type          imported;
+            sha256        "66aa739b10863d84a48a6ac15330f282c35e58267ad44ce6f3c6fdba9d65f899";
+            computationalSha256 "91bb426c2378a0008336d046856e015d00591acccac76af75fa1a5a798dda935";
+            origin        "data/standards/parameters/UNIQUAC/mXylene-nUndecane.dat";
+            originSha256  "7b939f7bc3376ab8f8526f9f38a459f952fa95fcd3f1c669bb08d978f41a61bc";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/mXylene-nUndecane.dat"
+        {
+            type          imported;
+            sha256        "3e06f7443a1604a0efb66dc07bcfed626a6d4326b86388a4947f49b5413ee665";
+            computationalSha256 "9f58cc256bf1cb4841f26513b27926b6f724e2d867a26166351b1c735314626a";
+            origin        "data/standards/parameters/Wilson/mXylene-nUndecane.dat";
+            originSha256  "196c70e3d6368c85f0b1b96cf0d367b956cd22b4ae78c2878596e5d1defea2d2";
             release       Choupo-2608;
         }
     }

@@ -37,10 +37,10 @@ propertyManifest
         "components/nHeptane.dat"
         {
             type          imported;
-            sha256        "25070332ac55ed31465bc842c2820fdfaad6f8148a03a841aca858978670b1d4";
-            computationalSha256 "125b2cbb0fb1a4182208bea7d0812526f79531b719a3e95c6555eb1eef5975b2";
+            sha256        "8c48efaaa9aa99b348c71a669b0004bae3abe91635a4fe1c401fc415b45e6b4d";
+            computationalSha256 "2f3b301c3cd1ef6d27fd35702b810c40ebcfc7fc573ec2dfb642d5981a6ed791";
             origin        "data/standards/components/nHeptane.dat";
-            originSha256  "d07d8e2aa11a5f1acb72593e0fcd1281a502b07ee6da32603bcc97d97b54abd4";
+            originSha256  "0e6ffd261eb07d90376837ad51670a939dfd10fc7e15c0bed37a675f034eeae0";
             release       Choupo-2608;
         }
         "parameters/NRTL/methylAcetate-nHeptane.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/methylAcetate-nHeptane.dat"
+        {
+            type          imported;
+            sha256        "26db2fdc38f3c74dbef464fe10b66ec7606190d03e8c0fe185592318a021e3e9";
+            computationalSha256 "abeef0c302304a89f745ca2e4265978031ac0f0aec19c5c7b133d0007d01506b";
+            origin        "data/standards/parameters/UNIQUAC/methylAcetate-nHeptane.dat";
+            originSha256  "921c25317ce186897c47d08da7d8f54adb16062451bf0e695c416f245072e420";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/methylAcetate-nHeptane.dat"
+        {
+            type          imported;
+            sha256        "26393a51b24002f4718b999d4c5200d47f168501936b6c4b59f12653ac596498";
+            computationalSha256 "7b0d031ebe45b2fdbb9c13422138d704ae1d33761f6f28dc08d5eb35b768ab01";
+            origin        "data/standards/parameters/Wilson/methylAcetate-nHeptane.dat";
+            originSha256  "e0b3e98aece22e5ffb734a8c9d107b058e9411ae778fb870e8375695492c4b5c";
             release       Choupo-2608;
         }
     }

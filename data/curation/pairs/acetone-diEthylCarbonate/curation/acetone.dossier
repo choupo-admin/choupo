@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acetone-diEthylCarbonate.A_ij  -262.803085579;
+        equilibrium.liquid.activityModel.binaryParameters.acetone-diEthylCarbonate.A_ji  307.62326683;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "990511af0386d6af";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetone-diEthylCarbonate-bubble-j.fluid.2005.06.024.dat";
+            doi       "10.1016/j.fluid.2005.06.024";
+            sha256    "422d54687a6c94980e1987583edc0e1cd6169261060333e26cf2866dc9c0091d";
+            provenance measured;
+            archiveFile "j.fluid.2005.06.024.xml";
+            system    "acetone + diEthylCarbonate";
+            pressure  "101325.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0209; max 0.9744; n 38; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acetone-diEthylCarbonate.A_ij  7148.2564873;
+        equilibrium.liquid.activityModel.binaryParameters.acetone-diEthylCarbonate.A_ji  -4630.48385215;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "990511af0386d6af";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/acetone-diEthylCarbonate-bubble-j.fluid.2005.06.024.dat";
+            doi       "10.1016/j.fluid.2005.06.024";
+            sha256    "422d54687a6c94980e1987583edc0e1cd6169261060333e26cf2866dc9c0091d";
+            provenance measured;
+            archiveFile "j.fluid.2005.06.024.xml";
+            system    "acetone + diEthylCarbonate";
+            pressure  "101325.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0209; max 0.9744; n 38; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );
