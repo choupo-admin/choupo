@@ -7,9 +7,9 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  26Dimethylpyridine -- the vapour pressure of 26Dimethylpyridine, REFITTED to
+  epichlorohydrin -- the vapour pressure of epichlorohydrin, REFITTED to
   measurements (DEV.md 4c C281 and C283).  Written by `bin/choupo-curate vp
-  26Dimethylpyridine`; everything above the RESULT paragraph is the DECLARATION,
+  epichlorohydrin`; everything above the RESULT paragraph is the DECLARATION,
   committed before any fit ran, so it can be read against the result.
 
   WHY.  The catalogue record carried `vaporPressure { model AmbroseWalton; }`,
@@ -20,10 +20,11 @@
 
   STUDIES (one per article, extracted by `choupo-thermoml extract-vp`; ranked
   by points, ties by DOI):
-      10.1016/j.fluid.2005.11.016      10 pts  263.15-353.15 K  Ben-makhlouf-Hakem; Ait-Kaci; Jose
-      10.1016/j.fluid.2014.04.004      10 pts  283.37-353.14 K  Ben-makhlouf-Hakem; Ait-Kaci; Jose
+      10.1021/je700398k                24 pts  315.67-388.29 K  Palczewska-Tulinska; Oracz
   SET ASIDE BY NAME:
-      (none)
+      10.1016/j.jct.2004.11.015: 1 pressure point(s), fewer than 5
+      10.1016/j.jct.2012.01.005: 3 pressure point(s), fewer than 5
+      10.1021/je020148t: 1 pressure point(s), fewer than 5
 
   FIT AND GRADED ACCEPTANCE (DEV.md 4c C285, Vitor 2026-11-10; the evidence,
   objective and outliers of C283; declared before the fit).
@@ -70,18 +71,13 @@ operations
     {
         name       fit_antoine;
         type       vaporPressureFit;
-        component  26Dimethylpyridine;
+        component  epichlorohydrin;
 
         evidence
         (
             {
-                dataset   "constant/archiveExtracts/26Dimethylpyridine-vapourPressure-j.fluid.2005.11.016.dat";
-                identity  { doi "10.1016/j.fluid.2005.11.016"; }
-                role      fit;
-            }
-            {
-                dataset   "constant/archiveExtracts/26Dimethylpyridine-vapourPressure-j.fluid.2014.04.004.dat";
-                identity  { doi "10.1016/j.fluid.2014.04.004"; }
+                dataset   "constant/archiveExtracts/epichlorohydrin-vapourPressure-je700398k.dat";
+                identity  { doi "10.1021/je700398k"; }
                 role      fit;
             }
         );
