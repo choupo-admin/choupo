@@ -1136,7 +1136,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/124Trimethylbenzene-oEthyltoluene": {
    "application": "choupoProps",
@@ -1154,7 +1154,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/124Trimethylbenzene-pEthyltoluene": {
    "application": "choupoProps",
@@ -1172,7 +1172,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/14Butanediol-diethyleneGlycol": {
    "application": "choupoProps",
@@ -1190,7 +1190,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/14Butanediol-ethyleneGlycol": {
    "application": "choupoProps",
@@ -1208,7 +1208,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/14Butanediol-nButanol": {
    "application": "choupoProps",
@@ -1226,7 +1226,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/14Butanediol-tetrahydrofuran": {
    "application": "choupoProps",
@@ -1244,7 +1244,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/14Dioxane-2Methyl1Propanol": {
    "application": "choupoProps",
@@ -1262,7 +1262,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/14Dioxane-2Methyl2Propanol": {
    "application": "choupoProps",
@@ -1298,7 +1298,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/14Dioxane-cyclohexane": {
    "application": "choupoProps",
@@ -1334,7 +1334,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/14Dioxane-nButanol": {
    "application": "choupoProps",
@@ -1369,7 +1369,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Heptanol-1Propanol": {
    "application": "choupoProps",
@@ -1387,7 +1387,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Heptanol-2Methyl2Propanol": {
    "application": "choupoProps",
@@ -1405,7 +1405,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Heptanol-acrylonitrile": {
    "application": "choupoProps",
@@ -1423,7 +1423,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Heptanol-ethanol": {
    "application": "choupoProps",
@@ -1441,7 +1441,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Heptanol-methanol": {
    "application": "choupoProps",
@@ -1459,7 +1459,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Heptanol-nPropylAcetate": {
    "application": "choupoProps",
@@ -1477,7 +1477,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Heptanol-nUndecane": {
    "application": "choupoProps",
@@ -1495,7 +1495,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Heptanol-nitrobenzene": {
    "application": "choupoProps",
@@ -1513,7 +1513,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Hexanol-2Methyl1Propanol": {
    "application": "choupoProps",
@@ -1531,7 +1531,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Hexanol-Dichloroethane": {
    "application": "choupoProps",
@@ -1549,7 +1549,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Hexanol-acetonitrile": {
    "application": "choupoProps",
@@ -1567,7 +1567,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Hexanol-acrylonitrile": {
    "application": "choupoProps",
@@ -1585,7 +1585,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Hexanol-aniline": {
    "application": "choupoProps",
@@ -1603,7 +1603,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Hexanol-ethylBenzene": {
    "application": "choupoProps",
@@ -1621,7 +1621,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Hexanol-isobutylAcetate": {
    "application": "choupoProps",
@@ -1639,7 +1639,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Hexanol-monochlorobenzene": {
    "application": "choupoProps",
@@ -1657,7 +1657,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Hexanol-nButanol": {
    "application": "choupoProps",
@@ -1709,7 +1709,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Hexanol-nHexylAcetate": {
    "application": "choupoProps",
@@ -1727,7 +1727,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Hexanol-nNDimethylformamide": {
    "application": "choupoProps",
@@ -1745,7 +1745,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Hexanol-nPropylAcetate": {
    "application": "choupoProps",
@@ -1763,7 +1763,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Hexanol-nitrobenzene": {
    "application": "choupoProps",
@@ -1781,7 +1781,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Hexanol-oXylene": {
    "application": "choupoProps",
@@ -1799,7 +1799,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Hexanol-trichloroethylene": {
    "application": "choupoProps",
@@ -1817,7 +1817,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Hexene-1Pentanol": {
    "application": "choupoProps",
@@ -1869,7 +1869,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Hexene-diEthylCarbonate": {
    "application": "choupoProps",
@@ -1887,7 +1887,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Hexene-diNButylEther": {
    "application": "choupoProps",
@@ -1922,7 +1922,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Hexene-nButanol": {
    "application": "choupoProps",
@@ -1957,7 +1957,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Hexene-tertButylEthylEther": {
    "application": "choupoProps",
@@ -1992,7 +1992,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Pentanol-224Trimethylpentane": {
    "application": "choupoProps",
@@ -2045,7 +2045,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Pentanol-anisole": {
    "application": "choupoProps",
@@ -2098,7 +2098,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Pentanol-diNButylEther": {
    "application": "choupoProps",
@@ -2116,7 +2116,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Pentanol-ethylAcetate": {
    "application": "choupoProps",
@@ -2134,7 +2134,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Pentanol-ethylBenzene": {
    "application": "choupoProps",
@@ -2152,7 +2152,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Pentanol-isopropanol": {
    "application": "choupoProps",
@@ -2170,7 +2170,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Pentanol-nButanol": {
    "application": "choupoProps",
@@ -2188,7 +2188,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Pentanol-nHeptane": {
    "application": "choupoProps",
@@ -2206,7 +2206,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Pentanol-nHexane": {
    "application": "choupoProps",
@@ -2259,7 +2259,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Pentanol-propionicAcid": {
    "application": "choupoProps",
@@ -2277,7 +2277,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Pentanol-toluene": {
    "application": "choupoProps",
@@ -2329,7 +2329,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Propanol-Dichloroethane": {
    "application": "choupoProps",
@@ -2399,7 +2399,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Propanol-diEthylCarbonate": {
    "application": "choupoProps",
@@ -2417,7 +2417,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Propanol-diethylSulfide": {
    "application": "choupoProps",
@@ -2487,7 +2487,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Propanol-dimethylSulfoxide": {
    "application": "choupoProps",
@@ -2505,7 +2505,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Propanol-ethyleneGlycol": {
    "application": "choupoProps",
@@ -2523,7 +2523,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Propanol-isopropylAcetate": {
    "application": "choupoProps",
@@ -2541,7 +2541,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Propanol-methanol": {
    "application": "choupoProps",
@@ -2559,7 +2559,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Propanol-methylTertButylEther": {
    "application": "choupoProps",
@@ -2577,7 +2577,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Propanol-methylTertPentylEther": {
    "application": "choupoProps",
@@ -2595,7 +2595,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Propanol-nButanol": {
    "application": "choupoProps",
@@ -2613,7 +2613,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Propanol-nDodecane": {
    "application": "choupoProps",
@@ -2631,7 +2631,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Propanol-nNDimethylformamide": {
    "application": "choupoProps",
@@ -2649,7 +2649,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Propanol-nPropylAcetate": {
    "application": "choupoProps",
@@ -2667,7 +2667,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Propanol-nitrobenzene": {
    "application": "choupoProps",
@@ -2685,7 +2685,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Propanol-oCresol": {
    "application": "choupoProps",
@@ -2703,7 +2703,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Propanol-pCresol": {
    "application": "choupoProps",
@@ -2721,7 +2721,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Propanol-propanal": {
    "application": "choupoProps",
@@ -2739,7 +2739,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/1Propanol-propionicAcid": {
    "application": "choupoProps",
@@ -2775,7 +2775,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/224Trimethylpentane-2Butanol": {
    "application": "choupoProps",
@@ -2810,7 +2810,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/224Trimethylpentane-2Pentanol": {
    "application": "choupoProps",
@@ -2845,7 +2845,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/224Trimethylpentane-diNButylEther": {
    "application": "choupoProps",
@@ -2863,7 +2863,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/224Trimethylpentane-diethylDisulfide": {
    "application": "choupoProps",
@@ -2987,7 +2987,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/224Trimethylpentane-methylEthylKetone": {
    "application": "choupoProps",
@@ -3005,7 +3005,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/224Trimethylpentane-methylTertButylEther": {
    "application": "choupoProps",
@@ -3023,7 +3023,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/224Trimethylpentane-methylTertPentylEther": {
    "application": "choupoProps",
@@ -3058,7 +3058,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/224Trimethylpentane-monochlorobenzene": {
    "application": "choupoProps",
@@ -3076,7 +3076,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/224Trimethylpentane-nButanol": {
    "application": "choupoProps",
@@ -3094,7 +3094,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/224Trimethylpentane-nHeptane": {
    "application": "choupoProps",
@@ -3129,7 +3129,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/224Trimethylpentane-pXylene": {
    "application": "choupoProps",
@@ -3147,7 +3147,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Butanol-acetonitrile": {
    "application": "choupoProps",
@@ -3165,7 +3165,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Butanol-benzene": {
    "application": "choupoProps",
@@ -3252,7 +3252,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Butanol-isopropylAcetate": {
    "application": "choupoProps",
@@ -3270,7 +3270,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Butanol-mCresol": {
    "application": "choupoProps",
@@ -3288,7 +3288,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Butanol-methanol": {
    "application": "choupoProps",
@@ -3324,7 +3324,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Butanol-methylTertPentylEther": {
    "application": "choupoProps",
@@ -3342,7 +3342,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Butanol-nDodecane": {
    "application": "choupoProps",
@@ -3377,7 +3377,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Butanol-nHexane": {
    "application": "choupoProps",
@@ -3412,7 +3412,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Butanol-nNDimethylformamide": {
    "application": "choupoProps",
@@ -3448,7 +3448,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Butanol-oCresol": {
    "application": "choupoProps",
@@ -3466,7 +3466,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Butanol-pCresol": {
    "application": "choupoProps",
@@ -3484,7 +3484,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Butanol-tetrahydrofuran": {
    "application": "choupoProps",
@@ -3502,7 +3502,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Butanol-toluene": {
    "application": "choupoProps",
@@ -3537,7 +3537,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Heptanone-nNonane": {
    "application": "choupoProps",
@@ -3555,7 +3555,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Heptanone-nOctane": {
    "application": "choupoProps",
@@ -3573,7 +3573,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Hexanone-anisole": {
    "application": "choupoProps",
@@ -3591,7 +3591,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Hexanone-cyclohexanol": {
    "application": "choupoProps",
@@ -3609,7 +3609,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl1Butanol-2Methyl1Propanol": {
    "application": "choupoProps",
@@ -3627,7 +3627,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl1Butanol-Dichloroethane": {
    "application": "choupoProps",
@@ -3645,7 +3645,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl1Butanol-ethanol": {
    "application": "choupoProps",
@@ -3681,7 +3681,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl1Butanol-ethylBenzene": {
    "application": "choupoProps",
@@ -3699,7 +3699,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl1Butanol-mXylene": {
    "application": "choupoProps",
@@ -3717,7 +3717,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl1Butanol-methanol": {
    "application": "choupoProps",
@@ -3735,7 +3735,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl1Butanol-nNDimethylformamide": {
    "application": "choupoProps",
@@ -3753,7 +3753,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl1Butanol-nPropylAcetate": {
    "application": "choupoProps",
@@ -3771,7 +3771,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl1Butanol-oXylene": {
    "application": "choupoProps",
@@ -3789,7 +3789,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl1Butanol-pXylene": {
    "application": "choupoProps",
@@ -3807,7 +3807,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl1Propanol-acetonitrile": {
    "application": "choupoProps",
@@ -3825,7 +3825,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl1Propanol-benzene": {
    "application": "choupoProps",
@@ -3877,7 +3877,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl1Propanol-dimethylSulfoxide": {
    "application": "choupoProps",
@@ -3895,7 +3895,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl1Propanol-ethanol": {
    "application": "choupoProps",
@@ -3913,7 +3913,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl1Propanol-ethylAcetate": {
    "application": "choupoProps",
@@ -3931,7 +3931,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl1Propanol-isobutylAcetate": {
    "application": "choupoProps",
@@ -3967,7 +3967,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl1Propanol-nDodecane": {
    "application": "choupoProps",
@@ -3985,7 +3985,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl1Propanol-nNDimethylformamide": {
    "application": "choupoProps",
@@ -4021,7 +4021,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl1Propanol-oCresol": {
    "application": "choupoProps",
@@ -4039,7 +4039,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl1Propanol-pCresol": {
    "application": "choupoProps",
@@ -4057,7 +4057,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl1Propanol-tetrahydrofuran": {
    "application": "choupoProps",
@@ -4075,7 +4075,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl2Butanol-isopropanol": {
    "application": "choupoProps",
@@ -4093,7 +4093,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl2Butanol-methanol": {
    "application": "choupoProps",
@@ -4111,7 +4111,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl2Butanol-methylTertButylEther": {
    "application": "choupoProps",
@@ -4129,7 +4129,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl2Propanol-acetonitrile": {
    "application": "choupoProps",
@@ -4147,7 +4147,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl2Propanol-dimethylCarbonate": {
    "application": "choupoProps",
@@ -4165,7 +4165,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl2Propanol-ethylAcetate": {
    "application": "choupoProps",
@@ -4183,7 +4183,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl2Propanol-ethylFormate": {
    "application": "choupoProps",
@@ -4201,7 +4201,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl2Propanol-methylAcetate": {
    "application": "choupoProps",
@@ -4219,7 +4219,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl2Propanol-methylFormate": {
    "application": "choupoProps",
@@ -4237,7 +4237,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl2Propanol-methylPropionate": {
    "application": "choupoProps",
@@ -4255,7 +4255,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl2Propanol-monochlorobenzene": {
    "application": "choupoProps",
@@ -4273,7 +4273,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl2Propanol-monoethanolamine": {
    "application": "choupoProps",
@@ -4291,7 +4291,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl2Propanol-nButylAcetate": {
    "application": "choupoProps",
@@ -4309,7 +4309,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl2Propanol-nNDimethylformamide": {
    "application": "choupoProps",
@@ -4345,7 +4345,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl2Propanol-nPropylFormate": {
    "application": "choupoProps",
@@ -4363,7 +4363,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl2Propanol-nitrobenzene": {
    "application": "choupoProps",
@@ -4381,7 +4381,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl2Propanol-oCresol": {
    "application": "choupoProps",
@@ -4399,7 +4399,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl2Propanol-pCresol": {
    "application": "choupoProps",
@@ -4417,7 +4417,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl2Propanol-tetrahydrofuran": {
    "application": "choupoProps",
@@ -4435,7 +4435,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Methyl2Propanol-water": {
    "application": "choupoProps",
@@ -4522,7 +4522,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Pentanol-toluene": {
    "application": "choupoProps",
@@ -4557,7 +4557,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Pentanone-diEthylCarbonate": {
    "application": "choupoProps",
@@ -4575,7 +4575,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/2Pentanone-dimethylCarbonate": {
    "application": "choupoProps",
@@ -4593,7 +4593,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/3Heptanone-nDecane": {
    "application": "choupoProps",
@@ -4611,7 +4611,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/3Heptanone-nNonane": {
    "application": "choupoProps",
@@ -4629,7 +4629,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/3Heptanone-nOctane": {
    "application": "choupoProps",
@@ -4647,7 +4647,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/4Heptanone-nDecane": {
    "application": "choupoProps",
@@ -4665,7 +4665,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/4Heptanone-nNonane": {
    "application": "choupoProps",
@@ -4683,7 +4683,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/4Heptanone-nOctane": {
    "application": "choupoProps",
@@ -4701,7 +4701,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/Dichloroethane-acrylonitrile": {
    "application": "choupoProps",
@@ -4719,7 +4719,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/Dichloroethane-dimethylSulfoxide": {
    "application": "choupoProps",
@@ -4737,7 +4737,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/Dichloroethane-ethylAcetate": {
    "application": "choupoProps",
@@ -4772,7 +4772,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/Dichloroethane-monochlorobenzene": {
    "application": "choupoProps",
@@ -4790,7 +4790,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/Dichloroethane-nButanol": {
    "application": "choupoProps",
@@ -4808,7 +4808,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/Dichloroethane-nHeptane": {
    "application": "choupoProps",
@@ -4826,7 +4826,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/Dichloroethane-nNDimethylformamide": {
    "application": "choupoProps",
@@ -4844,7 +4844,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/Dichloroethane-nPropylAcetate": {
    "application": "choupoProps",
@@ -4862,7 +4862,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/Dichloroethane-nitrobenzene": {
    "application": "choupoProps",
@@ -4880,7 +4880,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/Dichloroethane-oCresol": {
    "application": "choupoProps",
@@ -4898,7 +4898,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/Dichloroethane-pCresol": {
    "application": "choupoProps",
@@ -4916,7 +4916,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/Dichloroethane-tetrahydrofuran": {
    "application": "choupoProps",
@@ -4934,7 +4934,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/Dichloroethane-toluene": {
    "application": "choupoProps",
@@ -4952,7 +4952,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/R32-benzene": {
    "application": "choupoProps",
@@ -4970,7 +4970,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/R32-mXylene": {
    "application": "choupoProps",
@@ -4988,7 +4988,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/R32-mesitylene": {
    "application": "choupoProps",
@@ -5006,7 +5006,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/R32-toluene": {
    "application": "choupoProps",
@@ -5024,7 +5024,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/acetone-anisole": {
    "application": "choupoProps",
@@ -5042,7 +5042,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/acetone-diEthylCarbonate": {
    "application": "choupoProps",
@@ -5060,7 +5060,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/acetone-dimethylCarbonate": {
    "application": "choupoProps",
@@ -5078,7 +5078,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/acetone-furfural": {
    "application": "choupoProps",
@@ -5096,7 +5096,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/acetone-hexamethyldisiloxane": {
    "application": "choupoProps",
@@ -5114,7 +5114,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/acetone-methanol": {
    "application": "choupoProps",
@@ -5150,7 +5150,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/acetonitrile-bromobenzene": {
    "application": "choupoProps",
@@ -5168,7 +5168,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/acetonitrile-dimethylSulfoxide": {
    "application": "choupoProps",
@@ -5186,7 +5186,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/acetonitrile-ethanol": {
    "application": "choupoProps",
@@ -5239,7 +5239,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/acetonitrile-isopropanol": {
    "application": "choupoProps",
@@ -5293,7 +5293,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/acetonitrile-nButanol": {
    "application": "choupoProps",
@@ -5311,7 +5311,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/acrylicAcid-cyclohexane": {
    "application": "choupoProps",
@@ -5329,7 +5329,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/acrylicAcid-toluene": {
    "application": "choupoProps",
@@ -5347,7 +5347,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/acrylonitrile-cyclohexanone": {
    "application": "choupoProps",
@@ -5365,7 +5365,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/acrylonitrile-ethanol": {
    "application": "choupoProps",
@@ -5383,7 +5383,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/acrylonitrile-ethylBenzene": {
    "application": "choupoProps",
@@ -5401,7 +5401,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/acrylonitrile-monochlorobenzene": {
    "application": "choupoProps",
@@ -5419,7 +5419,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/acrylonitrile-nitrobenzene": {
    "application": "choupoProps",
@@ -5437,7 +5437,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/aniline-nButanol": {
    "application": "choupoProps",
@@ -5455,7 +5455,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/aniline-nNDimethylformamide": {
    "application": "choupoProps",
@@ -5508,7 +5508,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/anisole-ethylBenzene": {
    "application": "choupoProps",
@@ -5526,7 +5526,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/anisole-isopropanol": {
    "application": "choupoProps",
@@ -5544,7 +5544,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/anisole-isopropylAcetate": {
    "application": "choupoProps",
@@ -5562,7 +5562,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/anisole-mXylene": {
    "application": "choupoProps",
@@ -5580,7 +5580,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/anisole-methylAcetate": {
    "application": "choupoProps",
@@ -5598,7 +5598,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/anisole-nButylAcetate": {
    "application": "choupoProps",
@@ -5616,7 +5616,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/anisole-nButylbenzene": {
    "application": "choupoProps",
@@ -5634,7 +5634,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/anisole-nHexane": {
    "application": "choupoProps",
@@ -5669,7 +5669,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/anisole-nNonane": {
    "application": "choupoProps",
@@ -5687,7 +5687,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/anisole-nPropylAcetate": {
    "application": "choupoProps",
@@ -5705,7 +5705,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/anisole-oXylene": {
    "application": "choupoProps",
@@ -5723,7 +5723,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/anisole-pXylene": {
    "application": "choupoProps",
@@ -5741,7 +5741,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/anisole-toluene": {
    "application": "choupoProps",
@@ -5759,7 +5759,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/benzene-cyclohexanone": {
    "application": "choupoProps",
@@ -5777,7 +5777,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/benzene-diisopropylEther": {
    "application": "choupoProps",
@@ -5812,7 +5812,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/benzene-isopropanol": {
    "application": "choupoProps",
@@ -5865,7 +5865,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/benzene-methylal": {
    "application": "choupoProps",
@@ -5883,7 +5883,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/benzene-nButanol": {
    "application": "choupoProps",
@@ -5918,7 +5918,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/benzene-nNDimethylacetamide": {
    "application": "choupoProps",
@@ -5953,7 +5953,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/benzene-oXylene": {
    "application": "choupoProps",
@@ -5971,7 +5971,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/benzene-thiophene": {
    "application": "choupoProps",
@@ -5989,7 +5989,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/bromobenzene-dimethylSulfoxide": {
    "application": "choupoProps",
@@ -6007,7 +6007,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/bromobenzene-nHeptane": {
    "application": "choupoProps",
@@ -6025,7 +6025,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/bromobenzene-nNDimethylformamide": {
    "application": "choupoProps",
@@ -6043,7 +6043,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/bromobenzene-nitrobenzene": {
    "application": "choupoProps",
@@ -6061,7 +6061,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/carbonTetrachloride-cyclohexanone": {
    "application": "choupoProps",
@@ -6079,7 +6079,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/chloroform-ethanol": {
    "application": "choupoProps",
@@ -6097,7 +6097,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/chloroform-isopropanol": {
    "application": "choupoProps",
@@ -6115,7 +6115,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/chloroform-methanol": {
    "application": "choupoProps",
@@ -6133,7 +6133,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/chloroform-methylEthylKetone": {
    "application": "choupoProps",
@@ -6202,7 +6202,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/cumene-ethylFormate": {
    "application": "choupoProps",
@@ -6220,7 +6220,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/cumene-nNDimethylacetamide": {
    "application": "choupoProps",
@@ -6238,7 +6238,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/cumene-sulfolane": {
    "application": "choupoProps",
@@ -6256,7 +6256,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/cumene-vinylAcetate": {
    "application": "choupoProps",
@@ -6274,7 +6274,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/cyclohexane-cyclohexanol": {
    "application": "choupoProps",
@@ -6292,7 +6292,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/cyclohexane-cyclohexanone": {
    "application": "choupoProps",
@@ -6310,7 +6310,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/cyclohexane-cyclohexene": {
    "application": "choupoProps",
@@ -6346,7 +6346,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/cyclohexane-diNButylEther": {
    "application": "choupoProps",
@@ -6399,7 +6399,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/cyclohexane-methylal": {
    "application": "choupoProps",
@@ -6417,7 +6417,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/cyclohexane-nButanol": {
    "application": "choupoProps",
@@ -6452,7 +6452,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/cyclohexane-nHeptane": {
    "application": "choupoProps",
@@ -6488,7 +6488,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/cyclohexane-nNDimethylformamide": {
    "application": "choupoProps",
@@ -6506,7 +6506,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/cyclohexane-nNonane": {
    "application": "choupoProps",
@@ -6524,7 +6524,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/cyclohexane-tertButylEthylEther": {
    "application": "choupoProps",
@@ -6577,7 +6577,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/cyclohexanol-cyclohexene": {
    "application": "choupoProps",
@@ -6595,7 +6595,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/cyclohexanone-dimethylCarbonate": {
    "application": "choupoProps",
@@ -6613,7 +6613,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/cyclohexanone-dimethylSulfoxide": {
    "application": "choupoProps",
@@ -6631,7 +6631,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/cyclohexanone-ethanol": {
    "application": "choupoProps",
@@ -6649,7 +6649,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/cyclohexanone-isopropanol": {
    "application": "choupoProps",
@@ -6667,7 +6667,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/cyclohexanone-nDecane": {
    "application": "choupoProps",
@@ -6685,7 +6685,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/cyclohexanone-pXylene": {
    "application": "choupoProps",
@@ -6703,7 +6703,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/cyclohexanone-toluene": {
    "application": "choupoProps",
@@ -6721,7 +6721,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/cyclohexene-diEthylCarbonate": {
    "application": "choupoProps",
@@ -6739,7 +6739,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/cyclohexene-methylIsobutylKetone": {
    "application": "choupoProps",
@@ -6757,7 +6757,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diButylCarbonate-methanol": {
    "application": "choupoProps",
@@ -6775,7 +6775,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diButylCarbonate-nButanol": {
    "application": "choupoProps",
@@ -6793,7 +6793,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diEthylCarbonate-ethanol": {
    "application": "choupoProps",
@@ -6811,7 +6811,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diEthylCarbonate-ethylBenzene": {
    "application": "choupoProps",
@@ -6829,7 +6829,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diEthylCarbonate-isopropylAcetate": {
    "application": "choupoProps",
@@ -6847,7 +6847,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diEthylCarbonate-mXylene": {
    "application": "choupoProps",
@@ -6865,7 +6865,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diEthylCarbonate-methanol": {
    "application": "choupoProps",
@@ -6883,7 +6883,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diEthylCarbonate-methylAcetate": {
    "application": "choupoProps",
@@ -6901,7 +6901,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diEthylCarbonate-methylEthylKetone": {
    "application": "choupoProps",
@@ -6919,7 +6919,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diEthylCarbonate-methylcyclohexane": {
    "application": "choupoProps",
@@ -6937,7 +6937,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diEthylCarbonate-nButanol": {
    "application": "choupoProps",
@@ -6955,7 +6955,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diEthylCarbonate-nHexane": {
    "application": "choupoProps",
@@ -6973,7 +6973,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diEthylCarbonate-nPropylAcetate": {
    "application": "choupoProps",
@@ -6991,7 +6991,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diEthylCarbonate-oXylene": {
    "application": "choupoProps",
@@ -7009,7 +7009,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diEthylCarbonate-pXylene": {
    "application": "choupoProps",
@@ -7027,7 +7027,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diEthylCarbonate-propyleneCarbonate": {
    "application": "choupoProps",
@@ -7045,7 +7045,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diEthylCarbonate-vinylAcetate": {
    "application": "choupoProps",
@@ -7063,7 +7063,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diNButylEther-nButanol": {
    "application": "choupoProps",
@@ -7081,7 +7081,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diNButylEther-nHeptane": {
    "application": "choupoProps",
@@ -7133,7 +7133,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diNButylEther-oXylene": {
    "application": "choupoProps",
@@ -7151,7 +7151,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diNButylEther-toluene": {
    "application": "choupoProps",
@@ -7186,7 +7186,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diethanolamine-pCresol": {
    "application": "choupoProps",
@@ -7204,7 +7204,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diethylSulfide-ethanol": {
    "application": "choupoProps",
@@ -7256,7 +7256,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diethylamine-diethylethanolamine": {
    "application": "choupoProps",
@@ -7274,7 +7274,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diethylamine-ethanol": {
    "application": "choupoProps",
@@ -7292,7 +7292,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diethylamine-methanol": {
    "application": "choupoProps",
@@ -7310,7 +7310,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diethyleneGlycol-ethyleneGlycol": {
    "application": "choupoProps",
@@ -7328,7 +7328,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diethyleneGlycol-triethyleneGlycol": {
    "application": "choupoProps",
@@ -7346,7 +7346,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diethylethanolamine-ethanol": {
    "application": "choupoProps",
@@ -7364,7 +7364,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diethylethanolamine-methanol": {
    "application": "choupoProps",
@@ -7382,7 +7382,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diisopropanolamine-mCresol": {
    "application": "choupoProps",
@@ -7400,7 +7400,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diisopropylEther-ethanol": {
    "application": "choupoProps",
@@ -7418,7 +7418,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diisopropylEther-isopropanol/Tx": {
    "application": "choupoProps",
@@ -7472,7 +7472,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diisopropylEther-methylal": {
    "application": "choupoProps",
@@ -7490,7 +7490,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diisopropylEther-nButanol": {
    "application": "choupoProps",
@@ -7525,7 +7525,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diisopropylEther-nNDimethylacetamide": {
    "application": "choupoProps",
@@ -7543,7 +7543,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diisopropylEther-nNDimethylformamide": {
    "application": "choupoProps",
@@ -7561,7 +7561,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/diisopropylamine-isopropanol": {
    "application": "choupoProps",
@@ -7579,7 +7579,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylCarbonate-ethanol/Tx": {
    "application": "choupoProps",
@@ -7633,7 +7633,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylCarbonate-ethylBenzene": {
    "application": "choupoProps",
@@ -7651,7 +7651,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylCarbonate-ethyleneCarbonate": {
    "application": "choupoProps",
@@ -7669,7 +7669,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylCarbonate-ethyleneGlycol": {
    "application": "choupoProps",
@@ -7687,7 +7687,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylCarbonate-isobutylAcetate": {
    "application": "choupoProps",
@@ -7705,7 +7705,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylCarbonate-isopropanol": {
    "application": "choupoProps",
@@ -7741,7 +7741,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylCarbonate-mXylene": {
    "application": "choupoProps",
@@ -7759,7 +7759,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylCarbonate-methanol": {
    "application": "choupoProps",
@@ -7795,7 +7795,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylCarbonate-methylEthylKetone": {
    "application": "choupoProps",
@@ -7813,7 +7813,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylCarbonate-methylFormate": {
    "application": "choupoProps",
@@ -7831,7 +7831,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylCarbonate-methylPhenylCarbonate": {
    "application": "choupoProps",
@@ -7849,7 +7849,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylCarbonate-methylal": {
    "application": "choupoProps",
@@ -7867,7 +7867,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylCarbonate-nButanol": {
    "application": "choupoProps",
@@ -7903,7 +7903,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylCarbonate-nDecane": {
    "application": "choupoProps",
@@ -7921,7 +7921,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylCarbonate-nNonane": {
    "application": "choupoProps",
@@ -7939,7 +7939,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylCarbonate-nPropylAcetate": {
    "application": "choupoProps",
@@ -7957,7 +7957,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylCarbonate-oXylene": {
    "application": "choupoProps",
@@ -8011,7 +8011,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylDisulfide-methanol": {
    "application": "choupoProps",
@@ -8029,7 +8029,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylDisulfide-nButanol": {
    "application": "choupoProps",
@@ -8047,7 +8047,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylDisulfide-tertButylEthylEther": {
    "application": "choupoProps",
@@ -8099,7 +8099,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylSulfoxide-ethylBenzene": {
    "application": "choupoProps",
@@ -8117,7 +8117,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylSulfoxide-isobutylAcetate": {
    "application": "choupoProps",
@@ -8135,7 +8135,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylSulfoxide-isopropanol": {
    "application": "choupoProps",
@@ -8153,7 +8153,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylSulfoxide-isopropylAcetate": {
    "application": "choupoProps",
@@ -8171,7 +8171,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylSulfoxide-methanol": {
    "application": "choupoProps",
@@ -8189,7 +8189,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylSulfoxide-methylAcetate": {
    "application": "choupoProps",
@@ -8207,7 +8207,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylSulfoxide-methylEthylKetone": {
    "application": "choupoProps",
@@ -8225,7 +8225,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylSulfoxide-methylIsobutylKetone": {
    "application": "choupoProps",
@@ -8243,7 +8243,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylSulfoxide-monochlorobenzene": {
    "application": "choupoProps",
@@ -8261,7 +8261,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylSulfoxide-nNDimethylacetamide": {
    "application": "choupoProps",
@@ -8279,7 +8279,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylSulfoxide-nNDimethylformamide": {
    "application": "choupoProps",
@@ -8297,7 +8297,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylSulfoxide-nPropylAcetate": {
    "application": "choupoProps",
@@ -8315,7 +8315,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylSulfoxide-nitrobenzene": {
    "application": "choupoProps",
@@ -8333,7 +8333,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylSulfoxide-toluene": {
    "application": "choupoProps",
@@ -8351,7 +8351,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylSulfoxide-trichloroethylene": {
    "application": "choupoProps",
@@ -8369,7 +8369,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/dimethylSulfoxide-water": {
    "application": "choupoProps",
@@ -8387,7 +8387,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethanol-ethylTertPentylEther": {
    "application": "choupoProps",
@@ -8405,7 +8405,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethanol-ethyleneGlycol": {
    "application": "choupoProps",
@@ -8441,7 +8441,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethanol-isopropylAcetate": {
    "application": "choupoProps",
@@ -8459,7 +8459,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethanol-mCresol": {
    "application": "choupoProps",
@@ -8477,7 +8477,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethanol-methylEthylKetone": {
    "application": "choupoProps",
@@ -8513,7 +8513,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethanol-methylTertPentylEther": {
    "application": "choupoProps",
@@ -8531,7 +8531,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethanol-methylcyclohexane": {
    "application": "choupoProps",
@@ -8549,7 +8549,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethanol-nButanol": {
    "application": "choupoProps",
@@ -8567,7 +8567,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethanol-nHexane": {
    "application": "choupoProps",
@@ -8585,7 +8585,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethanol-nNDimethylacetamide": {
    "application": "choupoProps",
@@ -8620,7 +8620,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethanol-nOctane": {
    "application": "choupoProps",
@@ -8656,7 +8656,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethanol-oCresol": {
    "application": "choupoProps",
@@ -8692,7 +8692,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethanol-pXylene": {
    "application": "choupoProps",
@@ -8728,7 +8728,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethanol-tetrahydrofuran": {
    "application": "choupoProps",
@@ -8746,7 +8746,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylAcetate-hexamethyldisiloxane": {
    "application": "choupoProps",
@@ -8764,7 +8764,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylAcetate-isopropanol": {
    "application": "choupoProps",
@@ -8782,7 +8782,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylAcetate-methanol": {
    "application": "choupoProps",
@@ -8818,7 +8818,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylAcetate-nHeptane": {
    "application": "choupoProps",
@@ -8836,7 +8836,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylAcetate-nHexane": {
    "application": "choupoProps",
@@ -8854,7 +8854,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylAcetate-nNonane": {
    "application": "choupoProps",
@@ -8872,7 +8872,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylAcetate-nOctane": {
    "application": "choupoProps",
@@ -8890,7 +8890,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylAcetate-nPentane": {
    "application": "choupoProps",
@@ -8908,7 +8908,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylAcetate-nPropylAcetate": {
    "application": "choupoProps",
@@ -8926,7 +8926,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylAcetate-propyleneCarbonate": {
    "application": "choupoProps",
@@ -8944,7 +8944,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylBenzene-mXylene": {
    "application": "choupoProps",
@@ -8962,7 +8962,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylBenzene-methylFormate": {
    "application": "choupoProps",
@@ -8980,7 +8980,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylBenzene-methylIsobutylKetone": {
    "application": "choupoProps",
@@ -8998,7 +8998,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylBenzene-monochlorobenzene": {
    "application": "choupoProps",
@@ -9034,7 +9034,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylBenzene-nNDimethylacetamide": {
    "application": "choupoProps",
@@ -9052,7 +9052,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylBenzene-nitrobenzene": {
    "application": "choupoProps",
@@ -9070,7 +9070,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylBenzene-oCresol": {
    "application": "choupoProps",
@@ -9088,7 +9088,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylBenzene-oXylene": {
    "application": "choupoProps",
@@ -9106,7 +9106,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylBenzene-pCresol": {
    "application": "choupoProps",
@@ -9124,7 +9124,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylBenzene-pXylene": {
    "application": "choupoProps",
@@ -9142,7 +9142,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylBenzene-styrene": {
    "application": "choupoProps",
@@ -9196,7 +9196,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylBenzene-trichloroethylene": {
    "application": "choupoProps",
@@ -9214,7 +9214,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylFormate-nHeptane": {
    "application": "choupoProps",
@@ -9232,7 +9232,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylFormate-nHexane": {
    "application": "choupoProps",
@@ -9250,7 +9250,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylFormate-nNonane": {
    "application": "choupoProps",
@@ -9268,7 +9268,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylFormate-nOctane": {
    "application": "choupoProps",
@@ -9286,7 +9286,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylFormate-nPentane": {
    "application": "choupoProps",
@@ -9304,7 +9304,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethylTertPentylEther-methanol": {
    "application": "choupoProps",
@@ -9322,7 +9322,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethyleneCarbonate-ethyleneGlycol": {
    "application": "choupoProps",
@@ -9340,7 +9340,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethyleneCarbonate-methanol": {
    "application": "choupoProps",
@@ -9358,7 +9358,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethyleneGlycol-methylDiEthanolAmine": {
    "application": "choupoProps",
@@ -9376,7 +9376,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethyleneGlycol-methylethanolamine": {
    "application": "choupoProps",
@@ -9394,7 +9394,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/ethyleneGlycol-water": {
    "application": "choupoProps",
@@ -9430,7 +9430,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/hexamethyldisiloxane-isopropylAcetate": {
    "application": "choupoProps",
@@ -9448,7 +9448,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/isobutylAcetate-methylAcetate": {
    "application": "choupoProps",
@@ -9466,7 +9466,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/isobutylAcetate-nNDimethylformamide": {
    "application": "choupoProps",
@@ -9484,7 +9484,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/isopropanol-isopropylAcetate": {
    "application": "choupoProps",
@@ -9538,7 +9538,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/isopropanol-nButanol": {
    "application": "choupoProps",
@@ -9556,7 +9556,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/isopropanol-nButylAcetate": {
    "application": "choupoProps",
@@ -9574,7 +9574,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/isopropanol-nNDimethylacetamide": {
    "application": "choupoProps",
@@ -9592,7 +9592,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/isopropanol-nPropylAcetate": {
    "application": "choupoProps",
@@ -9610,7 +9610,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/isopropanol-nitrobenzene": {
    "application": "choupoProps",
@@ -9628,7 +9628,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/isopropanol-oCresol": {
    "application": "choupoProps",
@@ -9646,7 +9646,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/isopropanol-pCresol": {
    "application": "choupoProps",
@@ -9664,7 +9664,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/isopropylAcetate-methylAcetate": {
    "application": "choupoProps",
@@ -9682,7 +9682,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/isopropylAcetate-methylEthylKetone": {
    "application": "choupoProps",
@@ -9700,7 +9700,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/isopropylAcetate-nButanol": {
    "application": "choupoProps",
@@ -9718,7 +9718,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/isopropylAcetate-nPropylAcetate": {
    "application": "choupoProps",
@@ -9736,7 +9736,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/mCresol-nButanol": {
    "application": "choupoProps",
@@ -9754,7 +9754,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/mCresol-nNDimethylformamide": {
    "application": "choupoProps",
@@ -9772,7 +9772,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/mCresol-nitrobenzene": {
    "application": "choupoProps",
@@ -9790,7 +9790,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/mCresol-oCresol": {
    "application": "choupoProps",
@@ -9808,7 +9808,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/mXylene-methylFormate": {
    "application": "choupoProps",
@@ -9826,7 +9826,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/mXylene-nButanol": {
    "application": "choupoProps",
@@ -9844,7 +9844,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/mXylene-nDecane": {
    "application": "choupoProps",
@@ -9880,7 +9880,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/mXylene-nNDimethylformamide": {
    "application": "choupoProps",
@@ -9898,7 +9898,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/mXylene-nNonane": {
    "application": "choupoProps",
@@ -9916,7 +9916,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/mXylene-nOctane": {
    "application": "choupoProps",
@@ -9952,7 +9952,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/mXylene-oCresol": {
    "application": "choupoProps",
@@ -9970,7 +9970,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/mXylene-pCresol": {
    "application": "choupoProps",
@@ -9988,7 +9988,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/mXylene-styrene": {
    "application": "choupoProps",
@@ -10006,7 +10006,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methanol-methylEthylKetone": {
    "application": "choupoProps",
@@ -10042,7 +10042,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methanol-methylPropionate": {
    "application": "choupoProps",
@@ -10060,7 +10060,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methanol-methylal": {
    "application": "choupoProps",
@@ -10078,7 +10078,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methanol-nHeptane": {
    "application": "choupoProps",
@@ -10096,7 +10096,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methanol-nitrobenzene": {
    "application": "choupoProps",
@@ -10114,7 +10114,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methanol-oCresol": {
    "application": "choupoProps",
@@ -10132,7 +10132,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methanol-pCresol": {
    "application": "choupoProps",
@@ -10150,7 +10150,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methanol-propionicAcid": {
    "application": "choupoProps",
@@ -10168,7 +10168,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methanol-tetrahydrofuran": {
    "application": "choupoProps",
@@ -10204,7 +10204,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methylAcetate-nHeptane": {
    "application": "choupoProps",
@@ -10222,7 +10222,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methylAcetate-pXylene": {
    "application": "choupoProps",
@@ -10240,7 +10240,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methylDiEthanolAmine-methylethanolamine": {
    "application": "choupoProps",
@@ -10258,7 +10258,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methylDiEthanolAmine-water": {
    "application": "choupoProps",
@@ -10276,7 +10276,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methylEthylKetone-nHeptane": {
    "application": "choupoProps",
@@ -10294,7 +10294,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methylEthylKetone-nNDimethylformamide": {
    "application": "choupoProps",
@@ -10312,7 +10312,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methylFormate-methylal": {
    "application": "choupoProps",
@@ -10330,7 +10330,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methylFormate-nHeptane": {
    "application": "choupoProps",
@@ -10366,7 +10366,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methylFormate-nNonane": {
    "application": "choupoProps",
@@ -10384,7 +10384,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methylFormate-nOctane": {
    "application": "choupoProps",
@@ -10402,7 +10402,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methylFormate-nPentane": {
    "application": "choupoProps",
@@ -10420,7 +10420,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methylFormate-oXylene": {
    "application": "choupoProps",
@@ -10438,7 +10438,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methylFormate-pXylene": {
    "application": "choupoProps",
@@ -10456,7 +10456,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methylIsobutylKetone-nHexane": {
    "application": "choupoProps",
@@ -10474,7 +10474,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methylIsobutylKetone-nNDimethylacetamide": {
    "application": "choupoProps",
@@ -10492,7 +10492,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methylPalmitate-methylStearate": {
    "application": "choupoProps",
@@ -10510,7 +10510,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methylPropionate-nHeptane": {
    "application": "choupoProps",
@@ -10546,7 +10546,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methylPropionate-nPentane": {
    "application": "choupoProps",
@@ -10564,7 +10564,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methylTertButylEther-methylal": {
    "application": "choupoProps",
@@ -10582,7 +10582,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methylTertPentylEther-nHeptane": {
    "application": "choupoProps",
@@ -10600,7 +10600,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methylTertPentylEther-toluene": {
    "application": "choupoProps",
@@ -10635,7 +10635,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/methylcyclohexane-pXylene": {
    "application": "choupoProps",
@@ -10653,7 +10653,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/monochlorobenzene-nHeptane": {
    "application": "choupoProps",
@@ -10671,7 +10671,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/monochlorobenzene-nNDimethylformamide": {
    "application": "choupoProps",
@@ -10689,7 +10689,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/monochlorobenzene-toluene": {
    "application": "choupoProps",
@@ -10707,7 +10707,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/monochlorobenzene-trichloroethylene": {
    "application": "choupoProps",
@@ -10725,7 +10725,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nButanol-nButylAcetate": {
    "application": "choupoProps",
@@ -10778,7 +10778,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nButanol-nNDimethylacetamide": {
    "application": "choupoProps",
@@ -10796,7 +10796,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nButanol-nitrobenzene": {
    "application": "choupoProps",
@@ -10814,7 +10814,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nButanol-oCresol": {
    "application": "choupoProps",
@@ -10832,7 +10832,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nButanol-oXylene": {
    "application": "choupoProps",
@@ -10850,7 +10850,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nButanol-pCresol": {
    "application": "choupoProps",
@@ -10868,7 +10868,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nButanol-pXylene": {
    "application": "choupoProps",
@@ -10904,7 +10904,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nButanol-toluene": {
    "application": "choupoProps",
@@ -10939,7 +10939,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nButylAcetate-nOctane": {
    "application": "choupoProps",
@@ -10957,7 +10957,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nDecane-nNDimethylformamide": {
    "application": "choupoProps",
@@ -10975,7 +10975,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nDecane-nPropylAcetate": {
    "application": "choupoProps",
@@ -10993,7 +10993,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nDecane-oXylene": {
    "application": "choupoProps",
@@ -11047,7 +11047,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nHeptane-nNDimethylacetamide": {
    "application": "choupoProps",
@@ -11082,7 +11082,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nHeptane-nPropylAcetate": {
    "application": "choupoProps",
@@ -11100,7 +11100,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nHeptane-nPropylFormate": {
    "application": "choupoProps",
@@ -11118,7 +11118,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nHeptane-oCresol": {
    "application": "choupoProps",
@@ -11136,7 +11136,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nHeptane-tertButylEthylEther": {
    "application": "choupoProps",
@@ -11171,7 +11171,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nHeptane-thiophene": {
    "application": "choupoProps",
@@ -11224,7 +11224,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nHexane-nNDimethylformamide": {
    "application": "choupoProps",
@@ -11242,7 +11242,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nHexane-nPropylAcetate": {
    "application": "choupoProps",
@@ -11260,7 +11260,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nHexane-nPropylFormate": {
    "application": "choupoProps",
@@ -11278,7 +11278,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nHexane-oXylene": {
    "application": "choupoProps",
@@ -11296,7 +11296,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nHexane-toluene": {
    "application": "choupoProps",
@@ -11366,7 +11366,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nNDimethylformamide-nitrobenzene": {
    "application": "choupoProps",
@@ -11384,7 +11384,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nNDimethylformamide-oCresol": {
    "application": "choupoProps",
@@ -11402,7 +11402,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nNDimethylformamide-oXylene": {
    "application": "choupoProps",
@@ -11420,7 +11420,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nNDimethylformamide-pCresol": {
    "application": "choupoProps",
@@ -11438,7 +11438,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nNDimethylformamide-pXylene": {
    "application": "choupoProps",
@@ -11456,7 +11456,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nNDimethylformamide-trichloroethylene": {
    "application": "choupoProps",
@@ -11474,7 +11474,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nNonane-nPropylAcetate": {
    "application": "choupoProps",
@@ -11492,7 +11492,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nNonane-nPropylFormate": {
    "application": "choupoProps",
@@ -11510,7 +11510,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nNonane-pXylene": {
    "application": "choupoProps",
@@ -11528,7 +11528,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nNonane-toluene": {
    "application": "choupoProps",
@@ -11546,7 +11546,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nOctane-nPropylAcetate": {
    "application": "choupoProps",
@@ -11564,7 +11564,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nOctane-nPropylFormate": {
    "application": "choupoProps",
@@ -11582,7 +11582,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nOctane-oXylene": {
    "application": "choupoProps",
@@ -11618,7 +11618,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nPentane-nPropylAcetate": {
    "application": "choupoProps",
@@ -11636,7 +11636,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nPentane-nPropylFormate": {
    "application": "choupoProps",
@@ -11654,7 +11654,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nPropylAcetate-propyleneCarbonate": {
    "application": "choupoProps",
@@ -11672,7 +11672,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nPropylMercaptan-toluene": {
    "application": "choupoProps",
@@ -11690,7 +11690,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nUndecane-oXylene": {
    "application": "choupoProps",
@@ -11708,7 +11708,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nUndecane-pXylene": {
    "application": "choupoProps",
@@ -11726,7 +11726,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nitrobenzene-oCresol": {
    "application": "choupoProps",
@@ -11744,7 +11744,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nitrobenzene-pCresol": {
    "application": "choupoProps",
@@ -11762,7 +11762,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/nitrobenzene-trichloroethylene": {
    "application": "choupoProps",
@@ -11780,7 +11780,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/oCresol-oXylene": {
    "application": "choupoProps",
@@ -11798,7 +11798,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/oCresol-pXylene": {
    "application": "choupoProps",
@@ -11816,7 +11816,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/oCresol-trichloroethylene": {
    "application": "choupoProps",
@@ -11834,7 +11834,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/oXylene-pCresol": {
    "application": "choupoProps",
@@ -11852,7 +11852,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/oXylene-styrene": {
    "application": "choupoProps",
@@ -11870,7 +11870,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/oXylene-toluene": {
    "application": "choupoProps",
@@ -11888,7 +11888,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/pCresol-pXylene": {
    "application": "choupoProps",
@@ -11906,7 +11906,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/pCresol-trichloroethylene": {
    "application": "choupoProps",
@@ -11924,7 +11924,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/pXylene-styrene": {
    "application": "choupoProps",
@@ -11942,7 +11942,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/pXylene-vinylAcetate": {
    "application": "choupoProps",
@@ -11960,7 +11960,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/propanal-propionicAcid": {
    "application": "choupoProps",
@@ -11978,7 +11978,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/styrene-sulfolane": {
    "application": "choupoProps",
@@ -11996,7 +11996,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/sulfolane-toluene": {
    "application": "choupoProps",
@@ -12014,7 +12014,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/tertButylEthylEther-toluene": {
    "application": "choupoProps",
@@ -12049,7 +12049,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/tetrahydrofuran-trichloroethylene": {
    "application": "choupoProps",
@@ -12067,7 +12067,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/thiophene-toluene": {
    "application": "choupoProps",
@@ -12085,7 +12085,7 @@
    "roles": [
     "curationTrace"
    ],
-   "hasGolden": false
+   "hasGolden": true
   },
   "data/curation/pairs/triethyleneGlycol-water": {
    "application": "choupoProps",
