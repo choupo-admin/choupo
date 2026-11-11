@@ -30,12 +30,12 @@
     }
   },
   "curationTraces": {
-    "cases": 722,
-    "regressionChecks": 722,
+    "cases": 723,
+    "regressionChecks": 723,
     "byOrigin": {
       "pairs": 616,
       "components": 103,
-      "batches": 3
+      "batches": 4
     }
   },
   "totals": {

@@ -114,7 +114,7 @@
     "check_case_tiers": {
       "exit": 0,
       "claim": "check_case_tiers: OK -- 477 witness(es), 42 tutorial(s), 16 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or sectored flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point.",
-      "seconds": 0.2
+      "seconds": 0.1
     },
     "check_caveat_surface": {
       "exit": 0,
@@ -254,7 +254,7 @@
     "check_doc_references": {
       "exit": 0,
       "claim": "check_doc_references: OK -- 861 path mention(s) and 253 case name(s) across 25 AI-facing docs all resolve; 14 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 10 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
-      "seconds": 1.6
+      "seconds": 1.7
     },
     "check_doctrine": {
       "exit": 0,
@@ -859,7 +859,7 @@
     "check_schema_coverage": {
       "exit": 0,
       "claim": "check_schema_coverage: OK -- every one of the 108 registered operations carries a schema (104 exercised by the corpus over 1247 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property",
-      "seconds": 32.4
+      "seconds": 33.4
     },
     "check_sdem": {
       "exit": 0,
@@ -868,8 +868,8 @@
     },
     "check_seal_drift": {
       "exit": 0,
-      "claim": "check_seal_drift: OK -- 1150 sealed manifest(s) and 7779 embedded record(s) inspected; every sealed case still reproduces its own records under its declared sealSchema (9 cosmetic difference(s), which the parsed-content claim tolerates by design).  NOT CHECKED: whether any sealed value is RIGHT.  And divergence from the LIVE catalogue (2990 record(s), 769 case(s) worth a curator's eye) is HISTORY, not a verdict -- this gate reports it, never fails on it, and never re-seals to make the number smaller.",
-      "seconds": 29.1
+      "claim": "check_seal_drift: OK -- 1150 sealed manifest(s) and 7779 embedded record(s) inspected; every sealed case still reproduces its own records under its declared sealSchema (9 cosmetic difference(s), which the parsed-content claim tolerates by design).  NOT CHECKED: whether any sealed value is RIGHT.  And divergence from the LIVE catalogue (3042 record(s), 771 case(s) worth a curator's eye) is HISTORY, not a verdict -- this gate reports it, never fails on it, and never re-seals to make the number smaller.",
+      "seconds": 32.5
     },
     "check_seal_growth": {
       "exit": 0,
@@ -933,8 +933,8 @@
     },
     "check_source_licence": {
       "exit": 0,
-      "claim": "check_source_licence: OK -- 2577 TRACKED record(s) scanned (untracked and data/local files are NOT judged; an absent or collapsed scan root REFUSES); no encumbered source stands as the authority for a value, except 4 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted.  NonCommercial compilations: no new record names Burcat/ReSpecTh as a value's origin; 20 existing ones do and are pinned.  No-grant mechanism (C164): no line of the 9323 catalogue records and case-local constant/ files names GRI-Mech as a value's origin (none pinned; a cross-check marker before the name is allowed).  Engineering Toolbox and REFPROP (C65) are among the names refused, and they alone are also sought in the 5483 case-local records under tutorials/**/constant/: 25 name one as a value's origin, all sealed NH3 mirrors awaiting re-import, pinned (every other name is judged in data/standards/ only).  Accepted third-party databanks, by CONTRACT here and cross-checked against the importer's LICENSE constant: ChemSep (Artistic-2.0, 360 record(s)); NASA/TP-2002-211556 (publicDomain, 30 record(s)) -- and that acceptance has a SCOPE: 2 excluded interaction-parameter table classes (ChemSep .ipd, the thermo package's copy) are named as a value's origin by no record.  No source file reproduces a no-grant standard's table (1 class: the API STD 526 orifice-letter areas, matched by their VALUES over 15728 source files, not by the name).  Every source ruled on here has a thirdParty/ card and every card on disk is named by a gate (8 card(s)).  Vendored third-party code, by CONTRACT: NanoFiltran -- 3 file(s) each carrying its own licence notice, the LAPACK text the fetched one, NOTICE naming every holder.  Facts from a copyrighted paper, by CONTRACT: Geraldes & Alves 2008 (NanoFiltran paper) -- 9 file(s) each citing it and saying what it carries, and none of the 20 PDF/image file(s) under bin, tutorials, docs, data, gui/public, gui/src, thirdParty is the paper or a figure of it.",
-      "seconds": 7.4
+      "claim": "check_source_licence: OK -- 2577 TRACKED record(s) scanned (untracked and data/local files are NOT judged; an absent or collapsed scan root REFUSES); no encumbered source stands as the authority for a value, except 4 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted.  NonCommercial compilations: no new record names Burcat/ReSpecTh as a value's origin; 20 existing ones do and are pinned.  No-grant mechanism (C164): no line of the 9323 catalogue records and case-local constant/ files names GRI-Mech as a value's origin (none pinned; a cross-check marker before the name is allowed).  Engineering Toolbox and REFPROP (C65) are among the names refused, and they alone are also sought in the 5483 case-local records under tutorials/**/constant/: 25 name one as a value's origin, all sealed NH3 mirrors awaiting re-import, pinned (every other name is judged in data/standards/ only).  Accepted third-party databanks, by CONTRACT here and cross-checked against the importer's LICENSE constant: ChemSep (Artistic-2.0, 360 record(s)); NASA/TP-2002-211556 (publicDomain, 30 record(s)) -- and that acceptance has a SCOPE: 2 excluded interaction-parameter table classes (ChemSep .ipd, the thermo package's copy) are named as a value's origin by no record.  No source file reproduces a no-grant standard's table (1 class: the API STD 526 orifice-letter areas, matched by their VALUES over 15729 source files, not by the name).  Every source ruled on here has a thirdParty/ card and every card on disk is named by a gate (8 card(s)).  Vendored third-party code, by CONTRACT: NanoFiltran -- 3 file(s) each carrying its own licence notice, the LAPACK text the fetched one, NOTICE naming every holder.  Facts from a copyrighted paper, by CONTRACT: Geraldes & Alves 2008 (NanoFiltran paper) -- 9 file(s) each citing it and saying what it carries, and none of the 20 PDF/image file(s) under bin, tutorials, docs, data, gui/public, gui/src, thirdParty is the paper or a figure of it.",
+      "seconds": 9.1
     },
     "check_species_citation": {
       "exit": 0,
@@ -1108,8 +1108,8 @@
     },
     "check_validity_windows": {
       "exit": 0,
-      "claim": "check_validity_windows: OK -- 6477 declared window(s) across 8089 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)",
-      "seconds": 0.9
+      "claim": "check_validity_windows: OK -- 6548 declared window(s) across 8061 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)",
+      "seconds": 1.1
     },
     "check_verdict_parity": {
       "exit": 0,
@@ -1579,7 +1579,7 @@
     "check_brain_fresh": {
       "exit": 0,
       "claim": "check_brain_fresh: OK -- FACTS block equals a fresh render from the tracked tree; BRAIN.md 142/250 lines; STATE BY AREA has a `judged` column.  Does NOT judge whether a dated judgement is still true.",
-      "seconds": 0.3
+      "seconds": 0.2
     },
     "check_petroleum_cuts": {
       "exit": 0,
@@ -1645,6 +1645,11 @@
       "exit": 0,
       "claim": "check_cosmo_lvpp_selection: OK -- the engine's COSMO-SAC LVPP-HFTZVP-2018 reproduces the selected reading: mean |d ln gamma-inf| vs Lin & Sandler 2002 Table 2 = 0.9938 in water (32), 0.4038 in n-hexane (18), 0.7814 overall (the outside computation: 0.9938 / 0.4038 / 0.7814).  SELECTION DATA, NOT VALIDATION: this table chose the reading; the held-out test is bin/curate/cosmo_lvpp_vs_nrtl.py.",
       "seconds": 2.6
+    },
+    "check_transport_records": {
+      "exit": 0,
+      "claim": "check_transport_records: OK -- 92 fitted liquid-viscosity / liquid-thermal-conductivity record(s) held to the dataset (parameters, window, D/E written as zero, review by none, fitGradeBasis inSample, grade limits 5/10/20 %, C300 cap words, Trange = window, nothing below warning or with one parameter), and, when the ThermoML archive cache is reachable, each refit from it (parameters, window and max error equal the stored ones at 1e-6).  NOT CHECKED: that a fit agrees with the articles' own tables (a machine read them), surface tension (no reader), any molecule outside the written records.",
+      "seconds": 0.1
     }
   }
 }

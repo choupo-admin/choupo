@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1257,
+  "cases": 1258,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 15
@@ -50,6 +50,22 @@
    "application": "choupoProps",
    "ops": [
     "estimateComponent",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/batches/transport_c327": {
+   "application": "choupoProps",
+   "ops": [
     "propertyScan1D"
    ],
    "thermo": {
@@ -20662,6 +20678,7 @@
     "data/curation/batches/new_components",
     "data/curation/batches/new_components_c309",
     "data/curation/batches/new_components_estimated",
+    "data/curation/batches/transport_c327",
     "data/curation/components/1122Tetrachloroethane",
     "data/curation/components/11Diethoxyethane",
     "data/curation/components/12Butanediol",
@@ -23342,6 +23359,7 @@
     "data/curation/batches/new_components",
     "data/curation/batches/new_components_c309",
     "data/curation/batches/new_components_estimated",
+    "data/curation/batches/transport_c327",
     "data/curation/components/1122Tetrachloroethane",
     "data/curation/components/11Diethoxyethane",
     "data/curation/components/12Butanediol",
@@ -25179,6 +25197,7 @@
     "data/curation/batches/new_components",
     "data/curation/batches/new_components_c309",
     "data/curation/batches/new_components_estimated",
+    "data/curation/batches/transport_c327",
     "data/curation/pairs/124Trimethylbenzene-1Pentanol",
     "data/curation/pairs/124Trimethylbenzene-2Pentanol",
     "data/curation/pairs/124Trimethylbenzene-mEthyltoluene",

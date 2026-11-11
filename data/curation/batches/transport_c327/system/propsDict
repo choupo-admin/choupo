@@ -1,0 +1,846 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  transport_c327 -- DEV.md 4c C327.  Written by `bin/curate/transport_fit.py case`.
+    Each record the tool added to data/standards/components is loaded and evaluated at the two ends and the
+    middle of its own validity window (Tmin, Tmid, Tmax): every value must evaluate with NO extrapolation
+    announcement, which is the engine reading the window the record declares.  The records are reproduced
+    from the archive by `transport_fit.py verify` (gate check_transport_records).  Surface tension fits are
+    in constant/transportDataset.json only: the engine has no reader of a stored sigma(T) yet.  */
+
+operations
+(
+    {
+        name        visc_12Butanediol;
+        type        propertyScan1D;
+        vary        { variable T;  from 293.15 K;  to 338.15 K;  n 3; }
+        state       { P 1 bar;  composition { 12Butanediol 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_12Butanediol.csv; }
+    }
+    {
+        name        cond_12Propanediol;
+        type        propertyScan1D;
+        vary        { variable T;  from 283.15 K;  to 450.8 K;  n 3; }
+        state       { P 1 bar;  composition { 12Propanediol 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_12Propanediol.csv; }
+    }
+    {
+        name        visc_13Butanediol;
+        type        propertyScan1D;
+        vary        { variable T;  from 293.15 K;  to 338.15 K;  n 3; }
+        state       { P 1 bar;  composition { 13Butanediol 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_13Butanediol.csv; }
+    }
+    {
+        name        visc_13Propanediol;
+        type        propertyScan1D;
+        vary        { variable T;  from 253.15 K;  to 353.15 K;  n 3; }
+        state       { P 1 bar;  composition { 13Propanediol 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_13Propanediol.csv; }
+    }
+    {
+        name        visc_1Chlorobutane;
+        type        propertyScan1D;
+        vary        { variable T;  from 283.15 K;  to 318.15 K;  n 3; }
+        state       { P 1 bar;  composition { 1Chlorobutane 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_1Chlorobutane.csv; }
+    }
+    {
+        name        visc_1Decanol;
+        type        propertyScan1D;
+        vary        { variable T;  from 283.15 K;  to 363.15 K;  n 3; }
+        state       { P 1 bar;  composition { 1Decanol 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_1Decanol.csv; }
+    }
+    {
+        name        visc_1Octanol;
+        type        propertyScan1D;
+        vary        { variable T;  from 283.15 K;  to 363.15 K;  n 3; }
+        state       { P 1 bar;  composition { 1Octanol 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_1Octanol.csv; }
+    }
+    {
+        name        cond_1Octanol;
+        type        propertyScan1D;
+        vary        { variable T;  from 274.92 K;  to 374.96 K;  n 3; }
+        state       { P 1 bar;  composition { 1Octanol 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_1Octanol.csv; }
+    }
+    {
+        name        visc_2Butoxyethanol;
+        type        propertyScan1D;
+        vary        { variable T;  from 283.15 K;  to 353.15 K;  n 3; }
+        state       { P 1 bar;  composition { 2Butoxyethanol 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_2Butoxyethanol.csv; }
+    }
+    {
+        name        cond_2Butoxyethanol;
+        type        propertyScan1D;
+        vary        { variable T;  from 283.96 K;  to 373.84 K;  n 3; }
+        state       { P 1 bar;  composition { 2Butoxyethanol 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_2Butoxyethanol.csv; }
+    }
+    {
+        name        visc_2Chlorobutane;
+        type        propertyScan1D;
+        vary        { variable T;  from 283.15 K;  to 313.15 K;  n 3; }
+        state       { P 1 bar;  composition { 2Chlorobutane 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_2Chlorobutane.csv; }
+    }
+    {
+        name        visc_2Ethoxyethanol;
+        type        propertyScan1D;
+        vary        { variable T;  from 288.15 K;  to 373.15 K;  n 3; }
+        state       { P 1 bar;  composition { 2Ethoxyethanol 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_2Ethoxyethanol.csv; }
+    }
+    {
+        name        visc_2Ethylthiophene;
+        type        propertyScan1D;
+        vary        { variable T;  from 278.15 K;  to 338.15 K;  n 3; }
+        state       { P 1 bar;  composition { 2Ethylthiophene 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_2Ethylthiophene.csv; }
+    }
+    {
+        name        visc_33Oxydipropanol;
+        type        propertyScan1D;
+        vary        { variable T;  from 297.42 K;  to 428.3 K;  n 3; }
+        state       { P 1 bar;  composition { 33Oxydipropanol 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_33Oxydipropanol.csv; }
+    }
+    {
+        name        cond_33Oxydipropanol;
+        type        propertyScan1D;
+        vary        { variable T;  from 298.2 K;  to 435.1 K;  n 3; }
+        state       { P 1 bar;  composition { 33Oxydipropanol 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_33Oxydipropanol.csv; }
+    }
+    {
+        name        visc_3Methyl1Butanol;
+        type        propertyScan1D;
+        vary        { variable T;  from 288.15 K;  to 323.15 K;  n 3; }
+        state       { P 1 bar;  composition { 3Methyl1Butanol 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_3Methyl1Butanol.csv; }
+    }
+    {
+        name        visc_Dichloroethane;
+        type        propertyScan1D;
+        vary        { variable T;  from 288.15 K;  to 318.15 K;  n 3; }
+        state       { P 1 bar;  composition { Dichloroethane 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_Dichloroethane.csv; }
+    }
+    {
+        name        visc_NaNO3;
+        type        propertyScan1D;
+        vary        { variable T;  from 590.3 K;  to 752.1 K;  n 3; }
+        state       { P 1 bar;  composition { NaNO3 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_NaNO3.csv; }
+    }
+    {
+        name        cond_R245fa;
+        type        propertyScan1D;
+        vary        { variable T;  from 173.206 K;  to 415.54 K;  n 3; }
+        state       { P 1 bar;  composition { R245fa 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_R245fa.csv; }
+    }
+    {
+        name        visc_aceticAcid;
+        type        propertyScan1D;
+        vary        { variable T;  from 293.15 K;  to 373.15 K;  n 3; }
+        state       { P 1 bar;  composition { aceticAcid 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_aceticAcid.csv; }
+    }
+    {
+        name        visc_acetone;
+        type        propertyScan1D;
+        vary        { variable T;  from 278.15 K;  to 318.15 K;  n 3; }
+        state       { P 1 bar;  composition { acetone 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_acetone.csv; }
+    }
+    {
+        name        cond_benzene;
+        type        propertyScan1D;
+        vary        { variable T;  from 281.1774 K;  to 392.16 K;  n 3; }
+        state       { P 1 bar;  composition { benzene 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_benzene.csv; }
+    }
+    {
+        name        visc_cyclohexane;
+        type        propertyScan1D;
+        vary        { variable T;  from 283.15 K;  to 348.9 K;  n 3; }
+        state       { P 1 bar;  composition { cyclohexane 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_cyclohexane.csv; }
+    }
+    {
+        name        cond_cyclohexane;
+        type        propertyScan1D;
+        vary        { variable T;  from 280.8347 K;  to 318.9483 K;  n 3; }
+        state       { P 1 bar;  composition { cyclohexane 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_cyclohexane.csv; }
+    }
+    {
+        name        visc_cyclopentane;
+        type        propertyScan1D;
+        vary        { variable T;  from 253.15 K;  to 353.15 K;  n 3; }
+        state       { P 1 bar;  composition { cyclopentane 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_cyclopentane.csv; }
+    }
+    {
+        name        cond_cyclopentane;
+        type        propertyScan1D;
+        vary        { variable T;  from 257.0779 K;  to 316.5421 K;  n 3; }
+        state       { P 1 bar;  composition { cyclopentane 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_cyclopentane.csv; }
+    }
+    {
+        name        visc_cyclopentanol;
+        type        propertyScan1D;
+        vary        { variable T;  from 293.15 K;  to 373.15 K;  n 3; }
+        state       { P 1 bar;  composition { cyclopentanol 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_cyclopentanol.csv; }
+    }
+    {
+        name        visc_diethylEther;
+        type        propertyScan1D;
+        vary        { variable T;  from 243.15 K;  to 298.15 K;  n 3; }
+        state       { P 1 bar;  composition { diethylEther 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_diethylEther.csv; }
+    }
+    {
+        name        cond_diethylEther;
+        type        propertyScan1D;
+        vary        { variable T;  from 234.64 K;  to 336.08 K;  n 3; }
+        state       { P 1 bar;  composition { diethylEther 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_diethylEther.csv; }
+    }
+    {
+        name        visc_diethylSuccinate;
+        type        propertyScan1D;
+        vary        { variable T;  from 288.15 K;  to 323.15 K;  n 3; }
+        state       { P 1 bar;  composition { diethylSuccinate 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_diethylSuccinate.csv; }
+    }
+    {
+        name        cond_diethylSuccinate;
+        type        propertyScan1D;
+        vary        { variable T;  from 265.06 K;  to 387.25 K;  n 3; }
+        state       { P 1 bar;  composition { diethylSuccinate 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_diethylSuccinate.csv; }
+    }
+    {
+        name        visc_diethyleneGlycolDiethylEther;
+        type        propertyScan1D;
+        vary        { variable T;  from 288.15 K;  to 373.15 K;  n 3; }
+        state       { P 1 bar;  composition { diethyleneGlycolDiethylEther 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_diethyleneGlycolDiethylEther.csv; }
+    }
+    {
+        name        visc_dimethylCarbonate;
+        type        propertyScan1D;
+        vary        { variable T;  from 288.15 K;  to 343.15 K;  n 3; }
+        state       { P 1 bar;  composition { dimethylCarbonate 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_dimethylCarbonate.csv; }
+    }
+    {
+        name        visc_dimethylEther;
+        type        propertyScan1D;
+        vary        { variable T;  from 243.15 K;  to 373.129 K;  n 3; }
+        state       { P 1 bar;  composition { dimethylEther 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_dimethylEther.csv; }
+    }
+    {
+        name        cond_dimethylEther;
+        type        propertyScan1D;
+        vary        { variable T;  from 229.67 K;  to 291.33 K;  n 3; }
+        state       { P 1 bar;  composition { dimethylEther 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_dimethylEther.csv; }
+    }
+    {
+        name        cond_ethanol;
+        type        propertyScan1D;
+        vary        { variable T;  from 276.51 K;  to 342.82 K;  n 3; }
+        state       { P 1 bar;  composition { ethanol 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_ethanol.csv; }
+    }
+    {
+        name        visc_ethylAcetate;
+        type        propertyScan1D;
+        vary        { variable T;  from 293.15 K;  to 343.15 K;  n 3; }
+        state       { P 1 bar;  composition { ethylAcetate 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_ethylAcetate.csv; }
+    }
+    {
+        name        cond_ethylAcetate;
+        type        propertyScan1D;
+        vary        { variable T;  from 249.13 K;  to 348.46 K;  n 3; }
+        state       { P 1 bar;  composition { ethylAcetate 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_ethylAcetate.csv; }
+    }
+    {
+        name        visc_ethylBenzene;
+        type        propertyScan1D;
+        vary        { variable T;  from 253.23 K;  to 373.15 K;  n 3; }
+        state       { P 1 bar;  composition { ethylBenzene 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_ethylBenzene.csv; }
+    }
+    {
+        name        cond_ethylBenzene;
+        type        propertyScan1D;
+        vary        { variable T;  from 257.9965 K;  to 329.6589 K;  n 3; }
+        state       { P 1 bar;  composition { ethylBenzene 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_ethylBenzene.csv; }
+    }
+    {
+        name        visc_ethylButanoate;
+        type        propertyScan1D;
+        vary        { variable T;  from 288.15 K;  to 343.15 K;  n 3; }
+        state       { P 1 bar;  composition { ethylButanoate 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_ethylButanoate.csv; }
+    }
+    {
+        name        cond_ethylButanoate;
+        type        propertyScan1D;
+        vary        { variable T;  from 268.57 K;  to 363.52 K;  n 3; }
+        state       { P 1 bar;  composition { ethylButanoate 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_ethylButanoate.csv; }
+    }
+    {
+        name        visc_ethylDecanoate;
+        type        propertyScan1D;
+        vary        { variable T;  from 283.15 K;  to 353.15 K;  n 3; }
+        state       { P 1 bar;  composition { ethylDecanoate 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_ethylDecanoate.csv; }
+    }
+    {
+        name        cond_ethylDecanoate;
+        type        propertyScan1D;
+        vary        { variable T;  from 270 K;  to 400.44 K;  n 3; }
+        state       { P 1 bar;  composition { ethylDecanoate 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_ethylDecanoate.csv; }
+    }
+    {
+        name        cond_ethylHexanoate;
+        type        propertyScan1D;
+        vary        { variable T;  from 254.29 K;  to 383.37 K;  n 3; }
+        state       { P 1 bar;  composition { ethylHexanoate 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_ethylHexanoate.csv; }
+    }
+    {
+        name        visc_ethylLactate;
+        type        propertyScan1D;
+        vary        { variable T;  from 278.15 K;  to 338.15 K;  n 3; }
+        state       { P 1 bar;  composition { ethylLactate 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_ethylLactate.csv; }
+    }
+    {
+        name        visc_ethylOctanoate;
+        type        propertyScan1D;
+        vary        { variable T;  from 288.15 K;  to 358.15 K;  n 3; }
+        state       { P 1 bar;  composition { ethylOctanoate 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_ethylOctanoate.csv; }
+    }
+    {
+        name        cond_ethylOctanoate;
+        type        propertyScan1D;
+        vary        { variable T;  from 254.76 K;  to 400.37 K;  n 3; }
+        state       { P 1 bar;  composition { ethylOctanoate 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_ethylOctanoate.csv; }
+    }
+    {
+        name        visc_ethylPropionate;
+        type        propertyScan1D;
+        vary        { variable T;  from 293.15 K;  to 343.15 K;  n 3; }
+        state       { P 1 bar;  composition { ethylPropionate 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_ethylPropionate.csv; }
+    }
+    {
+        name        cond_ethylPropionate;
+        type        propertyScan1D;
+        vary        { variable T;  from 263.55 K;  to 356.28 K;  n 3; }
+        state       { P 1 bar;  composition { ethylPropionate 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_ethylPropionate.csv; }
+    }
+    {
+        name        visc_fluoroethane;
+        type        propertyScan1D;
+        vary        { variable T;  from 243.17 K;  to 363.16 K;  n 3; }
+        state       { P 1 bar;  composition { fluoroethane 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_fluoroethane.csv; }
+    }
+    {
+        name        cond_fluoroethane;
+        type        propertyScan1D;
+        vary        { variable T;  from 233.99 K;  to 375.21 K;  n 3; }
+        state       { P 1 bar;  composition { fluoroethane 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_fluoroethane.csv; }
+    }
+    {
+        name        cond_isohexane;
+        type        propertyScan1D;
+        vary        { variable T;  from 256.5647 K;  to 329.1529 K;  n 3; }
+        state       { P 1 bar;  composition { isohexane 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_isohexane.csv; }
+    }
+    {
+        name        visc_isopentane;
+        type        propertyScan1D;
+        vary        { variable T;  from 253.15 K;  to 353.15 K;  n 3; }
+        state       { P 1 bar;  composition { isopentane 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_isopentane.csv; }
+    }
+    {
+        name        visc_isopentylAcetate;
+        type        propertyScan1D;
+        vary        { variable T;  from 288.15 K;  to 358.15 K;  n 3; }
+        state       { P 1 bar;  composition { isopentylAcetate 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_isopentylAcetate.csv; }
+    }
+    {
+        name        visc_mXylene;
+        type        propertyScan1D;
+        vary        { variable T;  from 273.56 K;  to 398.15 K;  n 3; }
+        state       { P 1 bar;  composition { mXylene 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_mXylene.csv; }
+    }
+    {
+        name        cond_mXylene;
+        type        propertyScan1D;
+        vary        { variable T;  from 258.1655 K;  to 329.224 K;  n 3; }
+        state       { P 1 bar;  composition { mXylene 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_mXylene.csv; }
+    }
+    {
+        name        cond_methylButanoate;
+        type        propertyScan1D;
+        vary        { variable T;  from 283.34 K;  to 358.18 K;  n 3; }
+        state       { P 1 bar;  composition { methylButanoate 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_methylButanoate.csv; }
+    }
+    {
+        name        visc_methylDecanoate;
+        type        propertyScan1D;
+        vary        { variable T;  from 278.15 K;  to 363.15 K;  n 3; }
+        state       { P 1 bar;  composition { methylDecanoate 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_methylDecanoate.csv; }
+    }
+    {
+        name        cond_methylDecanoate;
+        type        propertyScan1D;
+        vary        { variable T;  from 267.1 K;  to 399.95 K;  n 3; }
+        state       { P 1 bar;  composition { methylDecanoate 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_methylDecanoate.csv; }
+    }
+    {
+        name        visc_methylHeptanoate;
+        type        propertyScan1D;
+        vary        { variable T;  from 283.15 K;  to 341.67 K;  n 3; }
+        state       { P 1 bar;  composition { methylHeptanoate 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_methylHeptanoate.csv; }
+    }
+    {
+        name        cond_methylHexanoate;
+        type        propertyScan1D;
+        vary        { variable T;  from 263.83 K;  to 368.5 K;  n 3; }
+        state       { P 1 bar;  composition { methylHexanoate 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_methylHexanoate.csv; }
+    }
+    {
+        name        visc_methylLactate;
+        type        propertyScan1D;
+        vary        { variable T;  from 278.15 K;  to 338.15 K;  n 3; }
+        state       { P 1 bar;  composition { methylLactate 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_methylLactate.csv; }
+    }
+    {
+        name        visc_methylLevulinate;
+        type        propertyScan1D;
+        vary        { variable T;  from 278.15 K;  to 338.15 K;  n 3; }
+        state       { P 1 bar;  composition { methylLevulinate 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_methylLevulinate.csv; }
+    }
+    {
+        name        visc_methylLinoleate;
+        type        propertyScan1D;
+        vary        { variable T;  from 278.15 K;  to 353.15 K;  n 3; }
+        state       { P 1 bar;  composition { methylLinoleate 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_methylLinoleate.csv; }
+    }
+    {
+        name        visc_methylLinolenate;
+        type        propertyScan1D;
+        vary        { variable T;  from 278.15 K;  to 373.15 K;  n 3; }
+        state       { P 1 bar;  composition { methylLinolenate 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_methylLinolenate.csv; }
+    }
+    {
+        name        visc_methylOctanoate;
+        type        propertyScan1D;
+        vary        { variable T;  from 283.15 K;  to 361.45 K;  n 3; }
+        state       { P 1 bar;  composition { methylOctanoate 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_methylOctanoate.csv; }
+    }
+    {
+        name        cond_methylOctanoate;
+        type        propertyScan1D;
+        vary        { variable T;  from 273.56 K;  to 393.54 K;  n 3; }
+        state       { P 1 bar;  composition { methylOctanoate 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_methylOctanoate.csv; }
+    }
+    {
+        name        visc_methylPalmitate;
+        type        propertyScan1D;
+        vary        { variable T;  from 308.15 K;  to 363.15 K;  n 3; }
+        state       { P 1 bar;  composition { methylPalmitate 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_methylPalmitate.csv; }
+    }
+    {
+        name        visc_methylPentanoate;
+        type        propertyScan1D;
+        vary        { variable T;  from 283.15 K;  to 313.15 K;  n 3; }
+        state       { P 1 bar;  composition { methylPentanoate 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_methylPentanoate.csv; }
+    }
+    {
+        name        cond_methylPentanoate;
+        type        propertyScan1D;
+        vary        { variable T;  from 285.55 K;  to 362.16 K;  n 3; }
+        state       { P 1 bar;  composition { methylPentanoate 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_methylPentanoate.csv; }
+    }
+    {
+        name        visc_methylStearate;
+        type        propertyScan1D;
+        vary        { variable T;  from 313.15 K;  to 363.15 K;  n 3; }
+        state       { P 1 bar;  composition { methylStearate 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_methylStearate.csv; }
+    }
+    {
+        name        visc_nButylButanoate;
+        type        propertyScan1D;
+        vary        { variable T;  from 293.15 K;  to 343.15 K;  n 3; }
+        state       { P 1 bar;  composition { nButylButanoate 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_nButylButanoate.csv; }
+    }
+    {
+        name        visc_nDecane;
+        type        propertyScan1D;
+        vary        { variable T;  from 283.15 K;  to 573.15 K;  n 3; }
+        state       { P 1 bar;  composition { nDecane 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_nDecane.csv; }
+    }
+    {
+        name        cond_nDodecane;
+        type        propertyScan1D;
+        vary        { variable T;  from 318.2 K;  to 352.8 K;  n 3; }
+        state       { P 1 bar;  composition { nDodecane 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_nDodecane.csv; }
+    }
+    {
+        name        visc_nHeptane;
+        type        propertyScan1D;
+        vary        { variable T;  from 273.15 K;  to 503.2 K;  n 3; }
+        state       { P 1 bar;  composition { nHeptane 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_nHeptane.csv; }
+    }
+    {
+        name        visc_nHexane;
+        type        propertyScan1D;
+        vary        { variable T;  from 273.15 K;  to 473.15 K;  n 3; }
+        state       { P 1 bar;  composition { nHexane 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_nHexane.csv; }
+    }
+    {
+        name        cond_nHexane;
+        type        propertyScan1D;
+        vary        { variable T;  from 301.73 K;  to 330.81 K;  n 3; }
+        state       { P 1 bar;  composition { nHexane 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_nHexane.csv; }
+    }
+    {
+        name        visc_nNonane;
+        type        propertyScan1D;
+        vary        { variable T;  from 273.15 K;  to 358.15 K;  n 3; }
+        state       { P 1 bar;  composition { nNonane 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_nNonane.csv; }
+    }
+    {
+        name        cond_nOctane;
+        type        propertyScan1D;
+        vary        { variable T;  from 255.43 K;  to 355.08 K;  n 3; }
+        state       { P 1 bar;  composition { nOctane 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_nOctane.csv; }
+    }
+    {
+        name        visc_nUndecane;
+        type        propertyScan1D;
+        vary        { variable T;  from 283.15 K;  to 363.15 K;  n 3; }
+        state       { P 1 bar;  composition { nUndecane 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_nUndecane.csv; }
+    }
+    {
+        name        visc_oXylene;
+        type        propertyScan1D;
+        vary        { variable T;  from 273.48 K;  to 372.83 K;  n 3; }
+        state       { P 1 bar;  composition { oXylene 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_oXylene.csv; }
+    }
+    {
+        name        cond_oXylene;
+        type        propertyScan1D;
+        vary        { variable T;  from 257.754 K;  to 329.0906 K;  n 3; }
+        state       { P 1 bar;  composition { oXylene 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_oXylene.csv; }
+    }
+    {
+        name        visc_pXylene;
+        type        propertyScan1D;
+        vary        { variable T;  from 288.15 K;  to 373.15 K;  n 3; }
+        state       { P 1 bar;  composition { pXylene 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_pXylene.csv; }
+    }
+    {
+        name        cond_pXylene;
+        type        propertyScan1D;
+        vary        { variable T;  from 287.3328 K;  to 329.1643 K;  n 3; }
+        state       { P 1 bar;  composition { pXylene 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_pXylene.csv; }
+    }
+    {
+        name        visc_pentanoicAcid;
+        type        propertyScan1D;
+        vary        { variable T;  from 293.4 K;  to 428.2 K;  n 3; }
+        state       { P 1 bar;  composition { pentanoicAcid 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_pentanoicAcid.csv; }
+    }
+    {
+        name        cond_pentanoicAcid;
+        type        propertyScan1D;
+        vary        { variable T;  from 296.1 K;  to 471.3 K;  n 3; }
+        state       { P 1 bar;  composition { pentanoicAcid 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_pentanoicAcid.csv; }
+    }
+    {
+        name        visc_squalane;
+        type        propertyScan1D;
+        vary        { variable T;  from 273.15 K;  to 473.05 K;  n 3; }
+        state       { P 1 bar;  composition { squalane 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_squalane.csv; }
+    }
+    {
+        name        visc_tetradecanoicAcid;
+        type        propertyScan1D;
+        vary        { variable T;  from 332.1 K;  to 472.2 K;  n 3; }
+        state       { P 1 bar;  composition { tetradecanoicAcid 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_tetradecanoicAcid.csv; }
+    }
+    {
+        name        cond_tetradecanoicAcid;
+        type        propertyScan1D;
+        vary        { variable T;  from 334.4 K;  to 471.9 K;  n 3; }
+        state       { P 1 bar;  composition { tetradecanoicAcid 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_tetradecanoicAcid.csv; }
+    }
+    {
+        name        visc_tetrahydropyran;
+        type        propertyScan1D;
+        vary        { variable T;  from 283.15 K;  to 323.15 K;  n 3; }
+        state       { P 1 bar;  composition { tetrahydropyran 1.0; } }
+        thermo      { transport { liquid { viscosity { model chemsepEq101; } } } }
+        properties  ( viscosity_liquid );
+        output      { file visc_tetrahydropyran.csv; }
+    }
+    {
+        name        cond_toluene;
+        type        propertyScan1D;
+        vary        { variable T;  from 234.6 K;  to 375.71 K;  n 3; }
+        state       { P 1 bar;  composition { toluene 1.0; } }
+        thermo      { transport { liquid { thermalConductivity { model chemsepEq16; } } } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file cond_toluene.csv; }
+    }
+);
