@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/1Propanol-diethylSulfide.dat"
         {
             type          imported;
-            sha256        "4e892362ef6f405f6ec056ca960c5614f42bce9d373809b29220b137c852afdc";
-            computationalSha256 "b964bb392f808510c8b05f8c9901579190e6d61fcbf80ee4b38a18ea74321fa3";
+            sha256        "c5672eb88c0b4e0c127adeba071ddcf58e2ff25553e8b2c0613b02f5a97386f7";
+            computationalSha256 "b0915bc13a819243b8423693f1951b581864b9f09736e12138f697afbb2bc2cd";
             origin        "data/standards/parameters/NRTL/1Propanol-diethylSulfide.dat";
-            originSha256  "8307bc9fc198ea58323ca9646289fa3e9ef6dc6fc86a7c615eb817d30f988ee6";
+            originSha256  "f014000a38428bf1844d90935201d31798aedea6900602ae8827d7f0d31ec011";
             release       Choupo-2608;
         }
     }

@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/1Hexanol-nButylAcetate.dat"
         {
             type          imported;
-            sha256        "dfa5b77bb9b70286af9ac7c7ebe83a55b8c08504cd03c6308bcab742d9629ba5";
-            computationalSha256 "519f050b50c5560b591b2a7acbae038c134c85be5727ffdf89e85b68740c19b4";
+            sha256        "47fe08b4bebc452537e8109703124f13b72da5a78542cf11129846ced857e74f";
+            computationalSha256 "2d8122928ae19903a664804acbdfff20a2ab56c3a83c716b203f7a5ca66473fd";
             origin        "data/standards/parameters/NRTL/1Hexanol-nButylAcetate.dat";
-            originSha256  "7a8b267433676ffd78e91bf04fecdd93079ba62a8850b18ac366a50940abdee0";
+            originSha256  "4db39aba224d51f729115d6a1d83b97133beb2b9f037889fdd6e56c26e2f98b6";
             release       Choupo-2608;
         }
     }

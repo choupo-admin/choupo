@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/224Trimethylpentane-dimethylDisulfide.dat"
         {
             type          imported;
-            sha256        "cad170baf909b4a89d4ce3df206d8208e1a705882825d5c86c242d728b894dde";
-            computationalSha256 "138356d809a5e525f9d466a00d655aaa7bf0902056e8d19afb9edd6c9993e136";
+            sha256        "814c6d93f2b24e6e93629b37d43212b102b3b4e43ca20573efaf73831e805384";
+            computationalSha256 "b77ef6f8204735a713af3cf11ecac9d45e431c1e22403772cd4c07c9f5b952fd";
             origin        "data/standards/parameters/NRTL/224Trimethylpentane-dimethylDisulfide.dat";
-            originSha256  "71af9e14e2f1aa3a68d53437fe7208bba4ebae34c4c9eb5eca338bdfc8095afd";
+            originSha256  "7fa0817219959c7b7da191c08f71e9440f16e6d51113be2b7d3a3938ea64db58";
             release       Choupo-2608;
         }
     }

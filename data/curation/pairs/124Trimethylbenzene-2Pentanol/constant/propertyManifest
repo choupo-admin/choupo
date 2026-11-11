@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/124Trimethylbenzene-2Pentanol.dat"
         {
             type          imported;
-            sha256        "fe6823ba2f863d49502ba1040eb089c7563d50e0f65317152c6ba854616ec0f7";
-            computationalSha256 "80fc287e6a8d6ec0b8f406e06cba608bca90b48535319ecb5c5ae12d6f1b36a4";
+            sha256        "506812a7f831f6abe1c2b30f10e146ca7b5d7dba05a916edb8576b6841673cd5";
+            computationalSha256 "27d08fdec606b21cd2fe687291669adc42833084379a9bb8f3b9fb057e757f43";
             origin        "data/standards/parameters/NRTL/124Trimethylbenzene-2Pentanol.dat";
-            originSha256  "b207690e70a31d7404996aaeca6ecaf59e11bcdf2f9adfb54ae01e16b9575daf";
+            originSha256  "423b3f418d40cc5f7a980c66d70dc29cd65b58a4c7f8b4eed4c823a583f1385e";
             release       Choupo-2608;
         }
     }

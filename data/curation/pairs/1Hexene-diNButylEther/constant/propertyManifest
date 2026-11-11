@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -37,19 +37,19 @@ propertyManifest
         "components/diNButylEther.dat"
         {
             type          imported;
-            sha256        "a3b818acd52aa4542d45437052d8e1419718cfee804ef8f67f0dba566cd4635a";
-            computationalSha256 "b715c512b98113de1eaa314d06a1f7bb1a2e21248674cd581d8633ba5f2e47a9";
+            sha256        "537970d2ee2c419075c0e60d44f291a9e308dd2c5fb5d18a04ae9dd5dd0f0f2b";
+            computationalSha256 "2d5d88b4f35c15d610e2651a7e04d59a600b408d65f8b9e305a62a753f13c07b";
             origin        "data/standards/components/diNButylEther.dat";
-            originSha256  "62a03e26d763570c05116ea98b22cde2cf77edb39e3d10a43f9972eabcadbbbb";
+            originSha256  "e943e71a195499eea4c36243b977aff1fe2a5602ccb7592874505a239160f212";
             release       Choupo-2608;
         }
         "parameters/NRTL/1Hexene-diNButylEther.dat"
         {
             type          imported;
-            sha256        "e774670191a6873599be54efeb7ebf4747dcebaed6090359660f12d9f263b256";
-            computationalSha256 "36a77fcd6ac5bec921ebb4e0fcd60ca43a4d477353c48c990af90f1142f16f4b";
+            sha256        "84774ad7de415eabb5e87b6467ca45f8d5b1ea66dfb32bc4936706856dc6e4d5";
+            computationalSha256 "93190dd3a39090ad6804dd9c2b44fb6ba1dc3f50ba7f425b74fd5525eae8d3a0";
             origin        "data/standards/parameters/NRTL/1Hexene-diNButylEther.dat";
-            originSha256  "0b12456ac778dcea81be61430189174d19dca3e8fd826e51c68c75a317ee9f3a";
+            originSha256  "be9a4d752b238e7b34f38b1f8442b99ca212cdfc1e672cdf68a9063e723e6f6c";
             release       Choupo-2608;
         }
     }

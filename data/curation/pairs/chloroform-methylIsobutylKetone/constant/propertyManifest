@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/chloroform-methylIsobutylKetone.dat"
         {
             type          imported;
-            sha256        "240244e200649947c35cb4792207f2c56a551854c7dfe7773b8bcebbeb07a6b6";
-            computationalSha256 "396cb03953482287e590b05400d772b781d2fe657f5e90abd7879e0d22aee04a";
+            sha256        "7ae3207419541585bea52a8d9e146d783718909bd1540fd8ce77335c3bedb78a";
+            computationalSha256 "b43f4efad06defd292d1abbc8bc1c3b23ee1313e94176df9fd361ac6bc819811";
             origin        "data/standards/parameters/NRTL/chloroform-methylIsobutylKetone.dat";
-            originSha256  "1adee53d55b81132c5c7b6482d290b27b0da9e8166fefaef0d7c3903d5b34520";
+            originSha256  "a69bb8f9f41b52e19632098e55b3b88f814e7edc6ba57ca70582973644eb6044";
             release       Choupo-2608;
         }
     }

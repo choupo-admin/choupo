@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/ethylAcetate-methanol.dat"
         {
             type          imported;
-            sha256        "60d9b9e12c76ae268ed07132bd641a033370b3ec1263101221312cb0feae3c85";
-            computationalSha256 "a2412621b21c5828be9d297099b7f3bc0e0225d2c26a18e04e34b33142ebf2ea";
+            sha256        "3d5afb2bc6823d971f854e2147f5125a7db32b037b77d28efbadb43099dbb3f3";
+            computationalSha256 "688746b9addc79c56ed35389873bdead3fd6cc5f3d966e5fe1d5500573abe0de";
             origin        "data/standards/parameters/NRTL/ethylAcetate-methanol.dat";
-            originSha256  "fa72da202bb73be60a681fdcbebd4b6d231151273f461d14884d4f85b7afe62c";
+            originSha256  "7d1f5793beb1b2eee32eb442100943f15d3f15c75de830969ae8c36937a89ed8";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

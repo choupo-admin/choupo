@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/chloroform-methylTertButylEther.dat"
         {
             type          imported;
-            sha256        "8b414330a53a2775876dc4ad509d3e17fea7942b5d98bf71faee363d13221ef5";
-            computationalSha256 "48c69eb1fff197970e36a353179da0cf09444711ce5f40ecece958a388e05d7a";
+            sha256        "36d3f19c12ab6b9b8e94d076cf71e3f9c03994104f1368a10ef35845123c347e";
+            computationalSha256 "18aa605ea1138e4f8f6055e14a2fd3bf90fbb5205db6bc13567461443278ce74";
             origin        "data/standards/parameters/NRTL/chloroform-methylTertButylEther.dat";
-            originSha256  "5a7a738c019b11959868bb3099d66ef4646f341498d4fca29e3f95ae2b380bd0";
+            originSha256  "c77405071df4ab1497f0d3ad2b7ded91e2a188a44135929a6f30498c8ac11b8a";
             release       Choupo-2608;
         }
     }

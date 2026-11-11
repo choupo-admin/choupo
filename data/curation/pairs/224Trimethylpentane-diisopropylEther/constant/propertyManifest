@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/224Trimethylpentane-diisopropylEther.dat"
         {
             type          imported;
-            sha256        "b187eb7bdaf72876ffcd7bfd0784dfba77c501867a200528473199c3c33738ac";
-            computationalSha256 "1c2c1a3002a18aafa9fe8f445edcc04be019514e4e5bf6ccafd6b775f918af64";
+            sha256        "2c94dbcc71edce6815f7be0a313087daf576bae1f1aab0458f98ef938ac46dcd";
+            computationalSha256 "ede421f43728cea6e0d552abc0cc636979c9dff4241d98f922a8e147326995c5";
             origin        "data/standards/parameters/NRTL/224Trimethylpentane-diisopropylEther.dat";
-            originSha256  "d73a7ee0c154cfb0241976a45ddcca2989a55fdd423a2dc36b33576a38571de8";
+            originSha256  "44bf996008f0fce2e97a1c4c498df54de85f45d06c4c8111fa1227ed7ccb0d2e";
             release       Choupo-2608;
         }
     }

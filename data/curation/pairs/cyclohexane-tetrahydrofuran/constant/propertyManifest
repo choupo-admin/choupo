@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/cyclohexane-tetrahydrofuran.dat"
         {
             type          imported;
-            sha256        "8b7da6df35063beaf87d9b4e7e27f2c05f81c084eccfd317410fc4d796b660ee";
-            computationalSha256 "bd7f0aeec91339f413c7bf105b60faeba49fbbeb54ed9bf587094df82a7f3d76";
+            sha256        "043f33f60c3bad3139b9c641f4d66454b878c6d02a41f7159292aa1e9c3a9a55";
+            computationalSha256 "6b314b101489e076e7faf91f894cd2f095eb5cd1f3043773cbd6fa7e820d2a05";
             origin        "data/standards/parameters/NRTL/cyclohexane-tetrahydrofuran.dat";
-            originSha256  "35606c1a5f008600caae6f7a111c03bf61e9bc7bef964dcb17c92ebbc5b6f155";
+            originSha256  "e4f36aad69a31e701b5a491e4704857027ec6cc833053c7ea8686056b07c1475";
             release       Choupo-2608;
         }
     }

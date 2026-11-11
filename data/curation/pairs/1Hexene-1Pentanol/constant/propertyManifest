@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-10";
+    importedAt         "2026-11-11";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/1Hexene-1Pentanol.dat"
         {
             type          imported;
-            sha256        "1ec70c13951d06cb18b0a2ec3df091b6615fd622fab76f050bcf9571ca5e78d4";
-            computationalSha256 "9139fb278d7d89a0e481d7bd1cb33c2ebee84c03f3fa450745b348ae2ea0068d";
+            sha256        "cb97c8b9301a7e0fb0eb2ef7ac9b093104591b12a60de0d0cef9d75a260b46b6";
+            computationalSha256 "39df9d802658a09ac914786a6c24d3f13dc5a72036b12b4b9db82b3b63e350be";
             origin        "data/standards/parameters/NRTL/1Hexene-1Pentanol.dat";
-            originSha256  "d9d7a2e1bf8ce955e3646cedb004033fe40c34b4c39dc948bd51f69e6b091555";
+            originSha256  "ec62478a72640cd996d54ddeecb8062cec19e526cd4c0d0f9d16a2798e345266";
             release       Choupo-2608;
         }
     }

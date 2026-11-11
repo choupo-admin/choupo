@@ -112,6 +112,7 @@ provenance
         reviewStatus  autoPromoted;
         humanReviewed false;
         fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 %
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
         fitGradeMaxRelativeError_pct 0.258245;
         reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
         reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
@@ -145,6 +146,7 @@ provenance
         reviewStatus  autoPromoted;
         humanReviewed false;
         fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 %
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
         fitGradeMaxRelativeError_pct 3.163547;
         reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
         reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
@@ -207,6 +209,7 @@ provenance
         reviewStatus  autoPromoted;
         humanReviewed false;
         fitGrade      warning;   // DEV.md 4c C285: the worse of the grades below
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
         fitGradeMaxRelativeError_pct 5.151348;   // grade warning
         promotedBy    "bin/choupo-curate vp --promote";
         promotedDate  "2026-11-10";
