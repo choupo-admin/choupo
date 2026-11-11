@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexanone-isopropanol.A_ij  1079.59318715;
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexanone-isopropanol.A_ji  -80.0106792279;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c785576aeab60335";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/cyclohexanone-isopropanol-bubble-acs.jced.8b00033.dat";
+            doi       "10.1021/acs.jced.8b00033";
+            sha256    "fa319b28e6f6b0d3ed43fbedee9c0d7afc2e905ad74e28bd1d03e8d5cc7ea750";
+            provenance measured;
+            archiveFile "acs.jced.8b00033.xml";
+            system    "cyclohexanone + isopropanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1253; max 0.984; n 14; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexanone-isopropanol.A_ij  1079.59318247;
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexanone-isopropanol.A_ji  -80.0106762011;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c785576aeab60335";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/cyclohexanone-isopropanol-bubble-acs.jced.8b00033.dat";
+            doi       "10.1021/acs.jced.8b00033";
+            sha256    "fa319b28e6f6b0d3ed43fbedee9c0d7afc2e905ad74e28bd1d03e8d5cc7ea750";
+            provenance measured;
+            archiveFile "acs.jced.8b00033.xml";
+            system    "cyclohexanone + isopropanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1253; max 0.984; n 14; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

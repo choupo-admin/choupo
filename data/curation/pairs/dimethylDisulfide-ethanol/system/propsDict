@@ -86,7 +86,19 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dT| 2.304 K (severe) on the same
+  kept points. fit_wilson: A_ij = 1026.5, A_ji = 5611.7 J/mol over 40
+  kept points: max |dT| 2.351 K, mean 0.488 K, graded severe -> accepted;
+  fit_wilson_start2 lands on the same pair (1026.5, 5611.7). NOT PROMOTED
+  (max |dT| 2.351 K over the 40 kept points, one liquid across the
+  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
+  pair does not enter the default catalogue; its record stays in this
+  curation case's constant/, and a case that needs it carries it in its
+  own constant/. UNIQUAC: not fitted -- dimethylDisulfide carries no
+  UNIQUAC r and q (no tabulated value, and no UNIFAC groups to sum them
+  from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted;
+  nothing is estimated silently.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -333,6 +345,20 @@ operations
         }
     }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[dimethylDisulfide];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.325 kPa;  composition { dimethylDisulfide 0.5;  ethanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_dimethylDisulfide );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );
 
 experimental

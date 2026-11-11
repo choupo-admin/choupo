@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-dimethylSulfoxide.A_ij  846.745400758;
+        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-dimethylSulfoxide.A_ji  -2463.73405818;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d9b74f9b78c46908";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylEthylKetone-dimethylSulfoxide-bubble-j.jct.2007.04.004.dat";
+            doi       "10.1016/j.jct.2007.04.004";
+            sha256    "b6be3b8664b234a8a61ae6a158adb350a9ac4ca1d1b42a247a99c7725c232845";
+            provenance measured;
+            archiveFile "j.jct.2007.04.004.xml";
+            system    "methylEthylKetone + dimethylSulfoxide";
+            pressure  "95300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0625; max 0.9239; n 8; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-dimethylSulfoxide.A_ij  5468.25697488;
+        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-dimethylSulfoxide.A_ji  -3993.98627951;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d9b74f9b78c46908";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylEthylKetone-dimethylSulfoxide-bubble-j.jct.2007.04.004.dat";
+            doi       "10.1016/j.jct.2007.04.004";
+            sha256    "b6be3b8664b234a8a61ae6a158adb350a9ac4ca1d1b42a247a99c7725c232845";
+            provenance measured;
+            archiveFile "j.jct.2007.04.004.xml";
+            system    "methylEthylKetone + dimethylSulfoxide";
+            pressure  "95300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0625; max 0.9239; n 8; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

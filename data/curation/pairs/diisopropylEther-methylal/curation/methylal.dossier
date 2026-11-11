@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylal-diisopropylEther.A_ij  4394.33729026;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-diisopropylEther.A_ji  -2084.98437323;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2b322f8a78718e43";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylal-diisopropylEther-bubble-je030238d.dat";
+            doi       "10.1021/je030238d";
+            sha256    "44a2a3c10185140624d0aecd17a711d282697f6c2694da5a48ce7fb1cd8def6c";
+            provenance measured;
+            archiveFile "je030238d.xml";
+            system    "methylal + diisopropylEther";
+            pressure  "95960.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0564; max 0.9081; n 9; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylal-diisopropylEther.A_ij  4394.33728607;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-diisopropylEther.A_ji  -2084.98437179;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2b322f8a78718e43";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylal-diisopropylEther-bubble-je030238d.dat";
+            doi       "10.1021/je030238d";
+            sha256    "44a2a3c10185140624d0aecd17a711d282697f6c2694da5a48ce7fb1cd8def6c";
+            provenance measured;
+            archiveFile "je030238d.xml";
+            system    "methylal + diisopropylEther";
+            pressure  "95960.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0564; max 0.9081; n 9; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

@@ -112,4 +112,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-ethanol.A_ij  1026.51606879;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-ethanol.A_ji  5611.69983098;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "98ec468aa61a6704";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/dimethylDisulfide-ethanol-bubble-acs.jced.7b00078.dat";
+            doi       "10.1021/acs.jced.7b00078";
+            sha256    "f02ef6edf8b627017cc706e2dd7ac35fe3511071195991b20f69db58936fd9c7";
+            provenance measured;
+            archiveFile "acs.jced.7b00078.xml";
+            system    "dimethylDisulfide + ethanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0384; max 0.9844; n 40; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-ethanol.A_ij  1026.51614317;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-ethanol.A_ji  5611.69978431;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "98ec468aa61a6704";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/dimethylDisulfide-ethanol-bubble-acs.jced.7b00078.dat";
+            doi       "10.1021/acs.jced.7b00078";
+            sha256    "f02ef6edf8b627017cc706e2dd7ac35fe3511071195991b20f69db58936fd9c7";
+            provenance measured;
+            archiveFile "acs.jced.7b00078.xml";
+            system    "dimethylDisulfide + ethanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0384; max 0.9844; n 40; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

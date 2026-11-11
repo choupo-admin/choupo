@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylCarbonate.A_ij  2000.25799211;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylCarbonate.A_ji  939.184599447;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9b62e7e1e0512ce8";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-dimethylCarbonate-bubble-acs.jced.7b00372.dat";
+            doi       "10.1021/acs.jced.7b00372";
+            sha256    "d7db373526dce14490ebc7cd7c42f771c4b2aae1013b5b3e8a930cd4d5a5a0a5";
+            provenance measured;
+            archiveFile "acs.jced.7b00372.xml";
+            system    "ethylBenzene + dimethylCarbonate";
+            pressure  "93130.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0393; max 0.9303; n 11; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylCarbonate.A_ij  2000.25799702;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylCarbonate.A_ji  939.184595508;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9b62e7e1e0512ce8";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-dimethylCarbonate-bubble-acs.jced.7b00372.dat";
+            doi       "10.1021/acs.jced.7b00372";
+            sha256    "d7db373526dce14490ebc7cd7c42f771c4b2aae1013b5b3e8a930cd4d5a5a0a5";
+            provenance measured;
+            archiveFile "acs.jced.7b00372.xml";
+            system    "ethylBenzene + dimethylCarbonate";
+            pressure  "93130.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0393; max 0.9303; n 11; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

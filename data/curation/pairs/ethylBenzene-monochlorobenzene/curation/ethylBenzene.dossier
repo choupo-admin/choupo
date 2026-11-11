@@ -132,4 +132,114 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-monochlorobenzene.A_ij  -2054.85455907;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-monochlorobenzene.A_ji  2450.4842421;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "4f48655e2f6409fe";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-monochlorobenzene-bubble-je020186c.dat";
+            doi       "10.1021/je020186c";
+            sha256    "42c372b090af0eedd09839822f60e727cbd35e444ec214ef4d1075f266e2aa46";
+            provenance measured;
+            archiveFile "je020186c.xml";
+            system    "ethylBenzene + monochlorobenzene";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-monochlorobenzene-bubble-j.jct.2005.12.009.dat";
+            doi       "10.1016/j.jct.2005.12.009";
+            sha256    "a98a2ed0d0a1d32edfbf57f888957a2e25b672502200eb2d43ea3e01fb0a596f";
+            provenance measured;
+            archiveFile "j.jct.2005.12.009.xml";
+            system    "ethylBenzene + monochlorobenzene";
+            pressure  "94700.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.119; max 0.853; n 26; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-monochlorobenzene.A_ij  -2054.8545536;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-monochlorobenzene.A_ji  2450.48423352;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "4f48655e2f6409fe";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-monochlorobenzene-bubble-je020186c.dat";
+            doi       "10.1021/je020186c";
+            sha256    "42c372b090af0eedd09839822f60e727cbd35e444ec214ef4d1075f266e2aa46";
+            provenance measured;
+            archiveFile "je020186c.xml";
+            system    "ethylBenzene + monochlorobenzene";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-monochlorobenzene-bubble-j.jct.2005.12.009.dat";
+            doi       "10.1016/j.jct.2005.12.009";
+            sha256    "a98a2ed0d0a1d32edfbf57f888957a2e25b672502200eb2d43ea3e01fb0a596f";
+            provenance measured;
+            archiveFile "j.jct.2005.12.009.xml";
+            system    "ethylBenzene + monochlorobenzene";
+            pressure  "94700.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.119; max 0.853; n 26; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

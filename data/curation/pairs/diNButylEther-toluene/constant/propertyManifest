@@ -28,19 +28,19 @@ propertyManifest
         "components/diNButylEther.dat"
         {
             type          imported;
-            sha256        "537970d2ee2c419075c0e60d44f291a9e308dd2c5fb5d18a04ae9dd5dd0f0f2b";
-            computationalSha256 "2d5d88b4f35c15d610e2651a7e04d59a600b408d65f8b9e305a62a753f13c07b";
+            sha256        "1eb78d03a6e082a5069fdab042f3902927f770e97f7e03f5a3bc9d789cc1f1f3";
+            computationalSha256 "021120e8b3e2ae75d45f6e83d172d78e8421092f64ef00c67b8a95019c02998a";
             origin        "data/standards/components/diNButylEther.dat";
-            originSha256  "e943e71a195499eea4c36243b977aff1fe2a5602ccb7592874505a239160f212";
+            originSha256  "fb73ec09e85d833de864cddf6d119fe08f842110ee4edd6efce7075c195d8e84";
             release       Choupo-2608;
         }
         "components/toluene.dat"
         {
             type          imported;
-            sha256        "025c441842aa1728935905ed8dfa50db5a6405ee082618c11673f665596d4911";
-            computationalSha256 "f66debfbcd493c4c7c4636809e784a1e07a6c482c3baed13ba34dce12ae63f79";
+            sha256        "5fb900674321baa67135bfeb2c8f80e63d9af183c35f1615477d751b4299f14b";
+            computationalSha256 "55e1e2986dd1c3fc08c951e842a86b062ee6a7bfbc1e1317387e69149a139e36";
             origin        "data/standards/components/toluene.dat";
-            originSha256  "fe5cb21ba09cf44b41de252f6a5a5dd21b6803fcd40666f6fed8d9de8e68563a";
+            originSha256  "ad1533cb0d94caade355d7149fd88ee1ad07c945f5d4c85f4bcce925766250b9";
             release       Choupo-2608;
         }
         "parameters/NRTL/diNButylEther-toluene.dat"

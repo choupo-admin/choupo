@@ -28,19 +28,19 @@ propertyManifest
         "components/cyclohexene.dat"
         {
             type          imported;
-            sha256        "0f91438afe315eea9a2c909c336166a1e103fb7a04d459b2f2409def340d6630";
-            computationalSha256 "1e8fb94519c7576ae958ab1e3b9d3011f5b3e54b3c29ff0158ddd192454475ce";
+            sha256        "c68c4e3df47db86a7e2ff4c0aa440c9f4e93f085cd4b65847d2302d259d828e2";
+            computationalSha256 "57cfa647b4dee2cccb4a29ce6d28af7dd2b7b55e4819e85d39e107a45f44cb10";
             origin        "data/standards/components/cyclohexene.dat";
-            originSha256  "342747afb1925b35c8c63af9101e6a5f1a47d91884c529a5668ead87427de35d";
+            originSha256  "66136b7074ebd5dba85e2e4e5be6c2ea12fea4bb226c985a07469a268fa6f5d5";
             release       Choupo-2608;
         }
         "components/methylIsobutylKetone.dat"
         {
             type          imported;
-            sha256        "883dca67acc7aabffa681e76e5b38194a93fc68f78d4a3433df849a68718372f";
-            computationalSha256 "3b343b8cff791a127701ce6eadd23f8a9a7b015e0678246d7007a3416d2d7c49";
+            sha256        "2e3acb08825da9dd98c7356c310fa1568645534ff964d8a152b44a2eda019677";
+            computationalSha256 "73e7b67b8341fa8156ac9d0f1d5e1c69987593b9579095bd87a1ec117d301d5f";
             origin        "data/standards/components/methylIsobutylKetone.dat";
-            originSha256  "8e66af3abd6102965d13c7772247cf28d37eeb7439927a2af07c69a09dae2718";
+            originSha256  "f0a81cb1eea4e0a10242eb39346555280cb08424e505a5d16d84107ca22f2955";
             release       Choupo-2608;
         }
         "parameters/NRTL/cyclohexene-methylIsobutylKetone.dat"

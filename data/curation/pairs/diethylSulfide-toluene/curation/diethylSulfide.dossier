@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-toluene.A_ij  -691.353549494;
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-toluene.A_ji  725.469661265;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e33c73833854a646";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diethylSulfide-toluene-bubble-je060093l.dat";
+            doi       "10.1021/je060093l";
+            sha256    "68c2d7f7d42e29a38f1d3b2774c4563b53eefe99ada54d399e32f54193b118c3";
+            provenance measured;
+            archiveFile "je060093l.xml";
+            system    "diethylSulfide + toluene";
+            pressure  "90030.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.012; max 0.96; n 17; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-toluene.A_ij  2903.57146669;
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-toluene.A_ji  -1949.10148314;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e33c73833854a646";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diethylSulfide-toluene-bubble-je060093l.dat";
+            doi       "10.1021/je060093l";
+            sha256    "68c2d7f7d42e29a38f1d3b2774c4563b53eefe99ada54d399e32f54193b118c3";
+            provenance measured;
+            archiveFile "je060093l.xml";
+            system    "diethylSulfide + toluene";
+            pressure  "90030.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.012; max 0.96; n 17; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

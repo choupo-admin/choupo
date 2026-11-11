@@ -112,4 +112,184 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNonane.a_ij  13.1924561592;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNonane.a_ji  -15.3680254108;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d4527f7baec26637";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diNButylEther-nNonane-bubble-je060237w.dat";
+            doi       "10.1021/je060237w";
+            sha256    "4080a9f392ed4ae1e0490702cfa32bae591f933e126e9704a5aec21edf9b01f1";
+            provenance measured;
+            archiveFile "je060237w.xml";
+            system    "diNButylEther + nNonane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.155; max 0.796; n 28; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNonane.a_ij  13.196448085;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNonane.a_ji  -15.3718728004;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d4527f7baec26637";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diNButylEther-nNonane-bubble-je060237w.dat";
+            doi       "10.1021/je060237w";
+            sha256    "4080a9f392ed4ae1e0490702cfa32bae591f933e126e9704a5aec21edf9b01f1";
+            provenance measured;
+            archiveFile "je060237w.xml";
+            system    "diNButylEther + nNonane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.155; max 0.796; n 28; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNonane.A_ij  -421.692003391;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNonane.A_ji  362.739619914;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d4527f7baec26637";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diNButylEther-nNonane-bubble-je060237w.dat";
+            doi       "10.1021/je060237w";
+            sha256    "4080a9f392ed4ae1e0490702cfa32bae591f933e126e9704a5aec21edf9b01f1";
+            provenance measured;
+            archiveFile "je060237w.xml";
+            system    "diNButylEther + nNonane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.155; max 0.796; n 28; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNonane.A_ij  4081.4489199;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNonane.A_ji  -2623.74668721;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d4527f7baec26637";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diNButylEther-nNonane-bubble-je060237w.dat";
+            doi       "10.1021/je060237w";
+            sha256    "4080a9f392ed4ae1e0490702cfa32bae591f933e126e9704a5aec21edf9b01f1";
+            provenance measured;
+            archiveFile "je060237w.xml";
+            system    "diNButylEther + nNonane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.155; max 0.796; n 28; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

@@ -87,7 +87,17 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dT| 1.600 K (warning) on the same
+  kept points. fit_wilson: A_ij = -654.1, A_ji = 11747.7 J/mol over 19
+  kept points: max |dT| 7.193 K, mean 1.547 K, graded refused ->
+  notAccepted; fit_wilson_start2 lands on the same pair (-654.1,
+  11747.7). NOT PROMOTABLE: fit grade refused -- max |dT| 7.193 K over
+  the 19 kept points. UNIQUAC: not fitted -- diisopropylEther and
+  nNDimethylacetamide carry no UNIQUAC r and q (no tabulated value, and
+  no UNIFAC groups to sum them from,
+  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
+  is estimated silently.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -338,6 +348,20 @@ operations
         }
     }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[diisopropylEther];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { diisopropylEther 0.5;  nNDimethylacetamide 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_diisopropylEther );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );
 
 experimental

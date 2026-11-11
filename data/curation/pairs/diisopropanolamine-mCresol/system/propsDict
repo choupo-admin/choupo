@@ -87,7 +87,22 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dT| 2.539 K (severe) on the same
+  kept points. fit_wilson: A_ij = -1712.3, A_ji = 1931.1 J/mol over 21
+  kept points: max |dT| 2.492 K, mean 1.134 K, graded severe -> accepted;
+  fit_wilson_start2 removed (it did not converge). NOT PROMOTED (max |dT|
+  2.492 K over the 21 kept points, one liquid across the validity span):
+  fit grade severe -- DEV.md 4c C300 rule 3: a severe pair does not enter
+  the default catalogue; its record stays in this curation case's
+  constant/, and a case that needs it carries it in its own constant/.
+  Wilson: fit_wilson_start2 was declared and run and did NOT CONVERGE
+  (A_ij at its bound, -30000 .. 30000 J/mol: no finite optimum inside the
+  declared bounds); the op is removed so the case runs (C294). UNIQUAC:
+  not fitted -- mCresol and diisopropanolamine carry no UNIQUAC r and q
+  (no tabulated value, and no UNIFAC groups to sum them from,
+  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
+  is estimated silently.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -278,66 +293,21 @@ operations
             proposal   diisopropanolamine-mCresol.Wilson.proposal.dat;
         }
     }
-    {
-        name        fit_wilson_start2;
-        type        fitParameters;
-
-        parameters
-        (
-            { path  equilibrium.liquid.activityModel.binaryParameters.mCresol-diisopropanolamine.A_ij;  initial 4000;  min -30000;  max 30000; }
-            { path  equilibrium.liquid.activityModel.binaryParameters.mCresol-diisopropanolamine.A_ji;  initial -2000;  min -30000;  max 30000; }
-        );
-
-        thermo   // the model, as a fragment of the case's system (C294)
-        {
-            equilibrium
-            {
-                liquid
-                {
-                    activityModel
-                    {
-                        model Wilson;
-                        binaryParameters   // the FIT'S starting point
-                        {
-                            mCresol-diisopropanolamine { i mCresol; j diisopropanolamine; A_ij 0; A_ji 0; }
-                        }
-                    }
-                    standardState pureLiquid;
-                }
-            }
-        }
-
-        evidence
-        (
-            {
-                dataset  "constant/archiveExtracts/mCresol-diisopropanolamine-bubble-acs.jced.7b00827.dat";
-                role     fit;
-                discard  ( 1 2 );   // the NRTL fit's outliers, reused: decided once (C294)
-            }
-        );
-
-        objective { method twoStage;  scale { T_bubble absolute; } }
-        residual
-        {
-            kind        T_bubble;
-            components  ( mCresol diisopropanolamine );
-            weighting   uncertainty;
-        }
-
-        options
-        {
-            maxIter      80;
-            tolerance    1.0e-6;
-            fdStep       1.0e-4;
-            lambda0      1.0e-3;
-        }
-
-        output
-        {
-            parity     parity_wilson_start2.csv;
-        }
-    }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[mCresol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 20 kPa;  composition { mCresol 0.5;  diisopropanolamine 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_mCresol );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );
 
 experimental

@@ -28,10 +28,10 @@ propertyManifest
         "components/diNButylEther.dat"
         {
             type          imported;
-            sha256        "537970d2ee2c419075c0e60d44f291a9e308dd2c5fb5d18a04ae9dd5dd0f0f2b";
-            computationalSha256 "2d5d88b4f35c15d610e2651a7e04d59a600b408d65f8b9e305a62a753f13c07b";
+            sha256        "1eb78d03a6e082a5069fdab042f3902927f770e97f7e03f5a3bc9d789cc1f1f3";
+            computationalSha256 "021120e8b3e2ae75d45f6e83d172d78e8421092f64ef00c67b8a95019c02998a";
             origin        "data/standards/components/diNButylEther.dat";
-            originSha256  "e943e71a195499eea4c36243b977aff1fe2a5602ccb7592874505a239160f212";
+            originSha256  "fb73ec09e85d833de864cddf6d119fe08f842110ee4edd6efce7075c195d8e84";
             release       Choupo-2608;
         }
         "components/nNDimethylacetamide.dat"

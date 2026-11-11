@@ -37,10 +37,10 @@ propertyManifest
         "components/ethylTertPentylEther.dat"
         {
             type          imported;
-            sha256        "da57c2ac6e2118689e38c2fcddf3325b80f209863037a534c240baa8ff0ab355";
-            computationalSha256 "4fb16c993b502cb7be009d887849e51a7150c5638a2421f25f855b251399a4c2";
+            sha256        "0baa4623f85856139d4326e058d7c5b249c340dbe640621a39a1ed9ebd724282";
+            computationalSha256 "f66fe064ca5521954e931b8e1d3058ad739d41e05b82f0418eeb5b8a08fdb16d";
             origin        "data/standards/components/ethylTertPentylEther.dat";
-            originSha256  "0e034eb8bc6b92535c590c7f37279419a5a9fb3d6ca9dacb86d849e67542158e";
+            originSha256  "d0bc4cd873f9d1471c81cd9350b73dcb8bf07250ef6fedb65a68b01d808d68e2";
             release       Choupo-2608;
         }
         "parameters/NRTL/ethanol-ethylTertPentylEther.dat"

@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-pCresol.A_ij  -2864.50008937;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-pCresol.A_ji  471.082115318;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "8de9f1501fe3b913";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-pCresol-bubble-j.fluid.2006.03.018.dat";
+            doi       "10.1016/j.fluid.2006.03.018";
+            sha256    "6e931cdb390e5154eade3106db61c1605da2984fb405d27b2b4043d47fc3b77f";
+            provenance measured;
+            archiveFile "j.fluid.2006.03.018.xml";
+            system    "ethanol + pCresol";
+            pressure  "95230.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0502; max 0.9002; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-pCresol.A_ij  29999.9999722;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-pCresol.A_ji  -8554.86861808;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "8de9f1501fe3b913";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-pCresol-bubble-j.fluid.2006.03.018.dat";
+            doi       "10.1016/j.fluid.2006.03.018";
+            sha256    "6e931cdb390e5154eade3106db61c1605da2984fb405d27b2b4043d47fc3b77f";
+            provenance measured;
+            archiveFile "j.fluid.2006.03.018.xml";
+            system    "ethanol + pCresol";
+            pressure  "95230.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0502; max 0.9002; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

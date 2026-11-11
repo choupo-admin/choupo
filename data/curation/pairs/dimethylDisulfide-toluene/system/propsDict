@@ -80,7 +80,17 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dP|/P 0.434 % (clean) on the same
+  kept points. fit_wilson: A_ij = -330.6, A_ji = 995.7 J/mol over 12 kept
+  points: max |dP|/P 0.427 %, mean 0.287 %, graded clean -> accepted;
+  fit_wilson_start2 lands on the same pair (-330.6, 995.7). PROMOTABLE by
+  `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
+  |dP|/P 0.427 % over the 12 kept points, one liquid across the validity
+  span. UNIQUAC: not fitted -- dimethylDisulfide carries no UNIQUAC r and
+  q (no tabulated value, and no UNIFAC groups to sum them from,
+  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
+  is estimated silently.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -313,4 +323,18 @@ operations
         }
     }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[dimethylDisulfide];  from 0.0;  to 1.0;  n 101; }
+        state       { P 66 kPa;  composition { dimethylDisulfide 0.5;  toluene 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_dimethylDisulfide );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );

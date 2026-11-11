@@ -114,4 +114,188 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-pXylene.a_ij  53.9758561967;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-pXylene.a_ji  -49.6965460525;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "6c99261554c898eb";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-pXylene-bubble-je049701s.dat";
+            doi       "10.1021/je049701s";
+            sha256    "3ccafcbfe084a251f14d3558797976d462b5eb2eaaa108027621f376b830fdc0";
+            provenance measured;
+            archiveFile "je049701s.xml";
+            system    "ethylBenzene + pXylene";
+            pressure  "100650.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0445; max 0.9709; n 11; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-pXylene.a_ij  53.5891446261;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-pXylene.a_ji  -49.3564207679;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "6c99261554c898eb";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-pXylene-bubble-je049701s.dat";
+            doi       "10.1021/je049701s";
+            sha256    "3ccafcbfe084a251f14d3558797976d462b5eb2eaaa108027621f376b830fdc0";
+            provenance measured;
+            archiveFile "je049701s.xml";
+            system    "ethylBenzene + pXylene";
+            pressure  "100650.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0445; max 0.9709; n 11; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-pXylene.A_ij  -396.471956576;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-pXylene.A_ji  455.281749591;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "6c99261554c898eb";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-pXylene-bubble-je049701s.dat";
+            doi       "10.1021/je049701s";
+            sha256    "3ccafcbfe084a251f14d3558797976d462b5eb2eaaa108027621f376b830fdc0";
+            provenance measured;
+            archiveFile "je049701s.xml";
+            system    "ethylBenzene + pXylene";
+            pressure  "100650.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0445; max 0.9709; n 11; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-pXylene.A_ij  -366.438716761;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-pXylene.A_ji  421.025251315;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "6c99261554c898eb";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-pXylene-bubble-je049701s.dat";
+            doi       "10.1021/je049701s";
+            sha256    "3ccafcbfe084a251f14d3558797976d462b5eb2eaaa108027621f376b830fdc0";
+            provenance measured;
+            archiveFile "je049701s.xml";
+            system    "ethylBenzene + pXylene";
+            pressure  "100650.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0445; max 0.9709; n 11; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

@@ -37,10 +37,10 @@ propertyManifest
         "components/methylEthylKetone.dat"
         {
             type          imported;
-            sha256        "586be099c39ea991906a44b6e4174465bc5e616d454876c74d82213df9047df8";
-            computationalSha256 "9482c1f6a07785e2c4edc34219616f07e0c69837a8d3d2343ead92c064a412cb";
+            sha256        "6b6f56d29c752e24d3899c2a834a66f02f010ca805f04e1f5d58d35e0d6009ca";
+            computationalSha256 "e1531518f0c1539f271be7ef1817207bbd884c73ace0d04f8b6b27b8d14fec5b";
             origin        "data/standards/components/methylEthylKetone.dat";
-            originSha256  "94912c130c9f2e982c8024d262432ce98809290bc68daaad011926f80f84413a";
+            originSha256  "57244b57a11a3f2abbac09ca3c9cacb9c8a6445185e0888404e59cb3ee10e6a5";
             release       Choupo-2608;
         }
         "parameters/NRTL/ethanol-methylEthylKetone.dat"

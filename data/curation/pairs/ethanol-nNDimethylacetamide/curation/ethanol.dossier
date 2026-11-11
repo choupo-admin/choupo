@@ -130,4 +130,112 @@ properties
     }
 }
 
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylacetamide.A_ij  -193.645055677;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylacetamide.A_ji  -1831.30064825;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7b4908c619e0ebfa";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-nNDimethylacetamide-bubbleP-acs.jced.7b00119-b21.dat";
+            doi       "10.1021/acs.jced.7b00119";
+            sha256    "c57dbb0a0bf3405a8a631fa0f45bc2682f03b5dd1ee020e8b3f07b3a0dafe997";
+            provenance measured;
+            archiveFile "acs.jced.7b00119.xml";
+            system    "ethanol + nNDimethylacetamide";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-nNDimethylacetamide-bubbleP-j.jct.2005.08.001-b7.dat";
+            doi       "10.1016/j.jct.2005.08.001";
+            sha256    "5de52fee95970543a46d21a2ef0bb6beea7c54542637858dfcc7a5bebdd8252e";
+            provenance measured;
+            archiveFile "j.jct.2005.08.001.xml";
+            system    "ethanol + nNDimethylacetamide";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0047; max 0.9991; n 59; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylacetamide.A_ij  8925.89768237;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylacetamide.A_ji  -5393.84021732;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7b4908c619e0ebfa";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-nNDimethylacetamide-bubbleP-acs.jced.7b00119-b21.dat";
+            doi       "10.1021/acs.jced.7b00119";
+            sha256    "c57dbb0a0bf3405a8a631fa0f45bc2682f03b5dd1ee020e8b3f07b3a0dafe997";
+            provenance measured;
+            archiveFile "acs.jced.7b00119.xml";
+            system    "ethanol + nNDimethylacetamide";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-nNDimethylacetamide-bubbleP-j.jct.2005.08.001-b7.dat";
+            doi       "10.1016/j.jct.2005.08.001";
+            sha256    "5de52fee95970543a46d21a2ef0bb6beea7c54542637858dfcc7a5bebdd8252e";
+            provenance measured;
+            archiveFile "j.jct.2005.08.001.xml";
+            system    "ethanol + nNDimethylacetamide";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0047; max 0.9991; n 59; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

@@ -134,4 +134,116 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.toluene-dimethylSulfoxide.A_ij  -704.132344702;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-dimethylSulfoxide.A_ji  5362.77179262;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c5f3c9df0edc2187";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/toluene-dimethylSulfoxide-bubble-j.fluid.2014.04.025.dat";
+            doi       "10.1016/j.fluid.2014.04.025";
+            sha256    "c678b690c2379ca6cf1d462902fd22cfb08cceb8e24e435714819abf2008b90e";
+            provenance measured;
+            archiveFile "j.fluid.2014.04.025.xml";
+            system    "toluene + dimethylSulfoxide";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/toluene-dimethylSulfoxide-bubble-j.fluid.2007.08.001.dat";
+            doi       "10.1016/j.fluid.2007.08.001";
+            sha256    "c2a7c61167feece786b88d9a85f449ea166f2e80bd2c632328682a1cd7325fc2";
+            provenance measured;
+            archiveFile "j.fluid.2007.08.001.xml";
+            system    "toluene + dimethylSulfoxide";
+            pressure  "95300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0157; max 0.942; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.toluene-dimethylSulfoxide.A_ij  -704.132345008;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-dimethylSulfoxide.A_ji  5362.77179313;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c5f3c9df0edc2187";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/toluene-dimethylSulfoxide-bubble-j.fluid.2014.04.025.dat";
+            doi       "10.1016/j.fluid.2014.04.025";
+            sha256    "c678b690c2379ca6cf1d462902fd22cfb08cceb8e24e435714819abf2008b90e";
+            provenance measured;
+            archiveFile "j.fluid.2014.04.025.xml";
+            system    "toluene + dimethylSulfoxide";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/toluene-dimethylSulfoxide-bubble-j.fluid.2007.08.001.dat";
+            doi       "10.1016/j.fluid.2007.08.001";
+            sha256    "c2a7c61167feece786b88d9a85f449ea166f2e80bd2c632328682a1cd7325fc2";
+            provenance measured;
+            archiveFile "j.fluid.2007.08.001.xml";
+            system    "toluene + dimethylSulfoxide";
+            pressure  "95300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0157; max 0.942; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );
