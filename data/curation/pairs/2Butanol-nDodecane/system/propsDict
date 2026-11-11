@@ -80,7 +80,18 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dP|/P 7.412 % (warning) on the same
+  kept points. fit_uniquac: a_ij = -157.9, a_ji = 408.7 K over 24 kept
+  points: max |dP|/P 8.614 %, mean 5.673 %, graded warning -> accepted;
+  fit_uniquac_start2 lands on A DIFFERENT pair (59.3, 38.8). PROMOTABLE
+  by `bin/choupo-curate pairs --models --promote`: fit grade warning --
+  max |dP|/P 8.614 % over the 24 kept points, one liquid across the
+  validity span. fit_wilson: A_ij = 2746.4, A_ji = 4153.9 J/mol over 23
+  kept points: max |dP|/P 48.671 %, mean 9.802 %, graded refused ->
+  notAccepted; fit_wilson_start2 lands on A DIFFERENT pair (7296.5,
+  64.0). NOT PROMOTABLE: fit grade refused -- max |dP|/P 48.671 % over
+  the 23 kept points.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -429,4 +440,30 @@ operations
         }
     }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_uniquac;
+        type        propertyScan1D;
+        vary        { variable x[2Butanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 4.875 kPa;  composition { 2Butanol 0.5;  nDodecane 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_2Butanol );
+        output      { file txy_uniquac.csv; }
+    }
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[2Butanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 4.875 kPa;  composition { 2Butanol 0.5;  nDodecane 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_2Butanol );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );

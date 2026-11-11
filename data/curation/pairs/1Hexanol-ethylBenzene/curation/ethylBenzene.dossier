@@ -114,4 +114,188 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1Hexanol.a_ij  -31.8445042554;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1Hexanol.a_ji  30.4525015081;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9817c5adad3243f0";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-1Hexanol-bubble-j.jct.2008.05.002.dat";
+            doi       "10.1016/j.jct.2008.05.002";
+            sha256    "8f94fae3c21136186bef5263f4d3713f8fbc2abf4941ba80a0b40894d792d4c9";
+            provenance measured;
+            archiveFile "j.jct.2008.05.002.xml";
+            system    "ethylBenzene + 1Hexanol";
+            pressure  "95350.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0755; max 0.959; n 14; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1Hexanol.a_ij  253.449997826;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1Hexanol.a_ji  -195.821258798;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9817c5adad3243f0";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-1Hexanol-bubble-j.jct.2008.05.002.dat";
+            doi       "10.1016/j.jct.2008.05.002";
+            sha256    "8f94fae3c21136186bef5263f4d3713f8fbc2abf4941ba80a0b40894d792d4c9";
+            provenance measured;
+            archiveFile "j.jct.2008.05.002.xml";
+            system    "ethylBenzene + 1Hexanol";
+            pressure  "95350.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0755; max 0.959; n 14; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1Hexanol.A_ij  -644.680749524;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1Hexanol.A_ji  1738.26840978;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9817c5adad3243f0";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-1Hexanol-bubble-j.jct.2008.05.002.dat";
+            doi       "10.1016/j.jct.2008.05.002";
+            sha256    "8f94fae3c21136186bef5263f4d3713f8fbc2abf4941ba80a0b40894d792d4c9";
+            provenance measured;
+            archiveFile "j.jct.2008.05.002.xml";
+            system    "ethylBenzene + 1Hexanol";
+            pressure  "95350.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0755; max 0.959; n 14; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1Hexanol.A_ij  -644.680756201;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1Hexanol.A_ji  1738.26842075;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9817c5adad3243f0";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylBenzene-1Hexanol-bubble-j.jct.2008.05.002.dat";
+            doi       "10.1016/j.jct.2008.05.002";
+            sha256    "8f94fae3c21136186bef5263f4d3713f8fbc2abf4941ba80a0b40894d792d4c9";
+            provenance measured;
+            archiveFile "j.jct.2008.05.002.xml";
+            system    "ethylBenzene + 1Hexanol";
+            pressure  "95350.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0755; max 0.959; n 14; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

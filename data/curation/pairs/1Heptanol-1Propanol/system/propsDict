@@ -83,7 +83,21 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dT| 1.799 K (warning) on the same
+  kept points. fit_uniquac: a_ij = 8.6, a_ji = 167.7 K over 8 kept
+  points: max |dT| 2.071 K, mean 1.175 K, graded severe -> accepted;
+  fit_uniquac_start2 lands on the same pair (8.6, 167.7). NOT PROMOTED
+  (max |dT| 2.071 K over the 8 kept points, one liquid across the
+  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
+  pair does not enter the default catalogue; its record stays in this
+  curation case's constant/, and a case that needs it carries it in its
+  own constant/. fit_wilson: A_ij = 4477.6, A_ji = 2679.2 J/mol over 8
+  kept points: max |dT| 1.501 K, mean 1.002 K, graded warning ->
+  accepted; fit_wilson_start2 lands on the same pair (4477.6, 2679.2).
+  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
+  warning -- max |dT| 1.501 K over the 8 kept points, one liquid across
+  the validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -466,6 +480,32 @@ operations
         }
     }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_uniquac;
+        type        propertyScan1D;
+        vary        { variable x[1Propanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 96.5 kPa;  composition { 1Propanol 0.5;  1Heptanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_1Propanol );
+        output      { file txy_uniquac.csv; }
+    }
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[1Propanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 96.5 kPa;  composition { 1Propanol 0.5;  1Heptanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_1Propanol );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );
 
 experimental

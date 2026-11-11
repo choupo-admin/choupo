@@ -28,19 +28,19 @@ propertyManifest
         "components/1Propanol.dat"
         {
             type          imported;
-            sha256        "6f8dab202717440a53ff49356dddaa632b8e71ad54a651d6c4f2513519864916";
-            computationalSha256 "c964d7a44b9335ec39b77584095dac5935998f8ccd1f814a9dbe51801adf4389";
+            sha256        "de3f1162278fc2d5ee4995ee4887b3f1c0f3669920483a314461b227ac825867";
+            computationalSha256 "d50d84215a5e98b6539bb27d9c7d0d58bb7fc2a8cf3f66c2f943a76cd6b6d056";
             origin        "data/standards/components/1Propanol.dat";
-            originSha256  "e576ef637c75dec43096777ad538d23ab32c8828de898339ba9226732172d96f";
+            originSha256  "ddcf4f1180bb27e9b6dfa2adb55a9ac88396a36d6a68cb8c48df90d2f04bcfd1";
             release       Choupo-2608;
         }
         "components/nDodecane.dat"
         {
             type          imported;
-            sha256        "48b61f9a4d3d3297e5189006d07bd3d96ad1b22d0160e54ff80109d79d6b1898";
-            computationalSha256 "aaf80f10f513674d9f88ea77ef42a2aa82f25b92286e7b15563513c9abd14585";
+            sha256        "c7228038bd9f2dc282e4c95377a8b778afda5bb7873f6647fa9658b97dc79155";
+            computationalSha256 "8a4d59bf4d118a9ff410164db4f946a8d7d0db674721139612307a1c4e5f821c";
             origin        "data/standards/components/nDodecane.dat";
-            originSha256  "44d85430f2f217f1098d4c23d44b9207e6732d075cf20d2ef4bfcaee204e0156";
+            originSha256  "9d405c55385de50af77aa7f33666cea3e162b9eb19c03842c0f8279e6da3d1b4";
             release       Choupo-2608;
         }
     }

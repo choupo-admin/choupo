@@ -28,19 +28,19 @@ propertyManifest
         "components/1Hexanol.dat"
         {
             type          imported;
-            sha256        "ff92f5582d2dd1ba667f3d466054ce752b793a12050556496d6521f08fef7c91";
-            computationalSha256 "6363abe381b95dabcba93eb20cca67bd715fbcf43e6d5b0fb6a78766b1500711";
+            sha256        "56c4231bc9a181e47909ed63aa4e9fce3611035b32d920276965dc874f42d9a0";
+            computationalSha256 "babb0f8da2e12886df84dc04b197ccd3fee3a2bf29319c24a0cdcde72a28d2a7";
             origin        "data/standards/components/1Hexanol.dat";
-            originSha256  "ab4dc5089f2f1bec42920a8f7b7301da49a9ac935c439900666185ba0de805c4";
+            originSha256  "45415f58f5f9b2bb79389cafffc6bd334c7010b417c03527393aa5f519c88388";
             release       Choupo-2608;
         }
         "components/oXylene.dat"
         {
             type          imported;
-            sha256        "d6bdb61163c015dec26d2cefff15a2c919b7a57896b8592d3605374a272dffa0";
-            computationalSha256 "a8ffc32a52cd609309dfebd10675e693ad9127c62d05bf6ddf8603f0a78620a2";
+            sha256        "1360348dc25bac70a331fc7d65535e3d3cd15689dc0b3bb225194d2687ce957f";
+            computationalSha256 "1c533f2710b61bc84d7205b1850b2db3326e00d5d45dc4ffccbb534ca41574f8";
             origin        "data/standards/components/oXylene.dat";
-            originSha256  "b6c6ede5d7ff713e82c02f27faf3ced0b49ef4762c4baa0eae22702c78888efe";
+            originSha256  "4421f5f2225fb65f840043469d7083f59ada5f6066c48198fbbc56e163c28da5";
             release       Choupo-2608;
         }
         "parameters/NRTL/1Hexanol-oXylene.dat"

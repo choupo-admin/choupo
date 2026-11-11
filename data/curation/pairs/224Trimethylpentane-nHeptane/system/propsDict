@@ -77,7 +77,19 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dP|/P 0.441 % (clean) on the same
+  kept points. fit_uniquac: a_ij = 15.9, a_ji = -16.2 K over 22 kept
+  points: max |dP|/P 0.448 %, mean 0.281 %, graded clean -> accepted;
+  fit_uniquac_start2 lands on A DIFFERENT pair (-145.0, 190.1).
+  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
+  clean -- max |dP|/P 0.448 % over the 22 kept points, one liquid across
+  the validity span. fit_wilson: A_ij = 2770.3, A_ji = -1605.5 J/mol over
+  22 kept points: max |dP|/P 0.352 %, mean 0.222 %, graded clean ->
+  accepted; fit_wilson_start2 lands on the same pair (2770.3, -1605.5).
+  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
+  clean -- max |dP|/P 0.352 % over the 22 kept points, one liquid across
+  the validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -426,4 +438,30 @@ operations
         }
     }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_uniquac;
+        type        propertyScan1D;
+        vary        { variable x[224Trimethylpentane];  from 0.0;  to 1.0;  n 101; }
+        state       { P 12.662 kPa;  composition { 224Trimethylpentane 0.5;  nHeptane 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_224Trimethylpentane );
+        output      { file txy_uniquac.csv; }
+    }
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[224Trimethylpentane];  from 0.0;  to 1.0;  n 101; }
+        state       { P 12.662 kPa;  composition { 224Trimethylpentane 0.5;  nHeptane 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_224Trimethylpentane );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );

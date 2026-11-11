@@ -28,19 +28,19 @@ propertyManifest
         "components/1Propanol.dat"
         {
             type          imported;
-            sha256        "6f8dab202717440a53ff49356dddaa632b8e71ad54a651d6c4f2513519864916";
-            computationalSha256 "c964d7a44b9335ec39b77584095dac5935998f8ccd1f814a9dbe51801adf4389";
+            sha256        "de3f1162278fc2d5ee4995ee4887b3f1c0f3669920483a314461b227ac825867";
+            computationalSha256 "d50d84215a5e98b6539bb27d9c7d0d58bb7fc2a8cf3f66c2f943a76cd6b6d056";
             origin        "data/standards/components/1Propanol.dat";
-            originSha256  "e576ef637c75dec43096777ad538d23ab32c8828de898339ba9226732172d96f";
+            originSha256  "ddcf4f1180bb27e9b6dfa2adb55a9ac88396a36d6a68cb8c48df90d2f04bcfd1";
             release       Choupo-2608;
         }
         "components/propanal.dat"
         {
             type          imported;
-            sha256        "3795d4909a6f1f3b2cb01e583aa73da6d8278d5c56bfe646f35b0a2b18910623";
-            computationalSha256 "eabb069ca8bf5f66632b644b1b8c8a326774a29626e8cc569ba71a24474038e4";
+            sha256        "d7bf99823bfc99bdcf6e50654afd8cd9911dfcc47859ba22e2add70b73c9b725";
+            computationalSha256 "0abd55317f6e1148a34a00053bbf724880066d31a1755bad2414063556ba5a1f";
             origin        "data/standards/components/propanal.dat";
-            originSha256  "e5a596dc9bbf7d4ce47dc29de4f21f7b6e0931bde31bf26df929f40f5abeff90";
+            originSha256  "19a4f421e4d073cb3a8fe2b47d794dfda9426e2f925c872ad1ae6c2830441be3";
             release       Choupo-2608;
         }
         "parameters/NRTL/1Propanol-propanal.dat"

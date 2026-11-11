@@ -77,7 +77,22 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dP|/P 2.413 % (clean) on the same
+  kept points. fit_uniquac: a_ij = -80.9, a_ji = 324.8 K over 21 kept
+  points: max |dP|/P 2.840 %, mean 1.036 %, graded clean -> accepted;
+  fit_uniquac_start2 lands on the same pair (-80.9, 324.8). NOT
+  PROMOTABLE (fit grade clean, max |dP|/P 2.840 %): the pair splits ONE
+  liquid inside its own validity span (arm f, UNIQUAC) -- predicts a
+  LIQUID-LIQUID SPLIT at 318.15 K (x_1Propanol 0.331 .. 0.544), inside
+  its own validity span 318.15-318.15 K -- its evidence is bubble points
+  of ONE liquid; a UNIQUAC pair that splits that liquid stays in its
+  case. fit_wilson: A_ij = 7153.1, A_ji = 1345.8 J/mol over 21 kept
+  points: max |dP|/P 1.103 %, mean 0.392 %, graded clean -> accepted;
+  fit_wilson_start2 lands on the same pair (7153.1, 1345.8). PROMOTABLE
+  by `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
+  |dP|/P 1.103 % over the 21 kept points, one liquid across the validity
+  span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -432,4 +447,30 @@ operations
         }
     }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_uniquac;
+        type        propertyScan1D;
+        vary        { variable x[1Propanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 20.66 kPa;  composition { 1Propanol 0.5;  224Trimethylpentane 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_1Propanol );
+        output      { file txy_uniquac.csv; }
+    }
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[1Propanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 20.66 kPa;  composition { 1Propanol 0.5;  224Trimethylpentane 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_1Propanol );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );

@@ -28,10 +28,10 @@ propertyManifest
         "components/1Hexene.dat"
         {
             type          imported;
-            sha256        "f3f6034e2b70cdd43e4cb310f98078980f8bb43a1f29ba10550002e16efddb79";
-            computationalSha256 "4bb3257c1ee9df2672cd685a9d6064728e3775327be2f9c7993aefac1d89ad26";
+            sha256        "456ad357771c8add9a689b45c6d37bb2cb96925c14036f1e1b37c1009c2f6d8c";
+            computationalSha256 "1063f2def570c77ab491b0622470c087a986b63b335805e5ec1f999da4a70969";
             origin        "data/standards/components/1Hexene.dat";
-            originSha256  "5512ce3cac416444fb8400aa7b92dd95e1dd0b55037227404c5729c5304892ee";
+            originSha256  "648504a513eba0cd115c14609480dfd1536cb7e6398fe09728a45a0afdbedf6e";
             release       Choupo-2608;
         }
         "components/diEthylCarbonate.dat"

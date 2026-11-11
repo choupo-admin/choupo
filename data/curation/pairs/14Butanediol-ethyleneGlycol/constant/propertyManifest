@@ -28,10 +28,10 @@ propertyManifest
         "components/14Butanediol.dat"
         {
             type          imported;
-            sha256        "f1d3db89f6ed2fd01c4db5eda70d05beeaebca417537ef29015fde3268bc8567";
-            computationalSha256 "8b0a5b70ce6a9accb08332a66c87bbad838887de572f570583bedc27149e020b";
+            sha256        "a97d6872099d93b5f20993e052dc545d509d48666a1523608a5b6c480496d27e";
+            computationalSha256 "460172d774d0116ebb7786400f542f25010372c825f3f71148815cc86400b95e";
             origin        "data/standards/components/14Butanediol.dat";
-            originSha256  "9306dd597dae0d6f8dcadd7679df4f14e82a8b263e73ed588f838a13287f7e2f";
+            originSha256  "3ef5906abdbddd8960564eeeaf8ccf52e08324550d709aa0826fca388c7b52e5";
             release       Choupo-2608;
         }
         "components/ethyleneGlycol.dat"

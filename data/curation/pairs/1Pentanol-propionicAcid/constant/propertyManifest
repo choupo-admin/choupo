@@ -28,19 +28,19 @@ propertyManifest
         "components/1Pentanol.dat"
         {
             type          imported;
-            sha256        "67c0add32a0365f5e7b1669e442fce34ca1fab7728982864212f471cea149ff4";
-            computationalSha256 "ef54b796ae70f47722ea40f25d897e9444289b0fc474d4d27a6ca111785c6a18";
+            sha256        "86c4addc505252ed263f53c07ca94ef9a158e34bfb5c32e992323eaa0c8df1d3";
+            computationalSha256 "831e21638f9c40c212865247a7342ab9080b1d897b9bece0cd5eaa0bd9f394c3";
             origin        "data/standards/components/1Pentanol.dat";
-            originSha256  "b5affaac9c1c791eb783bfdfc0669a3e8bf9a28e54efc09cbc866c5362af548c";
+            originSha256  "1b70bde782f9005b3b1776f286a59b76191371714b98aa89a8976851a2d0020a";
             release       Choupo-2608;
         }
         "components/propionicAcid.dat"
         {
             type          imported;
-            sha256        "f39e4af64471843d21f5a05fefe85d49d6c4a8cda190544971d218e470030976";
-            computationalSha256 "55a403e283529827e0913492d91cbdc2bc377e5c0abf0c1e3e63d7b3a66ae6a5";
+            sha256        "54470f946d56e040a029e2dc7a42386bab0e06d76c4ba00b3b97d37ca21e7929";
+            computationalSha256 "78e6a0e3179fd99a5824633e8fef9dc6823849a78e96d903d6893e322892b97a";
             origin        "data/standards/components/propionicAcid.dat";
-            originSha256  "74be98a87e97423686e9debff43064dd787fc82406395de96177ace800e85554";
+            originSha256  "b9662f0c5dd4216942e9a3db544171e1e1562beed4cc442c9e0c23f729d0dcf6";
             release       Choupo-2608;
         }
         "parameters/NRTL/1Pentanol-propionicAcid.dat"

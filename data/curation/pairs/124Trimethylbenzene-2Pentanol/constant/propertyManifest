@@ -28,19 +28,19 @@ propertyManifest
         "components/124Trimethylbenzene.dat"
         {
             type          imported;
-            sha256        "a610b89ab2e979191a60401b152ecd1256a9c20f6ecb1b9779104c81322992eb";
-            computationalSha256 "17d2955022e14e5718a502c8d6f37ee07ac5f8b0ede4ae27fd963a2e9fe57989";
+            sha256        "c69a1ead705980aa5742ee4861bda08eee3a883a419f8ce13edc99b5059be183";
+            computationalSha256 "871145bb8a5e1fc3759aa5b4bb84de39dba0f553ef3a6faa4629fe01dbca6dce";
             origin        "data/standards/components/124Trimethylbenzene.dat";
-            originSha256  "e2241b6ba6289ae25581787306519e47b0d32884a595e53bbe4872350a59c36f";
+            originSha256  "a705245a7c3d39c935422b8a30ce803cc48f6d24242a992c40f88fc7f4adeb15";
             release       Choupo-2608;
         }
         "components/2Pentanol.dat"
         {
             type          imported;
-            sha256        "10f691baeef2c7da6bc875224bc5eabb4679786777e59d4bbe142bded6ea69ac";
-            computationalSha256 "78538cfe4759e2e4d9e3da3647b400b498cdb899196e155200ec6b9f145fedb8";
+            sha256        "418a095eafb88453b89306be24b15411679ca472428acb942e4d5a34be2827db";
+            computationalSha256 "7c03c4941c839ce61547c8e8f015fccadd85f721ff3d175d3f9aea61621412d2";
             origin        "data/standards/components/2Pentanol.dat";
-            originSha256  "0ae113f45b02dbe7e56de45f9fe98846a4fbcb4a130b6f2740337e67129fddbc";
+            originSha256  "3ce4bd074554ea74ef27a23a3f7ac9d104684f715f81239b69804ede0f9581eb";
             release       Choupo-2608;
         }
         "parameters/NRTL/124Trimethylbenzene-2Pentanol.dat"

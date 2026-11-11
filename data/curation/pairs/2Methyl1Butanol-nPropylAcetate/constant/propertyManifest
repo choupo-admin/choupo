@@ -28,19 +28,19 @@ propertyManifest
         "components/2Methyl1Butanol.dat"
         {
             type          imported;
-            sha256        "c9ab8aee6e4b669e02e65ee3a6579c57e883133a1851177388705a66bdde60b9";
-            computationalSha256 "a9485fdc17ea9e25851a2a332f2c3226a701891ce7badb72ef8316ae3bde36bc";
+            sha256        "f90b494a8391fb588d9a2b470f293cfdbb2c2145a1ced61950e3c46242cf96fe";
+            computationalSha256 "d36cb54138d36743c14cb391fa2b5ab4fed5588fec6ada659da1083710c5152c";
             origin        "data/standards/components/2Methyl1Butanol.dat";
-            originSha256  "8539ec36a4bbea4015b16011168542b122b7f689d6c3fe9fbfbb213bac47ef8e";
+            originSha256  "576312a58a7313515df67a7ff33d373cf4659854074ea6b3dfe2923ab94a8cf9";
             release       Choupo-2608;
         }
         "components/nPropylAcetate.dat"
         {
             type          imported;
-            sha256        "bae5d694a37bfbe03d15627f0cb30337bf2fe4f53e411fd6241bbf08663bd720";
-            computationalSha256 "2c7f9840afa05762f6ea54030ca0f63c06c5a145138a3a1fc66405d5d64ecb1f";
+            sha256        "a4d98fa4268bc6a1079db72228e5677659b26a284e8bfa1fc380997fb7497afc";
+            computationalSha256 "62c9f54d2619d78e353dc006b570baf675a5c74819e7cbe941efd2470c427b46";
             origin        "data/standards/components/nPropylAcetate.dat";
-            originSha256  "d6441f89d965c47899449c155ee12a811238c3650307cbed703a2259c65126a9";
+            originSha256  "3ce435dbe5ebc3156e7a873351092b8814732d50e2fdd06e3684bba46a480d33";
             release       Choupo-2608;
         }
         "parameters/NRTL/2Methyl1Butanol-nPropylAcetate.dat"

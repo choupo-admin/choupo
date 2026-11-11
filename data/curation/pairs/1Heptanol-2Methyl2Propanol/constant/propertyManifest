@@ -28,19 +28,19 @@ propertyManifest
         "components/1Heptanol.dat"
         {
             type          imported;
-            sha256        "79fea1d323853bb2da8eac24d7824ee6194b141dd25d506f0071d5c7edca5457";
-            computationalSha256 "1195914da54fb5d51f6b730ea618434706056c761b7ebce979daa28274ce9bdf";
+            sha256        "ca88c1659a259e7e7eb8c5d30fd385b9cdac3744f4280e57ff10e12ad59cb737";
+            computationalSha256 "9b0e563e8b911fd7a6c6a7b43473e23f17f522628dd8d433698a8b67ff63b667";
             origin        "data/standards/components/1Heptanol.dat";
-            originSha256  "e2732fbe0aa55f2e557ebbbef1695df6211c1dbfc27e1bcd718c2fbc5e0c1867";
+            originSha256  "c4f185cc3a107c9adf024812d68f8b1c48c1150d9708f1e91213d5e61c5163f0";
             release       Choupo-2608;
         }
         "components/2Methyl2Propanol.dat"
         {
             type          imported;
-            sha256        "85da846573aa8847cf253bb6a529bccb7cef7f6811f6f65be60476b507fc5442";
-            computationalSha256 "11753215451e3bf204fd6a69c6d95af63cdadf84fdfebe9aa516b4610a7ae366";
+            sha256        "17e181c16f08bfa8410737c8f6744b259b00d8c1d985b3ea8efdf9ecb14eaa48";
+            computationalSha256 "646148d2e0ba73b3da0e8baca650e1a51842a343e7909e987a6aabc68f622a9d";
             origin        "data/standards/components/2Methyl2Propanol.dat";
-            originSha256  "225442e6d92c7f5d9f6cd96593a5d8d958d8b0f65227d2eee965eac6e04747b2";
+            originSha256  "03c4dae4a65edde0ea277bc42cd644162b49728a8612095e20ffd3565c2944b2";
             release       Choupo-2608;
         }
         "parameters/NRTL/1Heptanol-2Methyl2Propanol.dat"

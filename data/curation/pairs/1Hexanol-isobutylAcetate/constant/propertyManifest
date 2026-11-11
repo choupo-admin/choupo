@@ -28,19 +28,19 @@ propertyManifest
         "components/1Hexanol.dat"
         {
             type          imported;
-            sha256        "ff92f5582d2dd1ba667f3d466054ce752b793a12050556496d6521f08fef7c91";
-            computationalSha256 "6363abe381b95dabcba93eb20cca67bd715fbcf43e6d5b0fb6a78766b1500711";
+            sha256        "56c4231bc9a181e47909ed63aa4e9fce3611035b32d920276965dc874f42d9a0";
+            computationalSha256 "babb0f8da2e12886df84dc04b197ccd3fee3a2bf29319c24a0cdcde72a28d2a7";
             origin        "data/standards/components/1Hexanol.dat";
-            originSha256  "ab4dc5089f2f1bec42920a8f7b7301da49a9ac935c439900666185ba0de805c4";
+            originSha256  "45415f58f5f9b2bb79389cafffc6bd334c7010b417c03527393aa5f519c88388";
             release       Choupo-2608;
         }
         "components/isobutylAcetate.dat"
         {
             type          imported;
-            sha256        "8d42f736396b740336fdbb5895c767f26a256fac743580052accb38c119bf130";
-            computationalSha256 "764dea06bea08f8fea4ba03acf1b3874f48c47c514d4d22f811102a0b9b6edf7";
+            sha256        "7a5513321a7f94197cd761fbcda255c75c419151bc192359b5732369c779569a";
+            computationalSha256 "1feca08966bf03786807fe2993c834ead77e0ca86bcc3d74517b22d84404ac6b";
             origin        "data/standards/components/isobutylAcetate.dat";
-            originSha256  "fc83aedc37a243b53683835301a4a8aaabc51fde333ec26b3b3b0ca011d118fa";
+            originSha256  "e76455ecb20132cba36ad3f3a307dcd0c54aa93202987729cabb50cc30626fa2";
             release       Choupo-2608;
         }
         "parameters/NRTL/1Hexanol-isobutylAcetate.dat"

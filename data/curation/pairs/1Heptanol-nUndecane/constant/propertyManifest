@@ -28,19 +28,19 @@ propertyManifest
         "components/1Heptanol.dat"
         {
             type          imported;
-            sha256        "79fea1d323853bb2da8eac24d7824ee6194b141dd25d506f0071d5c7edca5457";
-            computationalSha256 "1195914da54fb5d51f6b730ea618434706056c761b7ebce979daa28274ce9bdf";
+            sha256        "ca88c1659a259e7e7eb8c5d30fd385b9cdac3744f4280e57ff10e12ad59cb737";
+            computationalSha256 "9b0e563e8b911fd7a6c6a7b43473e23f17f522628dd8d433698a8b67ff63b667";
             origin        "data/standards/components/1Heptanol.dat";
-            originSha256  "e2732fbe0aa55f2e557ebbbef1695df6211c1dbfc27e1bcd718c2fbc5e0c1867";
+            originSha256  "c4f185cc3a107c9adf024812d68f8b1c48c1150d9708f1e91213d5e61c5163f0";
             release       Choupo-2608;
         }
         "components/nUndecane.dat"
         {
             type          imported;
-            sha256        "a5fae856fd72b6771ac00f3a7ce0ad5a0116a803d819b312ba986439825ec59d";
-            computationalSha256 "3f115ea2cdc1c057dbcb025d472dc769d513190d133c8f106e42a07216b473ee";
+            sha256        "4c8f46718d143c4481ea06d11662285a12b2957f4bf811b4ab8b9275b2e54802";
+            computationalSha256 "5ef484fdb4ed754d2a9001b779e716d052e68c85e1ed343a3ef8f210f1abb9d7";
             origin        "data/standards/components/nUndecane.dat";
-            originSha256  "f8f8b76396af095cb86b0a64e1a274905626181597cb27e70ea3c169f673c36f";
+            originSha256  "5d5be5371675f61b87b20b3bf1820b076587fed058eca1efdbd658671fc0e8e4";
             release       Choupo-2608;
         }
         "parameters/NRTL/1Heptanol-nUndecane.dat"

@@ -28,19 +28,19 @@ propertyManifest
         "components/2Methyl1Butanol.dat"
         {
             type          imported;
-            sha256        "c9ab8aee6e4b669e02e65ee3a6579c57e883133a1851177388705a66bdde60b9";
-            computationalSha256 "a9485fdc17ea9e25851a2a332f2c3226a701891ce7badb72ef8316ae3bde36bc";
+            sha256        "f90b494a8391fb588d9a2b470f293cfdbb2c2145a1ced61950e3c46242cf96fe";
+            computationalSha256 "d36cb54138d36743c14cb391fa2b5ab4fed5588fec6ada659da1083710c5152c";
             origin        "data/standards/components/2Methyl1Butanol.dat";
-            originSha256  "8539ec36a4bbea4015b16011168542b122b7f689d6c3fe9fbfbb213bac47ef8e";
+            originSha256  "576312a58a7313515df67a7ff33d373cf4659854074ea6b3dfe2923ab94a8cf9";
             release       Choupo-2608;
         }
         "components/pXylene.dat"
         {
             type          imported;
-            sha256        "24c426099ea1243aa54d21cde64b34ed7312b8bf2bdde1af983f35795c260cce";
-            computationalSha256 "21ec82182e6c57257719624339c8912c2ab6ef6da558f01e7bcc4b9561706387";
+            sha256        "d6c1a35adcc2ecfb7fdd547613d094985aa02b5154eb86e2136893e5eb2b1081";
+            computationalSha256 "a12f3f6479aa3d4be6d976ca090188ab3b10b5671bb1a3fe568b547431a64d02";
             origin        "data/standards/components/pXylene.dat";
-            originSha256  "c84be1d773e7fda137a6721e882622f7cd66ba63f6278257a98da939fe724bfc";
+            originSha256  "ef3dffe3f5b93e45435a0e2b3d13566b4bd2a5c67451a02e52e75a55ac9de26b";
             release       Choupo-2608;
         }
         "parameters/NRTL/2Methyl1Butanol-pXylene.dat"

@@ -77,7 +77,19 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dP|/P 0.714 % (clean) on the same
+  kept points. fit_uniquac: a_ij = 3.0, a_ji = 26.6 K over 15 kept
+  points: max |dP|/P 0.719 %, mean 0.385 %, graded clean -> accepted;
+  fit_uniquac_start2 lands on the same pair (3.0, 26.6). PROMOTABLE by
+  `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
+  |dP|/P 0.719 % over the 15 kept points, one liquid across the validity
+  span. fit_wilson: A_ij = -76.0, A_ji = 1283.1 J/mol over 15 kept
+  points: max |dP|/P 0.723 %, mean 0.387 %, graded clean -> accepted;
+  fit_wilson_start2 lands on the same pair (-76.0, 1283.1). PROMOTABLE by
+  `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
+  |dP|/P 0.723 % over the 15 kept points, one liquid across the validity
+  span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -426,4 +438,30 @@ operations
         }
     }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_uniquac;
+        type        propertyScan1D;
+        vary        { variable x[14Dioxane];  from 0.0;  to 1.0;  n 101; }
+        state       { P 52.79 kPa;  composition { 14Dioxane 0.5;  nButanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_14Dioxane );
+        output      { file txy_uniquac.csv; }
+    }
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[14Dioxane];  from 0.0;  to 1.0;  n 101; }
+        state       { P 52.79 kPa;  composition { 14Dioxane 0.5;  nButanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_14Dioxane );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );

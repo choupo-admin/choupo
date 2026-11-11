@@ -28,19 +28,19 @@ propertyManifest
         "components/1Propanol.dat"
         {
             type          imported;
-            sha256        "6f8dab202717440a53ff49356dddaa632b8e71ad54a651d6c4f2513519864916";
-            computationalSha256 "c964d7a44b9335ec39b77584095dac5935998f8ccd1f814a9dbe51801adf4389";
+            sha256        "de3f1162278fc2d5ee4995ee4887b3f1c0f3669920483a314461b227ac825867";
+            computationalSha256 "d50d84215a5e98b6539bb27d9c7d0d58bb7fc2a8cf3f66c2f943a76cd6b6d056";
             origin        "data/standards/components/1Propanol.dat";
-            originSha256  "e576ef637c75dec43096777ad538d23ab32c8828de898339ba9226732172d96f";
+            originSha256  "ddcf4f1180bb27e9b6dfa2adb55a9ac88396a36d6a68cb8c48df90d2f04bcfd1";
             release       Choupo-2608;
         }
         "components/isopropylAcetate.dat"
         {
             type          imported;
-            sha256        "2328fd502eebc591dc0d81570786331f2d6647eb2b71bfe7172809332c8e3fe0";
-            computationalSha256 "1c866ebe928bb3a9819829800fbff05561232d4be946665e4b122aac3e9f145f";
+            sha256        "e7ac260d88cf4a0bfa207e4911233608a56c4d10a61c24e4f7747ea6e7c0f438";
+            computationalSha256 "b0aad9448ce9dd1414628dc55a1e66f00915a1d484ade9e5aa47fe646ee093c7";
             origin        "data/standards/components/isopropylAcetate.dat";
-            originSha256  "b4165a2c125255c87da7f45e828cad88381ca66d9b8bb23696bd173c77aae660";
+            originSha256  "72e882241e06e02aeea5b7957fc17349db5a3ac5b52a361372ead9ddfd714662";
             release       Choupo-2608;
         }
         "parameters/NRTL/1Propanol-isopropylAcetate.dat"

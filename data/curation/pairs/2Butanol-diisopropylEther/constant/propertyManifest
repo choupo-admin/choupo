@@ -28,10 +28,10 @@ propertyManifest
         "components/2Butanol.dat"
         {
             type          imported;
-            sha256        "e50417c9ddeaeb5527166cf726410485df839fdb613b8555aa2b8958be5a5c46";
-            computationalSha256 "ad0f4e4cb272e208c3a8ee83b570fe72b60cd9ab1b2dd9a7d6011dbd28c4995b";
+            sha256        "1595f49de30edfac85305b324b1d45e6fc32514fb2f5c3102e1da25064e57de0";
+            computationalSha256 "094b9b7676472cb8ed2d135265cc88c5c65283778ec3ddfec01877bdc50a3057";
             origin        "data/standards/components/2Butanol.dat";
-            originSha256  "8c6ea94875403bbbd569f6facd5fdaefdcc5aee732ba499696802675d675202a";
+            originSha256  "f9a1e64e1b7104dbaa4e9a541716a88d08af19be38f80885c81d7df98640c91f";
             release       Choupo-2608;
         }
         "components/diisopropylEther.dat"

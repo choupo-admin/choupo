@@ -28,19 +28,19 @@ propertyManifest
         "components/1Hexene.dat"
         {
             type          imported;
-            sha256        "f3f6034e2b70cdd43e4cb310f98078980f8bb43a1f29ba10550002e16efddb79";
-            computationalSha256 "4bb3257c1ee9df2672cd685a9d6064728e3775327be2f9c7993aefac1d89ad26";
+            sha256        "456ad357771c8add9a689b45c6d37bb2cb96925c14036f1e1b37c1009c2f6d8c";
+            computationalSha256 "1063f2def570c77ab491b0622470c087a986b63b335805e5ec1f999da4a70969";
             origin        "data/standards/components/1Hexene.dat";
-            originSha256  "5512ce3cac416444fb8400aa7b92dd95e1dd0b55037227404c5729c5304892ee";
+            originSha256  "648504a513eba0cd115c14609480dfd1536cb7e6398fe09728a45a0afdbedf6e";
             release       Choupo-2608;
         }
         "components/nHexane.dat"
         {
             type          imported;
-            sha256        "7a4f2c4ed3cbd1b5ba81e8385b99102ef376db27d62150a59fa1e3176fab1cfb";
-            computationalSha256 "43880946bf7394379147ea46119961e161682f5f265cb5e74b04a645fa24b3f0";
+            sha256        "c8c83e260653963f8cb65889ff6b6507684ae02fea70c8e35c12ea963dbf9d76";
+            computationalSha256 "92fbd4009ead0d3968cd5b258f2da092e18ea6e033b1b1e9b227a6de4d1b9598";
             origin        "data/standards/components/nHexane.dat";
-            originSha256  "37329be508de9ee60a05046cde1b405990560ec6c629c8c75294cce5bdf022fd";
+            originSha256  "0d4ed8a93f772a53ab30bf84df2b366e8aadc20a144f39bcfda4907ea2cd0470";
             release       Choupo-2608;
         }
         "parameters/NRTL/1Hexene-nHexane.dat"

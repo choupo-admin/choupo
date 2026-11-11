@@ -28,19 +28,19 @@ propertyManifest
         "components/14Dioxane.dat"
         {
             type          imported;
-            sha256        "55e99ece5e7f6d5bf69a2d4f7218f83ebf6070a68087486f5e8ee96cf53a8e32";
-            computationalSha256 "96829d3d9c4056a0b1dd3c02af6b592d638a6c502a67d3e1d5553815d98482d8";
+            sha256        "aa55552c69f5c4f2f833e57ed19fadde932fd35ce70f7c547fa9f8c34407c5f8";
+            computationalSha256 "7493f320929e8c93885ac0fbfea3ddb5b6d796346c09b563980294104dcd473c";
             origin        "data/standards/components/14Dioxane.dat";
-            originSha256  "0c8715c4094dfad7895f6120e6b964dc5961da0bb1f60ebc25d38d09824afe29";
+            originSha256  "280f4901e2b4cf57d51eb8e252737e5acdd4212a342d7b52e4be7c93b6b50211";
             release       Choupo-2608;
         }
         "components/benzene.dat"
         {
             type          imported;
-            sha256        "af31cf9da05b7d34c657c430cef68abbf0f08db2402827a4867f7a64073225c9";
-            computationalSha256 "b8a586d23e8f38eb0b5c0f9534f7057eb2d4059de464edbdc18995094fdca93e";
+            sha256        "2c20d6d671dd5884ed8e3668529ddaad20bf3c2a02d1a5130aac02dd790aa62c";
+            computationalSha256 "d710160da938e1163f77e26b0cc49af7c2a2e4563b37f914ce4bb001500decc4";
             origin        "data/standards/components/benzene.dat";
-            originSha256  "77d7604645ff3a28b34d91023e497586af35fa74849c914378f858666a2b900e";
+            originSha256  "dc7869a494c8e333ed57af66fa4086592b32ac5330960750b5d2775030c9b6bc";
             release       Choupo-2608;
         }
         "parameters/NRTL/14Dioxane-benzene.dat"

@@ -77,7 +77,19 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dP|/P 2.591 % (clean) on the same
+  kept points. fit_uniquac: a_ij = -81.9, a_ji = 257.4 K over 24 kept
+  points: max |dP|/P 2.345 %, mean 1.589 %, graded clean -> accepted;
+  fit_uniquac_start2 lands on the same pair (-81.9, 257.4). PROMOTABLE by
+  `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
+  |dP|/P 2.345 % over the 24 kept points, one liquid across the validity
+  span. fit_wilson: A_ij = 7231.9, A_ji = 586.3 J/mol over 24 kept
+  points: max |dP|/P 1.058 %, mean 0.656 %, graded clean -> accepted;
+  fit_wilson_start2 lands on the same pair (7231.9, 586.3). PROMOTABLE by
+  `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
+  |dP|/P 1.058 % over the 24 kept points, one liquid across the validity
+  span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -426,4 +438,30 @@ operations
         }
     }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_uniquac;
+        type        propertyScan1D;
+        vary        { variable x[1Pentanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 20.614 kPa;  composition { 1Pentanol 0.5;  cyclohexane 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_1Pentanol );
+        output      { file txy_uniquac.csv; }
+    }
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[1Pentanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 20.614 kPa;  composition { 1Pentanol 0.5;  cyclohexane 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_1Pentanol );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );

@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nNDimethylformamide.A_ij  2558.37621145;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nNDimethylformamide.A_ji  -2908.06848126;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "be4a55af394cf9f3";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Propanol-nNDimethylformamide-bubble-je0604479.dat";
+            doi       "10.1021/je0604479";
+            sha256    "fd60a552ac316065bcf630effca8cff113a17010aa0c8d8ea49288188422a04f";
+            provenance measured;
+            archiveFile "je0604479.xml";
+            system    "1Propanol + nNDimethylformamide";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.064; max 0.969; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nNDimethylformamide.A_ij  2558.37842673;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nNDimethylformamide.A_ji  -2908.06949022;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "be4a55af394cf9f3";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Propanol-nNDimethylformamide-bubble-je0604479.dat";
+            doi       "10.1021/je0604479";
+            sha256    "fd60a552ac316065bcf630effca8cff113a17010aa0c8d8ea49288188422a04f";
+            provenance measured;
+            archiveFile "je0604479.xml";
+            system    "1Propanol + nNDimethylformamide";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.064; max 0.969; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

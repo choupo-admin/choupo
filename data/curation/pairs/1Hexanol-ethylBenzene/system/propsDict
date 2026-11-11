@@ -83,7 +83,19 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dT| 0.167 K (clean) on the same
+  kept points. fit_uniquac: a_ij = -31.8, a_ji = 30.5 K over 14 kept
+  points: max |dT| 0.242 K, mean 0.144 K, graded clean -> accepted;
+  fit_uniquac_start2 lands on A DIFFERENT pair (253.4, -195.8).
+  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
+  clean -- max |dT| 0.242 K over the 14 kept points, one liquid across
+  the validity span. fit_wilson: A_ij = -644.7, A_ji = 1738.3 J/mol over
+  14 kept points: max |dT| 0.162 K, mean 0.089 K, graded clean ->
+  accepted; fit_wilson_start2 lands on the same pair (-644.7, 1738.3).
+  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
+  clean -- max |dT| 0.162 K over the 14 kept points, one liquid across
+  the validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -448,6 +460,32 @@ operations
         }
     }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_uniquac;
+        type        propertyScan1D;
+        vary        { variable x[ethylBenzene];  from 0.0;  to 1.0;  n 101; }
+        state       { P 95.35 kPa;  composition { ethylBenzene 0.5;  1Hexanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_ethylBenzene );
+        output      { file txy_uniquac.csv; }
+    }
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[ethylBenzene];  from 0.0;  to 1.0;  n 101; }
+        state       { P 95.35 kPa;  composition { ethylBenzene 0.5;  1Hexanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_ethylBenzene );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );
 
 experimental

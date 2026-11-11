@@ -78,7 +78,19 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dP|/P 1.472 % (clean) on the same
+  kept points. fit_uniquac: a_ij = 176.2, a_ji = -13.9 K over 24 kept
+  points: max |dP|/P 1.465 %, mean 0.959 %, graded clean -> accepted;
+  fit_uniquac_start2 lands on the same pair (176.2, -13.9). PROMOTABLE by
+  `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
+  |dP|/P 1.465 % over the 24 kept points, one liquid across the validity
+  span. fit_wilson: A_ij = 871.2, A_ji = 5554.4 J/mol over 24 kept
+  points: max |dP|/P 0.383 %, mean 0.233 %, graded clean -> accepted;
+  fit_wilson_start2 lands on the same pair (871.2, 5554.4). PROMOTABLE by
+  `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
+  |dP|/P 0.383 % over the 24 kept points, one liquid across the validity
+  span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -427,4 +439,30 @@ operations
         }
     }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_uniquac;
+        type        propertyScan1D;
+        vary        { variable x[benzene];  from 0.0;  to 1.0;  n 101; }
+        state       { P 24.12 kPa;  composition { benzene 0.5;  1Propanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_benzene );
+        output      { file txy_uniquac.csv; }
+    }
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[benzene];  from 0.0;  to 1.0;  n 101; }
+        state       { P 24.12 kPa;  composition { benzene 0.5;  1Propanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_benzene );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );

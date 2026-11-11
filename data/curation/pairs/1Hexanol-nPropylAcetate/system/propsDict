@@ -83,7 +83,19 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: not yet run.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dT| 0.898 K (clean) on the same
+  kept points. fit_uniquac: a_ij = -145.3, a_ji = 199.5 K over 19 kept
+  points: max |dT| 0.893 K, mean 0.401 K, graded clean -> accepted;
+  fit_uniquac_start2 lands on the same pair (-145.3, 199.5). PROMOTABLE
+  by `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
+  |dT| 0.893 K over the 19 kept points, one liquid across the validity
+  span. fit_wilson: A_ij = 2419.2, A_ji = -1458.7 J/mol over 19 kept
+  points: max |dT| 0.900 K, mean 0.417 K, graded clean -> accepted;
+  fit_wilson_start2 lands on the same pair (2419.2, -1458.7). PROMOTABLE
+  by `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
+  |dT| 0.900 K over the 19 kept points, one liquid across the validity
+  span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -460,6 +472,32 @@ operations
         }
     }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_uniquac;
+        type        propertyScan1D;
+        vary        { variable x[nPropylAcetate];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { nPropylAcetate 0.5;  1Hexanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_nPropylAcetate );
+        output      { file txy_uniquac.csv; }
+    }
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[nPropylAcetate];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { nPropylAcetate 0.5;  1Hexanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_nPropylAcetate );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
 );
 
 experimental

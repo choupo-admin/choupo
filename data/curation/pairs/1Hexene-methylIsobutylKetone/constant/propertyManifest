@@ -28,19 +28,19 @@ propertyManifest
         "components/1Hexene.dat"
         {
             type          imported;
-            sha256        "f3f6034e2b70cdd43e4cb310f98078980f8bb43a1f29ba10550002e16efddb79";
-            computationalSha256 "4bb3257c1ee9df2672cd685a9d6064728e3775327be2f9c7993aefac1d89ad26";
+            sha256        "456ad357771c8add9a689b45c6d37bb2cb96925c14036f1e1b37c1009c2f6d8c";
+            computationalSha256 "1063f2def570c77ab491b0622470c087a986b63b335805e5ec1f999da4a70969";
             origin        "data/standards/components/1Hexene.dat";
-            originSha256  "5512ce3cac416444fb8400aa7b92dd95e1dd0b55037227404c5729c5304892ee";
+            originSha256  "648504a513eba0cd115c14609480dfd1536cb7e6398fe09728a45a0afdbedf6e";
             release       Choupo-2608;
         }
         "components/methylIsobutylKetone.dat"
         {
             type          imported;
-            sha256        "883dca67acc7aabffa681e76e5b38194a93fc68f78d4a3433df849a68718372f";
-            computationalSha256 "3b343b8cff791a127701ce6eadd23f8a9a7b015e0678246d7007a3416d2d7c49";
+            sha256        "2e3acb08825da9dd98c7356c310fa1568645534ff964d8a152b44a2eda019677";
+            computationalSha256 "73e7b67b8341fa8156ac9d0f1d5e1c69987593b9579095bd87a1ec117d301d5f";
             origin        "data/standards/components/methylIsobutylKetone.dat";
-            originSha256  "8e66af3abd6102965d13c7772247cf28d37eeb7439927a2af07c69a09dae2718";
+            originSha256  "f0a81cb1eea4e0a10242eb39346555280cb08424e505a5d16d84107ca22f2955";
             release       Choupo-2608;
         }
         "parameters/NRTL/1Hexene-methylIsobutylKetone.dat"

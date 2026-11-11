@@ -112,4 +112,184 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-nHexylAcetate.a_ij  46.9489192156;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-nHexylAcetate.a_ji  -26.4183824814;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "544264afbdb50a51";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Hexanol-nHexylAcetate-bubble-je050141m.dat";
+            doi       "10.1021/je050141m";
+            sha256    "99044e3dea8c42c7fae56f37eca05732279ba72064540df1310a541562d21c46";
+            provenance measured;
+            archiveFile "je050141m.xml";
+            system    "1Hexanol + nHexylAcetate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.016; max 0.9906; n 73; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-nHexylAcetate.a_ij  46.9489189774;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-nHexylAcetate.a_ji  -26.4183822675;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "544264afbdb50a51";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Hexanol-nHexylAcetate-bubble-je050141m.dat";
+            doi       "10.1021/je050141m";
+            sha256    "99044e3dea8c42c7fae56f37eca05732279ba72064540df1310a541562d21c46";
+            provenance measured;
+            archiveFile "je050141m.xml";
+            system    "1Hexanol + nHexylAcetate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.016; max 0.9906; n 73; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-nHexylAcetate.A_ij  446.921463157;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-nHexylAcetate.A_ji  617.434547204;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "544264afbdb50a51";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Hexanol-nHexylAcetate-bubble-je050141m.dat";
+            doi       "10.1021/je050141m";
+            sha256    "99044e3dea8c42c7fae56f37eca05732279ba72064540df1310a541562d21c46";
+            provenance measured;
+            archiveFile "je050141m.xml";
+            system    "1Hexanol + nHexylAcetate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.016; max 0.9906; n 73; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-nHexylAcetate.A_ij  446.921482074;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-nHexylAcetate.A_ji  617.434519606;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "544264afbdb50a51";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Hexanol-nHexylAcetate-bubble-je050141m.dat";
+            doi       "10.1021/je050141m";
+            sha256    "99044e3dea8c42c7fae56f37eca05732279ba72064540df1310a541562d21c46";
+            provenance measured;
+            archiveFile "je050141m.xml";
+            system    "1Hexanol + nHexylAcetate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.016; max 0.9906; n 73; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

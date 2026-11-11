@@ -194,4 +194,176 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.a_ij  -101.649058478;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.a_ji  585.572946409;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "4bfcfba355c16604";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-224Trimethylpentane-bubble-je300847v.dat";
+            doi       "10.1021/je300847v";
+            sha256    "48cf0d1f1170b2e23d70db079156fd5843f03041852ed9db0fcb3b276e365ee3";
+            provenance measured;
+            archiveFile "je300847v.xml";
+            system    "ethanol + 224Trimethylpentane";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-224Trimethylpentane-bubble-acs.jced.8b00680.dat";
+            doi       "10.1021/acs.jced.8b00680";
+            sha256    "24e5d0a547f0ece199cef88e38a33059d446a79066ec16e532dde61242113b94";
+            provenance measured;
+            archiveFile "acs.jced.8b00680.xml";
+            system    "ethanol + 224Trimethylpentane";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-224Trimethylpentane-bubble-j.fluid.2005.01.007.dat";
+            doi       "10.1016/j.fluid.2005.01.007";
+            sha256    "f1acfe9dcd9476d848a167c0a3fe983e5b719138dd99807652ad914b3f29eb62";
+            provenance measured;
+            archiveFile "j.fluid.2005.01.007.xml";
+            system    "ethanol + 224Trimethylpentane";
+            pressure  "101320.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-224Trimethylpentane-bubble-j.fluid.2007.06.005.dat";
+            doi       "10.1016/j.fluid.2007.06.005";
+            sha256    "cc1f8832b57e5d44a79b79cda3c9425b77c19b96e2e6f4f9996363ea7de6f6fa";
+            provenance measured;
+            archiveFile "j.fluid.2007.06.005.xml";
+            system    "ethanol + 224Trimethylpentane";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-224Trimethylpentane-bubble-j.jct.2005.04.006.dat";
+            doi       "10.1016/j.jct.2005.04.006";
+            sha256    "e157abbd4d346d9ee5e79799e72fb16000d461970ab65ba327666624870901bc";
+            provenance measured;
+            archiveFile "j.jct.2005.04.006.xml";
+            system    "ethanol + 224Trimethylpentane";
+            pressure  "95800.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.024; max 0.996; n 85; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.a_ij  -101.649058467;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.a_ji  585.572946375;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "4bfcfba355c16604";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-224Trimethylpentane-bubble-je300847v.dat";
+            doi       "10.1021/je300847v";
+            sha256    "48cf0d1f1170b2e23d70db079156fd5843f03041852ed9db0fcb3b276e365ee3";
+            provenance measured;
+            archiveFile "je300847v.xml";
+            system    "ethanol + 224Trimethylpentane";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-224Trimethylpentane-bubble-acs.jced.8b00680.dat";
+            doi       "10.1021/acs.jced.8b00680";
+            sha256    "24e5d0a547f0ece199cef88e38a33059d446a79066ec16e532dde61242113b94";
+            provenance measured;
+            archiveFile "acs.jced.8b00680.xml";
+            system    "ethanol + 224Trimethylpentane";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-224Trimethylpentane-bubble-j.fluid.2005.01.007.dat";
+            doi       "10.1016/j.fluid.2005.01.007";
+            sha256    "f1acfe9dcd9476d848a167c0a3fe983e5b719138dd99807652ad914b3f29eb62";
+            provenance measured;
+            archiveFile "j.fluid.2005.01.007.xml";
+            system    "ethanol + 224Trimethylpentane";
+            pressure  "101320.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-224Trimethylpentane-bubble-j.fluid.2007.06.005.dat";
+            doi       "10.1016/j.fluid.2007.06.005";
+            sha256    "cc1f8832b57e5d44a79b79cda3c9425b77c19b96e2e6f4f9996363ea7de6f6fa";
+            provenance measured;
+            archiveFile "j.fluid.2007.06.005.xml";
+            system    "ethanol + 224Trimethylpentane";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-224Trimethylpentane-bubble-j.jct.2005.04.006.dat";
+            doi       "10.1016/j.jct.2005.04.006";
+            sha256    "e157abbd4d346d9ee5e79799e72fb16000d461970ab65ba327666624870901bc";
+            provenance measured;
+            archiveFile "j.jct.2005.04.006.xml";
+            system    "ethanol + 224Trimethylpentane";
+            pressure  "95800.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.024; max 0.996; n 85; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

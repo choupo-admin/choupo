@@ -112,4 +112,184 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Methyl1Propanol.a_ij  -5.06714363887;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Methyl1Propanol.a_ji  26.6065441392;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f990741606551b7f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/14Dioxane-2Methyl1Propanol-bubble-j.jct.2003.09.001.dat";
+            doi       "10.1016/j.jct.2003.09.001";
+            sha256    "ed6d3c6e4b418beca21d9e9824b60a7dfd25c43695095885dd7f6bc8ef14dc91";
+            provenance measured;
+            archiveFile "j.jct.2003.09.001.xml";
+            system    "14Dioxane + 2Methyl1Propanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0428; max 0.9563; n 26; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Methyl1Propanol.a_ij  -5.06714369839;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Methyl1Propanol.a_ji  26.6065441998;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f990741606551b7f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/14Dioxane-2Methyl1Propanol-bubble-j.jct.2003.09.001.dat";
+            doi       "10.1016/j.jct.2003.09.001";
+            sha256    "ed6d3c6e4b418beca21d9e9824b60a7dfd25c43695095885dd7f6bc8ef14dc91";
+            provenance measured;
+            archiveFile "j.jct.2003.09.001.xml";
+            system    "14Dioxane + 2Methyl1Propanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0428; max 0.9563; n 26; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Methyl1Propanol.A_ij  -109.479753813;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Methyl1Propanol.A_ji  1065.81986817;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f990741606551b7f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/14Dioxane-2Methyl1Propanol-bubble-j.jct.2003.09.001.dat";
+            doi       "10.1016/j.jct.2003.09.001";
+            sha256    "ed6d3c6e4b418beca21d9e9824b60a7dfd25c43695095885dd7f6bc8ef14dc91";
+            provenance measured;
+            archiveFile "j.jct.2003.09.001.xml";
+            system    "14Dioxane + 2Methyl1Propanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0428; max 0.9563; n 26; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Methyl1Propanol.A_ij  -109.47975657;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Methyl1Propanol.A_ji  1065.8198715;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f990741606551b7f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/14Dioxane-2Methyl1Propanol-bubble-j.jct.2003.09.001.dat";
+            doi       "10.1016/j.jct.2003.09.001";
+            sha256    "ed6d3c6e4b418beca21d9e9824b60a7dfd25c43695095885dd7f6bc8ef14dc91";
+            provenance measured;
+            archiveFile "j.jct.2003.09.001.xml";
+            system    "14Dioxane + 2Methyl1Propanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0428; max 0.9563; n 26; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );
