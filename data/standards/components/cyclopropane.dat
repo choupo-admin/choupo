@@ -60,10 +60,25 @@ standardThermochemistry
     s_298     237.45;      // J/(mol*K) third-law absolute (TRC class; primary re-citation pending IST review)
 }
 
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (3 CH2), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   2.0232;
+    q   1.6200;
+}
+
 groups { unifac ( { group CH2; count 3; } ); joback ( { group rCH2; count 3; } ); }
 
 provenance
 {
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 2.0232, q = sum nu_k Q_k = 1.6200 over the record's unifac groups (3 CH2)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
     dHf_298
     {
         origin           measured;

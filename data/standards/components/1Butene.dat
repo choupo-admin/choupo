@@ -68,12 +68,27 @@ standardThermochemistry
 
 provenance
 {
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 2.9209, q = sum nu_k Q_k = 2.5640 over the record's unifac groups (1 CH3 + 1 CH2 + 1 CH2=CH)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
     constants      "CoolProp 7.2.0 -- Lemmon-FPE-2005";
     vaporPressure  "Antoine fitted to CoolProp EOS saturation, AAD 0.69%";
     idealGasCp     "polynomial fitted to CoolProp cp0, maxerr 2.22%";
     liquidCp       "polynomial fitted to CoolProp sat-liquid cp, maxerr 0.00%";
     triplePoint    "CoolProp reference EOS triple-point T,P";
     standardThermochemistry "NASA TM-4513 (McBride-Gordon-Reno 1993), H0/S0(298.15) from NASA-7 poly";
+}
+
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (1 CH3 + 1 CH2 + 1 CH2=CH), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   2.9209;
+    q   2.5640;
 }
 
 groups
