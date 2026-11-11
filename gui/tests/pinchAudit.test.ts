@@ -109,10 +109,10 @@ describe("C304 B -- installed, maximum and additional recovery in one line", () 
   it("PEQ: installed = the FEHE, counted once", () => {
     expect(installedRecoveryKW(parseStreamTable(PEQ_POPULATION))).toBeCloseTo(61412.416, 3);
   });
-  it("PEQ: 61400 installed, 61500 maximum, 81.6 additional (3 s.f.)", () => {
+  it("PEQ: 61412.4 installed, 61494.0 maximum, 81.6 additional (one precision, set by 81.6)", () => {
     expect(recoveryLine(PEQ_KPIS, parseStreamTable(PEQ_POPULATION), u)).toBe(
-      "heat recovery · installed 61400 kW (process-to-process exchangers in the population)"
-      + " · maximum 61500 kW (target) · additional possible 81.6 kW");
+      "heat recovery · installed 61412.4 kW (process-to-process exchangers in the population)"
+      + " · maximum 61494.0 kW (target) · additional possible 81.6 kW");
     // first law: the additional recovery is the hot utility above its target
     expect(PEQ_KPIS["Q_recovery_max_kW"]! - 61412.41602)
       .toBeCloseTo(PEQ_KPIS["Q_heat_current_kW"]! - PEQ_KPIS["Q_H_min_kW"]!, 3);
@@ -124,7 +124,7 @@ describe("C304 B -- installed, maximum and additional recovery in one line", () 
   it("an installed recovery past the target says why, never a negative saving", () => {
     const l = recoveryLine({ Q_recovery_max_kW: 100 },
       [{ role: "recovered", side: "hot", Q_kW: -120 }, { role: "recovered", side: "cold", Q_kW: 120 }], u)!;
-    expect(l).toContain("installed exceeds this ΔTmin's maximum by 20 kW");
+    expect(l).toContain("installed exceeds this ΔTmin's maximum by 20.0 kW");
     expect(l).not.toContain("additional possible -");
   });
   it("both pages show the line", () => {
@@ -164,10 +164,10 @@ describe("C304 D -- the excess over target, worded for the class", () => {
   });
   it("PEQ: 81.6 kW of hot utility above a target of 0, never 'below the pinch'", () => {
     const l = excessLine(PEQ_KPIS, "thresholdNoHotUtility", u)!;
-    expect(l).toBe("hot utility bought above the target · 81.6 − 0 = 81.6 kW"
+    expect(l).toBe("hot utility bought above the target · 81.6 − 0.0 = 81.6 kW"
       + " (target 0 in a threshold problem: no interior pinch, so none of it is \"below the pinch\")");
     const t = text(page(PEQ));
-    expect(t).toContain("hot utility bought above the target · 81.6 − 0 = 81.6 kW");
+    expect(t).toContain("hot utility bought above the target · 81.6 − 0.0 = 81.6 kW");
     expect(t).not.toContain("kW heating below");
   });
   it("pinch01: 380 = 260 heating below the pinch + 120 cooling above it", () => {
@@ -180,15 +180,15 @@ describe("C304 D -- the excess over target, worded for the class", () => {
     const l = excessLine({ Q_heat_current_kW: 150, Q_cool_current_kW: 50, Q_H_min_kW: 100,
       Q_C_min_kW: 0, violation_heat_below_pinch_kW: 0, violation_cool_above_pinch_kW: 50 },
       "thresholdNoColdUtility", u)!;
-    expect(l).toContain("cold utility bought above the target · 50 − 0 = 50 kW");
-    expect(l).toContain("hot utility above its target · 150 − 100 = 50 kW");
+    expect(l).toContain("cold utility bought above the target · 50.0 − 0.0 = 50.0 kW");
+    expect(l).toContain("hot utility above its target · 150.0 − 100.0 = 50.0 kW");
     expect(l).not.toMatch(/heating below|cooling above the pinch:/);
   });
   it("no utility: both excesses against targets of 0", () => {
     const l = excessLine({ Q_heat_current_kW: 30, Q_cool_current_kW: 30, Q_H_min_kW: 0,
       Q_C_min_kW: 0, violation_heat_below_pinch_kW: 30, violation_cool_above_pinch_kW: 0 },
       "thresholdNoUtility", u)!;
-    expect(l).toContain("heating 30 − 0 = 30 kW · cooling 30 − 0 = 30 kW");
+    expect(l).toContain("heating 30.0 − 0.0 = 30.0 kW · cooling 30.0 − 0.0 = 30.0 kW");
     expect(l).toContain("both targets 0 in a threshold problem: no interior pinch");
   });
   it("several pinches keep the pinch wording", () => {
@@ -223,14 +223,14 @@ describe("C304 E -- every number on the Pinch page follows the sig-figs preferen
       setDisplayPrefs: () => undefined };
     const t = text(renderToStaticMarkup(createElement(MantineProvider, null, createElement(PinchView))));
     expect(t).toContain("Partial analysis: 30315 kW of duty not in the population (Converter)");
-    expect(t).toContain("installed 61412 kW");
+    expect(t).toContain("installed 61412.416 kW");   // 5 s.f. on the smallest, 81.550
     expect(t).toContain("targets 0 kW hot / 41051 kW cold");
   });
-  it("PEQ at the default: no number on the page carries more than 3 significant figures", () => {
+  it("PEQ at the default: a lone number carries 3 significant figures", () => {
     const t = text(page(PEQ));
     expect(t).toContain("targets 0 kW hot / 41100 kW cold");
     // the long engine values never reach the page
-    for (const raw of ["41050.8", "41051", "61412.4", "61494.0", "102544.7", "30314.8", "728.15"])
+    for (const raw of ["41050.8", "102544.7", "30314.8", "728.15"])
       expect(t, raw).not.toContain(raw);
   });
   it("the CSV the page reads stays at full precision (nothing rewrites it)", () => {
@@ -296,5 +296,44 @@ describe("C304 F -- SortableTable: one reusable sort, used by every Pinch table"
     const m = src.slice(src.indexOf("function MatchesTable"));
     expect((m.slice(0, m.indexOf("</Table.Thead>")).match(/<SortTh /g) ?? []).length).toBe(7);
     expect(m).toContain("s.rows.map");
+  });
+});
+
+describe("C304 G -- numbers in one identity share ONE absolute precision (u.group)", () => {
+  it("PEQ: 61412.4 / 61494.0 / 81.6 -- the smallest carries the 3 s.f.", () => {
+    const g = u.group([61412.41602, 61493.96625, 81.55022706]);
+    expect([g(61412.41602), g(61493.96625), g(81.55022706)]).toEqual(["61412.4", "61494.0", "81.6"]);
+    // what the reader subtracts is what is printed
+    expect(Number(g(61493.96625)) - Number(g(61412.41602))).toBeCloseTo(Number(g(81.55022706)), 6);
+  });
+  it("pinch01: 488 − 108 = 380 = 260 + 120, all integers", () => {
+    const v = [487.5, 107.5, 380, 260, 120];
+    const g = u.group(v);
+    expect(v.map(g)).toEqual(["488", "108", "380", "260", "120"]);
+  });
+  it("follows the preference: 5 s.f. puts three decimals on 81.550", () => {
+    const g = pinchUnits({ ...DEFAULT_PREFS, sigFigs: 5 }).group([61412.41602, 81.55022706]);
+    expect(g(61412.41602)).toBe("61412.416");
+    expect(g(81.55022706)).toBe("81.550");
+  });
+  it("zeros do not set the precision, and never print as -0", () => {
+    const g = u.group([0, 0]);
+    expect(g(0)).toBe("0");
+    expect(u.group([-0.01, 50])(-0.00001)).toBe("0.0000");   // rounds to zero: no sign
+  });
+  it("PEQ page: the targets identity chip and the recovery line are coherent", () => {
+    const t = text(page(PEQ));
+    expect(t).toContain("Q_recovery,max 61494 kW · Q_H,min − Q_C,min = -41051 kW"
+      + " = cold total − hot total (61494 − 102545)");
+    expect(t).toContain("installed 61412.4 kW (process-to-process exchangers in the population)"
+      + " · maximum 61494.0 kW (target) · additional possible 81.6 kW");
+    expect(t).toContain("hot utility bought above the target · 81.6 − 0.0 = 81.6 kW");
+  });
+  it("pinch01 page: the excess identity in integers, the totals identity to 67.5", () => {
+    const t = text(page(P01));
+    expect(t).toContain("excess over target · 488 − 108 = 380 kW = 260 kW heating below the pinch"
+      + " + 120 kW cooling above the pinch");
+    expect(t).toContain("Q_recovery,max 380.0 kW · Q_H,min − Q_C,min = 67.5 kW"
+      + " = cold total − hot total (487.5 − 420.0)");
   });
 });

@@ -901,9 +901,15 @@ export function PinchCompositeTool(
       {kpis && kpis["Q_recovery_max_kW"] != null && (
         <Badge variant="light" color="gray" size="lg"
           styles={{ root: { textTransform: "none" } }}>
-          {`Q_recovery,max ${u.Q(kpis["Q_recovery_max_kW"]!, 1)} ${u.qLabel}`
-            + ` · Q_H,min − Q_C,min = ${u.Q(kpis["Q_H_min_kW"]! - kpis["Q_C_min_kW"]!, 1)} ${u.qLabel}`
-            + ` = cold total − hot total (${u.Q(kpis["Q_cold_total_kW"]!, 1)} − ${u.Q(kpis["Q_hot_total_kW"]!, 1)})`}
+          {(() => {
+            //  an identity on one line: ONE absolute precision (u.group)
+            const rec = kpis["Q_recovery_max_kW"]!, dQ = kpis["Q_H_min_kW"]! - kpis["Q_C_min_kW"]!;
+            const ct = kpis["Q_cold_total_kW"]!, ht = kpis["Q_hot_total_kW"]!;
+            const g = u.group([rec, dQ, ct, ht]);
+            return `Q_recovery,max ${g(rec)} ${u.qLabel}`
+              + ` · Q_H,min − Q_C,min = ${g(dQ)} ${u.qLabel}`
+              + ` = cold total − hot total (${g(ct)} − ${g(ht)})`;
+          })()}
         </Badge>
       )}
     </Group>

@@ -105,13 +105,15 @@ export function recoveryLine(
   if (typeof max !== "number") return null;
   const inst = installedRecoveryKW(rows);
   const add = max - inst;
+  //  one identity on one line: one absolute precision (pinchUnits.group)
+  const g = u.group([inst, max, add]);
   const tail = add >= -1e-6
-    ? `additional possible ${u.Q(add, 1)} ${u.qLabel}`
-    : `installed exceeds this ΔTmin's maximum by ${u.Q(-add, 1)} ${u.qLabel}`
+    ? `additional possible ${g(add)} ${u.qLabel}`
+    : `installed exceeds this ΔTmin's maximum by ${g(-add)} ${u.qLabel}`
       + " (an existing exchanger runs closer than ΔTmin)";
-  return `heat recovery · installed ${u.Q(inst, 1)} ${u.qLabel}`
+  return `heat recovery · installed ${g(inst)} ${u.qLabel}`
     + ` (process-to-process exchangers in the population)`
-    + ` · maximum ${u.Q(max, 1)} ${u.qLabel} (target)`
+    + ` · maximum ${g(max)} ${u.qLabel} (target)`
     + ` · ${tail}`;
 }
 
@@ -127,10 +129,17 @@ export function excessLine(kpis: Kpis, cls: string | null, u: PinchUnits): strin
   const QH = k["Q_H_min_kW"], QC = k["Q_C_min_kW"];
   const hb = k["violation_heat_below_pinch_kW"], ca = k["violation_cool_above_pinch_kW"];
   if (Qh == null || QH == null || hb == null || ca == null) return null;
-  const q = (x: number) => `${u.Q(x, 1)} ${u.qLabel}`;
-  const heatEx = `${u.Q(Qh, 1)} − ${u.Q(QH, 1)} = ${q(Qh - QH)}`;
+  //  Every number of the line belongs to one identity, so they share ONE
+  //  absolute precision (pinchUnits.group): 81.6 − 0.0 = 81.6, and
+  //  488 − 108 = 380 = 260 + 120.
+  const all = [Qh, QH, Qh - QH, hb, ca];
+  const showsCool = cls === "thresholdNoColdUtility" || cls === "thresholdNoUtility";
+  if (showsCool && Qc != null && QC != null) all.push(Qc, QC, Qc - QC);   // only what the line shows
+  const g = u.group(all);
+  const q = (x: number) => `${g(x)} ${u.qLabel}`;
+  const heatEx = `${g(Qh)} − ${g(QH)} = ${q(Qh - QH)}`;
   const coolEx = Qc != null && QC != null
-    ? `${u.Q(Qc, 1)} − ${u.Q(QC, 1)} = ${q(Qc - QC)}` : null;
+    ? `${g(Qc)} − ${g(QC)} = ${q(Qc - QC)}` : null;
   switch (cls) {
     case "thresholdNoHotUtility":
       return `hot utility bought above the target · ${heatEx}`

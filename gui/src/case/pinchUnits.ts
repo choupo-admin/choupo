@@ -36,6 +36,12 @@ export interface PinchUnits {
   CP(kWperK: number, d?: number): string;
   /** a number ALREADY in display units (an axis tick), the same rule */
   n(v: number): string;
+  /** duties [kW] shown TOGETHER in one identity (a sum, a difference):
+   *  returns a formatter with ONE absolute precision for all of them, chosen
+   *  so the SMALLEST nonzero |value| carries the preference's significant
+   *  figures.  61412.4 / 61494.0 / 81.6, never 61400 / 61500 / 81.6, which
+   *  a reader would subtract to 100. */
+  group(kWs: number[]): (kW: number) => string;
   /** numeric converters, for axes */
   qNum(kW: number): number;
   tNum(K: number): number;
@@ -66,6 +72,18 @@ export function pinchUnits(
     Qt: (kW) => f(kWToDisplay(kW, q)),
     CP: (c) => f(cpToDisplay(c, q, t)),
     n: (v) => f(v),
+    group: (kWs) => {
+      const mags = kWs.map((k) => Math.abs(kWToDisplay(k, q)))
+        .filter((a) => Number.isFinite(a) && a > 0);
+      const d = mags.length === 0 ? 0    // all zero: nothing to carry
+        : Math.max(0, Math.min(12, sig() - 1 - Math.floor(Math.log10(Math.min(...mags)))));
+      return (kW) => {
+        const v = kWToDisplay(kW, q);
+        if (!Number.isFinite(v)) return "—";
+        const s = v.toFixed(d);
+        return /^-0(\.0*)?$/.test(s) ? s.slice(1) : s;   // never "-0.0"
+      };
+    },
     qNum: (kW) => kWToDisplay(kW, q),
     tNum: (K) => kToDisplay(K, t),
   };
