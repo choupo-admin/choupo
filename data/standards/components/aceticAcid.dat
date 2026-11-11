@@ -140,6 +140,16 @@ liquidViscosity
     }
 }
 
+surfaceTension
+{
+    A     0.0594918344;
+    B     0;
+    Tc    591.95;
+    n     1.127849284;
+    Tmin  298.15;
+    Tmax  343.15;
+}
+
 provenance
 {
     liquidViscosity
@@ -173,6 +183,35 @@ provenance
             dropped     "none";
             aad_pct     0.932211;
             max_pct     1.355182;
+        }
+    }
+    surfaceTension
+    {
+        origin        fitted;
+        method        "least squares on ln sigma of sigma/(N/m) = A tau^n, tau = 1 - T/Tc (A, n; B = 0; Tc the record's own), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeMaxRelativeError_pct 0.303602;
+        Trange        (298.15 343.15);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C328)";
+        evidence
+        (
+                { doi "10.1021/je060084c"; articleSha256 "caefdfe690400448a8f41618ee354495db0f57a1b06e7d2d3239de0dc0a3e228"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je060390q"; articleSha256 "ecf0a8064734f1ca562d963ce13668336393d733e7ae42c501d02379761f1232"; pointsKept 7; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     2;
+            pointsKept  8;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.193224;
+            max_pct     0.303602;
         }
     }
 }

@@ -70,3 +70,46 @@ aliases ( nitrogen );
 // ---- Aqueous-speciation FACT (substance-level, classifier-read) ----
 // dissolved nitrogen: neutral master, no aqueous equilibria.
 aqueousSpeciation  none;
+
+surfaceTension
+{
+    A     0.02935385676;
+    B     0;
+    Tc    126.2;
+    n     1.255908466;
+    Tmin  80;
+    Tmax  120;
+}
+
+provenance
+{
+    surfaceTension
+    {
+        origin        fitted;
+        method        "least squares on ln sigma of sigma/(N/m) = A tau^n, tau = 1 - T/Tc (A, n; B = 0; Tc the record's own), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      warning;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeCap   ( singleLaboratory );   // DEV.md 4c C300 rule 2
+        fitGradeMaxRelativeError_pct 0.596957;
+        Trange        (80 120);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C328)";
+        evidence
+        (
+                { doi "10.1016/j.fluid.2008.06.016"; articleSha256 "9c6987c2aaf35e08cddfdcedeba2c7104c14905629ab077075ea8a13ce250aab"; pointsKept 5; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     1;
+            pointsKept  5;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.425329;
+            max_pct     0.596957;
+        }
+    }
+}

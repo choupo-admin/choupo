@@ -92,6 +92,16 @@ source
     review        { state pending; reviewer unassigned; }
 }
 
+surfaceTension
+{
+    A     0.05255066602;
+    B     0;
+    Tc    500.05;
+    n     1.237740186;
+    Tmin  248.07;
+    Tmax  373.17;
+}
+
 provenance
 {
     MW
@@ -168,5 +178,37 @@ cosmo
                1.443994     0.862068     0.282380     0.000000     0.000000     0.000000
                0.000000     0.000000     0.000000
         );
+    }
+    surfaceTension
+    {
+        origin        fitted;
+        method        "least squares on ln sigma of sigma/(N/m) = A tau^n, tau = 1 - T/Tc (A, n; B = 0; Tc the record's own), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeMaxRelativeError_pct 1.198480;
+        Trange        (248.07 373.17);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C328)";
+        evidence
+        (
+                { doi "10.1016/j.fluid.2008.06.006"; articleSha256 "52dbf010232bc160ad7a38c6261f759b10374ce373a3e69a9d27ddf6a8856f6f"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.fluid.2013.02.005"; articleSha256 "3f87986f38ae625010485226536e192d27dd6828a5e3a4002c4129b9cc6e1795"; pointsKept 3; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.fluid.2015.03.040"; articleSha256 "aafcac987d98a7c0e274e7a80af0ecf7df9acf02c029667b9c2bf741004271ea"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je034279l"; articleSha256 "7e8255443b9dcc10d135656d77bb98acc195dfe518da3e6d4d548c5e1e76b017"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je900665a"; articleSha256 "a05759b635ed91aa8e46c4cc4e151380b84b7d30054f024d8dd27f8a7e1a5c85"; pointsKept 26; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     5;
+            pointsKept  32;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.741612;
+            max_pct     1.198480;
+        }
     }
 }

@@ -18,6 +18,14 @@ and, where the ThermoML archive cache is reachable, REFIT from the archive:
     stored ones (1e-6 relative).  Without it the line says so -- the
     structural arms still run, and the missing arm is never reported as PASS.
 
+DEV.md 4c C328 adds the surfaceTension arm: every stored
+`surfaceTension { A; B; Tc; n; Tmin; Tmax; }` record (sigma = A tau^n +
+B tau^(n+1), A = s0, B = 0) is held to the dataset by the same arms
+(parameters, window, labels, grade limits, cap words, Trange, stated max
+error), refit from the archive where reachable, and THREE SABOTAGES are
+applied in memory to a record and must each be refused by name:
+parameter-A-changed, grade-label-flipped, window-moved.
+
 Exit 0 pass, 1 fail.  Writes nothing.
 """
 import sys
@@ -27,4 +35,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import transport_fit  # noqa: E402
 
 if __name__ == "__main__":
-    sys.exit(transport_fit.cmd_verify("--no-refit" not in sys.argv))
+    refit = "--no-refit" not in sys.argv
+    rc = transport_fit.cmd_verify(refit)
+    rc2 = transport_fit.cmd_verify_sigma(refit)
+    sys.exit(1 if (rc or rc2) else 0)

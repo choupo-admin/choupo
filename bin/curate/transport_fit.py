@@ -700,7 +700,185 @@ def cmd_verify(refit=True):
               f"(parameters, window, D/E written as zero, review by none, fitGradeBasis inSample, grade limits 5/10/20 %, C300 cap words, "
               f"Trange = window, nothing below warning or with one parameter), and, when the ThermoML archive cache is reachable, each "
               "refit from it (parameters, window and max error equal the stored ones at 1e-6).  NOT CHECKED: that a fit agrees with the "
-              "articles' own tables (a machine read them), surface tension (no reader), any molecule outside the written records.")
+              "articles' own tables (a machine read them), surface tension (its own arm, `verify --surface-tension`), any molecule outside the written records.")
+        print("  " + arm)
+    for x in fails:
+        print("  FAIL", x)
+    return 1 if fails else 0
+
+
+# ---- surface tension (C328): sigma = A tau^n + B tau^(n+1), A = s0, B = 0 ----------------------------------------
+def sigma_block_text(f):
+    rows = [("A", f["s0"]), ("B", 0), ("Tc", f["Tc"]), ("n", f["n"]), ("Tmin", f["Tmin"]), ("Tmax", f["Tmax"])]
+    body = "".join(f"    {k:<5} {f10(v)};\n" for k, v in rows)
+    return f"surfaceTension\n{{\n{body}}}\n"
+
+
+def sigma_prov_text(f, sha):
+    ev = "".join(f'                {{ doi "{d}"; articleSha256 "{sha[d]}"; pointsKept {k}; pointsDropped {x}; provenance measured; }}\n'
+                 for d, (k, x) in sorted(f["perDoi"].items()))
+    drop = "; ".join(f"{r['doi']} T={r['T']:g} K sigma/(N/m)={r['val']:g} err {r['err']:+.1f} %" for r in f["dropped"]) or "none"
+    cap = f"        fitGradeCap   ( {' '.join(f['caps'])} );   // DEV.md 4c C300 rule 2\n" if f["caps"] else ""
+    return ("    surfaceTension\n    {\n"
+            "        origin        fitted;\n"
+            '        method        "least squares on ln sigma of sigma/(N/m) = A tau^n, tau = 1 - T/Tc (A, n; B = 0; Tc the record\'s own), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";\n'
+            f'        fittedBy      "{TOOL}";\n'
+            "        reviewStatus  autoPromoted;\n"
+            "        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it\n"
+            f"        fitGrade      {f['grade']};   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error\n"
+            "        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1\n"
+            + cap +
+            f"        fitGradeMaxRelativeError_pct {f['max']:.6f};\n"
+            f"        Trange        ({f10(f['Tmin'])} {f10(f['Tmax'])});   // K, the kept points -- outside it the engine announces an extrapolation\n"
+            '        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";\n'
+            '        reuse         "Choupo\'s own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C328)";\n'
+            f"        evidence\n        (\n{ev}        );\n"
+            "        acceptance\n        {\n"
+            "            verdict     accepted;\n"
+            f"            studies     {f['nDois']};\n"
+            f"            pointsKept  {f['nKept']};\n"
+            f"            pointsDropped {len(f['dropped'])};\n"
+            f'            dropped     "{drop}";\n'
+            f"            aad_pct     {f['aad']:.6f};\n"
+            f"            max_pct     {f['max']:.6f};\n"
+            "        }\n    }\n")
+
+
+def cmd_write_sigma(dry=False):
+    ds = json.load(open(DATASET))
+    held = collections.Counter()
+    written = []
+    for name, ent in sorted(ds["components"].items()):
+        f = ent.get("sigma")
+        if not f:
+            continue
+        path = STD / f"{name}.dat"
+        text = path.read_text(encoding="utf-8")
+        if re.search(r"^surfaceTension\s*\{", strip_comments(text), re.M):
+            held[("sigma", "record exists")] += 1
+            continue
+        if f["grade"] not in ("clean", "warning"):
+            held[("sigma", f"grade {f['grade']}")] += 1
+            continue
+        bt, pt = sigma_block_text(f), sigma_prov_text(f, ds["sha"])
+        m = re.search(r"^provenance\s*\{", text, re.M)
+        if m:
+            text = text[:m.start()] + bt + "\n" + text[m.start():]
+            k = text.rstrip().rfind("}")
+            text = text[:k] + pt + text[k:]
+        else:
+            text = text.rstrip("\n") + "\n\n" + bt + "\nprovenance\n{\n" + pt + "}\n"
+        written.append([name, "sigma", f["grade"]])
+        if not dry:
+            path.write_text(text, encoding="utf-8")
+    print("written", len(written), dict(collections.Counter(g for _, _, g in written)), "held", dict(held))
+    if not dry:
+        json.dump(written, open(BATCH / "constant" / "writtenSigma.json", "w"))
+
+
+def read_block_flat(text, block):
+    t = strip_comments(text)
+    m = re.search(r"^" + block + r"\s*\{([^}]*)\}", t, re.M)
+    if not m:
+        return None
+    return {k: float(v) for k, v in re.findall(r"(\w+)\s+([-+0-9.eE]+)\s*;", m.group(1))}
+
+
+def check_sigma_record(name, text, f):
+    """Failures of one stored surfaceTension record against its dataset entry (pure on text, so the sabotages run on it)."""
+    fails = []
+    tag = f"{name}.sigma"
+    d = read_block_flat(text, "surfaceTension")
+    ent = _parse_entry(text, "surfaceTension")
+    if d is None or ent is None:
+        return [f"{tag}: record or provenance entry missing"]
+    want = {"A": f["s0"], "B": 0.0, "Tc": f["Tc"], "n": f["n"]}
+    for k, v in want.items():
+        if abs(d.get(k, 1e300) - v) > 1e-8 * (1 + abs(v)):
+            fails.append(f"{tag}: {k} {d.get(k)} != dataset {v}")
+    if abs(d.get("Tmin", -1) - f["Tmin"]) > 1e-9 or abs(d.get("Tmax", -1) - f["Tmax"]) > 1e-9:
+        fails.append(f"{tag}: Tmin/Tmax differ from the data's range")
+    g = grade(f["max"])
+    caps = sorted(f["caps"])
+    gg = "warning" if (g == "clean" and caps) else g
+    m = re.search(r"fitGrade\s+(\w+);", ent)
+    if not m or m.group(1) != gg or gg != f["grade"]:
+        fails.append(f"{tag}: fitGrade {m and m.group(1)} != rule {gg}")
+    cm = re.search(r"fitGradeCap\s*\(([^)]*)\)", ent)
+    if sorted(cm.group(1).split() if cm else []) != (caps if g == "clean" else []):
+        fails.append(f"{tag}: fitGradeCap label disagrees with the evidence")
+    if not re.search(r"fitGradeBasis\s+inSample", ent):
+        fails.append(f"{tag}: fitGradeBasis inSample missing")
+    if not re.search(r"review\s*\{\s*by\s+none;", ent):
+        fails.append(f"{tag}: review {{ by none; }} missing")
+    if not re.search(r"origin\s+fitted;", ent):
+        fails.append(f"{tag}: origin fitted missing")
+    tr = re.search(r"Trange\s*\(\s*(\S+)\s+(\S+)\s*\)", ent)
+    if not tr or abs(float(tr.group(1)) - d.get("Tmin", -1)) > 1e-9 or abs(float(tr.group(2)) - d.get("Tmax", -1)) > 1e-9:
+        fails.append(f"{tag}: provenance Trange differs from the record window")
+    if f["grade"] not in ("clean", "warning"):
+        fails.append(f"{tag}: shipped though grade {f['grade']}")
+    mp = re.search(r"fitGradeMaxRelativeError_pct\s+(\S+);", ent)
+    if not mp or abs(float(mp.group(1)) - f["max"]) > 1e-5:
+        fails.append(f"{tag}: stated max error differs from the dataset")
+    return fails
+
+
+def sigma_sabotages(text):
+    """Three sabotages BY NAME, applied to the record text in memory: the checker must refuse each."""
+    out = {}
+    out["parameter-A-changed"] = re.sub(r"(^    A\s+)(\S+);", lambda m: m.group(1) + f10(float(m.group(2)) * 1.01) + ";", text, count=1, flags=re.M)
+    k = text.rfind("\n    surfaceTension\n")   # the surfaceTension provenance entry, not another property's
+    out["grade-label-flipped"] = text[:k] + re.sub(r"fitGrade\s+(clean|warning);", lambda m: "fitGrade " + ("severe" if m.group(1) == "clean" else "clean") + ";", text[k:], count=1)
+    out["window-moved"] = re.sub(r"(^    Tmax\s+)(\S+);", lambda m: m.group(1) + f10(float(m.group(2)) + 5) + ";", text, count=1, flags=re.M)
+    return out
+
+
+def cmd_verify_sigma(refit=True):
+    fails = []
+    ds = json.load(open(DATASET))
+    written = json.load(open(BATCH / "constant" / "writtenSigma.json"))
+    cat = catalogue()
+    refits = {}
+    if refit and (CACHE / "index.json").exists() and (CACHE / "identity.json").exists():
+        n2k = identity()
+        keys = {n2k[n] for n, _, _ in written if n in n2k}
+        data, _, _ = harvest(keys)
+        refits = {"data": data, "n2k": n2k}
+    for name, _, _ in written:
+        text = cat[name]["text"]
+        f = ds["components"][name]["sigma"]
+        fails += check_sigma_record(name, text, f)
+        if refits:
+            k = refits["n2k"].get(name)
+            u, _ = eligible(refits["data"].get(k, {}).get("sigma", []), cat[name]["Tc"])
+            r = fit_sigma(u, cat[name]["Tc"])
+            if not r:
+                fails.append(f"{name}.sigma: refit impossible"); continue
+            if abs(r["s0"] - f["s0"]) > 1e-6 * (1 + abs(f["s0"])) or abs(r["n"] - f["n"]) > 1e-6 * (1 + abs(f["n"])):
+                fails.append(f"{name}.sigma: refit parameters differ from the stored ones")
+            if abs(r["max"] - f["max"]) > 1e-4 or r["Tmin"] != f["Tmin"] or r["Tmax"] != f["Tmax"]:
+                fails.append(f"{name}.sigma: refit max/window differ (max {r['max']:.4f} vs {f['max']:.4f})")
+    # THE SABOTAGES: the checker must catch each, on a record it passes unsabotaged
+    probe = next((n for n, _, g in written if g == "clean"), written[0][0])
+    ptext, pf = cat[probe]["text"], ds["components"][probe]["sigma"]
+    if check_sigma_record(probe, ptext, pf):
+        fails.append(f"{probe}.sigma: the unsabotaged probe already fails (cannot test the sabotages)")
+    caught = []
+    for sname, stext in sorted(sigma_sabotages(ptext).items()):
+        if stext == ptext or not check_sigma_record(probe, stext, pf):
+            fails.append(f"sabotage '{sname}' NOT caught by the surface-tension arm")
+        else:
+            caught.append(sname)
+    arm = ("each record REFIT from the ThermoML archive cache (A, n, window and max error equal the stored ones at 1e-6)"
+           if refits else "the archive refit arm was NOT RUN (no ThermoML cache reachable) -- only the dataset-vs-record arms ran")
+    if fails:
+        print(f"check_transport_records surfaceTension: FAIL -- {len(fails)} failure(s) over {len(written)} record(s)")
+    else:
+        print(f"check_transport_records surfaceTension: OK -- {len(written)} stored surfaceTension record(s) held to the dataset "
+              f"(A, B = 0, Tc, n, window, review by none, fitGradeBasis inSample, grade limits 5/10/20 %, C300 cap words, Trange = window, "
+              f"nothing below warning), and 3 sabotages caught by name ({', '.join(caught)}).  NOT CHECKED: that a fit agrees with the "
+              "articles' own tables, any molecule outside the written records.")
         print("  " + arm)
     for x in fails:
         print("  FAIL", x)
@@ -713,10 +891,14 @@ if __name__ == "__main__":
         cmd_census()
     elif cmd == "fit":
         cmd_fit()
+    elif cmd == "write" and "--surface-tension" in sys.argv:
+        cmd_write_sigma("--dry" in sys.argv)
     elif cmd == "write":
         cmd_write("--dry" in sys.argv)
     elif cmd == "case":
         cmd_case()
+    elif cmd == "verify" and "--surface-tension" in sys.argv:
+        sys.exit(cmd_verify_sigma("--no-refit" not in sys.argv))
     elif cmd == "verify":
         sys.exit(cmd_verify("--no-refit" not in sys.argv))
     else:
