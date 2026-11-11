@@ -1,0 +1,96 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  cosmoSAC03_ethanol_water_predictive -- what a PREDICTIVE model is, shown
+  on one system beside a FITTED one and the measurements.
+
+  A FITTED model (NRTL here) has binary parameters regressed to measurements
+  of THIS pair: it can only be as good as those data, and it says nothing
+  about a pair nobody measured.  A PREDICTIVE model computes the activity
+  coefficients from properties of the PURE molecules alone.  COSMO-SAC does it
+  from each molecule's sigma profile -- the distribution of screening charge
+  over its surface, from a quantum-chemistry calculation -- and a handful of
+  UNIVERSAL constants fitted once, to many systems, and never to this one.
+  Nothing in this case was adjusted to ethanol-water.
+
+  THE PREDICTIVE MODEL: COSMO-SAC variant LVPP-HFTZVP-2018 -- the 2002
+  equations (Lin & Sandler, Ind. Eng. Chem. Res. 41 (2002) 899) with the
+  constants Ferrarini, Flores, Muniz & Soares fitted to the LVPP sigma-profile
+  database's GAMESS HF/TZVP profiles (AIChE J. 64 (2018) 3443).  The paper
+  leaves two choices open; the reading the engine uses was SELECTED on Lin &
+  Sandler's Table 2 and every run announces that (record:
+  docs/design/cosmo-sac-lvpp-hftzvp-2018.md).  The profiles are LVPP's (MIT);
+  which file stands for water and for ethanol is stated in each component's
+  record (the archive holds water twice and ethanol as three conformers).
+
+  THE FITTED MODEL: the ethanol-water NRTL pair in constant/parameters/NRTL
+  (Gmehling & Onken, DECHEMA Vol. I Part 1), the pair the sibling case
+  eval_nrtl_catalogue scores on these same points (aad 2.04 K).
+
+  THE MEASUREMENTS: eleven 1-atm bubble temperatures, the pedagogical subset
+  of the DECHEMA ethanol-water isobar already used by fitNRTL01 and
+  eval_nrtl_catalogue.
+
+  WHAT TO LOOK AT.
+    1. cosmo_score -- the prediction scored against the measurements (aad,
+       rms, max in K; the per-point parity in parity_cosmo.csv).  Nothing is
+       fitted: `mode evaluate`.
+    2. txy_cosmo / txy_nrtl -- the two T-x-y curves at 1 atm on the same
+       grid.  Plot T_bubble and y_eq_ethanol against x[ethanol] from both
+       CSVs with the measured points of parity_cosmo.csv on top.
+  WHAT IT SHOWS (measured 2026-11-11, the numbers this case's golden pins).
+  On these eleven points the prediction scores aad 0.98 K, max 1.78 K.  The
+  catalogue NRTL scores 2.04 K on the same points in eval_nrtl_catalogue,
+  but that case seals its own pure-component records, so the two scores are
+  not from one frame; the two T-x-y curves below ARE (same components, same
+  vapour pressures, only gamma differs).  And look at the SHAPE: the NRTL curve has the minimum-boiling
+  azeotrope (T_bubble lowest near x = 0.9), and the COSMO-SAC curve has NONE
+  -- its lowest bubble point is pure ethanol.  The prediction gets the
+  average temperature right and the qualitative fact a distillation designer
+  needs most wrong: gamma-inf of water in ethanol is 1.85 against NRTL's
+  2.58, and the curve never turns down into an azeotrope.  One system proves nothing either
+  way; the family-by-family comparison on the catalogue's own measured bubble
+  points is in docs/design/cosmo-sac-lvpp-hftzvp-2018.md section 6.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        cosmo_score;
+        type        fitParameters;
+        mode        evaluate;
+        residual
+        {
+            kind        T_bubble;
+            components  ( ethanol water );
+            P           1.01325 bar;
+            data
+            (
+                0.05  361.95    0.10  359.95    0.20  358.05
+                0.30  357.30    0.40  356.85    0.50  356.20
+                0.60  355.30    0.70  354.50    0.80  353.30
+                0.90  351.85    0.95  351.45
+            );
+        }
+        output      { parity  parity_cosmo.csv; }
+    }
+
+    { name txy_cosmo;  type propertyScan1D;
+      vary  { variable x[ethanol]; from 0.0; to 1.0; n 21; }
+      state { T 350 K; P 1.01325 bar; composition { ethanol 0.5; water 0.5; } }
+      properties ( T_bubble y_eq_ethanol gamma_ethanol gamma_water );
+      output { file txy_cosmo.csv; } }
+
+    { name txy_nrtl;   type propertyScan1D;
+      thermo { equilibrium { liquid { activityModel { model NRTL; } } } }
+      vary  { variable x[ethanol]; from 0.0; to 1.0; n 21; }
+      state { T 350 K; P 1.01325 bar; composition { ethanol 0.5; water 0.5; } }
+      properties ( T_bubble y_eq_ethanol gamma_ethanol gamma_water );
+      output { file txy_nrtl.csv; } }
+);

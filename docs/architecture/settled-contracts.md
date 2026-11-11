@@ -3325,7 +3325,7 @@ Record:
 version only.**  The original blanket rejection was against *bloat* (heavy deps, quantum
 chemistry, thousands of imported compounds, a new architecture).  A lean COSMO-SAC that
 adds NONE of that IS in: the 2002 (Lin & Sandler) variant, exactly the NIST benchmark
-(Bell et al., AIChE J. 2019; reference CODE usnistgov/COSMOSAC — MIT / not subject to US
+(Bell et al., J. Chem. Theory Comput. 16 (2020) 2635 -- this line said "AIChE J. 2019", whose DOI is Ferrarini 2018, corrected 2026-11-11; reference CODE usnistgov/COSMOSAC — MIT / not subject to US
 copyright; the profile folders it bundles are NOT, see the sigma-profile paragraph below), as a plain
 `ActivityModel` subclass (`src/thermo/activityCoefficient/CosmoSac.{H,cpp}`, model key
 `cosmoSAC`) — no new interface, no new deps, ~150 lines of self-contained C++.  Each
@@ -3355,6 +3355,22 @@ strongly non-ideal, and a bit-for-bit cross-check vs an independent implementati
 same equations+profiles.  Still rejected: profile GENERATION (quantum chemistry), bulk
 import of thousands, multiple variants, any new architecture.  Reference case:
 `tutorials/props/molecular/cosmoSAC01_water_ethanol`.
+
+**AMENDED 2026-11-11 (DEV.md 4c C310, architect under rule 00): "multiple
+variants" is no longer rejected -- exactly TWO, on ONE set of equations.**
+`variant "LVPP-HFTZVP-2018"` runs the same 2002 equations with the constants
+Ferrarini, Flores, Muniz & Soares fitted to LVPP release 18.07 GAMESS HF/TZVP
+profiles (AIChE J. 64 (2018) 3443); no new interface, no new term, no new
+dependency in the engine.  What changed the verdict: the reserved LVPP route
+became implementable from a published paper, and it is the only way the
+public tree can ship profiles at all.  The rest stands: no quantum chemistry
+in Choupo (LVPP computed the surfaces; Choupo only averages and bins them, at
+curation time), no bulk import (each profile joined to its component by InChIKey),
+never a profile under another variant's constants (the engine and
+`check_cosmo_scrub` refuse both ways, on an exact `protocol` string).  The
+paper leaves two choices open; the reading was SELECTED on Lin & Sandler 2002
+Table 2 and every run announces it.  Record:
+[`docs/design/cosmo-sac-lvpp-hftzvp-2018.md`](docs/design/cosmo-sac-lvpp-hftzvp-2018.md).
 
 ### Property architecture — consolidated; the authority is [`docs/architecture/property-architecture.md`](docs/architecture/property-architecture.md)
 
