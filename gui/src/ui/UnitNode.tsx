@@ -49,6 +49,7 @@ import { operationSchemaFor, type OperationSchema } from "../case/operationSchem
 import { COLUMN_TYPES, HEAT_DUTY_TYPES, PHASE_SPLIT_TYPES } from "../case/dutyTypes.js";
 import { DUTY_TIER_COLOUR, type DutyTier } from "../case/dutySign.js";
 import { useStore } from "../state/store.js";
+import { dutyText } from "../case/resultUnits.js";
 import { SolvingHalo } from "./SolvingHalo.js";
 import { NODE_BG, NODE_FONT, NODE_PADDING, NODE_RADIUS, nodeBorder, nodeShadow } from "./nodeCard.js";
 import {
@@ -607,7 +608,7 @@ function summarise(op: { [k: string]: JsonValue },
 
 // One numeric operation value, converted + unit-suffixed when the schema
 // declares a dimension the GUI knows; otherwise the schema's unit as-is.
-function fmtScalar(v: number, unit: string | undefined, prefs: DisplayPrefs): string {
+export function fmtScalar(v: number, unit: string | undefined, prefs: DisplayPrefs): string {
   // Convert an AUTHORED param (bar / degC / kmol/h, as well as canonical
   // Pa / K / kmol/s) into the user's display prefs, so node params FOLLOW the
   // units menu exactly like the Streams table -- no more "P = 1 bar" on a node
@@ -617,7 +618,7 @@ function fmtScalar(v: number, unit: string | undefined, prefs: DisplayPrefs): st
   if (conv !== null) return conv;
   // Energy rates (duties Q, shaft work W) are stored in W (SI); show them in kW
   // like the column duty stubs, so every duty on the canvas reads the same way.
-  if (unit === "W") return `${(v / 1000).toFixed(1)} kW`;
+  if (unit === "W") return dutyText(v / 1000, 1, prefs);
   return unit ? `${fmtNumber(v)} ${unit}` : fmtNumber(v);
 }
 

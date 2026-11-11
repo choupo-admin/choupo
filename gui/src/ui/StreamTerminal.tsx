@@ -39,6 +39,7 @@ import { dutyUtilityLabel, type DutyAllocationFacts } from "../case/dutyUtility.
 import { DUTY_TIER_COLOUR } from "../case/dutySign.js";
 import { scalarToSI } from "../dict/scalarSI.js";
 import { useStore } from "../state/store.js";
+import { dutyText } from "../case/resultUnits.js";
 import { inkFor, phaseColor as phaseColorFor } from "./plotting/palette.js";
 import { terminalCardStyle, TERMINAL_BORDER } from "./nodeCard.js";
 import {
@@ -192,7 +193,7 @@ export function StreamTerminal({ data, selected }: NodeProps) {
         </Group>
         <Text size="xs" c="dimmed" ff="monospace">
           {dutyKW !== undefined && Number.isFinite(dutyKW)
-            ? `${valLabel} = ${dutyKW > 0 ? "+" : ""}${dutyKW.toFixed(1)} kW`
+            ? `${valLabel} = ${dutyKW > 0 ? "+" : ""}${dutyText(dutyKW, 1, prefs)}`
             : isPower ? "electricity" : heating ? "heating" : unknown ? "sign after run" : "cooling"}
           {dutyEurH !== undefined && Number.isFinite(dutyEurH) && dutyEurH !== 0
             ? `  ·  ${dutyEurH.toFixed(1)} €/h`

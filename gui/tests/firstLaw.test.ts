@@ -244,8 +244,8 @@ describe("readable without colour", () => {
 
   it("the plot prints both levels and the residual as numbers, not as hue", () => {
     const src = readFileSync(new URL("../src/ui/plotting/FirstLawPlot.tsx", import.meta.url), "utf-8");
-    expect(src).toMatch(/col\.levelLabel.*fmtKw\(col\.level\)/);
-    expect(src).toMatch(/residual \$\{fmtKw\(fig\.residualKw\)\} kW/);
+    expect(src).toMatch(/col\.levelLabel.*fmtKwU\(col\.level\)/);
+    expect(src).toMatch(/residual \$\{fmtKwU\(fig\.residualKw\)\} \$\{U\}/);
     //  the white level line is drawn over a dark halo so it survives the
     //  light chrome and a greyscale print
     expect(src).toMatch(/#000000/);

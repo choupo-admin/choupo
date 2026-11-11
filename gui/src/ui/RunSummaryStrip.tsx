@@ -41,7 +41,7 @@ import { runSummary, runSummarySentence, type RunSummary } from "../case/runSumm
 import type { RunResult } from "../adapters/SolverAdapter.js";
 import { useStore, type WorkspaceKey } from "../state/store.js";
 import {
-  flowBasis, formatFlow, formatPressure, formatSig, formatTemperature, pressureLabel, temperatureLabel,
+  dutyLabel, flowBasis, formatDuty, formatFlow, formatPressure, formatSig, formatTemperature, pressureLabel, temperatureLabel,
 } from "../state/displayUnits.js";
 
 function Item({ label, children, title }: { label: string; children: ReactNode; title?: string }) {
@@ -91,6 +91,7 @@ function Products({ s }: { s: RunSummary }) {
 export function RunSummaryStrip() {
   const runResult: RunResult | null | undefined = useStore((s) => s.runResult);
   const runStatus = useStore((s) => s.runStatus);
+  const duty = useStore((s) => s.displayPrefs.duty);
   const s = runResult && runResult.status === "done" ? runSummary(runResult) : null;
   const phase = runStatus === "running" ? "running" : runStatus === "error" ? "error" : s ? "done" : "idle";
   const sentence = runSummarySentence(s, phase);
@@ -134,7 +135,7 @@ export function RunSummaryStrip() {
           </Item>
           <Item label="energy" title="The plant-boundary first law the engine published: its residual, and its percentage of the energy exchanged where the engine has that scale.">
             {s.energy === null ? NOT_PUBLISHED
-              : <>residual {formatSig(s.energy.residualKW, 4)} kW
+              : <>residual {formatDuty(s.energy.residualKW, duty, 4)} {dutyLabel(duty)}
                   {s.energy.pct === null ? " (no scale for a %)" : ` (${formatSig(s.energy.pct, 3)} %)`}</>}
           </Item>
           <Item label="advisories" title="What the engine raised that qualifies the answer -- grouped in the Log and on the Streams tab.">

@@ -64,6 +64,7 @@ import {
 import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 import {
+  dutyLabel,
   flowBasis,
   formatFlow,
   formatPressure,
@@ -72,6 +73,7 @@ import {
   temperatureLabel,
 } from "../state/displayUnits.js";
 import { useStore } from "../state/store.js";
+import { dutyFixed } from "../case/resultUnits.js";
 import type { StreamResult } from "../adapters/SolverAdapter.js";
 import { findRunStream } from "./streamPopOut.js";
 import { buildTree, leafName, type TreeNode } from "./streamsNavigatorTree.js";
@@ -468,7 +470,7 @@ function NavRow({
 
 // ---- Detail panel ----------------------------------------------------------
 
-function Detail({
+export function Detail({
   name, stream,
 }: {
   name: string | null;
@@ -588,8 +590,8 @@ function Detail({
                   ["H (kJ/mol)",  (stream.H / 1e3).toFixed(3)],
                   // Total flow enthalpy: prefer H_kW (counts the crystalline
                   // phase s[]); else F*H (fluid only).
-                  ["Ḣ (kW)",
-                    (stream.H_kW ?? stream.F * stream.H).toFixed(2),
+                  [`Ḣ (${dutyLabel(prefs.duty)})`,
+                    dutyFixed(stream.H_kW ?? stream.F * stream.H, 2, prefs),
                   ],
                 ]
               : [["H", "—  (no thermo data)"]]

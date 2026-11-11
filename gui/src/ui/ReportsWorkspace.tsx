@@ -65,6 +65,8 @@ import {
 } from "@mantine/core";
 
 import { useStore } from "../state/store.js";
+import { dutyFixed } from "../case/resultUnits.js";
+import { dutyLabel } from "../state/displayUnits.js";
 import { massBalance } from "../case/balances.js";
 import { annualUtilitiesLine } from "../case/annualBasis.js";
 import { heatExchangerDatasheetHtml } from "./HeatExchangerDatasheet.js";
@@ -275,10 +277,11 @@ function ReportsBody({ runResult }: { runResult: RunResult }) {
 /*  ---- Utilities ------------------------------------------------------- */
 //  The sentence under the table is the engine's annual basis, worded by
 //  case/annualBasis.ts (C264: it was `x 8000 h` of the GUI's own).
-function UtilitiesBody({ rows, economics }: {
+export function UtilitiesBody({ rows, economics }: {
   rows: NonNullable<RunResult["utilityAllocation"]>;
   economics: RunResult["economics"];
 }) {
+  const duty = useStore((st) => st.displayPrefs.duty);
   // Aggregate the per-duty rows by utility name.
   const byUtil = new Map<string, { tier: string; kW: number; kgh: number; MW: number; eurh: number }>();
   for (const r of rows) {
@@ -295,7 +298,7 @@ function UtilitiesBody({ rows, economics }: {
       <Table striped withTableBorder fz="sm" ff="monospace">
         <Table.Thead><Table.Tr>
           <Table.Th>utility</Table.Th><Table.Th>tier</Table.Th>
-          <Table.Th ta="right">duty (kW)</Table.Th><Table.Th ta="right">kg/h</Table.Th>
+          <Table.Th ta="right">duty ({dutyLabel(duty)})</Table.Th><Table.Th ta="right">kg/h</Table.Th>
           <Table.Th ta="right">MW</Table.Th><Table.Th ta="right">€/h</Table.Th>
         </Table.Tr></Table.Thead>
         <Table.Tbody>
@@ -303,7 +306,7 @@ function UtilitiesBody({ rows, economics }: {
             <Table.Tr key={name}>
               <Table.Td>{name}</Table.Td>
               <Table.Td c={g.tier === "heating" ? "orange" : g.tier === "power" ? "violet" : "cyan"}>{g.tier}</Table.Td>
-              <Table.Td ta="right">{g.kW.toFixed(1)}</Table.Td>
+              <Table.Td ta="right">{dutyFixed(g.kW, 1, { duty, temperature: "K" })}</Table.Td>
               <Table.Td ta="right">{g.kgh > 0 ? g.kgh.toFixed(0) : "—"}</Table.Td>
               <Table.Td ta="right">{g.MW.toFixed(2)}</Table.Td>
               <Table.Td ta="right">{g.eurh.toFixed(1)}</Table.Td>
@@ -373,7 +376,10 @@ function MassBody({ runResult }: { runResult: RunResult }) {
 }
 
 /*  ---- Global energy balance ------------------------------------------- */
-function EnergyBody({ gb }: { gb: RunResult["globalEnergyBoundary"] }) {
+export function EnergyBody({ gb }: { gb: RunResult["globalEnergyBoundary"] }) {
+  const duty = useStore((st) => st.displayPrefs.duty);
+  const Q = (v: number, d: number) => dutyFixed(v, d, { duty, temperature: "K" });
+  const Ql = dutyLabel(duty);
   // The first law is the ENGINE's: its energyBalance report decides which
   // duties are boundary heat, which are internal and which are already a
   // feed, and stamps the ledger on the result.  The GUI draws it.  (It used
@@ -412,8 +418,8 @@ function EnergyBody({ gb }: { gb: RunResult["globalEnergyBoundary"] }) {
     <>
       <Table withTableBorder fz="sm" ff="monospace" w="auto">
         <Table.Tbody>
-          <Table.Tr><Table.Td>Stream enthalpy IN (Σ H feeds)</Table.Td><Table.Td ta="right">{gb.H_feeds_kW.toFixed(1)} kW</Table.Td></Table.Tr>
-          {Math.abs(gb.Q_boundary_kW) > 0.05 && <Table.Tr><Table.Td>Boundary heat + work into process</Table.Td><Table.Td ta="right">{gb.Q_boundary_kW.toFixed(1)} kW</Table.Td></Table.Tr>}
+          <Table.Tr><Table.Td>Stream enthalpy IN (Σ H feeds)</Table.Td><Table.Td ta="right">{Q(gb.H_feeds_kW, 1)} {Ql}</Table.Td></Table.Tr>
+          {Math.abs(gb.Q_boundary_kW) > 0.05 && <Table.Tr><Table.Td>Boundary heat + work into process</Table.Td><Table.Td ta="right">{Q(gb.Q_boundary_kW, 1)} {Ql}</Table.Td></Table.Tr>}
           {/*  THE SAME NUMBER, TOLD APART (2026-09-12).  The row above is
               their SUM, which is what the ledger used to carry -- and on a
               plant like rankine02 that sum is 2e-10 kW while the two terms
@@ -427,12 +433,12 @@ function EnergyBody({ gb }: { gb: RunResult["globalEnergyBoundary"] }) {
           {gb.Q_heat_kW !== undefined && gb.W_shaft_kW !== undefined
            && Math.abs(gb.W_shaft_kW) > 0.05 && (
             <>
-              <Table.Tr><Table.Td pl="lg" c="dimmed">— of which heat, Q</Table.Td><Table.Td ta="right" c="dimmed">{gb.Q_heat_kW.toFixed(1)} kW</Table.Td></Table.Tr>
-              <Table.Tr><Table.Td pl="lg" c="dimmed">— of which shaft work (+ = into the fluid, so −W)</Table.Td><Table.Td ta="right" c="dimmed">{gb.W_shaft_kW.toFixed(1)} kW</Table.Td></Table.Tr>
+              <Table.Tr><Table.Td pl="lg" c="dimmed">— of which heat, Q</Table.Td><Table.Td ta="right" c="dimmed">{Q(gb.Q_heat_kW, 1)} {Ql}</Table.Td></Table.Tr>
+              <Table.Tr><Table.Td pl="lg" c="dimmed">— of which shaft work (+ = into the fluid, so −W)</Table.Td><Table.Td ta="right" c="dimmed">{Q(gb.W_shaft_kW, 1)} {Ql}</Table.Td></Table.Tr>
             </>
           )}
-          <Table.Tr><Table.Td>Stream enthalpy OUT (Σ H products)</Table.Td><Table.Td ta="right">{gb.H_products_kW.toFixed(1)} kW</Table.Td></Table.Tr>
-          <Table.Tr><Table.Td><strong>First-law residual</strong></Table.Td><Table.Td ta="right"><strong>{gb.residual_kW.toFixed(3)} kW</strong></Table.Td></Table.Tr>
+          <Table.Tr><Table.Td>Stream enthalpy OUT (Σ H products)</Table.Td><Table.Td ta="right">{Q(gb.H_products_kW, 1)} {Ql}</Table.Td></Table.Tr>
+          <Table.Tr><Table.Td><strong>First-law residual</strong></Table.Td><Table.Td ta="right"><strong>{Q(gb.residual_kW, 3)} {Ql}</strong></Table.Td></Table.Tr>
         </Table.Tbody>
       </Table>
       <Text size="xs" c={gb.residual_pct === null || gb.residual_pct_available === false
@@ -449,17 +455,17 @@ function EnergyBody({ gb }: { gb: RunResult["globalEnergyBoundary"] }) {
             {/*  NO SCALE, SO NO RATIO.  Drawing one would mean picking a
                 denominator here, which is the second home the engine
                 owns this number to prevent.  */}
-            Imbalance |H in + Q + W − H out| = {Math.abs(gb.residual_kW).toFixed(3)} kW.
+            Imbalance |H in + Q + W − H out| = {Q(Math.abs(gb.residual_kW), 3)} {Ql}.
             This plant declares no duty and carries no boundary heat, so the
             engine reports NO exchanged-energy scale and the percentage is
-            unavailable — the kW above is the whole of what is known.
+            unavailable — the {Ql} above is the whole of what is known.
           </>
         ) : (
           <>
             Imbalance |H in + Q + W − H out| = {Math.abs(gb.residual_pct).toFixed(4)}% of{" "}
             {gb.residual_basis ?? "a basis this run did not publish"}
             {gb.residual_denom_kW !== undefined && gb.residual_denom_kW !== null
-              ? ` (${gb.residual_denom_kW.toFixed(1)} kW)`
+              ? ` (${Q(gb.residual_denom_kW, 1)} ${Ql})`
               : ""}
           </>
         )} — the engine's
@@ -528,8 +534,9 @@ const openInTab = (html: string) => {
 function ColumnsBody({ runResult, columns }: {
   runResult: RunResult; columns: { u: UnitSpec; n: number }[];
 }) {
+  const prefs = useStore((s) => s.displayPrefs);
   const openColumnSheet = (u: UnitSpec) =>
-    openInTab(columnDatasheetHtml(u, runResult.kpis?.[u.name], runResult.designFiles));
+    openInTab(columnDatasheetHtml(u, runResult.kpis?.[u.name], runResult.designFiles, prefs));
   return (
     <Stack gap={6}>
       {columns.map(({ u, n }) => {
@@ -554,11 +561,12 @@ function ColumnsBody({ runResult, columns }: {
 }
 
 function ExchangersBody({ runResult, units }: { runResult: RunResult; units: UnitSpec[] }) {
+  const prefs = useStore((s) => s.displayPrefs);
   const openHxSheet = (u: UnitSpec) => {
     //  The engine's own specification sheet rides `designFiles`; the datasheet
     //  READS it rather than rebuilding the design numbers from the KPIs.
     const html = heatExchangerDatasheetHtml(u, runResult.kpis?.[u.name],
-      runResult.streams, runResult.designFiles);
+      runResult.streams, runResult.designFiles, prefs);
     if (!html) return;
     openInTab(html);
   };

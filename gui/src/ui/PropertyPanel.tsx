@@ -116,8 +116,11 @@ function scalarToSI(v: unknown): number {
   if (!u) return p.value;
   return u.affine ? affineToK(p.value, p.unit) : p.value * u.factor;
 }
+import { dTText, dutyText } from "../case/resultUnits.js";
 import {
+  dutyLabel,
   flowBasis,
+  formatDuty,
   formatFlow,
   formatPressure,
   formatSig,
@@ -758,7 +761,7 @@ function StreamDetails({
               {runStream?.H_kW !== undefined && (
                 <Table.Tr>
                   <Table.Td><Text size="sm" ff="monospace">Ḣ</Text></Table.Td>
-                  <Table.Td><Text size="sm" ff="monospace">{formatSig(runStream.H_kW)} kW</Text></Table.Td>
+                  <Table.Td><Text size="sm" ff="monospace">{formatDuty(runStream.H_kW, prefs.duty)} {dutyLabel(prefs.duty)}</Text></Table.Td>
                 </Table.Tr>
               )}
             </Table.Tbody>
@@ -786,7 +789,7 @@ function StreamDetails({
               ? [{ k: "H", v: `${(runStream.H / 1000).toFixed(2)} kJ/mol` }]
               : []),
             ...(runStream?.H_kW !== undefined
-              ? [{ k: "Ḣ", v: `${formatSig(runStream.H_kW)} kW` }]
+              ? [{ k: "Ḣ", v: `${formatDuty(runStream.H_kW, prefs.duty)} ${dutyLabel(prefs.duty)}` }]
               : []),
           ]}
         />
@@ -798,8 +801,8 @@ function StreamDetails({
                 {" "}— {boundary.reason ?? "the two models share no common enthalpy reference here"}</>
             : <>model boundary {boundary.producer}→{boundary.consumer}: ΔH{" "}
                 {boundary.dH_kJ_per_mol?.toFixed(3) ?? "—"} kJ/mol
-                {" "}({boundary.dH_kW?.toFixed(2) ?? "—"} kW), implied ΔT{" "}
-                {boundary.implied_dT_K?.toFixed(2) ?? "—"} K</>}
+                {" "}({boundary.dH_kW === undefined ? "—" : dutyText(boundary.dH_kW, 2, prefs)}), implied ΔT{" "}
+                {boundary.implied_dT_K === undefined ? "—" : dTText(boundary.implied_dT_K, 2, prefs)}</>}
         </Text>
       )}
       <Stack gap={6}>
@@ -1167,9 +1170,11 @@ function kpiLabel(k: string, kpis: { [k: string]: number }): string | undefined 
       ?? KPI_META[k]?.label;
 }
 
-function KpisSection({ kpis }: { kpis: { [k: string]: number } }) {
+export function KpisSection({ kpis }: { kpis: { [k: string]: number } }) {
   // Subscribe to the sig-figs pref so results re-render live when it changes.
   const sig = useStore((s) => s.displayPrefs.sigFigs);
+  const duty = useStore((s) => s.displayPrefs.duty);
+  const tUnit = useStore((s) => s.displayPrefs.temperature);
   const entries = Object.entries(kpis)
     // Drop the raw "Q" in W: "Q_kW" carries the same number, friendlier.
     .filter(([k]) => !(k === "Q" && "Q_kW" in kpis))
@@ -1192,13 +1197,19 @@ function KpisSection({ kpis }: { kpis: { [k: string]: number } }) {
             <Table.Tr key={k}>
               <Table.Td style={{ width: "55%" }}>
                 <Text size="xs" ff="monospace">
-                  {kpiLabel(k, kpis) ?? k}
+                  {k === "Q_kW"
+                    ? (kpiLabel(k, kpis) ?? k).replace("[kW]", `[${dutyLabel(duty)}]`)
+                    : k === "T"
+                    ? (kpiLabel(k, kpis) ?? k).replace("[K]", `[${temperatureLabel(tUnit)}]`)
+                    : (kpiLabel(k, kpis) ?? k)}
                 </Text>
               </Table.Td>
               <Table.Td>
                 <Text size="xs" ff="monospace">
                   {k === "phaseSet"
                     ? (PHASE_SET_NAMES[v] ?? formatSig(v, sig))
+                  : k === "Q_kW" ? formatDuty(v, duty, sig)
+                  : k === "T" ? formatTemperature(v, tUnit, sig)
                   : formatSig(v, sig)}
                 </Text>
               </Table.Td>
