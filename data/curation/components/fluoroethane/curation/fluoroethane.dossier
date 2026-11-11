@@ -1,0 +1,125 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      fluoroethane;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       vapourPressure;
+    operation      fit_antoine;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        A  4.40056657471;
+        B  991.238924952;
+        C  -9.84424032103;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d21ebd5a876a189e";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/fluoroethane-vapourPressure-je050054u.dat";
+            doi       "10.1021/je050054u";
+            sha256    "15d8d5e7a7ceae612e2f6fa42298d6167399443d37bfa424dac5a781481f9674";
+            provenance measured;
+            archiveFile "je050054u.xml";
+            system    "fluoroethane";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/fluoroethane-vapourPressure-je2000827.dat";
+            doi       "10.1021/je2000827";
+            sha256    "d186d5d553de717b5dec023533f20b4d6c6e1798d18a14cd9bb0e09e1625a8c3";
+            provenance measured;
+            archiveFile "je2000827.xml";
+            system    "fluoroethane";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/fluoroethane-vapourPressure-j.fluid.2006.04.014.dat";
+            doi       "10.1016/j.fluid.2006.04.014";
+            sha256    "12c2e76ace2413c730748598bf75f97a0d541ab468ac2fe41e19bc822b26cb40";
+            provenance measured;
+            archiveFile "j.fluid.2006.04.014.xml";
+            system    "fluoroethane";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/fluoroethane-vapourPressure-j.fluid.2017.01.024.dat";
+            doi       "10.1016/j.fluid.2017.01.024";
+            sha256    "d8a4e9f3d2208fcd4218894ac4a023f01de3f8a51e964e80b72b172b5855c6f3";
+            provenance measured;
+            archiveFile "j.fluid.2017.01.024.xml";
+            system    "fluoroethane";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/fluoroethane-vapourPressure-s10765-013-1546-4.dat";
+            doi       "10.1007/s10765-013-1546-4";
+            sha256    "711b01c1ba0258f9c9b95b07105bbfaf8ac25fd61985e13dd9d2189e0becebbb";
+            provenance measured;
+            archiveFile "s10765-013-1546-4.xml";
+            system    "fluoroethane";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/fluoroethane-vapourPressure-je050539i.dat";
+            doi       "10.1021/je050539i";
+            sha256    "b2b7ad3f7f335b083fea9b422dd63362c84f55ff193b7d0b27c2cc7986cfc758";
+            provenance measured;
+            archiveFile "je050539i.xml";
+            system    "fluoroethane";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/fluoroethane-vapourPressure-j.fluid.2015.02.014.dat";
+            doi       "10.1016/j.fluid.2015.02.014";
+            sha256    "2b16d2d97eab5978f2c70b1aeec91fd6557129e93768e12add32204a339313dd";
+            provenance measured;
+            archiveFile "j.fluid.2015.02.014.xml";
+            system    "fluoroethane";
+        }
+        );
+
+        domain
+        {
+            coordinate  K;
+            fit         { min 231.49; max 372.14; n 220; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        0.999915133611;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

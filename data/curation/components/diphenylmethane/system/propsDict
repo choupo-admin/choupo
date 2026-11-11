@@ -62,7 +62,21 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 4.539099 - 2146.9478/(T +
+  -65.0608), in-sample R2 0.999878 over 67 kept points, 298.15-623.1 K
+  (10.1021/je050034s 35/35 kept; 10.1021/je800300x 23/23 kept;
+  10.1016/j.fluid.2013.07.001 9/9 kept). Relative error in P over the
+  kept points: mean 3.0075 %, max 5.4223 %; AmbroseWalton on the same
+  points: mean 22.2602 %, max 49.6475 %. Outliers discarded: none. Its
+  own normal boiling point (101.325 kPa): 538.65 K. PROMOTED (and since
+  REVERTED by `choupo-curate revert`) on 2026-11-11 into
+  data/standards/components/diphenylmethane.dat as reviewStatus
+  autoPromoted, review by none, because: fit grade warning under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 3
+  studies, 67 points kept, 0 discarded as outliers; max relative error
+  5.422 % (mean 3.008 %), grade warning (limits 5 / 10 / 20 %); no Tb
+  declared; AmbroseWalton on the same points mean 22.26 % / max 49.65 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

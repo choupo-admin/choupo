@@ -62,7 +62,20 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 4.312111 - 1420.4750/(T +
+  -59.2531), in-sample R2 1.000000 over 24 kept points, 315.67-388.29 K
+  (10.1021/je700398k 24/24 kept). Relative error in P over the kept
+  points: mean 0.0391 %, max 0.0860 %; AmbroseWalton on the same points:
+  mean 178.4354 %, max 188.0402 %. Outliers discarded: none. Its own
+  normal boiling point (101.325 kPa): 389.11 K. PROMOTED (and since
+  REVERTED by `choupo-curate revert`) on 2026-11-11 into
+  data/standards/components/epichlorohydrin.dat as reviewStatus
+  autoPromoted, review by none, because: fit grade clean under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 1
+  studies, 24 points kept, 0 discarded as outliers; max relative error
+  0.08602 % (mean 0.03913 %), grade clean (limits 5 / 10 / 20 %); no Tb
+  declared; AmbroseWalton on the same points mean 178.4 % / max 188 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 

@@ -1,0 +1,248 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclopentanone  (cyclopentanone; CAS 120-92-3)
+  NEW in the catalogue (DEV.md 4c C309, slice 3 of C287, 2026-11-11), built by
+  bin/curate/c287_new_components.py from the IUPAC critical-property series, the
+  Zabransky liquid heat-capacity review and the measurements the NIST/TRC
+  ThermoML Archive locates (the articles are the sources; every value's
+  citation or DOIs are in provenance).
+  IUPAC RECOMMENDED (critically evaluated measurements): Tc, Pc.
+  RECOMMENDED (Zabransky): liquid Cp.
+  FITTED: vapour pressure (bin/choupo-curate vp), Vliq.
+  DERIVED: omega (from the fitted vapour pressure).
+  ESTIMATED (Joback): ideal-gas Cp, dHf_298; s_298 derived from Joback's dHf and dGf.
+  No measured series is reproduced here.
+  reviewStatus autoPromoted, review by none: NO human has read it back.
+  Psat: fitted by `bin/choupo-curate vp`; its promotion replaced the
+  AmbroseWalton block this tool writes (provenance.vaporPressure).
+\*---------------------------------------------------------------------------*/
+
+name        cyclopentanone;
+CAS         120-92-3;
+formula     C5H8O;
+reviewStatus autoPromoted;
+review      { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+MW          84.1180;      // kg/kmol, from the formula (IUPAC standard atomic weights)
+Tc          624;      // K, IUPAC recommended (provenance.Tc)
+Pc          46;      // bar, IUPAC recommended (provenance.Pc)
+omega       0.191622;      // [-] (provenance.omega)
+//  Tb: NOT DECLARED -- the archive reports no boiling temperature at
+//  101.3 kPa for it, and a Tb read back off the fitted Antoine would be
+//  the curve tested against itself (the fitted normal boiling point is
+//  in provenance.vaporPressure.acceptance.Tnb_fit).
+
+standardThermochemistry
+{
+    dHf_298   -203410;        // J/mol, ideal gas, Joback ESTIMATE (provenance.dHf_298)
+    s_298     263.92;        // J/(mol K), ideal gas, DERIVED from Joback (provenance.s_298)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C), FITTED by bin/choupo-curate vp to
+    // measured vapour pressures -- see provenance.vaporPressure
+    coefficients  (7.308726214  3822.230536  122.2026133);
+    Trange        (291.95  403.05);   // the fit's own span; outside it the engine announces the extrapolation
+}
+
+Vliq        8.903495e-05;      // m3/mol at 25 C, FITTED (provenance.Vliq)
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol K)] = a0 + a1 T + a2 T^2 + a3 T^3, Joback ESTIMATE
+    coefficients  (-31.65  0.4687  -1.870000e-04  3.000000e-09);
+    Trange        (273  1000);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol K)] = a0 + a1 T + a2 T^2 + a3 T^3, Zabransky RECOMMENDED (provenance.liquidHeatCapacity)
+    coefficients  (270.6630755  -1.677144756  0.006477285983  -7.239294196e-06);
+    Trange        (217.8  327.5);
+}
+
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH2CO; count 1; } );
+    joback ( { group rCH2; count 4; } { group ketoneRing; count 1; } );
+}
+
+provenance
+{
+    MW
+    {
+        origin        literature;
+        method        "sum of IUPAC standard atomic weights over the formula";
+    }
+    Tc
+    {
+        origin        measured;
+        method        "IUPAC recommended value: the critical evaluation of every published measurement by the IUPAC critical-properties group (624 K)";
+        uncertainty   "+-3 K, the evaluators' estimate";
+        source        "Kudchadker, A.P.; Ambrose, D.; Tsonopoulos, C. Vapor-Liquid Critical Properties of Elements and Compounds. 7. Oxygen Compounds Other Than Alkanols and Cycloalkanols. J. Chem. Eng. Data 46 (2001) 457-479, Table 1 (recommended values)";
+        doi           "10.1021/je0001680";
+        transcribedBy "bin/curate/c287_new_components.py (IUPAC table, hand-transcribed from the PDF, one row per compound)";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+        reviewReason  "transcribed by a model from the article's Table 1 and re-read once; not yet read back by a human";
+    }
+    Pc
+    {
+        origin        measured;
+        method        "IUPAC recommended value: the critical evaluation of every published measurement by the IUPAC critical-properties group (4.6 MPa, stored as 46 bar)";
+        uncertainty   "+-0.1 MPa, the evaluators' estimate";
+        source        "Kudchadker, A.P.; Ambrose, D.; Tsonopoulos, C. Vapor-Liquid Critical Properties of Elements and Compounds. 7. Oxygen Compounds Other Than Alkanols and Cycloalkanols. J. Chem. Eng. Data 46 (2001) 457-479, Table 1 (recommended values)";
+        doi           "10.1021/je0001680";
+        transcribedBy "bin/curate/c287_new_components.py (IUPAC table, hand-transcribed from the PDF, one row per compound)";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+        reviewReason  "transcribed by a model from the article's Table 1 and re-read once; not yet read back by a human";
+    }
+    omega
+    {
+        origin        regressed;
+        method        "DERIVED from a fit: omega = -log10(Psat(0.7 Tc)/Pc) - 1 from the Antoine the vapour-pressure pipeline fitted (data/curation/components/cyclopentanone) and the IUPAC-recommended Tc, Pc; 0.7 Tc = 436.80 K, EXTRAPOLATED +33.7 K beyond the fitted range (291.95-403.05 K)";
+        derivedBy     "bin/curate/c287_new_components.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+        reviewReason  "derived by a machine; read it with the fitGrade of the vapour pressure it comes from";
+    }
+    Vliq
+    {
+        origin        fitted;
+        method        "one-parameter fit of the engine's own liquid density, V(T) = Vliq Rackett(T)/Rackett(298.15 K) with this record's Tc, Pc, omega (ThermoPackage::density, liquid branch), to every measured liquid mass density at or below 200 kPa; least squares in the relative density error, then its largest value minimised";
+        fittedBy      "bin/curate/c287_new_components.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 %
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+        fitGradeMaxRelativeError_pct 0.244929;
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+        evidence
+        (
+            { doi "10.1016/j.fluid.2008.02.018"; articleSha256 "c2586bbfb5c7170303c2538f09f24b875ef74cf9fe6b9c0e1df943834f9899be"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1016/j.fluid.2013.10.057"; articleSha256 "10d8e7388b89ac8b39c03f0ef00752434237f78b4f166ed8071c7474b8c9872d"; pointsKept 6; pointsDropped 0; provenance measured; }
+            { doi "10.1016/j.jct.2007.03.008"; articleSha256 "b60694ef1e0ab51f71f72be08779b45bc34239264847f7a3d9a7a7d22b8dd4c9"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1016/j.jct.2014.03.007"; articleSha256 "2560935eb7295a8a2f3cfe424f2f13eb57fcc34c4302cd79d83d1ef05695e0ed"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1021/acs.jced.8b00217"; articleSha256 "b64ee50072fdc3e40c631200b8b83107753878cc61fc804479cae024826a043d"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je100715x"; articleSha256 "4233da2eca4cd3edaac4149a09fe4dc589eba9937570dcab26f27eba820cd8ba"; pointsKept 3; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je200468r"; articleSha256 "b073118f65c319dcbc703a3f3a67145db352f685799da7b8cb9883f5cea0a837"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je300085z"; articleSha256 "31dfe0c594fa32b4ef4cbd2a6e8cb5222a0f028adf15a7e4bfb5d8c8474c649f"; pointsKept 4; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je901052w"; articleSha256 "4b957539172e235cca01e5f7023dd986a49620a0e561c3f763087f7fd886095d"; pointsKept 4; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            rule        "the default graded acceptance of DEV.md 4c C285 on the max relative error over the kept points (clean / warning / severe up to 5 / 10 / 20 %); every laboratory fitted, points beyond 15 % after the least-squares stage discarded by name (C283 amended)";
+            verdict     accepted;
+            studies     9;
+            pointsKept  22;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.119211;
+            max_pct     0.244929;
+            Trange      (273.15 318.15);   // K, the kept points
+        }
+    }
+    liquidHeatCapacity
+    {
+        origin        literature;
+        method        "Zabransky et al. recommended isobaric heat capacity, their Eq. 19, C/R = sum_j A(j+1) (T/100)^j with R = 8.31451 J/(mol K): A1 = 32.5531, A2 = -20.1713, A3 = 7.79034, A4 = -0.870682, converted to the record's polynomial in T (a_j = R A(j+1) / 100^j)";
+        source        "Zabransky, M.; Ruzicka, V., Jr.; Domalski, E.S. Heat Capacity of Liquids: Critical Review and Recommended Values. Supplement I. J. Phys. Chem. Ref. Data 30 (2001) 1199, Table 43.8.3 (regression polynomial)";
+        doi           "10.1063/1.1407866";
+        uncertainty   "level III (below 0.5 %), the evaluators' assignment over 217.8-327.5 K";
+        transcribedBy "bin/curate/c287_new_components.py (hand-transcribed from the PDF, one row per compound)";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+        reviewReason  "transcribed by a model from the review's parameter table and re-read once; not yet read back by a human";
+    }
+    idealGasHeatCapacity
+    {
+        origin           estimated;
+        method           "Joback";
+        methodVersion    "joback-poling5e-table2-2";
+        input            joback;
+        inputFingerprint "ketoneRing:1,rCH2:4";
+        reproducedInCase "data/curation/batches/new_components_c309";
+        uncertainty      { status unquantified; reason "Joback group contribution (Joback & Reid 1987); a few percent for Cp_ig of ordinary organics"; }
+    }
+    dHf_298
+    {
+        origin           estimated;
+        method           "Joback";
+        methodVersion    "joback-poling5e-table2-2";
+        input            joback;
+        inputFingerprint "ketoneRing:1,rCH2:4";
+        reproducedInCase "data/curation/batches/new_components_c309";
+        uncertainty      { status unquantified; reason "Joback group contribution (Joback & Reid 1987); several kJ/mol, more for polyfunctional molecules"; }
+        notes            "the ThermoML archive carries no enthalpy of formation or combustion block for this compound (searched)";
+    }
+    s_298
+    {
+        origin           estimated;
+        method           "derived from Joback: s_298 = (dHf_298 - dGf_298)/298.15 + the sum of the elements' standard entropies, with Joback's dGf_298 = -87110 J/mol (not stored: dGf derives from dHf and s_298)";
+        methodVersion    "joback-poling5e-table2-2";
+        input            joback;
+        inputFingerprint "ketoneRing:1,rCH2:4";
+        elementEntropies "CODATA Key Values for Thermodynamics (Cox, Wagman & Medvedev, 1989): S(C, graphite) 5.74, S(H2, g) 130.680, S(O2, g) 205.152, S(N2, g) 191.609, S(F2, g) 202.791, S(Cl2, g) 223.081, S(Br2, l) 152.206, S(I2, cr) 116.139 J/(mol K)";
+        reproducedInCase "data/curation/batches/new_components_c309";
+        uncertainty      { status unquantified; reason "inherits the errors of Joback's dHf_298 and dGf_298"; }
+    }
+    vaporPressure
+    {
+        origin        fitted;
+        method        "vaporPressureFit (three-parameter Antoine; objective twoStage: least squares in log10 P, then the largest relative error in P minimised from it; every usable study fitted, outliers above 15 % discarded by name)";
+        methodVersion "choupoProps Choupo-dev";
+        fittedInCase  "data/curation/components/cyclopentanone";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+        fitGrade      warning;   // DEV.md 4c C285: the worse of the grades below
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+        fitGradeMaxRelativeError_pct 5.733219;   // grade warning
+        promotedBy    "bin/choupo-curate vp --promote";
+        promotedDate  "2026-11-11";
+        reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+        uncertainty   "the fit's maximum relative error over every kept measurement, below";
+        replaces      "model AmbroseWalton (a corresponding-states estimate from Tc, Pc, omega); `bin/choupo-curate revert <component>` restores it";
+        evidence
+        (
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/cyclopentanone-vapourPressure-j.jct.2006.01.010.dat";
+                doi       "10.1016/j.jct.2006.01.010";
+                sha256    "a14f09c2df251b60df5cdb41ab8ee1a758714b531444a25120f462a8931a365a";
+                articleSha256 "27c844e78b3b151ebc51ac350728769f2eb96319a7c4c1f3f6b82101454c7cda";
+                pointsKept    15;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/cyclopentanone-vapourPressure-j.jct.2005.07.016.dat";
+                doi       "10.1016/j.jct.2005.07.016";
+                sha256    "6ee8b7ca3302662d2c258be099a58d635d03d9d70464b03c7654b27e155f6925";
+                articleSha256 "e93ffd36fca175a3c0fe7fa7ef6f844628f50f09a2f34ac9c77703724f90d2b8";
+                pointsKept    10;
+                pointsDropped 0;
+                provenance measured;
+            }
+        );
+        acceptance
+        {
+            rule        "the default of DEV.md 4c C285 (graded): max relative error in P over the kept points 5 / 10 / 20 %, and |Tnb - Tb| 1 / 2 / 4 K where Tb lies outside their range, are the upper limits of clean / warning / severe; above, refused; the grade is the worse of the two";
+            verdict     accepted;
+            studies     2;
+            pointsKept  25;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     3.139268;   // the fitted Antoine, every kept point
+            max_pct     5.733219;
+            awAad_pct   67.649181;   // the AmbroseWalton curve it replaces, the same points
+            awMax_pct   103.727446;
+            Tnb_fit     401.1748;   // K, the fitted curve at 101.325 kPa
+        }
+    }
+}

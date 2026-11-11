@@ -1,0 +1,607 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  new_components_c309 -- the 41 components DEV.md 4c C309 (slice 3 of
+  C287) added to the catalogue, loaded and exercised.  Written by
+  `bin/curate/c287_new_components.py case`.
+  Tc and Pc come from the IUPAC critical-property series where it recommends
+  them, else from the archive's measurements, else from Joback (marked, per
+  value); the ideal-gas Cp and dHf_298 are Joback for every one.
+  1. REPRODUCTION.  One `estimateComponent` per component with the Joback
+     groups its record declares (groups.joback): the run prints the Joback
+     Tb, Tc, Pc (a record whose Tc or Pc is IUPAC or measured does not carry
+     these: they are printed beside it, for comparison), the ideal-gas Cp,
+     dHf_298 and dGf_298 (s_298 = (dHf - dGf)/298.15 + the elements' CODATA
+     standard entropies).  A liquid Cp estimated by Rowlinson-Bondi uses
+     that Cp_ig.
+  2. SMOKE TEST.  One `propertyScan1D` per component, 300-340 K at 1 bar:
+     the vapour pressure (the Antoine its vp case promoted), the liquid
+     heat capacity and the liquid density.  Every value must evaluate;
+     outside a fitted range the engine announces the extrapolation, and
+     every autoPromoted value is voiced on the console and in the caveat
+     block.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        joback_1122Tetrachloroethane;
+        type        estimateComponent;
+        component   1122Tetrachloroethane;
+        groups      ( { group CH; count 2; } { group Cl; count 4; } );
+    }
+    {
+        name        joback_ethylPropionate;
+        type        estimateComponent;
+        component   ethylPropionate;
+        groups      ( { group CH3; count 2; } { group CH2; count 2; } { group ester; count 1; } );
+    }
+    {
+        name        joback_nButylFormate;
+        type        estimateComponent;
+        component   nButylFormate;
+        groups      ( { group CH3; count 1; } { group CH2; count 3; } { group aldehyde; count 1; } { group ether; count 1; } );
+    }
+    {
+        name        joback_ethylButanoate;
+        type        estimateComponent;
+        component   ethylButanoate;
+        groups      ( { group CH3; count 2; } { group CH2; count 3; } { group ester; count 1; } );
+    }
+    {
+        name        joback_nButylPropionate;
+        type        estimateComponent;
+        component   nButylPropionate;
+        groups      ( { group CH3; count 2; } { group CH2; count 4; } { group ester; count 1; } );
+    }
+    {
+        name        joback_pyrrole;
+        type        estimateComponent;
+        component   pyrrole;
+        groups      ( { group arCH; count 4; } { group rNH; count 1; } );
+    }
+    {
+        name        joback_3Methylthiophene;
+        type        estimateComponent;
+        component   3Methylthiophene;
+        groups      ( { group CH3; count 1; } { group arCH; count 3; } { group arC; count 1; } { group rS; count 1; } );
+    }
+    {
+        name        joback_isopentylAcetate;
+        type        estimateComponent;
+        component   isopentylAcetate;
+        groups      ( { group CH3; count 3; } { group CH; count 1; } { group CH2; count 2; } { group ester; count 1; } );
+    }
+    {
+        name        joback_2Chlorobutane;
+        type        estimateComponent;
+        component   2Chlorobutane;
+        groups      ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group Cl; count 1; } );
+    }
+    {
+        name        joback_1Methoxy2Propanol;
+        type        estimateComponent;
+        component   1Methoxy2Propanol;
+        groups      ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group ether; count 1; } { group OH; count 1; } );
+    }
+    {
+        name        joback_ethylLactate;
+        type        estimateComponent;
+        component   ethylLactate;
+        groups      ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group OH; count 1; } { group ester; count 1; } );
+    }
+    {
+        name        joback_nPropylPropionate;
+        type        estimateComponent;
+        component   nPropylPropionate;
+        groups      ( { group CH3; count 2; } { group CH2; count 3; } { group ester; count 1; } );
+    }
+    {
+        name        joback_2Ethyl1Hexanol;
+        type        estimateComponent;
+        component   2Ethyl1Hexanol;
+        groups      ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group OH; count 1; } );
+    }
+    {
+        name        joback_dichloromethane;
+        type        estimateComponent;
+        component   dichloromethane;
+        groups      ( { group CH2; count 1; } { group Cl; count 2; } );
+    }
+    {
+        name        joback_diethylSuccinate;
+        type        estimateComponent;
+        component   diethylSuccinate;
+        groups      ( { group CH3; count 2; } { group CH2; count 4; } { group ester; count 2; } );
+    }
+    {
+        name        joback_244Trimethyl1Pentene;
+        type        estimateComponent;
+        component   244Trimethyl1Pentene;
+        groups      ( { group eCH2; count 1; } { group eC; count 1; } { group CH3; count 4; } { group CH2; count 1; } { group C; count 1; } );
+    }
+    {
+        name        joback_furan;
+        type        estimateComponent;
+        component   furan;
+        groups      ( { group arCH; count 4; } { group etherRing; count 1; } );
+    }
+    {
+        name        joback_perfluorooctane;
+        type        estimateComponent;
+        component   perfluorooctane;
+        groups      ( { group C; count 8; } { group F; count 18; } );
+    }
+    {
+        name        joback_diNPropylEther;
+        type        estimateComponent;
+        component   diNPropylEther;
+        groups      ( { group CH3; count 2; } { group CH2; count 4; } { group ether; count 1; } );
+    }
+    {
+        name        joback_epichlorohydrin;
+        type        estimateComponent;
+        component   epichlorohydrin;
+        groups      ( { group rCH2; count 1; } { group rCH; count 1; } { group etherRing; count 1; } { group CH2; count 1; } { group Cl; count 1; } );
+    }
+    {
+        name        joback_2Ethylthiophene;
+        type        estimateComponent;
+        component   2Ethylthiophene;
+        groups      ( { group CH3; count 1; } { group CH2; count 1; } { group arCH; count 3; } { group arC; count 1; } { group rS; count 1; } );
+    }
+    {
+        name        joback_methylPentanoate;
+        type        estimateComponent;
+        component   methylPentanoate;
+        groups      ( { group CH3; count 2; } { group CH2; count 3; } { group ester; count 1; } );
+    }
+    {
+        name        joback_222Trifluoroethanol;
+        type        estimateComponent;
+        component   222Trifluoroethanol;
+        groups      ( { group CH2; count 1; } { group C; count 1; } { group F; count 3; } { group OH; count 1; } );
+    }
+    {
+        name        joback_tertButylAcetate;
+        type        estimateComponent;
+        component   tertButylAcetate;
+        groups      ( { group CH3; count 4; } { group C; count 1; } { group ester; count 1; } );
+    }
+    {
+        name        joback_2HydroxyethylAcetate;
+        type        estimateComponent;
+        component   2HydroxyethylAcetate;
+        groups      ( { group CH3; count 1; } { group CH2; count 2; } { group OH; count 1; } { group ester; count 1; } );
+    }
+    {
+        name        joback_1Methoxy2PropylAcetate;
+        type        estimateComponent;
+        component   1Methoxy2PropylAcetate;
+        groups      ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group ether; count 1; } { group ester; count 1; } );
+    }
+    {
+        name        joback_morpholine;
+        type        estimateComponent;
+        component   morpholine;
+        groups      ( { group rCH2; count 4; } { group rNH; count 1; } { group etherRing; count 1; } );
+    }
+    {
+        name        joback_fluoroethane;
+        type        estimateComponent;
+        component   fluoroethane;
+        groups      ( { group CH3; count 1; } { group CH2; count 1; } { group F; count 1; } );
+    }
+    {
+        name        joback_pentanenitrile;
+        type        estimateComponent;
+        component   pentanenitrile;
+        groups      ( { group CH3; count 1; } { group CH2; count 3; } { group CN; count 1; } );
+    }
+    {
+        name        joback_11Diethoxyethane;
+        type        estimateComponent;
+        component   11Diethoxyethane;
+        groups      ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group ether; count 2; } );
+    }
+    {
+        name        joback_pentanoicAcid;
+        type        estimateComponent;
+        component   pentanoicAcid;
+        groups      ( { group CH3; count 1; } { group CH2; count 3; } { group acid; count 1; } );
+    }
+    {
+        name        joback_2Amino2Methyl1Propanol;
+        type        estimateComponent;
+        component   2Amino2Methyl1Propanol;
+        groups      ( { group CH3; count 2; } { group C; count 1; } { group CH2; count 1; } { group NH2; count 1; } { group OH; count 1; } );
+    }
+    {
+        name        joback_cyclopentanone;
+        type        estimateComponent;
+        component   cyclopentanone;
+        groups      ( { group rCH2; count 4; } { group ketoneRing; count 1; } );
+    }
+    {
+        name        joback_benzoBThiophene;
+        type        estimateComponent;
+        component   benzoBThiophene;
+        groups      ( { group arCH; count 6; } { group arC; count 2; } { group rS; count 1; } );
+    }
+    {
+        name        joback_2Methylfuran;
+        type        estimateComponent;
+        component   2Methylfuran;
+        groups      ( { group CH3; count 1; } { group arCH; count 3; } { group arC; count 1; } { group etherRing; count 1; } );
+    }
+    {
+        name        joback_nButylButanoate;
+        type        estimateComponent;
+        component   nButylButanoate;
+        groups      ( { group CH3; count 2; } { group CH2; count 5; } { group ester; count 1; } );
+    }
+    {
+        name        joback_methylLactate;
+        type        estimateComponent;
+        component   methylLactate;
+        groups      ( { group CH3; count 2; } { group CH; count 1; } { group OH; count 1; } { group ester; count 1; } );
+    }
+    {
+        name        joback_ethylHexanoate;
+        type        estimateComponent;
+        component   ethylHexanoate;
+        groups      ( { group CH3; count 2; } { group CH2; count 5; } { group ester; count 1; } );
+    }
+    {
+        name        joback_diphenylmethane;
+        type        estimateComponent;
+        component   diphenylmethane;
+        groups      ( { group arCH; count 10; } { group arC; count 2; } { group CH2; count 1; } );
+    }
+    {
+        name        joback_vinylPropionate;
+        type        estimateComponent;
+        component   vinylPropionate;
+        groups      ( { group eCH2; count 1; } { group eCH; count 1; } { group ester; count 1; } { group CH2; count 1; } { group CH3; count 1; } );
+    }
+    {
+        name        joback_2Ethoxypropene;
+        type        estimateComponent;
+        component   2Ethoxypropene;
+        groups      ( { group eCH2; count 1; } { group eC; count 1; } { group CH3; count 2; } { group CH2; count 1; } { group ether; count 1; } );
+    }
+    {
+        name        smoke_1122Tetrachloroethane;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { 1122Tetrachloroethane 1.0; } }
+        properties  ( Psat_1122Tetrachloroethane  Cp_liquid_1122Tetrachloroethane  rho_liquid_1122Tetrachloroethane );
+        output      { file smoke_1122Tetrachloroethane.csv; }
+    }
+    {
+        name        smoke_ethylPropionate;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { ethylPropionate 1.0; } }
+        properties  ( Psat_ethylPropionate  Cp_liquid_ethylPropionate  rho_liquid_ethylPropionate );
+        output      { file smoke_ethylPropionate.csv; }
+    }
+    {
+        name        smoke_nButylFormate;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { nButylFormate 1.0; } }
+        properties  ( Psat_nButylFormate  Cp_liquid_nButylFormate  rho_liquid_nButylFormate );
+        output      { file smoke_nButylFormate.csv; }
+    }
+    {
+        name        smoke_ethylButanoate;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { ethylButanoate 1.0; } }
+        properties  ( Psat_ethylButanoate  Cp_liquid_ethylButanoate  rho_liquid_ethylButanoate );
+        output      { file smoke_ethylButanoate.csv; }
+    }
+    {
+        name        smoke_nButylPropionate;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { nButylPropionate 1.0; } }
+        properties  ( Psat_nButylPropionate  Cp_liquid_nButylPropionate  rho_liquid_nButylPropionate );
+        output      { file smoke_nButylPropionate.csv; }
+    }
+    {
+        name        smoke_pyrrole;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { pyrrole 1.0; } }
+        properties  ( Psat_pyrrole  Cp_liquid_pyrrole  rho_liquid_pyrrole );
+        output      { file smoke_pyrrole.csv; }
+    }
+    {
+        name        smoke_3Methylthiophene;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { 3Methylthiophene 1.0; } }
+        properties  ( Psat_3Methylthiophene  Cp_liquid_3Methylthiophene  rho_liquid_3Methylthiophene );
+        output      { file smoke_3Methylthiophene.csv; }
+    }
+    {
+        name        smoke_isopentylAcetate;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { isopentylAcetate 1.0; } }
+        properties  ( Psat_isopentylAcetate  Cp_liquid_isopentylAcetate  rho_liquid_isopentylAcetate );
+        output      { file smoke_isopentylAcetate.csv; }
+    }
+    {
+        name        smoke_2Chlorobutane;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { 2Chlorobutane 1.0; } }
+        properties  ( Psat_2Chlorobutane  Cp_liquid_2Chlorobutane  rho_liquid_2Chlorobutane );
+        output      { file smoke_2Chlorobutane.csv; }
+    }
+    {
+        name        smoke_1Methoxy2Propanol;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { 1Methoxy2Propanol 1.0; } }
+        properties  ( Psat_1Methoxy2Propanol  Cp_liquid_1Methoxy2Propanol  rho_liquid_1Methoxy2Propanol );
+        output      { file smoke_1Methoxy2Propanol.csv; }
+    }
+    {
+        name        smoke_ethylLactate;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { ethylLactate 1.0; } }
+        properties  ( Psat_ethylLactate  Cp_liquid_ethylLactate  rho_liquid_ethylLactate );
+        output      { file smoke_ethylLactate.csv; }
+    }
+    {
+        name        smoke_nPropylPropionate;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { nPropylPropionate 1.0; } }
+        properties  ( Psat_nPropylPropionate  Cp_liquid_nPropylPropionate  rho_liquid_nPropylPropionate );
+        output      { file smoke_nPropylPropionate.csv; }
+    }
+    {
+        name        smoke_2Ethyl1Hexanol;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { 2Ethyl1Hexanol 1.0; } }
+        properties  ( Psat_2Ethyl1Hexanol  Cp_liquid_2Ethyl1Hexanol  rho_liquid_2Ethyl1Hexanol );
+        output      { file smoke_2Ethyl1Hexanol.csv; }
+    }
+    {
+        name        smoke_dichloromethane;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { dichloromethane 1.0; } }
+        properties  ( Psat_dichloromethane  Cp_liquid_dichloromethane  rho_liquid_dichloromethane );
+        output      { file smoke_dichloromethane.csv; }
+    }
+    {
+        name        smoke_diethylSuccinate;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { diethylSuccinate 1.0; } }
+        properties  ( Psat_diethylSuccinate  Cp_liquid_diethylSuccinate  rho_liquid_diethylSuccinate );
+        output      { file smoke_diethylSuccinate.csv; }
+    }
+    {
+        name        smoke_244Trimethyl1Pentene;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { 244Trimethyl1Pentene 1.0; } }
+        properties  ( Psat_244Trimethyl1Pentene  Cp_liquid_244Trimethyl1Pentene  rho_liquid_244Trimethyl1Pentene );
+        output      { file smoke_244Trimethyl1Pentene.csv; }
+    }
+    {
+        name        smoke_furan;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { furan 1.0; } }
+        properties  ( Psat_furan  Cp_liquid_furan  rho_liquid_furan );
+        output      { file smoke_furan.csv; }
+    }
+    {
+        name        smoke_perfluorooctane;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { perfluorooctane 1.0; } }
+        properties  ( Psat_perfluorooctane  Cp_liquid_perfluorooctane  rho_liquid_perfluorooctane );
+        output      { file smoke_perfluorooctane.csv; }
+    }
+    {
+        name        smoke_diNPropylEther;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { diNPropylEther 1.0; } }
+        properties  ( Psat_diNPropylEther  Cp_liquid_diNPropylEther  rho_liquid_diNPropylEther );
+        output      { file smoke_diNPropylEther.csv; }
+    }
+    {
+        name        smoke_epichlorohydrin;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { epichlorohydrin 1.0; } }
+        properties  ( Psat_epichlorohydrin  Cp_liquid_epichlorohydrin  rho_liquid_epichlorohydrin );
+        output      { file smoke_epichlorohydrin.csv; }
+    }
+    {
+        name        smoke_2Ethylthiophene;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { 2Ethylthiophene 1.0; } }
+        properties  ( Psat_2Ethylthiophene  Cp_liquid_2Ethylthiophene  rho_liquid_2Ethylthiophene );
+        output      { file smoke_2Ethylthiophene.csv; }
+    }
+    {
+        name        smoke_methylPentanoate;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { methylPentanoate 1.0; } }
+        properties  ( Psat_methylPentanoate  Cp_liquid_methylPentanoate  rho_liquid_methylPentanoate );
+        output      { file smoke_methylPentanoate.csv; }
+    }
+    {
+        name        smoke_222Trifluoroethanol;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { 222Trifluoroethanol 1.0; } }
+        properties  ( Psat_222Trifluoroethanol  Cp_liquid_222Trifluoroethanol  rho_liquid_222Trifluoroethanol );
+        output      { file smoke_222Trifluoroethanol.csv; }
+    }
+    {
+        name        smoke_tertButylAcetate;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { tertButylAcetate 1.0; } }
+        properties  ( Psat_tertButylAcetate  Cp_liquid_tertButylAcetate  rho_liquid_tertButylAcetate );
+        output      { file smoke_tertButylAcetate.csv; }
+    }
+    {
+        name        smoke_2HydroxyethylAcetate;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { 2HydroxyethylAcetate 1.0; } }
+        properties  ( Psat_2HydroxyethylAcetate  Cp_liquid_2HydroxyethylAcetate  rho_liquid_2HydroxyethylAcetate );
+        output      { file smoke_2HydroxyethylAcetate.csv; }
+    }
+    {
+        name        smoke_1Methoxy2PropylAcetate;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { 1Methoxy2PropylAcetate 1.0; } }
+        properties  ( Psat_1Methoxy2PropylAcetate  Cp_liquid_1Methoxy2PropylAcetate  rho_liquid_1Methoxy2PropylAcetate );
+        output      { file smoke_1Methoxy2PropylAcetate.csv; }
+    }
+    {
+        name        smoke_morpholine;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { morpholine 1.0; } }
+        properties  ( Psat_morpholine  Cp_liquid_morpholine  rho_liquid_morpholine );
+        output      { file smoke_morpholine.csv; }
+    }
+    {
+        name        smoke_fluoroethane;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { fluoroethane 1.0; } }
+        properties  ( Psat_fluoroethane  Cp_liquid_fluoroethane  rho_liquid_fluoroethane );
+        output      { file smoke_fluoroethane.csv; }
+    }
+    {
+        name        smoke_pentanenitrile;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { pentanenitrile 1.0; } }
+        properties  ( Psat_pentanenitrile  Cp_liquid_pentanenitrile  rho_liquid_pentanenitrile );
+        output      { file smoke_pentanenitrile.csv; }
+    }
+    {
+        name        smoke_11Diethoxyethane;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { 11Diethoxyethane 1.0; } }
+        properties  ( Psat_11Diethoxyethane  Cp_liquid_11Diethoxyethane  rho_liquid_11Diethoxyethane );
+        output      { file smoke_11Diethoxyethane.csv; }
+    }
+    {
+        name        smoke_pentanoicAcid;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { pentanoicAcid 1.0; } }
+        properties  ( Psat_pentanoicAcid  Cp_liquid_pentanoicAcid  rho_liquid_pentanoicAcid );
+        output      { file smoke_pentanoicAcid.csv; }
+    }
+    {
+        name        smoke_2Amino2Methyl1Propanol;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { 2Amino2Methyl1Propanol 1.0; } }
+        properties  ( Psat_2Amino2Methyl1Propanol  Cp_liquid_2Amino2Methyl1Propanol  rho_liquid_2Amino2Methyl1Propanol );
+        output      { file smoke_2Amino2Methyl1Propanol.csv; }
+    }
+    {
+        name        smoke_cyclopentanone;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { cyclopentanone 1.0; } }
+        properties  ( Psat_cyclopentanone  Cp_liquid_cyclopentanone  rho_liquid_cyclopentanone );
+        output      { file smoke_cyclopentanone.csv; }
+    }
+    {
+        name        smoke_benzoBThiophene;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { benzoBThiophene 1.0; } }
+        properties  ( Psat_benzoBThiophene  Cp_liquid_benzoBThiophene  rho_liquid_benzoBThiophene );
+        output      { file smoke_benzoBThiophene.csv; }
+    }
+    {
+        name        smoke_2Methylfuran;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { 2Methylfuran 1.0; } }
+        properties  ( Psat_2Methylfuran  Cp_liquid_2Methylfuran  rho_liquid_2Methylfuran );
+        output      { file smoke_2Methylfuran.csv; }
+    }
+    {
+        name        smoke_nButylButanoate;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { nButylButanoate 1.0; } }
+        properties  ( Psat_nButylButanoate  Cp_liquid_nButylButanoate  rho_liquid_nButylButanoate );
+        output      { file smoke_nButylButanoate.csv; }
+    }
+    {
+        name        smoke_methylLactate;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { methylLactate 1.0; } }
+        properties  ( Psat_methylLactate  Cp_liquid_methylLactate  rho_liquid_methylLactate );
+        output      { file smoke_methylLactate.csv; }
+    }
+    {
+        name        smoke_ethylHexanoate;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { ethylHexanoate 1.0; } }
+        properties  ( Psat_ethylHexanoate  Cp_liquid_ethylHexanoate  rho_liquid_ethylHexanoate );
+        output      { file smoke_ethylHexanoate.csv; }
+    }
+    {
+        name        smoke_diphenylmethane;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { diphenylmethane 1.0; } }
+        properties  ( Psat_diphenylmethane  Cp_liquid_diphenylmethane  rho_liquid_diphenylmethane );
+        output      { file smoke_diphenylmethane.csv; }
+    }
+    {
+        name        smoke_vinylPropionate;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { vinylPropionate 1.0; } }
+        properties  ( Psat_vinylPropionate  Cp_liquid_vinylPropionate  rho_liquid_vinylPropionate );
+        output      { file smoke_vinylPropionate.csv; }
+    }
+    {
+        name        smoke_2Ethoxypropene;
+        type        propertyScan1D;
+        vary        { variable T;  from 300 K;  to 340 K;  n 3; }
+        state       { P 1 bar;  composition { 2Ethoxypropene 1.0; } }
+        properties  ( Psat_2Ethoxypropene  Cp_liquid_2Ethoxypropene  rho_liquid_2Ethoxypropene );
+        output      { file smoke_2Ethoxypropene.csv; }
+    }
+);

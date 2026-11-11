@@ -62,7 +62,21 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 4.302618 - 1398.6865/(T +
+  -45.7853), in-sample R2 0.999983 over 35 kept points, 307.53-538.6 K
+  (10.1016/j.fluid.2004.10.022 25/25 kept; 10.1021/je060269j 10/10 kept).
+  Relative error in P over the kept points: mean 0.6677 %, max 1.1937 %;
+  AmbroseWalton on the same points: mean 24.1915 %, max 43.6415 %.
+  Outliers discarded: none. Its own normal boiling point (101.325 kPa):
+  371.30 K. PROMOTED (and since REVERTED by `choupo-curate revert`) on
+  2026-11-11 into data/standards/components/tertButylAcetate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade clean
+  under the DEFAULT graded acceptance of DEV.md 4c C285 (no
+  system/curationDict), 2 studies, 35 points kept, 0 discarded as
+  outliers; max relative error 1.194 % (mean 0.6677 %), grade clean
+  (limits 5 / 10 / 20 %); no Tb declared; AmbroseWalton on the same
+  points mean 24.19 % / max 43.64 %
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 
