@@ -7,7 +7,8 @@ catalogue evolves (curation), the sealed copies silently age -- the case still
 runs (that is the POINT of sealing), but the drift must be VISIBLE, or the
 standards tree rots unnoticed under 270+ frozen copies.
 
-This gate walks every tutorials/**/constant/propertyManifest and reports each
+This gate walks every tutorials/**/constant/propertyManifest (and, since
+C295, every data/curation/**/constant/propertyManifest) and reports each
 imported/merged record whose origin file changed (or vanished) in
 data/standards/.  Exit 0 with drift REPORTED (informational -- drift is
 legitimate after curation; re-run `bin/choupo-import` per case to refresh);
@@ -184,7 +185,13 @@ drift, damage, cosmeticSeal = [], [], []
 byClass = {}
 nManifests = nRecords = 0
 FULL = "--full-drift-report" in sys.argv
-for mf in sorted((ROOT / "tutorials").rglob("constant/propertyManifest")):
+#  Every root a case lives under (DEV.md 4c C295): the curation traces under
+#  data/curation are sealed cases too, and a moved case must not leave this
+#  gate's scope in silence (curation_roots.case_roots, the one home).
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import curation_roots  # noqa: E402
+for mf in sorted(m for r in curation_roots.case_roots(ROOT)
+                 for m in r.rglob("constant/propertyManifest")):
     nManifests += 1
     case = mf.parent.parent.relative_to(ROOT)
     schema, records = read_manifest(mf)
