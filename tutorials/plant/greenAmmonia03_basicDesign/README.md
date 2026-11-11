@@ -163,6 +163,28 @@ bounds for the same reason (the `StorageFlash`'s −35 °C duty, which no
 catalogue utility serves); every price is the base case's author-set
 assumption.
 
+### The pinch: what the heat targets of this plant show
+
+`system/postDict` runs the pinch pass on the converged result (dTmin 10 K,
+as the feasibility case; `reports/pinch/`). It reads 12 segments and
+**excludes none**: the two interbed coolers publish a generic `Q`, so the
+converter's heat is in the population here, which the feasibility pass could
+not say.
+
+| | |
+|---|---|
+| minimum heating, Q_H,min | **0** (0.08 MW bought today, on the two cold flash drums) |
+| minimum cooling, Q_C,min | 71.42 MW (against 71.49 MW cooled today) |
+| class | threshold problem, no hot utility, **no interior pinch** (top of the range at 783.15 K shifted) |
+
+With the feed/effluent exchanger built, the 64.3 MW of FEHE recovery is all but
+0.08 MW of the population's maximum recovery (64.39 MW), and the cooling the
+plant buys is within 0.1 % of its target. The Q_C,min is larger than the
+feasibility case's 40.36 MW because the interbed coolers (29.5 MW) now cool
+bed effluent that the feasibility case took out of the population; they are
+heat the design could sell as steam, which is what their boiling-water
+utility does, not heat the pinch asks the plant to recover.
+
 ### The equipment, designed
 
 Every exchanger is designed by the Kern method (DEV.md 4c C48): the bundle
