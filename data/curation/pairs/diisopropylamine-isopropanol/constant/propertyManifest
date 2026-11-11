@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/diisopropylamine.dat"
+        {
+            type          imported;
+            sha256        "5d5150355b2be9cb4541a32af52e1928a518b923a8a97a6e983476b810d9b0f3";
+            computationalSha256 "7937d3b13431b35774516e617689f644d976c43b2b4d4614fa4496fcc58a1a3e";
+            origin        "data/standards/components/diisopropylamine.dat";
+            originSha256  "d9d576f4e25c069849a815aafe6d80c06d86f7799558a0a53cee0f19d35e67dc";
+            release       Choupo-2608;
+        }
+        "components/isopropanol.dat"
+        {
+            type          imported;
+            sha256        "c206190bf473636ab8661c95a2126b9088fc6a1b5013c5e1325470f8133691b0";
+            computationalSha256 "4ca8dc74e7851f893506b84d7a8e03b629f1794fd0132eed65e92c65cac2e9f9";
+            origin        "data/standards/components/isopropanol.dat";
+            originSha256  "510b474f696cf7952c89a27d0a48623266b8a79f3026cc348a934361bd763e07";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/diisopropylamine-isopropanol.dat"
+        {
+            type          imported;
+            sha256        "d591fcc141485c4446608a23e22b11f2e8487814cf02c600fffc0040289ebfc3";
+            computationalSha256 "e259b8a248d0e6264666008a031dd3cebac8e550d7256ef8c8171e13d49c0098";
+            origin        "data/standards/parameters/NRTL/diisopropylamine-isopropanol.dat";
+            originSha256  "3029800f95019acb928783293b76049245897310a403a3e7ca9576d7fab932e6";
+            release       Choupo-2608;
+        }
+    }
+}

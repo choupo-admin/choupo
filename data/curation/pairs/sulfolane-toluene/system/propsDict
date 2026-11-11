@@ -58,11 +58,20 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      1 point(s) of 9: doi 10.1016/j.jct.2011.06.015 row 1: x 0.1474, P
+      101.330 kPa, T 420.16 K, dT -6.02 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 643.5 K, b_ji = 221.4 K over 8 kept points of 1
+  laboratories (1 discarded): max |dT| 1.666 K, mean 0.443 K, graded
+  warning (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (643.5, 221.4). PROMOTED on 2026-11-11 into
+  data/standards/parameters/NRTL/sulfolane-toluene.dat as reviewStatus
+  autoPromoted, review by none, because: fit grade warning -- max |dT|
+  1.666 K over the 8 kept points (limits 1 / 2 / 4 K), one liquid across
+  the validity span
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -88,6 +97,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/toluene-sulfolane-bubble-j.jct.2011.06.015.dat";
                 role     fit;
+                discard  ( 1 );   // C283 outliers, by name in the header
             }
         );
 
@@ -129,6 +139,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/toluene-sulfolane-bubble-j.jct.2011.06.015.dat";
                 role     fit;
+                discard  ( 1 );   // C283 outliers, by name in the header
             }
         );
 

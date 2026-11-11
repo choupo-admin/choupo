@@ -58,11 +58,21 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      2 point(s) of 10: doi 10.1021/je500237g row 7: x 0.7960, P 40.000
+      kPa, T 355.60 K, dT +3.43 K; doi 10.1021/je500237g row 9: x 0.9750,
+      P 40.000 kPa, T 412.90 K, dT -7.67 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 100.0 K, b_ji = 712.0 K over 8 kept points of 1
+  laboratories (2 discarded): max |dT| 2.017 K, mean 1.042 K, graded
+  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (100.0, 712.0). NOT PROMOTED (max |dT| 2.017 K over the 8
+  kept points, one liquid across the validity span): fit grade severe --
+  DEV.md 4c C300 rule 3: a severe pair does not enter the default
+  catalogue; its record stays in this curation case's constant/, and a
+  case that needs it carries it in its own constant/
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -88,6 +98,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/nDodecane-1Propanol-bubble-je500237g.dat";
                 role     fit;
+                discard  ( 7 9 );   // C283 outliers, by name in the header
             }
         );
 
@@ -129,6 +140,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/nDodecane-1Propanol-bubble-je500237g.dat";
                 role     fit;
+                discard  ( 7 9 );   // C283 outliers, by name in the header
             }
         );
 

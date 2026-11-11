@@ -58,11 +58,22 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      2 point(s) of 9: doi 10.1016/j.fluid.2012.09.013 row 8: x 0.0278, P
+      101.325 kPa, T 290.69 K, dT +3.03 K; doi
+      10.1016/j.fluid.2012.09.013 row 9: x 0.0282, P 101.325 kPa, T
+      288.45 K, dT +4.73 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 114.8 K, b_ji = 170.1 K over 7 kept points of 1
+  laboratories (2 discarded): max |dT| 2.119 K, mean 1.125 K, graded
+  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (114.8, 170.1). NOT PROMOTED (max |dT| 2.119 K over the 7
+  kept points, one liquid across the validity span): fit grade severe --
+  DEV.md 4c C300 rule 3: a severe pair does not enter the default
+  catalogue; its record stays in this curation case's constant/, and a
+  case that needs it carries it in its own constant/
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -88,6 +99,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/R32-mesitylene-bubble-j.fluid.2012.09.013.dat";
                 role     fit;
+                discard  ( 8 9 );   // C283 outliers, by name in the header
             }
         );
 
@@ -129,6 +141,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/R32-mesitylene-bubble-j.fluid.2012.09.013.dat";
                 role     fit;
+                discard  ( 8 9 );   // C283 outliers, by name in the header
             }
         );
 

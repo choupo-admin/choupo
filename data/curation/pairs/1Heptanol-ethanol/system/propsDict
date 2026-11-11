@@ -58,11 +58,24 @@
 
   OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
   @@OUTLIERS-BEGIN@@
-      not yet run.
+      4 point(s) of 8: doi 10.1021/je300696c row 1: x 0.0970, P 96.500
+      kPa, T 419.65 K, dT -19.98 K; doi 10.1021/je300696c row 2: x
+      0.2930, P 96.500 kPa, T 360.85 K, dT +9.59 K; doi 10.1021/je300696c
+      row 3: x 0.3770, P 96.500 kPa, T 358.35 K, dT +5.62 K; doi
+      10.1021/je300696c row 5: x 0.6150, P 96.500 kPa, T 357.15 K, dT
+      -3.48 K
   @@OUTLIERS-END@@
 
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND: not yet run.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = 573.9 K, b_ji = 24.8 K over 4 kept points of 1
+  laboratories (4 discarded): max |dT| 1.985 K, mean 1.538 K, graded
+  warning (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
+  same pair (574.0, 24.6). PROMOTED on 2026-11-11 into
+  data/standards/parameters/NRTL/1Heptanol-ethanol.dat as reviewStatus
+  autoPromoted, review by none, because: fit grade warning -- max |dT|
+  1.985 K over the 4 kept points (limits 1 / 2 / 4 K), one liquid across
+  the validity span
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -88,6 +101,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/ethanol-1Heptanol-bubble-je300696c.dat";
                 role     fit;
+                discard  ( 1 2 3 5 );   // C283 outliers, by name in the header
             }
         );
 
@@ -129,6 +143,7 @@ operations
             {
                 dataset  "constant/archiveExtracts/ethanol-1Heptanol-bubble-je300696c.dat";
                 role     fit;
+                discard  ( 1 2 3 5 );   // C283 outliers, by name in the header
             }
         );
 
