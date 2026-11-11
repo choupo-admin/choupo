@@ -28,10 +28,10 @@ propertyManifest
         "components/3Methylthiophene.dat"
         {
             type          imported;
-            sha256        "c8e08d236ca4f39bf34966cf875015c1154f56ddf92b1ddbefb6066c2b8b4f78";
-            computationalSha256 "f269dbbaf52cf7439142e7132d3db5e28df6bcbaaf9dd9facfdaecdd758591c0";
+            sha256        "749b10311d783157b48298a90b0378365a6e612da87c70a2d62151fb40dd6637";
+            computationalSha256 "59536f0134ab732fa75a10632d55d37e5bd21e69fa037ac55150cfc9c1b61fde";
             origin        "data/standards/components/3Methylthiophene.dat";
-            originSha256  "cb876f368219985355881a7320b119a4cc7d9059760446e9c3ef33089d1fc1fd";
+            originSha256  "b4e86f5ced31175955a684eb8f40540df0178d2210323e03fa818170517955af";
             release       Choupo-2608;
         }
         "components/oXylene.dat"
@@ -52,13 +52,13 @@ propertyManifest
             originSha256  "a48319867c6b6f8319935d17add22c2e2717f00c99f9e139924b68f88ae50069";
             release       Choupo-2608;
         }
-        "parameters/Wilson/3Methylthiophene-oXylene.dat"
+        "parameters/UNIQUAC/3Methylthiophene-oXylene.dat"
         {
             type          imported;
-            sha256        "80e2c0453e6e9ea707ab5474a4ca0e9e97b81d91c369f05ff20e15047067d227";
-            computationalSha256 "34849f9eb58b315693fcf0296adc19634d39bf0f22d7895145334111dd49cbcc";
-            origin        "data/standards/parameters/Wilson/3Methylthiophene-oXylene.dat";
-            originSha256  "0080e08bd3dfac4dacbaa27aa68bebb30774b57efb4ad10135eeac3ca324d497";
+            sha256        "1896a87fc441f7aac823ff9172c81df40468b24b3899cc3f33114b27f8e1d3b4";
+            computationalSha256 "ae951b930935800327096e6ccf9718c11a43920973b66d11b0d823ea35ae7fdf";
+            origin        "data/standards/parameters/UNIQUAC/3Methylthiophene-oXylene.dat";
+            originSha256  "8f3622a0b5671b539e1f55790298a47d00266076f8cd6d8ea9c5f551567b3cf0";
             release       Choupo-2608;
         }
     }

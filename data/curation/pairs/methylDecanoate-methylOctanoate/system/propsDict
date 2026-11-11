@@ -80,7 +80,20 @@
   grade, or a split, is not promoted. The three in-sample residuals are
   published side by side, never used to choose a model for the student.
   UNIQUAC: FITTED (r and q written afterwards into the components by
-  bin/curate/uniquac_rq_from_groups.py, C325; declared here after the Wilson fit).
+  bin/curate/uniquac_rq_from_groups.py, C325; declared here after the Wilson fit). Wilson: FITTED.
+  @@MODELS-END@@
+
+  @@MODELS-RESULT-BEGIN@@
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dT| 3.747 K (severe) on the same
+  kept points. fit_uniquac: a_ij = -250.9, a_ji = 381.4 K over 33 kept
+  points: max |dT| 3.371 K, mean 1.418 K, graded severe -> accepted;
+  fit_uniquac_start2 lands on A DIFFERENT pair (161.4, -136.8). NOT
+  PROMOTED (max |dT| 3.371 K over the 33 kept points, one liquid across
+  the validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
+  pair does not enter the default catalogue; its record stays in this
+  curation case's constant/, and a case that needs it carries it in its
+  own constant/.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -459,16 +472,16 @@ operations
     // @@C294-OPS-END@@
     // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
     {
-        name        txy_wilson;
+        name        txy_uniquac;
         type        propertyScan1D;
         vary        { variable x[methylOctanoate];  from 0.0;  to 1.0;  n 101; }
         state       { P 10 kPa;  composition { methylOctanoate 0.5;  methylDecanoate 0.5; } }
         thermo
         {
-            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
         }
         properties  ( T_bubble  y_eq_methylOctanoate );
-        output      { file txy_wilson.csv; }
+        output      { file txy_uniquac.csv; }
     }
     // @@C294-READBACK-END@@
 );

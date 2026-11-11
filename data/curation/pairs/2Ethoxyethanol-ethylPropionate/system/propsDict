@@ -74,7 +74,20 @@
   grade, or a split, is not promoted. The three in-sample residuals are
   published side by side, never used to choose a model for the student.
   UNIQUAC: FITTED (r and q written afterwards into the components by
-  bin/curate/uniquac_rq_from_groups.py, C325; declared here after the Wilson fit).
+  bin/curate/uniquac_rq_from_groups.py, C325; declared here after the Wilson fit). Wilson: FITTED.
+  @@MODELS-END@@
+
+  @@MODELS-RESULT-BEGIN@@
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dP|/P 6.047 % (warning) on the same
+  kept points. fit_uniquac: a_ij = 413.4, a_ji = -218.4 K over 21 kept
+  points: max |dP|/P 6.195 %, mean 4.233 %, graded warning -> accepted;
+  fit_uniquac_start2 lands on the same pair (413.4, -218.4). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/UNIQUAC/2Ethoxyethanol-ethylPropionate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade warning
+  -- max |dP|/P 6.195 % over the 21 kept points, one liquid across the
+  validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -431,16 +444,16 @@ operations
     // @@C294-OPS-END@@
     // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
     {
-        name        txy_wilson;
+        name        txy_uniquac;
         type        propertyScan1D;
         vary        { variable x[ethylPropionate];  from 0.0;  to 1.0;  n 101; }
         state       { P 7.683 kPa;  composition { ethylPropionate 0.5;  2Ethoxyethanol 0.5; } }
         thermo
         {
-            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
         }
         properties  ( T_bubble  y_eq_ethylPropionate );
-        output      { file txy_wilson.csv; }
+        output      { file txy_uniquac.csv; }
     }
     // @@C294-READBACK-END@@
 );

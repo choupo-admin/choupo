@@ -202,4 +202,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.a_ij  -133.203066592;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.a_ji  172.976249226;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "3218ca778eaf1373";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methylthiophene-oXylene-bubbleP-j.fluid.2010.02.030-b8.dat";
+            doi       "10.1016/j.fluid.2010.02.030";
+            sha256    "ff6299ef0eff4369f1114e2237c4cde63ead90f595fc9a5b8815c685864dc476";
+            provenance measured;
+            archiveFile "j.fluid.2010.02.030.xml";
+            system    "3Methylthiophene + oXylene";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.081; max 0.873; n 9; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.a_ij  -133.203062619;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.a_ji  172.976243444;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "3218ca778eaf1373";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methylthiophene-oXylene-bubbleP-j.fluid.2010.02.030-b8.dat";
+            doi       "10.1016/j.fluid.2010.02.030";
+            sha256    "ff6299ef0eff4369f1114e2237c4cde63ead90f595fc9a5b8815c685864dc476";
+            provenance measured;
+            archiveFile "j.fluid.2010.02.030.xml";
+            system    "3Methylthiophene + oXylene";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.081; max 0.873; n 9; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

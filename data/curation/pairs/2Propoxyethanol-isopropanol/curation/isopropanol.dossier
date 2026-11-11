@@ -202,4 +202,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-2Propoxyethanol.a_ij  212.41450927;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-2Propoxyethanol.a_ji  -163.317354924;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "66f5a68a10e385c2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/isopropanol-2Propoxyethanol-bubble-je3002255.dat";
+            doi       "10.1021/je3002255";
+            sha256    "e3a6af8e9ed8830d2c8bc638459c0d5dc7896abc726819b98f05422052b5d452";
+            provenance measured;
+            archiveFile "je3002255.xml";
+            system    "isopropanol + 2Propoxyethanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.014; max 0.905; n 39; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-2Propoxyethanol.a_ij  212.414508958;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-2Propoxyethanol.a_ji  -163.317354675;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "66f5a68a10e385c2";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/isopropanol-2Propoxyethanol-bubble-je3002255.dat";
+            doi       "10.1021/je3002255";
+            sha256    "e3a6af8e9ed8830d2c8bc638459c0d5dc7896abc726819b98f05422052b5d452";
+            provenance measured;
+            archiveFile "je3002255.xml";
+            system    "isopropanol + 2Propoxyethanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.014; max 0.905; n 39; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

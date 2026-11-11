@@ -28,10 +28,10 @@ propertyManifest
         "components/nButylFormate.dat"
         {
             type          imported;
-            sha256        "07a30c10d10e11e0b2afbf752dbaa3b167425ff3d0bc0d2953eac43fa72401d3";
-            computationalSha256 "901b9b4fe244665e40a74ca849b8f66ebe9599003a530b6a92839c2a91252b9b";
+            sha256        "daeab9f1f8f833a07c30b4b07ac1f6483313ae30455a93eac1f306978bf9cab1";
+            computationalSha256 "888565ae0c88888e78e0a4b70ca49d452281c7c5166fc453c905544addb7ca20";
             origin        "data/standards/components/nButylFormate.dat";
-            originSha256  "862e424d8742be3c416bb73714fd3dc3503656f055aafcb0edd318127b32de32";
+            originSha256  "32312366b955b7b0ebbe199f897350ff44e6476bdd50a809de6a3c0fbfb52279";
             release       Choupo-2608;
         }
         "components/nNonane.dat"
@@ -61,13 +61,13 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
-        "parameters/Wilson/nButylFormate-nNonane.dat"
+        "parameters/UNIQUAC/nButylFormate-nNonane.dat"
         {
             type          imported;
-            sha256        "3bf0a72e2724060c011a2947ca78afb6d7bcd1c96107b98c55c62a1a524a1ec9";
-            computationalSha256 "bd21b260bc26b1045e0a24e6875337f31d8ba528a7db5f226d1a244cf0fffeab";
-            origin        "data/standards/parameters/Wilson/nButylFormate-nNonane.dat";
-            originSha256  "b7d0660e6b4ebd616118447b50d63b5d14f99d8ddc6709a87b6f92c914f23f24";
+            sha256        "cb34dd1635a8c2df8d92d8d984a25f737ecb136307108bbfab4f914e5f31293a";
+            computationalSha256 "91acadcbae03b3560e505bde68d80ef1c4671574a6768a1a44c467bbb3c7621d";
+            origin        "data/standards/parameters/UNIQUAC/nButylFormate-nNonane.dat";
+            originSha256  "9f57300d6f8d5324af3f43a7e087551af8d9a8c0a0873fdac583c570bb0c5971";
             release       Choupo-2608;
         }
     }

@@ -202,4 +202,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-isopentylAcetate.a_ij  527.429342481;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-isopentylAcetate.a_ji  -275.771847499;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e9c58a4bbd937ba9";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylAcetate-isopentylAcetate-bubble-acs.jced.8b01053.dat";
+            doi       "10.1021/acs.jced.8b01053";
+            sha256    "beea7cf58638b99a3b2dbf854973bff9293816fbe817961786a41300f43a174d";
+            provenance measured;
+            archiveFile "acs.jced.8b01053.xml";
+            system    "ethylAcetate + isopentylAcetate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.012; max 0.954; n 46; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-isopentylAcetate.a_ij  527.429341355;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-isopentylAcetate.a_ji  -275.771846969;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e9c58a4bbd937ba9";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylAcetate-isopentylAcetate-bubble-acs.jced.8b01053.dat";
+            doi       "10.1021/acs.jced.8b01053";
+            sha256    "beea7cf58638b99a3b2dbf854973bff9293816fbe817961786a41300f43a174d";
+            provenance measured;
+            archiveFile "acs.jced.8b01053.xml";
+            system    "ethylAcetate + isopentylAcetate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.012; max 0.954; n 46; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

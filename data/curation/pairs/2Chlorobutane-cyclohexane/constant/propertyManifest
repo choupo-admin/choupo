@@ -28,10 +28,10 @@ propertyManifest
         "components/2Chlorobutane.dat"
         {
             type          imported;
-            sha256        "653a7e79927cb5671dc4224d759bbb49aa61c4f27f936ab228f39d1938a12867";
-            computationalSha256 "c7d0dbf6d8cf098550096b4efd6cac7b1d4cf2537e3d93070d67b2a7e02c147b";
+            sha256        "5c12fca7a18bfe26a63a018fc265beca927a26a9212d25d25fcdeea9857afa65";
+            computationalSha256 "586e029718f5feaef2ec65f6309eb62f3aadb41d269274f5b386c6d564e7a3a2";
             origin        "data/standards/components/2Chlorobutane.dat";
-            originSha256  "d6dd6d9f10763b4b66d919a007b34e2385b06f77a12127a6720b793ec37cfee6";
+            originSha256  "3245cca33b46ab9cb895903f4c931df7deb043ccfce5d962143cc2910ff3a5cb";
             release       Choupo-2608;
         }
         "components/cyclohexane.dat"
@@ -70,13 +70,13 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
-        "parameters/Wilson/2Chlorobutane-cyclohexane.dat"
+        "parameters/UNIQUAC/2Chlorobutane-cyclohexane.dat"
         {
             type          imported;
-            sha256        "de23a0f028303ec46b3b8fd7b497a5caea173817a383f5e22036c42e5876dbb7";
-            computationalSha256 "770b62cbc0b9bd732a05c73755048d2e9555e076b0ddbe62ab8c9073a31b89d4";
-            origin        "data/standards/parameters/Wilson/2Chlorobutane-cyclohexane.dat";
-            originSha256  "a51d92308fb81e9501ef77e3f3052c1285155d724e2406519eaf431c44b5f3f5";
+            sha256        "397b714de27be6422e1960f07e77b72f00dcd417bb205aa4285ad6335f0c4bb3";
+            computationalSha256 "04821854c70d4e975337239393880ca795b2b29048ecaec133aac2dc9bdd02aa";
+            origin        "data/standards/parameters/UNIQUAC/2Chlorobutane-cyclohexane.dat";
+            originSha256  "e0f62548722a878e919e7b8b1929f72b3e6cbb28cc9201bb525fbe21fcd4a622";
             release       Choupo-2608;
         }
     }

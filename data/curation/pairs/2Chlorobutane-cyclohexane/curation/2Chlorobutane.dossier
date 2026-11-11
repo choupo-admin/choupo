@@ -202,4 +202,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.a_ij  -124.44544902;
+        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.a_ji  191.315359693;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d7c64707f1c7aa95";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Chlorobutane-cyclohexane-bubble-j.fluid.2006.02.009.dat";
+            doi       "10.1016/j.fluid.2006.02.009";
+            sha256    "294793403436783975100d8eaea9083144484e525d73d8310f0c45881e55d4a5";
+            provenance measured;
+            archiveFile "j.fluid.2006.02.009.xml";
+            system    "2Chlorobutane + cyclohexane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0514; max 0.9263; n 51; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.a_ij  -124.44544897;
+        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.a_ji  191.315359596;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d7c64707f1c7aa95";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Chlorobutane-cyclohexane-bubble-j.fluid.2006.02.009.dat";
+            doi       "10.1016/j.fluid.2006.02.009";
+            sha256    "294793403436783975100d8eaea9083144484e525d73d8310f0c45881e55d4a5";
+            provenance measured;
+            archiveFile "j.fluid.2006.02.009.xml";
+            system    "2Chlorobutane + cyclohexane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0514; max 0.9263; n 51; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

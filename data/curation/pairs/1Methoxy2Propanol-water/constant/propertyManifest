@@ -28,10 +28,10 @@ propertyManifest
         "components/1Methoxy2Propanol.dat"
         {
             type          imported;
-            sha256        "f46dfdeb3d29cac8c0a3c8d2e993d0d3303215ab5af0d4f608a40d66a99fa670";
-            computationalSha256 "dab7e6630bcbda341a1673b75fa8303abe6c1d9e7157ab0e4e547090a4bafa3d";
+            sha256        "78af382abe6bb4dacf1e9b8b48874bb7ed9b6e821a623e00a607a07d5b43dea6";
+            computationalSha256 "7d2895bdc7a15b14410a5fe5677075d14db6fe8e76547d2e30ca90d0d4b67479";
             origin        "data/standards/components/1Methoxy2Propanol.dat";
-            originSha256  "8605e99e2ad8114fe1e7c78cb91e9d215d3732920a60e4e5134884d6b9f55edb";
+            originSha256  "56ec98726b969afa93e861e011ed929c3c118bde4dc39e4a9f60b1d902ede419";
             release       Choupo-2608;
         }
         "components/water.dat"

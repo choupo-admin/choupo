@@ -28,10 +28,10 @@ propertyManifest
         "components/2Propoxyethanol.dat"
         {
             type          imported;
-            sha256        "bdfe4968ba6a4ded881e8a5a508a2ec0fe3b4880ec096f9bd7acf79e424f64be";
-            computationalSha256 "a14cd79541be7ea2af142ad77bf4819ef7097b1d3655296696bc114163182aef";
+            sha256        "a76824d95208f31450366a7b9ccdfe517e15212fa4d867f32d42a215cc509854";
+            computationalSha256 "e8c69afd9ce1cfe284e0c784a6b2d2b1e45f36a9c91c265d1ed363c2b314617c";
             origin        "data/standards/components/2Propoxyethanol.dat";
-            originSha256  "5b9d664951cf1613125eca16d6b148f86560b972d779079eeec789aeb31a84b9";
+            originSha256  "2d0313d78cd0c87f2cdc13cbcff499d22bc3c189d04805b12a034e971b03dce0";
             release       Choupo-2608;
         }
         "components/nHeptane.dat"

@@ -37,10 +37,10 @@ propertyManifest
         "components/3Methyl1Butanol.dat"
         {
             type          imported;
-            sha256        "06807fc2f8b7942f787f41efa53ec7e1563148f37a77e2fdddca264780511548";
-            computationalSha256 "bc3bde7defcd31de691ba224e91f33120bbc0f667050dcb886c645947069610a";
+            sha256        "feb9a78f924adea09e52afadb1faea3b86a82592503ef7d91e9fbaf2b171bcd9";
+            computationalSha256 "462f7772a690287cab81b7cc48a247230dce1160f156e4a9bb1c67e6fadb360e";
             origin        "data/standards/components/3Methyl1Butanol.dat";
-            originSha256  "75054091b86e558cb1e679d4f372632e920bf79fe581a74aa788d14b19d5d1f7";
+            originSha256  "c0bbb9baf86fc1115d729a714ddfbe0baf220048d635c6c2731ff5d6e9e42c74";
             release       Choupo-2608;
         }
         "parameters/NRTL/2Methyl1Propanol-3Methyl1Butanol.dat"
@@ -70,13 +70,13 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
-        "parameters/Wilson/2Methyl1Propanol-3Methyl1Butanol.dat"
+        "parameters/UNIQUAC/2Methyl1Propanol-3Methyl1Butanol.dat"
         {
             type          imported;
-            sha256        "49a62d6d4cab5e648cc5fce57ea1cea73a685d779701e5ceed578880db6c9adb";
-            computationalSha256 "99e8d745832ab2a7756ea53b9df853aaf730b72c4eb109bbbac19b0b4cef85e3";
-            origin        "data/standards/parameters/Wilson/2Methyl1Propanol-3Methyl1Butanol.dat";
-            originSha256  "7ca3d4e0f1b21b6d0474e1e7239cd5ca7ef5222541321a13cc815d6113f14a18";
+            sha256        "fb818826702fc76dca647ab4155218cae8314597eec62a940da48ad39c1a101f";
+            computationalSha256 "780913dc75345d02a2d9b7cd019788c9c4ddcdb12731dfdeb5c9657f8f1ffcb0";
+            origin        "data/standards/parameters/UNIQUAC/2Methyl1Propanol-3Methyl1Butanol.dat";
+            originSha256  "7c6f58bafa9d3920db8d34427dcac5145932c980688621840bd56284db1ef035";
             release       Choupo-2608;
         }
     }

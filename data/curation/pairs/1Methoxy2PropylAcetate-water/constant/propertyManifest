@@ -28,10 +28,10 @@ propertyManifest
         "components/1Methoxy2PropylAcetate.dat"
         {
             type          imported;
-            sha256        "d1578ca69489c0a47df6f21516fba6c34e87ca8bdbed1327654b23c9f8b1c7a6";
-            computationalSha256 "d34ee349837585fb12faf38429dcac1a79c347964105eac63bec54601e258f27";
+            sha256        "50a4c9430686c7c9b3d7b2a5989c8a31c4d45dceb753725af8b35430a3f48682";
+            computationalSha256 "53eb784637a0fd9dc6f63e4b62a9f7cf1498876a82793be71cc238a91a0ae27c";
             origin        "data/standards/components/1Methoxy2PropylAcetate.dat";
-            originSha256  "6cde30c8336013eb381edd59a4d0775b9a7da0debf663eb44bc6ca9381fd1fa9";
+            originSha256  "ad9369f1d98039d3d69b7b8396fbae5db6e7b742e9b40acfd8e351927f540f96";
             release       Choupo-2608;
         }
         "components/water.dat"

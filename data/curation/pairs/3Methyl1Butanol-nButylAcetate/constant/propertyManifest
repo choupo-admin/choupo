@@ -28,10 +28,10 @@ propertyManifest
         "components/3Methyl1Butanol.dat"
         {
             type          imported;
-            sha256        "06807fc2f8b7942f787f41efa53ec7e1563148f37a77e2fdddca264780511548";
-            computationalSha256 "bc3bde7defcd31de691ba224e91f33120bbc0f667050dcb886c645947069610a";
+            sha256        "feb9a78f924adea09e52afadb1faea3b86a82592503ef7d91e9fbaf2b171bcd9";
+            computationalSha256 "462f7772a690287cab81b7cc48a247230dce1160f156e4a9bb1c67e6fadb360e";
             origin        "data/standards/components/3Methyl1Butanol.dat";
-            originSha256  "75054091b86e558cb1e679d4f372632e920bf79fe581a74aa788d14b19d5d1f7";
+            originSha256  "c0bbb9baf86fc1115d729a714ddfbe0baf220048d635c6c2731ff5d6e9e42c74";
             release       Choupo-2608;
         }
         "components/nButylAcetate.dat"
@@ -52,13 +52,13 @@ propertyManifest
             originSha256  "180025fb8be451eb91f22d6a7187ad59db7be4fa7d0d90e37313fc342866b9fe";
             release       Choupo-2608;
         }
-        "parameters/Wilson/3Methyl1Butanol-nButylAcetate.dat"
+        "parameters/UNIQUAC/3Methyl1Butanol-nButylAcetate.dat"
         {
             type          imported;
-            sha256        "a24201da47d405a441b9e1bf929b192c93d9afe467009e2106870cfb5a234b3b";
-            computationalSha256 "f1bf4c4589692cada1c4ce1c1b9d56490a42819f600ba79c54a45b48f3bee8b6";
-            origin        "data/standards/parameters/Wilson/3Methyl1Butanol-nButylAcetate.dat";
-            originSha256  "019d739d403aa9e8c2c4377c09cbcd1e0c1f8e205d9468be8078811077304ac1";
+            sha256        "75743354cf3610c7db709f8bcd95ab929c1e9ec9345c22f6a492a18336dab801";
+            computationalSha256 "314c5945ab055800cfc2298dac0b9a181a3d005c41a897a671d2948a604d5322";
+            origin        "data/standards/parameters/UNIQUAC/3Methyl1Butanol-nButylAcetate.dat";
+            originSha256  "a436faac305b9b5d6af525e35ec0f07fdeb428e4c2dee097bddbde6453dd2bb2";
             release       Choupo-2608;
         }
     }

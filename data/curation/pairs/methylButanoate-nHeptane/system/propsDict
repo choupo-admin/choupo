@@ -87,17 +87,14 @@
   @@MODELS-RESULT-BEGIN@@
   WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
   not argued). Beside fit_nrtl's max |dT| 1.021 K (warning) on the same
-  kept points. fit_wilson: A_ij = 3422.2, A_ji = -950.4 J/mol over 82
-  kept points: max |dT| 1.035 K, mean 0.337 K, graded warning ->
-  accepted; fit_wilson_start2 lands on the same pair (3422.2, -950.4).
-  PROMOTED on 2026-11-11 into
-  data/standards/parameters/Wilson/methylButanoate-nHeptane.dat as
+  kept points. fit_uniquac: a_ij = -131.1, a_ji = 238.3 K over 82 kept
+  points: max |dT| 1.026 K, mean 0.340 K, graded warning -> accepted;
+  fit_uniquac_start2 lands on the same pair (-131.1, 238.3). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/UNIQUAC/methylButanoate-nHeptane.dat as
   reviewStatus autoPromoted, review by none, because: fit grade warning
-  -- max |dT| 1.035 K over the 82 kept points, one liquid across the
-  validity span. UNIQUAC: not fitted -- methylButanoate carries no
-  UNIQUAC r and q (no tabulated value, and no UNIFAC groups to sum them
-  from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted;
-  nothing is estimated silently.
+  -- max |dT| 1.026 K over the 82 kept points, one liquid across the
+  validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -500,16 +497,16 @@ operations
     // @@C294-OPS-END@@
     // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
     {
-        name        txy_wilson;
+        name        txy_uniquac;
         type        propertyScan1D;
         vary        { variable x[methylButanoate];  from 0.0;  to 1.0;  n 101; }
         state       { P 101.32 kPa;  composition { methylButanoate 0.5;  nHeptane 0.5; } }
         thermo
         {
-            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
         }
         properties  ( T_bubble  y_eq_methylButanoate );
-        output      { file txy_wilson.csv; }
+        output      { file txy_uniquac.csv; }
     }
     // @@C294-READBACK-END@@
 );

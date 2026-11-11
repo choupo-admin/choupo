@@ -202,4 +202,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-1Methoxy2PropylAcetate.a_ij  4.22877009337;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-1Methoxy2PropylAcetate.a_ji  253.744575618;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b23cd5e709fe6d44";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-1Methoxy2PropylAcetate-bubble-acs.jced.6b01071.dat";
+            doi       "10.1021/acs.jced.6b01071";
+            sha256    "e5e3840b11d85390025771c40b7178bbd95159c167998895f14c435275dd5655";
+            provenance measured;
+            archiveFile "acs.jced.6b01071.xml";
+            system    "methanol + 1Methoxy2PropylAcetate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.012; max 0.987; n 32; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-1Methoxy2PropylAcetate.a_ij  4.22877011004;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-1Methoxy2PropylAcetate.a_ji  253.744575615;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b23cd5e709fe6d44";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-1Methoxy2PropylAcetate-bubble-acs.jced.6b01071.dat";
+            doi       "10.1021/acs.jced.6b01071";
+            sha256    "e5e3840b11d85390025771c40b7178bbd95159c167998895f14c435275dd5655";
+            provenance measured;
+            archiveFile "acs.jced.6b01071.xml";
+            system    "methanol + 1Methoxy2PropylAcetate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.012; max 0.987; n 32; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

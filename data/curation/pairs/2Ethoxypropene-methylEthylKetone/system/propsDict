@@ -86,17 +86,14 @@
   @@MODELS-RESULT-BEGIN@@
   WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
   not argued). Beside fit_nrtl's max |dT| 0.435 K (clean) on the same
-  kept points. fit_wilson: A_ij = -884.0, A_ji = 2603.3 J/mol over 44
-  kept points: max |dT| 0.422 K, mean 0.153 K, graded clean -> accepted;
-  fit_wilson_start2 lands on the same pair (-884.0, 2603.3). PROMOTED on
+  kept points. fit_uniquac: a_ij = 196.4, a_ji = -107.3 K over 44 kept
+  points: max |dT| 0.402 K, mean 0.140 K, graded clean -> accepted;
+  fit_uniquac_start2 lands on the same pair (196.4, -107.3). PROMOTED on
   2026-11-11 into
-  data/standards/parameters/Wilson/2Ethoxypropene-methylEthylKetone.dat
+  data/standards/parameters/UNIQUAC/2Ethoxypropene-methylEthylKetone.dat
   as reviewStatus autoPromoted, review by none, because: fit grade clean
-  -- max |dT| 0.422 K over the 44 kept points, one liquid across the
-  validity span. UNIQUAC: not fitted -- 2Ethoxypropene carries no UNIQUAC
-  r and q (no tabulated value, and no UNIFAC groups to sum them from,
-  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
-  is estimated silently.
+  -- max |dT| 0.402 K over the 44 kept points, one liquid across the
+  validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -475,16 +472,16 @@ operations
     // @@C294-OPS-END@@
     // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
     {
-        name        txy_wilson;
+        name        txy_uniquac;
         type        propertyScan1D;
         vary        { variable x[2Ethoxypropene];  from 0.0;  to 1.0;  n 101; }
         state       { P 99.99 kPa;  composition { 2Ethoxypropene 0.5;  methylEthylKetone 0.5; } }
         thermo
         {
-            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
         }
         properties  ( T_bubble  y_eq_2Ethoxypropene );
-        output      { file txy_wilson.csv; }
+        output      { file txy_uniquac.csv; }
     }
     // @@C294-READBACK-END@@
 );

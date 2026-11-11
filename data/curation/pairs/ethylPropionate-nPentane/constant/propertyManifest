@@ -28,10 +28,10 @@ propertyManifest
         "components/ethylPropionate.dat"
         {
             type          imported;
-            sha256        "932e99e5eec990003ad323125369bb1cb2d14dc225e02cb5e4a92743a3c6db46";
-            computationalSha256 "365abdd28ba43d5f1b6da97d908b79430f31239237db23c94c2a5725d41f8673";
+            sha256        "40ce078ea9b67160a331f96149557fc4ce505691c66ca84fdcff2401850b6883";
+            computationalSha256 "56473cfc2ac471343cc7c8c6b3df38cb84ef3a201cacbb9c69791718b2074923";
             origin        "data/standards/components/ethylPropionate.dat";
-            originSha256  "dff5e6218a2d0b36f198ebdc34938ba4d5f65d8c2b803aba7e5205cb98220e7b";
+            originSha256  "d16f1e38abfd9bae38a74d869499fc74e9e77f3b0cb8b5c261e20d7e668ede12";
             release       Choupo-2608;
         }
         "components/nPentane.dat"
@@ -70,13 +70,13 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
-        "parameters/Wilson/ethylPropionate-nPentane.dat"
+        "parameters/UNIQUAC/ethylPropionate-nPentane.dat"
         {
             type          imported;
-            sha256        "8cff9bf3a30bb6bf0fb48054820a67ee82d3c4e7bfe408f9881bd0857ebdcfdf";
-            computationalSha256 "9ae595d34bc8a181548e2c6393a94b974e958457f2f59802e0e95fe44281614f";
-            origin        "data/standards/parameters/Wilson/ethylPropionate-nPentane.dat";
-            originSha256  "4dc006936de9ff4ce5f1918f3bfad948eedb2f264c503523921cb31c3b4435e5";
+            sha256        "5df0f3c67b1f931de65c8a58297545ee2fb085312c261f168d37aad4e88e4196";
+            computationalSha256 "8f960889467fa9520d4b3cac249a8fdeb630d35265d833245c63a4c3b7ac69a3";
+            origin        "data/standards/parameters/UNIQUAC/ethylPropionate-nPentane.dat";
+            originSha256  "8f2f03a8b2d5530f82069003c9a13b24728cca4ae5279bb339f1583ed6e4f25a";
             release       Choupo-2608;
         }
     }

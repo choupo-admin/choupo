@@ -28,10 +28,10 @@ propertyManifest
         "components/1Octanol.dat"
         {
             type          imported;
-            sha256        "a8bae4056942aa0da5f79d29150dbf81a30645747ab68724c7b368d270733b0d";
-            computationalSha256 "28b3908cd6ffdf2c1d9c8e846e7a2cb15d4df01f852a1e17151b6753f019e011";
+            sha256        "fa835e31b5b0064ba5ed33873ae1509f037865096cb741da6f977852c727af3d";
+            computationalSha256 "5f8600bdf5f171e3031ff09c832b8eb01678cd9da00e5bdf672212843fbf434f";
             origin        "data/standards/components/1Octanol.dat";
-            originSha256  "024a96c5dd02bee13bfc6483dd58e9bfaaaa7da7602f4d9f97224c73ff9285fc";
+            originSha256  "2b35583b2cbfef8150efa756ec6dfaa9283a457d8deb7442a9a6c236444a46e8";
             release       Choupo-2608;
         }
         "components/nDodecane.dat"

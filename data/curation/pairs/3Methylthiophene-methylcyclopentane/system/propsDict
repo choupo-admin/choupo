@@ -74,7 +74,20 @@
   grade, or a split, is not promoted. The three in-sample residuals are
   published side by side, never used to choose a model for the student.
   UNIQUAC: FITTED (r and q written afterwards into the components by
-  bin/curate/uniquac_rq_from_groups.py, C325; declared here after the Wilson fit).
+  bin/curate/uniquac_rq_from_groups.py, C325; declared here after the Wilson fit). Wilson: FITTED.
+  @@MODELS-END@@
+
+  @@MODELS-RESULT-BEGIN@@
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dP|/P 0.356 % (clean) on the same
+  kept points. fit_uniquac: a_ij = -27.7, a_ji = 87.7 K over 10 kept
+  points: max |dP|/P 0.359 %, mean 0.198 %, graded clean -> accepted;
+  fit_uniquac_start2 lands on the same pair (-27.6, 87.7). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/UNIQUAC/3Methylthiophene-methylcyclopentane.dat
+  as reviewStatus autoPromoted, review by none, because: fit grade clean
+  -- max |dP|/P 0.359 % over the 10 kept points, one liquid across the
+  validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -425,16 +438,16 @@ operations
     // @@C294-OPS-END@@
     // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
     {
-        name        txy_wilson;
+        name        txy_uniquac;
         type        propertyScan1D;
         vary        { variable x[3Methylthiophene];  from 0.0;  to 1.0;  n 101; }
         state       { P 65.14 kPa;  composition { 3Methylthiophene 0.5;  methylcyclopentane 0.5; } }
         thermo
         {
-            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
         }
         properties  ( T_bubble  y_eq_3Methylthiophene );
-        output      { file txy_wilson.csv; }
+        output      { file txy_uniquac.csv; }
     }
     // @@C294-READBACK-END@@
 );

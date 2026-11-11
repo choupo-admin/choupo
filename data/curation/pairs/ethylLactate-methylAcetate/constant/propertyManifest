@@ -28,10 +28,10 @@ propertyManifest
         "components/ethylLactate.dat"
         {
             type          imported;
-            sha256        "2792db75c1743ab17bf2df44134bdd09da3c27a8fe7a94308509932a520d2610";
-            computationalSha256 "cbf5ca0bb3dd82daf357bf01e0956a32f3ab293a72cd0fff0d813624009c7037";
+            sha256        "cbed351c87326205a9042b984cf6479be4fb41b464c76387f578a604c611e65d";
+            computationalSha256 "02ae099e2b5a97e8c769f0aa28091bb731a14695a994201253efc2dca7c5d294";
             origin        "data/standards/components/ethylLactate.dat";
-            originSha256  "7e13fdaca3ba4cb773a1bb0735485ae199cb5d0b751f6bf1faed965bb7839d45";
+            originSha256  "6b03ed61acc6febdce92b86051e63380dcd4a213ccb17f52d72a13687eddde33";
             release       Choupo-2608;
         }
         "components/methylAcetate.dat"

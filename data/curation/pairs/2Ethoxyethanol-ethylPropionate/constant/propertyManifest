@@ -28,19 +28,19 @@ propertyManifest
         "components/2Ethoxyethanol.dat"
         {
             type          imported;
-            sha256        "2b520ea3ec694be6226a910534f306def4ab82a6574202374d0a340c37acad40";
-            computationalSha256 "1d44df950672d5174ef993726cdc10f7a06dfcbff5c35d141714da4988bd7487";
+            sha256        "0b7ecb49920f6b53fdfdd5833eec28ebd57f446c44aa65e53fc982857d80093d";
+            computationalSha256 "5955f830963288748eece85ecea04f20c410c4ac0e2f65c944fee74acba96858";
             origin        "data/standards/components/2Ethoxyethanol.dat";
-            originSha256  "967c792d6872c0f8b1f5d84a3078ddb3805feddcd451dcf4b7920271226afb4f";
+            originSha256  "98e5caef249c63cbb2cd7b95d48e9e54cf81cb40ddeacbf7a1845271d8fc0c6a";
             release       Choupo-2608;
         }
         "components/ethylPropionate.dat"
         {
             type          imported;
-            sha256        "932e99e5eec990003ad323125369bb1cb2d14dc225e02cb5e4a92743a3c6db46";
-            computationalSha256 "365abdd28ba43d5f1b6da97d908b79430f31239237db23c94c2a5725d41f8673";
+            sha256        "40ce078ea9b67160a331f96149557fc4ce505691c66ca84fdcff2401850b6883";
+            computationalSha256 "56473cfc2ac471343cc7c8c6b3df38cb84ef3a201cacbb9c69791718b2074923";
             origin        "data/standards/components/ethylPropionate.dat";
-            originSha256  "dff5e6218a2d0b36f198ebdc34938ba4d5f65d8c2b803aba7e5205cb98220e7b";
+            originSha256  "d16f1e38abfd9bae38a74d869499fc74e9e77f3b0cb8b5c261e20d7e668ede12";
             release       Choupo-2608;
         }
         "parameters/NRTL/2Ethoxyethanol-ethylPropionate.dat"
@@ -52,13 +52,13 @@ propertyManifest
             originSha256  "9299c732b75b8b67f5c9686cb5deea419654951f2413f97271353dcb051d91b1";
             release       Choupo-2608;
         }
-        "parameters/Wilson/2Ethoxyethanol-ethylPropionate.dat"
+        "parameters/UNIQUAC/2Ethoxyethanol-ethylPropionate.dat"
         {
             type          imported;
-            sha256        "0bef0db8f7a0fef9d3d4a776a0ad5d5b3c24ed5cd4770c37b75cec6602b6bfa8";
-            computationalSha256 "140cd67ed66d445294d4dc95a3ec757f7dd11992d19520cd49cc3b8ca55b35ca";
-            origin        "data/standards/parameters/Wilson/2Ethoxyethanol-ethylPropionate.dat";
-            originSha256  "c557f1cbcaa16e6563d7987c56dc22615ace2280b3322942b744e590fb02addc";
+            sha256        "441b41154cc6b370802ffa3acb1d19d8763d43c88d3eb1e38c5f72bbeb2d3781";
+            computationalSha256 "c81615adbed03698a6929e75111fa67c24e91cc7adab9e2b6e9a0aabb90af68a";
+            origin        "data/standards/parameters/UNIQUAC/2Ethoxyethanol-ethylPropionate.dat";
+            originSha256  "0112666dca240189badac6b2cb87ee12a5dd9a93dcc84a5d71a11966144b050b";
             release       Choupo-2608;
         }
     }

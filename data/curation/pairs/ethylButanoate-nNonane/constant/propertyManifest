@@ -28,10 +28,10 @@ propertyManifest
         "components/ethylButanoate.dat"
         {
             type          imported;
-            sha256        "669260b7541277937cd559d089f6542bfeacc0424f3c66461dffdc55cec08479";
-            computationalSha256 "26020bf70786f13662f85178e9c681c89c39600e5160ac1644805f7ad1d0c89d";
+            sha256        "ff4a9a120a1dc93217d91a53eb7a3f5b236d7ff9bb770e46cd428ef98cc5d509";
+            computationalSha256 "bba01e23728f628c6a6796bbe0b4955cab3e8626ecfee1dc07653caf637bc39e";
             origin        "data/standards/components/ethylButanoate.dat";
-            originSha256  "df0577292273d80319c10418e51dc18b6fdbbaed3a24f1a3f11a2ecae8abe912";
+            originSha256  "bbe1c05ff36aa50764f159cc9b2913e4e9698ea50e29cad648a1f6817ed7e9d9";
             release       Choupo-2608;
         }
         "components/nNonane.dat"
@@ -61,13 +61,13 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
-        "parameters/Wilson/ethylButanoate-nNonane.dat"
+        "parameters/UNIQUAC/ethylButanoate-nNonane.dat"
         {
             type          imported;
-            sha256        "a6f9536830f2b3ce5cc27b0a830b8b657dbe3dc160af5e8b695b4ec93d2a6020";
-            computationalSha256 "23f03eaf8c6788ef61acea3576a79ed2662b111fb9aca842fca1b2a406ab28ba";
-            origin        "data/standards/parameters/Wilson/ethylButanoate-nNonane.dat";
-            originSha256  "9cffbf31958dd6c6bcc602ee6375ece0e3fde58f5674b848d4c187ce44d44ca8";
+            sha256        "550fe957e8b253397c7aaf580708a4259e97e0a9a4c1bf1e4a36ef78f5fd0b03";
+            computationalSha256 "78490084d18648c1fedd828bd55e49aa2fde921825b702c994ef963c07f32c73";
+            origin        "data/standards/parameters/UNIQUAC/ethylButanoate-nNonane.dat";
+            originSha256  "c87d8c730e041f6e9594bfcb07ff52cad23c7fd7ac647789a227dac8f0e0c5c6";
             release       Choupo-2608;
         }
     }

@@ -202,4 +202,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-2Propoxyethanol.a_ij  347.705888275;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-2Propoxyethanol.a_ji  -129.960720783;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "0c11d61a6a84cfdb";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nHeptane-2Propoxyethanol-bubble-j.fluid.2010.08.002.dat";
+            doi       "10.1016/j.fluid.2010.08.002";
+            sha256    "be4a4fb9a27b24333cf603c302331914ee67fcd3299aa9c7586d97798a80593c";
+            provenance measured;
+            archiveFile "j.fluid.2010.08.002.xml";
+            system    "nHeptane + 2Propoxyethanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.009; max 0.982; n 30; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-2Propoxyethanol.a_ij  347.705888287;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-2Propoxyethanol.a_ji  -129.960720798;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "0c11d61a6a84cfdb";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nHeptane-2Propoxyethanol-bubble-j.fluid.2010.08.002.dat";
+            doi       "10.1016/j.fluid.2010.08.002";
+            sha256    "be4a4fb9a27b24333cf603c302331914ee67fcd3299aa9c7586d97798a80593c";
+            provenance measured;
+            archiveFile "j.fluid.2010.08.002.xml";
+            system    "nHeptane + 2Propoxyethanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.009; max 0.982; n 30; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

@@ -28,10 +28,10 @@ propertyManifest
         "components/methylButanoate.dat"
         {
             type          imported;
-            sha256        "ea70710be4829b7c35021654e9992c74c629a9c9af2d51873d63a487525f2438";
-            computationalSha256 "32114188437c3c8df542aa821f9b6d81632ed2189cefa07be89a827cd7db6788";
+            sha256        "03efed63bd7b7785c681103bfe0f5bdd6566ab0c01ec164f6643a3cd5876bcc6";
+            computationalSha256 "05dcd7da193ea255cdcdb92fce81fd1f947868e22ca6f52b4e76ca897cc944ed";
             origin        "data/standards/components/methylButanoate.dat";
-            originSha256  "0af8a580009106c3c195d6523567f6b8dbc3230b0c0548ac4d729d07f6641c7d";
+            originSha256  "9383c5f0c7cb995d33c3f50843fd5e8f2fbf7dce0af5eeed090a3501a79c15c5";
             release       Choupo-2608;
         }
         "components/nNonane.dat"

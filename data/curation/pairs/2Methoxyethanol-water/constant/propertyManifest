@@ -28,10 +28,10 @@ propertyManifest
         "components/2Methoxyethanol.dat"
         {
             type          imported;
-            sha256        "5537750c406e1c55acb95f32e215427e80fe10fb07b51568ea94f95662a1de91";
-            computationalSha256 "874bc832caf8598519ac1ee6d128fcc964bbc38b093b9b6ba6ca638d6439fc28";
+            sha256        "45ed71ba96d41aae2e54fadea97c736727e1d8a5eb945dddb261b86a47acf3e8";
+            computationalSha256 "627a45ea86d8b1b13284c00f93100d356dbfb646d40b8102bcaf4efc83e51015";
             origin        "data/standards/components/2Methoxyethanol.dat";
-            originSha256  "7aa0fac2f5f1215c00094d2ab92e4923ac4dcbf26ebc52fe4b36077b28a79c88";
+            originSha256  "3cb143ff0f17c455dedd66e2193480b3db5682765d7f6895073788c4bd0a3bae";
             release       Choupo-2608;
         }
         "components/water.dat"

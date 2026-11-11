@@ -86,17 +86,14 @@
   @@MODELS-RESULT-BEGIN@@
   WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
   not argued). Beside fit_nrtl's max |dT| 2.505 K (severe) on the same
-  kept points. fit_wilson: A_ij = -2177.2, A_ji = 3988.7 J/mol over 36
-  kept points: max |dT| 2.170 K, mean 0.448 K, graded severe -> accepted;
-  fit_wilson_start2 lands on the same pair (-2177.2, 3988.7). NOT
-  PROMOTED (max |dT| 2.170 K over the 36 kept points, one liquid across
-  the validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
+  kept points. fit_uniquac: a_ij = 1.2, a_ji = -1.0 K over 36 kept
+  points: max |dT| 2.514 K, mean 0.476 K, graded severe -> accepted;
+  fit_uniquac_start2 lands on the same pair (1.2, -1.0). NOT PROMOTED
+  (max |dT| 2.514 K over the 36 kept points, one liquid across the
+  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
   pair does not enter the default catalogue; its record stays in this
   curation case's constant/, and a case that needs it carries it in its
-  own constant/. UNIQUAC: not fitted -- cyclopentanol carries no UNIQUAC
-  r and q (no tabulated value, and no UNIFAC groups to sum them from,
-  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
-  is estimated silently.
+  own constant/.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -475,16 +472,16 @@ operations
     // @@C294-OPS-END@@
     // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
     {
-        name        txy_wilson;
+        name        txy_uniquac;
         type        propertyScan1D;
         vary        { variable x[cyclopentanol];  from 0.0;  to 1.0;  n 101; }
         state       { P 101.3 kPa;  composition { cyclopentanol 0.5;  cyclohexanol 0.5; } }
         thermo
         {
-            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
         }
         properties  ( T_bubble  y_eq_cyclopentanol );
-        output      { file txy_wilson.csv; }
+        output      { file txy_uniquac.csv; }
     }
     // @@C294-READBACK-END@@
 );

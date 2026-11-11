@@ -28,10 +28,10 @@ propertyManifest
         "components/2Chlorobutane.dat"
         {
             type          imported;
-            sha256        "653a7e79927cb5671dc4224d759bbb49aa61c4f27f936ab228f39d1938a12867";
-            computationalSha256 "c7d0dbf6d8cf098550096b4efd6cac7b1d4cf2537e3d93070d67b2a7e02c147b";
+            sha256        "5c12fca7a18bfe26a63a018fc265beca927a26a9212d25d25fcdeea9857afa65";
+            computationalSha256 "586e029718f5feaef2ec65f6309eb62f3aadb41d269274f5b386c6d564e7a3a2";
             origin        "data/standards/components/2Chlorobutane.dat";
-            originSha256  "d6dd6d9f10763b4b66d919a007b34e2385b06f77a12127a6720b793ec37cfee6";
+            originSha256  "3245cca33b46ab9cb895903f4c931df7deb043ccfce5d962143cc2910ff3a5cb";
             release       Choupo-2608;
         }
         "components/toluene.dat"
@@ -70,13 +70,13 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
-        "parameters/Wilson/2Chlorobutane-toluene.dat"
+        "parameters/UNIQUAC/2Chlorobutane-toluene.dat"
         {
             type          imported;
-            sha256        "85ffbe19c730d2ad1b4b15f26bf66d14e029d92feabef4b4be02c35e749e5cb5";
-            computationalSha256 "7cdef6b67272f71b960e797793402981607c4243c20a11148f6a98105ea6827e";
-            origin        "data/standards/parameters/Wilson/2Chlorobutane-toluene.dat";
-            originSha256  "3f90244df4e6aff2be87f1c74a272d718463c55d7a96471385a5d645e6cf69de";
+            sha256        "4e5468611b37f52f0af18ef1737531f0e22db6f99a008c348efcb7fdf5ecae3d";
+            computationalSha256 "675e89c77c8a0bbba27216389cc9368e9daf0423d5abcf8d8d1b9fe2ae00b85e";
+            origin        "data/standards/parameters/UNIQUAC/2Chlorobutane-toluene.dat";
+            originSha256  "b77e5cc9a91928199210b60c2829b792d80f3f77948a37ed6ebfcb020f4409a2";
             release       Choupo-2608;
         }
     }

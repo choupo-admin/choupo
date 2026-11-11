@@ -28,10 +28,10 @@ propertyManifest
         "components/2Propoxyethanol.dat"
         {
             type          imported;
-            sha256        "bdfe4968ba6a4ded881e8a5a508a2ec0fe3b4880ec096f9bd7acf79e424f64be";
-            computationalSha256 "a14cd79541be7ea2af142ad77bf4819ef7097b1d3655296696bc114163182aef";
+            sha256        "a76824d95208f31450366a7b9ccdfe517e15212fa4d867f32d42a215cc509854";
+            computationalSha256 "e8c69afd9ce1cfe284e0c784a6b2d2b1e45f36a9c91c265d1ed363c2b314617c";
             origin        "data/standards/components/2Propoxyethanol.dat";
-            originSha256  "5b9d664951cf1613125eca16d6b148f86560b972d779079eeec789aeb31a84b9";
+            originSha256  "2d0313d78cd0c87f2cdc13cbcff499d22bc3c189d04805b12a034e971b03dce0";
             release       Choupo-2608;
         }
         "components/nButanol.dat"
@@ -61,13 +61,13 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
-        "parameters/Wilson/2Propoxyethanol-nButanol.dat"
+        "parameters/UNIQUAC/2Propoxyethanol-nButanol.dat"
         {
             type          imported;
-            sha256        "7b26c1cfad779f803173cddd9a062eab90996321132399546fd6a61316494a8a";
-            computationalSha256 "82691d85a762d400d733756cbcb3e8dcae6ababbc72eeb120b938421756fc562";
-            origin        "data/standards/parameters/Wilson/2Propoxyethanol-nButanol.dat";
-            originSha256  "05ab0ee7e353f4464774ce95a600fa96b33218fd9aef2505cf3514df67ad463b";
+            sha256        "bf4ddb7444ffcc35afe050e615e4798c719c5787d782decc106cc2174cf55994";
+            computationalSha256 "5ef694e2c53a346a2ec079d3fad550493c13607b400c198f4a285e4293f77836";
+            origin        "data/standards/parameters/UNIQUAC/2Propoxyethanol-nButanol.dat";
+            originSha256  "70cf0f02cb0aabc347c216162bf4e9d75408e0aadffe366bd7d80763c2875c5b";
             release       Choupo-2608;
         }
     }

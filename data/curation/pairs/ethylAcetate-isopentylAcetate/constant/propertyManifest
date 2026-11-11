@@ -37,10 +37,10 @@ propertyManifest
         "components/isopentylAcetate.dat"
         {
             type          imported;
-            sha256        "2b1d0aea4fe9907f98d162e5ac4a7e1aad2d028d36aaf68de554dd089f894fb4";
-            computationalSha256 "016c10c106350bcf010c120efa24cb852eda4680ad7da2b3aaa9d17f2978eced";
+            sha256        "ffc39b5640deced42d62133dd87ba4486d8993a5d45c43f9a5816ac23e225a21";
+            computationalSha256 "9172e8aae43c3489d38d8e7563fef2c4c9e456bc2fadcf270c9c3e59967ea2cb";
             origin        "data/standards/components/isopentylAcetate.dat";
-            originSha256  "f3b8cd736ef5fccbd676245ad3d5eb70e54e252d4028e322e386a10b7da9659f";
+            originSha256  "0714539bdb62e9818604ebf7d43a258bd9b428859b55ee2e7e6660076207baca";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"
@@ -61,13 +61,13 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
-        "parameters/Wilson/ethylAcetate-isopentylAcetate.dat"
+        "parameters/UNIQUAC/ethylAcetate-isopentylAcetate.dat"
         {
             type          imported;
-            sha256        "b41b273a19f5012e2905443099d9860033e4e96f0da2da6e9ee4567b1f320a86";
-            computationalSha256 "e60884d3e322bfb174a16eb0654dac00dd21113267bab4f4408e85af586d4ba9";
-            origin        "data/standards/parameters/Wilson/ethylAcetate-isopentylAcetate.dat";
-            originSha256  "af607f765495742b7115f9e52ea507c89231a1b444ed6da64f6cb028615360a4";
+            sha256        "dc985ab232fe9626e0ec4f0cdefff611dcc59c6e73612953c605b7a9c28b6a7e";
+            computationalSha256 "fd9776b71d43a4d141ab2bbdb3ac23845a8c2d43908a70ac03af6d3f2dc21346";
+            origin        "data/standards/parameters/UNIQUAC/ethylAcetate-isopentylAcetate.dat";
+            originSha256  "9db74f3b21772e68679ecd14048394e3a906277e685305069903457f5b226060";
             release       Choupo-2608;
         }
     }

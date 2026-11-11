@@ -28,10 +28,10 @@ propertyManifest
         "components/diethylSuccinate.dat"
         {
             type          imported;
-            sha256        "577786c2f9c1c1e766d777aa5a00a2eae71214ba023aa49ddea091ec7aed9aab";
-            computationalSha256 "0bce054b513e18c51e82e407a7fffb2c86c935dfb98c1c12f52e068545f9c917";
+            sha256        "67d605b6c4063e56734485f0b0399c896dacbbfb63e520345e9971c12ea5f4d1";
+            computationalSha256 "b650975a74426db3cfc316daac8816f3d1cf90d242438d9594c68124bedb77ed";
             origin        "data/standards/components/diethylSuccinate.dat";
-            originSha256  "1abb61cb794dbfe155824e5ef3f36a2db41d48d9f9dfb9dc1476cbd24ecbe863";
+            originSha256  "0caff482e34022007a57ccc01d2f681e95f7afa0576b42e3e25bf5237eafe7ad";
             release       Choupo-2608;
         }
         "components/ethanol.dat"
@@ -52,13 +52,13 @@ propertyManifest
             originSha256  "2c2a279a2aad4a22bf344166d24459efcde44414e211759b6f84755822525ad3";
             release       Choupo-2608;
         }
-        "parameters/Wilson/diethylSuccinate-ethanol.dat"
+        "parameters/UNIQUAC/diethylSuccinate-ethanol.dat"
         {
             type          imported;
-            sha256        "737838dbc4200aae02304ac336a314ab265c19a30af1bdaa9255f5967e216ae0";
-            computationalSha256 "f2222b4aa736424b3e973013de0b38c74926107692cef4fcba9c7294cb095b34";
-            origin        "data/standards/parameters/Wilson/diethylSuccinate-ethanol.dat";
-            originSha256  "3a1d80f9bc5cec2cd246c13cb2ee22f10a59cfb0086b7350f519c878391ef2c1";
+            sha256        "ee102045dba365d0af1e47a402cb0474ecad59e7572638e22005ec969a10828a";
+            computationalSha256 "d6a6e96e549dde325f03dde31b5a3d7a80df39997c4d2290a8aa6bf8d53581cd";
+            origin        "data/standards/parameters/UNIQUAC/diethylSuccinate-ethanol.dat";
+            originSha256  "7645ef550901f9deb0cffb7df2a7522144c0187df3e27aac9a54aeef2f285e40";
             release       Choupo-2608;
         }
     }

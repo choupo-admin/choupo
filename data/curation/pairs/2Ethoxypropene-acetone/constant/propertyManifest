@@ -28,10 +28,10 @@ propertyManifest
         "components/2Ethoxypropene.dat"
         {
             type          imported;
-            sha256        "7ae08de5e7d3772fda61f0cbc18e4743eb57d67c8072c2b86b1b06d58f848785";
-            computationalSha256 "ae202fafc7af0ecfdea40f293d6eb1601c899cdcf7dfd63759949d844fe6dcee";
+            sha256        "e9ac6d6356f75a4c39342c483b4e41ba908d0f76309aaf55bae1603390b8e1af";
+            computationalSha256 "59bf025ffa41b39f631be80ba9d8cd8d8b63ae50aab618e71c966e991721ab6a";
             origin        "data/standards/components/2Ethoxypropene.dat";
-            originSha256  "09809a4f317f0c6b194a23ce18fa3251e73febcf2564e34c0072023f98844b64";
+            originSha256  "4ff26993f5aa25afde6c85463d4001b427b9ff669edf36b47d4dad6f523d2362";
             release       Choupo-2608;
         }
         "components/acetone.dat"
@@ -70,13 +70,13 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
-        "parameters/Wilson/2Ethoxypropene-acetone.dat"
+        "parameters/UNIQUAC/2Ethoxypropene-acetone.dat"
         {
             type          imported;
-            sha256        "eff88147694137bed06276c843e338dbc34c8a1523cb858e2ef7d1f2c2d9701f";
-            computationalSha256 "8ad4f489a0e8e889ef833a2fb43ef860096a0d274241bca99242192a7518844a";
-            origin        "data/standards/parameters/Wilson/2Ethoxypropene-acetone.dat";
-            originSha256  "0c788171f49ea1295ca419a784499ec5db4856bce5eabc33a1647aaa95f05b86";
+            sha256        "d1946bea90eaddf2cce92c7317b72c3c43348b94d1e58bb52adf9e214eeaebd1";
+            computationalSha256 "0e09e999f2048d09e8e214ee4a8d4c840f00a622aa8f111c1b15c4249c16c661";
+            origin        "data/standards/parameters/UNIQUAC/2Ethoxypropene-acetone.dat";
+            originSha256  "5e200570cd515ad8e0da074fc88aaa4c00a5f07ba590469fce71f2a389928042";
             release       Choupo-2608;
         }
     }

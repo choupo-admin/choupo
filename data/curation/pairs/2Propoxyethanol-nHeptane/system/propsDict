@@ -88,17 +88,14 @@
   @@MODELS-RESULT-BEGIN@@
   WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
   not argued). Beside fit_nrtl's max |dT| 3.688 K (severe) on the same
-  kept points. fit_wilson: A_ij = 543.0, A_ji = 6294.6 J/mol over 30 kept
-  points: max |dT| 2.236 K, mean 0.655 K, graded severe -> accepted;
-  fit_wilson_start2 lands on the same pair (543.0, 6294.6). NOT PROMOTED
-  (max |dT| 2.236 K over the 30 kept points, one liquid across the
+  kept points. fit_uniquac: a_ij = 347.7, a_ji = -130.0 K over 30 kept
+  points: max |dT| 3.534 K, mean 0.871 K, graded severe -> accepted;
+  fit_uniquac_start2 lands on the same pair (347.7, -130.0). NOT PROMOTED
+  (max |dT| 3.534 K over the 30 kept points, one liquid across the
   validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
   pair does not enter the default catalogue; its record stays in this
   curation case's constant/, and a case that needs it carries it in its
-  own constant/. UNIQUAC: not fitted -- 2Propoxyethanol carries no
-  UNIQUAC r and q (no tabulated value, and no UNIFAC groups to sum them
-  from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted;
-  nothing is estimated silently.
+  own constant/.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -483,16 +480,16 @@ operations
     // @@C294-OPS-END@@
     // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
     {
-        name        txy_wilson;
+        name        txy_uniquac;
         type        propertyScan1D;
         vary        { variable x[nHeptane];  from 0.0;  to 1.0;  n 101; }
         state       { P 100 kPa;  composition { nHeptane 0.5;  2Propoxyethanol 0.5; } }
         thermo
         {
-            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
         }
         properties  ( T_bubble  y_eq_nHeptane );
-        output      { file txy_wilson.csv; }
+        output      { file txy_uniquac.csv; }
     }
     // @@C294-READBACK-END@@
 );

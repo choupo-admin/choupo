@@ -28,19 +28,19 @@ propertyManifest
         "components/3Methylthiophene.dat"
         {
             type          imported;
-            sha256        "c8e08d236ca4f39bf34966cf875015c1154f56ddf92b1ddbefb6066c2b8b4f78";
-            computationalSha256 "f269dbbaf52cf7439142e7132d3db5e28df6bcbaaf9dd9facfdaecdd758591c0";
+            sha256        "749b10311d783157b48298a90b0378365a6e612da87c70a2d62151fb40dd6637";
+            computationalSha256 "59536f0134ab732fa75a10632d55d37e5bd21e69fa037ac55150cfc9c1b61fde";
             origin        "data/standards/components/3Methylthiophene.dat";
-            originSha256  "cb876f368219985355881a7320b119a4cc7d9059760446e9c3ef33089d1fc1fd";
+            originSha256  "b4e86f5ced31175955a684eb8f40540df0178d2210323e03fa818170517955af";
             release       Choupo-2608;
         }
         "components/isohexane.dat"
         {
             type          imported;
-            sha256        "315c4b45b15b98f0f6064556a102d1a3367e5c78998a8dfec1c043fb4f005e70";
-            computationalSha256 "3f8ccc4c28be3400b7d5ff820f84c5d3047feb0004b6ead774940277b6de8c0a";
+            sha256        "a609d1324622a2442eeecd867cfac4713eb066276a17b5a1088e988e092c4611";
+            computationalSha256 "54b552e452550308d77825c1c94ad537dbe309ddf95144ab1481bb9eca21bcbc";
             origin        "data/standards/components/isohexane.dat";
-            originSha256  "b1712068d6b578b7e9876529c99fff1310077cc1d3ba39b453602c878fab8d62";
+            originSha256  "5fc41204af38b50fd1490e6d25f7877c4248b7721a331a1fc7bf14e653e5d1e2";
             release       Choupo-2608;
         }
         "parameters/NRTL/3Methylthiophene-isohexane.dat"
@@ -52,13 +52,13 @@ propertyManifest
             originSha256  "03183216fe56a76e89676d156b5ae61646894efbc23a69a65384d789a9d09f20";
             release       Choupo-2608;
         }
-        "parameters/Wilson/3Methylthiophene-isohexane.dat"
+        "parameters/UNIQUAC/3Methylthiophene-isohexane.dat"
         {
             type          imported;
-            sha256        "8e10831dd90ef7703204b7bf82abc3a093076db21469cc06982d8858d8908902";
-            computationalSha256 "2b7195c491477c3d1b917a35458d3257b7fe6c4537e773dbcc2361a6118ba029";
-            origin        "data/standards/parameters/Wilson/3Methylthiophene-isohexane.dat";
-            originSha256  "2f235af0540b9d004c3f7c0c1480dba3cb2789d8a4067ced09454823beba61f3";
+            sha256        "011aaacf555453c513cfcb7e066c2f4eea98fe5611fd854b2704d8af039a91b9";
+            computationalSha256 "1e6da9709a5d9eb88d8490e8321f11b7199eaba8229b6bf22720ee49a930bcbb";
+            origin        "data/standards/parameters/UNIQUAC/3Methylthiophene-isohexane.dat";
+            originSha256  "f2522f022c5aef469a0fd5917d02d81f11428c808d72c990732fc349b81cf1eb";
             release       Choupo-2608;
         }
     }

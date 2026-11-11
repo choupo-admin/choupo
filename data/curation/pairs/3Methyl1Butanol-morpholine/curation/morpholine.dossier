@@ -202,4 +202,94 @@ properties
     }
 }
 
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.morpholine-3Methyl1Butanol.a_ij  -263.689994169;
+        equilibrium.liquid.activityModel.binaryParameters.morpholine-3Methyl1Butanol.a_ji  442.852909674;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "230fc80a5670e9e8";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/morpholine-3Methyl1Butanol-bubbleP-acs.jced.7b01128-b8.dat";
+            doi       "10.1021/acs.jced.7b01128";
+            sha256    "6745bdc0beec2fa3fa8d1493f40cfd46ffa6dea83ecb70fb52646a21d3abc433";
+            provenance measured;
+            archiveFile "acs.jced.7b01128.xml";
+            system    "morpholine + 3Methyl1Butanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0351; max 0.9876; n 15; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.morpholine-3Methyl1Butanol.a_ij  -263.689997114;
+        equilibrium.liquid.activityModel.binaryParameters.morpholine-3Methyl1Butanol.a_ji  442.852919768;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "230fc80a5670e9e8";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/morpholine-3Methyl1Butanol-bubbleP-acs.jced.7b01128-b8.dat";
+            doi       "10.1021/acs.jced.7b01128";
+            sha256    "6745bdc0beec2fa3fa8d1493f40cfd46ffa6dea83ecb70fb52646a21d3abc433";
+            provenance measured;
+            archiveFile "acs.jced.7b01128.xml";
+            system    "morpholine + 3Methyl1Butanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0351; max 0.9876; n 15; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

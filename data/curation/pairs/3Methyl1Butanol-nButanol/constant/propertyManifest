@@ -28,10 +28,10 @@ propertyManifest
         "components/3Methyl1Butanol.dat"
         {
             type          imported;
-            sha256        "06807fc2f8b7942f787f41efa53ec7e1563148f37a77e2fdddca264780511548";
-            computationalSha256 "bc3bde7defcd31de691ba224e91f33120bbc0f667050dcb886c645947069610a";
+            sha256        "feb9a78f924adea09e52afadb1faea3b86a82592503ef7d91e9fbaf2b171bcd9";
+            computationalSha256 "462f7772a690287cab81b7cc48a247230dce1160f156e4a9bb1c67e6fadb360e";
             origin        "data/standards/components/3Methyl1Butanol.dat";
-            originSha256  "75054091b86e558cb1e679d4f372632e920bf79fe581a74aa788d14b19d5d1f7";
+            originSha256  "c0bbb9baf86fc1115d729a714ddfbe0baf220048d635c6c2731ff5d6e9e42c74";
             release       Choupo-2608;
         }
         "components/nButanol.dat"
@@ -52,13 +52,13 @@ propertyManifest
             originSha256  "51660cc2012e7d52b29aa9e7c3569ae591fca840e45ca2dda40691656508c855";
             release       Choupo-2608;
         }
-        "parameters/Wilson/3Methyl1Butanol-nButanol.dat"
+        "parameters/UNIQUAC/3Methyl1Butanol-nButanol.dat"
         {
             type          imported;
-            sha256        "c1ed1e0ed3474bbfeaac4509591874300cc657ae42b29a08bab0c9a110ed0555";
-            computationalSha256 "d0c26ee4d0d379c2a636ecf4f57eee07ef72a8caa3101d4b9985a3c838876b2c";
-            origin        "data/standards/parameters/Wilson/3Methyl1Butanol-nButanol.dat";
-            originSha256  "61f12d0294ad678fda91d34027756229d65c30dcf9d8df66bc5b26fefd3abceb";
+            sha256        "386351a4d66c5483a831eec8b6c47e632229e40599d32cc6567715b353e39994";
+            computationalSha256 "86764cc6794f330ea7b020ef0ae2b22e4e3daf0e5ca78d6e99108a34d39496a2";
+            origin        "data/standards/parameters/UNIQUAC/3Methyl1Butanol-nButanol.dat";
+            originSha256  "f906ba8eae5131774a63548a4272df00a10956f92c58befe97465590585e996e";
             release       Choupo-2608;
         }
     }

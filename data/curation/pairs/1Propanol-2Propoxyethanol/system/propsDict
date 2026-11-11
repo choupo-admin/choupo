@@ -86,17 +86,14 @@
   @@MODELS-RESULT-BEGIN@@
   WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
   not argued). Beside fit_nrtl's max |dT| 0.810 K (clean) on the same
-  kept points. fit_wilson: A_ij = -368.4, A_ji = 418.3 J/mol over 36 kept
-  points: max |dT| 0.819 K, mean 0.357 K, graded clean -> accepted;
-  fit_wilson_start2 lands on A DIFFERENT pair (5914.9, -4202.9). PROMOTED
-  on 2026-11-11 into
-  data/standards/parameters/Wilson/1Propanol-2Propoxyethanol.dat as
+  kept points. fit_uniquac: a_ij = 193.2, a_ji = -168.2 K over 36 kept
+  points: max |dT| 0.729 K, mean 0.269 K, graded clean -> accepted;
+  fit_uniquac_start2 lands on the same pair (193.2, -168.2). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/UNIQUAC/1Propanol-2Propoxyethanol.dat as
   reviewStatus autoPromoted, review by none, because: fit grade clean --
-  max |dT| 0.819 K over the 36 kept points, one liquid across the
-  validity span. UNIQUAC: not fitted -- 2Propoxyethanol carries no
-  UNIQUAC r and q (no tabulated value, and no UNIFAC groups to sum them
-  from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted;
-  nothing is estimated silently.
+  max |dT| 0.729 K over the 36 kept points, one liquid across the
+  validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -473,16 +470,16 @@ operations
     // @@C294-OPS-END@@
     // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
     {
-        name        txy_wilson;
+        name        txy_uniquac;
         type        propertyScan1D;
         vary        { variable x[1Propanol];  from 0.0;  to 1.0;  n 101; }
         state       { P 100 kPa;  composition { 1Propanol 0.5;  2Propoxyethanol 0.5; } }
         thermo
         {
-            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
         }
         properties  ( T_bubble  y_eq_1Propanol );
-        output      { file txy_wilson.csv; }
+        output      { file txy_uniquac.csv; }
     }
     // @@C294-READBACK-END@@
 );

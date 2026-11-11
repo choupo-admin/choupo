@@ -90,14 +90,11 @@
   @@MODELS-RESULT-BEGIN@@
   WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
   not argued). Beside fit_nrtl's max |dT| 3.061 K (severe) on the same
-  kept points. fit_wilson: A_ij = 5957.6, A_ji = -7204.1 J/mol over 56
-  kept points: max |dT| 4.460 K, mean 0.782 K, graded refused ->
-  notAccepted; fit_wilson_start2 lands on the same pair (5957.6,
-  -7204.1). NOT PROMOTABLE: fit grade refused -- max |dT| 4.460 K over
-  the 56 kept points. UNIQUAC: not fitted -- morpholine and 1Decanol
-  carry no UNIQUAC r and q (no tabulated value, and no UNIFAC groups to
-  sum them from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not
-  fitted; nothing is estimated silently.
+  kept points. fit_uniquac: a_ij = -152.3, a_ji = 124.4 K over 56 kept
+  points: max |dT| 5.179 K, mean 2.025 K, graded refused -> notAccepted;
+  fit_uniquac_start2 lands on the same pair (-152.3, 124.4). NOT
+  PROMOTABLE: fit grade refused -- max |dT| 5.179 K over the 56 kept
+  points.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -482,16 +479,16 @@ operations
     // @@C294-OPS-END@@
     // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
     {
-        name        txy_wilson;
+        name        txy_uniquac;
         type        propertyScan1D;
         vary        { variable x[morpholine];  from 0.0;  to 1.0;  n 101; }
         state       { P 94.9 kPa;  composition { morpholine 0.5;  1Decanol 0.5; } }
         thermo
         {
-            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
         }
         properties  ( T_bubble  y_eq_morpholine );
-        output      { file txy_wilson.csv; }
+        output      { file txy_uniquac.csv; }
     }
     // @@C294-READBACK-END@@
 );

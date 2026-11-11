@@ -37,10 +37,10 @@ propertyManifest
         "components/3Methyl1Butanol.dat"
         {
             type          imported;
-            sha256        "06807fc2f8b7942f787f41efa53ec7e1563148f37a77e2fdddca264780511548";
-            computationalSha256 "bc3bde7defcd31de691ba224e91f33120bbc0f667050dcb886c645947069610a";
+            sha256        "feb9a78f924adea09e52afadb1faea3b86a82592503ef7d91e9fbaf2b171bcd9";
+            computationalSha256 "462f7772a690287cab81b7cc48a247230dce1160f156e4a9bb1c67e6fadb360e";
             origin        "data/standards/components/3Methyl1Butanol.dat";
-            originSha256  "75054091b86e558cb1e679d4f372632e920bf79fe581a74aa788d14b19d5d1f7";
+            originSha256  "c0bbb9baf86fc1115d729a714ddfbe0baf220048d635c6c2731ff5d6e9e42c74";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"
@@ -61,13 +61,13 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
-        "parameters/Wilson/14Butanediol-3Methyl1Butanol.dat"
+        "parameters/UNIQUAC/14Butanediol-3Methyl1Butanol.dat"
         {
             type          imported;
-            sha256        "c525e188b592ad6033394af9a8787426229c76360d46789315da289e25fc82fe";
-            computationalSha256 "f08bab4c44f028e48f9cb455dae74f0f5e66a08162ff715747222caab78948c0";
-            origin        "data/standards/parameters/Wilson/14Butanediol-3Methyl1Butanol.dat";
-            originSha256  "3d68c22b36e9724cbe3b9e72cc28facb7052a030e3aecc243e61cb1e9a72b6d1";
+            sha256        "b80b3e0fab3ecd9a235d01fa3667432015951ca09fafafbbbb760b133102f8d6";
+            computationalSha256 "3d0fb9c0ca9a37be708fec7caaf841d8a7954d763f9ba3dd2d148e00137fd54c";
+            origin        "data/standards/parameters/UNIQUAC/14Butanediol-3Methyl1Butanol.dat";
+            originSha256  "ded720649522884c143e140a692b3789b2877bb22436833c2330c40ae32dd12d";
             release       Choupo-2608;
         }
     }

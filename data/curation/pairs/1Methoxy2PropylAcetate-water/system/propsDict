@@ -87,14 +87,20 @@
   @@MODELS-END@@
 
   @@MODELS-RESULT-BEGIN@@
-  WHAT THE UNIQUAC AND WILSON FITS FOUND: neither was fitted. UNIQUAC:
-  1Methoxy2PropylAcetate carries no UNIQUAC r and q (no tabulated value,
-  and no UNIFAC groups to sum them from,
-  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
-  is estimated silently. Wilson: the NRTL fit of this very evidence
-  SPLITS the liquid inside its validity span (curation oneLiquid false,
-  arm f); Wilson cannot represent two liquids, so a Wilson fit here would
-  hide the split -- Wilson is not fitted.
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dT| 1.533 K (warning) on the same
+  kept points. fit_uniquac: a_ij = 43.2, a_ji = 245.0 K over 42 kept
+  points: max |dT| 2.041 K, mean 0.485 K, graded severe -> accepted;
+  fit_uniquac_start2 lands on the same pair (43.2, 245.0). NOT PROMOTABLE
+  (fit grade severe, max |dT| 2.041 K): the pair splits ONE liquid inside
+  its own validity span (arm f, UNIQUAC) -- predicts a LIQUID-LIQUID
+  SPLIT at 336.22 K (x_water 0.476 .. 0.985), inside its own validity
+  span 336.22-402.43 K -- its evidence is bubble points of ONE liquid; a
+  UNIQUAC pair that splits that liquid stays in its case. Wilson: not
+  fitted -- the NRTL fit of this very evidence SPLITS the liquid inside
+  its validity span (curation oneLiquid false, arm f); Wilson cannot
+  represent two liquids, so a Wilson fit here would hide the split --
+  Wilson is not fitted.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -356,6 +362,20 @@ operations
         }
     }
     // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_uniquac;
+        type        propertyScan1D;
+        vary        { variable x[water];  from 0.0;  to 1.0;  n 101; }
+        state       { P 93.3 kPa;  composition { water 0.5;  1Methoxy2PropylAcetate 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_water );
+        output      { file txy_uniquac.csv; }
+    }
+    // @@C294-READBACK-END@@
 );
 
 experimental

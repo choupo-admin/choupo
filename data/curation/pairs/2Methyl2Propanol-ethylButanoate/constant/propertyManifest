@@ -37,10 +37,10 @@ propertyManifest
         "components/ethylButanoate.dat"
         {
             type          imported;
-            sha256        "669260b7541277937cd559d089f6542bfeacc0424f3c66461dffdc55cec08479";
-            computationalSha256 "26020bf70786f13662f85178e9c681c89c39600e5160ac1644805f7ad1d0c89d";
+            sha256        "ff4a9a120a1dc93217d91a53eb7a3f5b236d7ff9bb770e46cd428ef98cc5d509";
+            computationalSha256 "bba01e23728f628c6a6796bbe0b4955cab3e8626ecfee1dc07653caf637bc39e";
             origin        "data/standards/components/ethylButanoate.dat";
-            originSha256  "df0577292273d80319c10418e51dc18b6fdbbaed3a24f1a3f11a2ecae8abe912";
+            originSha256  "bbe1c05ff36aa50764f159cc9b2913e4e9698ea50e29cad648a1f6817ed7e9d9";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"
@@ -61,13 +61,13 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
-        "parameters/Wilson/2Methyl2Propanol-ethylButanoate.dat"
+        "parameters/UNIQUAC/2Methyl2Propanol-ethylButanoate.dat"
         {
             type          imported;
-            sha256        "4aa256a1bc543852d4f4744a21025dda09646aefb48c84cc1b41a31fa9b6dfc6";
-            computationalSha256 "6a60da6b7fbf3e61ca48620ddbd448b44f832035130da98f9625ed4d2df1b76b";
-            origin        "data/standards/parameters/Wilson/2Methyl2Propanol-ethylButanoate.dat";
-            originSha256  "1823136f3bb0b6c9be0a77f9df29c0d4d07905da125d730e05058d4668ebed44";
+            sha256        "1c3046241f717a66248b3e8ac7275baa0a00aec0d45924b9faaf7f864cffb926";
+            computationalSha256 "a18f741102e7e46ae6d2d5d8369ad4ccd78eb9ea6ced661a61bf20883ec4f8ac";
+            origin        "data/standards/parameters/UNIQUAC/2Methyl2Propanol-ethylButanoate.dat";
+            originSha256  "8a294dfd2e3ed615d9ef45ba4d27d8fe6b96ff31308e7d423740c7374030a2f9";
             release       Choupo-2608;
         }
     }

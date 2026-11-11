@@ -80,17 +80,14 @@
   @@MODELS-RESULT-BEGIN@@
   WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
   not argued). Beside fit_nrtl's max |dP|/P 0.987 % (clean) on the same
-  kept points. fit_wilson: A_ij = -1065.3, A_ji = 3694.1 J/mol over 20
-  kept points: max |dP|/P 0.879 %, mean 0.479 %, graded clean ->
-  accepted; fit_wilson_start2 lands on the same pair (-1065.3, 3694.1).
-  PROMOTED on 2026-11-11 into
-  data/standards/parameters/Wilson/3Methyl1Butanol-nButylAcetate.dat as
+  kept points. fit_uniquac: a_ij = 222.1, a_ji = -126.0 K over 20 kept
+  points: max |dP|/P 0.935 %, mean 0.485 %, graded clean -> accepted;
+  fit_uniquac_start2 lands on the same pair (222.1, -126.0). PROMOTED on
+  2026-11-11 into
+  data/standards/parameters/UNIQUAC/3Methyl1Butanol-nButylAcetate.dat as
   reviewStatus autoPromoted, review by none, because: fit grade clean --
-  max |dP|/P 0.879 % over the 20 kept points, one liquid across the
-  validity span. UNIQUAC: not fitted -- 3Methyl1Butanol carries no
-  UNIQUAC r and q (no tabulated value, and no UNIFAC groups to sum them
-  from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted;
-  nothing is estimated silently.
+  max |dP|/P 0.935 % over the 20 kept points, one liquid across the
+  validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -441,16 +438,16 @@ operations
     // @@C294-OPS-END@@
     // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
     {
-        name        txy_wilson;
+        name        txy_uniquac;
         type        propertyScan1D;
         vary        { variable x[nButylAcetate];  from 0.0;  to 1.0;  n 101; }
         state       { P 13.1 kPa;  composition { nButylAcetate 0.5;  3Methyl1Butanol 0.5; } }
         thermo
         {
-            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
         }
         properties  ( T_bubble  y_eq_nButylAcetate );
-        output      { file txy_wilson.csv; }
+        output      { file txy_uniquac.csv; }
     }
     // @@C294-READBACK-END@@
 );

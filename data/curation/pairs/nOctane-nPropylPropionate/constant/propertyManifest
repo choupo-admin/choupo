@@ -37,10 +37,10 @@ propertyManifest
         "components/nPropylPropionate.dat"
         {
             type          imported;
-            sha256        "2e12f8955f15830aec373312e1ebb6b38ce7f2bcca574072e3ba5f1c5931a4d0";
-            computationalSha256 "350c8ed57db09094675c23072cc5fbad4f39020ef3683259e03367585a2fe805";
+            sha256        "e158c68c98a6bb2d06514848740cdc6a8fe5c48f0f10e55353de4737a5998918";
+            computationalSha256 "85da01fd59fb422e3c78211aceddb6af7c9b7bf77c21d0bd076929650f5ea4e9";
             origin        "data/standards/components/nPropylPropionate.dat";
-            originSha256  "8ddf0fa5d24b27fbb0df8e12ca257db80c11db8bffc565f504ecc2b21bd87404";
+            originSha256  "bae73233089f619e77b0aaded04ec98d720d1a82aad4ee70933e18354c2b51b4";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"
@@ -61,13 +61,13 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
-        "parameters/Wilson/nOctane-nPropylPropionate.dat"
+        "parameters/UNIQUAC/nOctane-nPropylPropionate.dat"
         {
             type          imported;
-            sha256        "67dade852f760e5537f9f69f97048e9ed101231b6b524bb91cf1b47faa5fcfd5";
-            computationalSha256 "45ff56d3feac668a8da6ffe8de9ed6457009e2faba91a95c00c995d79c043d7e";
-            origin        "data/standards/parameters/Wilson/nOctane-nPropylPropionate.dat";
-            originSha256  "8ee785b7cc62941dff7cf8ade55b53219c079def5b178e309df170b2e2dc9dea";
+            sha256        "3a326feeb000a5aed7eaab74731521f30b027639f36e5a9a585725e11e0fb7b7";
+            computationalSha256 "297e094a419d0995b41c471eb9ca79bcb314fbb29437b1e077bc992d0d085055";
+            origin        "data/standards/parameters/UNIQUAC/nOctane-nPropylPropionate.dat";
+            originSha256  "d67006f2cf6ba60fa5fcddb42933436234da9e7762fc75f54aaad0a075182009";
             release       Choupo-2608;
         }
     }

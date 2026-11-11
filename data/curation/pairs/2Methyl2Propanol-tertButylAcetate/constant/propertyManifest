@@ -37,10 +37,10 @@ propertyManifest
         "components/tertButylAcetate.dat"
         {
             type          imported;
-            sha256        "5904d714a2132b389cb44bd9d257f66c76c8f95eba916b949ccad7b699cd4c52";
-            computationalSha256 "06a30b8d951cd294b090193c086dbc43c8b8a2b4a23f61ef9d75574d51f92b9a";
+            sha256        "a792dcd113133313caf9a21da1541a999ac5329492fefe642dc07335f788eb2f";
+            computationalSha256 "b030c46222f31439cbe4aa4c88da815302d75a8b328af83991ee4a7948a10ce5";
             origin        "data/standards/components/tertButylAcetate.dat";
-            originSha256  "1481eff3db1e41d37e571c4b6e8e06fea4029321bb9f6f2bf6227c3004e9ae57";
+            originSha256  "f97c77cfda5f49ef0cf089ed36280919ba78d2f91ac2f17e7c39d8d794ac3cd8";
             release       Choupo-2608;
         }
         "parameters/NRTL/2Methyl2Propanol-tertButylAcetate.dat"
@@ -70,13 +70,13 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
-        "parameters/Wilson/2Methyl2Propanol-tertButylAcetate.dat"
+        "parameters/UNIQUAC/2Methyl2Propanol-tertButylAcetate.dat"
         {
             type          imported;
-            sha256        "997f42871f59473460068956d0e29bff6d3e31a8632e17f31e87b0423036460b";
-            computationalSha256 "0bfaf51fa4a0823ef4419d49b888cba0b8cc2b58455c8b59f9822c849ec5917b";
-            origin        "data/standards/parameters/Wilson/2Methyl2Propanol-tertButylAcetate.dat";
-            originSha256  "f47d7c43f275eddd5fa560e4056cda38914212837792093833847a3eb5e3203c";
+            sha256        "2931e1aa6637bea3f2011ec13279b4020dcaa1a39e79c51ffc596dbd5e1b796b";
+            computationalSha256 "e896af12a1872c8f0d7c565dba619e3a21225f91626b05e48f25999b3fbece23";
+            origin        "data/standards/parameters/UNIQUAC/2Methyl2Propanol-tertButylAcetate.dat";
+            originSha256  "2d94c71eb48667ab592e795e7d1d55b6265080bf9321c7837d997bea27f47eba";
             release       Choupo-2608;
         }
     }

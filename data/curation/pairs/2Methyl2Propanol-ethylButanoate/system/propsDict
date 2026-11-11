@@ -86,17 +86,14 @@
   @@MODELS-RESULT-BEGIN@@
   WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
   not argued). Beside fit_nrtl's max |dT| 0.236 K (clean) on the same
-  kept points. fit_wilson: A_ij = -1146.6, A_ji = 2507.1 J/mol over 39
-  kept points: max |dT| 0.236 K, mean 0.087 K, graded clean -> accepted;
-  fit_wilson_start2 lands on the same pair (-1146.6, 2507.1). PROMOTED on
+  kept points. fit_uniquac: a_ij = 152.2, a_ji = -100.6 K over 39 kept
+  points: max |dT| 0.235 K, mean 0.081 K, graded clean -> accepted;
+  fit_uniquac_start2 lands on the same pair (152.2, -100.6). PROMOTED on
   2026-11-11 into
-  data/standards/parameters/Wilson/2Methyl2Propanol-ethylButanoate.dat as
-  reviewStatus autoPromoted, review by none, because: fit grade clean --
-  max |dT| 0.236 K over the 39 kept points, one liquid across the
-  validity span. UNIQUAC: not fitted -- ethylButanoate carries no UNIQUAC
-  r and q (no tabulated value, and no UNIFAC groups to sum them from,
-  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
-  is estimated silently.
+  data/standards/parameters/UNIQUAC/2Methyl2Propanol-ethylButanoate.dat
+  as reviewStatus autoPromoted, review by none, because: fit grade clean
+  -- max |dT| 0.235 K over the 39 kept points, one liquid across the
+  validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -473,16 +470,16 @@ operations
     // @@C294-OPS-END@@
     // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
     {
-        name        txy_wilson;
+        name        txy_uniquac;
         type        propertyScan1D;
         vary        { variable x[ethylButanoate];  from 0.0;  to 1.0;  n 101; }
         state       { P 101.325 kPa;  composition { ethylButanoate 0.5;  2Methyl2Propanol 0.5; } }
         thermo
         {
-            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
         }
         properties  ( T_bubble  y_eq_ethylButanoate );
-        output      { file txy_wilson.csv; }
+        output      { file txy_uniquac.csv; }
     }
     // @@C294-READBACK-END@@
 );

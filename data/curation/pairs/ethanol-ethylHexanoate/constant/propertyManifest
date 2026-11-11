@@ -37,10 +37,10 @@ propertyManifest
         "components/ethylHexanoate.dat"
         {
             type          imported;
-            sha256        "43af60503dc4a79c05aacdceee47e31fd34973cdfb428a91f723cc04d121b60a";
-            computationalSha256 "b6846962b04d6e7909e643b209c2d50750ced4ee243b7b1d9c7ccdb94feaed82";
+            sha256        "df9f8097a0e653383a522a422d48d1c9e66a1b8c2a05e6001321d2dfa302888e";
+            computationalSha256 "cc70362be9f9c280571cd1aa29badd944bedd534dbb22fdb9857c1a441ace83d";
             origin        "data/standards/components/ethylHexanoate.dat";
-            originSha256  "46ba90ecf2208a25d3b446911dabb5779a9bee53fc96a78a505a84b7cabb94a0";
+            originSha256  "ec878dbbe80dc681da2a6fe5f4ae4dacc8477dc1ec149d6f2b4d108a7e3f3ada";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

@@ -114,4 +114,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Octanol-nDodecane.a_ij  539.016217056;
+        equilibrium.liquid.activityModel.binaryParameters.1Octanol-nDodecane.a_ji  -264.783070567;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "baeb23a8c12fba72";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Octanol-nDodecane-bubble-acs.jced.8b00680.dat";
+            doi       "10.1021/acs.jced.8b00680";
+            sha256    "24e5d0a547f0ece199cef88e38a33059d446a79066ec16e532dde61242113b94";
+            provenance measured;
+            archiveFile "acs.jced.8b00680.xml";
+            system    "1Octanol + nDodecane";
+            pressure  "40000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.004; max 0.998; n 34; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Octanol-nDodecane.a_ij  539.016217382;
+        equilibrium.liquid.activityModel.binaryParameters.1Octanol-nDodecane.a_ji  -264.783070706;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "baeb23a8c12fba72";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Octanol-nDodecane-bubble-acs.jced.8b00680.dat";
+            doi       "10.1021/acs.jced.8b00680";
+            sha256    "24e5d0a547f0ece199cef88e38a33059d446a79066ec16e532dde61242113b94";
+            provenance measured;
+            archiveFile "acs.jced.8b00680.xml";
+            system    "1Octanol + nDodecane";
+            pressure  "40000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.004; max 0.998; n 34; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

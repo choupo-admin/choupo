@@ -1,0 +1,138 @@
+/*---------------------------------------------------------------------------*\
+  UNIQUAC binary interaction parameters --- morpholine(i) + 3Methyl1Butanol(j)
+
+  REGRESSED BY CHOUPO'S CURATION PIPELINE (bin/choupo-curate pairs --models, DEV.md 4c C294 on C282;
+  record docs/design/binary-pairs-from-open-measurements.md) to measured
+  bubble PRESSURES at stated temperatures (P-x, DEV.md 4c C291).  The articles named under `evidence` are the
+  SOURCE of the measurements; the NIST/TRC ThermoML Archive located them.
+  NO MEASURED POINT IS IN THIS RECORD OR THIS TREE: the case regenerates
+  them from the DOIs and sha256 sums it declares (constant/archiveDatasets).
+  The PARAMETERS are Choupo's own work.
+
+  EQUATION: UNIQUAC, tau_ij = exp(-(a_ij + b_ij T + c_ij T^2) / T) [a in K],
+  Abrams & Prausnitz (src/thermo/activityCoefficient/UNIQUAC.cpp); r and q
+  each component's own record.  b_ij = b_ji = c_ij = c_ji = 0 FIXED, not
+  fitted: two parameters a_ij, a_ji (DEV.md 4c C294).
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
+  vapour-pressure records for both pure components.
+
+  reviewStatus autoPromoted; review { by none; }: PROMOTED AUTOMATICALLY by
+  its fitting pipeline (the NRTL case's own evidence and kept points, the
+  max |P_model - P|/P over the kept points, graded 5 / 10 / 20 % -- DEV.md 4c C285, C294;
+  THIS fit: clean in-sample, 1.6701 %, CAPPED at warning by C300 (singleTemperature and singleLaboratory); one liquid across its
+  validity span), and NO HUMAN HAS REVIEWED IT.  The engine says so on every
+  run that reads it, and voices a warning or a severe grade beside it.
+  Nothing was held out: the `validation {}` block says so, and the
+  acceptance is the `curation {}` block.  A curator who reads the series
+  back against the articles records it in the `review {}` block (DEV.md 4c
+  C297).  Revert by reverting the commit that promoted it.
+
+  REPRODUCE: run data/curation/pairs/3Methyl1Butanol-morpholine (after `bin/choupo-curate fetch` on it); its fit_uniquac
+  writes 3Methyl1Butanol-morpholine.UNIQUAC.proposal.dat, which bin/curate/check_regressed_pairs.py holds
+  equal to this record.
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i morpholine; j 3Methyl1Butanol; }
+
+components  ( morpholine  3Methyl1Butanol );
+model       UNIQUAC;
+
+parameters
+{
+    i           morpholine;
+    j           3Methyl1Butanol;
+    a_ij        -263.68999417;
+    b_ij        0.00000000;
+    c_ij        0.00000000;
+    a_ji        442.85290967;
+    b_ji        0.00000000;
+    c_ji        0.00000000;
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(P_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "data/curation/pairs/3Methyl1Butanol-morpholine";
+    reviewStatus  autoPromoted;
+    review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+    fitGrade      warning;   // DEV.md 4c C285 (C294): max |P_model - P|/P over the kept points, graded 5 / 10 / 20 %
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+    fitGradeCap   ( singleTemperature singleLaboratory );   // DEV.md 4c C300 rule 2: in-sample clean, capped -- nothing held out could have contradicted it
+    fitGradeMaxRelativeError_pct 1.6701;
+    promotedBy    "bin/choupo-curate pairs --models --promote";
+    promotedDate  "2026-11-11";
+    reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+    fitDate       "2026-11-11";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/morpholine-3Methyl1Butanol-bubbleP-acs.jced.7b01128-b8.dat";
+            doi       "10.1021/acs.jced.7b01128";
+            sha256    "6745bdc0beec2fa3fa8d1493f40cfd46ffa6dea83ecb70fb52646a21d3abc433";
+            provenance measured;
+            archiveFile "acs.jced.7b01128.xml";
+            system    "morpholine + 3Methyl1Butanol";
+        }
+    );
+    fingerprint "230fc80a5670e9e8";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     equal;   // chi2 is sum ((P_model - P_exp)/P_exp)^2, dimensionless
+    chi2          0.00177672;
+    rms_rel       0.01088338;
+    nDataPoints   15;
+    identifiable  true;
+    maxAbsCorr    0.99364485;
+
+    validity
+    {
+        temperature { min 343.15 K; max 343.15 K; }
+        pressure    { min 7990 Pa; max 12930 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validationRefused;
+
+    heldOut     none;   // every declared dataset carried `role fit`
+
+    acceptance  none;   // no band was declared before the fit, so no
+                        // pass/fail may be read out of the residual above
+}
+
+curation
+{
+    rule            "DEV.md 4c C294 (the NRTL case's own evidence and kept points, another activity model) on DEV.md 4c C291 (bubble-pressure pairs; every laboratory, graded by C285)";
+    model           UNIQUAC;
+    discardsFrom    fit_nrtl;   // the outliers were decided ONCE, on the NRTL least-squares stage, and reused (C294)
+    evidence        allLaboratories;   // every study fitted, none held out
+    objective       twoStage;
+    residual        P_bubble;
+    residualScale   relative;   // (P_model - P)/P at each point's stated T
+    outlierLimit_pct 20;   // the NRTL least-squares stage's, reused
+    outliersDropped 0;
+    pointsKept      15;
+    noBubblePoint   0;
+    maxRelError_pct 1.6701;
+    meanRelError_pct 0.8856;
+    acceptance      graded;   // max relative pressure error over the kept points, DEV.md 4c C285 (C291)
+    gradeLimits_pct (5 10 20);   // upper limits of clean / warning / severe; above, refused
+    grade           clean;
+    oneLiquid       true;   // arm (f) on this model's own equation over the validity span
+    temperatures    1;   // distinct stated temperatures in the kept evidence
+    laboratories    1;   // distinct articles in the kept evidence
+    singleTemperature true;
+    singleLaboratory  true;
+    verdict         accepted;
+}

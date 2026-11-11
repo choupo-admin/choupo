@@ -37,10 +37,10 @@ propertyManifest
         "components/cyclopentanol.dat"
         {
             type          imported;
-            sha256        "9c849368ac7f476f9028d4e125305b0aaa413fc7f3f0850b2e7836ac89966476";
-            computationalSha256 "7dc6768aba3a3508f290616b53d11330d62c88778529569e8bbfd2cef90ca841";
+            sha256        "2c1ddf8029f532c08824670bcc0d378354b7042570324f941f4cc23367c3ef44";
+            computationalSha256 "671de0de33d7186e30ad089e22b769dcdfcea1d7cb7aeeadd7d9e352f2d868a4";
             origin        "data/standards/components/cyclopentanol.dat";
-            originSha256  "483dfd03abdddf6d49f2e9b796f47e0e2b5a9c5ca49c246dd435c0ab29029039";
+            originSha256  "c5bd976682cebcc47c13582157e7b055e4f1992c53aaf2acb9102944b4af08db";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

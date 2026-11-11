@@ -206,4 +206,96 @@ properties
     }
 }
 
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nPropylPropionate-nOctane.a_ij  -39.3723277455;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylPropionate-nOctane.a_ji  87.0008981443;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "4ad429cc58307798";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nPropylPropionate-nOctane-bubble-acs.jced.5b01058.dat";
+            doi       "10.1021/acs.jced.5b01058";
+            sha256    "97e52019491b8e7b6002e92c401a38a3dcff6a8e4aafd17fa6b75f863bed4b2c";
+            provenance measured;
+            archiveFile "acs.jced.5b01058.xml";
+            system    "nPropylPropionate + nOctane";
+            pressure  "60000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.032; max 0.978; n 39; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nPropylPropionate-nOctane.a_ij  -39.3723277306;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylPropionate-nOctane.a_ji  87.0008981036;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "4ad429cc58307798";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nPropylPropionate-nOctane-bubble-acs.jced.5b01058.dat";
+            doi       "10.1021/acs.jced.5b01058";
+            sha256    "97e52019491b8e7b6002e92c401a38a3dcff6a8e4aafd17fa6b75f863bed4b2c";
+            provenance measured;
+            archiveFile "acs.jced.5b01058.xml";
+            system    "nPropylPropionate + nOctane";
+            pressure  "60000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.032; max 0.978; n 39; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
 );

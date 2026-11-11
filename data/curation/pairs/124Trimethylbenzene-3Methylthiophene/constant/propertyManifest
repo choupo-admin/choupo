@@ -37,10 +37,10 @@ propertyManifest
         "components/3Methylthiophene.dat"
         {
             type          imported;
-            sha256        "c8e08d236ca4f39bf34966cf875015c1154f56ddf92b1ddbefb6066c2b8b4f78";
-            computationalSha256 "f269dbbaf52cf7439142e7132d3db5e28df6bcbaaf9dd9facfdaecdd758591c0";
+            sha256        "749b10311d783157b48298a90b0378365a6e612da87c70a2d62151fb40dd6637";
+            computationalSha256 "59536f0134ab732fa75a10632d55d37e5bd21e69fa037ac55150cfc9c1b61fde";
             origin        "data/standards/components/3Methylthiophene.dat";
-            originSha256  "cb876f368219985355881a7320b119a4cc7d9059760446e9c3ef33089d1fc1fd";
+            originSha256  "b4e86f5ced31175955a684eb8f40540df0178d2210323e03fa818170517955af";
             release       Choupo-2608;
         }
         "parameters/NRTL/124Trimethylbenzene-3Methylthiophene.dat"
@@ -52,13 +52,13 @@ propertyManifest
             originSha256  "9dc805dce28490d37e7bd5770b09f9910ad3c6fec8ad459e2e46c8cce09ddd46";
             release       Choupo-2608;
         }
-        "parameters/Wilson/124Trimethylbenzene-3Methylthiophene.dat"
+        "parameters/UNIQUAC/124Trimethylbenzene-3Methylthiophene.dat"
         {
             type          imported;
-            sha256        "5fa597432e5a91e7f615c2d4c1ecc1c12c15ec6c7ec0ef11b17c3d81f5b9da40";
-            computationalSha256 "22f66668e9484c4eedf2edcfb4c98180e60531dc0c45b56ebc3c3aece8ea7b08";
-            origin        "data/standards/parameters/Wilson/124Trimethylbenzene-3Methylthiophene.dat";
-            originSha256  "2348d62abdc42b3144e148351d458a3ffc8ee9e6e1e42fb6ec5f5390df70c2d9";
+            sha256        "472a5df5ddc7da2c7e70191698a1005ecca9e43132a7df78807e7e4c644ef7d8";
+            computationalSha256 "fc01410ff494510fd33aa7e8cc4a3c59c2f5c29ade385df539b8366de4e82c5c";
+            origin        "data/standards/parameters/UNIQUAC/124Trimethylbenzene-3Methylthiophene.dat";
+            originSha256  "f4e493819b38e7a370e7a0c9d42c66d11e4b35d9fa95731140b962c250e521d7";
             release       Choupo-2608;
         }
     }

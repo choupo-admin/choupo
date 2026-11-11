@@ -37,10 +37,10 @@ propertyManifest
         "components/diNPropylEther.dat"
         {
             type          imported;
-            sha256        "2e4384e2f290802967e8c2201e31076f41ac647a0eb7613cadaefcfb81f214dd";
-            computationalSha256 "145cdea694160ecc82ca01d10308f4be8c37b7fdb5f57b03b32e90bc7ac158a6";
+            sha256        "3e03eccfe0ac955b885f2303a0128906f6ed849b44c35825242eefbde39c4476";
+            computationalSha256 "4d231049c3a937366d10a08fcd3d63a5ee92bb2bc9806e8d32bc2aca7299e894";
             origin        "data/standards/components/diNPropylEther.dat";
-            originSha256  "202203ae44e726d8caa6b9c9e73e9a1368a67451f7972cc6e06ad287ce158b07";
+            originSha256  "06c038be866580dabd153fe725c9d1c5480fccbfe6787ad2fbb37038c6b33764";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"
@@ -61,13 +61,13 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
-        "parameters/Wilson/1Propanol-diNPropylEther.dat"
+        "parameters/UNIQUAC/1Propanol-diNPropylEther.dat"
         {
             type          imported;
-            sha256        "f871ed1811eb7f8dd7a99759ee347c27253c14cb4da6cc9ad74011ae755ff6c2";
-            computationalSha256 "cc75a94a4fc85e0dae9eb5d6a0d24fe83347ed4d103bb8017ee7b5ec6e46bf42";
-            origin        "data/standards/parameters/Wilson/1Propanol-diNPropylEther.dat";
-            originSha256  "c751042992de0dbc31d6a99362d73f463d2e6a3e38e51bdfd1c52dd8f964cd8f";
+            sha256        "a8ae9dd8d4994a8776801853b176b8634b1b79e6018f4eb0332e304bbd25a210";
+            computationalSha256 "24db7c183e942616a539d16a3a12959b83fb0b1c37c665a22890639e3488bf29";
+            origin        "data/standards/parameters/UNIQUAC/1Propanol-diNPropylEther.dat";
+            originSha256  "bef973819f39a58bcdeb492c0f8db594a6ce84ef81ed3513cc72cf9211a3701a";
             release       Choupo-2608;
         }
     }

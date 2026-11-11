@@ -28,19 +28,19 @@ propertyManifest
         "components/3Methyl1Butanol.dat"
         {
             type          imported;
-            sha256        "06807fc2f8b7942f787f41efa53ec7e1563148f37a77e2fdddca264780511548";
-            computationalSha256 "bc3bde7defcd31de691ba224e91f33120bbc0f667050dcb886c645947069610a";
+            sha256        "feb9a78f924adea09e52afadb1faea3b86a82592503ef7d91e9fbaf2b171bcd9";
+            computationalSha256 "462f7772a690287cab81b7cc48a247230dce1160f156e4a9bb1c67e6fadb360e";
             origin        "data/standards/components/3Methyl1Butanol.dat";
-            originSha256  "75054091b86e558cb1e679d4f372632e920bf79fe581a74aa788d14b19d5d1f7";
+            originSha256  "c0bbb9baf86fc1115d729a714ddfbe0baf220048d635c6c2731ff5d6e9e42c74";
             release       Choupo-2608;
         }
         "components/morpholine.dat"
         {
             type          imported;
-            sha256        "ae4efb03ba686f8a0036c0280639a9152cdefeb3278fbf6206fab65447c34e58";
-            computationalSha256 "3e980aa298ccaed3a4ffabf9665e8770b294e91bb40c898180f87c85c4973adb";
+            sha256        "b83429efaa2d4488af4e391e73e425c476d609f35a87ba736866c7e4da8e4b64";
+            computationalSha256 "839a878e112542d94846d1ff834ed249928fb8296974cf6892adcea7724bf8c8";
             origin        "data/standards/components/morpholine.dat";
-            originSha256  "75ee49ac25f927b4ca0bde263d9561d088de6f787f9213d62dd4c2f020b9a8c2";
+            originSha256  "72d7fb4243b617f26781f92a741ed8cad851b5c1ceae47ad5a556c528344fdf4";
             release       Choupo-2608;
         }
         "parameters/NRTL/3Methyl1Butanol-morpholine.dat"
@@ -52,13 +52,13 @@ propertyManifest
             originSha256  "d24e6330175c7e2bc793e2d2f0bf85f08d40bef027cfd0ff44c29dd76f30edf2";
             release       Choupo-2608;
         }
-        "parameters/Wilson/3Methyl1Butanol-morpholine.dat"
+        "parameters/UNIQUAC/3Methyl1Butanol-morpholine.dat"
         {
             type          imported;
-            sha256        "b5d57fab5e7184d735a0af87af1ba289c9b5d898020ac02d8241cd96e35ef3a5";
-            computationalSha256 "95bcc70891a3c96573953f599ee5d33aed3b3985af164a0e121a2ba7b3436eaa";
-            origin        "data/standards/parameters/Wilson/3Methyl1Butanol-morpholine.dat";
-            originSha256  "779d605362cabd327b25a657bd39a41968684cb93541cbdf9112e77b04f296c6";
+            sha256        "d62766199b6db204c02aa4a0d25d86c94e34154c429ec2892b990eabaf1e82fb";
+            computationalSha256 "6738f2fd79457d79575e9e9c634c05a0ce19f5284e5db223dbb5929f3f522d1d";
+            origin        "data/standards/parameters/UNIQUAC/3Methyl1Butanol-morpholine.dat";
+            originSha256  "1b3c52859acdb5a2e97d802de66796fc473c8b83f0209ae83edef69d77cd3af2";
             release       Choupo-2608;
         }
     }

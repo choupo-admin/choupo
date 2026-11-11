@@ -28,19 +28,19 @@ propertyManifest
         "components/3Methylthiophene.dat"
         {
             type          imported;
-            sha256        "c8e08d236ca4f39bf34966cf875015c1154f56ddf92b1ddbefb6066c2b8b4f78";
-            computationalSha256 "f269dbbaf52cf7439142e7132d3db5e28df6bcbaaf9dd9facfdaecdd758591c0";
+            sha256        "749b10311d783157b48298a90b0378365a6e612da87c70a2d62151fb40dd6637";
+            computationalSha256 "59536f0134ab732fa75a10632d55d37e5bd21e69fa037ac55150cfc9c1b61fde";
             origin        "data/standards/components/3Methylthiophene.dat";
-            originSha256  "cb876f368219985355881a7320b119a4cc7d9059760446e9c3ef33089d1fc1fd";
+            originSha256  "b4e86f5ced31175955a684eb8f40540df0178d2210323e03fa818170517955af";
             release       Choupo-2608;
         }
         "components/methylcyclopentane.dat"
         {
             type          imported;
-            sha256        "f8bc14b35101bdfd91f9cd6f7ba035b4ea094e029391c8606f534c78c16dd4f5";
-            computationalSha256 "bc3810f68ef7bc10b2584e0c97dd2a3f056f0a7c9a7aa4c50b768717eef075d5";
+            sha256        "fc595883ea32645f0cbbde0e1500b43635926a92cbee68515f991dad7be80397";
+            computationalSha256 "ede5c16aa65321b29d4a65efbe1931861da1f486a69531a9dd903d7d612700cf";
             origin        "data/standards/components/methylcyclopentane.dat";
-            originSha256  "b60295f52c4ee84e9f94beb61c76bbbd0e31ae55418cdbb5755f07f9518d9137";
+            originSha256  "3c807559113cbb7c4f00ce468c69da50b4e046ada83a968fa4072266f98440e9";
             release       Choupo-2608;
         }
         "parameters/NRTL/3Methylthiophene-methylcyclopentane.dat"
@@ -52,13 +52,13 @@ propertyManifest
             originSha256  "4a721841c2a276c79eeb063167b39ddbf932c6e5d792e98886ccc415de63c8ce";
             release       Choupo-2608;
         }
-        "parameters/Wilson/3Methylthiophene-methylcyclopentane.dat"
+        "parameters/UNIQUAC/3Methylthiophene-methylcyclopentane.dat"
         {
             type          imported;
-            sha256        "10f903b90360b2d275e23354fff875c1195a092e2c04114fc5c3f0d3517a80fb";
-            computationalSha256 "e5c750a774e10b5ffba5c07306458d24619d2edd36df04b7ec66d294fbd5c33c";
-            origin        "data/standards/parameters/Wilson/3Methylthiophene-methylcyclopentane.dat";
-            originSha256  "72520ff4fd969c04f38d33493964baa61c52dbd027a92c28f0cdbf034a11ff09";
+            sha256        "9fc8e7a28edef6a480fd425bc9b251f5f6d3ec6ef9ff8d03b90d0b40c3ab9177";
+            computationalSha256 "b1aa040e176b8a50978de85fab5ddc40d08871d69ffdfac11d333363a74888d2";
+            origin        "data/standards/parameters/UNIQUAC/3Methylthiophene-methylcyclopentane.dat";
+            originSha256  "0066845e0f1642c146118c46950f8003eabf9435be46a66f910e0b4ff6d60231";
             release       Choupo-2608;
         }
     }

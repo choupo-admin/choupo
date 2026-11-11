@@ -28,10 +28,10 @@ propertyManifest
         "components/2Ethoxyethanol.dat"
         {
             type          imported;
-            sha256        "2b520ea3ec694be6226a910534f306def4ab82a6574202374d0a340c37acad40";
-            computationalSha256 "1d44df950672d5174ef993726cdc10f7a06dfcbff5c35d141714da4988bd7487";
+            sha256        "0b7ecb49920f6b53fdfdd5833eec28ebd57f446c44aa65e53fc982857d80093d";
+            computationalSha256 "5955f830963288748eece85ecea04f20c410c4ac0e2f65c944fee74acba96858";
             origin        "data/standards/components/2Ethoxyethanol.dat";
-            originSha256  "967c792d6872c0f8b1f5d84a3078ddb3805feddcd451dcf4b7920271226afb4f";
+            originSha256  "98e5caef249c63cbb2cd7b95d48e9e54cf81cb40ddeacbf7a1845271d8fc0c6a";
             release       Choupo-2608;
         }
         "components/nPropylAcetate.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "6442a7253d488a77555ef38ea065c45f351ad5520924ea1a0d43446446a24ded";
             origin        "data/standards/parameters/NRTL/2Ethoxyethanol-nPropylAcetate.dat";
             originSha256  "cc5aa8a1cf1414dba1c7f5324abe07f8c34f040f7ac44a07ae2f141f48e5e8cf";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/2Ethoxyethanol-nPropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "40a4f25ae38920c3d0c785af7810a1c66d545ec8a077ea68ebfd97cf6a48e2fe";
+            computationalSha256 "58b8a28cb19921dbdf4cdcd2865350af9c9d3fff6b0509c4b256236f5179b80b";
+            origin        "data/standards/parameters/UNIQUAC/2Ethoxyethanol-nPropylAcetate.dat";
+            originSha256  "5418eec4c91a339ace26558f31a091c8b14bbc75a67e3df5c704c59887e85a02";
             release       Choupo-2608;
         }
     }

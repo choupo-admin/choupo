@@ -86,13 +86,6 @@
   across the validity span): fit grade severe -- DEV.md 4c C300 rule 3: a
   severe pair does not enter the default catalogue; its record stays in
   this curation case's constant/, and a case that needs it carries it in
-  its own constant/. fit_wilson: A_ij = 3345.1, A_ji = -3345.1 J/mol over
-  21 kept points: max |dP|/P 11.839 %, mean 7.585 %, graded severe ->
-  accepted; fit_wilson_start2 lands on the same pair (3345.1, -3345.1).
-  NOT PROMOTED (max |dP|/P 11.839 % over the 21 kept points, one liquid
-  across the validity span): fit grade severe -- DEV.md 4c C300 rule 3: a
-  severe pair does not enter the default catalogue; its record stays in
-  this curation case's constant/, and a case that needs it carries it in
   its own constant/.
   @@MODELS-RESULT-END@@
 
@@ -461,18 +454,6 @@ operations
         }
         properties  ( T_bubble  y_eq_dichloromethane );
         output      { file txy_uniquac.csv; }
-    }
-    {
-        name        txy_wilson;
-        type        propertyScan1D;
-        vary        { variable x[dichloromethane];  from 0.0;  to 1.0;  n 101; }
-        state       { P 42.332 kPa;  composition { dichloromethane 0.5;  2Ethoxyethanol 0.5; } }
-        thermo
-        {
-            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
-        }
-        properties  ( T_bubble  y_eq_dichloromethane );
-        output      { file txy_wilson.csv; }
     }
     // @@C294-READBACK-END@@
 );

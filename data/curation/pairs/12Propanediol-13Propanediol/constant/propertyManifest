@@ -28,19 +28,19 @@ propertyManifest
         "components/12Propanediol.dat"
         {
             type          imported;
-            sha256        "19f646da5abc3ed78768c78d025eda829a7e7232094ed40bb9b801027b9f424d";
-            computationalSha256 "08456b107ad9a0eaddabc00c74a2feabce91b8385423818f41a83561b368b61a";
+            sha256        "c409c477e38149f45b6c4c595b27e4671838a2523b549c821d773f9e8e4745bb";
+            computationalSha256 "6d69cedf35f359bb82b9f96b941054fed9693709ceac08352ab43dba5c2cfc43";
             origin        "data/standards/components/12Propanediol.dat";
-            originSha256  "7de0215a01c9bcf9de9f73d9d43e169cff533558ff41fb7604b55093b896ac98";
+            originSha256  "05fa18c3ed58adca9c2cf0b10321be55c8ec74d0815208903d50188c09899fb4";
             release       Choupo-2608;
         }
         "components/13Propanediol.dat"
         {
             type          imported;
-            sha256        "174459798479ddf5931acbd7d8666da66e527b8961e6ee9956b06fb924b809c5";
-            computationalSha256 "2f8a943c5076582da0120f6f3747e245801a5dde4e588fa6f02b14891c5e6829";
+            sha256        "320d900f270b568334355ee7238930b99fbc95639be07c404581008f74b51fcf";
+            computationalSha256 "bf1cdc2a5dbeda5bda4f40795e13f7a8666219a985f82c809c35d13f56c3aa7b";
             origin        "data/standards/components/13Propanediol.dat";
-            originSha256  "3bb46b60f84af052bbba5c3278d6dadcfac480ddeec7c30ce177b990e926e6bb";
+            originSha256  "b67489e9c3bbcf486e506cdc38511968e7ce03aa985a705e8ffac0d20958c0d0";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

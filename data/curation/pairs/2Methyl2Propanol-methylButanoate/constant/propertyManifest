@@ -37,10 +37,10 @@ propertyManifest
         "components/methylButanoate.dat"
         {
             type          imported;
-            sha256        "ea70710be4829b7c35021654e9992c74c629a9c9af2d51873d63a487525f2438";
-            computationalSha256 "32114188437c3c8df542aa821f9b6d81632ed2189cefa07be89a827cd7db6788";
+            sha256        "03efed63bd7b7785c681103bfe0f5bdd6566ab0c01ec164f6643a3cd5876bcc6";
+            computationalSha256 "05dcd7da193ea255cdcdb92fce81fd1f947868e22ca6f52b4e76ca897cc944ed";
             origin        "data/standards/components/methylButanoate.dat";
-            originSha256  "0af8a580009106c3c195d6523567f6b8dbc3230b0c0548ac4d729d07f6641c7d";
+            originSha256  "9383c5f0c7cb995d33c3f50843fd5e8f2fbf7dce0af5eeed090a3501a79c15c5";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"
@@ -61,13 +61,13 @@ propertyManifest
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
             release       Choupo-2608;
         }
-        "parameters/Wilson/2Methyl2Propanol-methylButanoate.dat"
+        "parameters/UNIQUAC/2Methyl2Propanol-methylButanoate.dat"
         {
             type          imported;
-            sha256        "aa5d578aaede64247382b8c17ec4d6a761a2d462a67a096099c4a33c7518d6de";
-            computationalSha256 "ff1ad8db3b5222f2a4f2ccd4c4022458f108f9bd68c416dbdc533ab63cf8f8d2";
-            origin        "data/standards/parameters/Wilson/2Methyl2Propanol-methylButanoate.dat";
-            originSha256  "0e77c6011823e76656dd01915dcb63e5d2918606daac2200324a28be83e657b7";
+            sha256        "3691e467c931136c47dfbc1cef73ec9d8efbe583f06ba7e8bb90f46b7b00b14d";
+            computationalSha256 "8d353095acfb2a52ed3fc8ce7b4dfe09e6bf0d0770ab50db24d176e309ae15d7";
+            origin        "data/standards/parameters/UNIQUAC/2Methyl2Propanol-methylButanoate.dat";
+            originSha256  "bba1b4fb20e80d08d1013e1fb17de4e5bdffc789fcb874d1b66eb0454e075ce1";
             release       Choupo-2608;
         }
     }
