@@ -1,0 +1,34 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  NH4-HPO4 -- the curation case of the salt (NH4)2(HPO4)1 (DEV.md 4c C311).
+  Fits Pitzer and eNRTL to its evaluated gamma_pm and phi at 298.15 K
+  (constant/experiments/NH4-HPO4.dat) and writes the two proposals that
+  bin/curate/check_regressed_electrolytes.py holds the catalogue records
+  equal to.  Written by bin/curate/electrolytes_c311.py; the rules
+  (window, held-out points, grade, cap, promotion) are stated there.
+\*-----------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name      fit_pitzer;
+        type      electrolyteFit;
+        cation    NH4;   anion HPO4;
+        model     pitzer;
+        dataset   "constant/experiments/NH4-HPO4.dat";
+        heldOut   { every 4; offset 3; }
+        pitzer    { alpha1 2.0; alpha2 12.0; fitBeta2 false; }
+        grade     { limits_pct ( 2 5 10 ); }
+        proposal  { file "NH4-HPO4.pitzer.proposal.dat"; }
+    }
+    {
+        name      fit_eNRTL;
+        type      electrolyteFit;
+        cation    NH4;   anion HPO4;
+        model     eNRTL;
+        dataset   "constant/experiments/NH4-HPO4.dat";
+        heldOut   { every 4; offset 3; }
+        eNRTL     { alpha 0.2; }
+        grade     { limits_pct ( 2 5 10 ); }
+        proposal  { file "NH4-HPO4.eNRTL.proposal.dat"; }
+    }
+);

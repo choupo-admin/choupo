@@ -1,0 +1,7 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  K-HPO4 -- curation case (DEV.md 4c C311).
+\*-----------------------------------------------------------------------------*/
+
+application   choupoProps;
+description   "K-HPO4: Pitzer and eNRTL fitted to evaluated gamma_pm and phi, 25 C";
+verbosity     2;

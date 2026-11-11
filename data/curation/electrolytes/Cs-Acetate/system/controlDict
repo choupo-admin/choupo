@@ -1,0 +1,7 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Cs-Acetate -- curation case (DEV.md 4c C311).
+\*-----------------------------------------------------------------------------*/
+
+application   choupoProps;
+description   "Cs-Acetate: Pitzer and eNRTL fitted to evaluated gamma_pm and phi, 25 C";
+verbosity     2;

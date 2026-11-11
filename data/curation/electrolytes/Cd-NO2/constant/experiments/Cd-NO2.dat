@@ -1,0 +1,49 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Cd-NO2: mean ionic activity coefficient gamma_pm and osmotic coefficient
+  phi of the salt (Cd)1(NO2)2 in water at 298.15 K -- the EVALUATED
+  (recommended) values of
+    R. N. Goldberg, Evaluated Activity and Osmotic Coefficients for Aqueous Solutions: Bi-Univalent Compounds of Zinc, Cadmium, and Ethylene Bis(Trimethylammonium) Chloride and Iodide, J. Phys. Chem. Ref. Data 10 (1981) 1-55,
+    doi:10.1063/1.555639, the Cd(NO2)2 table of recommended values, p. 41 (m, gamma, phi, a_w).
+  The evaluation is the primary source of these recommended values (its
+  own references are the measurements behind them).
+  TRANSCRIBED 2026-11-11 (DEV.md 4c C311) from the NIST reprint
+  (nist-jpcrd-1.555639.pdf): every row read by eye from the page image; phi checked against the printed water activity (ln a_w = -nu m phi M_w, to 2.5e-4) and gamma against its neighbours by the Gibbs-Duhem relation.
+  Rows kept: 0.1 mol/kg up to ionic strength 6 mol/kg; a row the
+  source marks saturated, supersaturated or from another author is not
+  here.  Every 4th row (0-based index % 4 == 3, never the first or the
+  last) is HELD OUT by the case (system/propsDict), not by this file.
+\*-----------------------------------------------------------------------------*/
+provenance
+{
+    source        "R. N. Goldberg, Evaluated Activity and Osmotic Coefficients for Aqueous Solutions: Bi-Univalent Compounds of Zinc, Cadmium, and Ethylene Bis(Trimethylammonium) Chloride and Iodide, J. Phys. Chem. Ref. Data 10 (1981) 1-55";
+    doi           "10.1063/1.555639";
+    location      "the Cd(NO2)2 table of recommended values, p. 41 (m, gamma, phi, a_w)";
+    reviewStatus  transcribed;
+}
+
+temperature 298.15;   // K, every row
+
+columns
+(
+    { name m;     unit mol/kg; }
+    { name gamma; unit -; }       // gamma_pm, molality scale
+    { name phi;   unit -; }       // molal osmotic coefficient
+);
+
+data
+(
+    0.1     0.3442   0.6789  
+    0.2     0.2469   0.5974  
+    0.3     0.1982   0.5506  
+    0.4     0.1682   0.5199  
+    0.5     0.1476   0.4989  
+    0.6     0.1325   0.484   
+    0.7     0.121    0.4735  
+    0.8     0.1119   0.4662  
+    0.9     0.1046   0.4614  
+    1       0.0985   0.4583  
+    1.25    0.0871   0.4566  
+    1.5     0.0792   0.4605  
+    1.75    0.0735   0.4679  
+    2       0.0691   0.4777  
+);

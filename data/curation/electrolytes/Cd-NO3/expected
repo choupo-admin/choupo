@@ -1,0 +1,36 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    fit_pitzer             grade_heldOut    0                  1e-4
+diag    fit_pitzer             grade_inSample   0                  1e-4
+diag    fit_pitzer             heldOut_gamma_AAD_pct 0.241095228438     1e-4
+diag    fit_pitzer             heldOut_max_pct  0.476539160037     1e-4
+diag    fit_pitzer             heldOut_phi_AAD_pct 0.250233927893     1e-4
+diag    fit_pitzer             inSample_gamma_AAD_pct 0.200886696012     1e-4
+diag    fit_pitzer             inSample_max_pct 0.351809024031     1e-4
+diag    fit_pitzer             inSample_phi_AAD_pct 0.199550263441     1e-4
+diag    fit_pitzer             molality_max     2                  1e-4
+diag    fit_pitzer             molality_min     0.1                1e-4
+diag    fit_pitzer             nFit             11                 1e-4
+diag    fit_pitzer             nHeldOut         3                  1e-4
+diag    fit_pitzer             param_Cphi       -0.0307709966413   1e-4
+diag    fit_pitzer             param_beta0      0.298295967446     1e-4
+diag    fit_pitzer             param_beta1      1.5961869401       1e-4
+diag    fit_pitzer             rms              0.00220328243562   1e-4
+diag    fit_pitzer             temperature_K    298.15             1e-4
+diag    fit_eNRTL              grade_heldOut    1                  1e-4
+diag    fit_eNRTL              grade_inSample   1                  1e-4
+diag    fit_eNRTL              heldOut_gamma_AAD_pct 2.34203150214      1e-4
+diag    fit_eNRTL              heldOut_max_pct  4.01901231137      1e-4
+diag    fit_eNRTL              heldOut_phi_AAD_pct 1.0919785272       1e-4
+diag    fit_eNRTL              inSample_gamma_AAD_pct 2.34651181144      1e-4
+diag    fit_eNRTL              inSample_max_pct 4.71706373642      1e-4
+diag    fit_eNRTL              inSample_phi_AAD_pct 1.12604628004      1e-4
+diag    fit_eNRTL              molality_max     2                  1e-4
+diag    fit_eNRTL              molality_min     0.1                1e-4
+diag    fit_eNRTL              nFit             11                 1e-4
+diag    fit_eNRTL              nHeldOut         3                  1e-4
+diag    fit_eNRTL              param_tau_ca_m   -3.7208598949      1e-4
+diag    fit_eNRTL              param_tau_m_ca   6.18609615508      1e-4
+diag    fit_eNRTL              rms              0.0218294223326    1e-4
+diag    fit_eNRTL              temperature_K    298.15             1e-4
