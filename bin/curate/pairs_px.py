@@ -739,6 +739,9 @@ def run(case, pl):
         reason = (f"NOT PROMOTABLE (fit grade {grade}, max |dP|/P {mx:.2f} %): the pair splits ONE "
                   "liquid inside its own validity span (check_regressed_pairs arm f) -- "
                   + split[0].split(": ", 1)[1])
+    elif pc.promotion_refusal(grade):
+        reason = (f"NOT PROMOTED (max |dP|/P {mx:.2f} % over the {n_kept} kept points, one liquid "
+                  "across the validity span): " + pc.promotion_refusal(grade))
     else:
         reason = (f"PROMOTABLE by `bin/curate/pairs_px.py promote`: fit grade {grade} -- max "
                   f"|dP|/P {mx:.2f} % over the {n_kept} kept points (limits {GRADE_PCT[0]:g} / "
@@ -855,6 +858,8 @@ def promote(a, b):
     cur = crp.block(crp.strip_comments(text), "curation") or ""
     if crp.word(cur, "verdict") != "accepted":
         refuse(f"{rp.stem}: curation verdict `{crp.word(cur, 'verdict')}` -- only an accepted fit is promoted")
+    if pc.promotion_refusal(crp.word(cur, "grade")):
+        refuse(f"{rp.stem}: NOT PROMOTED: " + pc.promotion_refusal(crp.word(cur, "grade")))
     rf, split = cc.stability(text, rp.stem)
     if split:
         refuse(f"{rp.stem}: " + split[0])

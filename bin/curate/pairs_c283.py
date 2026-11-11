@@ -153,6 +153,27 @@ def cap_grade(grade, n_temperatures, n_laboratories, heldout_clean=False):
     return ("warning" if caps else grade), caps
 
 
+#  DEV.md 4c C300 rule 3: a `severe` fit does not enter the default
+#  catalogue.  Its record stays in its own curation case (constant/
+#  parameters/<MODEL>/), with the evidence; a case that needs it carries it
+#  in its own constant/.  ONE home, beside cap_grade, read by both pair tools'
+#  promotion and by the result line a run writes.  The severe records
+#  promoted before C300 are not touched here (a separate slice moves them).
+NOT_PROMOTED_GRADES = ("severe", "refused")
+
+
+def promotion_refusal(grade):
+    """The reason a fit of in-sample grade `grade` is NOT promoted into
+    data/standards, or None when it may be (C286, C300 rule 3)."""
+    if grade == "refused":
+        return "fit grade refused -- a refused fit is not promoted (C286)"
+    if grade == "severe":
+        return ("fit grade severe -- DEV.md 4c C300 rule 3: a severe pair does not enter "
+                "the default catalogue; its record stays in this curation case's "
+                "constant/, and a case that needs it carries it in its own constant/")
+    return None
+
+
 def cap_line(caps):
     """The provenance line naming the cap, or "" when nothing was capped."""
     if not caps:
@@ -606,7 +627,7 @@ def write_case(pl, kind="Tx"):
     C284).  See system/propsDict for the declaration and the result.  */
 
 application   choupoProps;
-description   "NRTL {c1}-{c2} regressed by the curation pipeline to every laboratory's measured bubble temperatures (ThermoML locates, the articles source), accepted at max |dT| < 1 K";
+description   "NRTL {c1}-{c2} regressed by the curation pipeline to every laboratory's measured bubble temperatures (ThermoML locates, the articles source), graded by max |dT| (clean 1 K, warning 2 K, severe 4 K, refused above; C285, C286)";
 verbosity     2;
 """)
     hdr = f"""/*---------------------------------------------------------------------------*\\
@@ -624,7 +645,10 @@ verbosity     2;
     (case / "constant" / "archiveDatasets").write_text(
         decl_text(pl, case.relative_to(ROOT).as_posix()))
     unifac = cc.has_unifac(c1) and cc.has_unifac(c2)
-    (case / "system" / "propsDict").write_text(props_text(pl, name, stem, unifac))
+    #  C290: a new declaration carries the graded acceptance from the start
+    #  (C285, applied to pairs by C286); the C284 form is written only by the
+    #  cases that predate it, and re-declared by --redeclare.
+    (case / "system" / "propsDict").write_text(props_text(pl, name, stem, unifac, graded=True))
     ex = case / cc.EXTRACTS
     ex.mkdir(parents=True)
     for s in pl["studies"]:
@@ -828,6 +852,9 @@ def run(case, pl, commit):
                    else "NOT PROMOTABLE: ")
                   + "the pair splits ONE liquid inside its own validity "
                   "span (check_regressed_pairs arm f) -- " + split[0].split(": ", 1)[1])
+    elif graded and own_promotion(c1, c2, case_rel) is None and promotion_refusal(grade):
+        reason = (f"NOT PROMOTED (max |dT| {mx:.3f} K over the {n_kept} kept points, one "
+                  "liquid across the validity span): " + promotion_refusal(grade))
     elif graded:
         reason = (f"PROMOTABLE by `bin/choupo-curate pair ... --promote`: fit grade "
                   f"{grade} -- max |dT| {mx:.3f} K over the {n_kept} kept points "
@@ -990,6 +1017,8 @@ def promote(a, b):
     if is_graded(case) and not crp.word(cur, "grade"):
         refuse(f"{rp.stem}: its case declares the graded acceptance (C286) and the record "
                "carries no curation grade -- re-run the case first")
+    if crp.word(cur, "grade") and promotion_refusal(crp.word(cur, "grade")):
+        refuse(f"{rp.stem}: NOT PROMOTED: " + promotion_refusal(crp.word(cur, "grade")))
     rf, split = cc.stability(text, rp.stem)
     if split:
         refuse(f"{rp.stem}: " + split[0])
@@ -1147,6 +1176,9 @@ def main(argv):
                    help="with --run/--promote: walk the C283 cases themselves "
                         "(promoted ones included) instead of the ranked queue")
     q.add_argument("--only", nargs="*", help="with --graded: these pairs only (record stems, e.g. acetone-methanol)")
+    q.add_argument("--jobs", type=int, default=1,
+                   help="with --graded --run: run up to N cases at once (cap 2), each a "
+                        "separate process writing only inside its own case directory")
     q.add_argument("--no-commit", action="store_true")
     q.add_argument("--top", type=int, default=60)
     q.add_argument("--pmax", type=float, default=110.0)
@@ -1255,6 +1287,57 @@ def batch(a):
     return 0
 
 
+JOBS_CAP = 2   # the laptop's budget (CLAUDE.md rule 4): one heavy job, cores left to Vitor
+
+
+def run_parallel(a, cases):
+    """`--graded --run --jobs N` (C290, carried to the curation root): each
+    case is run by a CHILD process of this very command (`--only <stem>
+    --jobs 1`), at most N at once; a child writes only inside its own case
+    directory (fetch, the two fit stages, its case-local record, the seal).
+    A case whose pair this pipeline already promoted would be regraded IN
+    PLACE -- a shared catalogue record -- so it is left to the serial loop,
+    as are promotion, commits and generated files, which never run here.
+    Returns (outcomes, cases left for the serial loop)."""
+    import concurrent.futures as cf
+    jobs = min(a.jobs, JOBS_CAP)
+    if a.jobs > JOBS_CAP:
+        cc.say(f"--jobs {a.jobs} capped at {JOBS_CAP}")
+    safe, serial = [], []
+    for c in cases:
+        (serial if own_promotion(c[1], c[2], c[0].relative_to(ROOT).as_posix()) is not None
+         else safe).append(c)
+    tmp = Path(tempfile.mkdtemp(prefix="choupo-curate-jobs-"))
+
+    def child(c):
+        stem = cc.curation_roots.pair_stem_of(c[0])
+        js = tmp / f"{stem}.json"
+        p = subprocess.run([sys.executable, str(ROOT / "bin" / "choupo-curate"), "pairs",
+                            "--graded", "--run", "--only", stem, "--no-commit", "--jobs", "1",
+                            "--pmax", str(a.pmax), "--json", str(js)],
+                           capture_output=True, text=True)
+        try:
+            rec = json.loads(js.read_text())[0]
+        except (OSError, ValueError, IndexError):
+            rec = {"case": cc.label(c[0]), "pair": [c[1], c[2]],
+                   "outcome": f"error: child exited {p.returncode}: {(p.stdout + p.stderr)[-300:]}"}
+        return rec, p.stdout
+
+    out = []
+    try:
+        with cf.ThreadPoolExecutor(max_workers=jobs) as ex:
+            for rec, txt in ex.map(child, safe):    # in case order
+                sys.stdout.write("".join(l + "\n" for l in txt.splitlines()
+                                         if l.startswith("[")))
+                sys.stdout.flush()
+                out.append(rec)
+                if a.json:
+                    Path(a.json).write_text(json.dumps(out, indent=1, default=str))
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+    return out, serial
+
+
 def batch_graded(a):
     """C286 over the cases this module wrote: --redeclare (every case, one
     commit), then --graded --run (each re-run on its committed declaration;
@@ -1265,6 +1348,8 @@ def batch_graded(a):
         want = set(a.only)
         cases = [c for c in cases if cc.curation_roots.pair_stem_of(c[0]) in want]
     out, touched = [], []
+    if a.run and a.jobs > 1:
+        out, cases = run_parallel(a, cases)
     for case, x, y in cases:
         rec = {"case": cc.label(case), "pair": [x, y]}
         work = Path(tempfile.mkdtemp(prefix="choupo-curate-"))
