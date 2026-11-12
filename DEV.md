@@ -3446,6 +3446,33 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C378 (Vitor, 2026-11-12, on learning that the kernel refuses the density
+> and the viscosity of a caustic solution: "precisamos de sistematizar a
+> forma como a viscosidade e calculada! E a massa especifica (o inverso dos
+> volumes molares) e a tensao superficial!! Achas que podemos ir buscar
+> inspiracao na literatura" and in the property systems of the two
+> simulators he names).**  A STUDY FIRST, written, before any architecture
+> (his standing rule of 2026-07-16: never design properties without studying
+> first; the deliverable is the study).  Scope: liquid molar volume /
+> density, liquid and gas viscosity, surface tension (thermal conductivity
+> and diffusivity noted where the same structure serves them), for the four
+> kinds of liquid Choupo meets: molecular mixtures, aqueous electrolytes,
+> solutions with dissolved gases or supercritical components, and slurries.
+> It maps (1) what the kernel does today, route by route, with what refuses
+> and what silently estimates; (2) how a large commercial property system
+> organises these properties (its methods-and-models manual is in the
+> literature folder) and how an open-source simulator does (its public
+> source); (3) the literature's own hierarchy (the standard monograph on
+> the properties of gases and liquids, the handbook, the electrolyte
+> correlations for density and viscosity fitted across many salts); and
+> proposes ONE systematic structure -- a route per property and per kind of
+> liquid, each a named, selectable object with its window and source, a
+> declared default, and a refusal where no route applies -- with a
+> migration that moves no golden silently.  The comparative study names its
+> sources and is kept OUTSIDE the tracked tree; the repository gets the
+> design record, which describes the other systems by what they are.
+> Branch c378-thermophysical-study; no code in this slice.
+
 > **C377 (Vitor, 2026-11-12: "se eu fizer evaporacao multi-efeito de
 > agua+NaOH o Choupo ja lida com o calor de dissolucao de forma elegante?").**
 > MEASURED the same turn on evaporator08_naoh_dilution_heat (single effect):
