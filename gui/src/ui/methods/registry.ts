@@ -61,7 +61,9 @@ export type MethodToolId =
   | "pump-system" | "breakthrough" | "merkel" | "rayleigh" | "levenspiel"
   | "vanheerden" | "drying" | "hunter-nash" | "column-control" | "thiele"
   | "what-is-temperature" | "flash-operating-line" | "bjerrum" | "salt-mixing"
-  | "thermometer-trust" | "property-trust" | "what-is-entropy"
+  | "thermometer-trust" | "property-trust" | "property-data-sources"
+  | "database-to-parameters"
+  | "what-is-entropy"
   | "what-is-exergy" | "property-origins" | "four-ways-mixture"
   | "cosmo-sac-theory" | "local-composition" | "unifac-theory"
   | "pcsaft-theory" | "ponchon-savarit" | "claus-gibbs"
@@ -132,6 +134,17 @@ export const METHOD_DISCIPLINES = [
   //  a stirred-tank scale-up (the power number) or a pilot plant's choice.
   "Modelling & scale-up",
   "Thermodynamics",
+  //  THE SHELF FOR WHERE A PROPERTY NUMBER COMES FROM (2026-11-12, DEV.md
+  //  4c C322, Vitor's approval relayed by the coordinator).  How a value is
+  //  estimated, where a measured one is found and what its licence allows,
+  //  when a record can be believed, and how a measurement becomes a fitted
+  //  parameter: none of it is a thermodynamic MODEL, which is what the
+  //  shelf above teaches, though every page uses one.  It sits right after
+  //  Thermodynamics because every model there needs the parameters this
+  //  shelf is about.  It opened with three tenants moved or added at once:
+  //  property-origins and property-trust (moved from Thermodynamics) and
+  //  property-data-sources (new).
+  "Property data & parameters",
   "Separations & phase equilibria",
   "Heat transfer & energy",
   "Reaction engineering",
@@ -220,6 +233,25 @@ export const METHOD_PATHS: MethodPath[] = [
       { tool: "local-composition", why: "Wilson, NRTL and UNIQUAC derived as one idea carried three distances." },
       { tool: "equilibrium-landscapes", why: "What an equilibrium can reach, read from the thermicity and the mole change." },
       { tool: "element-potential", why: "How the engine solves it: one potential per element instead of one unknown per species." },
+    ],
+  },
+  {
+    //  C322/C332 (2026-11-12, Vitor's approval relayed by the coordinator).
+    //  "From a database to binary parameters" (C334) follows least-squares;
+    //  sle-pair and salt-mixing follow it the day they land.
+    id: "measurement-to-parameter",
+    title: "From a measurement to a parameter",
+    intro: "From where a number comes from to the model parameter fitted to it.",
+    steps: [
+      { tool: "property-origins", why: "Measured, fitted or estimated: how an estimate is made and what it costs." },
+      { tool: "property-data-sources", why: "Where a measured value is found, how it is cited, and whether it may be published." },
+      { tool: "property-trust", why: "Test a record against itself before you believe it." },
+      { tool: "local-composition", why: "The models whose parameters the data will fix: Wilson, NRTL, UNIQUAC." },
+      { tool: "least-squares", why: "How a parameter is fitted to measurements, and what the fit can and cannot tell." },
+      { tool: "database-to-parameters", why: "A ThermoML file becomes an NRTL pair: the curation pipeline's rule, run by the engine on your own file." },
+      { tool: "sle-pair", why: "Fit a pair to how much solid dissolves, and see which end of the composition range solubility fixes." },
+      { tool: "salt-mixing", why: "Fit Pitzer mixing parameters to a measured two-salt solubility curve, and hold other temperatures out." },
+      { tool: "four-ways-mixture", why: "What a fitted pair buys against the predictive models, graded on measured data." },
     ],
   },
   {
@@ -426,7 +458,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  the page from the engine's published numbers.
     id: "property-origins", blurb: "Trace each property value to measured, fitted or estimated.",
     label: "Where do properties come from? (estimation, Joback)",
-    discipline: "Thermodynamics",
+    discipline: "Property data & parameters",
     kind: "notes", status: "live",
     origins: ["engine", "page", "reference"],
     teaches: "That every number in a component's data file has a PROVENANCE "
@@ -438,12 +470,39 @@ export const METHOD_TOOLS: MethodTool[] = [
     theory: "ch:criticals",
   },
   {
+    //  WHERE TO FIND A NUMBER, AND WHETHER IT MAY BE PUBLISHED (2026-11-12,
+    //  DEV.md 4c C322, scope approved by Vitor): the question that picks a
+    //  source, a map of free sources each with the licence read on its own
+    //  page and the date, the project's licence classes with the line each
+    //  rule is written at, measured / fitted / estimated, a real catalogue
+    //  record quoted line by line, and an exercise.  Between the page that
+    //  says how an estimate is made and the page that tests a record.
+    id: "property-data-sources", blurb: "Find a property datum and decide whether it may be published.",
+    label: "Where to find property data",
+    discipline: "Property data & parameters",
+    kind: "notes", status: "live",
+    origins: ["page", "reference", "assumption"],
+    teaches: "Which property, which system, which conditions picks the kind "
+      + "of source; a map of free sources (the ThermoML archive, the NIST "
+      + "Chemistry WebBook, the IUPAC-NIST Solubility Data Series, the NASA "
+      + "Glenn coefficients, the CODATA Key Values, Sander's Henry's law "
+      + "compilation, the ChemSep pure-component databank, PubChem for "
+      + "identity) with what each holds, how to reach and cite it and what "
+      + "its licence allows; the classes that cannot enter a public project "
+      + "(NonCommercial, no grant, provenance laundering); read, cite, copy "
+      + "a value, redistribute as four permissions; measured, fitted and "
+      + "estimated values and the held-out deviation; cite the primary, "
+      + "never the compiler; a real NRTL record's provenance read line by "
+      + "line; and an exercise deciding whether six data may be published.",
+    theory: "ch:criticals",
+  },
+  {
     //  THE PROPERTY-DATA LESSON that used to sit inside the temperature
     //  page, teaching the right words in the wrong place: the ladder's
     //  subject is not what a temperature is, it is when a database can be
     //  believed.
     id: "property-trust", blurb: "Test a property record for consistency before you believe it.", label: "When a property database lies to you",
-    discipline: "Thermodynamics",
+    discipline: "Property data & parameters",
     kind: "notes", status: "live",
     origins: ["engine", "page", "reference"],
     teaches: "Never trust a thermophysical record merely because it exists: "
@@ -451,6 +510,29 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "Thirteen records cross-examined against themselves, live -- water's "
       + "own file disagrees with itself by 0.70 K, and a predictive glycerol "
       + "correlation that asked to be validated misses by a factor of 19.",
+    theory: "ch:criticals",
+  },
+  {
+    //  FROM A DATABASE TO A BINARY PAIR (2026-11-12, DEV.md 4c C332 item 3,
+    //  C334, Vitor's approval): the curation pipeline of C282-C300 as the
+    //  lesson, and its rule run by the engine on a ThermoML file the student
+    //  loads (gui/src/case/thermomlReader.ts, held to bin/choupo-thermoml).
+    //  After least-squares on the shelf and on the path.
+    id: "database-to-parameters", blurb: "Turn a ThermoML file into an NRTL pair, and grade it.",
+    label: "From a database to binary parameters",
+    discipline: "Property data & parameters",
+    kind: "notes", status: "live",
+    origins: ["engine", "page", "reference"],
+    teaches: "How a binary pair is made from measurements, as Choupo's "
+      + "curation pipeline makes it: name the pair by InChIKey, choose the "
+      + "usable blocks (bubble temperature at a stated pressure, or bubble "
+      + "pressure at a stated temperature, an uncertainty on every point), "
+      + "fit every laboratory together, discard outliers by name, least "
+      + "squares then the largest error, the graded acceptance and the cap "
+      + "on a clean that one temperature or one laboratory cannot earn, the "
+      + "one-liquid check, and what a record does not prove; a map of which "
+      + "measurement constrains which parameter; and a live fit of your own "
+      + "ThermoML file by the engine.",
     theory: "ch:criticals",
   },
   {
@@ -751,7 +833,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   {
     id: "sle-pair", blurb: "Fit an NRTL pair to how much solid a solvent dissolves.",
     label: "Pair parameters from the solubility of a solid",
-    discipline: "Thermodynamics", kind: "construction", status: "live",
+    discipline: "Property data & parameters", kind: "construction", status: "live",
     origins: ["page", "reference", "assumption"],
     teaches: "That a saturated solution measures an activity coefficient: "
       + "the ideal solubility from the solid's measured melting point and "
@@ -774,7 +856,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  test to the engine's pitzerHMW and pitzerActivity.
     id: "salt-mixing", blurb: "Fit Pitzer mixing parameters to a measured NaCl-KCl solubility curve.",
     label: "Salt mixtures: Pitzer mixing parameters from ternary solubility",
-    discipline: "Thermodynamics",
+    discipline: "Property data & parameters",
     kind: "construction", status: "live",
     origins: ["engine", "page", "reference", "assumption"],
     teaches: "Why a second salt with a common ion changes a salt's "
@@ -1438,7 +1520,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   {
     id: "least-squares", blurb: "See what a fitted parameter is worth, and when it is not.",
     label: "Least squares: what a fitted parameter is worth",
-    discipline: "Flowsheeting & numerics", kind: "construction",
+    discipline: "Property data & parameters", kind: "construction",
     status: "live",
     origins: ["engine", "reference", "assumption"],
     teaches: "That Levenberg-Marquardt is the easy half.  Watch the damping "

@@ -396,7 +396,7 @@ export const LICENCE_CLASSES: readonly LicenceClassRow[] = [
     copyValues: "only the primary measurement, read through it and cited "
       + "to the original paper",
     redistribute: "no",
-    rule: "CLAUDE.md:726",
+    rule: "CLAUDE.md:747",
   },
   {
     cls: "noncommercial",
@@ -690,7 +690,7 @@ export const CITATIONS: readonly { file: string; line: number; contains: string 
   { file: "docs/architecture/settled-contracts.md", line: 3471, contains: "**DATA**" },
   { file: "docs/architecture/settled-contracts.md", line: 3477, contains: "NonCommercial" },
   { file: "docs/architecture/settled-contracts.md", line: 3482, contains: "PRIMARY" },
-  { file: "CLAUDE.md", line: 726, contains: "aggregator" },
+  { file: "CLAUDE.md", line: 747, contains: "aggregator" },
   { file: "bin/curate/check_source_licence.py", line: 337, contains: "EXCLUDED_TABLES" },
   { file: "bin/curate/check_source_licence.py", line: 485, contains: "ACCEPTED_PUBLIC_DOMAIN" },
   { file: EXAMPLE_RECORD, line: 120, contains: "rounded UP to two significant figures" },

@@ -50,7 +50,7 @@ import {
   interiorIndices, isReaderError, isRefusal, readThermoML, ThermoMLRefusal,
   type BubblePRecord, type BubbleTRecord, type ThermoMLCompound, type ThermoMLFile,
 } from "../../case/thermomlReader.js";
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, LessonReferences, lessonStepper } from "./lessonStep.js";
 import {
   CASE_NAME, FIT_RULE, capOf, gradeOf, kindOf, maxErrorOf, outliersOf, pairFitCaseFiles,
   pipelineIssues, readParity, temperaturesOf, type FitKind, type Grade, type PairFitInput,
@@ -552,6 +552,8 @@ export function DatabaseToParametersTool(): JSX.Element {
             Four ways to price a mixture
           </Anchor>.
         </Text>
+
+        <LessonReferences tool="database-to-parameters" />
       </Stack>
     </Box>
   );

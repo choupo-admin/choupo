@@ -851,7 +851,7 @@
           }
         },
         {
-          "text": "NIST Thermodynamics Research Center. ThermoML Archive, ThermoML.v2020-09-30 (data.nist.gov).",
+          "text": "NIST Thermodynamics Research Center. ThermoML/Data Archive, version 1.2.6 (file ThermoML.v2020-09-30.tgz). National Institute of Standards and Technology.",
           "doi": "10.18434/mds2-2422",
           "note": "The finding aid through which the three articles' values were located.",
           "verified": {
@@ -2321,6 +2321,96 @@
             "method": "official",
             "evidence": "doc.cfd.direct/openfoam/user-guide-v12: section 4.6.6 'Solution under-relaxation' read (p 0.3, U 0.7 in the steady incompressible example) and the case directory structure 0/, constant/, system/ (C259 numerics audit)",
             "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "property-data-sources": {
+      "pageSources": "The map of free sources",
+      "references": [
+        {
+          "text": "Fukano, M.; Matsuda, H.; Kurihara, K.; Ochi, K. (2006). Ebulliometric Determination of Vapor–Liquid Equilibria for Methanol + Ethanol + Dimethyl Carbonate. J. Chem. Eng. Data 51(4), 1458–1463.",
+          "doi": "10.1021/je0601309",
+          "note": "The fit set of the worked example's NRTL pair.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/je0601309: authors, title, container, volume, issue, pages and year matched (C322)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Chen, X.; Cai, F.; Wu, X.; Asumana, C.; Yu, G. (2013). Isobaric Vapor–Liquid Equilibrium for Methanol + Dimethyl Carbonate + 1-Butyl-3-methylimidazolium Dibutylphosphate. J. Chem. Eng. Data 58(5), 1186–1192.",
+          "doi": "10.1021/je301290c",
+          "note": "The held-out set of the worked example, from another laboratory.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/je301290c: authors, title, container, volume, issue, pages and year matched (C322)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Sander, R. (2023). Compilation of Henry's law constants (version 5.0.0) for water as solvent. Atmos. Chem. Phys. 23(19), 10901–12440.",
+          "doi": "10.5194/acp-23-10901-2023",
+          "note": "The open (CC BY 4.0) compilation of Henry's constants for water as solvent.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.5194/acp-23-10901-2023: authors, title, container, volume, issue, pages and year matched (C322)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "McBride, B. J.; Zehe, M. J.; Gordon, S. (2002). NASA Glenn Coefficients for Calculating Thermodynamic Properties of Individual Species. NASA/TP-2002-211556, NASA Glenn Research Center.",
+          "url": "https://ntrs.nasa.gov/citations/20020085330",
+          "note": "The public-domain source of ideal-gas heat capacities and formation enthalpies.",
+          "verified": {
+            "method": "official",
+            "evidence": "ntrs.nasa.gov/api/citations/20020085330: title, the three authors, date 2002-09 and distribution PUBLIC matched (C322)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Cox, J. D.; Wagman, D. D.; Medvedev, V. A. (1989). CODATA Key Values for Thermodynamics. Hemisphere Publishing Corp., New York.",
+          "url": "https://www.codata.info/resources/databases/key1.html",
+          "note": "The internationally agreed formation enthalpies and entropies of key substances.",
+          "verified": {
+            "method": "official",
+            "evidence": "www.codata.info/resources/databases/key1.html: CODATA's own table page names this book as its reference (C322)",
+            "date": "2026-11-12"
+          }
+        }
+      ]
+    },
+    "database-to-parameters": {
+      "references": [
+        {
+          "text": "Renon, H.; Prausnitz, J. M. (1968). Local compositions in thermodynamic excess functions for liquid mixtures. AIChE Journal 14(1), 135–144.",
+          "doi": "10.1002/aic.690140124",
+          "note": "NRTL, the model the curated pairs fit.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/aic.690140124: authors, title, container, volume, issue, pages and year matched (C334)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Frenkel, M.; Chirico, R. D.; Diky, V. V.; Dong, Q.; Frenkel, S.; Franchois, P. R.; Embry, D. L.; Teague, T. L.; Marsh, K. N.; Wilhoit, R. C. (2003). ThermoML — An XML-Based Approach for Storage and Exchange of Experimental and Critically Evaluated Thermophysical and Thermochemical Property Data. 1. Experimental Data. J. Chem. Eng. Data 48(1), 2–13.",
+          "doi": "10.1021/je025645o",
+          "note": "The ThermoML format the page reads.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/je025645o: authors, title, container, volume, issue, pages and year matched (C334)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "NIST Thermodynamics Research Center. ThermoML/Data Archive, version 1.2.6 (file ThermoML.v2020-09-30.tgz). National Institute of Standards and Technology.",
+          "doi": "10.18434/mds2-2422",
+          "url": "https://data.nist.gov/od/id/mds2-2422",
+          "note": "The archive the pipeline searches; it locates the articles, which are the sources.",
+          "verified": {
+            "method": "official",
+            "evidence": "data.nist.gov/rmm/records?@id=ark:/88434/mds2-2422: title, DOI, version 1.2.6, licence field and the file name read (C334)",
+            "date": "2026-11-12"
           }
         }
       ]

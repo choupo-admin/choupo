@@ -241,6 +241,12 @@ const ThermometerTrustTool = lazy(() =>
 const PropertyTrustTool = lazy(() =>
   import("./methods/PropertyTrustTool.js")
     .then((m) => ({ default: m.PropertyTrustTool })));
+const DatabaseToParametersTool = lazy(() =>
+  import("./methods/DatabaseToParametersTool.js")
+    .then((m) => ({ default: m.DatabaseToParametersTool })));
+const DataSourcesTool = lazy(() =>
+  import("./methods/DataSourcesTool.js")
+    .then((m) => ({ default: m.DataSourcesTool })));
 const PropertyOriginsTool = lazy(() =>
   import("./methods/PropertyOriginsTool.js")
     .then((m) => ({ default: m.PropertyOriginsTool })));
@@ -611,6 +617,8 @@ export function MethodsWorkspace() {
             : tool === "thermometer-trust" ? <ThermometerTrustTool />
             : tool === "property-trust" ? <PropertyTrustTool />
             : tool === "property-origins" ? <PropertyOriginsTool />
+            : tool === "property-data-sources" ? <DataSourcesTool />
+            : tool === "database-to-parameters" ? <DatabaseToParametersTool />
             : tool === "four-ways-mixture" ? <FourWaysMixtureTool />
             : tool === "cosmo-sac-theory" ? <CosmoSacTheoryTool />
             : tool === "local-composition" ? <LocalCompositionTool />

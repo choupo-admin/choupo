@@ -2127,6 +2127,50 @@ statistic on the page.  The three disagreeing is the finding.
 Only the volume is forecast, not the price; the history on the page is invented
 and must be replaced by a series you can cite.
 
+\section{The shelf ``Property data \& parameters''}\label{sec:edu-property-data}
+
+%  Added with the shelf (DEV.md 4c C322, C332, C334).  The shelf sits right
+%  after Thermodynamics: the models there need the parameters this shelf is
+%  about.  The registry is the authority on what it holds.
+Where a property number comes from, whether it may be published, when a
+record can be believed, and how a measurement becomes a fitted parameter:
+none of it is a thermodynamic \emph{model}, though every page uses one, so
+these pages have a shelf of their own, right after Thermodynamics.  The
+path \emph{From a measurement to a parameter} walks them in order:
+\emph{Where do properties come from?}, \emph{Where to find property data},
+\emph{When a property database lies to you}, the local-composition models,
+\emph{least squares}, \emph{From a database to binary parameters},
+\emph{a pair from solubility data} (\code{sle-pair}), \emph{salt mixing}
+(\code{salt-mixing}) and \emph{Four ways to price a mixture}.
+
+\subsection*{Where to find property data \quad(\code{tool=property-data-sources})}
+Which property, which system and which conditions pick the kind of source;
+a map of free sources with what each holds, how to cite it and what its
+licence allows; the classes of source that cannot enter a public project;
+measured, fitted and estimated values; and a real catalogue record read line
+by line.  The page computes nothing: its numbers are the catalogue's own.
+\declaredanchor{ch:criticals}
+
+\subsection*{From a database to binary parameters \quad(\code{tool=database-to-parameters})}
+Choupo's curation pipeline as a lesson: a ThermoML file is read in the
+browser (the same reader the curation tool is held to), the usable blocks
+are chosen, the NRTL pair is fitted by the engine's own rule, and the fit is
+graded with the cap a single laboratory or temperature cannot lift.
+\declaredanchor{ch:criticals}
+
+\subsection*{A pair from solubility data \quad(\code{tool=sle-pair})}
+The activity coefficient of a solute is extracted from measured solid
+solubility (benzoic acid in four solvents), an NRTL pair is fitted with
+every fourth point held out, and the page shows that a solubility-only pair
+fixes the solvent-rich end of the composition range and not the other.
+\declaredanchor{ch:fittable}
+
+\subsection*{Pitzer mixing parameters from a solubility curve \quad(\code{tool=salt-mixing})}
+The mixing parameters $\theta_{\mathrm{Na,K}}$ and $\psi_{\mathrm{Na,K,Cl}}$
+are fitted to the measured NaCl--KCl--H$_2$O solubility branches at one
+temperature and tested on the temperatures held out.
+\declaredanchor{ch:pitzer-hmw}
+
 \section{Constructions not yet documented here}\label{sec:edu-stubs}
 
 %  No count here.  This sentence used to say "Six live tools", against a
