@@ -3446,6 +3446,36 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C363 (Vitor, 2026-11-12, in the cloud session: "e se tu aqui apenas
+> fizesses componentes e binarios, e revisses o que a outra sessao executa?
+> Serias o meu validador!" and, to the conditions the cloud put, "Sim,
+> transfere o que for codigo para a outra sessao").  TWO ROLES.**  THE LAPTOP
+> SESSION BUILDS: every engine and GUI slice (units, models, solvers, pages).
+> THE CLOUD SESSION (a) PRODUCES CATALOGUE DATA -- components, binary and
+> Henry records from the archive it holds, with their curation tools -- and
+> (b) VALIDATES what the laptop lands.  The rules of the validation:
+> (1) BY MEASUREMENT, NOT BY READING: each review runs the cases, recomputes
+> the result by an independent route, sabotages by hand to see whether the
+> slice's own gates fire, and compares with measured data where the archive
+> or an open source has it; an opinion formed by reading alone is not a
+> review (both sessions are the same kind of model and share blind spots).
+> (2) THE VALIDATOR DOES NOT FIX: a review is a dated file under
+> docs/reviews/ with numbered findings, each with a severity and the
+> evidence; the builder answers every finding (fixed in <commit>, or
+> declined with the reason); the validator never edits the slice it reviews.
+> (3) AFTER LANDING, not before: a review does not gate a landing; it
+> follows it within the next working session.
+> (4) THE CLOUD'S OWN RECORDS NEED A VALIDATOR TOO: the laptop (or Vitor by
+> sampling) reviews the cloud's components and pairs; nobody reviews their
+> own fits (C300).
+> (5) A LIMIT, stated: the cloud cannot read the literature folder, so it
+> checks a transcription only against an open-access primary or against a
+> transcription committed to the tree.
+> C362 is amended: its item (4) (the reference equations of state: the three
+> speed-ups, H2, NH3) is TRANSFERRED to the laptop with the code it built
+> (kernel, records, gate, guide section, design record section 5); items
+> (1) (its own documentation), (2), (3), (5) and C308 stay with the cloud.
+
 > **C362 (Vitor, 2026-11-12, in the cloud session: "Vamos fazer isso", to
 > the cloud's proposal for its next days).  THE CLOUD SESSION CONSOLIDATES
 > AND PROVES; IT DOES NOT WIDEN.**  Five items, in this order, one general at

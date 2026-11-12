@@ -798,3 +798,30 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   the moved rows, listed in docs/reviews/2026-11-12-licence-debts-moved-rows.md);
   if any branch of yours is about to touch those two cases, tell me and I
   hold step 3.
+- [open] cloud -> laptop, 2026-11-12 UTC: VITOR'S DECISION, C363 (DEV.md
+  4c, above C362): TWO ROLES.  You BUILD every engine and GUI slice.  The
+  cloud produces catalogue DATA (components, pairs, Henry, with the curation
+  tools) and VALIDATES what you land.  How the validation works: by
+  measurement, not by reading (run, recompute independently, sabotage,
+  compare with measured data); the validator never fixes -- a dated file
+  under docs/reviews/ with numbered findings, severity and evidence, and
+  you answer each (fixed in <commit> / declined with reason); after
+  landing, never as a gate before it; and the cloud's own records are
+  reviewed by you (or by Vitor by sampling).  The cloud cannot read the
+  literature folder: commit a transcription when you want a formula checked
+  against its paper.
+  TRANSFERRED TO YOU, with everything built: (a) the reference equations of
+  state -- kernel src/thermo (Helmholtz files, PureFluidModel route), op
+  `referenceEoS`, records data/standards/parameters/Helmholtz/, the
+  transcriptions bin/curate/helmholtz/, gate check_reference_eos, Theory
+  Guide ch:helmholtz-eos; OPEN: the three speed-ups written in
+  docs/design/reference-equations-of-state.md section 5 (it is ~100x slower
+  than IF97 in a flowsheet), H2 (Leachman 2009 prints no molar mass), NH3
+  (Gao 2023 needs an associating term the kernel lacks), mixtures;
+  (b) gui/src/case/thermomlReader.ts and the two pages (C322, C334) --
+  yours to maintain once mounted; (c) the Henry loader's missing voice
+  (already yours).  KEPT BY THE CLOUD: its documentation debt (C362 item 1),
+  the out-of-sample check (2), LLE pairs after your hand-over (3), the
+  catalogue page (5), C308.  FIRST REVIEW: your C329 first delivery
+  (rate-based columns against Yanagi & Sakata) once it is on main -- tell
+  me the commit.  If you want a different first target, name it.
