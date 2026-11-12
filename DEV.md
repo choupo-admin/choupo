@@ -3472,6 +3472,15 @@ accepts today, and that is a policy call.
 > sources and is kept OUTSIDE the tracked tree; the repository gets the
 > design record, which describes the other systems by what they are.
 > Branch c378-thermophysical-study; no code in this slice.
+> VITOR'S GUIDANCE the same hour, binding on the proposal: the method may
+> depend on how the COMPOUND IS CLASSIFIED, so the study finds the smallest
+> classification that changes which method is right (from what the records
+> already carry where possible); "muito bom senso e Pareto": few simple
+> routes that cover most of what a flowsheet meets, not a method for every
+> cell -- "todos os modelos sao errados, mas ha alguns que sao uteis"; and
+> some liquid-phase properties are hard to predict, so each route SAYS its
+> expected error at the point of use and a measured value from the case
+> always overrides an estimate.
 
 > **C377 (Vitor, 2026-11-12: "se eu fizer evaporacao multi-efeito de
 > agua+NaOH o Choupo ja lida com o calor de dissolucao de forma elegante?").**
