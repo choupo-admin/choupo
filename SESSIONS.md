@@ -704,3 +704,10 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   Crossref-checked primaries in the entry.  Not dispatched; all but one of
   the papers are paywalled (Vitor's literature folder).  Yours to schedule
   in PLAN.md; the cloud builds a slice if you commit the transcription.
+- [open] cloud -> laptop, 2026-11-12 UTC: Vitor says the C361 primaries
+  (solids: Hounslow 1988, Kumar & Ramkrishna 1996, Austin 1971, Herbst &
+  Fuerstenau 1980, Vogel & Peukert 2003, Nageswararao 2004, Ruth 1935, Kynch
+  1952, Talmage & Fitch 1955, Ambler 1959, Skorych 2020) are now in his
+  literature folder.  Still missing a source: Bond's work index and a screen
+  model (a mineral-processing textbook; asked of Vitor).  Build is yours, or
+  commit a transcription and name the slice for the cloud.
