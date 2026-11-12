@@ -1,0 +1,147 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+# =============================================================================
+#  THE HERBST & FUERSTENAU ANCHORS (C361 slice 3).  H&F 1980 Table II, the
+#  C.E. = 70 % / two-mixers cell, and p. 23: 637 kW holds 100 TPH at 250 %
+#  circulating load, i.e. a classifier oversize of 2.50 x 100 TPH =
+#  62.999 kg/s and a mill feed of 350 TPH, E = 1.82 kWh/short ton per pass
+#  (0.91 kWh/short ton = 1.003105 kWh/t in EACH perfectly mixed half).
+#
+#      quantity                          H&F        Choupo      gap
+#      circulating load (recycle/fresh)  2.500      2.5880      +3.5 %
+#      mill feed, short TPH              350.0      358.80      +2.5 %
+#      E per half, kWh/t                 1.00311    0.97851     -2.5 %
+#
+#  TOLERANCE 5 %, and why.  Nothing here is tuned.  The one input that is OURS
+#  is the breakage distribution function, fitted to points READ from H&F's
+#  Fig. 13, every point within 4 %.  Moving phi alone across that band
+#  (0.456 -> 0.474, +4 % in B at small u) moves the circulating load by
+#  -3.4 %; beta across +/-0.3 moves it by -9/+8 %.  A 3.5 % gap therefore sits
+#  inside what the figure-read input carries, and 5 % is that band, not a
+#  solver tolerance.  READ THIS HONESTLY: the rows show that the circuit, the
+#  energy-specific mill and the classifier reproduce H&F's design point to
+#  within the uncertainty of a function H&F printed only as a figure -- not
+#  that the model is right to 3.5 %.
+#
+#  THE OTHER EIGHT CELLS of Table II, run by the engine on scratch copies of
+#  this case (the cell's power; plugFlow for plug flow, one mill at full
+#  power and the other at zero for one mixer; bypass 0 / 0.3 / 0.5 for
+#  C.E. 100 / 70 / 50 %).  Each should give 2.50 at 100 TPH.  Compared, not
+#  anchored, so the pattern is on the record:
+#
+#      RTD \ C.E.      100 %          70 %           50 %
+#      plug flow       498 kW 2.574   581 kW 2.567   770 kW 2.439
+#      two mixers      532 kW 2.774   637 kW 2.588   875 kW 2.454
+#      one mixer       595 kW 2.456   720 kW 2.461   980 kW 2.518
+#
+#  Eight of nine lie within -2.5 % / +3.5 %; the two-mixers / 100 % cell is
+#  +11 %.  An independent re-computation in Python (scratch, not shipped)
+#  gives the same numbers to four figures for the five cells it ran, so the
+#  spread is the model's with our Fig. 13 fit, not an engine artefact.
+kpi     classifier             coarse_solids_kg_s 62.9989          5e-2     anchor
+kpi     millFirstHalf          specificEnergy_kWh_t 1.003105         5e-2     anchor
+kpi     millSecondHalf         specificEnergy_kWh_t 1.003105         5e-2     anchor
+# =============================================================================
+stream  fresh                  F                0.251776966944   1e-4
+stream  fresh                  T                298.15           1e-4
+stream  millDischarge          F                0.903364872884   1e-4
+stream  millDischarge          T                327.731851109    1e-4
+stream  millFeed               F                0.903364872884   1e-4
+stream  millFeed               T                319.619755418    1e-4
+stream  millMid                F                0.903364872884   1e-4
+stream  millMid                T                323.687892069    1e-4
+stream  product                F                0.251776966945   1e-4
+stream  product                T                327.731851109    1e-4
+stream  recycle                F                0.651587905939   1e-4
+stream  recycle                T                327.731851109    1e-4
+kpi     classifier             anchor_partition_dev 0                1e-4
+kpi     classifier             bypass           0.3              1e-4
+kpi     classifier             coarse_Sv_m2_m3  46857.6514405    1e-4
+kpi     classifier             coarse_d10_um    51.6813154665    1e-4
+kpi     classifier             coarse_d32_um    128.047390673    1e-4
+kpi     classifier             coarse_d50_um    184.108328453    1e-4
+kpi     classifier             coarse_d80_um    423.921757429    1e-4
+kpi     classifier             coarse_d90_um    706.501786729    1e-4
+kpi     classifier             d50_um           96.8330955103    1e-4
+kpi     classifier             d50c_um          104.2982518      1e-4
+kpi     classifier             feed_Sv_m2_m3    73229.2889895    1e-4
+kpi     classifier             feed_d10_um      19.7845955148    1e-4
+kpi     classifier             feed_d32_um      81.9344292808    1e-4
+kpi     classifier             feed_d50_um      129.808294443    1e-4
+kpi     classifier             feed_d80_um      323.899658209    1e-4
+kpi     classifier             feed_d90_um      562.380800169    1e-4
+kpi     classifier             fine_Sv_m2_m3    141477.9469      1e-4
+kpi     classifier             fine_d10_um      7.87738250381    1e-4
+kpi     classifier             fine_d32_um      42.4094364632    1e-4
+kpi     classifier             fine_d50_um      39.9181281486    1e-4
+kpi     classifier             fine_d80_um      75.766054459     1e-4
+kpi     classifier             fine_d90_um      88.8946962752    1e-4
+kpi     classifier             fine_solids_kg_s 25.1995761129    1e-4
+kpi     classifier             fluidMassClosure 0                1e-4
+kpi     classifier             fluidMassFlow_kg_s 0                1e-4
+kpi     classifier             fluidTo_coarse   0                1e-4
+kpi     classifier             sizeMassClosure  0                1e-4
+kpi     classifier             solidsMassFlow_kg_s 90.4149896959    1e-4
+kpi     classifier             solidsTo_coarse  0.721289841456   1e-4
+kpi     feedMixer              F_out            0                1e-4
+kpi     feedMixer              P_out            101325           1e-4
+kpi     feedMixer              T_out            319.619755418    1e-4
+kpi     feedMixer              n_in             2                1e-4
+kpi     feedMixer              psd_Sv_m2_m3     37602.2959317    1e-4
+kpi     feedMixer              psd_d10_um       71.3444053161    1e-4
+kpi     feedMixer              psd_d32_um       159.564724742    1e-4
+kpi     feedMixer              psd_d50_um       261.895809028    1e-4
+kpi     feedMixer              psd_d80_um       990.422757615    1e-4
+kpi     feedMixer              psd_d90_um       1600.51551508    1e-4
+kpi     feedMixer              psd_massFractionSum 0.999999999972   1e-4
+kpi     feedMixer              vf               0                1e-4
+kpi     millFirstHalf          T_out            323.687892069    1e-4
+kpi     millFirstHalf          W_shaft_kW       318.5            1e-4
+kpi     millFirstHalf          anchor_bond_dev  0                1e-4
+kpi     millFirstHalf          anchor_breakage_dev 0.000183811261131 1e-4
+kpi     millFirstHalf          anchor_selection_dev 0                1e-4
+kpi     millFirstHalf          dT_K             4.06813665036    1e-4
+kpi     millFirstHalf          feed_Sv_m2_m3    37602.2959317    1e-4
+kpi     millFirstHalf          feed_d10_um      71.3444053161    1e-4
+kpi     millFirstHalf          feed_d32_um      159.564724742    1e-4
+kpi     millFirstHalf          feed_d50_um      261.895809028    1e-4
+kpi     millFirstHalf          feed_d80_um      990.422757615    1e-4
+kpi     millFirstHalf          feed_d90_um      1600.51551508    1e-4
+kpi     millFirstHalf          product_Sv_m2_m3 56643.0120886    1e-4
+kpi     millFirstHalf          product_d10_um   29.8010687572    1e-4
+kpi     millFirstHalf          product_d32_um   105.926570265    1e-4
+kpi     millFirstHalf          product_d50_um   172.283108378    1e-4
+kpi     millFirstHalf          product_d80_um   504.259823972    1e-4
+kpi     millFirstHalf          product_d90_um   918.022090905    1e-4
+kpi     millFirstHalf          reductionRatio80 1.9641119727     1e-4
+kpi     millFirstHalf          sizeMassClosure  -2.22044604925e-16 1e-4
+kpi     millFirstHalf          solidsMassFlow_kg_s 90.4149896959    1e-4
+kpi     millFirstHalf          topClassRemaining 0.32065963668    1e-4
+kpi     millSecondHalf         T_out            327.731851109    1e-4
+kpi     millSecondHalf         W_shaft_kW       318.5            1e-4
+kpi     millSecondHalf         anchor_bond_dev  0                1e-4
+kpi     millSecondHalf         anchor_breakage_dev 0.000183811261131 1e-4
+kpi     millSecondHalf         anchor_selection_dev 0                1e-4
+kpi     millSecondHalf         dT_K             4.04395904056    1e-4
+kpi     millSecondHalf         feed_Sv_m2_m3    56643.0120886    1e-4
+kpi     millSecondHalf         feed_d10_um      29.8010687572    1e-4
+kpi     millSecondHalf         feed_d32_um      105.926570265    1e-4
+kpi     millSecondHalf         feed_d50_um      172.283108378    1e-4
+kpi     millSecondHalf         feed_d80_um      504.259823972    1e-4
+kpi     millSecondHalf         feed_d90_um      918.022090905    1e-4
+kpi     millSecondHalf         product_Sv_m2_m3 73229.2889895    1e-4
+kpi     millSecondHalf         product_d10_um   19.7845955148    1e-4
+kpi     millSecondHalf         product_d32_um   81.9344292808    1e-4
+kpi     millSecondHalf         product_d50_um   129.808294443    1e-4
+kpi     millSecondHalf         product_d80_um   323.899658209    1e-4
+kpi     millSecondHalf         product_d90_um   562.380800169    1e-4
+kpi     millSecondHalf         reductionRatio80 1.55683962978    1e-4
+kpi     millSecondHalf         sizeMassClosure  0                1e-4
+kpi     millSecondHalf         solidsMassFlow_kg_s 90.4149896959    1e-4
+kpi     millSecondHalf         topClassRemaining 0.32065963668    1e-4
+boundary global                 H_feeds_kW       -304045.865282   1e-4
+boundary global                 Q_boundary_kW    637              1e-4
+boundary global                 H_products_kW    -303408.865282   1e-4
+boundary global                 residual_kW      3.81201971322e-07 1e-4
+boundary global                 W_shaft_kW       637              1e-4

@@ -1,0 +1,62 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  hydrocyclone01_quartz_willsTable91 / flowsheetDict
+
+  One hydrocyclone, Wills & Napier-Munn (2006) Table 9.1 run FORWARD: the
+  book derives the partition curve from the two products; here the curve
+  and the water split are given and the products are predicted.
+\*---------------------------------------------------------------------------*/
+
+//  THE CASE'S SIZE AXIS: the sqrt-2 series 74 x 2^(k/2) um (the Tyler
+//  openings, unrounded), 74 um to 2368 um, plus the pan.
+sizeGrid
+{
+    xMax      2368 um;
+    ratio     1.41421356;
+    nClasses  11;
+}
+
+units
+(
+    {
+        name        cyclone;
+        type        hydrocyclone;
+        model       declared;
+        in          feed;
+        outputs     ( underflow overflow );
+        operation
+        {
+            //  R_f: "The value of R in this example is 65.2 x 0.34 / (100 x 0.57)
+            //  = 0.39" (Wills p. 215), the water recovered to the underflow,
+            //  and by Kelsall's assumption the bypass of every size.
+            waterToUnderflow    0.39;
+            partition
+            {
+                model       tabulated;
+                //  The CORRECTED curve, Wills eq. 9.15 y' = (y - R)/(1 - R)
+                //  applied to Table 9.1 column 8 (y, % of feed to U/F) class by
+                //  class, R = 0.39:
+                //      -74: 37.2 -> -0.0295 (!)   74-104: 41.3 -> 0.0377
+                //  104-147: 44.3 -> 0.0885     147-208: 50.0 -> 0.1803
+                //  208-295: 60.8 -> 0.3574     295-589: 88.6 -> 0.7967 (both
+                //  grid classes)               +589: 100 -> 1.
+                //  THE PAN CANNOT BE CORRECTED: 37.2 % of the -74 um solids
+                //  reach the underflow while 39 % of the water does, so Kelsall's
+                //  assumption (the fines follow the water) fails on this test's
+                //  finest class -- Wills notes the assumption "has been
+                //  questioned" (p. 214).  A corrected recovery cannot be
+                //  negative; it is written 0, and the 1.8 % of the -74 um mass
+                //  this adds to the underflow is the case's one stated gap.
+                //           pan     74      104.7   148     209.3   296     418.6   592  837  1184 1674
+                corrected   ( 0      0.0377  0.0885  0.1803  0.3574  0.7967  0.7967  1    1    1    1 );
+            }
+        }
+    }
+);

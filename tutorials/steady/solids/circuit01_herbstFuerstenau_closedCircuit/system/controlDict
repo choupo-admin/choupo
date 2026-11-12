@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  circuit01_herbstFuerstenau_closedCircuit
+
+  THE CLOSED GRINDING CIRCUIT Herbst & Fuerstenau (1980) design at the end of
+  their paper (pp. 17-24, Tables I-II): 100 TPH of limestone ground to
+  -150 mesh in a ball mill closed by a classifier, at 250 % circulating load.
+
+  THEIRS, printed and used as is:
+    * feed: Gaudin-Schuhmann, top size 8 mesh, modulus 1; 100 TPH (p. 18);
+    * mill transport: two ideal mixers in series (p. 18 and its footnote);
+    * classifier: C = 1 above 150 mesh, 0.3 below -- 70 % efficiency (p. 18);
+    * the specific breakage rate, Fig. 14 legend ("improved estimates"):
+      k^E_i = 2.40 (sqrt(x_i x_i+1)/2000)^0.72 (kWh/ton)^-1, x in um;
+    * the power: 637.0 kW (1.82 kWh/ton x 350 TPH, p. 23).
+  OURS, stated:
+    * the breakage distribution function: mill01's Austin form fitted BY US
+      to points read from H&F Fig. 13 (phi 0.456, gamma 0.75, beta 2.2) --
+      H&F print the figure, not the numbers;
+    * "ton" read as the US short ton (TPH, a US paper; 1 TPH = 0.907 t/h);
+    * the grid's 150-mesh edge is 104.3 um (the sqrt-2 series from 2.36 mm),
+      H&F's 105 um sieve.
+  HELD TO (Table II, the C.E. = 70 % / two-mixers cell, and p. 23): at 637 kW
+    the circuit must carry 250 % circulating load at 100 TPH -- recycle / fresh
+    = 2.50, mill feed 350 TPH, E = 1.82 kWh/ton of mill feed.  The comparison
+    and its reading are in `expected`; nothing is tuned to close it.
+  DRY GRINDING: the shaft work leaves as heat with the product (adiabatic
+    mills), so the product is warmer than the feed; H&F do not model heat.
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "Herbst & Fuerstenau's 1980 closed-circuit design case: 100 TPH of limestone, a ball mill with the residence-time distribution of two ideal mixers in series (built as two perfectly mixed mill halves), their energy-specific breakage rates (Fig. 14) and a 150-mesh classifier with 30 % bypass; at their 637 kW the circuit must carry 250 % circulating load.";
+verbosity     3;
+citations
+(
+    "Herbst, J.A.; Fuerstenau, D.W. (1980) Scale-up procedure for continuous grinding mill design using population balance models. Int. J. Miner. Process. 7, 1-31. doi:10.1016/0301-7516(80)90034-4"
+    "Austin, L.G. (1971) Introduction to the mathematical description of grinding as a rate process. Powder Technol. 5, 1-17. doi:10.1016/0032-5910(71)80064-5"
+    "King, R.P. (2001) Modeling and Simulation of Mineral Processing Systems. Butterworth-Heinemann, Oxford. Section 4.2."
+);

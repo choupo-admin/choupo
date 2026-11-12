@@ -1,0 +1,48 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  screen01_dolomite_karra / flowsheetDict
+
+  One vibrating screen, King (2001) Example 10.1, Table 10.1 (p. 364).
+\*---------------------------------------------------------------------------*/
+
+//  THE CASE'S SIZE AXIS: the sqrt-2 series down from the test's 3-inch top
+//  sieve.  It shares the test's 3, 1.5, 0.75 and 0.375 inch sieves as class
+//  edges, so the measured % passing at those four sizes is compared on an
+//  edge, with no interpolation.
+sizeGrid
+{
+    xMax      3 in;
+    ratio     1.41421356;
+    nClasses  9;               // 3 in down to 0.1875 in, plus the pan
+}
+
+units
+(
+    {
+        name        screen;
+        type        screen;
+        model       karra;                  // King 2001 sec. 4.2.1-4.2.2
+        in          feed;
+        outputs     ( oversize undersize );
+        operation
+        {
+            //  Table 10.1: "Woven wire 1.25 inches aperture 0.5 inch wire
+            //  diameter", "Angle of inclination 20", "16 ft x 0.88 ft",
+            //  "Dolomite 110 lb/ft3".
+            aperture        1.25 in;
+            wireDiameter    0.5 in;
+            inclination     20 deg;
+            area            1.308055 m2;    // 16 ft x 0.88 ft = 14.08 ft2
+            deck            1;              // a single-deck test screen
+            wetScreening    no;             // a dry test (no spray stated)
+            bulkDensity     1762.04 kg/m3;  // 110 lb/ft3
+        }
+    }
+);

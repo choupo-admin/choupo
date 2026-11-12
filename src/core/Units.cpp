@@ -256,6 +256,10 @@ const std::map<std::string, UnitSpec>& table()
         { "kWh/t",        UnitSpec{ 3.6e6 / 1000.0,       Dims::specificEnergy } },
         { "kWh/shortTon", UnitSpec{ 3.6e6 / 907.18474,    Dims::specificEnergy } },
         { "t/kWh",        UnitSpec{ 1000.0 / 3.6e6,       Dimensions{ 0, -2, 2, 0, 0 } } },
+        //   The same in SHORT tons (C361 slice 3): Herbst & Fuerstenau (1980)
+        //   print k^E in (kWh/ton)^-1 and their circuit in TPH, US short tons.
+        { "shortTon/kWh", UnitSpec{ 907.18474 / 3.6e6,    Dimensions{ 0, -2, 2, 0, 0 } } },
+        { "shortTon/h",   UnitSpec{ 907.18474 / 3600.0,   Dims::massFlow } },
         { "J/kg/K",     UnitSpec{ 1.0,      Dims::heatCapacity } },
         { "N/m",        UnitSpec{ 1.0,      Dims::surfaceTension } },
         { "W/m2",       UnitSpec{ 1.0,      Dims::heatFlux } },

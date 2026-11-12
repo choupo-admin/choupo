@@ -1,0 +1,79 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+# =============================================================================
+#  THE WILLS TABLE 9.1 ANCHORS (C361 slice 3).  Wills & Napier-Munn 2006
+#  pp. 215-216, a printed worked example (arithmetic on measured sieve data).
+#
+#      quantity                    Wills    Choupo     gap       row
+#      underflow dilution (w/s)    0.34     0.33904    -0.3 %    anchor (1.5 % = the 2-figure print)
+#      d50 (actual curve), um      177.5    176.01     -0.8 %    anchor (1 %: see below)
+#      solids to underflow U/F     0.652    0.65568    +0.56 %   GAP, not anchored
+#      overflow dilution (w/s)     1.00     1.00982    +1.0 %    GAP, not anchored
+#
+#  d50: Wills plots column 8 at the ARITHMETIC mean of each sieve interval
+#  (177.5 um for 147-208, where the partition is exactly 50.0 %); the grid's
+#  representative size is the GEOMETRIC mean of the same interval (176.0 um
+#  for 148-209.3).  The 0.8 % is that definition, and 1 % covers it.
+#
+#  THE TWO GAPS have ONE cause, written in the flowsheetDict: the book's -74 um
+#  class reaches the underflow at 37.2 %, BELOW the water's 39 %, so Kelsall's
+#  correction gives it a negative corrected recovery; it is declared 0, which
+#  sends (0.39 - 0.372) x 0.301 = 0.54 % of the feed's solids to the underflow
+#  that the book's test did not -- +0.56 % on U/F and, through the water
+#  balance, +1.0 % on the overflow dilution.  Kelsall's assumption failing on
+#  measured data, shown, not tuned away.
+#
+#  The underflow's size analysis (Wills column 2 / Choupo, wt %, the grid
+#  classes merged back to Wills's sieves):
+#      +1168 14.7/14.64   589-1168 21.8/21.66   295-589 25.0/24.58
+#      208-295 7.4/7.33   147-208 6.3/6.25   104-147 4.8/4.74   74-104 2.9/2.90
+#      -74 17.1/17.90  (the pan: the gap above)
+kpi     cyclone                underflow_dilution 0.34               1.5e-2   anchor
+kpi     cyclone                d50_um           177.5              1e-2     anchor
+# =============================================================================
+stream  feed                   F                1.34124372222      1e-4
+stream  feed                   T                298.15             1e-4
+stream  overflow               F                0.695322392592     1e-4
+stream  overflow               T                298.15             1e-4
+stream  underflow              F                0.64592132963      1e-4
+stream  underflow              T                298.15             1e-4
+kpi     cyclone                anchor_partition_dev 0                  1e-4
+kpi     cyclone                bypass           0.39               1e-4
+kpi     cyclone                d50c_um          278.543153552      1e-4
+kpi     cyclone                feedSolids_vol_frac 0.397596673027     1e-4
+kpi     cyclone                feedSolids_wt_pct 63.6942672853      1e-4
+kpi     cyclone                feed_Sv_m2_m3    44293.0927986      1e-4
+kpi     cyclone                feed_d10_um      24.5847178386      1e-4
+kpi     cyclone                feed_d32_um      135.461301546      1e-4
+kpi     cyclone                feed_d50_um      210.223833604      1e-4
+kpi     cyclone                feed_d80_um      712.654496234      1e-4
+kpi     cyclone                feed_d90_um      1161.10630844      1e-4
+kpi     cyclone                feed_dilution    0.570000005686     1e-4
+kpi     cyclone                fluidMassClosure 1.12190957392e-16  1e-4
+kpi     cyclone                fluidMassFlow_kg_s 15.8333334583      1e-4
+kpi     cyclone                fluidTo_underflow 0.39               1e-4
+kpi     cyclone                overflow_Sv_m2_m3 69405.6536876      1e-4
+kpi     cyclone                overflow_d10_um  13.877060433       1e-4
+kpi     cyclone                overflow_d32_um  86.4482888815      1e-4
+kpi     cyclone                overflow_d50_um  69.3853021648      1e-4
+kpi     cyclone                overflow_d80_um  184.256687499      1e-4
+kpi     cyclone                overflow_d90_um  259.922381149      1e-4
+kpi     cyclone                overflow_dilution 1.00981683949      1e-4
+kpi     cyclone                overflow_solids_kg_s 9.56444082918      1e-4
+kpi     cyclone                rho_liquid       996.956281129      1e-4
+kpi     cyclone                rho_pulp         1654.20096412      1e-4
+kpi     cyclone                rho_solid        2650               1e-4
+kpi     cyclone                sizeMassClosure  0                  1e-4
+kpi     cyclone                solidsMassFlow_kg_s 27.77777772        1e-4
+kpi     cyclone                solidsTo_underflow 0.655680129433     1e-4
+kpi     cyclone                underflow_Sv_m2_m3 31105.6354902      1e-4
+kpi     cyclone                underflow_d10_um 41.3325922423      1e-4
+kpi     cyclone                underflow_d32_um 192.891092095      1e-4
+kpi     cyclone                underflow_d50_um 402.283643301      1e-4
+kpi     cyclone                underflow_d80_um 997.391822545      1e-4
+kpi     cyclone                underflow_d90_um 1474.95296219      1e-4
+kpi     cyclone                underflow_solids_kg_s 18.2133368908      1e-4
+boundary global               H_feeds_kW       -672776.520965     1e-4
+boundary global               Q_boundary_kW    0                  1e-4
+boundary global               H_products_kW    -672776.520965     1e-4

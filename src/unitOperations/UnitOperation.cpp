@@ -71,6 +71,10 @@ License
 #include "separation/Cyclone.H"
 #include "solids/Mill.H"
 #include "solids/millModel/MillModels.H"
+#include "solids/Classifier.H"
+#include "solids/Screen.H"
+#include "solids/Hydrocyclone.H"
+#include "solids/classifierModel/PartitionCurves.H"
 #include "separation/BagFilter.H"
 #include "separation/GasSolidSplitter.H"
 #include "separation/IonExchanger.H"
@@ -200,6 +204,10 @@ void UnitOperation::registerBuiltins()
     //  SIZE REDUCTION (2026-11-12, DEV.md 4c C361 slice 2): a breakage
     //  population balance on the case's size grid.
     reg("mill",               []{ return std::make_unique<Mill>();               });
+    //  CLASSIFICATION (C361 slice 3): a partition curve on the size grid.
+    reg("classifier",         []{ return std::make_unique<Classifier>();         });
+    reg("screen",             []{ return std::make_unique<Screen>();             });
+    reg("hydrocyclone",       []{ return std::make_unique<Hydrocyclone>();       });
     reg("ionExchanger",       []{ return std::make_unique<IonExchanger>();       });
     reg("psa",                []{ return std::make_unique<PSA>();                });
     reg("tsaTwinBed",         []{ return std::make_unique<TSATwinBed>();         });
@@ -227,6 +235,9 @@ void UnitOperation::registerBuiltins()
     // a `mill` unit) and the breakage function (`breakage { model ...; }`).
     SelectionFunction::registerBuiltins();
     BreakageFunction::registerBuiltins();
+
+    // Partition curves of the size classifiers (`partition { model ...; }`).
+    PartitionCurve::registerBuiltins();
 }
 
 } // namespace Choupo

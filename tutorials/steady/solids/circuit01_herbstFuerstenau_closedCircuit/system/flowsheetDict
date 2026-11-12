@@ -1,0 +1,122 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  circuit01_herbstFuerstenau_closedCircuit / flowsheetDict
+
+  Herbst & Fuerstenau's design circuit (1980, Fig. 2 and pp. 18-24): fresh
+  feed + classifier oversize -> ball mill -> classifier; the undersize is the
+  circuit product.  The mill's residence-time distribution is "two ideal
+  mixers in series" (p. 18, footnote: E(theta) = 4 theta exp(-2 theta)),
+  built EXACTLY as two perfectly mixed `mill` units in series, each drawing
+  half the mill's 637 kW: with an energy-specific rate the extent of each
+  half is k^E (P/2)/M = kappa/2, and two perfect mixers of extent kappa/2
+  each ARE the RTD 4 theta e^(-2 theta) with total extent kappa (the
+  tanks-in-series RTD; nothing is approximated).
+\*---------------------------------------------------------------------------*/
+
+//  THE CASE'S ONE SIZE AXIS: H&F's own sieve stack (p. 18), the sqrt-2 Tyler
+//  series from 8 mesh (2.36 mm) down to 400 mesh (37 um), plus the pan.
+sizeGrid
+{
+    xMax      2.36 mm;
+    ratio     1.41421356;
+    nClasses  13;
+}
+
+tearStreams    ( recycle );
+//  Direct substitution: the tear vector carries F, z, T and P; plain
+//  substitution keeps the recycle's solids and every class of its size
+//  distribution the image of the last pass, consistent with its flow.
+recycleSolver  directSubstitution;
+recycleTol     1e-12;
+recycleMaxIter 400;
+
+units
+(
+    {
+        name        feedMixer;
+        type        mixer;
+        inputs      ( fresh recycle );
+        outputs     ( millFeed );
+    }
+    {
+        name        millFirstHalf;
+        type        mill;
+        model       herbstFuerstenau;       // ENERGY-specific: kappa = k^E E
+        in          millFeed;
+        outputs     ( millMid );
+        operation
+        {
+            W_shaft         318.5 kW;       // half of H&F's 637.0 kW (p. 23)
+            residence       perfectlyMixed; // the first of the two ideal mixers
+            selection
+            {
+                S1E     2.40 shortTon/kWh;  // H&F Fig. 14, "improved estimates":
+                x1      2000 um;            //   k^E_i = 2.40 (sqrt(x_i x_i+1)/2000)^0.72
+                zeta1   0.72;
+                zeta2   0;
+            }
+            breakage
+            {
+                model   austin;             // mill01's fit to H&F Fig. 13 (ours;
+                phi     0.456;              // every point read within 4 %)
+                gamma   0.75;               // H&F p. 20: the fine-range slope
+                beta    2.2;
+            }
+        }
+    }
+    {
+        name        millSecondHalf;
+        type        mill;
+        model       herbstFuerstenau;
+        in          millMid;
+        outputs     ( millDischarge );
+        operation
+        {
+            W_shaft         318.5 kW;       // the other half
+            residence       perfectlyMixed; // the second ideal mixer
+            selection
+            {
+                S1E     2.40 shortTon/kWh;
+                x1      2000 um;
+                zeta1   0.72;
+                zeta2   0;
+            }
+            breakage
+            {
+                model   austin;
+                phi     0.456;
+                gamma   0.75;
+                beta    2.2;
+            }
+        }
+    }
+    {
+        name        classifier;
+        type        classifier;
+        in          millDischarge;
+        outputs     ( recycle product );
+        operation
+        {
+            //  H&F p. 18: "a classifier which has a 150-mesh cut size and which
+            //  by-passes 30 % of the particles finer than 150-mesh into the
+            //  oversize product, i.e. C_ii = 1.0 for x_i >= 105 um and
+            //  C_ii = 0.3 for x_i < 105 um".  The corrected curve is the step
+            //  at the 150-mesh sieve (104.3 um on this grid); the 30 % is the
+            //  bypass: a_k = 0.3 + 0.7 c_k.
+            partition
+            {
+                model       tabulated;
+                //           pan  -400 -270 -200 | -150 mesh and coarser
+                corrected   ( 0    0    0    0      1    1    1    1    1    1    1    1    1 );
+            }
+            bypass      0.3;
+        }
+    }
+);

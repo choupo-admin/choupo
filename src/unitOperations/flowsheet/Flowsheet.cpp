@@ -1810,6 +1810,21 @@ sVector packTears(const std::vector<std::string>& tears,
         //  their own units.
         v.push_back(s.P / 1.0e5);
     }
+    //  THE SOLIDS OF A TEAR ON THE CASE'S SIZE GRID (C361 slice 3).  F and z
+    //  are the FLUID's, so a solids recycle (a closed grinding circuit) was
+    //  judged converged on its temperature alone.  When a tear carries a
+    //  distribution on the grid, its class molar flows (total solid kmol/s
+    //  x mass fraction) are appended AFTER every tear's [F, z, T, P] block --
+    //  so the per-tear stride the pressure check reads is unchanged -- and a
+    //  case without a grid packs exactly what it packed before.
+    for (const auto& name : tears)
+    {
+        const auto& s = streams.at(name);
+        if (!s.psd.onGrid()) continue;
+        scalar sTot = 0.0;
+        for (auto x : s.s) sTot += x;
+        for (auto w : s.psd.massFrac) v.push_back(sTot * w);
+    }
     return v;
 }
 
@@ -1860,6 +1875,26 @@ void unpackTears(const std::vector<std::string>& tears,
             auto it = bounds->find(name);
             if (it != bounds->end() && it->second.any)
                 applyStreamBounds(s, it->second, name, announce);
+        }
+    }
+    //  The grid solids block packTears appends (C361 slice 3): the class
+    //  flows set the distribution, and their sum rescales every solid
+    //  component in proportion (one population).
+    for (const auto& name : tears)
+    {
+        auto& s = streams.at(name);
+        if (!s.psd.onGrid()) continue;
+        const std::size_t nc = s.psd.massFrac.size();
+        if (off + nc > v.size()) break;
+        scalar tot = 0.0, sOld = 0.0;
+        std::vector<scalar> c(nc, 0.0);
+        for (std::size_t k = 0; k < nc; ++k) { c[k] = std::max(v[off + k], 0.0); tot += c[k]; }
+        off += nc;
+        for (auto x : s.s) sOld += x;
+        if (tot > 0.0 && sOld > 0.0)
+        {
+            for (auto& x : s.s) x *= tot / sOld;
+            for (std::size_t k = 0; k < nc; ++k) s.psd.massFrac[k] = c[k] / tot;
         }
     }
 }

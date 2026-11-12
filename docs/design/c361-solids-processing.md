@@ -1,6 +1,6 @@
 # Solids processing: one size axis, then the units that move along it
 
-**2026-11-12.  Kind: ADR.  Status: slices 1-2 BUILT (DEV.md 4c C361); slices 3-4 PLANNED.**
+**2026-11-12.  Kind: ADR.  Status: slices 1-3 BUILT (DEV.md 4c C361; slice 3 engine and cases, its guides pending); slice 4 PLANNED.**
 
 Vitor, on the breadth-first tools he has used: models he could not trust and
 documentation he could not read -- "e preciso que o Choupo ultrapasse isso".
@@ -241,3 +241,228 @@ framework: its answers may be compared against, never its code copied.
 * One distribution per solid species (2.3).
 * No sizer or cost for the mill (Bond's power-to-diameter relation is in
   King p. 204 and H&F p. 24; the sizing pass is a later slice).
+
+## 7. What slice 3 built (2026-11-12)
+
+Classification on the size grid: one partition-curve family, one split, three
+units, and the closed circuit Herbst & Fuerstenau design.  Every equation
+below is as implemented, with the page it was read from.
+
+### 7.1 Pieces
+
+| piece | where |
+|---|---|
+| partition curves as objects (`whiten`, `rosinRammler`, `tabulated`), explicit registration, `verify()` anchors | `src/unitOperations/solids/classifierModel/PartitionCurves.{H,cpp}` (registry `PartitionCurves.cpp:326`, called from `UnitOperation::registerBuiltins`) |
+| the one split every classifier performs; feed reader; passing fraction; KPIs and profile | `src/unitOperations/solids/ClassifierCore.{H,cpp}` |
+| unit `classifier` (a curve and a bypass, nothing else) | `src/unitOperations/solids/Classifier.{H,cpp}` |
+| unit `screen` (`karra` / `declared`) | `src/unitOperations/solids/Screen.{H,cpp}` |
+| unit `hydrocyclone` (`declared` / `nageswararao`) | `src/unitOperations/solids/Hydrocyclone.{H,cpp}` |
+| grid solids in the recycle tear vector | `src/unitOperations/flowsheet/Flowsheet.cpp:1813-1828` (pack), `:1880-1899` (unpack) |
+| units `shortTon/kWh`, `shortTon/h` | `src/core/Units.cpp:261-262` |
+| cases | `tutorials/steady/solids/circuit01_herbstFuerstenau_closedCircuit`, `screen01_dolomite_karra`, `hydrocyclone01_quartz_willsTable91` |
+
+### 7.2 The split, and why it closes exactly
+
+King (2001) section 4.2, eqs. 4.20-4.29, pp. 86-87: the classification
+function c(d_pi) is the fraction of class i of the feed that leaves in the
+coarse product.  Two curves are kept apart:
+
+* corrected c_k -- what a `PartitionCurve` returns;
+* actual a_k = R + (1 - R) c_k, R the BYPASS (the fraction of every class
+  short-circuited to the coarse product).  In a hydrocyclone R is the water
+  recovery to underflow R_f (Kelsall; Wills & Napier-Munn 2006 eq. 9.15,
+  p. 214, written forward; Nageswararao et al. 2004 eq. 21 is the same
+  algebra for the overflow, E_oa = C (1 - c), C = 1 - R_f).
+  `Classifier.cpp:89`, `Screen.cpp` (after its model block),
+  `Hydrocyclone.cpp:305`.
+
+Per class, m_s the feed's solids mass flow and f_k its fractions
+(`ClassifierCore.cpp:147-148`):
+
+    coarse_k = a_k f_k m_s,        fine_k = f_k m_s - coarse_k
+
+The fine product is the DIFFERENCE, so coarse + fine = feed per class to the
+last bit (the printed closure is 0.000e+00 in all three cases).  The fluid
+(the stream's F z -- F and z are the FLUID's, the solids ride `s`) splits by
+one fraction R_fl, the same for every fluid component
+(`ClassifierCore.cpp:79` and the build lambda).  Every solid component
+splits in the proportion Y = SUM_k a_k f_k: ONE POPULATION (2.3 stays
+deferred, and each unit header says so).  No work, no heat: both products
+leave at the feed's T and P.
+
+A continuous curve is evaluated at each class's representative size (the
+geometric mean of its edges, King's d_pi).  Published per class (profile):
+the feed fractions, corrected and actual partition, both products'
+fractions.  KPIs: the solids and fluid splits, the bypass, `d50c_um` (0.5
+crossing of the corrected curve), `d50_um` and `imperfection`
+I = (d75 - d25)/(2 d50) on the ACTUAL curve (Wills eq. 9.14, p. 214; not
+published when the bypass leaves no d25), both products' d10..d90, d32, S_v,
+and the closures.  Crossings by `partitionSize` (`PartitionCurves.cpp:334`):
+linear in ln x between neighbouring representative sizes, the first crossing
+from the fine end.
+
+### 7.3 Partition curves
+
+| model | c(d) as implemented | parameters | source | code |
+|---|---|---|---|---|
+| `whiten` | 1 - (e^a - 1)/(e^(a d/d50c) + e^a - 2) | `d50c` [length], `alpha` [-] | Nageswararao, Wiseman & Napier-Munn (2004) eq. 21, p. 681 (written there for the overflow; divided by C and complemented here) | `PartitionCurves.cpp:143` |
+| `rosinRammler` | 1 - exp(-0.693 (d/d50)^m), 0.693 as printed | `d50` [length], `m` [-] | King (2001) eq. 4.41, p. 89; Plitt's form, Nageswararao et al. eq. 20, p. 680 | `PartitionCurves.cpp:214` |
+| `tabulated` | c_k declared on the case's classes, pan first, each in [0, 1] | `corrected ( ... )`, exactly nClasses values | King section 4.2; H&F 1980 p. 18 (classifier matrix C) | `PartitionCurves.cpp:268` |
+
+Windows: whiten -- monotone (the fish-hook beta form, eq. 25 p. 683, is NOT
+built); rosinRammler -- a monotone S-curve; tabulated -- the case's own grid,
+never interpolated to another.  Anchors (`verify()`), all IDENTITIES: whiten
+c(d50c) = 1/2 for any a (the definition of d50c, p. 683); rosinRammler
+c(d50) = 1 - e^-0.693 = 0.49997; tabulated -- nothing to compute, said so.
+
+### 7.4 `screen`, model `karra`
+
+Karra (1979) as King (2001) prints it, section 4.2.1-4.2.2, pp. 87-90, in
+King's units (h_T mm, A t/(h m2), W^F t/h, rho_B kg/m3):
+
+| quantity | as implemented | King | code |
+|---|---|---|---|
+| effective aperture | h_T = (h + d_w) cos(theta) - d_w | eq. 4.31 | `Screen.cpp:214` |
+| basic capacity | A = 12.13 h_T^0.32 - 10.3 (h_T < 51 mm); 0.34 h_T + 14.41 (>= 51) | 4.32-4.33 | `Screen.cpp:54` |
+| open area (optional `openArea`) | A <- A x 100 oa / OA, OA = 21.5 log10(h) + 37 | 4.34-4.35 | `Screen.cpp:229-236` |
+| oversize factor | B = 1.6 - 1.2 Pbar (Pbar <= 0.87); 4.275 - 4.25 Pbar; Pbar = 1 - P^F(h_T) | 4.36 | `Screen.cpp:59` |
+| half-size factor | C = 0.7 + 1.2x (x <= 0.3); 2.053 x^0.564 (<= 0.55); 3.35 x^1.37 (<= 0.8); 5x - 1.5; x = P^F(h_T/2) | 4.37 | `Screen.cpp:64` |
+| deck, wet, bulk density | D = 1.1 - 0.1 S; E from the table of p. 89 with T = 1.26 h_T (only `wetScreening yes`, else 1); F = rho_B/1600 | 4.38, p. 89, 4.39 | `Screen.cpp:73`, `:243-247` |
+| near-size factor | G_c = 0.975 (1 - P^F(1.25 h_T) + P^F(0.75 h_T))^0.511 | 4.40 | `Screen.cpp:248` |
+| loading | K = (W^F P^F(h_T)/area)/(A B C D E F) | 4.42 | `Screen.cpp:251` |
+| cut size | d50 = h_T G_c / K^0.148 | 4.43 | `Screen.cpp:255` |
+| partition | rosinRammler with m = 5.9, no bypass | 4.41 | the curve object |
+| capacity, AUF, efficiency | Th = A B C D E F G_c area; AUF = undersize transmitted / Th; eff = transmitted / (W^F P^F(h)) | 4.30, 4.48, 4.46-4.47 | `Screen.cpp:265-267` |
+
+P^F(x) is `fractionPassing` (`ClassifierCore.cpp:107`): the grid's own
+within-class assumption (uniform in ln x, uniform in x in the pan).  Window
+enforced: the aperture inside the grid (refused by name otherwise); h_T > 0;
+A > 0 (h_T above about 0.6 mm, the correlation's own zero).  The relation
+signs of 4.36-4.37 and the theta of 4.31 do not survive text extraction; they
+were read from the rendered pages, and the branches meet within 0.03 at each
+boundary.  Anchor: an identity at a printed point, King p. 87 -- the factors
+are unity at the standard condition, B(0.5) C(0.25) = 1.
+
+`screen`, model `declared`: a `partition {}` curve, a `bypass` (fines
+misplaced to the oversize) and an optional `aperture`, checked against the
+grid.
+
+### 7.5 `hydrocyclone`
+
+`declared`: a `partition {}` curve with its cut size and `waterToUnderflow`
+R_f, which is also the solids bypass.
+
+`nageswararao`: Nageswararao, Wiseman & Napier-Munn (2004) eqs. 13-15, p. 677
+(units of its footnote 4: lengths m, theta degrees, Q m3/h per cyclone,
+P kPa, rho_p t/m3, g m/s2, d50c um), with the Whiten curve of eq. 21
+(`alpha`):
+
+    eq. 13  Q/(D_c^2 sqrt(P/rho_p)) = K_Q0 D_c^-0.10 (D_o/D_c)^0.68 (D_i/D_c)^0.45
+            (L_c/D_c)^0.20 theta^-0.10  -> solved for P from the feed's own Q
+                                                       (Hydrocyclone.cpp:242-252)
+    eq. 14  d50c/D_c = K_D0 D_c^-0.65 (D_o/D_c)^0.52 (D_u/D_c)^-0.50 (D_i/D_c)^0.20
+            (L_c/D_c)^0.20 theta^0.15 (P/(rho_p g D_c))^-0.22 lambda^0.93   (:255)
+    eq. 15  R_f = K_W0 (D_o/D_c)^-1.19 (D_u/D_c)^2.40 (D_i/D_c)^0.50 (L_c/D_c)^0.22
+            theta^-0.24 (P/(rho_p g D_c))^-0.53 lambda^0.27                 (:260)
+
+lambda is DECLARED: `hinderedSettling original`, C_V/(1 - C_V)^3 (p. 676), or
+`steinour`, 10^(1.82 C_V)/(1 - C_V)^2, the complete Steinour form unscaled
+(Castro 1990, p. 684; conclusion 8, p. 685) (`Hydrocyclone.cpp:236-237`): a
+case's K_D0 and K_W0 belong to one of them.  K_Q0, K_D0, K_W0 and alpha are
+material constants the case declares (p. 679); no default exists.  R_V
+(eq. 16) is not built (conclusion 5: redundant).  Also published: the
+hydraulic power P Q (Wills eq. 9.20, p. 217) and the products' dilutions.
+
+DATA WINDOW, enforced by name (`Hydrocyclone.cpp:55-56`): feed solids 40-70 %
+by weight (the fitting set, pp. 678, 681, 684); D_c 0.102-0.381 m (the
+database's 10.2-38.1 cm cyclones, p. 677); the fluid water only (p. 675).
+The paper prints no window for the geometric ratios, so none is enforced.
+Anchor: an identity at a printed point, p. 681 -- "an increase in D_u of 10 %
+will always result in an increase of 26 % in R_f": 1.1^2.40 = 1.2570 against
+1.26 (0.24 %, the paper's rounding).  The model has NO case: the paper prints
+no K values for any material and no worked example, and inventing K for a
+tutorial would be the default the brief forbids.  It was exercised on a
+scratch copy of hydrocyclone01 (it runs; D_c 0.5 m and 25 % solids are
+refused by name).
+
+### 7.6 The recycle of a grid solid
+
+A stream's F and z are its fluid's, so a dry grinding circuit's tear carried
+F = 0 and was judged converged on T and P alone: the first run of circuit01
+"converged" with a 0.002 % mass and element closure.  When a tear carries a
+distribution on the grid, `packTears` now appends its class molar flows
+(total solid kmol/s x w_k) AFTER every tear's [F, z, T, P] block (the
+pressure check's per-tear stride is unchanged), and `unpackTears` sets the
+distribution from them and rescales every solid component in proportion.  A
+case without a grid packs exactly what it packed before.  Only
+`directSubstitution` and `Wegstein` read this vector; the default
+`Newton`-on-tears does not, and a gridded solids recycle under Newton is NOT
+validated (circuit01 declares `directSubstitution`, `recycleTol 1e-12`: at
+1e-9 the mixer's published inlets missed its outlet by 2.6 W of enthalpy on
+the elements datum, which `check_energy_closure` refuses at 0.1 W).
+
+### 7.7 Cases and anchors
+
+| case | held to | kind | result |
+|---|---|---|---|
+| circuit01 | H&F 1980 Table II (C.E. 70 %, two mixers) and p. 23: at 637 kW, 250 % circulating load at 100 TPH, E = 1.82 kWh/short ton | arithmetic on a published simulation; one input (the breakage function) read by us from a figure | circulating load 2.588 (+3.5 %), E 1.775 kWh/short ton (-2.5 %); anchored at 5 % = the band the figure-read B carries (phi across its 4 % read band alone moves the load 3.4 %) |
+| circuit01, the eight other Table II cells | the same 2.50 | compared, not anchored | seven cells 2.44-2.57; two mixers / C.E. 100 % 2.77 (+11 %); an independent Python re-computation agrees to four figures |
+| hydrocyclone01 | Wills & Napier-Munn 2006 Table 9.1, pp. 215-216 | printed worked example on measured data | underflow dilution 0.339 vs 0.34 and d50 176.0 vs 177.5 um (geometric vs arithmetic class mean) anchored; U/F 0.6557 vs 0.652 and overflow dilution 1.010 vs 1.00 are GAPS with one stated cause (7.8) |
+| screen01 | King 2001 Example 10.1, Table 10.1 (Hennings & Grant 1982) | MEASURED | NOT anchored (Karra states no accuracy): oversize 0.293 vs 0.305 measured (-4.0 %), undersize % passing within -1.6/-2.7 %; King's own AUF 1.58 vs Choupo 1.08, unexplained (likeliest: King's run applied the open-area correction, which gives about 1.47) |
+
+What circuit01 represents EXACTLY, and what is its own: H&F's mill RTD "two
+ideal mixers in series" (p. 18 footnote, E(theta) = 4 theta e^(-2 theta)) is
+two perfectly mixed `mill` units in series, each drawing half the power --
+with an energy-specific rate the extent of each half is kappa/2, which IS
+that RTD, so no residence model was added.  The specific breakage rate is
+H&F's printed Fig. 14 legend, k^E_i = 2.40 (sqrt(x_i x_i+1)/2000)^0.72
+(kWh/ton)^-1; the breakage distribution function is mill01's Austin fit to
+points we read from Fig. 13 (OURS).  "ton" is read as the US short ton.
+screen01 carries the catalogue's calcite record for the test's dolomite (the
+catalogue's dolomite has no `role` and no thermal block; a screen reads only
+the declared bulk density), said in its thermoPhysPropDict.
+
+### 7.8 What the sources say that the brief did not
+
+* H&F's Tables I-II are not "RTD and classifier efficiency" curves: Table I is
+  the production rate of an 11.5 ft mill and Table II the power and diameter
+  for 100 TPH, each for three RTDs x three classifier efficiencies.  H&F's
+  classifier is a two-level step (C = 1 above 150 mesh, 0.3 below, p. 18),
+  not a curve given class by class; it is `tabulated` + a 0.3 bypass.  The
+  circuit's product size distribution exists only as a figure (Fig. 16), so
+  it is not compared.
+* H&F's classifier is not a hydrocyclone and their circuit carries no water;
+  a hydrocyclone needs a slurry.  The circuit uses the generic `classifier`
+  unit (a curve and a bypass, nothing else), which H&F's "classifier matrix
+  C" is.  This third unit type was not in the brief.
+* Nageswararao et al. 2004 print eq. 15 twice with different signs on the
+  inlet exponent: (D_i/D_c)^+0.50 in eq. 15 (p. 677), ^-0.50 in its
+  repetition eq. 18 (p. 680); R_V likewise (eq. 16 ^+0.25, eq. 19 ^-0.25).
+  Eq. 15, the model's statement, is implemented and the run says so; within
+  one geometry K_W0 absorbs the difference, across inlet sizes it does not.
+  The nomenclature (p. 672) prints the scaled Steinour factor as
+  "8.05 x 10^(1.82 C_V)/(1 - C_V)^2" while p. 684 puts the 8.05 in the
+  DENOMINATOR; only the unscaled form (conclusion 8) is offered.
+* The paper prints no data-window table and no K values; the window enforced
+  is assembled from its text (7.5), and no case runs the model.
+* Wills's own Table 9.1 contradicts Kelsall's assumption in its finest class
+  (37.2 % of the -74 um solids to underflow against 39 % of the water): the
+  corrected recovery would be negative.  hydrocyclone01 declares 0 there and
+  carries the 0.54 % of the feed this misplaces as its one stated gap.
+* King's K uses P(h_T) (eq. 4.42) and his efficiency P^F(h) (eq. 4.47); both
+  are implemented as printed.
+
+### 7.9 Refused or deferred, with the reason
+
+* Per-species distribution (2.3): deferred; every classifier splits one
+  population, said in each header.
+* Fish hook (Whiten beta, Nageswararao eq. 25): not built -- beta* is defined
+  only implicitly and the paper calls the effect undetermined (p. 683).
+* Plitt's model (eqs. 3-6): not built -- the brief named Nageswararao, and
+  Plitt's F1-F4 would be four more declared constants.
+* King's kinetic screen model (eqs. 4.49-4.86): not built -- King says it
+  awaits experiments on the crowded length L_c (p. 97).
+* A vapour-bearing fluid: refused by all three units (a gas-borne powder is a
+  `cyclone`'s).
+* The gridded tear under Newton-on-tears (7.6), the time-integrated binaries
+  (6), a sizer or cost for any classifier: not in this slice.

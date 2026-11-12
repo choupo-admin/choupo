@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+//  THE TEAR SEED: a first guess of the classifier oversize returned to the
+//  mill -- 250 TPH (H&F's circulating load) carrying the fresh feed's
+//  distribution.  Only a starting point: direct substitution replaces it.
+
+componentMolarFlows
+{
+    CaCO3    2265.992702 kmol/h;
+}
+
+T               298.15 K;
+P               101325 Pa;
+
+phases
+{
+    solid
+    {
+        componentMolarFlows
+        {
+            CaCO3    2265.992702 kmol/h;
+        }
+        particleSizeDistribution
+        {
+            edges     ( 0  3.6875000743e-05  5.2149126075e-05  7.3750001238e-05  1.0429825180e-04  1.4750000198e-04  2.0859650290e-04  2.9500000297e-04  4.1719300440e-04  5.9000000396e-04  8.3438600600e-04  1.1800000040e-03  1.6687720064e-03  2.3600000000e-03 );
+            diameter  ( 3.1008056e-05 4.3852013e-05 6.2016112e-05 8.7704026e-05 1.2403222e-04 1.7540805e-04 2.4806445e-04 3.5081610e-04 4.9612889e-04 7.0163220e-04 9.9225777e-04 1.4032644e-03 1.9845155e-03 );
+            massFrac  ( 0.0156250003 0.0064720870 0.0091529132 0.0129441740 0.0183058263 0.0258883478 0.0366116526 0.0517766955 0.0732233049 0.1035533907 0.1464466093 0.2071067807 0.2928932176 );
+        }
+    }
+}

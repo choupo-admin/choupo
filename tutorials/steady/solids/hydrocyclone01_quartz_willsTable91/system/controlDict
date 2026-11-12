@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  hydrocyclone01_quartz_willsTable91
+
+  A HYDROCYCLONE ON A DECLARED CURVE, held to the printed worked example of
+  Wills & Napier-Munn (2006), pp. 215-216 and Table 9.1: a quartz slurry,
+  feed pulp 1670 kg/m3 (63.7 % solids), underflow 1890 and overflow
+  1460 kg/m3, sieve analyses of both products.
+
+  THE BOOK'S ARITHMETIC, which this case runs in the other direction:
+    dilutions (water/solids): feed 0.57, underflow 0.34, overflow 1.00;
+    water balance 0.57 F = 0.34 U + (F - U)  ->  U/F = 0.652 (p. 215);
+    R = 65.2 x 0.34 / (100 x 0.57) = 0.39 (p. 215);
+    column 8, % of each size to the underflow; d50 = 177.5 um.
+  HERE: the corrected curve (eq. 9.15 inverted on column 8) and R = 0.39 are
+    DECLARED; the unit predicts the split, both products' size analyses and
+    their dilutions.  Kelsall's bypass a_k = R + (1 - R) c_k (Wills eq. 9.15
+    written forward) is the model under test.
+  WHAT IT CANNOT REPRODUCE, and why: the book's -74 um class reaches the
+    underflow LESS than the water does (37.2 % against 39 %), so its
+    corrected recovery would be negative; it is written 0, and the predicted
+    underflow carries 0.54 % of the feed more than the book's (see
+    `expected`).  That is Kelsall's assumption failing on real data, shown,
+    not hidden.
+  INPUTS taken: 100 t/h of solids (the book gives F only as a symbol); the
+    quartz is the catalogue's silica record (rho_p 2650 kg/m3; the book
+    says 2700 -- only the printed C_V and pulp density read it, and no
+    anchor does).
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "A hydrocyclone on a declared corrected curve and water split (Kelsall's bypass), run forward on the worked example of Wills & Napier-Munn (2006) Table 9.1: a quartz slurry, R = 0.39, underflow 65.2 % of the solids at dilution 0.34, overflow at 1.00.";
+verbosity     3;
+citations
+(
+    "Wills, B.A.; Napier-Munn, T.J. (2006) Wills' Mineral Processing Technology, 7th ed. Elsevier, Oxford. Chapter 9, pp. 213-216, eqs. 9.14-9.15, Table 9.1."
+    "Kelsall, D.F. (1953) A further study of the hydraulic cyclone. Chem. Eng. Sci. 2, 254-272 (as cited by Wills & Napier-Munn 2006)."
+);

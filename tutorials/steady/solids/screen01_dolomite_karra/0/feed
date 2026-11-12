@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+//  King (2001) Example 10.1: 99.4 short tons/h of dry dolomite (Fig. 10.3),
+//  carried on the catalogue's CALCITE record (see constant/thermoPhysPropDict),
+//  with the MEASURED feed analysis of Table 10.1 (% passing 3, 2, 1.5, 1.25,
+//  1.0, 0.75, 0.5, 0.375, 0.25 in: 100, 95.52, 88.58, 81.87, 72.73, 61.00,
+//  44.47, 36.36, 25.40) written as the mass in each sieve interval on the
+//  test's OWN edges; the run re-bins it onto the case's grid (uniform in
+//  ln x inside each interval) and prints the mapping's closure.
+
+componentMolarFlows
+{
+    CaCO3       900.9587 kmol/h;     // 99.4 short ton/h on calcite's MW 100.0869
+}
+
+T               298.15 K;
+P               101325 Pa;
+
+phases
+{
+    solid
+    {
+        componentMolarFlows
+        {
+            CaCO3       900.9587 kmol/h;
+        }
+        particleSizeDistribution
+        {
+            //         pan       0.25-0.375 0.375-0.5 0.5-0.75  0.75-1.0  1.0-1.25  1.25-1.5  1.5-2.0   2.0-3.0 in
+            edges     ( 0  6.350e-3  9.525e-3  1.270e-2  1.905e-2  2.540e-2  3.175e-2  3.810e-2  5.080e-2  7.620e-2 );
+            diameter  ( 5.184753e-03 7.777130e-03 1.099852e-02 1.555426e-02 2.199705e-02 2.839806e-02 3.478038e-02 4.399409e-02 6.221704e-02 );
+            massFrac  ( 0.2540    0.1096    0.0811    0.1653    0.1173    0.0914    0.0671    0.0694    0.0448 );
+        }
+    }
+}
