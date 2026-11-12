@@ -1,0 +1,7 @@
+mill	== base exit 0 T_out:        305.9482 == noCp exit 2 needs liquidHeatCapacity == noHf exit 2 needs standardThermochemistry 
+mix	exit 0 liquid inlets merged T_out:         366.29 
+cyc	== base exit 0 d50_micron": 1.10984825815 rho_particle": 2650 == mixed exit 0 d50_micron": 1.56956245965 rho_particle": 1324.99999865 == mixedCaO exit 0 d50_micron": 1.04397059355 rho_particle": 2994.99810631 
+sd	== base exit 0 d_particle_micron": 38.0926671659 == noRho exit 0 d_particle_micron": 38.8397718826 
+kv	== base exit 0 L_dominant": 2.02534396647e-05 == noKv exit 0 L_dominant": 2.30102483864e-05 
+gab	== base exit 0 == noC exit 0  "X_equilibrium_inlet_air": 0.00109945367934 "X_final": 0.0234175246423 "X_equilibrium_inlet_air": 0 "X_final": 0.00966789702094 
+hot	exit 0 LEAVES its declared Trange T_out:         410.00 

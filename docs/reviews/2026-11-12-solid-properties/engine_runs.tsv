@@ -1,0 +1,9 @@
+case	solids_carried	unit_energy_row	global_boundary_residual_kW	solids_priced	note
+steady/solids/mill01_limestone_herbstFuerstenau	CaCO3 (pureSolid, Cp poly)	mill H_in -3351.5321 H_out -3349.7121 W 1.8200 closure 100.00 %	-7.3e-12	yes (hand check: n*int Cp dT = 1.820000083 kW vs W 1.82000008287)	T_out 305.9482 K
+steady/gas-solid/cyclone02_leith_licht	silica (pureSolid, Cp poly)	cyclone dH 0.0000	-2.8e-14	yes (hand: silica -210.5 kW + N2 sensible ~ -208.26 kW)	no duty; percentage unavailable by design
+steady/drying/solidDryer01_sugar	sucrose (pureSolid)	solidDryer remaining -1.8e-12	1.8e-12	yes	no exchanged-energy scale
+steady/crystallisation/crystalliser03_pbe_size_independent	sucrose	cryst remaining 4.5e-13	0	yes	Q -269.58 kW
+steady/crystallisation/crystalliser01_sugar	sucrose	cryst dH -271.6771 closure 100.00 %	0	yes	
+steady/drying/evapDryer01_nacl	NaCl (ion-derived Hf only)	UNAVAILABLE	n/a	no: report refuses (no standardThermochemistry); unit takes crystal Cp = 0, announced	energy balance REFUSED by name
+steady/crystallisation/crystalliser05_nacl_pitzer	NaCl (ion-derived Hf only)	cryst gap n/a	n/a	no: report refuses on the magma's NaCl crystals	energy balance UNAVAILABLE by name
+probe mix2solids_same (probe_two_solids_mixer.sh)	silica + CaCO3 in one stream	mix dH 0.0000	0	yes, additive (hand check T_out 366.29326 K)	mixer prints '2 liquid inlets merged' for solids-only inlets

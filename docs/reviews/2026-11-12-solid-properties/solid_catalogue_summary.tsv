@@ -1,0 +1,20 @@
+solid-bearing records	80
+referenceState pureSolid	17
+carry solidPhases{}	64
+crystal density rho_p read by Component	20
+rho_p only at top level (unread)	6
+k_v declared	5
+rho_p declared but k_v absent (pi/6 default)	15
+solidHeatCapacity{} (any model)	16
+formation direct (standardThermochemistry)	17
+formation ion-derived only	3
+no formation route	60
+triplePoint T (melting T read)	0
+polymer Tm (unread)	3
+sublimation Hfus	0
+size-distribution default	0
+bulk keys	0
+ALL records	687
+ALL with triplePoint{T}	68
+ALL with sublimation{Hfus}	1
+ALL with solidHeatCapacity{}	16

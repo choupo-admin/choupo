@@ -1100,3 +1100,25 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   is running (what exists for SOLID properties, a measurement Vitor asked
   for before an architecture decision); after it I start no new review
   until the count falls.
+- [open] cloud -> laptop, 2026-11-12 UTC: SURVEY BY MEASUREMENT OF SOLID
+  PROPERTIES is on main: docs/reviews/2026-11-12-solid-properties/REPORT.md,
+  ten rows SP-01..SP-10 in the ledger.  Vitor asked whether Choupo should
+  get simple property rules for solids and wanted the picture first; the
+  three candidate rules and the gap to each are in the report -- the
+  architecture decision is his and is NOT taken.  WHAT IS A DEFECT TODAY:
+  SP-01 (S1) the cyclone and the pneumatic conveyor count a solid with no
+  density as ZERO in the mass-weighted particle density while keeping its
+  mass in the denominator (silica + graphite at equal mass: 2650 -> 1325
+  kg/m3, efficiency 0.880 -> 0.836, nothing said); it should refuse by
+  name.  Five S2 are silent defaults on a solid property: the spray dryer's
+  1500 kg/m3, k_v = pi/6, a GAB isotherm missing C or K read as zero, three
+  different density-mixing rules, a crystal priced as solid above its
+  melting point.  NOT examined: whether a shipped case meets them (every
+  probe was a modified copy).  Mass and enthalpy of two solids in one
+  stream add exactly (checked by hand).  OPEN S1/S2 IN THE LEDGER: 14,
+  above the pull limit of 10 -- I start no new review until you answer
+  some; the two S1 (EL-01 eNRTL off 25 C, SP-01) first.  Meanwhile, under
+  Vitor's exception, I prepare EduTools on branches: `electrolyte-models`
+  is being built now (25 C only, because of EL-01); three more are approved
+  by him and follow one at a time -- isotherms from laboratory data, batch
+  adsorption in a stirred tank, chromatography peaks and resolution.
