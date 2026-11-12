@@ -1,0 +1,34 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  K-Acetate -- the curation case of the salt (K)1(Acetate)1 (DEV.md 4c C311).
+  Fits Pitzer and eNRTL to its evaluated gamma_pm and phi at 298.15 K
+  (constant/experiments/K-Acetate.dat) and writes the two proposals that
+  bin/curate/check_regressed_electrolytes.py holds the catalogue records
+  equal to.  Written by bin/curate/electrolytes_c311.py; the rules
+  (window, held-out points, grade, cap, promotion) are stated there.
+\*-----------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name      fit_pitzer;
+        type      electrolyteFit;
+        cation    K;   anion Acetate;
+        model     pitzer;
+        dataset   "constant/experiments/K-Acetate.dat";
+        heldOut   { every 4; offset 3; }
+        pitzer    { alpha1 2.0; alpha2 12.0; fitBeta2 false; }
+        grade     { limits_pct ( 2 5 10 ); }
+        proposal  { file "K-Acetate.pitzer.proposal.dat"; }
+    }
+    {
+        name      fit_eNRTL;
+        type      electrolyteFit;
+        cation    K;   anion Acetate;
+        model     eNRTL;
+        dataset   "constant/experiments/K-Acetate.dat";
+        heldOut   { every 4; offset 3; }
+        eNRTL     { alpha 0.2; }
+        grade     { limits_pct ( 2 5 10 ); }
+        proposal  { file "K-Acetate.eNRTL.proposal.dat"; }
+    }
+);

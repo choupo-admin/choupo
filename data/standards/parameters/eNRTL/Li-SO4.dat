@@ -1,0 +1,84 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Electrolyte-NRTL binary energy parameters --- (Li)2(SO4)1 in water.
+  Role: the water / (Li)(SO4) pair taus of the Chen local-composition model,
+  alpha 0.2 fixed, consumed by the eNRTL activity engine.
+  REGRESSED BY CHOUPO (DEV.md 4c C311) to the evaluated gamma_pm and phi
+  of R. N. Goldberg, Evaluated Activity and Osmotic Coefficients for Aqueous Solutions: Thirty-Six Uni-Bivalent Electrolytes, J. Phys. Chem. Ref. Data 10 (1981) 671-764, doi:10.1063/1.555646 (the Li2SO4 table of recommended values, p. 685 (m, gamma, phi, a_w)) -- the evaluation is the
+  primary source of those recommended values.  The PARAMETERS are
+  Choupo's own work.  Window: 0.1-2 mol/kg at 298.15 K
+  (11 points fitted, 3 interleaved points held out).
+  Outside it the record is an extrapolation; off 25 C it carries no
+  temperature extension of its own.
+  GRADE: in-sample max error 1.06 % -> clean (capped at warning: one temperature, one evaluation);
+  the held-out points 0.807 % (clean).  No human has
+  reviewed it.  REPRODUCE: run data/curation/electrolytes/Li-SO4; its proposal is held equal to this
+  record by bin/curate/check_regressed_electrolytes.py.
+\*-----------------------------------------------------------------------------*/
+recordType electrolyteNRTLParameters;
+schemaVersion 1;
+
+model eNRTL;
+
+pair { cation Li; anion SO4; }
+
+parameters
+{
+    tau_m_ca 7.666687;
+    tau_ca_m -3.946351855;
+    alpha    0.2;
+}
+
+source "REGRESSED by Choupo (C311) to R. N. Goldberg, Evaluated Activity and Osmotic Coefficients for Aqueous Solutions: Thirty-Six Uni-Bivalent Electrolytes, J. Phys. Chem. Ref. Data 10 (1981) 671-764, doi:10.1063/1.555646, the Li2SO4 table of recommended values, p. 685 (m, gamma, phi, a_w)";
+
+provenance
+{
+    origin        regressed;
+    method        "electrolyteFit(eNRTL): ln gamma_pm and phi, equal weight, Levenberg-Marquardt from 4 starts";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "data/curation/electrolytes/Li-SO4";
+    reviewStatus  autoPromoted;
+    fitGrade      warning;   // DEV.md 4c C311: max relative error of gamma_pm or phi over the fitted points, graded 2 / 5 / 10 %
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+    fitGradeCap   ( singleTemperature singleLaboratory );   // DEV.md 4c C300 rule 2: in-sample clean, capped -- one temperature, one evaluation
+    fitGradeMaxRelativeError_pct 1.0550;
+    promotedBy    "bin/curate/electrolytes_c311.py promote";
+    promotedDate  "2026-11-11";
+    reviewReason  "regressed by bin/curate/electrolytes_c311.py from a hand-checked transcription of an evaluated table; not yet read back by a human";
+    reuse         "Choupo's own regression; the evaluated values belong to the cited compilation";
+    fitDate       "2026-11-11";
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/experiments/Li-SO4.dat";
+            doi       "10.1063/1.555646";
+            provenance evaluated;
+        }
+    );
+    inSample
+    {
+        gammaAAD_pct 0.4699;
+        phiAAD_pct   0.5339;
+        max_pct      1.0550;
+        nPoints      11;
+    }
+    heldOut
+    {
+        kind         interleavedSameSource;   // every 4th point of the same evaluation: NOT a validation
+        gammaAAD_pct 0.4905;
+        phiAAD_pct   0.5962;
+        max_pct      0.8074;
+        nPoints      3;
+        grade        clean;
+    }
+    validity
+    {
+        temperature { min 298.15 K; max 298.15 K; }
+        molality    { min 0.1; max 2; }   // mol/kg
+        note        "the span of the fitted evaluated values; outside it the salt is an extrapolation";
+    }
+    review
+    {
+        by none;
+    }
+}

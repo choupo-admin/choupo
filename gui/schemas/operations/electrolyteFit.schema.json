@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/electrolyteFit.schema.json",
+  "title": "electrolyteFit operation",
+  "x-choupo": {"discipline": "Thermodynamics", "activity": "fit", "models": [{"choice": ["pitzer", "eNRTL"], "role": "single-salt activity model"}], "data": [{"key": "dataset", "kind": "file", "label": "gamma_pm and phi of one salt at one temperature", "flow": "evidence"}]},
+  "description": "Regresses the parameters of ONE fully dissociated salt in water against its mean ionic activity coefficient gamma_pm and osmotic coefficient phi at one stated temperature, with the engine's own closed forms (PitzerSingleSalt: beta0, beta1, Cphi, and beta2 for a 2:2 salt; ENRTLSingleSalt: tau_m_ca, tau_ca_m with alpha fixed). The residual is ln gamma_pm and phi, equal weight; the search is Levenberg-Marquardt. Optionally holds out every N-th point (interleaved points of the same source, reported beside the in-sample errors and never called a validation), grades the in-sample maximum relative error, and writes a proposal file a catalogue record is held equal to (DEV.md 4c C311).",
+  "type": "object",
+  "required": ["cation", "anion", "model", "dataset"],
+  "additionalProperties": false,
+  "properties": {
+    "cation": {"type": "string", "title": "Cation species", "description": "Species key of the cation, e.g. Na; its charge comes from its species record."},
+    "anion": {"type": "string", "title": "Anion species", "description": "Species key of the anion, e.g. NO3."},
+    "model": {"type": "string", "enum": ["pitzer", "eNRTL"], "title": "Model"},
+    "dataset": {"type": "string", "title": "Dataset", "description": "A dataset file with columns m (mol/kg), gamma and phi, and a held-constant `temperature`."},
+    "heldOut": {
+      "type": "object", "title": "Held-out points",
+      "description": "`{ every N; offset k; }` -- the points whose 0-based position in the file satisfies index % N == k are never handed to the fitter.",
+      "properties": {
+        "every": {"type": "integer", "minimum": 2, "title": "Every", "unit": "-"},
+        "offset": {"type": "integer", "minimum": 0, "title": "Offset", "unit": "-"}
+      }
+    },
+    "pitzer": {
+      "type": "object", "title": "Pitzer options",
+      "properties": {
+        "alpha1": {"type": "number", "title": "alpha1", "unit": "-"},
+        "alpha2": {"type": "number", "title": "alpha2", "unit": "-"},
+        "fitBeta2": {"type": "string", "enum": ["true", "false"], "title": "Fit beta2 (2:2 salts)"}
+      }
+    },
+    "eNRTL": {
+      "type": "object", "title": "eNRTL options",
+      "properties": {
+        "alpha": {"type": "number", "title": "Nonrandomness alpha (fixed)", "unit": "-"}
+      }
+    },
+    "grade": {
+      "type": "object", "title": "Grade",
+      "description": "`{ limits_pct ( c w s ); }` -- upper limits, in per cent, of clean, warning and severe for the in-sample maximum relative error of gamma_pm or phi.",
+      "properties": {
+        "limits_pct": {"type": "array", "items": {"type": "number"}, "minItems": 3, "maxItems": 3, "title": "Limits", "unit": "%"}
+      }
+    },
+    "proposal": {
+      "type": "object", "title": "Proposal file",
+      "properties": {
+        "file": {"type": "string", "title": "File"}
+      }
+    },
+    "objective": {"type": "object", "title": "Objective", "description": "Only `method leastSquares;` is built for this op."}
+  }
+}

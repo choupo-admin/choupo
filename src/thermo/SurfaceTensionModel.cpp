@@ -28,6 +28,7 @@ License
 
 #include "SurfaceTensionModel.H"
 #include "transport/BrockBird.H"
+#include "transport/StoredCorrelation.H"
 
 #include <map>
 #include <memory>
@@ -50,7 +51,7 @@ void SurfaceTensionModel::registerType(const std::string& name, Factory f)
 std::unique_ptr<SurfaceTensionModel>
 SurfaceTensionModel::New(const DictPtr& dict)
 {
-    const std::string name = dict->lookupWordOrDefault("model", "BrockBird");
+    const std::string name = dict->lookupWordOrDefault("model", "StoredCorrelation");
     auto it = registry().find(name);
     if (it == registry().end())
     {
@@ -67,6 +68,8 @@ void SurfaceTensionModel::registerBuiltins()
     registerType("BrockBird", [](const DictPtr& d) { return std::make_unique<BrockBird>(d); });
     registerType("brockBird", [](const DictPtr& d) { return std::make_unique<BrockBird>(d); });
     registerType("brockbird", [](const DictPtr& d) { return std::make_unique<BrockBird>(d); });
+    registerType("StoredCorrelation", [](const DictPtr& d) { return std::make_unique<StoredCorrelation>(d); });
+    registerType("storedCorrelation", [](const DictPtr& d) { return std::make_unique<StoredCorrelation>(d); });
 }
 
 std::vector<std::string> SurfaceTensionModel::availableModels()

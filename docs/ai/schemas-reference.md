@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*111 of 111 registered operations carry a schema and are documented below.*
+*112 of 112 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -408,6 +408,23 @@ Mean-ionic activity and osmotic coefficients of the salt the CASE's declared the
 | `molality` |   | object | — | `{ from ...; to ...; n ...; }` — the molality range to sweep. |
 | `temperature` |   | number | K | Defaults to 298.15 K. |
 | `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+
+## `electrolyteFit`  (electrolyteFit operation)
+
+Regresses the parameters of ONE fully dissociated salt in water against its mean ionic activity coefficient gamma_pm and osmotic coefficient phi at one stated temperature, with the engine's own closed forms (PitzerSingleSalt: beta0, beta1, Cphi, and beta2 for a 2:2 salt; ENRTLSingleSalt: tau_m_ca, tau_ca_m with alpha fixed). The residual is ln gamma_pm and phi, equal weight; the search is Levenberg-Marquardt. Optionally holds out every N-th point (interleaved points of the same source, reported beside the in-sample errors and never called a validation), grades the in-sample maximum relative error, and writes a proposal file a catalogue record is held equal to (DEV.md 4c C311).
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `cation` | ✓ | string | — | Species key of the cation, e.g. Na; its charge comes from its species record. |
+| `anion` | ✓ | string | — | Species key of the anion, e.g. NO3. |
+| `model` | ✓ | string | — |  |
+| `dataset` | ✓ | string | — | A dataset file with columns m (mol/kg), gamma and phi, and a held-constant `temperature`. |
+| `heldOut` |   | object | — | `{ every N; offset k; }` -- the points whose 0-based position in the file satisfies index % N == k are never handed to the fitter. |
+| `pitzer` |   | object | — |  |
+| `eNRTL` |   | object | — |  |
+| `grade` |   | object | — | `{ limits_pct ( c w s ); }` -- upper limits, in per cent, of clean, warning and severe for the in-sample maximum relative error of gamma_… |
+| `proposal` |   | object | — |  |
+| `objective` |   | object | — | Only `method leastSquares;` is built for this op. |
 
 ## `elementalComposition`  (elementalComposition operation)
 
@@ -1185,6 +1202,17 @@ The standard reaction thermochemistry of declared reactions -- dH, dS, dG and ln
 | `phases` | ✓ | object | — | `{ glucose pureSolid; water pureLiquid; N2 idealGas; ... }` -- the standard state EACH species of every listed reaction is priced on. Req… |
 | `temperatures` | ✓ | array[number] | K | The temperatures at which each reaction is priced. 298.15 K is the datum temperature, where a declared rung answers without a heat capacity. |
 | `output` | ✓ | object | — | `{ file <name>.csv; }` -- one row per (reaction, temperature): dH_kJ_mol, dS_J_molK, dG_kJ_mol, lnK, and the route each species was price… |
+
+## `referenceEoS`  (referenceEoS operation)
+
+A pure fluid from its REFERENCE (multiparameter Helmholtz-energy) equation of state, read from data/standards/parameters/Helmholtz/<equation>.dat (case-local constant/parameters/Helmholtz/ first). This is a propsDict operation under choupoProps, NOT a flowsheet unit (a flowsheet reaches the same equation through `pureFluids { <component> { method Helmholtz; equation <name>; } }`). Loading a record evaluates EVERY check value its publication prints (IAPWS-95: 81) at the printed precision and REFUSES the run on a single miss. Give exactly ONE mode block: state (T with p, or T with rho) or saturation (T, by the Maxwell criterion). A (T, p) state lists every density root of the isotherm with its branch; the stable one is taken unless `branch` names one. A (T, p) outside the publication's validity window is announced as an extrapolation. Diagnostics are SI per unit mass. Tutorial: tutorials/props/thermo/refEoS01_iapws95_verification.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `equation` | ✓ | string | — | The record name, e.g. IAPWS95 (data/standards/parameters/Helmholtz/IAPWS95.dat). |
+| `state` |   | object | — | One state. With p the density is SOLVED: every root of the isotherm is listed (below T_c one per branch; crossings inside the unstable re… |
+| `saturation` |   | object | — | psat, rhoL, rhoV, h and s of both phases and hLV at T, by the Maxwell criterion (equal p and g), from the triple point to the critical po… |
+| `output` |   | object | — | `{ file <name>.csv; }` -- optional; writes a one-row CSV of the state (12 significant digits, SI). |
 
 ## `scalingScan`  (scalingScan operation)
 
