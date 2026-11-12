@@ -3478,8 +3478,9 @@ accepts today, and that is a policy call.
 > the shipped batch13 (100 cells): the numerical term is 3.1e-4 m2/s against
 > a physical 2.5e-4; the 5-95 % front is 314 s wide where the converged
 > front is about 219 s (30 % of the width is the grid); the pinned
-> breakthrough time 2890.7 s is the grid's, the converged one about 2935 s;
-> the unused-bed length reads 0.0247 m against about 0.0172 m.  The mean
+> breakthrough time 2890.7 s is the grid's, the converged one 2939.3 s (corrected by the
+> slice's own mesh study);
+> the unused-bed length reads 0.0247 m against 0.0167 m.  The mean
 > (stoichiometric time) is exact at every grid.  All 14 fixed-bed tutorials
 > and the pages `breakthrough` and `lub-scaleup` rest on it; the second
 > carries the widened unused length to full scale.  DECIDED: (1) now, the
