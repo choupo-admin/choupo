@@ -338,8 +338,12 @@ The neutral masters carry no `hfAq` (their datum is component + solution pair); 
 without one refuses by name.  No component carries a Cp or an entropy.  Malonic, gluconic, ascorbic,
 gallic, propionic, butyric and benzoic acids have no ionisation record.  Inorganic ladders from Goldberg et al. 2002 (C373 phase 2): **pyrophosphate**
 (`H4P2O7`/`H3P2O7`/`H2P2O7`/`HP2O7`/`P2O7`, navigation family `phosphate`), **arsenate** (`H3AsO4`/`H2AsO4`/`HAsO4`/`AsO4`),
-**sulfite** (`H2SO3`/`Bisulfite`/`Sulfite`) and **hydrazine** (`N2H6`/`N2H5`/`Hydrazine`); ionisation only, no formation
-data.  Carbonate, phosphate, hydrogensulfate, ammonia and borate keep their PHREEQC records (compared in the design note;
+**sulfite** (`H2SO3`/`Bisulfite`/`Sulfite`) and **hydrazine** (`N2H6`/`N2H5`/`Hydrazine`); ionisation records from
+Goldberg.  Formation data (C376, route 1, NBS tables Wagman et al. 1982, read from page images): H2PO4, HPO4, all
+five pyrophosphates, H2SO3, H3AsO4, AsO4, Hydrazine, N2H5 and the methylamine pair carry `hfAq`/`sAq`; the pyrophosphate ladder
+and the two new arsenic species are ONE scale from the evaluated steps (the NBS rows disagree with Goldberg beyond the
+Gibbs-identity tolerance of `check_logk_crosscheck`, both readings are tabulated in
+`data/curation/batches/species_c373/formation_compare.tsv`); `N2H6` (no NBS row) still refuses an energy balance by name.  Carbonate, phosphate, hydrogensulfate, ammonia and borate keep their PHREEQC records (compared in the design note;
 hydrogensulfate's ionisation enthalpy is 6.3 kJ/mol off Goldberg's).  Case: `inorganicLadders01_goldberg`.
 Phase 3 (C373): **amines and amino acids** -- master = the compound AS WEIGHED (the base or the zwitterion), so a case
 declares it directly and HCl or NaOH is the titrant: `Tris`/`HTris`, `TEOA`/`HTEOA` (triethanolamine), `TEA`/`HTEA`

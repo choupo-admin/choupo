@@ -1,0 +1,31 @@
+species	quantity	catalogue	reading	unit	src	where	image	note
+PO4	hfAq	-1277.4	-1277.4	kJ/mol	NBS82	Table 19:P, p. 2-73 (PDF p. 81), row PO4 3- ao	yes	catalogue value already the NBS value; no change
+PO4	sAq	-222.0	-222.	J/mol/K	NBS82	Table 19:P, p. 2-73 (PDF p. 81), row PO4 3- ao	yes	no change
+H3PO4aq	hfAq	-	-1288.34	kJ/mol	NBS82	Table 19:P, p. 2-74 (PDF p. 82), row H3PO4 ao	yes	no species file (the neutral acid is the ion `H3PO4` of chemistry/H3PO4aq-formation.dat, a PHREEQC-derived record); the reading is held for the one-scale check only
+H3PO4aq	sAq	-	158.2	J/mol/K	NBS82	Table 19:P, p. 2-74 (PDF p. 82), row H3PO4 ao	yes	held for the one-scale check only
+H2AsO4	hfAq	-909.56	-909.56	kJ/mol	NBS82	Table 20:As, p. 2-77 (PDF p. 85), row H2AsO4- ao	yes	no change (entered in C320 from the same table)
+H2AsO4	sAq	117.0	117.	J/mol/K	NBS82	Table 20:As, p. 2-77 (PDF p. 85), row H2AsO4- ao	yes	no change
+HAsO4	hfAq	-906.34	-906.34	kJ/mol	NBS82	Table 20:As, p. 2-77 (PDF p. 85), row HAsO4 2- ao	yes	no change
+HAsO4	sAq	-1.7	-1.7	J/mol/K	NBS82	Table 20:As, p. 2-77 (PDF p. 85), row HAsO4 2- ao	yes	no change
+Bisulfite	hfAq	-626.22	-626.22	kJ/mol	NBS82	Table 14:S, p. 2-57 (PDF p. 65), row HSO3- ao	yes	no change
+Bisulfite	sAq	139.7	139.7	J/mol/K	NBS82	Table 14:S, p. 2-57 (PDF p. 65), row HSO3- ao	yes	no change
+Sulfite	hfAq	-635.5	-635.5	kJ/mol	NBS82	Table 14:S, p. 2-57 (PDF p. 65), row SO3 2- ao	yes	no change
+Sulfite	sAq	-29.0	-29.	J/mol/K	NBS82	Table 14:S, p. 2-57 (PDF p. 65), row SO3 2- ao	yes	no change
+H2Gly	hfAq	-518.37	-517.912	kJ/mol	NBS82	Table 23:C, pp. 2-104 and 2-105 (PDF pp. 112, 113), row NH3CH2COOH+ ao	yes	catalogue value is Miller & Smith-Magowan's (Table 3 and Table 6); NBS differs by +0.46; the Miller route is kept (it carries the steps of the same evaluation)
+H2Gly	sAq	189.95	190.20	J/mol/K	NBS82	Table 23:C, pp. 2-104 and 2-105 (PDF pp. 112, 113), row NH3CH2COOH+ ao	yes	catalogue Miller; difference +0.25
+HGly	hfAq	-514.36	-513.988	kJ/mol	NBS82	Table 23:C, pp. 2-104 and 2-105 (PDF pp. 112, 113), row NH2CH2COOH ao4	yes	catalogue Miller; difference +0.37
+HGly	sAq	158.45	158.32	J/mol/K	NBS82	Table 23:C, pp. 2-104 and 2-105 (PDF pp. 112, 113), row NH2CH2COOH ao4	yes	catalogue Miller; difference -0.13
+Gly	hfAq	-470.26	-469.780	kJ/mol	NBS82	Table 23:C, pp. 2-104 and 2-105 (PDF pp. 112, 113), row glycinate ao / glycine ai4	yes	catalogue Miller; difference +0.48
+Gly	sAq	119.25	119.41	J/mol/K	NBS82	Table 23:C, pp. 2-104 and 2-105 (PDF pp. 112, 113), row glycinate ao / glycine ai4	yes	catalogue Miller; difference +0.16
+HP2O7	hfAq	-2272.5	-2274.8	kJ/mol	NBS82	Table 19:P, p. 2-74 (PDF p. 82), row HP2O7 ao	yes	NOT entered: the family is on one scale (see formation.tsv); the printed value is kept here as the disagreement
+HP2O7	sAq	59.4	46.	J/mol/K	NBS82	Table 19:P, p. 2-74 (PDF p. 82), row HP2O7 ao	yes	NOT entered, as above
+H2P2O7	hfAq	-2273.0	-2278.6	kJ/mol	NBS82	Table 19:P, p. 2-75 (PDF p. 83), row H2P2O7 ao	yes	NOT entered: the family is on one scale (see formation.tsv); the printed value is kept here as the disagreement
+H2P2O7	sAq	186.4	163.	J/mol/K	NBS82	Table 19:P, p. 2-75 (PDF p. 83), row H2P2O7 ao	yes	NOT entered, as above
+H3P2O7	hfAq	-2268.0	-2276.5	kJ/mol	NBS82	Table 19:P, p. 2-75 (PDF p. 83), row H3P2O7 ao	yes	NOT entered: the family is on one scale (see formation.tsv); the printed value is kept here as the disagreement
+H3P2O7	sAq	246.4	213.	J/mol/K	NBS82	Table 19:P, p. 2-75 (PDF p. 83), row H3P2O7 ao	yes	NOT entered, as above
+H4P2O7	hfAq	-2258.8	-2268.6	kJ/mol	NBS82	Table 19:P, p. 2-75 (PDF p. 83), row H4P2O7 ao	yes	NOT entered: the family is on one scale (see formation.tsv); the printed value is kept here as the disagreement
+H4P2O7	sAq	293.2	268.	J/mol/K	NBS82	Table 19:P, p. 2-75 (PDF p. 83), row H4P2O7 ao	yes	NOT entered, as above
+H3AsO4	hfAq	-901.76	-902.5	kJ/mol	NBS82	Table 20:As, p. 2-77 (PDF p. 85), row H3AsO4 ao	yes	NOT entered: one scale with the existing H2AsO4 and HAsO4 (see formation.tsv)
+H3AsO4	sAq	187.4	184.	J/mol/K	NBS82	Table 20:As, p. 2-77 (PDF p. 85), row H3AsO4 ao	yes	NOT entered, as above
+AsO4	hfAq	-890.44	-888.14	kJ/mol	NBS82	Table 20:As, p. 2-77 (PDF p. 85), row AsO4 ao	yes	NOT entered: one scale with the existing H2AsO4 and HAsO4 (see formation.tsv)
+AsO4	sAq	-176.2	-162.8	J/mol/K	NBS82	Table 20:As, p. 2-77 (PDF p. 85), row AsO4 ao	yes	NOT entered, as above

@@ -3,7 +3,8 @@
   Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
   reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
   1 mol/kg, 298.15 K, H+ = 0.
-  NO `aqueousThermo` ON PURPOSE: the ionisation (pK, dH) of this family is evaluated in a work in hand and is in chemistry/, so the SPECIATION is complete; the evaluated compilation prints ionisation quantities only (no formation enthalpy or entropy), and none was entered from another work in this pass, so a balance that needs the enthalpy of this species REFUSES BY NAME instead of borrowing a value.
+  The formation values are the PRINTED numbers of the source; the table, page and row are in the
+  source line below and in formation.tsv.
 \*-----------------------------------------------------------------------------*/
 recordType modelSpecies;
 schemaVersion 1;
@@ -12,3 +13,9 @@ name    MeNH2;
 formula     "CH5N";
 charge  0;
 MW { value 31.058; unit g/mol;}
+aqueousThermo
+{
+source "hfAq [kJ/mol] -70.17: printed dfH -- Wagman, Evans, Parker, Schumm, Halow, Bailey, Churney & Nuttall, The NBS tables of chemical thermodynamic properties, J. Phys. Chem. Ref. Data 11 (1982) Suppl. 2, Table 23:C, p. 2-89 (PDF p. 97), row CH3NH2 methylamine ao (read from a page image) ## sAq [J/mol/K] 123.4: printed S -- Wagman, Evans, Parker, Schumm, Halow, Bailey, Churney & Nuttall, The NBS tables of chemical thermodynamic properties, J. Phys. Chem. Ref. Data 11 (1982) Suppl. 2, Table 23:C, p. 2-89 (PDF p. 97), row CH3NH2 methylamine ao (read from a page image)";
+hfAq { value -70170; unit J/mol;}
+sAq  { value 123.4; unit J/mol/K;}
+}

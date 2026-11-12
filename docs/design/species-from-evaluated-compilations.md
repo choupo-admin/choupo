@@ -345,3 +345,164 @@ every ionisation (see the proposal below).
 `logK25`, `dH` and an `analytic` block.  A constant dCp is exactly the `A1`, `A3`, `A4` terms of the `analytic` form
 (log K(T) = logK25 + [ana(T) - ana(298.15)]); a `dCp` key on the record, resolved to those terms at load time and
 announced, would carry every printed value without a new model.  Proposed, not built.
+
+## 6. Phase 5 (C376): formation data for the species entered for pH only
+
+Phases 1 to 4 entered most of the new species as speciation ladders without `aqueousThermo`: a balance that needs the
+enthalpy of such a species refuses by name.  C376 supplies the formation data (`hfAq`, `sAq`) route by route, on the same
+machinery: the readings are rows of `data/curation/batches/species_c373/formation.tsv`, the records are written by
+`bin/curate/species_c373.py` (a species hand-written in an earlier campaign that lacks the datum, such as `H2PO4` and
+`HPO4`, gets the generated block INSIDE its `aqueousThermo` between two marker lines and every other byte is kept; a
+value an existing record already carries is never overwritten, it is compared in `formation_compare.tsv`, printed by
+`species_c373.py fcompare`).  Units are those of the sources (kJ/mol and J/mol/K), H+ = 0, 298.15 K.
+
+### 6.1 Route 1: the NBS tables (Wagman et al. 1982, J. Phys. Chem. Ref. Data 11, Suppl. 2)
+
+The file is a scan without a text layer (407 pages; the PDF page is the printed page plus 8): the rows were read from page
+images (every row of `formation.tsv` carries `image yes`), the tables located by a first OCR pass and every number taken
+from the image, not from the OCR.  The state `ao` is the hypothetical ideal solution of unit molality (the catalogue's
+standard state); `ai` is the ionised form of an acid, `aq` an undefined state and is not used.
+
+| species | NBS row | DfH (kJ/mol) | S (J/mol/K) | table, page (PDF page) |
+|---|---|---|---|---|
+| H3PO4 | H3PO4 ao | -1288.34 | 158.2 | 19:P, 2-74 (82) |
+| H2PO4- | H2PO4- ao | -1296.29 | 90.4 | 19:P, 2-73 (81) |
+| HPO4 2- | HPO4 2- ao | -1292.14 | -33.5 | 19:P, 2-73 (81) |
+| PO4 3- | PO4 3- ao | -1277.4 | -222. | 19:P, 2-73 (81) |
+| H4P2O7 | H4P2O7 ao | -2268.6 | 268. | 19:P, 2-75 (83) |
+| H3P2O7- | H3P2O7- ao | -2276.5 | 213. | 19:P, 2-75 (83) |
+| H2P2O7 2- | H2P2O7 2- ao | -2278.6 | 163. | 19:P, 2-75 (83) |
+| HP2O7 3- | HP2O7 3- ao | -2274.8 | 46. | 19:P, 2-74 (82) |
+| P2O7 4- | P2O7 4- ao | -2271.1 | -117. | 19:P, 2-73 (81) |
+| H2SO3 (SO2(ao) + H2O) | H2SO3 ao | -608.81 | 232.2 | 14:S, 2-57 (65) |
+| HSO3- | HSO3- ao | -626.22 | 139.7 | 14:S, 2-57 (65) |
+| SO3 2- | SO3 2- ao | -635.5 | -29. | 14:S, 2-57 (65) |
+| H3AsO4 | H3AsO4 ao | -902.5 | 184. | 20:As, 2-77 (85) |
+| H2AsO4- | H2AsO4- ao | -909.56 | 117. | 20:As, 2-77 (85) |
+| HAsO4 2- | HAsO4 2- ao | -906.34 | -1.7 | 20:As, 2-77 (85) |
+| AsO4 3- | AsO4 3- ao | -888.14 | -162.8 | 20:As, 2-77 (85) |
+| N2H4 | N2H4 ao | 34.31 | 138. | 18:N, 2-65 (73) |
+| N2H5+ | N2H5+ ao | -7.5 | 151. | 18:N, 2-65 (73) |
+| CH3NH2 | CH3NH2 methylamine ao | -70.17 | 123.4 | 23:C, 2-89 (97) |
+| CH3NH3+ | CH3NH3+ ao | -124.93 | 142.7 | 23:C, 2-89 (97) |
+| glycolate | CH2OHCO2- ao | -652.3 | (none) | 23:C, 2-93 (101) |
+| glycine, glycinium, glycinate | NH2CH2COOH ao4, NH3CH2COOH+ ao, ai4 | -513.988, -517.912, -469.780 | 158.32, 190.20, 119.41 | 23:C, 2-104 and 2-105 (112, 113) |
+
+Not in the tables: N2H6 2+ (hydrazinium(2+)), ethanolamine and its cation (the table prints ethanolammonium nitrate only),
+and the entropy of glycolate.  Oxalate (`HOx`, `Ox`) was entered from this table in C320.
+
+**Comparison with what the catalogue already carried** (`species_c373.py fcompare`).  PO4 (-1277.4, -222.), H2AsO4,
+HAsO4, HSO3- and SO3 2- are the NBS values themselves (entered in C320): difference 0.000, nothing changed.  The glycine
+species carry Miller & Smith-Magowan's values; NBS differs by +0.46, +0.37 and +0.48 kJ/mol (cation, zwitterion, anion)
+and +0.25, -0.13, +0.16 J/mol/K, inside the sources' stated uncertainty; Miller's are kept because they carry the
+steps of the same evaluation (one scale for the glycine family).  Phosphoric acid has no species file (the neutral acid is
+the ion `H3PO4` of the PHREEQC-derived record `H3PO4aq-formation`), so its NBS row is held in `formation_compare.tsv`
+for the one-scale check only.
+
+**One scale per family** (the `scale` table; hf difference against the Goldberg step enthalpy, kJ/mol):
+
+| family | steps (hf difference / printed dH) | tolerance |
+|---|---|---|
+| phosphate | -7.95/-8.0, +4.15/+3.6, +14.74/+16.0 | 1.5 |
+| sulfite | -17.41/-17.80, -9.28/-3.65 | 6.0 |
+| hydrazine | +41.81/+41.7 | 0.5 |
+| methylamine | +54.76/+55.34 | 1.0 |
+| arsenate (NBS printed; see below) | -7.06/-7.8, +3.22/+1.7, +18.20/+15.9 | n.a. |
+| pyrophosphate (NBS printed; see below) | -7.9/-9.2, -2.1/-5.0, +3.8/+0.5, +3.7/+1.4 | n.a. |
+
+**Where two sources disagree beyond tolerance: the choice.**  The gate `check_logk_crosscheck` holds every ladder to the
+Gibbs identity, dG = sum(nu (hf - T S)), against the curated logK at 0.30 log units.  The NBS pyrophosphate and arsenic
+acid rows violate it against Goldberg's evaluated pK and dH (pyrophosphate sums 0.40 to 0.70, arsenic acid 0.33 to 0.63
+log units; the NBS pK1 of pyrophosphoric acid read from its own Gibbs energies is 1.54 against Goldberg's 0.83, and its
+integer entropies are estimates), and the sulfite step 2 enthalpy of NBS (-9.28) is 5.6 kJ/mol from Goldberg's (-3.65) while
+the pK agrees (7.22 against 7.17).  One family on one scale is the rule, so:
+
+* **Pyrophosphate**: the fully dissociated anion as printed (-2271.1, -117.), and every protonated form from it by
+  the evaluated steps (Eq. `ladder-formation` of the Theory Guide, grade CDD to DCC for the steps): HP2O7 -2272.5 / 59.4,
+  H2P2O7 -2273.0 / 186.4, H3P2O7 -2268.0 / 246.4, H4P2O7 -2258.8 / 293.2.  The NBS printed values differ by 2.3 to 9.8 kJ/mol
+  in the enthalpy and 13 to 33 J/mol/K in the entropy (both are `formation_compare.tsv` rows); neither work grades these steps
+  better than C/D, and the one whose steps Choupo's speciation uses is the one that fixes the scale.
+* **Arsenic acid**: the two ions the catalogue already carries (H2AsO4, HAsO4, NBS) are fixed, and H3AsO4 and AsO4 follow
+  from the evaluated steps 1 and 3 (-901.76 / 187.4 and -890.44 / -176.2; NBS prints -902.5 / 184. and -888.14 / -162.8).
+  Step 2 stays NBS minus NBS (pK 6.76 against 7.05: 0.29 log units, the largest remaining, inside the 0.30 tolerance).
+* **Sulfite**: NBS printed throughout (the existing HSO3- and SO3 2- are NBS and fixed, and H2SO3 agrees with step 1 to
+  0.39 kJ/mol); the family tolerance is 6.0 kJ/mol *for the step 2 enthalpy alone*, a disagreement of the two works that is
+  recorded here and not hidden: a heat of the second ionisation computed from the formation enthalpies is -9.3 kJ/mol, while
+  the speciation's van't Hoff law uses -3.65.  The Gibbs identity holds (the entropies absorb it).
+* **Phosphate, hydrazine, methylamine**: NBS printed throughout; the steps agree to 1.3, 0.1 and 0.6 kJ/mol.
+
+Species that gained formation data in this route: H2PO4, HPO4, H4P2O7, H3P2O7, H2P2O7, HP2O7, P2O7, H2SO3, H3AsO4, AsO4,
+Hydrazine, N2H5, MeNH2, HMeNH2 (14 species, each with both DfH and S).  Glycolate: see the later sections of this note; ethanolamine has no value in any work of this route.
+
+## 7. Route 3 (C376, NOT BUILT): an estimated aqueous enthalpy for the laboratory buffers, worked for Tris and HEPES
+
+Decision of C376: the neutral form's aqueous DfH of a buffer with no measured formation datum may be ESTIMATED by group
+additivity (Domalski & Hearing, condensed phase, plus a solution step), origin `estimated`, announced on every use; the ions
+then follow from the measured ionisation enthalpies of Goldberg et al. (2002), so a balance in which the buffer's total amount
+is conserved depends on measured quantities only and the estimate cancels.  This section writes the estimate in full for two
+buffers BEFORE anything is built, so the decision is taken on numbers.  Source: Domalski & Hearing, J. Phys. Chem. Ref.
+Data 22 (1993) 805-1159 (text layer; the OCR of the group table is noisy, so every group value below was read against the
+table's own neighbouring rows and the worked examples of Tables 15 and 26; they are to be read once from the page images
+before any record is written).  Values are DfH in kJ/mol, solid-phase columns, 298.15 K.
+
+### 7.1 Tris (C4H11NO3, tris(hydroxymethyl)aminomethane)
+
+Groups (Table 2, `Listing of groups and group values`): 3 x C-(H)2(O)(C) = 3 x (-33.00) [p. 819]; 3 x O-(H)(C) =
+3 x (-199.66) [p. 818]; 1 x C-(C)3(N) = +1.00 [p. 820]; 1 x N-(H)2(C) = -6.30 [p. 820; the table prints only the two
+rows labelled "amino acids" for this group, -6.30 solid and -46.00 for the second; the definition list says the first is
+the only NH2 on a carbon of an amino acid, so its use for a plain primary amine is an extension the paper does not
+make: no solid-phase amine of the fitting set carries it].  Sum, crystal: -99.00 - 598.98 + 1.00 - 6.30 = **-703.28
+kJ/mol**.  Entropy of the crystal from the same groups (3 x 24.73 + 3 x 28.62 - 84.14 + 39.00) = 114.9 J/mol/K (the same caveat
+for the amine group).  Tris is not among the 1512 compounds of the paper, so there is no measured value to hold the estimate
+to; the closest cases in the paper are:
+
+* pentaerythritol, C(CH2OH)4 (Table 15, p. 919): the same quaternary carbon with four CH2OH groups.  Solid: literature
+  -920.60 (54MED/THO), calculated -918.17, residual -2.43 kJ/mol; gas: literature -776.70, calculated -749.72, residual
+  -26.98 (the gas-phase group is not the fitted one).  The polyol skeleton is therefore reproduced to 2.4 kJ/mol in the solid;
+* tert-butylamine, (CH3)3C-NH2 (Table 26, pp. 984-985): the pair C-(C)3(N) + N-(H)2(C) with three CH3.  Liquid: literature
+  -150.60 (67SMI/GOO), calculated -150.57, residual -0.03; gas: literature 121.00 and calculated 120.92 as printed (OCR; both
+  are enthalpies of formation, so negative), residual -0.08.  No solid phase is printed;
+* the paper's own fit statistics (Table 55, p. 1102 ff.): alcohols, DfH residuals below 4 kJ/mol for 94 of 143 compounds, 4 to 8
+  for 30, above 8 for 19; all CHN compounds (amines, nitriles, hydrazines and the heterocycles), 167 of 199 below 4, 19
+  between 4 and 8, 13 above 8; the text states average deviations of 2.7 kJ/mol and 4.7 J/mol/K between the literature
+  differences solid-liquid and the estimated ones.
+
+The estimate's expected error is therefore 3 to 8 kJ/mol (not 0.01), larger for the amine group in the solid, whose only
+fitting compounds are amino acids.
+
+What the solution step needs: the enthalpy of solution of crystalline Tris at infinite dilution, DsolH(cr -> aq, infinite
+dilution, 298.15 K), measured calorimetrically.  **No work in hand prints it**: the Tris section of Goldberg et al. (Table
+7.68, pp. 357-358) lists calorimetric ionisation enthalpies only (47.45 kJ/mol selected, grade AAA, 23 determinations), the NBS
+tables have no Tris row.  Whether Domalski's 1972 compilation (in hand) lists it was not searched.  A measurement is likely to
+exist (Tris is a calorimetric reference compound) but its bibliographic data are not
+in any work in hand and none is named here.  The entropy of the aqueous neutral would need a solubility and an activity
+model as well: the estimate covers DfH only, which is what an energy balance of a conserved buffer needs.  Then
+DfH(aq, HTris+) = DfH(aq, Tris) - 47.45 (Goldberg, p. 357); the record `Tris` would carry the estimate, `HTris` the difference.
+
+### 7.2 HEPES (C8H18N2O4S, 4-(2-hydroxyethyl)-1-piperazineethanesulfonic acid)
+
+The method cannot be applied.  Table 2 has groups for N-(C)3 (+101.00 solid, p. 820), C-(H)2(C)(N), C-(H)2(O)(C), O-(H)(C)
+and C-(H)2(C)(S) (liquid -26.77; no solid value), and the heterocyclic families of Table 32 (piperidine and others) carry a ring
+correction; but the sulfur families of the paper are thiols, sulfides, disulfides, sulfoxides, sulfones, sulfites, sulfates and
+heterocyclic sulfur (Tables 42 to 49) and **no sulfonic acid group exists** (searched: no `sulfonic`, no S-(O)... group with a
+hydroxyl).  The sulfonic acid group dominates the molecule's enthalpy and is not obtainable from the sulfone group (the
+nearest, SO2-(C)2, -356.62 solid) without an unfitted OH increment.  Piperazine itself does not occur in the paper (searched), so the
+diaza ring has no ring correction to borrow.  HEPES therefore has no estimate from this work; the only route for
+the sulfonic buffers (HEPES, MES, MOPS, PIPES, TAPS, TES, ACES, BES, CAPS, ...) would be a measured enthalpy of formation or of
+combustion of one of them, none of which is in hand.
+
+### 7.3 Do the vocabulary and the grammar already support an estimated hfAq announced on use?
+
+* The word: yes.  `estimated` is in `check_origin_census.KNOWN`, `core/Origin.H` and the doctrine (`docs/ai/data-doctrine.md`
+  section 5: group contribution; "no estimated value without a provenance{ origin; method }").
+* The record: partly.  A species record's `aqueousThermo` block carries `hfAq`, `sAq` and a `source` string; the generic dictionary
+  parser accepts a `provenance { hfAq { origin estimated; method "..."; } }` block beside them (the census counts it), and
+  `check_origin_census` / `check_record_form` would then hold it.  No species record carries such a block today; the C373 records
+  record the derivation in the `source` line only.
+* The announcement on use: NO.  The announcements exist for COMPONENTS: `Component::provenanceFor`, the "property origins (this
+  run)" block, `PackageAudit` (`requireVerifiedOrThrow` refuses a required `estimated` or `placeholder` value unless the case
+  declares `acceptUnverified true;`) and the `[local] UNVERIFIED` line for `data/local`.  An ion's `hfAq` is read by
+  `SaltFromCatalogue.H` (and the speciation energy route) as a bare number; nothing reads a species' provenance, so an estimated
+  `hfAq` would be used silently.  A small engine slice is needed first: read `aqueousThermo.provenance.hfAq.origin`, list it in
+  the property-origins block, and let `PackageAudit` treat an `estimated` species datum the way it treats a component's.
+  Until then an estimated record must not be written.

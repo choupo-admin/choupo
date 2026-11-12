@@ -3,7 +3,8 @@
   Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
   reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
   1 mol/kg, 298.15 K, H+ = 0.
-  NO `aqueousThermo` ON PURPOSE: the ionisation (pK, dH) of this family is evaluated in a work in hand and is in chemistry/, so the SPECIATION is complete; the evaluated compilation prints ionisation quantities only (no formation enthalpy or entropy), and none was entered from another work in this pass, so a balance that needs the enthalpy of this species REFUSES BY NAME instead of borrowing a value.
+  The formation values are the PRINTED numbers of the source; the table, page and row are in the
+  source line below and in formation.tsv.
 \*-----------------------------------------------------------------------------*/
 recordType modelSpecies;
 schemaVersion 1;
@@ -12,3 +13,9 @@ name    H2SO3;
 formula     "H2SO3";
 charge  0;
 MW { value 82.073; unit g/mol;}
+aqueousThermo
+{
+source "hfAq [kJ/mol] -608.81: printed dfH -- Wagman, Evans, Parker, Schumm, Halow, Bailey, Churney & Nuttall, The NBS tables of chemical thermodynamic properties, J. Phys. Chem. Ref. Data 11 (1982) Suppl. 2, Table 14:S, p. 2-57 (PDF p. 65), row H2SO3 ao (equivalent to SO2(ao) + H2O(l)) (read from a page image), the formal stoichiometric acid, aqueous SO2 hydrated ## sAq [J/mol/K] 232.2: printed S -- Wagman, Evans, Parker, Schumm, Halow, Bailey, Churney & Nuttall, The NBS tables of chemical thermodynamic properties, J. Phys. Chem. Ref. Data 11 (1982) Suppl. 2, Table 14:S, p. 2-57 (PDF p. 65), row H2SO3 ao (read from a page image)";
+hfAq { value -608810; unit J/mol;}
+sAq  { value 232.2; unit J/mol/K;}
+}

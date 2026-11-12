@@ -5,3 +5,4 @@ EB59	Eden & Bates, J. Res. Natl. Bur. Stand. 62 (1959) 161 (Research Paper 2947)
 NS36	Nims & Smith, J. Biol. Chem. 113 (1936) 145	thermodynamic pK, 0.3 to 50 C
 KOCH06	Kochergina, Volkov, Krutov & Krutova, Russ. J. Phys. Chem. 80 (2006) 899-903	calorimetric formation enthalpies, hypothetical non-dissociated reference state
 DOM72	Domalski, J. Phys. Chem. Ref. Data 1 (1972) 221	kcal/mol x 4.184 = kJ/mol (Section 5.5, p. 225)
+NBS82	Wagman, Evans, Parker, Schumm, Halow, Bailey, Churney & Nuttall, The NBS tables of chemical thermodynamic properties, J. Phys. Chem. Ref. Data 11 (1982) Suppl. 2	H+(aq) = 0; state `ao` is the hypothetical ideal solution of unit molality at infinite dilution, 298.15 K, 0.1 MPa (Introduction, Table of conventions); kJ/mol and J/mol/K as printed
