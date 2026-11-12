@@ -384,13 +384,14 @@
     "packing": {
       "type": "object",
       "title": "Structured-packing bed (total reflux)",
-      "description": "Under `model totalReflux;` replaces the trays by a packed bed: Rocha-Bravo-Fair holdup, pressure drop and flooding (IECR 32 (1993) 641, Eqs 20-29) and HETP (IECR 35 (1996) 1660, Eqs 5-17). Binary only; exclusive with nStages, hydraulics and the tray efficiency.",
+      "description": "Under `model totalReflux;` replaces the trays by a packed bed: Rocha-Bravo-Fair holdup, pressure drop and flooding (IECR 32 (1993) 641, Eqs 20-29) and HETP (IECR 35 (1996) 1660, Eqs 5-17). Binary only; exclusive with nStages, hydraulics and the tray efficiency. `model Delft;` (Olujic et al. 1999, working equations of Fair et al. 2000) reads corrugationBase, corrugationHeight and elementHeight instead of corrugationSide.",
       "additionalProperties": false,
       "properties": {
         "model": {
           "type": "string",
           "enum": [
-            "RochaBravoFair"
+            "RochaBravoFair",
+            "Delft"
           ]
         },
         "diameter": {
@@ -447,6 +448,34 @@
         },
         "segments": {
           "type": "number"
+        },
+        "corrugationBase": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "unit": "m",
+          "description": "Delft only: corrugation base b."
+        },
+        "corrugationHeight": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "unit": "m",
+          "description": "Delft only: corrugation (crimp) height h."
+        },
+        "elementHeight": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "unit": "m",
+          "description": "Delft only: height of one packing element h_pe."
+        },
+        "holeFraction": {
+          "type": "number",
+          "description": "Delft only: fraction of the surface occupied by holes (0 unperforated)."
         }
       }
     }
