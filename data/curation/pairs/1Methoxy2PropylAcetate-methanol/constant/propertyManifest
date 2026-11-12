@@ -1,0 +1,74 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/1Methoxy2PropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "50a4c9430686c7c9b3d7b2a5989c8a31c4d45dceb753725af8b35430a3f48682";
+            computationalSha256 "53eb784637a0fd9dc6f63e4b62a9f7cf1498876a82793be71cc238a91a0ae27c";
+            origin        "data/standards/components/1Methoxy2PropylAcetate.dat";
+            originSha256  "ad9369f1d98039d3d69b7b8396fbae5db6e7b742e9b40acfd8e351927f540f96";
+            release       Choupo-2608;
+        }
+        "components/methanol.dat"
+        {
+            type          imported;
+            sha256        "c31b411d7bdd0857e1a2998503dd5170f75f9a417a9d47306b4095fd28bcebd6";
+            computationalSha256 "d51b98bd9ea6675087f0be387bcb63782ea8fc394f1962cb648ad92e39752faa";
+            origin        "data/standards/components/methanol.dat";
+            originSha256  "3e584446eb5b5ffd4ee5547099679b01254cc19dad31a8db909a2068fe9cad43";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/1Methoxy2PropylAcetate-methanol.dat"
+        {
+            type          imported;
+            sha256        "0753f199d65a25f807126eb5574538b00fdbf5c0703731da62d7cb9da79b8eaa";
+            computationalSha256 "3db7645bb9620b28bcdeb293b325d000411f0fe7f9b6f9e64b9f523989dfa510";
+            origin        "data/standards/parameters/UNIQUAC/1Methoxy2PropylAcetate-methanol.dat";
+            originSha256  "c16af0cbc5bf80f7d8fe4046b91df934d3b04183f72eaa56980115d23b56a1a9";
+            release       Choupo-2608;
+        }
+    }
+}

@@ -21,17 +21,17 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/nNDimethylformamide.dat"
         {
             type          imported;
-            sha256        "5dc5e624ec26f7584374f1c24564d0750fe6035d6d04806c118cacafdbb9a9cf";
-            computationalSha256 "a54dfb01aa4f8ccf4cd36ebaaa39c04ad37254ae34c4fd4f112690de9f1d0425";
+            sha256        "a88c2d32602da60e27e10ba9e0aedec1cb83216cb771caeb2f8437404df87f5d";
+            computationalSha256 "099dc481e1a60221b28f3cbda6ae34a63399cbe02fb820cb7396d33f8effd64d";
             origin        "data/standards/components/nNDimethylformamide.dat";
-            originSha256  "9c683ee45a5fcc273e4186865d45184b187b080ff179cec4f0ac16d72933fc21";
+            originSha256  "2962c91b01e27473cd7cbeb36d60eeb705e5bf442b915f9d5921d7da1c1ddac3";
             release       Choupo-2608;
         }
         "components/nitrobenzene.dat"
@@ -41,6 +41,24 @@ propertyManifest
             computationalSha256 "0b4a4231f87f80f41544b0e12087ccb13016c93e1b53475a9fe70cce95d732d1";
             origin        "data/standards/components/nitrobenzene.dat";
             originSha256  "4dfd083b1f44673d3672cb463555bdfa03068f10bec14bf97bce1e682ec0db07";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/nNDimethylformamide-nitrobenzene.dat"
+        {
+            type          imported;
+            sha256        "c81e12f90fb51065fd1f76c2e0a43c0382afc2d304c33b4d46f485e83a7921c8";
+            computationalSha256 "27d4bd6070658153a8f3fbb8ec99273c5bac2909ca95426e7c4a49f1ea5c9683";
+            origin        "data/standards/parameters/NRTL/nNDimethylformamide-nitrobenzene.dat";
+            originSha256  "6ff9f8644bd5d95732aabd98c2b7d1f7ea35ebe3291886b382aad40059d3a220";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/nNDimethylformamide-nitrobenzene.dat"
+        {
+            type          imported;
+            sha256        "feac9ad6e3ff662b4ad2632b1221261e1ef7bd6732115719799a7dddb7837aa7";
+            computationalSha256 "5e3fe280dc02afa3a8e24d41552e36cde5d699fdc9b88aadc6d760ae2b22e0af";
+            origin        "data/standards/parameters/Wilson/nNDimethylformamide-nitrobenzene.dat";
+            originSha256  "2f3861304b66566635d49fc4edca5702389273bc754335122be95f5dd931da1e";
             release       Choupo-2608;
         }
     }

@@ -79,6 +79,15 @@ liquidThermalConductivity
     }
 }
 
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (4 CH3 + 2 CH), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   4.4982;
+    q   3.8480;
+}
+
 groups
 {
     unifac ( { group CH3; count 4; } { group CH; count 2; } );
@@ -99,6 +108,12 @@ source
 
 provenance
 {
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 4.4982, q = sum nu_k Q_k = 3.8480 over the record's unifac groups (4 CH3 + 2 CH)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
     MW
     {
         origin        literature;

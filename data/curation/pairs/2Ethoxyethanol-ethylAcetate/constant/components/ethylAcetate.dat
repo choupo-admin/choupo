@@ -1,0 +1,118 @@
+// [imported] origin "data/standards/components/ethylAcetate.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Ethyl Acetate  (C4H8O2, CAS 141-78-6)
+  Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), Antoine
+           coefficients, Cp polynomials and the ideal-gas formation datum
+           (dHf_298/s_298, JANAF convention) are individual literature
+           values -- primary re-citation pending (IST review).
+\*---------------------------------------------------------------------------*/
+
+name        ethylAcetate;
+formula     C4H8O2;
+CAS         141-78-6;
+
+MW          88.106;
+Tc          523.20;
+Pc          38.30;
+omega       0.3664;
+Tb          350.21;
+HvapTb      31940;
+Vliq        9.819e-5;       // 98.19 cm³/mol at 25 °C
+//  ANCHOR, never an input.  The engine DERIVES the Hildebrand
+//  parameter from HvapTb and Vliq (the tree stores no derivative);
+//  this is what ChemSep v8.3 computed independently, so the
+//  derivation has something to be wrong against.
+solubilityParameter 18350;   // Pa^0.5  [anchor, ChemSep v8.3, Artistic-2.0]
+
+
+standardThermochemistry
+{
+    dHf_298   -442920.0;        // J/mol  -- ideal-gas reference
+    s_298     359.710;         // J/(mol·K)  -- third-law absolute
+}
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)
+    // Poling 5e App. A (via the MIT-licensed `chemicals` 1.5.2 data
+    // distribution; INTERIM pending primary review (Vitor)). The old set's A
+    // and B matched this one with A converted to bar, but C was
+    // mistranscribed (-53.118 for -60.680) -- the 7.6 K self-contradiction
+    // the 2026-08-22 audit pinned
+    coefficients  (4.13361   1195.130   -60.68);
+    Trange        (266  372.51);      // upper clamped to the source fit range (review 2026-08-24)
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (7.235   0.4072   -2.092e-4   2.855e-8);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (170.7);
+    Trange        (280  350);
+}
+
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (1 CH3 + 1 CH2 + 1 CH3COO), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   3.4786;
+    q   3.1160;
+}
+
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH3COO; count 1; } );
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group ester; count 1; } );
+}
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0639-PROF.txt bundled in usnistgov/COSMOSAC; CAS 141-78-6";
+        licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
+        installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
+    }
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file ETHYL_ACETATE.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey XEKOWRVHYACXOJ-UHFFFAOYSA-N (full match); formula C4H8O2; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        132.638043;   // sum of the profile below; GAMESS prints 132.64
+        volume      116.40;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.278093     2.724246
+               5.383242    12.872123    14.175620    15.889014    12.136103    12.745999
+              11.225066     7.138732     6.440745     2.584700     1.741095     0.886921
+               1.460580     1.365266     1.189872     1.532486     3.240525     1.426840
+               2.681553     2.429775     1.000092     2.211354     4.832020     2.503726
+               0.542255     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
+    }
+}
+
+provenance
+{
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 3.4786, q = sum nu_k Q_k = 3.1160 over the record's unifac groups (1 CH3 + 1 CH2 + 1 CH3COO)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
+}

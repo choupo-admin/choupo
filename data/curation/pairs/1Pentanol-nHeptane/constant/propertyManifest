@@ -21,26 +21,26 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/1Pentanol.dat"
         {
             type          imported;
-            sha256        "86c4addc505252ed263f53c07ca94ef9a158e34bfb5c32e992323eaa0c8df1d3";
-            computationalSha256 "831e21638f9c40c212865247a7342ab9080b1d897b9bece0cd5eaa0bd9f394c3";
+            sha256        "5e398be678d83347ac1e9e27041c5851006908fecf291b4c117699c8a16444fc";
+            computationalSha256 "f93387f281715a682944f91bbc460309c7e250048216ee18284dfa91035f9b56";
             origin        "data/standards/components/1Pentanol.dat";
-            originSha256  "1b70bde782f9005b3b1776f286a59b76191371714b98aa89a8976851a2d0020a";
+            originSha256  "144d02c13b3872818db57d8725844f0e83b61d57a95dc631b65fbd9717012446";
             release       Choupo-2608;
         }
         "components/nHeptane.dat"
         {
             type          imported;
-            sha256        "8c48efaaa9aa99b348c71a669b0004bae3abe91635a4fe1c401fc415b45e6b4d";
-            computationalSha256 "2f3b301c3cd1ef6d27fd35702b810c40ebcfc7fc573ec2dfb642d5981a6ed791";
+            sha256        "a7070c242b1e983394223ff7eee404bb92b3d786d4084206099da44034d276ff";
+            computationalSha256 "2d3f05b485954c058b6d08f36c865bcce5f50ca5b52320bf4d78be213fb24805";
             origin        "data/standards/components/nHeptane.dat";
-            originSha256  "0e6ffd261eb07d90376837ad51670a939dfd10fc7e15c0bed37a675f034eeae0";
+            originSha256  "c4efb38aaf4080cff55dfda4017e9bc8d4911ccad74c28b2daf7194cc6922c76";
             release       Choupo-2608;
         }
         "parameters/NRTL/1Pentanol-nHeptane.dat"
@@ -77,6 +77,15 @@ propertyManifest
             computationalSha256 "03c8a7e8a8f2f23e62589a869139f33913346bf6338e4ee1d685986598b9d923";
             origin        "data/standards/parameters/UNIQUAC/1Pentanol-nHeptane.dat";
             originSha256  "719080087c24a2b4bee7b0d5fb0ccb9172b906c24f376f06de3f13f724431686";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Pentanol-nHeptane.dat"
+        {
+            type          imported;
+            sha256        "6e4e15d8d95b18091c7935e9182b9483f5a9120b3bf53ebffe99587a331dec83";
+            computationalSha256 "57b79a0e281221ca73c26fc816a39cbfb9178285131bfbda99b301e526c49cce";
+            origin        "data/standards/parameters/Wilson/1Pentanol-nHeptane.dat";
+            originSha256  "4cf009d7274116bc68c9f9e126f7085e66987bcbe8f7c845c26057912809c5a4";
             release       Choupo-2608;
         }
     }

@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -37,10 +37,28 @@ propertyManifest
         "components/methanol.dat"
         {
             type          imported;
-            sha256        "8a5d7eada35ef18aafd03f99eaeaa45a0837da565ac71b4ffb3574e7a99df54a";
-            computationalSha256 "687725d9dfbbd996959983f08041d099f4b76c6b1a639d19d9a43a0209f04ab6";
+            sha256        "c31b411d7bdd0857e1a2998503dd5170f75f9a417a9d47306b4095fd28bcebd6";
+            computationalSha256 "d51b98bd9ea6675087f0be387bcb63782ea8fc394f1962cb648ad92e39752faa";
             origin        "data/standards/components/methanol.dat";
-            originSha256  "8cedd68cbab3194cfb72728ae31e42118e256931e9e166b4c53ace9dbbe27376";
+            originSha256  "3e584446eb5b5ffd4ee5547099679b01254cc19dad31a8db909a2068fe9cad43";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/diethylethanolamine-methanol.dat"
+        {
+            type          imported;
+            sha256        "fc31cb9f8807cd99a4687599173fc83dfd11e380ca0bedb5c180f7b50d1baef4";
+            computationalSha256 "3db48679ecc4fae1cf50949502c44fcd1290a4f6d0c8e37a782a14ebfc683a0d";
+            origin        "data/standards/parameters/NRTL/diethylethanolamine-methanol.dat";
+            originSha256  "50b7895faea3883ffb44dea487ca3861b57d70f1f24d50e276fa015f2f06ec5c";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/diethylethanolamine-methanol.dat"
+        {
+            type          imported;
+            sha256        "efc961414b2681d528bdb96a69c1886b557a2a09afd6a32860088cb19364c14e";
+            computationalSha256 "3bcec54d3405e128517730c1465abbd15a2de553d9adae3ff14f108a4f9b6479";
+            origin        "data/standards/parameters/Wilson/diethylethanolamine-methanol.dat";
+            originSha256  "94935cca915697d797f76ee9823ed64fff5d29a03ec6d5354a55fd528092c3b6";
             release       Choupo-2608;
         }
     }

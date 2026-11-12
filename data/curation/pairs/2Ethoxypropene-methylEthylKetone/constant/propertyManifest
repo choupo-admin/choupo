@@ -1,0 +1,83 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/2Ethoxypropene.dat"
+        {
+            type          imported;
+            sha256        "e9ac6d6356f75a4c39342c483b4e41ba908d0f76309aaf55bae1603390b8e1af";
+            computationalSha256 "59bf025ffa41b39f631be80ba9d8cd8d8b63ae50aab618e71c966e991721ab6a";
+            origin        "data/standards/components/2Ethoxypropene.dat";
+            originSha256  "4ff26993f5aa25afde6c85463d4001b427b9ff669edf36b47d4dad6f523d2362";
+            release       Choupo-2608;
+        }
+        "components/methylEthylKetone.dat"
+        {
+            type          imported;
+            sha256        "5cd52e21cef3f980561fcea6e906e2de747d42d4003d80cf35692db8ef532101";
+            computationalSha256 "800c4ec79e27e6ceb8577d4783b29d2073862cd2bdfc566e1f96c952718467f1";
+            origin        "data/standards/components/methylEthylKetone.dat";
+            originSha256  "d43e0a6ed62af65778e6f579f19a678c6e57c522782543777bb9c4a2081f1498";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Ethoxypropene-methylEthylKetone.dat"
+        {
+            type          imported;
+            sha256        "9302cc9e7b29f2e122ff46118eeb2562e01ed543ee77f70211b2c5710446db00";
+            computationalSha256 "2192460dce5ba527f2a46044943da6bbd52ca33fa44bc3ad77f4da97f95d65a5";
+            origin        "data/standards/parameters/NRTL/2Ethoxypropene-methylEthylKetone.dat";
+            originSha256  "dbd58bd17665d0fb473b7548719c833da27b5e370c1dd49fbecfcbd6ec2a8637";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/2Ethoxypropene-methylEthylKetone.dat"
+        {
+            type          imported;
+            sha256        "714ab6fd8170833df0ed926eec5b5453cc873ccc6bf462983e484787e479dabc";
+            computationalSha256 "87c4e8c5c0c0d5a5c92f5845a48c051746c8eda9f767bbf4ae21e249e53e8e58";
+            origin        "data/standards/parameters/UNIQUAC/2Ethoxypropene-methylEthylKetone.dat";
+            originSha256  "a5c5e88186b0cae9c75c0cc3a1cf697a40db7a7ec7601b0c157e0a8dc732aebc";
+            release       Choupo-2608;
+        }
+    }
+}

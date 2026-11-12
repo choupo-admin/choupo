@@ -21,26 +21,44 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/Dichloroethane.dat"
         {
             type          imported;
-            sha256        "ccec8ed54dd89e5ada83fa9b95a1f1d6890306d0905c6f66d536b79262e6322c";
-            computationalSha256 "0f7fe4aedc3796a98e2c137ff1a0d520463954f8d6acd1d81e2233fc1cae86c7";
+            sha256        "94c5aac10347cd06b9fd90380be605c4c7193f95dac011343e03fab50ce81d0e";
+            computationalSha256 "ba02e8b3f6499c5571a7fb5ab9ea0c560ef1db3dc604186fa6108e61ca7ff2f5";
             origin        "data/standards/components/Dichloroethane.dat";
-            originSha256  "8c4cad78bb756f1c81f8d50caf255bf5efd657a5f5c36d1ad767f265cc93e142";
+            originSha256  "8b34d3129f4dd6a2d2d127d3f010d70bdcef1c259b056f89c92ce4b889b8786e";
             release       Choupo-2608;
         }
         "components/toluene.dat"
         {
             type          imported;
-            sha256        "5fb900674321baa67135bfeb2c8f80e63d9af183c35f1615477d751b4299f14b";
-            computationalSha256 "55e1e2986dd1c3fc08c951e842a86b062ee6a7bfbc1e1317387e69149a139e36";
+            sha256        "2f88a0bab6cfc9c5391c9711987cc9de2c7ccd3b43578cb37dd6863702e4bbcf";
+            computationalSha256 "7d316837e8321a6e87d8c3913cad0dd71f31ba54815976a987d95ff64995d730";
             origin        "data/standards/components/toluene.dat";
-            originSha256  "ad1533cb0d94caade355d7149fd88ee1ad07c945f5d4c85f4bcce925766250b9";
+            originSha256  "c0def63ccca243b6d038bbf80667196243b5f4cb1dbf2390cdbd24bed2319be1";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/Dichloroethane-toluene.dat"
+        {
+            type          imported;
+            sha256        "9b225a92afe40507a60d162fa35a14026a5404d3dbf1a0c8df7d084390b02b87";
+            computationalSha256 "4e00db6505a8ab00bf98dc70e484a19801eab0db113bfc1e9835ac881e3cfddc";
+            origin        "data/standards/parameters/NRTL/Dichloroethane-toluene.dat";
+            originSha256  "264abb9acab8e1e53b375fb714884e01c210c2ee81d1edcd000b627be6b5be9a";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/Dichloroethane-toluene.dat"
+        {
+            type          imported;
+            sha256        "1b046403c12b964bb292e5c9b2fe65671ebb9aa31bcba5bd74106c3b46f983d7";
+            computationalSha256 "49ad443339e76098d16887d526bf5f876395ee92b481c8febc945fa74d321e8f";
+            origin        "data/standards/parameters/Wilson/Dichloroethane-toluene.dat";
+            originSha256  "3f9baabec36e277a041e55fa0ec8bf1071b3b0d29b9a19626b05c74ce7be674d";
             release       Choupo-2608;
         }
     }

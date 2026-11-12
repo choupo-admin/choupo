@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/1122Tetrachloroethane.dat"
+        {
+            type          imported;
+            sha256        "ceaf75c88666dc0535c0b68bccaa520eaaee25ce3f5c99ed60117faf5d759af1";
+            computationalSha256 "198d7d857a25ec951e052faa80e091770880c6e53f7c4a26d551a1cb8ee782da";
+            origin        "data/standards/components/1122Tetrachloroethane.dat";
+            originSha256  "6634649d343fe9f78d2f9a3e798cb5b500568dc19d387e81d6aca1b85ac6bcff";
+            release       Choupo-2608;
+        }
+        "components/tetrahydrofuran.dat"
+        {
+            type          imported;
+            sha256        "895c252261881577b0174dc6f8cef817c463944d58685499a48e9dd98d24647e";
+            computationalSha256 "b633485a1530fbce2ea54dbf94e8faaf87ca5f2ab20e7373f330bb259e2a9737";
+            origin        "data/standards/components/tetrahydrofuran.dat";
+            originSha256  "7bec4038f718899fb69683b24810aab1698dd594462b92c0220ac081e1b3a2bc";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1122Tetrachloroethane-tetrahydrofuran.dat"
+        {
+            type          imported;
+            sha256        "e1e1294bec1071776691597dc832363ae6f22d8408b819b1d2e1e5e575c6ef93";
+            computationalSha256 "e80dbad798b61e7a3d212cddda16200facd3df265fe767f315ccccaacf336535";
+            origin        "data/standards/parameters/NRTL/1122Tetrachloroethane-tetrahydrofuran.dat";
+            originSha256  "12d0644f79b2bdfa7279f69e343e0cbcac1bc0efcc9a9250d5dce1b608a08df3";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1122Tetrachloroethane-tetrahydrofuran.dat"
+        {
+            type          imported;
+            sha256        "ba693d6a4aad4928120ea69601eb9b49129ca9d6ec1e1287da878702b4999a9a";
+            computationalSha256 "4dd7d6d254fa3b362f1cccbea77fbe81e55e8ca6ee543ff1c53eca98cd3a1fc0";
+            origin        "data/standards/parameters/Wilson/1122Tetrachloroethane-tetrahydrofuran.dat";
+            originSha256  "e9d5e35ccc70e3cced366aefada1cf88c549ca85454869936401b383495626df";
+            release       Choupo-2608;
+        }
+    }
+}

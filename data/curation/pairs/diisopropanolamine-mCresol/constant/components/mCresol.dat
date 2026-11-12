@@ -144,3 +144,30 @@ provenance
         notes         "computed from ChemSep Tc/Pc/omega";
     }
 }
+
+cosmo
+{
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file M-CRESOL.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey RLSSMJSEOOYNOY-UHFFFAOYSA-N (full match); formula C7H8O; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        149.208337;   // sum of the profile below; GAMESS prints 149.21
+        volume      141.41;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.072714
+               0.517538     1.822180     0.636315     0.307588     0.550922     1.292909
+               0.950976     0.746513     0.042075     0.423128     0.487845     2.170581
+               4.939004     8.597465    11.324808    11.144025     9.138512     9.559803
+               8.575100    10.498806    10.165714     4.754233     7.872538     7.757438
+               9.800715     9.393292     4.225586     1.068684     0.950211     2.013907
+               1.524139     0.213852     0.600831     1.856606     1.570549     1.409133
+               0.232102     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
+    }
+}

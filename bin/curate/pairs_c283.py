@@ -83,6 +83,10 @@ COMP = ROOT / "data" / "standards" / "components"
 #  refuses.  C283's relative clause, graded 5 / 10 / 20 %, judges composition;
 #  a T_bubble fit has no composition residual, so it is declared and unused.
 GRADES = ("clean", "warning", "severe", "refused")
+#  ONE home of the pair limits (pairs_px.py reads GRADE_PCT from here).  DEV.md
+#  4c C334 (second opinion): they do NOT widen -- a bubble P or T error goes
+#  straight into relative volatility and stage count.  A severe fit is promoted
+#  only if it BEATS THE IDEAL MIXTURE on its own kept points (C334 guard).
 GRADE_K = (1.0, 2.0, 4.0)
 GRADE_PCT = (5.0, 10.0, 20.0)
 GMARK = "THE GRADED ACCEPTANCE (DEV.md 4c C285, applied to pairs by C286)"
@@ -153,25 +157,142 @@ def cap_grade(grade, n_temperatures, n_laboratories, heldout_clean=False):
     return ("warning" if caps else grade), caps
 
 
-#  DEV.md 4c C300 rule 3: a `severe` fit does not enter the default
-#  catalogue.  Its record stays in its own curation case (constant/
-#  parameters/<MODEL>/), with the evidence; a case that needs it carries it
-#  in its own constant/.  ONE home, beside cap_grade, read by both pair tools'
-#  promotion and by the result line a run writes.  The severe records
-#  promoted before C300 are not touched here (a separate slice moves them).
-NOT_PROMOTED_GRADES = ("severe", "refused")
+#  DEV.md 4c C333 (Vitor; it REVERSES C300 rule 3): a `severe` fit STAYS in
+#  the catalogue, voiced SEVERE by the engine on every run that reads it;
+#  only a `refused` fit is discarded.  ONE home, beside cap_grade, read by
+#  both pair tools' promotion and by the result line a run writes.  (A pair
+#  that splits one liquid inside its validity span stays unpromoted whatever
+#  its grade -- a separate test, unchanged.)
+NOT_PROMOTED_GRADES = ("refused",)
 
 
 def promotion_refusal(grade):
     """The reason a fit of in-sample grade `grade` is NOT promoted into
-    data/standards, or None when it may be (C286, C300 rule 3)."""
+    data/standards, or None when it may be (C286; C333: severe stays)."""
     if grade == "refused":
-        return "fit grade refused -- a refused fit is not promoted (C286)"
-    if grade == "severe":
-        return ("fit grade severe -- DEV.md 4c C300 rule 3: a severe pair does not enter "
-                "the default catalogue; its record stays in this curation case's "
-                "constant/, and a case that needs it carries it in its own constant/")
+        return "fit grade refused -- a refused fit is not promoted (C286, C333)"
     return None
+
+
+_SEVERE_REASON = re.compile(
+    r"NOT PROMOTED \((max [^()]*?)\): fit grade severe -- DEV\.md 4c C300 rule 3: a severe "
+    r"pair does not enter the default catalogue; its record stays in this curation case's "
+    r"constant/, and a case that needs it carries it in its own constant/")
+
+
+def ideal_max(case, kind):
+    """DEV.md 4c C334 guard: the SAME max-error statistic as the fit's own
+    (max |dT| in K for `tx`, max |dP|/P in % for `px`) with every activity
+    coefficient 1 (Raoult: a_ij = b_ij = 0, the same vapour-pressure records,
+    the same kept points), read from the case's OWN fit op run with its
+    parameters at their zero start and no iteration (`maxIter 0`, least
+    squares): a scratch copy, nothing is written into the case."""
+    rc = cc.fetch(case, quiet=True)
+    if rc:
+        refuse(f"fetch of {cc.label(case)} returned {rc}")
+    work = Path(tempfile.mkdtemp(prefix="choupo-curate-c334-"))
+    try:
+        sc = work / case.name
+        shutil.copytree(case, sc, ignore=shutil.ignore_patterns("expected"))
+        pdp = sc / "system" / "propsDict"
+        t = pdp.read_text()
+        i = t.index("    {\n        name        fit_nrtl_start2;")
+        t = t[:i] + ");\n"
+        j = t.index("name        fit_nrtl;")
+        op = t[j:]
+        inits = re.findall(r"initial\s+([-0-9.eE+]+);", op)
+        if len(inits) != 2 or any(float(v) != 0.0 for v in inits):
+            refuse(f"{cc.label(case)}: the fit_nrtl op does not start at zero parameters "
+                   f"({inits}) -- the ideal mixture cannot be read from it")
+        t = t.replace("method twoStage;", "method leastSquares;")
+        t, n = re.subn(r"maxIter\s+\d+;", "maxIter      0;", t)
+        if n != 1:
+            refuse(f"{cc.label(case)}: expected one maxIter in the fit op, found {n}")
+        pdp.write_text(t)
+        for stale in sc.glob("*.proposal.dat"):
+            stale.unlink()
+        rc, out, js = cc.run_props(sc)
+        par = sc / "parity.csv"
+        rows = []
+        if par.exists():
+            for l in par.read_text().splitlines()[1:]:
+                if l.strip():
+                    rows.append([float(v) for v in l.split(",")])
+        if not rows:
+            refuse(f"{cc.label(case)}: the ideal read-back exited {rc} and wrote no parity rows")
+        scale = 100.0 if kind == "px" else 1.0
+        r = [abs(v[4]) * scale for v in rows]
+        if any(v != v for v in r):
+            return float("inf")
+        return max(r)
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+
+
+def ideal_guard(case, kind, grade, mx, label, blk=None):
+    """C334: None for any grade but severe; for a severe fit the ideal max,
+    REFUSED (by name, with both numbers) unless fit < ideal."""
+    if grade != "severe":
+        return None
+    ideal = ideal_max(case, kind)
+    unit = "%" if kind == "px" else "K"
+    if not mx < ideal:
+        if blk:
+            restate_severe_result(case, blk[0], blk[1], blk[2], kind=kind, mx=mx, ideal=ideal,
+                                  beaten=False, after=(blk[3] if len(blk) > 3 else None))
+        refuse(f"{label}: NOT PROMOTED: a severe fit is promoted only if it BEATS THE IDEAL "
+               f"MIXTURE on its own kept points (DEV.md 4c C334) -- fit max {mx:.4f} {unit}, "
+               f"ideal (gamma = 1) max {ideal:.4f} {unit}")
+    return ideal
+
+
+def stamp_ideal(text, kind, mx, ideal):
+    """Write the guard's two numbers into the promoted record's provenance,
+    beside the fit's own max-error line."""
+    if ideal is None:
+        return text
+    key = "fitGradeMaxRelativeError_pct" if kind == "px" else "fitGradeMaxTemperatureError_K"
+    unit = "%" if kind == "px" else "K"
+    new, n = re.subn(rf"(\n    {key} [^\n]*;\n)",
+                     lambda m: m.group(1) + f"    fitGradeIdealMax{key[len('fitGradeMax'):]} {ideal:.4f};"
+                     f"   // DEV.md 4c C334: the ideal mixture (gamma = 1) on the SAME kept points; a severe fit "
+                     f"is promoted only if {mx:.4f} {unit} < {ideal:.4f} {unit}\n", text, count=1)
+    if n != 1:
+        refuse("stamp_ideal: no fitGradeMax line in the promoted record")
+    return new
+
+
+def restate_severe_result(case, begin, end, phrase, kind=None, mx=None, ideal=None,
+                          after=None, beaten=True):
+    """DEV.md 4c C334: a case written under the retired C300 rule 3 says `NOT
+    PROMOTED ... severe`.  Before the promotion marks the paragraph, that
+    sentence is restated in the PROMOTABLE form the promote step rewrites,
+    with the guard's two numbers, or -- `beaten` False, the guard having
+    refused -- as the guard's refusal.  `after`
+    restricts it to the text after that marker (one model of several)."""
+    pd = case / "system" / "propsDict"
+    x = pd.read_text()
+    m = re.search(re.escape(begin) + r"(.*?)" + re.escape(end), x, re.S)
+    if not m:
+        return
+    para = " ".join(m.group(1).split())
+    k = para.find(after) if after else 0
+    if k < 0:
+        return
+    unit = "%" if kind == "px" else "K"
+
+    def rep(g):
+        if not beaten:
+            return (f"NOT PROMOTED ({g.group(1)}): fit grade severe, and a severe fit is promoted "
+                    f"only if it BEATS THE IDEAL MIXTURE on its own kept points (DEV.md 4c C334): "
+                    f"fit max {mx:.4f} {unit}, ideal (gamma = 1) max {ideal:.4f} {unit}")
+        tail = (f"; BEATS THE IDEAL MIXTURE (C334): {mx:.4f} {unit} against ideal {ideal:.4f} {unit}"
+                if ideal is not None else "")
+        return f"PROMOTABLE by `{phrase}`: fit grade severe -- {g.group(1)}{tail}"
+
+    new = para[:k] + _SEVERE_REASON.sub(rep, para[k:], count=1)
+    if new != para:
+        pd.write_text(x[:m.start()] + begin + "\n" + cc.wrap(new) + "\n  " + end + x[m.end():])
 
 
 def cap_line(caps):
@@ -1030,7 +1151,11 @@ def promote(a, b):
     dest = cc.STD_NRTL / f"{rp.stem}.dat"
     if dest.exists():
         refuse(f"{dest.relative_to(ROOT)} exists -- never overwritten")
-    dest.write_text(promoted_text(text, case, rp.stem, rf["i"], rf["j"]))
+    mxg = crp.num(cur, "maxAbsError")
+    blk = ("@@RESULT-BEGIN@@", "@@RESULT-END@@", "bin/choupo-curate pair ... --promote")
+    ideal = ideal_guard(case, "tx", crp.word(cur, "grade"), mxg, rp.stem, blk)
+    dest.write_text(stamp_ideal(promoted_text(text, case, rp.stem, rf["i"], rf["j"]),
+                                "tx", mxg, ideal))
     rp.unlink()
     try:
         cc.seal(case)
@@ -1039,6 +1164,7 @@ def promote(a, b):
         rp.write_text(text)
         cc.seal(case)
         raise
+    restate_severe_result(case, *blk, kind="tx", mx=mxg, ideal=ideal)
     cc.mark_result(case, "PROMOTABLE by `bin/choupo-curate pair ... --promote`:",
                    f"PROMOTED on {date.today().isoformat()} into "
                    f"{dest.relative_to(ROOT).as_posix()} as reviewStatus autoPromoted, "
@@ -1651,8 +1777,8 @@ def models_decl_text(el, kind):
              "A_ij, A_ji (J/mol), Lambda_ij = (V_j/V_i) exp(-A_ij/RT), V the records' Vliq.  "
              "Two starts each.  Each model gets its own record (constant/parameters/<MODEL>/), "
              f"its own grade at {lim}, its own one-liquid test (arm f), `fitGradeBasis "
-             "inSample`, the C300 cap and `review { by none; }`; a severe or refused grade, "
-             "or a split, is not promoted.  The three in-sample residuals are published side "
+             "inSample`, the C300 cap and `review { by none; }`; a refused grade, "
+             "or a split, is not promoted (C333: severe stays).  The three in-sample residuals are published side "
              "by side, never used to choose a model for the student.")
     for m in MODELS:
         lines += f"  {m}: " + ("FITTED." if el[m] is None else "NOT FITTED -- " + el[m] + ".")
@@ -2123,7 +2249,12 @@ def models_promote(case, model):
                "case of evidence across its models (C294)")
     dest = cc.STD_PARAMS / model / f"{stem}.dat"
     dest.parent.mkdir(parents=True, exist_ok=True)
-    dest.write_text(model_promoted_text(text, model, case, stem, rf["i"], rf["j"], kind))
+    mxg = crp.num(cur, "maxAbsError" if kind == "tx" else "maxRelError_pct")
+    blk = ("@@MODELS-RESULT-BEGIN@@", "@@MODELS-RESULT-END@@", MODELS_PROMOTED_BY,
+           f"fit_{model.lower()}:")
+    ideal = ideal_guard(case, kind, crp.word(cur, "grade"), mxg, f"{model} {stem}", blk)
+    dest.write_text(stamp_ideal(model_promoted_text(text, model, case, stem, rf["i"], rf["j"], kind),
+                                kind, mxg, ideal))
     rp.unlink()
     try:
         cc.seal(case)
@@ -2132,6 +2263,7 @@ def models_promote(case, model):
         rp.write_text(text)
         cc.seal(case)
         raise
+    restate_severe_result(case, *blk[:3], kind=kind, mx=mxg, ideal=ideal, after=blk[3])
     pd = case / "system" / "propsDict"
     x = pd.read_text()
     mm = re.search(r"@@MODELS-RESULT-BEGIN@@(.*?)@@MODELS-RESULT-END@@", x, re.S)

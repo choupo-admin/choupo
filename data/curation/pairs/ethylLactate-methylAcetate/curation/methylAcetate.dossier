@@ -1,0 +1,355 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      methylAcetate;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.b_ij  -181.520953287;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.b_ji  102.7659507;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "dda867a5d5ba1f3a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylAcetate-ethylLactate-bubble-j.fluid.2015.12.029.dat";
+            doi       "10.1016/j.fluid.2015.12.029";
+            sha256    "8b4e8cfbfb31555d50ad40600466408a2c58ab3223317dbf12b22208576eb72c";
+            provenance measured;
+            archiveFile "j.fluid.2015.12.029.xml";
+            system    "methylAcetate + ethylLactate";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylAcetate-ethylLactate-bubble-je060052p.dat";
+            doi       "10.1021/je060052p";
+            sha256    "2fc2cbd748a485059618028ee56231db2d316fac5b4fed186717236b85589564";
+            provenance measured;
+            archiveFile "je060052p.xml";
+            system    "methylAcetate + ethylLactate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.011; max 0.979; n 70; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.b_ij  -181.510012712;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.b_ji  102.752212335;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "dda867a5d5ba1f3a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylAcetate-ethylLactate-bubble-j.fluid.2015.12.029.dat";
+            doi       "10.1016/j.fluid.2015.12.029";
+            sha256    "8b4e8cfbfb31555d50ad40600466408a2c58ab3223317dbf12b22208576eb72c";
+            provenance measured;
+            archiveFile "j.fluid.2015.12.029.xml";
+            system    "methylAcetate + ethylLactate";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylAcetate-ethylLactate-bubble-je060052p.dat";
+            doi       "10.1021/je060052p";
+            sha256    "2fc2cbd748a485059618028ee56231db2d316fac5b4fed186717236b85589564";
+            provenance measured;
+            archiveFile "je060052p.xml";
+            system    "methylAcetate + ethylLactate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.011; max 0.979; n 70; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.A_ij  1188.19068254;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.A_ji  -1934.65776997;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "dda867a5d5ba1f3a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylAcetate-ethylLactate-bubble-j.fluid.2015.12.029.dat";
+            doi       "10.1016/j.fluid.2015.12.029";
+            sha256    "8b4e8cfbfb31555d50ad40600466408a2c58ab3223317dbf12b22208576eb72c";
+            provenance measured;
+            archiveFile "j.fluid.2015.12.029.xml";
+            system    "methylAcetate + ethylLactate";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylAcetate-ethylLactate-bubble-je060052p.dat";
+            doi       "10.1021/je060052p";
+            sha256    "2fc2cbd748a485059618028ee56231db2d316fac5b4fed186717236b85589564";
+            provenance measured;
+            archiveFile "je060052p.xml";
+            system    "methylAcetate + ethylLactate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.011; max 0.979; n 70; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.A_ij  1188.16443278;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.A_ji  -1934.63501671;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "dda867a5d5ba1f3a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylAcetate-ethylLactate-bubble-j.fluid.2015.12.029.dat";
+            doi       "10.1016/j.fluid.2015.12.029";
+            sha256    "8b4e8cfbfb31555d50ad40600466408a2c58ab3223317dbf12b22208576eb72c";
+            provenance measured;
+            archiveFile "j.fluid.2015.12.029.xml";
+            system    "methylAcetate + ethylLactate";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylAcetate-ethylLactate-bubble-je060052p.dat";
+            doi       "10.1021/je060052p";
+            sha256    "2fc2cbd748a485059618028ee56231db2d316fac5b4fed186717236b85589564";
+            provenance measured;
+            archiveFile "je060052p.xml";
+            system    "methylAcetate + ethylLactate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.011; max 0.979; n 70; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.a_ij  -11.3585706612;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.a_ji  3.71222216946;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "dda867a5d5ba1f3a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylAcetate-ethylLactate-bubble-j.fluid.2015.12.029.dat";
+            doi       "10.1016/j.fluid.2015.12.029";
+            sha256    "8b4e8cfbfb31555d50ad40600466408a2c58ab3223317dbf12b22208576eb72c";
+            provenance measured;
+            archiveFile "j.fluid.2015.12.029.xml";
+            system    "methylAcetate + ethylLactate";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylAcetate-ethylLactate-bubble-je060052p.dat";
+            doi       "10.1021/je060052p";
+            sha256    "2fc2cbd748a485059618028ee56231db2d316fac5b4fed186717236b85589564";
+            provenance measured;
+            archiveFile "je060052p.xml";
+            system    "methylAcetate + ethylLactate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.011; max 0.979; n 70; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.a_ij  -11.358713637;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.a_ji  3.71236877495;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "dda867a5d5ba1f3a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylAcetate-ethylLactate-bubble-j.fluid.2015.12.029.dat";
+            doi       "10.1016/j.fluid.2015.12.029";
+            sha256    "8b4e8cfbfb31555d50ad40600466408a2c58ab3223317dbf12b22208576eb72c";
+            provenance measured;
+            archiveFile "j.fluid.2015.12.029.xml";
+            system    "methylAcetate + ethylLactate";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylAcetate-ethylLactate-bubble-je060052p.dat";
+            doi       "10.1021/je060052p";
+            sha256    "2fc2cbd748a485059618028ee56231db2d316fac5b4fed186717236b85589564";
+            provenance measured;
+            archiveFile "je060052p.xml";
+            system    "methylAcetate + ethylLactate";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.011; max 0.979; n 70; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

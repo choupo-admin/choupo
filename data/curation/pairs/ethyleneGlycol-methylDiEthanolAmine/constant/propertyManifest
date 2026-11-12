@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -37,10 +37,28 @@ propertyManifest
         "components/methylDiEthanolAmine.dat"
         {
             type          imported;
-            sha256        "a6589b36aa49310cdb02a0535585481289b1f8099ddc59f4df3d27d7a17a8b11";
-            computationalSha256 "38b43886e6cc2dd7da699d5a8dfdce6eb441e8fae987bff01c1ca8cc51e48692";
+            sha256        "d6dfe527c3886d2549f163db803657c1f142018d015a4d6d624cdc3a6afda83a";
+            computationalSha256 "be0dfcb95ebe99d71c803539e99faef1ec0bdf0310b9f4b028b496952a035e46";
             origin        "data/standards/components/methylDiEthanolAmine.dat";
-            originSha256  "40cbce50d282e7b68cffe3c715a4fbc06a62b228c0e5ede3867731f06831040c";
+            originSha256  "cfd4331ccf0a7ae72d217482b7ab109ef566a9a5422f7a14735a808126fcace3";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/ethyleneGlycol-methylDiEthanolAmine.dat"
+        {
+            type          imported;
+            sha256        "56859b1ad6add87215ea8590df4a8f1d09ae8d69f9d5a640b62580aed0b5d181";
+            computationalSha256 "d0a17b83d94912170cfc4f5d7a262da5cf1c500608cf672df1673cd43e14ab84";
+            origin        "data/standards/parameters/NRTL/ethyleneGlycol-methylDiEthanolAmine.dat";
+            originSha256  "4fa4592218d5d9ed68186d3be96a93aa3abc6cfd111a831902ae8a7788a86877";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/ethyleneGlycol-methylDiEthanolAmine.dat"
+        {
+            type          imported;
+            sha256        "7896729ce2687cd3239abe15913a9b64e7bd8e3ebacdf1f99c6cf8b3680dfc8b";
+            computationalSha256 "13f260a96ca45fbef3c14424fa98d52f71c874ca3cd93bfb0b0ecdfe1d632ac7";
+            origin        "data/standards/parameters/Wilson/ethyleneGlycol-methylDiEthanolAmine.dat";
+            originSha256  "d6ee77bae5d5a14b2ea9ee8414c0661740b95cb4e22d8f9d78b146ac898fafeb";
             release       Choupo-2608;
         }
     }

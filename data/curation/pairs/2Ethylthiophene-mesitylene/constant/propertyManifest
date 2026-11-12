@@ -1,0 +1,92 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-12";
+    importerVersion    "3";
+    records
+    {
+        "components/2Ethylthiophene.dat"
+        {
+            type          imported;
+            sha256        "f0002204675538d6d38f840b43631e94c1e31f38fc977b049a023e5181e7a80c";
+            computationalSha256 "378acdc3a54e3826de24f1cf57c247c22165db07b9804c9b808905fafe619d30";
+            origin        "data/standards/components/2Ethylthiophene.dat";
+            originSha256  "ecaa31e09bc4f6f96333770e0098fe8d80e02fb580bb6efd41420d4f71e0c638";
+            release       Choupo-2608;
+        }
+        "components/mesitylene.dat"
+        {
+            type          imported;
+            sha256        "143e72f04b07aff5c4387855ee253bf6c3af9c6cc25943cc81a119470aaaec5f";
+            computationalSha256 "7b21fd4ae50ba2e5a7814a1f5d50e63c69c4c2fc67363876560153820e8575a6";
+            origin        "data/standards/components/mesitylene.dat";
+            originSha256  "097d37ca691ade025db9807559b33daa66cc6d0d5f46de467986bdccc1c72bc1";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Ethylthiophene-mesitylene.dat"
+        {
+            type          imported;
+            sha256        "ba73d65b37e4880a294ee4c3518f5d7fa839b28495be32204a67017d8ba53707";
+            computationalSha256 "6fe24626c333efacfaf342e85dc0ce36d82d4cb581cef2caa47e947656afd0fc";
+            origin        "data/standards/parameters/NRTL/2Ethylthiophene-mesitylene.dat";
+            originSha256  "fe97fbe1ed005adf25f6f404bb8d9d72f27ed2f57fdddc54d741c72f80e2ac50";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/2Ethylthiophene-mesitylene.dat"
+        {
+            type          imported;
+            sha256        "a8abc7892dea6ade060ec8bc8c464ab75b64579b70d91893a99c925dd8a7165d";
+            computationalSha256 "fa10485fe7d1d202f8dce9e14eb5ab0ab61a7272e67473f8037f9a8ec21d04ce";
+            origin        "data/standards/parameters/UNIQUAC/2Ethylthiophene-mesitylene.dat";
+            originSha256  "33e3a0a1e34349b600c5f64ca01c9e7ebf64dabeeb8f20bcfac64bf2700e1519";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Ethylthiophene-mesitylene.dat"
+        {
+            type          imported;
+            sha256        "430048be5145d0bbd15e5a24e42653e0a39be531613a79849b208107016b5c18";
+            computationalSha256 "f2d5d387359844203c007ee8d195af199098c6dcf9d5c8639aa392adfd9d3975";
+            origin        "data/standards/parameters/Wilson/2Ethylthiophene-mesitylene.dat";
+            originSha256  "b1bff35345772aa052a8e657100b7d01f3579c400504c2833ae1ed5a98e58ec6";
+            release       Choupo-2608;
+        }
+    }
+}

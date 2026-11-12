@@ -88,19 +88,21 @@
   not argued). Beside fit_nrtl's max |dT| 1.904 K (warning) on the same
   kept points. fit_uniquac: a_ij = 457.8, a_ji = -203.0 K over 20 kept
   points: max |dT| 2.007 K, mean 0.833 K, graded severe -> accepted;
-  fit_uniquac_start2 lands on the same pair (457.8, -203.0). NOT PROMOTED
-  (max |dT| 2.007 K over the 20 kept points, one liquid across the
-  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/. fit_wilson: A_ij = -1169.1, A_ji = 9629.3 J/mol over 20
-  kept points: max |dT| 2.152 K, mean 0.952 K, graded severe -> accepted;
-  fit_wilson_start2 lands on the same pair (-1169.1, 9629.3). NOT
-  PROMOTED (max |dT| 2.152 K over the 20 kept points, one liquid across
-  the validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/.
+  fit_uniquac_start2 lands on the same pair (457.8, -203.0). PROMOTED on
+  2026-11-12 into
+  data/standards/parameters/UNIQUAC/cyclohexane-cyclohexanol.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.007 K over the 20 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.0070 K against ideal
+  14.1075 K. fit_wilson: A_ij = -1169.1, A_ji = 9629.3 J/mol over 20 kept
+  points: max |dT| 2.152 K, mean 0.952 K, graded severe -> accepted;
+  fit_wilson_start2 lands on the same pair (-1169.1, 9629.3). PROMOTED on
+  2026-11-12 into
+  data/standards/parameters/Wilson/cyclohexane-cyclohexanol.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.152 K over the 20 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.1519 K against ideal
+  14.1075 K.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

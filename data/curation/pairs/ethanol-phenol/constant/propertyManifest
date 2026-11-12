@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -37,10 +37,28 @@ propertyManifest
         "components/phenol.dat"
         {
             type          imported;
-            sha256        "26137570566e824d19c324ef95ab30bff8f65b36ce4cba745eef6573a62c1bf2";
-            computationalSha256 "0a14c5739f42f3c0769c88c805d3664ea6da2697f4fab089f70604795e226ef3";
+            sha256        "5eaf00fb9ee6de2a5bfca036bbf3a18bf176755e42c73593971f70bde9eabb0d";
+            computationalSha256 "526f4078a3d8fdd544592a5fc7a46e310de3a7755ed92aad056b5611eed0ff15";
             origin        "data/standards/components/phenol.dat";
-            originSha256  "8f4616184896b127d6389a88e4b43ec4d8b35bb10e87d282844794627ae408af";
+            originSha256  "2656ce36384018775c934d583482107c9b38a323fc0c64c8f164e16922d3cc2e";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/ethanol-phenol.dat"
+        {
+            type          imported;
+            sha256        "99b23d56b37c27d81717044b9796d64d1c618ec2ea0b55cb2baa132e1b226dbe";
+            computationalSha256 "05ff960fb9aef42c4f734073e29e8b7170019c8c250ba4e701a10141fdbcd523";
+            origin        "data/standards/parameters/NRTL/ethanol-phenol.dat";
+            originSha256  "f58a55a0d807e67730077d7e4d54ec3c153d414acb426d3519de778c7c66e7fd";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/ethanol-phenol.dat"
+        {
+            type          imported;
+            sha256        "bfc2dbfb916fd941b85b3462cf106586923ee63403b466c209a42281fcceae91";
+            computationalSha256 "11417c0862ebd2bc618bb82e473d1eca724156fcae197a9a6838b436e429f52b";
+            origin        "data/standards/parameters/Wilson/ethanol-phenol.dat";
+            originSha256  "60aa64b1bdffec031fa29eddb1cc4abecfae5003bc7e233be1766eef1de16845";
             release       Choupo-2608;
         }
     }

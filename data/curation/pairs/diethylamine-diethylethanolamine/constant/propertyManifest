@@ -21,17 +21,17 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/diethylamine.dat"
         {
             type          imported;
-            sha256        "08955353d4806334e3429bab33cb12595a4359d5a1a664be0d87873ee4742a11";
-            computationalSha256 "9a535f155784e03bf0af7ceacaaa61668a2722052426beda07ebc02a63678d14";
+            sha256        "ee2f6758e89887a4498931ad842e84a723fe8591378c944014eec36dc798c811";
+            computationalSha256 "d3cf2898331aa715274ff76d8e9f744f9d6419c8100d187560d57a81b8eb7927";
             origin        "data/standards/components/diethylamine.dat";
-            originSha256  "1e4bfc81adbcef79abe7c8adf10174208eb7df648322e13167dadeee40732ee9";
+            originSha256  "c44c08fd7b1ee62d36450766dbed5c95c395038169a0a85ee7f06c14bb76434b";
             release       Choupo-2608;
         }
         "components/diethylethanolamine.dat"
@@ -41,6 +41,24 @@ propertyManifest
             computationalSha256 "cbf8ff0ae3799d9e546a45a065c515daf813e2718957993268a0dd092e51aea4";
             origin        "data/standards/components/diethylethanolamine.dat";
             originSha256  "30a3ad78d44922ebc7406c97f7bcf8837a28bc83432a9ad015b81c7c7c192eb8";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/diethylamine-diethylethanolamine.dat"
+        {
+            type          imported;
+            sha256        "dce21b9539f89b7e6430f7880e83bf08062b5562304bf65bbb8177172879adf7";
+            computationalSha256 "207c709e46e3a769d8a1cdece60734079cd52dc5bf49f25c0017dcfceaa3e5eb";
+            origin        "data/standards/parameters/NRTL/diethylamine-diethylethanolamine.dat";
+            originSha256  "cf304ae38028b11e28b61380588bd5bcfd307a818e4bde566869ddaba52325c4";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/diethylamine-diethylethanolamine.dat"
+        {
+            type          imported;
+            sha256        "ca5716e62c8854d589dc2b0db7f51ba0659dfda178560c04f9d41875311033d1";
+            computationalSha256 "f1ae182365f5618e7d382579c84fd5e520d9c9aa0b987d7b237b90f8379ff0d3";
+            origin        "data/standards/parameters/Wilson/diethylamine-diethylethanolamine.dat";
+            originSha256  "921da3bfa67a6658af22b7aa7ef52b0ffa1b33ef34b17650d3d434d000058b33";
             release       Choupo-2608;
         }
     }

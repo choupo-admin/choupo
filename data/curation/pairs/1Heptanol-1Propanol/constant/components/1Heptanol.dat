@@ -164,3 +164,30 @@ provenance
         notes         "computed from ChemSep Tc/Pc/omega";
     }
 }
+
+cosmo
+{
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file 1-HEPTANOL.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey BBMCTIGTTCKYKF-UHFFFAOYSA-N (full match); formula C7H16O; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        185.915364;   // sum of the profile below; GAMESS prints 185.92
+        volume      178.02;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.049804     0.472216     1.551355     1.067056     0.302863
+               0.684188     0.802419     1.448870     0.501237     0.345314     0.966480
+               0.631383     0.590448     1.894850     7.329565    20.387157    33.757443
+              33.708533    21.767194    14.601448    16.408166    10.154649     0.978195
+               1.110048     1.479303     0.679139     0.342662     0.247423     0.818317
+               0.930500     0.773101     1.346520     2.519165     0.526823     0.552649
+               1.878749     1.769829     0.540303     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
+    }
+}

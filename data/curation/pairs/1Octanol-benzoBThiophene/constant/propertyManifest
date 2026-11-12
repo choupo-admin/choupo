@@ -1,0 +1,92 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/1Octanol.dat"
+        {
+            type          imported;
+            sha256        "fa835e31b5b0064ba5ed33873ae1509f037865096cb741da6f977852c727af3d";
+            computationalSha256 "5f8600bdf5f171e3031ff09c832b8eb01678cd9da00e5bdf672212843fbf434f";
+            origin        "data/standards/components/1Octanol.dat";
+            originSha256  "2b35583b2cbfef8150efa756ec6dfaa9283a457d8deb7442a9a6c236444a46e8";
+            release       Choupo-2608;
+        }
+        "components/benzoBThiophene.dat"
+        {
+            type          imported;
+            sha256        "c2dd661f6e7f00842b95fbd6ec65c3491c11386ab16dde7c7801756a33259c9d";
+            computationalSha256 "34f57109b8db02f67b6aa22a6839775aeebcf62cbece0caa56d4ec432585fb42";
+            origin        "data/standards/components/benzoBThiophene.dat";
+            originSha256  "73481b47c54e42ea571ff75dd69e11f8d4542749243464b85bf5bac29fd3128c";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1Octanol-benzoBThiophene.dat"
+        {
+            type          imported;
+            sha256        "5ae5549d7f3cf06baa7911e1cf921b51f57d2b55fbd600545dd66583db08d1a8";
+            computationalSha256 "61307224b806734f2742f748846606eef620db52e4de3e469c9065632eb9934e";
+            origin        "data/standards/parameters/NRTL/1Octanol-benzoBThiophene.dat";
+            originSha256  "e8a46e8e78a6661b5b992df86aa713dee99f1a27ee63df0788567c12ce613cb8";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/1Octanol-benzoBThiophene.dat"
+        {
+            type          imported;
+            sha256        "651cbb07402fdfe0968c3c82d7ebd336ae396a4c4ff188a70ea17ccc03d5181f";
+            computationalSha256 "e345676564d394e12b345c1a9a248d97849f078dac3561d2dc5c9744156e22f2";
+            origin        "data/standards/parameters/UNIQUAC/1Octanol-benzoBThiophene.dat";
+            originSha256  "c5174f7d5142e7dff42a094231bc0db2ad1d07526b739d82fa9105220f59b1cf";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Octanol-benzoBThiophene.dat"
+        {
+            type          imported;
+            sha256        "8d4fa537082518778431f788b310ccd6535bc4e9c6cbc2967b9e4742b3d7ca1e";
+            computationalSha256 "c8400fe22af63be59f8d88acb5029b010e8047f4d40329017a90c8441fd3931f";
+            origin        "data/standards/parameters/Wilson/1Octanol-benzoBThiophene.dat";
+            originSha256  "a915a6d1c4f7489ddda1afba96f78617e1d937d4e49656e42833e56019250991";
+            release       Choupo-2608;
+        }
+    }
+}

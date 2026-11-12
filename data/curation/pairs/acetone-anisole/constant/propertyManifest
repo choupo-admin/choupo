@@ -21,26 +21,26 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/acetone.dat"
         {
             type          imported;
-            sha256        "484d860fa5b649ff773be3ed0fe422eab9957c8c665dfae88f9b50754f45fa18";
-            computationalSha256 "cc35b7672e63775056198ac55648e04bb92e5eb53eed1fc49436c87b1590072a";
+            sha256        "3406a1c14e08831da61ec91539024e56d6d827f264176613893b1cc8fa56c967";
+            computationalSha256 "1d40a3796dc0aab8d7216574c9f1c1e63a545faa1c67bf88893f3eac709812b6";
             origin        "data/standards/components/acetone.dat";
-            originSha256  "dec7ac911299d04f8b3ec284051dc0898d10087426317982647c16dda6c292bb";
+            originSha256  "29b33932b741e011b332c4d85207bf939f34fc51b4e0550d652d26e75fb9b27a";
             release       Choupo-2608;
         }
         "components/anisole.dat"
         {
             type          imported;
-            sha256        "409f3f1c28e88cf65e16ddd58c835d8ce346a7d7e1511438b2cfcd3f0badd48f";
-            computationalSha256 "aaa9917f4ffc56d9b1e0cc7324988b535e09c74124611ef83377f1305b0c1725";
+            sha256        "6c0fedbc27eba67c1d0c1674344181d9a7e0d0a533bef59d338c177fd4a0802b";
+            computationalSha256 "8afd1537f102d57aa6d6bcbf7d31aa24965e256f5b0d080ac2952b00e1569278";
             origin        "data/standards/components/anisole.dat";
-            originSha256  "1eb4544ae67d18f6f2118ebbf32d59c7685e4b349d1bfd634e8b53d218d3e654";
+            originSha256  "de5a2c207bef3c9b3ed846b517be897d3d620c189e3f0e7a44a4ad6e4b637675";
             release       Choupo-2608;
         }
         "parameters/NRTL/acetone-anisole.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "11effb4c600fb80463fc052c4b0464f3a5f1b8d3edf29eb80db2c7493ecca8ae";
             origin        "data/standards/parameters/NRTL/acetone-anisole.dat";
             originSha256  "5a0094d82e8e4bedf1025581e2ae9f3f596b95b68f52a45baec1d20335864afc";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/acetone-anisole.dat"
+        {
+            type          imported;
+            sha256        "4e24af8d91724e3f40781ea99d9256c1b2956c8bced7c2a08a4f1671b4deb8fa";
+            computationalSha256 "e1cb9391eb834a14694d917a163235f72f9a47697feaab4ea1bfb0bebe693b6b";
+            origin        "data/standards/parameters/Wilson/acetone-anisole.dat";
+            originSha256  "cb3bce0ea1bd352bfb2218928df30173d5a251943275fb897dadf80e94f12dd4";
             release       Choupo-2608;
         }
     }

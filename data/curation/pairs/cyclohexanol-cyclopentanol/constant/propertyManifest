@@ -1,0 +1,92 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-12";
+    importerVersion    "3";
+    records
+    {
+        "components/cyclohexanol.dat"
+        {
+            type          imported;
+            sha256        "38bd71b40272f5dec80d98863f4a9901c90c765ffecd34ebb849b7ce211613e5";
+            computationalSha256 "3a6fd36c99256c8674f3f9a578087f84195617c361893ea448b97ba2120d8c4b";
+            origin        "data/standards/components/cyclohexanol.dat";
+            originSha256  "93182f8aa1fb320bdad757d3cff4ec094717c8f4b7672d5b1ed295554480eaa6";
+            release       Choupo-2608;
+        }
+        "components/cyclopentanol.dat"
+        {
+            type          imported;
+            sha256        "2c1ddf8029f532c08824670bcc0d378354b7042570324f941f4cc23367c3ef44";
+            computationalSha256 "671de0de33d7186e30ad089e22b769dcdfcea1d7cb7aeeadd7d9e352f2d868a4";
+            origin        "data/standards/components/cyclopentanol.dat";
+            originSha256  "c5bd976682cebcc47c13582157e7b055e4f1992c53aaf2acb9102944b4af08db";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/cyclohexanol-cyclopentanol.dat"
+        {
+            type          imported;
+            sha256        "43cea083527b01524373913376e58a8a227edf4195b0bd6ed95a563f2b20a718";
+            computationalSha256 "82e9aa684c9ab8fd8d40b67f1c2e200941a709640aceb40fdf28b39bd666d288";
+            origin        "data/standards/parameters/NRTL/cyclohexanol-cyclopentanol.dat";
+            originSha256  "6bea0a09cf839517870346beae1682c12e19ba8b17464ba816ad7c2447a864c5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/cyclohexanol-cyclopentanol.dat"
+        {
+            type          imported;
+            sha256        "1c57ccc8d8be20142eff291ce92aaabffff18b4c4ff7903304b335ce3df35a4e";
+            computationalSha256 "58da6a1f74c7bf0683b7272b1c64204e21630b2741973f0b24b367020ea16d10";
+            origin        "data/standards/parameters/UNIQUAC/cyclohexanol-cyclopentanol.dat";
+            originSha256  "abd05c7ec6c3817c1aebd3c91e24acbd9a4ae7c1ea6b415d2f70b179353d96f7";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/cyclohexanol-cyclopentanol.dat"
+        {
+            type          imported;
+            sha256        "e760ccebac57af93e2a14ebf4820421a5b2db3dc2982b0c6a6dfdde7d4da4560";
+            computationalSha256 "fe73818f54b108fb1c393b720cfb4c0947d71c212a2b9d16a71db28f19bc7579";
+            origin        "data/standards/parameters/Wilson/cyclohexanol-cyclopentanol.dat";
+            originSha256  "e25895c55d256b57fba259c6828b3549480f9be29bd91441750dea207eeb4fe9";
+            release       Choupo-2608;
+        }
+    }
+}

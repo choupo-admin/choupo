@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -37,19 +37,28 @@ propertyManifest
         "components/mXylene.dat"
         {
             type          imported;
-            sha256        "c24a6c9ac4d388af9f8c2bf739601e19ef9c8d71b2be2683e845e2bbe02d3342";
-            computationalSha256 "6be7c972c0aa573b6dac04f2ee3b608577af2926c9509b2580627a2d55915b1b";
+            sha256        "4c52078dcdfe69e76efba61b0e9b578586bf8416c66d47658eefe95a84b708e8";
+            computationalSha256 "e7a7d7ae417ca1c5504410c7f8c54f1ac66af95689e1354fbe1c97de912849f7";
             origin        "data/standards/components/mXylene.dat";
-            originSha256  "4d3c5a24e214e3030771078a8aa4d959e837268baf8b491e8a43ed61f0d00e90";
+            originSha256  "021fa9765d1fa336a59638eb082153708b4efc4bc5560086ff85c0ad7b0dc581";
             release       Choupo-2608;
         }
         "components/methylFormate.dat"
         {
             type          imported;
-            sha256        "c5e9cd0cf30f8664590c7e8066909f2f9c1438139a86b0c36a98fbe3be6f4a96";
-            computationalSha256 "5068200af02eb42f56750b96df43f6d46ec552e1872684b3291d5c4c84093efa";
+            sha256        "3e93d486d0ecaf1ee3ee9656ab4c356dd30236bbe48168a9cca15c6a83503c6a";
+            computationalSha256 "39f0df16bb4434011fdeaf5099c381c79a4bbdb21d66d83247ce613d53a94c1c";
             origin        "data/standards/components/methylFormate.dat";
-            originSha256  "1750df760cd7fc5d6d966f4c19c824f6ad0ec93c9e312ba3e83fd13ca413e7ff";
+            originSha256  "ff423e3a2b7d22ba31e75a8108a22c7d3d2c790328006f59f0f01f5b4d5be752";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/mXylene-methylFormate.dat"
+        {
+            type          imported;
+            sha256        "7eb718d12ac49c67aef024e791e54af0cad6f6fd264575c4f03c3dd062056406";
+            computationalSha256 "042feccef2b27018e77460b5073b837d6945a99338454102b6f97b7b2b8e420f";
+            origin        "data/standards/parameters/Wilson/mXylene-methylFormate.dat";
+            originSha256  "4acfb3a9a9f08ecea17a6b7aaad4adb96c3437cee8944c65db83a8227fbc1054";
             release       Choupo-2608;
         }
     }

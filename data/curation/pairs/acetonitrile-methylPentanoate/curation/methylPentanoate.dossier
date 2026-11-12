@@ -1,0 +1,209 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      methylPentanoate;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-acetonitrile.b_ij  -231.071555725;
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-acetonitrile.b_ji  622.315410043;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "487d9fa467f17993";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylPentanoate-acetonitrile-bubble-je060001s.dat";
+            doi       "10.1021/je060001s";
+            sha256    "b1d7aa9818165e7df99e66d53633ba79305aa612d980b0036377825344db9904";
+            provenance measured;
+            archiveFile "je060001s.xml";
+            system    "methylPentanoate + acetonitrile";
+            pressure  "93320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0166; max 0.9725; n 24; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-acetonitrile.b_ij  -231.071555225;
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-acetonitrile.b_ji  622.315408806;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "487d9fa467f17993";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylPentanoate-acetonitrile-bubble-je060001s.dat";
+            doi       "10.1021/je060001s";
+            sha256    "b1d7aa9818165e7df99e66d53633ba79305aa612d980b0036377825344db9904";
+            provenance measured;
+            archiveFile "je060001s.xml";
+            system    "methylPentanoate + acetonitrile";
+            pressure  "93320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0166; max 0.9725; n 24; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-acetonitrile.A_ij  1093.3835239;
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-acetonitrile.A_ji  1931.90630588;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "487d9fa467f17993";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylPentanoate-acetonitrile-bubble-je060001s.dat";
+            doi       "10.1021/je060001s";
+            sha256    "b1d7aa9818165e7df99e66d53633ba79305aa612d980b0036377825344db9904";
+            provenance measured;
+            archiveFile "je060001s.xml";
+            system    "methylPentanoate + acetonitrile";
+            pressure  "93320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0166; max 0.9725; n 24; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-acetonitrile.A_ij  1093.38357663;
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-acetonitrile.A_ji  1931.90628781;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "487d9fa467f17993";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylPentanoate-acetonitrile-bubble-je060001s.dat";
+            doi       "10.1021/je060001s";
+            sha256    "b1d7aa9818165e7df99e66d53633ba79305aa612d980b0036377825344db9904";
+            provenance measured;
+            archiveFile "je060001s.xml";
+            system    "methylPentanoate + acetonitrile";
+            pressure  "93320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0166; max 0.9725; n 24; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

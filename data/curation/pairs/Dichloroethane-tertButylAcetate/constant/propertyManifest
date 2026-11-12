@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/Dichloroethane.dat"
+        {
+            type          imported;
+            sha256        "94c5aac10347cd06b9fd90380be605c4c7193f95dac011343e03fab50ce81d0e";
+            computationalSha256 "ba02e8b3f6499c5571a7fb5ab9ea0c560ef1db3dc604186fa6108e61ca7ff2f5";
+            origin        "data/standards/components/Dichloroethane.dat";
+            originSha256  "8b34d3129f4dd6a2d2d127d3f010d70bdcef1c259b056f89c92ce4b889b8786e";
+            release       Choupo-2608;
+        }
+        "components/tertButylAcetate.dat"
+        {
+            type          imported;
+            sha256        "a792dcd113133313caf9a21da1541a999ac5329492fefe642dc07335f788eb2f";
+            computationalSha256 "b030c46222f31439cbe4aa4c88da815302d75a8b328af83991ee4a7948a10ce5";
+            origin        "data/standards/components/tertButylAcetate.dat";
+            originSha256  "f97c77cfda5f49ef0cf089ed36280919ba78d2f91ac2f17e7c39d8d794ac3cd8";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/Dichloroethane-tertButylAcetate.dat"
+        {
+            type          imported;
+            sha256        "f812cf667a364bfabd4789712aec9a1f3eaf298a64d4a5ff5780dda8bc86c939";
+            computationalSha256 "be2e4cd8b2dbb8f56b9f779b10b3379f76f41449e8c0e8069f08e50258273bf6";
+            origin        "data/standards/parameters/NRTL/Dichloroethane-tertButylAcetate.dat";
+            originSha256  "b5893c03ad5ddbbf486cf513e8f816bba37aaea53733120a160df5a5f98bd580";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/Dichloroethane-tertButylAcetate.dat"
+        {
+            type          imported;
+            sha256        "613833898db79c7575ba125eb45a6d4eeff3a1e32cb6327e4f83898005b28a3b";
+            computationalSha256 "f22f6ac1084bec16430ed480e94e92e95300022a46442a07e7204364614f274a";
+            origin        "data/standards/parameters/Wilson/Dichloroethane-tertButylAcetate.dat";
+            originSha256  "d307d5a32d7645b07bc5373e5a69512027d18e7f3f22b7a6f32d8a24160e5e8a";
+            release       Choupo-2608;
+        }
+    }
+}

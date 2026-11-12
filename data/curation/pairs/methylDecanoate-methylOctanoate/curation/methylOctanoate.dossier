@@ -1,0 +1,295 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      methylOctanoate;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylOctanoate-methylDecanoate.b_ij  -513.036101165;
+        equilibrium.liquid.activityModel.binaryParameters.methylOctanoate-methylDecanoate.b_ji  935.820773169;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e2bc0f41aab2c249";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylOctanoate-methylDecanoate-bubble-j.jct.2016.11.024.dat";
+            doi       "10.1016/j.jct.2016.11.024";
+            sha256    "cde8e82cf6c2907b30c7d6be39b4cdd1c9928e2d1a0c0294bc61ae78af66ce5a";
+            provenance measured;
+            archiveFile "j.jct.2016.11.024.xml";
+            system    "methylOctanoate + methylDecanoate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0595; max 0.8785; n 33; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylOctanoate-methylDecanoate.b_ij  268.981580526;
+        equilibrium.liquid.activityModel.binaryParameters.methylOctanoate-methylDecanoate.b_ji  -244.570470315;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e2bc0f41aab2c249";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylOctanoate-methylDecanoate-bubble-j.jct.2016.11.024.dat";
+            doi       "10.1016/j.jct.2016.11.024";
+            sha256    "cde8e82cf6c2907b30c7d6be39b4cdd1c9928e2d1a0c0294bc61ae78af66ce5a";
+            provenance measured;
+            archiveFile "j.jct.2016.11.024.xml";
+            system    "methylOctanoate + methylDecanoate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0595; max 0.8785; n 33; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylOctanoate-methylDecanoate.A_ij  9637.27368634;
+        equilibrium.liquid.activityModel.binaryParameters.methylOctanoate-methylDecanoate.A_ji  -3920.26496584;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e2bc0f41aab2c249";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylOctanoate-methylDecanoate-bubble-j.jct.2016.11.024.dat";
+            doi       "10.1016/j.jct.2016.11.024";
+            sha256    "cde8e82cf6c2907b30c7d6be39b4cdd1c9928e2d1a0c0294bc61ae78af66ce5a";
+            provenance measured;
+            archiveFile "j.jct.2016.11.024.xml";
+            system    "methylOctanoate + methylDecanoate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0595; max 0.8785; n 33; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylOctanoate-methylDecanoate.A_ij  9637.27404864;
+        equilibrium.liquid.activityModel.binaryParameters.methylOctanoate-methylDecanoate.A_ji  -3920.26498441;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e2bc0f41aab2c249";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylOctanoate-methylDecanoate-bubble-j.jct.2016.11.024.dat";
+            doi       "10.1016/j.jct.2016.11.024";
+            sha256    "cde8e82cf6c2907b30c7d6be39b4cdd1c9928e2d1a0c0294bc61ae78af66ce5a";
+            provenance measured;
+            archiveFile "j.jct.2016.11.024.xml";
+            system    "methylOctanoate + methylDecanoate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0595; max 0.8785; n 33; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylOctanoate-methylDecanoate.a_ij  -250.887664062;
+        equilibrium.liquid.activityModel.binaryParameters.methylOctanoate-methylDecanoate.a_ji  381.405641415;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e2bc0f41aab2c249";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylOctanoate-methylDecanoate-bubble-j.jct.2016.11.024.dat";
+            doi       "10.1016/j.jct.2016.11.024";
+            sha256    "cde8e82cf6c2907b30c7d6be39b4cdd1c9928e2d1a0c0294bc61ae78af66ce5a";
+            provenance measured;
+            archiveFile "j.jct.2016.11.024.xml";
+            system    "methylOctanoate + methylDecanoate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0595; max 0.8785; n 33; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylOctanoate-methylDecanoate.a_ij  161.410995297;
+        equilibrium.liquid.activityModel.binaryParameters.methylOctanoate-methylDecanoate.a_ji  -136.762421828;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "e2bc0f41aab2c249";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylOctanoate-methylDecanoate-bubble-j.jct.2016.11.024.dat";
+            doi       "10.1016/j.jct.2016.11.024";
+            sha256    "cde8e82cf6c2907b30c7d6be39b4cdd1c9928e2d1a0c0294bc61ae78af66ce5a";
+            provenance measured;
+            archiveFile "j.jct.2016.11.024.xml";
+            system    "methylOctanoate + methylDecanoate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0595; max 0.8785; n 33; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

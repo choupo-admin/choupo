@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/13Dioxolane.dat"
+        {
+            type          imported;
+            sha256        "02ccd8e072602eda6d670bc38dbaf020c22fa09e1c6837ae3b6b89b93d35ecd9";
+            computationalSha256 "05c0fe809074bcc49c42f1f12d95cfe917dd7825a3903eb632063322d6b72793";
+            origin        "data/standards/components/13Dioxolane.dat";
+            originSha256  "024cf5ef6ebf36cd8db1791dc64ddf22c4d78393285d946b28a3fae1a38835fa";
+            release       Choupo-2608;
+        }
+        "components/aniline.dat"
+        {
+            type          imported;
+            sha256        "7c3adbc973035d899825a8cea68a8552a7790ee3e58dcdffd12b4d592a4612bd";
+            computationalSha256 "0a7fc469db9d1387baa178e9db6e956886278acf98b3d645bb97c5d5b8d00d7f";
+            origin        "data/standards/components/aniline.dat";
+            originSha256  "ce3452f855a3f5f4ae6669d60b85521c229f9226ea80530004dbe0861fb92511";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/13Dioxolane-aniline.dat"
+        {
+            type          imported;
+            sha256        "b7917f66d47848db3d1528f7eb2a4267bcb022ce8b882aaedbe0bd35b11470f2";
+            computationalSha256 "62be00ce6ee66de9bd35279cab027671ffc3795b18b03aa8a7fa2e1d1ee0cd98";
+            origin        "data/standards/parameters/NRTL/13Dioxolane-aniline.dat";
+            originSha256  "ee23bc4e3c9efc0ce280e7ac0ac995c0e7a8dfe3428d5b5a01febb16469821fe";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/13Dioxolane-aniline.dat"
+        {
+            type          imported;
+            sha256        "d689c8ee88d5c838e9c1b88c5aedc0548c271b48eabea0b3f16b2d552636c226";
+            computationalSha256 "c64956d50ecaac15db503abe164526811ccc7fa57b987b689d97a853fe7a9453";
+            origin        "data/standards/parameters/Wilson/13Dioxolane-aniline.dat";
+            originSha256  "04f20769f1f88d16d0fe899ecd9aaec2a0d1dd5f8c84e8cdfa01dcfc48f58794";
+            release       Choupo-2608;
+        }
+    }
+}

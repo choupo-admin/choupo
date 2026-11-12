@@ -1,0 +1,301 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      1Decanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.b_ij  185.533616406;
+        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.b_ji  276.185610611;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f69036ce4d52f65a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Decanol-nTetradecane-bubble-acs.jced.8b00680.dat";
+            doi       "10.1021/acs.jced.8b00680";
+            sha256    "24e5d0a547f0ece199cef88e38a33059d446a79066ec16e532dde61242113b94";
+            provenance measured;
+            archiveFile "acs.jced.8b00680.xml";
+            system    "1Decanol + nTetradecane";
+            pressure  "40000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.011; max 0.994; n 44; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.b_ij  185.533624454;
+        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.b_ji  276.185601121;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f69036ce4d52f65a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Decanol-nTetradecane-bubble-acs.jced.8b00680.dat";
+            doi       "10.1021/acs.jced.8b00680";
+            sha256    "24e5d0a547f0ece199cef88e38a33059d446a79066ec16e532dde61242113b94";
+            provenance measured;
+            archiveFile "acs.jced.8b00680.xml";
+            system    "1Decanol + nTetradecane";
+            pressure  "40000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.011; max 0.994; n 44; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.A_ij  4264.56259362;
+        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.A_ji  25.6960391205;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f69036ce4d52f65a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Decanol-nTetradecane-bubble-acs.jced.8b00680.dat";
+            doi       "10.1021/acs.jced.8b00680";
+            sha256    "24e5d0a547f0ece199cef88e38a33059d446a79066ec16e532dde61242113b94";
+            provenance measured;
+            archiveFile "acs.jced.8b00680.xml";
+            system    "1Decanol + nTetradecane";
+            pressure  "40000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.011; max 0.994; n 44; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.A_ij  4264.60772477;
+        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.A_ji  25.6669744383;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f69036ce4d52f65a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Decanol-nTetradecane-bubble-acs.jced.8b00680.dat";
+            doi       "10.1021/acs.jced.8b00680";
+            sha256    "24e5d0a547f0ece199cef88e38a33059d446a79066ec16e532dde61242113b94";
+            provenance measured;
+            archiveFile "acs.jced.8b00680.xml";
+            system    "1Decanol + nTetradecane";
+            pressure  "40000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.011; max 0.994; n 44; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.a_ij  -69.2611341293;
+        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.a_ji  136.946701573;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f69036ce4d52f65a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Decanol-nTetradecane-bubble-acs.jced.8b00680.dat";
+            doi       "10.1021/acs.jced.8b00680";
+            sha256    "24e5d0a547f0ece199cef88e38a33059d446a79066ec16e532dde61242113b94";
+            provenance measured;
+            archiveFile "acs.jced.8b00680.xml";
+            system    "1Decanol + nTetradecane";
+            pressure  "40000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.011; max 0.994; n 44; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.a_ij  -69.2611400255;
+        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.a_ji  136.946709095;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "f69036ce4d52f65a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Decanol-nTetradecane-bubble-acs.jced.8b00680.dat";
+            doi       "10.1021/acs.jced.8b00680";
+            sha256    "24e5d0a547f0ece199cef88e38a33059d446a79066ec16e532dde61242113b94";
+            provenance measured;
+            archiveFile "acs.jced.8b00680.xml";
+            system    "1Decanol + nTetradecane";
+            pressure  "40000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.011; max 0.994; n 44; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

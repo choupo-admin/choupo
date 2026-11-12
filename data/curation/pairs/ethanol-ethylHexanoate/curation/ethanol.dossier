@@ -1,0 +1,295 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      ethanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylHexanoate.b_ij  954.212759482;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylHexanoate.b_ji  -398.062218739;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c76086b021071296";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-ethylHexanoate-bubble-je200868y.dat";
+            doi       "10.1021/je200868y";
+            sha256    "c8eb85482568bab9e54c9789e8acb353dcc7cb3c8820474c24b5f0bd6528dab4";
+            provenance measured;
+            archiveFile "je200868y.xml";
+            system    "ethanol + ethylHexanoate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0501; max 0.9; n 54; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylHexanoate.b_ij  954.212758987;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylHexanoate.b_ji  -398.062218745;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c76086b021071296";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-ethylHexanoate-bubble-je200868y.dat";
+            doi       "10.1021/je200868y";
+            sha256    "c8eb85482568bab9e54c9789e8acb353dcc7cb3c8820474c24b5f0bd6528dab4";
+            provenance measured;
+            archiveFile "je200868y.xml";
+            system    "ethanol + ethylHexanoate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0501; max 0.9; n 54; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylHexanoate.A_ij  1139.10455519;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylHexanoate.A_ji  3359.58086728;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c76086b021071296";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-ethylHexanoate-bubble-je200868y.dat";
+            doi       "10.1021/je200868y";
+            sha256    "c8eb85482568bab9e54c9789e8acb353dcc7cb3c8820474c24b5f0bd6528dab4";
+            provenance measured;
+            archiveFile "je200868y.xml";
+            system    "ethanol + ethylHexanoate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0501; max 0.9; n 54; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylHexanoate.A_ij  1139.10456133;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylHexanoate.A_ji  3359.5808251;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c76086b021071296";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-ethylHexanoate-bubble-je200868y.dat";
+            doi       "10.1021/je200868y";
+            sha256    "c8eb85482568bab9e54c9789e8acb353dcc7cb3c8820474c24b5f0bd6528dab4";
+            provenance measured;
+            archiveFile "je200868y.xml";
+            system    "ethanol + ethylHexanoate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0501; max 0.9; n 54; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylHexanoate.a_ij  78.1890317488;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylHexanoate.a_ji  41.3211340604;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c76086b021071296";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-ethylHexanoate-bubble-je200868y.dat";
+            doi       "10.1021/je200868y";
+            sha256    "c8eb85482568bab9e54c9789e8acb353dcc7cb3c8820474c24b5f0bd6528dab4";
+            provenance measured;
+            archiveFile "je200868y.xml";
+            system    "ethanol + ethylHexanoate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0501; max 0.9; n 54; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylHexanoate.a_ij  78.1890315373;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylHexanoate.a_ji  41.3211342666;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c76086b021071296";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-ethylHexanoate-bubble-je200868y.dat";
+            doi       "10.1021/je200868y";
+            sha256    "c8eb85482568bab9e54c9789e8acb353dcc7cb3c8820474c24b5f0bd6528dab4";
+            provenance measured;
+            archiveFile "je200868y.xml";
+            system    "ethanol + ethylHexanoate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0501; max 0.9; n 54; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

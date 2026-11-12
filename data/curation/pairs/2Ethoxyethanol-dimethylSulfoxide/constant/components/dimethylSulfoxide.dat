@@ -1,0 +1,231 @@
+// [imported] origin "data/standards/components/dimethylSulfoxide.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dimethylSulfoxide  (CAS 67-68-5)
+  PROPOSAL TIER -- UNVERIFIED. Imported from ChemSep v8.3
+  pure-component data under Artistic License 2.0.
+  Critical constants are source data.  Psat is an Antoine FITTED by
+  bin/choupo-curate vp to measured vapour pressures (DEV.md 4c C281;
+  provenance.vaporPressure): reviewStatus autoPromoted, NOT human-reviewed.
+\*---------------------------------------------------------------------------*/
+
+name        dimethylSulfoxide;
+CAS         67-68-5;
+formula     C2H6OS;      // counted from the ChemSep v8.3 structure formula "CH3SOCH3" (derived 2026-09-03; reproduces MW to 0.006 %)
+reviewStatus interim;
+MW          78.13344;      // kg/kmol [origin=ChemSep v8.3]
+Tc          729;      // K [origin=ChemSep v8.3]
+Pc          56.5;      // bar; source Pa / 1e5 [origin=ChemSep v8.3]
+omega       0.280551;      // [-] [origin=ChemSep v8.3]
+Tb          462.15;      // K [origin=ChemSep v8.3]
+
+standardThermochemistry
+{
+    dHf_298   -209200;        // J/mol   [ChemSep v8.3, ideal gas]
+    s_298     306.3;        // J/(mol.K)  third-law absolute
+}
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C), FITTED by bin/choupo-curate vp to
+    // measured vapour pressures -- see provenance.vaporPressure
+    coefficients  (4.693649558  1946.01699  -48.5200814);
+    Trange        (293.15  463.45);   // the fit's own span; outside it the engine announces the extrapolation
+}
+
+Vliq        7.12818e-05;      // m3/mol at 25 C  [ChemSep eqno 105]
+HvapTb      44989.3;      // J/mol at Tb  [ChemSep eqno 106]
+
+idealGasHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    // ChemSep states J/(kmol.K); A and the exp are scaled to per-mole here.
+    coefficients  (61.635  -582.63  5.297244721  -5.3872e-05  2.2232e-08);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    coefficients  (148.92  274.35  -4.695055279  0.017296  -1.184e-06);
+    Trange        (291.67  422.15);
+}
+
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     33.492;
+        B     223.29;
+        C     -7.3227;
+        D     1.4294e-05;
+        E     2;
+        Tmin  291.67;
+        Tmax  464;
+    }
+}
+
+liquidThermalConductivity
+{
+    chemsepEq16
+    {
+        A     0.081843;
+        B     -215.42;
+        C     0.15922;
+        D     -0.0051305;
+        E     1.1114e-06;
+        Tmin  291.67;
+        Tmax  464;
+    }
+}
+solubilityParameter 26750;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
+
+source
+{
+    database      "ChemSep pure-component data v8.3";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "chemsep1.xml";
+    sourceSha256  "78b3e0c6408ff35f3b75fb71a1fdd70bb8e967d8996b49452a4a9fa2dd567c76";
+    sourceRecord  "Dimethyl sulfoxide";
+    importedBy    "chemsep_to_choupo";
+    review        { state pending; reviewer unassigned; }
+}
+
+provenance
+{
+    MW
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Pc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    omega
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tb
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    vaporPressure
+    {
+        origin        fitted;
+        method        "vaporPressureFit (three-parameter Antoine; objective twoStage: least squares in log10 P, then the largest relative error in P minimised from it; every usable study fitted, outliers above 15 % discarded by name)";
+        methodVersion "choupoProps Choupo-dev";
+        fittedInCase  "data/curation/components/dimethylSulfoxide";
+        reviewStatus  autoPromoted;
+        humanReviewed false;
+        fitGrade      clean;   // DEV.md 4c C285: the worse of the grades below
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+        fitGradeMaxRelativeError_pct 0.794321;   // grade clean
+        promotedBy    "bin/choupo-curate vp --promote";
+        promotedDate  "2026-11-10";
+        reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+        uncertainty   "the fit's maximum relative error over every kept measurement, below";
+        replaces      "model AmbroseWalton (a corresponding-states estimate from Tc, Pc, omega); `bin/choupo-curate revert <component>` restores it";
+        evidence
+        (
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/dimethylSulfoxide-vapourPressure-j.fluid.2011.02.002.dat";
+                doi       "10.1016/j.fluid.2011.02.002";
+                sha256    "1126f272e459e8c42b3ca6a54ace995cab24cb8b48a133db3255eeecf09f4bb7";
+                articleSha256 "9bf78a3180df28aa81da573dba0a9b22d46c4f5191a2ceb451e13b17047b7a29";
+                pointsKept    21;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/dimethylSulfoxide-vapourPressure-je400531a.dat";
+                doi       "10.1021/je400531a";
+                sha256    "4be8e0e21ad1200873dd09d0323e76631015a77d22059632afb192ab4ca79854";
+                articleSha256 "edd47a0f561183a4e83930823356df31104086f2203e1fce79bd027d5848225e";
+                pointsKept    19;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/dimethylSulfoxide-vapourPressure-j.jct.2018.04.014.dat";
+                doi       "10.1016/j.jct.2018.04.014";
+                sha256    "6508d283b7b0e35d445d6548bbdb5646ae3f4b5c9cd2b498e4a8909fe245b9ec";
+                articleSha256 "cbaa662fdf6729848746508f29cbaacda6ea575bb013c398006fec618746a9f8";
+                pointsKept    9;
+                pointsDropped 0;
+                provenance measured;
+            }
+        );
+        acceptance
+        {
+            rule        "the default of DEV.md 4c C285 (graded): max relative error in P over the kept points 5 / 10 / 20 %, and |Tnb - Tb| 1 / 2 / 4 K where Tb lies outside their range, are the upper limits of clean / warning / severe; above, refused; the grade is the worse of the two";
+            verdict     accepted;
+            studies     3;
+            pointsKept  49;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.597547;   // the fitted Antoine, every kept point
+            max_pct     0.794321;
+            awAad_pct   21.304495;   // the AmbroseWalton curve it replaces, the same points
+            awMax_pct   35.906009;
+            Tnb_fit     463.6320;   // K, the fitted curve at 101.325 kPa
+        }
+    }
+}
+
+cosmo
+{
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file DIMETHYL_SULFOXIDE.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey IAZDPXIOMUYVGZ-UHFFFAOYSA-N (full match); formula C2H6OS; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        111.015990;   // sum of the profile below; GAMESS prints 111.02
+        volume      97.77;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.381077     0.585972     2.690162     6.481061     8.663800
+              11.695255    10.065295     7.639159     7.505324    11.787443     8.184389
+               2.602515     1.607755     0.549757     2.053404     3.644572     0.594090
+               1.455139     1.777070     0.136854     0.292231     0.469568     0.568989
+               0.314838     0.320224     1.258768     1.257772     1.585942     0.245028
+               0.389515     1.539890     3.301378     2.267685     5.937407     1.166662
+               0.000000     0.000000     0.000000
+        );
+    }
+}

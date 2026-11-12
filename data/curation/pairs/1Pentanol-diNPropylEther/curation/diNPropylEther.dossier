@@ -1,0 +1,301 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      diNPropylEther;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-1Pentanol.b_ij  530.03135326;
+        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-1Pentanol.b_ji  -139.524576412;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b7a31da9d3873b3f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diNPropylEther-1Pentanol-bubble-j.fluid.2006.07.003.dat";
+            doi       "10.1016/j.fluid.2006.07.003";
+            sha256    "0c56d150e7de52e916a2a2a6f597cd4d84cd7410459522d6191e47bef7120efa";
+            provenance measured;
+            archiveFile "j.fluid.2006.07.003.xml";
+            system    "diNPropylEther + 1Pentanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.033; max 0.946; n 20; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-1Pentanol.b_ij  530.031353396;
+        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-1Pentanol.b_ji  -139.524576462;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b7a31da9d3873b3f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diNPropylEther-1Pentanol-bubble-j.fluid.2006.07.003.dat";
+            doi       "10.1016/j.fluid.2006.07.003";
+            sha256    "0c56d150e7de52e916a2a2a6f597cd4d84cd7410459522d6191e47bef7120efa";
+            provenance measured;
+            archiveFile "j.fluid.2006.07.003.xml";
+            system    "diNPropylEther + 1Pentanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.033; max 0.946; n 20; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-1Pentanol.a_ij  270.929103844;
+        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-1Pentanol.a_ji  -146.837142881;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b7a31da9d3873b3f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diNPropylEther-1Pentanol-bubble-j.fluid.2006.07.003.dat";
+            doi       "10.1016/j.fluid.2006.07.003";
+            sha256    "0c56d150e7de52e916a2a2a6f597cd4d84cd7410459522d6191e47bef7120efa";
+            provenance measured;
+            archiveFile "j.fluid.2006.07.003.xml";
+            system    "diNPropylEther + 1Pentanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.033; max 0.946; n 20; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-1Pentanol.a_ij  270.929104344;
+        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-1Pentanol.a_ji  -146.837143152;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b7a31da9d3873b3f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diNPropylEther-1Pentanol-bubble-j.fluid.2006.07.003.dat";
+            doi       "10.1016/j.fluid.2006.07.003";
+            sha256    "0c56d150e7de52e916a2a2a6f597cd4d84cd7410459522d6191e47bef7120efa";
+            provenance measured;
+            archiveFile "j.fluid.2006.07.003.xml";
+            system    "diNPropylEther + 1Pentanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.033; max 0.946; n 20; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-1Pentanol.A_ij  -1295.54122083;
+        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-1Pentanol.A_ji  4793.69242966;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b7a31da9d3873b3f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diNPropylEther-1Pentanol-bubble-j.fluid.2006.07.003.dat";
+            doi       "10.1016/j.fluid.2006.07.003";
+            sha256    "0c56d150e7de52e916a2a2a6f597cd4d84cd7410459522d6191e47bef7120efa";
+            provenance measured;
+            archiveFile "j.fluid.2006.07.003.xml";
+            system    "diNPropylEther + 1Pentanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.033; max 0.946; n 20; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-1Pentanol.A_ij  -1295.54122405;
+        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-1Pentanol.A_ji  4793.69243833;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "b7a31da9d3873b3f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diNPropylEther-1Pentanol-bubble-j.fluid.2006.07.003.dat";
+            doi       "10.1016/j.fluid.2006.07.003";
+            sha256    "0c56d150e7de52e916a2a2a6f597cd4d84cd7410459522d6191e47bef7120efa";
+            provenance measured;
+            archiveFile "j.fluid.2006.07.003.xml";
+            system    "diNPropylEther + 1Pentanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.033; max 0.946; n 20; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

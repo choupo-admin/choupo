@@ -21,26 +21,44 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/dimethylSulfoxide.dat"
         {
             type          imported;
-            sha256        "146549d6b5fff7a0e57a607bd5f78f88f22f2fdc676aea18421963252b02137c";
-            computationalSha256 "f965b44ef5ea770b90f8e5d5263a5322ef24cd12c9fa213806688a4ccdb73e12";
+            sha256        "17f9b99ac0c913e567614c63c159770bbc0a1913df97026d01fffbe3b04cf774";
+            computationalSha256 "d843f0b7b938772a1d29d5515b33b2c59fadc96f846788d5aded7916bf16c994";
             origin        "data/standards/components/dimethylSulfoxide.dat";
-            originSha256  "705eb8c5af775aa597b0b092d2e795e71a47ee20518b93b04cdd533103253f17";
+            originSha256  "a9b5f0fee39f8c1914eedda69137802495adf06e015450e16ae426392208ba86";
             release       Choupo-2608;
         }
         "components/ethylBenzene.dat"
         {
             type          imported;
-            sha256        "a3770fc80542ebef6c1e967abe82aa77f1772855e3873575603dc3ec1c54ce74";
-            computationalSha256 "99065feb74f678d5fdc677c7b2f450910efa7af9990f15e931738055b6bda9ae";
+            sha256        "281986d8699976dacc4075b5f1cf39c0afb9f528a4d9a8ab8f8c240c589d6fe3";
+            computationalSha256 "6464e1bf592481198bc2c0511993f8dae16a4e63e783219fe11150a800a959ac";
             origin        "data/standards/components/ethylBenzene.dat";
-            originSha256  "eb0e3c4909ad9a0859b769f78ba184bc73174b779765f33d3e2876a4600b2d0f";
+            originSha256  "75a9d87bea16679e2c9e462c1526f66464d2b0473d11dff115935f8a8ea363e3";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/dimethylSulfoxide-ethylBenzene.dat"
+        {
+            type          imported;
+            sha256        "8b69a21eff6fd085481bc987e8883b877b6289c5012ac41ba86768515b131880";
+            computationalSha256 "0bbc5dccbae4491d29d0d4502a0f3bbf4813c0643718da9d7860fe2c391c84a5";
+            origin        "data/standards/parameters/NRTL/dimethylSulfoxide-ethylBenzene.dat";
+            originSha256  "f853dc028627780287ed9fe3ae6b779a14314d571c74ce8ca52a9677c7b7a37f";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/dimethylSulfoxide-ethylBenzene.dat"
+        {
+            type          imported;
+            sha256        "44ee239dc32751f0bb743f9302d0a0405f83b51bde0095d9f2904b05822d5b0f";
+            computationalSha256 "dfe3baf00da7fd51fa675546c81438ef8d86e9dca3abb6dad7a3f187a6527f36";
+            origin        "data/standards/parameters/Wilson/dimethylSulfoxide-ethylBenzene.dat";
+            originSha256  "33e07cb634149b8932492e6462355189a559c5dc523491c816e903abe1122333";
             release       Choupo-2608;
         }
     }

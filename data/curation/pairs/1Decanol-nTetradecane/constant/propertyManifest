@@ -1,0 +1,83 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/1Decanol.dat"
+        {
+            type          imported;
+            sha256        "31f2967a47f9f8f26fcf3ae23069b07aee71f43411e108e90b14d1625f9c9c46";
+            computationalSha256 "0dc401582572c8baed306c2681a85fbb45639c22e8d9d7efa895fdca5c095c67";
+            origin        "data/standards/components/1Decanol.dat";
+            originSha256  "636053a5f091841b0b20c95cb2d96b2eeaa9597003467829b77448a348f79d61";
+            release       Choupo-2608;
+        }
+        "components/nTetradecane.dat"
+        {
+            type          imported;
+            sha256        "1b98d9924bb3d16050d431c953be11cb472a7e27aeaf55d4956f8785ab64d5ed";
+            computationalSha256 "8077b697f7643893c559ce86bc00f27254d417db1cfd8699bb211cb2d13a553d";
+            origin        "data/standards/components/nTetradecane.dat";
+            originSha256  "0fda4ff647bbb7cb5c42f20dd63477493be3eb9801fa86893927c0a8c7fd1137";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1Decanol-nTetradecane.dat"
+        {
+            type          imported;
+            sha256        "5bcb704b1159c0ca82a2f0d386cf67149e583094494029427584df922a72bd94";
+            computationalSha256 "f02876d02b85da7f67eb4eefb21d77b2e27abc86bc8e6c34b2959aec8ba67775";
+            origin        "data/standards/parameters/NRTL/1Decanol-nTetradecane.dat";
+            originSha256  "0a2d3dbffb346bb03861bc6c1a5e3d594d50239da351d9e26a2b540033df2504";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/1Decanol-nTetradecane.dat"
+        {
+            type          imported;
+            sha256        "3533524421e139fa3d754ac3267a8cf0cf6597114e18a9152daa521a42473863";
+            computationalSha256 "30043f3d5ec03fb55a263e6e642464a33f90b979b94ea2205a6088a61d18dd93";
+            origin        "data/standards/parameters/UNIQUAC/1Decanol-nTetradecane.dat";
+            originSha256  "b202a257a046238a5df52c4d6e05a2f7dc6bea2d6d8614e0bc466b6613199053";
+            release       Choupo-2608;
+        }
+    }
+}

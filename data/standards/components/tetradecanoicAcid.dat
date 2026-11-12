@@ -65,6 +65,15 @@ liquidHeatCapacity
     Trange        unknown;   // ONE measurement temperature (338.15 K): no interval can be claimed
 }
 
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (1 CH3 + 12 CH2 + 1 COOH), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   10.2952;
+    q   8.5520;
+}
+
 groups
 {
     unifac ( { group CH3; count 1; } { group CH2; count 12; } { group COOH; count 1; } );
@@ -101,6 +110,12 @@ liquidThermalConductivity
 
 provenance
 {
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 10.2952, q = sum nu_k Q_k = 8.5520 over the record's unifac groups (1 CH3 + 12 CH2 + 1 COOH)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
     groups
     {
         origin       definition;

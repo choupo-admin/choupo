@@ -1,0 +1,205 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      aniline;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.aniline-tetrahydropyran.b_ij  -521.024105636;
+        equilibrium.liquid.activityModel.binaryParameters.aniline-tetrahydropyran.b_ji  439.931337001;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "21089b331520b282";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/aniline-tetrahydropyran-bubbleP-je1005196-b17.dat";
+            doi       "10.1021/je1005196";
+            sha256    "b93571bde96a5b39fb8bd7063296577a2c5335f252cae579251c921a5c13a4b6";
+            provenance measured;
+            archiveFile "je1005196.xml";
+            system    "aniline + tetrahydropyran";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0502; max 0.8511; n 9; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.aniline-tetrahydropyran.b_ij  1371.20290435;
+        equilibrium.liquid.activityModel.binaryParameters.aniline-tetrahydropyran.b_ji  -625.907290747;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "21089b331520b282";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/aniline-tetrahydropyran-bubbleP-je1005196-b17.dat";
+            doi       "10.1021/je1005196";
+            sha256    "b93571bde96a5b39fb8bd7063296577a2c5335f252cae579251c921a5c13a4b6";
+            provenance measured;
+            archiveFile "je1005196.xml";
+            system    "aniline + tetrahydropyran";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0502; max 0.8511; n 9; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.aniline-tetrahydropyran.A_ij  3832.78225272;
+        equilibrium.liquid.activityModel.binaryParameters.aniline-tetrahydropyran.A_ji  -3832.72561825;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "21089b331520b282";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/aniline-tetrahydropyran-bubbleP-je1005196-b17.dat";
+            doi       "10.1021/je1005196";
+            sha256    "b93571bde96a5b39fb8bd7063296577a2c5335f252cae579251c921a5c13a4b6";
+            provenance measured;
+            archiveFile "je1005196.xml";
+            system    "aniline + tetrahydropyran";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0502; max 0.8511; n 9; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.aniline-tetrahydropyran.A_ij  3830.96860621;
+        equilibrium.liquid.activityModel.binaryParameters.aniline-tetrahydropyran.A_ji  -3832.2936151;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "21089b331520b282";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/aniline-tetrahydropyran-bubbleP-je1005196-b17.dat";
+            doi       "10.1021/je1005196";
+            sha256    "b93571bde96a5b39fb8bd7063296577a2c5335f252cae579251c921a5c13a4b6";
+            provenance measured;
+            archiveFile "je1005196.xml";
+            system    "aniline + tetrahydropyran";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0502; max 0.8511; n 9; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

@@ -66,6 +66,15 @@ standardThermochemistry
     s_298     343.74;        // J/(mol.K) third-law absolute [NASA-TM4513]
 }
 
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (3 CH3 + 1 CH2 + 1 CH), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   3.8246;
+    q   3.3120;
+}
+
 groups
 {
     joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } );
@@ -87,6 +96,12 @@ liquidViscosity
 
 provenance
 {
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 3.8246, q = sum nu_k Q_k = 3.3120 over the record's unifac groups (3 CH3 + 1 CH2 + 1 CH)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
     constants      "CoolProp 7.2.0 -- Lemmon-JCED-2006";
     vaporPressure  "Antoine fitted to CoolProp EOS saturation, AAD 0.60%";
     idealGasCp     "polynomial fitted to CoolProp cp0, maxerr 1.17%";

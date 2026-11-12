@@ -1,0 +1,92 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/ethylPropionate.dat"
+        {
+            type          imported;
+            sha256        "40ce078ea9b67160a331f96149557fc4ce505691c66ca84fdcff2401850b6883";
+            computationalSha256 "56473cfc2ac471343cc7c8c6b3df38cb84ef3a201cacbb9c69791718b2074923";
+            origin        "data/standards/components/ethylPropionate.dat";
+            originSha256  "d16f1e38abfd9bae38a74d869499fc74e9e77f3b0cb8b5c261e20d7e668ede12";
+            release       Choupo-2608;
+        }
+        "components/nHexane.dat"
+        {
+            type          imported;
+            sha256        "21c74d8d3e29050dc993812dd30b2cd64cbeefd036bc8d367abd6ee25436fc55";
+            computationalSha256 "7aa52217b06fd08229d256e222efda0ade6a6599a73899eae054b7a50a3da8de";
+            origin        "data/standards/components/nHexane.dat";
+            originSha256  "f37d7199cc0bb8577ba1a79797185a9cf0e9b65f2ecce764f079a3f480ddb81c";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/ethylPropionate-nHexane.dat"
+        {
+            type          imported;
+            sha256        "aab0d7a192a994945efa1b8a07bda3f46bda03effd1fd44d63778e5f9e951813";
+            computationalSha256 "3912475d0bea03a4f812453cd9485dcc9a7b8406c17c8aa12cd7130afee7994a";
+            origin        "data/standards/parameters/NRTL/ethylPropionate-nHexane.dat";
+            originSha256  "7224c40c1d4e03bb428a14f5b5d6c59b7f849916aeaba367774eb9c120669b9d";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/ethylPropionate-nHexane.dat"
+        {
+            type          imported;
+            sha256        "e21cd69cd113a89cc62b0074e79f901f58f130d885d5e3b801bcc9a7e3479f41";
+            computationalSha256 "7df002e5ca5d06b85c703f162cd8f3e759d3dec7c2937722bdb956fbc07db02d";
+            origin        "data/standards/parameters/UNIQUAC/ethylPropionate-nHexane.dat";
+            originSha256  "294cebbdf01f216bc14850e96386bfb8127282ce04927c91174db31a9eb60d68";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/ethylPropionate-nHexane.dat"
+        {
+            type          imported;
+            sha256        "1d5d73501db44cd5a4969ea493359217590878cd97c2cbdfe76da7f45c501520";
+            computationalSha256 "beec09eb2692c4d7142b9581ee1306a6e1726bb15ec1172e863c84b6834f34e0";
+            origin        "data/standards/parameters/Wilson/ethylPropionate-nHexane.dat";
+            originSha256  "5327bfbf25408fa830e6861f7ebdd9e877faa8a4613d2550984ff6ca5b4780cc";
+            release       Choupo-2608;
+        }
+    }
+}

@@ -1,0 +1,151 @@
+// [imported] origin "data/standards/components/nOctane.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-Octane  (C8H18, CAS 111-65-9)
+
+  Reference compound for the gasoline RON / MON scale (iso-octane =
+  2,2,4-trimethylpentane has the same Tc within ~5 K so this entry
+  doubles as a surrogate when the isomer is not resolved).  Useful
+  for combustion equilibria in IC engines.
+  Sources: constants (Tc, Pc, omega, MW, Tb) cross-checked against the
+  CoolProp 7.2.0 reference equation of state (MIT-licensed); ideal-gas
+  formation properties (dHf_298, s_298) from NASA TM-4513 (McBride-
+  Gordon-Reno 1993).
+\*---------------------------------------------------------------------------*/
+
+name        nOctane;
+formula     C8H18;
+CAS         111-65-9;
+
+MW          114.231;           // kg/kmol
+Tc          568.70;             // K
+Pc          24.86;              // bar
+omega       0.398;              // [-]
+Tb          398.83;             // K
+HvapTb      34410;              // J/mol
+Vliq        1.638e-4;           // m^3/mol
+//  ANCHOR, never an input.  The engine DERIVES the Hildebrand
+//  parameter from HvapTb and Vliq (the tree stores no derivative);
+//  this is what ChemSep v8.3 computed independently, so the
+//  derivation has something to be wrong against.
+solubilityParameter 15490;   // Pa^0.5  [anchor, ChemSep v8.3, Artistic-2.0]
+
+standardThermochemistry
+{
+    dHf_298    -208447.0;       // J/mol  -- ideal-gas reference
+    s_298      466.73;          // J/(mol·K)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (4.04867   1351.94   -64.030);
+    Trange        (326  399);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (-6.096   0.7712   -4.195e-4   8.855e-8);
+    Trange        (250  1500);
+}
+
+//  LIQUID Cp (added 2026-08-29, ruled by Vitor: the ThermoML-archive route,
+//  already used for the fitNRTL02 VLE datasets, extends to a heat capacity).
+//
+//  THE COEFFICIENTS ARE CHOUPO'S OWN FIT, not the authors': a quadratic
+//  regressed on the ELEVEN measured points of
+//      Coulier, Ballerat-Busserolles, Mesones, Lowe & Coxam,
+//      J. Chem. Eng. Data 60 (2015) 1563-1571, doi 10.1021/je5008444
+//      (pure n-octane, flow calorimetry, 283.15-333.15 K, 0.1 MPa),
+//  as transcribed in the NIST ThermoML archive (thirdParty/thermoml/xml/
+//  10.1021/je5008444.xml, re-read from the XML on the day of this fit, not
+//  from any report about it).  Fit rms 0.18 J/(mol K), max residual 0.35,
+//  both inside the per-point expanded uncertainties (0.42-0.51, TRC's
+//  evaluation, NOT the authors' own statement).  The declared Trange is the
+//  data's actual span and nothing wider.
+//
+//  INDEPENDENTLY CORROBORATED at 298.15 K by three other laboratories in the
+//  same archive, each measuring octane incidentally to a different study:
+//      253.94  Pardo et al. 2005, doi 10.1016/j.tca.2004.11.022  (DSC)
+//      254.08  Lei et al. 2010,   doi 10.1021/je100145f          (DSC)
+//      253.89  Navarro et al. 2016, doi 10.1016/j.fluid.2016.08.035 (DSC)
+//  against Coulier's 253.98 and this fit's 254.20 -- a 0.075 % spread across
+//  four apparatus that nobody arranged.  Also on record: Regueira et al.
+//  2017 (doi 10.1016/j.jct.2017.03.034, 323-383 K) sits a consistent
+//  ~0.5 % BELOW Coulier in their three-point overlap -- a finding between
+//  two laboratories, deliberately NOT spliced into one fit, and the reason
+//  this window stops at 333.15 K instead of borrowing their range.
+//
+//  provenance: transcribedNotCheckedAgainstArticle -- the archive was read,
+//  the paper was not; the citation says where these numbers are supposed to
+//  come from, not that anybody here has read them back off the page.
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol.K)] = 181.6086 + 7.339146e-2 T + 5.7048860e-4 T^2
+    coefficients  (181.6086   7.339146e-2   5.7048860e-4);
+    Trange        (283.15  333.15);
+}
+
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (2 CH3 + 6 CH2), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   5.8486;
+    q   4.9360;
+}
+
+groups
+{
+    joback ( { group CH3; count 2; } { group CH2; count 6; } );
+    unifac ( { group CH3; count 2; } { group CH2; count 6; } );
+}
+
+// Friendly-name aliases -- resolved to this file via the generated ALIASES index.
+aliases ( n-octane octane C8H18 );
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0023-PROF.txt bundled in usnistgov/COSMOSAC; CAS 111-65-9";
+        licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
+        installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
+    }
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file N-OCTANE.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey TVMXDCGIABBOFY-UHFFFAOYSA-N (full match); formula C8H18; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        194.953743;   // sum of the profile below; GAMESS prints 194.95
+        volume      188.51;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     1.624001    14.710806    36.616477
+              43.561006    32.153675    25.086152    22.343954    18.822967     0.034705
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
+    }
+}
+
+provenance
+{
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 5.8486, q = sum nu_k Q_k = 4.9360 over the record's unifac groups (2 CH3 + 6 CH2)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
+}

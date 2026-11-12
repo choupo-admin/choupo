@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -37,19 +37,28 @@ propertyManifest
         "components/2Methyl2Propanol.dat"
         {
             type          imported;
-            sha256        "17e181c16f08bfa8410737c8f6744b259b00d8c1d985b3ea8efdf9ecb14eaa48";
-            computationalSha256 "646148d2e0ba73b3da0e8baca650e1a51842a343e7909e987a6aabc68f622a9d";
+            sha256        "ab9a93f3aa5f71dd7fe75be5f810327bce2dce3084861490b97d333837b3176e";
+            computationalSha256 "20a287e2c4d20841d0f28fe574535bffc70a8e31cf8fcef3938e77aead89c094";
             origin        "data/standards/components/2Methyl2Propanol.dat";
-            originSha256  "03c4dae4a65edde0ea277bc42cd644162b49728a8612095e20ffd3565c2944b2";
+            originSha256  "25cc1a3086696dc3e0ce0df81e239a4ecf1c0e0dae78f3642d07bc96c2767e01";
             release       Choupo-2608;
         }
         "components/methylFormate.dat"
         {
             type          imported;
-            sha256        "c5e9cd0cf30f8664590c7e8066909f2f9c1438139a86b0c36a98fbe3be6f4a96";
-            computationalSha256 "5068200af02eb42f56750b96df43f6d46ec552e1872684b3291d5c4c84093efa";
+            sha256        "3e93d486d0ecaf1ee3ee9656ab4c356dd30236bbe48168a9cca15c6a83503c6a";
+            computationalSha256 "39f0df16bb4434011fdeaf5099c381c79a4bbdb21d66d83247ce613d53a94c1c";
             origin        "data/standards/components/methylFormate.dat";
-            originSha256  "1750df760cd7fc5d6d966f4c19c824f6ad0ec93c9e312ba3e83fd13ca413e7ff";
+            originSha256  "ff423e3a2b7d22ba31e75a8108a22c7d3d2c790328006f59f0f01f5b4d5be752";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Methyl2Propanol-methylFormate.dat"
+        {
+            type          imported;
+            sha256        "08b44d9a10b20859ab964bbb27716ee7b7c524ae5a3e3166341f7e433eb10389";
+            computationalSha256 "2c5b3eb31d60657217223bb1694b81cd49c8aa9f2f15ec3756c8095f1a5b15f7";
+            origin        "data/standards/parameters/NRTL/2Methyl2Propanol-methylFormate.dat";
+            originSha256  "5da799d34e73546f53372f3b5857076f226d6d167c08e1ea78ff9a0551ac9131";
             release       Choupo-2608;
         }
         "parameters/Wilson/2Methyl2Propanol-methylFormate.dat"

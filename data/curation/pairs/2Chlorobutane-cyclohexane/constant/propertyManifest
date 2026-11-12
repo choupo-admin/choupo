@@ -1,0 +1,83 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/2Chlorobutane.dat"
+        {
+            type          imported;
+            sha256        "5c12fca7a18bfe26a63a018fc265beca927a26a9212d25d25fcdeea9857afa65";
+            computationalSha256 "586e029718f5feaef2ec65f6309eb62f3aadb41d269274f5b386c6d564e7a3a2";
+            origin        "data/standards/components/2Chlorobutane.dat";
+            originSha256  "3245cca33b46ab9cb895903f4c931df7deb043ccfce5d962143cc2910ff3a5cb";
+            release       Choupo-2608;
+        }
+        "components/cyclohexane.dat"
+        {
+            type          imported;
+            sha256        "6e9c77d143be165e7f62c31dfda1de7fc130983a69186068273126f2bb968285";
+            computationalSha256 "04364dec902d4e12d65dadb6aa208108b37ad08210b3ec980b8e4ef259f64cdc";
+            origin        "data/standards/components/cyclohexane.dat";
+            originSha256  "0115ae582f156445955d331ea388b9ac1a51f226207a24f74fe9ab3cc14b4d69";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Chlorobutane-cyclohexane.dat"
+        {
+            type          imported;
+            sha256        "45a681a2fc6e590dc1cb02628f96fd20719e20c9cb33d312fd2700fd41dec701";
+            computationalSha256 "e1404970a3cc1be973b1d7233f2101add01619985faf14151de4055e813afdf4";
+            origin        "data/standards/parameters/NRTL/2Chlorobutane-cyclohexane.dat";
+            originSha256  "92923b58200c6f94124400e932863f9b7e4630c00733d32cfa77ea457e94c4de";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/2Chlorobutane-cyclohexane.dat"
+        {
+            type          imported;
+            sha256        "397b714de27be6422e1960f07e77b72f00dcd417bb205aa4285ad6335f0c4bb3";
+            computationalSha256 "04821854c70d4e975337239393880ca795b2b29048ecaec133aac2dc9bdd02aa";
+            origin        "data/standards/parameters/UNIQUAC/2Chlorobutane-cyclohexane.dat";
+            originSha256  "e0f62548722a878e919e7b8b1929f72b3e6cbb28cc9201bb525fbe21fcd4a622";
+            release       Choupo-2608;
+        }
+    }
+}

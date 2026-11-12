@@ -136,3 +136,30 @@ provenance
         notes         "computed from ChemSep Tc/Pc/omega";
     }
 }
+
+cosmo
+{
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file DIISOPROPANOLAMINE.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey connectivity block LVTYICIALWPMFW matches; the LVPP geometry is one stereoisomer (LVTYICIALWPMFW-OLQVQODUSA-N), the catalogue record carries no stereo layer; formula C6H15NO2; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        185.942379;   // sum of the profile below; GAMESS prints 185.94
+        volume      182.62;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.161833     0.793529     2.937443     1.092631     0.886235
+               1.929119     2.588417     2.326686     2.040215     1.350301     2.585856
+               2.819573     3.855211    10.336047    19.445102    25.929192    16.146062
+              13.146403    11.385699    15.081613     7.865338     3.803070     1.628097
+               2.292788     3.121385     1.042824     1.987839     1.020904     1.836842
+               1.759946     3.100380     4.142630     2.801481     1.277396     3.351359
+               5.173073     2.250947     0.182183     0.130003     0.292044     0.044683
+               0.000000     0.000000     0.000000
+        );
+    }
+}

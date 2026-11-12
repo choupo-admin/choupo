@@ -1,0 +1,355 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      water;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2Propanol.b_ij  681.929494223;
+        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2Propanol.b_ji  -108.932993805;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "4c5f2365091d7fd1";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/water-1Methoxy2Propanol-bubble-j.fluid.2007.06.006.dat";
+            doi       "10.1016/j.fluid.2007.06.006";
+            sha256    "1199da24ff6d595c35b20f12ca5001fe7bb53d23719dca5dafec2b262c84ad53";
+            provenance measured;
+            archiveFile "j.fluid.2007.06.006.xml";
+            system    "water + 1Methoxy2Propanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/water-1Methoxy2Propanol-bubble-acs.jced.6b00895.dat";
+            doi       "10.1021/acs.jced.6b00895";
+            sha256    "0ae2e355a34202e32a89a88b12de714caef2b7db39d7b78295fcb8eac63e0cd6";
+            provenance measured;
+            archiveFile "acs.jced.6b00895.xml";
+            system    "water + 1Methoxy2Propanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.011; max 0.99; n 55; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2Propanol.b_ij  681.929495601;
+        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2Propanol.b_ji  -108.932994724;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "4c5f2365091d7fd1";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/water-1Methoxy2Propanol-bubble-j.fluid.2007.06.006.dat";
+            doi       "10.1016/j.fluid.2007.06.006";
+            sha256    "1199da24ff6d595c35b20f12ca5001fe7bb53d23719dca5dafec2b262c84ad53";
+            provenance measured;
+            archiveFile "j.fluid.2007.06.006.xml";
+            system    "water + 1Methoxy2Propanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/water-1Methoxy2Propanol-bubble-acs.jced.6b00895.dat";
+            doi       "10.1021/acs.jced.6b00895";
+            sha256    "0ae2e355a34202e32a89a88b12de714caef2b7db39d7b78295fcb8eac63e0cd6";
+            provenance measured;
+            archiveFile "acs.jced.6b00895.xml";
+            system    "water + 1Methoxy2Propanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.011; max 0.99; n 55; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2Propanol.A_ij  5181.40115412;
+        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2Propanol.A_ji  -293.65710282;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "4c5f2365091d7fd1";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/water-1Methoxy2Propanol-bubble-j.fluid.2007.06.006.dat";
+            doi       "10.1016/j.fluid.2007.06.006";
+            sha256    "1199da24ff6d595c35b20f12ca5001fe7bb53d23719dca5dafec2b262c84ad53";
+            provenance measured;
+            archiveFile "j.fluid.2007.06.006.xml";
+            system    "water + 1Methoxy2Propanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/water-1Methoxy2Propanol-bubble-acs.jced.6b00895.dat";
+            doi       "10.1021/acs.jced.6b00895";
+            sha256    "0ae2e355a34202e32a89a88b12de714caef2b7db39d7b78295fcb8eac63e0cd6";
+            provenance measured;
+            archiveFile "acs.jced.6b00895.xml";
+            system    "water + 1Methoxy2Propanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.011; max 0.99; n 55; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2Propanol.A_ij  5181.40115412;
+        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2Propanol.A_ji  -293.657103113;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "4c5f2365091d7fd1";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/water-1Methoxy2Propanol-bubble-j.fluid.2007.06.006.dat";
+            doi       "10.1016/j.fluid.2007.06.006";
+            sha256    "1199da24ff6d595c35b20f12ca5001fe7bb53d23719dca5dafec2b262c84ad53";
+            provenance measured;
+            archiveFile "j.fluid.2007.06.006.xml";
+            system    "water + 1Methoxy2Propanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/water-1Methoxy2Propanol-bubble-acs.jced.6b00895.dat";
+            doi       "10.1021/acs.jced.6b00895";
+            sha256    "0ae2e355a34202e32a89a88b12de714caef2b7db39d7b78295fcb8eac63e0cd6";
+            provenance measured;
+            archiveFile "acs.jced.6b00895.xml";
+            system    "water + 1Methoxy2Propanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.011; max 0.99; n 55; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2Propanol.a_ij  -182.997052657;
+        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2Propanol.a_ji  419.124420678;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "4c5f2365091d7fd1";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/water-1Methoxy2Propanol-bubble-j.fluid.2007.06.006.dat";
+            doi       "10.1016/j.fluid.2007.06.006";
+            sha256    "1199da24ff6d595c35b20f12ca5001fe7bb53d23719dca5dafec2b262c84ad53";
+            provenance measured;
+            archiveFile "j.fluid.2007.06.006.xml";
+            system    "water + 1Methoxy2Propanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/water-1Methoxy2Propanol-bubble-acs.jced.6b00895.dat";
+            doi       "10.1021/acs.jced.6b00895";
+            sha256    "0ae2e355a34202e32a89a88b12de714caef2b7db39d7b78295fcb8eac63e0cd6";
+            provenance measured;
+            archiveFile "acs.jced.6b00895.xml";
+            system    "water + 1Methoxy2Propanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.011; max 0.99; n 55; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2Propanol.a_ij  -182.997052529;
+        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2Propanol.a_ji  419.124420493;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "4c5f2365091d7fd1";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/water-1Methoxy2Propanol-bubble-j.fluid.2007.06.006.dat";
+            doi       "10.1016/j.fluid.2007.06.006";
+            sha256    "1199da24ff6d595c35b20f12ca5001fe7bb53d23719dca5dafec2b262c84ad53";
+            provenance measured;
+            archiveFile "j.fluid.2007.06.006.xml";
+            system    "water + 1Methoxy2Propanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/water-1Methoxy2Propanol-bubble-acs.jced.6b00895.dat";
+            doi       "10.1021/acs.jced.6b00895";
+            sha256    "0ae2e355a34202e32a89a88b12de714caef2b7db39d7b78295fcb8eac63e0cd6";
+            provenance measured;
+            archiveFile "acs.jced.6b00895.xml";
+            system    "water + 1Methoxy2Propanol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.011; max 0.99; n 55; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

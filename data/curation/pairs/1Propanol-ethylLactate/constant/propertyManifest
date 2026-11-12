@@ -1,0 +1,92 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-12";
+    importerVersion    "3";
+    records
+    {
+        "components/1Propanol.dat"
+        {
+            type          imported;
+            sha256        "13f21aa546fa0847052f0158a65b23979145b7033a791e9508d9410ef9684e8b";
+            computationalSha256 "95cecd58a68b3db6dc9e540a083c8a167127cf8781e836662598dcc0ebbe0b7d";
+            origin        "data/standards/components/1Propanol.dat";
+            originSha256  "c195e55f4a94e4a58aca3703d644f362c546f295ca510a80bf926ae0c53ecff7";
+            release       Choupo-2608;
+        }
+        "components/ethylLactate.dat"
+        {
+            type          imported;
+            sha256        "cbed351c87326205a9042b984cf6479be4fb41b464c76387f578a604c611e65d";
+            computationalSha256 "02ae099e2b5a97e8c769f0aa28091bb731a14695a994201253efc2dca7c5d294";
+            origin        "data/standards/components/ethylLactate.dat";
+            originSha256  "6b03ed61acc6febdce92b86051e63380dcd4a213ccb17f52d72a13687eddde33";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1Propanol-ethylLactate.dat"
+        {
+            type          imported;
+            sha256        "7b54629b1c76bc12cf77233050208da8818a0de8cd60f946b70398fe6a69f57c";
+            computationalSha256 "44b579ae55eeac28f363ca995ee667fff108754ced0e2160d762a30fd786aa7c";
+            origin        "data/standards/parameters/NRTL/1Propanol-ethylLactate.dat";
+            originSha256  "f7e5aa188bdeb25be7a79bb87635a1d8ab7a5e6ae87ff8c9b7981b99ef4c18ff";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/1Propanol-ethylLactate.dat"
+        {
+            type          imported;
+            sha256        "addfa063989ac36501282b3328e5cf58936f39501a192403befebab5502657b9";
+            computationalSha256 "ce457917f5e58dfa5b1060793dfcb929530008c01ba63129e8c0eecc9136efa1";
+            origin        "data/standards/parameters/UNIQUAC/1Propanol-ethylLactate.dat";
+            originSha256  "3b30a9311614afcadf01194143d94583f15dfc3ffdd421572dc0c34add8b1888";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Propanol-ethylLactate.dat"
+        {
+            type          imported;
+            sha256        "051d937977ea6f4c51a86ca926d9a08d5dab0cc99464e1f2afdddc8bc17fb802";
+            computationalSha256 "eb41352d15149fe610ecd960e1b9739a6c76c21768da0d75a2f40a37379d6625";
+            origin        "data/standards/parameters/Wilson/1Propanol-ethylLactate.dat";
+            originSha256  "e49af83d9fcc5d64c5d0d2497cccba17b92238fc59950b73e4ec520d0dd43c06";
+            release       Choupo-2608;
+        }
+    }
+}

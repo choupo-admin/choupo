@@ -1,0 +1,295 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      3Methylthiophene;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-methylcyclopentane.b_ij  78.4807223712;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-methylcyclopentane.b_ji  92.5184444212;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "98f8929e99eabc55";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methylthiophene-methylcyclopentane-bubbleP-j.fluid.2009.11.004-b19.dat";
+            doi       "10.1016/j.fluid.2009.11.004";
+            sha256    "0fac91924225e603c5b68fb030161838f506ee99efd9efd458ceb206dddbec03";
+            provenance measured;
+            archiveFile "j.fluid.2009.11.004.xml";
+            system    "3Methylthiophene + methylcyclopentane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.056; max 0.979; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-methylcyclopentane.b_ij  78.4806949028;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-methylcyclopentane.b_ji  92.5184690932;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "98f8929e99eabc55";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methylthiophene-methylcyclopentane-bubbleP-j.fluid.2009.11.004-b19.dat";
+            doi       "10.1016/j.fluid.2009.11.004";
+            sha256    "0fac91924225e603c5b68fb030161838f506ee99efd9efd458ceb206dddbec03";
+            provenance measured;
+            archiveFile "j.fluid.2009.11.004.xml";
+            system    "3Methylthiophene + methylcyclopentane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.056; max 0.979; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-methylcyclopentane.A_ij  1214.83845114;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-methylcyclopentane.A_ji  243.653858586;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "98f8929e99eabc55";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methylthiophene-methylcyclopentane-bubbleP-j.fluid.2009.11.004-b19.dat";
+            doi       "10.1016/j.fluid.2009.11.004";
+            sha256    "0fac91924225e603c5b68fb030161838f506ee99efd9efd458ceb206dddbec03";
+            provenance measured;
+            archiveFile "j.fluid.2009.11.004.xml";
+            system    "3Methylthiophene + methylcyclopentane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.056; max 0.979; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-methylcyclopentane.A_ij  1214.83852466;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-methylcyclopentane.A_ji  243.653807244;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "98f8929e99eabc55";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methylthiophene-methylcyclopentane-bubbleP-j.fluid.2009.11.004-b19.dat";
+            doi       "10.1016/j.fluid.2009.11.004";
+            sha256    "0fac91924225e603c5b68fb030161838f506ee99efd9efd458ceb206dddbec03";
+            provenance measured;
+            archiveFile "j.fluid.2009.11.004.xml";
+            system    "3Methylthiophene + methylcyclopentane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.056; max 0.979; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-methylcyclopentane.a_ij  -27.6881069197;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-methylcyclopentane.a_ji  87.7466147967;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "98f8929e99eabc55";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methylthiophene-methylcyclopentane-bubbleP-j.fluid.2009.11.004-b19.dat";
+            doi       "10.1016/j.fluid.2009.11.004";
+            sha256    "0fac91924225e603c5b68fb030161838f506ee99efd9efd458ceb206dddbec03";
+            provenance measured;
+            archiveFile "j.fluid.2009.11.004.xml";
+            system    "3Methylthiophene + methylcyclopentane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.056; max 0.979; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-methylcyclopentane.a_ij  -27.6318505918;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-methylcyclopentane.a_ji  87.6850756059;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "98f8929e99eabc55";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methylthiophene-methylcyclopentane-bubbleP-j.fluid.2009.11.004-b19.dat";
+            doi       "10.1016/j.fluid.2009.11.004";
+            sha256    "0fac91924225e603c5b68fb030161838f506ee99efd9efd458ceb206dddbec03";
+            provenance measured;
+            archiveFile "j.fluid.2009.11.004.xml";
+            system    "3Methylthiophene + methylcyclopentane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.056; max 0.979; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

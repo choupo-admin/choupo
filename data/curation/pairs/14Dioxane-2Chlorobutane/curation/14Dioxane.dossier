@@ -1,0 +1,301 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      14Dioxane;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.b_ij  -64.9571483652;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.b_ji  276.418126732;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "85f51094c50e580f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/14Dioxane-2Chlorobutane-bubble-je020185k.dat";
+            doi       "10.1021/je020185k";
+            sha256    "0f2b4134bf4fe1d3319aada74ce86e9f619955c04b466ef4a511bda79890f760";
+            provenance measured;
+            archiveFile "je020185k.xml";
+            system    "14Dioxane + 2Chlorobutane";
+            pressure  "40000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.098; max 0.936; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.b_ij  -64.9571501584;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.b_ji  276.41812929;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "85f51094c50e580f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/14Dioxane-2Chlorobutane-bubble-je020185k.dat";
+            doi       "10.1021/je020185k";
+            sha256    "0f2b4134bf4fe1d3319aada74ce86e9f619955c04b466ef4a511bda79890f760";
+            provenance measured;
+            archiveFile "je020185k.xml";
+            system    "14Dioxane + 2Chlorobutane";
+            pressure  "40000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.098; max 0.936; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.a_ij  -107.35410104;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.a_ji  207.488622953;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "85f51094c50e580f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/14Dioxane-2Chlorobutane-bubble-je020185k.dat";
+            doi       "10.1021/je020185k";
+            sha256    "0f2b4134bf4fe1d3319aada74ce86e9f619955c04b466ef4a511bda79890f760";
+            provenance measured;
+            archiveFile "je020185k.xml";
+            system    "14Dioxane + 2Chlorobutane";
+            pressure  "40000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.098; max 0.936; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.a_ij  -107.354100776;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.a_ji  207.488622549;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "85f51094c50e580f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/14Dioxane-2Chlorobutane-bubble-je020185k.dat";
+            doi       "10.1021/je020185k";
+            sha256    "0f2b4134bf4fe1d3319aada74ce86e9f619955c04b466ef4a511bda79890f760";
+            provenance measured;
+            archiveFile "je020185k.xml";
+            system    "14Dioxane + 2Chlorobutane";
+            pressure  "40000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.098; max 0.936; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.A_ij  2459.27809445;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.A_ji  -700.60199791;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "85f51094c50e580f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/14Dioxane-2Chlorobutane-bubble-je020185k.dat";
+            doi       "10.1021/je020185k";
+            sha256    "0f2b4134bf4fe1d3319aada74ce86e9f619955c04b466ef4a511bda79890f760";
+            provenance measured;
+            archiveFile "je020185k.xml";
+            system    "14Dioxane + 2Chlorobutane";
+            pressure  "40000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.098; max 0.936; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.A_ij  2459.27809379;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.A_ji  -700.60199737;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "85f51094c50e580f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/14Dioxane-2Chlorobutane-bubble-je020185k.dat";
+            doi       "10.1021/je020185k";
+            sha256    "0f2b4134bf4fe1d3319aada74ce86e9f619955c04b466ef4a511bda79890f760";
+            provenance measured;
+            archiveFile "je020185k.xml";
+            system    "14Dioxane + 2Chlorobutane";
+            pressure  "40000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.098; max 0.936; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

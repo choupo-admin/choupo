@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/244Trimethyl1Pentene.dat"
+        {
+            type          imported;
+            sha256        "3b5df070eeb7a51a68dbb254a318689c9b504d2d3749fec208e722172954f8c3";
+            computationalSha256 "db422f9a1ed815399780f876837e3151bbb999f5800973700c9484347ffc666a";
+            origin        "data/standards/components/244Trimethyl1Pentene.dat";
+            originSha256  "01ab5198fdf72d8e79fe0b209a4cc49e7259a99c81f4025520532b816cbec890";
+            release       Choupo-2608;
+        }
+        "components/dimethylDisulfide.dat"
+        {
+            type          imported;
+            sha256        "89da35ff8e21d212bb2f1a1d77d134585b4342ba5f8c0fac2dd72f970f75b0ae";
+            computationalSha256 "650a760feafa880dbfd5aef5241edda125708b6c20708fe201e9dadd9a2dc6ad";
+            origin        "data/standards/components/dimethylDisulfide.dat";
+            originSha256  "33c9817f90a0c8e6abd943c5d741dd7bdf6818ca3e3f9f87c45530652b1c5ab7";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/244Trimethyl1Pentene-dimethylDisulfide.dat"
+        {
+            type          imported;
+            sha256        "bbe09c08c0a6f70905fe0f283ee909e57aa63bb9dff1ca775d85a5d43eeeaf19";
+            computationalSha256 "2bd7944d668a3e77360ea2929f6b60f624ae4fb14158f764028a180481f11e73";
+            origin        "data/standards/parameters/NRTL/244Trimethyl1Pentene-dimethylDisulfide.dat";
+            originSha256  "b2ed03e4021b2d127a2d7192ebe7795aa76e764a178a5cf2123b68908f052c7e";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/244Trimethyl1Pentene-dimethylDisulfide.dat"
+        {
+            type          imported;
+            sha256        "af586971992267ff10ef84951ae7bd69c3356e93c5d6e7cc55d15f4d9769d30b";
+            computationalSha256 "29241a581867036b4f3b6d39036e91c5c03afdd33fcddf1ecaffb91b1c053498";
+            origin        "data/standards/parameters/Wilson/244Trimethyl1Pentene-dimethylDisulfide.dat";
+            originSha256  "cfceaa8c3e8612ca70fadddd0e55c721313a56eebb5d11f165d5164d21df46b8";
+            release       Choupo-2608;
+        }
+    }
+}

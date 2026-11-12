@@ -21,26 +21,35 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/ethylAcetate.dat"
         {
             type          imported;
-            sha256        "54a2177877292bf69c144e8501a70f5fbdd893d0d52c59b98a2751121bea1d6f";
-            computationalSha256 "a684b58c42fd149250d5211ca6545fa9f6968847122e1a9267a719a700deb26d";
+            sha256        "4ee06f30aae70c1eab14da7bffce60be14bbdddc957964087e3f055599649351";
+            computationalSha256 "80dbe1d46a9004f4170f6e26b03368a10cea61d8233a38611ffce770e21e4914";
             origin        "data/standards/components/ethylAcetate.dat";
-            originSha256  "882d88a79a8cf5677b7b9eb8d6c7eea180a82c7a6ac1c4a90e907913ca261cb6";
+            originSha256  "3d9d32e87fd2417113925a18dbfb0d833a5ef7033a1a0acd05f1cd80c0ab174f";
             release       Choupo-2608;
         }
         "components/nDecane.dat"
         {
             type          imported;
-            sha256        "dc134490f41e3a8ac612df6c816894cd5d48d78c8de8e358d5d002bc1c168d16";
-            computationalSha256 "db998ca1a7ce1794eeb761efa4f902ab545998f122c5a40a55500321745de919";
+            sha256        "c2efdc318ce9b5bba917d70c65976c28c18ee6eba2667a87e2caa79cbb4c6221";
+            computationalSha256 "261750ad82607c8ed22155f11a8d3e23adeb0327ae976cfdd7974933828939fa";
             origin        "data/standards/components/nDecane.dat";
-            originSha256  "d3eb0769d43d0e76ccbdb97d3a106719a4635b848be11342b1d17f9231985544";
+            originSha256  "e825708595bddfd2ee36e5d605dafbfe7bbc538188911d732eae37fed86a3baa";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/ethylAcetate-nDecane.dat"
+        {
+            type          imported;
+            sha256        "091d335ccef3e5e8afb8e6a30a1483cecee319ca846f5b8fa4f442602e03bd1a";
+            computationalSha256 "31478d49bc58030e0502a228641a783876c99335f8811d08eea217a738219be6";
+            origin        "data/standards/parameters/NRTL/ethylAcetate-nDecane.dat";
+            originSha256  "b4b2f535beb2fe60846332ebff5018fd1539da22d1afe2dbc78c08c7a1889c14";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"
@@ -68,6 +77,15 @@ propertyManifest
             computationalSha256 "828d1a17a48633b6f76cf7b1338928fdfd40dc2de9ec15a5a717c6b0860a470e";
             origin        "data/standards/parameters/UNIQUAC/ethylAcetate-nDecane.dat";
             originSha256  "b937e431208dacfbb56957aa35dac08a4f163ebaafb737afc66aab25830e70b5";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/ethylAcetate-nDecane.dat"
+        {
+            type          imported;
+            sha256        "3b2cc1bac89f8c26247b8dafa036a756516b4bdc45d61cb908c644e8d67e541b";
+            computationalSha256 "b79c764769a5ce3b9beaae955cfe2613708ed76951e1b312e45fb055ac5f0a3b";
+            origin        "data/standards/parameters/Wilson/ethylAcetate-nDecane.dat";
+            originSha256  "48f6de6fe8cfb6ad86532c73d2b7b79ebb4637aabfc05d5cc824623d9e5b4675";
             release       Choupo-2608;
         }
     }

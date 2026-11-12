@@ -1,0 +1,137 @@
+/*---------------------------------------------------------------------------*\
+  UNIQUAC binary interaction parameters --- nButylFormate(i) + nNonane(j)
+
+  REGRESSED BY CHOUPO'S CURATION PIPELINE (bin/choupo-curate pairs --models, DEV.md 4c C294 on C282;
+  record docs/design/binary-pairs-from-open-measurements.md) to measured
+  bubble temperatures.  The articles named under `evidence` are the
+  SOURCE of the measurements; the NIST/TRC ThermoML Archive located them.
+  NO MEASURED POINT IS IN THIS RECORD OR THIS TREE: the case regenerates
+  them from the DOIs and sha256 sums it declares (constant/archiveDatasets).
+  The PARAMETERS are Choupo's own work.
+
+  EQUATION: UNIQUAC, tau_ij = exp(-(a_ij + b_ij T + c_ij T^2) / T) [a in K],
+  Abrams & Prausnitz (src/thermo/activityCoefficient/UNIQUAC.cpp); r and q
+  each component's own record.  b_ij = b_ji = c_ij = c_ji = 0 FIXED, not
+  fitted: two parameters a_ij, a_ji (DEV.md 4c C294).
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
+  vapour-pressure records for both pure components.
+
+  reviewStatus autoPromoted; review { by none; }: PROMOTED AUTOMATICALLY by
+  its fitting pipeline (the NRTL case's own evidence and kept points, the
+  max |T_model - T| over the kept points, graded 1 / 2 / 4 K -- DEV.md 4c C285, C294;
+  THIS fit: clean in-sample, 0.8980 K, CAPPED at warning by C300 (singleLaboratory); one liquid across its
+  validity span), and NO HUMAN HAS REVIEWED IT.  The engine says so on every
+  run that reads it, and voices a warning or a severe grade beside it.
+  Nothing was held out: the `validation {}` block says so, and the
+  acceptance is the `curation {}` block.  A curator who reads the series
+  back against the articles records it in the `review {}` block (DEV.md 4c
+  C297).  Revert by reverting the commit that promoted it.
+
+  REPRODUCE: run data/curation/pairs/nButylFormate-nNonane (after `bin/choupo-curate fetch` on it); its fit_uniquac
+  writes nButylFormate-nNonane.UNIQUAC.proposal.dat, which bin/curate/check_regressed_pairs.py holds
+  equal to this record.
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i nButylFormate; j nNonane; }
+
+components  ( nButylFormate  nNonane );
+model       UNIQUAC;
+
+parameters
+{
+    i           nButylFormate;
+    j           nNonane;
+    a_ij        -80.46133744;
+    b_ij        0.00000000;
+    c_ij        0.00000000;
+    a_ji        159.92121187;
+    b_ji        0.00000000;
+    c_ji        0.00000000;
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "data/curation/pairs/nButylFormate-nNonane";
+    reviewStatus  autoPromoted;
+    review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+    fitGrade      warning;   // DEV.md 4c C285 (C294): max |T_model - T| over the kept points, graded 1 / 2 / 4 K
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+    fitGradeCap   ( singleLaboratory );   // DEV.md 4c C300 rule 2: in-sample clean, capped -- nothing held out could have contradicted it
+    fitGradeMaxTemperatureError_K 0.8980;
+    promotedBy    "bin/choupo-curate pairs --models --promote";
+    promotedDate  "2026-11-11";
+    reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+    fitDate       "2026-11-11";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nButylFormate-nNonane-bubble-j.fluid.2015.05.031.dat";
+            doi       "10.1016/j.fluid.2015.05.031";
+            sha256    "158321c69e485f4cb23d9f6346a82af145358b10b4c855edf8e5631ce607974f";
+            provenance measured;
+            archiveFile "j.fluid.2015.05.031.xml";
+            system    "nButylFormate + nNonane";
+            pressure  "101320.000000 Pa";
+        }
+    );
+    fingerprint "67f52da1448d26f7";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          66.24255883;
+    rms_K         0.42529298;
+    nDataPoints   29;
+    identifiable  true;
+    maxAbsCorr    0.99873244;
+
+    validity
+    {
+        temperature { min 379.74 K; max 419.32 K; }
+        pressure    { min 101320 Pa; max 101320 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validationRefused;
+
+    heldOut     none;   // every declared dataset carried `role fit`
+
+    acceptance  none;   // no band was declared before the fit, so no
+                        // pass/fail may be read out of the residual above
+}
+
+curation
+{
+    rule            "DEV.md 4c C294 (the NRTL case's own evidence and kept points, another activity model) on DEV.md 4c C283 (amended) + C284, graded by C285 (C286)";
+    model           UNIQUAC;
+    discardsFrom    fit_nrtl;   // the outliers were decided ONCE, on the NRTL least-squares stage, and reused (C294)
+    evidence        allLaboratories;   // every study fitted, none held out
+    objective       twoStage;
+    outlierLimit    3 K;   // the NRTL least-squares stage's, reused
+    outliersDropped 0;
+    pointsKept      29;
+    noBubblePoint   0;
+    maxAbsError     0.8980 K;
+    meanAbsError    0.3498 K;
+    acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
+    gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
+    grade           clean;
+    oneLiquid       true;   // arm (f) on this model's own equation over the validity span
+    temperatures    29;   // distinct stated temperatures in the kept evidence
+    laboratories    1;   // distinct articles in the kept evidence
+    singleTemperature false;
+    singleLaboratory  true;
+    verdict         accepted;
+}

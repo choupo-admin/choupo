@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/12Propanediol.dat"
+        {
+            type          imported;
+            sha256        "19f646da5abc3ed78768c78d025eda829a7e7232094ed40bb9b801027b9f424d";
+            computationalSha256 "08456b107ad9a0eaddabc00c74a2feabce91b8385423818f41a83561b368b61a";
+            origin        "data/standards/components/12Propanediol.dat";
+            originSha256  "7de0215a01c9bcf9de9f73d9d43e169cff533558ff41fb7604b55093b896ac98";
+            release       Choupo-2608;
+        }
+        "components/ethyleneGlycol.dat"
+        {
+            type          imported;
+            sha256        "90ccbaaf3bce924c24126424206ef523e3a6377b4bac7bae6a4f55038ac55d7d";
+            computationalSha256 "535ebabab2b99be2309ed449cdea0a342ca26b3d0ae9cb5e0cc224f53589bb9c";
+            origin        "data/standards/components/ethyleneGlycol.dat";
+            originSha256  "409fc26748c4dd89998c0398c5023a4cc7143aeb481d53e119933d0d86b235d7";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/12Propanediol-ethyleneGlycol.dat"
+        {
+            type          imported;
+            sha256        "e5ebd9ec630da11e8b6ba6c9a89e62371fd03ae5c1b974e840d9b537a74ab633";
+            computationalSha256 "e47df07b5ee7f6c457533713d0737f76a13214f51d6ce6417f2dcebf5346d789";
+            origin        "data/standards/parameters/NRTL/12Propanediol-ethyleneGlycol.dat";
+            originSha256  "e45f6765453f4848a93ad8cd7feef71d1e6c7649f6b60cd5ab1922800b85e46d";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/12Propanediol-ethyleneGlycol.dat"
+        {
+            type          imported;
+            sha256        "d0bebf1e7055a3099d871714377c7a8a3bb2851cf3cb386aa6f27f54b8001985";
+            computationalSha256 "42076e56ffcc4dc3ef7d4b27e4392108a5c07f435e3b74c711e5805c9e619a47";
+            origin        "data/standards/parameters/Wilson/12Propanediol-ethyleneGlycol.dat";
+            originSha256  "b3558a21bea907ac0f0e3548c09ce619028d4639fe236f146105c5143fe00080";
+            release       Choupo-2608;
+        }
+    }
+}

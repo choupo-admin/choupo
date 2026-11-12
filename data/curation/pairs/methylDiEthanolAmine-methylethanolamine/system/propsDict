@@ -90,12 +90,13 @@
   not argued). Beside fit_nrtl's max |dT| 1.227 K (warning) on the same
   kept points. fit_wilson: A_ij = 8136.1, A_ji = -4249.8 J/mol over 36
   kept points: max |dT| 2.402 K, mean 0.401 K, graded severe -> accepted;
-  fit_wilson_start2 lands on the same pair (8136.1, -4249.8). NOT
-  PROMOTED (max |dT| 2.402 K over the 36 kept points, one liquid across
-  the validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/. UNIQUAC: not fitted -- methylethanolamine and
+  fit_wilson_start2 lands on the same pair (8136.1, -4249.8). PROMOTED on
+  2026-11-12 into
+  data/standards/parameters/Wilson/methylDiEthanolAmine-methylethanolamine.dat
+  as reviewStatus autoPromoted, review by none, because: fit grade severe
+  -- max |dT| 2.402 K over the 36 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.4024 K against ideal
+  5.4021 K. UNIQUAC: not fitted -- methylethanolamine and
   methylDiEthanolAmine carry no UNIQUAC r and q (no tabulated value, and
   no UNIFAC groups to sum them from,
   bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing

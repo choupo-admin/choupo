@@ -1,0 +1,295 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      nPropylAcetate;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.b_ij  1037.00429654;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.b_ji  -412.49523116;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "8743d0be1d4e211e";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nPropylAcetate-2Ethoxyethanol-bubbleP-je0255628-b8.dat";
+            doi       "10.1021/je0255628";
+            sha256    "7dc1d629e300ed5bc0e18e0a6d17d36bb886995b830117cc20aba081b96ac0e0";
+            provenance measured;
+            archiveFile "je0255628.xml";
+            system    "nPropylAcetate + 2Ethoxyethanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0602; max 0.9728; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.b_ij  1037.00430599;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.b_ji  -412.495230414;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "8743d0be1d4e211e";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nPropylAcetate-2Ethoxyethanol-bubbleP-je0255628-b8.dat";
+            doi       "10.1021/je0255628";
+            sha256    "7dc1d629e300ed5bc0e18e0a6d17d36bb886995b830117cc20aba081b96ac0e0";
+            provenance measured;
+            archiveFile "je0255628.xml";
+            system    "nPropylAcetate + 2Ethoxyethanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0602; max 0.9728; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.A_ij  -3077.73668051;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.A_ji  29999.8870351;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "8743d0be1d4e211e";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nPropylAcetate-2Ethoxyethanol-bubbleP-je0255628-b8.dat";
+            doi       "10.1021/je0255628";
+            sha256    "7dc1d629e300ed5bc0e18e0a6d17d36bb886995b830117cc20aba081b96ac0e0";
+            provenance measured;
+            archiveFile "je0255628.xml";
+            system    "nPropylAcetate + 2Ethoxyethanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0602; max 0.9728; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.A_ij  -3077.73272946;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.A_ji  29724.8775797;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "8743d0be1d4e211e";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nPropylAcetate-2Ethoxyethanol-bubbleP-je0255628-b8.dat";
+            doi       "10.1021/je0255628";
+            sha256    "7dc1d629e300ed5bc0e18e0a6d17d36bb886995b830117cc20aba081b96ac0e0";
+            provenance measured;
+            archiveFile "je0255628.xml";
+            system    "nPropylAcetate + 2Ethoxyethanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0602; max 0.9728; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.a_ij  572.540682971;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.a_ji  -268.479249749;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "8743d0be1d4e211e";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nPropylAcetate-2Ethoxyethanol-bubbleP-je0255628-b8.dat";
+            doi       "10.1021/je0255628";
+            sha256    "7dc1d629e300ed5bc0e18e0a6d17d36bb886995b830117cc20aba081b96ac0e0";
+            provenance measured;
+            archiveFile "je0255628.xml";
+            system    "nPropylAcetate + 2Ethoxyethanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0602; max 0.9728; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.a_ij  572.540694026;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.a_ji  -268.479251208;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "8743d0be1d4e211e";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nPropylAcetate-2Ethoxyethanol-bubbleP-je0255628-b8.dat";
+            doi       "10.1021/je0255628";
+            sha256    "7dc1d629e300ed5bc0e18e0a6d17d36bb886995b830117cc20aba081b96ac0e0";
+            provenance measured;
+            archiveFile "je0255628.xml";
+            system    "nPropylAcetate + 2Ethoxyethanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0602; max 0.9728; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

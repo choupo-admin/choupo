@@ -90,15 +90,16 @@
   not argued). Beside fit_nrtl's max |dT| 1.708 K (warning) on the same
   kept points. fit_wilson: A_ij = -1893.5, A_ji = 6558.7 J/mol over 16
   kept points: max |dT| 2.219 K, mean 1.357 K, graded severe -> accepted;
-  fit_wilson_start2 lands on the same pair (-1893.5, 6558.9). NOT
-  PROMOTED (max |dT| 2.219 K over the 16 kept points, one liquid across
-  the validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/. UNIQUAC: not fitted -- dimethylSulfoxide carries no
-  UNIQUAC r and q (no tabulated value, and no UNIFAC groups to sum them
-  from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted;
-  nothing is estimated silently.
+  fit_wilson_start2 lands on the same pair (-1893.5, 6558.9). PROMOTED on
+  2026-11-12 into
+  data/standards/parameters/Wilson/dimethylSulfoxide-ethylAcetate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.219 K over the 16 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.2189 K against ideal
+  17.5599 K. UNIQUAC: not fitted -- dimethylSulfoxide carries no UNIQUAC
+  r and q (no tabulated value, and no UNIFAC groups to sum them from,
+  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
+  is estimated silently.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

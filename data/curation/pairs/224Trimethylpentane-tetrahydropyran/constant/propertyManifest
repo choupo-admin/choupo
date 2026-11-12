@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/224Trimethylpentane.dat"
+        {
+            type          imported;
+            sha256        "5bc42a28bbed118ca84b1ce224106a3cf7ca57285a2b4bfa3da1bff9790d941a";
+            computationalSha256 "746441a94fdf1abf8ca5a1fc1142b064ff44c9c1210cb0eb7e9ca71fa3f60e07";
+            origin        "data/standards/components/224Trimethylpentane.dat";
+            originSha256  "106123056b46c83324a8defd357d2de09b9914d8408241e44412011aa5823bb3";
+            release       Choupo-2608;
+        }
+        "components/tetrahydropyran.dat"
+        {
+            type          imported;
+            sha256        "ba04df8e3e3920a41b108aa23f7d65733b2bda1b12a017b8422de1152bfd2ed0";
+            computationalSha256 "a1f8003988e5db50c8e44fc873eda989cfa1f6eb34be05424bd528cacb407a5a";
+            origin        "data/standards/components/tetrahydropyran.dat";
+            originSha256  "0ecb5a8368235280bf149259f9e5941ddce69c1266c9a16b5afe280abbe2dace";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/224Trimethylpentane-tetrahydropyran.dat"
+        {
+            type          imported;
+            sha256        "d3db761b917ed61ddeb6127c21f10cbdf1a8ce878ddbf1ada4d360e5752f0a90";
+            computationalSha256 "f3b4652a4e8aadefb414d3755e8d1b7abf9d2d9b8dac2f9144bba29b90384ec9";
+            origin        "data/standards/parameters/NRTL/224Trimethylpentane-tetrahydropyran.dat";
+            originSha256  "c2b19d2ba45db96ee9e8a3d9803e6a0868c870b59c4bc054c16932ec3619cf5c";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/224Trimethylpentane-tetrahydropyran.dat"
+        {
+            type          imported;
+            sha256        "aa6e1aa7763fe50977635e2c4f4b4b54ebba77dff07c33ba072bc984bb29372c";
+            computationalSha256 "13c6bb455f1e9e34878a8d29307c4b5f852bb6c4fb0501fcc0a087b99651c619";
+            origin        "data/standards/parameters/Wilson/224Trimethylpentane-tetrahydropyran.dat";
+            originSha256  "cccf1ab457cdf7f8e94f7db6819b271b5a03b7073a4aadafd0e1523e2816a5ce";
+            release       Choupo-2608;
+        }
+    }
+}

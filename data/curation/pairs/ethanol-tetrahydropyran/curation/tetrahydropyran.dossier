@@ -1,0 +1,241 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      tetrahydropyran;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-ethanol.b_ij  94.7955893486;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-ethanol.b_ji  199.131520806;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1f719e6b5e4d5cf7";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/tetrahydropyran-ethanol-bubble-je800145h.dat";
+            doi       "10.1021/je800145h";
+            sha256    "5dd47b3ee3daba46383121cf9b59b062c8da13cdfd2befd3f7223b52bdbfa81a";
+            provenance measured;
+            archiveFile "je800145h.xml";
+            system    "tetrahydropyran + ethanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/tetrahydropyran-ethanol-bubble-je201140q.dat";
+            doi       "10.1021/je201140q";
+            sha256    "4a2eca2490b726a3d87fa960c94c7abf2ca4693cbc809e9effee16e2a0283d2c";
+            provenance measured;
+            archiveFile "je201140q.xml";
+            system    "tetrahydropyran + ethanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.063; max 0.962; n 123; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-ethanol.b_ij  94.7955891835;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-ethanol.b_ji  199.13152098;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1f719e6b5e4d5cf7";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/tetrahydropyran-ethanol-bubble-je800145h.dat";
+            doi       "10.1021/je800145h";
+            sha256    "5dd47b3ee3daba46383121cf9b59b062c8da13cdfd2befd3f7223b52bdbfa81a";
+            provenance measured;
+            archiveFile "je800145h.xml";
+            system    "tetrahydropyran + ethanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/tetrahydropyran-ethanol-bubble-je201140q.dat";
+            doi       "10.1021/je201140q";
+            sha256    "4a2eca2490b726a3d87fa960c94c7abf2ca4693cbc809e9effee16e2a0283d2c";
+            provenance measured;
+            archiveFile "je201140q.xml";
+            system    "tetrahydropyran + ethanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.063; max 0.962; n 123; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-ethanol.A_ij  83.5521300379;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-ethanol.A_ji  2478.25483886;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1f719e6b5e4d5cf7";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/tetrahydropyran-ethanol-bubble-je800145h.dat";
+            doi       "10.1021/je800145h";
+            sha256    "5dd47b3ee3daba46383121cf9b59b062c8da13cdfd2befd3f7223b52bdbfa81a";
+            provenance measured;
+            archiveFile "je800145h.xml";
+            system    "tetrahydropyran + ethanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/tetrahydropyran-ethanol-bubble-je201140q.dat";
+            doi       "10.1021/je201140q";
+            sha256    "4a2eca2490b726a3d87fa960c94c7abf2ca4693cbc809e9effee16e2a0283d2c";
+            provenance measured;
+            archiveFile "je201140q.xml";
+            system    "tetrahydropyran + ethanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.063; max 0.962; n 123; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-ethanol.A_ij  83.552126743;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-ethanol.A_ji  2478.25484168;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1f719e6b5e4d5cf7";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/tetrahydropyran-ethanol-bubble-je800145h.dat";
+            doi       "10.1021/je800145h";
+            sha256    "5dd47b3ee3daba46383121cf9b59b062c8da13cdfd2befd3f7223b52bdbfa81a";
+            provenance measured;
+            archiveFile "je800145h.xml";
+            system    "tetrahydropyran + ethanol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/tetrahydropyran-ethanol-bubble-je201140q.dat";
+            doi       "10.1021/je201140q";
+            sha256    "4a2eca2490b726a3d87fa960c94c7abf2ca4693cbc809e9effee16e2a0283d2c";
+            provenance measured;
+            archiveFile "je201140q.xml";
+            system    "tetrahydropyran + ethanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.063; max 0.962; n 123; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

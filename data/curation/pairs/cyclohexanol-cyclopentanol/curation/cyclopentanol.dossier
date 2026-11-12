@@ -1,0 +1,295 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      cyclopentanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.cyclopentanol-cyclohexanol.b_ij  -25.557056756;
+        equilibrium.liquid.activityModel.binaryParameters.cyclopentanol-cyclohexanol.b_ji  22.1372804525;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "784430ee755831ca";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/cyclopentanol-cyclohexanol-bubble-acs.jced.8b00929.dat";
+            doi       "10.1021/acs.jced.8b00929";
+            sha256    "bd35ac362a39f6c424a08b5ae248462f92c9bdcf8a79d243ec6ec3f36e1eb08d";
+            provenance measured;
+            archiveFile "acs.jced.8b00929.xml";
+            system    "cyclopentanol + cyclohexanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0794; max 0.8862; n 36; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.cyclopentanol-cyclohexanol.b_ij  626.946877394;
+        equilibrium.liquid.activityModel.binaryParameters.cyclopentanol-cyclohexanol.b_ji  -430.889961441;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "784430ee755831ca";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/cyclopentanol-cyclohexanol-bubble-acs.jced.8b00929.dat";
+            doi       "10.1021/acs.jced.8b00929";
+            sha256    "bd35ac362a39f6c424a08b5ae248462f92c9bdcf8a79d243ec6ec3f36e1eb08d";
+            provenance measured;
+            archiveFile "acs.jced.8b00929.xml";
+            system    "cyclopentanol + cyclohexanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0794; max 0.8862; n 36; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.cyclopentanol-cyclohexanol.A_ij  -2177.24899236;
+        equilibrium.liquid.activityModel.binaryParameters.cyclopentanol-cyclohexanol.A_ji  3988.73470999;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "784430ee755831ca";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/cyclopentanol-cyclohexanol-bubble-acs.jced.8b00929.dat";
+            doi       "10.1021/acs.jced.8b00929";
+            sha256    "bd35ac362a39f6c424a08b5ae248462f92c9bdcf8a79d243ec6ec3f36e1eb08d";
+            provenance measured;
+            archiveFile "acs.jced.8b00929.xml";
+            system    "cyclopentanol + cyclohexanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0794; max 0.8862; n 36; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.cyclopentanol-cyclohexanol.A_ij  -2177.24900688;
+        equilibrium.liquid.activityModel.binaryParameters.cyclopentanol-cyclohexanol.A_ji  3988.73475369;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "784430ee755831ca";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/cyclopentanol-cyclohexanol-bubble-acs.jced.8b00929.dat";
+            doi       "10.1021/acs.jced.8b00929";
+            sha256    "bd35ac362a39f6c424a08b5ae248462f92c9bdcf8a79d243ec6ec3f36e1eb08d";
+            provenance measured;
+            archiveFile "acs.jced.8b00929.xml";
+            system    "cyclopentanol + cyclohexanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0794; max 0.8862; n 36; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.cyclopentanol-cyclohexanol.a_ij  1.163798711;
+        equilibrium.liquid.activityModel.binaryParameters.cyclopentanol-cyclohexanol.a_ji  -1.0251759419;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "784430ee755831ca";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/cyclopentanol-cyclohexanol-bubble-acs.jced.8b00929.dat";
+            doi       "10.1021/acs.jced.8b00929";
+            sha256    "bd35ac362a39f6c424a08b5ae248462f92c9bdcf8a79d243ec6ec3f36e1eb08d";
+            provenance measured;
+            archiveFile "acs.jced.8b00929.xml";
+            system    "cyclopentanol + cyclohexanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0794; max 0.8862; n 36; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.cyclopentanol-cyclohexanol.a_ij  1.16725734758;
+        equilibrium.liquid.activityModel.binaryParameters.cyclopentanol-cyclohexanol.a_ji  -1.0286256131;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "784430ee755831ca";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/cyclopentanol-cyclohexanol-bubble-acs.jced.8b00929.dat";
+            doi       "10.1021/acs.jced.8b00929";
+            sha256    "bd35ac362a39f6c424a08b5ae248462f92c9bdcf8a79d243ec6ec3f36e1eb08d";
+            provenance measured;
+            archiveFile "acs.jced.8b00929.xml";
+            system    "cyclopentanol + cyclohexanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0794; max 0.8862; n 36; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

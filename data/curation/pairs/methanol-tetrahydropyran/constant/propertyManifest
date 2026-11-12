@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/methanol.dat"
+        {
+            type          imported;
+            sha256        "c31b411d7bdd0857e1a2998503dd5170f75f9a417a9d47306b4095fd28bcebd6";
+            computationalSha256 "d51b98bd9ea6675087f0be387bcb63782ea8fc394f1962cb648ad92e39752faa";
+            origin        "data/standards/components/methanol.dat";
+            originSha256  "3e584446eb5b5ffd4ee5547099679b01254cc19dad31a8db909a2068fe9cad43";
+            release       Choupo-2608;
+        }
+        "components/tetrahydropyran.dat"
+        {
+            type          imported;
+            sha256        "ba04df8e3e3920a41b108aa23f7d65733b2bda1b12a017b8422de1152bfd2ed0";
+            computationalSha256 "a1f8003988e5db50c8e44fc873eda989cfa1f6eb34be05424bd528cacb407a5a";
+            origin        "data/standards/components/tetrahydropyran.dat";
+            originSha256  "0ecb5a8368235280bf149259f9e5941ddce69c1266c9a16b5afe280abbe2dace";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/methanol-tetrahydropyran.dat"
+        {
+            type          imported;
+            sha256        "dd67aa7833f7c298574ea3eabfd7baf4fa9621905c887b963d99847b23d0fb92";
+            computationalSha256 "e791df31c286dbcb21daaeac2db0814567d36163434d66c603796a919bb303a2";
+            origin        "data/standards/parameters/NRTL/methanol-tetrahydropyran.dat";
+            originSha256  "3d7c0e0bbdda3d455dbe2b0b5f5938efb91f68f5d0855bba2be2bfe4f8f2a2e7";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/methanol-tetrahydropyran.dat"
+        {
+            type          imported;
+            sha256        "60d9e34fef9b6151fe511f99b003113f18d46858d506946c7802404ee02491a9";
+            computationalSha256 "a8330fd643fb06e2a3702dd71298c70be16fba41a4cae28a660da5b37bfa9dd9";
+            origin        "data/standards/parameters/Wilson/methanol-tetrahydropyran.dat";
+            originSha256  "d588ff469267b1d758e540192afc824f1f56164d1256f3e0bc66feeb3d854cce";
+            release       Choupo-2608;
+        }
+    }
+}

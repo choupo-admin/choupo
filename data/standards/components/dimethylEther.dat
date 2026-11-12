@@ -67,6 +67,15 @@ standardThermochemistry
     s_298     245.186;      // J/(mol*K) third-law [DERIVED: (dHf-dGf)/T + CODATA element S]
 }
 
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (1 CH3 + 1 CH3O), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   2.0461;
+    q   1.9360;
+}
+
 groups { unifac ( { group CH3; count 1; } { group CH3O; count 1; } ); joback ( { group CH3; count 2; } { group ether; count 1; } ); }
 
 liquidViscosity
@@ -109,6 +118,12 @@ surfaceTension
 
 provenance
 {
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 2.0461, q = sum nu_k Q_k = 1.9360 over the record's unifac groups (1 CH3 + 1 CH3O)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
     dHf_298
     {
         origin           estimated;

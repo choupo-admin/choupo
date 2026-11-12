@@ -21,26 +21,35 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/dimethylSulfoxide.dat"
         {
             type          imported;
-            sha256        "146549d6b5fff7a0e57a607bd5f78f88f22f2fdc676aea18421963252b02137c";
-            computationalSha256 "f965b44ef5ea770b90f8e5d5263a5322ef24cd12c9fa213806688a4ccdb73e12";
+            sha256        "17f9b99ac0c913e567614c63c159770bbc0a1913df97026d01fffbe3b04cf774";
+            computationalSha256 "d843f0b7b938772a1d29d5515b33b2c59fadc96f846788d5aded7916bf16c994";
             origin        "data/standards/components/dimethylSulfoxide.dat";
-            originSha256  "705eb8c5af775aa597b0b092d2e795e71a47ee20518b93b04cdd533103253f17";
+            originSha256  "a9b5f0fee39f8c1914eedda69137802495adf06e015450e16ae426392208ba86";
             release       Choupo-2608;
         }
         "components/isopropanol.dat"
         {
             type          imported;
-            sha256        "61118a4a99021492caf6ad77788bb2bd987dab2f1160ad21534ae7ce688dae8a";
-            computationalSha256 "5c4f956b35dd2eaa9db4947f8fe641dea0228bf8ba7301d2369f0790871f65da";
+            sha256        "1d2cd015fb92886a9ff57473efcd1b8b8399c0db14df16056f6b4e7f41417a3d";
+            computationalSha256 "6b71a304e15a7bd72cccc98edae61265a75a73516bab6ba0aba5a3b4ea5ae1dc";
             origin        "data/standards/components/isopropanol.dat";
-            originSha256  "7338879f6f351e08c4ec91a02c86117d7f56faef9906c7e3174f954a4000d0d7";
+            originSha256  "0b7c68a64e289e03c57e59d22924394920fc2bfc69d44fbbb11a74712d453af1";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/dimethylSulfoxide-isopropanol.dat"
+        {
+            type          imported;
+            sha256        "1799793370a7ebb7d503ceacc263c6a1e658d1181b60234e47d6f092caef004a";
+            computationalSha256 "b38997efe3e0818a015d98b1402b08c9c175b95e7b13de707b71bcc3f33e98b1";
+            origin        "data/standards/parameters/NRTL/dimethylSulfoxide-isopropanol.dat";
+            originSha256  "28afcbcc2eecd9e056a32759b452c90739594ca1a1b950a081ed3b3da0156eae";
             release       Choupo-2608;
         }
         "parameters/Wilson/dimethylSulfoxide-isopropanol.dat"

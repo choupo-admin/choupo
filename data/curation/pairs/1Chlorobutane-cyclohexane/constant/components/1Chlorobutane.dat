@@ -1,0 +1,302 @@
+// [imported] origin "data/standards/components/1Chlorobutane.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1Chlorobutane  (1-chlorobutane; CAS 109-69-3)
+  NEW in the catalogue (DEV.md 4c C292, slice 2 of C287, 2026-11-10), built by
+  bin/curate/c287_new_components.py from measurements the NIST/TRC ThermoML Archive
+  locates (the articles are the sources; their DOIs are in provenance).
+  UPGRADED by DEV.md 4c C309 (2026-11-11): Tc replaced by the IUPAC
+  recommended value (critically evaluated measurements; citation in
+  provenance) and omega re-derived from them.  Nothing else refitted: Vliq
+  is the C292 fit, made with the Joback Tc/Pc, kept as it was.
+  MEASURED: no Tb (critical constants: UPGRADED above).  FITTED: vapour pressure (bin/choupo-curate vp),
+  Vliq, liquid Cp.  DERIVED: omega (from the fitted vapour pressure).
+  ESTIMATED (Joback): Pc, ideal-gas Cp, dHf_298; s_298 derived from Joback's
+  dHf and dGf.  No measured series is reproduced here.
+  reviewStatus autoPromoted, humanReviewed false: NO human has read it back.
+  Psat: fitted by `bin/choupo-curate vp`; its promotion replaced the
+  AmbroseWalton block this tool writes (provenance.vaporPressure).
+\*---------------------------------------------------------------------------*/
+
+name        1Chlorobutane;
+CAS         109-69-3;
+formula     C4H9Cl;
+reviewStatus autoPromoted;
+humanReviewed false;
+MW          92.5660;      // kg/kmol, from the formula (IUPAC standard atomic weights)
+Tc          539.2;      // K, IUPAC recommended (provenance.Tc)
+Pc          37.2256331;      // bar, Joback ESTIMATE (provenance.Pc)
+omega       0.245789;      // [-] (provenance.omega)
+//  Tb: NOT DECLARED -- the archive reports no boiling temperature at
+//  101.3 kPa for it, and a Tb read back off the fitted Antoine would be
+//  the curve tested against itself (the fitted normal boiling point is
+//  in provenance.vaporPressure.acceptance.Tnb_fit).  Joback's Tb is NOT stored either: the vapour-pressure
+//  grade would read an estimate as a measurement (WRITE_ESTIMATED_TB in
+//  the tool); the case data/curation/batches/new_components_estimated prints it.
+
+standardThermochemistry
+{
+    dHf_298   -141630;        // J/mol, ideal gas, Joback ESTIMATE (provenance.dHf_298)
+    s_298     345.23;        // J/(mol K), ideal gas, DERIVED from Joback (provenance.s_298)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C), FITTED by bin/choupo-curate vp to
+    // measured vapour pressures -- see provenance.vaporPressure
+    coefficients  (4.059433175  1222.543635  -50.06468135);
+    Trange        (278.15  351.61);   // the fit's own span; outside it the engine announces the extrapolation
+}
+
+Vliq        1.051623e-04;      // m3/mol at 25 C, FITTED (provenance.Vliq)
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol K)] = a0 + a1 T + a2 T^2 + a3 T^3, Joback ESTIMATE
+    coefficients  (12.143  0.39062  -2.142000e-04  4.540000e-08);
+    Trange        (273  1000);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol K)] = a0 + a1 T + a2 T^2, FITTED (provenance.liquidHeatCapacity)
+    coefficients  (138.4209622  -0.09032562173  0.000532081375);
+    Trange        (284.15  353.15);
+}
+
+groups
+{
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group Cl; count 1; } );
+}
+
+provenance
+{
+    MW
+    {
+        origin        literature;
+        method        "sum of IUPAC standard atomic weights over the formula";
+    }
+    Tc
+    {
+        origin        measured;
+        method        "IUPAC recommended value: the critical evaluation of every published measurement by the IUPAC critical-properties group (539.2 K)";
+        uncertainty   "+-0.5 K, the evaluators' estimate";
+        source        "Marsh, K.N. et al. Vapor-Liquid Critical Properties of Elements and Compounds. 10. Organic Compounds Containing Halogens. J. Chem. Eng. Data 52 (2007) 1509-1538, Table 1 (recommended values)";
+        doi           "10.1021/je700336g";
+        transcribedBy "bin/curate/c287_new_components.py (IUPAC table, hand-transcribed from the PDF, one row per compound)";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+        reviewReason  "transcribed by a model from the article's Table 1 and re-read once; not yet read back by a human";
+    }
+    Pc
+    {
+        origin           estimated;
+        method           "Joback";
+        methodVersion    "joback-poling5e-table2-2";
+        input            joback;
+        inputFingerprint "CH2:3,CH3:1,Cl:1";
+        reproducedInCase "data/curation/batches/new_components_estimated";
+        uncertainty      { status unquantified; reason "Joback group contribution (Joback & Reid 1987); Tc within a few per cent and Pc within about 5-10 per cent for ordinary organics, worse for polyfunctional molecules"; }
+        notes            "the archive carries no critical pressure for this compound; all groups of the structure are in the Joback table";
+    }
+    omega
+    {
+        origin        regressed;
+        method        "DERIVED from a fit: omega = -log10(Psat(0.7 Tc)/Pc) - 1 from the Antoine the vapour-pressure pipeline fitted (data/curation/components/1Chlorobutane) and the measured Tc, Pc; 0.7 Tc = 377.44 K, EXTRAPOLATED +25.8 K beyond the fitted range (278.15-351.61 K); cross-check (C309): omega 0.2458 from the Antoine at 0.7 Tc against Lee-Kesler 0.2481 from the fitted Antoine's own normal boiling point 351.65 K, Tc and Pc (difference -0.0023)";
+        derivedBy     "bin/curate/c287_new_components.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+        reviewReason  "derived by a machine; read it with the fitGrade of the vapour pressure it comes from";
+    }
+    Vliq
+    {
+        origin        fitted;
+        method        "one-parameter fit of the engine's own liquid density, V(T) = Vliq Rackett(T)/Rackett(298.15 K) with this record's Tc, Pc, omega (ThermoPackage::density, liquid branch), to every measured liquid mass density at or below 200 kPa; least squares in the relative density error, then its largest value minimised";
+        fittedBy      "bin/curate/c287_new_components.py";
+        reviewStatus  autoPromoted;
+        humanReviewed false;
+        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 %
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+        fitGradeMaxRelativeError_pct 1.460399;
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+        evidence
+        (
+            { doi "10.1007/s10765-006-0100-z"; articleSha256 "30c737f17ddeb4a6488cd6da1391b89bebc274601046a1e78c4c5e9c500f1b00"; pointsKept 2; pointsDropped 0; provenance measured; }
+            { doi "10.1007/s10765-007-0169-z"; articleSha256 "dbda6520b4b05901a2151e028e16487df817627270b64b9109ca613c54a713ce"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1007/s10765-010-0737-5"; articleSha256 "4f081c58571c0c0bdbe9530359f0b058650b1838394c54d33569e1784d7406a6"; pointsKept 7; pointsDropped 0; provenance measured; }
+            { doi "10.1007/s10765-010-0902-x"; articleSha256 "8dfc243a96e9317de41cb12430784a311c15c2db83f001040431c6d0281a97c7"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1016/j.fluid.2005.02.014"; articleSha256 "2e20f7f93853787f45f54b6021f65428aa068d9b1409912ca4d3c93839693bd3"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1016/j.fluid.2012.10.015"; articleSha256 "b31cac9094e16182a55d0075f2d20036250a2939b6ea7ba81fd452cf39f261ee"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1016/j.jct.2006.05.003"; articleSha256 "4d108ccd2fb1b268c35d905b34f84136f5394ad1fd9aae49c088df72080b8295"; pointsKept 2; pointsDropped 0; provenance measured; }
+            { doi "10.1016/j.jct.2006.10.003"; articleSha256 "fcf0830a841b3da951651a243985d115ec7fd03612388f706ed7847d6151b09a"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1016/j.jct.2007.01.017"; articleSha256 "40ba91bc46e3728b56cde4158bdb6de3569826f604c6ebf76ee829b8e20996b0"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1016/j.jct.2007.03.008"; articleSha256 "b60694ef1e0ab51f71f72be08779b45bc34239264847f7a3d9a7a7d22b8dd4c9"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1016/j.jct.2008.01.024"; articleSha256 "771ee7989d4bc058aa194a9ad3d4343eb7cce18dcd6cb579af3d0bbf29d0b61a"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1016/j.jct.2009.04.005"; articleSha256 "2e597d6ea9f9fcba792f352de6d2aacc297e18d5feda527d7f46228ad3b118f2"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1016/j.jct.2009.04.006"; articleSha256 "64a6fd16799fc8710150968d7297acde43a47a568e73ccbe270e6e651cdde75c"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1016/j.jct.2012.02.039"; articleSha256 "f1ea5727daba86dad1f30610636924fdb374896ef993c4db194a11ffd7dba634"; pointsKept 7; pointsDropped 0; provenance measured; }
+            { doi "10.1016/j.tca.2004.11.034"; articleSha256 "bbaf0dd03dbefcca442f1f42edf7ed768aec54aeb8e2d5c7021a03a8c7f1b23d"; pointsKept 2; pointsDropped 0; provenance measured; }
+            { doi "10.1016/j.tca.2010.02.010"; articleSha256 "6ae0627e23f3ae0cfde924695cc2baabcdbd1b830502942609e994c0f2c91504"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1016/j.tca.2012.04.001"; articleSha256 "8dd0acb99e57aff3aaf708fee1663595e6fe9c3a8c4524307f6cb932fc6e1fed"; pointsKept 3; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je020185k"; articleSha256 "0f2b4134bf4fe1d3319aada74ce86e9f619955c04b466ef4a511bda79890f760"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je030167i"; articleSha256 "5fc7987f85d548b84dd080c5cfa065362a000f2df1165008fd8dc3640800db5f"; pointsKept 2; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je030226s"; articleSha256 "e27bd9dde34b32e5a326d9333d1d7ff072856fe58accbce90f8cf2ecee55159b"; pointsKept 3; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je0496140"; articleSha256 "3611f6f0bd8356b0e939f231570d600cb871f25b46cf61d4a4d42ac629a25989"; pointsKept 6; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je0600653"; articleSha256 "f1793c4a473429366bf9fd1d644d663c658e16ba45a8dd546a436c577f3a9d60"; pointsKept 2; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je100177u"; articleSha256 "16b87f3726867144e5387e849debfe17d00faee5894cba52d2a114adee15b10c"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je100765j"; articleSha256 "863440377dea8d09145b6da6924f002c219f1ead6eadbd52f896bc92a9f9ee89"; pointsKept 7; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je3003805"; articleSha256 "3f26c2cd59ab92b28ca9fcc3b18e77e79f29d2d1048a1aa76c41e45b06752630"; pointsKept 10; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je3013342"; articleSha256 "931bcd985b46bd178a3814a63ce1bebba44755373db06569f88e0d1baa7e8f7f"; pointsKept 3; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je700096m"; articleSha256 "945b0b42fc3a3b111643a9dfcb39e85d9e2d21a9a77c370fd6e5400d94899b64"; pointsKept 4; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je700325c"; articleSha256 "c7d603ecf1d1b63256f528361cc1db612e45e5e6cf831dc5c7199154689aaed1"; pointsKept 10; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je7003758"; articleSha256 "1a9d91f6c0a703eefb6a36de8b2454ce3a0e2d4e5ee6bfb25834eb046ebe71f0"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je800012v"; articleSha256 "ba7030009172d46b902acbdb56fff7bfc943d2282c141c59bb3e9996170f28af"; pointsKept 7; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je800048f"; articleSha256 "c829ab157436f555221b89478a09b3ab54197047532335a09d4e5b36c965b65c"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je800535c"; articleSha256 "b936ec60ecb4d987ff9b9ae630c23851eb127999e550127382ca762a4e9b3be6"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je900404r"; articleSha256 "d708b8d600959235d4469a83afc5206d129eae9be477cb7b27a2e74ac64179dc"; pointsKept 4; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je900436f"; articleSha256 "ba99e9333c81178237546f9636d5492d4efc11d2f8e49e47c1083317c5c07d48"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je901052w"; articleSha256 "4b957539172e235cca01e5f7023dd986a49620a0e561c3f763087f7fd886095d"; pointsKept 4; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            rule        "the default graded acceptance of DEV.md 4c C285 on the max relative error over the kept points (clean / warning / severe up to 5 / 10 / 20 %); every laboratory fitted, points beyond 15 % after the least-squares stage discarded by name (C283 amended)";
+            verdict     accepted;
+            studies     35;
+            pointsKept  102;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.322150;
+            max_pct     1.460399;
+            Trange      (253.15 338.15);   // K, the kept points
+        }
+    }
+    liquidHeatCapacity
+    {
+        origin        fitted;
+        method        "polynomial of degree 2 in T fitted to every measured liquid isobaric heat capacity at or below 200 kPa (specific values converted with MW); least squares in the relative error, then its largest value minimised";
+        fittedBy      "bin/curate/c287_new_components.py";
+        reviewStatus  autoPromoted;
+        humanReviewed false;
+        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 %
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+        fitGradeMaxRelativeError_pct 0.327171;
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+        evidence
+        (
+            { doi "10.1021/je049652j"; articleSha256 "c405d6ef88a2482e06e0b2bee9836bf915faf8cb91d26f00ca085ec90bd657a0"; pointsKept 29; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            rule        "the default graded acceptance of DEV.md 4c C285 on the max relative error over the kept points (clean / warning / severe up to 5 / 10 / 20 %); every laboratory fitted, points beyond 15 % after the least-squares stage discarded by name (C283 amended)";
+            verdict     accepted;
+            studies     1;
+            pointsKept  29;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.201977;
+            max_pct     0.327171;
+            Trange      (284.15 353.15);   // K, the kept points
+        }
+    }
+    idealGasHeatCapacity
+    {
+        origin           estimated;
+        method           "Joback";
+        methodVersion    "joback-poling5e-table2-2";
+        input            joback;
+        inputFingerprint "CH2:3,CH3:1,Cl:1";
+        reproducedInCase "data/curation/batches/new_components_estimated";
+        uncertainty      { status unquantified; reason "Joback group contribution (Joback & Reid 1987); a few percent for Cp_ig of ordinary organics"; }
+    }
+    dHf_298
+    {
+        origin           estimated;
+        method           "Joback";
+        methodVersion    "joback-poling5e-table2-2";
+        input            joback;
+        inputFingerprint "CH2:3,CH3:1,Cl:1";
+        reproducedInCase "data/curation/batches/new_components_estimated";
+        uncertainty      { status unquantified; reason "Joback group contribution (Joback & Reid 1987); several kJ/mol, more for polyfunctional molecules"; }
+        notes            "the ThermoML archive carries no enthalpy of formation or combustion block for this compound (searched)";
+    }
+    s_298
+    {
+        origin           estimated;
+        method           "derived from Joback: s_298 = (dHf_298 - dGf_298)/298.15 + the sum of the elements' standard entropies, with Joback's dGf_298 = -29130 J/mol (not stored: dGf derives from dHf and s_298)";
+        methodVersion    "joback-poling5e-table2-2";
+        input            joback;
+        inputFingerprint "CH2:3,CH3:1,Cl:1";
+        elementEntropies "CODATA Key Values for Thermodynamics (Cox, Wagman & Medvedev, 1989): S(C, graphite) 5.74, S(H2, g) 130.680, S(O2, g) 205.152, S(N2, g) 191.609, S(F2, g) 202.791, S(Cl2, g) 223.081, S(Br2, l) 152.206, S(I2, cr) 116.139 J/(mol K)";
+        reproducedInCase "data/curation/batches/new_components_estimated";
+        uncertainty      { status unquantified; reason "inherits the errors of Joback's dHf_298 and dGf_298"; }
+    }
+    vaporPressure
+    {
+        origin        fitted;
+        method        "vaporPressureFit (three-parameter Antoine; objective twoStage: least squares in log10 P, then the largest relative error in P minimised from it; every usable study fitted, outliers above 15 % discarded by name)";
+        methodVersion "choupoProps Choupo-dev";
+        fittedInCase  "data/curation/components/1Chlorobutane";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+        fitGrade      clean;   // DEV.md 4c C285: the worse of the grades below
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+        fitGradeMaxRelativeError_pct 0.482152;   // grade clean
+        promotedBy    "bin/choupo-curate vp --promote";
+        promotedDate  "2026-11-11";
+        reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+        uncertainty   "the fit's maximum relative error over every kept measurement, below";
+        replaces      "model AmbroseWalton (a corresponding-states estimate from Tc, Pc, omega); `bin/choupo-curate revert <component>` restores it";
+        evidence
+        (
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/1Chlorobutane-vapourPressure-j.fluid.2006.02.009.dat";
+                doi       "10.1016/j.fluid.2006.02.009";
+                sha256    "929f03c4922527aa84331d53eb8194af16ec34aeb1be829cb1d0cbd1a6855c1c";
+                articleSha256 "294793403436783975100d8eaea9083144484e525d73d8310f0c45881e55d4a5";
+                pointsKept    16;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/1Chlorobutane-vapourPressure-j.jct.2003.09.009.dat";
+                doi       "10.1016/j.jct.2003.09.009";
+                sha256    "15bd5f9fe2822b301144edcd93cfdde66beb1946ab2ebc51bda93107b32f47da";
+                articleSha256 "f2666d0d886d604130ea42f9b1e45049d90f2b20c516ab3851bf82ba85508acc";
+                pointsKept    10;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/1Chlorobutane-vapourPressure-je800535c.dat";
+                doi       "10.1021/je800535c";
+                sha256    "e972c2c5096ee5db79f86282c423fecdd2cfbac1493c215d6dcedd890b3dc00d";
+                articleSha256 "b936ec60ecb4d987ff9b9ae630c23851eb127999e550127382ca762a4e9b3be6";
+                pointsKept    8;
+                pointsDropped 0;
+                provenance measured;
+            }
+        );
+        acceptance
+        {
+            rule        "the default of DEV.md 4c C285 (graded): max relative error in P over the kept points 5 / 10 / 20 %, and |Tnb - Tb| 1 / 2 / 4 K where Tb lies outside their range, are the upper limits of clean / warning / severe; above, refused; the grade is the worse of the two";
+            verdict     accepted;
+            studies     3;
+            pointsKept  34;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.251955;   // the fitted Antoine, every kept point
+            max_pct     0.482152;
+            awAad_pct   3.922143;   // the AmbroseWalton curve it replaces, the same points
+            awMax_pct   10.475761;
+            Tnb_fit     351.6506;   // K, the fitted curve at 101.325 kPa
+        }
+    }
+}

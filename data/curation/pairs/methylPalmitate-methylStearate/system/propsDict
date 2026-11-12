@@ -94,12 +94,13 @@
   not argued). Beside fit_nrtl's max |dT| 3.213 K (severe) on the same
   kept points. fit_uniquac: a_ij = -248.1, a_ji = 388.7 K over 32 kept
   points: max |dT| 3.121 K, mean 1.366 K, graded severe -> accepted;
-  fit_uniquac_start2 lands on the same pair (-248.1, 388.7). NOT PROMOTED
-  (max |dT| 3.121 K over the 32 kept points, one liquid across the
-  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/. Wilson: not fitted -- methylPalmitate and methylStearate
+  fit_uniquac_start2 lands on the same pair (-248.1, 388.7). PROMOTED on
+  2026-11-12 into
+  data/standards/parameters/UNIQUAC/methylPalmitate-methylStearate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 3.121 K over the 32 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 3.1207 K against ideal
+  10.7975 K. Wilson: not fitted -- methylPalmitate and methylStearate
   carry no liquid molar volume Vliq, which Wilson's Lambda needs --
   Wilson is not fitted.
   @@MODELS-RESULT-END@@
@@ -109,11 +110,12 @@
   fit_nrtl: b_ij = -331.1 K, b_ji = 1172.3 K over 32 kept points of 1
   laboratories (5 discarded): max |dT| 3.213 K, mean 1.440 K, graded
   severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
-  same pair (-331.1, 1172.3). NOT PROMOTED (max |dT| 3.213 K over the 32
-  kept points, one liquid across the validity span): fit grade severe --
-  DEV.md 4c C300 rule 3: a severe pair does not enter the default
-  catalogue; its record stays in this curation case's constant/, and a
-  case that needs it carries it in its own constant/
+  same pair (-331.1, 1172.3). PROMOTED on 2026-11-12 into
+  data/standards/parameters/NRTL/methylPalmitate-methylStearate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 3.213 K over the 32 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 3.2131 K against ideal
+  10.7975 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

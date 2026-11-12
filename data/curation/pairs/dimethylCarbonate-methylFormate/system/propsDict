@@ -93,15 +93,16 @@
   not argued). Beside fit_nrtl's max |dT| 2.621 K (severe) on the same
   kept points. fit_wilson: A_ij = 1903.4, A_ji = 2332.1 J/mol over 11
   kept points: max |dT| 2.316 K, mean 1.072 K, graded severe -> accepted;
-  fit_wilson_start2 lands on the same pair (1903.4, 2332.1). NOT PROMOTED
-  (max |dT| 2.316 K over the 11 kept points, one liquid across the
-  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/. UNIQUAC: not fitted -- methylFormate and
-  dimethylCarbonate carry no UNIQUAC r and q (no tabulated value, and no
-  UNIFAC groups to sum them from, bin/curate/uniquac_rq_from_groups.py)
-  -- UNIQUAC is not fitted; nothing is estimated silently.
+  fit_wilson_start2 lands on the same pair (1903.4, 2332.1). PROMOTED on
+  2026-11-12 into
+  data/standards/parameters/Wilson/dimethylCarbonate-methylFormate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.316 K over the 11 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.3157 K against ideal
+  21.1656 K. UNIQUAC: not fitted -- methylFormate and dimethylCarbonate
+  carry no UNIQUAC r and q (no tabulated value, and no UNIFAC groups to
+  sum them from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not
+  fitted; nothing is estimated silently.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -109,11 +110,12 @@
   fit_nrtl: b_ij = 423.1 K, b_ji = 46.6 K over 11 kept points of 1
   laboratories (3 discarded): max |dT| 2.621 K, mean 1.206 K, graded
   severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
-  same pair (423.1, 46.6). NOT PROMOTED (max |dT| 2.621 K over the 11
-  kept points, one liquid across the validity span): fit grade severe --
-  DEV.md 4c C300 rule 3: a severe pair does not enter the default
-  catalogue; its record stays in this curation case's constant/, and a
-  case that needs it carries it in its own constant/
+  same pair (423.1, 46.6). PROMOTED on 2026-11-12 into
+  data/standards/parameters/NRTL/dimethylCarbonate-methylFormate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.621 K over the 11 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.6213 K against ideal
+  21.1656 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

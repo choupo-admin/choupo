@@ -21,26 +21,26 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/sulfolane.dat"
         {
             type          imported;
-            sha256        "3608f9788ff3687e08d902ca6977898c4ab6a466053619faae6ff73913362066";
-            computationalSha256 "7385ac756f3617a1d484545550e657cb980d6b9c42593d66620f003b03c4144b";
+            sha256        "70e9e0d6792df3f58bb6b51bd3b57325abf9708c3f3d4f78f7481463e465ceff";
+            computationalSha256 "f8ee6fd89710bf6383dcbe94e87f2a50ec2b5e655b06f3a245d8d74c472a6e3b";
             origin        "data/standards/components/sulfolane.dat";
-            originSha256  "ac7f8c608764cf5b4538d3877c47f5ffb0e65846642a661fe10cdebb90748d96";
+            originSha256  "6e103bc7e4f574eef823ce1c1b6d25ed7665552b6d39163a14fd49be3b7b318d";
             release       Choupo-2608;
         }
         "components/toluene.dat"
         {
             type          imported;
-            sha256        "5fb900674321baa67135bfeb2c8f80e63d9af183c35f1615477d751b4299f14b";
-            computationalSha256 "55e1e2986dd1c3fc08c951e842a86b062ee6a7bfbc1e1317387e69149a139e36";
+            sha256        "2f88a0bab6cfc9c5391c9711987cc9de2c7ccd3b43578cb37dd6863702e4bbcf";
+            computationalSha256 "7d316837e8321a6e87d8c3913cad0dd71f31ba54815976a987d95ff64995d730";
             origin        "data/standards/components/toluene.dat";
-            originSha256  "ad1533cb0d94caade355d7149fd88ee1ad07c945f5d4c85f4bcce925766250b9";
+            originSha256  "c0def63ccca243b6d038bbf80667196243b5f4cb1dbf2390cdbd24bed2319be1";
             release       Choupo-2608;
         }
         "parameters/NRTL/sulfolane-toluene.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "fc2a76ad04db79621030d9ac3886647c039483fb2f30b111ea944f6abd383465";
             origin        "data/standards/parameters/NRTL/sulfolane-toluene.dat";
             originSha256  "725a27aeaeeb50650fa401faf31091271b07caeb8583b32d34e6c808131e8002";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/sulfolane-toluene.dat"
+        {
+            type          imported;
+            sha256        "884bda9b532277221023688f156807b66f14a678f4c52958736df13ea6c1570e";
+            computationalSha256 "5b0fe93a4782e1796736861b637cbee03875497997b9f268ccf8c184f8d62328";
+            origin        "data/standards/parameters/Wilson/sulfolane-toluene.dat";
+            originSha256  "35bed634a17c30469a2a7b05ec18c11b4994747fe0a4973d19d91dc53cf1b921";
             release       Choupo-2608;
         }
     }

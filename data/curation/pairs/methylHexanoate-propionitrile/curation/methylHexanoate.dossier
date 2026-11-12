@@ -1,0 +1,209 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      methylHexanoate;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylHexanoate-propionitrile.b_ij  -295.353624469;
+        equilibrium.liquid.activityModel.binaryParameters.methylHexanoate-propionitrile.b_ji  591.041062776;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "6df964c6311fed2f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylHexanoate-propionitrile-bubble-je060469v.dat";
+            doi       "10.1021/je060469v";
+            sha256    "c9cd2f7a154f8a26d2842cfb6f97bb9fd4fe3b13126bafecc810181a2851b659";
+            provenance measured;
+            archiveFile "je060469v.xml";
+            system    "methylHexanoate + propionitrile";
+            pressure  "93320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0461; max 0.9712; n 20; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylHexanoate-propionitrile.b_ij  -295.353624731;
+        equilibrium.liquid.activityModel.binaryParameters.methylHexanoate-propionitrile.b_ji  591.041063251;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "6df964c6311fed2f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylHexanoate-propionitrile-bubble-je060469v.dat";
+            doi       "10.1021/je060469v";
+            sha256    "c9cd2f7a154f8a26d2842cfb6f97bb9fd4fe3b13126bafecc810181a2851b659";
+            provenance measured;
+            archiveFile "je060469v.xml";
+            system    "methylHexanoate + propionitrile";
+            pressure  "93320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0461; max 0.9712; n 20; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylHexanoate-propionitrile.A_ij  1142.96657539;
+        equilibrium.liquid.activityModel.binaryParameters.methylHexanoate-propionitrile.A_ji  1015.71865108;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "6df964c6311fed2f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylHexanoate-propionitrile-bubble-je060469v.dat";
+            doi       "10.1021/je060469v";
+            sha256    "c9cd2f7a154f8a26d2842cfb6f97bb9fd4fe3b13126bafecc810181a2851b659";
+            provenance measured;
+            archiveFile "je060469v.xml";
+            system    "methylHexanoate + propionitrile";
+            pressure  "93320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0461; max 0.9712; n 20; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylHexanoate-propionitrile.A_ij  1142.9665833;
+        equilibrium.liquid.activityModel.binaryParameters.methylHexanoate-propionitrile.A_ji  1015.71864679;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "6df964c6311fed2f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylHexanoate-propionitrile-bubble-je060469v.dat";
+            doi       "10.1021/je060469v";
+            sha256    "c9cd2f7a154f8a26d2842cfb6f97bb9fd4fe3b13126bafecc810181a2851b659";
+            provenance measured;
+            archiveFile "je060469v.xml";
+            system    "methylHexanoate + propionitrile";
+            pressure  "93320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0461; max 0.9712; n 20; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

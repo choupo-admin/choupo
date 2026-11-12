@@ -1,0 +1,118 @@
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- ethylPropionate(i) + 2Methyl2Propanol(j)
+
+  REGRESSED BY CHOUPO'S CURATION PIPELINE (bin/choupo-curate, DEV.md 4c C282;
+  record docs/design/binary-pairs-from-open-measurements.md) to measured
+  bubble temperatures.  The articles named under `evidence` are the
+  SOURCE of the measurements; the NIST/TRC ThermoML Archive located them.
+  NO MEASURED POINT IS IN THIS RECORD OR THIS TREE: the case regenerates
+  them from the DOIs and sha256 sums it declares (constant/archiveDatasets).
+  The PARAMETERS are Choupo's own work.
+
+  EQUATION: tau_ij = a_ij + b_ij / T [b in K], G_ij = exp(-alpha tau_ij),
+  Renon & Prausnitz direction (src/thermo/activityCoefficient/NRTL.cpp).
+  a_ij = a_ji = 0 and alpha = 0.30 FIXED, not fitted.
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
+  vapour-pressure records for both pure components.
+
+  reviewStatus interim: a case-local record, regressed and not read back.  Fitted on EVERY laboratory (C283), so the
+  `validation {}` block below says, truthfully, that nothing
+  was held out; the acceptance is the `curation {}` block.
+  PROMOTABLE by `bin/choupo-curate pair ... --promote`: fit grade clean
+  -- max |dT| 0.165 K over the 34 kept points (limits 1 / 2 / 4 K), one
+  liquid across the validity span
+
+  REPRODUCE: run data/curation/pairs/2Methyl2Propanol-ethylPropionate (after `bin/choupo-curate fetch` on it); its fit
+  writes 2Methyl2Propanol-ethylPropionate.proposal.dat, which bin/curate/check_regressed_pairs.py holds
+  equal to this record.
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i ethylPropionate; j 2Methyl2Propanol; }
+
+components  ( ethylPropionate  2Methyl2Propanol );
+model       NRTL;
+
+parameters
+{
+    i           ethylPropionate;
+    j           2Methyl2Propanol;
+    a_ij        0.00000000;
+    b_ij        64.76112701;
+    a_ji        0.00000000;
+    b_ji        63.59265588;
+    alpha       0.30000000;
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "data/curation/pairs/2Methyl2Propanol-ethylPropionate";
+    reviewStatus  interim;
+    reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+    fitDate       "2026-11-11";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethylPropionate-2Methyl2Propanol-bubble-je0202073.dat";
+            doi       "10.1021/je0202073";
+            sha256    "b03e251e0109e291a7c3bfd18d61e691063a4ec1e3b2210dd23312c3ee53f9b0";
+            provenance measured;
+            archiveFile "je0202073.xml";
+            system    "ethylPropionate + 2Methyl2Propanol";
+            pressure  "101325.000000 Pa";
+        }
+    );
+    fingerprint "c7e13d2d3af512ea";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          45.06124439;
+    rms_K         0.08785911;
+    nDataPoints   34;
+    identifiable  false;
+    maxAbsCorr    0.99929427;
+
+    validity
+    {
+        temperature { min 355.80 K; max 371.05 K; }
+        pressure    { min 101325 Pa; max 101325 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validationRefused;
+
+    heldOut     none;   // every declared dataset carried `role fit`
+
+    acceptance  none;   // no band was declared before the fit, so no
+                        // pass/fail may be read out of the residual above
+}
+
+curation
+{
+    rule            "DEV.md 4c C283 (amended) + C284, graded by C285 (C286)";
+    evidence        allLaboratories;   // every study fitted, none held out
+    objective       twoStage;
+    outlierLimit    3 K;   // |T_model - T| after the least-squares stage
+    outliersDropped 0;
+    pointsKept      34;
+    noBubblePoint   0;
+    maxAbsError     0.1650 K;
+    meanAbsError    0.0735 K;
+    acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
+    gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
+    grade           clean;
+    oneLiquid       true;   // arm (f) over the validity span; a pair that splits ONE liquid is never promoted, whatever its grade
+    verdict         accepted;
+}

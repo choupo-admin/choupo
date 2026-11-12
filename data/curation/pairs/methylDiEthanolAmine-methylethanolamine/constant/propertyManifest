@@ -21,17 +21,17 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/methylDiEthanolAmine.dat"
         {
             type          imported;
-            sha256        "a6589b36aa49310cdb02a0535585481289b1f8099ddc59f4df3d27d7a17a8b11";
-            computationalSha256 "38b43886e6cc2dd7da699d5a8dfdce6eb441e8fae987bff01c1ca8cc51e48692";
+            sha256        "d6dfe527c3886d2549f163db803657c1f142018d015a4d6d624cdc3a6afda83a";
+            computationalSha256 "be0dfcb95ebe99d71c803539e99faef1ec0bdf0310b9f4b028b496952a035e46";
             origin        "data/standards/components/methylDiEthanolAmine.dat";
-            originSha256  "40cbce50d282e7b68cffe3c715a4fbc06a62b228c0e5ede3867731f06831040c";
+            originSha256  "cfd4331ccf0a7ae72d217482b7ab109ef566a9a5422f7a14735a808126fcace3";
             release       Choupo-2608;
         }
         "components/methylethanolamine.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "8ff8490087a0c1bca2106864d4ad6d6b8cad072cdfabdac1d97703d1b74a72ff";
             origin        "data/standards/parameters/NRTL/methylDiEthanolAmine-methylethanolamine.dat";
             originSha256  "d36f476acef8a9446d3d7fe1edf3f865fa093b283586749bf48e877c50540867";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/methylDiEthanolAmine-methylethanolamine.dat"
+        {
+            type          imported;
+            sha256        "eff525a549fe8e4c4e00426c5f080523c42134246eb3a735ec0a77e18397c8f9";
+            computationalSha256 "61cc6291a24d70779e552237f3646ab956012952b389f171eaaa916cc2c541df";
+            origin        "data/standards/parameters/Wilson/methylDiEthanolAmine-methylethanolamine.dat";
+            originSha256  "693336423568f1ff3c6405384c325a81dea950b59b2c705855b8148d8431f490";
             release       Choupo-2608;
         }
     }

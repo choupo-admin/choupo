@@ -95,15 +95,16 @@
   not argued). Beside fit_nrtl's max |dT| 2.065 K (severe) on the same
   kept points. fit_wilson: A_ij = 4749.1, A_ji = -1111.7 J/mol over 50
   kept points: max |dT| 2.063 K, mean 0.515 K, graded severe -> accepted;
-  fit_wilson_start2 lands on the same pair (4749.1, -1111.7). NOT
-  PROMOTED (max |dT| 2.063 K over the 50 kept points, one liquid across
-  the validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/. UNIQUAC: not fitted -- diEthylCarbonate carries no
-  UNIQUAC r and q (no tabulated value, and no UNIFAC groups to sum them
-  from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted;
-  nothing is estimated silently.
+  fit_wilson_start2 lands on the same pair (4749.1, -1111.7). PROMOTED on
+  2026-11-12 into
+  data/standards/parameters/Wilson/diEthylCarbonate-methanol.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.063 K over the 50 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.0633 K against ideal
+  15.5204 K. UNIQUAC: not fitted -- diEthylCarbonate carries no UNIQUAC r
+  and q (no tabulated value, and no UNIFAC groups to sum them from,
+  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
+  is estimated silently.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -111,11 +112,12 @@
   fit_nrtl: b_ij = 254.2 K, b_ji = 149.5 K over 50 kept points of 2
   laboratories (4 discarded): max |dT| 2.065 K, mean 0.540 K, graded
   severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
-  same pair (254.2, 149.5). NOT PROMOTED (max |dT| 2.065 K over the 50
-  kept points, one liquid across the validity span): fit grade severe --
-  DEV.md 4c C300 rule 3: a severe pair does not enter the default
-  catalogue; its record stays in this curation case's constant/, and a
-  case that needs it carries it in its own constant/
+  same pair (254.2, 149.5). PROMOTED on 2026-11-12 into
+  data/standards/parameters/NRTL/diEthylCarbonate-methanol.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.065 K over the 50 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.0651 K against ideal
+  15.5204 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

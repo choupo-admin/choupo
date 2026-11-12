@@ -113,11 +113,11 @@
   fit_nrtl: b_ij = 1121.6 K, b_ji = -1346.5 K over 7 kept points of 1
   laboratories (5 discarded): max |dT| 2.573 K, mean 1.832 K, graded
   severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
-  same pair (1121.5, -1346.5). NOT PROMOTED (max |dT| 2.573 K over the 7
-  kept points, one liquid across the validity span): fit grade severe --
-  DEV.md 4c C300 rule 3: a severe pair does not enter the default
-  catalogue; its record stays in this curation case's constant/, and a
-  case that needs it carries it in its own constant/
+  same pair (1121.5, -1346.5). PROMOTED on 2026-11-12 into
+  data/standards/parameters/NRTL/mCresol-nButanol.dat as reviewStatus
+  autoPromoted, review by none, because: fit grade severe -- max |dT|
+  2.573 K over the 7 kept points, one liquid across the validity span;
+  BEATS THE IDEAL MIXTURE (C334): 2.5726 K against ideal 33.2244 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

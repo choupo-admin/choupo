@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-12";
+    importerVersion    "3";
+    records
+    {
+        "components/furan.dat"
+        {
+            type          imported;
+            sha256        "2f6a589d1fe1c00150a2c9cf69a7b2ad817a7ad52082885c3a8f760436503378";
+            computationalSha256 "be9cf3e63603613c99083b7636381c48048f906abe56b1e872a61b0294684d86";
+            origin        "data/standards/components/furan.dat";
+            originSha256  "656d31d92867385d6e0897a73306e3e467ecf5f0c8b50c8ea462aeda36e83cb4";
+            release       Choupo-2608;
+        }
+        "components/furfural.dat"
+        {
+            type          imported;
+            sha256        "f2f2a7b7b55ab32eaffb4e42a92a97d1be9177b7181df9be1c627d47ec454d7d";
+            computationalSha256 "7d0057b911a77802c128aa5bb4d32cd68ef6d33f4e93cbd647809a929789e686";
+            origin        "data/standards/components/furfural.dat";
+            originSha256  "a22381d24ba39a150781e235fc42f1ac68db528c7c3461eb6d9e0ee4dc82a13c";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/furan-furfural.dat"
+        {
+            type          imported;
+            sha256        "ef1a4d05ad87f628c0c2d9ff558e8d8868414adfa1caf3663e74aa6a2862dcc2";
+            computationalSha256 "8c524008f707b308c29a2f89381e0e61c18ac45574db43aefca4c247573d0d24";
+            origin        "data/standards/parameters/Wilson/furan-furfural.dat";
+            originSha256  "951e93b9c35688df12087638336385cb3fb6300f8ce16b34c181e313845e0310";
+            release       Choupo-2608;
+        }
+    }
+}

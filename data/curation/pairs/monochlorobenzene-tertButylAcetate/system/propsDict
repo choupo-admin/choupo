@@ -1,0 +1,376 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  monochlorobenzene-tertButylAcetate -- AN NRTL PAIR FROM EVERY LABORATORY'S MEASUREMENTS.
+
+  WRITTEN BY bin/choupo-curate pair tertButylAcetate monochlorobenzene (DEV.md 4c C284, the bulk run;
+  record docs/design/binary-pairs-from-open-measurements.md section 11).
+
+  THE DECLARATION -- WRITTEN AND COMMITTED BEFORE ANY FIT RAN (several
+  declarations of the bulk run share one commit).
+
+  IDENTITY.  tertButylAcetate (CAS 540-88-5, InChIKey WMOVHXAZOJBABW-UHFFFAOYSA-N)
+  + monochlorobenzene (CAS 108-90-7, InChIKey MVPPADPHJFYWMZ-UHFFFAOYSA-N), joined
+  to the archive through identity.json -- never by name.  CLASS (C284): both
+  records are volatile molecular liquids (no role nonvolatile/solute, no
+  dissociatesTo, no charge, no solid, a vapour-pressure model), and every
+  measured temperature lies below both critical temperatures.
+
+  NO MEASURED SERIES IN THIS TREE.  constant/archiveDatasets names each
+  dataset (DOI, NIST URL, article sha256, extraction selector, extract
+  sha256); `bin/choupo-curate fetch` writes the points into
+  constant/archiveExtracts/, which is gitignored.
+
+  STUDIES: every bubble-temperature block of the pair at or below 110 kPa
+  with a declared uncertainty (1 block(s)).  FITTED, ALL OF THEM
+  (1):
+      10.1021/acs.jced.7b01021       block 5    18 pts  101.33 kPa  371.29-404.31 K  U 0.2-0.53 K
+  SET ASIDE BY THE EXTRACTION RULES, BY NAME:
+      (none)
+
+  THE RULE (DEV.md 4c C283 amended, C284).  Every laboratory above is
+  fitted; none is held out (the C16 partition and its band are retired as
+  the acceptance test).  NRTL, a_ij = a_ji = 0, alpha = 0.30 fixed: two
+  parameters (b_ij, b_ji); each point weighted by 1/U, U its own stated
+  expanded uncertainty.  Objective twoStage (least squares, then minimax;
+  T_bubble absolute, in K).  OUTLIERS: after a least-squares stage over every
+  point, a point with |T_model - T| > 3 K is discarded BY
+  NAME (`discard` on its evidence entry, listed below) and the fit repeated
+  without it.
+  THE GRADED ACCEPTANCE (DEV.md 4c C285, applied to pairs by C286): max
+  |T_model - T| over the KEPT points is GRADED -- clean up to 1 K,
+  warning up to 2 K, severe up to 4 K, refused above; a point with no
+  bubble point refuses. C283's relative clause (5 / 10 / 20 %) judges
+  composition; this fit has no composition residual, so only the
+  temperature clause applies. Every grade but refused is accepted and
+  promoted (autoPromoted, humanReviewed false) with `fitGrade` and its
+  max |dT| in the record's provenance; the engine voices a warning or a
+  severe grade on every run that reads the pair. A pair that splits ONE
+  liquid inside its validity span is not promoted, whatever its grade
+  (arm f).
+  Two starts: (0, 0) and (800, -400).
+
+  OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
+  @@OUTLIERS-BEGIN@@
+      none: every one of the 18 points lies within 3 K after the
+      least-squares stage.
+  @@OUTLIERS-END@@
+
+  @@MODELS-BEGIN@@
+  THE OTHER ACTIVITY MODELS (DEV.md 4c C294), declared before their fits
+  ran. The SAME datasets and the SAME kept points as fit_nrtl: each op
+  below is fit_nrtl copied verbatim -- evidence, discards, objective,
+  residual, weighting, options -- with only its parameters, its `thermo
+  {}` fragment (the model) and its outputs changed; the outlier discard
+  was decided ONCE, on the NRTL least-squares stage, and is reused, never
+  re-decided per model. UNIQUAC: two parameters a_ij, a_ji (K), tau_ij =
+  exp(-a_ij/T), b = c = 0 fixed (the NRTL default's count; temperature
+  dependence 1/T), r and q each component's own record. Wilson: two
+  parameters A_ij, A_ji (J/mol), Lambda_ij = (V_j/V_i) exp(-A_ij/RT), V
+  the records' Vliq. Two starts each. Each model gets its own record
+  (constant/parameters/<MODEL>/), its own grade at 1 / 2 / 4 K (max
+  |T_model - T|), its own one-liquid test (arm f), `fitGradeBasis
+  inSample`, the C300 cap and `review { by none; }`; a severe or refused
+  grade, or a split, is not promoted. The three in-sample residuals are
+  published side by side, never used to choose a model for the student.
+  UNIQUAC: NOT FITTED -- monochlorobenzene carries no UNIQUAC r and q (no
+  tabulated value, and no UNIFAC groups to sum them from,
+  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
+  is estimated silently. Wilson: FITTED.
+  @@MODELS-END@@
+
+  @@MODELS-RESULT-BEGIN@@
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dT| 2.316 K (severe) on the same
+  kept points. fit_wilson: A_ij = 991.3, A_ji = -1157.1 J/mol over 18
+  kept points: max |dT| 2.440 K, mean 1.485 K, graded severe -> accepted;
+  fit_wilson_start2 lands on the same pair (991.3, -1157.1). PROMOTED on
+  2026-11-12 into
+  data/standards/parameters/Wilson/monochlorobenzene-tertButylAcetate.dat
+  as reviewStatus autoPromoted, review by none, because: fit grade severe
+  -- max |dT| 2.440 K over the 18 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.4401 K against ideal
+  4.7702 K. UNIQUAC: not fitted -- monochlorobenzene carries no UNIQUAC r
+  and q (no tabulated value, and no UNIFAC groups to sum them from,
+  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
+  is estimated silently.
+  @@MODELS-RESULT-END@@
+
+  @@RESULT-BEGIN@@
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = -270.2 K, b_ji = 223.0 K over 18 kept points of 1
+  laboratories (0 discarded): max |dT| 2.316 K, mean 1.471 K, graded
+  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on A
+  DIFFERENT pair (1580.5, -729.9). PROMOTED on 2026-11-12 into
+  data/standards/parameters/NRTL/monochlorobenzene-tertButylAcetate.dat
+  as reviewStatus autoPromoted, review by none, because: fit grade severe
+  -- max |dT| 2.316 K over the 18 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.3157 K against ideal
+  4.7702 K
+  @@RESULT-END@@
+
+  WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
+  frame (ideal-gas vapour, the catalogue's own vapour-pressure records); the
+  measurements were transcribed by the archive and have NOT been read back
+  against the articles (the CHECKLIST that `fetch` writes is the aid).
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        fit_nrtl;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.tertButylAcetate-monochlorobenzene.b_ij;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.tertButylAcetate-monochlorobenzene.b_ji;  initial 0;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/tertButylAcetate-monochlorobenzene-bubble-acs.jced.7b01021.dat";
+                role     fit;
+            }
+        );
+
+        objective { method twoStage;  scale { T_bubble absolute; } }
+        residual
+        {
+            kind        T_bubble;
+            components  ( tertButylAcetate monochlorobenzene );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_history.csv;
+            parity     parity.csv;
+            proposal   monochlorobenzene-tertButylAcetate.proposal.dat;
+        }
+    }
+    {
+        name        fit_nrtl_start2;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.tertButylAcetate-monochlorobenzene.b_ij;  initial 800;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.tertButylAcetate-monochlorobenzene.b_ji;  initial -400;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/tertButylAcetate-monochlorobenzene-bubble-acs.jced.7b01021.dat";
+                role     fit;
+            }
+        );
+
+        objective { method twoStage;  scale { T_bubble absolute; } }
+        residual
+        {
+            kind        T_bubble;
+            components  ( tertButylAcetate monochlorobenzene );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            parity     parity_start2.csv;
+        }
+    }
+    {
+        name        txy_ideal;
+        type        propertyScan1D;
+        vary        { variable x[tertButylAcetate];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.33 kPa;  composition { tertButylAcetate 0.5;  monochlorobenzene 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model ideal; } } }
+        }
+        properties  ( T_bubble  y_eq_tertButylAcetate );
+        output      { file txy_ideal.csv; }
+    }
+    {
+        name        txy_nrtl;
+        type        propertyScan1D;
+        vary        { variable x[tertButylAcetate];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.33 kPa;  composition { tertButylAcetate 0.5;  monochlorobenzene 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_tertButylAcetate );
+        output      { file txy_nrtl.csv; }
+    }
+    // @@C294-OPS-BEGIN@@ -- UNIQUAC and Wilson on the NRTL fit's own evidence (DEV.md 4c C294)
+    {
+        name        fit_wilson;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.tertButylAcetate-monochlorobenzene.A_ij;  initial 0;  min -30000;  max 30000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.tertButylAcetate-monochlorobenzene.A_ji;  initial 0;  min -30000;  max 30000; }
+        );
+
+        thermo   // the model, as a fragment of the case's system (C294)
+        {
+            equilibrium
+            {
+                liquid
+                {
+                    activityModel
+                    {
+                        model Wilson;
+                        binaryParameters   // the FIT'S starting point
+                        {
+                            tertButylAcetate-monochlorobenzene { i tertButylAcetate; j monochlorobenzene; A_ij 0; A_ji 0; }
+                        }
+                    }
+                    standardState pureLiquid;
+                }
+            }
+        }
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/tertButylAcetate-monochlorobenzene-bubble-acs.jced.7b01021.dat";
+                role     fit;
+            }
+        );
+
+        objective { method twoStage;  scale { T_bubble absolute; } }
+        residual
+        {
+            kind        T_bubble;
+            components  ( tertButylAcetate monochlorobenzene );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_history_wilson.csv;
+            parity     parity_wilson.csv;
+            proposal   monochlorobenzene-tertButylAcetate.Wilson.proposal.dat;
+        }
+    }
+    {
+        name        fit_wilson_start2;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.tertButylAcetate-monochlorobenzene.A_ij;  initial 4000;  min -30000;  max 30000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.tertButylAcetate-monochlorobenzene.A_ji;  initial -2000;  min -30000;  max 30000; }
+        );
+
+        thermo   // the model, as a fragment of the case's system (C294)
+        {
+            equilibrium
+            {
+                liquid
+                {
+                    activityModel
+                    {
+                        model Wilson;
+                        binaryParameters   // the FIT'S starting point
+                        {
+                            tertButylAcetate-monochlorobenzene { i tertButylAcetate; j monochlorobenzene; A_ij 0; A_ji 0; }
+                        }
+                    }
+                    standardState pureLiquid;
+                }
+            }
+        }
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/tertButylAcetate-monochlorobenzene-bubble-acs.jced.7b01021.dat";
+                role     fit;
+            }
+        );
+
+        objective { method twoStage;  scale { T_bubble absolute; } }
+        residual
+        {
+            kind        T_bubble;
+            components  ( tertButylAcetate monochlorobenzene );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            parity     parity_wilson_start2.csv;
+        }
+    }
+    // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[tertButylAcetate];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.33 kPa;  composition { tertButylAcetate 0.5;  monochlorobenzene 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_tertButylAcetate );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
+);
+
+experimental
+(
+    {
+        name      study1;
+        component tertButylAcetate;
+        kind      txy;
+        models    ( txy_ideal  txy_nrtl );
+        dataset   "constant/archiveExtracts/tertButylAcetate-monochlorobenzene-bubble-acs.jced.7b01021.dat";
+        source    "IN-SAMPLE (fitted): doi 10.1021/acs.jced.7b01021";
+    }
+);

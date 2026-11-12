@@ -1,0 +1,92 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/allylAlcohol.dat"
+        {
+            type          imported;
+            sha256        "191ab207e5829dd2e148e0b31cab2193023b57895dabb696171e490519763f4b";
+            computationalSha256 "a68d87e0a76731ff44002648a4e399843bab742901a006901d2ef26334eeb0a9";
+            origin        "data/standards/components/allylAlcohol.dat";
+            originSha256  "ad889fe302e1a314414860d2ddc5c03a3f32f3b66f3923e4e61d36afbfb98bda";
+            release       Choupo-2608;
+        }
+        "components/methanol.dat"
+        {
+            type          imported;
+            sha256        "c31b411d7bdd0857e1a2998503dd5170f75f9a417a9d47306b4095fd28bcebd6";
+            computationalSha256 "d51b98bd9ea6675087f0be387bcb63782ea8fc394f1962cb648ad92e39752faa";
+            origin        "data/standards/components/methanol.dat";
+            originSha256  "3e584446eb5b5ffd4ee5547099679b01254cc19dad31a8db909a2068fe9cad43";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/allylAlcohol-methanol.dat"
+        {
+            type          imported;
+            sha256        "968dc2c1a0886e28b55046826be13604992184e37b0d96a5a292670114bb25dc";
+            computationalSha256 "5d8995a14c691d8b585363c577b186e9316cb1e2702a05594096df2ca0c90b1d";
+            origin        "data/standards/parameters/NRTL/allylAlcohol-methanol.dat";
+            originSha256  "0df19c32e1d53db46ec57daf00ad2e0db07eee237ffd703a13b944dd836e6bca";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/allylAlcohol-methanol.dat"
+        {
+            type          imported;
+            sha256        "ce70bd2e18dbd52fdc1c76ae1671199621d17d06195fbc7acb718df1c0f2e3fb";
+            computationalSha256 "436f69ed3d3c20953b676e3c91311b6f11cc0aae3143d5c948add518f8496e40";
+            origin        "data/standards/parameters/UNIQUAC/allylAlcohol-methanol.dat";
+            originSha256  "291096012bac476e86ad60ef6323f9d16d414c6dcde8df1aaec402f915641c31";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/allylAlcohol-methanol.dat"
+        {
+            type          imported;
+            sha256        "fb138382bc681dbbaa3c08dd18dc7de21bfc100d46571ccc8263c63b77d2888e";
+            computationalSha256 "7c76fe4262f1e21e744d8e4b852e05753ae6417c93487216fe4d0f924d3329f0";
+            origin        "data/standards/parameters/Wilson/allylAlcohol-methanol.dat";
+            originSha256  "2b25e424251b7d6a5a7a708c8894b6e83d72d2dc0c15d5d8dc31455468743e37";
+            release       Choupo-2608;
+        }
+    }
+}

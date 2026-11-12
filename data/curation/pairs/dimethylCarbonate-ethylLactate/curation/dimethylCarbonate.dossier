@@ -1,0 +1,205 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      dimethylCarbonate;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-ethylLactate.b_ij  807.343509412;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-ethylLactate.b_ji  -441.560159513;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5fcb7ab9ade5f39a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/dimethylCarbonate-ethylLactate-bubble-acs.jced.7b00185.dat";
+            doi       "10.1021/acs.jced.7b00185";
+            sha256    "61bb3c09e1b45ee9f1f094e2f765842296864f1cac5f49d7b1fbc0263c3e13ca";
+            provenance measured;
+            archiveFile "acs.jced.7b00185.xml";
+            system    "dimethylCarbonate + ethylLactate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1001; max 0.95; n 56; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-ethylLactate.b_ij  807.343506513;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-ethylLactate.b_ji  -441.560158693;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5fcb7ab9ade5f39a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/dimethylCarbonate-ethylLactate-bubble-acs.jced.7b00185.dat";
+            doi       "10.1021/acs.jced.7b00185";
+            sha256    "61bb3c09e1b45ee9f1f094e2f765842296864f1cac5f49d7b1fbc0263c3e13ca";
+            provenance measured;
+            archiveFile "acs.jced.7b00185.xml";
+            system    "dimethylCarbonate + ethylLactate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1001; max 0.95; n 56; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-ethylLactate.A_ij  -1755.79737319;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-ethylLactate.A_ji  5798.69720036;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5fcb7ab9ade5f39a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/dimethylCarbonate-ethylLactate-bubble-acs.jced.7b00185.dat";
+            doi       "10.1021/acs.jced.7b00185";
+            sha256    "61bb3c09e1b45ee9f1f094e2f765842296864f1cac5f49d7b1fbc0263c3e13ca";
+            provenance measured;
+            archiveFile "acs.jced.7b00185.xml";
+            system    "dimethylCarbonate + ethylLactate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1001; max 0.95; n 56; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-ethylLactate.A_ij  -1755.7973693;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-ethylLactate.A_ji  5798.69717621;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5fcb7ab9ade5f39a";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/dimethylCarbonate-ethylLactate-bubble-acs.jced.7b00185.dat";
+            doi       "10.1021/acs.jced.7b00185";
+            sha256    "61bb3c09e1b45ee9f1f094e2f765842296864f1cac5f49d7b1fbc0263c3e13ca";
+            provenance measured;
+            archiveFile "acs.jced.7b00185.xml";
+            system    "dimethylCarbonate + ethylLactate";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1001; max 0.95; n 56; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

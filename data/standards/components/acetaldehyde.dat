@@ -42,6 +42,15 @@ idealGasHeatCapacity
     high     ( 3.321176590e+06 -1.449719957e+04 2.708421279e+01 -2.879320054e-03 5.556309920e-07 -5.732674880e-11 2.443965239e-15 );
 }
 
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (1 CH3 + 1 CHO), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   1.8991;
+    q   1.7960;
+}
+
 groups
 {
     unifac ( { group CH3; count 1; } { group CHO; count 1; } );   // added from data/groupEstimative (UNIFAC decomposition; vocab-checked vs groups.dat)
@@ -84,6 +93,12 @@ cosmo
 
 provenance
 {
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 1.8991, q = sum nu_k Q_k = 1.7960 over the record's unifac groups (1 CH3 + 1 CHO)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
     dHf_298
     {
         origin        literature;

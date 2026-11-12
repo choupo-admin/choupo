@@ -1,0 +1,92 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/12Propanediol.dat"
+        {
+            type          imported;
+            sha256        "c409c477e38149f45b6c4c595b27e4671838a2523b549c821d773f9e8e4745bb";
+            computationalSha256 "6d69cedf35f359bb82b9f96b941054fed9693709ceac08352ab43dba5c2cfc43";
+            origin        "data/standards/components/12Propanediol.dat";
+            originSha256  "05fa18c3ed58adca9c2cf0b10321be55c8ec74d0815208903d50188c09899fb4";
+            release       Choupo-2608;
+        }
+        "components/cyclohexane.dat"
+        {
+            type          imported;
+            sha256        "6e9c77d143be165e7f62c31dfda1de7fc130983a69186068273126f2bb968285";
+            computationalSha256 "04364dec902d4e12d65dadb6aa208108b37ad08210b3ec980b8e4ef259f64cdc";
+            origin        "data/standards/components/cyclohexane.dat";
+            originSha256  "0115ae582f156445955d331ea388b9ac1a51f226207a24f74fe9ab3cc14b4d69";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/12Propanediol-cyclohexane.dat"
+        {
+            type          imported;
+            sha256        "f983e6868139b05221fa810de96c5f3cb71a68f83e661dbec53080de1c962dc6";
+            computationalSha256 "0f68408866eb3776b22a3321ea320b60ad02398c3b8b9f3d91660f4ea986e215";
+            origin        "data/standards/parameters/NRTL/12Propanediol-cyclohexane.dat";
+            originSha256  "1bce08f101d9dd70a9a541ea12f5b8bfe0def6c9a71eb9fbac5ce890766d84ae";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/12Propanediol-cyclohexane.dat"
+        {
+            type          imported;
+            sha256        "6ca747754b93e447398514432ba8a318c4c2acbbc6ffd609de5bb444a4320c12";
+            computationalSha256 "e1b608b58b5d539f480e9f955161be0d8e2dd9be112970d4c32155b9996ed60f";
+            origin        "data/standards/parameters/UNIQUAC/12Propanediol-cyclohexane.dat";
+            originSha256  "41db77020f53082a934b279c95993b18beeb6dbd167f73c3a3005d21b7b07dbc";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/12Propanediol-cyclohexane.dat"
+        {
+            type          imported;
+            sha256        "3257845544e1f985c102aa0a745a574abed271b841144a3047c3cef8a85f32d5";
+            computationalSha256 "b2f205dd3ee8cf11982b3357c80600941482d41311e8c04a2cb4d2e7e27c0cea";
+            origin        "data/standards/parameters/Wilson/12Propanediol-cyclohexane.dat";
+            originSha256  "797ff66244c16716b2d5e2e23c0564de71f2f4fbad3bf5d3120558c14982665a";
+            release       Choupo-2608;
+        }
+    }
+}

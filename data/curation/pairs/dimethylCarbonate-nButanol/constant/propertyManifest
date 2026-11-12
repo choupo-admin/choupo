@@ -21,35 +21,44 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/dimethylCarbonate.dat"
         {
             type          imported;
-            sha256        "82aaa1f6328a7ed9424fae60b37cae2ff1bafb8753132f84e5c7466d4287c6c2";
-            computationalSha256 "4e75d782f46cb42b368ec6e5e09250045bd4349540011fbc882cfeb3e7a27e8d";
+            sha256        "4be4fe8aaf660cad0eb5af7c50824b449c947ecfa3624411275e4ed3fbe1a954";
+            computationalSha256 "d1ce227e9f6035734bb597c6ed3456667048e05d09f1b8b37b390d8bca08653e";
             origin        "data/standards/components/dimethylCarbonate.dat";
-            originSha256  "4364b5ed2f6a4ccf01a7fe01b0939072b8747fbf150e92362a4030c825ea8eba";
+            originSha256  "00b7cd53761950a5e794e19202e03b9e4d61d019224051fb75aeeba5701ea7b7";
             release       Choupo-2608;
         }
         "components/nButanol.dat"
         {
             type          imported;
-            sha256        "b94c5a927292040755a5310af8d6b2b35eab4b09a5d42feca3c9079cf7cb05dc";
-            computationalSha256 "84b146c0b864097e855611306486ba58bbca0f893ff1cf743ffd992b673ed825";
+            sha256        "eb57ae27f353b279a69e742cc8349504bcedf2e7335daeb40a024789cfc02506";
+            computationalSha256 "a462bf8ebea1da54db64f8a9b25c711a27a005e93cb1a1e0edda7028961967d0";
             origin        "data/standards/components/nButanol.dat";
-            originSha256  "5b25d70fce421e7c0496c1e6d83620f20a4ee7ca35e9e0cc4762f9059c7ec3d1";
+            originSha256  "30905278422e547c776f0c9bad446732d7e1b501bb8a06de57812a2d1a5df1a1";
             release       Choupo-2608;
         }
         "parameters/NRTL/dimethylCarbonate-nButanol.dat"
         {
             type          imported;
-            sha256        "4a184672796b9e17cb80306780392ad2a53894196251124ade40bc4ba6d6022e";
-            computationalSha256 "78b560971d6b61903745e3485ee97bc5821c9b44e2182861065ce99400bb3107";
+            sha256        "87ed06cf401b28173fb38ec9aeb6e91b809aa59384105ff429ec682d13d5b81c";
+            computationalSha256 "a4f221425e872365876a5eac07314d66bdb03ed3d0788ca0e116cfcec4552063";
             origin        "data/standards/parameters/NRTL/dimethylCarbonate-nButanol.dat";
-            originSha256  "838f4fcc51404dcca0f2912c4024d0c7c86e4f348f6935ba478c016c4d182915";
+            originSha256  "0fc4ea7523e9c38ea2f5d048809caac14f95ad0243f9b02d1f3cad552dc60afd";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/dimethylCarbonate-nButanol.dat"
+        {
+            type          imported;
+            sha256        "ec46464f700038be3aecbdf0e3828d4b1a6384de4258466fb887a8f3e1247d0e";
+            computationalSha256 "e260cd3862637b69a347e255525db648689e3873c6997c8ae2c88ccccc891c0d";
+            origin        "data/standards/parameters/Wilson/dimethylCarbonate-nButanol.dat";
+            originSha256  "44ab56951a89fa937b68e318fcdb9e7ec49c835fe710f3a1506497eba802d090";
             release       Choupo-2608;
         }
     }

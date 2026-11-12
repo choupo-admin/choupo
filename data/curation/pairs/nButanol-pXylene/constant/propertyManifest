@@ -21,35 +21,35 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/nButanol.dat"
         {
             type          imported;
-            sha256        "b94c5a927292040755a5310af8d6b2b35eab4b09a5d42feca3c9079cf7cb05dc";
-            computationalSha256 "84b146c0b864097e855611306486ba58bbca0f893ff1cf743ffd992b673ed825";
+            sha256        "eb57ae27f353b279a69e742cc8349504bcedf2e7335daeb40a024789cfc02506";
+            computationalSha256 "a462bf8ebea1da54db64f8a9b25c711a27a005e93cb1a1e0edda7028961967d0";
             origin        "data/standards/components/nButanol.dat";
-            originSha256  "5b25d70fce421e7c0496c1e6d83620f20a4ee7ca35e9e0cc4762f9059c7ec3d1";
+            originSha256  "30905278422e547c776f0c9bad446732d7e1b501bb8a06de57812a2d1a5df1a1";
             release       Choupo-2608;
         }
         "components/pXylene.dat"
         {
             type          imported;
-            sha256        "d6c1a35adcc2ecfb7fdd547613d094985aa02b5154eb86e2136893e5eb2b1081";
-            computationalSha256 "a12f3f6479aa3d4be6d976ca090188ab3b10b5671bb1a3fe568b547431a64d02";
+            sha256        "60415935fd9d4b63d8f3219f07fc04b1383809b4195320d67c412b8343dacef8";
+            computationalSha256 "50989011ee1bdba21c140a91dfc510ae7ad3e35b454e59c435bacadaa6d21a3f";
             origin        "data/standards/components/pXylene.dat";
-            originSha256  "ef3dffe3f5b93e45435a0e2b3d13566b4bd2a5c67451a02e52e75a55ac9de26b";
+            originSha256  "8b4435dbd10e1b894f0579e848612d6a50d21422dae1532c879a22463a754cb1";
             release       Choupo-2608;
         }
         "parameters/NRTL/nButanol-pXylene.dat"
         {
             type          imported;
-            sha256        "0e29ef99ee36cfd04de39fe0d7179ca629db212541dd8e7b3432a4d87aecc251";
-            computationalSha256 "69102f27ac91fdc0b3205f06e0d54e355c073105ba8ebabb880157e8376a1a23";
+            sha256        "40fa7206454778d8654e03edea8febb2ca011008f6e61de682310a4157ce1703";
+            computationalSha256 "52747558cab6a3080bc24e8bc657fc863edbb2d81333dbdd9aaf20c218925a86";
             origin        "data/standards/parameters/NRTL/nButanol-pXylene.dat";
-            originSha256  "b486fe7a58e5bb637176ff904b3ea0f52bf5ca56a851d530801c2f4401c6c7f5";
+            originSha256  "334f9d1fb4b65623b47fffdfdafd0cb4e7378e042780e8a9eade87e694e38d2f";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/nButanol-pXylene.dat"
+        {
+            type          imported;
+            sha256        "139b157e16dba37aa362df89ec8eebff075ac59a13090e4ff6ba77d5ca802f0c";
+            computationalSha256 "caff1711aa46f077f20c138a9a9914bf38e6341e6a71b81db7bc939e1e6cba0e";
+            origin        "data/standards/parameters/UNIQUAC/nButanol-pXylene.dat";
+            originSha256  "8daf0ce80ec65e2f21d3f3a3d298e8fcf8bfe1dd4495b8ad3b0f4d05224a6c7d";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/nButanol-pXylene.dat"
+        {
+            type          imported;
+            sha256        "009bb59132670de50a734f95b89dd3ef5aaafc6253e2421cf291f552962708f3";
+            computationalSha256 "585229d4f0130be1b3d16c56308b231d8d6434f6bb3b30a7c3644d4d5b762a4f";
+            origin        "data/standards/parameters/Wilson/nButanol-pXylene.dat";
+            originSha256  "67a79ed038a40633962ec1d63d0c76ce720570797d78ab49cfa4a2113110b1c7";
             release       Choupo-2608;
         }
     }

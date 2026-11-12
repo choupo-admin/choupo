@@ -21,26 +21,44 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/acetone.dat"
         {
             type          imported;
-            sha256        "484d860fa5b649ff773be3ed0fe422eab9957c8c665dfae88f9b50754f45fa18";
-            computationalSha256 "cc35b7672e63775056198ac55648e04bb92e5eb53eed1fc49436c87b1590072a";
+            sha256        "3406a1c14e08831da61ec91539024e56d6d827f264176613893b1cc8fa56c967";
+            computationalSha256 "1d40a3796dc0aab8d7216574c9f1c1e63a545faa1c67bf88893f3eac709812b6";
             origin        "data/standards/components/acetone.dat";
-            originSha256  "dec7ac911299d04f8b3ec284051dc0898d10087426317982647c16dda6c292bb";
+            originSha256  "29b33932b741e011b332c4d85207bf939f34fc51b4e0550d652d26e75fb9b27a";
             release       Choupo-2608;
         }
         "components/furfural.dat"
         {
             type          imported;
-            sha256        "78bdab06724b7e5a8ba37af00f68feb8d65b0c24d36140bbdeaab4616a77fc6f";
-            computationalSha256 "75c923fe8474bace66ff7b8395dc5e523f61614d5189184d5cfa0140cac16d02";
+            sha256        "f2f2a7b7b55ab32eaffb4e42a92a97d1be9177b7181df9be1c627d47ec454d7d";
+            computationalSha256 "7d0057b911a77802c128aa5bb4d32cd68ef6d33f4e93cbd647809a929789e686";
             origin        "data/standards/components/furfural.dat";
-            originSha256  "a7ac9f9dfbf1b396314ae86bace474ee6b22153f5ea3f9a10cc6b23f9bfab6b8";
+            originSha256  "a22381d24ba39a150781e235fc42f1ac68db528c7c3461eb6d9e0ee4dc82a13c";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/acetone-furfural.dat"
+        {
+            type          imported;
+            sha256        "9ff17dcd15cd5f1f1046f888fa72bab84735e241befc1bb64063626764b41c98";
+            computationalSha256 "bde9cc32a2b356cc8f7249c51ca495adf9f5c31ee6f6b99b05cd589691e1f476";
+            origin        "data/standards/parameters/NRTL/acetone-furfural.dat";
+            originSha256  "8056ea97e0d7ed611ddf3f1422b42c79fd70f70fc0471d039825f76a2461382e";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/acetone-furfural.dat"
+        {
+            type          imported;
+            sha256        "de820c0dd3162ad8d5ae42c5d2d5a9e0ea958c69e7ab1db7269df8db83715b69";
+            computationalSha256 "d49fbfdf16399b80ee39ce5f2a4bd25170b935f5ecac960d102201dda3f98422";
+            origin        "data/standards/parameters/Wilson/acetone-furfural.dat";
+            originSha256  "b46a1b9814a242fcb60142fd8277e4515405669aaa16eb812e0b23386185083b";
             release       Choupo-2608;
         }
     }

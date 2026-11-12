@@ -1,0 +1,92 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-12";
+    importerVersion    "3";
+    records
+    {
+        "components/13Propanediol.dat"
+        {
+            type          imported;
+            sha256        "320d900f270b568334355ee7238930b99fbc95639be07c404581008f74b51fcf";
+            computationalSha256 "bf1cdc2a5dbeda5bda4f40795e13f7a8666219a985f82c809c35d13f56c3aa7b";
+            origin        "data/standards/components/13Propanediol.dat";
+            originSha256  "b67489e9c3bbcf486e506cdc38511968e7ce03aa985a705e8ffac0d20958c0d0";
+            release       Choupo-2608;
+        }
+        "components/isopropanol.dat"
+        {
+            type          imported;
+            sha256        "1d2cd015fb92886a9ff57473efcd1b8b8399c0db14df16056f6b4e7f41417a3d";
+            computationalSha256 "6b71a304e15a7bd72cccc98edae61265a75a73516bab6ba0aba5a3b4ea5ae1dc";
+            origin        "data/standards/components/isopropanol.dat";
+            originSha256  "0b7c68a64e289e03c57e59d22924394920fc2bfc69d44fbbb11a74712d453af1";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/13Propanediol-isopropanol.dat"
+        {
+            type          imported;
+            sha256        "5792ffd6ceedd2804285988785a7adb69bf5bd4621e8002470fdda2bc47abc8d";
+            computationalSha256 "f073b14f2539422e7c9982d269ff7ffe333d76a418eb28b085f3d8d1fa46c121";
+            origin        "data/standards/parameters/NRTL/13Propanediol-isopropanol.dat";
+            originSha256  "103acb5538b05fc186e204a40e11813c7c57404587ad9b6ffcfecaca0db71c17";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/13Propanediol-isopropanol.dat"
+        {
+            type          imported;
+            sha256        "5c3735f83995aab36db360196006681433290805f3f6fc5871b5569ff2a5f895";
+            computationalSha256 "b0ecb93eda7f3ec094377aa56bf03b0e8b98f0daddcdc5a7bcc4f5bf7ccdfae9";
+            origin        "data/standards/parameters/UNIQUAC/13Propanediol-isopropanol.dat";
+            originSha256  "1d01b28fb05edcee505ea16ae8fd5a31bae472fd82b7d9f5ce36333423f0c6cd";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/13Propanediol-isopropanol.dat"
+        {
+            type          imported;
+            sha256        "d91bae3c6ac0b095e3e07739e44b9028f43059e1a36bfdacc76db77ad4c4ec13";
+            computationalSha256 "5257ef546c5d0d5b73bc11d6718dcb445b3fe76abd68921dd608df16c8458076";
+            origin        "data/standards/parameters/Wilson/13Propanediol-isopropanol.dat";
+            originSha256  "c7b10f05b0968d6f0a6ba7944671cf8f067e9d02c86b319b25d1aca96d09044a";
+            release       Choupo-2608;
+        }
+    }
+}

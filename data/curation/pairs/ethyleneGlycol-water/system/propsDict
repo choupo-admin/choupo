@@ -92,13 +92,14 @@
   not argued). Beside fit_nrtl's max |dT| 2.584 K (severe) on the same
   kept points. fit_wilson: A_ij = 3370.7, A_ji = -4136.4 J/mol over 73
   kept points: max |dT| 3.009 K, mean 0.871 K, graded severe -> accepted;
-  fit_wilson_start2 lands on the same pair (3370.7, -4136.4). NOT
-  PROMOTED (max |dT| 3.009 K over the 73 kept points, one liquid across
-  the validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/. UNIQUAC: not fitted -- ethyleneGlycol carries no UNIQUAC
-  r and q (no tabulated value, and no UNIFAC groups to sum them from,
+  fit_wilson_start2 lands on the same pair (3370.7, -4136.4). PROMOTED on
+  2026-11-12 into
+  data/standards/parameters/Wilson/ethyleneGlycol-water.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 3.009 K over the 73 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 3.0094 K against ideal
+  6.4024 K. UNIQUAC: not fitted -- ethyleneGlycol carries no UNIQUAC r
+  and q (no tabulated value, and no UNIFAC groups to sum them from,
   bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
   is estimated silently.
   @@MODELS-RESULT-END@@

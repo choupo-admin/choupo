@@ -1,0 +1,92 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/diNPropylEther.dat"
+        {
+            type          imported;
+            sha256        "3e03eccfe0ac955b885f2303a0128906f6ed849b44c35825242eefbde39c4476";
+            computationalSha256 "4d231049c3a937366d10a08fcd3d63a5ee92bb2bc9806e8d32bc2aca7299e894";
+            origin        "data/standards/components/diNPropylEther.dat";
+            originSha256  "06c038be866580dabd153fe725c9d1c5480fccbfe6787ad2fbb37038c6b33764";
+            release       Choupo-2608;
+        }
+        "components/nButylPropionate.dat"
+        {
+            type          imported;
+            sha256        "313b26cdebd4138f38fcdca97d3a1cd58df6f90e76c663c89ef58b9332171b77";
+            computationalSha256 "78723060a1fb44f59005ba01d504e00a270437506566dd6d665d74a183280ee8";
+            origin        "data/standards/components/nButylPropionate.dat";
+            originSha256  "7a33a6e0d5e7f8870ac1d100c25f4771e055a6b2768eee804e7fb1da8ddd88e4";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/diNPropylEther-nButylPropionate.dat"
+        {
+            type          imported;
+            sha256        "7e8a3e660ee5664374548ed1836acb2ff6cc670ebd93a1253048682ef4ef03fd";
+            computationalSha256 "6432708e29e069dbde229ce6425fef3aa3e1b26176b1c6d6b9cbcc8d58d2cd63";
+            origin        "data/standards/parameters/NRTL/diNPropylEther-nButylPropionate.dat";
+            originSha256  "b2285f2cb4c252fd8dff2ce390511f8c107252e44e8f6efc81dbcef80e9bb75e";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/diNPropylEther-nButylPropionate.dat"
+        {
+            type          imported;
+            sha256        "db0ee343bee815cf2d94bafeadf5ca00e2656c56a813e080df8162cc0785862a";
+            computationalSha256 "39928bf2f4620f5effb8240e6cf9d5b5a13d76420cb293d0df55dc7c3bbf32c2";
+            origin        "data/standards/parameters/UNIQUAC/diNPropylEther-nButylPropionate.dat";
+            originSha256  "4e9504cad36a16c6559f37ca08a8d9ef8d25a113307731c76baef439ac3d0e6d";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/diNPropylEther-nButylPropionate.dat"
+        {
+            type          imported;
+            sha256        "175fe3e86fc787f7023d356ccf2dd191c26e3484113be925b87d31fe6cf8e76a";
+            computationalSha256 "34f95ac85b077cd16a2384f1c4a12c7c5ea2867f4b886cacbf568aa3b64ca5cf";
+            origin        "data/standards/parameters/Wilson/diNPropylEther-nButylPropionate.dat";
+            originSha256  "ceb1f87f5ff21fea3a261c533808294bd0139ff5561205bff35adbfa1745697b";
+            release       Choupo-2608;
+        }
+    }
+}
