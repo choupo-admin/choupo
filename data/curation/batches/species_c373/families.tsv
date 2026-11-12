@@ -31,7 +31,7 @@ glycine	glycine	glycine	build	-	0.2		The pK and dH are the evaluated values of G
 alanine	alanine	L-alanine	build	-	0.05			1
 asparticacid	aspartate	L-aspartic acid	build	-	0.1		Table 3 prints the second ionisation enthalpy of aspartic acid as +4.64 kJ/mol (and the monoanion formation enthalpy -942.86 built on it), Table 6 as +4.60; the printed formation enthalpy is entered and the 0.04 difference is in the one-scale table.	1
 glutamicacid	glutamate	L-glutamic acid	build	-	0.05			1
-glycylglycine	peptide	glycylglycine	build	-				1
+glycylglycine	peptide	glycylglycine	build	-	0.05			1
 triglycine	peptide	glycylglycylglycine	build	-				1
 histidine	histidine	L-histidine	build	-	0.8			2
 cysteine	cysteine	L-cysteine	build	-	7.0			1

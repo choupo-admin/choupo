@@ -57,3 +57,31 @@ HGlu	hfAq	-979.16	-979.68	kJ/mol	AMEND97	Table 1, p. 1929, row Glu-	no	catalogue
 HGlu	sAq	170.3	183.51	J/mol/K	AMEND97	Table 1, p. 1929, row Glu-	no	catalogue Miller; not entered
 Glu	hfAq	-939.09	-909.10	kJ/mol	AMEND97	Table 1, p. 1929, row Glu2-	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
 Glu	sAq	114.59	241.04	J/mol/K	AMEND97	Table 1, p. 1929, row Glu2-	no	catalogue Miller; not entered
+Cit	hfAq	-1528.5	-1515.11	kJ/mol	ALB03	Table 3.2, p. 52 (PDF p. 58), row citrate z = -3	yes	catalogue is Kochergina's; the third step is +3.35 in Alberty against Goldberg's -3.38 (opposite sign)
+HCit	hfAq	-1526.2	-1518.46	kJ/mol	ALB03	Table 3.2, p. 52 (PDF p. 58), row citrate z = -2	yes	catalogue Kochergina; offset +7.7
+H2Cit	hfAq	-1529.7	-1520.88	kJ/mol	ALB03	Table 3.2, p. 52 (PDF p. 58), row citrate z = -1	yes	catalogue Kochergina; offset +8.8; Alberty's steps 2.42 against Goldberg's 2.23
+Succ	hfAq	-909.37	-908.68	kJ/mol	ALB03	Table 3.2, p. 55 (PDF p. 61), row succinate z = -2	yes	catalogue Miller's; +0.69
+HSucc	hfAq	-908.93	-908.84	kJ/mol	ALB03	Table 3.2, p. 55 (PDF p. 61), row succinate z = -1	yes	catalogue Miller's; +0.09
+Fumar	hfAq	-777.57	-777.39	kJ/mol	ALB03	Table 3.2, p. 53 (PDF p. 59), row fumarate z = -2	yes	catalogue Miller's; +0.18
+HFumar	hfAq	-774.72	-774.46	kJ/mol	ALB03	Table 3.2, p. 53 (PDF p. 59), row fumarate z = -1	yes	catalogue Miller's; +0.26
+Lac	hfAq	-686.63	-686.64	kJ/mol	ALB03	Table 3.2, p. 54 (PDF p. 60), row lactate	yes	catalogue Miller's; -0.01
+Acetate	hfAq	-486.01	-486.01	kJ/mol	ALB03	Table 3.2, p. 52 (PDF p. 58), row acetate z = -1	yes	identical (both NBS)
+Formate	hfAq	-425.55	-425.55	kJ/mol	ALB03	Table 3.2, p. 53 (PDF p. 59), row formate	yes	identical (both NBS)
+Ox	hfAq	-825.1	-825.10	kJ/mol	ALB03	Table 3.2, p. 54 (PDF p. 60), row oxalate	yes	identical (NBS)
+NH4	hfAq	-132.51	-132.51	kJ/mol	ALB03	Table 3.2, p. 52 (PDF p. 58), row ammonia z = +1	yes	identical (NBS)
+CO3	hfAq	-677.14	-677.14	kJ/mol	ALB03	Table 3.2, p. 52 (PDF p. 58), row CO2,tot z = -2	yes	identical (NBS)
+HCO3	hfAq	-691.99	-691.99	kJ/mol	ALB03	Table 3.2, p. 52 (PDF p. 58), row CO2,tot z = -1	yes	identical (NBS)
+HMeNH2	hfAq	-124.93	-124.93	kJ/mol	ALB03	Table 3.2, p. 54 (PDF p. 60), row methylamineion	yes	identical (NBS)
+H2PO4	hfAq	-1296.29	-1302.6	kJ/mol	ALB03	Table 3.2, p. 54 (PDF p. 60), row inorganic phosphate z = -1	yes	catalogue NBS; Alberty's phosphate enthalpies and Gibbs energies are both 6 to 7 kJ/mol lower, the entropy the same (HPO4: -33.1 derived against NBS -33.5)
+HPO4	hfAq	-1292.14	-1299.00	kJ/mol	ALB03	Table 3.2, p. 54 (PDF p. 60), row inorganic phosphate z = -2	yes	catalogue NBS; see above
+P2O7	hfAq	-2271.1	-2293.47	kJ/mol	ALB03	Table 3.2, p. 54 (PDF p. 60), row pyrophosphate z = -4	yes	catalogue is the NBS value (-2271.1); 22 kJ/mol apart, the Gibbs energy within 0.9; see section 6.4
+HP2O7	hfAq	-2272.5	-2294.87	kJ/mol	ALB03	Table 3.2, p. 54 (PDF p. 60), row pyrophosphate z = -3	yes	catalogue derived from NBS P2O7 and Goldberg's steps; 22 kJ/mol apart
+H2P2O7	hfAq	-2273	-2295.37	kJ/mol	ALB03	Table 3.2, p. 54 (PDF p. 60), row pyrophosphate z = -2	yes	as above
+H3P2O7	hfAq	-2268	-2290.37	kJ/mol	ALB03	Table 3.2, p. 55 (PDF p. 61), row pyrophosphate z = -1	yes	as above
+H4P2O7	hfAq	-2258.8	-2281.17	kJ/mol	ALB03	Table 3.2, p. 55 (PDF p. 61), row pyrophosphate z = 0	yes	as above
+HGly	hfAq	-514.36	-523.00	kJ/mol	ALB03	Table 3.2, p. 53 (PDF p. 59), row glycine	yes	catalogue Miller's; Alberty and Amend & Helgeson (-522.08) agree, Miller and NBS (-513.99) differ by 8 to 9 kJ/mol
+HAla	hfAq	-553.75	-554.80	kJ/mol	ALB03	Table 3.2, p. 52 (PDF p. 58), row alanine	yes	catalogue Miller's; Amend -554.38
+HAspt	hfAq	-942.86	-943.41	kJ/mol	ALB03	Table 3.2, p. 52 (PDF p. 58), row aspartate z = -1	yes	catalogue Miller's; +0.55
+HGlu	hfAq	-979.16	-979.89	kJ/mol	ALB03	Table 3.2, p. 53 (PDF p. 59), row glutamate z = -1	yes	catalogue Miller's; -0.73
+H2Succ	hfAq	-	-912.20	kJ/mol	ALB03	Table 3.2, p. 55 (PDF p. 61), row succinate z = 0	yes	neutral master: its datum is the component and the solution pair (Miller -912.11); held here for the record, not read by the one-scale check
+H2Fumar	hfAq	-	-774.88	kJ/mol	ALB03	Table 3.2, p. 53 (PDF p. 59), row fumarate z = 0	yes	neutral master (Miller -775.18); held here for the record, not read by the one-scale check

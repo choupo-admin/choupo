@@ -3,7 +3,8 @@
   Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
   reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
   1 mol/kg, 298.15 K, H+ = 0.
-  NO `aqueousThermo` ON PURPOSE: the ionisation (pK, dH) of this family is evaluated in a work in hand and is in chemistry/, so the SPECIATION is complete; the evaluated compilation prints ionisation quantities only (no formation enthalpy or entropy), and none was entered from another work in this pass, so a balance that needs the enthalpy of this species REFUSES BY NAME instead of borrowing a value.
+  The formation values are DERIVED from printed numbers; the arithmetic, tables and pages are in the
+  source line below and in formation.tsv.
 \*-----------------------------------------------------------------------------*/
 recordType modelSpecies;
 schemaVersion 1;
@@ -12,3 +13,9 @@ name    HGlyGly;
 formula     "C4H8N2O3";
 charge  0;
 MW { value 132.119; unit g/mol;}
+aqueousThermo
+{
+source "hfAq [kJ/mol] -734.25: printed DfH -- Alberty, Thermodynamics of Biochemical Reactions, Wiley-Interscience (2003), Table 3.2 (pp. 52-55, the data file BasicBiochemData2), Table 3.2, p. 53 (PDF p. 59), row glycylglycine (z = 0, N_H = 8) (read from a page image), the only species the table lists for glycylglycine, the DfH column is printed ## sAq [J/mol/K] 327.1: S = (DfH - DfG)/T + sum of the elements' S (4 C, 4 H2, N2, 1.5 O2, COD89): (-734.25 - (-520.2))/298.15 x 1000 + 1045.02, H+ = 0, charge 0 -- Alberty, Thermodynamics of Biochemical Reactions, Wiley-Interscience (2003), Table 3.2 (pp. 52-55, the data file BasicBiochemData2), Table 3.2, p. 53 (PDF p. 59), row glycylglycine (z = 0, N_H = 8) (read from a page image), an entropy-equivalent derived from the two printed formation quantities, validated on acetate (86.58 against NBS 86.6), oxalate (45.34 against 45.6) and fumarate (105.9 against Miller's 105.25)";
+hfAq { value -734250; unit J/mol;}
+sAq  { value 327.1; unit J/mol/K;}
+}

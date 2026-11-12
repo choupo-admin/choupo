@@ -631,3 +631,59 @@ in any work in hand; the ethanolamine ladder stays without formation data.
 
 Species that gained formation data in this route: HGlyc, Glyc (DfH, S), HLac, Lac (S only), HPropn, Propn, HBut, But, HBenz,
 Benz, H2Maln, HMaln, Maln, H2Glut, HGlut, Glut (DfH, S): 16 species.
+
+### 6.4 Route 4: Alberty (2003), Table 3.2
+
+Alberty, Thermodynamics of Biochemical Reactions (Wiley-Interscience 2003; text layer with OCR errors, so every number was read from
+the page images, PDF pp. 58-61 = book pp. 52-55) prints, for 131 reactants, DfG and DfH (kJ/mol) of each species at 298.15 K and zero
+ionic strength, with the charge and the number of hydrogens.  Convention (the table's note, p. 55): DfG = DfH = 0 for the elements in
+their reference states and for H+ (a = 1), the catalogue's H+ = 0.  The note does not restate the concentration scale; a
+1 mol/L against 1 mol/kg difference would be 0.01 kJ/mol in DfG, below the digits compared here.  The table has **no entropy**
+column, and the DfH column is **blank** for many species (cis-aconitate, malate, glycolate, pyruvate's relatives, most phosphates
+of sugars, cysteine, butyrate ...): a blank is never filled from another work.  An entropy-equivalent follows only where both are
+printed: S = (DfH - DfG)/T + sum of the elements' S (CODATA, COD89) - z S(H2)/2 (the last term takes the table's S(H+) = S(H2)/2 to the
+catalogue's S(H+) = 0).  It reproduces acetate (86.58 against 86.6), oxalate (45.34 against 45.6), hydrogenphosphate (-33.1 against
+-33.5) and fumarate (105.9 against Miller's 105.25), and misses succinate by 12 J/mol/K (93.3 against 81.5, Alberty's succinate DfG
+differing from the Miller route), so an entropy derived this way carries about +-12 J/mol/K.
+
+**Where Alberty and the NBS tables coincide**: acetate, formate, oxalate, ammonium, carbonate, hydrogencarbonate and
+methylammonium (identical to the digit; Alberty took them from NBS).  **Where they do not**: inorganic phosphate (H2PO4-: -1302.6 / -1137.30
+against NBS -1296.29 / -1130.28; HPO4 2-: -1299.00 / -1096.10 against -1292.14 / -1089.15: both DfH and DfG are 6.3 to 7.1 kJ/mol lower,
+the entropy equal) and pyrophosphate (P2O7 4-: DfH -2293.47 against -2271.1, DfG -1919.86 against -1919.0).  Alberty's pyrophosphate
+step enthalpies (+1.40, +0.50, -5.00, -9.20) are exactly Goldberg's.
+
+**One scale per family, and the reason.**
+
+| family | Alberty against the catalogue (DfH, kJ/mol) | kept | why |
+|---|---|---|---|
+| succinate | Succ -908.68, HSucc -908.84, H2Succ -912.20 against Miller -909.37, -908.93, -912.11 | Miller | within 0.7; same evaluation as the steps |
+| fumarate | -777.39, -774.46, -774.88 against -777.57, -774.72, -775.18 | Miller | within 0.3 |
+| lactate | -686.64 against -686.63 | Miller | identical |
+| citrate | Cit -1515.11, HCit -1518.46, H2Cit -1520.88 against Kochergina -1528.5, -1526.2, -1529.7 (offsets +13.4, +7.7, +8.8) | Kochergina | see below |
+| malate | DfG only (-842.66 z=-2, -872.68 z=-1), DfH blank | Miller | no entropy derivable |
+| phosphate | -1302.6 and -1299.00 against NBS -1296.29, -1292.14 | NBS | see below |
+| pyrophosphate | -2294.87 ... -2281.17 against -2272.5 ... -2258.8 (22 to 23 lower) | NBS-anchored (route 1) | see below |
+| glycine | -523.00 against Miller -514.36 | Miller | Alberty agrees with Amend (-522.08); Miller with NBS |
+| alanine, aspartate, glutamate | -554.80, -943.41, -979.89 against -553.75, -942.86, -979.16 | Miller | within 1.1 |
+| glycylglycine | z = 0: -734.25 (DfG -520.20) | **Alberty (new)** | no other work in hand |
+
+* **Citrate**: Alberty prints G and H for all three ions, so an entropy could be derived (Cit 93.2, HCit 204.3, H2Cit 287.3 J/mol/K), but
+  his enthalpies are 8 to 13 kJ/mol from Kochergina's and his third step (+3.35) has the opposite sign to Goldberg's (-3.38), while the
+  neutral master's datum (crystal plus heat of solution) ties the family to Kochergina's scale with the one-scale check at 1.6.  Entering
+  Alberty's entropies with Kochergina's enthalpies would mix two scales, and replacing the enthalpies is not warranted by a 8 to 13
+  kJ/mol disagreement between two evaluations.  **No citrate entropy is entered**; the derived values are in the table above and in
+  `formation_compare.tsv` (enthalpies).
+* **Phosphate and pyrophosphate**: the hydrolysis P2O7 4- + H2O -> 2 HPO4 2- has DfH = -27.35 kJ/mol on the NBS rows, -18.70 on Alberty's, and
+  -4.98 if Alberty's pyrophosphate is combined with the catalogue's NBS phosphate (which also carries PO4 3-, absent from Alberty).
+  The catalogue keeps the NBS phosphates, so pyrophosphate stays on the NBS-anchored scale of route 1; moving both to Alberty would be one
+  decision (and would change the existing `PO4` value, which this campaign does not do).  The Alberty-derived pyrophosphate entropies,
+  for the day that decision is taken: P2O7 -191.5, HP2O7 -15.1, H2P2O7 111.9, H3P2O7 171.9, H4P2O7 218.6 J/mol/K (75 below the route-1
+  values for the same enthalpy offset).
+* **Lactate entropy**: Alberty-derived 147.1 J/mol/K against Shock's estimate 133.5 (route 2b): Shock's is kept because it is paired with the
+  estimated acid entropy and the printed dissociation entropy; the 14 J/mol/K difference is the scatter of the two derivations.
+* **Glycylglycine (entered)**: the table lists one species, so HGlyGly carries DfH -734.25 kJ/mol and S = 327.1 J/mol/K (the entropy-
+  equivalent, elements C 4, H 4 H2, N 1 N2, O 1.5 O2) and the ions follow from Goldberg's steps (pK 3.140, dH +0.11; pK 8.265, dH +43.4): H2GlyGly
+  -734.36 / 386.8, GlyGly -690.85 / 314.4.  Not entered from this table: pyruvate (no family in the catalogue), glycolate (DfG only), L-cysteine
+  and butyrate (DfG only).
+
+Species that gained formation data in this route: H2GlyGly, HGlyGly, GlyGly (3).

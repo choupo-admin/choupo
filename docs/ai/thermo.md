@@ -364,6 +364,10 @@ C376 route 2b (Shock 1995, scan read from images): propionic, n-butyric, benzoic
 glycolic acid carries DfH -648.06 kJ/mol (the crystal route) and lactic acid/lactate an entropy.  An entropy or an anion enthalpy the
 paper marks as estimated has a per-value `provenance { sAq { origin estimated; method ...; } }` block in the record: the engine does NOT
 yet announce a species' estimated datum on use (design note section 7.3), so treat these as flagged data, not as measurements.
+C376 route 4 (Alberty 2003, Table 3.2, read from images): glycylglycine (`H2GlyGly`/`HGlyGly`/`GlyGly`) carries DfH -734.25 kJ/mol and an
+entropy-equivalent for the zwitterion from DfG and DfH (CODATA element entropies), the ions by Goldberg's steps.  Alberty's other families are
+compared against the catalogue and not entered (citrate differs by 8 to 13 kJ/mol from Kochergina's; Alberty's phosphate and pyrophosphate differ from
+the NBS rows the catalogue keeps; malate has a blank DfH); the table has no entropy column and no blank is ever filled from another work.
 Phase 4 (C373): **laboratory buffers**, every other section of Goldberg 2002 (ACES, ADA, AMPSO, APSA, barbital, BES, Bicine,
 Bis-tris, Bis-tris propane, cacodylate, CAPS, CAPSO, CHES, diglycolate, 3,3-dimethylglutarate, DIPSO, glycerol 2-phosphate,
 HEPES, HEPPS, HEPPSO, 2-mercaptoethanol, MES, MOPS, MOPSO, phthalate, PIPES, POPSO, TAPS, TAPSO, TES, Tricine): species
