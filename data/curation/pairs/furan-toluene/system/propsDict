@@ -92,13 +92,12 @@
   kept points: max |dT| 3.257 K, mean 1.395 K, graded severe -> accepted;
   fit_wilson_start2 lands on A DIFFERENT pair (1487.1, -2103.3). NOT
   PROMOTED (max |dT| 3.257 K over the 26 kept points, one liquid across
-  the validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/. UNIQUAC: not fitted -- furan carries no UNIQUAC r and q
-  (no tabulated value, and no UNIFAC groups to sum them from,
-  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
-  is estimated silently.
+  the validity span): fit grade severe, and a severe fit is promoted only
+  if it BEATS THE IDEAL MIXTURE on its own kept points (DEV.md 4c C334):
+  fit max 3.2569 K, ideal (gamma = 1) max 2.0618 K. UNIQUAC: not fitted
+  -- furan carries no UNIQUAC r and q (no tabulated value, and no UNIFAC
+  groups to sum them from, bin/curate/uniquac_rq_from_groups.py) --
+  UNIQUAC is not fitted; nothing is estimated silently.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

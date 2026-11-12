@@ -89,17 +89,16 @@
   points: max |dT| 2.927 K, mean 0.817 K, graded severe -> accepted;
   fit_uniquac_start2 lands on the same pair (-255.2, 458.6). NOT PROMOTED
   (max |dT| 2.927 K over the 16 kept points, one liquid across the
-  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/. fit_wilson: A_ij = 5996.2, A_ji = -5273.1 J/mol over 16
-  kept points: max |dT| 2.837 K, mean 0.758 K, graded severe -> accepted;
-  fit_wilson_start2 lands on A DIFFERENT pair (5909.8, -5220.4). NOT
-  PROMOTED (max |dT| 2.837 K over the 16 kept points, one liquid across
-  the validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/.
+  validity span): fit grade severe, and a severe fit is promoted only if
+  it BEATS THE IDEAL MIXTURE on its own kept points (DEV.md 4c C334): fit
+  max 2.9275 K, ideal (gamma = 1) max 2.7386 K. fit_wilson: A_ij =
+  5996.2, A_ji = -5273.1 J/mol over 16 kept points: max |dT| 2.837 K,
+  mean 0.758 K, graded severe -> accepted; fit_wilson_start2 lands on A
+  DIFFERENT pair (5909.8, -5220.4). NOT PROMOTED (max |dT| 2.837 K over
+  the 16 kept points, one liquid across the validity span): fit grade
+  severe, and a severe fit is promoted only if it BEATS THE IDEAL MIXTURE
+  on its own kept points (DEV.md 4c C334): fit max 2.8374 K, ideal (gamma
+  = 1) max 2.7386 K.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

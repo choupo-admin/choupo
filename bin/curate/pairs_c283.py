@@ -238,7 +238,8 @@ def ideal_guard(case, kind, grade, mx, label, blk=None):
     unit = "%" if kind == "px" else "K"
     if not mx < ideal:
         if blk:
-            restate_severe_result(case, *blk, kind=kind, mx=mx, ideal=ideal, beaten=False)
+            restate_severe_result(case, blk[0], blk[1], blk[2], kind=kind, mx=mx, ideal=ideal,
+                                  beaten=False, after=(blk[3] if len(blk) > 3 else None))
         refuse(f"{label}: NOT PROMOTED: a severe fit is promoted only if it BEATS THE IDEAL "
                f"MIXTURE on its own kept points (DEV.md 4c C334) -- fit max {mx:.4f} {unit}, "
                f"ideal (gamma = 1) max {ideal:.4f} {unit}")

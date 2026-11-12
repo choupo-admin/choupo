@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -59,6 +59,15 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/12Butanediol-methanol.dat"
+        {
+            type          imported;
+            sha256        "ae1d890e8f1899e76736d5c0776c496abae7502d16005c63e784e938c3695ef2";
+            computationalSha256 "54cb2499a09473a838414008d0cccd51029276e1cad364dc2fd73eb43a4b6521";
+            origin        "data/standards/parameters/Wilson/12Butanediol-methanol.dat";
+            originSha256  "d2fa8f9e897e88ce7cf2b31aabce78dc8afe1d1b98cb6114ad02426759039655";
             release       Choupo-2608;
         }
     }
