@@ -3740,6 +3740,28 @@ accepts today, and that is a policy call.
 > deliberate choice, and the danger named is the silence, which the
 > printed deviation removes.
 
+> **C378 SLICE 0, STEP 1 LANDED (2026-11-12, night): THE CHARACTERISATION
+> BENCH.**  `choupoProps --property-route-bench` (a flag, not an
+> operation) evaluates every liquid-property route the kernel has today --
+> density with its pure-fluid routes, viscosity, surface tension,
+> diffusivity -- for all 696 component records and 8 binaries on 11
+> temperatures x 3 pressures: 4974 blocks, 81003 values and 74163 refusals
+> with their full text, one hash per block in
+> `bin/curate/property_route_bench.sha256.tsv`, recorded BEFORE any edit of
+> a property routine (no file under src/thermo/ changed).  Gate
+> `check_property_route_bench` (full sweep and --fast; 3.5 s) names every
+> block that moves; the self-test changes one digit of methanol's liquid
+> volume and observes five blocks named, two of them surface tensions.
+> DETERMINISTIC across runs, locale and thread count.  FOUND: 64 records
+> cannot be assembled into a package (no MW, no s_298, no vapour-pressure
+> block), so only their refusal is pinned; 357 refusal messages embedded
+> an absolute path (replaced by a marker in the bench; the messages
+> themselves are unchanged); the reference equations of CO2, N2 and CH4
+> carry no viscosity or surface tension.  Held by --fast 85/0, a props
+> scope 7/0, the whole gate self-test, the integration gates.  The plan
+> (docs/design/thermophysical-slice0-plan.md) was accepted with its three
+> disagreements; step 2, the door, is next.
+
 > **C377 LANDED IN FULL (2026-11-12, night; dc0ed4a4b).**  The NaOH-water
 > model from the published correlation, the exact boiling-point rise and
 > both cases are on main, validated by a FULL SWEEP of the integrated tree
