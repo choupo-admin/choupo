@@ -370,7 +370,8 @@ solver throws a clear error naming the missing slot.
 
 The three LIQUID properties also select how the pure values are combined,
 with `mixingRule` beside `model` (the gas rules, Wilke and
-Wassiljewa-Mason-Saxena, are fixed and refuse the key):
+Wassiljewa-Mason-Saxena, are fixed and refuse the key).  The DEFAULT is the
+best-practice rule (C331); the old rule stays selectable by name:
 
 ```
 liquid
@@ -389,9 +390,9 @@ interface { surfaceTension { model StoredCorrelation; mixingRule Butler; } }
 
 | Property | Rules | What the new rule needs |
 |---|---|---|
-| Surface tension | `moleFractionAverage` (default) · **`Butler`** | the case's activity model (bulk AND surface composition; Poling 5ed eqs. 12-5.16/17); falls back to the linear rule, announced, if the package has none |
-| Liquid viscosity | `logMoleAverage` (default) · **`GrunbergNissan`** | `interaction` rows `G_ij(T,x) = A + B/T + (C + D/T)(x_i - x_j)` fitted to measured mixture data, with `source`; a pair with no row mixes with G = 0, announced |
-| Liquid thermal conductivity | `massFractionAverage` (default) · **`Filippov`** (binary only) · **`Li`** | Li reads the package's liquid molar volumes |
+| Surface tension | **`Butler`** (default) · `moleFractionAverage` | the case's activity model (bulk AND surface composition; Poling 5ed eqs. 12-5.16/17); falls back to the linear rule, announced, if the package has none |
+| Liquid viscosity | **`GrunbergNissan`** (default) · `logMoleAverage` | `interaction` rows `G_ij(T,x) = A + B/T + (C + D/T)(x_i - x_j)` fitted to measured mixture data, with `source`; a pair with no row mixes with G = 0, announced |
+| Liquid thermal conductivity | **`Li`** (default) · **`Filippov`** (binary only) · `massFractionAverage` | Li reads the package's liquid molar volumes |
 
 Measured (ThermoML archive, `bin/curate/mixing_fit.py validate`): surface
 tension of water + acetone 63 % mean error with the linear rule, 12 % with

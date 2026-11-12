@@ -210,7 +210,7 @@ void LiquidConductivityMixingRule::registerType(const std::string& name, Factory
 std::unique_ptr<LiquidConductivityMixingRule>
 LiquidConductivityMixingRule::New(const DictPtr& dict)
 {
-    const std::string name = dict->lookupWordOrDefault("mixingRule", "massFractionAverage");
+    const std::string name = dict->lookupWordOrDefault("mixingRule", "Li");
     auto it = registry().find(name);
     if (it == registry().end())
     {

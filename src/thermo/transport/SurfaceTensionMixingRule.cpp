@@ -316,7 +316,7 @@ void SurfaceTensionMixingRule::registerType(const std::string& name, Factory f)
 std::unique_ptr<SurfaceTensionMixingRule>
 SurfaceTensionMixingRule::New(const DictPtr& dict)
 {
-    const std::string name = dict->lookupWordOrDefault("mixingRule", "moleFractionAverage");
+    const std::string name = dict->lookupWordOrDefault("mixingRule", "Butler");
     auto it = registry().find(name);
     if (it == registry().end())
     {

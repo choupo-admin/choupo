@@ -239,7 +239,7 @@ void LiquidViscosityMixingRule::registerType(const std::string& name, Factory f)
 std::unique_ptr<LiquidViscosityMixingRule>
 LiquidViscosityMixingRule::New(const DictPtr& dict)
 {
-    const std::string name = dict->lookupWordOrDefault("mixingRule", "logMoleAverage");
+    const std::string name = dict->lookupWordOrDefault("mixingRule", "GrunbergNissan");
     auto it = registry().find(name);
     if (it == registry().end())
     {
