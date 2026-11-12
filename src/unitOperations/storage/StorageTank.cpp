@@ -16,6 +16,7 @@ File
 \*---------------------------------------------------------------------------*/
 
 #include "StorageTank.H"
+#include "thermo/LiquidPropertyDoor.H"
 #include "core/Advisory.H"
 #include "thermo/PricedDensity.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
@@ -180,7 +181,10 @@ int StorageTank::solve(const DictPtr& dict,
     scalar rho = 0.0;                                   // kg/m^3
     try
     {
-        rho = thermo.density(T, P, zPriced, ph);
+        rho = ph == DensityPhase::Liquid
+            ? liquidProperty::evaluate(thermo, liquidProperty::Property::density, T, P,
+                                       zPriced, nullptr, sel.dropped).value
+            : thermo.density(T, P, zPriced, ph);
     }
     catch (const std::exception& ex)
     {

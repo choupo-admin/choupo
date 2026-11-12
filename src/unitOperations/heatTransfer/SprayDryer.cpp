@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "SprayDryer.H"
+#include "thermo/LiquidPropertyDoor.H"
 #include "streams/PsdOnGrid.H"
 #include "atomizer/Atomizer.H"
 #include "core/Advisory.H"
@@ -134,7 +135,7 @@ int SprayDryer::solve(const DictPtr& dict,
         //  remedy is the record's, not the unit's, and it is named.
         try
         {
-            muL = thermo.viscosityLiquid(T_feed, zFeed);
+            muL = liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, T_feed, 0.0, zFeed).value;
             muLSource = "property layer mu_L(T_feed, x_feed) -- SOLUTION viscosity via the mixing rule";
         }
         catch (const std::exception& e)
@@ -399,7 +400,7 @@ int SprayDryer::solve(const DictPtr& dict,
         const sVector& xLiq = xs;
         try
         {
-            sigma = thermo.surfaceTension(T_feed, xLiq);
+            sigma = liquidProperty::evaluate(thermo, liquidProperty::Property::surfaceTension, T_feed, 0.0, xLiq).value;
             sigmaSource = "property layer sigma(T_feed) of "
                 + (multiSolvent ? "the solvent liquid (" + solventNames + ")" : solv.name())
                 + " (Brock-Bird: OVERPREDICTS H-bonded liquids ~50%; d32 impact modest via the ^0.6 power)";

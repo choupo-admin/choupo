@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "TrayHydraulics.H"
+#include "thermo/LiquidPropertyDoor.H"
 
 #include "core/Constants.H"
 #include "thermo/PricedDensity.H"
@@ -96,8 +97,8 @@ TrayHydraulics::liquidDensity(const ThermoPackage& thermo, scalar T, scalar P,
                       / (sel.keptFraction + sel.droppedFraction);
     //  Nothing left out: the question is the one it always was, asked of
     //  the composition itself, so the answer is unchanged to the bit.
-    d.rho = thermo.density(T, P, sel.droppedFraction > 0.0 ? sel.zPriced : x,
-                           DensityPhase::Liquid);
+    d.rho = liquidProperty::evaluate(thermo, liquidProperty::Property::density, T, P,
+                           sel.droppedFraction > 0.0 ? sel.zPriced : x, nullptr, sel.dropped).value;
     return d;
 }
 
@@ -245,7 +246,7 @@ TrayHydraulics::Result TrayHydraulics::evaluate(const ThermoPackage&        ther
         }
 
         if (geo.sigma > 0.0) s.sigma = geo.sigma;
-        else if (thermo.hasSurfaceTension()) s.sigma = thermo.surfaceTension(T[j], x[j]);
+        else if (thermo.hasSurfaceTension()) s.sigma = liquidProperty::evaluate(thermo, liquidProperty::Property::surfaceTension, T[j], 0.0, x[j]).value;
         else
             throw std::runtime_error("TrayHydraulics: the flooding correlation needs the "
                 "surface tension.  Either add `surfaceTension { model BrockBird; }` to the "

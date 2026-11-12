@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "core/InfeasibleTrial.H"
+#include "thermo/LiquidPropertyDoor.H"
 #include "core/Formula.H"
 #include "core/Advisory.H"
 #include "core/RegistryRefusal.H"
@@ -5179,7 +5180,7 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
         for (std::size_t i = 0; i < n; ++i) MWL += x[j][i] * thermo.comp(i).MW();
         const scalar muV = thermo.viscosityGas(T[j], y[j]);
         const scalar DV  = thermo.diffusivityGas(T[j], P, 0, 1);
-        const scalar muL = (muLdecl > 0.0) ? muLdecl : thermo.viscosityLiquid(T[j], x[j]);
+        const scalar muL = (muLdecl > 0.0) ? muLdecl : liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, T[j], P, x[j]).value;
         //  Infinite-dilution Wilke-Chang both ways, in the mixture's own
         //  viscosity, combined linearly in mole fraction (Poling, Prausnitz &
         //  O'Connell 5th ed. Eq. 11-10.2, thermodynamic factor 1).
@@ -5206,7 +5207,7 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
         st.DV     = DV;
         st.DL     = DL;
         st.muL    = muL;
-        st.sigma  = thermo.hasSurfaceTension() ? thermo.surfaceTension(T[j], x[j]) : geo.sigma;
+        st.sigma  = thermo.hasSurfaceTension() ? liquidProperty::evaluate(thermo, liquidProperty::Property::surfaceTension, T[j], P, x[j]).value : geo.sigma;
         st.m      = m;
         st.lambda = m * V[j] / L[j];
         //  Molar densities: c_G = rho_V/M_V, c_L = rho_L/M_L.
@@ -5613,8 +5614,8 @@ int DistillationColumn::solveTotalRefluxPacked(const DictPtr& dict,
         st.ULs = Vmol * ML / (rhoL * A_T);
         st.rhoG = rhoG; st.rhoL = rhoL;
         st.muG = thermo.viscosityGas(p.T, yv);
-        st.muL = (muLdecl > 0.0) ? muLdecl : thermo.viscosityLiquid(p.T, x);
-        st.sigma = thermo.surfaceTension(p.T, x);
+        st.muL = (muLdecl > 0.0) ? muLdecl : liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, p.T, P, x).value;
+        st.sigma = liquidProperty::evaluate(thermo, liquidProperty::Property::surfaceTension, p.T, P, x).value;
         st.DG = thermo.diffusivityGas(p.T, P, 0, 1);
         const scalar D01 = wilkeChang.diffusivityLiquidBinary(thermo.comp(0), thermo.comp(1), p.T, st.muL);
         const scalar D10 = wilkeChang.diffusivityLiquidBinary(thermo.comp(1), thermo.comp(0), p.T, st.muL);

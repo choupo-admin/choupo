@@ -16,6 +16,7 @@
 
 #include "core/Dictionary.H"
 #include "thermo/Database.H"
+#include "thermo/LiquidPropertyDoor.H"
 #include "thermo/SurfaceTensionModel.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/ThermoPackageBuilder.H"
@@ -26,6 +27,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstring>
 #include <chrono>
 #include <clocale>
 #include <cstdio>
@@ -224,17 +226,54 @@ std::unique_ptr<ThermoPackage> assemble(const Database& db, const std::string& t
     return nullptr;
 }
 
+//  THE DOOR AGAINST THE OLD CALL (C378 slice 0): when `dc.pk` is set, every
+//  state is asked again through liquidProperty::evaluate and the answer --
+//  the double bit for bit, or the refusal message byte for byte -- must be
+//  the old call's.  Counted and printed, never written to the bench file
+//  (whose hashes pin the old call).
+struct DoorCheck
+{
+    const ThermoPackage* pk = nullptr;
+    int                  prop = -1;     // 0 density, 1 viscosity, 2 surface tension
+    const sVector*       x = nullptr;
+};
+long doorCompared = 0, doorDisagreed = 0;
+std::vector<std::string> doorFirst;
+
 //  Evaluate `f` over the grid; one line per state.
 void sweep(const Grid& g, Writer& w, const std::string& xTag,
-           const std::function<double(double, double)>& f)
+           const std::function<double(double, double)>& f, DoorCheck dc = {})
 {
     for (double T : g.T)
         for (double P : g.P)
         {
             const std::string s = stateKey(T, P, xTag);
-            try { w.value(s, f(T, P)); }
-            catch (const std::exception& e) { w.refused(s, e.what()); }
-            catch (...) { w.refused(s, "(an exception that is not a std::exception)"); }
+            bool ok = false;
+            double v = 0.0;
+            std::string msg;
+            try { v = f(T, P); ok = true; w.value(s, v); }
+            catch (const std::exception& e) { msg = e.what(); w.refused(s, msg); }
+            catch (...) { msg = "(non-standard)"; w.refused(s, "(an exception that is not a std::exception)"); }
+            if (!dc.pk) continue;
+            bool dOk = false;
+            double dv = 0.0;
+            std::string dMsg;
+            try
+            {
+                dv = liquidProperty::evaluate(*dc.pk,
+                    static_cast<liquidProperty::Property>(dc.prop), T, P, *dc.x).value;
+                dOk = true;
+            }
+            catch (const std::exception& e) { dMsg = e.what(); }
+            catch (...) { dMsg = "(non-standard)"; }
+            ++doorCompared;
+            const bool same = (ok == dOk)
+                && (ok ? std::memcmp(&v, &dv, sizeof v) == 0 : msg == dMsg);
+            if (!same)
+            {
+                ++doorDisagreed;
+                if (doorFirst.size() < 5) doorFirst.push_back(s);
+            }
         }
 }
 
@@ -340,7 +379,8 @@ int run(const std::string& manifestPath, const std::string& outPath)
             w.block(rec, "density.liquid");
             if (auto pk = assemble(db, systemText(one, ""), w))
                 sweep(g, w, "", [&](double T, double P)
-                      { return pk->density(T, P, pure, DensityPhase::Liquid); });
+                      { return pk->density(T, P, pure, DensityPhase::Liquid); },
+                      DoorCheck{ pk.get(), 0, &pure });
 
             //  The pure-fluid routes that describe this record.
             std::vector<std::pair<std::string, std::string>> pureRoutes;
@@ -365,15 +405,18 @@ int run(const std::string& manifestPath, const std::string& outPath)
                 const std::string extra = "pureFluids { " + rec + " { " + pr.second + " } }\n";
                 if (auto pk = assemble(db, systemText(one, extra), w))
                     sweep(g, w, "", [&](double T, double P)
-                          { return pk->density(T, P, pure, DensityPhase::Liquid); });
+                          { return pk->density(T, P, pure, DensityPhase::Liquid); },
+                      DoorCheck{ pk.get(), 0, &pure });
                 w.block(rec, "viscosity.pureFluid." + pr.first);
                 if (auto pk = assemble(db, systemText(one, extra), w))
                     sweep(g, w, "", [&](double T, double)
-                          { return pk->viscosityLiquid(T, pure); });
+                          { return pk->viscosityLiquid(T, pure); },
+                          DoorCheck{ pk.get(), 1, &pure });
                 w.block(rec, "surfaceTension.pureFluid." + pr.first);
                 if (auto pk = assemble(db, systemText(one, extra), w))
                     sweep(g, w, "", [&](double T, double)
-                          { return pk->surfaceTension(T, pure); });
+                          { return pk->surfaceTension(T, pure); },
+                          DoorCheck{ pk.get(), 2, &pure });
             }
 
             for (const auto& m : viscModels)
@@ -381,14 +424,16 @@ int run(const std::string& manifestPath, const std::string& outPath)
                 w.block(rec, "viscosity." + m);
                 if (auto pk = assemble(db, systemText(one, viscBlock(m, "")), w))
                     sweep(g, w, "", [&](double T, double)
-                          { return pk->viscosityLiquid(T, pure); });
+                          { return pk->viscosityLiquid(T, pure); },
+                          DoorCheck{ pk.get(), 1, &pure });
             }
             for (const auto& m : sigModels)
             {
                 w.block(rec, "surfaceTension." + m);
                 if (auto pk = assemble(db, systemText(one, sigBlock(m, "")), w))
                     sweep(g, w, "", [&](double T, double)
-                          { return pk->surfaceTension(T, pure); });
+                          { return pk->surfaceTension(T, pure); },
+                          DoorCheck{ pk.get(), 2, &pure });
             }
             if (rec != solvent)
                 for (const auto& m : diffModels)
@@ -407,26 +452,27 @@ int run(const std::string& manifestPath, const std::string& outPath)
         {
             const std::string rec = b.first + "+" + b.second;
             const std::vector<std::string> two { b.first, b.second };
-            auto overX = [&](ThermoPackage& pk, const std::function<double(ThermoPackage&, double, double, const sVector&)>& f)
+            auto overX = [&](ThermoPackage& pk, int prop, const std::function<double(ThermoPackage&, double, double, const sVector&)>& f)
             {
                 for (double x : g.x)
                 {
                     const sVector z { x, 1.0 - x };
                     char tag[48];
                     std::snprintf(tag, sizeof(tag), "x=%.17g", x);
-                    sweep(g, w, tag, [&](double T, double P) { return f(pk, T, P, z); });
+                    sweep(g, w, tag, [&](double T, double P) { return f(pk, T, P, z); },
+                          DoorCheck{ &pk, prop, &z });
                 }
             };
             w.block(rec, "density.liquid");
             if (auto pk = assemble(db, systemText(two, ""), w))
-                overX(*pk, [](ThermoPackage& p, double T, double P, const sVector& z)
+                overX(*pk, 0, [](ThermoPackage& p, double T, double P, const sVector& z)
                       { return p.density(T, P, z, DensityPhase::Liquid); });
             for (const auto& m : viscModels)
                 for (const auto& r : viscRules)
                 {
                     w.block(rec, "viscosity." + m + "." + r);
                     if (auto pk = assemble(db, systemText(two, viscBlock(m, r)), w))
-                        overX(*pk, [](ThermoPackage& p, double T, double, const sVector& z)
+                        overX(*pk, 1, [](ThermoPackage& p, double T, double, const sVector& z)
                               { return p.viscosityLiquid(T, z); });
                 }
             for (const auto& m : sigModels)
@@ -434,7 +480,7 @@ int run(const std::string& manifestPath, const std::string& outPath)
                 {
                     w.block(rec, "surfaceTension." + m + "." + r);
                     if (auto pk = assemble(db, systemText(two, sigBlock(m, r)), w))
-                        overX(*pk, [](ThermoPackage& p, double T, double, const sVector& z)
+                        overX(*pk, 2, [](ThermoPackage& p, double T, double, const sVector& z)
                               { return p.surfaceTension(T, z); });
                 }
         }
@@ -450,7 +496,11 @@ int run(const std::string& manifestPath, const std::string& outPath)
               << ", refusals " << w.refusals_ << ", packages not assembled "
               << w.notAssembled_ << "\n"
               << "  non-finite values: NaN " << w.nans_ << ", inf " << w.infs_
-              << "; data-root paths replaced in messages: " << w.pathHits_ << "\n";
+              << "; data-root paths replaced in messages: " << w.pathHits_ << "\n"
+              << "  door against the old call: " << doorCompared << " compared, "
+              << doorDisagreed << " disagreements";
+    for (const auto& s : doorFirst) std::cout << "  [" << s << "]";
+    std::cout << "\n";
     char b[64];
     std::snprintf(b, sizeof(b), "%.1f", secs);
     std::cout << "  wall time " << b << " s\n";

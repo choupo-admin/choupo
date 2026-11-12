@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "HeatExchanger.H"
+#include "thermo/LiquidPropertyDoor.H"
 
 #include "unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
 #include "unitOperations/heatTransfer/htc/ShellTubeDesign.H"
@@ -220,11 +221,12 @@ int HeatExchanger::solve(const DictPtr& dict,
         {
             const DensityPhase ph =
                 (s.vf < 0.5) ? DensityPhase::Liquid : DensityPhase::Vapour;
-            return thermo.density(s.T, s.P, s.z, ph);
+            return ph == DensityPhase::Liquid ? liquidProperty::evaluate(thermo, liquidProperty::Property::density, s.T, s.P, s.z).value
+                                         : thermo.density(s.T, s.P, s.z, ph);
         };
         auto streamMu = [&](const Stream& s) -> scalar
         {
-            return (s.vf < 0.5) ? thermo.viscosityLiquid(s.T, s.z)
+            return (s.vf < 0.5) ? liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, s.T, s.P, s.z).value
                                 : thermo.viscosityGas(s.T, s.z);
         };
         auto streamLambda = [&](const Stream& s) -> scalar

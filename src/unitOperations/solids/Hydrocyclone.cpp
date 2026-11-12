@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "unitOperations/solids/Hydrocyclone.H"
+#include "thermo/LiquidPropertyDoor.H"
 #include "unitOperations/solids/ClassifierCore.H"
 #include "unitOperations/solids/classifierModel/PartitionCurves.H"
 #include "core/Dimensions.H"
@@ -82,7 +83,7 @@ int Hydrocyclone::solve(const DictPtr& dict, const ThermoPackage& thermo, int ve
     scalar nFl = 0.0;
     for (std::size_t i = 0; i < n; ++i) nFl += f.fluid[i];
     for (std::size_t i = 0; i < n; ++i) xl[i] = f.fluid[i] / nFl;
-    const scalar rhoL = thermo.density(f.T, f.P, xl, DensityPhase::Liquid);
+    const scalar rhoL = liquidProperty::evaluate(thermo, liquidProperty::Property::density, f.T, f.P, xl).value;
     const scalar Vs = f.mSolids / rhoS, Vl = f.mFluid / rhoL;      // m3/s
     const scalar CW = 100.0 * f.mSolids / (f.mSolids + f.mFluid);  // % by weight
     const scalar CV = Vs / (Vs + Vl);                              // fraction

@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Pipe.H"
+#include "thermo/LiquidPropertyDoor.H"
 #include "core/Advisory.H"                          // the transition-band announcement
 #include "core/Constants.H"
 #include "unitOperations/flash/IsothermalFlash.H"   // feed-flash for the gas-liquid split
@@ -233,7 +234,7 @@ int Pipe::solve(const DictPtr& dict,
 
             // Phase properties (rho per phase; mu from override or thermo)
             const scalar rhoG = thermo.density(T, Pin, yv,  DensityPhase::Vapour);
-            const scalar rhoL = thermo.density(T, Pin, xlp, DensityPhase::Liquid);
+            const scalar rhoL = liquidProperty::evaluate(thermo, liquidProperty::Property::density, T, Pin, xlp).value;
             if (rhoG <= 0.0 || rhoL <= 0.0)
                 throw std::runtime_error("Pipe(two-phase): non-physical phase density.");
             scalar muL, muG;
@@ -245,7 +246,7 @@ int Pipe::solve(const DictPtr& dict,
                              " (the thermoPackage liquidViscosity model is"
                              " bypassed for this unit).\n";
             }
-            else if (thermo.hasLiquidViscosity()) muL = thermo.viscosityLiquid(T, xlp);
+            else if (thermo.hasLiquidViscosity()) muL = liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, T, Pin, xlp).value;
             else throw std::runtime_error("Pipe(two-phase): no liquid viscosity -- add a "
                 "thermoPackage liquidViscosity model, or operation { viscosity <v> Pa.s; }.");
             if (tpDict && tpDict->found("gasViscosity"))
@@ -301,7 +302,7 @@ int Pipe::solve(const DictPtr& dict,
                 // Friedel (1979): a general two-phase multiplier on the TOTAL mass
                 // flux flowing as liquid; needs surface tension (Weber number).
                 const scalar sigma = (tpDict && tpDict->found("surfaceTension"))
-                    ? tpDict->lookupScalar("surfaceTension") : thermo.surfaceTension(T, xlp);
+                    ? tpDict->lookupScalar("surfaceTension") : liquidProperty::evaluate(thermo, liquidProperty::Property::surfaceTension, T, Pin, xlp).value;
                 if (sigma <= 0.0) throw std::runtime_error("Pipe(Friedel): non-physical surface tension.");
                 const scalar G    = Wtot / area;                         // mass flux kg/m2.s
                 const scalar rhoH = 1.0 / (quality / rhoG + (1.0 - quality) / rhoL);
@@ -327,7 +328,7 @@ int Pipe::solve(const DictPtr& dict,
                 // Beggs & Brill (1973): flow-pattern map + holdup (+ inclination)
                 // + a two-phase friction-factor ratio.  Needs surface tension.
                 const scalar sigma = (tpDict && tpDict->found("surfaceTension"))
-                    ? tpDict->lookupScalar("surfaceTension") : thermo.surfaceTension(T, xlp);
+                    ? tpDict->lookupScalar("surfaceTension") : liquidProperty::evaluate(thermo, liquidProperty::Property::surfaceTension, T, Pin, xlp).value;
                 if (sigma <= 0.0) throw std::runtime_error("Pipe(BeggsBrill): non-physical surface tension.");
                 const scalar vm   = jG + jL;                    // mixture velocity
                 const scalar lamL = jL / vm;                    // no-slip liquid holdup
@@ -439,7 +440,7 @@ int Pipe::solve(const DictPtr& dict,
 
     // ---- Properties: density (liquid) and viscosity ---------------------
     //   rho from the thermoPackage liquid branch (Rackett / pure-fluid).
-    const scalar rho = thermo.density(T, Pin, z, DensityPhase::Liquid);
+    const scalar rho = liquidProperty::evaluate(thermo, liquidProperty::Property::density, T, Pin, z).value;
     if (rho <= 0.0)
         throw std::runtime_error("Pipe: non-physical liquid density.");
 
@@ -454,7 +455,7 @@ int Pipe::solve(const DictPtr& dict,
     }
     else if (thermo.hasLiquidViscosity())
     {
-        mu = thermo.viscosityLiquid(T, z);
+        mu = liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, T, Pin, z).value;
         muSource = "thermoPackage liquidViscosity";
     }
     else

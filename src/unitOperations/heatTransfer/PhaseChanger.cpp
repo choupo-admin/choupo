@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "PhaseChanger.H"
+#include "thermo/LiquidPropertyDoor.H"
 #include "unitOperations/flash/IsothermalFlash.H"
 #include "unitOperations/flash/PureSaturationPlateau.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
@@ -862,12 +863,12 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
         // surfaceTension block); harmless and best-effort for condensation.
         if (thermo.hasSurfaceTension() || !thermo.pureFluidSelections().empty())
         {
-            try { ctx.sigma = thermo.surfaceTension(Tsat, z); }
+            try { ctx.sigma = liquidProperty::evaluate(thermo, liquidProperty::Property::surfaceTension, Tsat, P_out, z).value; }
             catch (const std::exception&) { ctx.sigma = 0.0; }
         }
-        ctx.rho_l       = thermo.density(T_f, P_out, z, DensityPhase::Liquid);
+        ctx.rho_l       = liquidProperty::evaluate(thermo, liquidProperty::Property::density, T_f, P_out, z).value;
         ctx.lambda_l    = thermo.thermalConductivityLiquid(T_f, z);
-        ctx.mu_l        = thermo.viscosityLiquid(T_f, z);
+        ctx.mu_l        = liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, T_f, P_out, z).value;
         // mass cp: molar Cp_liquid / M.
         scalar cp_molar = 0.0;
         for (std::size_t i = 0; i < n; ++i)
@@ -1277,7 +1278,7 @@ int PhaseChanger::solveBoilingGeometry(const DictPtr& operDict,
             "surface tension sigma -- add `transport { surfaceTension { model "
             "BrockBird; } }` to the thermoPackage, or flag a pure-fluid kernel "
             "(IF97 supplies sigma via IAPWS R1-76).");
-    const scalar sigma = thermo.surfaceTension(Tsat, z);
+    const scalar sigma = liquidProperty::evaluate(thermo, liquidProperty::Property::surfaceTension, Tsat, P_out, z).value;
 
     // Molar mass + latent heat per kg (same idiom as condensation).
     scalar Mbar = 0.0;
@@ -1304,10 +1305,10 @@ int PhaseChanger::solveBoilingGeometry(const DictPtr& operDict,
     // by the +/-eps.  (Same idiom as the dome-aware H_stream eps-step.)
     const scalar dTsat = 0.05;   // 50 mK off the line -- enough to switch region
     const scalar rho_v = thermo.density(Tsat + dTsat, P_out, z, DensityPhase::Vapour);
-    const scalar rho_l = thermo.density(Tsat - dTsat, P_out, z, DensityPhase::Liquid);
+    const scalar rho_l = liquidProperty::evaluate(thermo, liquidProperty::Property::density, Tsat - dTsat, P_out, z).value;
 
     // Liquid film properties just below Tsat (saturated liquid -- pool boiling).
-    const scalar mu_l     = thermo.viscosityLiquid(Tsat - dTsat, z);
+    const scalar mu_l     = liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, Tsat - dTsat, P_out, z).value;
     const scalar lambda_l = thermo.thermalConductivityLiquid(Tsat - dTsat, z);
     // Liquid mass-cp at Tsat.  Prefer the pure-fluid kernel (IF97 cp_molar on
     // the saturated-liquid line) when the dominant component is flagged; else

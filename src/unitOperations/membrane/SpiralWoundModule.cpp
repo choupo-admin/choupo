@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "SpiralWoundModule.H"
+#include "thermo/LiquidPropertyDoor.H"
 #include "BulkConversion.H"
 #include "AqueousSplit.H"
 #include "RatedTestInversion.H"
@@ -395,7 +396,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     {
         if (thermo.hasLiquidViscosity())
         {
-            mu_feed = thermo.viscosityLiquid(T_in, z_in);
+            mu_feed = liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, T_in, 0.0, z_in).value;
             AdvisoryLog::instance().add("model", "info",
                 "membrane '" + (dict->name().empty() ? type() : dict->name()) + "'",
                 "feed viscosity " + std::to_string(mu_feed) + " Pa.s priced"

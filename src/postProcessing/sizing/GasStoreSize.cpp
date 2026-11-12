@@ -13,6 +13,7 @@
 \*---------------------------------------------------------------------------*/
 
 #include "GasStoreSize.H"
+#include "thermo/LiquidPropertyDoor.H"
 #include "DesignDefaults.H"
 #include "MaterialLimits.H"
 #include "PhaseDensity.H"
@@ -655,7 +656,7 @@ std::vector<EquipmentSizing> LiquefiedGasStoreSize::size(
             pricedDensity::select(tp, T, d.P, s.z, DensityPhase::Liquid);
         rho = 0.0;
         if (sel.keptFraction > 0.0)
-            try { rho = tp.density(T, d.P, sel.zPriced, DensityPhase::Liquid); }
+            try { rho = liquidProperty::evaluate(tp, liquidProperty::Property::density, T, d.P, sel.zPriced, liquidProperty::Consumer{"sizing", who}, sel.dropped).value; }
             catch (const std::exception&) { rho = 0.0; }
         const std::string m = "the liquid of stream '" + stream + "' arrives"
             " at " + fmt("%.2f", d.T) + " K and is stored at the declared "

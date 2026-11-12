@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Flowsheet.H"
+#include "core/PropertySourceLog.H"
 #include "core/DictAudit.H"
 #include "core/Advisory.H"
 #include "thermo/ThermoAnnounce.H"
@@ -1151,6 +1152,8 @@ void runUnit(const DictPtr&                                          udict,
 
     // Silence inner logs during outer Wegstein iterations except the last one
     int vUsed = quiet ? 0 : verbosity;
+    //  The unit being solved, for the liquid-property sources (C378).
+    PropertySourceLog::Scope propertyScope(utype, uname);
     int rc = unit->solve(augmented, thermo, vUsed);
     if (rc != 0)
         throw std::runtime_error("Flowsheet: unit '" + uname

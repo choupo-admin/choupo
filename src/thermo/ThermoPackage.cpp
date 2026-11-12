@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "ThermoPackage.H"
+#include "PropertyDomainError.H"
 
 // The concrete model families the interface only forward-declares (build
 // hygiene 4/6): the bodies that dereference them live HERE, where the
@@ -2174,7 +2175,7 @@ scalar ThermoPackage::viscosityLiquid(scalar T, const sVector& x) const
             return m.mu(T, m.p_sat(T));   // saturated-liquid state
         }
     if (!liquidViscosity_)
-        throw std::runtime_error("ThermoPackage::viscosityLiquid: no model ---"
+        throw PropertyDomainError(PropertyDomainError::Kind::missingDatum, "ThermoPackage::viscosityLiquid: no model ---"
             " add `transport { liquidViscosity { model Andrade; } }` to the"
             " thermoPackage (a propertyPackage's propertyMethods `transport`"
             " slot covers gas viscosity only).");
@@ -2253,7 +2254,7 @@ scalar ThermoPackage::surfaceTension(scalar T, const sVector& x) const
             return m.sigma(T);
         }
     if (!surfaceTension_)
-        throw std::runtime_error("ThermoPackage::surfaceTension: no model ---"
+        throw PropertyDomainError(PropertyDomainError::Kind::missingDatum, "ThermoPackage::surfaceTension: no model ---"
             " add `transport { surfaceTension { model BrockBird; } }` to the"
             " thermoPackage (a propertyPackage's propertyMethods `transport`"
             " slot covers gas viscosity only).");
@@ -2277,7 +2278,7 @@ scalar ThermoPackage::density(scalar T, scalar P_Pa, const sVector& z,
     for (std::size_t i = 0; i < N; ++i)
         if (z[i] > 0.0) { Mbar += z[i] * components_[i].MW(); zsum += z[i]; }
     if (zsum <= 0.0)
-        throw std::runtime_error("ThermoPackage::density: empty composition");
+        throw PropertyDomainError(PropertyDomainError::Kind::invalidState, "ThermoPackage::density: empty composition");
     Mbar = (Mbar / zsum) / 1000.0;                       // kg/mol
 
     // (1) Pure-fluid override (water + IF97 -> rho = MW / v_molar).  IF97's
@@ -2296,7 +2297,7 @@ scalar ThermoPackage::density(scalar T, scalar P_Pa, const sVector& z,
             const scalar Mi = components_[*i].MW() / 1000.0;   // kg/mol
             const scalar vm = m.v_molar(T, P_Pa);             // m³/mol
             if (!(vm > 0.0) || !std::isfinite(vm))
-                throw std::runtime_error("ThermoPackage::density: pure-fluid"
+                throw PropertyDomainError(PropertyDomainError::Kind::invalidState, "ThermoPackage::density: pure-fluid"
                     " v_molar is not a finite positive number");
             return Mi / vm;                                    // kg/m³
         }
@@ -2349,7 +2350,7 @@ scalar ThermoPackage::density(scalar T, scalar P_Pa, const sVector& z,
         Vmix += (z[i] / zsum) * liquidMolarVolumeOf(i, T);
     }
     if (!(Vmix > 0.0) || !std::isfinite(Vmix))
-        throw std::runtime_error("ThermoPackage::density: liquid molar volume"
+        throw PropertyDomainError(PropertyDomainError::Kind::invalidState, "ThermoPackage::density: liquid molar volume"
             " is not a finite positive number");
     return Mbar / Vmix;                                         // kg/m³
 }
@@ -2432,14 +2433,16 @@ scalar ThermoPackage::liquidMolarVolumeOf(std::size_t i, scalar T) const
     const scalar Tc = c.Tc(), Pc_Pa = c.Pc() * 1.0e5, omega = c.omega();
     const scalar Vdecl = c.Vliq();
     const bool   hasCrit = (Tc > 0.0 && Pc_Pa > 0.0);
+    //  WHICH ROUTE: one home, read by the liquid-property door too (C378).
+    const LiquidVolumeRoute route = liquidVolumeRouteOf(i);
 
     scalar Vi = 0.0;
-    if (Vdecl > 0.0 && hasCrit)
+    if (route == LiquidVolumeRoute::anchoredRackett)
     {
         const scalar Vr  = closures::rackettVliq(T, Tc, Pc_Pa, omega);
         const scalar Vr0 = closures::rackettVliq(Tref_Vliq, Tc, Pc_Pa, omega);
         if ((!(Vr0 > 0.0) || !std::isfinite(Vr0)) && T < Tc)
-            throw std::runtime_error("ThermoPackage::density: Rackett"
+            throw PropertyDomainError(PropertyDomainError::Kind::missingDatum, "ThermoPackage::density: Rackett"
                 " cannot anchor component '" + c.name() + "''s 25 C `Vliq`"
                 " (its reference volume at 298.15 K is not a finite"
                 " positive number; Tc = " + std::to_string(Tc) + " K).");
@@ -2454,7 +2457,7 @@ scalar ThermoPackage::liquidMolarVolumeOf(std::size_t i, scalar T) const
             announcedAnchored = true;
         }
     }
-    else if (Vdecl > 0.0)
+    else if (route == LiquidVolumeRoute::flatVliq)
     {
         Vi = Vdecl;
         if (!announcedFlat)
@@ -2466,7 +2469,7 @@ scalar ThermoPackage::liquidMolarVolumeOf(std::size_t i, scalar T) const
             announcedFlat = true;
         }
     }
-    else if (hasCrit)
+    else if (route == LiquidVolumeRoute::bareRackett)
     {
         Vi = closures::rackettVliq(T, Tc, Pc_Pa, omega);
         if (!announcedBare)
@@ -2479,7 +2482,7 @@ scalar ThermoPackage::liquidMolarVolumeOf(std::size_t i, scalar T) const
         }
     }
     else
-        throw std::runtime_error("ThermoPackage::density: liquid density"
+        throw PropertyDomainError(PropertyDomainError::Kind::missingDatum, "ThermoPackage::density: liquid density"
             " for component '" + c.name() + "' needs either a `Vliq` in its"
             " record or the critical constants Tc and Pc for Rackett;"
             " it declares neither.");
@@ -2500,7 +2503,7 @@ scalar ThermoPackage::liquidMolarVolumeOf(std::size_t i, scalar T) const
     //  can do without the component asks over the others
     //  (`pricedDensity::select`) and says so in its own words.
     if (hasCrit && T >= Tc)
-        throw std::runtime_error("ThermoPackage::density: no liquid molar"
+        throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain, "ThermoPackage::density: no liquid molar"
             " volume for component '" + c.name() + "' at T = "
             + std::to_string(T) + " K: it is above its critical"
             " temperature (Tc = " + std::to_string(Tc) + " K), where Rackett"
@@ -2512,7 +2515,7 @@ scalar ThermoPackage::liquidMolarVolumeOf(std::size_t i, scalar T) const
             " components that have a liquid volume, and say which were"
             " left out.");
     if (!(Vi > 0.0) || !std::isfinite(Vi))
-        throw std::runtime_error("ThermoPackage::density: the liquid molar"
+        throw PropertyDomainError(PropertyDomainError::Kind::invalidState, "ThermoPackage::density: the liquid molar"
             " volume of component '" + c.name() + "' at T = "
             + std::to_string(T) + " K is not a finite positive number.");
     return Vi;                                                  // m³/mol
@@ -2529,6 +2532,41 @@ LiquidMixingContext ThermoPackage::liquidMixingContext() const
     }
     ctx.molarVolume = [this](std::size_t i, scalar T) { return liquidMolarVolumeOf(i, T); };
     return ctx;
+}
+
+// ---- WHAT THE LIQUID-PROPERTY DOOR READS (C378 slice 0) --------------------
+//  Placed at the end of the file so no line an EduTool lesson cites moves.
+ThermoPackage::LiquidVolumeRoute ThermoPackage::liquidVolumeRouteOf(std::size_t i) const
+{
+    const Component& c = components_.at(i);
+    const bool hasCrit = (c.Tc() > 0.0 && c.Pc() * 1.0e5 > 0.0);
+    if (c.Vliq() > 0.0) return hasCrit ? LiquidVolumeRoute::anchoredRackett
+                                       : LiquidVolumeRoute::flatVliq;
+    return hasCrit ? LiquidVolumeRoute::bareRackett : LiquidVolumeRoute::none;
+}
+
+std::optional<std::size_t> ThermoPackage::pureFluidCarrying(const sVector& z) const
+{
+    if (pureFluid_.empty()) return std::nullopt;
+    return pureFluidRoute(pureFluid_, components_, z);
+}
+
+std::string ThermoPackage::pureFluidMethod(std::size_t i) const
+{
+    const auto it = pureFluid_.find(i);
+    return it == pureFluid_.end() ? std::string() : it->second->type();
+}
+
+std::string ThermoPackage::liquidViscosityMethod() const
+{
+    if (!liquidViscosity_) return "";
+    return liquidViscosity_->modelName() + "/" + liquidViscosityMixing_->ruleName();
+}
+
+std::string ThermoPackage::surfaceTensionMethod() const
+{
+    if (!surfaceTension_) return "";
+    return surfaceTension_->modelName() + "/" + surfaceTensionMixing_->ruleName();
 }
 
 } // namespace Choupo

@@ -82,7 +82,14 @@ def run_bench():
         print((p.stdout + p.stderr)[-3000:])
         sys.exit(1)
     summary = [l.strip() for l in p.stdout.splitlines()
-               if l.strip().startswith(("records", "non-finite"))]
+               if l.strip().startswith(("records", "non-finite", "door against"))]
+    door = [l for l in summary if l.startswith("door against")]
+    if (not door or not door[0].endswith(" 0 disagreements")
+            or door[0].startswith("door against the old call: 0 compared")):
+        print(f"{NAME}: FAIL -- the door (thermo/LiquidPropertyDoor) does not answer as the "
+              "package's own call: " + (door[0] if door else "no door line printed"))
+        print("\n".join(summary))
+        sys.exit(1)
     return secs, summary
 
 

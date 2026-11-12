@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "unitOperations/solids/SolidLiquidCore.H"
+#include "thermo/LiquidPropertyDoor.H"
 #include "thermo/ThermoPackage.H"
 
 #include <algorithm>
@@ -139,7 +140,7 @@ scalar liquidDensity(const sVector& n, scalar T, scalar P, const ThermoPackage& 
     for (auto v : n) tot += std::max(0.0, v);
     sVector x(n.size(), 0.0);
     for (std::size_t i = 0; i < n.size(); ++i) x[i] = std::max(0.0, n[i]) / tot;
-    return thermo.density(T, P, x, DensityPhase::Liquid);
+    return liquidProperty::evaluate(thermo, liquidProperty::Property::density, T, P, x).value;
 }
 
 scalar liquidViscosity(const sVector& n, scalar T, const ThermoPackage& thermo,
@@ -156,7 +157,7 @@ scalar liquidViscosity(const sVector& n, scalar T, const ThermoPackage& thermo,
     for (auto v : n) tot += std::max(0.0, v);
     sVector x(n.size(), 0.0);
     for (std::size_t i = 0; i < n.size(); ++i) x[i] = std::max(0.0, n[i]) / tot;
-    return thermo.viscosityLiquid(T, x);
+    return liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, T, 0.0, x).value;
 }
 
 ProcessStream makeSlurryStream(const std::string& name, scalar T, scalar P,

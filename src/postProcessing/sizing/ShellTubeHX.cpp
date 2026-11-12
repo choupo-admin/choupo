@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "ShellTubeHX.H"
+#include "thermo/LiquidPropertyDoor.H"
 #include "MaterialLimits.H"
 
 #include "thermo/utility/UtilityCatalogue.H"
@@ -227,10 +228,12 @@ SideFluid price(const ThermoPackage& tp, const FluidState& s, bool heating,
     };
     try
     {
-        f.rho = need("density", tp.density(s.T, s.P, s.z, ph),
+        f.rho = need("density", ph == DensityPhase::Liquid
+            ? liquidProperty::evaluate(tp, liquidProperty::Property::density, s.T, s.P, s.z, liquidProperty::Consumer{"sizing.shellTubeHX", who}).value
+            : tp.density(s.T, s.P, s.z, ph),
             "The package's phase-density route returned nothing usable.");
         f.mu = need("viscosity", s.vapour ? tp.viscosityGas(s.T, s.z)
-                                          : tp.viscosityLiquid(s.T, s.z),
+                                          : liquidProperty::evaluate(tp, liquidProperty::Property::viscosity, s.T, s.P, s.z, liquidProperty::Consumer{"sizing.shellTubeHX", who}).value,
             "Declare a viscosity model in the package's `transport {}`.");
         f.lambda = need("thermal conductivity",
             s.vapour ? tp.thermalConductivityGas(s.T, s.z)
@@ -996,7 +999,7 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
                     " TENSION, and the case's package declares no model for it"
                     " -- add `transport { interface { surfaceTension { model"
                     " BrockBird; } } }` to constant/thermoPhysPropDict.");
-            f->sigma = tp.surfaceTension(f->Tsat, pcp->z);
+            f->sigma = liquidProperty::evaluate(tp, liquidProperty::Property::surfaceTension, f->Tsat, pcp->P, pcp->z, liquidProperty::Consumer{"sizing.shellTubeHX", who}).value;
             if (!std::isfinite(f->sigma) || !(f->sigma > 0.0))
                 throw std::runtime_error(who + ": the package's surface tension"
                     " at " + std::to_string(f->Tsat) + " K is not positive.");

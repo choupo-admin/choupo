@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Valve.H"
+#include "thermo/LiquidPropertyDoor.H"
 #include "unitOperations/flash/IsothermalFlash.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
 #include "thermo/PricedDensity.H"
@@ -297,7 +298,7 @@ int Valve::solve(const DictPtr& dict,
                              " of the rest\n";
                 announced = true;
             }
-            return thermo.density(T, P, sel.zPriced, DensityPhase::Liquid);
+            return liquidProperty::evaluate(thermo, liquidProperty::Property::density, T, P, sel.zPriced, nullptr, sel.dropped).value;
         };
         //  One end of the valve: mass flow [kg/s] and volumetric flow
         //  [m3/s], with the phase densities it was built from.

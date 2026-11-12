@@ -13,6 +13,7 @@
 \*---------------------------------------------------------------------------*/
 
 #include "PhaseDensity.H"
+#include "thermo/LiquidPropertyDoor.H"
 #include "core/Advisory.H"
 #include "thermo/PricedDensity.H"
 #include "thermo/ThermoPackage.H"
@@ -121,7 +122,9 @@ Reading of(const SimulationResult& result,
               " volume nor a mass can be formed from it.");
     r.unpricedMoleFraction = sel.droppedFraction;
     const std::string excluded = sel.dropped;
-    r.rho = tp.density(s.T, s.P, sel.zPriced, ph);
+    r.rho = ph == DensityPhase::Liquid
+        ? liquidProperty::evaluate(tp, liquidProperty::Property::density, s.T, s.P, sel.zPriced, liquidProperty::Consumer{"sizing", who}, sel.dropped).value
+        : tp.density(s.T, s.P, sel.zPriced, ph);
     if (!std::isfinite(r.rho) || !(r.rho > 0.0))
         throw std::runtime_error(who + ": the package returned no usable"
             " density for stream '" + stream + "'.");

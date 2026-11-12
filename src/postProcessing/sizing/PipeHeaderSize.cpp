@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "PipeHeaderSize.H"
+#include "thermo/LiquidPropertyDoor.H"
 #include "PhaseDensity.H"
 #include "TrainSplit.H"
 #include "core/Dimensions.H"
@@ -196,7 +197,7 @@ std::vector<EquipmentSizing> PipeHeaderSize::size(const std::string& unitName,
                         " liquid-viscosity model and the header declares no"
                         " `viscosity { value <Pa.s>; source; reason; }`.  No"
                         " viscosity is guessed.");
-                mu = pkg->viscosityLiquid(s.T, s.z);
+                mu = liquidProperty::evaluate(*pkg, liquidProperty::Property::viscosity, s.T, s.P, s.z, liquidProperty::Consumer{"sizing.pipeHeader", who}).value;
                 muFrom = "the case's liquid-viscosity model";
             }
         }

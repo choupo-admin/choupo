@@ -33,6 +33,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "VariableVolumeHoldup.H"
+#include "thermo/LiquidPropertyDoor.H"
 
 #include <algorithm>
 #include <cmath>
@@ -87,7 +88,7 @@ LiquidState liquidState(const ThermoPackage& thermo, const sVector& n,
     s.meanMW = mass / s.nTotal;
     try
     {
-        s.density = thermo.density(T, P_Pa, x, DensityPhase::Liquid);
+        s.density = liquidProperty::evaluate(thermo, liquidProperty::Property::density, T, P_Pa, x, liquidProperty::Consumer{"dynamicVessel", who}).value;
     }
     catch (const std::exception& e)
     {

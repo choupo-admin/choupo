@@ -801,6 +801,19 @@ public:
     const std::map<std::string, std::map<std::string, scalar>>&
     mixtureMembersByToken() const { return mixtureMembersByToken_; }
 
+    // ---- What the liquid-property door reads (C378 slice 0) -------------
+    //  The route the liquid density takes for ONE component -- the same
+    //  decision liquidMolarVolumeOf() switches on (one home).
+    enum class LiquidVolumeRoute { anchoredRackett, flatVliq, bareRackett, none };
+    LiquidVolumeRoute liquidVolumeRouteOf(std::size_t i) const;
+    //  The pure-fluid component that carries `z`, when a case selected one
+    //  and the phase is effectively pure in it (throws on a mixture, as the
+    //  property methods do).
+    std::optional<std::size_t> pureFluidCarrying(const sVector& z) const;
+    std::string pureFluidMethod(std::size_t i) const;      // "" when none
+    std::string liquidViscosityMethod() const;             // "model/rule" or ""
+    std::string surfaceTensionMethod() const;              // "model/rule" or ""
+
 private:
     // Load-time helper: expand any predefined-mixture tokens in `names`
     // (data/standards/mixtures/<token>.dat) into their member component
