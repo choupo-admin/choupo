@@ -281,6 +281,18 @@ SABOTAGES += [
                "token is assembled because this file is inside the scanner's "
                "own scope (bin/curate .py).",
     },
+    {
+        "gate": "check_property_route_bench.py",
+        "kind": "detection",
+        "file": "data/standards/components/methanol.dat",
+        "find": "Vliq        4.070e-5;",
+        "replace": "Vliq        4.071e-5;",
+        "why": "the bench pins every liquid-property route bit for bit "
+               "(C378 slice 0, TR-16).  One stored liquid volume moved in "
+               "its last digit moves methanol's density block and the "
+               "water-methanol mixture block, and the gate must NAME them "
+               "-- a hash of the total would only say that something moved.",
+    },
 ]
 
 SOURCE_SABOTAGES = [
