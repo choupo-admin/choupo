@@ -180,7 +180,10 @@ Description
     `solutionControl { write false; }` (no <t>/ directories at all); KPIs t_breakthrough_5pct / t_50 /
     t_breakthrough_95pct / integral_anchor (trapezoid of (1 - c_out/c_in)
     over the internal <= samplingInterval samples, gate G5) /
-    t_stoichiometric (analytic) / mass_closure per component.
+    t_stoichiometric (analytic) / mass_closure per component; with
+    `schemeDiagnostics true;` (C375) also outlet_m0 / outlet_mean /
+    outlet_variance (moments of c_out about t = 0) and the field extremes
+    c_max_over_feed / c_min / q_max_over_qstar_feed / q_min.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -307,6 +310,16 @@ private:
     //  The declared switch for <t>/ time directories (controlDict
     //  solutionControl { write ...; }): the axial profiles obey it (C375 b).
     bool        writeProfiles_    = true;
+    //  C375: the scheme's witnesses (operation.schemeDiagnostics true;),
+    //  per integrated species: the zeroth, first and second moments of
+    //  c_out(t) about t = 0 (trapezoid over the sampler's chunks; a pulse's
+    //  mean and variance are what the closed form of the linear model
+    //  predicts), and the extremes of c and q over every cell and every
+    //  sampled instant against the largest feed (and its q*) declared.
+    bool        schemeDiagnostics_ = false;
+    std::vector<scalar> mom0_, mom1_, mom2_, cOutPrev_;
+    std::vector<scalar> cMaxField_, cMinField_, cFeedMax_;
+    std::vector<scalar> qMaxField_, qMinField_, qStarFeedMax_;
     //  The numerical and the physical dispersion, frozen at initialise
     //  (interstitial basis, the one the moments obey: D_L = Dax/eps).
     scalar      dNumAnn_ = 0.0;

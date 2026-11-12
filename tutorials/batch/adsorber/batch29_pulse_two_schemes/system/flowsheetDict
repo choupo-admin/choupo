@@ -1,0 +1,128 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch29_pulse_two_schemes  --  the same bed, two schemes, against the
+  closed form.
+
+  NUMERICAL DISPERSION, for a student.  The bed is cut into cells, and the
+  convective flux through each face needs ONE concentration at the face.
+  The first-order `upwind` scheme takes the upstream cell's value; a Taylor
+  expansion shows that this differs from the true face value by -(dz/2)
+  dc/dz, so the scheme quietly adds a Fickian flux: it solves the model
+  with D_L + v dz/2 instead of D_L (v = u/eps).  Here v dz/2 is 3.1e-4 m2/s
+  at 100 cells against a declared D_L = 2.5e-4: the grid more than doubles
+  the dispersion.  The `vanLeer` scheme reconstructs a limited linear
+  profile in each cell, which removes that term (second order), and its
+  limiter keeps the peak free of over- and undershoots.
+
+  THE EXPERIMENT.  Two identical, independent beds of a synthetic LINEAR
+  sorbent (Henry isotherm, case-local records under constant/), fed 1 %
+  CO2 in He for t_inj = 2 s and then pure He (a rectangular pulse, the
+  recipe below).  Each bed publishes the moments of its outlet
+  concentration (operation.schemeDiagnostics true;).  The model is linear,
+  so its moments have a closed form (derived in the Theory Guide, fixed-bed
+  section; symbols: eps void fraction, u superficial velocity, v = u/eps,
+  D_L = Dax/eps, K = H R T the linear isotherm in m3/kg, rho_b bulk
+  density, k the LDF constant):
+
+      t0  = eps L/u = 4 s                     k' = rho_b K/eps = 12.39479
+      t_R = t0 (1 + k') = 53.57914 s          Pe = v L/D_L = u L/Dax = 250
+      mean     = t_R + t_inj/2 = 54.57914 s
+      variance = t_R^2 [2/Pe - 2(1 - exp(-Pe))/Pe^2]   (Danckwerts, closed)
+               + 2 k' t0/k                              (LDF)
+               + t_inj^2/12                             (the pulse)
+               = 22.87393 + 9.91583 + 0.33333 = 33.12309 s2
+
+  bedVanLeer (100 cells) must reproduce THAT variance; bedUpwind (100
+  cells) reproduces it only with D_L replaced by D_L + v dz/2 (Pe_eff =
+  111.1): 61.45714 s2.  Both means are t_R + t_inj/2: the grid moves the
+  width, never the centre.  The `anchor` rows in `expected` are these
+  closed-form values (DERIVED anchors: identities of the linear model, not
+  measurements); the gate check_fixed_bed_scheme repeats them at 200 cells
+  and states the tolerance it measured.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        bedUpwind;
+        type        fixedBedAdsorber;
+        solver      { samplingInterval 0.05; }   // s -- moment quadrature step
+
+        operation
+        {
+            adsorbent   henrySorbent;  // synthetic linear sorbent (case-local)
+            L           0.5   m;
+            area        0.01  m2;
+            eps         0.4;
+            u           0.05  m/s;     // superficial, constant (A3 closure)
+            T           298.15 K;      // = the isotherm's tRef: K is exactly H R T
+            P           1     bar;
+            Dax  [0 2 -1 0 0]  1e-4;   // m2/s -> Pe = u L/Dax = 250
+            nCells      100;
+            convectionScheme  upwind;  // first order: adds v dz/2 = 3.125e-4 m2/s
+            schemeDiagnostics true;    // outlet moments + field extremes as KPIs
+
+            feed    { molarComposition { CO2 0.01; He 0.99; } }
+            initial { molarComposition { He  1.0; } }   // clean bed: q = 0
+
+            kLDF
+            {
+                basis    solidFilm;    // dq/dt = k (q* - q)
+                scope    "synthetic teaching sorbent, batch29 pulse";
+                source   "declared teaching value: k = 10 1/s keeps the LDF variance (9.9 s2) below the dispersion variance (22.9 s2)";
+                k
+                {
+                    CO2  [0 0 -1 0 0]  10;   // 1/s
+                }
+            }
+        }
+    }
+    {
+        name        bedVanLeer;
+        type        fixedBedAdsorber;
+        solver      { samplingInterval 0.05; }
+
+        operation
+        {
+            adsorbent   henrySorbent;
+            L           0.5   m;
+            area        0.01  m2;
+            eps         0.4;
+            u           0.05  m/s;
+            T           298.15 K;
+            P           1     bar;
+            Dax  [0 2 -1 0 0]  1e-4;
+            nCells      100;
+            convectionScheme  vanLeer; // second order, limited: no v dz/2 term
+            schemeDiagnostics true;
+
+            feed    { molarComposition { CO2 0.01; He 0.99; } }
+            initial { molarComposition { He  1.0; } }
+
+            kLDF
+            {
+                basis    solidFilm;
+                scope    "synthetic teaching sorbent, batch29 pulse";
+                source   "declared teaching value: k = 10 1/s keeps the LDF variance (9.9 s2) below the dispersion variance (22.9 s2)";
+                k
+                {
+                    CO2  [0 0 -1 0 0]  10;
+                }
+            }
+        }
+    }
+);
+
+//  The pulse: at t_inj = 2 s both feeds switch to pure He.
+recipe
+(
+    { time 2; action setParameter; unit bedUpwind;  key feed.CO2; value 0.0; }
+    { time 2; action setParameter; unit bedVanLeer; key feed.CO2; value 0.0; }
+);

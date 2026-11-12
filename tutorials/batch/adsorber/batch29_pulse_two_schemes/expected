@@ -1,0 +1,131 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+kpi     bedUpwind              D_axial_interstitial 0.00025            1e-4
+kpi     bedUpwind              D_numerical      0.0003125          1e-4
+kpi     bedUpwind              E_adsorption_seg0_kJ -2.6519254011e-28  1e-4
+kpi     bedUpwind              E_adsorption_total_kJ -2.6519254011e-28  1e-4
+kpi     bedUpwind              P_final          100000             1e-4
+kpi     bedUpwind              Pe               250                1e-4
+kpi     bedUpwind              T_final          298.15             1e-4
+kpi     bedUpwind              c_max_over_feed_CO2 0.906065328263     1e-4
+kpi     bedUpwind              c_min_CO2        0                  1e-4
+kpi     bedUpwind              carrier_fabricated_mol 1.32596270055e-29  1e-4
+kpi     bedUpwind              carrier_makeup_rel 3.28700455746e-30  1e-4
+kpi     bedUpwind              integral_anchor_CO2 2                  1e-4
+kpi     bedUpwind              mass_closure_CO2 1.30352993952e-14  1e-4
+kpi     bedUpwind              nCells_numerical_ratio_0p1 1251               1e-4
+kpi     bedUpwind              n_CO2_final      1.01631846403e-33  1e-4
+kpi     bedUpwind              n_He_final       8.06790910917e-05  1e-4
+kpi     bedUpwind              numerical_dispersion_ratio 1.25               1e-4
+kpi     bedUpwind              outlet_m0_CO2    0.806790910917     1e-4
+kpi     bedUpwind              outlet_mean_CO2  54.5791405911      1e-4
+kpi     bedUpwind              outlet_variance_CO2 61.6000928935      1e-4
+kpi     bedUpwind              q_max_over_qstar_feed_CO2 0.89654769476      1e-4
+kpi     bedUpwind              q_min_CO2        0                  1e-4
+kpi     bedUpwind              qbar_CO2_final   5.3038508022e-30   1e-4
+kpi     bedUpwind              t_end            200                1e-4
+kpi     bedUpwind              t_stoichiometric_CO2 53.5791405911      1e-4
+kpi     bedUpwind              totalMoles_final 8.06790910917e-05  1e-4
+kpi     bedVanLeer             D_axial_interstitial 0.00025            1e-4
+kpi     bedVanLeer             D_numerical      0                  1e-4
+kpi     bedVanLeer             E_adsorption_seg0_kJ -2.99714369515e-44 1e-4
+kpi     bedVanLeer             E_adsorption_total_kJ -2.99714369515e-44 1e-4
+kpi     bedVanLeer             P_final          100000             1e-4
+kpi     bedVanLeer             Pe               250                1e-4
+kpi     bedVanLeer             T_final          298.15             1e-4
+kpi     bedVanLeer             c_max_over_feed_CO2 0.961540426108     1e-4
+kpi     bedVanLeer             c_min_CO2        -1.31962832448e-26 1e-4
+kpi     bedVanLeer             carrier_fabricated_mol 1.49857184757e-45  1e-4
+kpi     bedVanLeer             carrier_makeup_rel 3.71489521584e-46  1e-4
+kpi     bedVanLeer             integral_anchor_CO2 2                  1e-4
+kpi     bedVanLeer             mass_closure_CO2 2.64737523799e-14  1e-4
+kpi     bedVanLeer             n_CO2_final      1.11166946766e-49  1e-4
+kpi     bedVanLeer             n_He_final       8.06790910917e-05  1e-4
+kpi     bedVanLeer             numerical_dispersion_ratio 0                  1e-4
+kpi     bedVanLeer             outlet_m0_CO2    0.806790906107     1e-4
+kpi     bedVanLeer             outlet_mean_CO2  54.5859854412      1e-4
+kpi     bedVanLeer             outlet_variance_CO2 33.7448289198      1e-4
+kpi     bedVanLeer             q_max_over_qstar_feed_CO2 0.955679622699     1e-4
+kpi     bedVanLeer             q_min_CO2        -3.47588284322e-29 1e-4
+kpi     bedVanLeer             qbar_CO2_final   5.99428739029e-46  1e-4
+kpi     bedVanLeer             t_end            200                1e-4
+kpi     bedVanLeer             t_stoichiometric_CO2 53.5791405911      1e-4
+kpi     bedVanLeer             totalMoles_final 8.06790910917e-05  1e-4
+kpi     campaign               element_C_closure_rel 1.67980662309e-16  1e-4
+kpi     campaign               element_He_closure_rel 8.43203221601e-16  1e-4
+kpi     campaign               element_O_closure_rel 1.67980662309e-16  1e-4
+kpi     campaign               element_worst_closure_rel 8.43203221601e-16  1e-4
+kpi     campaign               energy_balance_available 0                  1e-4
+kpi     campaign               energy_records_invalid 0                  1e-4
+kpi     campaign               energy_records_valid 2                  1e-4
+kpi     campaign               mass_closure_rel 6.34376739769e-16  1e-4
+kpi     campaign               mass_kg_amend_in 0.000322685046532  1e-4
+kpi     campaign               mass_kg_amend_out 0.00351816810878   1e-4
+kpi     campaign               mass_kg_external_out 0.0323248906071    1e-4
+kpi     campaign               mass_kg_final    0.000645852260007  1e-4
+kpi     campaign               mass_kg_initial  0.0361662259293    1e-4
+kpi     campaign               mass_kg_stream_in_carrierMakeUp 2.98817782879e-06  1e-4
+kpi     campaign               mass_kg_stream_out_carrierMakeUp 2.98817782879e-06  1e-4
+kpi     campaign               mass_residual_kg 2.31477163826e-17  1e-4
+kpi     campaign               moles_kmol_amend_in 8.06188593745e-05  1e-4
+kpi     campaign               moles_kmol_amend_out 8.06188593745e-05  1e-4
+kpi     campaign               moles_kmol_external_out 0.00806790910917   1e-4
+kpi     campaign               moles_kmol_final 0.000161358182183  1e-4
+kpi     campaign               moles_kmol_initial 0.00822926729135   1e-4
+kpi     campaign               transfers_H_invalid 0                  1e-4
+kpi     campaign               transfers_H_valid 10                 1e-4
+kpi     campaign               transfers_logged 10                 1e-4
+kpi     campaign               utility_chilledWater_eur 1.06077016044e-33  1e-4
+kpi     campaign               utility_chilledWater_kJ 2.6519254011e-28   1e-4
+kpi     campaign               utility_chilledWater_kg 1.26282161957e-29  1e-4
+kpi     campaign               utility_cost_eur_total 1.06077016044e-33  1e-4
+ledger  bedUpwind->(external_boundary) material.external.dn.CO2 4.03395455458e-07  1e-4
+ledger  bedUpwind->(external_boundary) material.external.dn.He 0.00403355115913   1e-4
+ledger  bedUpwind->(external_boundary) material.external.H_kJ -0.158744179632    1e-4
+ledger  bedUpwind->(external_boundary) material.external.valid valid              exact
+ledger  bedVanLeer->(external_boundary) material.external.dn.CO2 4.03395455458e-07  1e-4
+ledger  bedVanLeer->(external_boundary) material.external.dn.He 0.00403355115913   1e-4
+ledger  bedVanLeer->(external_boundary) material.external.H_kJ -0.158744179632    1e-4
+ledger  bedVanLeer->(external_boundary) material.external.valid valid              exact
+ledger  (external_boundary)->bedUpwind material.carrierMakeUp.dn.He 3.73279596861e-07  1e-4
+ledger  (external_boundary)->bedUpwind material.carrierMakeUp.H_kJ 0                  1e-4
+ledger  (external_boundary)->bedUpwind material.carrierMakeUp.valid valid              exact
+ledger  (external_boundary)->bedVanLeer material.carrierMakeUp.dn.He 3.73279596861e-07  1e-4
+ledger  (external_boundary)->bedVanLeer material.carrierMakeUp.H_kJ 0                  1e-4
+ledger  (external_boundary)->bedVanLeer material.carrierMakeUp.valid valid              exact
+ledger  bedUpwind->(external_boundary) material.feedAmendment.dn.CO2 3.99361500904e-05  1e-4
+ledger  bedUpwind->(external_boundary) material.feedAmendment.H_kJ -15.7156737836     1e-4
+ledger  bedUpwind->(external_boundary) material.feedAmendment.valid valid              exact
+ledger  (external_boundary)->bedUpwind material.feedAmendment.dn.He 3.99361500904e-05  1e-4
+ledger  (external_boundary)->bedUpwind material.feedAmendment.H_kJ 0                  1e-4
+ledger  (external_boundary)->bedUpwind material.feedAmendment.valid valid              exact
+ledger  bedVanLeer->(external_boundary) material.feedAmendment.dn.CO2 3.99361500904e-05  1e-4
+ledger  bedVanLeer->(external_boundary) material.feedAmendment.H_kJ -15.7156737836     1e-4
+ledger  bedVanLeer->(external_boundary) material.feedAmendment.valid valid              exact
+ledger  (external_boundary)->bedVanLeer material.feedAmendment.dn.He 3.99361500904e-05  1e-4
+ledger  (external_boundary)->bedVanLeer material.feedAmendment.H_kJ 0                  1e-4
+ledger  (external_boundary)->bedVanLeer material.feedAmendment.valid valid              exact
+ledger  bedUpwind->(external_boundary) material.carrierMakeUp.dn.He 3.73279596861e-07  1e-4
+ledger  bedUpwind->(external_boundary) material.carrierMakeUp.H_kJ 0                  1e-4
+ledger  bedUpwind->(external_boundary) material.carrierMakeUp.valid valid              exact
+ledger  bedVanLeer->(external_boundary) material.carrierMakeUp.dn.He 3.73279596861e-07  1e-4
+ledger  bedVanLeer->(external_boundary) material.carrierMakeUp.H_kJ 0                  1e-4
+ledger  bedVanLeer->(external_boundary) material.carrierMakeUp.valid valid              exact
+ledger  bedUpwind              energy.adsorption.valid valid              exact
+ledger  bedVanLeer             energy.adsorption.valid valid              exact
+# ANCHORS: the closed form of the linear equilibrium-dispersive model with an
+# LDF term and closed (Danckwerts) ends -- DERIVED anchors, identities of the
+# model the case declares (Theory Guide eq:chrom-moments), not measurements:
+#   mean = t_R + t_inj/2 = 54.5791405911 s (t_R = t0 (1 + k'), t0 = 4 s,
+#          k' = rho_b H R T/(1e5 eps) = 12.3947851478, t_inj = 2 s);
+#   variance = t_R^2 [2/Pe - 2(1 - exp(-Pe))/Pe^2] + 2 k' t0/k + t_inj^2/12
+#     bedVanLeer: Pe = u L/Dax = 250                     -> 33.1230927256 s2
+#     bedUpwind:  D_L -> D_L + v dz/2 (Pe_eff = 111.1)   -> 61.4571416306 s2
+# The bands are this engine's measured residuals with a margin (2026-11-12):
+# upwind mean 6e-13, van Leer mean 1.25e-4, upwind variance 0.23 %, van Leer
+# variance 1.9 % (the limiter's own dispersion at 100 cells; 0.26 % at 200).
+kpi     bedUpwind              outlet_mean_CO2      54.5791405911    1e-9    anchor
+kpi     bedUpwind              outlet_variance_CO2  61.4571416306    3e-3    anchor
+kpi     bedVanLeer             outlet_mean_CO2      54.5791405911    5e-4    anchor
+kpi     bedVanLeer             outlet_variance_CO2  33.1230927256    2.5e-2  anchor

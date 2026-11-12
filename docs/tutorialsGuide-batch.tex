@@ -677,6 +677,45 @@ THE ANCHOR: T\_min\_final\_K sits BELOW the declared 298.15 K by a visible margi
 \goldmore{38}
 \end{tutgolden}
 
+\clearpage
+\tutentry{batch29\_pulse\_two\_schemes}{tutorials/batch/adsorber/batch29\_pulse\_two\_schemes}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (bedUpwind) at (0.0,-0.0) {\textbf{bedUpwind}\\[-1pt]{\tiny fixedBedAdsorber}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (bedVanLeer) at (0.0,-1.7) {\textbf{bedVanLeer}\\[-1pt]{\tiny fixedBedAdsorber}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A linear pulse through two identical fixed beds, upwind and van Leer, against the closed-form mean and variance: the grid widens the upwind peak by v dz/2, never moves its centre}
+\begin{tutnarrative}
+the same bed, two schemes, against the closed form.
+
+NUMERICAL DISPERSION, for a student. The bed is cut into cells, and the convective flux through each face needs ONE concentration at the face. The first-order `upwind` scheme takes the upstream cell's value; a Taylor expansion shows that this differs from the true face value by -(dz/2) dc/dz, so the scheme quietly adds a Fickian flux: it solves the model with D\_L + v dz/2 instead of D\_L (v = u/eps). Here v dz/2 is 3.1e-4 m2/s at 100 cells against a declared D\_L = 2.5e-4: the grid more than doubles the dispersion. The `vanLeer` scheme reconstructs a limited linear profile in each cell, which removes that term (second order), and its limiter keeps the peak free of over- and undershoots.
+
+THE EXPERIMENT. Two identical, independent beds of a synthetic LINEAR sorbent (Henry isotherm, case-local records under constant/), fed 1 \% CO2 in He for t\_inj = 2 s and then pure He (a rectangular pulse, the recipe below). Each bed publishes the moments of its outlet concentration (operation.schemeDiagnostics true;). The model is linear, so its moments have a closed form (derived in the Theory Guide, fixed-bed section; symbols: eps void fraction, u superficial velocity, v = u/eps, D\_L = Dax/eps, K = H R T the linear isotherm in m3/kg, rho\_b bulk density, k the LDF constant):
+
+t0 = eps L/u = 4 s k' = rho\_b K/eps = 12.39479 t\_R = t0 (1 + k') = 53.57914 s Pe = v L/D\_L = u L/Dax = 250 mean = t\_R + t\_inj/2 = 54.57914 s variance = t\_R\textasciicircum{}2 [2/Pe - 2(1 - exp(-Pe))/Pe\textasciicircum{}2] (Danckwerts, closed) + 2 k' t0/k (LDF) + t\_inj\textasciicircum{}2/12 (the pulse) = 22.87393 + 9.91583 + 0.33333 = 33.12309 s2
+
+bedVanLeer (100 cells) must reproduce THAT variance; bedUpwind (100 cells) reproduces it only with D\_L replaced by D\_L + v dz/2 (Pe\_eff = 111.1): 61.45714 s2. Both means are t\_R + t\_inj/2: the grid moves the width, never the centre. The `anchor` rows in `expected` are these closed-form values (DERIVED anchors: identities of the linear model, not measurements); the gate check\_fixed\_bed\_scheme repeats them at 200 cells and states the tolerance it measured.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{bedUpwind}{D\_axial\_interstitial}{0.00025}
+\goldrow{kpi}{bedUpwind}{D\_numerical}{0.0003125}
+\goldrow{kpi}{bedUpwind}{E\_adsorption\_seg0\_kJ}{-2.6519254011e-28}
+\goldrow{kpi}{bedUpwind}{E\_adsorption\_total\_kJ}{-2.6519254011e-28}
+\goldrow{kpi}{bedUpwind}{P\_final}{100000}
+\goldrow{kpi}{bedUpwind}{Pe}{250}
+\goldrow{kpi}{bedUpwind}{T\_final}{298.15}
+\goldrow{kpi}{bedUpwind}{c\_max\_over\_feed\_CO2}{0.906065328263}
+\goldrow{kpi}{bedUpwind}{c\_min\_CO2}{0}
+\goldrow{kpi}{bedUpwind}{carrier\_fabricated\_mol}{1.32596270055e-29}
+\goldrow{kpi}{bedUpwind}{carrier\_makeup\_rel}{3.28700455746e-30}
+\goldrow{kpi}{bedUpwind}{integral\_anchor\_CO2}{2}
+\goldrow{kpi}{bedUpwind}{mass\_closure\_CO2}{1.30352993952e-14}
+\goldrow{kpi}{bedUpwind}{nCells\_numerical\_ratio\_0p1}{1251}
+\goldmore{103}
+\end{tutgolden}
+
 \subsection{combustion}
 \grouptheory{combustion}
 \clearpage

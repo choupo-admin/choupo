@@ -191,6 +191,15 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
             + registryRefusal::message("operation.convectionScheme",
                   convectionScheme_, {"upwind", "vanLeer"}, "Accepted"));
     secondOrder_ = (convectionScheme_ == "vanLeer");
+    if (opDict->found("schemeDiagnostics"))
+    {
+        const std::string w = opDict->lookupWord("schemeDiagnostics");
+        if (w != "true" && w != "false")
+            throw std::runtime_error("fixedBedAdsorber '" + name_ + "': "
+                + registryRefusal::message("operation.schemeDiagnostics", w,
+                      {"true", "false"}, "Accepted"));
+        schemeDiagnostics_ = (w == "true");
+    }
 
     // -----------------------------------------------------------------
     //  Declared geometry + operating constants (u, P, T constant is the
@@ -802,6 +811,32 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
     tStoich_.assign(nAds, -1.0);
     feedSwitched_.assign(nAds, false);
     pendingAmendments_.clear();
+    mom0_.assign(nAds, 0.0);
+    mom1_.assign(nAds, 0.0);
+    mom2_.assign(nAds, 0.0);
+    cOutPrev_.assign(nAds, 0.0);
+    cMaxField_.assign(nAds, 0.0);
+    cMinField_.assign(nAds, 0.0);
+    cFeedMax_.assign(nAds, 0.0);
+    qMaxField_.assign(nAds, 0.0);
+    qMinField_.assign(nAds, 0.0);
+    qStarFeedMax_.assign(nAds, 0.0);
+    for (std::size_t a = 0; a < nAds; ++a)
+    {
+        const std::size_t rq = qOffset_() + a * N_;
+        qMaxField_[a] = *std::max_element(y_.begin() + long(rq),
+                                          y_.begin() + long(rq + N_));
+        qMinField_[a] = *std::min_element(y_.begin() + long(rq),
+                                          y_.begin() + long(rq + N_));
+        if (cIn_[a] > 0.0) qStarFeedMax_[a] = qStarFeed_(a);
+        const std::size_t r = (ergun_ ? adsIdx_[a] : a) * N_;
+        cOutPrev_[a] = y_[r + N_ - 1];
+        cFeedMax_[a] = cIn_[a];
+        cMaxField_[a] = *std::max_element(y_.begin() + long(r),
+                                          y_.begin() + long(r + N_));
+        cMinField_[a] = *std::min_element(y_.begin() + long(r),
+                                          y_.begin() + long(r + N_));
+    }
     for (std::size_t a = 0; a < nAds; ++a)
         if (cIn_[a] > 0.0)
         {
@@ -1939,6 +1974,30 @@ void FixedBedAdsorber::sample_(scalar t)
     const std::size_t nAds = adsIdx_.size();
     const scalar dt = t - tPrev_;
     if (dt <= 0.0) return;
+    //  C375: the scheme's witnesses -- outlet moments by the trapezoid over
+    //  this chunk (they run through feed switches: a pulse IS a switch),
+    //  and the field's extremes at this instant.
+    if (schemeDiagnostics_)
+        for (std::size_t a = 0; a < nAds; ++a)
+        {
+            const std::size_t r = (ergun_ ? adsIdx_[a] : a) * N_;
+            const scalar c0 = cOutPrev_[a], c1 = y_[r + N_ - 1];
+            mom0_[a] += 0.5 * (c0 + c1) * dt;
+            mom1_[a] += 0.5 * (tPrev_ * c0 + t * c1) * dt;
+            mom2_[a] += 0.5 * (tPrev_ * tPrev_ * c0 + t * t * c1) * dt;
+            cOutPrev_[a] = c1;
+            cFeedMax_[a] = std::max(cFeedMax_[a], cIn_[a]);
+            if (cIn_[a] > 0.0)
+                qStarFeedMax_[a] = std::max(qStarFeedMax_[a], qStarFeed_(a));
+            const std::size_t rq = qOffset_() + a * N_;
+            for (std::size_t j = 0; j < N_; ++j)
+            {
+                cMaxField_[a] = std::max(cMaxField_[a], y_[r + j]);
+                cMinField_[a] = std::min(cMinField_[a], y_[r + j]);
+                qMaxField_[a] = std::max(qMaxField_[a], y_[rq + j]);
+                qMinField_[a] = std::min(qMinField_[a], y_[rq + j]);
+            }
+        }
     for (std::size_t a = 0; a < nAds; ++a)
     {
         //  A switched feed changes the sampler's reference basis: the
@@ -3134,6 +3193,28 @@ std::map<std::string, scalar> FixedBedAdsorber::kpis() const
         if (tCross5_[a]  >= 0.0) k["t_breakthrough_5pct_" + nm]  = tCross5_[a];
         if (tCross50_[a] >= 0.0) k["t_50_" + nm]                 = tCross50_[a];
         if (tCross95_[a] >= 0.0) k["t_breakthrough_95pct_" + nm] = tCross95_[a];
+        if (schemeDiagnostics_)
+        {
+            //  Moments of c_out about t = 0 (mol s/m3, s, s2): mean m1/m0,
+            //  variance m2/m0 - mean^2.
+            k["outlet_m0_" + nm] = mom0_[a];
+            if (mom0_[a] > 0.0)
+            {
+                const scalar mean = mom1_[a] / mom0_[a];
+                k["outlet_mean_" + nm]     = mean;
+                k["outlet_variance_" + nm] = mom2_[a] / mom0_[a] - mean * mean;
+            }
+            if (cFeedMax_[a] > 0.0)
+                k["c_max_over_feed_" + nm] = cMaxField_[a] / cFeedMax_[a];
+            k["c_min_" + nm] = cMinField_[a];
+            //  The loading against the equilibrium loading of the largest
+            //  feed declared (isothermal: the top of the isotherm's range
+            //  this run can reach).
+            if (qStarFeedMax_[a] > 0.0)
+                k["q_max_over_qstar_feed_" + nm] =
+                    qMaxField_[a] / qStarFeedMax_[a];
+            k["q_min_" + nm] = qMinField_[a];
+        }
         if (cIn_[a] > 0.0 || feedSwitched_[a])
             k["integral_anchor_" + nm] = integral_[a];
         if (liveFeed)

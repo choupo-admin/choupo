@@ -22099,7 +22099,7 @@ the closed form the integrator must reproduce to $10^{-8}$
 analytic gate that certifies the numerics before any nonlinear case
 is trusted.
 
-\subsection{The 1-D isothermal fixed bed}
+\subsection{The 1-D isothermal fixed bed}\label{sec:fixed-bed}
 
 The bed balance is written the way it is solved: conservative finite
 volumes.  For cell $j$ of volume $V_j$, species $i$:
@@ -22113,8 +22113,9 @@ F^{\mathrm{disp}}_{i,j-\frac12} - F^{\mathrm{disp}}_{i,j+\frac12}
 \rho_b\,V_j\,\frac{\mathrm{d}q_{ij}}{\mathrm{d}t},
 \label{eq:bed-fv}
 \end{equation}
-with upwind convective face fluxes $u\,A\,c$ ($u$ the superficial
-velocity), dispersive fluxes
+with convective face fluxes $u\,A\,c_f$ ($u$ the superficial
+velocity, $c_f$ the face value of the declared convection scheme,
+Section~\ref{sec:bed-convection-scheme}), dispersive fluxes
 $-D_{\mathrm{ax}} A\,\partial c/\partial z$ at the
 interior faces (no factor $\varepsilon$: the code divides the whole
 row by $\varepsilon$, so $D_{\mathrm{ax}}/\varepsilon$ is the dispersion
@@ -22140,6 +22141,113 @@ them as a KPI, and discounts them in the campaign ledger.  The model's
 residual is \emph{declared}, at a named magnitude, instead of being
 absorbed invisibly --- the difference between a wrong number and an
 honest model.
+
+\subsection{The convection scheme and its numerical dispersion}
+\label{sec:bed-convection-scheme}
+
+The finite volume \eqref{eq:bed-fv} needs \emph{one} concentration at
+each face to form the convective flux $u\,c_{f}$; how it is chosen is
+the convection scheme, declared beside the mesh it acts on as
+\code{operation.convectionScheme} (\code{upwind} or \code{vanLeer}).
+Face $f$ separates cell $L=f-1$ from cell $R=f$; $\Delta z = L_{\mathrm{bed}}/N$.
+
+\emph{First-order upwind} takes the upstream cell's value,
+$c_f = c_L$ for $u\ge 0$.  Expanding about the face,
+$c_L = c_f - \tfrac{\Delta z}{2}\,\partial c/\partial z + O(\Delta z^2)$, so
+\[
+u\,c_L = u\,c_f - \frac{u\,\Delta z}{2}\,\frac{\partial c}{\partial z} + O(\Delta z^2):
+\]
+the scheme adds a Fickian flux with coefficient $u\,\Delta z/2$ to
+$D_{\mathrm{ax}}$.  Divided by $\varepsilon$, as the whole row is, the
+interstitial dispersion the front sees is
+\begin{equation}
+D_L + D_{\mathrm{num}},\qquad D_L = \frac{D_{\mathrm{ax}}}{\varepsilon},\qquad
+D_{\mathrm{num}} = \frac{v\,\Delta z}{2},\quad v=\frac{u}{\varepsilon},
+\label{eq:bed-numdisp}
+\end{equation}
+and $D_{\mathrm{num}}/D_L = v L/(2N D_L) = \mathrm{Pe}/(2N)$ falls under
+$0.1$ only for $N > 5\,\mathrm{Pe}$.  Every fixed-bed run prints
+$D_{\mathrm{num}}$, its ratio to $D_L$ and that cell count before it
+integrates (KPIs \code{D\_numerical}, \code{D\_axial\_interstitial},
+\code{numerical\_dispersion\_ratio}, \code{nCells\_numerical\_ratio\_0p1}).
+The front width, the breakthrough times and the unused bed length carry
+it; the mean does not, because \eqref{eq:integral-anchor} holds on any
+mesh.  Seen from chromatography, upwind cells are a cascade of stirred
+plates, one per cell (Nicoud, Section~7.9.3, pp.~430--431, who also
+states that first-order schemes ``suffer from numerical
+diffusion''\cite{Nicoud}); the artificial band broadening of a coarse
+grid, and the test of refining it until the profile stops moving, are
+Schmidt-Traub's Section~6.4.2.1, pp.~346--348\cite{SchmidtTraub2020}.
+
+\emph{The van Leer scheme} reconstructs a linear profile in the upwind
+cell and evaluates it at the face, $c_f = c_L + s_L/2$ ($u\ge 0$) or
+$c_f = c_R - s_R/2$ ($u<0$), with the limited slope (times $\Delta z$)
+\begin{equation}
+s_j = \begin{cases}
+\dfrac{2\,\Delta_{-}\Delta_{+}}{\Delta_{-}+\Delta_{+}}, & \Delta_{-}\Delta_{+}>0,\\[1ex]
+0, & \text{otherwise},
+\end{cases}
+\qquad \Delta_{-}=c_j-c_{j-1},\ \ \Delta_{+}=c_{j+1}-c_j,
+\label{eq:bed-vanleer}
+\end{equation}
+which is $s_j = \phi(r)\,\Delta_{+}$ with $r=\Delta_{-}/\Delta_{+}$ and
+$\phi(r) = (r+|r|)/(1+|r|)$.  Where the profile is smooth
+$\Delta_{+}-\Delta_{-} = O(\Delta z^2)$, so $s_j$ is the central slope
+$(\Delta_{-}+\Delta_{+})/2$ to $O(\Delta z^3)$, the face value is
+second-order accurate and the $v\,\Delta z/2$ term of
+\eqref{eq:bed-numdisp} is gone; at an extremum $s_j = 0$ and the face
+falls back to upwind there.  Because $|s_j| \le 2\min(|\Delta_{-}|,|\Delta_{+}|)$,
+$c_L + s_L/2$ lies between $c_L$ and $c_R$: no face value leaves the
+range of its two cells, so the scheme creates no new extremum and keeps
+non-negative concentrations non-negative; the loading follows
+$\mathrm{d}q/\mathrm{d}t = k(q^{*}-q)$ towards a $q^{*}$ evaluated on
+those bounded concentrations.  This limiter was chosen over the minmod
+one because it is smooth away from $r=0$ (the Rosenbrock integrator
+differentiates the right-hand side by finite differences) and clips less
+at a smooth peak.
+
+\emph{The two ends.}  The inlet face keeps the imposed Danckwerts flux
+$u\,c_{\mathrm{in}}$ under both schemes; the slope of cell 1 reads the
+feed $c_{\mathrm{in}}$ as the value upstream of it.  At the outlet the
+condition $\partial c/\partial z = 0$ is a zero-gradient ghost, so the
+last cell's slope is zero and the outlet face carries $c_N$, as under
+upwind.  On backflow (Ergun mode) the reconstruction is taken in the
+downstream cell with the same rules.  Every face flux is computed once
+and leaves one cell as it enters the next, for the gas, every adsorbing
+species and, in thermal mode, the enthalpy those same moles carry, so the
+cells telescope to the boundary fluxes and the campaign closes to
+round-off under either scheme.
+
+\emph{The time step.}  The integrator is the unit's own
+(Rosenbrock23, L-stable, or explicit RK4 at a declared step).  The van
+Leer face value has partial derivatives $(-a,\,1+a-b,\,b)$ on
+$(c_{L-1},c_L,c_R)$ with $a,b\in[0,1]$ (halved derivatives of
+\eqref{eq:bed-vanleer}, each between 0 and 2), absolute sum at most 3,
+so a cell's row of the Jacobian sums to at most $6v/\Delta z$ in the
+convective part against $2v/\Delta z$ under upwind: the Gershgorin bound
+the unit prints, and the explicit step it enforces, use $6v/\Delta z$
+for \code{vanLeer}.  The stencil reaches two cells upstream, so the
+declared Jacobian structure gathers two cells per block (block
+tridiagonal again, the last block padded when $N$ is odd) and the
+integrator audits it on its first step.  The stages of the stiff
+integrator can leave a cell ahead of a front a round-off below zero
+($-10^{-22}$ measured); that is accepted down to the row's absolute
+tolerance and kept as it is (not set to zero), so the ledger stays
+exact, and anything lower still rejects the step.
+
+\emph{The check.}  On a straight isotherm the moments of a pulse have
+the closed form \eqref{eq:chrom-moments}.  The upwind bed reproduces it
+only with $D$ replaced by $D_L + v\Delta z/2$; the van Leer bed
+reproduces it as written.  Measured on
+\file{tutorials/batch/adsorber/batch29\_pulse\_two\_schemes}
+($\mathrm{Pe}=250$, 100 cells): the upwind mean matches to $6\times10^{-13}$
+and its variance to 0.23\,\% once $v\Delta z/2$ is added (86\,\% off
+without it); the van Leer variance matches the closed form as written to
+1.9\,\% at 100 cells and 0.26\,\% at 200, the residue being the limiter's
+clipping at the peak.  On batch13's breakthrough the 5--95\,\% width at
+100 cells is 313.5\,s under upwind and 231.5\,s under van Leer against a
+converged 219.6\,s; the observed orders of the width are 1.04 and about 2
+(gate \code{check\_fixed\_bed\_scheme}).
 
 \subsection{The stoichiometric time: where the front must arrive}
 
@@ -22174,7 +22282,8 @@ $t_{\mathrm{st}}$, but cannot move its centroid: because
 \end{equation}
 holds for the conservative scheme on \emph{any} mesh, while the
 useful capacity $t_b$ (breakthrough at, say, 5\,\%) converges with
-the mesh at the upwind scheme's first order --- run the mesh study
+the mesh at the upwind scheme's first order (about the second under
+\code{vanLeer}, Section~\ref{sec:bed-convection-scheme}) --- run the mesh study
 and watch both statements hold
 (\file{tutorials/batch/adsorber/batch13\_breakthrough\_co2},
 \file{batch15\_mesh\_study}; the pure-transport twin
@@ -22491,8 +22600,9 @@ puts the hydrodynamic plate height of a good packing near two particle
 diameters, i.e.\ $\lambda\approx 1$).  The plate model of Martin and
 Synge\cite{MartinSynge1941} (their Eq.~(1)) is the Erlang peak the page
 draws; at $t = 3$ standard deviations it leaves 0.13\,\% on the wrong side.  The engine's first-order
-upwind grid adds $v\,\Delta z/2$ to $D$: on a grid of cells it is itself a
-cascade of stirred plates, one per cell, $H_{\mathrm{grid}} = \Delta z$.
+upwind grid (\code{convectionScheme upwind}) adds $v\,\Delta z/2$ to $D$: on a grid of cells it is itself a
+cascade of stirred plates, one per cell, $H_{\mathrm{grid}} = \Delta z$; the
+\code{vanLeer} scheme removes that term (Section~\ref{sec:bed-convection-scheme}).
 Two peaks are resolved by
 $R_s = (t_{R,2}-t_{R,1})/\bigl(2(\sigma_1+\sigma_2)\bigr)$ (base widths of
 $4\sigma$; Wankat's Eq.~(17-82), Schmidt-Traub's Eq.~(2.25)), and
@@ -22507,7 +22617,11 @@ by the earlier solute drags the later one along (pp.~40--43).
 
 \emph{What Choupo computes.}  No unit operation is a chromatographic column
 and no operation computes \eqref{eq:chrom-moments}.  The fixed bed runs a
-gas pulse when its feed is switched off by a recipe; the EduTool
+gas pulse when its feed is switched off by a recipe, and with
+\code{schemeDiagnostics true;} it publishes the moments of its own outlet
+(\code{outlet\_mean}, \code{outlet\_variance});
+\file{batch29\_pulse\_two\_schemes} holds them against
+\eqref{eq:chrom-moments}; the EduTool
 \code{chromatography} writes that case, compares its outlet peaks with
 \eqref{eq:chrom-moments}, and integrates the overloaded (Langmuir) column
 itself.  The derivation, the measurement and the checks are in
@@ -28626,6 +28740,18 @@ minimum, used by \cite{GeraldesAfonso2010} to locate $i_\text{lim}$.
 
 \bibitem{Wachinski2017} Wachinski, A. M., \emph{Ion Exchange Treatment for Water}, American Water Works Association, Denver (2017). Practitioner reference for water-softening capacity bases (eq/L bed vs eq/kg dry), regeneration and the sodium ``salt penalty'' \eqref{eq:salt-penalty}.
 
+\bibitem{Nicoud} Nicoud, R.-M., \emph{Chromatographic Processes: Modeling,
+Simulation, and Design}, Cambridge University Press,
+doi:10.1017/CBO9781139998284 (the year is not given in the library copy,
+which has no title page): Table~2.4 (p.~39), Eqs.~(2.48)--(2.50) and
+appendix~B.
+
+\bibitem{SchmidtTraub2020} Schmidt-Traub, H., Schulte, M.\ and
+Seidel-Morgenstern, A.\ (eds.), \emph{Preparative Chromatography}, 3rd ed.,
+Wiley-VCH, 2020, Chapter~2: Eqs.~(2.5), (2.14)--(2.28), (2.40)--(2.48), the
+displacement and tag-along effects (pp.~40--43) and overloading
+(pp.~43--45).
+
 \bibitem{GeankoplisHL2018} Geankoplis, C. J., Hersel, A. A., \& Lepek, D. H.,
 \emph{Transport Processes and Separation Process Principles}, 5th ed., Pearson
 (Prentice Hall), 2018, Chapter~28 (equations (28.1-1) to (28.1-3) and (28.2-1),
@@ -28661,29 +28787,6 @@ adsorption, pp.~480--483: the film rate law (15-76), the batch balance (15-77),
 the closed form for a linear isotherm (15-80), Example~15.10 and Glueckauf's
 series resistance (15-100).
 
-\bibitem{MartinSynge1941} Martin, A.~J.~P.\ and Synge, R.~L.~M., ``A new form of
-chromatogram employing two liquid phases'', \emph{Biochem.\ J.}\ \textbf{35}
-(1941) 1358--1368, doi:10.1042/bj0351358: the plate theory, Eq.~(1) and the
-tail areas at $t=1,2,3$ (pp.~1360--1362).
-
-\bibitem{vanDeemter1956} van Deemter, J.~J., Zuiderweg, F.~J.\ and
-Klinkenberg, A., ``Longitudinal diffusion and resistance to mass transfer as
-causes of nonideality in chromatography'', \emph{Chem.\ Eng.\ Sci.}\
-\textbf{5} (1956) 271--289, doi:10.1016/0009-2509(56)80003-1: Eqs.~(38),
-(42)--(49) and the list of symbols (p.~288).
-
-\bibitem{SchmidtTraub2020} Schmidt-Traub, H., Schulte, M.\ and
-Seidel-Morgenstern, A.\ (eds.), \emph{Preparative Chromatography}, 3rd ed.,
-Wiley-VCH, 2020, Chapter~2: Eqs.~(2.5), (2.14)--(2.28), (2.40)--(2.48), the
-displacement and tag-along effects (pp.~40--43) and overloading
-(pp.~43--45).
-
-\bibitem{Nicoud} Nicoud, R.-M., \emph{Chromatographic Processes: Modeling,
-Simulation, and Design}, Cambridge University Press,
-doi:10.1017/CBO9781139998284 (the year is not given in the library copy,
-which has no title page): Table~2.4 (p.~39), Eqs.~(2.48)--(2.50) and
-appendix~B.
-
 \bibitem{Kinniburgh1986} Kinniburgh, D.G., ``General purpose adsorption
 isotherms'', \emph{Environ.\ Sci.\ Technol.} \textbf{20} (1986) 895--904,
 doi:10.1021/es00151a008.  Nonlinear least squares for isotherms, and what
@@ -28713,6 +28816,17 @@ Formulae for diffusion into spheres and their application to
 chromatography'', \emph{Trans.\ Faraday Soc.} \textbf{51} (1955) 1540--1551,
 doi:10.1039/TF9555101540.  The series film-and-particle resistance of
 Section~\ref{sec:batch-adsorption-stirred-tank}.
+
+\bibitem{vanDeemter1956} van Deemter, J.~J., Zuiderweg, F.~J.\ and
+Klinkenberg, A., ``Longitudinal diffusion and resistance to mass transfer as
+causes of nonideality in chromatography'', \emph{Chem.\ Eng.\ Sci.}\
+\textbf{5} (1956) 271--289, doi:10.1016/0009-2509(56)80003-1: Eqs.~(38),
+(42)--(49) and the list of symbols (p.~288).
+
+\bibitem{MartinSynge1941} Martin, A.~J.~P.\ and Synge, R.~L.~M., ``A new form of
+chromatogram employing two liquid phases'', \emph{Biochem.\ J.}\ \textbf{35}
+(1941) 1358--1368, doi:10.1042/bj0351358: the plate theory, Eq.~(1) and the
+tail areas at $t=1,2,3$ (pp.~1360--1362).
 
 \bibitem{Weisbach1845} Weisbach, J., \emph{Lehrbuch der Ingenieur- und
 Maschinen-Mechanik}, Vol.~1, Braunschweig, 1845; and Darcy, H.,

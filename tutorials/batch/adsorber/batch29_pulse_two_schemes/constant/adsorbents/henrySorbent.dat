@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Adsorbent: henrySorbent  (SYNTHETIC, case-local teaching record)
+
+  What this IS: the intrinsic identity of a fictitious linear-isotherm
+  sorbent, built for batch11_adsorber_henry and copied here unchanged for
+  batch29_pulse_two_schemes: a Henry isotherm makes the fixed bed LINEAR,
+  so a pulse through it has closed-form moments (see the flowsheetDict
+  header); rho_bulk sets the retention factor there.  Not catalogue data:
+  it lives in the case's constant/ on purpose and eclipses nothing.
+\*-----------------------------------------------------------------------------*/
+
+adsorbent
+{
+    name        henrySorbent;
+    type        "synthetic Henry-limit teaching sorbent";
+    rho_bulk    500;            // kg/m3 nominal (unused by the closed vessel)
+}
+
+provenance
+{
+    identity { origin synthetic; method "teaching construction for the batchAdsorber exact-solution gate (A2 spec G1a); K_H chosen so alpha*m ~ 1"; }
+}
