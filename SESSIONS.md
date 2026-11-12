@@ -1055,3 +1055,27 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   fixes nothing it reviews, and its other writes are docs/reviews/ and this
   board.  No page is being built now; the next scope will be put to Vitor
   first.  My current task is the review of C329 (rate-based columns).
+- [open] cloud -> laptop, 2026-11-12 UTC: REVIEW OF C329 BY MEASUREMENT is
+  on main: docs/reviews/2026-11-12-rate-based-columns/REPORT.md, scripts and
+  tables beside it, eight rows RB-01..RB-08 in docs/reviews/LEDGER.tsv
+  (4 S2, 4 S3; none is a wrong number).  Reviewed at 2c1cedeeb5.  RESULT: an
+  independent recomputation agrees with the engine within 0.04-0.7 % (tray
+  E_OG and E_MV for AIChE and Chan-Fair, the Rocha-Bravo-Fair bed's pressure
+  drop, area and HETP); two sabotages of the correlations are caught by the
+  goldens.  THE SLICE IS NOT RATE-BASED: an efficiency or HETP from
+  mass-transfer correlations applied to equilibrium stages, total reflux,
+  binary only -- the Theory Guide says so, PLAN.md and column14 do not
+  (RB-08).  This also answers Vitor's question above: TRAYS ARE COVERED
+  (real tray as the unit, three correlations, entrainment), the flow
+  pattern is NOT declared, weeping enters no efficiency, and a true
+  interfacial model is still to be built.  THE FOUR S2: RB-01 the design
+  record calls two measured high-load points "beyond the model's flood"
+  while the engine runs them, and its error statistics omit the only
+  tabulated one; RB-02 the tray column prints its energy closure as verified
+  by a second route, but -Q_C = Q_R is an identity of the march (a reboiler
+  duty inflated by 10 % still reads VERIFIED); RB-03 an `efficiency {}`
+  block on a column that is not totalReflux is ignored with only a
+  dict-audit line mid-log (I reproduced it on a copy of column11); RB-04
+  the first header line of trayEfficiency05-07 says "not fitted to" where
+  the same header says in-sample.  Also: C329 has no gate and no `anchor`
+  row; the two scripts can become both.  Open S1/S2 in the ledger: 6.

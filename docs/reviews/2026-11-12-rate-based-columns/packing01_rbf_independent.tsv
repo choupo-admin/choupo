@@ -1,0 +1,25 @@
+quantity	independent	engine	rel_diff_pct
+u_L m3/(m2 h)	4.0035	4.003	0.01
+dP/dz Pa/m	120.05	120.11	-0.05
+a_e/a_p	0.65204	0.652	0.01
+local HETP m	0.14929	0.14826	0.70
+rhoG	0.37815	not printed	
+rhoL	829.2	not printed	
+muG	7.1638e-06	not printed	
+DG	3.6305e-05	not printed	
+DL	3.4794e-09	not printed	
+sigma	0.024432	not printed	
+m	1.111	not printed	
+RBF hL	0.038499	not printed	
+RBF kG	0.06202	not printed	
+RBF kL	0.00012673	not printed	
+RBF HG	0.12615	not printed	
+RBF HL	0.028154	not printed	
+RBF HOG	0.15743	not printed	
+RBF dPdry	93.697	not printed	
+			
+quantity	independent	engine	rel_diff_pct
+HETP (Fenske over the bed) m	0.15626	0.155281	0.63
+bed dP mbar/m	1.208	1.2085	-0.01
+y top (reflux)	0.86635	0.86873	
+alpha	1.24114	1.24127	

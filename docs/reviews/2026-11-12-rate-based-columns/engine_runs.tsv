@@ -1,0 +1,12 @@
+case	how_run	key_result	measured_reference	mass_closure	energy_closure_as_reported
+totalReflux01_c6c7_yanagiRun628	runCase on a copy (single point, F 1.47, ideal trays)	Eo 1.0100; Q_R 641.496 kW; Sinnott dP 797.8 Pa/tray	run 628 dP 0.393 kPa (design record)	closed cycle, element closure 0.0000 %	VERIFIED by construction label (see RB-02)
+trayEfficiency01_yanagi14	copy, outerDict removed, F 1.47	Eo 0.737719; tray-5 E_MV 0.74642; Bolles-Fair dP 418.6 Pa/tray	run 628 Eo 0.708, dP 0.393 kPa	closed cycle, 0.0000 %	VERIFIED label (RB-02)
+trayEfficiency01_yanagi14	copy, F 1.007 / 1.825 / 2.030	Eo 0.776044 / 0.69609 / 0.65402	design-record table 77.6 / 69.6 / 65.4 (reproduced)	-	-
+trayEfficiency05_chanFair_yanagi14	copy, F 1.47	Eo 0.901068; tray-5 E_MV 0.8894	run 628 Eo 0.708	0.0000 %	VERIFIED label (RB-02)
+trayEfficiency06_syedaChuang_yanagi14	copy, F 1.47	Eo 0.621499	run 628 Eo 0.708	0.0000 %	VERIFIED label (RB-02)
+packing01_schulz_0p10bar	copy, outerDict removed, F 1.5 (reboiler)	HETP 0.155281 m; dP 1.2085 mbar/m; Q_R 409.96 kW = -Q_C	Schulz Fig. 2b ~0.17-0.18 m near F 1.5 (design-record digitisation, interpolated)	0.0000 %	no closure published; Q_C assigned -Q_R (RB-05)
+packing03_schulz_delft_0p10bar	copy, F 1.5; F 3.6 and 4.2 refused (bed floods)	Q_R 407.16 kW = -Q_C	-	0.0000 %	no closure published (RB-05)
+column11_murphree + efficiency{AIChE}	copy, murphreeEfficiency replaced by efficiency{}	rc 0; block unread, ideal stages	-	-	-
+column09_tray_hydraulics + efficiency{ChanFair}	copy, efficiency{} added	rc 0; block unread	-	-	-
+trayEfficiency01 + benzene (3 components, unsealed copy)	AIChE / ChanFair / SyedaChuang	rc 2, refused: binary only (message names AIChE for all three)	-	-	-
+bin/runTests (4 cases, unmodified tree)	trayEfficiency05, trayEfficiency01, packing01, totalReflux01	PASS 4 / FAIL 0	-	-	-
