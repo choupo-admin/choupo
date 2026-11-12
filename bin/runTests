@@ -4991,6 +4991,20 @@ PYEOF
     fi
     rm -f /tmp/edbatch.$$
 
+    # Time-integrated pre-integration contracts (review 2026-11-12, TI-01..03):
+    # a trajectory.csv column set fixed at t = 0, an undetermined loop flow
+    # refused before integrating, a `recipe` the binary cannot act on refused
+    # by name -- each on a probe the gate builds and runs.
+    if gate_exec "$ROOT/bin/curate/check_time_integrated.py" > /tmp/timeint.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "time-integrated-gate" "$(grep -m1 '^check_time_integrated: OK' /tmp/timeint.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_time_integrated.py)\n" "time-integrated-gate"
+        cat /tmp/timeint.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/timeint.$$
+
     # block-tridiagonal gate (2026-08-25).  The MESH declares its Jacobian
     # structure; the declaration is audited on the first iteration and the
     # colored evaluation count must equal the CPR formula recomputed by the
@@ -7811,6 +7825,22 @@ for case_dir in "$1"; do
     # (1) NaN / inf guard
     if printf '%s\n' "$block" | grep -qiE ':[[:space:]]*-?(nan|inf)\b'; then
         printf "FAIL  %-40s  (NaN/inf in result)\n" "$label"; fail=$((fail+1)); continue
+    fi
+
+    # (1b) TRAJECTORY SHAPE (TI-01, 2026-11-12).  A time-integrated case
+    #      writes trajectory.csv beside its dicts; every row must carry
+    #      exactly as many fields as the header.  A column set derived from
+    #      a container that grows (an ion a tank did not carry at t = 0)
+    #      wrote rows wider than the header, so a reader by column name
+    #      took the wrong values and the GUI parser dropped every row but
+    #      the first -- at exit 0, under a green golden.  Checked on EVERY
+    #      case that leaves one, so a new writer cannot reintroduce it.
+    if [ -f "$case_dir/trajectory.csv" ] && [ "$exp_file" = "$case_dir/expected" ]; then
+        traj_bad=$(awk -F, 'NR==1{h=NF; next} NF!=h{printf "line %d has %d fields, header %d\n", NR, NF, h; n++; if(n>=1) exit}' "$case_dir/trajectory.csv")
+        if [ -n "$traj_bad" ]; then
+            printf "FAIL  %-40s  (trajectory.csv misaligned: %s)\n" "$label" "$traj_bad"
+            fail=$((fail+1)); continue
+        fi
     fi
 
     # (2) result-block guard -- a case that PROMISES a golden but emits NO

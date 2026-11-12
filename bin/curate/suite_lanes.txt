@@ -169,6 +169,7 @@ PRE  | PAR    | bin/curate/check_pore_partition.py                 | traced: wri
 PRE  | SERIAL | bin/curate/check_postprocessing.py                 | writes data/local/adsorption/equilibria/zeolite13X/CO2.dat
 PRE  | SERIAL | bin/curate/check_ed_stack.py                       | writes tutorials/steady/electrodialysis/ed01_nacl_desalination/converged (+89 more)
 PRE  | SERIAL | bin/curate/check_ed_batch.py                       | writes tutorials/batch/electrodialysis/edbatch01_constant_current/.tmp_100 (+635 more)
+PRE  | PAR    | bin/curate/check_time_integrated.py                | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | SERIAL | bin/curate/check_block_tridiagonal.py              | writes tutorials/steady/distillation/column02_simultaneous/converged (+17 more)
 PRE  | SERIAL | bin/curate/check_ode_block_structure.py            | writes 0 (+94 more)
 PRE  | PAR    | bin/curate/check_rodas4_order.py                   | writes only a temp dir (probe binary)

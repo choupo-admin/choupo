@@ -305,6 +305,9 @@ private:
     scalar       refShare0_ = 1.0;          // the reference cation's share at t = 0
 
     sVector n0D_, n0C_;
+    //  the fixed molality-column set of trajectory.csv (TI-01)
+    std::vector<std::size_t> colIonComp_;
+    std::vector<std::string> colIonKey_;
     scalar  I0_ = 0.0, iLim0_ = 0.0, V0dil_ = 0.0;
     scalar  tNow_ = 0.0;
 

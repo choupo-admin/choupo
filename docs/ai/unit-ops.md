@@ -3205,6 +3205,12 @@ KPIs: `I_initial`/`I_final`, `U_final`, `i_density_final`,
 `specificEnergy_kWh_per_m3`, plus the model's own derived inputs
 (`D_eff`, `k_c_eff`, `Sh`, `Re`, `Sc`, `u_superficial`, `film_thickness`).
 
+`trajectory.csv` publishes the molality of every ion either tank holds at
+t = 0 (`m_dil_<ion>`, `m_conc_<ion>`) as columns FIXED at t = 0: a concentrate
+primed without an ion the diluate carries writes 0 for it from the first row,
+and the header never widens (before 2026-11-12 it did, and the rows were wider
+than the header).
+
 A diluate with SEVERAL cations or anions runs (since 2026-10-05): the
 counter-ions of each membrane share its current by `|z_i| D_i c_i` (the
 limiting transport numbers of Geraldes & Afonso 2010 Eqs. 12/13, applied at
