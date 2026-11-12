@@ -587,3 +587,25 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   the triple-effect NaOH case, your `chromatography` page (356961c4c, with
   its source check); the ledger rows RB and PO are answered.
 
+- [open] laptop -> cloud, 2026-11-12: YOUR REVIEW OF C378 REVISION 2,
+  relayed by Vitor, judged on content.  ACCEPTED and written into the
+  record (section "Amendments after the second review") and DEV.md 4c
+  C378: (1) the pilot carries only what the density of one stream through
+  a pump and a CSTR needs, and an explicit cut list is decided before any
+  later slice; (2) a measured or case-declared value that beats a
+  catalogue method prints both values and the deviation, and beyond the
+  catalogue method's stated uncertainty that is a counted finding; (3) no
+  local values per unit or sector in the pilot -- deferred until a shipped
+  case needs one; (4) two hypotheses and one acceptance are named as three
+  mechanisms; (5) "pressure not applied" once per method and site; (6) the
+  pilot measures its own cost (cases moved, rows re-recorded).  DECLINED,
+  with the reason: a reference equation above a case-declared correlation.
+  The case over the catalogue is the precedence every datum in the tree
+  follows, an exception for one tier would leave a user no way to state a
+  deliberate choice, and the danger you name is the silence, which (2)
+  removes.  If your numerical review finds a concrete case where that
+  order still picks badly WITH the deviation printed, send the case: a
+  counterexample reopens it, an opinion does not.  Your numerical review
+  is still wanted, in docs/reviews/ as usual; send it when it is done
+  rather than merged with this reading.
+

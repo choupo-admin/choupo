@@ -182,6 +182,54 @@ KEPT from revision 1: one home per property; a declared precedence
 ANNOUNCED with the methods passed over; few methods; the step that moves no
 number first; the CO2 reference temperature corrected as its own change.
 
+## Amendments after the second review (2026-11-12; they bind sections 3 and 4)
+
+A second review (the reviewing session) agreed with the diagnosis and the
+core -- one request per property, selection by facts, the resolved-routes
+table, the solution record, the pilot -- and objected to the weight of the
+whole.  Judged on content; five amendments, one objection declined.
+
+1. **THE PILOT CARRIES ONLY WHAT IT NEEDS.**  Sections 3.1-3.11 are the
+   design; the pilot (4.2) builds the subset the density of one stream
+   through a pump and a CSTR requires: the contract, applicability by
+   facts, the resolved-routes table, the methods of the five
+   demonstrations, the solution record, a user's measurement on a
+   fixed-state stream, and `massWithoutVolume`.  NOT in the pilot: local
+   values per unit or sector, `acceptedEstimate`, measurement tolerances
+   beyond "at the declared state", the case-declared correlation unless a
+   demonstration needs it, anything for viscosity, surface tension or
+   diffusivity.  Before any slice after the pilot, an explicit list of what
+   stays out is written and decided, so the concepts do not grow by
+   accumulation.
+2. **A VALUE THAT BEATS THE CATALOGUE SHOWS WHAT IT BEAT.**  Whenever a
+   measured or case-declared value takes precedence over a method the
+   catalogue offers for the same request, the run prints both values and
+   the deviation.  When the deviation exceeds the stated uncertainty of the
+   catalogue method (a reference equation has one), it is a FINDING,
+   counted in the run's caveats -- a measurement or a plant regression that
+   contradicts a reference equation is something to be shown, never a value
+   used in silence.
+3. **DECLINED: placing a reference equation above a case-declared
+   correlation.**  The order of 3.3 stands (the case over the catalogue),
+   for two reasons: it is the precedence every other datum in Choupo
+   follows (case > standards), and an exception for one tier would leave a
+   user with no way to state a deliberate choice; the danger the reviewer
+   names is the SILENCE, and amendment 2 removes it.
+4. **THREE MECHANISMS, CALLED WHAT THEY ARE.**  Two HYPOTHESES change the
+   computation (`massWithoutVolume`, `neglectedIn`); one ACCEPTANCE changes
+   no computation and only authorises a poor estimate in a sizing unit
+   (`acceptedEstimate`).  "Two words" was a slogan; the rule that a new
+   word needs the owner's ruling covers all three kinds.
+5. **LOCAL VALUES PER UNIT OR SECTOR ARE DEFERRED** until after the pilot,
+   and are built only for a shipped case that needs one: a stream with two
+   densities is the confusion this record exists to end.  The design of
+   3.9 stays as the answer to "can it be customised per unit or sector";
+   its construction waits for the need.
+6. **"PRESSURE NOT APPLIED" is announced once per method and site,** like
+   every other message (3.9), not beside every value.  And the pilot
+   MEASURES ITS OWN COST (cases moved, rows re-recorded, hours of suite)
+   so that the later slices are decided on a number.
+
 ## 3. The proposal (revision 2)
 
 ### 3.1 The contract

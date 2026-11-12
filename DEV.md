@@ -3607,6 +3607,22 @@ accepts today, and that is a policy call.
 > after viscosity, as the clearest composite method (the infinite-dilution
 > correlation calls the solvent viscosity), with a small Pareto set and the
 > literature's stated errors.
+> REVISION 2 LANDED (d8b25b149) AND WAS REVIEWED BY THE CLOUD SESSION
+> (2026-11-12, relayed by Vitor: "ve se tem razao").  JUDGED ON CONTENT:
+> it is right on five points and they are written into the record as
+> amendments: the pilot carries only what the density of one stream through
+> a pump and a CSTR needs, with an explicit cut list before any later
+> slice; a measured or declared value that beats a catalogue method prints
+> both values and the deviation, and beyond the catalogue method's
+> uncertainty that is a counted FINDING; two hypotheses and one acceptance
+> are named as three mechanisms; local values per unit or sector are
+> deferred until a shipped case needs one; "pressure not applied" is
+> announced once per method and site, and the pilot measures its own cost.
+> DECLINED, with the reason: putting a reference equation above a
+> case-declared correlation -- the case over the catalogue is the precedence
+> every datum follows, an exception would leave no way to state a
+> deliberate choice, and the danger named is the silence, which the
+> printed deviation removes.
 
 > **C377 (Vitor, 2026-11-12: "se eu fizer evaporacao multi-efeito de
 > agua+NaOH o Choupo ja lida com o calor de dissolucao de forma elegante?").**
