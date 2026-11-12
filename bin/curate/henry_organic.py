@@ -476,8 +476,14 @@ def fit_points(series):
         return res
     p1 = least_squares([(T, H) for _, _, T, H in pts])
     r1 = rel(p1, [(T, H) for _, _, T, H in pts])
-    discarded = [(d, b, T, ri) for (d, b, T, H), ri in zip(pts, r1) if abs(ri) > OUTLIER]
-    kept = [q for q, ri in zip(pts, r1) if abs(ri) <= OUTLIER]
+    #  ONE LABORATORY, NO OUTLIER (C321 part 2 amended, the commander's rule
+    #  of 2026-11-12): a point is an outlier only against ANOTHER laboratory.
+    #  Discarding points of a single series tailors the data to the model, so
+    #  a one-laboratory pair keeps every point and is graded on its real error.
+    multi = len({d for d, _, _, _ in pts}) >= 2
+    discarded = [(d, b, T, ri) for (d, b, T, H), ri in zip(pts, r1)
+                 if multi and abs(ri) > OUTLIER]
+    kept = [q for q, ri in zip(pts, r1) if not (multi and abs(ri) > OUTLIER)]
     ktemps = {round(T, 6) for _, _, T, _ in kept}
     res.update(discarded=discarded, kept=kept, lsInitial=p1)
     if len(ktemps) < 2:
@@ -720,8 +726,11 @@ def declare(write):
                  "  form the loader reads, ln H = ln H_ref + (enthalpy/R)(1/T - 1/298.15 K):",
                  "  two parameters.  Stage 1, least squares on the relative residual",
                  "  H_model/H - 1 (equal weights); a point above 20 % is DISCARDED BY NAME and",
-                 "  stage 1 repeated.  Stage 2, minimax on the same residual over the kept",
-                 "  points; its coefficients are the record's.  GRADE on the max relative",
+                 "  stage 1 repeated -- ONLY when two or more laboratories are fitted: with ONE",
+                 "  laboratory no point is discarded (no second series to call it an outlier",
+                 "  against; C321 part 2 amended) and the grade is the series' real error.",
+                 "  Stage 2, minimax on the same residual over the kept points; its",
+                 "  coefficients are the record's.  GRADE on the max relative",
                  "  error over the kept points: clean up to 5 %, warning up to 10 %, severe up",
                  "  to 20 %, refused above.  An in-sample clean resting on ONE laboratory is",
                  "  capped at warning (C300 rule 2).  One temperature gives no enthalpy: refused.",
@@ -748,6 +757,11 @@ def result_text(s, v, res):
              f"  {len(res['discarded'])} discarded after the least-squares stage (> 20 %):"]
     for d, b, T, ri in res["discarded"]:
         lines.append(f"      doi {d} block {b} T = {T:g} K (stage-1 residual {100 * ri:+.1f} %)")
+    if res["labs"] < 2:
+        lines.append("  ONE laboratory: no point was discarded (C321 part 2 amended).")
+        if res["grade_in"] != "clean":
+            lines.append(f"  THE SERIES DOES NOT FOLLOW VAN'T HOFF within 5 %: the two-parameter")
+            lines.append(f"  form misses its own measurements by up to {res['maxRel_pct']:.2f} %.")
     lines += [f"  H_ref = {Href:.5e} Pa at 298.15 K, enthalpy = {dH} J/mol;",
               f"  kept span {res['Tmin']:g}-{res['Tmax']:g} K; max relative error",
               f"  {res['maxRel_pct']:.4f} % (least squares {res['lsMaxRel_pct']:.4f} %); in-sample",
@@ -841,6 +855,9 @@ def fit_case(case, write=False):
         t = re.sub(r"@@RESULT-BEGIN@@\n.*?\n  @@RESULT-END@@",
                    "@@RESULT-BEGIN@@\n" + new + "\n  @@RESULT-END@@", t, flags=re.S)
         pd.write_text(t)
+        std = HENRY / f"{s}-{v}.dat"
+        if res["grade"] in ("severe", "refused") and std.exists() and "henry_organic" in std.read_text():
+            std.unlink()            # no longer accepted into the catalogue
         if res["grade"] in ("clean", "warning", "severe"):
             text = record_text(case, s, v, decl, res, fingerprint(case))
             if res["grade"] == "severe":

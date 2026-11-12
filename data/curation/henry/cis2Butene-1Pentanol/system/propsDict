@@ -33,8 +33,10 @@
   form the loader reads, ln H = ln H_ref + (enthalpy/R)(1/T - 1/298.15 K):
   two parameters.  Stage 1, least squares on the relative residual
   H_model/H - 1 (equal weights); a point above 20 % is DISCARDED BY NAME and
-  stage 1 repeated.  Stage 2, minimax on the same residual over the kept
-  points; its coefficients are the record's.  GRADE on the max relative
+  stage 1 repeated -- ONLY when two or more laboratories are fitted: with ONE
+  laboratory no point is discarded (no second series to call it an outlier
+  against; C321 part 2 amended) and the grade is the series' real error.  Stage 2, minimax on
+  the same residual over the kept points; its coefficients are the record's.  GRADE on the max relative
   error over the kept points: clean up to 5 %, warning up to 10 %, severe up
   to 20 %, refused above.  An in-sample clean resting on ONE laboratory is
   capped at warning (C300 rule 2).  One temperature gives no enthalpy: refused.
