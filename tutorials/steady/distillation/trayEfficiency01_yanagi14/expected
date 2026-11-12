@@ -1,0 +1,46 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+kpi     column                 E_MV_dry_mean    0.791551818033     1e-4
+kpi     column                 E_MV_max         0.897712932329     1e-4
+kpi     column                 E_MV_mean        0.785682064571     1e-4
+kpi     column                 E_MV_min         0.743512156009     1e-4
+kpi     column                 E_OG_mean        0.646725065686     1e-4
+kpi     column                 Pe_mean          22.4118442091      1e-4
+kpi     column                 Q_condensate_m3_s 0.00200279237712   1e-4
+kpi     column                 Q_condenser_kW   -567.488222754     1e-4
+kpi     column                 Q_reboiler_kW    567.488222754      1e-4
+kpi     column                 T_bottom         332.544796542      1e-4
+kpi     column                 T_reflux         321.711423758      1e-4
+kpi     column                 T_top            321.788438336      1e-4
+kpi     column                 V_boilup         0.0168802390235    1e-4
+kpi     column                 V_top            0.0178290201573    1e-4
+kpi     column                 alpha_mean       1.90027798705      1e-4
+kpi     column                 dP_column_kPa    3.79991940553      1e-4
+kpi     column                 diameter         1.2                1e-4
+kpi     column                 diameterDesigned 0                  1e-4
+kpi     column                 downcomerBackup_max_mm 119.097454115      1e-4
+kpi     column                 downcomerFloodStages 0                  1e-4
+kpi     column                 efficiencyMarches 8                  1e-4
+kpi     column                 fFactor_reboilerVapour 1.3                1e-4
+kpi     column                 fFactor_topTray  1.28421095985      1e-4
+kpi     column                 floodApproach_max 0.555338419241     1e-4
+kpi     column                 floodStage       10                 1e-4
+kpi     column                 nStages          11                 1e-4
+kpi     column                 nTrays           10                 1e-4
+kpi     column                 overallTrayEfficiency 0.752854109944     1e-4
+kpi     column                 psi_mean         0.00925020810071   1e-4
+kpi     column                 theoreticalStages_trays 6.7756869895       1e-4
+kpi     column                 u_bottomTray     1.21861166145      1e-4
+kpi     column                 x_bottomTray_LK  0.430939227201     1e-4
+kpi     column                 x_reboiler_LK    0.29               1e-4
+kpi     column                 x_reflux_LK      0.989193632499     1e-4
+kpi     column                 x_topTray_LK     0.983241878389     1e-4
+utility column                 heating.steamLP.duty_kW 567.488222754      1e-4
+utility column                 heating.steamLP.T 332.544796542      1e-4
+utility column                 heating.steamLP.kg_s 0.259601199796     1e-4
+utility column                 heating.steamLP.eur_h 24.515491223       1e-4
+utility column                 cooling.coolingWater.duty_kW -567.488222754     1e-4
+utility column                 cooling.coolingWater.T 321.788438336      1e-4
+utility column                 cooling.coolingWater.kg_s 13.5762732716      1e-4
+utility column                 cooling.coolingWater.eur_h 0.817183040766     1e-4

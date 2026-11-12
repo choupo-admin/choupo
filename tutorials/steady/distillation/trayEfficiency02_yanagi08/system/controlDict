@@ -1,0 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "Sieve-tray efficiency computed from the internals (AIChE + eddy diffusion + entrainment), FRI 8 % hole-area tray of Yanagi & Sakata 1982 at total reflux, cyclohexane/n-heptane at 34 kPa, swept over the F-factor; nothing fitted";
+verbosity     3;

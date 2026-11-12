@@ -1,0 +1,55 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- cyclohexane / n-heptane, the FRI test system of
+  Yanagi & Sakata (1982).  Two saturated hydrocarbons of similar size: Raoult
+  (gamma = 1) and an ideal-gas vapour at 34 kPa.  The vapour pressures are the
+  records' Antoine fits to the CoolProp reference equations.
+
+  Transport, used only by a COMPUTED tray efficiency and by the hydraulics:
+    vapour viscosity  Chung (Vc ESTIMATED from Zc(omega), announced)
+    vapour diffusion  Fuller (diffusion volumes from the formula)
+    surface tension   Brock-Bird (corresponding states, from Tc, Pc, Tb)
+  None of the three is fitted to anything in the paper.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( cyclohexane nHeptane );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+transport
+{
+    vapour
+    {
+        viscosity   { model Chung; }
+        diffusivity { model Fuller; }
+    }
+
+    interface
+    {
+        surfaceTension { model BrockBird; }
+    }
+}
