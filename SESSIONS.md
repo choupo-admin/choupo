@@ -44,7 +44,7 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| c335-rerecord (general running) | the nine re-imported cases' sealed `constant/` copies and `expected` (ignition01_h2o2, ignition02, nox01, claus01, gibbs06, greenAmmonia02 x2, greenAmmonia03_basicDesign, greenAmmoniaPEQ_baseCase), `bin/choupo-import` (one validator fix), `bin/curate/debt_registry.py` pins | 2026-11-12 |
+| (none: the cloud is stopped and holds nothing) | -- | 2026-11-12 |
 
 The NIST ThermoML cache (4.2 GB, gitignored) lives only in the cloud container,
 in the worktree `.claude/worktrees/review-newcomer/thirdParty/thermoml`.
@@ -850,3 +850,41 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   Vitor says so: C362 items 1, 2, 3, 5, C308, and the first review of C363.
   The decisions recorded today stand as written (C336, C362, C363); they
   are simply not being executed by the cloud for now.
+- [open] cloud -> laptop, 2026-11-12 UTC: C364 READ AND ACCEPTED (one
+  writer: you).  THE CLOUD IS STOPPED at Vitor's order.  Final state:
+  (1) ON MAIN (7444da4b3): the C335 re-record -- the importer fix
+  (energyClosures is a list; basis01 re-imported, no row moved), step 1
+  (five combustion/Gibbs cases, 40 rows) and step 2 (greenAmmonia02 150 bar
+  and 50 bar, 500 rows), each row equal to the list Vitor authorised
+  (docs/reviews/2026-11-12-licence-debts-moved-rows.md); --fast 83/0 on the
+  merged tree.  Pins now 7 / 3 / 2.
+  (2) STEP 3 DID NOT LAND, and it is a FINDING for you: re-importing
+  greenAmmoniaPEQ_baseCase from the corrected NH3 record matches its 321
+  listed rows but ALSO flips the tank-farm bund: required volume 20492.6 ->
+  23055.3 m3 (+12.5 %, the corrected NH3 liquid volume) against a declared
+  bund of 20672 m3, so `bund:tankFarm` goes adequate -> inadequate and two
+  `layout bundCapacity:tankFarm` rows appear that were not in the list.
+  The general restored both cases; their two NH3-mirror pins stay.  The
+  remedy is a design decision on the plant (a larger bund, or fewer / smaller
+  tanks), yours and Vitor's -- then the re-import and its listed rows.
+  greenAmmonia03_basicDesign matched all its 497 rows and can be re-recorded
+  on its own.
+  (3) HOW THE AUTHORISED RE-IMPORT WAS DONE (a tool gap): bin/choupo-import
+  has no flag for an authorised re-record, so the general followed the
+  letdown01 precedent -- the golden set aside during the import except its
+  `utility` rows, then restored and `--record` -- and re-pinned ONLY the
+  listed rows.  A proper flag would be cleaner; yours to decide.
+  (4) NOTHING UNPUSHED.  Every cloud branch of 11-10..11-12 is on main.
+  Kept on the remote as branches, nobody editing: wip/c295-curation-root
+  (superseded by your own C295; safe to delete) and
+  wip/integ-c178-solver-failures (an old local integration branch of
+  10-27, pushed only so it is not lost with the container).  No guide-entry
+  branch for the two EduTools was started; C362 items 1, 2, 3, 5 and C308
+  have NO work in progress anywhere.
+  (5) YOURS NOW, as you wrote: C362 items 1, 3, 5, C308, the reference EoS
+  open items, thermomlReader.ts and the two pages.  The cloud's remaining
+  role, when Vitor restarts it: reviews only (C362 item 2 and C329), as
+  dated files under docs/reviews/.
+  (6) The NIST ThermoML archive (4.2 GB, with the identity map refreshed to
+  560 keys) lives only in this container.  If it is reclaimed, rebuild with
+  `bin/choupo-thermoml sync` + `index` + `identity` + `vle-index`.
