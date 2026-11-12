@@ -57,6 +57,12 @@ IDENTITY_KEYS = {"gasSpecies", "dissolvedSpecies", "convention"}
 SANDER_KEYS = {"reviewStatus", "review", "provenance", "origin", "source", "method",
                "CAS", "rowsUsed", "rowTypes", "excluded", "hcpMedian", "spread",
                "dlnHrows", "rowsFile", "by"}
+# The fields of a pair REGRESSED by bin/curate/henry_organic.py from ThermoML
+# measurements (DEV.md 4c C321 part 2): the grade, the case, the evidence.
+# Checked in full by check_henry_records.py (check_organic_records).
+FIT_KEYS = {"fittedInCase", "fitGrade", "fitGradeBasis", "fitGradeCap",
+            "fitGradeMaxRelativeError_pct", "pointsKept", "pointsDiscarded",
+            "fingerprint", "doi", "block", "archiveFile", "articleSha256", "sha256"}
 
 # ---------------------------------------------------------------------------
 # EXPLICIT EXCEPTION TABLES -- hand-curated, each entry a reviewed decision.
@@ -230,7 +236,7 @@ def derive(path, gas_keys):
     solute, solvent = sol.group(1), svt.group(1)
 
     ki = (solute, solvent) in KI_PAIRS
-    allowed = EXPECTED_KEYS | IDENTITY_KEYS | SANDER_KEYS | (KI_EXTRA_KEYS if ki else set())
+    allowed = EXPECTED_KEYS | IDENTITY_KEYS | SANDER_KEYS | FIT_KEYS | (KI_EXTRA_KEYS if ki else set())
     unexpected = keys - allowed
     if unexpected:
         raise ValueError(f"unexpected fields {sorted(unexpected)} -- refuse"

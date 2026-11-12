@@ -131,6 +131,27 @@ it.  The rules below; the corollaries that make them concrete are in §10.
    still describes the code is not retaken.  And no estimate of duration is
    given in place of the result.
 
+4d. **EVERY NEW CAPABILITY IS DOCUMENTED IN THE GUIDES IN THE SAME SLICE
+   (Vitor, 2026-11-12, after a rate-based column was built with five new
+   models and no guide section: "eu estou a assumir que estas a documentar
+   tudo o que fazes nos guias do Choupo!").**  A unit, a model, a correlation,
+   a mixing rule, a props operation or a selectable key is NOT DONE, and is
+   not integrated, until: (1) the Theory Guide has its section -- equations as
+   implemented, symbols, validity window, source with equation numbers, the
+   in-sample statement where one applies -- with a `\label`; (2) the Theory /
+   F1 link of the block AND of each selectable model opens THAT section
+   (`gui/src/case/modelDocs.ts`, gate `check_guide_anchors`); (3) the
+   Tutorials Guide, `docs/tutorials-catalogue.md`, `docs/ai/unit-ops.md` (or
+   the matching `docs/ai` file) and the capability index carry it; (4) the
+   PDFs are rebuilt.  EVERY BRIEF to a general lists these four as acceptance
+   criteria; a report that does not show them is a partial report.  The gate
+   `check_feature_documented` holds the half a machine can see (DEV.md 4c
+   C338): a name a factory registers with no labelled guide section or no
+   docs/ai entry fails; the debt that existed is pinned in
+   `bin/curate/feature_documented_debt.tsv` and may only shrink.  It does NOT
+   check that the equations match the code, that the link opens the section,
+   or that the PDFs were rebuilt -- those are held by reading the report.
+
 5. **Do not change a permanent rule as a reflex to criticism.**  Change it
    when Vítor asks, or when there is a durable technical reason -- and
    state the reason in the change.

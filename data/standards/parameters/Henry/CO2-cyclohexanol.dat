@@ -1,0 +1,63 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Henry's-law constant for CO2 in liquid cyclohexanol (infinite dilution).
+
+  Source DATA: the measurements of
+    Merker, T.; Vrabec, J.; Hasse, H. (2012) J. Chem. Thermodyn. 49, 114-118, doi:10.1016/j.jct.2012.01.017
+  located through the NIST/TRC ThermoML Archive (doi 10.18434/mds2-2422);
+  the values belong to those articles.  NO measured point is reproduced here
+  or anywhere in this tree; data/curation/henry/CO2-cyclohexanol
+  declares each dataset by DOI, block and sha256 and regenerates it.
+
+  FIT (DEV.md 4c C321 part 2): van't Hoff in 1/T, every laboratory together,
+  least squares then minimax on the relative residual of H; points above
+  20 % after the least-squares stage discarded by name (0 here).
+  4 kept points, 303.8-392 K; max relative error
+  5.27 % in-sample (graded 10 / 20 / 30 %, C336 class B).
+  Regressed by Choupo, NOT read by a human; the archive's transcription has
+  not been read back against the articles.
+
+  NOTE: INFINITE-DILUTION coefficient at the solvent's own vapour pressure;
+  validity 303-392 K (the measured span; outside it an extrapolation).
+\*---------------------------------------------------------------------------*/
+
+solute      CO2;
+solvent     cyclohexanol;
+
+gasSpecies        CO2;
+dissolvedSpecies  CO2;
+convention        Sander-Hxp-v1;
+
+model       vantHoff;
+H_ref       2.30429e+07 Pa;
+T_ref       298.15 K;
+enthalpy    -5435  J/mol;
+Trange      ( 303  392 );
+
+reviewStatus autoPromoted;
+review      { by none; }
+
+provenance
+{
+    origin        fitted;
+    source        "doi:10.1016/j.jct.2012.01.017 (located through ThermoML, doi 10.18434/mds2-2422)";
+    method        "van't Hoff fit, least squares then minimax on H_model/H - 1, bin/curate/henry_organic.py";
+    CAS           124-38-9;
+    fittedInCase  "data/curation/henry/CO2-cyclohexanol";
+    fitGrade      warning;   // DEV.md 4c C285: max |H_model - H|/H over the kept points, graded 10 / 20 / 30 % (C336 class B)
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+    fitGradeCap   ( singleLaboratory );   // DEV.md 4c C300 rule 2
+    fitGradeMaxRelativeError_pct 5.2716;
+    pointsKept    4;
+    pointsDiscarded 0;
+    fingerprint   "994771c945ccf30c";   // of the declaration, frozen before the fit
+    evidence
+    (
+        {
+            doi           "10.1016/j.jct.2012.01.017";
+            block         2;
+            archiveFile   "j.jct.2012.01.017.xml";
+            articleSha256 "c570c0becef37771abe2f2d983f48b115d032eb1d94e56f053b478e312904b68";
+            sha256        "3be8e9818dbe26f598ce9442f496c72b7172d8dc709cb7344712d11b25b6bd71";
+        }
+    );
+}

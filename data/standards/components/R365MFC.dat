@@ -64,6 +64,16 @@ standardThermochemistry
 
 groups { unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CF3; count 1; } { group CF2; count 1; } ); joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 2; } { group F; count 5; } ); }
 
+surfaceTension
+{
+    A     0.04983352597;
+    B     0;
+    Tc    460.0032;
+    n     1.096738047;
+    Tmin  261.8;
+    Tmax  308.31;
+}
+
 provenance
 {
     dHf_298
@@ -82,4 +92,33 @@ provenance
     liquidCp       "polynomial fitted to CoolProp sat-liquid cp, maxerr 0.00%";
     triplePoint    "CoolProp reference EOS triple-point T,P";
     preserved      "from prior proposal (NOT CoolProp): standardThermochemistry, groups";
+    surfaceTension
+    {
+        origin        fitted;
+        method        "least squares on ln sigma of sigma/(N/m) = A tau^n, tau = 1 - T/Tc (A, n; B = 0; Tc the record's own), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      warning;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeCap   ( singleLaboratory );   // DEV.md 4c C300 rule 2
+        fitGradeMaxRelativeError_pct 0.835301;
+        Trange        (261.8 308.31);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C328)";
+        evidence
+        (
+                { doi "10.1021/je4004542"; articleSha256 "a23ed110c883d5a55e2dafe76be0de2b8b4bef998839603fe0e27f935f169fe0"; pointsKept 20; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     1;
+            pointsKept  20;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.412071;
+            max_pct     0.835301;
+        }
+    }
 }

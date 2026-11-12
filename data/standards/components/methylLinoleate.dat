@@ -64,6 +64,20 @@ standardThermochemistry
 
 groups { joback ( { group CH3; count 2; } { group CH2; count 12; } { group eCH; count 4; } { group ester; count 1; } ); }
 
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     -69.40633204;
+        B     4625.622898;
+        C     8.501130389;
+        D     0;
+        E     0;
+        Tmin  278.15;
+        Tmax  353.15;
+    }
+}
+
 provenance
 {
     dHf_298
@@ -108,5 +122,34 @@ cosmo
                0.633664     0.000000     0.000000     0.000000     0.000000     0.000000
                0.000000     0.000000     0.000000
         );
+    }
+    liquidViscosity
+    {
+        origin        fitted;
+        method        "least squares on ln y of ln(mu/Pa.s) = A + B/T + C ln T (chemsepEq101 with D = 0), 3 parameter(s), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      warning;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeMaxRelativeError_pct 5.112921;
+        Trange        (278.15 353.15);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C327)";
+        evidence
+        (
+                { doi "10.1021/je100042c"; articleSha256 "92f271664a2023b27fbdee360873285acd388374992987e5ccaf93bbb3a15045"; pointsKept 16; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je600552b"; articleSha256 "b924c391214570485ed5ebb680643e42a26763ea8d6d0949e79ef6d445dd9739"; pointsKept 6; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     2;
+            pointsKept  22;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     3.625138;
+            max_pct     5.112921;
+        }
     }
 }

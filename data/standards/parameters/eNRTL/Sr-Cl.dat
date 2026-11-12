@@ -1,0 +1,83 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Electrolyte-NRTL binary energy parameters --- (Sr)1(Cl)2 in water.
+  Role: the water / (Sr)(Cl) pair taus of the Chen local-composition model,
+  alpha 0.2 fixed, consumed by the eNRTL activity engine.
+  REGRESSED BY CHOUPO (DEV.md 4c C311) to the evaluated gamma_pm and phi
+  of R. N. Goldberg and R. L. Nuttall, Evaluated Activity and Osmotic Coefficients for Aqueous Solutions: The Alkaline Earth Metal Halides, J. Phys. Chem. Ref. Data 7 (1978) 263-310, doi:10.1063/1.555569 (Table 23, p. 294 (m, gamma, phi, a_w), the recommended values) -- the evaluation is the
+  primary source of those recommended values.  The PARAMETERS are
+  Choupo's own work.  Window: 0.1-2 mol/kg at 298.15 K
+  (11 points fitted, 3 interleaved points held out).
+  Outside it the record is an extrapolation; off 25 C it carries no
+  temperature extension of its own.
+  GRADE: in-sample max error 3.51 % -> warning;
+  the held-out points 2.74 % (warning).  No human has
+  reviewed it.  REPRODUCE: run data/curation/electrolytes/Sr-Cl; its proposal is held equal to this
+  record by bin/curate/check_regressed_electrolytes.py.
+\*-----------------------------------------------------------------------------*/
+recordType electrolyteNRTLParameters;
+schemaVersion 1;
+
+model eNRTL;
+
+pair { cation Sr; anion Cl; }
+
+parameters
+{
+    tau_m_ca 8.74411201;
+    tau_ca_m -4.607241105;
+    alpha    0.2;
+}
+
+source "REGRESSED by Choupo (C311) to R. N. Goldberg and R. L. Nuttall, Evaluated Activity and Osmotic Coefficients for Aqueous Solutions: The Alkaline Earth Metal Halides, J. Phys. Chem. Ref. Data 7 (1978) 263-310, doi:10.1063/1.555569, Table 23, p. 294 (m, gamma, phi, a_w), the recommended values";
+
+provenance
+{
+    origin        regressed;
+    method        "electrolyteFit(eNRTL): ln gamma_pm and phi, equal weight, Levenberg-Marquardt from 4 starts";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "data/curation/electrolytes/Sr-Cl";
+    reviewStatus  autoPromoted;
+    fitGrade      warning;   // DEV.md 4c C311: max relative error of gamma_pm or phi over the fitted points, graded 2 / 5 / 10 %
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+    fitGradeMaxRelativeError_pct 3.5092;
+    promotedBy    "bin/curate/electrolytes_c311.py promote";
+    promotedDate  "2026-11-11";
+    reviewReason  "regressed by bin/curate/electrolytes_c311.py from a hand-checked transcription of an evaluated table; not yet read back by a human";
+    reuse         "Choupo's own regression; the evaluated values belong to the cited compilation";
+    fitDate       "2026-11-11";
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/experiments/Sr-Cl.dat";
+            doi       "10.1063/1.555569";
+            provenance evaluated;
+        }
+    );
+    inSample
+    {
+        gammaAAD_pct 1.9065;
+        phiAAD_pct   1.6957;
+        max_pct      3.5092;
+        nPoints      11;
+    }
+    heldOut
+    {
+        kind         interleavedSameSource;   // every 4th point of the same evaluation: NOT a validation
+        gammaAAD_pct 1.6547;
+        phiAAD_pct   1.5188;
+        max_pct      2.7376;
+        nPoints      3;
+        grade        warning;
+    }
+    validity
+    {
+        temperature { min 298.15 K; max 298.15 K; }
+        molality    { min 0.1; max 2; }   // mol/kg
+        note        "the span of the fitted evaluated values; outside it the salt is an extrapolation";
+    }
+    review
+    {
+        by none;
+    }
+}

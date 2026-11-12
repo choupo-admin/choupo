@@ -70,6 +70,7 @@ License
 #include "PoreTransportBench.H"
 #include "ENRTLMixedSolventOp.H"
 #include "ENRTLMultiSaltOp.H"
+#include "ElectrolyteFit.H"
 #include "GibbsMapOp.H"
 #include "ReactionGibbs.H"
 #include "Ppr78Kij.H"
@@ -78,6 +79,7 @@ License
 #include "ScalingScan.H"
 #include "Speciate.H"
 #include "SteamTables.H"
+#include "ReferenceEoSOp.H"
 #include "ThielePellet.H"
 #include "VaporPressureFit.H"
 #include "VleConsistency.H"
@@ -217,6 +219,9 @@ void PropertyOperation::registerBuiltins()
     reg("hConsistency", []{ return std::make_unique<HConsistency>(); });
     reg("enrtlMixedSolvent", []{ return std::make_unique<ENRTLMixedSolventOp>(); });
     reg("enrtlMultiSalt", []{ return std::make_unique<ENRTLMultiSaltOp>(); });
+    // The salt-by-salt regression of Pitzer / eNRTL parameters against
+    // gamma_pm and phi (DEV.md 4c C311).
+    reg("electrolyteFit", []{ return std::make_unique<ElectrolyteFit>(); });
     reg("gibbsMap", []{ return std::make_unique<GibbsMapOp>(); });
     reg("reactionGibbs", []{ return std::make_unique<ReactionGibbs>(); });
     reg("ppr78Kij",      []{ return std::make_unique<Ppr78Kij>();      });
@@ -225,6 +230,7 @@ void PropertyOperation::registerBuiltins()
     reg("speciate",       []{ return std::make_unique<Speciate>();       });
     reg("exchange",       []{ return std::make_unique<Exchange>();       });
     reg("steamTables",    []{ return std::make_unique<SteamTables>();    });
+    reg("referenceEoS",   []{ return std::make_unique<ReferenceEoSOp>(); });
     reg("scalingScan",    []{ return std::make_unique<ScalingScan>();    });
     reg("fitParameters",  []{ return std::make_unique<FitParameters>();  });
     // A1b adsorption: evaluate a curated isotherm record on a (T,p) grid and

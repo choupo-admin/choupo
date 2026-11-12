@@ -96,6 +96,22 @@
     }
    ]
   },
+  "electrolyteFit": {
+   "reads": [
+    {
+     "key": "dataset",
+     "kind": "file",
+     "default": ""
+    }
+   ],
+   "writes": [
+    {
+     "key": "proposal.file",
+     "kind": "proposal",
+     "default": ""
+    }
+   ]
+  },
   "elementalComposition": {
    "reads": [],
    "writes": []
@@ -548,6 +564,16 @@
      "default": "constant/reactions"
     }
    ],
+   "writes": [
+    {
+     "key": "output.file",
+     "kind": "file",
+     "default": ""
+    }
+   ]
+  },
+  "referenceEoS": {
+   "reads": [],
    "writes": [
     {
      "key": "output.file",
