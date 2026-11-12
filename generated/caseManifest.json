@@ -6,10 +6,10 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1815,
+  "cases": 1818,
   "witnesses": 16,
   "validationOp": 6,
-  "anchored": 15
+  "anchored": 17
  },
  "cases": {
   "data/curation/batches/henry_sander": {
@@ -28869,6 +28869,49 @@
    ],
    "hasGolden": false
   },
+  "tutorials/steady/solids/circuit01_herbstFuerstenau_closedCircuit": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "classifier",
+    "mill",
+    "mixer"
+   ],
+   "unitModels": [
+    "austin",
+    "herbstFuerstenau",
+    "tabulated"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "anchored"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/steady/solids/hydrocyclone01_quartz_willsTable91": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "hydrocyclone"
+   ],
+   "unitModels": [
+    "declared",
+    "tabulated"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "anchored"
+   ],
+   "hasGolden": true
+  },
   "tutorials/steady/solids/mill01_limestone_herbstFuerstenau": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -28954,6 +28997,23 @@
    "application": "choupoSolve",
    "unitTypes": [
     "mixer"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/solids/screen01_dolomite_karra": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "screen"
+   ],
+   "unitModels": [
+    "karra"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -31060,12 +31120,15 @@
     "tutorials/steady/separation/psa01_h2_psa",
     "tutorials/steady/separation/tsa01_co2_twin_bed",
     "tutorials/steady/separation/tsa02_refused_capacity",
+    "tutorials/steady/solids/circuit01_herbstFuerstenau_closedCircuit",
+    "tutorials/steady/solids/hydrocyclone01_quartz_willsTable91",
     "tutorials/steady/solids/mill01_limestone_herbstFuerstenau",
     "tutorials/steady/solids/mill02_bond_crosscheck",
     "tutorials/steady/solids/mill03_impact_vogelPeukert",
     "tutorials/steady/solids/pneumaticConveyor01_sand",
     "tutorials/steady/solids/pneumaticConveyor02_bends",
     "tutorials/steady/solids/psd01_grid_and_moments",
+    "tutorials/steady/solids/screen01_dolomite_karra",
     "tutorials/steady/thermo/air01_heater_expand",
     "tutorials/steady/thermo/basis01_two_unit_chain",
     "tutorials/steady/thermo/perUnitThermo01_srk_nrtl",
@@ -31204,6 +31267,9 @@
    "bubbleT": [
     "tutorials/steady/flash/bubbleT01_ethanol_water",
     "tutorials/steady/flash/bubbleT02_uniquac_ethanol_water"
+   ],
+   "classifier": [
+    "tutorials/steady/solids/circuit01_herbstFuerstenau_closedCircuit"
    ],
    "componentSplitter": [
     "tutorials/steady/userops/userOp02_component_splitter"
@@ -31513,6 +31579,9 @@
     "tutorials/steady/thermo/air01_heater_expand",
     "tutorials/steady/thermo/basis01_two_unit_chain"
    ],
+   "hydrocyclone": [
+    "tutorials/steady/solids/hydrocyclone01_quartz_willsTable91"
+   ],
    "ionExchanger": [
     "tutorials/steady/membranes/membrane08_softened_scaling"
    ],
@@ -31584,6 +31653,7 @@
     "tutorials/steady/thermoTest/model5_nrtl_flash"
    ],
    "mill": [
+    "tutorials/steady/solids/circuit01_herbstFuerstenau_closedCircuit",
     "tutorials/steady/solids/mill01_limestone_herbstFuerstenau",
     "tutorials/steady/solids/mill02_bond_crosscheck",
     "tutorials/steady/solids/mill03_impact_vogelPeukert"
@@ -31614,6 +31684,7 @@
     "tutorials/steady/reactors/ammoniaReactor02_equilibrium",
     "tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach",
     "tutorials/steady/reactors/ammoniaReactor04_kineticSizing",
+    "tutorials/steady/solids/circuit01_herbstFuerstenau_closedCircuit",
     "tutorials/steady/solids/psd01_grid_and_moments",
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
     "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
@@ -31681,6 +31752,9 @@
    ],
    "ramp": [
     "tutorials/ctrl/ctrl17_signal_shapes"
+   ],
+   "screen": [
+    "tutorials/steady/solids/screen01_dolomite_karra"
    ],
    "shortcutColumn": [
     "tutorials/steady/distillation/shortcut01_benzene_toluene"
@@ -34368,12 +34442,15 @@
     "tutorials/steady/separation/psa01_h2_psa",
     "tutorials/steady/separation/tsa01_co2_twin_bed",
     "tutorials/steady/separation/tsa02_refused_capacity",
+    "tutorials/steady/solids/circuit01_herbstFuerstenau_closedCircuit",
+    "tutorials/steady/solids/hydrocyclone01_quartz_willsTable91",
     "tutorials/steady/solids/mill01_limestone_herbstFuerstenau",
     "tutorials/steady/solids/mill02_bond_crosscheck",
     "tutorials/steady/solids/mill03_impact_vogelPeukert",
     "tutorials/steady/solids/pneumaticConveyor01_sand",
     "tutorials/steady/solids/pneumaticConveyor02_bends",
     "tutorials/steady/solids/psd01_grid_and_moments",
+    "tutorials/steady/solids/screen01_dolomite_karra",
     "tutorials/steady/thermo/air01_heater_expand",
     "tutorials/steady/thermo/perUnitThermo01_srk_nrtl",
     "tutorials/steady/thermoTest/model1_lumped_evaporator",

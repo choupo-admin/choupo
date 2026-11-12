@@ -2157,7 +2157,7 @@ Partition curves (`partition { model ...; }`, shared by the three classifiers):
 
 Refused: a feed off the grid, no solids, a vapour-bearing fluid, a bypass outside
 [0, 1), a liquid with no `fluidToCoarse`.  KPIs: `solidsTo_coarse`, `fluidTo_coarse`,
-`bypass`, `d50c_um`, `d50_um`, `imperfection` (not published when the bypass
+`bypass`, `d50c_um d50_um imperfection` (not published when the bypass
 leaves no d25), `feed_`/`coarse_`/`fine_` `d10_um .. d90_um d32_um Sv_m2_m3`,
 `sizeMassClosure`, `fluidMassClosure`.  Profile: feed fractions, corrected and
 actual partition, both products' fractions per class.

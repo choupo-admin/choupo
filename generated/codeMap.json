@@ -336,6 +336,15 @@
   "ChurchillAsymptotes": [
    "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.H"
   ],
+  "Classifier": [
+   "src/unitOperations/solids/Classifier.H"
+  ],
+  "ClassifierFeed": [
+   "src/unitOperations/solids/ClassifierCore.H"
+  ],
+  "ClassifierSplit": [
+   "src/unitOperations/solids/ClassifierCore.H"
+  ],
   "CleanUtilitiesPass": [
    "src/postProcessing/CleanUtilitiesPass.H"
   ],
@@ -1002,6 +1011,9 @@
   "HottestPort": [
    "src/postProcessing/sizing/MaterialLimits.H"
   ],
+  "Hydrocyclone": [
+   "src/unitOperations/solids/Hydrocyclone.H"
+  ],
   "IEMSpec": [
    "src/unitOperations/electrochem/EDCell.H"
   ],
@@ -1466,6 +1478,9 @@
   "ParticleSizeDistribution": [
    "src/streams/ProcessStream.H"
   ],
+  "PartitionCurve": [
+   "src/unitOperations/solids/classifierModel/PartitionCurves.H"
+  ],
   "PassThroughDeclaration": [
    "src/unitOperations/UnitAcceptance.H"
   ],
@@ -1917,6 +1932,9 @@
   ],
   "Scope": [
    "src/propertyOps/LleResidual.H"
+  ],
+  "Screen": [
+   "src/unitOperations/solids/Screen.H"
   ],
   "Selection": [
    "src/thermo/PricedDensity.H"
@@ -3192,6 +3210,18 @@
     "type": "Mill"
    },
    {
+    "key": "classifier",
+    "type": "Classifier"
+   },
+   {
+    "key": "screen",
+    "type": "Screen"
+   },
+   {
+    "key": "hydrocyclone",
+    "type": "Hydrocyclone"
+   },
+   {
     "key": "ionExchanger",
     "type": "IonExchanger"
    },
@@ -3460,6 +3490,20 @@
    {
     "key": "Muschelknautz",
     "type": "Muschelknautz"
+   }
+  ],
+  "src/unitOperations/solids/classifierModel/PartitionCurves.cpp": [
+   {
+    "key": "whiten",
+    "type": "WhitenPartition"
+   },
+   {
+    "key": "rosinRammler",
+    "type": "RosinRammlerPartition"
+   },
+   {
+    "key": "tabulated",
+    "type": "TabulatedPartition"
    }
   ],
   "src/unitOperations/solids/millModel/MillModels.cpp": [
@@ -9519,7 +9563,11 @@
    "src/unitOperations/separation/PSA.H",
    "src/unitOperations/separation/Stripper.H",
    "src/unitOperations/separation/TSATwinBed.H",
+   "src/unitOperations/solids/Classifier.H",
+   "src/unitOperations/solids/Hydrocyclone.H",
    "src/unitOperations/solids/Mill.H",
+   "src/unitOperations/solids/Screen.H",
+   "src/unitOperations/solids/classifierModel/PartitionCurves.H",
    "src/unitOperations/solids/millModel/MillModels.H",
    "src/unitOperations/storage/StorageTank.H",
    "src/unitOperations/valve/Valve.H"
@@ -12212,6 +12260,76 @@
    "src/unitOperations/separation/cycloneModel/CycloneModel.H",
    "src/unitOperations/separation/cycloneModel/Muschelknautz.H"
   ],
+  "src/unitOperations/solids/Classifier.cpp": [
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/result/ClosureVariable.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/VapourAssociation.H",
+   "src/unitOperations/UnitAcceptance.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/solids/Classifier.H",
+   "src/unitOperations/solids/ClassifierCore.H",
+   "src/unitOperations/solids/classifierModel/PartitionCurves.H",
+   "src/unitOperations/solids/millModel/MillModels.H"
+  ],
+  "src/unitOperations/solids/ClassifierCore.cpp": [
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/core/distribution/SizeGrid.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/streams/PsdOnGrid.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/VapourAssociation.H",
+   "src/unitOperations/solids/ClassifierCore.H",
+   "src/unitOperations/solids/classifierModel/PartitionCurves.H",
+   "src/unitOperations/solids/millModel/MillModels.H"
+  ],
+  "src/unitOperations/solids/Hydrocyclone.cpp": [
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/result/ClosureVariable.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/VapourAssociation.H",
+   "src/unitOperations/UnitAcceptance.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/solids/ClassifierCore.H",
+   "src/unitOperations/solids/Hydrocyclone.H",
+   "src/unitOperations/solids/classifierModel/PartitionCurves.H",
+   "src/unitOperations/solids/millModel/MillModels.H"
+  ],
   "src/unitOperations/solids/Mill.cpp": [
    "src/core/Advisory.H",
    "src/core/Constants.H",
@@ -12238,6 +12356,37 @@
    "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/solids/Mill.H",
+   "src/unitOperations/solids/millModel/MillModels.H"
+  ],
+  "src/unitOperations/solids/Screen.cpp": [
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/result/ClosureVariable.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/VapourAssociation.H",
+   "src/unitOperations/UnitAcceptance.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/solids/ClassifierCore.H",
+   "src/unitOperations/solids/Screen.H",
+   "src/unitOperations/solids/classifierModel/PartitionCurves.H",
+   "src/unitOperations/solids/millModel/MillModels.H"
+  ],
+  "src/unitOperations/solids/classifierModel/PartitionCurves.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/unitOperations/solids/classifierModel/PartitionCurves.H",
    "src/unitOperations/solids/millModel/MillModels.H"
   ],
   "src/unitOperations/solids/millModel/MillModels.cpp": [
@@ -13002,7 +13151,11 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Classifier.cpp",
+   "src/unitOperations/solids/ClassifierCore.cpp",
+   "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/Screen.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -13406,7 +13559,12 @@
    "src/unitOperations/separation/cycloneModel/Lapple.cpp",
    "src/unitOperations/separation/cycloneModel/LeithLicht.cpp",
    "src/unitOperations/separation/cycloneModel/Muschelknautz.cpp",
+   "src/unitOperations/solids/Classifier.cpp",
+   "src/unitOperations/solids/ClassifierCore.cpp",
+   "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/classifierModel/PartitionCurves.cpp",
    "src/unitOperations/solids/millModel/MillModels.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
@@ -13795,7 +13953,12 @@
    "src/unitOperations/separation/cycloneModel/Lapple.cpp",
    "src/unitOperations/separation/cycloneModel/LeithLicht.cpp",
    "src/unitOperations/separation/cycloneModel/Muschelknautz.cpp",
+   "src/unitOperations/solids/Classifier.cpp",
+   "src/unitOperations/solids/ClassifierCore.cpp",
+   "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/classifierModel/PartitionCurves.cpp",
    "src/unitOperations/solids/millModel/MillModels.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
@@ -14212,7 +14375,11 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Classifier.cpp",
+   "src/unitOperations/solids/ClassifierCore.cpp",
+   "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/Screen.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -14537,7 +14704,11 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Classifier.cpp",
+   "src/unitOperations/solids/ClassifierCore.cpp",
+   "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/Screen.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -15399,7 +15570,12 @@
    "src/unitOperations/separation/cycloneModel/Lapple.cpp",
    "src/unitOperations/separation/cycloneModel/LeithLicht.cpp",
    "src/unitOperations/separation/cycloneModel/Muschelknautz.cpp",
+   "src/unitOperations/solids/Classifier.cpp",
+   "src/unitOperations/solids/ClassifierCore.cpp",
+   "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/classifierModel/PartitionCurves.cpp",
    "src/unitOperations/solids/millModel/MillModels.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
@@ -15460,6 +15636,7 @@
    "src/unitOperations/heatTransfer/SprayDryer.cpp",
    "src/unitOperations/mixer/Mixer.cpp",
    "src/unitOperations/separation/GasSolidSplitter.cpp",
+   "src/unitOperations/solids/ClassifierCore.cpp",
    "src/unitOperations/solids/Mill.cpp"
   ],
   "src/core/distribution/TabularSizeDistribution.H": [
@@ -16480,7 +16657,10 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Classifier.cpp",
+   "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/Screen.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -16753,7 +16933,11 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Classifier.cpp",
+   "src/unitOperations/solids/ClassifierCore.cpp",
+   "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/Screen.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -16993,7 +17177,11 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Classifier.cpp",
+   "src/unitOperations/solids/ClassifierCore.cpp",
+   "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/Screen.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -17286,7 +17474,11 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Classifier.cpp",
+   "src/unitOperations/solids/ClassifierCore.cpp",
+   "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/Screen.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -17295,6 +17487,7 @@
    "src/unitOperations/heatTransfer/SprayDryer.cpp",
    "src/unitOperations/mixer/Mixer.cpp",
    "src/unitOperations/separation/GasSolidSplitter.cpp",
+   "src/unitOperations/solids/ClassifierCore.cpp",
    "src/unitOperations/solids/Mill.cpp"
   ],
   "src/streams/SpeciationBlock.H": [
@@ -17677,7 +17870,11 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Classifier.cpp",
+   "src/unitOperations/solids/ClassifierCore.cpp",
+   "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/Screen.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -17947,7 +18144,11 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Classifier.cpp",
+   "src/unitOperations/solids/ClassifierCore.cpp",
+   "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/Screen.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -18242,7 +18443,11 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Classifier.cpp",
+   "src/unitOperations/solids/ClassifierCore.cpp",
+   "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/Screen.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -18557,7 +18762,11 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Classifier.cpp",
+   "src/unitOperations/solids/ClassifierCore.cpp",
+   "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/Screen.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -18985,7 +19194,11 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Classifier.cpp",
+   "src/unitOperations/solids/ClassifierCore.cpp",
+   "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/Screen.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -19225,7 +19438,11 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Classifier.cpp",
+   "src/unitOperations/solids/ClassifierCore.cpp",
+   "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/Screen.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -20328,7 +20545,10 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Classifier.cpp",
+   "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/Screen.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -20410,7 +20630,10 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Classifier.cpp",
+   "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/Screen.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -21264,13 +21487,44 @@
    "src/unitOperations/separation/cycloneModel/CycloneModel.cpp",
    "src/unitOperations/separation/cycloneModel/Muschelknautz.cpp"
   ],
+  "src/unitOperations/solids/Classifier.H": [
+   "src/unitOperations/UnitOperation.cpp",
+   "src/unitOperations/solids/Classifier.cpp"
+  ],
+  "src/unitOperations/solids/ClassifierCore.H": [
+   "src/unitOperations/solids/Classifier.cpp",
+   "src/unitOperations/solids/ClassifierCore.cpp",
+   "src/unitOperations/solids/Hydrocyclone.cpp",
+   "src/unitOperations/solids/Screen.cpp"
+  ],
+  "src/unitOperations/solids/Hydrocyclone.H": [
+   "src/unitOperations/UnitOperation.cpp",
+   "src/unitOperations/solids/Hydrocyclone.cpp"
+  ],
   "src/unitOperations/solids/Mill.H": [
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/solids/Mill.cpp"
   ],
+  "src/unitOperations/solids/Screen.H": [
+   "src/unitOperations/UnitOperation.cpp",
+   "src/unitOperations/solids/Screen.cpp"
+  ],
+  "src/unitOperations/solids/classifierModel/PartitionCurves.H": [
+   "src/unitOperations/UnitOperation.cpp",
+   "src/unitOperations/solids/Classifier.cpp",
+   "src/unitOperations/solids/ClassifierCore.cpp",
+   "src/unitOperations/solids/Hydrocyclone.cpp",
+   "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/classifierModel/PartitionCurves.cpp"
+  ],
   "src/unitOperations/solids/millModel/MillModels.H": [
    "src/unitOperations/UnitOperation.cpp",
+   "src/unitOperations/solids/Classifier.cpp",
+   "src/unitOperations/solids/ClassifierCore.cpp",
+   "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/classifierModel/PartitionCurves.cpp",
    "src/unitOperations/solids/millModel/MillModels.cpp"
   ],
   "src/unitOperations/storage/StorageTank.H": [
