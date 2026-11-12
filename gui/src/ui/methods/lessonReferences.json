@@ -2488,6 +2488,68 @@
           }
         }
       ]
+    },
+    "chromatography": {
+      "references": [
+        {
+          "text": "Martin, A. J. P.; Synge, R. L. M. (1941). A new form of chromatogram employing two liquid phases. Biochemical Journal 35(12), 1358–1368.",
+          "doi": "10.1042/bj0351358",
+          "note": "The plate model of step 2: the column as a series of equilibrium plates.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1042/bj0351358: authors, title, container, volume, pages and year matched (chromatography EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "van Deemter, J. J.; Zuiderweg, F. J.; Klinkenberg, A. (1956). Longitudinal diffusion and resistance to mass transfer as causes of nonideality in chromatography. Chemical Engineering Science 5(6), 271–289.",
+          "doi": "10.1016/0009-2509(56)80003-1",
+          "note": "The plate-height equation of step 3.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0009-2509(56)80003-1: authors, title, container, volume, pages and year matched (chromatography EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Glueckauf, E. (1955). Theory of chromatography. Part 10. Formulae for diffusion into spheres and their application to chromatography. Trans. Faraday Soc. 51, 1540–1551.",
+          "doi": "10.1039/tf9555101540",
+          "note": "The linear-driving-force uptake both the engine's bed and the page's integration use.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1039/tf9555101540: authors, title, container, volume, pages and year matched (chromatography EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Guiochon, G. (2002). Preparative liquid chromatography. Journal of Chromatography A 965(1–2), 129–161.",
+          "doi": "10.1016/S0021-9673(01)01471-6",
+          "note": "A review of overloaded (preparative) elution, the subject of steps 5 and 6.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/S0021-9673(01)01471-6: authors, title, container, volume, pages and year matched (chromatography EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Ruthven, D. M. (1984). Principles of Adsorption and Adsorption Processes. Wiley. ISBN 978-0-471-86606-0.",
+          "note": "The adsorption monograph: the moment analysis of a linear column and axial dispersion in packed beds.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0471866067 (openlibrary.org/isbn/0471866067.json): Wiley, 433 pages, LC TP156.A35 R8 1984 (chromatography EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Seader, J. D.; Henley, E. J.; Roper, D. K. (2011). Separation Process Principles: Chemical and Biochemical Operations, 3rd ed. Wiley. ISBN 978-0-470-48183-7.",
+          "note": "The textbook treatment of adsorption, chromatography and the plate and rate models.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9780470481837 (openlibrary.org/isbn/9780470481837.json): title, '3rd ed.', Wiley, 2011, by-statement 'J. D. Seader, Ernest J. Henley, D. Keith Roper' (chromatography EduTool)",
+            "date": "2026-11-12"
+          }
+        }
+      ]
     }
   }
 }

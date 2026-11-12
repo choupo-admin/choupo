@@ -79,7 +79,7 @@ export type MethodToolId =
   | "correlation-simplicity" | "data-reconciliation" | "solvent-mixture"
   | "sines-pta" | "ip-strategy" | "tree-of-chemistry" | "patent-expiry"
   | "economics-errors" | "demand-forecast" | "plant-cost" | "plant-running-cost"
-  | "site-process-price" | "campaign-plan" | "stack-dispersion" | "residue-curves";
+  | "site-process-price" | "campaign-plan" | "stack-dispersion" | "residue-curves" | "chromatography";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1314,6 +1314,33 @@ export const METHOD_TOOLS: MethodTool[] = [
     origins: ["engine", "page", "assumption"],
     teaches: "How a laboratory breakthrough curve sizes a plant bed: t_b and t_st read off the data, the capacity they imply checked against the isotherm, LUB = L(1 − t_b/t_st) carried to full scale at the same velocity — L_full = L_es + LUB, the diameter from the design flow, and why a longer bed wastes a smaller fraction.",
     theory: "ch:adsorption",
+  },
+  //  THE PULSE BESIDE THE STEP (preparative chromatography, scope approved
+  //  by the project owner): the same kind of bed as `breakthrough`, fed a
+  //  short injection.  The ENGINE runs the linear pulse of two solutes
+  //  (choupoBatch, fixedBedAdsorber, a case the page writes, the feed
+  //  switched back to carrier by a recipe); the PAGE carries the closed forms
+  //  (retention, moments, plate model, van Deemter, resolution, cuts) and its
+  //  own integration of the overloaded Langmuir column
+  //  (gui/src/case/chromatography.ts).  Liquid chromatography has no engine
+  //  route; the page says so.  Record:
+  //  docs/design/chromatography-peaks-and-resolution.md.
+  {
+    id: "chromatography", blurb: "Separate two solutes on a column: retention, peak width, resolution, overload.",
+    label: "Chromatography: peaks, plates and resolution",
+    discipline: "Separations & phase equilibria", kind: "construction", status: "live",
+    origins: ["engine", "page", "reference", "assumption"],
+    theory: "sec:chromatography",
+    teaches: "Elution chromatography from a bed fed a pulse: the retention "
+      + "time t_R = t0(1 + k') from the isotherm's slope; the plate model "
+      + "and why a peak is a Gaussian, sigma = t_R/sqrt(N); the van Deemter "
+      + "curve H = A + B/v + Cv built from the bed's dispersion and uptake "
+      + "rate; selectivity, resolution and the fundamental resolution "
+      + "equation, with purity and recovery of a cut; and what changes when "
+      + "the column is overloaded on a Langmuir isotherm -- the sharp front, "
+      + "the tail, the competition and the purity-versus-throughput trade -- "
+      + "on a linear pulse the engine runs and checks against the moments, "
+      + "and an overloaded column the page integrates.",
   },
   //  THE BATCH HALF of the membrane physics (2026-09-22).  Everything this
   //  page needs was already in the engine -- the transport laws, the osmotic

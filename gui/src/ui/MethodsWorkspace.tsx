@@ -346,6 +346,9 @@ const StackDispersionTool = lazy(() =>
 const ResidueCurvesTool = lazy(() =>
   import("./methods/ResidueCurvesTool.js")
     .then((m) => ({ default: m.ResidueCurvesTool })));
+const ChromatographyTool = lazy(() =>
+  import("./methods/ChromatographyTool.js")
+    .then((m) => ({ default: m.ChromatographyTool })));
 const PoolFireTool = lazy(() =>
   import("./methods/PoolFireTool.js")
     .then((m) => ({ default: m.PoolFireTool })));
@@ -655,6 +658,7 @@ export function MethodsWorkspace() {
             : tool === "pool-fire" ? <PoolFireTool />
             : tool === "stack-dispersion" ? <StackDispersionTool />
             : tool === "residue-curves" ? <ResidueCurvesTool />
+            : tool === "chromatography" ? <ChromatographyTool />
             : tool === "bund" ? <BundTool />
             : tool === "letdown" ? <LetdownTool />
             : tool === "plant-layout" ? <PlantLayoutTool />

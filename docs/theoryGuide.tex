@@ -22065,6 +22065,51 @@ blowdown with its first law closed (\file{batch25}). \\
 equilibrium shortcut in a steady flowsheet.
 \end{tutoriallink}
 
+\subsection{Elution chromatography: retention, plates and
+resolution}\label{sec:chromatography}
+
+Feed the bed of \eqref{eq:bed-fv} a short rectangular injection of length
+$t_{\mathrm{inj}}$ instead of a step, on a straight isotherm $q^{*}=K_c c$.
+With $v=u/\varepsilon$, $k'=\rho_b K_c/\varepsilon$ and the engine's
+interstitial dispersion $D=D_{\mathrm{ax}}/\varepsilon$ (the code divides
+by $\varepsilon$; its dispersive face flux carries $D_{\mathrm{ax}}$ with
+no factor $\varepsilon$), a Laplace transform in time turns the bed into
+$D c'' - v c' - G(s)\,c = 0$ with $G(s) = s\,[1 + k'k/(s+k)]$.  For closed
+(Danckwerts) ends and Peclet number $\mathrm{Pe} = vL/D$ the outlet peak
+has
+\begin{equation}
+\mu_1 = \frac{L(1+k')}{v} + \frac{t_{\mathrm{inj}}}{2},\qquad
+\sigma^2 = \Bigl[\frac{2}{\mathrm{Pe}} - \frac{2(1-e^{-\mathrm{Pe}})}{\mathrm{Pe}^2}\Bigr]
+\Bigl(\frac{L(1+k')}{v}\Bigr)^{2} + \frac{2k'L}{vk} + \frac{t_{\mathrm{inj}}^{2}}{12},
+\label{eq:chrom-moments}
+\end{equation}
+so the retention time is $t_R = t_0(1+k')$, $t_0=L/v$ --- on a straight
+isotherm the stoichiometric time \eqref{eq:t-stoich} --- and for a long
+column the plate height $H = L\sigma^2/t_R^2$ (injection removed) is the van
+Deemter form
+\begin{equation}
+H = \frac{2D}{v} + \frac{2k'}{k(1+k')^2}\,v = A + \frac{B}{v} + Cv,
+\qquad D = \gamma D_m + \lambda d_p v,
+\label{eq:van-deemter}
+\end{equation}
+with $A = 2\lambda d_p$, $B = 2\gamma D_m$, $C = 2k'/(k(1+k')^2)$, a minimum
+$H_{\min} = A + 2\sqrt{BC}$ at $v_{\mathrm{opt}} = \sqrt{B/C}$, and
+$N = L/H$ plates, $\sigma_t = t_R/\sqrt{N}$.  The engine's first-order
+upwind grid adds $v\,\Delta z/2$ to $D$: on a grid of cells it is itself a
+cascade of stirred plates, one per cell, $H_{\mathrm{grid}} = \Delta z$.
+Two peaks are resolved by
+$R_s = (t_{R,2}-t_{R,1})/\bigl(2(\sigma_1+\sigma_2)\bigr)$ (base widths of
+$4\sigma$), approximately $(\sqrt{N}/4)\,((\alpha-1)/\alpha)\,(k'_2/(1+k'_2))$
+with $\alpha = k'_2/k'_1$.
+
+\emph{What Choupo computes.}  No unit operation is a chromatographic column
+and no operation computes \eqref{eq:chrom-moments}.  The fixed bed runs a
+gas pulse when its feed is switched off by a recipe; the EduTool
+\code{chromatography} writes that case, compares its outlet peaks with
+\eqref{eq:chrom-moments}, and integrates the overloaded (Langmuir) column
+itself.  The derivation, the measurement and the checks are in
+\file{docs/design/chromatography-peaks-and-resolution.md}.
+
 % ---------------------------------------------------------------------
 \section{Rotating equipment: compressors, turbines, pumps}\label{ch:rotating}
 

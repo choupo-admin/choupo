@@ -1312,6 +1312,84 @@ mass-transfer zone whose width the unused length measures.  The trapezoid,
 the crossing and the scale-up on this page are the hand method itself,
 labelled as such, and judged against those engine numbers.}
 
+\subsection{Chromatography: peaks, plates and resolution}\label{sec:edu-chromatography}
+
+\declaredanchor{sec:chromatography}
+
+\noindent\textit{\small Tool:} \code{tool=chromatography}.  \textit{\small
+Case it starts from:} none in the corpus --- the page writes a
+\code{choupoBatch} case of its own (one fixed-bed adsorber unit, a synthetic
+linear sorbent, a recipe that switches the feed back to carrier) and runs it
+in the browser.
+
+\subsubsection*{The question}
+
+\emph{I want to separate two solutes on a column: when does each come out,
+how wide are the peaks, are they resolved, and what changes when I load
+more?}
+
+The bed of the breakthrough page is fed a short injection of two solutes
+instead of a step.  The page derives the retention time
+$t_R = t_0(1+k')$ with $k' = \rho_b K_c/\varepsilon$, draws the plate model
+(the Erlang peak of $N$ stirred plates) beside the Gaussian of the same
+mean and variance, builds the van Deemter curve $H = A + B/v + Cv$ from the
+bed's own parameters (particle diameter, molecular diffusivity, the
+linear-driving-force constant), computes the resolution
+$R_s = (t_{R,2}-t_{R,1})/(2(\sigma_1+\sigma_2))$ beside the fundamental
+resolution equation, cuts the outlet in time for purity and recovery, and
+then loads the column until the isotherm bends.
+
+\subsubsection*{What the engine says, and what the page computes}
+
+The engine runs the linear pulse: its outlet histories and its own
+stoichiometric times, Peclet number and mass closure are read off the run,
+and a run that does not belong to the current knobs is not drawn.  The page
+puts the moments derived in the Theory Guide (elution chromatography, in the adsorption chapter) beside it, with the
+dispersion the engine's first-order grid adds (one plate per cell) as a
+column of its own, and its own second-order integration of the same bed
+equations as a third reading.  The overloaded column --- a competitive
+Langmuir isotherm, in concentration units --- is the page's integration
+only, on 100 cells, with its mass ledger printed and a button that repeats
+it on 200 cells and prints the change.  The design record
+\file{docs/design/chromatography-peaks-and-resolution.md} holds the moment
+derivation, the native measurement that decided to use the engine for the
+linear part, the tests, and a table of every published form the page uses
+with its checking status.
+
+\subsubsection*{What to vary, what to watch}
+
+\begin{tryit}
+At the defaults the two peaks overlap ($R_s$ just under 0.9).  Raise the bed
+length to 1.5\,m: $R_s$ passes 1.5, but only as $\sqrt{L}$, and the engine's
+dotted peaks stay wider than the page's Gaussians --- that is its grid, one
+plate per cell, and the extra row in the table accounts for it.  On the
+van Deemter plot move the velocity towards $v_{\mathrm{opt}}$ and watch the
+plate count rise.  Set the plate count of the plate-model panel to 3 and to
+100 and compare the gap to the Gaussian.  In step 5 raise the load from 0.02
+to 1.6: the peaks lean forward, come out earlier, and the first solute is
+pushed ahead by the second; switch competition off to see how much of that
+is competition.  The table of step 6 shows the amount recovered at 99\,\%
+purity rising with the load and then falling.
+\end{tryit}
+
+\begin{pitfall}
+\textbf{That a longer column is the way to resolve two peaks.}  Resolution
+grows only as the square root of the plate count, so twice the resolution
+costs four times the column; the selectivity term $(\alpha-1)/\alpha$ is
+usually the cheaper lever, and at high load no column length restores the
+purity the overload took.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+Liquid chromatography has no engine route: the engine's fixed bed is a gas
+unit, and the overloaded column is the page's integration of equations in
+the form a liquid column takes.  The velocity is held constant (a poor
+assumption for a concentrated gas pulse), the band is isothermal, the
+competition is the competitive Langmuir model with one saturation capacity,
+and gradient elution, extra-column broadening and the simulated moving bed
+are not covered.
+
 \subsection{Membranes: a UF/NF batch, concentrated and washed}\label{sec:edu-batch-membrane}
 
 \declaredanchor{ch:membrane}
