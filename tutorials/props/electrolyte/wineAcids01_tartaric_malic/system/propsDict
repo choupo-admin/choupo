@@ -1,0 +1,56 @@
+/*---------------------------------------------------------------------------*\
+  wineAcids01_tartaric_malic -- the three main organic acids of a wine together, titrated with
+  potassium hydroxide: 0.03 mol/kg tartaric acid + 0.03 mol/kg malic acid + 0.03 mol/kg lactic
+  acid in water, with 0 to 0.18 mol/kg KOH.  The titratable protons are 0.03 x (2 + 2 + 1) =
+  0.15 mol/kg, so the axis runs from 0 to 1.2 equivalents of acid; ten beakers.  pH and the
+  distribution of the eight species H2Tart / HTart- / Tart2- / H2Malic / HMalic- / Malic2- /
+  HLac / Lac-.  (The file keeps the name given when it held two acids.)
+
+  ILLUSTRATIVE COMPOSITION.  No sourced must or wine composition is in hand, so 0.03 mol/kg
+  of each is a round declared number, in the order of magnitude of the acids of a wine (a few
+  g/L each; lactic acid is the product of the malolactic fermentation and rarely sits beside
+  this much malic acid); the case says nothing about any particular wine, and there is no
+  ethanol, no potassium or calcium of the wine, no citric or acetic acid, no ion pairing.  It
+  is a structural illustration of three families on one pH axis, NOT validated against a
+  measured pH: no source in hand prints one, so no `anchor` rows.
+
+  CONSTANTS (25 C, I = 0).  Tartaric: pK1 3.036, pK2 4.366, dH +3.19 / +0.93 kJ/mol,
+  Goldberg, Kishore & Lennen 2002 Table 7.63 p. 347 (agreeing with Patterson & Woolley 2001
+  Tables 9-10).  Malic: pK1 3.459, pK2 5.097, dH +2.955 / -1.181 kJ/mol of the d,l acid,
+  Eden & Bates 1959 (J. Res. Natl. Bur. Stand. 62, 161) Table 6 p. 169.  Lactic: pK 3.862,
+  dH -0.251 kJ/mol, Nims & Smith 1936 (J. Biol. Chem. 113, 145) Table II p. 148.
+
+  The pH is a RESULT: `pH solve;` closes the charge balance and `totalsBasis stoichiometric`
+  makes the potassium a titrant, as in bjerrum01_carbonate_pH.
+
+  WHAT TO LOOK FOR.  (this run's numbers, Davies, 25 C; molalities in mmol/kg of each acid's 30)
+   1. The three acids alone (KOH = 0): pH 2.210.  The strongest acid is the most ionised:
+      tartaric 4.2 + 0.04 of 30 (HTart + Tart), malic 1.7, lactic 0.71 (Lac).  The order of
+      the acids is the order of pK1: tartaric 3.036, malic 3.459, lactic 3.862.
+   2. At KOH = 0.06 (pH 3.528, 0.4 equivalents) lactate is 11.0, HMalic 17.3 and HTart 19.5:
+      the three acids are ionised in the order of their pK's, at one common pH.
+   3. At KOH = 0.10 (pH 4.163) Tart2- is 16.9 against HTart- 12.3: the second step of
+      tartaric acid (pK2 4.366) is half done only a little above here, while lactate is
+      already 21.7 of 30 and Malic2- 5.4 (pK2 5.097).
+   4. At KOH = 0.14 (pH 5.220) lactate is 29.0, Tart2- 28.3, Malic2- 22.7 and HMalic- 7.2:
+      malic acid, with the highest pK2, is the last to finish.
+   5. At KOH = 0.15 (the titratable protons 0.03 x 5) all three are fully ionised
+      (>= 29.99 of 30), pH 8.587; the next beaker has 0.03 mol/kg free KOH and pH 12.348.
+   The curve has no plateau at any single pK: five proton steps lie between pH 3.0 and 5.1,
+   so the solution is buffered across the whole of that range, which is the point of a
+   wine's acid mixture.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    { name K_0p000; type speciate; activityModel davies; analyticalTotals { H2Tart 0.03 mol/kg; H2Malic 0.03 mol/kg; HLac 0.03 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H2Tart HTart Tart H2Malic HMalic Malic HLac Lac ); output { file K_0p000.csv; } }
+    { name K_0p020; type speciate; activityModel davies; analyticalTotals { H2Tart 0.03 mol/kg; H2Malic 0.03 mol/kg; HLac 0.03 mol/kg; K 0.020 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H2Tart HTart Tart H2Malic HMalic Malic HLac Lac ); output { file K_0p020.csv; } }
+    { name K_0p040; type speciate; activityModel davies; analyticalTotals { H2Tart 0.03 mol/kg; H2Malic 0.03 mol/kg; HLac 0.03 mol/kg; K 0.040 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H2Tart HTart Tart H2Malic HMalic Malic HLac Lac ); output { file K_0p040.csv; } }
+    { name K_0p060; type speciate; activityModel davies; analyticalTotals { H2Tart 0.03 mol/kg; H2Malic 0.03 mol/kg; HLac 0.03 mol/kg; K 0.060 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H2Tart HTart Tart H2Malic HMalic Malic HLac Lac ); output { file K_0p060.csv; } }
+    { name K_0p080; type speciate; activityModel davies; analyticalTotals { H2Tart 0.03 mol/kg; H2Malic 0.03 mol/kg; HLac 0.03 mol/kg; K 0.080 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H2Tart HTart Tart H2Malic HMalic Malic HLac Lac ); output { file K_0p080.csv; } }
+    { name K_0p100; type speciate; activityModel davies; analyticalTotals { H2Tart 0.03 mol/kg; H2Malic 0.03 mol/kg; HLac 0.03 mol/kg; K 0.100 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H2Tart HTart Tart H2Malic HMalic Malic HLac Lac ); output { file K_0p100.csv; } }
+    { name K_0p120; type speciate; activityModel davies; analyticalTotals { H2Tart 0.03 mol/kg; H2Malic 0.03 mol/kg; HLac 0.03 mol/kg; K 0.120 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H2Tart HTart Tart H2Malic HMalic Malic HLac Lac ); output { file K_0p120.csv; } }
+    { name K_0p140; type speciate; activityModel davies; analyticalTotals { H2Tart 0.03 mol/kg; H2Malic 0.03 mol/kg; HLac 0.03 mol/kg; K 0.140 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H2Tart HTart Tart H2Malic HMalic Malic HLac Lac ); output { file K_0p140.csv; } }
+    { name K_0p150; type speciate; activityModel davies; analyticalTotals { H2Tart 0.03 mol/kg; H2Malic 0.03 mol/kg; HLac 0.03 mol/kg; K 0.150 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H2Tart HTart Tart H2Malic HMalic Malic HLac Lac ); output { file K_0p150.csv; } }
+    { name K_0p180; type speciate; activityModel davies; analyticalTotals { H2Tart 0.03 mol/kg; H2Malic 0.03 mol/kg; HLac 0.03 mol/kg; K 0.180 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H2Tart HTart Tart H2Malic HMalic Malic HLac Lac ); output { file K_0p180.csv; } }
+);

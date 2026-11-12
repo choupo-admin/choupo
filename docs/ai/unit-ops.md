@@ -3212,6 +3212,12 @@ KPIs: `I_initial`/`I_final`, `U_final`, `i_density_final`,
 `specificEnergy_kWh_per_m3`, plus the model's own derived inputs
 (`D_eff`, `k_c_eff`, `Sh`, `Re`, `Sc`, `u_superficial`, `film_thickness`).
 
+`trajectory.csv` publishes the molality of every ion either tank holds at
+t = 0 (`m_dil_<ion>`, `m_conc_<ion>`) as columns FIXED at t = 0: a concentrate
+primed without an ion the diluate carries writes 0 for it from the first row,
+and the header never widens (before 2026-11-12 it did, and the rows were wider
+than the header).
+
 A diluate with SEVERAL cations or anions runs (since 2026-10-05): the
 counter-ions of each membrane share its current by `|z_i| D_i c_i` (the
 limiting transport numbers of Geraldes & Afonso 2010 Eqs. 12/13, applied at
@@ -3257,6 +3263,13 @@ the stack never sees the feed).
 <!-- END GENERATED unit-acceptance batchElectrodialysis -->
 
 ## Recipe events (in `flowsheetDict`)
+
+A `recipe` is executed by `choupoBatch` ONLY.  `choupoSemiContinuous` and
+`choupoCtrl` share a driver that has no reader for it, and since 2026-11-12
+(review row TI-03) a flowsheetDict that declares one is REFUSED by name there
+instead of being accepted at exit 0 and ignored.  For a timed change in a
+continuous process use a `Schedule` controller under `choupoCtrl`
+(`ctrl05_disturbance_transient`).
 
 ```
 recipe
@@ -3419,6 +3432,26 @@ nothing).  The first law across it is NOT claimed (the ledger
 withholds the rung, naming why).  Example:
 `unsteady03_nf_feed_and_bleed_startup` (the start-up of membrane18's loop; it
 ends on membrane18's steady answer).
+
+**WHO SETS THE FLOW OF A LOOP (refused before integrating since 2026-11-12,
+review row TI-02).**  A constant-volume `dynamicCSTR` passes `F_out = F_in`
+and a quasi-steady unit's outflow follows its inflow, so on a loop made only
+of such units nothing says how much circulates.  The flow is determined when
+(i) the loop is FED from outside -- a domain inlet or a stream from another
+part of the plant enters one of its units, typically a `mixer` wrapped as
+`quasiSteady` with a `Feed` in front of the vessel, so the circulating flow is
+the balance of the feed and the splitter fractions (unsteady03, unsteady04);
+or (ii) a vessel on it has an OUTFLOW LAW (`volumeMode variable` with an
+`outflow {}` block, or a `dynamicTank`); or (iii) nothing leaves the loop, in
+which case the flow is the one `0/` declares and stays.  A closed loop with
+NO feed, NO flow-setting vessel and material LEAVING it (a membrane's
+permeate, a bleed) has a circulating flow that shrinks at every accepted step
+by what leaves, so the answer depends on the time step; the driver REFUSES it
+by name, listing the loop's units and streams and the remedies above.  The
+test is structural (a cycle of the routes, the declared `in`/`inputs`/
+`outputs`, and `DynamicUnitOperation::setsOutletFlow()`), not a reading of the
+numbers.  Held by `bin/curate/check_time_integrated.py`, which also runs the
+shipped loops to show they are not refused.
 
 ```
 { name NF;  type quasiSteady;

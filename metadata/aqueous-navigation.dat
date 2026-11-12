@@ -133,6 +133,28 @@ speciesNavigation
     Tart   { familyRoots ( tartrate );  }
     HTart  { familyRoots ( tartrate );  }
     H2Tart { familyRoots ( tartrate );  }   // the neutral master of the family
+    // --- the common organic acids (C372): neutral master + its ions ------
+    H3Cit  { familyRoots ( citrate );   }   // the neutral master of the family
+    H2Cit  { familyRoots ( citrate );   }
+    HCit   { familyRoots ( citrate );   }
+    Cit    { familyRoots ( citrate );   }
+    H2Succ { familyRoots ( succinate ); }   // the neutral master of the family
+    HSucc  { familyRoots ( succinate ); }
+    Succ   { familyRoots ( succinate ); }
+    H2Ox   { familyRoots ( oxalate );   }   // the neutral master of the family
+    HOx    { familyRoots ( oxalate );   }
+    Ox     { familyRoots ( oxalate );   }
+    H2Male { familyRoots ( maleate );   }   // the neutral master of the family
+    HMale  { familyRoots ( maleate );   }
+    Male   { familyRoots ( maleate );   }
+    H2Malic { familyRoots ( malate );   }   // the neutral master of the family
+    HMalic  { familyRoots ( malate );   }
+    Malic   { familyRoots ( malate );   }
+    H2Fumar  { familyRoots ( fumarate );  }   // the neutral master of the family
+    HFumar   { familyRoots ( fumarate );  }
+    Fumar    { familyRoots ( fumarate );  }
+    HLac    { familyRoots ( lactate );  }   // the neutral master of the family
+    Lac     { familyRoots ( lactate );  }
 }
 
 // The CLOSED vocabulary of process topics.  A topic that is an unambiguous

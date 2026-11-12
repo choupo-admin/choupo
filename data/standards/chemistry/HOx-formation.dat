@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/HOx-formation.dat -- the first dissociation of oxalic acid, written from the neutral master:
+      H2Ox  <=>  HOx + 1 H+
+
+  logK25 and dH are the selected values of Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231, Table 7.50 (Oxalate), p. 316 (evaluation grades BBC / AAA,
+  scale: standard state ideal solution at 1 mol/kg, 298.15 K, I = 0):
+      pK1 = 1.27, pK2 = 4.266
+      dH1 = -3.9 kJ/mol, dH2 = -7 kJ/mol
+  This record carries the first of those steps (the sign flips with the direction written).
+  The enthalpy is the EVALUATED dH_ion of the same table as the pK, not a difference of formation
+  enthalpies: the two kinds of number are kept apart and cross-checked in
+  docs/design/organic-acids-in-the-catalogue.md.  Hand-curated organic chemistry, not PHREEQC.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species HOx; masters ( { ion H2Ox; nu 1; } { ion H; nu -1; } );
+      logK25 -1.27; dH -3900; source "Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231, Table 7.50 (Oxalate), p. 316: pK1 = 1.27, pK2 = 4.266; dH1 = -3.9 kJ/mol, dH2 = -7 kJ/mol (pK, dH_ion at 298.15 K, I = 0)";

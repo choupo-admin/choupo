@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/Lac-formation.dat -- the dissociation of lactic acid, written from the neutral
+  master:   HLac  <=>  Lac- + H+
+
+  logK25 = -pK = -3.862 and dH = -251 J/mol are the thermodynamic values PRINTED in
+  Nims & Smith, "The ionization of lactic acid from zero to fifty degrees", J. Biol. Chem.
+  113 (1936) 145-152, Table II, p. 148, at 25 C: pK 3.862 (average of the lithium, barium,
+  strontium and calcium series, and the value of their equation (2) pK = 3.862 + 5e-5
+  (t - 23.5)^2, p. 149; the summary item 3, p. 152, repeats 3.862) and dH = -60 cal/mol (the
+  table's ionisation heat content; the unit is not printed in the page read, but dF 5267 = 2.3026 R T pK holds only in calories, so thermochemical calorie 4.184 J: -251 J/mol).  The paper's
+  equation (4), dH = -2.3026e-4 R T^2 (t - 23.5), p. 151, gives -255 J/mol at 25 C: the
+  enthalpy is small and the table prints it to the nearest calorie, so it is good to about
+  +/-5 J/mol and the record is effectively athermal at 25 C; the sign matters only for
+  the van't Hoff shift away from the maximum of ionisation at 23.5 C.  Method: cells without
+  liquid junction (H2 | HCl, lactate | AgCl | Ag), 0 to 50 C, thermodynamic constant by
+  extrapolation to zero ionic strength.  Hand-curated organic chemistry, not PHREEQC.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species Lac; masters ( { ion HLac; nu 1; } { ion H; nu -1; } );
+      logK25 -3.862; dH -251; source "Nims & Smith, J. Biol. Chem. 113 (1936) 145, Table II p. 148 and eq. (2) p. 149: pK 3.862 at 25 C; dH -60 cal/mol (Table II) = -251 J/mol";

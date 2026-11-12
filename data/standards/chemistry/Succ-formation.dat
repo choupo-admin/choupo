@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/Succ-formation.dat -- the first 2 dissociations of succinic acid, written from the neutral master:
+      H2Succ  <=>  Succ + 2 H+
+
+  logK25 and dH are the selected values of Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231, Table 7.57 (Succinate), p. 340 (evaluation grades AAB / AAA,
+  scale: standard state ideal solution at 1 mol/kg, 298.15 K, I = 0):
+      pK1 = 4.207, pK2 = 5.636
+      dH1 = 3 kJ/mol, dH2 = -0.5 kJ/mol
+  This record carries the sum of those steps (the sign flips with the direction written).
+  The enthalpy is the EVALUATED dH_ion of the same table as the pK, not a difference of formation
+  enthalpies: the two kinds of number are kept apart and cross-checked in
+  docs/design/organic-acids-in-the-catalogue.md.  Hand-curated organic chemistry, not PHREEQC.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species Succ; masters ( { ion H2Succ; nu 1; } { ion H; nu -2; } );
+      logK25 -9.843; dH 2500; source "Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231, Table 7.57 (Succinate), p. 340: pK1 = 4.207, pK2 = 5.636; dH1 = 3 kJ/mol, dH2 = -0.5 kJ/mol (pK, dH_ion at 298.15 K, I = 0)";

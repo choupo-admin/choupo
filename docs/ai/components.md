@@ -57,7 +57,7 @@ level up.)
 <!-- AUTO-GENERATED below this line by bin/regen-llm-docs. -->
 <!-- Edit the .dat files in data/standards/components/, then re-run. -->
 
-## Components (687 entries)
+## Components (688 entries)
 
 ### Volatile (curated for VLE)
 
@@ -714,6 +714,7 @@ level up.)
 | `calciumTartrate` | 188.15 | nonvolatile | — | — | ✓ | — | ✓ | — | — | — |   |
 | `CaO` | 56.077 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |
 | `CaSO4` | 136.141 | nonvolatile | — | — | ✓ | ✓ | ✓ | — | — | — |   |
+| `citricAcid` | 192.123 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |
 | `K2SO4` | 174.259 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |
 | `KOH` | 56.105 | nonvolatile | — | — | ✓ | ✓ | ✓ | — | — | — |   |
 | `magnesiumHydroxide` | 58.320 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |

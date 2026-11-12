@@ -163,6 +163,7 @@ public:
     void setInletStream(const ContinuousStream& s) override;
 
     bool   variableVolume() const { return variableVolume_; }
+    bool   setsOutletFlow() const override { return variableVolume_; }  // outflow law
     scalar T_in()       const { return T_in_; }
     scalar F_in()       const { return F_in_; }
     const sVector& n()  const { return n_; }

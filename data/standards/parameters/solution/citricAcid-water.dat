@@ -1,0 +1,48 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Solution thermo: CITRIC ACID dissolved in liquid WATER (arity-2, the
+  aqueous-solution tier -- the molecular-solute sibling of
+  parameters/solution/tartaricAcid-water.dat, written the same way and from the
+  same work).
+
+  PAIR data: a heat of solution is defined as `crystal -> species dissolved in
+  WATER`, so it names a second species and lives HERE, keyed by the (solute,
+  solvent) pair, never inside citricAcid.dat (data-governance golden rule,
+  arity-2).
+
+  The engine reads dHsoln for the dissolved-vs-crystalline enthalpy rung:
+
+      h_aq(T) = Hf_crystal + dHsoln + INT_298^T cp_aq dT'
+
+  The dissolved species is the HYPOTHETICAL non-dissociated H3Cit (Kochergina's
+  own reference state, Table 4 row "H3Cit (sln, H2O, hyp. nondis)"): at the
+  concentrations a food or wine stream carries, the three dissociation steps
+  move the enthalpy by tens of J/mol, not kJ/mol (Kochergina p. 900: the second
+  to fourth terms of eq. (8) sum to < 0.03 kJ/mol at the dilutions studied), so
+  the neutral rung is the right first approximation and is stated as such.  The
+  dissociated route is the citrate family (species/H3Cit, H2Cit, HCit, Cit;
+  chemistry/*Cit-formation), see docs/design/organic-acids-in-the-catalogue.md.
+
+  NOT carried: the aqueous heat capacity `Cp`.  With no `Cp` key the engine would
+  integrate the cp_aq rung with the component's liquidHeatCapacity -- which
+  citricAcid.dat does not carry, because no work in hand prints it.  The rung
+  therefore refuses by name when a duty reaches the sensible heat of a citric
+  solution; the formation-level (298.15 K) balance is complete.
+\*---------------------------------------------------------------------------*/
+
+solute      citricAcid;
+solvent     water;
+
+// Standard enthalpy of solution: crystalline H3Cit -> aqueous (hypothetical
+// non-dissociated, high dilution), 298.15 K.  ENDOTHERMIC (positive): dissolving
+// citric acid cools the solution.  From ONE study on ONE material:
+//   dHsoln = Hf(H3Cit, sln, hyp. nondis.) - Hf(H3Cit, cr)
+//          = -1534.3 - (-1551.7)  =  +17.4 kJ/mol
+// (Kochergina et al. 2006, Table 4).  The measured heats of solution at finite
+// dilution, Table 2, run 18.8 kJ/mol (n = 9500 H2O per acid) to 17.4 (n = 900);
+// the recommended hypothetical-state value is the extrapolation of eq. (8).
+dHsoln      17400 J/mol;
+dHsoln_provenance
+{
+    origin   literature;
+    method   "Kochergina, Volkov, Krutov & Krutova, Russ. J. Phys. Chem. 80 (2006) 899-903, Table 4: Hf(H3Cit, sln, H2O, hyp. nondis., 298.15 K) = -(1534.3) kJ/mol and Hf(H3Cit, cr) = -(1551.7) +/- 1.3 kJ/mol (weighted mean of two calorimetric procedures) -> dHsoln = +17.4 kJ/mol.  Same study cited in citricAcid.dat for dHf_298, so crystal datum and heat of solution come from one material in one work.";
+}

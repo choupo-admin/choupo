@@ -1,0 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  wineAcids01_tartaric_malic -- 0.03 mol/kg each of tartaric, malic and lactic acid in water
+  titrated with KOH (0 to 1.2 equivalents of titratable acid) at 25 C: pH and the eight-species
+  distribution.  Round declared numbers, ILLUSTRATIVE (no sourced wine composition in hand);
+  constants Goldberg et al. 2002 (tartaric), Eden & Bates 1959 (malic), Nims & Smith 1936
+  (lactic).  Not validated against a measured pH.
+\*---------------------------------------------------------------------------*/
+
+application   choupoProps;
+description   "Tartaric + malic + lactic acid (0.03 mol/kg each) in water titrated with KOH, 0 to 1.2 equivalents of titratable acid, 25 C: pH and the eight-species distribution (Goldberg 2002 Table 7.63; Eden & Bates 1959; Nims & Smith 1936). Illustrative round composition; not validated against a measured pH.";
+verbosity     2;

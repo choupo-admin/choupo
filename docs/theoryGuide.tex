@@ -7394,6 +7394,53 @@ $\log_{10}K(298.15\,\mathrm K)\equiv\log_{10}K_{25}$ exactly (the
 Each form is listed at verbosity $\ge 2$, so the student sees exactly
 which constants were temperature-corrected and how.
 
+\subsection{Carboxylic acids: an ionisation record from the Gibbs energies of
+the acid and its anion}\label{sec:carboxylic-ionisation}
+
+A weak organic acid enters the speciation network the way every other
+equilibrium does: as an \code{aqueousSpeciation} record whose
+$\log_{10}K_{25}$ and $\Delta H$ feed the mass-action row and the
+van't Hoff correction above.  The catalogue's \code{HAc-formation} (acetic
+acid) and \code{HFo-formation} (formic acid) records are written in the
+formation sense, anion $+$ H$^+\rightleftharpoons$ acid.  Where an evaluated
+table prints the standard Gibbs energy of formation of \emph{both} aqueous
+species, the constant is not copied from a pK$_a$ list but \emph{derived}:
+\begin{equation}
+   \Delta_{\rm ion}G^\circ = \Delta_fG^\circ(\mathrm{A^-,ao})
+        - \Delta_fG^\circ(\mathrm{HA,ao}),\qquad
+   \mathrm{p}K_a = \frac{\Delta_{\rm ion}G^\circ}{\Rgas T\ln 10},\qquad
+   \Delta_{\rm ion}H^\circ = \Delta_fH^\circ(\mathrm{A^-})
+        - \Delta_fH^\circ(\mathrm{HA,ao}),
+   \label{eq:carboxylic-pka-derived}
+\end{equation}
+with $\Delta_fG^\circ(\mathrm H^+)=0$ on the aqueous convention and the
+standard state of ideal solution at $1$ mol/kg (``ao'' = aqueous, non-ionised
+standard state).  Symbols: $\Delta_fG^\circ$, $\Delta_fH^\circ$ formation
+Gibbs energy and enthalpy at $298.15$~K, $\Rgas$ the gas constant,
+$T=298.15$~K.  For formic acid the NBS rows (Wagman et al., 1982, Table 23:C,
+p.~2-83) give $\Delta_fG^\circ=-351.0$ (formate) and $-372.3$~kJ/mol (acid),
+so $\Delta_{\rm ion}G^\circ=21.3$~kJ/mol and $\mathrm{p}K_a=3.732$; for acetic
+acid ($-369.31$ and $-396.46$) $\mathrm{p}K_a=4.757$, against the record's
+4.756 from an independent evaluated source.  The origin word of such a value
+is \code{derived}.  \emph{Validity:} 25~\textdegree C only, and no better than
+the 0.1~kJ/mol the tables print for $\Delta_{\rm ion}H^\circ$ (formic acid
+is athermal at that resolution).  \emph{Limits of the tables:} the NBS
+compilation stops at two carbons, so citric, succinic, oxalic and maleic acids
+take pK$_a$ and $\Delta_{\rm ion}H^\circ$ directly (the evaluated $\Delta C_p^\circ$ is printed there, not carried by the record) from the
+evaluated selected values of Goldberg, Kishore \& Lennen (2002), Tables 7.22,
+7.57, 7.50 and 7.42, and the formation enthalpies of the citrate ions from
+Kochergina et al.\ (2006), Table~4; the two works agree on the step enthalpies of
+citric acid to 0.5--1.3~kJ/mol, inside Kochergina's stated uncertainty (see
+\file{docs/design/organic-acids-in-the-catalogue.md}).  Malic acid takes its pK$_a$ and $\Delta_{\rm ion}H^\circ$ from the measurements of
+Eden \& Bates (1959), Table~6, and lactic acid from Nims \& Smith (1936), Table~II.
+The tartrate records stand on Goldberg et al.\ (2002), Table~7.63, in agreement with
+Patterson \& Woolley (2001).  Fumaric acid takes its constants from the evaluation of Miller \& Smith-Magowan (1990), Table~6.  Malonic acid is absent: no ionisation work
+covering them has been read.  A triprotic family is declared through its neutral master
+(\code{H3Cit}) or its fully dissociated ion (\code{Cit}); the closure activates
+the records reachable from whichever the case declares.  Worked cases:
+\file{volatileAcids01\_acetic\_formic}, \file{citricAcid01\_speciation} and
+\file{wineAcids01\_tartaric\_malic}.
+
 \subsection{Open systems: the Henry gas pin}\label{sec:gaspin}
 
 Everything above conserves every master total --- a \emph{closed}

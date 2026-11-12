@@ -1,0 +1,16 @@
+// [imported] origin "data/standards/chemistry/H2Malic-formation.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/H2Malic-formation.dat -- the neutral d,l-malic acid as the sum of its fully
+  dissociated form:
+      Malic(2-) + 2 H+  <=>  H2Malic
+
+  logK25 = pK1 + pK2 = 3.459 + 5.097 = 8.556 and dH = -(2.955 - 1.181) = -1.774 kJ/mol:
+  Eden & Bates, J. Res. Natl. Bur. Stand. 62 (1959) 161 (Research Paper 2947), Table 6,
+  p. 169, the sign flipped for the direction written.  The inverse of Malic-formation.dat: a
+  case declares one master and the closure activates the record reachable from it.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species H2Malic; masters ( { ion Malic; nu 1; } { ion H; nu 2; } );
+      logK25 8.556; dH -1774; source "Eden & Bates, J. Res. Natl. Bur. Stand. 62 (1959) 161 (Research Paper 2947), Tables 5 and 6, p. 169: d,l-malic acid, pK1 3.459 + pK2 5.097 = 8.556; dH1 +2955 + dH2 -1181 = +1774 J/mol, sign flipped, at 25 C";
