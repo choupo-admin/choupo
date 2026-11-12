@@ -201,7 +201,7 @@ export const DP_STEPS: readonly LessonStep[] = [
       + "pressure).  The grade is in-sample.  A clean on one temperature or "
       + "one laboratory is capped at warning, and severe fits are no longer "
       + "promoted.",
-    note: "bin/curate/pairs_c283.py:90, :147, :162.  The 17 severe records "
+    note: "bin/curate/pairs_c283.py:90, :151, :166.  The 17 severe records "
       + "promoted before that rule are still in the catalogue: "
       + "docs/design/binary-pairs-from-open-measurements.md:1335.",
   },

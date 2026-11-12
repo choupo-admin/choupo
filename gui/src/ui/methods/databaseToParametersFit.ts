@@ -60,11 +60,11 @@ export const FIT_RULE = {
   outlierPct: 20,
   /** pairs_c283.py:90 -- upper limits of clean / warning / severe, K */
   gradeK: [1, 2, 4] as const,
-  /** pairs_c283.py:87 / pairs_px.py:71 -- the same in per cent of P */
+  /** pairs_c283.py:91 / pairs_px.py:71 -- the same in per cent of P */
   gradePct: [5, 10, 20] as const,
   /** bin/choupo-curate:109 */
   minInterior: 5,
-  /** pairs_c283.py:254, the archive query: at or below 110 kPa */
+  /** pairs_c283.py:375, the archive query: at or below 110 kPa */
   pMaxKPa: 110,
   alpha: 0.3,
   bound: 3000,
