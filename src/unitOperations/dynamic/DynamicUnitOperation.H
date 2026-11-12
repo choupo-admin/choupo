@@ -161,6 +161,13 @@ public:
     //  instead of stepping it.  Defaults describe every vessel written
     //  before the seam: inventory, one inlet face, one outlet.
     virtual bool hasInventory() const { return true; }
+    //- Does this unit SET the flow that leaves it, rather than pass the flow
+    //  that enters it?  A constant-volume vessel passes F_out = F_in and a
+    //  quasi-steady unit's outflow is a function of its inflow, so the
+    //  default is no.  A vessel with an outflow law (a valve, a manipulated
+    //  flow) sets it.  The driver reads this to refuse a closed loop in which
+    //  NO unit sets the circulating flow (TI-02, 2026-11-12).
+    virtual bool setsOutletFlow() const { return false; }
     //- The declared inlet names in port order; EMPTY means the single
     //  legacy feed face (`in <stream>;`), set through setInletStream().
     virtual std::vector<std::string> inletPorts() const { return {}; }

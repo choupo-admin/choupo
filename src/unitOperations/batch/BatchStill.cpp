@@ -967,10 +967,15 @@ void BatchStill::step(scalar t, scalar dt)
 
 std::vector<std::pair<std::string, scalar>> BatchStill::trajectoryExtras() const
 {
-    if (model_ != "rectifier" || !thermo_ || xD_.empty()) return {};
+    if (model_ != "rectifier" || !thermo_) return {};
+    //  The column set is FIXED by the component list, never by whether a
+    //  distillate has been solved yet (TI-01 pattern): a still charged
+    //  empty has no x_D at t = 0 and used to publish none, then grew the
+    //  columns on the first row after a charge.  Absent = 0.
     std::vector<std::pair<std::string, scalar>> out;
-    for (std::size_t i = 0; i < xD_.size(); ++i)
-        out.emplace_back("xD_" + thermo_->comp(i).name(), xD_[i]);
+    for (std::size_t i = 0; i < thermo_->n(); ++i)
+        out.emplace_back("xD_" + thermo_->comp(i).name(),
+                         i < xD_.size() ? xD_[i] : 0.0);
     out.emplace_back("R", refluxRatio_);
     out.emplace_back("D", refluxLimitReached_
                           ? 0.0 : F_vap_ / (refluxRatio_ + 1.0));

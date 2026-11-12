@@ -80,7 +80,7 @@ export type MethodToolId =
   | "sines-pta" | "ip-strategy" | "tree-of-chemistry" | "patent-expiry"
   | "economics-errors" | "demand-forecast" | "plant-cost" | "plant-running-cost"
   | "site-process-price" | "campaign-plan" | "stack-dispersion" | "residue-curves"
-  | "adsorption-isotherms";
+  | "adsorption-isotherms" | "electrolyte-models" | "batch-adsorption";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -872,6 +872,31 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "matter, and cooling a saturated brine to crystallise KCl.",
     theory: "ch:pitzer-hmw",
   },
+  //  CHOOSING AN ELECTROLYTE MODEL (scope approved by Vitor, relayed by the
+  //  coordinator, 2026-11-12).  ENGINE: Pitzer and eNRTL through the package a
+  //  unit declares (electrolyteActivity), Davies through the speciation solver
+  //  on free ions and with the catalogue's ion pairs, one operation per
+  //  molality, plus MgSO4 under both for the refusal.  PAGE: the limiting
+  //  law, phi and Pi from a_w, deviations from the tree's measured tables
+  //  (gui/src/case/electrolyteModels.ts).  25 C only, by the scope.
+  {
+    id: "electrolyte-models", blurb: "Compare Davies, Pitzer and eNRTL on one salt against measurement.",
+    label: "Choosing an electrolyte activity model",
+    discipline: "Property data & parameters", kind: "selection", status: "live",
+    origins: ["engine", "page", "reference", "assumption"],
+    teaches: "Which activity model to declare for a solution of salts, and "
+      + "what each alternative loses: the Debye-Hückel limit every model "
+      + "shares, drawn alone against measurement; what Davies (a fixed "
+      + "correction, charge only), Pitzer (short-range ion-pair virial terms) "
+      + "and eNRTL (local composition) add to it; the same salt -- NaCl, KCl, "
+      + "CaCl2 or Na2SO4 -- under each model against its evaluated activity "
+      + "and osmotic coefficients at 25 °C, saying which comparisons are "
+      + "in-sample; the difference as the osmotic pressure a membrane must "
+      + "overcome; the choice as four questions (acid gases, a second "
+      + "solvent, a second salt, the ionic strength); and the engine's "
+      + "refusal, by name, of a pair the catalogue lacks.",
+    theory: "ch:electrolytes",
+  },
   {
     id: "mccabe", blurb: "Count the stages a reflux ratio buys.", label: "Distillation (McCabe-Thiele)",
     discipline: "Separations & phase equilibria", kind: "construction", status: "live",
@@ -1315,6 +1340,31 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "operating line on the fitted isotherm -- on synthetic examples with stated "
       + "generating parameters, or on points you paste.",
     theory: "sec:adsorption-isotherm-fitting",
+  },
+  //  THE ISOTHERM, USED (2026-11-12): a stirred tank of solution dosed with an
+  //  adsorbent whose isotherm is known -- the equilibrium where the operating
+  //  line meets the isotherm, the dose for a target, crossflow and
+  //  countercurrent stages and the best split, the film-resistance uptake
+  //  time and the Biot number that says what the film model leaves out.  ALL
+  //  of it is the page's arithmetic (gui/src/case/batchAdsorption.ts, on the
+  //  isotherm functions of the page above): the engine's batch adsorber and
+  //  fixed bed contact a gas -- measured and proposed in
+  //  docs/design/batch-adsorption-in-a-stirred-tank.md.
+  {
+    id: "batch-adsorption", blurb: "Dose, stage and time a tank of solution on a known isotherm.",
+    label: "Batch adsorption in a stirred tank",
+    discipline: "Separations & phase equilibria", kind: "construction", status: "live",
+    origins: ["page", "assumption"],
+    teaches: "How much adsorbent a tank of solution needs and how long it takes: the solute "
+      + "balance as an operating line of slope -V/M meeting the isotherm (linear, Langmuir "
+      + "or Freundlich), solved by bisection beside the closed forms; the dose for a target "
+      + "removal and why it climbs steeply toward 100 %; the same adsorbent in crossflow and "
+      + "countercurrent stages, and the best split of a fixed total between two stages; the "
+      + "external-film uptake c(t) derived in closed form for a linear isotherm and "
+      + "integrated numerically otherwise, with times that scale as the particle diameter "
+      + "squared; and the Biot number that says when diffusion inside the particle makes "
+      + "the film-only answer too optimistic.",
+    theory: "sec:batch-adsorption-stirred-tank",
   },
   {
     id: "breakthrough", blurb: "Watch a bed's mass-transfer zone eat capacity before saturation.", label: "Adsorption breakthrough",

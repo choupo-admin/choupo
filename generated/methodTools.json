@@ -251,8 +251,8 @@
       ]
     }
   ],
-  "liveTools": 82,
-  "registryTools": 82,
+  "liveTools": 84,
+  "registryTools": 84,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -512,6 +512,20 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=salt-mixing"
+    },
+    {
+      "id": "electrolyte-models",
+      "label": "Choosing an electrolyte activity model",
+      "blurb": "Compare Davies, Pitzer and eNRTL on one salt against measurement.",
+      "discipline": "Property data & parameters",
+      "teaches": "Which activity model to declare for a solution of salts, and what each alternative loses: the Debye-Hückel limit every model shares, drawn alone against measurement; what Davies (a fixed correction, charge only), Pitzer (short-range ion-pair virial terms) and eNRTL (local composition) add to it; the same salt -- NaCl, KCl, CaCl2 or Na2SO4 -- under each model against its evaluated activity and osmotic coefficients at 25 °C, saying which comparisons are in-sample; the difference as the osmotic pressure a membrane must overcome; the choice as four questions (acid gases, a second solvent, a second salt, the ionic strength); and the engine's refusal, by name, of a pair the catalogue lacks.",
+      "origins": [
+        "engine",
+        "page",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=electrolyte-models"
     },
     {
       "id": "mccabe",
@@ -817,6 +831,18 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=adsorption-isotherms"
+    },
+    {
+      "id": "batch-adsorption",
+      "label": "Batch adsorption in a stirred tank",
+      "blurb": "Dose, stage and time a tank of solution on a known isotherm.",
+      "discipline": "Separations & phase equilibria",
+      "teaches": "How much adsorbent a tank of solution needs and how long it takes: the solute balance as an operating line of slope -V/M meeting the isotherm (linear, Langmuir or Freundlich), solved by bisection beside the closed forms; the dose for a target removal and why it climbs steeply toward 100 %; the same adsorbent in crossflow and countercurrent stages, and the best split of a fixed total between two stages; the external-film uptake c(t) derived in closed form for a linear isotherm and integrated numerically otherwise, with times that scale as the particle diameter squared; and the Biot number that says when diffusion inside the particle makes the film-only answer too optimistic.",
+      "origins": [
+        "page",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=batch-adsorption"
     },
     {
       "id": "breakthrough",

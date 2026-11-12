@@ -375,6 +375,25 @@ void BatchElectrodialysis::initialise(const DictPtr&       unitDict,
 
     n0D_ = state_.n;
     n0C_ = nConc_;
+
+    //  THE COLUMN SET OF trajectory.csv IS FIXED HERE, AT t = 0 (TI-01).
+    //  The molality columns used to be one per ion a tank CARRIED at the
+    //  instant of the call, so a concentrate that started without an ion
+    //  the diluate carries grew a column the moment the first transfer
+    //  gave it that ion: the header kept its width and later rows were
+    //  wider.  The set is now the union of every ion either tank holds at
+    //  t = 0 (a tank can only gain what the other holds), in component
+    //  order; a tank that does not carry one at an instant writes 0.
+    colIonComp_.clear();
+    colIonKey_.clear();
+    for (std::size_t i = 0; i < Nc; ++i)
+    {
+        if (i == iWater_) continue;
+        if (!(n0D_[i] > 0.0) && !(n0C_[i] > 0.0)) continue;
+        colIonComp_.push_back(i);
+        colIonKey_.push_back(thermo.aqueousChemistry().singleMaster(
+            ComponentId(thermo.comp(i).name())).key);
+    }
     V0dil_ = waterVolume(state_.n);
     state_.V = V0dil_;
 
@@ -837,10 +856,18 @@ BatchElectrodialysis::trajectoryExtras() const
     x.emplace_back("kappa_conc_S_per_m", s.chC.kappa);
     //  Molality is the basis every number above is closed on, so it is the
     //  basis published beside them.
-    for (std::size_t k = 0; k < s.chD.ion.size(); ++k)
-        x.emplace_back("m_dil_" + s.chD.ion[k].key, s.chD.m[k]);
-    for (std::size_t k = 0; k < s.chC.ion.size(); ++k)
-        x.emplace_back("m_conc_" + s.chC.ion[k].key, s.chC.m[k]);
+    //  The column set is FIXED at t = 0 (colIonComp_, built in the
+    //  constructor); an ion a tank does not carry at this instant is 0.
+    auto molalityOf = [](const edCell::ChannelState& ch, std::size_t comp)
+    {
+        for (std::size_t k = 0; k < ch.compIdx.size(); ++k)
+            if (ch.compIdx[k] == comp) return ch.m[k];
+        return scalar(0.0);
+    };
+    for (std::size_t c = 0; c < colIonComp_.size(); ++c)
+        x.emplace_back("m_dil_" + colIonKey_[c], molalityOf(s.chD, colIonComp_[c]));
+    for (std::size_t c = 0; c < colIonComp_.size(); ++c)
+        x.emplace_back("m_conc_" + colIonKey_[c], molalityOf(s.chC, colIonComp_[c]));
     //  The CONCENTRATE tank's own inventory: it is internal state, so it is
     //  published in full rather than inferred from the diluate.
     for (std::size_t i = 0; i < nConc_.size(); ++i)

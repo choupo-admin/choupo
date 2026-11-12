@@ -3811,8 +3811,18 @@ integration with NO control loop is its own problem class,
 watched open-loop, fed-batch, feed \& bleed.  Both binaries run one driver
 (\file{src/dynamicDriver/}); \code{choupoSemiContinuous} refuses a
 \code{controllers} block by name, and \code{choupoCtrl} announces when a case
-declares none.  Everything in this section about the time loop, the
-ledger and the instants applies to both.  In
+declares none.  Both refuse a \code{recipe} block by name: a recipe
+(transfers, \code{setParameter}, conditions, cycles) is executed by
+\code{choupoBatch} only, and a timed change in a continuous process is a
+\code{Schedule} controller under \code{choupoCtrl}.  Both also refuse,
+before integrating, a closed loop whose circulating flow nothing sets: a loop
+of constant-volume vessels and quasi-steady units with no feed entering it and
+material leaving it, in which every unit passes the flow it receives, so the
+flow would shrink at every accepted step and the answer would depend on the time
+step.  A loop fed from outside through a quasi-steady mixer (the flow is then
+the balance of the feed and the split fractions, \file{unsteady03\_nf\_feed\_and\_bleed\_startup}),
+or carrying a vessel with an outflow law, is well posed.  Everything in this
+section about the time loop, the ledger and the instants applies to both.  In
 \file{controlDict}, \code{deltaT} is the controller \emph{sample time};
 with \code{timeStepping adaptive;} the plant is sub-stepped between
 samples by the stiff integrator while the manipulated variable is held
@@ -3894,7 +3904,7 @@ as first-class columns.
 The trajectory CSV carries every CV, MV and setpoint --- plot it and
 read the tuning off the page.
 
-% Source: src/dynamicDriver/DynamicDriver.cpp:865-908 (declaration, the two
+% Source: src/dynamicDriver/DynamicDriver.cpp:975-1018 (declaration, the two
 % refusals, the armed line), :737-759 (accepted-step trapezoid),
 % :1513-1570 (KPIs, reports/rtd/E.csv, the printed moments and spread).
 % Grammar as written by tutorials/ctrl/ctrl18_rtd_pulse_cstr/system/controlDict
@@ -3927,7 +3937,7 @@ dynamic unit, a \code{tracer} that is not a declared component, and a
 run in which no tracer ever left the outlet
 (\file{ctrl18\_rtd\_pulse\_cstr}).
 
-% Source: src/dynamicDriver/DynamicDriver.cpp:910-987 (declaration,
+% Source: src/dynamicDriver/DynamicDriver.cpp:1020-1097 (declaration,
 % `frequency` XOR `reference`, the five refusals, the armed line),
 % :1574-1620 (the fit, its KPIs, the fewer-than-8-samples refusal).
 % Grammar as written by tutorials/ctrl/ctrl19_freq_response_cstr/system/controlDict;
@@ -3964,7 +3974,7 @@ division by the drive's declared amplitude.  A fit window that
 \code{linkedTargets ( controllers[1].signal.frequency );} so the carrier
 mirror moves in lockstep (\file{ctrl20\_bode\_cstr}).
 
-% Source: src/dynamicDriver/DynamicDriver.cpp:1021-1040 (trajectory.csv
+% Source: src/dynamicDriver/DynamicDriver.cpp:1131-1150 (trajectory.csv
 % header and rows), :892-897 (console echo), :1470-1477 (the summary
 % line), :1498-1509 (SP_final / PV_final / MV_final);
 % src/control/ScheduleController.H:83 (hasPV() false) against
@@ -3973,7 +3983,10 @@ mirror moves in lockstep (\file{ctrl20\_bode\_cstr}).
 \subsection{A column exists only where a measurement does}\label{sec:ctrl-pv-columns}
 
 \file{trajectory.csv} is headed \code{t}, then one column per unit state
-(\code{<unit>.<label>}), then the controllers.  A controller with a
+(\code{<unit>.<label>}), then the controllers.  The column set is fixed at
+$t = 0$: the header is written once and every row has exactly its number of
+fields (a column for an item the run can carry, such as an ion a tank starts
+without, is present from the first row and reads $0$ until the item appears).  A controller with a
 measurement writes the triple \code{<name>.SP}, \code{<name>.PV},
 \code{<name>.MV}; a controller \emph{without} one writes
 \code{<name>.MV} alone.  The \code{Schedule} type is the one that

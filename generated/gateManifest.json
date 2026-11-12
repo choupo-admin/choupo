@@ -1680,6 +1680,11 @@
       "exit": 0,
       "claim": "check_solid_property_refusals: OK -- the five witnesses still run; a solid with no rho_p is refused by name in the cyclone, the pneumatic conveyor and the spray dryer (no zero, no 1500 kg/m3); an absent k_v runs the MSMPR on the sphere and ANNOUNCES it; a sorption block missing C or K is refused naming the key.  NOT CHECKED: that the harmonic mean suits a real powder, the hydrocyclone, the batch dryer and the time-integrated binaries, the equilibrium crystalliser.",
       "seconds": 0.3
+    },
+    "check_time_integrated": {
+      "exit": 0,
+      "claim": "check_time_integrated: OK -- TI-01 fixture: 34-field header held on every row; TI-02: the closed leaking loop is refused; unsteady03, unsteady04, unsteady05 still run; TI-03: a `recipe` is refused by name under choupoSemiContinuous and choupoCtrl",
+      "seconds": 7.0
     }
   }
 }

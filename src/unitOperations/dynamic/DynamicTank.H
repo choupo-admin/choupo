@@ -98,6 +98,7 @@ public:
     ContinuousStream outletStream() const override;
 
     bool             hasInlet()    const override { return true; }
+    bool             setsOutletFlow() const override { return true; }   // valve or manipulated flow
     ContinuousStream inletStream() const override;
     bool acceptsRoutedInlet() const override { return true; }
     void setInletStream(const ContinuousStream& s) override;
