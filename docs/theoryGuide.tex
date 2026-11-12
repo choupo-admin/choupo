@@ -22130,6 +22130,70 @@ fits on the page and says so; the design record
 \file{docs/design/adsorption-isotherms-from-laboratory-data.md} proposes the
 engine side.
 
+\subsection{A stirred tank of solution: dose, stages and contact time}\label{sec:batch-adsorption-stirred-tank}
+
+The same balance $V c_0 + M q_0 = V c + M q$ answers the design question of a
+stirred tank.  At equilibrium the state lies on the isotherm and on the
+operating line of slope $-V/M$ through $(c_0, q_0)$; the crossing is the root of
+$f(c) = V(c_0-c) + M(q_0 - q^*(c))$, which is positive at $c=0$ and negative at
+$c = c_0 + Mq_0/V$, so it is always bracketed.  For a linear isotherm
+$c = (Vc_0 + Mq_0)/(V+MK)$; for Langmuir the crossing is the positive root of
+$Vc^2 + (VK_L + Mq_{\max} - Vc_0 - Mq_0)c - (Vc_0+Mq_0)K_L = 0$; Freundlich has
+no closed form.  The dose for a target is $M = V(c_0-c)/(q^*(c)-q_0)$, which
+for a linear isotherm grows as $R/(100-R)$ with the percentage removed $R$, and
+an adsorbent charged with $q_0$ cannot take the liquid below $c^*(q_0)$.
+
+The same mass may be used in stages.  In crossflow every stage receives fresh
+adsorbent; in countercurrent one solid stream meets the liquid in the opposite
+direction, $V(c_{k-1}-c_k) = M(q_k - q_{k+1})$ with $q_{N+1}=0$.  For a linear
+isotherm and two stages, with $a = MK/V$, an equal crossflow split gives
+$c_2/c_0 = (1+a/2)^{-2}$ and countercurrent $c_2/c_0 = (1+a+a^2)^{-1}$; the
+crossflow outlet $1/[(1+af)(1+a(1-f))]$ is smallest at $f = 1/2$.  For a
+favourable nonlinear isotherm the best split is not equal and puts more than
+half in the first stage (measured, not derived, by the EduTool's tests); for a
+linear isotherm the equal split is the optimum and for any other the optimum is
+unequal\cite{Treybal1980}, with the Freundlich stationarity condition
+$(c_1/c_2)^n - n\,c_0/c_1 = 1-n$ for $q = K_F c^n$ (Treybal's Eq.~(11.13), his $1/n$
+written $n$).
+
+With the whole resistance in a liquid film around each particle,
+$-\mathrm{d}c/\mathrm{d}t = k_L a\,(c - c^*)$, where $c^*$ is in equilibrium with
+the particle's mean loading and $q = V(c_0-c)/M$ for fresh adsorbent.  For a
+linear isotherm $c^* = \alpha(c_0 - c)$ with $\alpha = V/(MK)$, and with
+$\beta = 1+\alpha$
+\begin{equation}
+c(t) = \frac{c_0}{\beta}\left[e^{-k_L a \beta t} + \alpha\right],
+\qquad k_L = \frac{\mathit{Sh}\,D_{AB}}{d}, \quad a = \frac{6M}{\rho_p d V},
+\label{eq:batch-ads-film}
+\end{equation}
+$\rho_p$ being the particle density, pores included.  This is the film model of
+Seader's slurry adsorption, Eqs.~(15-76) and~(15-80)\cite{SeaderHR2016}, and of
+Treybal's Eq.~(11.40)\cite{Treybal1980}; the page's integration of the nonlinear case
+reproduces the book's worked Example~15.10 (1,158~s against 1,140~s).  $\mathit{Sh} = 2$ is the stagnant-fluid bound and a poor stand-in for
+a stirred tank, whose film coefficient is larger by one to two orders of
+magnitude: Treybal's Eq.~(11.29), $\mathit{Sh} = 2 + 0.47\,\mathit{Re}_p^{0.62}
+(d_i/T)^{0.17}\mathit{Sc}^{0.36}$ with $\mathit{Re}_p$ built on the power per
+volume of liquid, gives $\mathit{Sh}\approx 190$ for 0.5~mm particles at
+1~kW/m$^3$ in water, and Seader's example uses $k_L = 5\times10^{-5}$~m/s
+($\mathit{Sh}\approx 75$ at 1.5~mm); Harriott measured such
+coefficients\cite{Harriott1962}.  The times the page prints
+at $\mathit{Sh}=2$ are therefore an upper bound.  At fixed $\mathit{Sh}$ every time
+scales as $d^2$; in a stirred tank $\mathit{Sh}-2$ grows as $d^{0.83}$ and the time
+as about $d^{1.2}$.  The resistance inside a porous
+particle is compared with the film's by the Biot number $\mathit{Bi} = k_L R_p/D_e$;
+in Glueckauf's linear-driving-force approximation\cite{Glueckauf1955} the two
+are in series as $1/k_L + R_p/(5D_e)$ (Seader's Eq.~(15-100)), so their ratio is
+$\mathit{Bi}/5$.  With $k_L = \mathit{Sh}D_{AB}/d$ at a fixed $\mathit{Sh}$ the
+diameter cancels, $\mathit{Bi} = (\mathit{Sh}/2) D_{AB}/D_e$, which exceeds one
+for any porous particle at $\mathit{Sh}\ge 2$; that is a property of holding
+$\mathit{Sh}$ fixed, and in a stirred tank $\mathit{Bi}$ rises with the diameter.
+
+None of this is the engine's arithmetic: the engine's \code{batchAdsorber}
+(Eq.~\eqref{eq:ldf}) and its fixed bed contact a gas, in partial
+pressure.  The EduTool \code{batch-adsorption} carries it on the page; the
+design record \file{docs/design/batch-adsorption-in-a-stirred-tank.md}
+proposes the engine side.
+
 % ---------------------------------------------------------------------
 \section{Rotating equipment: compressors, turbines, pumps}\label{ch:rotating}
 
@@ -28260,7 +28324,10 @@ Eq.~\eqref{eq:ads-liquid-isotherms}.
 \bibitem{SeaderHR2016} Seader, J. D., Henley, E. J., \& Roper, D. K.,
 \emph{Separation Process Principles with Applications Using Process
 Simulators}, 4th ed., Wiley, 2016, Chapter~15: Freundlich Eqs.~(15-19) and
-(15-20) with the exponent $1/n$, Langmuir Eqs.~(15-24) and (15-25).
+(15-20) with the exponent $1/n$, Langmuir Eqs.~(15-24) and (15-25).  Slurry
+adsorption, pp.~480--483: the film rate law (15-76), the batch balance (15-77),
+the closed form for a linear isotherm (15-80), Example~15.10 and Glueckauf's
+series resistance (15-100).
 
 \bibitem{Kinniburgh1986} Kinniburgh, D.G., ``General purpose adsorption
 isotherms'', \emph{Environ.\ Sci.\ Technol.} \textbf{20} (1986) 895--904,
@@ -28271,6 +28338,26 @@ the linearised forms do to the errors.
 of linearized Langmuir equations'', \emph{Soil Sci.\ Soc.\ Am.\ J.} \textbf{71}
 (2007) 1796--1806, doi:10.2136/sssaj2006.0304.  How each linearised form
 weights the points.
+
+\bibitem{Treybal1980} Treybal, R.~E., \emph{Mass-Transfer Operations}, 3rd
+ed., McGraw-Hill, 1980.  Pp.~172 (Eq.~6.38) and 180--184 (Eqs.~6.47--6.64,
+Illustration 6.4): the AIChE sieve-tray correlations in SI form, point
+efficiency and the eddy-diffusion conversion.  Chapter~11, pp.~588--594 and
+603--604: crossflow and countercurrent adsorption stages (Eqs.~11.8--11.14, the
+unequal optimum split and its Freundlich form~11.13), the stirred-tank film
+coefficient (Eqs.~11.28--11.29) and batch adsorption with film resistance
+(Eqs.~11.36--11.40).
+
+\bibitem{Harriott1962} Harriott, P., ``Mass transfer to particles: Part I.
+Suspended in agitated tanks'', \emph{AIChE J.} \textbf{8} (1962) 93--101,
+doi:10.1002/aic.690080122.  Film coefficients in a stirred tank, above the
+stagnant bound.
+
+\bibitem{Glueckauf1955} Glueckauf, E., ``Theory of chromatography.  Part 10.
+Formulae for diffusion into spheres and their application to
+chromatography'', \emph{Trans.\ Faraday Soc.} \textbf{51} (1955) 1540--1551,
+doi:10.1039/TF9555101540.  The series film-and-particle resistance of
+Section~\ref{sec:batch-adsorption-stirred-tank}.
 
 \bibitem{Weisbach1845} Weisbach, J., \emph{Lehrbuch der Ingenieur- und
 Maschinen-Mechanik}, Vol.~1, Braunschweig, 1845; and Darcy, H.,
@@ -28574,11 +28661,6 @@ diameter.
 commercial scale 14\,\% hole area sieve tray'', \emph{Ind.\ Eng.\ Chem.\
 Process Des.\ Dev.}\ \textbf{21} (1982) 712--717.  FRI 1.2~m column; Table~III
 tabulated runs, the 8\,\% tray in Figs.~12--13.
-
-\bibitem{Treybal1980} Treybal, R.~E., \emph{Mass-Transfer Operations}, 3rd
-ed., McGraw-Hill, 1980.  Pp.~172 (Eq.~6.38) and 180--184 (Eqs.~6.47--6.64,
-Illustration 6.4): the AIChE sieve-tray correlations in SI form, point
-efficiency and the eddy-diffusion conversion.
 
 \bibitem{ChanFair1984} Chan, H.\ and Fair, J.~R., ``Prediction of point
 efficiencies on sieve trays.\ 1.\ Binary systems'', \emph{Ind.\ Eng.\ Chem.\

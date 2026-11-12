@@ -238,7 +238,7 @@ export function XYPlot({ series, xLabel, yLabel, xlog = false, ylog = false, spa
 
 // ---- panels -----------------------------------------------------------------------
 
-function Panel({ title, origin, originNote, children }: {
+export function Panel({ title, origin, originNote, children }: {
   title: string; origin: OriginKind | readonly OriginKind[];
   originNote?: string; children: ReactNode;
 }): JSX.Element {
@@ -252,7 +252,7 @@ function Panel({ title, origin, originNote, children }: {
 }
 
 /** Tables scroll inside their own box, never the page. */
-function Wide({ children }: { children: ReactNode }): JSX.Element {
+export function Wide({ children }: { children: ReactNode }): JSX.Element {
   return <Box style={{ overflowX: "auto", maxWidth: "100%" }}>{children}</Box>;
 }
 
@@ -686,8 +686,9 @@ export function AdsorptionIsothermsTool(): JSX.Element {
                       { name: "measured points", color: INK, points: pts.map((p): XY => [p.c, p.q]) },
                     ]} />
                   <Text size="xs" c="dimmed">
-                    A fuller batch page -- several stages, contact time, a dose against a curve of
-                    removals -- is planned and not built; this is the one-stage balance only.
+                    This is the one-stage balance only.  Several stages, the dose against a curve
+                    of removals and the contact time are on the Batch adsorption page, where you type
+                    in the isotherm fitted here.
                   </Text>
                 </>
               )}

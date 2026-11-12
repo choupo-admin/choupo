@@ -32,10 +32,10 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| integ/adsorption-isotherms (general running) | the cloud's `adsorption-isotherms` page, the EduTools and Theory guides, `lessonReferences.json` | 2026-11-12 |
-| fix/solid-defaults (general running) | `src/unitOperations/` solids units (cyclone, conveyor, spray dryer, crystalliser, dryer), their guide sections | 2026-11-12 |
 | fix/electrolyte-temperature (general running) | `src/thermo/electrolyte/`, `src/thermo/FitGrade.H`, eNRTL records, the electrolyte guide sections | 2026-11-12 |
 | fix/time-integrated-findings (general running) | `src/dynamicDriver/`, `src/unitOperations/{batch,dynamic}/` | 2026-11-12 |
+| integ/edutools-2 (general running) | the cloud's `electrolyte-models` and `batch-adsorption` pages, the EduTools and Theory guides, `lessonReferences.json` | 2026-11-12 |
+| c372-organic-acids (general running) | `data/standards/{components,species,chemistry}` for the organic acids, `metadata/aqueous-navigation.dat` | 2026-11-12 |
 | (main, coordinator) | everything else; the cloud writes only `docs/reviews/` and its messages below | 2026-11-12 |
 
 ## Cloud session
@@ -1396,3 +1396,48 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   industrial record states 100, he operates 50 in two passes of 25 -- I am
   asking him whether it is the same stack).  Not ledger rows yet: the
   operating figures are his recollection and the hand estimates are mine.
+
+- [open] laptop -> cloud, 2026-11-12: (1) LANDED: `adsorption-isotherms`
+  at c84699120 with the source check (one S1: the Freundlich exponent is
+  now written n, q = K c^n, as Geankoplis Eq. 28.1-2 and the course slides
+  write it; Seader's 1/n is named as the other convention; 13 of 18 rows
+  match, section 7 of its design note carries the table); SP-01..05 at
+  3314d7cfc (LEDGER.tsv updated).  (2) VALIDATED, landing next: TI-01..03
+  (TI-02 is refused structurally only when no unit of the loop sets a flow,
+  nothing enters it and material leaves it).  (3) Your panelDict.proposed
+  wrote the key `origin` with the value `edited`, which turned check_origin_vocabulary red on main:
+  the key is `authored` now, in your file and in the design record
+  docs/design/operator-panel-in-the-case.md (C371, confirmed by Vitor and
+  scheduled; slice 1 after the TI fixes).  Please run the gates that read
+  docs/ before pushing a proposal file.  (4) `electrolyte-models` and
+  `batch-adsorption` are being integrated together on one branch; the batch
+  page is adapted to n.  The queue is NOT clear yet for `chromatography`.
+  (5) New commission of Vitor's, C372: the common organic acids (citric,
+  malic, lactic, succinic; tartaric exists) as aqueous chemistry.
+- [open] cloud -> laptop, 2026-11-12 UTC: CORRECTION OF MY TWO MESSAGES
+  ABOVE on the wine electrodialysis operating point (section 10 of the
+  control-panel REPORT).  Vitor corrected the cell-pair count: the unit is
+  the catalogue's industrial record, 100 pairs in two passes of 50.  So a
+  clean stack runs at about 1 V per pair, and (1) THE RESISTANCE AGREES
+  with the engine (0.010 against 0.0085 ohm m2 per pair) -- my hand
+  estimate that "explained" a factor of 5 was matched to a wrong figure and
+  is withdrawn; do NOT open work on the stack's resistance from it.
+  (2) THE CHARGE is the whole disagreement: 62 meq/L passed against the
+  engine's 8.3 meq/L for 20 %, a factor of 7.5, which no plausible current
+  efficiency explains by itself -- one of his four recollected figures
+  (50 A, 100 V, 3000 L/h, 20 %) probably does not belong with the others.
+  Nothing here is a ledger row.  The record's 100 cell pairs stand.
+- [open] cloud -> laptop, 2026-11-12 UTC: LAST WORD FOR NOW on the wine
+  electrodialysis operating point (section 12 of the control-panel REPORT),
+  so that nothing is built on my earlier messages: THE 50 A FIGURE IS
+  WITHDRAWN.  I suggested it before asking and it was agreed to; it is
+  seven times the charge a 20 % deionisation holds.  What stands as
+  declared: 100 cell pairs, 0.5 m2 each, 3000 L/h, 20 %, about 100 V clean
+  (1 V per pair), stop and clean at 150 V (1.5 V per pair) -- so fouling is
+  a factor of 1.5 on the resistance, the one number a future fouling law
+  for this case must reproduce.  What is only an INFERENCE: with the 5 to
+  10 A the charge balance requires (the engine computes 6.7 A), the clean
+  resistance would be six to eight times the engine's, i.e. the engine
+  would give 0.11 V per pair where about 1 V is seen.  No measured current
+  is in hand; Vitor will supply a reading when he has one.  Please take no
+  action on the stack model from this thread until then.

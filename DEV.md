@@ -3446,6 +3446,39 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C374 (Vitor, 2026-11-12, on a screenshot of the EduTools home: "esta
+> pagina esta gira, mas acho que podia ter mais cor e aquela linha dificulta
+> a selecao de uma categoria").**  The home (C251) lists the sections as a
+> row of small text links ("Jump to ...") that reads as one line of prose,
+> and every section looks the same.  DECIDED: the sections become the
+> page's first visual element -- one tile per section with its name, its
+> count and its own accent colour, large enough to hit, in place of the
+> link row; the same accent marks the section's heading and its cards, so
+> colour means "which section" and nothing else (the phase colours of the
+> flowsheet stay reserved for phases); the Find box keeps its place and its
+> behaviour.  Shown to him as a render before it lands.
+
+> **C373 (Vitor, 2026-11-12, on seeing the evaluated compilations fetched for
+> C372: "sera que podes tirar de la o maximo de ioes que puderes?").**  A
+> species campaign from the evaluated compilations now in the literature
+> folder: Goldberg, Kishore & Lennen (2002; ionisation of 64 buffers: pK,
+> DrH, DrCp), Miller & Smith-Magowan (1990; formation properties of the
+> Krebs-cycle acids, their ions and four amino acids), Domalski (1972; heats
+> of formation of 719 organic compounds), with the NBS tables and CODATA
+> already used for C320.  Every aqueous species and ionisation equilibrium
+> these works carry and the catalogue lacks is entered on the existing
+> patterns (one typed file per species, ionisation as chemistry records,
+> the navigation ontology), each number with its table and page; a family
+> is entered whole or not at all, on one formation scale.  Starts when the
+> C372 branch has landed (same files).  Sources found through the reference
+> lists of a NonCommercial digitised dataset are fetched and read as
+> primaries; nothing enters from that dataset.
+> SCOPE CONFIRMED by Vitor the same hour ("Quero mesmo todos!"): ALL 64
+> buffers of Goldberg et al., the laboratory zwitterionic buffers included,
+> not only the process-relevant ones; order of work: wine, food and water
+> first (phosphate, carbonate, sulfite, borate, ammonia, amino acids,
+> pyruvate, fumarate), then amines, then the laboratory buffers.
+
 > **C372 (Vitor, 2026-11-12: "ha uma lacuna que para mim importa: faltam as
 > especies dos acidos organicos mais comuns! Acido citrico, malico,
 > tartarico, lactico, etc.").**  MEASURED the same turn: the tartrate family
@@ -3493,6 +3526,18 @@ accepts today, and that is a policy call.
 > voltage drive with a limit, a displacement vessel, conditional events)
 > are separate later slices, each decided on its own.  An EduTool on good
 > practice for panels and alarms waits for the page queue to clear.
+> VITOR'S ANSWERS to the design record's questions (2026-11-12): he holds
+> no alarm-management or operator-display standard -- "usa apenas boas
+> praticas": the alarm rules are written as good practice and SAID to be
+> unverified against a standard; the tutorial is on WINE, "uma composicao
+> tipica de vinho de mesa" -- a declared typical composition, labelled as
+> such in the case, with a citable source sought for it (none is in the
+> folder yet); mid-run parameter changes are the architect's call: NOT
+> before the lesson -- a disturbance is first a second run of a varied
+> case, the simplest thing that works, and a mid-run `setParameter` on the
+> batch electrodialysis is built only if the lesson shows it is missed.
+> Still open with him: the bounded exception that lets the GUI write
+> `panelDict` (explained to him again; no answer yet).
 
 > **C370 (2026-11-12; three proposals the cloud says Vitor left to the two
 > sessions' judgement; the architect's answers).**  (a) SOLIDS, simple

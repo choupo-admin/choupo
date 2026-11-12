@@ -343,12 +343,18 @@ const OverpressureTool = lazy(() =>
 const StackDispersionTool = lazy(() =>
   import("./methods/StackDispersionTool.js")
     .then((m) => ({ default: m.StackDispersionTool })));
+const ElectrolyteModelsTool = lazy(() =>
+  import("./methods/ElectrolyteModelsTool.js")
+    .then((m) => ({ default: m.ElectrolyteModelsTool })));
 const ResidueCurvesTool = lazy(() =>
   import("./methods/ResidueCurvesTool.js")
     .then((m) => ({ default: m.ResidueCurvesTool })));
 const AdsorptionIsothermsTool = lazy(() =>
   import("./methods/AdsorptionIsothermsTool.js")
     .then((m) => ({ default: m.AdsorptionIsothermsTool })));
+const BatchAdsorptionTool = lazy(() =>
+  import("./methods/BatchAdsorptionTool.js")
+    .then((m) => ({ default: m.BatchAdsorptionTool })));
 const PoolFireTool = lazy(() =>
   import("./methods/PoolFireTool.js")
     .then((m) => ({ default: m.PoolFireTool })));
@@ -659,6 +665,8 @@ export function MethodsWorkspace() {
             : tool === "stack-dispersion" ? <StackDispersionTool />
             : tool === "residue-curves" ? <ResidueCurvesTool />
             : tool === "adsorption-isotherms" ? <AdsorptionIsothermsTool />
+            : tool === "electrolyte-models" ? <ElectrolyteModelsTool />
+            : tool === "batch-adsorption" ? <BatchAdsorptionTool />
             : tool === "bund" ? <BundTool />
             : tool === "letdown" ? <LetdownTool />
             : tool === "plant-layout" ? <PlantLayoutTool />

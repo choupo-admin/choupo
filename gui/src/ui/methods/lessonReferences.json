@@ -2597,6 +2597,198 @@
           }
         }
       ]
+    },
+    "electrolyte-models": {
+      "references": [
+        {
+          "text": "Hamer, W. J.; Wu, Y.-C. (1972). Osmotic Coefficients and Mean Activity Coefficients of Uni-univalent Electrolytes in Water at 25°C. J. Phys. Chem. Ref. Data 1(4), 1047–1100.",
+          "doi": "10.1063/1.3253108",
+          "note": "The evaluated NaCl and KCl tables (Tables 16 and 28) the page compares every model with.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1063/1.3253108: authors, title, container, volume, pages and year matched (electrolyte-models EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Goldberg, R. N.; Nuttall, R. L. (1978). Evaluated activity and osmotic coefficients for aqueous solutions: The alkaline earth metal halides. J. Phys. Chem. Ref. Data 7(1), 263–310.",
+          "doi": "10.1063/1.555569",
+          "note": "The evaluated CaCl2 table (Table 20).",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1063/1.555569: authors, title, container, volume, pages and year matched (electrolyte-models EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Goldberg, R. N. (1981). Evaluated activity and osmotic coefficients for aqueous solutions: thirty-six uni-bivalent electrolytes. J. Phys. Chem. Ref. Data 10(3), 671–764.",
+          "doi": "10.1063/1.555646",
+          "note": "The evaluated Na2SO4 table.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1063/1.555646: authors, title, container, volume, pages and year matched (electrolyte-models EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Davies, C. W. (1938). The extent of dissociation of salts in water. Part VIII. An equation for the mean ionic activity coefficient of an electrolyte in water, and a revision of the dissociation constants of some sulphates. J. Chem. Soc., 2093–2098.",
+          "doi": "10.1039/JR9380002093",
+          "note": "Davies' equation: the limiting law with one fixed correction for every salt. The 0.3 I form quoted on the page is printed by Plummer and Busenberg (1982, eq 17), who cite Davies (1962); the 1938 paper was not read.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1039/JR9380002093: author, title, container, page and year matched (electrolyte-models EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Pitzer, K. S. (1973). Thermodynamics of electrolytes. I. Theoretical basis and general equations. J. Phys. Chem. 77, 268-277.",
+          "doi": "10.1021/j100621a026",
+          "note": "The virial form of ln gamma behind Pitzer's model.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/j100621a026: author, title, container, volume, pages and year matched (electrolyte-models EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Pitzer, K. S.; Mayorga, G. (1973). Thermodynamics of electrolytes. II. Activity and osmotic coefficients for strong electrolytes with one or both ions univalent. J. Phys. Chem. 77(19), 2300–2308.",
+          "doi": "10.1021/j100638a009",
+          "note": "The single-salt form with b = 1.2 and alpha = 2.0 the engine evaluates.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/j100638a009: authors, title, container, volume, pages and year matched (electrolyte-models EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Chen, C.-C.; Britt, H. I.; Boston, J. F.; Evans, L. B. (1982). Local composition model for excess Gibbs energy of electrolyte systems. Part I: Single solvent, single completely dissociated electrolyte systems. AIChE J. 28(4), 588–596.",
+          "note": "The original eNRTL paper: alpha = 0.2, rho = 14.9, the molal conversion, and Table 1 (p. 592) with the water-NaCl energies 8.885 and -4.549 the catalogue carries.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/Articles/Electrolytes/chen1982-local-composition-electrolyte-part1.pdf read: title, authors, AIChE J. Vol. 28 No. 4, July 1982, pages 588-596 (page headers 590-593 seen); not checked on Crossref (electrolyte-models review)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Plummer, L. N.; Busenberg, E. (1982). The solubilities of calcite, aragonite and vaterite in CO2-H2O solutions between 0 and 90 °C, and an evaluation of the aqueous model for the system CaCO3-CO2-H2O. Geochim. Cosmochim. Acta 46, 1011–1040.",
+          "note": "Prints the Davies equation with the 0.3 I term (eq 17, p. 1017).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/Articles/Electrolytes/plummer1982-calcite-aragonite-vaterite-solubility.pdf read: first page gives title, authors, GCA Vol. 46 pp. 1011-1040; eq 17 on p. 1017 seen as an image (electrolyte-models review)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Chen, C.-C.; Evans, L. B. (1986). A local composition model for the excess Gibbs energy of aqueous electrolyte systems. AIChE J. 32(3), 444–454.",
+          "doi": "10.1002/aic.690320311",
+          "note": "The electrolyte-NRTL model; its Table 1 (p. 448) lists water-NaCl energies -4.5916 and 9.0234, which are NOT the 8.885 and -4.549 the catalogue's NaCl record carries (those are in Chen et al. 1982, Table 1, p. 592).",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/aic.690320311: authors, title, container, volume, pages and year matched (electrolyte-models EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Harvie, C. E.; Møller, N.; Weare, J. H. (1984). The prediction of mineral solubilities in natural waters: the Na-K-Mg-Ca-H-Cl-SO4-OH-HCO3-CO3-CO2-H2O system to high ionic strengths at 25 °C. Geochim. Cosmochim. Acta 48, 723-751.",
+          "doi": "10.1016/0016-7037(84)90098-X",
+          "note": "The multi-salt Pitzer assembly (pitzerHMW) step 5 points to for mixtures.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0016-7037(84)90098-X: authors, title, container, volume, pages and year matched (electrolyte-models EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Edwards, T. J.; Maurer, G.; Newman, J.; Prausnitz, J. M. (1978). Vapor-liquid equilibria in multicomponent aqueous solutions of volatile weak electrolytes. AIChE J. 24(6), 966–976.",
+          "doi": "10.1002/aic.690240605",
+          "note": "The model (edwardsPitzer) step 5 points to for dissolved NH3, CO2 and H2S.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/aic.690240605: authors, title, container, volume, pages and year matched (electrolyte-models EduTool)",
+            "date": "2026-11-12"
+          }
+        }
+      ]
+    },
+    "batch-adsorption": {
+      "references": [
+        {
+          "text": "Langmuir, I. (1918). The adsorption of gases on plane surfaces of glass, mica and platinum. Journal of the American Chemical Society 40(9), 1361–1403.",
+          "doi": "10.1021/ja02242a004",
+          "note": "The site balance behind the Langmuir isotherm used in every step.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ja02242a004: authors, title, container, volume, pages and year matched (adsorption-isotherms EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Freundlich, H. (1907). Über die Adsorption in Lösungen. Zeitschrift für Physikalische Chemie 57U(1), 385–470.",
+          "doi": "10.1515/zpch-1907-5723",
+          "note": "The power-law isotherm, proposed for adsorption from solution; it has no closed-form crossing with the operating line.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1515/zpch-1907-5723: authors, title, container, volume, pages and year matched (adsorption-isotherms EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Glueckauf, E. (1955). Theory of chromatography. Part 10. Formulae for diffusion into spheres and their application to chromatography. Trans. Faraday Soc. 51, 1540–1551.",
+          "doi": "10.1039/TF9555101540",
+          "note": "The linear-driving-force approximation for a sphere, R/(5 D_e), behind the Biot-number estimate of step 5.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1039/TF9555101540: author, title, container, volume 51, pages 1540-1551 and year 1955 matched (batch-adsorption EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Harriott, P. (1962). Mass transfer to particles: Part I. Suspended in agitated tanks. AIChE Journal 8(1), 93–101.",
+          "doi": "10.1002/aic.690080122",
+          "note": "Further reading: measured film coefficients for particles in a stirred tank, above the Sh = 2 bound the page uses by default.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/aic.690080122: author, title, container, volume 8, issue 1, pages 93-101 and year 1962 matched (batch-adsorption EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Seader, J. D.; Henley, E. J.; Roper, D. K. (2016). Separation Process Principles with Applications Using Process Simulators, 4th ed. Wiley.",
+          "note": "Slurry (stirred-tank) adsorption, chapter 15: the film rate law (Eq. 15-76), the batch balance (15-77), the closed form for a linear isotherm (15-80), Example 15.10 (batch phenol on carbon, 1,140 s) and Glueckauf's series resistance (15-100), pp. 480-483.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/seader-separation-process-principles-4ed.pdf: authors, title, edition, publisher and year read from the title and copyright pages; Eqs. 15-76 to 15-83, Example 15.10 and Eqs. 15-98 to 15-100 read in the text layer (batch-adsorption source review)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Treybal, R. E. (1980). Mass-Transfer Operations, 3rd ed. McGraw-Hill. ISBN 978-0-07-065176-0.",
+          "note": "Chapter 11: contact filtration, crossflow and countercurrent stages (Eqs. 11.8 to 11.14, pp. 590-592, with the unequal optimum split and its Freundlich form 11.13), the stirred-tank film coefficient (Eqs. 11.28 and 11.29, p. 603) and batch adsorption with film resistance (Eqs. 11.36 to 11.40, p. 604).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/treybal-mass-transfer-operations-3ed.pdf: title page and ISBN 0-07-065176-0 read in the text layer; Eqs. 11.4 to 11.14 and 11.28 to 11.40 read as page images (batch-adsorption source review)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Ruthven, D. M. (1984). Principles of Adsorption and Adsorption Processes. Wiley. ISBN 978-0-471-86606-0.",
+          "note": "The adsorption monograph: the isotherms (Eqs. 2.27 to 2.32, p. 50) and chapter 6 on the kinetics of sorption in batch systems, where external film resistance is treated only qualitatively (sec. 6.7, p. 199).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/ruthven-principles-of-adsorption-and-adsorption-processes-1ed.pdf (a scan): copyright page read as an image: John Wiley & Sons, 1984, ISBN 0-471-86606-7 (= 978-0-471-86606-0); Eqs. 2.27 to 2.32 read on p. 50; contents and sec. 6.1 and 6.7 read by OCR (batch-adsorption source review)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Geankoplis, C. J.; Hersel, A. A.; Lepek, D. H. (2018). Transport Processes and Separation Process Principles, 5th ed. Pearson (Prentice Hall). ISBN 978-0-13-418102-8.",
+          "note": "The course text: the isotherms (Eqs. 28.1-1 to 28.1-3), the batch balance of Eq. 28.2-1 and Example 28.2-1 (pp. 1348-1350), and Sh = 2 for a sphere in stagnant fluid (sec. 21.3, p. 903).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/geankoplis-transport-processes-separation-process-principles-5ed.pdf: authors, title, edition, publisher, year and ISBNs read from the title and copyright pages; Eqs. 28.1-1 to 28.2-1 and the Sh = 2 passage read in the text layer (batch-adsorption source review)",
+            "date": "2026-11-12"
+          }
+        }
+      ]
     }
   }
 }
