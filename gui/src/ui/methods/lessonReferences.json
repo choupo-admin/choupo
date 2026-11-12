@@ -2488,6 +2488,100 @@
           }
         }
       ]
+    },
+    "electrolyte-models": {
+      "references": [
+        {
+          "text": "Hamer, W. J.; Wu, Y.-C. (1972). Osmotic Coefficients and Mean Activity Coefficients of Uni-univalent Electrolytes in Water at 25°C. J. Phys. Chem. Ref. Data 1(4), 1047–1100.",
+          "doi": "10.1063/1.3253108",
+          "note": "The evaluated NaCl and KCl tables (Tables 16 and 28) the page compares every model with.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1063/1.3253108: authors, title, container, volume, pages and year matched (electrolyte-models EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Goldberg, R. N.; Nuttall, R. L. (1978). Evaluated activity and osmotic coefficients for aqueous solutions: The alkaline earth metal halides. J. Phys. Chem. Ref. Data 7(1), 263–310.",
+          "doi": "10.1063/1.555569",
+          "note": "The evaluated CaCl2 table (Table 20).",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1063/1.555569: authors, title, container, volume, pages and year matched (electrolyte-models EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Goldberg, R. N. (1981). Evaluated activity and osmotic coefficients for aqueous solutions: thirty-six uni-bivalent electrolytes. J. Phys. Chem. Ref. Data 10(3), 671–764.",
+          "doi": "10.1063/1.555646",
+          "note": "The evaluated Na2SO4 table.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1063/1.555646: authors, title, container, volume, pages and year matched (electrolyte-models EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Davies, C. W. (1938). The extent of dissociation of salts in water. Part VIII. An equation for the mean ionic activity coefficient of an electrolyte in water, and a revision of the dissociation constants of some sulphates. J. Chem. Soc., 2093–2098.",
+          "doi": "10.1039/JR9380002093",
+          "note": "Davies' equation: the limiting law with one fixed correction for every salt.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1039/JR9380002093: author, title, container, page and year matched (electrolyte-models EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Pitzer, K. S. (1973). Thermodynamics of electrolytes. I. Theoretical basis and general equations. J. Phys. Chem. 77, 268-277.",
+          "doi": "10.1021/j100621a026",
+          "note": "The virial form of ln gamma behind Pitzer's model.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/j100621a026: author, title, container, volume, pages and year matched (electrolyte-models EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Pitzer, K. S.; Mayorga, G. (1973). Thermodynamics of electrolytes. II. Activity and osmotic coefficients for strong electrolytes with one or both ions univalent. J. Phys. Chem. 77(19), 2300–2308.",
+          "doi": "10.1021/j100638a009",
+          "note": "The single-salt form with b = 1.2 and alpha = 2.0 the engine evaluates.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/j100638a009: authors, title, container, volume, pages and year matched (electrolyte-models EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Chen, C.-C.; Evans, L. B. (1986). A local composition model for the excess Gibbs energy of aqueous electrolyte systems. AIChE J. 32(3), 444–454.",
+          "doi": "10.1002/aic.690320311",
+          "note": "The electrolyte-NRTL model, and the source of the catalogue's water-NaCl parameters.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/aic.690320311: authors, title, container, volume, pages and year matched (electrolyte-models EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Harvie, C. E.; Møller, N.; Weare, J. H. (1984). The prediction of mineral solubilities in natural waters: the Na-K-Mg-Ca-H-Cl-SO4-OH-HCO3-CO3-CO2-H2O system to high ionic strengths at 25 °C. Geochim. Cosmochim. Acta 48, 723-751.",
+          "doi": "10.1016/0016-7037(84)90098-X",
+          "note": "The multi-salt Pitzer assembly (pitzerHMW) step 5 points to for mixtures.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0016-7037(84)90098-X: authors, title, container, volume, pages and year matched (electrolyte-models EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Edwards, T. J.; Maurer, G.; Newman, J.; Prausnitz, J. M. (1978). Vapor-liquid equilibria in multicomponent aqueous solutions of volatile weak electrolytes. AIChE J. 24(6), 966–976.",
+          "doi": "10.1002/aic.690240605",
+          "note": "The model (edwardsPitzer) step 5 points to for dissolved NH3, CO2 and H2S.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/aic.690240605: authors, title, container, volume, pages and year matched (electrolyte-models EduTool)",
+            "date": "2026-11-12"
+          }
+        }
+      ]
     }
   }
 }

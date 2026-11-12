@@ -79,7 +79,8 @@ export type MethodToolId =
   | "correlation-simplicity" | "data-reconciliation" | "solvent-mixture"
   | "sines-pta" | "ip-strategy" | "tree-of-chemistry" | "patent-expiry"
   | "economics-errors" | "demand-forecast" | "plant-cost" | "plant-running-cost"
-  | "site-process-price" | "campaign-plan" | "stack-dispersion" | "residue-curves";
+  | "site-process-price" | "campaign-plan" | "stack-dispersion" | "residue-curves"
+  | "electrolyte-models";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -870,6 +871,31 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "six ternary chloride systems and where charge makes mixing "
       + "matter, and cooling a saturated brine to crystallise KCl.",
     theory: "ch:pitzer-hmw",
+  },
+  //  CHOOSING AN ELECTROLYTE MODEL (scope approved by Vitor, relayed by the
+  //  coordinator, 2026-11-12).  ENGINE: Pitzer and eNRTL through the package a
+  //  unit declares (electrolyteActivity), Davies through the speciation solver
+  //  on free ions and with the catalogue's ion pairs, one operation per
+  //  molality, plus MgSO4 under both for the refusal.  PAGE: the limiting
+  //  law, phi and Pi from a_w, deviations from the tree's measured tables
+  //  (gui/src/case/electrolyteModels.ts).  25 C only, by the scope.
+  {
+    id: "electrolyte-models", blurb: "Compare Davies, Pitzer and eNRTL on one salt against measurement.",
+    label: "Choosing an electrolyte activity model",
+    discipline: "Property data & parameters", kind: "selection", status: "live",
+    origins: ["engine", "page", "reference", "assumption"],
+    teaches: "Which activity model to declare for a solution of salts, and "
+      + "what each alternative loses: the Debye-Hückel limit every model "
+      + "shares, drawn alone against measurement; what Davies (a fixed "
+      + "correction, charge only), Pitzer (short-range ion-pair virial terms) "
+      + "and eNRTL (local composition) add to it; the same salt -- NaCl, KCl, "
+      + "CaCl2 or Na2SO4 -- under each model against its evaluated activity "
+      + "and osmotic coefficients at 25 °C, saying which comparisons are "
+      + "in-sample; the difference as the osmotic pressure a membrane must "
+      + "overcome; the choice as four questions (acid gases, a second "
+      + "solvent, a second salt, the ionic strength); and the engine's "
+      + "refusal, by name, of a pair the catalogue lacks.",
+    theory: "ch:electrolytes",
   },
   {
     id: "mccabe", blurb: "Count the stages a reflux ratio buys.", label: "Distillation (McCabe-Thiele)",
