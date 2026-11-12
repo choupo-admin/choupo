@@ -924,3 +924,27 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   built yet; the first candidates, to be put to Vitor: a residue-curve map
   page (azeotropic distillation), and the guide entries of the two pages
   you are mounting now (C322, C334) if your branch has not written them.
+- [open] cloud -> laptop, 2026-11-12 UTC: FIRST REVIEW UNDER THE MATRIX
+  FRAME, the catalogue pairs out of sample (C362 item 2), is on main:
+  docs/reviews/2026-11-12-pairs-out-of-sample/REPORT.md, with its scripts
+  and tables; findings in docs/reviews/LEDGER.tsv (you fill status and
+  commit).  Measured at 84557436e; I reproduced the kernel check and both S2
+  findings myself.  RESULT: the three activity-model kernels agree with an
+  independent implementation to 4.9e-12 in ln gamma; inside their span the
+  tested records predict infinite-dilution gamma at the scatter between
+  laboratories (factor 1.13 against 1.11) and ternary bubble points to
+  0.24 K / 0.97 % (median); outside the span gamma misses by a factor 1.8,
+  and the bubble-T pipeline records under-predict a dilute alcohol in a
+  hydrocarbon by about 2.  The in-sample grade does not separate clean from
+  warning out of sample.  WHAT I ASK OF YOU: (1) PO-01 (S2): an
+  infinite-dilution gamma outside a pair's span is published in silence
+  (the span guard skips x = 0); announce it at least in the ops whose
+  subject is that value.  (2) PO-02 (S2): a bubble-point solve announces as
+  `accepted` the extrapolations of its starting guess (387.9 K announced,
+  answer 365.34 K); frame the search so those read `trial`, or announce at
+  the answer.  (3) PO-03 (S3): three UNIQUAC records declare no validity
+  span.  (4) `verify_kernels.py` needs no archive and can become a gate and
+  the first VERIFIED rows of maturity_evidence.tsv (proposed rows:
+  evidence.tsv in that directory).  (5) a design note for you and Vitor, not
+  a defect: a b/T pair fitted on bubble temperatures alone extrapolates
+  badly below its span; the records already say where their span ends.

@@ -1,0 +1,37 @@
+group	nRecordsOrSystems	nPoints	nPointsInSpan	median_abs_err	p90_abs_err	median_abs_err_inSpan	p90_abs_err_inSpan
+A gamma-inf |d ln gamma| | NRTL | pipeline=bubbleT | inSample=clean | fitGrade=warning | caps=singleLaboratory	2	10	2	0.7033	0.9499	0.2826	0.4173
+A gamma-inf |d ln gamma| | NRTL | pipeline=bubbleT | inSample=warning | fitGrade=warning | caps=none	2	10	0	0.5005	1.0410		
+A gamma-inf |d ln gamma| | NRTL | pipeline=earlyCase | inSample=none | fitGrade=none | caps=none	5	61	31	0.2526	0.6517	0.1624	0.3430
+A gamma-inf |d ln gamma| | NRTL | pipeline=literature | inSample=none | fitGrade=none | caps=none	1	22	20	0.0797	0.2689	0.0774	0.1274
+A gamma-inf |d ln gamma| | UNIQUAC | pipeline=bubbleT | inSample=clean | fitGrade=warning | caps=singleLaboratory	2	10	2	0.7563	1.0335	0.2931	0.4407
+A gamma-inf |d ln gamma| | UNIQUAC | pipeline=bubbleT | inSample=warning | fitGrade=warning | caps=none	2	9	0	0.3212	0.9304		
+A gamma-inf |d ln gamma| | UNIQUAC | pipeline=literature | inSample=none | fitGrade=none | caps=none	1	5	0	0.0842	0.1355		
+A gamma-inf |d ln gamma| | Wilson | pipeline=bubbleT | inSample=clean | fitGrade=warning | caps=singleLaboratory	2	10	2	0.6811	0.9053	0.2901	0.4167
+A gamma-inf |d ln gamma| | Wilson | pipeline=bubbleT | inSample=warning | fitGrade=warning | caps=none	1	5	0	0.6010	0.8601		
+A gamma-inf |d ln gamma| all models | inSample=clean	6	30	6	0.7044	1.0193	0.2901	0.4643
+A gamma-inf |d ln gamma| all models | inSample=none (not a C283/C291 pipeline record)	7	88	51	0.1721	0.6133	0.1152	0.3194
+A gamma-inf |d ln gamma| all models | inSample=warning	5	24	0	0.4955	0.9939		
+B ternary A bubble T [K] | NRTL | worstInSample=clean | articleAlsoInBinaryEvidence=True	5	218	73	0.2336	0.6837	0.2647	0.5136
+B ternary A bubble T [K] | NRTL | worstInSample=severe | articleAlsoInBinaryEvidence=False	1	42	5	0.5224	1.1468	0.6808	1.2057
+B ternary A bubble T [K] | NRTL | worstInSample=severe | articleAlsoInBinaryEvidence=True	6	297	126	0.4396	1.4643	0.3593	0.8569
+B ternary A bubble T [K] | NRTL | worstInSample=warning | articleAlsoInBinaryEvidence=False	1	53	21	0.2485	0.9132	0.1317	0.3151
+B ternary A bubble T [K] | NRTL | worstInSample=warning | articleAlsoInBinaryEvidence=True	5	626	197	0.1494	0.6700	0.1433	0.5127
+B ternary A bubble T [K] | UNIQUAC | worstInSample=clean | articleAlsoInBinaryEvidence=True	2	54	0	0.2315	2.4537		
+B ternary A bubble T [K] | UNIQUAC | worstInSample=warning | articleAlsoInBinaryEvidence=True	2	53	0	0.2374	1.5298		
+B ternary A bubble T [K] | Wilson | worstInSample=clean | articleAlsoInBinaryEvidence=True	5	218	73	0.2667	0.7107	0.2986	0.5658
+B ternary A bubble T [K] | Wilson | worstInSample=warning | articleAlsoInBinaryEvidence=True	5	138	0	0.3373	0.9234		
+B ternary B bubble P [relative] | NRTL | worstInSample=clean | articleAlsoInBinaryEvidence=False	1	78	78	0.0069	0.0163	0.0069	0.0163
+B ternary B bubble P [relative] | NRTL | worstInSample=clean | articleAlsoInBinaryEvidence=True	6	463	309	0.0126	0.0726	0.0100	0.0173
+B ternary B bubble P [relative] | NRTL | worstInSample=severe | articleAlsoInBinaryEvidence=True	2	154	154	0.0099	0.0215	0.0099	0.0215
+B ternary B bubble P [relative] | NRTL | worstInSample=warning | articleAlsoInBinaryEvidence=True	2	88	0	0.0123	0.0838		
+B ternary B bubble P [relative] | UNIQUAC | worstInSample=clean | articleAlsoInBinaryEvidence=False	1	78	78	0.0127	0.0212	0.0127	0.0212
+B ternary B bubble P [relative] | UNIQUAC | worstInSample=clean | articleAlsoInBinaryEvidence=True	3	231	77	0.0120	0.0667	0.0054	0.0222
+B ternary B bubble P [relative] | UNIQUAC | worstInSample=warning | articleAlsoInBinaryEvidence=True	1	78	0	0.0144	0.0291		
+B ternary B bubble P [relative] | Wilson | worstInSample=clean | articleAlsoInBinaryEvidence=False	1	78	78	0.0097	0.0201	0.0097	0.0201
+B ternary B bubble P [relative] | Wilson | worstInSample=clean | articleAlsoInBinaryEvidence=True	6	463	309	0.0079	0.0427	0.0067	0.0161
+B ternary A bubble T [K] all models | worstInSample=clean	12	490	146	0.2473	0.7612	0.2821	0.5444
+B ternary A bubble T [K] all models | worstInSample=severe	7	339	131	0.4514	1.3205	0.3618	0.8739
+B ternary A bubble T [K] all models | worstInSample=warning	13	870	218	0.1928	0.8864	0.1430	0.4809
+B ternary B bubble P [relative] all models | worstInSample=clean	18	1391	929	0.0095	0.0477	0.0081	0.0187
+B ternary B bubble P [relative] all models | worstInSample=severe	2	154	154	0.0099	0.0215	0.0099	0.0215
+B ternary B bubble P [relative] all models | worstInSample=warning	3	166	0	0.0133	0.0540		

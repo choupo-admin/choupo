@@ -1,0 +1,12 @@
+rule	count	unit
+blocks: two compounds, an activity-coefficient property	9501	blocks
+accepted blocks	529	blocks
+R1 a compound not in the catalogue (no InChIKey join)	8803	blocks
+R5 not at infinite dilution (x is a variable or not stated): a finite-concentration activity coefficient	152	blocks
+R3 the activity coefficient is of a GAS phase	4	blocks
+accepted blocks (standard state labelled 'Infinite dilution solute', values != 1: read as Raoult)	13	blocks
+points in accepted blocks	2593	points
+points kept	2593	points
+(solute, solvent) systems kept	475	systems
+unordered catalogue pairs kept	467	pairs
+pairs with a point outside the span: NOT announced	18	pair-model runs
