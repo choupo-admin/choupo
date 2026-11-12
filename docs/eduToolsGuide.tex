@@ -1183,6 +1183,167 @@ nothing about \emph{what kind}.
 \end{tryit}
 
 % ---------------------------------------------------------------------
+\subsection{Adsorption isotherms from laboratory data}\label{sec:edu-adsorption-isotherms}
+
+\declaredanchor{sec:adsorption-isotherm-fitting}
+
+\noindent\textit{\small Tool:} \code{tool=adsorption-isotherms}.
+\textit{\small Case it starts from:} none --- the page fits points it
+generates or points you paste, and runs no engine.
+
+\subsubsection*{The question}
+
+\emph{I have laboratory equilibrium points $(c, q)$ for a solute on an
+adsorbent; which isotherm describes them, with what parameters, and how far
+can I trust it?}
+
+The page opens on what an isotherm is --- the loading on the solid against
+the concentration left in the liquid, at one temperature, each point read
+from a flask balance $q = V(c_0-c)/M$ --- and on the three shapes
+(favourable, linear, unfavourable) and what each does to a front in a bed,
+which is where the \code{breakthrough} page continues.  It then derives the
+three models: linear $q = Kc$; Langmuir $q = q_{\max}c/(K_L+c)$ from a site
+balance, with its equivalent affinity form $b = 1/K_L$ and its Henry limit
+$q_{\max}/K_L$; and Freundlich $q = K_F c^{n}$ (the exponent written as the course text writes it; Seader writes it $1/n$), which has neither a Henry
+limit nor a plateau.
+
+\subsubsection*{What the page computes, and what it does not}
+
+Everything is the page's own arithmetic, marked \emph{page} on every panel.
+The engine carries Henry and Langmuir isotherms for a gas, in partial
+pressure, and fits them to measured $(T, p, q)$ data; it has no
+liquid-phase isotherm and no Freundlich model, and handing it a
+concentration as a pressure would be a units lie.  The page fits each model
+two ways: the classical straight lines ($1/q$ against $1/c$; $\log q$
+against $\log c$) and a direct least-squares fit on $q$ by a hand-written
+Levenberg--Marquardt, with absolute or relative residuals.  It prints each
+parameter with its standard error from $s^2(J^{\mathsf T}WJ)^{-1}$, the
+root-mean-square residual, the largest relative error, a residual plot,
+and a diagnostic of whether the measured range can tell the models apart:
+the decades of $c$ spanned, the fraction of the fitted Langmuir plateau
+reached at the highest and the lowest point, and how many standard errors
+the Freundlich exponent lies from 1.  Every plot shades the concentrations
+outside the measured range.  Finally the fitted isotherm is used once: the
+single-stage batch balance $Vc_0 + Mq_0 = Vc + Mq$ drawn as an operating
+line, giving the dose for a target removal, with a warning when the target
+lies outside the data.  The design record
+\file{docs/design/adsorption-isotherms-from-laboratory-data.md} holds the
+measurements and a proposal for the engine side.
+
+\subsubsection*{The examples are synthetic}
+
+Three example sets are \emph{generated} by the page, not measured, and are
+labelled so: each states its model, its parameters, its concentrations and
+its noise (multiplicative, $\exp(\sigma e)$ with a seeded standard normal
+$e$), so the fit can be checked against the truth.  An organic solute on
+activated carbon, Freundlich-shaped over four decades of $c$; a metal ion on
+a chelating resin, strongly favourable Langmuir with a clear plateau; and a
+trace solute generated from a Langmuir isotherm but measured only far below
+$K_L$, where nothing in the data can tell the three models apart.  Your own
+points are pasted as two columns, in a unit chosen from a short list.
+
+\begin{tryit}
+On the activated-carbon set, compare the Langmuir straight-line fit with the
+direct one: the double-reciprocal line gives a capacity about four times
+smaller (13.5 against 58.5 mg/g), because the lowest concentrations dominate
+it, and neither Langmuir fit describes a set that has no plateau --- the
+Freundlich RMS is about a fifth of the direct Langmuir's.  On the trace-solute set the
+double-reciprocal line has $R^2 = 0.999$ and still returns $q_{\max} = 124$
+mg/g where the direct fit gives $64 \pm 29$: a high $R^2$ on the transformed
+variables says the points lie near a line, not that the capacity is known.
+Read that standard error and the diagnostic sentence, then switch the
+residuals from absolute to relative and watch the Freundlich exponent move
+towards or away from 1.
+\end{tryit}
+
+\begin{pitfall}
+\textbf{Reading the smallest RMS as the right model.}  A two-parameter
+model always fits at least as well as a one-parameter one.  The residual
+plot --- a run of one sign then the other --- and the diagnostic of the
+measured range say more than the RMS alone.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+One temperature: no heat of adsorption, no van't Hoff extrapolation.  One
+solute: no competition.  Equilibrium only: no uptake rate.  One batch
+stage: no multistage dosing and no column.  The standard errors rest on the
+chosen error model and on local linearity.
+
+% ---------------------------------------------------------------------
+\subsection{Batch adsorption in a stirred tank}\label{sec:edu-batch-adsorption}
+
+\declaredanchor{sec:batch-adsorption-stirred-tank}
+
+\noindent\textit{\small Tool:} \code{tool=batch-adsorption}.
+\textit{\small Case it starts from:} none --- the page works on an isotherm
+you choose and runs no engine.
+
+\subsubsection*{The question}
+
+\emph{I have a tank of solution and an adsorbent with a known isotherm; how
+much adsorbent do I need, is it better split into stages, and how long does
+it take?}
+
+The isotherm is one of three example systems with the page's own
+illustrative numbers (a Langmuir dye on powdered carbon, a Freundlich
+aromatic on granular carbon, a linear trace solute), or any linear, Langmuir
+or Freundlich isotherm you type --- for instance the one fitted on the
+\code{adsorption-isotherms} page.  One basis throughout: $c$ in mg/L, $q$ in
+mg/g, $V$ in L, $M$ in g.
+
+\subsubsection*{What the page computes, and what it does not}
+
+Everything is the page's own arithmetic, marked \emph{page}.  The engine's
+batch adsorber and fixed bed contact a gas, in partial pressure, with Henry or
+Langmuir isotherms; it has no liquid-phase adsorption and no Freundlich model.
+The isotherm functions are the \code{adsorption-isotherms} page's, imported,
+not copied.  Step by step: the equilibrium of one stage as the crossing of the
+operating line (slope $-V/M$) with the isotherm, found by bisection on a
+bracket that always holds and printed beside the closed form where one exists
+(linear, Langmuir); the dose for a target removal, drawn against the removal on
+a logarithmic axis, with a pre-loaded adsorbent's equilibrium floor refused by
+name; one to four stages in crossflow and in countercurrent, each with its
+mass balance recomputed, and the best split of a fixed total between two
+crossflow stages; the uptake in time with the whole resistance in a liquid
+film, $k_L$ from $\mathit{Sh} = 2$ (the still-liquid bound, which a stirred tank
+exceeds by one to two orders of magnitude, so the times printed by default are an
+upper bound; the student may replace it), $a$ from the particle density, in closed form for a linear isotherm
+and integrated numerically (fourth-order Runge--Kutta) otherwise, with the time
+to a target at five particle sizes; and the Biot number with Glueckauf's
+series resistance, with a warning when diffusion inside the particle makes the
+film-only times too short.  The design record
+\file{docs/design/batch-adsorption-in-a-stirred-tank.md} holds the
+measurements and a proposal for the engine side.
+
+\begin{tryit}
+On the dye example with 50~g in 100~L, read the best two-stage split: about
+69\,\% of the carbon in the first stage, leaving 0.92~mg/L against 1.15~mg/L for
+half and half.  Switch to the linear example and watch the optimum return to
+exactly one half.  Then, in the kinetic step, halve the particle diameter and
+check that every time falls by four --- the still-liquid result, which holds
+because $\mathit{Sh}$ is fixed --- and then declare $\mathit{Sh}=100$ to see the
+times a stirred tank gives.
+\end{tryit}
+
+\begin{pitfall}
+\textbf{Reading $\mathit{Sh}=2$ as a stirred tank.}  It is a sphere in still
+liquid, and a stirred tank's Sherwood number is tens to a few hundred for
+particles of this size (Treybal's Eq.~11.29 gives about 190 for 0.5~mm at
+1~kW/m$^3$; Seader's Example~15.10 has $k_L = 5\times10^{-5}$~m/s), so the
+default times are one to two orders of magnitude too long.  And the Biot number
+does not fall as the particle shrinks \emph{while $\mathit{Sh}$ is fixed}: at
+$\mathit{Sh} = 2$ it is $D_{AB}/D_e$, larger than one for every porous particle;
+in a tank $\mathit{Sh}$ grows with the diameter and so does $\mathit{Bi}$.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+One temperature and no heat of adsorption; one solute; a perfectly mixed
+tank; no diffusion solved inside the particle (only flagged); no
+continuous column, which is the \code{breakthrough} page.
+
+% ---------------------------------------------------------------------
 \subsection{Adsorption: sizing a bed from a breakthrough curve (LUB)}\label{sec:edu-lub-scaleup}
 
 \declaredanchor{ch:adsorption}
@@ -2170,6 +2331,94 @@ The mixing parameters $\theta_{\mathrm{Na,K}}$ and $\psi_{\mathrm{Na,K,Cl}}$
 are fitted to the measured NaCl--KCl--H$_2$O solubility branches at one
 temperature and tested on the temperatures held out.
 \declaredanchor{ch:pitzer-hmw}
+
+\subsection{Choosing an electrolyte activity model}\label{sec:edu-electrolyte-models}
+
+\noindent\textit{\small Tool:} \code{tool=electrolyte-models}.  \textit{\small
+Case it starts from:} none in the corpus --- the page writes its own props
+cases and runs them with \code{choupoProps} in the browser.
+
+\subsubsection*{The question}
+
+\emph{I have a solution with salts; which activity model should I declare,
+and what do I lose with the others?}
+
+The page starts from the term every model shares, the Debye--Hückel limit
+$\ln\gamma_\pm = -3A_\phi\lvert z_+z_-\rvert\sqrt{I}$ with the engine's
+$A_\phi = 0.3915$ at 25\,\textdegree C, drawn alone against the measured table
+of the salt the student picks.  It then writes what Davies (a fixed correction,
+charge only), Pitzer (short-range virial terms per cation--anion pair, with a $\beta^{(2)}$ term in the records that carry one) and
+eNRTL (a local-composition term with water and the salt as species) add, each
+equation read from the source file it names.  The student picks NaCl, KCl,
+CaCl$_2$ or Na$_2$SO$_4$; the page draws $\gamma_\pm$ and $\phi$ under each
+model against the critically evaluated values of Hamer and Wu (1972),
+Goldberg and Nuttall (1978) and Goldberg (1981) that the tree carries in
+\file{data/curation/electrolytes/}, tabulates the mean and worst deviation,
+turns the water activity of each model into the osmotic pressure a membrane
+must overcome, asks four questions (dissolved acid gases, a second solvent, a
+second salt, the ionic strength) whose answers name a model, and ends with
+MgSO$_4$, for which the catalogue holds a Pitzer record and no eNRTL record.
+
+\subsubsection*{What the engine says, and what the page computes}
+
+The engine computes every model value.  Pitzer and eNRTL run through the
+package a process unit declares (\code{formulation electrolyteGammaPhi} with
+\code{activityModel \{ model Pitzer; \}} or \code{model eNRTL;}) and the props
+operation \code{electrolyteActivity}, one operation per molality; Davies runs
+through the speciation solver (\code{speciate}, \code{activityModel davies}),
+once with the network restricted to water's dissociation and once with every
+equilibrium the catalogue holds for the ions --- for Na$_2$SO$_4$ that forms
+NaSO$_4^-$.  Every model is asked at every measured molality, so no
+deviation is interpolated.  The page computes, and prints with its constants:
+the limiting law, the stoichiometric mean $\gamma_\pm$ of the run with ion
+pairs from the free-ion activities the engine wrote, Davies' $\phi$ from the
+engine's $a_w$, the measured $a_w$ from the table's $\phi$, the osmotic
+pressure $\Pi = -(RT/\bar V_w)\ln a_w$ with the engine's
+$\bar V_w = 1.807\times10^{-5}$\,m$^3$/mol, and the deviations.  Whether a
+model was regressed to the table on screen is read from the record's own
+\code{source} and \code{fittedInCase} lines: the eNRTL records of KCl,
+CaCl$_2$ and Na$_2$SO$_4$ were, so those comparisons are marked in-sample,
+and for CaCl$_2$ and Na$_2$SO$_4$ the rows the regression held out are drawn
+open and scored apart.  The MgSO$_4$ eNRTL run is shown as the engine's
+refusal, verbatim.  The design record
+\file{docs/design/choosing-an-electrolyte-model.md} holds the measured
+numbers for each salt.
+
+\subsubsection*{What to vary, what to watch}
+
+\begin{tryit}
+On NaCl, read where Davies leaves the table: within 0.3\,\% at
+$I = 0.1$\,mol/kg and about 8\,\% at $I = 0.5$.  Switch to Na$_2$SO$_4$:
+Davies on free ions is 21\,\% off already at the first row ($I = 0.3$), and the
+curve with the catalogue's NaSO$_4^-$ ion pair comes back to within 3\,\% up to
+$I = 0.6$\,mol/kg --- the specific interaction Davies lacks, declared as
+chemistry --- and leaves again above it (+19\,\% at $I = 1.8$).  On CaCl$_2$, compare
+Pitzer and eNRTL: eNRTL was fitted to this very table and still misses it by
+up to 4.6\,\%.  In step~4, pick 1\,mol/kg of NaCl: Davies' water is ideal, so
+its osmotic pressure is the ideal one, van~'t Hoff's law in its molality form (pure-water molar volume, not the solution's molarity).
+\end{tryit}
+
+\begin{pitfall}
+\textbf{A small error on a fitted table.}  An error on the points a model was
+regressed to shows that the fit worked, not that the model predicts; the
+page says which comparisons are in-sample.  The Pitzer records and the NaCl eNRTL
+record are not regressed to a table in this tree, but their authors fitted them to
+measurements of the same salts at 25\,\textdegree C, so their small errors there
+also show the quality of a fit, not a prediction.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+Everything is at 25\,\textdegree C, with no temperature control: 96 of the
+catalogue's 99 Pitzer pair records hold their parameters at 25\,\textdegree C
+only, and the single-salt eNRTL scales its two energies by $298.15/T$ and
+nothing else (the engine's own simplification, not the form of Chen and Evans, 1986, eq.~45); neither is tested here away from 25\,\textdegree C.  The
+measured tables start at 0.1\,mol/kg.  Only single salts in water are compared
+with measurements; \code{pitzerHMW}, the mixed-solvent eNRTL and
+\code{edwardsPitzer} appear only as answers in step~5.  Davies is drawn up to
+$I = 2$\,mol/kg.  The osmotic pressure is the thermodynamic minimum, with the
+pure-water molar volume and the bulk composition.
+\declaredanchor{ch:electrolytes}
 
 \subsection{Residue curve maps: azeotropic and extractive distillation}\label{sec:edu-residue-curves}
 

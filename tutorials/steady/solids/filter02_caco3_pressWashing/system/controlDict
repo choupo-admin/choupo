@@ -1,0 +1,50 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  filter02_caco3_pressWashing
+
+  A PLATE-AND-FRAME PRESS WITH THROUGH-WASHING, held to the printed worked
+  examples of Geankoplis, Hersel & Lepek (5th ed.), Examples 24.2-1, 24.2-2
+  and 24.2-3, pp. 1083-1088: the CaCO3 slurry of the laboratory test (alpha
+  = 1.863e11 m/kg, R_m = 10.63e10 1/m at 338 kN/m2, c_S = 23.47 kg/m3 of
+  filtrate) in a 20-frame press of 17.46 m2; 3.37 m3 of filtrate per cycle;
+  through-washing with wash water equal to 10 % of the filtrate; 20 min to
+  clean.
+
+  THE BOOK'S ANSWERS: K_p = 37.93 s/m6 and B = 16.10 s/m3 (p. 1086); the
+    filtration time 269.7 s (eq. 24.2-17, p. 1086); the washing rate
+    1.737e-3 m3/s and time 194.0 s (eq. 24.2-20, p. 1087); the cycle
+    27.73 min (p. 1088).
+  THE STEADY REPRESENTATION: the streams are cycle-averaged; the press's
+    cycle and the number of presses that pass the average feed are results
+    (docs/design/c361-solids-processing.md 8.3).  The feed is SET to what
+    one press passes on the book's cycle (3.37 m3 of filtrate per 27.73 min,
+    2.0255e-3 m3/s), so `pressesRequired` near 1 is a consistency check of
+    the cycle arithmetic, not an anchor.  The wash flow is 10 % of the
+    filtrate's, which makes 0.337 m3 per cycle as in the book.
+  WHAT IS NOT THE BOOK'S:
+    * m = 2.0 kg wet / kg dry: Examples 24.2-1 to -3 do not give the cake's
+      moisture; Example 24.2-4 gives m = 2.0 for "a CaCO3 slurry as given in
+      Example 24.2-1", and it is taken here.  With it the feed's c_x =
+      c_S / (rho + m c_S) = 0.02248 reproduces c_S = 23.47.
+    * the viscosity and density are the package's (Vogel 8.89e-4 Pa s against
+      the book's 8.937e-4; K_p and B scale with it).
+    * the solute left in the cake: water washes water here, so the washing
+      law (`displacement`) has nothing to remove; the wash ratio N is shown.
+      No book in the folder prints a washing-efficiency law with constants
+      (design record 8.6).
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "A plate-and-frame filter press with through-washing on Geankoplis's CaCO3 slurry (Examples 24.2-1 to 24.2-3): filtration time, washing time and cycle time on the cycle-averaged steady balance.";
+verbosity     3;
+citations
+(
+    "Geankoplis, C.J.; Hersel, A.A.; Lepek, D.H. Transport Processes and Separation Process Principles, 5th ed. Prentice Hall (year not read on the page). Section 24.2, eqs. 24.2-13 to 24.2-20, Examples 24.2-1 to 24.2-4, pp. 1078-1090."
+    "Ruth, B.F. (1935) Studies in filtration III. Derivation of general filtration equations. Ind. Eng. Chem. 27(6), 708-723 (the two-resistance law as given by Geankoplis; the paper is in the literature folder and was not read for this case)."
+);

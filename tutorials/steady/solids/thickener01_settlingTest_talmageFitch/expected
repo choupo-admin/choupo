@@ -1,0 +1,55 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+# =============================================================================
+#  NO ANCHOR (C361 slice 4).  No printed Talmage-Fitch worked example exists
+#  in the literature folder (searched list in controlDict); the settling data
+#  are Geankoplis Problem 30.1-11, whose answer is not printed.  Every row
+#  below is SELF-RECORDED: it pins that the answer has not moved, not that
+#  it is right.
+#
+#  What is held beyond the golden, by identity:
+#    anchor_TFequalsCC_dev  -- Coe-Clevenger at the compression layer equals
+#      the Talmage-Fitch tangent area (Wills eq. 15.6 from 15.5, p. 387): 0;
+#    componentMassClosure   -- 0.
+#  Hand check of the construction (Python, the same three-point slope):
+#    v(1.75 h) = 0.058333 m/h, H_i = 0.252083 m, C = 357.02 kg/m3,
+#    t_u = (0.252083 - 0.128571)/0.058333 = 2.1173 h,
+#    A = 10 kg/s x 7622.4 s / (250 x 0.36) = 846.94 m2  -- the engine's.
+# =============================================================================
+stream  feed                   F                2.10920555481    1e-4
+stream  feed                   T                298.15           1e-4
+stream  overflow               F                1.42292395741    1e-4
+stream  overflow               T                298.15           1e-4
+stream  underflow              F                0.686281597398   1e-4
+stream  underflow              T                298.15           1e-4
+kpi     thickener              anchor_TFequalsCC_dev 0                1e-4
+kpi     thickener              areaCoeClevenger_m2 1102.25563903    1e-4
+kpi     thickener              areaTalmageFitch_m2 846.938775459    1e-4
+kpi     thickener              area_m2          846.938775459    1e-4
+kpi     thickener              coeClevenger_C_kg_m3 533.029612756    1e-4
+kpi     thickener              coeClevenger_v_m_s 4.05982905983e-06 1e-4
+kpi     thickener              componentMassClosure 0                1e-4
+kpi     thickener              compressionTime_s 6300             1e-4
+kpi     thickener              compression_C_kg_m3 357.024793388    1e-4
+kpi     thickener              compression_H_m  0.15             1e-4
+kpi     thickener              compression_v_m_s 1.62037037037e-05 1e-4
+kpi     thickener              curveCrossesHu_s 10157.1428571    1e-4
+kpi     thickener              feedConcentration_kg_m3 250.012811921    1e-4
+kpi     thickener              liquidMassFlow_kg_s 36.1974022142    1e-4
+kpi     thickener              overflowLiquid_kg_s 25.6339750927    1e-4
+kpi     thickener              rho_liquid       996.956281129    1e-4
+kpi     thickener              rho_solid        2710             1e-4
+kpi     thickener              solidsMassFlow_kg_s 9.99999999939    1e-4
+kpi     thickener              tangentIntercept_Hi_m 0.252083333333   1e-4
+kpi     thickener              tangentUsed      1                1e-4
+kpi     thickener              testC0_kg_m3     250              1e-4
+kpi     thickener              testH0_m         0.36             1e-4
+kpi     thickener              tu_s             7622.44897959    1e-4
+kpi     thickener              underflowConcentration_kg_m3 700              1e-4
+kpi     thickener              underflowLine_Hu_m 0.128571428571   1e-4
+kpi     thickener              underflowLiquid_kg_s 10.5634271215    1e-4
+kpi     thickener              unitArea_m2_per_tpd 0.980253212396   1e-4
+boundary global                 H_feeds_kW       -696119.686374   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -696119.686374   1e-4

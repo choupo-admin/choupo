@@ -274,6 +274,19 @@ export const SYMBOLS: readonly UnitSymbolSpec[] = [
     path: "M12 10h24v12L28 40h-8l-8-18z M6 15h6 M24 10V4 M24 40v6"
         + " M17 16h14 M19 22h10" },
 
+  { cls: "CakeFilter", label: "cake filter (drum or press)",
+    //  A slurry trough with the drum turning in it; the cake forms on the
+    //  face, the filtrate leaves through the axis.
+    path: "M8 30a16 16 0 0032 0 M12 22a12 12 0 1024 0a12 12 0 10-24 0"
+        + " M24 10V4 M24 34v12 M20 16h8 M16 22h16" },
+  { cls: "Thickener", label: "gravity thickener (settling tank)",
+    //  A shallow cone-bottomed tank with the rake arm and the underflow
+    //  at the apex.
+    path: "M4 14h40 M4 14l8 22h24l8-22 M24 8v22 M14 24h20 M24 36v10 M4 20h-2 M44 20h2" },
+  { cls: "SedimentingCentrifuge", label: "sedimenting centrifuge (bowl)",
+    //  A bowl spinning on its shaft, the solids thrown to the wall.
+    path: "M12 8h24v30l-6 6h-12l-6-6z M24 2v6 M16 14v22 M32 14v22 M20 20v14 M28 20v14" },
+
   //  ---- DRYERS.  Four mechanisms, four shapes.
   { cls: "SprayDryer", label: "spray dryer",
     //  Chamber, ATOMISER at the top, the spray cone under it.
@@ -492,6 +505,9 @@ export const UNIT_CLASS: { readonly [type: string]: string } = {
   classifier: "Classifier",
   screen: "Screen",
   hydrocyclone: "Hydrocyclone",
+  cakeFilter: "CakeFilter",
+  thickener: "Thickener",
+  sedimentingCentrifuge: "SedimentingCentrifuge",
   distillationColumn: "DistillationColumn",
   column: "DistillationColumn",
   absorber: "Absorber",

@@ -1,0 +1,15 @@
+recordType  internalState;
+unit        "BRINE";
+equipment   dynamicCSTR;
+holdup
+{
+    T           298.15;
+    P           250000.0;
+    V           0.2;
+    holdupMolar
+    {
+        water     11.10168701;
+        K         0.004;
+        HTart     0.004;
+    }
+}

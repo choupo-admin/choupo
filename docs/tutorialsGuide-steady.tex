@@ -12353,6 +12353,74 @@ This teaching case uses a CASE-LOCAL synthetic property anchor: cpSolid = 920 J/
 \subsection{solids}
 \grouptheory{solids}
 \clearpage
+\tutentry{centrifuge01\_tubularBowl\_geankoplis}{tutorials/steady/solids/centrifuge01\_tubularBowl\_geankoplis}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (bowl) at (0.0,-0.0) {\textbf{bowl}\\[-1pt]{\tiny sedimentingCentrifuge}};
+  \draw[->] ($(bowl.west)+(-1.05,0.00)$) -- ($(bowl.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(bowl.east)+(0,-0.17)$) -- ($(bowl.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {sediment};
+  \draw[->] ($(bowl.east)+(0,0.17)$) -- ($(bowl.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {centrate};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A tubular-bowl sedimenting centrifuge by Sigma theory, held to Geankoplis Example 30.2-2 (the critical particle diameter 0.746 um at 23 000 rev/min), with the grade efficiency of the uniformly fed bowl applied on the case's size grid.}
+\begin{tutnarrative}
+A TUBULAR-BOWL CENTRIFUGE BY SIGMA THEORY, held to the printed worked example of Geankoplis, Hersel \& Lepek (5th ed.), Example 30.2-2, pp. 1437-1438: particles of 1461 kg/m3 in a solution of 801 kg/m3 and 100 cp; a bowl r\_2 = 0.02225 m, r\_1 = 0.00716 m, b = 0.1970 m at 23 000 rev/min; q = 0.002832 m3/h.
+
+THE BOOK'S ANSWERS (p. 1438): omega = 2410 rad/s (printed rounded; 2 pi 23000/60 = 2408.6); V = pi b (r\_2\textasciicircum{}2 - r\_1\textasciicircum{}2) = 2.747e-4 m3; q\_c = 7.87e-7 m3/s; the critical diameter D\_pc = 0.746 um by eq. 30.2-12 (the particle that starts HALFWAY through the liquid layer); "the settling is in the Stokes' law range" (no Re printed). TWO CUT SIZES, ONE CURVE: Geankoplis's D\_pc is defined by the radial midpoint; Ambler (1959, eq. 28) and de Haan et al. (eq. 9.45) define the 50 \% cut by EQUAL VOLUMES, which is where a uniformly fed bowl captures half of a size. The unit computes the grade curve of the uniformly fed bowl and publishes both: d50 (E = 0.5) and D\_pc, which on that curve has E = (r\_2\textasciicircum{}2 - r\_m\textasciicircum{}2)/(r\_2\textasciicircum{}2 - r\_1\textasciicircum{}2) = 0.628. The anchor is the book's D\_pc; d50 is the curve's. WHAT IS NOT THE BOOK'S: the particle size distribution (the example prints none; a Rosin-Rammler feed, d63 0.8 um, n 1.5, is DECLARED to show the split class by class), the solids content (0.1 \% by volume, dilute, declared), the sediment's solids fraction (0.5, declared), the temperature (298.15 K, read nowhere: the properties are constants).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{bowl}{omega\_rad\_s}{2410}
+\goldrow{kpi}{bowl}{bowlVolume\_m3}{2.747e-4}
+\goldrow{kpi}{bowl}{cutSizeHalfLayer\_Dpc\_um}{0.746}
+\goldrow{stream}{centrate}{F}{6.29453282585e-06}
+\goldrow{stream}{centrate}{T}{298.15}
+\goldrow{stream}{feed}{F}{6.306392e-06}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{stream}{sediment}{F}{1.18591741527e-08}
+\goldrow{stream}{sediment}{T}{298.15}
+\goldrow{kpi}{bowl}{Re\_cut}{9.60198206228e-08}
+\goldrow{kpi}{bowl}{bypass}{0}
+\goldrow{kpi}{bowl}{centrate\_Sv\_m2\_m3}{20432822.2371}
+\goldrow{kpi}{bowl}{centrate\_d10\_um}{0.0900027463102}
+\goldrow{kpi}{bowl}{centrate\_d32\_um}{0.293645191563}
+\goldmore{40}
+\end{tutgolden}
+
+\clearpage
+\tutentry{centrifuge02\_discStack\_sigmaIdentity}{tutorials/steady/solids/centrifuge02\_discStack\_sigmaIdentity}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (stack) at (0.0,-0.0) {\textbf{stack}\\[-1pt]{\tiny sedimentingCentrifuge}};
+  \draw[->] ($(stack.west)+(-1.05,0.00)$) -- ($(stack.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(stack.east)+(0,-0.17)$) -- ($(stack.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {sediment};
+  \draw[->] ($(stack.east)+(0,0.17)$) -- ($(stack.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {centrate};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A disc-stack sedimenting centrifuge by Sigma theory, a declared illustration: the engine's Sigma equals de Haan et al. eq. 9.52 evaluated by hand (9405 m2); no printed or measured result holds it.}
+\begin{tutnarrative}
+One disc-stack clarifier: 100 disc spaces, half angle 40 deg, 6000 rev/min.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{stack}{sigma\_m2}{9405.03}
+\goldrow{kpi}{stack}{cutSize\_d50\_um}{0.37543}
+\goldrow{stream}{centrate}{F}{0.146454797423}
+\goldrow{stream}{centrate}{T}{298.15}
+\goldrow{stream}{feed}{F}{0.153489194444}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{stream}{sediment}{F}{0.00703439702099}
+\goldrow{stream}{sediment}{T}{298.15}
+\goldrow{kpi}{stack}{Re\_cut}{0.000250309170206}
+\goldrow{kpi}{stack}{bypass}{0}
+\goldrow{kpi}{stack}{centrate\_Sv\_m2\_m3}{27464010.1196}
+\goldrow{kpi}{stack}{centrate\_d10\_um}{0.0521091755009}
+\goldrow{kpi}{stack}{centrate\_d32\_um}{0.21846773191}
+\goldrow{kpi}{stack}{centrate\_d50\_um}{0.233936779121}
+\goldmore{37}
+\end{tutgolden}
+
+\clearpage
 \tutentry{circuit01\_herbstFuerstenau\_closedCircuit}{tutorials/steady/solids/circuit01\_herbstFuerstenau\_closedCircuit}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -12389,6 +12457,74 @@ Herbst \& Fuerstenau's design circuit (1980, Fig. 2 and pp. 18-24): fresh feed +
 \goldrow{stream}{product}{T}{327.731851109}
 \goldrow{stream}{recycle}{F}{0.651587905939}
 \goldmore{91}
+\end{tutgolden}
+
+\clearpage
+\tutentry{filter01\_caco3\_rotaryDrum}{tutorials/steady/solids/filter01\_caco3\_rotaryDrum}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (drum) at (0.0,-0.0) {\textbf{drum}\\[-1pt]{\tiny cakeFilter}};
+  \draw[->] ($(drum.west)+(-1.05,0.00)$) -- ($(drum.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {slurry};
+  \draw[->] ($(drum.east)+(0,-0.17)$) -- ($(drum.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {cake};
+  \draw[->] ($(drum.east)+(0,0.17)$) -- ($(drum.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {filtrate};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A continuous rotary vacuum drum filter on a compressible CaCO3 cake (alpha = 4.37e9 dp\textasciicircum{}0.3), held to Geankoplis Example 24.2-4: 0.778 kg/s of slurry, 33 \% submergence, 250 s cycle, 67 kPa -- the filter area.}
+\begin{tutnarrative}
+One rotary drum, Geankoplis Example 24.2-4: the cycle time is declared, the area is the result (eq. 24.2-26 with R\_m = 0, which is eq. 24.2-24).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{drum}{alpha\_m\_kg}{1.225e11}
+\goldrow{kpi}{drum}{cS\_kg\_m3}{308.1}
+\goldrow{kpi}{drum}{filtrate\_m3\_s}{4.823e-4}
+\goldrow{kpi}{drum}{area\_m2}{6.60}
+\goldrow{stream}{cake}{F}{0.00973326044667}
+\goldrow{stream}{cake}{T}{298.2}
+\goldrow{stream}{filtrate}{F}{0.0266890924144}
+\goldrow{stream}{filtrate}{T}{298.2}
+\goldrow{stream}{slurry}{F}{0.0364223528611}
+\goldrow{stream}{slurry}{T}{298.2}
+\goldrow{kpi}{drum}{B\_s\_m3}{0}
+\goldrow{kpi}{drum}{Kp\_s\_m6}{11349.5827054}
+\goldrow{kpi}{drum}{cS\_eq24\_2\_10\_kg\_m3}{308.106562087}
+\goldrow{kpi}{drum}{cakeLiquor\_kg\_s}{0.1485980001}
+\goldmore{21}
+\end{tutgolden}
+
+\clearpage
+\tutentry{filter02\_caco3\_pressWashing}{tutorials/steady/solids/filter02\_caco3\_pressWashing}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (press) at (0.0,-0.0) {\textbf{press}\\[-1pt]{\tiny cakeFilter}};
+  \draw[->] ($(press.west)+(-1.05,-0.17)$) -- ($(press.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {slurry};
+  \draw[->] ($(press.west)+(-1.05,0.17)$) -- ($(press.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {washWater};
+  \draw[->] ($(press.east)+(0,-0.34)$) -- ($(press.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {cake};
+  \draw[->] ($(press.east)+(0,0.00)$) -- ($(press.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {filtrate};
+  \draw[->] ($(press.east)+(0,0.34)$) -- ($(press.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {spentWash};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A plate-and-frame filter press with through-washing on Geankoplis's CaCO3 slurry (Examples 24.2-1 to 24.2-3): filtration time, washing time and cycle time on the cycle-averaged steady balance.}
+\begin{tutnarrative}
+One press, two inlets (the slurry, the wash water), three outlets (the washed cake, the filtrate, the spent wash).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{press}{Kp\_s\_m6}{37.93}
+\goldrow{kpi}{press}{B\_s\_m3}{16.10}
+\goldrow{kpi}{press}{filtrationTime\_s}{269.7}
+\goldrow{kpi}{press}{washTime\_s}{194.0}
+\goldrow{kpi}{press}{cycleTime\_s}{1663.8}
+\goldrow{stream}{cake}{F}{0.00311377514992}
+\goldrow{stream}{cake}{T}{298.2}
+\goldrow{stream}{filtrate}{F}{0.112084642378}
+\goldrow{stream}{filtrate}{T}{298.2}
+\goldrow{stream}{slurry}{F}{0.115198417528}
+\goldrow{stream}{slurry}{T}{298.2}
+\goldrow{stream}{spentWash}{F}{0.01120846425}
+\goldrow{stream}{spentWash}{T}{298.2}
+\goldrow{stream}{washWater}{F}{0.01120846425}
+\goldmore{30}
 \end{tutgolden}
 
 \clearpage
@@ -12643,6 +12779,39 @@ One vibrating screen, King (2001) Example 10.1, Table 10.1 (p. 364).
 \goldrow{kpi}{screen}{feed\_d10\_um}{2500}
 \goldrow{kpi}{screen}{feed\_d32\_um}{9606.46939208}
 \goldmore{40}
+\end{tutgolden}
+
+\clearpage
+\tutentry{thickener01\_settlingTest\_talmageFitch}{tutorials/steady/solids/thickener01\_settlingTest\_talmageFitch}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (thickener) at (0.0,-0.0) {\textbf{thickener}\\[-1pt]{\tiny thickener}};
+  \draw[->] ($(thickener.west)+(-1.05,0.00)$) -- ($(thickener.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(thickener.east)+(0,-0.17)$) -- ($(thickener.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {underflow};
+  \draw[->] ($(thickener.east)+(0,0.17)$) -- ($(thickener.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {overflow};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A gravity thickener sized from one batch settling test by the Talmage-Fitch tangent at the compression point, the Coe-Clevenger area beside it; the settling data of Geankoplis Problem 30.1-11 (no printed answer exists).}
+\begin{tutnarrative}
+One thickener. The batch settling test is the slurry's own measurement and lives with the unit; the lists are in SI (s, m) because a list does not carry a unit word.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{2.10920555481}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{stream}{overflow}{F}{1.42292395741}
+\goldrow{stream}{overflow}{T}{298.15}
+\goldrow{stream}{underflow}{F}{0.686281597398}
+\goldrow{stream}{underflow}{T}{298.15}
+\goldrow{kpi}{thickener}{anchor\_TFequalsCC\_dev}{0}
+\goldrow{kpi}{thickener}{areaCoeClevenger\_m2}{1102.25563903}
+\goldrow{kpi}{thickener}{areaTalmageFitch\_m2}{846.938775459}
+\goldrow{kpi}{thickener}{area\_m2}{846.938775459}
+\goldrow{kpi}{thickener}{coeClevenger\_C\_kg\_m3}{533.029612756}
+\goldrow{kpi}{thickener}{coeClevenger\_v\_m\_s}{4.05982905983e-06}
+\goldrow{kpi}{thickener}{componentMassClosure}{0}
+\goldrow{kpi}{thickener}{compressionTime\_s}{6300}
+\goldmore{22}
 \end{tutgolden}
 
 \subsection{thermo}

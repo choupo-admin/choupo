@@ -1,0 +1,67 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+# =============================================================================
+#  THE GEANKOPLIS EXAMPLES 24.2-1 TO 24.2-3 ANCHORS (C361 slice 4), pp.
+#  1083-1088, printed worked examples on a laboratory test (t/V vs V of a
+#  CaCO3 slurry, Example 24.2-1).
+#
+#      quantity                      book        Choupo        gap       row
+#      K_p [s/m6]                    37.93       37.719        -0.56 %   anchor
+#      B [s/m3]                      16.10       16.010        -0.56 %   anchor
+#      filtration time [s]           269.7       268.14        -0.58 %   anchor
+#      washing time [s]              194.0       192.93        -0.55 %   anchor
+#      cycle time [s]                1663.8      1661.07       -0.16 %   anchor (27.73 min)
+#
+#  ONE CAUSE: the package's water viscosity (Vogel, water's record) is
+#  8.889e-4 Pa s against the book's 8.937e-4 (-0.54 %); K_p, B, t_f and the
+#  washing time are linear in it, and the 20 min of cleaning dilutes it in
+#  the cycle.  The 1 % band is twice that.  Nothing tuned.
+#  NOT ANCHORED: pressesRequired (~1 by construction: the feed is set to one
+#  press on the book's cycle, see controlDict); the wash ratio (N = 4.25) and
+#  the solute remaining (water washes water).
+kpi     press                  Kp_s_m6          37.93            1e-2     anchor
+kpi     press                  B_s_m3           16.10            1e-2     anchor
+kpi     press                  filtrationTime_s 269.7            1e-2     anchor
+kpi     press                  washTime_s       194.0            1e-2     anchor
+kpi     press                  cycleTime_s      1663.8           1e-2     anchor
+# =============================================================================
+stream  cake                   F                0.00311377514992 1e-4
+stream  cake                   T                298.2            1e-4
+stream  filtrate               F                0.112084642378   1e-4
+stream  filtrate               T                298.2            1e-4
+stream  slurry                 F                0.115198417528   1e-4
+stream  slurry                 T                298.2            1e-4
+stream  spentWash              F                0.01120846425    1e-4
+stream  spentWash              T                298.2            1e-4
+stream  washWater              F                0.01120846425    1e-4
+stream  washWater              T                298.2            1e-4
+kpi     press                  alpha_m_kg       186300000000     1e-4
+kpi     press                  area_m2          17.46            1e-4
+kpi     press                  cS_eq24_2_10_kg_m3 23.4702408789    1e-4
+kpi     press                  cS_kg_m3         23.4702408789    1e-4
+kpi     press                  cakeLiquor_kg_s  0.0475381053013  1e-4
+kpi     press                  cakePorosity     0.731067068546   1e-4
+kpi     press                  cakeSolidsPerArea_kg_m2 4.53005222004    1e-4
+kpi     press                  cakeThickness_mm 6.21569837587    1e-4
+kpi     press                  cleaningTime_s   1200             1e-4
+kpi     press                  componentMassClosure 0                1e-4
+kpi     press                  filtratePerCycle_m3 3.37             1e-4
+kpi     press                  filtrate_m3_s    0.00202546303409 1e-4
+kpi     press                  filtrationFlux_m_s 0.00011600590115 1e-4
+kpi     press                  liquidMassFlow_kg_s 2.06674293774    1e-4
+kpi     press                  mediumResistance_1_m 106300000000     1e-4
+kpi     press                  mu_liquid_Pa_s   0.00088885596324 1e-4
+kpi     press                  pressesRequired  0.998347722124   1e-4
+kpi     press                  pressureDrop_Pa  338000           1e-4
+kpi     press                  rho_liquid       996.910236552    1e-4
+kpi     press                  rho_solid        2710             1e-4
+kpi     press                  solidsMassFlow_kg_s 0.0475381053013  1e-4
+kpi     press                  solidsMassFraction 0.02248428867    1e-4
+kpi     press                  soluteRemaining  0                1e-4
+kpi     press                  washFractionOfCycle 0.116147597219   1e-4
+kpi     press                  washRatio        4.24755009027    1e-4
+kpi     press                  wash_m3_s        0.000202546303629 1e-4
+boundary global                 H_feeds_kW       -36640.1948166   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -36640.1948166   1e-4

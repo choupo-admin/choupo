@@ -1,6 +1,6 @@
 # Solids processing: one size axis, then the units that move along it
 
-**2026-11-12.  Kind: ADR.  Status: slices 1-3 BUILT (DEV.md 4c C361; slice 3 engine and cases, its guides pending); slice 4 PLANNED.**
+**2026-11-12.  Kind: ADR.  Status: slices 1-4 BUILT (DEV.md 4c C361; slices 3 and 4 engine and cases, their guides pending).**
 
 Vitor, on the breadth-first tools he has used: models he could not trust and
 documentation he could not read -- "e preciso que o Choupo ultrapasse isso".
@@ -468,3 +468,305 @@ the declared bulk density), said in its thermoPhysPropDict.
 * The gridded tear under Newton-on-tears: REFUSED by name (7.6).
 * The time-integrated binaries (6), a sizer or cost for any classifier: not in
   this slice.
+
+## 8. What slice 4 built (2026-11-12)
+
+Solid-liquid separation: three units, six models (two filters, two washing laws, two thickener methods, two bowls), four cases.  Every
+equation below is as implemented, with the page it was read from; a
+`file:line` points at the line that computes it.  The guides are not written
+yet (a second general writes them from this section).
+
+### 8.1 Pieces
+
+| piece | where |
+|---|---|
+| the slurry reader (one-inlet `feed {}` or `inputStreams`), densities, the package viscosity, product streams, the component closure | `src/unitOperations/solids/SolidLiquidCore.{H,cpp}` |
+| unit `cakeFilter` (`rotaryDrum`, `batchPress`; washing `displacement`, `tabulated`) | `src/unitOperations/solids/CakeFilter.{H,cpp}` |
+| unit `thickener` (`talmageFitch`, `coeClevenger`) | `src/unitOperations/solids/Thickener.{H,cpp}` |
+| unit `sedimentingCentrifuge` (`tubularBowl`, `discStack`) on the classifier core of slice 3 | `src/unitOperations/solids/SedimentingCentrifuge.{H,cpp}` |
+| registration (three lines) | `src/unitOperations/UnitOperation.cpp`, after `hydrocyclone` |
+| cases | `tutorials/steady/solids/filter01_caco3_rotaryDrum`, `filter02_caco3_pressWashing`, `thickener01_settlingTest_talmageFitch`, `centrifuge01_tubularBowl_geankoplis` |
+
+What existed before (searched by name and in `docs/ai/unit-ops.md`): `bagFilter`
+(a GAS-solid fabric filter), `cyclone` and `gasSolidSplitter` (gas-solid),
+`hydrocyclone` (slice 3), `batchDiafilter` (a MEMBRANE batch unit, not a cake
+filter), `crystalliser`, the dryers.  No cake filter, thickener, settler,
+clarifier or liquid centrifuge existed under any name; nothing was built
+twice.  The models are branches inside each unit, selected by the `model`
+slot and refused by name otherwise; the washing law is a small struct in
+`CakeFilter.cpp`.  No new factory was opened: each law has one or two forms
+and no second consumer.
+
+Properties are the package's, never the case's: the liquid density is
+`ThermoPackage::density(T, P, x, Liquid)`, the viscosity
+`ThermoPackage::viscosityLiquid(T, x)` (refused by name when the case
+declares no liquid viscosity model, `SolidLiquidCore.cpp`), the solid density
+is volume-additive over the components' `solid { rho_p; }`.
+
+### 8.2 `cakeFilter`: the law
+
+Geankoplis, Hersel & Lepek, 5th ed. (G below), section 24.2, pp. 1078-1090.
+The integrated two-resistance law is Ruth's (1935); the paper is in the
+literature folder and the law was implemented as G prints it, not from the
+paper.
+
+| quantity | as implemented | units | source | code |
+|---|---|---|---|---|
+| compressible cake | alpha = alpha_0 dp^s | m/kg, dp in Pa | G eq. 24.2-11, p. 1081 | `CakeFilter.cpp:184` |
+| liquor kept by the cake | L_r = (m - 1) W | kg/s | the definition of m, G eq. 24.2-10, p. 1080 | `:205` |
+| filtrate | Q_f = (m_l - L_r) / rho_l | m3/s | balance | `:219` |
+| solids per filtrate | c_S = W / Q_f, printed beside rho c_x / (1 - m c_x) | kg/m3 | G eq. 24.2-10 (the same by algebra) | `:220`, `:222` |
+| cake porosity (saturated) | eps = ((m-1)/rho_l) / ((m-1)/rho_l + 1/rho_s) | - | ours: the liquor fills the voids | `:225` |
+| drum flux, t_c declared | V/(A t_c) = [-R_m/t_c + (R_m^2/t_c^2 + 2 c_S alpha dp f/(mu t_c))^1/2] / (alpha c_S) | m/s | G eq. 24.2-26, p. 1089 (eq. 24.2-24 when R_m = 0) | `:272` |
+| drum, area declared | t_c = (f - mu R_m Q_f/(dp A)) 2 dp A^2 / (mu alpha c_S Q_f^2) | s | G eq. 24.2-25 solved for t_c | `:289` |
+| cake formation time | t = f t_c | s | G eq. 24.2-23, p. 1088 | `:291` |
+| constants | K_p = mu alpha c_S/(A^2 dp), B = mu R_m/(A dp) | s/m6, s/m3 | G eqs. 24.2-14, -15, p. 1082 | `:308-309` |
+| filtration time | t = K_p V^2/2 + B V | s | G eq. 24.2-17, p. 1082 | `:310` |
+| washing rate | (dV/dt)_f = k / (K_p V_f + B); k = 1 (`sameAsFiltrate`, and every drum), 1/4 (`throughWashing`) | m3/s | G eqs. 24.2-19, -20, pp. 1086-1087 | `:343` |
+| wash per cycle, wash time | V_w = Q_w V_f / Q_f; t_w = V_w / (dV/dt)_f | m3, s | cycle-averaged flows | `:344-345` |
+| press cycle, presses | t_c = t_f + t_w + t_clean (G p. 1087); n = Q_f t_c / V_f | s, - | G Example 24.2-3; n is ours | `:377-378` |
+| wash ratio | N = wash volume / volume of liquid in the cake | - | Perry 9th ed. p. 18-76 (the definition beside eq. 18-71) | `:359` |
+| solute remaining, `displacement` | R = max(0, 1 - N) | - | the definition of ideal displacement (no source claimed) | `:55` |
+| solute remaining, `tabulated` | ln R linear in N between the test's points; no extrapolation | - | Perry eq. 18-71, p. 18-76 ("log R vs. N", named, not parametrised) | `:70` |
+| washed cake liquor | n_cake,i = R n_r,i + beta n_w,i, beta = (1 - R) V_r / V_w (refused above 1) | kmol/s | ours: volume-for-volume replacement | `:361`, `:370` |
+| spent wash | the DIFFERENCE (n_r,i + n_w,i) - n_cake,i | kmol/s | balance | `:372` |
+| cake per area, thickness | W_A = c_S V / A; L = W_A / ((1 - eps) rho_s) | kg/m2, m | G eq. 24.2-4 with the filtrate held in the cake neglected, as G does | `:396-397` |
+
+Window: constant pressure; laminar flow through the cake (G p. 1077); the
+cake law is the case's measured alpha or (alpha_0, s).  Every solid is
+retained (stated, not computed).  The products leave at the feed's T and P
+(no work; the wash must arrive at the slurry's temperature).
+
+Keys (`operation {}`); NONE has a default:
+
+| key | meaning | unit | required |
+|---|---|---|---|
+| `pressureDrop` | -dp across cake and medium | Pa | always |
+| `specificCakeResistance` | alpha (incompressible cake) | m/kg | or the next two |
+| `alpha0`, `compressibility` | alpha = alpha0 dp^s; alpha0 read in SI (m/kg with dp in Pa: its dimensions have no integer form) | SI, - | both or neither |
+| `mediumResistance` | R_m | 1/m | always (0 is a declaration) |
+| `wetToDryCakeRatio` | m, kg wet cake per kg dry: the cake moisture, DECLARED | - | always |
+| `submergence` | f | - | rotaryDrum |
+| `cycleTime` XOR `area` | t_c or A; the other is the result | s / m2 | rotaryDrum |
+| `area`, `filtratePerCycle`, `cleaningTime` | A, V_f, t_clean | m2, m3, s | batchPress |
+| `washFlowPath` | `sameAsFiltrate` (eq. 24.2-19) or `throughWashing` (eq. 24.2-20) | word | batchPress with a wash |
+| `washing { model displacement; }` or `{ model tabulated; washRatio (...); remaining (...); }` | the solute-removal law | - | with a wash inlet, and only then |
+
+Inlets `( slurry [wash] )`, outlets `( cake filtrate [spentWash] )`.  KPIs a
+student checks by hand: `alpha_m_kg`, `cS_kg_m3` beside `cS_eq24_2_10_kg_m3`,
+`filtrate_m3_s`, `Kp_s_m6`, `B_s_m3`, `area_m2`, `cycleTime_s`,
+`filtrationTime_s`, `cakeThickness_mm`, `cakePorosity`, `washRatio`,
+`soluteRemaining`, `washTime_s`, `washFractionOfCycle`, `pressesRequired`,
+`componentMassClosure`.  Profile: the cycle's t/V vs V line (`V_m3`, `t_s`,
+`t_over_V_s_m3`, 21 points; slope K_p/2, intercept B -- G Fig. 24.2-2).
+
+### 8.3 How a cyclic filter sits in a steady flowsheet
+
+Following the settled contract "A BATCH PLANT IS DESIGNED ON THE STEADY
+BALANCE": the streams are the CYCLE-AVERAGED flows -- the steady balance per
+unit time -- and the cycle is a design result computed on them, never a
+second time axis and never a binary of its own.
+
+* `rotaryDrum` is continuous by construction (G p. 1088): feed, filtrate and
+  cake move at steady rates; a fraction f of each revolution forms cake.
+  Declaring t_c gives the area (G Example 24.2-4); declaring the area gives
+  t_c.  A wash zone washes at the final filtration rate; when the wash does
+  not fit in the (1 - f) of the revolution out of the slurry, the unit
+  refuses.
+* `batchPress` is cyclic: the case declares A, the filtrate per cycle V_f and
+  the cleaning time; t_f (eq. 24.2-17), t_w (eqs. 24.2-19/-20) and t_c follow,
+  and `pressesRequired` = Q_f t_c / V_f is the number of identical presses
+  that pass the average feed (a real number; rounding up is the student's
+  design choice).  The wash per cycle is the wash flow over one cycle, so a
+  wash flow of 10 % of the filtrate flow is G's "10 % of the filtrate
+  volume".
+
+### 8.4 `thickener`
+
+The data are the case's batch settling test: `initialConcentration` C_0
+[kg/m3 of slurry] and the interface height H at times t, first point t = 0,
+H = H_0.  Lists are SI (s, m): a list does not carry a unit word.
+
+| quantity | as implemented | source | code |
+|---|---|---|---|
+| slope at a test time | v = -dH/dt of the parabola through that point and its two neighbours (the interior point nearest t) | ours (numerical; a student draws the tangent by eye) | `Thickener.cpp:49-67` |
+| Kynch's layer at (t, H) | H_i = H + v t; C = C_0 H_0 / H_i | Talmage & Fitch 1955 eqs. 4-6, pp. 38-39; Wills & Napier-Munn 2006 eq. 15.4, p. 387 | `:162-165` |
+| underflow line | H_u = C_0 H_0 / C_u | T&F step 1, p. 39 | `:144` |
+| curve crossing | t_x where the (linearly interpolated) test crosses H_u | T&F p. 39 | `:170-174` |
+| `talmageFitch` | tangent at the declared compression time t_c; if H_u < H(t_c): t_u = (H_i - H_u)/v; else t_u = t_x; A = W t_u / (C_0 H_0) | T&F eqs. 7-10 and steps 1-5, p. 39; Wills eq. 15.6, p. 387; Perry 9th ed. eq. 18-54, p. 18-64 | `:177-195`, `:216` |
+| `coeClevenger` | A = max over the test's layers with C < C_u of W (1/C - 1/C_u)/v | Coe & Clevenger 1916 as Wills eq. 15.5, p. 387 prints it, with (C, v) from Kynch's construction as Wills p. 387 says may be done | `:210` |
+| the identity | Coe-Clevenger at the compression layer = Talmage-Fitch's tangent area (algebra: H_i - H_u = v t_u) | Wills derives eq. 15.6 from 15.5, p. 387 | `:221-225` |
+| underflow liquid | (1 - C_u/rho_s) rho_l / C_u kg per kg of solids | definition of C_u | `:229` |
+| overflow | the DIFFERENCE, componentwise; every solid to the underflow (ideal) | balance | `:240` |
+| unit area | A/W in m2 per (t/d) | T&F eq. 10 (their units ft2/(ton/day)) | `:265` |
+
+Window: Kynch's postulate (the settling velocity a function of the local
+concentration only, T&F p. 38); free settling governs the area; the test at
+the expected feed concentration (T&F p. 40; a deviation above 5 % is
+announced).  Area only: depth, compression time and safety factor (Wills
+p. 386 asks for at least two) are not applied.
+
+Keys, none with a default: `settlingTest { initialConcentration [kg/m3];
+time ( ... ) [s]; height ( ... ) [m]; }`; `underflowConcentration` C_u
+[kg/m3]; `compressionTime` [s] (required by `talmageFitch`, optional and
+then drawn with `coeClevenger`).  KPIs: `area_m2`, `unitArea_m2_per_tpd`,
+`areaTalmageFitch_m2`, `areaCoeClevenger_m2` (and its C, v),
+`underflowLine_Hu_m`, `curveCrossesHu_s`, `compression_H_m`,
+`compression_v_m_s`, `tangentIntercept_Hi_m`, `compression_C_kg_m3`, `tu_s`,
+`tangentUsed`, `anchor_TFequalsCC_dev`, the stream liquids,
+`componentMassClosure`.  PROFILE, for the GUI to draw the construction:
+`t_s`, `H_m`, and at every point `kynch_v_m_s`, `kynch_Hi_m`,
+`kynch_C_kg_m3`, `coeClevengerArea_m2`; markers at the compression point and
+at t_u.
+
+### 8.5 `sedimentingCentrifuge`
+
+Reads its feed with `readClassifierFeed` and splits with `splitOnPartition`
+(slice 3, `ClassifierCore`): no second splitter.  g = 9.80665 m/s2 (G p. 1412).
+
+| quantity | as implemented | units | source | code |
+|---|---|---|---|---|
+| angular speed | omega = 2 pi N (N from `speed` in rpm -> rev/s) | rad/s | G eq. 30.2-4 | `SedimentingCentrifuge.cpp:89` |
+| feed volume flow | Q = m_l/rho_l + m_s/rho_s | m3/s | ours | `:85` |
+| tubular bowl volume | V = pi b (r_2^2 - r_1^2) | m3 | G p. 1436 | `:103` |
+| tubular Sigma | Sigma = omega^2 V / (g ln(2 r_2^2/(r_1^2 + r_2^2))) | m2 | Ambler 1959 eqs. 24-28, p. 191 (the exact form; his eq. 33 is the approximation); de Haan, Eral & Schuur 2nd ed. eqs. 9.44-9.46, p. 309 | `:104` |
+| tubular Sigma, half-layer cut | Sigma_G = omega^2 V / (2 g ln(2 r_2/(r_1 + r_2))) | m2 | G eq. 30.2-19, p. 1439 | `:105` |
+| disc-stack Sigma | Sigma = 2 pi n omega^2 (r_2^3 - r_1^3) / (3 g tan theta) | m2 | de Haan et al. eq. 9.52, p. 311; Ambler eq. 46, p. 194, with C = 1 | `:119` |
+| cut size | Q = 2 v_g(d50) Sigma, v_g = d^2 (rho_s - rho_l) g/(18 mu) -> d50 = (9 mu Q / (drho g Sigma))^1/2 | m | Ambler eq. 9; G eq. 30.2-18 | `:125` |
+| G's critical diameter | D_pc from Sigma_G by the same relation | m | G eq. 30.2-12, p. 1436 | `:142` |
+| Stokes' window | Re = d50 v_wall rho_l / mu < 1, v_wall = d50^2 drho omega^2 r_2/(18 mu) | - | G eq. 30.2-13, p. 1437; N_Re < 1, G section 30.1B, p. 1413 | `:126-127` |
+| tubular grade efficiency | k = d^2 drho omega^2 tau/(18 mu), tau = V/Q; r* = max(r_1, r_2 e^-k); E = (r_2^2 - r*^2)/(r_2^2 - r_1^2) | - | DERIVED here: G eq. 30.2-10 integrated from a starting radius r, with Ambler's eq. 26 premise (feed spread uniformly over the annulus); E(d50) = 1/2 exactly | `:153-155` |
+| disc grade efficiency | E = min(1, (d/d50)^2 / 2) | - | DERIVED here: Ambler eqs. 43-44, p. 194, with f(y) = 1 (the case in which his C = 1): the captured fraction is the drift across the gap, v_g Sigma / Q | `:157` |
+| sediment | Y = SUM_k E_k f_k of the solids; its liquid Y m_s (1 - w_s)/w_s | kg/s | ours (w_s declared) | `:170-175` |
+
+Windows: Stokes (enforced); dilute free settling (hindered settling, G eq.
+30.1-16, is NOT applied -- the case's solids fraction is printed);
+Brownian threshold and agglomeration (Ambler pp. 195-196) not modelled.  No
+drive power.
+
+Keys, none with a default: `speed` [1/s, `rpm` accepted]; tubularBowl:
+`bowlRadius` r_2, `liquidRadius` r_1, `bowlLength` b [m]; discStack:
+`discSpaces` n, `outerRadius`, `innerRadius` [m], `discHalfAngle` [rad,
+`deg` accepted]; `sedimentSolids` w_s (solids mass fraction of the
+discharged sediment) [-].  KPIs: every classifier KPI of slice 3 with the
+words `sediment`/`centrate` (`d50_um`, both products' d10..d90, the
+closures), plus `omega_rad_s`, `gForce_wall`, `sigma_m2`,
+`cutSize_d50_um`, `Re_cut`, `vWall_cut_m_s`, `gradeEfficiency_at_d50`,
+and for the tubular bowl `bowlVolume_m3`, `residenceTime_s`,
+`sigmaHalfLayer_m2`, `cutSizeHalfLayer_Dpc_um`, `gradeEfficiency_at_Dpc`.
+Profile: the class-by-class table of slice 3 (feed, grade efficiency, both
+products).
+
+### 8.6 Cases and anchors
+
+| case | held to | kind | result |
+|---|---|---|---|
+| filter01_caco3_rotaryDrum | G Example 24.2-4, pp. 1089-1090: rotary drum, compressible CaCO3 cake, t_c 250 s declared, the area | printed worked example (arithmetic on G's Example 24.2-1 slurry) | alpha 1.22547e11 vs 1.225e11 (+0.04 %), c_S 308.107 vs 308.1, V/t_c 4.82294e-4 vs 4.823e-4, A 6.6434 vs 6.60 m2 (+0.66 %): all four anchored |
+| filter02_caco3_pressWashing | G Examples 24.2-1 to 24.2-3, pp. 1083-1088: press, through-washing, cycle | printed worked examples (on a laboratory test) | K_p 37.719 vs 37.93 (-0.56 %), B 16.010 vs 16.10 (-0.56 %), t_f 268.14 vs 269.7 s (-0.58 %), t_w 192.93 vs 194.0 s (-0.55 %), t_c 1661.07 vs 1663.8 s (27.73 min, -0.16 %): all five anchored at 1 % |
+| thickener01_settlingTest_talmageFitch | none printed (see 8.7); identity: Coe-Clevenger at the compression layer = Talmage-Fitch area (dev 0) | IDENTITY only | A_TF 846.94 m2 (0.980 m2 per t/d), A_CC 1102.3 m2; self-recorded golden, no anchor row |
+| centrifuge01_tubularBowl_geankoplis | G Example 30.2-2, pp. 1437-1438 | printed worked example | omega 2408.55 vs 2410 (printed rounded, -0.06 %), V 2.74663e-4 vs 2.747e-4 (-0.01 %), D_pc 0.74677 vs 0.746 um (+0.10 %): anchored; Re at the cut 9.6e-8 ("in the Stokes' law range", no number printed) |
+
+The gaps, each with its one cause, nothing tuned:
+* filter01, the area: G's own inputs give 6.660 m2 by his eq. 24.2-24, so the
+  printed 6.60 is 0.9 % below its own arithmetic; the package's water
+  viscosity (Vogel, water's record, 8.889e-4 Pa s against G's 8.937e-4)
+  moves A by -0.27 % (A ~ mu^1/2).  Band 1.5 %.
+* filter02: the same viscosity, -0.54 %, linear in K_p, B, t_f, t_w; diluted
+  in the cycle by the 20 min of cleaning.  Band 1 %.
+* centrifuge01: omega printed rounded to 2410; D_pc printed to 3 figures.
+* filter02 declares m = 2.0 from G's Example 24.2-4 (the same slurry), because
+  Examples 24.2-1 to -3 do not give the cake moisture; the feed is set to one
+  press on G's cycle, so `pressesRequired` = 0.998 is a consistency check, not
+  an anchor.  centrifuge01's size distribution, solids content, sediment
+  solids fraction and temperature are DECLARED (the example has none); no
+  anchor reads them.  Its two components are case-local pseudo-components
+  (MW 100 as a basis, constant density and viscosity, no enthalpy datum), so
+  its energy and element balances are REFUSED for want of data (announced
+  by the engine; mass closes, 100.000 %).
+
+Closures held (`bin/runTests --scope tutorials/steady/solids
+tutorials/steady/gas-solid`): componentMassClosure 0 on all four (exact by
+construction, every outlet the difference); mass 100.000 %; element closure
+0.0000 % on filter01/02 and thickener01; plant energy residual below 1e-9 kW
+(filter01, filter02, thickener01: isothermal, no work); centrifuge01's energy
+and element balances UNAVAILABLE (no enthalpy datum, no formula), named by
+`check_energy_closure` among the refusals.
+
+### 8.7 What the sources say that the brief did not
+
+* **Seader, Henley & Roper 4th ed. carries NO filtration, sedimentation or
+  centrifugation**: its preface (p. v) says Chapter 19 (mechanical phase
+  separations) and Chapters 16-18 (with washing) were REMOVED from the fourth
+  edition and remain in the third.  Every printed example used here is
+  Geankoplis's.
+* **No printed worked example of Talmage-Fitch (or Coe-Clevenger) sizing
+  exists in the folder.**  Searched: Geankoplis 30.1F (method only; Problem
+  30.1-11 prints data and no answer), Wills & Napier-Munn pp. 385-388
+  (method and a figure), Talmage & Fitch 1955 (derivation; their Table II
+  unit areas come from curves that are not printed), King chapter 6 (Kynch
+  flux model), Perry 9th ed. pp. 18-64 to 18-65 (eq. 18-54), Treybal 3rd ed.
+  (batch settling described), de Haan et al. chapter 9 (exercises only).
+  thickener01 therefore runs on Geankoplis's problem data with an identity
+  and a self-recorded golden, and says so.
+* **No washing-efficiency law with constants is printed in the folder.**
+  Geankoplis gives the washing RATE only (eqs. 24.2-19/-20); Perry 9th ed.
+  names the empirical correlation "log R vs. N" (eq. 18-71, p. 18-76) without
+  coefficients; Wills, King and de Haan describe washing without a law.  So
+  the `displacement` model is the definition of ideal displacement and the
+  `tabulated` model takes the case's own wash test in Perry's coordinates.
+* **The primary papers ARE in the folder** (Ruth 1935, Kynch 1952, Talmage &
+  Fitch 1955, Ambler 1959; `Articles/Solids-Particles/`).  Talmage & Fitch and
+  Ambler were read and cited by equation; Ruth and Kynch were not read: the
+  laws are implemented as Geankoplis and Talmage & Fitch / Wills print them.
+* **Two definitions of the tubular bowl's Sigma and cut size.**  Geankoplis
+  (eqs. 30.2-12, 30.2-19) takes the particle starting HALFWAY through the
+  liquid layer; Ambler (eq. 28) and de Haan et al. (eq. 9.44) take the
+  radius splitting the layer into EQUAL VOLUMES, which is where a uniformly
+  fed bowl captures half of a size.  Both are published; the grade curve is
+  the uniformly fed one, on which Geankoplis's D_pc is the 62.8 % size.
+* **Neither source prints a grade-efficiency curve E(d)** for the bowl or
+  the disc stack; both curves are derived from the trajectories they print
+  (8.5), and labelled DERIVED in the code.
+* **Ambler's disc-stack Sigma carries a flow factor C** (eq. 46) that he
+  calls "not completely understood"; it is 1 here (laminar symmetric flow,
+  plug-flow drift) and his measured disc efficiency (55 % of theoretical on
+  satin clay, p. 195) is not applied.
+* **The centrifugal Stokes check:** Re at the cut size grows as Q^1.5/omega,
+  so the remedy is a faster bowl or a lower throughput (the message says
+  so).
+
+### 8.8 Refused or deferred, with the reason
+
+Refused, by name (each exercised by hand on a scratch copy of the cases):
+`alpha0`/`compressibility` alone or beside `specificCakeResistance`; both or
+neither of `cycleTime`/`area`; a medium resistance that alone exceeds the
+submerged time; a cake holding more liquid than the slurry brings; a wash
+with solids, at another temperature, or that cannot supply the liquor it
+replaces; a drum that cannot wash in the unsubmerged part of its revolution;
+a wash ratio outside a tabulated test; a settling test that does not start at
+t = 0, whose times do not rise or whose interface rises; C_u at or below C_0,
+at or above rho_s, or below what the test reached (H_u under its last
+height); a compression time outside the test; a centrifuge feed not on the
+grid, dry or vapour-bearing; a solid not denser than the liquid; Re >= 1 at
+the cut size; a geometry with r_1 >= r_2 or a disc angle outside (0, 90) deg;
+a sediment needing more liquid than the feed has; any liquid viscosity the
+case did not declare a model for.
+
+Deferred, named:
+* An enthalpy balance across the cake (a wash at another temperature) and
+  the pressure of the filtrate under vacuum: every product leaves at the
+  feed's T and P.
+* Constant-rate filtration (G section 24.2C), centrifugal filtration (G
+  30.2E), a filter-medium bleed of fines: not built.
+* Hindered settling in the centrifuge (G eq. 30.1-16), Ambler's turbulent
+  Sigma (eqs. 34-39), the disc stack's measured efficiency factor, drive
+  power: not built.
+* A thickener's depth, compression zone, flocculant and safety factor
+  (Wills p. 386: at least two); a Kynch flux-curve thickener (King 6.1): not
+  built -- the area is the result.
+* No sizer or cost for any of the three; the time-integrated binaries do not
+  carry them (as in 6).
+* Gates the names fail until the guides and GUI land (expected, the second
+  general's and the GUI's work): `check_feature_documented`,
+  `check_schema_coverage`, `check_unit_families` on `cakeFilter`,
+  `thickener`, `sedimentingCentrifuge`.

@@ -30,6 +30,7 @@ License
 #include "unitOperations/crystallisation/CrystallisationSaturation.H"
 #include "streams/Composition.H"
 #include "thermo/Component.H"
+#include "thermo/SolidMixture.H"
 #include "unitOperations/crystallisation/CrystallisationHeat.H"
 #include "unitOperations/crystallisation/Crystalliser.H"      // its contract is the vessel's
 
@@ -116,6 +117,8 @@ void BatchCrystalliser::initialise(const DictPtr&       unitDict,
     MW_solv_ = solv.MW();
     rho_c_   = sol.rho_p();
     k_v_     = sol.k_v();
+    solidMixture::announceDefaultShapeFactor(sol,
+        "batchCrystalliser '" + name_ + "'", 1);
     if (rho_c_ <= 0.0)
         throw std::runtime_error("BatchCrystalliser '" + name_ + "': solute needs"
             " a `solid { rho_p; k_v; }` block.");

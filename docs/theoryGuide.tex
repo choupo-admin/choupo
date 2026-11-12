@@ -18571,7 +18571,9 @@ the magma (suspension) density
 \end{equation}
 ($k_v$ the volume shape factor, $\rho_c$ the crystal density --- the
 \emph{number$\leftrightarrow$mass bridge} on the component's
-\dict{solid \{ rho\_p; k\_v; \}} block), and a coefficient of variation
+\dict{solid \{ rho\_p; k\_v; \}} block; a record without $k_v$ gets the sphere,
+$\pi/6$, which is a shape \emph{assumption} and is announced by the unit
+naming the component and the value), and a coefficient of variation
 that is a pure number:
 \begin{equation}
    \mathrm{CV} = \sqrt{\frac{\mu_0\mu_2}{\mu_1^2}-1}
@@ -22168,6 +22170,133 @@ blowdown with its first law closed (\file{batch25}). \\
 equilibrium shortcut in a steady flowsheet.
 \end{tutoriallink}
 
+\subsection{Liquid-phase isotherms fitted to laboratory points}\label{sec:adsorption-isotherm-fitting}
+
+Everything above is written for a gas, in partial pressure, because that is
+what the engine's isotherm records carry.  A laboratory course meets the
+other half first: flasks of solution shaken with a weighed dose of adsorbent,
+one equilibrium point $(c, q)$ per flask, with $q = V(c_0 - c)/M$ read from
+what the liquid lost.  Three single-solute models are fitted to such points:
+\begin{equation}
+q = K c, \qquad
+q = \frac{q_{\max}\, c}{K_L + c}, \qquad
+q = K_F\, c^{n} .
+\label{eq:ads-liquid-isotherms}
+\end{equation}
+The first is the Henry limit \eqref{eq:ads-henry} in concentration
+(Geankoplis Eq.~(28.1-1)\cite{GeankoplisHL2018}; $K$ is the Henry constant, with
+the units of $q$ over $c$).  The
+second is the Langmuir site balance of Eq.~\eqref{eq:langmuir} with the
+affinity written as a half-saturation concentration, $K_L = 1/b$; at
+$c \ll K_L$ it tends to the first with $K = q_{\max}/K_L$, so data confined to
+that region fix the ratio and not the two parameters.  The Langmuir form
+with a half-saturation concentration is Geankoplis Eq.~(28.1-3), with his
+$q_o$ and $K$ written $q_{\max}$ and $K_L$ here, because $q_0$ is already the
+loading of the adsorbent as charged in the batch balance; the forms with
+the affinity $b=1/K_L$ are Wankat Eq.~(17-6a), de Haan Eq.~(6.11) and Ruthven
+Eq.~(2.28)\cite{Wankat2007,DeHaan2020,Ruthven1984}.  The third is
+Freundlich's power law\cite{Freundlich1907}, Geankoplis Eq.~(28.1-2), which
+has neither a Henry limit (its slope diverges as $c\to 0$ for $n<1$) nor a
+plateau.  The exponent is written $n$ here, as Geankoplis and the course
+slides write it; Seader writes the same exponent $1/n$ (Eq.~(15-19)
+\cite{SeaderHR2016}), so a value of $n$ from one book is the reciprocal of
+a value of ``$n$'' in the other.
+
+The classical fits are straight lines in transformed variables:
+$1/q = 1/q_{\max} + (K_L/q_{\max})(1/c)$ (Geankoplis, after
+Eq.~(28.1-3): slope $K/q_o$, intercept $1/q_o$; Ruthven Eq.~(2.32), second form)
+and $\log q = \log K_F + n\log c$ (Geankoplis: the log--log slope is $n$).
+The page draws the double-reciprocal form because the course text does.
+Langmuir has a second straight line, $c/q = K_L/q_{\max} + c/q_{\max}$, drawn by
+Ruthven (Eq.~(2.32), first form), Wankat (Example~17-1), de Haan
+(Eq.~(6.12)) and Seader (Eq.~(15-25)) in their own symbols; it weights the
+points differently and returns different parameters from the same data.  Both
+forms minimise the scatter of the
+TRANSFORMED variable, so the double-reciprocal form gives the smallest
+loadings the largest leverage, and the parameters differ from a direct fit
+that minimises $S(\beta)=\sum_i w_i^2[q^*(c_i;\beta)-q_i]^2$ on what was
+measured\cite{Kinniburgh1986,BolsterHornberger2007}.  The direct fit is
+nonlinear in $\beta$ and is solved by damped Gauss--Newton
+(Levenberg--Marquardt\cite{Marquardt63}); near its minimum the parameter
+covariance is approximately $s^2(J^{\mathsf T}WJ)^{-1}$ with
+$s^2 = S(\hat\beta)/(N-p)$, which assumes independent errors of equal size
+after weighting and a model close to linear in $\beta$ over the
+uncertainty.  The single-stage batch balance $V c_0 + M q_0 = V c + M q$ is
+then an operating line of slope $-V/M$ on the isotherm, and the dose for a
+target $c$ is $M = V(c_0-c)/(q^*(c)-q_0)$.
+
+None of this is the engine's arithmetic today: the engine has no
+liquid-phase isotherm record and no Freundlich model, and its isotherm
+regression (\code{fitParameters} with \code{residual.kind isotherm}) reads
+partial pressures.  The EduTool \code{adsorption-isotherms} carries these
+fits on the page and says so; the design record
+\file{docs/design/adsorption-isotherms-from-laboratory-data.md} proposes the
+engine side.
+
+\subsection{A stirred tank of solution: dose, stages and contact time}\label{sec:batch-adsorption-stirred-tank}
+
+The same balance $V c_0 + M q_0 = V c + M q$ answers the design question of a
+stirred tank.  At equilibrium the state lies on the isotherm and on the
+operating line of slope $-V/M$ through $(c_0, q_0)$; the crossing is the root of
+$f(c) = V(c_0-c) + M(q_0 - q^*(c))$, which is positive at $c=0$ and negative at
+$c = c_0 + Mq_0/V$, so it is always bracketed.  For a linear isotherm
+$c = (Vc_0 + Mq_0)/(V+MK)$; for Langmuir the crossing is the positive root of
+$Vc^2 + (VK_L + Mq_{\max} - Vc_0 - Mq_0)c - (Vc_0+Mq_0)K_L = 0$; Freundlich has
+no closed form.  The dose for a target is $M = V(c_0-c)/(q^*(c)-q_0)$, which
+for a linear isotherm grows as $R/(100-R)$ with the percentage removed $R$, and
+an adsorbent charged with $q_0$ cannot take the liquid below $c^*(q_0)$.
+
+The same mass may be used in stages.  In crossflow every stage receives fresh
+adsorbent; in countercurrent one solid stream meets the liquid in the opposite
+direction, $V(c_{k-1}-c_k) = M(q_k - q_{k+1})$ with $q_{N+1}=0$.  For a linear
+isotherm and two stages, with $a = MK/V$, an equal crossflow split gives
+$c_2/c_0 = (1+a/2)^{-2}$ and countercurrent $c_2/c_0 = (1+a+a^2)^{-1}$; the
+crossflow outlet $1/[(1+af)(1+a(1-f))]$ is smallest at $f = 1/2$.  For a
+favourable nonlinear isotherm the best split is not equal and puts more than
+half in the first stage (measured, not derived, by the EduTool's tests); for a
+linear isotherm the equal split is the optimum and for any other the optimum is
+unequal\cite{Treybal1980}, with the Freundlich stationarity condition
+$(c_1/c_2)^n - n\,c_0/c_1 = 1-n$ for $q = K_F c^n$ (Treybal's Eq.~(11.13), his $1/n$
+written $n$).
+
+With the whole resistance in a liquid film around each particle,
+$-\mathrm{d}c/\mathrm{d}t = k_L a\,(c - c^*)$, where $c^*$ is in equilibrium with
+the particle's mean loading and $q = V(c_0-c)/M$ for fresh adsorbent.  For a
+linear isotherm $c^* = \alpha(c_0 - c)$ with $\alpha = V/(MK)$, and with
+$\beta = 1+\alpha$
+\begin{equation}
+c(t) = \frac{c_0}{\beta}\left[e^{-k_L a \beta t} + \alpha\right],
+\qquad k_L = \frac{\mathit{Sh}\,D_{AB}}{d}, \quad a = \frac{6M}{\rho_p d V},
+\label{eq:batch-ads-film}
+\end{equation}
+$\rho_p$ being the particle density, pores included.  This is the film model of
+Seader's slurry adsorption, Eqs.~(15-76) and~(15-80)\cite{SeaderHR2016}, and of
+Treybal's Eq.~(11.40)\cite{Treybal1980}; the page's integration of the nonlinear case
+reproduces the book's worked Example~15.10 (1,158~s against 1,140~s).  $\mathit{Sh} = 2$ is the stagnant-fluid bound and a poor stand-in for
+a stirred tank, whose film coefficient is larger by one to two orders of
+magnitude: Treybal's Eq.~(11.29), $\mathit{Sh} = 2 + 0.47\,\mathit{Re}_p^{0.62}
+(d_i/T)^{0.17}\mathit{Sc}^{0.36}$ with $\mathit{Re}_p$ built on the power per
+volume of liquid, gives $\mathit{Sh}\approx 190$ for 0.5~mm particles at
+1~kW/m$^3$ in water, and Seader's example uses $k_L = 5\times10^{-5}$~m/s
+($\mathit{Sh}\approx 75$ at 1.5~mm); Harriott measured such
+coefficients\cite{Harriott1962}.  The times the page prints
+at $\mathit{Sh}=2$ are therefore an upper bound.  At fixed $\mathit{Sh}$ every time
+scales as $d^2$; in a stirred tank $\mathit{Sh}-2$ grows as $d^{0.83}$ and the time
+as about $d^{1.2}$.  The resistance inside a porous
+particle is compared with the film's by the Biot number $\mathit{Bi} = k_L R_p/D_e$;
+in Glueckauf's linear-driving-force approximation\cite{Glueckauf1955} the two
+are in series as $1/k_L + R_p/(5D_e)$ (Seader's Eq.~(15-100)), so their ratio is
+$\mathit{Bi}/5$.  With $k_L = \mathit{Sh}D_{AB}/d$ at a fixed $\mathit{Sh}$ the
+diameter cancels, $\mathit{Bi} = (\mathit{Sh}/2) D_{AB}/D_e$, which exceeds one
+for any porous particle at $\mathit{Sh}\ge 2$; that is a property of holding
+$\mathit{Sh}$ fixed, and in a stirred tank $\mathit{Bi}$ rises with the diameter.
+
+None of this is the engine's arithmetic: the engine's \code{batchAdsorber}
+(Eq.~\eqref{eq:ldf}) and its fixed bed contact a gas, in partial
+pressure.  The EduTool \code{batch-adsorption} carries it on the page; the
+design record \file{docs/design/batch-adsorption-in-a-stirred-tank.md}
+proposes the engine side.
+
 % ---------------------------------------------------------------------
 \section{Rotating equipment: compressors, turbines, pumps}\label{ch:rotating}
 
@@ -22799,7 +22928,10 @@ The solids friction factor is the hard part --- particles differ in size,
 shape and charge, and there is no universal Reynolds number.  Choupo uses the
 correlation of Yang (1974)\cite{Yang1974}, which ties $f_p$ to the voidage
 $\varepsilon$
-($1-\varepsilon = \rho_s^*/\rho_p$, the solids holdup) and the terminal-to-
+($1-\varepsilon = \rho_s^*/\rho_p$, the solids holdup; for several solids
+$\rho_p$ is the volume-additive harmonic mean of their densities, and a
+solid without a declared $\rho_p$ is refused by name, exactly as for the
+cyclone) and the terminal-to-
 particle Reynolds ratio $(Re)_t/(Re)_p = u_t/u_p$:
 \begin{align}
   \text{vertical:}\quad & f_p\,\frac{\varepsilon^3}{1-\varepsilon}
@@ -22951,6 +23083,16 @@ the grade-efficiency curve
 \begin{equation}
    \eta(d) = \frac{1}{1 + (d_{50}/d)^2}.
 \end{equation}
+\emph{Several solids in one stream.}  The solids are a mechanical mixture,
+so their volumes add and the particle density is the mass-weighted
+\emph{harmonic} mean,
+$1/\rho_p=\sum_i w_i/\rho_{p,i}$ ($w_i$ the mass fractions among the
+solids); one solid keeps its own density exactly.  One function
+(\code{solidMixture::particleDensity}) computes it for the cyclone, the
+pneumatic conveyor and the spray dryer, and announces the mixture the same
+way in each.  A solid whose record declares no $\rho_p$ is \emph{refused by
+name} (component, unit, the key to declare and where) --- no density is
+assumed, since a density is a material datum that needs a source.
 The collection efficiency follows by integrating $\eta(d)$ over the
 feed PSD.  The pressure drop is a few velocity heads, $\Delta P = N_H
 \rho_g v_i^2/2$ (Shepherd--Lapple).
@@ -23801,6 +23943,497 @@ population.
 \item The time-integrated binaries, and a sizer or cost for any classifier.
 \end{itemize}
 
+\subsection{Solid--liquid separation: the cake filter, the thickener and the sedimenting centrifuge}\label{sec:solidliquid}
+
+Three units separate a SLURRY (a liquid carrying suspended solids; a
+gas-borne powder is the \code{cyclone}'s and the \code{bagFilter}'s) into a
+solids-rich stream and a clarified liquid: the \code{cakeFilter}
+(\S\ref{sec:cakeFilter}) forces the liquid through a cake by a pressure drop,
+the \code{thickener} (\S\ref{sec:thickener}) lets the solids settle under
+gravity, the \code{sedimentingCentrifuge} (\S\ref{sec:sedimentingCentrifuge})
+replaces gravity by a centrifugal field.  They read the same slurry stream as
+the hydrocyclone (\S\ref{sec:hydrocyclone}) and share one reader.  The solid
+density is volume-additive over the components' \code{rho\_p}; the liquid
+density is the package's at the feed's $T$ and $P$
+(\code{ThermoPackage::density}); the liquid viscosity is the package's
+(\code{ThermoPackage::viscosityLiquid}) and a case that declares no liquid
+viscosity model is REFUSED by name --- the viscosity is never a unit
+parameter.  Every outlet is the DIFFERENCE between the inlets and the others,
+so the component mass closes exactly (\code{componentMassClosure} is $0$ in
+every shipped case); every product leaves at the feed's $T$ and $P$ (no work,
+no heat: a wash at another temperature is deferred,
+\S\ref{sec:solidliquid-deferred}).  No sizer and no cost model exists for
+any of the three, and the time-integrated binaries do not carry them.
+
+SOURCES.  Geankoplis, Hersel \& Lepek (5th ed.)~\cite{Geankoplis2018}
+section~24.2 (filtration), section~30.1 (settling), section~30.2 (centrifuges);
+Talmage \& Fitch (1955)~\cite{TalmageFitch1955} and Wills \& Napier-Munn
+(2006)~\cite{Wills2006} section~15 (thickener); Ambler (1959)~\cite{Ambler1959}
+and de Haan, Eral \& Schuur (2nd ed.)~\cite{DeHaan2020} section~9.3
+(centrifuge); Perry (9th ed.)~\cite{Perry9} section~18.  The integrated
+filtration law is Ruth's~\cite{Ruth1935}; the settling construction rests on
+Kynch's postulate~\cite{Kynch1952}; neither paper was read for the
+implementation, which follows the books that print them (the papers are in the
+literature folder).  Seader, Henley \& Roper's 4th edition carries no
+filtration, sedimentation or centrifugation (its preface, p.~v, says those
+chapters were removed from it), so every printed example used below is
+Geankoplis's.
+
+\subsubsection{The \texttt{cakeFilter}: the two-resistance law}\label{sec:cakeFilter}
+
+\code{cakeFilter} takes \dict{model} \code{rotaryDrum} or \code{batchPress}.
+Inlets \dict{(slurry [wash])}; outlets \dict{(cake filtrate [spentWash])}.  The
+law is the constant-pressure filtration of Geankoplis section~24.2
+(pp.~1078--1090).  A volume $V$ of filtrate has passed through a filter of
+area $A$ under a pressure drop $-\Delta p$ when the cake of specific
+resistance $\alpha$ (m/kg) carries $c_S V$ of dry solids and the medium has a
+resistance $R_m$ (1/m):
+\begin{equation}
+\frac{t}{V} = \frac{K_p}{2}\,V + B,\qquad
+K_p = \frac{\mu\,\alpha\,c_S}{A^2\,(-\Delta p)},\qquad
+B = \frac{\mu\,R_m}{A\,(-\Delta p)},
+\label{eq:sl-filtration}
+\end{equation}
+i.e.\ $t = K_p V^2/2 + B V$ (Geankoplis eqs.~24.2-14, 24.2-15 and 24.2-17,
+pp.~1082).  Symbols: $\mu$ (Pa\,s) the filtrate viscosity, $c_S$ (kg of dry
+cake solids per m$^3$ of filtrate) the slurry's solids per filtrate, $t$ (s)
+the filtration time.  A plot of $t/V$ against $V$ is a straight line of
+slope $K_p/2$ and intercept $B$ (Geankoplis Fig.~24.2-2); the unit publishes
+that line as its profile (\code{V\_m3}, \code{t\_s}, \code{t\_over\_V\_s\_m3},
+21 points).  A compressible cake follows
+\begin{equation}
+\alpha = \alpha_0\,(-\Delta p)^{s}
+\label{eq:sl-compressible}
+\end{equation}
+(eq.~24.2-11, p.~1081), with $-\Delta p$ in Pa and $\alpha$ in m/kg;
+$\alpha_0$ is therefore read in SI, its dimensions having no integer form.
+The case gives EITHER a measured \dict{specificCakeResistance} $\alpha$ OR the
+pair \dict{alpha0}, \dict{compressibility} $s$ (both or neither; one beside
+the other is refused).
+
+\paragraph{What the slurry fixes: the cake moisture and $c_S$.}  The cake
+moisture is DECLARED, as $m$, the kg of WET cake per kg of DRY cake
+(\dict{wetToDryCakeRatio}); the definition of $m$ (eq.~24.2-10, p.~1080) gives
+the liquor kept by the cake, $L_r = (m-1)W$ kg/s for a solids flow $W$.  The
+filtrate is the rest of the feed's liquid, $Q_f = (\dot m_{\ell} - L_r)/\rho_\ell$
+(m$^3$/s), and
+\begin{equation}
+c_S = \frac{W}{Q_f}
+\label{eq:sl-cS}
+\end{equation}
+which is Geankoplis eq.~24.2-10, $c_S = \rho\,c_x/(1 - m\,c_x)$, written from
+the balance rather than from the slurry's mass fraction $c_x$; the unit prints
+both (\code{cS\_kg\_m3} and \code{cS\_eq24\_2\_10\_kg\_m3}), and they agree by
+algebra.  The cake's porosity (saturated, the liquor filling the voids) is
+$\varepsilon = \dfrac{(m-1)/\rho_\ell}{(m-1)/\rho_\ell + 1/\rho_s}$ and its
+thickness $L = W_A/((1-\varepsilon)\rho_s)$ with $W_A = c_S V/A$ the dry mass
+per area (eq.~24.2-4 with the liquid held in the cake neglected, as
+Geankoplis does).  These two are the unit's, not the book's.
+
+\paragraph{Window.}  Constant pressure; laminar flow through the cake
+(Geankoplis p.~1077); every solid is retained (stated, not computed: there is
+no bleed of fines); the cake law is the case's measured $\alpha$ or $(\alpha_0, s)$.
+Constant-rate filtration (section~24.2C) and centrifugal filtration
+(section~30.2E) are not built.  KEYS (none has a default): \dict{pressureDrop},
+\dict{mediumResistance} ($0$ is a declaration), \dict{wetToDryCakeRatio}, the
+cake law, and those of the model below.
+
+\paragraph{How a cyclic filter sits on a steady balance.}  The streams are the
+CYCLE-AVERAGED flows --- the steady balance per unit time --- and the cycle is
+a design result computed on them, never a second time axis and never another
+binary (the same settled contract as a batch plant designed on the steady balance).  The \code{rotaryDrum} is continuous by
+construction (Geankoplis p.~1088).  The \code{batchPress} is cyclic: its
+\dict{area}, \dict{filtratePerCycle} $V_f$ and \dict{cleaningTime} are declared,
+and the filtration time, the washing time and the cycle time follow.
+
+\paragraph{Model \texttt{rotaryDrum}.}\label{sec:cakeFilter-rotaryDrum}  A drum
+turning once every cycle time $t_c$, a fraction $f$ of each revolution
+\emph{submerged} (\dict{submergence}) forming cake, so the cake forms in
+$t = f\,t_c$ (eq.~24.2-23, p.~1088).  The filtrate per unit area and time,
+$V/(A t_c)$, follows from the two-resistance law with the formation time
+$f t_c$ (eq.~24.2-26, p.~1089):
+\begin{equation}
+\frac{V}{A\,t_c} =
+\frac{-R_m/t_c + \sqrt{R_m^{2}/t_c^{2} + 2\,c_S\,\alpha\,(-\Delta p)\,f/(\mu\,t_c)}}
+     {\alpha\,c_S},
+\label{eq:sl-drum}
+\end{equation}
+which reduces to eq.~24.2-24 when $R_m = 0$.  The case declares EXACTLY ONE of
+\dict{cycleTime} $t_c$ (the area is then the result, Geankoplis
+Example~24.2-4: $A = Q_f/(V/(A t_c))$) and \dict{area} $A$ (the cycle time is
+then the result, eq.~24.2-25 solved for $t_c$:
+$t_c = (f - \mu R_m Q_f/((-\Delta p) A))\,2(-\Delta p)A^2/(\mu\,\alpha\,c_S\,Q_f^2)$).
+A medium resistance that alone needs more than the submerged fraction of every
+revolution is REFUSED (no speed lets this drum pass the feed).  A wash zone
+washes at the final filtration rate, and when the wash does not fit in the
+$(1-f)$ of the revolution out of the slurry the unit refuses.
+
+\paragraph{Model \texttt{batchPress}.}\label{sec:cakeFilter-batchPress}  A
+plate-and-frame press or a leaf filter.  The filtration time is
+eq.~(\ref{eq:sl-filtration}) at $V = V_f$; the washing time is below; the cycle
+is $t_c = t_f + t_w + t_{\text{clean}}$ (Geankoplis p.~1087, Example~24.2-3), and
+the number of identical presses that pass the average feed is
+\begin{equation}
+n_{\text{presses}} = Q_f\,t_c/V_f
+\label{eq:sl-presses}
+\end{equation}
+(\code{pressesRequired}, ours: a real number, and rounding up is the student's
+design choice).  The wash per cycle is the wash flow over one cycle, so a wash
+flow of $10\,\%$ of the filtrate flow is Geankoplis's ``$10\,\%$ of the
+filtrate volume''.
+
+\subsubsection{Washing: where the cake's solute goes}\label{sec:cakeFilter-washing}
+
+A second inlet carries the wash liquid (a real stream, \dict{(slurry wash)}),
+and a third outlet the spent wash.  A wash with solids, at another temperature
+than the slurry, or that cannot supply the liquor it replaces is REFUSED.  The
+\emph{wash rate} is the final filtration rate times a path factor $k$,
+\begin{equation}
+\left(\frac{dV}{dt}\right)_{w} = \frac{k}{K_p V_f + B},\qquad
+k = \begin{cases}1 & \text{\code{sameAsFiltrate}, every drum (eq.~24.2-19)}\\
+1/4 & \text{\code{throughWashing} (eq.~24.2-20)}\end{cases}
+\label{eq:sl-washrate}
+\end{equation}
+(Geankoplis pp.~1086--1087; \code{throughWashing} is the plate-and-frame press,
+in which the wash passes through twice the cake over half the area: one
+quarter of the rate; \dict{washFlowPath} is declared with a wash on a press).
+The wash per cycle is $V_w = Q_w V_f/Q_f$ and $t_w = V_w/(dV/dt)_w$.  The
+\emph{wash ratio} is $N = $ volume of wash $/$ volume of liquor in the cake
+(Perry 9th ed.~\cite{Perry9} p.~18-76, the definition beside its eq.~18-71).
+A washing LAW gives the fraction $R$ of the cake's solute still in the cake
+after $N$:
+\paragraph{Law \texttt{displacement}.}\label{sec:wash-displacement}  $R = \max(0,\,1 - N)$:
+the definition of ideal displacement, the wash replacing the liquor volume for
+volume with no mixing.  No source is claimed for it.
+
+\paragraph{Law \texttt{tabulated}.}\label{sec:wash-tabulated}  The case's own wash test,
+\dict{washRatio (\dots)} and \dict{remaining (\dots)}, interpolated LINEARLY IN
+$\ln R$ against $N$ (Perry's coordinates, ``$\log R$ versus $N$'', named
+without coefficients under eq.~18-71, p.~18-76), with no extrapolation: an $N$
+outside the test is REFUSED.
+\textbf{No source in hand prints a washing law with constants.}
+Geankoplis prints the washing RATE only (eqs.~24.2-19/-20); Perry names the
+empirical correlation without its coefficients; Wills \& Napier-Munn, King
+and de Haan describe washing without a law.  So the first law is a
+definition and the second takes the case's measurement; neither is validated
+against a washing experiment.  The cake leaves holding $n_{\text{cake},i} = R\,n_{r,i} + \beta\,n_{w,i}$ of each
+liquid component ($n_{r,i}$ its liquor, $n_{w,i}$ the wash, $\beta = (1-R)V_r/V_w$
+the fraction of the wash that replaces liquor, volume for volume; a $\beta$
+above $1$, a wash that brings less than it must replace, is refused); the
+spent wash is the DIFFERENCE, $n_{r,i} + n_{w,i} - n_{\text{cake},i}$.
+
+\paragraph{KPIs a student checks by hand.}  \code{alpha\_m\_kg},
+\code{cS\_kg\_m3}, \code{filtrate\_m3\_s}, \code{Kp\_s\_m6}, \code{B\_s\_m3},
+\code{area\_m2}, \code{cycleTime\_s}, \code{filtrationTime\_s},
+\code{cakeThickness\_mm}, \code{cakePorosity}, \code{washRatio},
+\code{soluteRemaining}, \code{washTime\_s}, \code{pressesRequired},
+\code{componentMassClosure}.
+
+\paragraph{Comparison with the printed worked examples.}
+\file{filter01\_caco3\_rotaryDrum} runs Geankoplis Example~24.2-4 (pp.~1089--1090:
+a CaCO$_3$ slurry in water at 298.2\,K, 0.778\,kg/s at $c_x = 0.191$, $m = 2.0$,
+$67.0$\,kPa, $f = 0.33$, $t_c = 250$\,s declared, $\alpha = 4.37\times10^{9}(-\Delta p)^{0.3}$,
+$R_m$ neglected).  \file{filter02\_caco3\_pressWashing} runs Examples~24.2-1 to
+24.2-3 (pp.~1083--1088: a plate-and-frame press on a laboratory test,
+$-\Delta p = 338$\,kPa, $\alpha = 1.863\times10^{11}$, $R_m = 10.63\times10^{10}$,
+20 frames of $0.873$\,m$^2$, $V_f = 3.37$\,m$^3$, through-washing, 20\,min of
+cleaning).  Both are printed worked examples, so these rows are ANCHORS (not
+in-sample statements about a model: the arithmetic is the book's).
+\begin{center}\small
+\begin{tabular}{@{}llrrrl@{}}
+\toprule
+case & quantity & book & Choupo & gap & row \\ \midrule
+filter01 & $\alpha$ (m/kg) & $1.225\times10^{11}$ & $1.22547\times10^{11}$ & $+0.04\,\%$ & anchor \\
+filter01 & $c_S$ (kg/m$^3$) & 308.1 & 308.107 & $+0.00\,\%$ & anchor \\
+filter01 & $V/t_c$ (m$^3$/s) & $4.823\times10^{-4}$ & $4.82294\times10^{-4}$ & $-0.00\,\%$ & anchor \\
+filter01 & area $A$ (m$^2$) & 6.60 & 6.6434 & $+0.66\,\%$ & anchor ($1.5\,\%$) \\
+filter02 & $K_p$ (s/m$^6$) & 37.93 & 37.719 & $-0.56\,\%$ & anchor \\
+filter02 & $B$ (s/m$^3$) & 16.10 & 16.010 & $-0.56\,\%$ & anchor \\
+filter02 & filtration time (s) & 269.7 & 268.14 & $-0.58\,\%$ & anchor \\
+filter02 & washing time (s) & 194.0 & 192.93 & $-0.55\,\%$ & anchor \\
+filter02 & cycle time (s) & 1663.8 & 1661.07 & $-0.16\,\%$ & anchor (27.73\,min) \\
+\bottomrule
+\end{tabular}
+\end{center}
+The GAPS, each with its one cause, nothing tuned.  In filter01 the area has
+two parts: the print itself --- Geankoplis's own inputs ($\mu = 0.8937\times10^{-3}$,
+$\alpha = 1.225\times10^{11}$, $c_S = 308.1$, $f = 0.33$, $t_c = 250$\,s,
+$-\Delta p = 67.0$\,kPa) give $6.660$\,m$^2$ by his eq.~24.2-24, so the printed
+$6.60$ is $0.9\,\%$ below its own arithmetic --- and the water viscosity, which is the
+package's (Vogel, water's catalogue record) $8.889\times10^{-4}$\,Pa\,s against
+the book's $8.937\times10^{-4}$, and $A\propto\mu^{1/2}$ moves it by $-0.27\,\%$
+($6.660\sqrt{8.889/8.937} = 6.642$).  In filter02 the same viscosity, $-0.54\,\%$,
+enters linearly in $K_p$, $B$, $t_f$ and $t_w$, and is diluted in the cycle time
+by the 20\,min of cleaning ($-0.16\,\%$); the band is $1\,\%$.  filter02 declares
+$m = 2.0$ from the same slurry of Example~24.2-4 because Examples~24.2-1 to -3
+give no cake moisture, and its feed is set to one press on the book's cycle,
+so \code{pressesRequired} $= 0.998$ is a consistency check and not an
+anchor; the wash ratio and the solute remaining (water washes water) are
+unanchored.
+
+\subsubsection{The \texttt{thickener}: area from a batch settling test}\label{sec:thickener}
+
+A gravity thickener is sized from ONE batch settling test: the interface height
+$H$ against time $t$, first point $t = 0$, $H = H_0$, at an initial
+concentration $C_0$ (kg of solids per m$^3$ of slurry), given as
+\dict{settlingTest \{ initialConcentration; time (\dots); height (\dots); \}}
+in SI (a list carries no unit word).  Inlet \dict{in}; outlets
+$(\text{underflow},\ \text{overflow})$; \dict{model} \code{talmageFitch} or
+\code{coeClevenger}.  The target underflow concentration $C_u$ is
+\dict{underflowConcentration}.  The unit computes the AREA $A$ only: depth,
+the compression zone, a flocculant and the safety factor (Wills p.~386 asks for
+at least two) are not applied.  WINDOW: Kynch's postulate (the settling
+velocity a function of the local concentration alone, Talmage \& Fitch p.~38);
+free settling governs the area; the test run at the expected feed
+concentration (Talmage \& Fitch p.~40; a deviation above $5\,\%$ is announced).
+
+\paragraph{Kynch's construction.}  The settling velocity at a test point is the
+slope $v = -dH/dt$, the parabola through that point and its two neighbours (the
+interior point nearest $t$; ours, numerical --- a student draws the tangent by
+eye).  The tangent to the curve at $(t, H)$ meets the $H$ axis at
+$H_i = H + v\,t$, and the layer of concentration
+\begin{equation}
+C = \frac{C_0 H_0}{H_i}
+\label{eq:sl-kynch}
+\end{equation}
+settles at $v$ (Talmage \& Fitch eqs.~4--6, pp.~38--39; Wills eq.~15.4, p.~387).
+The underflow line is at $H_u = C_0 H_0/C_u$ (Talmage \& Fitch step~1, p.~39).
+The unit REFUSES a $C_u$ at or below $C_0$, at or above $\rho_s$, or whose
+$H_u$ lies below the last height the test reached (run the test longer or lower
+the target).
+
+\paragraph{Model \texttt{talmageFitch}.}\label{sec:thickener-talmageFitch}  The
+case declares the \emph{compression time} $t_c$ (\dict{compressionTime}) --- the
+time at which the settling solids go into compression --- and the unit draws the
+tangent there, at height $H_c$ and slope $v_c$, with intercept $H_{ic} = H_c + v_c t_c$.
+If $H_u < H_c$ the tangent meets the underflow line at
+$t_u = (H_{ic} - H_u)/v_c$; otherwise the curve itself crosses $H_u$ and $t_u$
+is that crossing (linearly interpolated); then
+\begin{equation}
+A = \frac{W\,t_u}{C_0\,H_0}
+\label{eq:sl-tf}
+\end{equation}
+for a solids feed $W$ (kg/s) (Talmage \& Fitch eqs.~7--10 and steps~1--5, p.~39;
+Wills eq.~15.6, p.~387; Perry 9th ed.\ eq.~18-54, p.~18-64).  The unit area
+$A/W$ is published in m$^2$ per (t/d) (their eq.~10 gives ft$^2$ per ton per
+day).  \textbf{THE COMPRESSION POINT IS DECLARED, never guessed:} Perry says
+every way of picking it is empirical (p.~18-64), and Talmage \& Fitch pick it
+by eye on the curve; a rule would be a second, unvalidated model, so the
+student's reading is the input and the unit draws it.
+
+\paragraph{Model \texttt{coeClevenger}.}\label{sec:thickener-coeClevenger}  Coe
+\& Clevenger (1916), as Wills eq.~15.5, p.~387, prints it: the area is the
+largest, over the layers of the test whose $C < C_u$, of
+\begin{equation}
+A = \max_{C<C_u}\; W\left(\frac{1}{C} - \frac{1}{C_u}\right)\frac{1}{v},
+\label{eq:sl-cc}
+\end{equation}
+with $(C, v)$ from Kynch's construction at each test point (Wills p.~387 says it
+may be done this way, instead of Coe and Clevenger's many tests).  THE IDENTITY
+that holds the two: Coe--Clevenger evaluated at the compression layer
+($C_c = C_0H_0/H_{ic}$, $v_c$) equals Talmage--Fitch's tangent area, since
+$H_{ic} - H_u = v_c t_u$ (Wills derives eq.~15.6 from eq.~15.5, p.~387).  The
+unit publishes both areas, the identity's deviation (\code{anchor\_TFequalsCC\_dev},
+$0$ to rounding) and the construction for the GUI to draw: \code{t\_s},
+\code{H\_m} and at every point \code{kynch\_v\_m\_s}, \code{kynch\_Hi\_m},
+\code{kynch\_C\_kg\_m3}, \code{coeClevengerArea\_m2}, with markers at the
+compression point and at $t_u$.  The underflow carries every solid (ideal) and
+$(1 - C_u/\rho_s)\rho_\ell/C_u$ kg of liquid per kg of solids; the overflow is
+the difference.
+
+\paragraph{Comparison: none printed.}  \file{thickener01\_settlingTest\_talmageFitch}
+uses the settling data of Geankoplis Problem~30.1-11 (p.~1451: a slurry at
+$250$\,kg/m$^3$, interface height $0.360$\,m falling to $0.090$\,m in 20\,h), a
+compression point of 1.75\,h, a target underflow of $700$\,kg/m$^3$ and a feed of
+10\,kg/s of solids, with calcite's record standing in for the unnamed solid.
+\textbf{NO PRINTED WORKED EXAMPLE OF A TALMAGE--FITCH OR COE--CLEVENGER SIZING
+EXISTS in the literature folder} (searched: Geankoplis section~30.1F gives the
+method and Problem~30.1-11 prints its data with no answer; Wills \&
+Napier-Munn pp.~385--388 the method and a figure; Talmage \& Fitch the
+derivation, their Table~II unit areas coming from curves that are not printed;
+King chapter~6 the Kynch flux model; Perry pp.~18-64 to 18-65 eq.~18-54; Treybal
+the batch test described; de Haan chapter~9 exercises only).  So the case is
+held by the identity above (deviation $0$) and the material balance
+(\code{componentMassClosure} $0$); the areas it gives, $A_{TF} = 846.94$\,m$^2$
+($0.980$\,m$^2$ per t/d) and $A_{CC} = 1102.3$\,m$^2$, are SELF-RECORDED in its
+golden: they pin that the answer has not moved, not that it is right.
+
+\subsubsection{The \texttt{sedimentingCentrifuge}: Sigma theory}\label{sec:sedimentingCentrifuge}
+
+A centrifuge sediments the particles that are denser than the liquid
+($\Delta\rho = \rho_s - \rho_\ell > 0$, refused otherwise) toward the bowl wall.
+Inlet \dict{in}; outlets $(\text{sediment},\ \text{centrate})$; \dict{model}
+\code{tubularBowl} or \code{discStack}.  The feed must be on the case's size grid
+(\S\ref{sec:classification}); the unit reads it and splits it with the
+classifier's own routines, class by class, by a GRADE EFFICIENCY $E_k$ (the
+fraction of class $k$ that reaches the sediment): coarse $=$ sediment,
+fine $=$ centrate (eqs.~(\ref{eq:class-actual})--(\ref{eq:class-split}) with
+$R=0$).  With $\omega = 2\pi N$ (eq.~30.2-4; $N$ from \dict{speed}, in rev/s; \code{rpm}
+accepted), $g = 9.80665$\,m/s$^2$ (Geankoplis p.~1412) and the feed's
+volumetric flow $Q = \dot m_\ell/\rho_\ell + \dot m_s/\rho_s$ (m$^3$/s), a
+particle of diameter $d$ settles in a field $\omega^2 r$ at the Stokes
+velocity
+\begin{equation}
+v = \frac{d^{2}\,\Delta\rho\,\omega^{2} r}{18\,\mu}
+\label{eq:sl-stokes}
+\end{equation}
+(Geankoplis eq.~30.2-8, the Stokes velocity with $g$ replaced by $\omega^{2} r$, eq.~30.2-1).  The
+machine's $\Sigma$ (m$^2$) is the area of the gravity settling tank that would
+do the same: a particle of diameter $d_{50}$ is half collected when
+\begin{equation}
+Q = 2\,v_g(d_{50})\,\Sigma,\qquad v_g = \frac{d^{2}\Delta\rho\,g}{18\,\mu},
+\qquad d_{50} = \sqrt{\frac{9\,\mu\,Q}{\Delta\rho\,g\,\Sigma}}
+\label{eq:sl-cut}
+\end{equation}
+(Ambler 1959 eq.~9; Geankoplis eq.~30.2-18).  Two geometries give $\Sigma$.
+
+\paragraph{Model \texttt{tubularBowl}.}\label{sec:centrifuge-tubularBowl}  A
+cylinder of outer radius $r_2$ (\dict{bowlRadius}), liquid-surface radius $r_1$
+(\dict{liquidRadius}) and length $b$ (\dict{bowlLength}), of volume
+$V = \pi b\,(r_2^2 - r_1^2)$ (Geankoplis p.~1436).  The
+EQUAL-VOLUME definition of the cut --- the particle that starts at the radius
+splitting the liquid layer into two equal volumes --- gives
+\begin{equation}
+\Sigma = \frac{\omega^{2}\,V}{g\,\ln\!\big(2 r_2^{2}/(r_1^{2}+r_2^{2})\big)}
+\label{eq:sl-sigma-tubular}
+\end{equation}
+(Ambler eqs.~24--28, p.~191, the exact form, his eq.~33 being the approximation;
+de Haan, Eral \& Schuur eqs.~9.44--9.46, p.~309).  Geankoplis takes the particle
+that starts HALFWAY through the liquid layer instead, and gets
+$\Sigma_G = \omega^{2}V/\big(2g\ln\frac{2r_2}{r_1+r_2}\big)$ (eq.~30.2-19, p.~1439)
+and a critical diameter $D_{pc}$ from the same relation (eq.~30.2-12, p.~1436).
+\textbf{TWO DEFINITIONS, TWO CUT SIZES, ONE CURVE.}  Both are published; the unit
+prints both: \code{cutSize\_d50\_um} (equal volumes, $E = 1/2$ exactly, the size
+a uniformly fed bowl half collects) and \code{cutSizeHalfLayer\_Dpc\_um}
+(Geankoplis's $D_{pc}$, which on the same curve has
+$E = (r_2^2 - r_m^2)/(r_2^2-r_1^2) = 0.628$ with $r_m = (r_1+r_2)/2$, so it is the
+$62.8\,\%$ size in \file{centrifuge01}).  The ANCHOR is the book's $D_{pc}$; the
+$d_{50}$ is the curve's.
+
+\paragraph{The grade-efficiency curve is DERIVED here, not printed.}  Neither
+Geankoplis, Ambler nor de Haan prints a grade efficiency $E(d)$ for either
+geometry.  The tubular curve is Geankoplis eq.~30.2-10 (the radial motion
+$dr/dt = d^{2}\Delta\rho\,\omega^{2}r/(18\mu)$) integrated from a starting radius,
+with Ambler's eq.~26 premise that the feed is spread uniformly over the annulus:
+with the residence time $\tau = V/Q$ and $k = d^{2}\Delta\rho\,\omega^{2}\tau/(18\mu)$,
+a particle that starts at $r$ reaches the wall if $r\,e^{k}\ge r_2$, so
+\begin{equation}
+r^{*} = \max\!\big(r_1,\ r_2\,e^{-k}\big),\qquad
+E = \frac{r_2^{2} - r^{*2}}{r_2^{2} - r_1^{2}}
+\label{eq:sl-grade-tubular}
+\end{equation}
+(by construction $E(d_{50}) = 1/2$).  The code labels it DERIVED.
+
+\paragraph{Model \texttt{discStack}.}\label{sec:centrifuge-discStack}  A stack of
+$n$ disc spaces (\dict{discSpaces}) between radii $r_1$ (\dict{innerRadius}) and
+$r_2$ (\dict{outerRadius}), the discs at a half angle $\theta$
+(\dict{discHalfAngle}, \code{deg} accepted, in $(0, 90^\circ)$):
+\begin{equation}
+\Sigma = \frac{2\pi\,n\,\omega^{2}\,(r_2^{3} - r_1^{3})}{3\,g\,\tan\theta}
+\label{eq:sl-sigma-disc}
+\end{equation}
+(de Haan, Eral \& Schuur eq.~9.52, p.~311; Ambler eq.~46, p.~194, with his flow
+factor $C = 1$).  Ambler says $C$ ``is not completely understood''; $C = 1$ is
+laminar symmetric flow with plug-flow drift, and his measured disc efficiency
+($55\,\%$ of theoretical on satin clay, p.~195) is NOT applied.  The grade curve
+is the captured fraction, the drift across the gap $v_g\Sigma/Q$ with Ambler's
+$f(y) = 1$ (eqs.~43--44, p.~194):
+\begin{equation}
+E = \min\!\Big(1,\ \tfrac12\,(d/d_{50})^{2}\Big)
+\label{eq:sl-grade-disc}
+\end{equation}
+DERIVED here, printed by no source.
+
+\paragraph{The split and the Stokes window.}  The sediment's solids fraction
+\dict{sedimentSolids} $w_s$ is declared (the discharged sludge's mass fraction of
+solids); the solids reaching it are $Y = \sum_k E_k f_k$ of the feed's solids and
+its liquid is $Y\,\dot m_s(1-w_s)/w_s$ (refused when the feed has not that much
+liquid); the centrate is the difference.  WINDOW: Stokes' law at the cut size
+(enforced): the particle Reynolds number at the wall,
+$Re = d_{50}\,v_{\text{wall}}\rho_\ell/\mu$ with
+$v_{\text{wall}} = d_{50}^{2}\Delta\rho\,\omega^{2}r_2/(18\mu)$, must be below $1$
+(Geankoplis eq.~30.2-13, p.~1437; $N_{Re}<1$, section~30.1B, p.~1413), or the unit
+refuses, and the message says the remedy: $Re$ at the cut grows as $Q^{3/2}/\omega$,
+so a faster bowl or a lower throughput.  Hindered settling (Geankoplis eq.~30.1-16)
+is NOT applied (the solids fraction is printed), nor Ambler's turbulent $\Sigma$
+(eqs.~34--39), the Brownian threshold and agglomeration (pp.~195--196), or the
+drive power.  KEYS (none has a default): \dict{speed} and \dict{sedimentSolids},
+and those of the model.  KPIs: every classifier KPI of \S\ref{sec:classification}
+under the words \code{sediment}/\code{centrate} (\code{d50\_um}, both products'
+$d_{10}\dots d_{90}$, the closures), \code{omega\_rad\_s}, \code{gForce\_wall},
+\code{sigma\_m2}, \code{cutSize\_d50\_um}, \code{Re\_cut}, \code{vWall\_cut\_m\_s},
+\code{gradeEfficiency\_at\_d50}; for the tubular bowl also \code{bowlVolume\_m3},
+\code{residenceTime\_s}, \code{sigmaHalfLayer\_m2}, \code{cutSizeHalfLayer\_Dpc\_um},
+\code{gradeEfficiency\_at\_Dpc}.
+
+\paragraph{Comparison.}  \file{centrifuge01\_tubularBowl\_geankoplis} runs
+Geankoplis Example~30.2-2 (pp.~1437--1438: particles of $1461$\,kg/m$^3$ in a
+solution of $801$\,kg/m$^3$ and $100$\,cP; $r_2 = 0.02225$, $r_1 = 0.00716$,
+$b = 0.1970$\,m at 23\,000\,rev/min; $q = 0.002832$\,m$^3$/h), a printed worked
+example, so these rows are ANCHORS:
+\begin{center}\small
+\begin{tabular}{@{}lrrrl@{}}
+\toprule
+quantity & book & Choupo & gap & row \\ \midrule
+$\omega$ (rad/s) & 2410 & 2408.55 & $-0.06\,\%$ & anchor (the book prints it rounded) \\
+bowl volume $V$ (m$^3$) & $2.747\times10^{-4}$ & $2.74663\times10^{-4}$ & $-0.01\,\%$ & anchor \\
+$D_{pc}$ ($\mu$m, eq.~30.2-12) & 0.746 & 0.74677 & $+0.10\,\%$ & anchor (3 figures) \\
+\bottomrule
+\end{tabular}
+\end{center}
+The book also says only that the settling is ``in the Stokes' law range'' (no
+number): the unit's $Re$ at the cut is $9.6\times10^{-8}$.  What is NOT the
+book's: the particle size distribution (none is printed; a Rosin--Rammler feed,
+$d_{63} = 0.8\,\mu$m, $n = 1.5$, is DECLARED to show the split class by class),
+the solids content ($0.1\,\%$ by volume), the sediment's solids fraction ($0.5$)
+and the temperature; the two components are case-local pseudo-components, so
+the energy and element balances of this case are REFUSED for want of an enthalpy
+datum and a formula (named by the engine; mass closes).  Its $d_{50} = 0.6327\,\mu$m
+and the split ($51.6\,\%$ of the solids to the sediment) are the unit's, held by
+the golden alone.
+
+\file{centrifuge02\_discStack\_sigmaIdentity} exercises the \code{discStack}
+model, and is a DECLARED ILLUSTRATION: \textbf{no printed or measured result holds
+it.}  A search of the literature folder found no worked example of a disc-stack
+centrifuge with numbers (de Haan gives eq.~9.52 and no example; Geankoplis
+describes the disk bowl in words, section~30.2D, p.~1442; Ambler derives the
+disc $\Sigma$ and quotes a measured efficiency for machines whose geometry is not
+given; Perry shows a figure).  Its one anchor is an IDENTITY: the $\Sigma$ the engine prints
+equals eq.~(\ref{eq:sl-sigma-disc}) evaluated by hand in the case header with the
+same inputs ($n = 100$, $r_2 = 0.10$\,m, $r_1 = 0.04$\,m, $\theta = 40^\circ$,
+6000\,rev/min: $\Sigma = 9405.03$\,m$^2$).  The identity checks the arithmetic of
+the equation as implemented, not the equation against a machine.
+
+\subsubsection{What is deferred or refused}\label{sec:solidliquid-deferred}
+
+\begin{itemize}
+\item \textbf{Refused, by name:} \dict{alpha0}/\dict{compressibility} alone or
+beside \dict{specificCakeResistance}; both or neither of \dict{cycleTime} and
+\dict{area} on a drum; a medium that alone exceeds the submerged time; a cake
+holding more liquid than the slurry brings; a wash with solids, at another
+temperature, or that cannot supply the liquor it replaces; a drum that cannot wash
+in the unsubmerged part of its revolution; a wash ratio outside a tabulated test;
+a settling test that does not start at $t=0$, whose times do not rise or whose
+interface rises; $C_u$ at or below $C_0$, at or above $\rho_s$ or below what the
+test reached; a compression time outside the test; a centrifuge feed not on the
+grid, dry or vapour-bearing; a solid not denser than the liquid; $Re \ge 1$ at the
+cut size; a geometry with $r_1 \ge r_2$ or a disc angle outside $(0, 90^\circ)$;
+a sediment needing more liquid than the feed has; a liquid viscosity the case did
+not declare a model for.
+\item \textbf{An enthalpy balance across the cake}, a wash at another
+temperature and the filtrate's pressure under vacuum: every product leaves at the
+feed's $T$ and $P$.
+\item \textbf{Constant-rate filtration} (Geankoplis section~24.2C), centrifugal
+filtration (section~30.2E), a medium that bleeds fines.
+\item \textbf{A washing law with constants}: none is printed in the sources in hand.
+\item \textbf{A thickener's depth, compression zone, flocculant and safety
+factor}, and a Kynch flux-curve thickener (King chapter~6): the area is the result.
+\item \textbf{Hindered settling in the centrifuge}, Ambler's turbulent $\Sigma$,
+the disc stack's measured efficiency factor, the drive power.
+\item A sizer or a cost for any of the three, and the time-integrated binaries.
+\end{itemize}
+
+
 % ---------------------------------------------------------------------
 \section{Drying: spray dryer and solid dryer}\label{ch:drying-overview}
 
@@ -23897,7 +24530,10 @@ droplet then shrinks to the powder particle by the solid fraction,
 \begin{equation}
    d_p = d_{32}\,(x_{\text{solid}}\,\rho_L/\rho_{\text{solid}})^{1/3},
 \end{equation}
-so the powder carries a PSD.
+so the powder carries a PSD.  $\rho_{\text{solid}}$ is the solid's declared
+$\rho_p$ (for a powder of several solids, the volume-additive harmonic mean
+of theirs); a solid with no $\rho_p$ in its record is refused by name --- the
+unit no longer assumes $1500\,$kg/m$^3$.
 
 \paragraph{Wet-bulb temperature.}  While the surface is wet the droplet
 sits at the psychrometric wet-bulb temperature (a Lewis-number-$\approx
@@ -23928,6 +24564,9 @@ its KPI of the same name is the inlet's),
 \begin{equation}
    X_e = \frac{X_m\,C\,K\,a_w}{(1-K a_w)(1-K a_w + C K a_w)}.
 \end{equation}
+All three of $X_m$, $C$ and $K$ are required: a \dict{sorption \{\}} block
+missing any one is refused by name (a missing $C$ or $K$ used to read as zero
+and give $X_e=0$).
 
 \emph{Kinetics} (in \file{constant/dryingKinetics}, axiom 3): below the
 critical moisture $X_c$ the rate falls; the Lewis falling-rate model
@@ -27771,6 +28410,71 @@ minimum, used by \cite{GeraldesAfonso2010} to locate $i_\text{lim}$.
 
 \bibitem{Wachinski2017} Wachinski, A. M., \emph{Ion Exchange Treatment for Water}, American Water Works Association, Denver (2017). Practitioner reference for water-softening capacity bases (eq/L bed vs eq/kg dry), regeneration and the sodium ``salt penalty'' \eqref{eq:salt-penalty}.
 
+\bibitem{GeankoplisHL2018} Geankoplis, C. J., Hersel, A. A., \& Lepek, D. H.,
+\emph{Transport Processes and Separation Process Principles}, 5th ed., Pearson
+(Prentice Hall), 2018, Chapter~28 (equations (28.1-1) to (28.1-3) and (28.2-1),
+pp.~1348--1350 of the 5th edition).  The linear, Freundlich and Langmuir forms,
+the log--log and $1/q$ against $1/c$ plots, and the batch balance whose plot
+against $c$ meets the isotherm.
+
+\bibitem{Wankat2007} Wankat, P. C., \emph{Separation Process Engineering},
+2nd ed., Prentice Hall (Pearson Education), 2007, Chapter~17: Eqs.~(17-5a) to
+(17-6c), the liquid-phase Langmuir isotherm, and Example~17-1, which fits
+$p/q$ against $p$.
+
+\bibitem{DeHaan2020} de Haan, A.~B., Eral, H.~B.\ and Schuur, B.,
+\emph{Industrial Separation Processes: Fundamentals}, 2nd ed., De Gruyter, 2020
+(ISBN 978-3-11-065473-8).  The sigma concept and the tubular-bowl cut
+(eqs.~9.41--9.46, pp.~308--309) and the disc-stack $\Sigma$ (eq.~9.52, p.~311).  Chapter~6 for the Langmuir isotherm: Eqs.~(6.6), (6.11), (6.12); for a liquid the physical meaning of $q_{\max}$ and $b'$ is lost and both are empirical constants.
+
+\bibitem{Ruthven1984} Ruthven, D. M., \emph{Principles of Adsorption and
+Adsorption Processes}, Wiley-Interscience (John Wiley \& Sons), 1984,
+pp.~49--50 (Eqs.~(2.27) to (2.32), the Langmuir isotherm and both of its
+linear forms) and p.~121 (Section~4.7, adsorption from the liquid phase).
+
+\bibitem{Freundlich1907} Freundlich, H., ``\"Uber die Adsorption in
+L\"osungen'', \emph{Z.\ Phys.\ Chem.} \textbf{57U} (1907) 385--470,
+doi:10.1515/zpch-1907-5723.  The power-law isotherm of
+Eq.~\eqref{eq:ads-liquid-isotherms}.
+
+\bibitem{SeaderHR2016} Seader, J. D., Henley, E. J., \& Roper, D. K.,
+\emph{Separation Process Principles with Applications Using Process
+Simulators}, 4th ed., Wiley, 2016, Chapter~15: Freundlich Eqs.~(15-19) and
+(15-20) with the exponent $1/n$, Langmuir Eqs.~(15-24) and (15-25).  Slurry
+adsorption, pp.~480--483: the film rate law (15-76), the batch balance (15-77),
+the closed form for a linear isotherm (15-80), Example~15.10 and Glueckauf's
+series resistance (15-100).
+
+\bibitem{Kinniburgh1986} Kinniburgh, D.G., ``General purpose adsorption
+isotherms'', \emph{Environ.\ Sci.\ Technol.} \textbf{20} (1986) 895--904,
+doi:10.1021/es00151a008.  Nonlinear least squares for isotherms, and what
+the linearised forms do to the errors.
+
+\bibitem{BolsterHornberger2007} Bolster, C.H., Hornberger, G.M., ``On the use
+of linearized Langmuir equations'', \emph{Soil Sci.\ Soc.\ Am.\ J.} \textbf{71}
+(2007) 1796--1806, doi:10.2136/sssaj2006.0304.  How each linearised form
+weights the points.
+
+\bibitem{Treybal1980} Treybal, R.~E., \emph{Mass-Transfer Operations}, 3rd
+ed., McGraw-Hill, 1980.  Pp.~172 (Eq.~6.38) and 180--184 (Eqs.~6.47--6.64,
+Illustration 6.4): the AIChE sieve-tray correlations in SI form, point
+efficiency and the eddy-diffusion conversion.  Chapter~11, pp.~588--594 and
+603--604: crossflow and countercurrent adsorption stages (Eqs.~11.8--11.14, the
+unequal optimum split and its Freundlich form~11.13), the stirred-tank film
+coefficient (Eqs.~11.28--11.29) and batch adsorption with film resistance
+(Eqs.~11.36--11.40).
+
+\bibitem{Harriott1962} Harriott, P., ``Mass transfer to particles: Part I.
+Suspended in agitated tanks'', \emph{AIChE J.} \textbf{8} (1962) 93--101,
+doi:10.1002/aic.690080122.  Film coefficients in a stirred tank, above the
+stagnant bound.
+
+\bibitem{Glueckauf1955} Glueckauf, E., ``Theory of chromatography.  Part 10.
+Formulae for diffusion into spheres and their application to
+chromatography'', \emph{Trans.\ Faraday Soc.} \textbf{51} (1955) 1540--1551,
+doi:10.1039/TF9555101540.  The series film-and-particle resistance of
+Section~\ref{sec:batch-adsorption-stirred-tank}.
+
 \bibitem{Weisbach1845} Weisbach, J., \emph{Lehrbuch der Ingenieur- und
 Maschinen-Mechanik}, Vol.~1, Braunschweig, 1845; and Darcy, H.,
 \emph{Recherches exp\'erimentales relatives au mouvement de l'eau dans
@@ -27926,6 +28630,41 @@ Whiten's partition curve (eq.~21, p.~681) behind the \code{whiten} model;
 its hydrocyclone correlations (eqs.~13--15) are deferred
 (\S\ref{sec:classification-deferred}).
 
+\bibitem{Geankoplis2018} Geankoplis, C.~J., Hersel, A.~A.\ and Lepek, D.~H.,
+\emph{Transport Processes and Separation Process Principles}, 5th ed., Prentice
+Hall / Pearson Education, 2018.  Section~24.2 (cake filtration: eqs.~24.2-4,
+24.2-10, 24.2-11, 24.2-14, 24.2-15, 24.2-17, 24.2-19, 24.2-20, 24.2-23 to
+24.2-26, Examples~24.2-1 to 24.2-4, pp.~1078--1090); section~30.1 (settling,
+Problem~30.1-11, p.~1451); section~30.2 (centrifuges: eqs.~30.2-1 to 30.2-19,
+Example~30.2-2, pp.~1434--1439).
+
+\bibitem{TalmageFitch1955} Talmage, W.~P.\ and Fitch, E.~B., ``Determining
+thickener unit areas'', \emph{Industrial \& Engineering Chemistry} \textbf{47}(1)
+(1955) 38--41, doi:10.1021/ie50541a022.  Kynch's construction as a thickener
+area (eqs.~4--10 and steps~1--5, pp.~38--39).
+
+\bibitem{Ambler1959} Ambler, C.~M., ``The theory of scaling up laboratory data
+for the sedimentation type centrifuge'', \emph{Journal of Biochemical and
+Microbiological Technology and Engineering} \textbf{1}(2) (1959) 185--205,
+doi:10.1002/jbmte.390010206.  The tubular $\Sigma$ (eqs.~24--28, p.~191), the
+cut size (eq.~9) and the disc-type $\Sigma$ (eqs.~43--46, p.~194).
+
+\bibitem{Perry9} Green, D.~W.\ and Southard, M.~Z.\ (eds.), \emph{Perry's
+Chemical Engineers' Handbook}, 9th ed., McGraw-Hill, 2019.  Section~14:
+Eqs.~(14-90) table (open-area flood correction, p.~14-36), (14-98)--(14-99)
+(Colburn, Fair's entrainment), (14-100)--(14-109) (Bolles--Fair pressure drop),
+(14-102a) (orifice coefficient); Section~13, Eq.~(13-77).
+
+\bibitem{Ruth1935} Ruth, B.~F., ``Studies in filtration III.  Derivation of
+general filtration equations'', \emph{Industrial \& Engineering Chemistry}
+\textbf{27}(6) (1935) 708--723, doi:10.1021/ie50306a024.  The two-resistance
+filtration law, implemented as Geankoplis prints it.
+
+\bibitem{Kynch1952} Kynch, G.~J., ``A theory of sedimentation'',
+\emph{Transactions of the Faraday Society} \textbf{48} (1952) 166--176,
+doi:10.1039/tf9524800166.  The postulate behind the settling construction,
+implemented as Talmage \& Fitch and Wills \& Napier-Munn print it.
+
 \bibitem{Gnielinski1976} Gnielinski, V., 1976.  The lower-scatter
 turbulent in-tube correlation on Petukhov's smooth-tube friction factor;
 Choupo's \code{Gnielinski} model and the default tube-side film.  As
@@ -28039,11 +28778,6 @@ commercial scale 14\,\% hole area sieve tray'', \emph{Ind.\ Eng.\ Chem.\
 Process Des.\ Dev.}\ \textbf{21} (1982) 712--717.  FRI 1.2~m column; Table~III
 tabulated runs, the 8\,\% tray in Figs.~12--13.
 
-\bibitem{Treybal1980} Treybal, R.~E., \emph{Mass-Transfer Operations}, 3rd
-ed., McGraw-Hill, 1980.  Pp.~172 (Eq.~6.38) and 180--184 (Eqs.~6.47--6.64,
-Illustration 6.4): the AIChE sieve-tray correlations in SI form, point
-efficiency and the eddy-diffusion conversion.
-
 \bibitem{ChanFair1984} Chan, H.\ and Fair, J.~R., ``Prediction of point
 efficiencies on sieve trays.\ 1.\ Binary systems'', \emph{Ind.\ Eng.\ Chem.\
 Process Des.\ Dev.}\ \textbf{23} (1984) 814--819.
@@ -28055,12 +28789,6 @@ efficiency of bubble cap columns'', \emph{Ind.\ Eng.\ Chem.}\ \textbf{28}
 \bibitem{Colburn1936} Colburn, A.~P., ``Effect of entrainment on plate
 efficiency in distillation'', \emph{Ind.\ Eng.\ Chem.}\ \textbf{28} (1936)
 526--530.
-
-\bibitem{Perry9} Green, D.~W.\ and Southard, M.~Z.\ (eds.), \emph{Perry's
-Chemical Engineers' Handbook}, 9th ed., McGraw-Hill, 2019.  Section~14:
-Eqs.~(14-90) table (open-area flood correction, p.~14-36), (14-98)--(14-99)
-(Colburn, Fair's entrainment), (14-100)--(14-109) (Bolles--Fair pressure drop),
-(14-102a) (orifice coefficient); Section~13, Eq.~(13-77).
 
 \bibitem{Syeda2007} Syeda, S.~R., Afacan, A.\ and Chuang, K.~T., ``A
 fundamental model for prediction of sieve tray efficiency'', \emph{Chem.\ Eng.\

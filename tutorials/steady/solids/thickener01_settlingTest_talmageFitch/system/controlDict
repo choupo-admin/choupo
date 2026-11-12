@@ -1,0 +1,50 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thickener01_settlingTest_talmageFitch
+
+  A CONTINUOUS THICKENER SIZED FROM ONE BATCH SETTLING TEST by the
+  Talmage-Fitch construction (Talmage & Fitch 1955; Wills & Napier-Munn
+  2006 eqs. 15.4-15.6, p. 387), with the Coe-Clevenger area of the same
+  test beside it.
+
+  NO PRINTED WORKED EXAMPLE EXISTS IN THE LITERATURE FOLDER FOR THIS.
+    Searched: Geankoplis 5th ed. section 30.1F (the method, no example);
+    Wills & Napier-Munn 2006 pp. 385-388 (the method, a figure, no numbers);
+    Talmage & Fitch 1955 (the derivation; Table II compares unit areas whose
+    settling curves are not printed); King 2001 chapter 6 (Kynch's flux
+    model, no Talmage-Fitch example); Perry 9th ed. pp. 18-64 to 18-65
+    (eq. 18-54, no example); Treybal 3rd ed. (batch settling described, no
+    thickener example); de Haan et al. 2nd ed. chapter 9 (exercises only).
+    The brief asked for a printed example; there is none to hold this to.
+  WHAT IS PRINTED AND USED: the settling data of Geankoplis Problem 30.1-11
+    (p. 1451: a slurry at 250 kg/m3, interface height 0.360 m to 0.090 m
+    over 20 h).  The book prints NO answer to that problem.
+  WHAT IS DECLARED HERE, AND IS OURS: the compression point (1.75 h, the
+    end of the steep part of the curve; Perry p. 18-64: every way of picking
+    it is empirical); the target underflow, 700 kg/m3; the feed, 10 kg/s of
+    solids at the test's 250 kg/m3; the solid (calcite's record, see the
+    thermoPhysPropDict).
+  HELD TO: one IDENTITY -- Coe-Clevenger evaluated at the compression layer
+    (its C = C_0 H_0 / H_i and its v) gives Talmage-Fitch's tangent area
+    (Wills derives eq. 15.6 from eq. 15.5, p. 387); and the material-balance
+    closure.  The area itself is held by the golden only: it is what this
+    construction gives on these data, unverified against any print.
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "A gravity thickener sized from one batch settling test by the Talmage-Fitch tangent at the compression point, the Coe-Clevenger area beside it; the settling data of Geankoplis Problem 30.1-11 (no printed answer exists).";
+verbosity     3;
+citations
+(
+    "Talmage, W.P.; Fitch, E.B. (1955) Determining thickener unit areas. Ind. Eng. Chem. 47(1), 38-41."
+    "Kynch, G.J. (1952) A theory of sedimentation. Trans. Faraday Soc. 48, 166-176 (as given by Talmage & Fitch 1955 and Wills & Napier-Munn 2006; not read for this case)."
+    "Wills, B.A.; Napier-Munn, T.J. (2006) Wills' Mineral Processing Technology, 7th ed. Elsevier, Oxford. Chapter 15, eqs. 15.1-15.6, pp. 386-387."
+    "Coe, H.S.; Clevenger, G.H. (1916) Trans. Am. Inst. Mining Engrs. 55, 356 (as cited by Talmage & Fitch 1955; as given by Wills & Napier-Munn 2006; not read)."
+    "Geankoplis, C.J.; Hersel, A.A.; Lepek, D.H. Transport Processes and Separation Process Principles, 5th ed. Prentice Hall (year not read on the page). Problem 30.1-11, p. 1451 (the settling data)."
+);

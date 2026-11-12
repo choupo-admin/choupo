@@ -618,6 +618,7 @@ void Component::readFromDict(const DictPtr& d)
                 hasSolid_ = true;
                 rho_p_ = cr->lookupScalarOrDefault("rho_p", 0.0);
                 k_v_   = cr->lookupScalarOrDefault("k_v", 0.5235987756);
+                kvDeclared_ = cr->found("k_v");
                 break;
             }
     }
@@ -627,6 +628,7 @@ void Component::readFromDict(const DictPtr& d)
         hasSolid_ = true;
         rho_p_ = sd->lookupScalarOrDefault("rho_p", 0.0);
         k_v_   = sd->lookupScalarOrDefault("k_v", 0.5235987756);  // sphere
+        kvDeclared_ = sd->found("k_v");
     }
 
     // Sublimation reference state (the solid-vapour P-T anchor): triple point +
@@ -671,9 +673,21 @@ void Component::readFromDict(const DictPtr& d)
     {
         auto sd = d->subDict("sorption");
         hasSorption_ = true;
-        sorpXm_ = sd->lookupScalarOrDefault("Xm", 0.0);
-        sorpC_  = sd->lookupScalarOrDefault("C",  0.0);
-        sorpK_  = sd->lookupScalarOrDefault("K",  0.0);
+        //  GAB: all three parameters are REQUIRED.  A missing C or K used to
+        //  read as 0 and give X_eq = 0 at exit 0 (review SP-04).
+        for (const char* key : {"Xm", "C", "K"})
+            if (!sd->found(key))
+                throw std::runtime_error("component '" + name_ + "': the"
+                    " `sorption {}` block (GAB water-sorption isotherm) does"
+                    " not declare `" + std::string(key) + "`.  The isotherm"
+                    " needs Xm (monolayer moisture, kg/kg), C (energy constant)"
+                    " and K (multilayer factor), all three, from a measured"
+                    " isotherm of THIS material; none is assumed.  Declare it in"
+                    " the component record or in the case's constant/components/"
+                    + name_ + ".");
+        sorpXm_ = sd->lookupScalar("Xm");
+        sorpC_  = sd->lookupScalar("C");
+        sorpK_  = sd->lookupScalar("K");
         // Xc (critical moisture) is KINETICS, not equilibrium -> it lives in
         // constant/dryingKinetics, read by the dryer, not on the component.
     }

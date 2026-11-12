@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  filter01_caco3_rotaryDrum / flowsheetDict
+
+  One rotary drum, Geankoplis Example 24.2-4: the cycle time is declared,
+  the area is the result (eq. 24.2-26 with R_m = 0, which is eq. 24.2-24).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        drum;
+        type        cakeFilter;
+        model       rotaryDrum;
+        in          slurry;
+        outputs     ( cake filtrate );
+        operation
+        {
+            pressureDrop        67.0 kPa;     // "a pressure drop of 67.0 kPa"
+            submergence         0.33;         // "33% submergence of the drum"
+            cycleTime           250 s;        // "The filter-cycle time is 250 s"
+            //  alpha = (4.37e9)(-dp)^0.3, "-dp in Pa and alpha in m/kg":
+            //  alpha0 is read in SI (its dimensions, m/kg/Pa^0.3, have no
+            //  integer form).
+            alpha0              4.37e9;
+            compressibility     0.3;
+            //  "neglecting and setting B = 0" (p. 1089): the medium is not
+            //  part of the example.  Declared, not defaulted.
+            mediumResistance    [0 -1 0 0 0] 0;
+            wetToDryCakeRatio   2.0;          // "kg wet cake/kg dry cake = m = 2.0"
+        }
+    }
+);

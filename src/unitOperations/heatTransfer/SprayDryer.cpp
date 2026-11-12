@@ -43,6 +43,7 @@ License
 #include <sstream>
 #include <stdexcept>
 #include "thermo/vaporPressure/VaporPressureModel.H"
+#include "thermo/SolidMixture.H"
 #include "thermo/heatCapacity/HeatCapacityModel.H"
 
 namespace Choupo {
@@ -431,7 +432,7 @@ int SprayDryer::solve(const DictPtr& dict,
         for (auto i : solids) names += (names.empty() ? "" : ", ") + thermo.comp(i).name();
         const std::string msg = "the powder carries " + std::to_string(solids.size())
             + " solids (" + names + "): all leave in the powder, the particle density"
-              " is their mass-weighted harmonic mean (volumes additive), and no"
+              " is their volume-additive (harmonic) mean, and no"
               " residual moisture is modelled for a mixed powder";
         if (AdvisoryLog::instance().add("model", "info",
                 "sprayDryer '" + (dict->name().empty() ? type() : dict->name()) + "'", msg)
@@ -606,18 +607,13 @@ int SprayDryer::solve(const DictPtr& dict,
     if (verbosity >= 2)
         std::cout << "  [atomiser] " << atomiser->name() << ":  " << drop.note << "\n"
                   << "  [atomiser mu_L] " << muLSource << "\n";
-    //  The particle density of a powder of several solids is the mass-
-    //  weighted HARMONIC mean (the volumes add, an ideal-mixing assumption
-    //  printed below); one solid keeps its own density exactly.
-    auto rhoOf = [&](std::size_t i)
-    { return (thermo.comp(i).rho_p() > 0.0) ? thermo.comp(i).rho_p() : 1500.0; };
-    scalar rho_solid = rhoOf(iSolid);
-    if (solids.size() > 1 && m_solid > 0.0)
-    {
-        scalar vol = 0.0;                                   // m3 per s of solid
-        for (auto i : solids) vol += nSolidOf[i] * thermo.comp(i).MW() / rhoOf(i);
-        rho_solid = m_solid / vol;
-    }
+    //  The particle density of the powder: ONE home (thermo/SolidMixture),
+    //  volumes additive (harmonic mean); one solid keeps its own density
+    //  exactly; a solid with no rho_p REFUSES by name (it used to take
+    //  1500 kg/m3 unannounced).
+    const scalar rho_solid = solidMixture::particleDensity(thermo, nSolidOf,
+        "sprayDryer '" + (dict->name().empty() ? type() : dict->name()) + "'",
+        verbosity);
     const scalar d_part = (x_solid_mass > 0.0)
                         ? d32 * std::cbrt(x_solid_mass * rho_L / rho_solid) : d32;
 

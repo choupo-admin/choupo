@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  centrifuge01_tubularBowl_geankoplis
+
+  A TUBULAR-BOWL CENTRIFUGE BY SIGMA THEORY, held to the printed worked
+  example of Geankoplis, Hersel & Lepek (5th ed.), Example 30.2-2, pp.
+  1437-1438: particles of 1461 kg/m3 in a solution of 801 kg/m3 and 100 cp;
+  a bowl r_2 = 0.02225 m, r_1 = 0.00716 m, b = 0.1970 m at 23 000 rev/min;
+  q = 0.002832 m3/h.
+
+  THE BOOK'S ANSWERS (p. 1438): omega = 2410 rad/s (printed rounded; 2 pi
+    23000/60 = 2408.6); V = pi b (r_2^2 - r_1^2) = 2.747e-4 m3; q_c =
+    7.87e-7 m3/s; the critical diameter D_pc = 0.746 um by eq. 30.2-12 (the
+    particle that starts HALFWAY through the liquid layer); "the settling is
+    in the Stokes' law range" (no Re printed).
+  TWO CUT SIZES, ONE CURVE: Geankoplis's D_pc is defined by the radial
+    midpoint; Ambler (1959, eq. 28) and de Haan et al. (eq. 9.45) define the
+    50 % cut by EQUAL VOLUMES, which is where a uniformly fed bowl captures
+    half of a size.  The unit computes the grade curve of the uniformly fed
+    bowl and publishes both: d50 (E = 0.5) and D_pc, which on that curve has
+    E = (r_2^2 - r_m^2)/(r_2^2 - r_1^2) = 0.628.  The anchor is the book's
+    D_pc; d50 is the curve's.
+  WHAT IS NOT THE BOOK'S: the particle size distribution (the example
+    prints none; a Rosin-Rammler feed, d63 0.8 um, n 1.5, is DECLARED to show
+    the split class by class), the solids content (0.1 % by volume, dilute,
+    declared), the sediment's solids fraction (0.5, declared), the
+    temperature (298.15 K, read nowhere: the properties are constants).
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "A tubular-bowl sedimenting centrifuge by Sigma theory, held to Geankoplis Example 30.2-2 (the critical particle diameter 0.746 um at 23 000 rev/min), with the grade efficiency of the uniformly fed bowl applied on the case's size grid.";
+verbosity     3;
+citations
+(
+    "Geankoplis, C.J.; Hersel, A.A.; Lepek, D.H. Transport Processes and Separation Process Principles, 5th ed. Prentice Hall (year not read on the page). Section 30.2C, eqs. 30.2-8 to 30.2-21, Example 30.2-2, pp. 1435-1439."
+    "Ambler, C.M. (1959) The theory of scaling up laboratory data for the sedimentation type centrifuge. J. Biochem. Microbiol. Technol. Eng. 1(2), 185-205. Eqs. 24-28, p. 191."
+    "de Haan, A.B.; Eral, H.B.; Schuur, B. (2020) Industrial Separation Processes: Fundamentals, 2nd ed. De Gruyter. Section 9.3.4, eqs. 9.38-9.46, pp. 307-309."
+);

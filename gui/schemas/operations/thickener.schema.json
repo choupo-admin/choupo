@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/thickener.schema.json",
+  "title": "thickener operation",
+  "description": "A gravity thickener sized from the case's batch settling test by Kynch's construction. Model talmageFitch: the tangent at the declared compression time (Talmage & Fitch 1955 eqs. 7-10; Wills & Napier-Munn 2006 eq. 15.6). Model coeClevenger: the largest area over the layers of the test (Wills eq. 15.5). The area is the result; depth, compression zone and safety factor are not applied. Inlet in, outlets (underflow overflow).",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "settlingTest": {
+      "type": "object",
+      "title": "Batch settling test",
+      "description": "The interface height H against time t, first point t = 0, H = H_0. The lists are SI (s, m): a list carries no unit word.",
+      "additionalProperties": false,
+      "required": [
+        "initialConcentration",
+        "time",
+        "height"
+      ],
+      "properties": {
+        "initialConcentration": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Initial concentration C_0",
+          "description": "kg of solids per m3 of slurry; the test should be run at the expected feed concentration.",
+          "unit": "kg/m3"
+        },
+        "time": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0
+          },
+          "title": "Times (s)",
+          "description": "Starting at 0, strictly increasing."
+        },
+        "height": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "title": "Interface heights (m)",
+          "description": "One per time; the first is H_0; the interface never rises."
+        }
+      }
+    },
+    "underflowConcentration": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Target underflow concentration C_u",
+      "description": "Above C_0, below the solid's density, and within what the test reached (H_u = C_0 H_0 / C_u not below the last height).",
+      "unit": "kg/m3"
+    },
+    "compressionTime": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Compression time t_c",
+      "description": "The time at which the settling solids go into compression, read off the test: declared, never guessed (Perry 9th ed. p. 18-64). Required by talmageFitch; optional for coeClevenger, which then draws the tangent.",
+      "unit": "s"
+    }
+  },
+  "required": [
+    "settlingTest",
+    "underflowConcentration"
+  ]
+}
