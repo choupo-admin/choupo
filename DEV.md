@@ -3446,6 +3446,26 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C379 (Vitor, 2026-11-12: "achas que e boa ideia criar um EduTool a
+> explicar a estrutura do kernel de propriedades termofisicas?  Isto para
+> alem do registo nos guias habituais").**  YES, on the shelf "How Choupo
+> works", beside the two pages on how a case is assembled and how a log is
+> read.  THE TASK IT SERVES: "I need the density (viscosity, diffusivity,
+> surface tension) of this stream: where does the number come from, and
+> how far do I trust it?"  The page is the visible face of the
+> resolved-routes table of C378: the student picks a liquid (water; water
+> + ethanol; water + NaOH; CO2 dissolved in water), sees which methods
+> apply, which one is used and which were passed over and why, the three
+> statements of quality and the expected error; then adds a measured
+> point, a case-declared correlation or a bounded hypothesis and watches
+> the precedence change, and meets a refusal with its reason.  It teaches
+> the distinction the structure rests on: a model predicts, a measurement
+> is a number with its source, a hypothesis is a stated concession.  BUILT
+> ONLY AFTER C378 is ratified and its pilot (liquid density) runs: an
+> EduTool cites the engine by file and line and shows the engine's own
+> output, so a page written before the structure exists would describe a
+> plan.  The guide sections (rule 4d) are owed by each slice regardless.
+
 > **C378 (Vitor, 2026-11-12, on learning that the kernel refuses the density
 > and the viscosity of a caustic solution: "precisamos de sistematizar a
 > forma como a viscosidade e calculada! E a massa especifica (o inverso dos
