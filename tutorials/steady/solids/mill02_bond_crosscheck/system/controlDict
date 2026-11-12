@@ -1,0 +1,34 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  mill02_bond_crosscheck
+
+  Three lessons in one flowsheet, all on the limestone of mill01.
+
+  1. THE ENERGY-SPECIFIC LAW.  Herbst & Fuerstenau (1980) eq. 10: the rate is
+     proportional to the specific power, S_i = S_i^E P/H, so one pass breaks
+     kappa_i = S_i^E E with E = P/W.  S1E = 1.56 / 1.82 = 0.857143 t/kWh is
+     mill01's k1 tau re-expressed at E = 1.82 kWh/t (OURS, stated): the
+     plug-flow mill here must give mill01's product EXACTLY -- the two bases
+     agree when E = P tau / H.  `topClassRemaining` = 0.21014 again.
+  2. THE RESIDENCE-TIME DISTRIBUTION.  The same E in a perfectly mixed mill
+     (Austin 1971 eq. 44a) leaves MORE feed unbroken, 1/(1 + 1.56) = 0.3906,
+     and a coarser product -- H&F's Table I makes the same point for their
+     commercial circuit (one perfect mixer 107.0 t/h against plug flow
+     128.1 t/h at 100 % classifier efficiency).
+  3. BOND BESIDE IT.  Bond's third theory (Wills & Napier-Munn eq. 5.2,
+     p. 111) on each mill's OWN F80 and P80, with limestone's work index
+     12.74 kWh/short ton (Wills Table 5.1).  A cross-check, never the answer:
+     Bond's Wi calibrates a 2.44 m wet closed-circuit mill (King p. 202), so a
+     ratio E/W_Bond far from 1 for a dry open-circuit pass is the expected
+     reading, not an error -- `bond_ratio` and the operating work index say how
+     far.
+  INPUTS:  2 x 1 t/h of 8x10 mesh calcite; E = 1.82 kWh/t (declared).
+  PREDICTED:  both products, both temperature rises, Bond's energy for each.
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "The limestone of mill01 ground on the ENERGY basis of Herbst & Fuerstenau (1980): the specific energy itself breaks the particles (kappa = S^E E), in a plug-flow mill and a perfectly mixed mill side by side at the same 1.82 kWh/t, with Bond's third theory printed beside each as a cross-check (Wi = 12.74 kWh/short ton, Wills Table 5.1).";
+verbosity     3;
+citations
+(
+    "Austin, L.G. (1971) Introduction to the mathematical description of grinding as a rate process. Powder Technol. 5, 1-17. doi:10.1016/0032-5910(71)80064-5"
+    "Herbst, J.A.; Fuerstenau, D.W. (1980) Scale-up procedure for continuous grinding mill design using population balance models. Int. J. Miner. Process. 7, 1-31. doi:10.1016/0301-7516(80)90034-4"
+);

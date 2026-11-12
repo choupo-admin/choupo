@@ -187,6 +187,10 @@ const THEORY_DEST: Record<string, string> = {
   // minor losses, static head) -- pressure drop is a computed RESULT.
   pipe: "ch:hydraulics",
   pneumaticConveyor: "sec:pneumatic-conveying",   // particle drag+Yang+saltation+bends
+  // size reduction (DEV.md 4c C361): the breakage population balance on the
+  // case's size grid; each selectable model opens its own subsection through
+  // SLOT_MODEL_DEST below.
+  mill: "sec:mill",
   // liquid-liquid extraction column: each theoretical stage IS one LL Gibbs-
   // minimisation flash; the cascade just tears the counter-current stages.
   // The dedicated chapter (ch:extractor) extends the LL-flash chapter
@@ -374,6 +378,11 @@ const PROPS_MODEL_DEST: Record<string, ModelDest> = {
   SpanWagner1996:     { guide: "theory", dest: "sec:helmholtz-eos-fluids" },
   Span2000:           { guide: "theory", dest: "sec:helmholtz-eos-fluids" },
   SetzmannWagner1991: { guide: "theory", dest: "sec:helmholtz-eos-fluids" },
+  // -- the mill's selection functions (MillModels.cpp; DEV.md 4c C361) ------
+  //    unambiguous tokens; `austin` names TWO models and is resolved by its
+  //    slot in SLOT_MODEL_DEST.
+  herbstFuerstenau:   { guide: "theory", dest: "sec:mill-selection-hf" },
+  vogelPeukert:       { guide: "theory", dest: "sec:mill-selection-vp" },
 };
 
 // THE SAME WORD IN ANOTHER SLOT IS ANOTHER EQUATION (DEV.md 4c C165).  The
@@ -412,6 +421,13 @@ const SLOT_MODEL_DEST: Record<string, ModelDest> = {
   "column.operation.hydraulics.pressureDropModel:Sinnott":         { guide: "theory", dest: "ch:hydraulics" },
   "column.operation.packing.model:RochaBravoFair":                 { guide: "theory", dest: "sec:packing-rbf" },
   "column.operation.packing.model:Delft":                          { guide: "theory", dest: "sec:packing-delft" },
+  //  The mill (DEV.md 4c C361): the unit's `model` word is its SELECTION
+  //  function, `operation.breakage.model` its BREAKAGE function -- and both
+  //  can be `austin`, two different equations.
+  "mill.model:austin":                      { guide: "theory", dest: "sec:mill-selection-austin" },
+  "mill.model:herbstFuerstenau":            { guide: "theory", dest: "sec:mill-selection-hf" },
+  "mill.model:vogelPeukert":                { guide: "theory", dest: "sec:mill-selection-vp" },
+  "mill.operation.breakage.model:austin":   { guide: "theory", dest: "sec:mill-breakage-austin" },
 };
 
 // The theory link of a word chosen INSIDE a unit block -- `model
@@ -422,6 +438,16 @@ const SLOT_MODEL_DEST: Record<string, ModelDest> = {
 export function unitSlotTheoryLink(type: string, path: string, token: string): string {
   const m = SLOT_MODEL_DEST[`${type}.${path}:${token}`];
   return m ? guideUrl(m.guide === "props" ? "propsGuide" : "theoryGuide", m.dest) : theoryLink(type);
+}
+
+
+// A link that opens the section deriving the model a UNIT's slot names --
+// ONLY when that slot is listed above (no fall-through to the bare token: a
+// word in a unit means what its slot says, and an unlisted slot keeps the
+// unit's own theory link).
+export function unitModelTheoryLink(type: string, key: string, word: string): string | null {
+  const m = SLOT_MODEL_DEST[`${type}.${key}:${word}`];
+  return m ? guideUrl(m.guide === "props" ? "propsGuide" : "theoryGuide", m.dest) : null;
 }
 
 // A link that opens the theory at the section deriving a given property MODEL

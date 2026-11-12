@@ -1,0 +1,52 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  mill01_limestone_herbstFuerstenau / flowsheetDict
+
+  One mill.  The grid is H&F's own sieve stack, the sqrt-2 Tyler series from
+  the feed's top size (8 mesh = 2.36 mm) down to 400 mesh (37 um) plus the pan.
+\*---------------------------------------------------------------------------*/
+
+//  THE CASE'S ONE SIZE AXIS (DEV.md 4c C361): the sqrt-2 Tyler series of Herbst & Fuerstenau's sieving (p. 18), 8 mesh down to 400 mesh, plus the pan.
+sizeGrid
+{
+    xMax      2.36 mm;
+    ratio     1.41421356;    // sqrt 2, the Tyler sieve series
+    nClasses  13;            // including the pan
+}
+
+units
+(
+    {
+        name        mill;
+        type        mill;
+        model       austin;                 // the selection function: a RATE law
+        in          feed;
+        outputs     ( product );
+        operation
+        {
+            specificEnergy  1.82 kWh/t;     // priced as heat only (see controlDict)
+            residence       plugFlow;       // Austin 1971 eq. 49
+            residenceTime   2 min;
+            selection
+            {
+                S1      0.780 1/min;        // H&F 1980 p. 19, the 8x10 mesh feed
+                x1      1.98451 mm;         // the top class's representative size
+                alpha   0.75;               // H&F 1980 p. 21 (eq. 22)
+            }
+            breakage
+            {
+                model   austin;
+                phi     0.456;              // fitted by us to H&F Fig. 13
+                gamma   0.75;               // H&F p. 20: the fine-range slope
+                beta    2.2;                // fitted by us to H&F Fig. 13
+            }
+        }
+    }
+);

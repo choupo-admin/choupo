@@ -1,0 +1,86 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  mill02_bond_crosscheck / flowsheetDict
+
+  Two mills, one feed each, the same specific energy: plug flow and perfectly
+  mixed.  The grid is mill01's.
+\*---------------------------------------------------------------------------*/
+
+//  THE CASE'S ONE SIZE AXIS (DEV.md 4c C361): mill01's sqrt-2 Tyler series.
+sizeGrid
+{
+    xMax      2.36 mm;
+    ratio     1.41421356;    // sqrt 2, the Tyler sieve series
+    nClasses  13;            // including the pan
+}
+
+units
+(
+    {
+        name        millPlugFlow;
+        type        mill;
+        model       herbstFuerstenau;       // the selection function: ENERGY-specific
+        in          feedPF;
+        outputs     ( productPF );
+        operation
+        {
+            specificEnergy  1.82 kWh/t;     // this E breaks the particles
+            residence       plugFlow;
+            selection
+            {
+                S1E     0.857143 t/kWh;     // = k1 tau / E of mill01 (ours)
+                x1      1.98451 mm;
+                zeta1   0.75;               // H&F eq. 22's slope
+                zeta2   0;                  // no maximum in this size range
+            }
+            breakage
+            {
+                model   austin;
+                phi     0.456;
+                gamma   0.75;
+                beta    2.2;
+            }
+            bond
+            {
+                workIndex   12.74 kWh/shortTon;   // limestone, Wills Table 5.1
+            }
+        }
+    }
+    {
+        name        millMixed;
+        type        mill;
+        model       herbstFuerstenau;       // the selection function: ENERGY-specific
+        in          feedPM;
+        outputs     ( productPM );
+        operation
+        {
+            specificEnergy  1.82 kWh/t;     // this E breaks the particles
+            residence       perfectlyMixed;
+            selection
+            {
+                S1E     0.857143 t/kWh;     // = k1 tau / E of mill01 (ours)
+                x1      1.98451 mm;
+                zeta1   0.75;               // H&F eq. 22's slope
+                zeta2   0;                  // no maximum in this size range
+            }
+            breakage
+            {
+                model   austin;
+                phi     0.456;
+                gamma   0.75;
+                beta    2.2;
+            }
+            bond
+            {
+                workIndex   12.74 kWh/shortTon;   // limestone, Wills Table 5.1
+            }
+        }
+    }
+);

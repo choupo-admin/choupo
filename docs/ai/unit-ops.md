@@ -2061,6 +2061,74 @@ _(Solid–liquid separation lives in the `crystalliser`: declare two
 outputs and it discharges a wet cake + the drained mother liquor —
 see the Crystallisation section.)_
 
+## Size distribution and size reduction
+
+### `sizeGrid` (in `system/flowsheetDict`) — the case's ONE size axis
+Declared once; every authored inlet with a `particleSizeDistribution` is put on
+it before the first unit runs (a `RosinRammler`/`logNormal` law INTEGRATED over
+the classes; a measured table RE-BINNED from its `edges`, uniform in ln x inside
+each of its classes), mass exact, each mapping printed (`[psd-grid] ... sum in,
+out`).  Class 0 is the pan `[0, x_1]`; the representative size of a cut is its
+geometric mean.  The `mixer` blends gridded streams class by class; two
+different grids are refused.  Every stream with a distribution publishes
+`psd.moments` (`d10`, `d50`, `d80`, `d90`, Sauter `d32`, `Sv`); the mixer
+publishes them as `psd_*` KPIs.  No `sizeGrid`: nothing of this runs.
+```
+sizeGrid { xMax 2.36 mm; ratio 1.41421356; nClasses 13; }   // pan included
+// a measured sieve table on its own edges (0/<stream>, inside phases { solid { } }):
+particleSizeDistribution { edges ( 0 45e-6 90e-6 ); diameter ( 31.8e-6 63.6e-6 ); massFrac ( 0.4 0.6 ); }
+```
+Theory: `sec:size-grid`.  Case: `tutorials/steady/solids/psd01_grid_and_moments`.
+
+### `mill`
+Size reduction as a breakage population balance on the case's `sizeGrid`
+(Austin 1971): one pass with extents `kappa_i` from the SELECTION function (the
+unit's `model` word) and fragments distributed by the BREAKAGE function;
+`residence plugFlow` (p = exp(M) f, Austin eq. 49) or `perfectlyMixed` (eq. 44a).
+Mass is conserved class by class by construction (`sizeMassClosure` ~1e-16);
+the chemistry passes through.  Exactly ONE of `W_shaft` / `specificEnergy`;
+adiabatic, T_out from H(out) = H(in) + W, published `W_shaft_kW`.  Only
+`herbstFuerstenau` lets the energy break particles; for the rate laws it is
+priced as heat, and the run says so.  Bond's third theory is printed BESIDE it
+(`bond { workIndex ...; }`), never instead.
+
+Selection functions (`model`):
+- `austin` — S = S1 (x/x1)^alpha / (1 + (x/mu)^Lambda); keys `S1` [1/time],
+  `x1` (default 1 mm), `alpha`, optional `mu`, `Lambda`.  Needs `residenceTime`
+  or `holdup`.
+- `herbstFuerstenau` — energy-specific: kappa = S^E E, ln(S^E/S1E) =
+  zeta1 ln(x/x1) + zeta2 ln^2(x/x1); keys `S1E` [t/kWh], `x1`, `zeta1`,
+  `zeta2` (<= 0).  No residence time.
+- `vogelPeukert` — S = f [1 - exp(-fMat x k (Wkin - xWmMin/x))], zero below the
+  threshold size; keys `fMat` [kg/(J m)], `xWmMin` [J m/kg], `Wkin`,
+  `stressFrequency`, `impacts`.  Needs `residenceTime` or `holdup`.
+
+Breakage function: `breakage { model austin; phi; gamma; beta; }`,
+B(u) = phi u^gamma + (1-phi) u^beta.
+```
+type      mill;
+model     herbstFuerstenau;                 // the selection function
+in        feed;   outputs ( product );
+operation
+{
+    specificEnergy  1.82 kWh/t;             // or W_shaft (exactly one)
+    residence       plugFlow;               // or perfectlyMixed
+    selection { S1E 0.857143 t/kWh; x1 1.98451 mm; zeta1 0.75; zeta2 0; }
+    breakage  { model austin; phi 0.456; gamma 0.75; beta 2.2; }
+    bond      { workIndex 12.74 kWh/shortTon; }   // optional cross-check
+}
+```
+Refused: a feed not on the grid, a rate law without (or with two) residence
+times, an energy law with one, both or neither energy keys, no solids.
+KPIs: `feed_*`/`product_*` `d10_um d50_um d80_um d90_um d32_um Sv_m2_m3`,
+`reductionRatio80`, `topClassRemaining`, `sizeMassClosure`, `T_out`, `dT_K`,
+`W_shaft_kW`, `specificEnergy_kWh_t`, `bond_specificEnergy_kWh_t`,
+`bond_ratio`, `bond_operatingWorkIndex_kWh_t`, `anchor_*_dev`.  Profile:
+feed and product per class (`x_um` = upper edge), the extents.
+Theory: `sec:mill`.  Cases: `tutorials/steady/solids/mill01_limestone_herbstFuerstenau`,
+`tutorials/steady/solids/mill02_bond_crosscheck`,
+`tutorials/steady/solids/mill03_impact_vogelPeukert`.
+
 ## Drying
 
 ### `sprayDryer`

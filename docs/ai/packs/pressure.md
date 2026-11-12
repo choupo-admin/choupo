@@ -257,6 +257,6 @@ real.
  Pipe: src/unitOperations/hydraulics/Pipe.cpp:100-103 (D, L, roughness required; dz optional), :112-118 (fittings list of {K, count}), :486-487 (model word, default Churchill), :450-472 (viscosity), :146-182 (gas refused), :186-192 (twoPhase model), :566-568 (dP sum), KPIs :626-630.
  Friction models registered: src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.cpp:402-405.
  PhaseChanger: src/unitOperations/heatTransfer/PhaseChanger.cpp:158-160 (P optional, held from inlet), :183-196 (exactly one coordinate; message quoted), outletT :320.
- Energy wires: src/unitOperations/flowsheet/Flowsheet.cpp:874-1040 (energyInputs: from/kind/target; summed targets :900-910; kind mismatch refused; forward only); docs/ai/energy.md section 2.
+ Energy wires: src/unitOperations/flowsheet/Flowsheet.cpp:876-1042 (energyInputs: from/kind/target; summed targets :900-910; kind mismatch refused; forward only); docs/ai/energy.md section 2.
  SRK phiPhi grammar: docs/ai/thermo.md:213-248 (copied form, run).
 -->

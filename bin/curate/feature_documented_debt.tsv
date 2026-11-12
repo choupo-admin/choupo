@@ -31,8 +31,6 @@ PureFluidModel	IF97	guide+catalogue
 Report	energyStreams	catalogue
 Report	profiles	catalogue
 Signal	prbs	catalogue
-SizeDistribution	RosinRammler	guide+catalogue
-SizeDistribution	logNormal	guide+catalogue
 SizeDistribution	tabular	guide+catalogue
 SurfaceTensionModel	StoredCorrelation	guide+catalogue
 TransportModel	constantRejection	guide

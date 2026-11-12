@@ -249,11 +249,17 @@
   "BlockTri": [
    "src/solver/NewtonND.H"
   ],
+  "BondEnergy": [
+   "src/unitOperations/solids/millModel/MillModels.H"
+  ],
   "BracketedRoot": [
    "src/unitOperations/flash/PureSaturationPlateau.H"
   ],
   "Branch": [
    "src/propertyOps/LleResidual.H"
+  ],
+  "BreakageFunction": [
+   "src/unitOperations/solids/millModel/MillModels.H"
   ],
   "BrockBird": [
    "src/thermo/transport/BrockBird.H"
@@ -1252,6 +1258,15 @@
   "Memo": [
    "src/thermo/electrolyte/SaltFromCatalogue.H"
   ],
+  "Mill": [
+   "src/unitOperations/solids/Mill.H"
+  ],
+  "MillAnchor": [
+   "src/unitOperations/solids/millModel/MillModels.H"
+  ],
+  "MillContext": [
+   "src/unitOperations/solids/millModel/MillModels.H"
+  ],
   "MineralEntry": [
    "src/thermo/electrolyte/SpeciationSolver.H"
   ],
@@ -1625,6 +1640,9 @@
   "Props": [
    "src/thermo/iapws/IF97.H"
   ],
+  "PsdMoments": [
+   "src/core/distribution/SizeGrid.H"
+  ],
   "PsychrometricChart": [
    "src/propertyOps/PsychrometricChart.H"
   ],
@@ -1883,6 +1901,9 @@
   "Selection": [
    "src/thermo/PricedDensity.H"
   ],
+  "SelectionFunction": [
+   "src/unitOperations/solids/millModel/MillModels.H"
+  ],
   "ShellPressureDrop": [
    "src/unitOperations/heatTransfer/htc/ShellTubeDesign.H"
   ],
@@ -1912,6 +1933,12 @@
   ],
   "SizeDistribution": [
    "src/core/distribution/SizeDistribution.H"
+  ],
+  "SizeGrid": [
+   "src/core/distribution/SizeGrid.H"
+  ],
+  "SizeGridMapReport": [
+   "src/core/distribution/SizeGrid.H"
   ],
   "SizingPass": [
    "src/postProcessing/SizingPass.H"
@@ -3099,6 +3126,10 @@
     "type": "GasSolidSplitter"
    },
    {
+    "key": "mill",
+    "type": "Mill"
+   },
+   {
     "key": "ionExchanger",
     "type": "IonExchanger"
    },
@@ -3367,6 +3398,24 @@
    {
     "key": "Muschelknautz",
     "type": "Muschelknautz"
+   }
+  ],
+  "src/unitOperations/solids/millModel/MillModels.cpp": [
+   {
+    "key": "austin",
+    "type": "AustinSelection"
+   },
+   {
+    "key": "herbstFuerstenau",
+    "type": "HerbstFuerstenauSelection"
+   },
+   {
+    "key": "vogelPeukert",
+    "type": "VogelPeukertSelection"
+   },
+   {
+    "key": "austin",
+    "type": "AustinBreakage"
    }
   ]
  },
@@ -3859,6 +3908,13 @@
    "src/core/distribution/RosinRammler.H",
    "src/core/distribution/SizeDistribution.H",
    "src/core/distribution/TabularSizeDistribution.H"
+  ],
+  "src/core/distribution/SizeGrid.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/core/distribution/SizeDistribution.H",
+   "src/core/distribution/SizeGrid.H"
   ],
   "src/core/distribution/TabularSizeDistribution.cpp": [
    "src/core/Dictionary.H",
@@ -7697,6 +7753,7 @@
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
+   "src/core/distribution/SizeGrid.H",
    "src/result/BatchPlanJson.H",
    "src/result/BuildingJson.H",
    "src/result/ClosureVariable.H",
@@ -9354,6 +9411,8 @@
    "src/unitOperations/separation/PSA.H",
    "src/unitOperations/separation/Stripper.H",
    "src/unitOperations/separation/TSATwinBed.H",
+   "src/unitOperations/solids/Mill.H",
+   "src/unitOperations/solids/millModel/MillModels.H",
    "src/unitOperations/storage/StorageTank.H",
    "src/unitOperations/valve/Valve.H"
   ],
@@ -9788,11 +9847,13 @@
    "src/core/Origin.H",
    "src/core/RegistryRefusal.H",
    "src/core/Types.H",
+   "src/core/distribution/SizeGrid.H",
    "src/result/ClosureVariable.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
    "src/solver/NewtonRaphson.H",
    "src/streams/ProcessStream.H",
+   "src/streams/PsdOnGrid.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
    "src/thermo/PackageAudit.H",
@@ -10239,6 +10300,8 @@
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
+   "src/core/distribution/SizeDistribution.H",
+   "src/core/distribution/SizeGrid.H",
    "src/io/InternalStateIO.H",
    "src/result/ClosureVariable.H",
    "src/result/SimulationResult.H",
@@ -10614,11 +10677,13 @@
    "src/core/Origin.H",
    "src/core/RegistryRefusal.H",
    "src/core/Types.H",
+   "src/core/distribution/SizeGrid.H",
    "src/result/ClosureVariable.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
    "src/solver/NewtonRaphson.H",
    "src/streams/ProcessStream.H",
+   "src/streams/PsdOnGrid.H",
    "src/streams/StreamMass.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
@@ -11076,11 +11141,13 @@
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/Types.H",
+   "src/core/distribution/SizeGrid.H",
    "src/result/ClosureVariable.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
    "src/solver/NewtonRaphson.H",
    "src/streams/ProcessStream.H",
+   "src/streams/PsdOnGrid.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
    "src/thermo/PackageAudit.H",
@@ -11826,10 +11893,12 @@
    "src/core/Origin.H",
    "src/core/Types.H",
    "src/core/distribution/SizeDistribution.H",
+   "src/core/distribution/SizeGrid.H",
    "src/result/ClosureVariable.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
    "src/streams/ProcessStream.H",
+   "src/streams/PsdOnGrid.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
    "src/thermo/PackageAudit.H",
@@ -12013,6 +12082,40 @@
    "src/core/Types.H",
    "src/unitOperations/separation/cycloneModel/CycloneModel.H",
    "src/unitOperations/separation/cycloneModel/Muschelknautz.H"
+  ],
+  "src/unitOperations/solids/Mill.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/core/distribution/SizeGrid.H",
+   "src/result/ClosureVariable.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/streams/PsdOnGrid.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/VapourAssociation.H",
+   "src/unitOperations/UnitAcceptance.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
+   "src/unitOperations/flash/StreamEquilibrium.H",
+   "src/unitOperations/solids/Mill.H",
+   "src/unitOperations/solids/millModel/MillModels.H"
+  ],
+  "src/unitOperations/solids/millModel/MillModels.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/unitOperations/solids/millModel/MillModels.H"
   ],
   "src/unitOperations/storage/StorageTank.cpp": [
    "src/core/Advisory.H",
@@ -12312,6 +12415,7 @@
    "src/unitOperations/separation/Absorber.cpp",
    "src/unitOperations/separation/IonExchanger.cpp",
    "src/unitOperations/separation/Stripper.cpp",
+   "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -12764,6 +12868,7 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -12806,6 +12911,7 @@
    "src/core/distribution/LogNormalSize.cpp",
    "src/core/distribution/RosinRammler.cpp",
    "src/core/distribution/SizeDistribution.cpp",
+   "src/core/distribution/SizeGrid.cpp",
    "src/core/distribution/TabularSizeDistribution.cpp",
    "src/curation/AqueousGraph.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
@@ -13163,6 +13269,8 @@
    "src/unitOperations/separation/cycloneModel/Lapple.cpp",
    "src/unitOperations/separation/cycloneModel/LeithLicht.cpp",
    "src/unitOperations/separation/cycloneModel/Muschelknautz.cpp",
+   "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/millModel/MillModels.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -13189,6 +13297,7 @@
    "src/core/distribution/LogNormalSize.cpp",
    "src/core/distribution/RosinRammler.cpp",
    "src/core/distribution/SizeDistribution.cpp",
+   "src/core/distribution/SizeGrid.cpp",
    "src/core/distribution/TabularSizeDistribution.cpp",
    "src/curation/AqueousGraph.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
@@ -13546,6 +13655,8 @@
    "src/unitOperations/separation/cycloneModel/Lapple.cpp",
    "src/unitOperations/separation/cycloneModel/LeithLicht.cpp",
    "src/unitOperations/separation/cycloneModel/Muschelknautz.cpp",
+   "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/millModel/MillModels.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -13958,6 +14069,7 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -14279,6 +14391,7 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -14754,6 +14867,7 @@
    "src/core/distribution/LogNormalSize.cpp",
    "src/core/distribution/RosinRammler.cpp",
    "src/core/distribution/SizeDistribution.cpp",
+   "src/core/distribution/SizeGrid.cpp",
    "src/core/distribution/TabularSizeDistribution.cpp",
    "src/curation/AqueousGraph.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
@@ -15133,6 +15247,8 @@
    "src/unitOperations/separation/cycloneModel/Lapple.cpp",
    "src/unitOperations/separation/cycloneModel/LeithLicht.cpp",
    "src/unitOperations/separation/cycloneModel/Muschelknautz.cpp",
+   "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/millModel/MillModels.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -15177,10 +15293,22 @@
    "src/core/distribution/LogNormalSize.cpp",
    "src/core/distribution/RosinRammler.cpp",
    "src/core/distribution/SizeDistribution.cpp",
+   "src/core/distribution/SizeGrid.cpp",
    "src/core/distribution/TabularSizeDistribution.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/streams/StreamStateIO.cpp",
+   "src/unitOperations/flowsheet/Flowsheet.cpp",
    "src/unitOperations/separation/GasSolidSplitter.cpp"
+  ],
+  "src/core/distribution/SizeGrid.H": [
+   "src/core/distribution/SizeGrid.cpp",
+   "src/result/ResultEmitter.cpp",
+   "src/unitOperations/crystallisation/Crystalliser.cpp",
+   "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/heatTransfer/SprayDryer.cpp",
+   "src/unitOperations/mixer/Mixer.cpp",
+   "src/unitOperations/separation/GasSolidSplitter.cpp",
+   "src/unitOperations/solids/Mill.cpp"
   ],
   "src/core/distribution/TabularSizeDistribution.H": [
    "src/core/distribution/SizeDistribution.cpp",
@@ -16200,6 +16328,7 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -16472,6 +16601,7 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -16711,6 +16841,7 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -17003,8 +17134,16 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
+  ],
+  "src/streams/PsdOnGrid.H": [
+   "src/unitOperations/crystallisation/Crystalliser.cpp",
+   "src/unitOperations/heatTransfer/SprayDryer.cpp",
+   "src/unitOperations/mixer/Mixer.cpp",
+   "src/unitOperations/separation/GasSolidSplitter.cpp",
+   "src/unitOperations/solids/Mill.cpp"
   ],
   "src/streams/SpeciationBlock.H": [
    "src/streams/SpeciationBlock.cpp",
@@ -17383,6 +17522,7 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -17652,6 +17792,7 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -17945,6 +18086,7 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -18259,6 +18401,7 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -18683,6 +18826,7 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -18922,6 +19066,7 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -19998,6 +20143,7 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -20079,6 +20225,7 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -20283,6 +20430,7 @@
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/Pump.cpp",
    "src/unitOperations/separation/Extractor.cpp",
+   "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -20325,6 +20473,7 @@
    "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/Pump.cpp",
+   "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -20368,6 +20517,7 @@
    "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/Pump.cpp",
+   "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -20915,6 +21065,15 @@
   "src/unitOperations/separation/cycloneModel/Muschelknautz.H": [
    "src/unitOperations/separation/cycloneModel/CycloneModel.cpp",
    "src/unitOperations/separation/cycloneModel/Muschelknautz.cpp"
+  ],
+  "src/unitOperations/solids/Mill.H": [
+   "src/unitOperations/UnitOperation.cpp",
+   "src/unitOperations/solids/Mill.cpp"
+  ],
+  "src/unitOperations/solids/millModel/MillModels.H": [
+   "src/unitOperations/UnitOperation.cpp",
+   "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/millModel/MillModels.cpp"
   ],
   "src/unitOperations/storage/StorageTank.H": [
    "src/unitOperations/UnitOperation.cpp",

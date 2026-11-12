@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/mill.schema.json",
+  "title": "mill operation",
+  "description": "Size reduction as a breakage population balance on the case's size grid (`sizeGrid {}` in system/flowsheetDict; Austin 1971). The unit's `model` word selects the SELECTION function (austin, herbstFuerstenau, vogelPeukert); `breakage { model austin; }` the breakage function. Plug flow or perfectly mixed. Exactly one of W_shaft and specificEnergy; the mill is adiabatic and its outlet temperature is the result. Bond's third theory is an optional cross-check printed beside the population-balance energy, never instead of it.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "W_shaft": {
+      "type": "number",
+      "minimum": 0,
+      "title": "Net shaft power",
+      "description": "The power drawn by the mill. Give this OR specificEnergy, never both: the other follows from the solids flow.",
+      "unit": "W"
+    },
+    "specificEnergy": {
+      "type": "number",
+      "minimum": 0,
+      "title": "Specific energy",
+      "description": "Energy per kg of solids (kWh/t is accepted). For herbstFuerstenau it is what breaks the particles; for the rate laws it is only priced as heat.",
+      "unit": "J/kg"
+    },
+    "residence": {
+      "type": "string",
+      "enum": ["plugFlow", "perfectlyMixed"],
+      "title": "Residence-time model",
+      "description": "plugFlow: p = exp(M) f, a batch mill ground for tau (Austin 1971 eq. 49). perfectlyMixed: p_i (1 + kappa_i) = f_i + sum b_ij kappa_j p_j (eq. 44a). Default plugFlow, said in the run."
+    },
+    "residenceTime": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Mean residence time",
+      "description": "For the RATE laws (austin, vogelPeukert): tau. Give this OR holdup.",
+      "unit": "s"
+    },
+    "holdup": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Solids hold-up",
+      "description": "Solids mass in the mill; tau = holdup / solids flow (Austin 1971 eq. 46). Give this OR residenceTime.",
+      "unit": "kg"
+    },
+    "selection": {
+      "type": "object",
+      "title": "Selection-function parameters",
+      "description": "The parameters of the law the unit's `model` word names. austin: S1, x1, alpha, mu, Lambda. herbstFuerstenau: S1E, x1, zeta1, zeta2. vogelPeukert: fMat, xWmMin, Wkin, stressFrequency, impacts.",
+      "additionalProperties": false,
+      "properties": {
+        "S1": { "type": "number", "minimum": 0, "title": "Specific rate at x1 (austin)", "unit": "1/s" },
+        "x1": { "type": "number", "exclusiveMinimum": 0, "title": "Reference size", "description": "austin: default 1 mm. herbstFuerstenau: required.", "unit": "m" },
+        "alpha": { "type": "number", "title": "Power-law slope (austin)", "unit": "-" },
+        "mu": { "type": "number", "exclusiveMinimum": 0, "title": "Size of the maximum (austin)", "description": "Absent: the pure power law (Herbst & Fuerstenau 1980 eq. 22).", "unit": "m" },
+        "Lambda": { "type": "number", "exclusiveMinimum": 0, "title": "Fall-off beyond mu (austin)", "description": "Default 2.", "unit": "-" },
+        "S1E": { "type": "number", "minimum": 0, "title": "Energy-specific rate at x1 (herbstFuerstenau)", "description": "In t/kWh as the literature reports it.", "unit": "kg/J" },
+        "zeta1": { "type": "number", "title": "Linear log-size coefficient (herbstFuerstenau)", "unit": "-" },
+        "zeta2": { "type": "number", "maximum": 0, "title": "Quadratic log-size coefficient (herbstFuerstenau)", "description": "Must be <= 0 (a maximum, not a minimum).", "unit": "-" },
+        "fMat": { "type": "number", "exclusiveMinimum": 0, "title": "Material parameter fMat (vogelPeukert)", "description": "Vogel & Peukert 2003 Fig. 6: limestone 0.318.", "unit": "kg/(J m)" },
+        "xWmMin": { "type": "number", "minimum": 0, "title": "Size-specific threshold x Wm,min (vogelPeukert)", "description": "Vogel & Peukert 2003 Fig. 6: limestone 0.5.", "unit": "J m/kg" },
+        "Wkin": { "type": "number", "minimum": 0, "title": "Mass-specific impact energy per stress (vogelPeukert)", "unit": "J/kg" },
+        "stressFrequency": { "type": "number", "minimum": 0, "title": "Stress events per second (vogelPeukert)", "unit": "1/s" },
+        "impacts": { "type": "number", "exclusiveMinimum": 0, "title": "Impacts per stress event (vogelPeukert)", "description": "Default 1.", "unit": "-" }
+      }
+    },
+    "breakage": {
+      "type": "object",
+      "title": "Breakage function",
+      "description": "B(u) = phi u^gamma + (1 - phi) u^beta, u = x/y (King 2001 eq. 5.78).",
+      "additionalProperties": false,
+      "required": ["model"],
+      "properties": {
+        "model": { "type": "string", "enum": ["austin"], "title": "Breakage model" },
+        "phi": { "type": "number", "exclusiveMinimum": 0, "maximum": 1, "title": "Weight of the fine branch", "unit": "-" },
+        "gamma": { "type": "number", "exclusiveMinimum": 0, "title": "Fine-range slope", "unit": "-" },
+        "beta": { "type": "number", "exclusiveMinimum": 0, "title": "Coarse-range exponent", "unit": "-" }
+      }
+    },
+    "bond": {
+      "type": "object",
+      "title": "Bond cross-check (optional)",
+      "description": "W = 10 Wi (1/sqrt(P80) - 1/sqrt(F80)) on the run's own F80 and P80, printed beside the population-balance energy with their ratio and the operating work index.",
+      "additionalProperties": false,
+      "required": ["workIndex"],
+      "properties": {
+        "workIndex": { "type": "number", "exclusiveMinimum": 0, "title": "Bond work index", "description": "kWh/shortTon is accepted (Bond's own unit; Wills Table 5.1: limestone 12.74).", "unit": "J/kg" }
+      }
+    }
+  },
+  "required": ["selection", "breakage"]
+}

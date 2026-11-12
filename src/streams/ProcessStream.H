@@ -71,7 +71,22 @@ struct ParticleSizeDistribution
     std::vector<scalar> diameter;    // m
     std::vector<scalar> massFrac;    // fraction of solid mass per bin (Σ = 1)
 
+    //  THE CLASS EDGES, when the distribution lives on the case's declared
+    //  size grid (`sizeGrid {}` in system/flowsheetDict; DEV.md 4c C361,
+    //  docs/design/c361-solids-processing.md).  n+1 ascending values,
+    //  edges[0] == 0 being the pan.  EMPTY for a distribution on a unit's
+    //  own bins (every case written before the grid existed): such a
+    //  distribution has representative sizes and no declared classes.
+    std::vector<scalar> edges;       // m
+
+    //  The continuous law the 0/ file declared (`model RosinRammler; ...`),
+    //  kept until the case's grid is known so the law is INTEGRATED onto the
+    //  grid's classes rather than re-binned from a first discretisation.
+    //  Null for a measured table and for every produced stream.
+    std::shared_ptr<const Dictionary> declaredLaw;
+
     bool empty() const { return diameter.empty(); }
+    bool onGrid() const { return !edges.empty(); }
 };
 
 struct ProcessStream

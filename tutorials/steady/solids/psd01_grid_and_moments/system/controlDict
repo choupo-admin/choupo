@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  psd01_grid_and_moments
+
+  The size axis every solids unit reads and writes (DEV.md 4c C361 slice 1,
+  docs/design/c361-solids-processing.md), shown on the simplest flowsheet
+  that needs it: a blend of two powders.
+
+  INPUTS (declared, nothing measured by Choupo):
+    powderA  1.0 t/h calcite, a FITTED law: Rosin-Rammler d63 = 300 um, n = 1.5
+    powderB  0.5 t/h calcite, a MEASURED sieve table on its own edges
+             0 / 45 / 90 / 180 / 355 / 710 um (a teaching table, not a paper's)
+    grid     xMax 2 mm, ratio sqrt 2, 18 classes (pan from 0 to 5.5 um)
+
+  PREDICTED: each feed's fractions on the grid (the law integrated, the table
+  re-binned uniformly in ln x inside each of its classes), the blend
+  w = (1.0 wA + 0.5 wB) / 1.5 class by class, and its moments.  The mass
+  closure of each mapping is printed (`[psd-grid] ... sum in, out`) and the
+  blend's sum of fractions is pinned (`psd_massFractionSum`).
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "Two limestone powders on ONE declared size grid: a fitted Rosin-Rammler law is INTEGRATED over the grid's classes, a measured sieve table on its own edges is RE-BINNED onto them, and the mixer blends the two class by class. Every mapping prints its mass closure; the blend's d10/d50/d80/d90, Sauter mean and specific surface come from the engine's one home of the moments.";
+verbosity     3;
+citations
+(
+    "Austin, L.G. (1971) Introduction to the mathematical description of grinding as a rate process. Powder Technol. 5, 1-17. doi:10.1016/0032-5910(71)80064-5"
+    "Herbst, J.A.; Fuerstenau, D.W. (1980) Scale-up procedure for continuous grinding mill design using population balance models. Int. J. Miner. Process. 7, 1-31. doi:10.1016/0301-7516(80)90034-4"
+);

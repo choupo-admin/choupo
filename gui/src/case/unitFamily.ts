@@ -250,6 +250,13 @@ export const SYMBOLS: readonly UnitSymbolSpec[] = [
         + " M12 22a1.6 1.6 0 103.2 0a1.6 1.6 0 10-3.2 0"
         + " M20 27a1.6 1.6 0 103.2 0a1.6 1.6 0 10-3.2 0"
         + " M27 21a1.6 1.6 0 103.2 0a1.6 1.6 0 10-3.2 0" },
+  { cls: "Mill", label: "mill (tumbling, size reduction)",
+    //  A horizontal DRUM on its trunnions with the grinding charge in it:
+    //  the breakage population balance of C361 (feed left, product right).
+    path: "M8 14h32v20H8z M2 24h6 M40 24h6"
+        + " M14 29a2.5 2.5 0 105 0a2.5 2.5 0 10-5 0"
+        + " M21 30a2.5 2.5 0 105 0a2.5 2.5 0 10-5 0"
+        + " M28 28a2.5 2.5 0 105 0a2.5 2.5 0 10-5 0" },
 
   //  ---- DRYERS.  Four mechanisms, four shapes.
   { cls: "SprayDryer", label: "spray dryer",
@@ -465,6 +472,7 @@ export const UNIT_CLASS: { readonly [type: string]: string } = {
   storageTank: "StorageTank",
   pipe: "Pipe",
   pneumaticConveyor: "PneumaticConveyor",
+  mill: "Mill",
   distillationColumn: "DistillationColumn",
   column: "DistillationColumn",
   absorber: "Absorber",

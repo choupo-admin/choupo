@@ -249,6 +249,12 @@ const TABLE: Record<string, UnitSpec> = {
   "J/kg/K": { factor: 1.0, affine: false },
   "N/m":    { factor: 1.0, affine: false },
   "W/m2":   { factor: 1.0, affine: false },
+  // comminution (DEV.md 4c C361) -- mirrors src/core/Units.cpp: a mill's
+  // specific energy (kWh per metric tonne), Bond's work index in its own unit
+  // (kWh per SHORT ton, 907.18474 kg) and the energy-specific rate S^E (t/kWh).
+  "kWh/t":        { factor: 3.6e6 / 1000.0, affine: false },
+  "kWh/shortTon": { factor: 3.6e6 / 907.18474, affine: false },
+  "t/kWh":        { factor: 1000.0 / 3.6e6, affine: false },
   // pressure gradient Pa/m, the drop per metre of a sized header (C199) --
   // mirrors src/core/Units.cpp, added in the same commit.
   "Pa/m":   { factor: 1.0, affine: false },

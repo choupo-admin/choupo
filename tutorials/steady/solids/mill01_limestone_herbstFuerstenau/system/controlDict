@@ -1,0 +1,34 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  mill01_limestone_herbstFuerstenau
+
+  Herbst & Fuerstenau (1980), the limestone example of their section on
+  scale-up (pp. 18-21): 8x10 mesh limestone (2.36-1.70 mm) ground dry in a
+  25.4 x 29.2 cm ball mill.
+
+  MEASURED (theirs):  k1 = 0.780 1/min for the feed size (their Fig. 11 and
+    p. 19);  the cumulative breakage function of Fig. 13 (slope 0.75 in the
+    fine range, p. 20).
+  PARAMETERS (ours, stated):  the selection function S(x) = k1 (x/x1)^0.75
+    -- their eq. 22 with their alpha = 0.75 (p. 21), x1 the representative
+    size of the top class;  the breakage function B(u) = phi u^0.75 +
+    (1-phi) u^beta with phi = 0.456, beta = 2.2, fitted BY US to eleven
+    points we READ from their Fig. 13 (every point within 4 %);  the batch
+    test treated as a plug-flow pass of tau = 2 min (Austin 1971 eq. 49: a
+    plug-flow mill IS a batch mill ground for tau);  1 t/h of feed (scale is
+    immaterial to the distribution).
+  PREDICTED:  the product distribution on the grid; the fraction of the feed
+    size remaining, exp(-k1 tau) = 0.21014 (H&F eq. 18 -- the number this
+    case is held to: `topClassRemaining`);  the shaft work's heat.
+  NOT PREDICTED HERE:  the energy.  This selection function is a RATE, so the
+    declared specific energy (1.82 kWh/t, the figure H&F design their
+    commercial mill at, p. 22) is priced as heat and grinds nothing; the
+    energy-specific form of the same law is mill02.
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "Dry ball milling of 8x10 mesh limestone as a first-order breakage population balance on a sqrt-2 sieve grid (Austin 1971), with the selection and breakage functions Herbst & Fuerstenau (1980) report for it: k1 = 0.780 1/min, a power law of slope 0.75, and the cumulative breakage function of their Fig. 13. Plug flow for 2 min reproduces their first-order disappearance of the feed size, exp(-0.78 x 2) = 0.2101.";
+verbosity     3;
+citations
+(
+    "Austin, L.G. (1971) Introduction to the mathematical description of grinding as a rate process. Powder Technol. 5, 1-17. doi:10.1016/0032-5910(71)80064-5"
+    "Herbst, J.A.; Fuerstenau, D.W. (1980) Scale-up procedure for continuous grinding mill design using population balance models. Int. J. Miner. Process. 7, 1-31. doi:10.1016/0301-7516(80)90034-4"
+);

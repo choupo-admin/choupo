@@ -82,6 +82,10 @@ DictPtr streamToDict(const ProcessStream& s, const ThermoPackage& thermo)
         {
             sol->insert("diameters", s.psd.diameter);
             sol->insert("massFractions", s.psd.massFrac);
+            //  The class edges of the case's size grid (C361), when the
+            //  distribution lives on it -- the one discretisation every
+            //  solids unit reads and writes.
+            if (s.psd.onGrid()) sol->insert("sizeEdges", s.psd.edges);
         }
         out->insert("solids", sol);
     }
@@ -291,6 +295,7 @@ DictPtr buildAugmentedDict(const DictPtr&                          udict,
             {
                 sol->insert("diameters", s.psd.diameter);
                 sol->insert("massFractions", s.psd.massFrac);
+                if (s.psd.onGrid()) sol->insert("sizeEdges", s.psd.edges);
             }
             out->insert("solids", sol);
         }

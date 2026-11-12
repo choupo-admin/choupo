@@ -122,7 +122,18 @@ export interface StreamResult {
    *  bin centres in metres; `massFrac` fraction of total solid mass
    *  per bin (sums to 1).  Absent for solid-bearing streams whose
    *  producer does not compute one (e.g. equilibrium crystalliser). */
-  psd?: { diameter: number[]; massFrac: number[] };
+  psd?: {
+    diameter: number[];
+    massFrac: number[];
+    /** Class edges [m] (n+1, the first 0 = the pan) when the stream lives on
+     *  the case's size grid (`sizeGrid {}`, DEV.md 4c C361). */
+    edges?: number[];
+    /** The moments, computed by the ENGINE from one home (`psdMoments`):
+     *  mass-passing sizes and the Sauter mean [m], S_v [m2/m3].  The GUI
+     *  draws them and never recomputes them. */
+    moments?: { d10: number; d50: number; d80: number; d90: number;
+                d32: number; Sv: number; edgesInferred: boolean };
+  };
   /** Components genuinely PRESENT in this stream that carry NO elements-datum
    *  enthalpy (no standardThermochemistry, no aqueous-ion reference).  When non-empty,
    *  H / H_kW are absent BY MISSING DATA, not by composition -- the energy

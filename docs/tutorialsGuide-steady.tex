@@ -12353,6 +12353,101 @@ This teaching case uses a CASE-LOCAL synthetic property anchor: cpSolid = 920 J/
 \subsection{solids}
 \grouptheory{solids}
 \clearpage
+\tutentry{mill01\_limestone\_herbstFuerstenau}{tutorials/steady/solids/mill01\_limestone\_herbstFuerstenau}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mill) at (0.0,-0.0) {\textbf{mill}\\[-1pt]{\tiny mill}};
+  \draw[->] ($(mill.west)+(-1.05,0.00)$) -- ($(mill.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(mill.east)+(0,0.00)$) -- ($(mill.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Dry ball milling of 8x10 mesh limestone as a first-order breakage population balance on a sqrt-2 sieve grid (Austin 1971), with the selection and breakage functions Herbst \& Fuerstenau (1980) report for it: k1 = 0.780 1/min, a power law of slope 0.75, and the cumulative breakage function of their Fig. 13. Plug flow for 2 min reproduces their first-order disappearance of the feed size, exp(-0.78 x 2) = 0.2101.}
+\begin{tutnarrative}
+One mill. The grid is H\&F's own sieve stack, the sqrt-2 Tyler series from the feed's top size (8 mesh = 2.36 mm) down to 400 mesh (37 um) plus the pan.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.00277536611111}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{stream}{product}{F}{0.00277536611111}
+\goldrow{stream}{product}{T}{305.948239497}
+\goldrow{kpi}{mill}{topClassRemaining}{0.21013538465}
+\goldrow{kpi}{mill}{sizeMassClosure}{0}
+\goldrow{kpi}{mill}{product\_d10\_um}{113.646917245}
+\goldrow{kpi}{mill}{product\_d50\_um}{849.529426701}
+\goldrow{kpi}{mill}{product\_d80\_um}{1696.90192268}
+\goldrow{kpi}{mill}{product\_d32\_um}{268.401443729}
+\goldrow{kpi}{mill}{feed\_d80\_um}{2201.95786077}
+\goldrow{kpi}{mill}{reductionRatio80}{1.29763413627}
+\goldrow{kpi}{mill}{W\_shaft\_kW}{1.82000008287}
+\goldrow{kpi}{mill}{specificEnergy\_kWh\_t}{1.82}
+\goldmore{9}
+\end{tutgolden}
+
+\clearpage
+\tutentry{mill02\_bond\_crosscheck}{tutorials/steady/solids/mill02\_bond\_crosscheck}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (millPlugFlow) at (0.0,-0.0) {\textbf{millPlugFlow}\\[-1pt]{\tiny mill}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (millMixed) at (0.0,-1.7) {\textbf{millMixed}\\[-1pt]{\tiny mill}};
+  \draw[->] ($(millPlugFlow.west)+(-1.05,0.00)$) -- ($(millPlugFlow.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedPF};
+  \draw[->] ($(millMixed.west)+(-1.05,0.00)$) -- ($(millMixed.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedPM};
+  \draw[->] ($(millPlugFlow.east)+(0,0.00)$) -- ($(millPlugFlow.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {productPF};
+  \draw[->] ($(millMixed.east)+(0,0.00)$) -- ($(millMixed.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {productPM};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The limestone of mill01 ground on the ENERGY basis of Herbst \& Fuerstenau (1980): the specific energy itself breaks the particles (kappa = S\textasciicircum{}E E), in a plug-flow mill and a perfectly mixed mill side by side at the same 1.82 kWh/t, with Bond's third theory printed beside each as a cross-check (Wi = 12.74 kWh/short ton, Wills Table 5.1).}
+\begin{tutnarrative}
+Two mills, one feed each, the same specific energy: plug flow and perfectly mixed. The grid is mill01's.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feedPF}{F}{0.00277536611111}
+\goldrow{stream}{feedPF}{T}{298.15}
+\goldrow{stream}{feedPM}{F}{0.00277536611111}
+\goldrow{stream}{feedPM}{T}{298.15}
+\goldrow{stream}{productPF}{F}{0.00277536611111}
+\goldrow{stream}{productPF}{T}{305.948239497}
+\goldrow{stream}{productPM}{F}{0.00277536611111}
+\goldrow{stream}{productPM}{T}{305.948239497}
+\goldrow{kpi}{millPlugFlow}{topClassRemaining}{0.210135330015}
+\goldrow{kpi}{millPlugFlow}{sizeMassClosure}{0}
+\goldrow{kpi}{millPlugFlow}{product\_d50\_um}{849.52929756}
+\goldrow{kpi}{millPlugFlow}{product\_d80\_um}{1696.90177714}
+\goldrow{kpi}{millPlugFlow}{product\_d32\_um}{268.401408121}
+\goldrow{kpi}{millPlugFlow}{reductionRatio80}{1.29763424756}
+\goldmore{24}
+\end{tutgolden}
+
+\clearpage
+\tutentry{mill03\_impact\_vogelPeukert}{tutorials/steady/solids/mill03\_impact\_vogelPeukert}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (impactMill) at (0.0,-0.0) {\textbf{impactMill}\\[-1pt]{\tiny mill}};
+  \draw[->] ($(impactMill.west)+(-1.05,0.00)$) -- ($(impactMill.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(impactMill.east)+(0,0.00)$) -- ($(impactMill.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{An impact mill whose selection function is the single-particle breakage probability of Vogel \& Peukert (2003) with their material parameters for limestone (fMat = 0.318 kg/(J m), x Wm,min = 0.5 J m/kg): particles below about 0.25 mm are below the threshold energy and do not break at 2 kJ/kg, which no power-law selection function can show.}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.00277536611111}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{stream}{product}{F}{0.00277536611111}
+\goldrow{stream}{product}{T}{310.01380966}
+\goldrow{kpi}{impactMill}{sizeMassClosure}{0}
+\goldrow{kpi}{impactMill}{feed\_d50\_um}{825.416538864}
+\goldrow{kpi}{impactMill}{feed\_d80\_um}{1284.28280957}
+\goldrow{kpi}{impactMill}{product\_d10\_um}{96.3953324497}
+\goldrow{kpi}{impactMill}{product\_d50\_um}{404.173221915}
+\goldrow{kpi}{impactMill}{product\_d80\_um}{804.936100355}
+\goldrow{kpi}{impactMill}{product\_d32\_um}{132.009368539}
+\goldrow{kpi}{impactMill}{reductionRatio80}{1.59550902115}
+\goldrow{kpi}{impactMill}{W\_shaft\_kW}{2.77777790426}
+\goldrow{kpi}{impactMill}{T\_out}{310.01380966}
+\goldmore{6}
+\end{tutgolden}
+
+\clearpage
 \tutentry{pneumaticConveyor01\_sand}{tutorials/steady/solids/pneumaticConveyor01\_sand}
 \tutwhat{Dilute-phase pneumatic conveying of sand in nitrogen: the glass-box dP breakdown + the saltation-margin safety check. Particle velocity from a mechanistic FORCE BALANCE (drag = wall friction + gravity); solids friction from Yang (1974, AIChE J 20:605); Rizk (1973) saltation. Loading \textasciitilde{}2 kg/kg (in the Yang voidage range); solids friction DOMINATES the dP -- conveying solids IS a pressure-drop problem. u\_g/u\_salt = 1.72 (safe margin above plugging).}
 \begin{tutnarrative}
@@ -12410,6 +12505,39 @@ The same sand-in-N2 service as pneumaticConveyor01 (loading \textasciitilde{}2),
 \goldrow{kpi}{node}{particleWallFriction}{0.4}
 \goldrow{kpi}{node}{rho\_gas}{3.39180174393}
 \goldmore{15}
+\end{tutgolden}
+
+\clearpage
+\tutentry{psd01\_grid\_and\_moments}{tutorials/steady/solids/psd01\_grid\_and\_moments}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (blender) at (0.0,-0.0) {\textbf{blender}\\[-1pt]{\tiny mixer}};
+  \draw[->] ($(blender.west)+(-1.05,-0.17)$) -- ($(blender.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {powderA};
+  \draw[->] ($(blender.west)+(-1.05,0.17)$) -- ($(blender.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {powderB};
+  \draw[->] ($(blender.east)+(0,0.00)$) -- ($(blender.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {blend};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Two limestone powders on ONE declared size grid: a fitted Rosin-Rammler law is INTEGRATED over the grid's classes, a measured sieve table on its own edges is RE-BINNED onto them, and the mixer blends the two class by class. Every mapping prints its mass closure; the blend's d10/d50/d80/d90, Sauter mean and specific surface come from the engine's one home of the moments.}
+\begin{tutnarrative}
+A mixer of two dry powders. The `sizeGrid` below is the ONLY place the classes are declared; both feeds are put on it before the mixer runs, and the mixer blends on it exactly (mass-weighted, class by class).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{powderA}{F}{0.00277536611111}
+\goldrow{stream}{powderA}{T}{298.15}
+\goldrow{stream}{powderB}{F}{0.00138768305556}
+\goldrow{stream}{powderB}{T}{298.15}
+\goldrow{stream}{blend}{F}{0.00416304916667}
+\goldrow{stream}{blend}{T}{298.15}
+\goldrow{kpi}{blender}{psd\_d10\_um}{52.1803096432}
+\goldrow{kpi}{blender}{psd\_d50\_um}{188.138562465}
+\goldrow{kpi}{blender}{psd\_d80\_um}{366.469817627}
+\goldrow{kpi}{blender}{psd\_d90\_um}{487.362374151}
+\goldrow{kpi}{blender}{psd\_d32\_um}{95.4269772629}
+\goldrow{kpi}{blender}{psd\_Sv\_m2\_m3}{62875.3018496}
+\goldrow{kpi}{blender}{psd\_massFractionSum}{1}
+\goldrow{kpi}{blender}{T\_out}{298.15}
+\goldmore{3}
 \end{tutgolden}
 
 \subsection{thermo}

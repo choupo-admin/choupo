@@ -41,6 +41,8 @@ License
 #include "streams/UtilityCircuit.H"
 #include "io/InternalStateIO.H"
 #include "streams/StreamStateIO.H"
+#include "core/distribution/SizeDistribution.H"
+#include "core/distribution/SizeGrid.H"
 #include <fstream>
 #include <functional>   // model-boundary audit (H conserved, T is the readout)
 
@@ -1069,6 +1071,7 @@ void runUnit(const DictPtr&                                          udict,
              const DictPtr&                                           reactionsDict,
              const DictPtr&                                           dryingDict,
              const DictPtr&                                           crystDict,
+             const DictPtr&                                           sizeGridDict,
              int                                                      verbosity,
              int                                                      unitIdx,
              bool                                                     quiet)
@@ -1126,6 +1129,12 @@ void runUnit(const DictPtr&                                          udict,
     }
 
     auto augmented = buildAugmentedDict(udict, utype, streams, thermo, solverDict, reactionsDict, dryingDict, crystDict);
+    //  THE CASE'S SIZE GRID (C361), handed to every unit: one that writes a
+    //  size distribution of its own (a crystalliser, a spray dryer, a mill)
+    //  writes it on these classes.  Absent unless the case declares one, so
+    //  every case written before it reaches its units unchanged.
+    if (sizeGridDict && !augmented->found("sizeGrid"))
+        augmented->insert("sizeGrid", sizeGridDict);
 
     auto unit = UnitOperation::New(utype);
 
@@ -2937,6 +2946,70 @@ int Flowsheet::solve(const DictPtr& dict,
             s.authoredInlet = !producedHere.count(nm);
     }
 
+    //  THE ONE SIZE AXIS (DEV.md 4c C361; docs/design/c361-solids-processing.md).
+    //  When the case declares `sizeGrid {}`, every AUTHORED inlet that carries
+    //  a size distribution is put on its classes here, once, before any unit
+    //  runs: a declared law is INTEGRATED over the classes, a table on other
+    //  classes is RE-BINNED (uniform in ln x inside each of its classes), and
+    //  each mapping says its mass closure and how much lay above xMax.  No
+    //  grid declared: nothing here runs, and no stream is touched.
+    sizeGridDict_ = dict->found("sizeGrid") ? dict->subDict("sizeGrid") : nullptr;
+    if (sizeGridDict_)
+    {
+        const SizeGrid grid = SizeGrid::fromDict(sizeGridDict_);
+        for (auto& [nm, s] : streams_)
+        {
+            if (!s.authoredInlet || s.psd.empty()) continue;
+            if (!s.psd.declaredLaw && grid.sameAs(s.psd.edges)) continue;
+            SizeGridMapReport rep;
+            std::string how;
+            std::vector<scalar> w;
+            if (s.psd.declaredLaw)
+            {
+                auto law = SizeDistribution::New(
+                    std::const_pointer_cast<Dictionary>(s.psd.declaredLaw));
+                w = grid.mapLaw(*law, &rep);
+                how = "law " + law->type() + " integrated in its mass basis";
+            }
+            else if (s.psd.onGrid())
+            {
+                w = grid.mapTable(s.psd.edges, s.psd.massFrac, &rep);
+                how = "table re-binned from its declared edges";
+            }
+            else
+            {
+                w = grid.mapTable(inferSizeEdges(s.psd.diameter), s.psd.massFrac, &rep);
+                how = "table re-binned from edges INFERRED at the geometric "
+                      "midpoints of its sizes (declare `edges` to give them)";
+            }
+            //  A grid that leaves more than 1 % of a declared powder above
+            //  its top edge does not describe that powder: refused, because
+            //  folding a tenth of the feed into one class would make every
+            //  size-dependent rate downstream wrong at exit 0.
+            if (rep.foldedAbove > 0.01)
+                throw std::runtime_error("sizeGrid: " + std::to_string(
+                    100.0 * rep.foldedAbove) + " % of the solids of stream '"
+                    + nm + "' lie above the grid's top edge xMax = "
+                    + std::to_string(grid.xMax()) + " m.  The grid must cover "
+                    "the feed's top size: raise `xMax` in system/flowsheetDict's "
+                    "`sizeGrid {}` (up to 1 % is folded into the top class and "
+                    "announced).");
+            s.psd.diameter = grid.representative();
+            s.psd.massFrac = w;
+            s.psd.edges    = grid.edges();
+            s.psd.declaredLaw.reset();
+            std::cout << "  [psd-grid] " << nm << ": " << how << " onto "
+                      << grid.nClasses() << " classes; sum in "
+                      << std::setprecision(12) << rep.inputSum << ", out "
+                      << rep.outputSum << std::setprecision(6);
+            if (rep.foldedAbove > 1e-6)   // below a ppm it is the law's own tail
+                std::cout << "; " << rep.foldedAbove
+                          << " of the mass lay above xMax and is folded into the "
+                             "top class (raise xMax to resolve it)";
+            std::cout << "\n";
+        }
+    }
+
     //  A PURE AUTHORED INLET ON ITS OWN SATURATION CURVE, WITH NO PHASE
     //  DECLARED, IS REFUSED (DEV.md C36 item 1).  The rule and its band live
     //  in ONE home, `flashState::undeterminedSaturationRefusal`; it is APPLIED
@@ -3131,7 +3204,7 @@ int Flowsheet::solve(const DictPtr& dict,
                     declaredInteriors_,
                     thermoFor(udict->lookupWord("name"), udict, thermo),
                     solverDict_, reactionsDict_, dryingKineticsDict_, crystallisationDict_,
-                    verbosity, unitIdx++, /*quiet=*/false);
+                    sizeGridDict_, verbosity, unitIdx++, /*quiet=*/false);
         }
         // Solution-directory tap for a TEAR-FREE flowsheet: there is no recycle
         // loop, so the single pass IS the converged answer --- emit it as the
@@ -3227,7 +3300,7 @@ int Flowsheet::solve(const DictPtr& dict,
                         declaredInteriors_,
                         thermoFor(udict->lookupWord("name"), udict, thermo),
                         solverDict_, reactionsDict_, dryingKineticsDict_, crystallisationDict_,
-                        verbosity, unitIdx++, quiet);
+                        sizeGridDict_, verbosity, unitIdx++, quiet);
             }
         };
 

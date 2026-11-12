@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1578,
+  "cases": 1582,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 15
@@ -24701,6 +24701,59 @@
    ],
    "hasGolden": false
   },
+  "tutorials/steady/solids/mill01_limestone_herbstFuerstenau": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "mill"
+   ],
+   "unitModels": [
+    "austin"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/solids/mill02_bond_crosscheck": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "mill"
+   ],
+   "unitModels": [
+    "austin",
+    "herbstFuerstenau"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/solids/mill03_impact_vogelPeukert": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "mill"
+   ],
+   "unitModels": [
+    "austin",
+    "vogelPeukert"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/solids/pneumaticConveyor01_sand": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -24719,6 +24772,20 @@
    "application": "choupoSolve",
    "unitTypes": [
     "pneumaticConveyor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/solids/psd01_grid_and_moments": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "mixer"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -26592,8 +26659,12 @@
     "tutorials/steady/separation/psa01_h2_psa",
     "tutorials/steady/separation/tsa01_co2_twin_bed",
     "tutorials/steady/separation/tsa02_refused_capacity",
+    "tutorials/steady/solids/mill01_limestone_herbstFuerstenau",
+    "tutorials/steady/solids/mill02_bond_crosscheck",
+    "tutorials/steady/solids/mill03_impact_vogelPeukert",
     "tutorials/steady/solids/pneumaticConveyor01_sand",
     "tutorials/steady/solids/pneumaticConveyor02_bends",
+    "tutorials/steady/solids/psd01_grid_and_moments",
     "tutorials/steady/thermo/air01_heater_expand",
     "tutorials/steady/thermo/basis01_two_unit_chain",
     "tutorials/steady/thermo/perUnitThermo01_srk_nrtl",
@@ -27111,6 +27182,11 @@
     "tutorials/steady/thermo/perUnitThermo01_srk_nrtl",
     "tutorials/steady/thermoTest/model5_nrtl_flash"
    ],
+   "mill": [
+    "tutorials/steady/solids/mill01_limestone_herbstFuerstenau",
+    "tutorials/steady/solids/mill02_bond_crosscheck",
+    "tutorials/steady/solids/mill03_impact_vogelPeukert"
+   ],
    "mixer": [
     "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/batch/plant/donepezil01_tablets",
@@ -27137,6 +27213,7 @@
     "tutorials/steady/reactors/ammoniaReactor02_equilibrium",
     "tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach",
     "tutorials/steady/reactors/ammoniaReactor04_kineticSizing",
+    "tutorials/steady/solids/psd01_grid_and_moments",
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
     "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
    ],
@@ -29449,8 +29526,12 @@
     "tutorials/steady/separation/psa01_h2_psa",
     "tutorials/steady/separation/tsa01_co2_twin_bed",
     "tutorials/steady/separation/tsa02_refused_capacity",
+    "tutorials/steady/solids/mill01_limestone_herbstFuerstenau",
+    "tutorials/steady/solids/mill02_bond_crosscheck",
+    "tutorials/steady/solids/mill03_impact_vogelPeukert",
     "tutorials/steady/solids/pneumaticConveyor01_sand",
     "tutorials/steady/solids/pneumaticConveyor02_bends",
+    "tutorials/steady/solids/psd01_grid_and_moments",
     "tutorials/steady/thermo/air01_heater_expand",
     "tutorials/steady/thermo/perUnitThermo01_srk_nrtl",
     "tutorials/steady/thermoTest/model1_lumped_evaporator",

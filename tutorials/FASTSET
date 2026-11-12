@@ -185,6 +185,7 @@ tutorials/steady/reactors/conversion02_parallel_selectivity
 tutorials/steady/rotating/turbine01_air
 tutorials/steady/separation/tsa02_refused_capacity
 tutorials/steady/solids/pneumaticConveyor01_sand
+tutorials/steady/solids/mill02_bond_crosscheck
 tutorials/steady/thermo/air01_heater_expand
 tutorials/steady/thermoTest/model5_nrtl_flash
 tutorials/steady/userops/userOp01_yield_reactor
