@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 238 records already exist
+## 1. Why an index, when 239 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 238 design records, **166 state a rejected alternative and 72 do not** —
+- Of 239 design records, **167 state a rejected alternative and 72 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -279,6 +279,7 @@ is this index failing its own purpose; they move below with their rulings.
 | record | kind | note |
 |---|---|---|
 | [`the-sines-pta-plant-appraisal-and-project-risk.md`](../design/the-sines-pta-plant-appraisal-and-project-risk.md) | STUDY | no | **RESEARCH RECORD, no decision -- 2026-10-24/25 (C143, 8279c166e).**  The sourced evidence the EduTool `sines-pta` (economic appraisal and project risk: lessons from the Sines PTA plant) is built from: confirmed facts only, persons not named, every statement about an institution sourced and attributed; what could not be confirmed is listed.  Changes no engine, corpus or contract |
+| [`thermophysical-property-routes.md`](../design/thermophysical-property-routes.md) | STUDY | yes | **OPEN -- STUDY 2026-11-12 (C378), awaiting the owner's ratification; nothing built.** -- how liquid density, viscosity and surface tension should be organised: today's routes measured and reproduced (electrolyte density and viscosity refused; a CO2 `Vliq` read 31 % off; water without its pure-fluid record 2-6.5 % off and pressure ignored; seven units bypassing the density home and four using 1000 kg/m3; Brock-Bird +49 % on water); four other organisations compared by what they are; PROPOSED five concepts (property, class derived from the record, a route of pure correlation -> mixture rule -> system correction -> pressure correction with a quality word and an expected error, declared measurement, hypothesis from a closed two-word list in `approximations {}`), salt-solvent data in `parameters/solution/`, the C377 activity-interface seam rejected, a liquid-density pilot first.  REJECTED: silent fall-backs and sentinels; a hidden ranked default; apparent salts reconstituted arbitrarily from ions; a density method on the electrolyte activity interface |
 | [`solid-migration-witness-data.md`](../design/solid-migration-witness-data.md) | SCOPE | staged 2026-08-08, reviewStatus interim — the authorised migration's validation targets, transcribed from the two owner-provided primaries (Archer 1992: invariant points + dihydrate formation props; Marcilla 1995: LLE tie-lines + the LLS tie-triangles); locates anchors, curates nothing |
 | [`state-of-the-art-property-study-2026-07-17.md`](../design/state-of-the-art-property-study-2026-07-17.md) | STUDY | ordered after two AIs decided a day's architecture in a self-ratification loop without studying the field |
 | [`audit-2026-08-05-arity.md`](audit-2026-08-05-arity.md) | STUDY | fleet audit, I1 |
@@ -392,7 +393,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**72 of 238 records state no rejected alternative.**  For a FORUM or a STUDY
+**72 of 239 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

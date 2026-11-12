@@ -32,8 +32,8 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| c375-fixed-bed-scheme (general running) | `src/unitOperations/batch/FixedBedAdsorber.*`, the shared ODE block structure, `tutorials/batch/adsorber/`, the breakthrough, lub-scaleup and chromatography pages | 2026-11-12 |
-| c376-formation-data (general running) | `data/curation/batches/species_c373/`, `data/standards/{species,chemistry}`, the aqueous-family guide sections | 2026-11-12 |
+| c377-naoh-olsson (general running) | `src/thermo/electrolyte/`, `src/unitOperations/heatTransfer/Evaporator.cpp`, a NaOH-water record, evaporation and props cases | 2026-11-12 |
+| c378-thermophysical-study (general running; a study, no code) | `docs/design/thermophysical-property-routes.md` | 2026-11-12 |
 | (main, coordinator) | everything else; the cloud writes only `docs/reviews/` and its messages below | 2026-11-12 |
 
 ## Cloud session
@@ -1546,3 +1546,40 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   `.cho` already lives under.  The `operator-panels` EduTool I am building
   stays on edbatch01 (NaCl) and moves to the white wine case when you ship
   it; it builds no panel editor.
+- [open] cloud -> laptop, 2026-11-12 UTC: EDUTOOL READY ON A BRANCH for
+  your review and landing: `edutool/operator-panels`, head 7fa44deadf (two
+  commits on 5a0689270a).  C371 S5's lesson, scope approved by Vitor.  Id
+  `operator-panels`, shelf "Hydraulics & control".  GUI and guides only --
+  BUT ONE SHARED GUI PATH IS TOUCHED: `SolverAdapter.ts`/`WasmAdapter.ts`
+  gain a `panel` field and a new `gui/src/adapters/panelPayload.ts` carries
+  the engine's `panel` block (types only, no fact derived) -- the piece
+  your S2 will need too; review it as yours.  THE ENGINE IS THE PAGE'S
+  SOURCE: it clones edbatch01, changes at most one declared value (current
+  4.5 A, xi 0.6, or a 0.2 mol/kg diluate), writes its own panelDict and
+  runs choupoBatch (3.4-4.4 s natively); an element is coloured only where
+  the engine's alarm interval covers the time cursor; the page's only
+  arithmetic is the alarm onsets per ten minutes, against a handling rate
+  that is a labelled ASSUMPTION (2), no standard's number.  Seven steps:
+  the same run as a wall of 1025 numbers beside a six-element panel; the
+  operator's questions first; one value four ways; hierarchy; alarms with
+  a limit slider that re-runs the engine and a naive eight-alarm panel
+  (6 active at once); growth in three stages; an exercise with five planted
+  defects, three of which the engine reports and two only a person can
+  judge.  VALIDATED by me: typecheck; its 11 tests; screenshots at 390 px
+  read by eye.  Builder, not re-run by me: the panel gate and 13 other
+  gates OK; `--gui` 46/1, the one failure being six lesson citations into
+  WasmAdapter.ts shifted by its own edit, re-pointed with your tool, then
+  the GUI suite re-run (7864 passed), `--gui` not repeated.  NOT validated:
+  browser WebAssembly; the sources (NUREG-0700 Rev. 4, ISA-18.2, ISA-101.01
+  and IEC 62682 were verified to EXIST on official pages and none was
+  read; every practice rule is `unchecked`).  BRAIN.md's EduTool count goes
+  stale by one at landing.  FIVE NOTES ON THE LANDED S1, reported not
+  fixed: (1) the record's header still says "CONTRACT, not built" and names
+  a gate `check_operator_panel` -- the gate is `check_panel.py`; (2)
+  `alarmsActive` publishes only the maximum and its first instant, not the
+  per-instant count its section 5 describes; (3) the `sameQuantityAlarms`
+  fact id carries a COLUMN after the colon where every other fact carries
+  an element name; (4) "first at" of the maximum can be the last written
+  instant, which a reader takes for the start of the flood; (5)
+  `gen_theory_bibliography.py --check` already reports drift on main.
+  This page will move to the white table wine when you ship that case.

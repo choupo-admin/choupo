@@ -3,7 +3,8 @@
   Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
   reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
   1 mol/kg, 298.15 K, H+ = 0.
-  NO `aqueousThermo` ON PURPOSE: the ionisation (pK, dH) of this family is evaluated in a work in hand and is in chemistry/, so the SPECIATION is complete; the evaluated compilation prints ionisation quantities only (no formation enthalpy or entropy), and none was entered from another work in this pass, so a balance that needs the enthalpy of this species REFUSES BY NAME instead of borrowing a value.
+  The formation values are DERIVED from printed numbers; the arithmetic, tables and pages are in the
+  source line below and in formation.tsv.
 \*-----------------------------------------------------------------------------*/
 recordType modelSpecies;
 schemaVersion 1;
@@ -12,3 +13,9 @@ name    H2P2O7;
 formula     "H2P2O7-2";
 charge  -2;
 MW { value 175.957; unit g/mol;}
+aqueousThermo
+{
+source "hfAq [kJ/mol] -2273.0: derived: HP2O7 -2272.5 minus dH_ion3 +0.5, S 59.4 minus dS_ion3 -127.0 (pK3 6.72), steps from GOLD02 Section 8 summary p. 360 (pK, dH_ion of pyrophosphoric acid) -- Wagman, Evans, Parker, Schumm, Halow, Bailey, Churney & Nuttall, The NBS tables of chemical thermodynamic properties, J. Phys. Chem. Ref. Data 11 (1982) Suppl. 2, anchor Table 19:P, p. 2-73 (PDF p. 81), row P2O7 4- ao, steps in steps.tsv (read from a page image), the NBS table prints -2278.6 and 163. for this species, its differences from the evaluated ionisation steps (Goldberg) exceed the Gibbs identity's 0.30 log-unit tolerance (check_logk_crosscheck), so the family is held on ONE scale: the fully dissociated anion as printed and every other species from the evaluated steps, listed in formation_compare.tsv ## sAq [J/mol/K] 186.4: derived: HP2O7 -2272.5 minus dH_ion3 +0.5, S 59.4 minus dS_ion3 -127.0 (pK3 6.72), steps from GOLD02 Section 8 summary p. 360 (pK, dH_ion of pyrophosphoric acid) -- Wagman, Evans, Parker, Schumm, Halow, Bailey, Churney & Nuttall, The NBS tables of chemical thermodynamic properties, J. Phys. Chem. Ref. Data 11 (1982) Suppl. 2, anchor Table 19:P, p. 2-73 (PDF p. 81), row P2O7 4- ao, steps in steps.tsv (read from a page image)";
+hfAq { value -2273000; unit J/mol;}
+sAq  { value 186.4; unit J/mol/K;}
+}

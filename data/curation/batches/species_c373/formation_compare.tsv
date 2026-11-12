@@ -1,0 +1,87 @@
+species	quantity	catalogue	reading	unit	src	where	image	note
+PO4	hfAq	-1277.4	-1277.4	kJ/mol	NBS82	Table 19:P, p. 2-73 (PDF p. 81), row PO4 3- ao	yes	catalogue value already the NBS value; no change
+PO4	sAq	-222.0	-222.	J/mol/K	NBS82	Table 19:P, p. 2-73 (PDF p. 81), row PO4 3- ao	yes	no change
+H3PO4aq	hfAq	-	-1288.34	kJ/mol	NBS82	Table 19:P, p. 2-74 (PDF p. 82), row H3PO4 ao	yes	no species file (the neutral acid is the ion `H3PO4` of chemistry/H3PO4aq-formation.dat, a PHREEQC-derived record); the reading is held for the one-scale check only
+H3PO4aq	sAq	-	158.2	J/mol/K	NBS82	Table 19:P, p. 2-74 (PDF p. 82), row H3PO4 ao	yes	held for the one-scale check only
+H2AsO4	hfAq	-909.56	-909.56	kJ/mol	NBS82	Table 20:As, p. 2-77 (PDF p. 85), row H2AsO4- ao	yes	no change (entered in C320 from the same table)
+H2AsO4	sAq	117.0	117.	J/mol/K	NBS82	Table 20:As, p. 2-77 (PDF p. 85), row H2AsO4- ao	yes	no change
+HAsO4	hfAq	-906.34	-906.34	kJ/mol	NBS82	Table 20:As, p. 2-77 (PDF p. 85), row HAsO4 2- ao	yes	no change
+HAsO4	sAq	-1.7	-1.7	J/mol/K	NBS82	Table 20:As, p. 2-77 (PDF p. 85), row HAsO4 2- ao	yes	no change
+Bisulfite	hfAq	-626.22	-626.22	kJ/mol	NBS82	Table 14:S, p. 2-57 (PDF p. 65), row HSO3- ao	yes	no change
+Bisulfite	sAq	139.7	139.7	J/mol/K	NBS82	Table 14:S, p. 2-57 (PDF p. 65), row HSO3- ao	yes	no change
+Sulfite	hfAq	-635.5	-635.5	kJ/mol	NBS82	Table 14:S, p. 2-57 (PDF p. 65), row SO3 2- ao	yes	no change
+Sulfite	sAq	-29.0	-29.	J/mol/K	NBS82	Table 14:S, p. 2-57 (PDF p. 65), row SO3 2- ao	yes	no change
+H2Gly	hfAq	-518.37	-517.912	kJ/mol	NBS82	Table 23:C, pp. 2-104 and 2-105 (PDF pp. 112, 113), row NH3CH2COOH+ ao	yes	catalogue value is Miller & Smith-Magowan's (Table 3 and Table 6); NBS differs by +0.46; the Miller route is kept (it carries the steps of the same evaluation)
+H2Gly	sAq	189.95	190.20	J/mol/K	NBS82	Table 23:C, pp. 2-104 and 2-105 (PDF pp. 112, 113), row NH3CH2COOH+ ao	yes	catalogue Miller; difference +0.25
+HGly	hfAq	-514.36	-513.988	kJ/mol	NBS82	Table 23:C, pp. 2-104 and 2-105 (PDF pp. 112, 113), row NH2CH2COOH ao4	yes	catalogue Miller; difference +0.37
+HGly	sAq	158.45	158.32	J/mol/K	NBS82	Table 23:C, pp. 2-104 and 2-105 (PDF pp. 112, 113), row NH2CH2COOH ao4	yes	catalogue Miller; difference -0.13
+Gly	hfAq	-470.26	-469.780	kJ/mol	NBS82	Table 23:C, pp. 2-104 and 2-105 (PDF pp. 112, 113), row glycinate ao / glycine ai4	yes	catalogue Miller; difference +0.48
+Gly	sAq	119.25	119.41	J/mol/K	NBS82	Table 23:C, pp. 2-104 and 2-105 (PDF pp. 112, 113), row glycinate ao / glycine ai4	yes	catalogue Miller; difference +0.16
+HP2O7	hfAq	-2272.5	-2274.8	kJ/mol	NBS82	Table 19:P, p. 2-74 (PDF p. 82), row HP2O7 ao	yes	NOT entered: the family is on one scale (see formation.tsv); the printed value is kept here as the disagreement
+HP2O7	sAq	59.4	46.	J/mol/K	NBS82	Table 19:P, p. 2-74 (PDF p. 82), row HP2O7 ao	yes	NOT entered, as above
+H2P2O7	hfAq	-2273.0	-2278.6	kJ/mol	NBS82	Table 19:P, p. 2-75 (PDF p. 83), row H2P2O7 ao	yes	NOT entered: the family is on one scale (see formation.tsv); the printed value is kept here as the disagreement
+H2P2O7	sAq	186.4	163.	J/mol/K	NBS82	Table 19:P, p. 2-75 (PDF p. 83), row H2P2O7 ao	yes	NOT entered, as above
+H3P2O7	hfAq	-2268.0	-2276.5	kJ/mol	NBS82	Table 19:P, p. 2-75 (PDF p. 83), row H3P2O7 ao	yes	NOT entered: the family is on one scale (see formation.tsv); the printed value is kept here as the disagreement
+H3P2O7	sAq	246.4	213.	J/mol/K	NBS82	Table 19:P, p. 2-75 (PDF p. 83), row H3P2O7 ao	yes	NOT entered, as above
+H4P2O7	hfAq	-2258.8	-2268.6	kJ/mol	NBS82	Table 19:P, p. 2-75 (PDF p. 83), row H4P2O7 ao	yes	NOT entered: the family is on one scale (see formation.tsv); the printed value is kept here as the disagreement
+H4P2O7	sAq	293.2	268.	J/mol/K	NBS82	Table 19:P, p. 2-75 (PDF p. 83), row H4P2O7 ao	yes	NOT entered, as above
+H3AsO4	hfAq	-901.76	-902.5	kJ/mol	NBS82	Table 20:As, p. 2-77 (PDF p. 85), row H3AsO4 ao	yes	NOT entered: one scale with the existing H2AsO4 and HAsO4 (see formation.tsv)
+H3AsO4	sAq	187.4	184.	J/mol/K	NBS82	Table 20:As, p. 2-77 (PDF p. 85), row H3AsO4 ao	yes	NOT entered, as above
+AsO4	hfAq	-890.44	-888.14	kJ/mol	NBS82	Table 20:As, p. 2-77 (PDF p. 85), row AsO4 ao	yes	NOT entered: one scale with the existing H2AsO4 and HAsO4 (see formation.tsv)
+AsO4	sAq	-176.2	-162.8	J/mol/K	NBS82	Table 20:As, p. 2-77 (PDF p. 85), row AsO4 ao	yes	NOT entered, as above
+H2Gly	hfAq	-518.37	-526.01	kJ/mol	AMEND97	Table 1, p. 1929, row Gly+	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+H2Gly	sAq	189.95	196.27	J/mol/K	AMEND97	Table 1, p. 1929, row Gly+	no	catalogue Miller; not entered
+HGly	hfAq	-514.36	-522.08	kJ/mol	AMEND97	Table 1, p. 1929, row Gly	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+HGly	sAq	158.45	164.39	J/mol/K	AMEND97	Table 1, p. 1929, row Gly	no	catalogue Miller; not entered
+Gly	hfAq	-470.26	-477.77	kJ/mol	AMEND97	Table 1, p. 1929, row Gly-	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+Gly	sAq	119.25	125.81	J/mol/K	AMEND97	Table 1, p. 1929, row Gly-	no	catalogue Miller; not entered
+H2Ala	hfAq	-556.76	-556.81	kJ/mol	AMEND97	Table 1, p. 1929, row Ala+	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+H2Ala	sAq	194.5	199.20	J/mol/K	AMEND97	Table 1, p. 1929, row Ala+	no	catalogue Miller; not entered
+HAla	hfAq	-553.75	-554.38	kJ/mol	AMEND97	Table 1, p. 1929, row Ala	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+HAla	sAq	159.8	162.46	J/mol/K	AMEND97	Table 1, p. 1929, row Ala	no	catalogue Miller; not entered
+Ala	hfAq	-508.52	-508.23	kJ/mol	AMEND97	Table 1, p. 1929, row Ala-	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+Ala	sAq	122.6	128.49	J/mol/K	AMEND97	Table 1, p. 1929, row Ala-	no	catalogue Miller; not entered
+H3Aspt	hfAq	-954.96	-950.35	kJ/mol	AMEND97	Table 1, p. 1929, row Asp+	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+H3Aspt	sAq	242.49	257.94	J/mol/K	AMEND97	Table 1, p. 1929, row Asp+	no	catalogue Miller; not entered
+H2Aspt	hfAq	-947.5	-947.01	kJ/mol	AMEND97	Table 1, p. 1929, row Asp	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+H2Aspt	sAq	229.49	231.04	J/mol/K	AMEND97	Table 1, p. 1929, row Asp	no	catalogue Miller; not entered
+HAspt	hfAq	-942.86	-939.48	kJ/mol	AMEND97	Table 1, p. 1929, row Asp-	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+HAspt	sAq	170.09	181.33	J/mol/K	AMEND97	Table 1, p. 1929, row Asp-	no	catalogue Miller; not entered
+Aspt	hfAq	-905.1	-874.87	kJ/mol	AMEND97	Table 1, p. 1929, row Asp2-	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+Aspt	sAq	105.19	206.44	J/mol/K	AMEND97	Table 1, p. 1929, row Asp2-	no	catalogue Miller; not entered
+H3Glu	hfAq	-980.45	-983.20	kJ/mol	AMEND97	Table 1, p. 1929, row Glu+	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+H3Glu	sAq	289.2	295.10	J/mol/K	AMEND97	Table 1, p. 1929, row Glu+	no	catalogue Miller; not entered
+H2Glu	hfAq	-980.72	-982.49	kJ/mol	AMEND97	Table 1, p. 1929, row Glu	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+H2Glu	sAq	246.9	256.06	J/mol/K	AMEND97	Table 1, p. 1929, row Glu	no	catalogue Miller; not entered
+HGlu	hfAq	-979.16	-979.68	kJ/mol	AMEND97	Table 1, p. 1929, row Glu-	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+HGlu	sAq	170.3	183.51	J/mol/K	AMEND97	Table 1, p. 1929, row Glu-	no	catalogue Miller; not entered
+Glu	hfAq	-939.09	-909.10	kJ/mol	AMEND97	Table 1, p. 1929, row Glu2-	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+Glu	sAq	114.59	241.04	J/mol/K	AMEND97	Table 1, p. 1929, row Glu2-	no	catalogue Miller; not entered
+Cit	hfAq	-1528.5	-1515.11	kJ/mol	ALB03	Table 3.2, p. 52 (PDF p. 58), row citrate z = -3	yes	catalogue is Kochergina's; the third step is +3.35 in Alberty against Goldberg's -3.38 (opposite sign)
+HCit	hfAq	-1526.2	-1518.46	kJ/mol	ALB03	Table 3.2, p. 52 (PDF p. 58), row citrate z = -2	yes	catalogue Kochergina; offset +7.7
+H2Cit	hfAq	-1529.7	-1520.88	kJ/mol	ALB03	Table 3.2, p. 52 (PDF p. 58), row citrate z = -1	yes	catalogue Kochergina; offset +8.8; Alberty's steps 2.42 against Goldberg's 2.23
+Succ	hfAq	-909.37	-908.68	kJ/mol	ALB03	Table 3.2, p. 55 (PDF p. 61), row succinate z = -2	yes	catalogue Miller's; +0.69
+HSucc	hfAq	-908.93	-908.84	kJ/mol	ALB03	Table 3.2, p. 55 (PDF p. 61), row succinate z = -1	yes	catalogue Miller's; +0.09
+Fumar	hfAq	-777.57	-777.39	kJ/mol	ALB03	Table 3.2, p. 53 (PDF p. 59), row fumarate z = -2	yes	catalogue Miller's; +0.18
+HFumar	hfAq	-774.72	-774.46	kJ/mol	ALB03	Table 3.2, p. 53 (PDF p. 59), row fumarate z = -1	yes	catalogue Miller's; +0.26
+Lac	hfAq	-686.63	-686.64	kJ/mol	ALB03	Table 3.2, p. 54 (PDF p. 60), row lactate	yes	catalogue Miller's; -0.01
+Acetate	hfAq	-486.01	-486.01	kJ/mol	ALB03	Table 3.2, p. 52 (PDF p. 58), row acetate z = -1	yes	identical (both NBS)
+Formate	hfAq	-425.55	-425.55	kJ/mol	ALB03	Table 3.2, p. 53 (PDF p. 59), row formate	yes	identical (both NBS)
+Ox	hfAq	-825.1	-825.10	kJ/mol	ALB03	Table 3.2, p. 54 (PDF p. 60), row oxalate	yes	identical (NBS)
+NH4	hfAq	-132.51	-132.51	kJ/mol	ALB03	Table 3.2, p. 52 (PDF p. 58), row ammonia z = +1	yes	identical (NBS)
+CO3	hfAq	-677.14	-677.14	kJ/mol	ALB03	Table 3.2, p. 52 (PDF p. 58), row CO2,tot z = -2	yes	identical (NBS)
+HCO3	hfAq	-691.99	-691.99	kJ/mol	ALB03	Table 3.2, p. 52 (PDF p. 58), row CO2,tot z = -1	yes	identical (NBS)
+HMeNH2	hfAq	-124.93	-124.93	kJ/mol	ALB03	Table 3.2, p. 54 (PDF p. 60), row methylamineion	yes	identical (NBS)
+H2PO4	hfAq	-1296.29	-1302.6	kJ/mol	ALB03	Table 3.2, p. 54 (PDF p. 60), row inorganic phosphate z = -1	yes	catalogue NBS; Alberty's phosphate enthalpies and Gibbs energies are both 6 to 7 kJ/mol lower, the entropy the same (HPO4: -33.1 derived against NBS -33.5)
+HPO4	hfAq	-1292.14	-1299.00	kJ/mol	ALB03	Table 3.2, p. 54 (PDF p. 60), row inorganic phosphate z = -2	yes	catalogue NBS; see above
+P2O7	hfAq	-2271.1	-2293.47	kJ/mol	ALB03	Table 3.2, p. 54 (PDF p. 60), row pyrophosphate z = -4	yes	catalogue is the NBS value (-2271.1); 22 kJ/mol apart, the Gibbs energy within 0.9; see section 6.4
+HP2O7	hfAq	-2272.5	-2294.87	kJ/mol	ALB03	Table 3.2, p. 54 (PDF p. 60), row pyrophosphate z = -3	yes	catalogue derived from NBS P2O7 and Goldberg's steps; 22 kJ/mol apart
+H2P2O7	hfAq	-2273	-2295.37	kJ/mol	ALB03	Table 3.2, p. 54 (PDF p. 60), row pyrophosphate z = -2	yes	as above
+H3P2O7	hfAq	-2268	-2290.37	kJ/mol	ALB03	Table 3.2, p. 55 (PDF p. 61), row pyrophosphate z = -1	yes	as above
+H4P2O7	hfAq	-2258.8	-2281.17	kJ/mol	ALB03	Table 3.2, p. 55 (PDF p. 61), row pyrophosphate z = 0	yes	as above
+HGly	hfAq	-514.36	-523.00	kJ/mol	ALB03	Table 3.2, p. 53 (PDF p. 59), row glycine	yes	catalogue Miller's; Alberty and Amend & Helgeson (-522.08) agree, Miller and NBS (-513.99) differ by 8 to 9 kJ/mol
+HAla	hfAq	-553.75	-554.80	kJ/mol	ALB03	Table 3.2, p. 52 (PDF p. 58), row alanine	yes	catalogue Miller's; Amend -554.38
+HAspt	hfAq	-942.86	-943.41	kJ/mol	ALB03	Table 3.2, p. 52 (PDF p. 58), row aspartate z = -1	yes	catalogue Miller's; +0.55
+HGlu	hfAq	-979.16	-979.89	kJ/mol	ALB03	Table 3.2, p. 53 (PDF p. 59), row glutamate z = -1	yes	catalogue Miller's; -0.73
+H2Succ	hfAq	-	-912.20	kJ/mol	ALB03	Table 3.2, p. 55 (PDF p. 61), row succinate z = 0	yes	neutral master: its datum is the component and the solution pair (Miller -912.11); held here for the record, not read by the one-scale check
+H2Fumar	hfAq	-	-774.88	kJ/mol	ALB03	Table 3.2, p. 53 (PDF p. 59), row fumarate z = 0	yes	neutral master (Miller -775.18); held here for the record, not read by the one-scale check

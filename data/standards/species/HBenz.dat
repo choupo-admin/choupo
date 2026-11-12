@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/HBenz.dat -- ONE model species, ONE typed file: the most protonated form of benzoic acid, the speciation MASTER of its family.
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
+  reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
+  1 mol/kg, 298.15 K, H+ = 0.
+  The formation values are the PRINTED numbers of the source; the table, page and row are in the
+  source line below and in formation.tsv.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    HBenz;
+formula     "HC7H5O2";
+charge  0;
+MW { value 122.123; unit g/mol;}
+aqueousThermo
+{
+source "hfAq [kJ/mol] -355.93: printed DfH -85070 cal/mol x 4.184 -- Shock, Organic acids in hydrothermal solutions: standard molal thermodynamic properties of carboxylic acids, and estimates of dissociation constants at high temperatures and pressures, Am. J. Sci. 295 (1995) 496-580, Table 4, p. 518 (PDF p. 23), row benzoic acid (read from a page image), Table 2 / Table 4: from the heat of solution and the formation enthalpy of the liquid or the hydration reaction (experimental quantities), DfG printed -56130 ## sAq [J/mol/K] 230.54: printed S 55.1 cal/mol/K x 4.184 -- Shock, Organic acids in hydrothermal solutions: standard molal thermodynamic properties of carboxylic acids, and estimates of dissociation constants at high temperatures and pressures, Am. J. Sci. 295 (1995) 496-580, Table 4, p. 518 (PDF p. 23), row benzoic acid (read from a page image), experimental (Table 2: Strong, Neff & Whitesel 1989 per the paper's footnote k)";
+hfAq { value -355930; unit J/mol;}
+sAq  { value 230.54; unit J/mol/K;}
+}

@@ -3,7 +3,8 @@
   Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
   reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
   1 mol/kg, 298.15 K, H+ = 0.
-  NO `aqueousThermo` ON PURPOSE: the ionisation (pK, dH) of this family is evaluated in a work in hand and is in chemistry/, so the SPECIATION is complete; the evaluated compilation prints ionisation quantities only (no formation enthalpy or entropy), and none was entered from another work in this pass, so a balance that needs the enthalpy of this species REFUSES BY NAME instead of borrowing a value.
+  The formation values are DERIVED from printed numbers; the arithmetic, tables and pages are in the
+  source line below and in formation.tsv.
 \*-----------------------------------------------------------------------------*/
 recordType modelSpecies;
 schemaVersion 1;
@@ -12,3 +13,9 @@ name    H2GlyGly;
 formula     "C4H9N2O3+";
 charge  +1;
 MW { value 133.127; unit g/mol;}
+aqueousThermo
+{
+source "hfAq [kJ/mol] -734.36: HGlyGly -734.25 minus dH_ion1 +0.11 (GOLD02) -- Alberty, Thermodynamics of Biochemical Reactions, Wiley-Interscience (2003), Table 3.2 (pp. 52-55, the data file BasicBiochemData2), Table 3.2, p. 53 (PDF p. 59), row glycylglycine (z = 0, N_H = 8) and steps.tsv (read from a page image), one scale with the evaluated steps ## sAq [J/mol/K] 386.8: HGlyGly 327.1 minus dS_ion1 -59.7 (dS = (dH - RT ln10 pK)/T, pK1 3.140) -- Alberty, Thermodynamics of Biochemical Reactions, Wiley-Interscience (2003), Table 3.2 (pp. 52-55, the data file BasicBiochemData2), Table 3.2, p. 53 (PDF p. 59), row glycylglycine (z = 0, N_H = 8) and steps.tsv (read from a page image)";
+hfAq { value -734360; unit J/mol;}
+sAq  { value 386.8; unit J/mol/K;}
+}

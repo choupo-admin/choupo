@@ -3,7 +3,8 @@
   Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
   reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
   1 mol/kg, 298.15 K, H+ = 0.
-  NO `aqueousThermo` ON PURPOSE: the ionisation (pK, dH) of glycolic acid is printed in Miller & Smith-Magowan Table 6, so the SPECIATION is complete.  Its formation data are NOT entered: Miller Table 5 (p. 1056) prints dHf(cr) -664.0, dH(soln) +15.94 and dHf(aq acid) -651.0, which do not close (-664.0 + 15.94 = -648.06, 2.9 kJ/mol from the printed aqueous value, the row marked error estimated); the NBS tables print glycolate -652.3 (dHf only, no entropy).  Three readings disagree by 4.7 kJ/mol and the work in hand does not say which is right, so the energy route through glycolate REFUSES BY NAME.
+  The formation values are DERIVED from printed numbers; the arithmetic, tables and pages are in the
+  source line below and in formation.tsv.
 \*-----------------------------------------------------------------------------*/
 recordType modelSpecies;
 schemaVersion 1;
@@ -12,3 +13,17 @@ name    Glyc;
 formula     "C2H3O3-";
 charge  -1;
 MW { value 75.043; unit g/mol;}
+aqueousThermo
+{
+source "hfAq [kJ/mol] -647.60: HGlyc -648.06 plus dH_ion +0.46 (MILL90 Table 6) -- Shock, Organic acids in hydrothermal solutions: standard molal thermodynamic properties of carboxylic acids, and estimates of dissociation constants at high temperatures and pressures, Am. J. Sci. 295 (1995) 496-580, Table 10, p. 544 (acid) and steps.tsv (dH_ion) (read from a page image), one scale with the evaluated step: the paper's own glycolate DfH is -154700 cal = -647.28 kJ/mol, calculated by it from DfG and S (footnote r), 0.32 kJ/mol from this ## sAq [J/mol/K] 108.33: HGlyc 180.33 plus dS_ion -72.0 (MILL90 Table 6) -- Shock, Organic acids in hydrothermal solutions: standard molal thermodynamic properties of carboxylic acids, and estimates of dissociation constants at high temperatures and pressures, Am. J. Sci. 295 (1995) 496-580, Table 10, p. 544 (acid) and steps.tsv (dS_ion) (read from a page image), the paper prints 26.2 cal/mol/K = 109.62 J/mol/K (estimated, footnote h, eq 40), the value entered follows the acid's estimate and the printed dissociation entropy so that the family holds the Gibbs identity";
+hfAq { value -647600; unit J/mol;}
+sAq  { value 108.33; unit J/mol/K;}
+provenance
+{
+    sAq
+    {
+        origin  estimated;
+        method  "Shock (1995): acid S ESTIMATED (Table 10 footnote g) plus Miller & Smith-Magowan's printed dissociation entropy";
+    }
+}
+}

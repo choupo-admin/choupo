@@ -7494,9 +7494,10 @@ difference of the neighbouring species' formation enthalpies are two readings of
 same table), malic $0.005$ and $0.001$ (Eden \& Bates and Miller print the same constants), lactic $0.20$~kJ/mol; the three
 citric steps differ by $0.5$, $1.3$ and $1.1$~kJ/mol, inside the $\pm1.1$ to $1.6$~kJ/mol Kochergina's formation
 enthalpies carry, which is why the whole citrate family keeps Kochergina's ions (Miller prints no formation enthalpy of
-citrate) and a mix of the two works never occurs.  A glycolic acid whose crystal, heat of solution and aqueous enthalpy
-do not close in the source (they differ by 2.9~kJ/mol) is carried for its speciation only: the energy route through it
-refuses by name.  The records do not carry the printed $\Delta C_p^\circ$ of an ionisation: a constant
+citrate) and a mix of the two works never occurs.  Glycolic acid, whose crystal, heat of solution and aqueous enthalpy do not close in Miller \& Smith-Magowan (they differ by
+2.9~kJ/mol), was carried for its speciation only until C376; Shock (1995, Tables~8 and~10) takes the closing reading
+($-648.06$~kJ/mol, the crystal plus the heat of solution), which fixes $\Delta_fH^\circ$ of glycolic acid and, by
+Eq.~\eqref{eq:ladder-formation}, of glycolate ($-647.60$).  The records do not carry the printed $\Delta C_p^\circ$ of an ionisation: a constant
 $\Delta C_p$ is exactly the $A_1$, $A_3$, $A_4$ terms of the \code{analytic} form above, proposed but not used.  The
 entropy of the fumarate ion is taken from the sum of the Table~6 steps ($105.3$~J/mol/K), because Table~2's own
 $\Delta G$ and $\Delta H$ imply $-155.4$~J/mol/K for the ionisation and not the $-152.2$ it prints.  Worked case: none for
@@ -7513,6 +7514,19 @@ hydrogensulfate, whose catalogue value $-16.1$ differs from the evaluated $-22.4
 comparison is rendered by \file{bin/curate/species\_c373.py compare}).  Worked case:
 \file{inorganicLadders01\_goldberg} (half-neutralisation beakers whose Davies $\mathrm{pH}=\mathrm{p}K+\log_{10}(\gamma_B/\gamma_A)$
 at equal molality).
+
+\emph{Formation data of the inorganic ladders (C376).}  The NBS tables (Wagman et al., 1982, Tables 14:S, 18:N,
+19:P, 20:As, 23:C) print $\Delta_fH^\circ$ and $S^\circ$ of the aqueous ($ao$ state, hypothetical ideal 1~mol/kg
+solution, $\mathrm{H^+}=0$) phosphate, pyrophosphate, sulfite, arsenate, hydrazine and methylamine species, and they are entered as
+printed wherever the ladder they close holds the Gibbs identity of the previous paragraph within $0.3$ log units
+(phosphate, sulfite, hydrazine, methylamine, and the existing H$_2$AsO$_4^-$, HAsO$_4^{2-}$).  Where they do not
+(the NBS pyrophosphoric acid rows give $\mathrm{p}K_1=1.54$ against Goldberg's $0.83$; arsenic acid $0.3$ to $0.6$ in the
+sums) the family is kept on ONE scale: one species as printed and each neighbour from it by
+Eq.~\eqref{eq:ladder-formation} with the evaluated step, $\Delta_{\rm ion}S^\circ=(\Delta_{\rm ion}H^\circ-RT\ln 10\,\mathrm{p}K)/T$.
+Both readings are tabulated (\file{formation\_compare.tsv}); the heat of the second ionisation of sulfite from the NBS
+formation enthalpies ($-9.3$~kJ/mol) differs from the evaluated $-3.65$ by $5.6$~kJ/mol and is the largest difference
+left on any family, recorded in the design note.  Uncertainty: the NBS integer entropies of the pyrophosphates and of the
+trivalent anions are estimates.  Source: Wagman et al.\ (1982); Goldberg et al.\ (2002), Section~8.
 
 \emph{Amines, imidazoles, peptides and amino acids.}  Phase~3 writes the ladders of Tris, triethanolamine, triethylamine,
 2-amino-2-methyl-1-propanol and -1,3-propanediol, diethanolamine, ethanolamine, methylamine, piperazine, imidazole,
@@ -7531,6 +7545,44 @@ catalogue's volatile component of the same substance are two identities until a 
 \file{aminoBuffers01\_tris\_glycine} (Davies $\mathrm{pH}=\mathrm{p}K+\log_{10}(1/\gamma_+)$ for a half-neutralised amine
 amine with HCl; the isoelectric glycine solution at $(\mathrm{p}K_1+\mathrm{p}K_2)/2$ to $0.01$); inventory and readings:
 \file{docs/design/species-from-evaluated-compilations.md}.
+
+\emph{Formation data of histidine and cysteine (C376).}  Amend \& Helgeson (1997), Table~1 (p.~1929), print
+$\Delta_fG^\circ$, $\Delta_fH^\circ$ (kcal/mol, converted at $4.184$ exactly) and $S^\circ$ of the L-histidine and
+L-cysteine species on the aqueous convention ($\mathrm{H^+}=0$); the entropies are the authors' own
+$S^\circ=(\Delta_fH^\circ-\Delta_fG^\circ)/T+\sum S^\circ_{\rm el}$ with the charge convention of the table, so they enter as printed.
+The ladders then hold two scales: histidine's neighbouring enthalpies reproduce Goldberg's step enthalpies to $0.7$~kJ/mol;
+cysteine's differ by up to $6.9$~kJ/mol (Goldberg's cysteine enthalpies are grades CD to BBD) and Amend's set is kept, with the
+family tolerance of the one-scale gate raised to $7.0$ and stated.  Where Miller \& Smith-Magowan (1990) and Amend \&
+Helgeson both print a species (glycine, alanine, aspartic and glutamic acids) both values are tabulated and Miller's kept: they agree for
+alanine to $0.6$~kJ/mol, differ by $7.6$ for glycine and by $30$ for the dianions of aspartic and glutamic acids.
+Dick, LaRowe \& Helgeson (2006) reproduce Amend \& Helgeson's amino-acid table and give group contributions and
+Gly--X--Gly properties without formation data, so glycylglycine and triglycine stay without it.
+
+\emph{Carboxylic acids of Shock (1995), with the estimated values marked.}  Shock's Table~4 prints, at $25$~\textdegree C
+and $1$~bar, $\Delta_fG^\circ$, $\Delta_fH^\circ$ and $S^\circ$ of aqueous monocarboxylic and dicarboxylic acids and of their
+anions, with a footnote per value saying how it was obtained.  The enthalpy of an acid comes from the heat of solution of the
+solid or the liquid and is entered as a literature value; the entropy of the aqueous acid is, for every acid beyond acetic
+except benzoic, \emph{estimated} by the author's correlations (Eqs.~13 and 16, a linear function of the carbon number), the
+entropy of each anion is the acid's plus the selected dissociation entropy, and the enthalpy of a diprotic anion is
+computed from the tabulated $\Delta_fG^\circ$ and that estimated $S^\circ$.  Those values carry \code{origin estimated;} and
+their method in a per-value \code{provenance} block of the species record.  Propionic, n-butyric, benzoic, malonic and glutaric
+acids enter as families with the $\mathrm{p}K$ of the paper's Table~7 and the dissociation enthalpy of the difference of the
+printed formation enthalpies; the Gibbs identity $\mathrm{p}K=\Delta_{\rm ion}G^\circ/(RT\ln10)$ holds on the printed values
+to $0.01$.  Adipic acid is not entered: the paper's hydrogen-adipate enthalpy implies a first ionisation enthalpy of
+$+11$~kJ/mol, a consequence of the estimated entropy.  Glycolic acid takes $\Delta_fH^\circ=-648.06$~kJ/mol, lactic acid
+and lactate their entropies ($208.4$ and $133.5$~J/mol/K, both estimated), the ions of glycolic acid by
+Eq.~\eqref{eq:ladder-formation}.  Source: Shock (1995), Tables~4, 7, 8 and 10.
+
+\emph{Alberty's Table~3.2.}  Alberty (2003) prints $\Delta_fG^\circ$ and $\Delta_fH^\circ$ at zero ionic
+strength with $\Delta_fG^\circ(\mathrm{H^+})=\Delta_fH^\circ(\mathrm{H^+})=0$ but no entropy.  Where both are printed an entropy
+equivalent follows, $S^\circ=(\Delta_fH^\circ-\Delta_fG^\circ)/T+\sum_{\rm el}\nu S^\circ_{\rm el}-z\,S^\circ(\mathrm{H_2})/2$, which
+reproduces acetate, oxalate, hydrogenphosphate and fumarate to $0.7$~J/mol/K and succinate to $12$ (the uncertainty to assume).
+Alberty's values coincide with the NBS tables for acetate, formate, oxalate, ammonium, carbonate and methylammonium and differ
+for inorganic phosphate (both $\Delta_fH^\circ$ and $\Delta_fG^\circ$ lower by $6$ to $7$~kJ/mol) and pyrophosphate (enthalpy lower by
+$22$): the catalogue keeps the NBS phosphates, and the pyrophosphates with them, so that the hydrolysis of pyrophosphate stays on
+one table.  Glycylglycine, on which no other work in hand has a formation datum, takes the zwitterion from Alberty and its ions by
+Eq.~\eqref{eq:ladder-formation}; the citrate and malate families are not changed (the enthalpies differ by $8$ to $13$~kJ/mol and
+are blank, respectively).
 
 \emph{Laboratory buffers.}  Phase~4 takes every remaining section of Goldberg et al.\ (2002) --- ACES, ADA, AMPSO,
 3-amino-1-propanesulfonic acid, barbital, BES, Bicine, Bis-tris, Bis-tris propane, cacodylate, CAPS, CAPSO, CHES,
