@@ -3446,8 +3446,8 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
-> **C371 (2026-11-12; a proposal relayed by the cloud session as Vitor's, to
-> be confirmed with him in this session before anything is scheduled).**
+> **C371 (2026-11-12; a proposal relayed by the cloud session as Vitor's;
+> CONFIRMED by him in the laptop session the same day: "Sim avanca").**
 > AN OPERATOR CONTROL PANEL KEPT IN THE CASE: declared like the flowsheet
 > (`panelDict`), drafted by the engine with a reason per element, tuned by
 > the student, locked when final; first tutorial a once-through
@@ -3462,8 +3462,16 @@ accepts today, and that is a policy call.
 > case does not publish; a limit the run never approaches) and the GUI
 > draws number, bar and trend elements read-only on the batch
 > electrodialysis that already runs, beside the existing Control Room.
-> NOT scheduled; an EduTool on good practice for panels and alarms is said
-> to be approved and waits for the page queue to clear.
+> SCHEDULED (the architect): first the DESIGN RECORD (grammar of
+> `panelDict` checked against the dictionary conventions, the facts the
+> engine reports and where they are published, how the GUI draws and
+> persists, what the draft is derived from), on branch c371-panel-design,
+> no code; then the first slice above, built after the time-integrated
+> fixes (TI-01..03) land, since both touch the batch run's outputs.  The
+> four engine pieces the wine process needs (fouling in electrodialysis, a
+> voltage drive with a limit, a displacement vessel, conditional events)
+> are separate later slices, each decided on its own.  An EduTool on good
+> practice for panels and alarms waits for the page queue to clear.
 
 > **C370 (2026-11-12; three proposals the cloud says Vitor left to the two
 > sessions' judgement; the architect's answers).**  (a) SOLIDS, simple
