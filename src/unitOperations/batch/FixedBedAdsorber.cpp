@@ -28,6 +28,7 @@ License
 
 #include "FixedBedAdsorber.H"
 
+#include "core/Advisory.H"
 #include "core/Constants.H"
 #include "core/RegistryRefusal.H"
 #include "io/SolutionWriter.H"
@@ -798,6 +799,28 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
     }
 
     // -----------------------------------------------------------------
+    //  C375: THE SCHEME'S OWN DISPERSION, said at the start of every run.
+    //  First-order upwind face values add v dz/2 to the axial dispersion
+    //  (the modified equation: the upwind flux u c_L differs from the
+    //  centred u (c_L + c_R)/2 by -u dz/2 dc/dz, a Fickian flux).  The
+    //  front width, the breakthrough times and the unused bed length carry
+    //  it; the mean (the stoichiometric time) does not.  Interstitial
+    //  basis, the one the moments obey: D_L = Dax/eps, v = u/eps.
+    // -----------------------------------------------------------------
+    dPhysAnn_ = Dax_ / eps_;
+    dNumAnn_  = numericalDispersion_();
+    {
+        const std::string msg = convectionSchemeSentence_();
+        const bool matters = dNumAnn_ > 0.0
+            && (dPhysAnn_ <= 0.0 || dNumAnn_ >= 0.1 * dPhysAnn_);
+        if (AdvisoryLog::instance().add("model",
+                matters ? "warning" : "info",
+                "fixedBedAdsorber '" + name_ + "'", msg)
+            && verbosity_ >= 1 && verbosity_ < 2)
+            std::cout << "  [advisory] " << msg << "\n";
+    }
+
+    // -----------------------------------------------------------------
     //  The GLASS-BOX header: declared hypotheses, derived densities,
     //  dimensionless groups, the stiffness verdict and the Gershgorin
     //  bound term by term (spec sections 1.3 + 2.4).
@@ -835,6 +858,9 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
         else
             std::cout << "  [fixedBedAdsorber '" << name_ << "'] Dax = 0"
                          " (declared): pure advection, no dispersive flux\n";
+        //  C375: the scheme's own dispersion, said beside the declared one.
+        std::cout << "  [fixedBedAdsorber '" << name_ << "'] convection"
+                     " scheme: " << convectionSchemeSentence_() << "\n";
         if (thermal_)
         {
             //  A5-T1 anchors, printed BEFORE the run (design section 4;
@@ -1325,6 +1351,57 @@ scalar FixedBedAdsorber::qStarFeed_(std::size_t a) const
     for (std::size_t b = 0; b < adsIdx_.size(); ++b)
         pIt_[b]->second = cIn_[b] * constant::R * T_;
     return ads_->loading(compNames_[adsIdx_[a]], pMap_, T_);
+}
+
+scalar FixedBedAdsorber::numericalDispersion_() const
+{
+    //  The leading truncation term of the scheme's convective flux, read as
+    //  a dispersion (interstitial basis).  Upwind: the face value c_L where
+    //  the centred one is (c_L + c_R)/2 + O(dz^2), so the flux carries an
+    //  extra -u (dz/2) dc/dz and, divided by eps, D_num = v dz/2.  A
+    //  second-order reconstruction has no such term (its leading error is
+    //  O(dz^2), dispersive, and the limiter falls back to first order only
+    //  at extrema and fronts).
+    if (secondOrder_) return 0.0;
+    return 0.5 * (u_ / eps_) * dz_;
+}
+
+scalar FixedBedAdsorber::nCellsForTenth_() const
+{
+    //  D_num/D_L = (v L / (2 N D_L)) < 0.1  <=>  N > 5 v L / D_L = 5 Pe.
+    if (dPhysAnn_ <= 0.0) return 0.0;
+    return std::floor(5.0 * (u_ / eps_) * L_ / dPhysAnn_) + 1.0;
+}
+
+std::string FixedBedAdsorber::convectionSchemeSentence_() const
+{
+    std::ostringstream os;
+    os << std::setprecision(4);
+    if (dNumAnn_ <= 0.0)
+    {
+        os << convectionScheme_ << " (second order, van Leer-limited):"
+              " no first-order numerical dispersion -- its leading error is"
+              " O(dz^2); the declared D_L = Dax/eps = " << dPhysAnn_
+           << " m2/s is the dispersion the front sees, except where the"
+              " limiter falls back to first order at a front or an"
+              " extremum";
+        return os.str();
+    }
+    os << convectionScheme_ << " (first order) adds a NUMERICAL dispersion"
+          " D_num = v dz/2 = " << dNumAnn_ << " m2/s (v = u/eps = "
+       << u_ / eps_ << " m/s, dz = " << dz_ << " m) to the declared D_L ="
+          " Dax/eps = " << dPhysAnn_ << " m2/s";
+    if (dPhysAnn_ > 0.0)
+        os << " -- ratio " << dNumAnn_ / dPhysAnn_ << "; nCells >= "
+           << std::setprecision(10) << nCellsForTenth_()
+           << " would bring it under 0.1";
+    else
+        os << " -- the bed declares no physical dispersion, so every bit of"
+              " spreading is the grid's";
+    os << ".  The front width, the breakthrough times and the unused bed"
+          " length carry the grid's dispersion; the mean (stoichiometric"
+          " time) does not";
+    return os.str();
 }
 
 scalar FixedBedAdsorber::gershgorin_(scalar& adv, scalar& disp,
@@ -2831,6 +2908,14 @@ std::map<std::string, scalar> FixedBedAdsorber::kpis() const
     const std::size_t nAds = adsIdx_.size();
     std::map<std::string, scalar> k;
     if (Dax_ > 0.0) k["Pe"] = u_ * L_ / Dax_;
+    //  C375: the scheme's numerical dispersion beside the declared one
+    //  (interstitial basis, frozen at initialise).
+    k["D_axial_interstitial"] = dPhysAnn_;
+    k["D_numerical"]          = dNumAnn_;
+    if (dPhysAnn_ > 0.0)
+        k["numerical_dispersion_ratio"] = dNumAnn_ / dPhysAnn_;
+    if (dNumAnn_ > 0.0 && dPhysAnn_ > 0.0)
+        k["nCells_numerical_ratio_0p1"] = nCellsForTenth_();
     if (ergun_)
     {
         k["P_first_cell_Pa"] = pressureCell_(y_, 0);

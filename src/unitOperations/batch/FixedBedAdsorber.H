@@ -75,7 +75,11 @@ Description
 
     Announced pre-run (spec section 1.3): Pe = uL/Dax, retention factor
     R_f = eps + rho_b q*(c_in)/c_in, stoichiometric time t_st = (L/u) R_f,
-    shock speed u_sh = u/R_f, |lambda_LDF| and the stiff/non-stiff verdict.
+    shock speed u_sh = u/R_f, |lambda_LDF| and the stiff/non-stiff verdict;
+    and (C375) the scheme's own NUMERICAL dispersion beside the declared
+    one, interstitial basis: D_num = v dz/2 for first-order upwind against
+    D_L = Dax/eps, their ratio and the nCells (> 5 Pe) that would bring it
+    under 0.1 -- in the header, on the advisory log, and as KPIs.
 
     Species classification (I = isotherm record on the adsorbent, K = entry
     in operation.kLDF.k), refused without silence -- the A2 pattern:
@@ -285,6 +289,15 @@ private:
     scalar rhoB_ = 0.0;      // bulk density [kg/m3] from the catalogue
     std::size_t N_ = 0;      // nCells (declared -- no silent default)
     scalar dz_   = 0.0;      // L/N [m]
+    //  C375: the convection scheme of the face values.  `upwind` takes the
+    //  upwind cell's value (first order: it adds a numerical dispersion
+    //  u dz/2 to Dax), announced at the start of every run.
+    std::string convectionScheme_ = "upwind";
+    bool        secondOrder_      = false;
+    //  The numerical and the physical dispersion, frozen at initialise
+    //  (interstitial basis, the one the moments obey: D_L = Dax/eps).
+    scalar      dNumAnn_ = 0.0;
+    scalar      dPhysAnn_ = 0.0;
     scalar cTot_ = 0.0;      // P/(R T) [mol/m3], constant by declaration
     bool   ergun_ = false;    // A4: all species integrated, P derived, u algebraic
     //  A5-T1: adiabatic one-temperature energy balance (ergun mode ONLY --
@@ -409,6 +422,13 @@ private:
     void    commit_(const sVector& y);       // y_ <- y, refresh state_.n
     void    sample_(scalar t);               // crossings + G5 integral update
     void    rk4Step_(scalar dt);
+    //  C375: the numerical dispersion the scheme adds [m2/s, interstitial
+    //  basis: v dz/2 for upwind], the smallest nCells that brings it under
+    //  a tenth of D_L, and the one sentence the header and the advisory
+    //  both print.
+    scalar      numericalDispersion_() const;
+    scalar      nCellsForTenth_() const;
+    std::string convectionSchemeSentence_() const;
     void    writeProfile_(scalar t) const;   // <t>/<name>.profile
     scalar  gershgorin_(scalar& adv, scalar& disp, scalar& ldf) const;
     scalar  carrierCell_(std::size_t j) const;   // c_carrier in cell j [mol/m3]
