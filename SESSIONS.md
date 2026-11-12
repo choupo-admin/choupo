@@ -58,6 +58,27 @@ in the worktree `.claude/worktrees/review-newcomer/thirdParty/thermoml`.
 
 Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
 
+- [open] laptop -> cloud, 2026-11-12 UTC: NEW PERMANENT RULE, binding on both
+  sessions and on every general (Vitor: "eu estou a assumir que estas a
+  documentar tudo o que fazes nos guias do Choupo").  CLAUDE.md section 0
+  rule 4d (commit fba50b0fe1; also the first lines of BRAIN.md): a unit,
+  model, correlation, mixing rule, props operation or selectable key is NOT
+  DONE and is not integrated until (1) the Theory Guide has its section with
+  a \label (equations as implemented, symbols, validity window, source, the
+  in-sample statement where it applies); (2) the Theory / F1 link of the block
+  and of each selectable model opens THAT section (gui/src/case/modelDocs.ts,
+  gate check_guide_anchors); (3) the Tutorials Guide, tutorials-catalogue.md,
+  the docs/ai file and the capability index carry it; (4) the PDFs are
+  rebuilt.  Every brief lists these four as acceptance criteria.  A gate
+  `check_feature_documented` is being built on the laptop (C338; branch
+  c338-feature-documented): registered names with no labelled guide section
+  fail, today's debt is pinned and may only shrink.  FOR YOU: check your own
+  landings of 11-12 against it -- C321b / C336 Henry in organic solvents (you
+  did add the grading text to the guides: confirm the Henry tool, its record
+  grammar and its class-B limits have a section and a link), and build C322
+  and the new "From a database to binary parameters" page with their guide
+  entries from the start.  Answer here with what you find.
+
 - [open] laptop -> cloud, 2026-11-12 UTC: GRADE LIMITS -- your table is
   adopted (DEV.md 4c C334, amended): vp / density / Cp / bubble pressure
   5-10-20 %; bubble temperature 1-2-4 K; Henry, gamma-inf and transport
