@@ -1,0 +1,192 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  system/panelDict -- PROPOSED GRAMMAR (review 2026-11-12), NOT read by any
+  engine or GUI today.  The operator panel of proposedCase/: once-through
+  electrodialysis of a wine drawn from a stratified vat (process as described
+  for this proposal).
+
+  WHAT A PANEL IS.  A declared, engine-drafted, engine-checked view of a
+  time-integrated case, kept IN THE CASE like system/layoutDict: the engine
+  writes the first draft from the case (`--panel-draft`, never overwriting
+  without --force), a person tunes it in the GUI, the browser keeps the
+  reader's last arrangement, and ONE explicit "Save panel to case" writes
+  this file.  A locked panel refuses that write until explicitly unlocked.
+
+  WHAT IT IS NOT.  It computes nothing of its own: every number it shows is a
+  quantity the engine PUBLISHES (`measurement { unit; cv; }`, the controller
+  grammar), or an `expression` the ENGINE evaluates through core/Formula
+  over published quantities (the energyOutputs precedent) -- never
+  arithmetic in the browser.  Every limit says where it comes from.
+
+  Elements marked NOT PUBLISHED name a quantity the engine does not publish
+  today: the checks below report them as findings, and the panel draws
+  "not published" in their place, never a zero.
+\*---------------------------------------------------------------------------*/
+
+recordType   controlPanel;
+
+//  Who wrote THIS version.  `origin engineDraft` = written by --panel-draft;
+//  `edited` = a person saved it from the GUI.  The draft's own analysis
+//  (why each element is there) is carried in each element's `reason`.
+draft
+{
+    origin    edited;                  // engineDraft | edited
+    by        "reviewing session (proposal)";
+    date      "2026-11-12";
+    basedOn   engineDraft;             // what this edit started from
+}
+
+//  THE LOCK.  `locked true;` freezes the panel: the GUI may still rearrange
+//  it in the reader's own browser, but "Save panel to case" REFUSES, and
+//  `--panel-draft --force` REFUSES, until a person sets `locked false;`.
+//  The engine's checks still run on a locked panel (a lock freezes the
+//  design, not the facts about it).
+lock
+{
+    locked    false;
+    // by     "<who locked it>";
+    // date   "<YYYY-MM-DD>";
+    // reason "<why this version is the final one>";
+}
+
+//  The grid the elements are placed on.  A reader tunes dimensions by moving
+//  and resizing on this grid; nothing is placed in pixels.
+grid
+{
+    columns    12;
+    rows       8;
+}
+
+style
+{
+    density    comfortable;            // compact | comfortable
+    trendWindow 60 min;                // default time window of every trend
+    //  Colour carries status ONLY (grey normal, amber pre-alarm, red alarm);
+    //  every status is also written as a WORD, so it survives greyscale.
+}
+
+elements
+(
+    {
+        name        treatedInBand;
+        title       "Treated wine conductivity";
+        kind        trend;                         // number | bar | trend | lamp | prediction | strip
+        measurement { unit ED;  cv kappa_dil_out_S_m; }
+        reference   { unit ED;  cv kappa_dil_in_S_m; }   // drawn faint: the wine before the stack
+        displayUnit mS/cm;
+        range       ( 0 0.6 ) S/m;
+        band
+        {
+            //  The operator's own specification.  ABSOLUTE setpoint: the
+            //  engine accepts only a RELATIVE target today
+            //  (targetConductivityRemoval) -- NOT PUBLISHED as a setpoint.
+            low     0.374 S/m;
+            high    0.392 S/m;
+            source  "operator declaration: 20 % below the wine's 0.479 S/m, +/- 2 % of it (tolerance is an assumption)";
+            reason  "the product specification the machine runs for";
+        }
+        alarms
+        (
+            { name outOfBand;  when outsideBand;  for 2 min;
+              action "check the current is held; if the voltage is at its limit, stop and clean"; }
+        );
+        place       { column 1;  row 1;  width 7;  height 4; }
+        reason      "the band IS the product specification and the only reason the machine runs";
+    }
+
+    {
+        name        voltageHeadroom;
+        title       "Voltage per cell pair";
+        kind        bar;
+        expression  "U / N_cellpairs";             // evaluated by the ENGINE over ED's published KPIs
+        measurement { unit ED;  cv U; }
+        displayUnit V;
+        range       ( 0 2.2 ) V;
+        limit
+        {
+            value   2.0 V;
+            source  "as declared for this proposal: at 2 V per cell pair the membranes are cleaned";
+            reason  "the stack record declares no limits {}; this is the plant's own rule";
+        }
+        preAlarm    { fraction 0.9;  source "assumption"; }
+        //  Time to the limit from the rate of rise over a declared window:
+        //  NOT PUBLISHED (the engine publishes no rate), and the rise from
+        //  FOULING is not modelled at all -- the central gap.
+        prediction  { quantity timeToLimit;  window 30 min; }
+        place       { column 8;  row 1;  width 5;  height 2; }
+        reason      "the voltage rise is the only visible sign of fouling, and fouling is what ends a campaign";
+    }
+
+    {
+        name        currentHeld;
+        title       "Current";
+        kind        lamp;
+        measurement { unit ED;  cv I; }
+        states
+        (
+            { word HELD;       when "I >= 0.99 I_held"; }
+            { word FALLING;    when "I < 0.99 I_held";  alarm cleaningDue; }
+        );
+        //  I_held = the current the target needs.  The engine solves it but
+        //  does not publish a held-vs-actual pair: NOT PUBLISHED.
+        place       { column 8;  row 3;  width 5;  height 2; }
+        reason      "the declared stop signal is the current leaving its held value at the voltage limit";
+    }
+
+    {
+        name        vatEnd;
+        title       "Vat finishes at";
+        kind        prediction;
+        expression  "volume / (F_out * MW_mean / density)";   // NOT PUBLISHED: MW_mean; the engine should publish the time to empty itself
+        measurement { unit VAT;  cv volume; }
+        confirm
+        {
+            //  The physical end: the inlet conductivity FALLS when the treated
+            //  layer reaches the draw-off (as declared for this proposal).
+            measurement { unit ED;  cv kappa_dil_in_S_m; }
+            fallBelowPlateau 0.05;              // fraction; assumption
+        }
+        place       { column 1;  row 5;  width 7;  height 2; }
+        reason      "the operator plans around the end of the vat and wants to be called, not to watch";
+    }
+
+    {
+        name        brineCycle;
+        title       "Brine";
+        kind        bar;
+        //  NOT PUBLISHED: no unit publishes the concentrate conductivity, and
+        //  the drain / refill cycle has no representation in the engine.
+        measurement { unit BRINE;  cv kappa; }
+        range       ( 0 1.2 ) relative;         // of the drain set point
+        setPoint    { source "operator declaration"; reason "drain to 50 L at this conductivity, refill with water at 500 L/h (as declared for this proposal)"; }
+        states      ( { word CONCENTRATING; } { word DRAINING; } { word REFILLING; } );
+        alarms      ( { name cycleFault;  when "DRAINING or REFILLING longer than declared";  action "check the drain valve and the water supply"; } );
+        place       { column 8;  row 5;  width 5;  height 2; }
+        reason      "a brine cycle that stops is a common way a once-through machine quietly stops working (operator's understanding -- to be checked)";
+    }
+
+    {
+        name        abnormal;
+        title       "Abnormal";
+        kind        strip;                       // one lamp per cause + the COUNT of active alarms
+        lamps
+        (
+            { word FLOW;  measurement { unit VAT; cv F_out; };  low 0.9 relative;  source "assumption"; action "check the feed pump and filters"; }
+            { word TEMP;  measurement { unit VAT; cv T; };  high 313.15 K;  source "the bench stack record's T_max, an estimate; the industrial record declares none"; action "cool the wine or stop"; }
+            { word PH;    measurement { unit BRINE; cv pH; };  source "operator declaration"; action "check the acid dosing"; }   // NOT PUBLISHED
+            { word ILIM;  measurement { unit ED; cv i_over_ilim; };  high 0.8;  source "assumption"; action "lower the current target"; }
+        );
+        place       { column 1;  row 7;  width 12;  height 2; }
+        reason      "everything that is not the normal story sits in ONE place and is silent while normal";
+    }
+);
+
+//  REMOTE MESSAGES -- a display kind of their own, distinct from an on-panel
+//  alarm: a message goes to a person who is NOT looking at the panel, so it
+//  is sent only for an event that asks for a visit or a plan.
+messages
+(
+    { event endSoon;       from vatEnd;           when "predicted end within 30 min";  text "Vat finishes in about 30 min"; }
+    { event vatFinished;   from vatEnd;           when confirmed;                      text "Vat finished: the inlet conductivity has fallen"; }
+    { event cleaningDue;   from currentHeld;      when FALLING;                        text "Voltage at 2 V per pair, current falling: clean the membranes"; }
+    { event brineFault;    from brineCycle;       when cycleFault;                     text "Brine cycle fault"; }
+);

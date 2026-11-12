@@ -1,0 +1,25 @@
+recordType  internalState;
+unit        "VAT";
+equipment   dynamicCSTR;
+holdup
+{
+    T           298.15;
+    P           250000.0;
+    holdupMolar
+    {
+        water     555.0843506;
+        K         0.25;
+        Na        0.05;
+        Ca        0.0125;
+        Mg        0.04;
+        H         0.0025;
+        Cl        0.011;
+        SO4       0.06025;
+        HTart     0.08;
+        Tart      0.015;
+        HMal      0.01;
+        Mal       0.0005;
+        Lactate   0.09;
+        H2PO4     0.065;
+    }
+}

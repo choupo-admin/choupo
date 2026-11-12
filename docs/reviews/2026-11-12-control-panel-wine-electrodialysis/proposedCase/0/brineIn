@@ -1,0 +1,8 @@
+componentMolarFlows
+{
+    water    166.5253052 kmol/h;
+    K        0.06 kmol/h;
+    HTart    0.06 kmol/h;
+}
+T               298.15 K;
+P               250000 Pa;

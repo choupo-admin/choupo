@@ -1,0 +1,88 @@
+/*---------------------------------------------------------------------------*\
+  PROPOSAL (review 2026-11-12) -- NOT a tutorial, NOT validated, NOT in the
+  corpus.  Once-through electrodialysis of a wine drawn from a stratified vat.
+
+  THE PROCESS, as declared for this proposal: wine is drawn from the BOTTOM of a
+  vat, deionised in ONE pass through the stack and returned at the TOP through
+  a diffuser; the treated wine is lighter and stays on top, so the vat is a
+  displacement vessel, not a stirred tank.  The operator sets a target for the
+  treated wine's conductivity (20 % below the wine's); the current that gives
+  it is HELD and the voltage rises as the membranes foul, up to 2 V per cell
+  pair; at that limit the current falls and the membranes are cleaned.  The
+  vat is finished when the conductivity of the wine ENTERING the machine
+  FALLS (the treated layer has reached the draw-off).  Vat 10 000 L.
+
+  HOW THIS FILE REPRESENTS IT, and every workaround named:
+  * VAT is the UNTREATED wine only, a variable-volume vessel drained at the
+    circulation flow (3000 L/h, the industrial stack record's design flow).
+    In a perfectly stratified vat the treated wine never meets the untreated
+    again, so it leaves the model as the product stream `treated`.  The end
+    of the vat is then the vessel running dry at V/Q = 10 m3 / 3 m3/h =
+    3.33 h; the engine REFUSES the dry vessel (measured: "the vessel RAN DRY
+    at t = 12010 s"), so endTime stops short of it.  The FALL of the inlet
+    conductivity at the end is interface mixing, which no vessel here models.
+  * `vatBottomInlet` is a trace flow (1e-9 kmol/h): a vessel must declare an
+    inlet and a zero-flow one is refused ("molarComposition sums to zero").
+  * A variable-volume vessel needs a liquid density, and the ion records
+    carry no Vliq: the run REFUSES without one.  The scratch probe gave every
+    ion water's Vliq (no physical claim); this proposal does NOT ship that
+    placeholder -- curating it, or a dilute-carrier density rule for vessels,
+    is a named gap.
+  * ED is the steady `electrodialysisStack` wrapped `quasiSteady`, on
+    `targetConductivityRemoval 0.20` -- the unit SOLVES the current, which
+    stands in for the operator's control loop (a PID cannot actuate a
+    quasi-steady unit: "does not expose MV").  No fouling is modelled, so the
+    voltage does not rise from fouling at all.
+  * BRINE is a 200 L constant-volume tank primed with KHT 20 mol/m3 (author-
+    set; citric acid is not in the tree).  Its drain-to-50-L / refill cycle is
+    NOT represented (no conditional event in this binary; a `recipe` block is
+    silently ignored), and a closed constant-volume loop lets the circulating
+    molar flow drift with the ions it gains.
+  * `stack industrialStack50m2;` is a TOKEN: substitute the identifier of the
+    catalogue's industrial `kind edStack` record of 50 m2 cell-pair area.
+    constant/ is ed09_wine_multiionic's, unsealed (the wine of ed09: thirteen
+    ions, ethanol absent, author-set composition).
+\*---------------------------------------------------------------------------*/
+units
+(
+    {
+        name        VAT;
+        type        dynamicCSTR;
+        in          vatBottomInlet;
+        outputs     ( toStack );
+        operation
+        {
+            energy      isothermal;
+            UA          0.0;
+            T_jacket    298.15 K;
+            volumeMode  variable;
+            geometry    { shape verticalCylinder; diameter 2.0 m; height 3.6 m; }
+            outflow     { mode flow; F 0.04631425838; }
+        }
+    }
+    {
+        name        BRINE;
+        type        dynamicCSTR;
+        in          brineOut;
+        outputs     ( brineIn );
+        operation   { energy isothermal; UA 0.0; T_jacket 298.15 K; }
+    }
+    {
+        name        ED;
+        type        quasiSteady;
+        inputs      ( toStack  brineIn );
+        outputs     ( treated  brineOut );
+        unit
+        {
+            type        electrodialysisStack;
+            operation
+            {
+                stack                      industrialStack50m2;
+                membrane                   CMX_AMX;
+                targetConductivityRemoval  0.20;
+                xi                         0.9;
+                E_electrodes               2.0;
+            }
+        }
+    }
+);

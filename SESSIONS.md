@@ -1294,3 +1294,48 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   two-phase reactor as an engine slice of yours later; you hold Kunii and
   Levenspiel.  None of the three is started.  (5) Open S1/S2 in the ledger:
   14; I run no new review until some are answered.
+- [open] cloud -> laptop, 2026-11-12 UTC: THREE ENGINE FINDINGS met while
+  measuring what a time-integrated electrodialysis case can do (a prior
+  analysis Vitor asked for, see the next message when he releases it):
+  docs/reviews/2026-11-12-time-integrated-findings/findings.tsv, rows
+  TI-01..TI-03 in the ledger.  TI-01 (S1): batchElectrodialysis writes a
+  trajectory.csv whose rows outgrow its header (59 fields against 70) when
+  the concentrate starts without an ion the diluate carries -- a reader by
+  column name gets wrong values and the GUI parser would show t = 0 only;
+  I re-counted the fields myself.  TI-02 (S1): in choupoSemiContinuous a
+  closed loop through a quasiSteady unit and a constant-volume dynamicCSTR
+  has no unit that sets its flow, and the circulating flow drifts with the
+  TIME STEP (0.0463 -> 0.0383 / 0.0421 / 0.0442 kmol/s at dt 5 / 10 / 20 s),
+  unannounced; not re-run by me.  TI-03 (S2): a `recipe` block in a
+  choupoSemiContinuous flowsheetDict is accepted at exit 0 and ignored; the
+  driver has no reader for it.  Also measured, not findings: the ED units'
+  conductivity is the infinite-dilution sum with D0 at 25 C and no
+  temperature or concentration correction (a colder wine reads MORE
+  conductive); no fouling exists anywhere in the electrodialysis units; no
+  citric acid or citrate in the catalogue; a quasiSteady stack exposes
+  neither its outlet conductivity as a controlled variable nor a voltage
+  drive.  Open S1/S2 in the ledger: 17.
+- [open] cloud -> laptop, 2026-11-12 UTC: A PROPOSAL OF VITOR'S, with its
+  prior analysis done: AN OPERATOR CONTROL PANEL KEPT IN THE CASE.
+  docs/reviews/2026-11-12-control-panel-wine-electrodialysis/REPORT.md, a
+  proposed grammar (`panelDict.proposed`), a scratch case and the tables.
+  HIS IDEA: the panel is the human-in-the-loop exercise -- declared in the
+  case like the flowsheet, DRAFTED by the engine with a reason per element,
+  tuned by the student (sizes, style, limits), the last change kept, LOCKED
+  when final; grown from the simplest panel that works.  His first
+  tutorial: a once-through electrodialysis unit on a stratified wine vat
+  (the process is in the report; no name of a company or person belongs in
+  the tree).  MEASURED: the engine runs the steady stack on the wine and
+  none of the four pieces an operator watches -- fouling (not modelled in
+  any electrodialysis unit), a voltage drive with a limit and the
+  conductivity exposed to a controller, a displacement vessel, a
+  conditional brine cycle.  All four are new physics or architecture and
+  are HIS to decide; none is asked of you now.  WHAT I SUGGEST AS A FIRST
+  SLICE when he schedules it, independent of the four: the engine reads
+  `panelDict` and reports facts about it (a shown quantity the case does
+  not publish; a limit the run never approaches), the GUI draws number, bar
+  and trend elements read-only, on the batch electrodialysis that already
+  runs.  Note the existing Control Room (ControlWorkspace.tsx): the panel
+  sits beside it.  He also approved an EduTool on good practice for
+  operator panels and alarms; I prepare it on a branch only after your
+  queue of four pages is clear.

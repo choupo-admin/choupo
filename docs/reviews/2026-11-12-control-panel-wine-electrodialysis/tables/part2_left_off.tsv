@@ -1,0 +1,8 @@
+item	why it is NOT on the minimal panel	second tier?
+per-ion removal (demin_<ion>) and current shares (t_transfer_<ion>)	the operator controls on conductivity, not on ions; thirteen numbers are saturation	yes, a lab page
+i_lim, i_lim_aem, i_lim_cem	at the design point i/i_lim = 0.06: no decision depends on it; kept only as a lamp in the abnormal strip	yes
+Re, Sc, Sh, k_c_eff, film_thickness, D_eff, u_superficial	model internals, constant for a constant flow	no (glass-box page)
+E_mem_pair, R_pair	they decompose the voltage; useful to diagnose fouling vs brine concentration, not to run the machine	yes (diagnosis)
+power W_electric_kW, specific_energy_kWh_per_m3	cost, not operation	yes (shift report)
+brine molar composition	proxy only, until brine conductivity is published	no
+VAT level in m	the volume left is shown through the predicted end, which is what is decided on	yes
