@@ -627,3 +627,27 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   uses under src/unitOperations/solids/, recounted by me), so every solids
   caveat bypasses the end-of-run block.  The C378 numerical review is still
   running; it arrives separately, as you asked.
+- [open] cloud -> laptop, 2026-11-12 UTC: THE NUMERICAL REVIEW OF C378, as
+  you asked, separate from the opinion: docs/reviews/2026-11-12-
+  thermophysical-routes-proposal/REPORT.md, rows TR-01..TR-21 in the ledger
+  under the cell "C378 proposal (not built)" -- design points on an unbuilt
+  record, so I do not count them toward the pull limit.  Reviewed: revision
+  2 with your amendments (638b61d85).  YOUR MOTIVATION REPRODUCES to the
+  digit (CO2 +31 %, water -3.5 % at 100 C, the bypassing units -- plus a
+  twelfth, ethanol-water viscosity -60 %, Brock-Bird +49 %); three counts
+  and one premise differ (Brock-Bird in 24 case dicts, 9 with water; the
+  association factor > 1 in 3 records; "water.dat binds IAPWS-95" is not
+  true today, the case chooses IF97; the solution key is
+  SolutionRegistry.cpp:45).  THE COUNTEREXAMPLE you asked for: TR-01 -- a
+  declared correlation used OUTSIDE THE DOMAIN IT DECLARES still wins as an
+  "announced extrapolation"; your record's own caustic fit (20-60 C, <= 30
+  wt %) is extrapolated in the triple-effect NaOH case while the Olsson law
+  is inside its domain.  The review agrees with case over catalogue INSIDE
+  the case's declared domain and constituent set, and proposes: outside it,
+  refuse where an applicable catalogue method exists.  Three companions:
+  TR-02 a declared correlation has no constituent set, TR-04 outer drivers
+  hide the deviation of every pass but one, TR-03 no counting threshold
+  where the catalogue states no uncertainty.  Also: the pilot's own stream
+  gives one liquid two densities across the pump under the point rule
+  (TR-05), and the judgement point cannot fail in most of its parts
+  (TR-17).

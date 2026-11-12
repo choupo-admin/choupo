@@ -1,0 +1,30 @@
+quantity	T_K	value_kg_m3	method
+water sat liquid	273.16	999.79	Wagner-Pruss 2002 Eq 2.6 (own code)
+water sat liquid	277.16	999.92	Wagner-Pruss 2002 Eq 2.6 (own code)
+water sat liquid	373.16	958.34	Wagner-Pruss 2002 Eq 2.6 (own code)
+water sat liquid	573.16	712.31	Wagner-Pruss 2002 Eq 2.6 (own code)
+CO2 sat liquid	280.0	883.56	Span-Wagner 1996 Eq 3.14 (own code)
+CO2 sat liquid	298.15	710.47	Span-Wagner 1996 Eq 3.14 (own code)
+N2 sat liquid	90	745.05	Span 2000 ancillary (own code)
+CH4 sat liquid	120	409.90	Setzmann-Wagner 1991 ancillary (own code)
+CO2 Rackett anchored at 273 K (record's stated T)	280.0	892.7	Rackett, own code
+CO2 Rackett anchored at 273 K (record's stated T)	298.15	724.9	Rackett, own code
+ethane Rackett anchored at Tb	250.0	449.4	Rackett, own code
+ethane bare Rackett (no Vliq)	250.0	445.4	Rackett, own code
+ethane Rackett anchored at Tb	298.0	319.5	Rackett, own code
+ethane bare Rackett (no Vliq)	298.0	316.7	Rackett, own code
+ethane Vliq read as volume at Tb	184.55	545.7	MW/Vliq
+HCl Rackett anchored at Tb	250.0	1020.4	Rackett, own code
+HCl bare Rackett (no Vliq)	250.0	931.4	Rackett, own code
+HCl Rackett anchored at Tb	298.0	823.6	Rackett, own code
+HCl bare Rackett (no Vliq)	298.0	751.8	Rackett, own code
+HCl Vliq read as volume at Tb	188.0	1195.4	MW/Vliq
+water Brock-Bird	298.15	106.52	mN/m	Poling Eq 12-3.5, own code, record constants
+ethyleneGlycol Brock-Bird	298.15	73.39	mN/m	Poling Eq 12-3.5, own code, record constants
+triethanolamine Brock-Bird	298.15	75.45	mN/m	Poling Eq 12-3.5, own code, record constants
+monoethanolamine Brock-Bird	298.15	68.61	mN/m	Poling Eq 12-3.5, own code, record constants
+nHexane Brock-Bird	298.15	17.81	mN/m	Poling Eq 12-3.5, own code, record constants
+water IAPWS R1-76	298.15	71.97	mN/m	IAPWS R1-76, own code
+CO2 in water, measured correlation	298.15	1.9252e-09	m2/s	Versteeg-van Swaaij 1988
+CO2 in water, Wilke-Chang Va = record Vliq (47.0, 273 K liquid)	298.15	1.6839e-09	m2/s	Poling Eq 11-9.1, own code
+CO2 in water, Wilke-Chang Va = 34.0 at Tb (recalled)	298.15	2.0450e-09	m2/s	Poling Eq 11-9.1, own code
