@@ -83,6 +83,7 @@ Description
 #include "core/Dictionary.H"
 
 #include <set>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -118,14 +119,48 @@ public:
         reason_.clear();
         outsideActivity_.clear();
         reasonOutside_.clear();
+        idealMolecular_.clear();
+        reasonMolecular_.clear();
         if (!topLevel || !topLevel->found("approximations")) return;
         auto ap = topLevel->subDict("approximations");
+        //  HARDENED (C378 slice 0): a word this engine does not know is
+        //  REFUSED, never ignored -- an authorisation the engine cannot
+        //  execute is an authorisation the case believes it took; and each
+        //  word carries a non-empty `reason`, the statement a reader audits.
+        static const char* const words[] =
+            { "idealBinaryPair", "componentOutsideActivityModel", "idealMolecularVLE" };
+        for (const auto& k : ap->keys())
+        {
+            bool known = false;
+            for (const char* w : words) if (k == w) known = true;
+            if (!known)
+                throw std::runtime_error("approximations: unknown word '" + k
+                    + "'.  The words this engine executes are idealBinaryPair,"
+                      " componentOutsideActivityModel and idealMolecularVLE;"
+                      " a word it does not know would authorise nothing.");
+            if (!std::holds_alternative<DictPtr>(ap->entryValue(k)))
+                throw std::runtime_error("approximations." + k + " must be a"
+                    " block { ...; reason \"...\"; }.");
+            const std::string r = ap->subDict(k)->lookupWordOrDefault("reason", "");
+            if (r.find_first_not_of(" \t\n") == std::string::npos)
+                throw std::runtime_error("approximations." + k + " has no"
+                    " `reason`.  An authorised approximation says why it is"
+                    " acceptable for this case: add `reason \"...\";` to the"
+                    " block.");
+        }
         if (ap->found("idealBinaryPair"))
         {
             auto ib = ap->subDict("idealBinaryPair");
             for (const auto& w : ib->lookupWordList("pairs"))
                 idealPairs_.insert(w);
             reason_ = ib->lookupWordOrDefault("reason", "");
+        }
+        if (ap->found("idealMolecularVLE"))
+        {
+            auto im = ap->subDict("idealMolecularVLE");
+            for (const auto& w : im->lookupWordList("components"))
+                idealMolecular_.insert(w);
+            reasonMolecular_ = im->lookupWordOrDefault("reason", "");
         }
         //  A COMPONENT THE ACTIVITY MODEL CANNOT PRICE, authorised by name.
         //
@@ -167,12 +202,19 @@ public:
 
     const std::string& reasonOutside() const { return reasonOutside_; }
 
+    //  The ideal molecular VLE of the mixed-solvent electrolyte route, read
+    //  by the builder (the same parse, C378 slice 0).
+    const std::set<std::string>& idealMolecularVLE() const { return idealMolecular_; }
+    const std::string& reasonIdealMolecularVLE() const { return reasonMolecular_; }
+
 private:
     ApproximationAuthorisation() = default;
     bool read_ = false;
     std::set<std::string> idealPairs_;
     std::string reason_;
     std::set<std::string> outsideActivity_;
+    std::set<std::string> idealMolecular_;
+    std::string reasonMolecular_;
     std::string reasonOutside_;
 };
 

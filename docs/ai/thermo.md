@@ -734,7 +734,7 @@ vocabulary (standard states + conventions) onto the engine's declarations.
 | **law of mass action on activities** | the SpeciationSolver (mass action + electroneutrality, pH solved) |
 | **mean-ionic activity, γ±** | Davies / Pitzer / eNRTL on molality |
 | **fugacity coefficient φ̂ from an EoS** | `phiPhi` (SRK, PC-SAFT) |
-| **ideal-solution approximation** | `approximations { idealMolecularVLE { components (...) } }` — authorised, delimited, announced |
+| **ideal-solution approximation** | `approximations { idealMolecularVLE { components (...); reason "..."; } }` — authorised, delimited, announced; the `reason` is required and an unknown word is refused |
 | **ideal binary pair** (a declared γ-model pair with no parameters) | `approximations { idealBinaryPair { pairs (...); reason "..."; } }` — **REFUSED unless authorised** (2026-08-11), then recorded as a `problemDivergence` |
 | **composite mixed-solvent electrolyte v1** | NRTL molecular backbone + Davies ions + multiplicative a_w — a COMPOSITE whose limits are PROVEN each sweep (`check_composite_limits`): x_co→0 recovers the aqueous electrolyte, I→0 recovers molecular NRTL, NRTL→0 recovers the authorised ideal |
 

@@ -1099,19 +1099,13 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
     //  at the top of buildV2Dispatch -- every formulation passes through it,
     //  this one does not.)
 
-    std::set<std::string> idealMolecularVLE;
-    std::string approximationReason;     // optional declared justification
-    if (v2->found("approximations"))
-    {
-        auto ap = v2->subDict("approximations");
-        if (ap->found("idealMolecularVLE"))
-        {
-            auto im = ap->subDict("idealMolecularVLE");
-            for (const auto& w : im->lookupWordList("components"))
-                idealMolecularVLE.insert(w);
-            approximationReason = im->lookupWordOrDefault("reason", "");
-        }
-    }
+    //  READ FROM THE ONE PARSE (ApproximationAuthorisation::readFrom, at the
+    //  top of buildV2Dispatch): this used to be a second parse of the same
+    //  block (C378 slice 0).
+    const std::set<std::string> idealMolecularVLE =
+        ApproximationAuthorisation::instance().idealMolecularVLE();
+    const std::string approximationReason =
+        ApproximationAuthorisation::instance().reasonIdealMolecularVLE();
     for (const auto& w : idealMolecularVLE)
     {
         bool ok = false;

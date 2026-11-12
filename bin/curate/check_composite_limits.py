@@ -187,7 +187,9 @@ with tempfile.TemporaryDirectory() as tmp:
     t = t.replace("activityModel { ionic davies;  molecular NRTL; }",
                   "activityModel { model davies; }")
     t += ("\napproximations\n{\n    idealMolecularVLE\n    {\n"
-          "        components ( ethanol );\n    }\n}\n")
+          "        components ( ethanol );\n"
+          "        reason \"the L3 probe: ideal declared, to compare with NRTL\";\n"
+          "    }\n}\n")
     tp.write_text(t)
     rd, ed = run_case(d)
     re_, ee = run_case(e)

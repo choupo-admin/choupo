@@ -197,6 +197,9 @@ def main():
         print("    idealMolecularVLE")
         print("    {")
         print("        components ( " + "  ".join(nonionising) + " );")
+        print("        //  REQUIRED since C378 slice 0: say why ideal is acceptable here,")
+        print("        //  in your own words -- the engine refuses the block without it.")
+        print("        // reason \"...\";")
         print("    }")
         print("}")
 
