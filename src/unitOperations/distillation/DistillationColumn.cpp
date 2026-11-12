@@ -5390,16 +5390,27 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
         }
     }
 
-    //  The first law, by two routes that are independent here: the
-    //  reboiler's own envelope (Q_R) and the condenser's (the column's plug,
-    //  -Q_C, since no stream crosses the boundary).  Every stage energy
-    //  balance is solved by the march, so they must agree.
+    //  THE FIRST LAW HERE IS CONSISTENT BY CONSTRUCTION, NOT VERIFIED (RB-02,
+    //  2026-11-12).  This block used to pass the reboiler's own envelope as a
+    //  "second route" and print VERIFIED.  It is not one: the march defines
+    //  every vapour rate V_j from Q_R (V_j = Q_R / (h_V - h_L) on the cut), so
+    //  each cut -- the reboiler's included -- carries Q_R by definition and the
+    //  condenser duty -Q_C = Q_R holds identically, for ANY Q_R.  Reviewed by
+    //  inflating Q_R 10 %: the envelope was then violated by 64 kW and the
+    //  report still said VERIFIED with a gap of 1e-13 kW.  No route that does
+    //  not start from the march's own definition exists in this model, so the
+    //  closure is published with NO second route and says why; the numbers are
+    //  held by the case's golden and by an independent recomputation, never
+    //  by this closure (result/ClosureVariable.H: "by construction -- not
+    //  verified").
     {
-        const scalar terms = std::abs(V[N-1] * hs.hV(y[N-1], T[N-1]))
-                           + std::abs(L[N-2] * hs.hL(x[N-2], T[N-2]));
         closures_.clear();
-        closures_.push_back(reboilerClosure(-QC, QR, /*fullMesh=*/true, terms,
-                                            "a column of fewer than two stages"));
+        closures_.push_back(reboilerClosure(-QC, std::nullopt, /*fullMesh=*/true, 0.0,
+            "the total-reflux march defines every vapour rate V_j from Q_R, so"
+            " every cut carries Q_R and -Q_C = Q_R holds identically; the"
+            " reboiler's own envelope on the same traffic is Q_R again, so it"
+            " is not a second route (a Q_R inflated by 10 % still closes to"
+            " rounding)"));
     }
 
     //  ---- The hydraulics of the trays (flood approach, pressure drop) ---
