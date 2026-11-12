@@ -50,6 +50,10 @@ import {
 import { downloadOds } from "../case/odsExport.js";
 import { dutyFixed, type ResultUnitPrefs } from "../case/resultUnits.js";
 import { DEFAULT_PREFS, dutyLabel } from "../state/displayUnits.js";
+import type { UnitProfile } from "../adapters/SolverAdapter.js";
+import {
+  columnStageSection, STAGE_SHEET_CSS, STAGE_SHEET_SCRIPT, type SheetPrefs,
+} from "../case/columnStageSheet.js";
 
 type Kpis = { [k: string]: number };
 
@@ -81,17 +85,30 @@ const SIZED_INK = PROVENANCE_INK.choupo;      // SIZED BY CHOUPO
 const DECLARED_INK = PROVENANCE_INK.declared; // DECLARED BY THE CASE
 const RATING_INK = "#37536e";                 // RATING RESULT
 
+/** The run's stage (or bed) profile for this unit, when it published one. */
+export function columnProfileOf(profiles: UnitProfile[] | undefined,
+  unitName: string): UnitProfile | undefined {
+  return profiles?.find((p) => p.unit === unitName
+    && (p.xAxis === "stage" || p.xAxis === "z"));
+}
+
 export function columnDatasheetHtml(
   unit: UnitSpec,
   kpis: Kpis | undefined,
   designFiles?: { [relPath: string]: string },
-  prefs: ResultUnitPrefs = DEFAULT_PREFS,
+  prefs: ResultUnitPrefs | SheetPrefs = DEFAULT_PREFS,
+  profile?: UnitProfile,
 ): string {
   const k = kpis ?? {};
   const { sheets, unreadable } = unitDesignSheets(designFiles, unit.name);
   const byItem = (item: string): DesignSheet | null =>
     sheets.find((s) => s.item === item) ?? null;
   const shell = byItem("shell"), trays = byItem("trays");
+  const packed = profile?.xAxis === "z"
+    || (unit.operation as { [key: string]: unknown } | undefined)?.["packing"] !== undefined;
+  //  THE TRAYS AT WORK (C337): the stage-by-stage half, from the run's own
+  //  profile.  Absent profile, absent section -- nothing is drawn in its place.
+  const stages = columnStageSection(unit, kpis, profile, shell, prefs);
 
   const row = (a: string, b: string) => `<tr><td>${a}</td><td>${b}</td></tr>`;
   const wide = (b: string) => `<tr><td colspan="2">${b}</td></tr>`;
@@ -144,7 +161,7 @@ export function columnDatasheetHtml(
     caption = `The run sized this column's shell but wrote no tray sheet, so `
       + `there is no tray stack to draw and no tower is drawn in its place.`;
   } else {
-    scheme = `<p style="color:#777;font-size:12px;margin:0">`
+    scheme = `<p class="nosize">`
       + (unreadable > 0
         ? `The run wrote ${unreadable} specification sheet(s) that this reader `
           + `could not parse, so it cannot say whether this column was sized. `
@@ -162,7 +179,7 @@ export function columnDatasheetHtml(
   const service = sec("SERVICE", "#37536e", [
     row("Unit", esc(unit.name)),
     ...(shell && shell.sector ? [row("Sector", esc(shell.sector))] : []),
-    row("Type", `Tray column${unit.model ? ` (${esc(unit.model)})` : ""}`),
+    row("Type", `${packed ? "Packed" : "Tray"} column${unit.model ? ` (${esc(unit.model)})` : ""}`),
     row("Material", shell ? esc(shell.material) : "—"),
     row("Items sized", sheets.length > 0
       ? sheets.map((s) => `<code>${esc(s.item || s.equipment)}</code>`).join(", ")
@@ -217,8 +234,17 @@ export function columnDatasheetHtml(
     row("Condenser / reboiler duty",
       `${dutyFixed(k["Q_condenser_kW"] as number, 1, prefs)} / ${dutyFixed(k["Q_reboiler_kW"] as number, 1, prefs)} ${dutyLabel(prefs.duty)}`),
   ].join("");
-  const rating = sec("RATING RESULT  ·  the tray-hydraulics pass", RATING_INK,
-    ratingRows);
+  const packedRows = [
+    row("Bed HETP", `${N(k["HETP"], 4)} m`),
+    row("Theoretical stages in the bed", N(k["theoreticalStages_bed"], 2)),
+    row("Pressure drop", `${N(k["dP_bed_mbar_per_m"], 3)} mbar/m`),
+    row("Highest ΔP / ΔP<sub>flood</sub>", N(k["dP_over_dPflood_max"], 3)),
+    row("Condenser / reboiler duty",
+      `${dutyFixed(k["Q_condenser_kW"] as number, 1, prefs)} / ${dutyFixed(k["Q_reboiler_kW"] as number, 1, prefs)} ${dutyLabel(prefs.duty)}`),
+  ].join("");
+  const rating = packed
+    ? sec("RATING RESULT  ·  the packed-bed march", RATING_INK, packedRows)
+    : sec("RATING RESULT  ·  the tray-hydraulics pass", RATING_INK, ratingRows);
 
   //  ---- DECLARED BY THE CASE -------------------------------------------
   const op = (unit.operation ?? {}) as { [k: string]: unknown };
@@ -279,31 +305,47 @@ export function columnDatasheetHtml(
   return `<!doctype html><html><head><meta charset="utf-8">
 <title>${esc(unit.name)} — column datasheet</title>
 <style>
-  body{font-family:system-ui,sans-serif;margin:24px;color:#222;background:#fff}
+  :root{--fg:#222;--muted:#6b7280;--rule:#e5e7eb;--panel:#f6f8fa;--bg:#fff;
+    --steel:#dfe5eb;--metal:#5a6675;--cool:#4a90d9;--accent:#2f6fb0;--bad:#c0392b;
+    --declared:${DECLARED_INK};--sized:${SIZED_INK};--head:#37536e;--code:#f2f4f6}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+    --fg:#e6e6e6;--muted:#9aa3ad;--rule:#33393f;--panel:#1d2227;--bg:#121518;
+    --steel:#2b333b;--metal:#a7b3bf;--cool:#6aa8e8;--accent:#7fb3e6;--bad:#ef6f5e;
+    --declared:#d9a066;--sized:#7cc68d;--head:#37536e;--code:#262c32}}
+  :root[data-theme="dark"]{
+    --fg:#e6e6e6;--muted:#9aa3ad;--rule:#33393f;--panel:#1d2227;--bg:#121518;
+    --steel:#2b333b;--metal:#a7b3bf;--cool:#6aa8e8;--accent:#7fb3e6;--bad:#ef6f5e;
+    --declared:#d9a066;--sized:#7cc68d;--head:#37536e;--code:#262c32}
+  body{font-family:system-ui,sans-serif;margin:24px;color:var(--fg);background:var(--bg)}
   h1{font-size:19px;margin:0 0 2px}
   h2{font-size:14px;margin:18px 0 6px}
-  h2 span{color:#888;font-weight:400;font-size:12px}
-  .sub{color:#666;font-size:12px;margin-bottom:16px}
-  .scheme{border:1px solid #ddd;border-radius:8px;padding:12px;margin-bottom:10px;background:#fafbfc;text-align:center}
-  .notes{list-style:none;margin:10px auto 0;padding:0;max-width:800px;text-align:left;font-size:11.5px;color:#445;column-count:2;column-gap:24px}
+  h2 span{color:var(--muted);font-weight:400;font-size:12px}
+  .sub{color:var(--muted);font-size:12px;margin-bottom:16px}
+  .scheme{border:1px solid var(--rule);border-radius:8px;padding:12px;margin-bottom:10px;background:#fafbfc;color:#222;text-align:center}
+  .nosize{color:#777;font-size:12px;margin:0}
+  .notes{list-style:none;margin:10px auto 0;padding:0;max-width:800px;text-align:left;font-size:11.5px;color:var(--muted);column-count:2;column-gap:24px}
   .notes li{margin:0 0 3px;break-inside:avoid}
   .notes i{color:#8a8a8a;font-size:10.5px}
   .why{margin:6px auto 0;max-width:520px;text-align:left;font-size:10.5px;color:#777;line-height:1.5}
-  .cap{color:#777;font-size:11px;margin:0 0 18px;line-height:1.5}
-  .legend{font-size:11px;color:#555;margin:8px 0 0}
+  .cap{color:var(--muted);font-size:11px;margin:0 0 18px;line-height:1.5}
+  .legend{font-size:11px;color:var(--muted);margin:8px 0 0}
   .legend b{padding:0 4px;border-radius:3px;color:#fff}
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   .item{break-inside:avoid}
   table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:0}
   th{color:#fff;text-align:left;padding:5px 9px;font-size:12px;letter-spacing:.02em}
-  td{padding:4px 9px;border-bottom:1px solid #eee;vertical-align:top}
-  td:first-child{color:#555;width:52%}
-  code{background:#f2f4f6;padding:0 3px;border-radius:3px}
-  .foot{margin-top:18px;color:#888;font-size:11px;line-height:1.55}
-  @media print{body{margin:8mm} .noprint{display:none}}
+  td{padding:4px 9px;border-bottom:1px solid var(--rule);vertical-align:top}
+  td:first-child{color:var(--muted);width:52%}
+  code{background:var(--code);padding:0 3px;border-radius:3px}
+  .foot{margin-top:18px;color:var(--muted);font-size:11px;line-height:1.55}
+  ${STAGE_SHEET_CSS}
+  @media print{body{margin:8mm} .noprint{display:none}
+    .cs-stage[hidden]{display:none} .cs-figbox{overflow:visible} .cs-tablebox{max-height:none;overflow:visible}}
 </style></head><body>
   <h1>Distillation Column Datasheet — ${esc(unit.name)}</h1>
-  <div class="sub">Choupo tray column · glass-box (Fair flooding · Francis weir) · the tower and its tray stack</div>
+  <div class="sub">${packed
+    ? "Choupo packed column · glass-box · the bed and its profile"
+    : "Choupo tray column · glass-box (Fair flooding · Francis weir) · the tower and its tray stack"}</div>
   <div class="scheme">${scheme}</div>
   <p class="legend">
     <b style="background:${SIZED_INK}">Choupo</b> — computed by the sizing pass
@@ -313,6 +355,7 @@ export function columnDatasheetHtml(
     survives a greyscale print.
   </p>
   <p class="cap">${esc(caption)}</p>
+  ${stages ? stages.html : ""}
   <div class="grid">
     <div>${service}${sizedSection(shell, "shell")}${sizedSection(trays, "trays")}</div>
     <div>${rating}${declared}</div>
@@ -342,6 +385,7 @@ export function columnDatasheetHtml(
     dimension.  Print → PDF with your browser.
   </div>
   <p class="noprint" style="margin-top:14px"><button onclick="window.print()">Print / Save as PDF</button></p>
+  ${stages ? STAGE_SHEET_SCRIPT : ""}
 </body></html>`;
 }
 
@@ -382,16 +426,20 @@ export function columnDatasheetOdsRows(
 /** The datasheet trigger, shown in the unit panel for a distillation column. */
 export function ColumnDatasheet({ unit, kpis }: { unit: UnitSpec; kpis: Kpis }) {
   const designFiles = useStore((s) => s.runResult?.designFiles);
+  const profiles = useStore((s) => s.runResult?.profiles);
   const prefs = useStore((s) => s.displayPrefs);
+  const profile = columnProfileOf(profiles, unit.name);
   //  SHOWN ONLY WHEN THERE IS SOMETHING TO SHOW.  A button that opens a page
   //  explaining its own emptiness is the lit-but-dead control the credo
   //  forbids: 30 corpus cases declare a column and one ships a `postDict`.
+  //  A run with no sizing pass but a stage or bed profile (the C329 rating
+  //  cases) still has a column to show: the trays at work (C337).
   const { sheets } = unitDesignSheets(designFiles, unit.name);
-  if (sheets.length === 0) return null;
+  if (sheets.length === 0 && !profile) return null;
 
   const openTab = () => {
     let built: string;
-    try { built = columnDatasheetHtml(unit, kpis, designFiles, prefs); }
+    try { built = columnDatasheetHtml(unit, kpis, designFiles, prefs, profile); }
     catch (e) {
       built = `<pre style="padding:16px;color:#900;font-family:monospace">`
         + `Datasheet build failed:\n${String(e instanceof Error ? e.stack : e)}</pre>`;
