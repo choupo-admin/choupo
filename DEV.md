@@ -3446,6 +3446,29 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C377 (Vitor, 2026-11-12: "se eu fizer evaporacao multi-efeito de
+> agua+NaOH o Choupo ja lida com o calor de dissolucao de forma elegante?").**
+> MEASURED the same turn on evaporator08_naoh_dilution_heat (single effect):
+> yes within its window -- the duty climbs the calorimetric L_phi curve and
+> prints the heat of dilution as its own line (3.54 kW of 839 kW, m 2.0 ->
+> 5.2 mol/kg), the boiling-point elevation comes from the Pitzer water
+> activity (6.75 K), and leaving the fit is announced.  THREE LIMITS: (1) the
+> Na-OH pair's L_phi is fitted to Parker only up to 6 mol/kg (about 19 wt %),
+> while caustic is concentrated to 50 wt % (25 mol/kg): beyond 6 the duty,
+> the dilution heat and the BPE are extrapolated, announced, and not to be
+> trusted; (2) no multi-effect NaOH case ships (the multi-effect cases are
+> sugar and NaCl); (3) in that case the water's Cp polynomial and Antoine are
+> used above their 373 K window (steam at 130 C): announced, but water
+> should be priced on its reference equation in an electrolyte package
+> too.  DECIDED: (a) a triple-effect NaOH case inside the fit window, with
+> the heat of dilution per effect printed and held by the balances, and
+> the water route fixed if the package can reach the reference equation;
+> (b) for real caustic duty (to 50 wt %) a property model valid to that
+> concentration, from a measured high-concentration correlation, beside
+> Pitzer and selectable, validated against the classical
+> enthalpy-concentration chart; the source asked of Vitor.  Branch
+> c377-naoh-multieffect for (a).
+
 > **C376 (Vitor, 2026-11-12: "A maior parte das especies novas nao tem dados
 > de formacao?! Podes ver online como vamos resolver isto? Se for preciso
 > pede-me mais bibliografia").**  Formation data (DfH, S, DfG of the aqueous
