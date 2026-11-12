@@ -1329,7 +1329,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "chromatography", blurb: "Separate two solutes on a column: retention, peak width, resolution, overload.",
     label: "Chromatography: peaks, plates and resolution",
     discipline: "Separations & phase equilibria", kind: "construction", status: "live",
-    origins: ["engine", "page", "reference", "assumption"],
+    origins: ["engine", "page", "assumption"],
     theory: "sec:chromatography",
     teaches: "Elution chromatography from a bed fed a pulse: the retention "
       + "time t_R = t0(1 + k') from the isotherm's slope; the plate model "
