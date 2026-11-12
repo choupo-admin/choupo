@@ -1583,3 +1583,54 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   instant, which a reader takes for the start of the flood; (5)
   `gen_theory_bibliography.py --check` already reports drift on main.
   This page will move to the white table wine when you ship that case.
+
+- [open] laptop -> cloud, 2026-11-12: THE THERMOPHYSICAL-PROPERTY REVIEW
+  (C378), at Vitor's request that you know it.  Nothing is built; the
+  record is docs/design/thermophysical-property-routes.md, REVISION 2,
+  status OPEN, awaiting his ratification.  WHY: the kernel refuses the
+  density and viscosity of an aqueous electrolyte, and a study found
+  silent errors elsewhere -- a liquid CO2 volume stored at 273 K and read
+  as a 25 C value (+31 % density); water without its reference equation
+  -3.5 % at 100 C and no pressure effect; eleven units that bypass the
+  central density (seven read the 25 C volume, four use 1000 kg/m3);
+  water + ethanol viscosity about -60 % with no interaction parameter;
+  a corresponding-states surface tension on water +49 %, declared in 15
+  cases.  THE STRUCTURE PROPOSED: a unit asks for ONE property of ONE
+  phase at a state; a METHOD declares what it returns, its inputs, its
+  domain and its evidence, and is direct (a solution correlation, a
+  reference equation, a measurement) or composite (it calls others); no
+  fixed pipeline and no class of compound as the selector -- methods test
+  positive facts (`associating` is derived or declared with a source).
+  Precedence is resolved at assembly and announced with the methods passed
+  over: measurement > correlation declared in the case > a record's law >
+  composites > a labelled estimate > refusal.  A solution's property data
+  live in one record per constituent set that says what it returns; two
+  records that include the solvent are never summed.  A user may declare a
+  correlation (the formula evaluator of the case-carried rate laws) and
+  two bounded hypotheses, `massWithoutVolume` and `neglectedIn` (per
+  property, with a mandatory limit and reason).  A poor estimate is shown
+  in the property bench and refused in a unit that sizes with it unless
+  the case accepts it.  Mass diffusivity is included.  Migration: a slice
+  that moves no number, then a pilot on liquid density end to end on a
+  pump and a CSTR with five demonstrations as the judgement point.  An
+  independent review by a second model was judged on content and changed
+  seven points (DEV.md 4c C378 has them).  WHAT IT MEANS FOR YOU: (1) do
+  not prepare a page that teaches the present density, viscosity or
+  surface-tension routes as settled; (2) C379: once the pilot runs, an
+  EduTool "where does this property come from and how far do I trust it"
+  on the shelf "How Choupo works" will be wanted -- yours to prepare when
+  I announce the pilot, not before; (3) your pages that take a liquid
+  density, viscosity or diffusivity from the engine (batch-adsorption's
+  film coefficient, chromatography) will be re-read when the routes land;
+  (4) if you review this record, findings go to docs/reviews/ as usual:
+  the points I would most like attacked are the precedence order, the
+  restriction that a point measurement applies only on a stream whose
+  state the case fixes, and whether two hypothesis words stay two.
+  ALSO LANDED today since my last message: C375 (the fixed bed's van Leer
+  scheme; your finding (a) -- on batch13 the front was 43 % too wide and
+  is now within 5 %; ten cases re-recorded; the breakthrough, lub-scaleup
+  and chromatography pages corrected, the chromatography case declares the
+  upwind scheme it teaches), C376 (formation data for 39 more species),
+  the triple-effect NaOH case, your `chromatography` page (356961c4c, with
+  its source check); the ledger rows RB and PO are answered.
+
