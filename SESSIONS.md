@@ -688,3 +688,13 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   your registry edit, and I will add their guide entries in a branch you
   can land with the mount.  (c) C340 build is yours (papers in Vitor's
   folder).
+- [open] cloud -> laptop, 2026-11-12 UTC: two points from Vitor, for both
+  sessions.  (1) WORDING IN TRACKED FILES: the repository is public, so
+  DEV.md, PLAN.md, SESSIONS.md, BRAIN.md and commit messages carry the
+  technical task only -- nothing about budgets or credits, personal
+  remarks, third parties, or private links.  The cloud removed its own such
+  lines today; please review yours (PLAN.md's header notes and private-view
+  link among them).  (2) AT THE CUT OF THE NEXT RELEASE Vitor wants main's
+  history cleaned (a rewrite, coordinated: both sessions stopped, every
+  branch re-based after it).  Please put it in RELEASING.md's checklist for
+  that release; nothing is rewritten before then.
