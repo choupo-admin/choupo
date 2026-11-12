@@ -1,0 +1,30 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+  species_c320 -- the aqueous species added to data/standards/species/ by C320 (DEV.md 4c): ions the
+  electrolyte campaign (C311) could not fit for lack of them (perchlorate, chlorate, bromate, iodate,
+  thiocyanate, formate, chromate, dichromate, molybdate, sulfite, arsenates, Ag+, Tl+) and the
+  transition-metal and oxyanion ions of hydrometallurgy (Ni, Co, Hg, Sn, permanganate, bisulfite) and
+  nitrous acid.  species.tsv holds every reading (NBS 1982 table, page and row, the CRC second reading,
+  the CODATA key value where the species has one, the chosen value) and the species held back, with the
+  reason; elements.tsv the reference-state entropies of the Gibbs-identity check;
+  bin/curate/species_c320.py writes the records and bin/curate/check_species_records.py holds each
+  record to the table.  The one operation below asks the engine's formula parser for the atoms and the
+  charge of every formula: the element and charge balance of each species, read by the same parser
+  every balance of the engine uses.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name      atoms;
+        type      elementalComposition;
+        formulas  ( "ClO4" "ClO3" "BrO3" "IO3" "SCN" "HCOO" "CrO4" "Cr2O7" "MoO4" "SO3" "H2AsO4" "HAsO4" "Ag" "Tl" "Ni" "Co" "Hg" "Sn" "MnO4" "HSO3" "HNO2" );
+    }
+);

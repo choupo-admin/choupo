@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/BrO3.dat -- the aqueous species BrO3- (C320, DEV.md 4c).  ONE model species, ONE
+  typed file.  Made by bin/curate/species_c320.py from
+  data/curation/batches/species_c320/species.tsv, which holds every reading (NBS table, page, row;
+  the CRC second reading; the CODATA key value where the species has one) and the chosen value.
+  Standard state: ideal solution at 1 mol/kg, 298.15 K, H+ = 0 (NBS convention).  The chosen
+  value is NBS (Wagman et al. 1982) unless CODATA (Cox, Wagman & Medvedev 1989) carries the species.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    BrO3;
+formula     "BrO3-";
+charge  -1;
+MW { value 127.901; unit g/mol;}
+aqueousThermo
+{
+source "NBS = Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 11:Br, p. 2-50 (PDF p. 58), row BrO3- ao ## CRC = CRC Handbook, Thermodynamic Properties of Aqueous Systems, p. 5-86 (TeamLRN_5_1_CODATA_KEY_VALUES_FOR_THERMO.pdf), row BrO3- ## hfAq [kJ/mol] chosen -67.07 (NBS): NBS -67.07, CRC -67.1 ## sAq [J/mol/K] chosen 161.71 (NBS): NBS 161.71, CRC 161.7";
+hfAq { value -67070; unit J/mol;}
+sAq  { value 161.71;  unit J/mol/K;}
+}

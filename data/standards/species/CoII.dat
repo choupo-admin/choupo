@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/CoII.dat -- the aqueous species Co+2 (C320, DEV.md 4c).  ONE model species, ONE
+  typed file.  Made by bin/curate/species_c320.py from
+  data/curation/batches/species_c320/species.tsv, which holds every reading (NBS table, page, row;
+  the CRC second reading; the CODATA key value where the species has one) and the chosen value.
+  Standard state: ideal solution at 1 mol/kg, 298.15 K, H+ = 0 (NBS convention).  The chosen
+  value is NBS (Wagman et al. 1982) unless CODATA (Cox, Wagman & Medvedev 1989) carries the species.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    CoII;
+formula     "Co+2";
+charge  +2;
+MW { value 58.933; unit g/mol;}
+aqueousThermo
+{
+source "NBS = Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 40:Co, p. 2-170 (PDF p. 178), row Co2+ ao ## CRC = CRC Handbook, Thermodynamic Properties of Aqueous Systems, p. 5-85 (TeamLRN_5_1_CODATA_KEY_VALUES_FOR_THERMO.pdf), row Co+2 ## hfAq [kJ/mol] chosen -58.2 (NBS): NBS -58.2, CRC -58.2 ## sAq [J/mol/K] chosen -113.0 (NBS): NBS -113.0, CRC -113.0";
+hfAq { value -58200; unit J/mol;}
+sAq  { value -113.0;  unit J/mol/K;}
+}

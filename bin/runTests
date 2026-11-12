@@ -6864,6 +6864,16 @@ PYEOF
     fi
     rm -f /tmp/henryrec.$$
 
+    # species-records gate (2026-11-12, DEV.md 4c C320).  The aqueous-species records made from the NBS tables (Wagman 1982) and CODATA (Cox 1989) reproduce byte for byte from species.tsv; the two readings agree, the NBS row obeys the Gibbs identity, charge and elements balance, MW is the sum of the engine's atomic weights.
+    if gate_exec "$ROOT/bin/curate/check_species_records.py" > /tmp/speciesrec.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "species-records-gate" "$(head -1 /tmp/speciesrec.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_species_records.py)\n" "species-records-gate"
+        cat /tmp/speciesrec.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/speciesrec.$$
     # feature-documented gate (2026-11-12, DEV.md 4c C338, CLAUDE.md rule 4d).  Every name a factory registers is in a labelled Theory/Props Guide section AND the docs/ai catalogue; today's debt is pinned in bin/curate/feature_documented_debt.tsv and may only shrink.
     if gate_exec "$ROOT/bin/curate/check_feature_documented.py" > /tmp/featdoc.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "feature-documented-gate" "$(head -1 /tmp/featdoc.$$)"

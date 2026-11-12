@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1564,
+  "cases": 1565,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 15
@@ -64,6 +64,22 @@
    "ops": [
     "estimateComponent",
     "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/batches/species_c320": {
+   "application": "choupoProps",
+   "ops": [
+    "elementalComposition"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -24861,6 +24877,7 @@
     "data/curation/batches/new_components",
     "data/curation/batches/new_components_c309",
     "data/curation/batches/new_components_estimated",
+    "data/curation/batches/species_c320",
     "data/curation/batches/transport_c327",
     "data/curation/components/1122Tetrachloroethane",
     "data/curation/components/11Diethoxyethane",
@@ -27848,6 +27865,7 @@
     "data/curation/batches/new_components",
     "data/curation/batches/new_components_c309",
     "data/curation/batches/new_components_estimated",
+    "data/curation/batches/species_c320",
     "data/curation/batches/transport_c327",
     "data/curation/components/1122Tetrachloroethane",
     "data/curation/components/11Diethoxyethane",
@@ -29282,6 +29300,7 @@
     "tutorials/props/electrolyte/electrolyteFit01_nacl"
    ],
    "elementalComposition": [
+    "data/curation/batches/species_c320",
     "tutorials/props/thermoTest/atoms01_formula_parser"
    ],
    "enrtlMixedSolvent": [

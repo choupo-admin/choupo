@@ -1,0 +1,23 @@
+element	reference	atoms	S_ref	unit	source
+H	H2 g	2	130.680	J/mol/K	CODATA Key Values (Cox, Wagman & Medvedev 1989), TeamLRN_5_1 file p. 5-2, row H2 g
+O	O2 g	2	205.152	J/mol/K	CODATA Key Values (Cox, Wagman & Medvedev 1989), TeamLRN_5_1 file p. 5-3, row O2 g
+N	N2 g	2	191.609	J/mol/K	CODATA Key Values (Cox, Wagman & Medvedev 1989), TeamLRN_5_1 file p. 5-3, row N2 g
+Cl	Cl2 g	2	223.081	J/mol/K	CODATA Key Values (Cox, Wagman & Medvedev 1989), TeamLRN_5_1 file p. 5-1, row Cl2 g
+F	F2 g	2	202.791	J/mol/K	CODATA Key Values (Cox, Wagman & Medvedev 1989), TeamLRN_5_1 file p. 5-2, row F2 g
+Br	Br2 l	2	152.21	J/mol/K	CODATA Key Values (Cox, Wagman & Medvedev 1989), TeamLRN_5_1 file p. 5-1, row Br2 l
+I	I2 cr	2	116.14	J/mol/K	CODATA Key Values (Cox, Wagman & Medvedev 1989), TeamLRN_5_1 file p. 5-2, row I2 cr
+S	S cr rhombic	1	32.054	J/mol/K	CODATA Key Values (Cox, Wagman & Medvedev 1989), TeamLRN_5_1 file p. 5-3, row S cr rhombic
+C	C cr graphite	1	5.74	J/mol/K	CODATA Key Values (Cox, Wagman & Medvedev 1989), TeamLRN_5_1 file p. 5-1, row C cr graphite
+Ag	Ag cr	1	42.55	J/mol/K	CODATA Key Values (Cox, Wagman & Medvedev 1989), TeamLRN_5_1 file p. 5-1, row Ag cr
+Hg	Hg l	1	75.90	J/mol/K	CODATA Key Values (Cox, Wagman & Medvedev 1989), TeamLRN_5_1 file p. 5-2, row Hg l
+P	P cr white	1	41.09	J/mol/K	CODATA Key Values (Cox, Wagman & Medvedev 1989), TeamLRN_5_1 file p. 5-3, row P cr white
+Si	Si cr	1	18.81	J/mol/K	CODATA Key Values (Cox, Wagman & Medvedev 1989), TeamLRN_5_1 file p. 5-3, row Si cr
+Sn	Sn cr white	1	51.18	J/mol/K	CODATA Key Values (Cox, Wagman & Medvedev 1989), TeamLRN_5_1 file p. 5-3, row Sn cr white
+As	As cr gray	1	35.1	J/mol/K	CRC Handbook, Standard Thermodynamic Properties of Chemical Substances (TeamLRN_5_1 file) p. 5-6, row As gray
+Co	Co cr	1	30.0	J/mol/K	CRC Handbook, Standard Thermodynamic Properties of Chemical Substances (TeamLRN_5_1 file) p. 5-13, row Co
+Cr	Cr cr	1	23.8	J/mol/K	CRC Handbook, Standard Thermodynamic Properties of Chemical Substances (TeamLRN_5_1 file) p. 5-14, row Cr
+Mn	Mn cr	1	32.0	J/mol/K	CRC Handbook, Standard Thermodynamic Properties of Chemical Substances (TeamLRN_5_1 file) p. 5-21, row Mn
+Mo	Mo cr	1	28.7	J/mol/K	CRC Handbook, Standard Thermodynamic Properties of Chemical Substances (TeamLRN_5_1 file) p. 5-22, row Mo
+Ni	Ni cr	1	29.9	J/mol/K	CRC Handbook, Standard Thermodynamic Properties of Chemical Substances (TeamLRN_5_1 file) p. 5-23, row Ni
+Tl	Tl cr	1	64.2	J/mol/K	CRC Handbook, Standard Thermodynamic Properties of Chemical Substances (TeamLRN_5_1 file) p. 5-26, row Tl
+W	W cr	1	32.6	J/mol/K	CRC Handbook, Standard Thermodynamic Properties of Chemical Substances (TeamLRN_5_1 file) p. 5-26, row W

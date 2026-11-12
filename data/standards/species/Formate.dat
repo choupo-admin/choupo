@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/Formate.dat -- the aqueous species HCOO- (C320, DEV.md 4c).  ONE model species, ONE
+  typed file.  Made by bin/curate/species_c320.py from
+  data/curation/batches/species_c320/species.tsv, which holds every reading (NBS table, page, row;
+  the CRC second reading; the CODATA key value where the species has one) and the chosen value.
+  Standard state: ideal solution at 1 mol/kg, 298.15 K, H+ = 0 (NBS convention).  The chosen
+  value is NBS (Wagman et al. 1982) unless CODATA (Cox, Wagman & Medvedev 1989) carries the species.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    Formate;
+formula     "HCOO-";
+charge  -1;
+MW { value 45.017; unit g/mol;}
+aqueousThermo
+{
+source "NBS = Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 23:C, p. 2-83 (PDF p. 91), row HCO2- formate ao ## CRC = CRC Handbook, Thermodynamic Properties of Aqueous Systems, p. 5-86 (TeamLRN_5_1_CODATA_KEY_VALUES_FOR_THERMO.pdf), row CHOO- ## hfAq [kJ/mol] chosen -425.55 (NBS): NBS -425.55, CRC -425.6 ## sAq [J/mol/K] chosen 92.0 (NBS): NBS 92.0, CRC 92.0 ## cpAq [J/mol/K] chosen -87.9 (NBS): NBS -87.9, CRC -87.9";
+hfAq { value -425550; unit J/mol;}
+sAq  { value 92.0;  unit J/mol/K;}
+cpAq { value -87.9; unit J/mol/K;}
+}

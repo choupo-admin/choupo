@@ -1,0 +1,47 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    atoms                  HNO2_H           1                1e-4
+diag    atoms                  HNO2_N           1                1e-4
+diag    atoms                  HNO2_O           2                1e-4
+diag    atoms                  formulas_available 21               1e-4
+diag    atoms                  formulas_total   21               1e-4
+diag    atoms                  Ag_Ag            1                1e-4
+diag    atoms                  BrO3_Br          1                1e-4
+diag    atoms                  BrO3_O           3                1e-4
+diag    atoms                  ClO3_Cl          1                1e-4
+diag    atoms                  ClO3_O           3                1e-4
+diag    atoms                  ClO4_Cl          1                1e-4
+diag    atoms                  ClO4_O           4                1e-4
+diag    atoms                  Co_Co            1                1e-4
+diag    atoms                  Cr2O7_Cr         2                1e-4
+diag    atoms                  Cr2O7_O          7                1e-4
+diag    atoms                  CrO4_Cr          1                1e-4
+diag    atoms                  CrO4_O           4                1e-4
+diag    atoms                  H2AsO4_As        1                1e-4
+diag    atoms                  H2AsO4_H         2                1e-4
+diag    atoms                  H2AsO4_O         4                1e-4
+diag    atoms                  HAsO4_As         1                1e-4
+diag    atoms                  HAsO4_H          1                1e-4
+diag    atoms                  HAsO4_O          4                1e-4
+diag    atoms                  HCOO_C           1                1e-4
+diag    atoms                  HCOO_H           1                1e-4
+diag    atoms                  HCOO_O           2                1e-4
+diag    atoms                  HSO3_H           1                1e-4
+diag    atoms                  HSO3_O           3                1e-4
+diag    atoms                  HSO3_S           1                1e-4
+diag    atoms                  Hg_Hg            1                1e-4
+diag    atoms                  IO3_I            1                1e-4
+diag    atoms                  IO3_O            3                1e-4
+diag    atoms                  MnO4_Mn          1                1e-4
+diag    atoms                  MnO4_O           4                1e-4
+diag    atoms                  MoO4_Mo          1                1e-4
+diag    atoms                  MoO4_O           4                1e-4
+diag    atoms                  Ni_Ni            1                1e-4
+diag    atoms                  SCN_C            1                1e-4
+diag    atoms                  SCN_N            1                1e-4
+diag    atoms                  SCN_S            1                1e-4
+diag    atoms                  SO3_O            3                1e-4
+diag    atoms                  SO3_S            1                1e-4
+diag    atoms                  Sn_Sn            1                1e-4
+diag    atoms                  Tl_Tl            1                1e-4

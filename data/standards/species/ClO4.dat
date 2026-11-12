@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/ClO4.dat -- the aqueous species ClO4- (C320, DEV.md 4c).  ONE model species, ONE
+  typed file.  Made by bin/curate/species_c320.py from
+  data/curation/batches/species_c320/species.tsv, which holds every reading (NBS table, page, row;
+  the CRC second reading; the CODATA key value where the species has one) and the chosen value.
+  Standard state: ideal solution at 1 mol/kg, 298.15 K, H+ = 0 (NBS convention).  The chosen
+  value is NBS (Wagman et al. 1982) unless CODATA (Cox, Wagman & Medvedev 1989) carries the species.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    ClO4;
+formula     "ClO4-";
+charge  -1;
+MW { value 99.446; unit g/mol;}
+aqueousThermo
+{
+source "NBS = Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 10:Cl, p. 2-47 (PDF p. 55), row ClO4- ao ## CRC = CRC Handbook, Thermodynamic Properties of Aqueous Systems, p. 5-86 (TeamLRN_5_1_CODATA_KEY_VALUES_FOR_THERMO.pdf), row ClO4- ## CODATA = CODATA Key Values for Thermodynamics (Cox, Wagman & Medvedev 1989), p. 5-1 (TeamLRN_5_1_CODATA_KEY_VALUES_FOR_THERMO.pdf), row ClO4- aq, the 5-page Codata-key-values-for-thermodynamics.pdf reads the same ## hfAq [kJ/mol] chosen -128.1 (CODATA): NBS -129.33, CRC -129.3, CODATA -128.1 ## sAq [J/mol/K] chosen 184.0 (CODATA): NBS 182.0, CRC 182.0, CODATA 184.0";
+hfAq { value -128100; unit J/mol;}
+sAq  { value 184.0;  unit J/mol/K;}
+}
