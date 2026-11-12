@@ -20,6 +20,12 @@ FITS and carrying no number (C296):
     data/curation/components/<name>/      a pure-component vapour pressure
                                           (<name> = the component record's stem)
     data/curation/batches/<name>/         a case that loads several components
+    data/curation/electrolytes/<c>-<a>/   one salt (DEV.md 4c C311): Pitzer and
+                                          eNRTL fitted to gamma_pm and phi;
+                                          <c>-<a> is EXACTLY the stem of
+                                          parameters/Pitzer/pairs/<c>-<a>.dat
+                                          and parameters/eNRTL/<c>-<a>.dat
+                                          (cation first, as the engine reads)
 
 The hand-written TEACHING cases (curate01..14, and the synthetic ThermoML
 fixtures they read) stay in `tutorials/props/curation/`: they are tutorials.
@@ -42,13 +48,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 CURATION_REL = "data/curation"
-ORIGINS = ("pairs", "components", "batches")
+ORIGINS = ("pairs", "components", "batches", "electrolytes")
 TEACHING_REL = "tutorials/props/curation"
 
 CURATION = ROOT / CURATION_REL
 PAIRS = CURATION / "pairs"
 COMPONENTS = CURATION / "components"
 BATCHES = CURATION / "batches"
+ELECTROLYTES = CURATION / "electrolytes"
 TEACHING = ROOT / TEACHING_REL
 
 _NUMBER = re.compile(r"curate(\d+)_")

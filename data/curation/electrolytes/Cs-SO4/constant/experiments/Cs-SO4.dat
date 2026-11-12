@@ -1,0 +1,47 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Cs-SO4: mean ionic activity coefficient gamma_pm and osmotic coefficient
+  phi of the salt (Cs)2(SO4)1 in water at 298.15 K -- the EVALUATED
+  (recommended) values of
+    R. N. Goldberg, Evaluated Activity and Osmotic Coefficients for Aqueous Solutions: Thirty-Six Uni-Bivalent Electrolytes, J. Phys. Chem. Ref. Data 10 (1981) 671-764,
+    doi:10.1063/1.555646, the Cs2SO4 table of recommended values, p. 756 (m, gamma, phi, a_w).
+  The evaluation is the primary source of these recommended values (its
+  own references are the measurements behind them).
+  TRANSCRIBED 2026-11-11 (DEV.md 4c C311) from the NIST reprint
+  (nist-jpcrd-1.555646.pdf): every row read by eye from the page image; phi checked against the printed water activity (ln a_w = -nu m phi M_w, to 2.5e-4) and gamma against its neighbours by the Gibbs-Duhem relation.
+  Rows kept: 0.1 mol/kg up to ionic strength 6 mol/kg; a row the
+  source marks saturated, supersaturated or from another author is not
+  here.  Every 4th row (0-based index % 4 == 3, never the first or the
+  last) is HELD OUT by the case (system/propsDict), not by this file.
+\*-----------------------------------------------------------------------------*/
+provenance
+{
+    source        "R. N. Goldberg, Evaluated Activity and Osmotic Coefficients for Aqueous Solutions: Thirty-Six Uni-Bivalent Electrolytes, J. Phys. Chem. Ref. Data 10 (1981) 671-764";
+    doi           "10.1063/1.555646";
+    location      "the Cs2SO4 table of recommended values, p. 756 (m, gamma, phi, a_w)";
+    reviewStatus  transcribed;
+}
+
+temperature 298.15;   // K, every row
+
+columns
+(
+    { name m;     unit mol/kg; }
+    { name gamma; unit -; }       // gamma_pm, molality scale
+    { name phi;   unit -; }       // molal osmotic coefficient
+);
+
+data
+(
+    0.1     0.4443   0.7884  
+    0.2     0.369    0.7598  
+    0.3     0.3294   0.7465  
+    0.4     0.3036   0.7388  
+    0.5     0.2848   0.7339  
+    0.6     0.2704   0.7306  
+    0.7     0.2587   0.7282  
+    0.8     0.249    0.7263  
+    0.9     0.2407   0.7248  
+    1       0.2335   0.7236  
+    1.25    0.219    0.7212  
+    1.5     0.2077   0.7192  
+);

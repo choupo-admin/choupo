@@ -1,0 +1,63 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Henry's-law constant for 1Butene in liquid 1Propanol (infinite dilution).
+
+  Source DATA: the measurements of
+    Miyano, Y.[Yoshimori] (2004) J. Chem. Thermodyn. 36, 101-106, doi:10.1016/j.jct.2003.08.018
+  located through the NIST/TRC ThermoML Archive (doi 10.18434/mds2-2422);
+  the values belong to those articles.  NO measured point is reproduced here
+  or anywhere in this tree; data/curation/henry/1Butene-1Propanol
+  declares each dataset by DOI, block and sha256 and regenerates it.
+
+  FIT (DEV.md 4c C321 part 2): van't Hoff in 1/T, every laboratory together,
+  least squares then minimax on the relative residual of H; points above
+  20 % after the least-squares stage discarded by name (0 here).
+  5 kept points, 260.03-340 K; max relative error
+  3.05 % in-sample (graded 10 / 20 / 30 %, C336 class B).
+  Regressed by Choupo, NOT read by a human; the archive's transcription has
+  not been read back against the articles.
+
+  NOTE: INFINITE-DILUTION coefficient at the solvent's own vapour pressure;
+  validity 260-340 K (the measured span; outside it an extrapolation).
+\*---------------------------------------------------------------------------*/
+
+solute      1Butene;
+solvent     1Propanol;
+
+gasSpecies        1Butene;
+dissolvedSpecies  1Butene;
+convention        Sander-Hxp-v1;
+
+model       vantHoff;
+H_ref       1.08419e+06 Pa;
+T_ref       298.15 K;
+enthalpy    -20772  J/mol;
+Trange      ( 260  340 );
+
+reviewStatus autoPromoted;
+review      { by none; }
+
+provenance
+{
+    origin        fitted;
+    source        "doi:10.1016/j.jct.2003.08.018 (located through ThermoML, doi 10.18434/mds2-2422)";
+    method        "van't Hoff fit, least squares then minimax on H_model/H - 1, bin/curate/henry_organic.py";
+    CAS           106-98-9;
+    fittedInCase  "data/curation/henry/1Butene-1Propanol";
+    fitGrade      warning;   // DEV.md 4c C285: max |H_model - H|/H over the kept points, graded 10 / 20 / 30 % (C336 class B)
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+    fitGradeCap   ( singleLaboratory );   // DEV.md 4c C300 rule 2
+    fitGradeMaxRelativeError_pct 3.0544;
+    pointsKept    5;
+    pointsDiscarded 0;
+    fingerprint   "0977634a30db336e";   // of the declaration, frozen before the fit
+    evidence
+    (
+        {
+            doi           "10.1016/j.jct.2003.08.018";
+            block         5;
+            archiveFile   "j.jct.2003.08.018.xml";
+            articleSha256 "e8e963199f3d54ff7077b9dfe335da211f615c47185523bf9a8a1d60542bacad";
+            sha256        "2b486af73784e29146992c468b1be0fe588c847aec63742c9bd0ebeeac5524cd";
+        }
+    );
+}

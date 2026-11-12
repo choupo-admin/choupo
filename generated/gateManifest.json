@@ -318,13 +318,13 @@
     },
     "check_electrolyte_records": {
       "exit": 0,
-      "claim": "electrolyte-records: OK -- monoliths absent, 55 pitzer-pairs, 65 pitzer-mixing, 3 eNRTL, 63 speciation, 9 gas-liquid, 6 ion-exchange record(s) structurally sound; the mineralSolubility kind stays retired.",
+      "claim": "electrolyte-records: OK -- monoliths absent, 99 pitzer-pairs, 65 pitzer-mixing, 48 eNRTL, 63 speciation, 9 gas-liquid, 6 ion-exchange record(s) structurally sound; the mineralSolubility kind stays retired.",
       "seconds": 0.0
     },
     "check_electrolyte_sidecars": {
       "exit": 0,
       "claim": "check_electrolyte_sidecars: OK -- constant/electrolyte/ is fully retired: every leg refuses by name with its canonical remedy (species -> constant/species/, reactions -> constant/chemistry/, restriction -> networkScope restricted), the tartrate case builds its 9-activated network canonically, and the converted seawater case ships no sidecar",
-      "seconds": 0.6
+      "seconds": 0.3
     },
     "check_element_balance": {
       "exit": 0,
@@ -423,8 +423,8 @@
     },
     "check_fastset": {
       "exit": 0,
-      "claim": "check_fastset: OK -- 81 declared case(s) covering 71 of the 75 tutorial famil(ies) the suite walks, each an existing case the full sweep also walks, no case declared twice; the remaining 4 famil(ies) carry a DECLARED `# EXCLUDED` line with a reason (tutorials/plant/aceticAcid02_plant, tutorials/plant/acetonePlant, tutorials/plant/greenAmmonia03_basicDesign, tutorials/steady/flowsheets/twoSectorDemo).  NOT COVERED: whether the declared cases are CHEAP (a measurement, and one that moved 26 % between two runs of the same tree -- it lives dated in FASTSET's header, not in a gate), whether they PASS (that is `bin/runTests --fast`), and whether a family's representative is REPRESENTATIVE of it (an author's judgement, made in review, exactly as check_witness_tier leaves representativeness to the architect).",
-      "seconds": 1.4
+      "claim": "check_fastset: OK -- 83 declared case(s) covering 73 of the 77 tutorial famil(ies) the suite walks, each an existing case the full sweep also walks, no case declared twice; the remaining 4 famil(ies) carry a DECLARED `# EXCLUDED` line with a reason (tutorials/plant/aceticAcid02_plant, tutorials/plant/acetonePlant, tutorials/plant/greenAmmonia03_basicDesign, tutorials/steady/flowsheets/twoSectorDemo).  NOT COVERED: whether the declared cases are CHEAP (a measurement, and one that moved 26 % between two runs of the same tree -- it lives dated in FASTSET's header, not in a gate), whether they PASS (that is `bin/runTests --fast`), and whether a family's representative is REPRESENTATIVE of it (an author's judgement, made in review, exactly as check_witness_tier leaves representativeness to the architect).",
+      "seconds": 0.4
     },
     "check_feed_switch": {
       "exit": 0,
@@ -1579,7 +1579,7 @@
     "check_brain_fresh": {
       "exit": 0,
       "claim": "check_brain_fresh: OK -- FACTS block equals a fresh render from the tracked tree; BRAIN.md 142/250 lines; STATE BY AREA has a `judged` column.  Does NOT judge whether a dated judgement is still true.",
-      "seconds": 0.3
+      "seconds": 0.4
     },
     "check_petroleum_cuts": {
       "exit": 0,
@@ -1648,13 +1648,18 @@
     },
     "check_henry_records": {
       "exit": 0,
-      "claim": "check_henry_records: OK -- 45 Henry records from Sander 2015 reproduce from rows.tsv (1851 M/L rows, no Q or E row; NOT CHECKED: the values of the thermo-library records)",
-      "seconds": 0.1
+      "claim": "check_henry_records: OK -- 45 Henry records from Sander 2015 reproduce from rows.tsv (1851 M/L rows, no Q or E row); 235 organic-solvent Henry records (235 in the catalogue, 0 case-local) refitted from their 235 ThermoML cases equal their fit and grade (5 built negatives refused, a 25 % severe accepted (C336 class B); one laboratory, no point discarded; NOT CHECKED: the values of the thermo-library records, and the voicing of a Henry fitGrade, which no loader does)",
+      "seconds": 7.1
+    },
+    "check_regressed_electrolytes": {
+      "exit": 0,
+      "claim": "regressed-electrolytes: OK -- 101 regressed salt records (89 in the catalogue: 44 Pitzer, 45 eNRTL) reproduced by their 67 cases; grades follow the C311 rule and the C300 cap; the engine voices a promoted record; the transcription itself is NOT checked here",
+      "seconds": 0.7
     },
     "check_reference_eos": {
       "exit": 0,
       "claim": "check_reference_eos: OK -- 1 reference equation(s) (IAPWS95); 81 published check values reproduced at the printed precision by an independent implementation and by the engine; 5 engine states agree with the recomputation to 1e-9.  NOT checked: whether an equation is right (its uncertainty is the publication's), the flowsheet route, states nearer the critical point than the check values.",
-      "seconds": 16.4
+      "seconds": 12.0
     }
   }
 }

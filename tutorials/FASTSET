@@ -144,6 +144,8 @@ tutorials/props/curation/curate01_water_evidence_partition
 data/curation/pairs/acetone-methanol
 data/curation/components/13Propanediol
 data/curation/batches/new_components
+data/curation/electrolytes/Na-F
+data/curation/henry/CO2-cyclohexanol
 tutorials/props/electrolyte/pitzer02_cacl2
 tutorials/props/estimate/yang2020_Tg_pvc
 tutorials/props/fit/psat01_antoine_recovery

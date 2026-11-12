@@ -1561,6 +1561,41 @@ DATA SCOPE: sealed (bin/choupo-import); every record named and verified by const
 \end{tutgolden}
 
 \clearpage
+\tutentry{electrolyteFit01\_nacl}{tutorials/props/electrolyte/electrolyteFit01\_nacl}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_pitzer}\\[-1pt]{\tiny electrolyteFit}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{fit\_eNRTL}\\[-1pt]{\tiny electrolyteFit}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{electrolyteFit: Pitzer and eNRTL regressed to the evaluated gamma\_pm and phi of NaCl, 25 C}
+\begin{tutnarrative}
+ONE SALT, TWO MODELS, ONE TABLE. The parameters of NaCl(aq) are regressed to the evaluated mean ionic activity coefficient gamma\_pm and osmotic coefficient phi of Hamer \& Wu, J. Phys. Chem. Ref. Data 1 (1972) 1047, doi:10.1063/1.3253108, Table 16 (constant/experiments/Na-Cl.dat, the same file as the catalogue's curation case data/curation/electrolytes/Na-Cl), 0.1-6 mol/kg at 25 C -- first by Pitzer (beta0, beta1, Cphi), then by eNRTL (two taus, alpha 0.2 fixed).
+
+WHAT TO READ IN THE OUTPUT. The per-point table: Pitzer misses nowhere by more than 0.2 \%; two-parameter eNRTL misses by about 3 \% at 6 mol/kg -- the same data, two model shapes. Compare the fitted values with the literature: Pitzer \& Mayorga (1973) give 0.0765 / 0.2664 / 0.00127, Chen \& Evans (1986) 8.885 / -4.549. Every 4th point is HELD OUT and printed beside the fit: interleaved points of the SAME table, so they show interpolation, not a validation against an independent source.
+
+The rules the catalogue campaign applies (window, grade, cap) are stated in bin/curate/electrolytes\_c311.py (DEV.md 4c C311).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{fit\_pitzer}{grade\_heldOut}{0}
+\goldrow{diag}{fit\_pitzer}{grade\_inSample}{0}
+\goldrow{diag}{fit\_pitzer}{heldOut\_gamma\_AAD\_pct}{0.0597412761731}
+\goldrow{diag}{fit\_pitzer}{heldOut\_max\_pct}{0.120525651013}
+\goldrow{diag}{fit\_pitzer}{heldOut\_phi\_AAD\_pct}{0.0633666466159}
+\goldrow{diag}{fit\_pitzer}{inSample\_gamma\_AAD\_pct}{0.0743035817969}
+\goldrow{diag}{fit\_pitzer}{inSample\_max\_pct}{0.202377039474}
+\goldrow{diag}{fit\_pitzer}{inSample\_phi\_AAD\_pct}{0.0631592025556}
+\goldrow{diag}{fit\_pitzer}{molality\_max}{6}
+\goldrow{diag}{fit\_pitzer}{molality\_min}{0.1}
+\goldrow{diag}{fit\_pitzer}{nFit}{18}
+\goldrow{diag}{fit\_pitzer}{nHeldOut}{5}
+\goldrow{diag}{fit\_pitzer}{param\_Cphi}{0.00128772685997}
+\goldrow{diag}{fit\_pitzer}{param\_beta0}{0.0760798823768}
+\goldmore{19}
+\end{tutgolden}
+
+\clearpage
 \tutentry{enrtl\_mixed\_nacl\_ethanol\_esteso}{tutorials/props/electrolyte/enrtl\_mixed\_nacl\_ethanol\_esteso}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

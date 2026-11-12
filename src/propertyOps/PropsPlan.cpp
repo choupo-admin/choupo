@@ -111,6 +111,8 @@ const std::map<std::string, OpSlots>& table()
         //  Kinetics1D.cpp, VleConsistency.cpp.
         m["kinetics1D"]     = { { F("dataset") }, outFile };
         m["vleConsistency"] = { { F("dataset") }, outFile };
+        //  ElectrolyteFit.cpp: the gamma/phi table, the proposal it writes.
+        m["electrolyteFit"] = { { F("dataset") }, { P("proposal.file") } };
         //  PolarisationIndex.cpp appends `.dat` to a dataset that lacks it.
         {
             Slot ds = F("dataset");

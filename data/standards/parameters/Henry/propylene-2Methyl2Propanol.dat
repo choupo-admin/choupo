@@ -1,0 +1,63 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Henry's-law constant for propylene in liquid 2Methyl2Propanol (infinite dilution).
+
+  Source DATA: the measurements of
+    Miyano, Y.[Yoshimori] (2004) J. Chem. Thermodyn. 36, 865-869, doi:10.1016/j.jct.2004.05.010
+  located through the NIST/TRC ThermoML Archive (doi 10.18434/mds2-2422);
+  the values belong to those articles.  NO measured point is reproduced here
+  or anywhere in this tree; data/curation/henry/propylene-2Methyl2Propanol
+  declares each dataset by DOI, block and sha256 and regenerates it.
+
+  FIT (DEV.md 4c C321 part 2): van't Hoff in 1/T, every laboratory together,
+  least squares then minimax on the relative residual of H; points above
+  20 % after the least-squares stage discarded by name (0 here).
+  4 kept points, 300.03-330 K; max relative error
+  0.39 % in-sample (graded 10 / 20 / 30 %, C336 class B).
+  Regressed by Choupo, NOT read by a human; the archive's transcription has
+  not been read back against the articles.
+
+  NOTE: INFINITE-DILUTION coefficient at the solvent's own vapour pressure;
+  validity 300-330 K (the measured span; outside it an extrapolation).
+\*---------------------------------------------------------------------------*/
+
+solute      propylene;
+solvent     2Methyl2Propanol;
+
+gasSpecies        propylene;
+dissolvedSpecies  propylene;
+convention        Sander-Hxp-v1;
+
+model       vantHoff;
+H_ref       2.67412e+06 Pa;
+T_ref       298.15 K;
+enthalpy    -12596  J/mol;
+Trange      ( 300  330 );
+
+reviewStatus autoPromoted;
+review      { by none; }
+
+provenance
+{
+    origin        fitted;
+    source        "doi:10.1016/j.jct.2004.05.010 (located through ThermoML, doi 10.18434/mds2-2422)";
+    method        "van't Hoff fit, least squares then minimax on H_model/H - 1, bin/curate/henry_organic.py";
+    CAS           115-07-1;
+    fittedInCase  "data/curation/henry/propylene-2Methyl2Propanol";
+    fitGrade      warning;   // DEV.md 4c C285: max |H_model - H|/H over the kept points, graded 10 / 20 / 30 % (C336 class B)
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+    fitGradeCap   ( singleLaboratory );   // DEV.md 4c C300 rule 2
+    fitGradeMaxRelativeError_pct 0.3866;
+    pointsKept    4;
+    pointsDiscarded 0;
+    fingerprint   "a9a84a1adead0791";   // of the declaration, frozen before the fit
+    evidence
+    (
+        {
+            doi           "10.1016/j.jct.2004.05.010";
+            block         19;
+            archiveFile   "j.jct.2004.05.010.xml";
+            articleSha256 "4d53b9c689cddc5571149b0f561e85887b9e55738b1907cc944fe5c78ddc84bd";
+            sha256        "b8689db228df24882f5f14a326c4f16e8db556d3630c6a1098b363bd53c9de5e";
+        }
+    );
+}

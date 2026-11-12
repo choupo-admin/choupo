@@ -1,0 +1,68 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+  isoButane-benzene -- A HENRY'S-LAW CONSTANT FROM EVERY LABORATORY'S MEASUREMENTS.
+
+  WRITTEN BY bin/curate/henry_organic.py declare (DEV.md 4c C321 part 2).
+
+  THE DECLARATION -- WRITTEN AND COMMITTED BEFORE ANY FIT RAN (the
+  declarations of the run share one commit).
+
+  IDENTITY.  Solute isoButane (CAS 75-28-5) in solvent benzene (CAS 71-43-2),
+  joined to the archive by InChIKey through identity.json -- never by name.
+  The solute is the compound the block's Henry property names.
+  CLASS: isoButane: Tb 261.401 K, Tc 407.81 K; benzene: Tb 353.24 K, Tc 562.05 K.
+
+  NO MEASURED SERIES IN THIS TREE.  constant/henryArchiveDatasets names each
+  dataset (DOI, NIST URL, article sha256, block, extract sha256);
+  `bin/curate/henry_organic.py fetch` writes the points into
+  constant/archiveExtracts/, which is gitignored.
+
+  STUDIES: every mole-fraction-scale Henry block of the pair with a stated
+  uncertainty on every point (1 block(s)).  FITTED, ALL OF THEM:
+      10.1021/je060395n              block 37    4 pts  279.99-329.99 K   Miyano, Y.[Yoshimori]; Kimura, A.[Arisa]; Kuroda, M.[Mikiko] et al. (2007) J. Chem. Eng. Data 52, 291-297, doi:10.1021/je060395n
+
+  THE RULE (DEV.md 4c C283 amended, C285, C300; C321 part 2).  The van't Hoff
+  form the loader reads, ln H = ln H_ref + (enthalpy/R)(1/T - 1/298.15 K):
+  two parameters.  Stage 1, least squares on the relative residual
+  H_model/H - 1 (equal weights); a point above 20 % is DISCARDED BY NAME and
+  stage 1 repeated -- ONLY when two or more laboratories are fitted: with ONE
+  laboratory no point is discarded (no second series to call it an outlier
+  against; C321 part 2 amended) and the grade is the series' real error.  Stage 2, minimax on
+  the same residual over the kept points; its coefficients are the record's.  GRADE on the max relative
+  error over the kept points (C336 class B, Henry): clean up to 10 %,
+  warning up to 20 %, severe up to 30 %, refused above.  An in-sample
+  clean resting on ONE laboratory is
+  capped at warning (C300 rule 2).  One temperature gives no enthalpy: refused.
+  clean, warning and severe are promoted (autoPromoted, review by none)
+  into data/standards/parameters/Henry/ (C285; Vitor's ruling of
+  2026-11-12; C336 class B: only above 30 % is refused); refused writes
+  nothing.
+
+  @@RESULT-BEGIN@@
+  4 points of 1 laboratory(ies); 4 kept,
+  0 discarded after the least-squares stage (> 20 %):
+  ONE laboratory: no point was discarded (C321 part 2 amended).
+  H_ref = 8.01715e+05 Pa at 298.15 K, enthalpy = -16070 J/mol;
+  kept span 279.99-329.99 K; max relative error
+  1.2537 % (least squares 1.7530 %); in-sample
+  grade clean, CAPPED to warning (singleLaboratory).
+  PROMOTED into data/standards/parameters/Henry/.
+  @@RESULT-END@@
+
+  WHAT IS NOT CLAIMED.  The constant is the infinite-dilution H_xp at the
+  solvent's own vapour pressure, in the measured range only; the archive's
+  transcription has NOT been read back against the articles.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    { name h_isoButane_benzene; type pairLookup; components ( isoButane benzene ); }
+);

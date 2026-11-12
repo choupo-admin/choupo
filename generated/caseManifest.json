@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1259,
+  "cases": 1562,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 15
@@ -1713,6 +1713,4133 @@
    "ops": [
     "vaporPressureFit"
    ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Ba-Br": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Ba-Cl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Ba-I": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Ca-Br": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Ca-Cl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Ca-I": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Cd-NO2": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Cd-NO3": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Cs-Acetate": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Cs-Br": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Cs-Cl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Cs-F": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Cs-I": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Cs-NO3": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Cs-OH": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Cs-SO4": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/H-Br": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/H-Cl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/H-I": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/H-NO3": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/K-Acetate": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/K-Br": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/K-Cl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/K-F": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/K-H2PO4": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/K-HPO4": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/K-I": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/K-NO3": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/K-OH": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/K-SO4": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Li-Acetate": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Li-Br": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Li-Cl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Li-I": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Li-NO3": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Li-OH": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Li-SO4": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Mg-Br": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Mg-Cl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Mg-I": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/NH4-Cl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/NH4-HPO4": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/NH4-NO3": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Na-Acetate": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Na-Br": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Na-Cl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Na-F": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Na-H2PO4": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Na-HPO4": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Na-I": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Na-NO3": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Na-OH": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Na-SO4": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Rb-Acetate": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Rb-Br": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Rb-Cl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Rb-F": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Rb-I": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Rb-NO3": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Rb-SO4": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Sr-Br": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Sr-Cl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Sr-I": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Zn-Br": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Zn-Cl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Zn-I": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Zn-NO3": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/13Butadiene-1Pentanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/13Butadiene-1Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/13Butadiene-2Butanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/13Butadiene-2Methyl1Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/13Butadiene-2Methyl2Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/13Butadiene-2Pentanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/13Butadiene-allylAlcohol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/13Butadiene-benzene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/13Butadiene-isopropanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/13Butadiene-mCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/13Butadiene-mXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/13Butadiene-nButanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/13Butadiene-oCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/13Butadiene-oXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/13Butadiene-pCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/13Butadiene-pXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/13Butadiene-styrene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/13Butadiene-tetrahydropyran": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/13Butadiene-toluene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/1Butene-1Pentanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/1Butene-1Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/1Butene-2Butanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/1Butene-2Methyl1Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/1Butene-2Methyl2Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/1Butene-2Pentanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/1Butene-allylAlcohol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/1Butene-benzene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/1Butene-isopropanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/1Butene-mCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/1Butene-mXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/1Butene-nButanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/1Butene-oCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/1Butene-oXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/1Butene-pCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/1Butene-pXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/1Butene-styrene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/1Butene-tetrahydropyran": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/1Butene-toluene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/Ar-methylChloride": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/CH4-methylDiEthanolAmine": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/CO2-cyclohexanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/CO2-methylChloride": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/He-methylChloride": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/N2-methylChloride": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/NH3-ethanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/O2-acetonitrile": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/O2-cyclohexanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/O2-methylChloride": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/R32-1Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/R32-ethanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/R32-methanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/R32-nButanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/cis2Butene-1Pentanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/cis2Butene-1Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/cis2Butene-2Butanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/cis2Butene-2Methyl1Butanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/cis2Butene-2Methyl1Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/cis2Butene-2Methyl2Butanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/cis2Butene-2Methyl2Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/cis2Butene-2Pentanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/cis2Butene-3Methyl1Butanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/cis2Butene-allylAlcohol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/cis2Butene-benzene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/cis2Butene-isopropanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/cis2Butene-mCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/cis2Butene-mXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/cis2Butene-methanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/cis2Butene-nButanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/cis2Butene-oCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/cis2Butene-oXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/cis2Butene-pCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/cis2Butene-pXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/cis2Butene-styrene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/cis2Butene-tetrahydropyran": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/cis2Butene-toluene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/dimethylEther-1Pentanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/dimethylEther-1Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/dimethylEther-2Butanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/dimethylEther-2Methyl1Butanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/dimethylEther-2Methyl1Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/dimethylEther-2Methyl2Butanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/dimethylEther-2Methyl2Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/dimethylEther-2Pentanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/dimethylEther-3Methyl1Butanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/dimethylEther-allylAlcohol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/dimethylEther-benzene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/dimethylEther-isopropanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/dimethylEther-mCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/dimethylEther-mXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/dimethylEther-methanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/dimethylEther-nButanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/dimethylEther-oCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/dimethylEther-oXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/dimethylEther-pCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/dimethylEther-pXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/dimethylEther-styrene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/dimethylEther-tetrahydropyran": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/dimethylEther-toluene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/ethylChloride-1Pentanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/ethylChloride-1Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/ethylChloride-2Butanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/ethylChloride-2Methyl1Butanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/ethylChloride-2Methyl1Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/ethylChloride-2Methyl2Butanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/ethylChloride-2Methyl2Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/ethylChloride-2Pentanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/ethylChloride-3Methyl1Butanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/ethylChloride-allylAlcohol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/ethylChloride-benzene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/ethylChloride-isopropanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/ethylChloride-mCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/ethylChloride-mXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/ethylChloride-methanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/ethylChloride-nButanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/ethylChloride-oCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/ethylChloride-oXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/ethylChloride-pCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/ethylChloride-pXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/ethylChloride-styrene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/ethylChloride-tetrahydropyran": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/ethylChloride-toluene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButane-1Pentanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButane-1Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButane-2Butanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButane-2Methyl1Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButane-2Methyl2Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButane-2Pentanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButane-allylAlcohol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButane-benzene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButane-isopropanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButane-mCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButane-mXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButane-nButanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButane-oCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButane-oXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButane-pCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButane-pXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButane-styrene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButane-tetrahydropyran": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButane-toluene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButene-1Pentanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButene-1Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButene-2Butanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButene-2Methyl1Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButene-2Methyl2Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButene-2Pentanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButene-allylAlcohol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButene-benzene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButene-isopropanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButene-mCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButene-mXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButene-nButanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButene-oCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButene-oXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButene-pCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButene-pXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButene-styrene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButene-tetrahydropyran": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/isoButene-toluene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/nButane-1Pentanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/nButane-1Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/nButane-2Butanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/nButane-2Methyl1Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/nButane-2Methyl2Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/nButane-2Pentanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/nButane-allylAlcohol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/nButane-benzene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/nButane-isopropanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/nButane-mCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/nButane-mXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/nButane-nButanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/nButane-oCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/nButane-oXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/nButane-pCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/nButane-pXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/nButane-styrene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/nButane-tetrahydropyran": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/nButane-toluene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propane-1Pentanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propane-1Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propane-2Butanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propane-2Methyl1Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propane-2Methyl2Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propane-2Pentanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propane-allylAlcohol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propane-benzene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propane-isopropanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propane-mCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propane-mXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propane-nButanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propane-oCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propane-oXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propane-pCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propane-pXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propane-styrene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propane-tetrahydropyran": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propane-toluene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propylene-1Pentanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propylene-1Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propylene-2Butanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propylene-2Methyl1Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propylene-2Methyl2Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propylene-2Pentanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propylene-allylAlcohol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propylene-benzene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propylene-isopropanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propylene-mCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propylene-mXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propylene-nButanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propylene-oCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propylene-oXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propylene-pCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propylene-pXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propylene-styrene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propylene-tetrahydropyran": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/propylene-toluene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/trans2Butene-1Pentanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/trans2Butene-1Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/trans2Butene-2Butanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/trans2Butene-2Methyl1Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/trans2Butene-2Methyl2Propanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/trans2Butene-2Pentanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/trans2Butene-allylAlcohol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/trans2Butene-benzene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/trans2Butene-isopropanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/trans2Butene-mCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/trans2Butene-mXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/trans2Butene-nButanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/trans2Butene-oCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/trans2Butene-oXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/trans2Butene-pCresol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/trans2Butene-pXylene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/trans2Butene-styrene": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/trans2Butene-tetrahydropyran": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/henry/trans2Butene-toluene": {
+   "application": "choupoProps",
    "thermo": {
     "formulation": "gammaPhi",
     "activityModels": [
@@ -14695,6 +18822,20 @@
    ],
    "hasGolden": true
   },
+  "tutorials/props/electrolyte/electrolyteFit01_nacl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/electrolyte/enrtl_mixed_nacl_ethanol_esteso": {
    "application": "choupoProps",
    "ops": [
@@ -20793,6 +24934,308 @@
     "data/curation/components/triethanolamine",
     "data/curation/components/triethylamine",
     "data/curation/components/vinylPropionate",
+    "data/curation/electrolytes/Ba-Br",
+    "data/curation/electrolytes/Ba-Cl",
+    "data/curation/electrolytes/Ba-I",
+    "data/curation/electrolytes/Ca-Br",
+    "data/curation/electrolytes/Ca-Cl",
+    "data/curation/electrolytes/Ca-I",
+    "data/curation/electrolytes/Cd-NO2",
+    "data/curation/electrolytes/Cd-NO3",
+    "data/curation/electrolytes/Cs-Acetate",
+    "data/curation/electrolytes/Cs-Br",
+    "data/curation/electrolytes/Cs-Cl",
+    "data/curation/electrolytes/Cs-F",
+    "data/curation/electrolytes/Cs-I",
+    "data/curation/electrolytes/Cs-NO3",
+    "data/curation/electrolytes/Cs-OH",
+    "data/curation/electrolytes/Cs-SO4",
+    "data/curation/electrolytes/H-Br",
+    "data/curation/electrolytes/H-Cl",
+    "data/curation/electrolytes/H-I",
+    "data/curation/electrolytes/H-NO3",
+    "data/curation/electrolytes/K-Acetate",
+    "data/curation/electrolytes/K-Br",
+    "data/curation/electrolytes/K-Cl",
+    "data/curation/electrolytes/K-F",
+    "data/curation/electrolytes/K-H2PO4",
+    "data/curation/electrolytes/K-HPO4",
+    "data/curation/electrolytes/K-I",
+    "data/curation/electrolytes/K-NO3",
+    "data/curation/electrolytes/K-OH",
+    "data/curation/electrolytes/K-SO4",
+    "data/curation/electrolytes/Li-Acetate",
+    "data/curation/electrolytes/Li-Br",
+    "data/curation/electrolytes/Li-Cl",
+    "data/curation/electrolytes/Li-I",
+    "data/curation/electrolytes/Li-NO3",
+    "data/curation/electrolytes/Li-OH",
+    "data/curation/electrolytes/Li-SO4",
+    "data/curation/electrolytes/Mg-Br",
+    "data/curation/electrolytes/Mg-Cl",
+    "data/curation/electrolytes/Mg-I",
+    "data/curation/electrolytes/NH4-Cl",
+    "data/curation/electrolytes/NH4-HPO4",
+    "data/curation/electrolytes/NH4-NO3",
+    "data/curation/electrolytes/Na-Acetate",
+    "data/curation/electrolytes/Na-Br",
+    "data/curation/electrolytes/Na-Cl",
+    "data/curation/electrolytes/Na-F",
+    "data/curation/electrolytes/Na-H2PO4",
+    "data/curation/electrolytes/Na-HPO4",
+    "data/curation/electrolytes/Na-I",
+    "data/curation/electrolytes/Na-NO3",
+    "data/curation/electrolytes/Na-OH",
+    "data/curation/electrolytes/Na-SO4",
+    "data/curation/electrolytes/Rb-Acetate",
+    "data/curation/electrolytes/Rb-Br",
+    "data/curation/electrolytes/Rb-Cl",
+    "data/curation/electrolytes/Rb-F",
+    "data/curation/electrolytes/Rb-I",
+    "data/curation/electrolytes/Rb-NO3",
+    "data/curation/electrolytes/Rb-SO4",
+    "data/curation/electrolytes/Sr-Br",
+    "data/curation/electrolytes/Sr-Cl",
+    "data/curation/electrolytes/Sr-I",
+    "data/curation/electrolytes/Zn-Br",
+    "data/curation/electrolytes/Zn-Cl",
+    "data/curation/electrolytes/Zn-I",
+    "data/curation/electrolytes/Zn-NO3",
+    "data/curation/henry/13Butadiene-1Pentanol",
+    "data/curation/henry/13Butadiene-1Propanol",
+    "data/curation/henry/13Butadiene-2Butanol",
+    "data/curation/henry/13Butadiene-2Methyl1Propanol",
+    "data/curation/henry/13Butadiene-2Methyl2Propanol",
+    "data/curation/henry/13Butadiene-2Pentanol",
+    "data/curation/henry/13Butadiene-allylAlcohol",
+    "data/curation/henry/13Butadiene-benzene",
+    "data/curation/henry/13Butadiene-isopropanol",
+    "data/curation/henry/13Butadiene-mCresol",
+    "data/curation/henry/13Butadiene-mXylene",
+    "data/curation/henry/13Butadiene-nButanol",
+    "data/curation/henry/13Butadiene-oCresol",
+    "data/curation/henry/13Butadiene-oXylene",
+    "data/curation/henry/13Butadiene-pCresol",
+    "data/curation/henry/13Butadiene-pXylene",
+    "data/curation/henry/13Butadiene-styrene",
+    "data/curation/henry/13Butadiene-tetrahydropyran",
+    "data/curation/henry/13Butadiene-toluene",
+    "data/curation/henry/1Butene-1Pentanol",
+    "data/curation/henry/1Butene-1Propanol",
+    "data/curation/henry/1Butene-2Butanol",
+    "data/curation/henry/1Butene-2Methyl1Propanol",
+    "data/curation/henry/1Butene-2Methyl2Propanol",
+    "data/curation/henry/1Butene-2Pentanol",
+    "data/curation/henry/1Butene-allylAlcohol",
+    "data/curation/henry/1Butene-benzene",
+    "data/curation/henry/1Butene-isopropanol",
+    "data/curation/henry/1Butene-mCresol",
+    "data/curation/henry/1Butene-mXylene",
+    "data/curation/henry/1Butene-nButanol",
+    "data/curation/henry/1Butene-oCresol",
+    "data/curation/henry/1Butene-oXylene",
+    "data/curation/henry/1Butene-pCresol",
+    "data/curation/henry/1Butene-pXylene",
+    "data/curation/henry/1Butene-styrene",
+    "data/curation/henry/1Butene-tetrahydropyran",
+    "data/curation/henry/1Butene-toluene",
+    "data/curation/henry/Ar-methylChloride",
+    "data/curation/henry/CH4-methylDiEthanolAmine",
+    "data/curation/henry/CO2-cyclohexanol",
+    "data/curation/henry/CO2-methylChloride",
+    "data/curation/henry/He-methylChloride",
+    "data/curation/henry/N2-methylChloride",
+    "data/curation/henry/NH3-ethanol",
+    "data/curation/henry/O2-acetonitrile",
+    "data/curation/henry/O2-cyclohexanol",
+    "data/curation/henry/O2-methylChloride",
+    "data/curation/henry/R32-1Propanol",
+    "data/curation/henry/R32-ethanol",
+    "data/curation/henry/R32-methanol",
+    "data/curation/henry/R32-nButanol",
+    "data/curation/henry/cis2Butene-1Pentanol",
+    "data/curation/henry/cis2Butene-1Propanol",
+    "data/curation/henry/cis2Butene-2Butanol",
+    "data/curation/henry/cis2Butene-2Methyl1Butanol",
+    "data/curation/henry/cis2Butene-2Methyl1Propanol",
+    "data/curation/henry/cis2Butene-2Methyl2Butanol",
+    "data/curation/henry/cis2Butene-2Methyl2Propanol",
+    "data/curation/henry/cis2Butene-2Pentanol",
+    "data/curation/henry/cis2Butene-3Methyl1Butanol",
+    "data/curation/henry/cis2Butene-allylAlcohol",
+    "data/curation/henry/cis2Butene-benzene",
+    "data/curation/henry/cis2Butene-isopropanol",
+    "data/curation/henry/cis2Butene-mCresol",
+    "data/curation/henry/cis2Butene-mXylene",
+    "data/curation/henry/cis2Butene-methanol",
+    "data/curation/henry/cis2Butene-nButanol",
+    "data/curation/henry/cis2Butene-oCresol",
+    "data/curation/henry/cis2Butene-oXylene",
+    "data/curation/henry/cis2Butene-pCresol",
+    "data/curation/henry/cis2Butene-pXylene",
+    "data/curation/henry/cis2Butene-styrene",
+    "data/curation/henry/cis2Butene-tetrahydropyran",
+    "data/curation/henry/cis2Butene-toluene",
+    "data/curation/henry/dimethylEther-1Pentanol",
+    "data/curation/henry/dimethylEther-1Propanol",
+    "data/curation/henry/dimethylEther-2Butanol",
+    "data/curation/henry/dimethylEther-2Methyl1Butanol",
+    "data/curation/henry/dimethylEther-2Methyl1Propanol",
+    "data/curation/henry/dimethylEther-2Methyl2Butanol",
+    "data/curation/henry/dimethylEther-2Methyl2Propanol",
+    "data/curation/henry/dimethylEther-2Pentanol",
+    "data/curation/henry/dimethylEther-3Methyl1Butanol",
+    "data/curation/henry/dimethylEther-allylAlcohol",
+    "data/curation/henry/dimethylEther-benzene",
+    "data/curation/henry/dimethylEther-isopropanol",
+    "data/curation/henry/dimethylEther-mCresol",
+    "data/curation/henry/dimethylEther-mXylene",
+    "data/curation/henry/dimethylEther-methanol",
+    "data/curation/henry/dimethylEther-nButanol",
+    "data/curation/henry/dimethylEther-oCresol",
+    "data/curation/henry/dimethylEther-oXylene",
+    "data/curation/henry/dimethylEther-pCresol",
+    "data/curation/henry/dimethylEther-pXylene",
+    "data/curation/henry/dimethylEther-styrene",
+    "data/curation/henry/dimethylEther-tetrahydropyran",
+    "data/curation/henry/dimethylEther-toluene",
+    "data/curation/henry/ethylChloride-1Pentanol",
+    "data/curation/henry/ethylChloride-1Propanol",
+    "data/curation/henry/ethylChloride-2Butanol",
+    "data/curation/henry/ethylChloride-2Methyl1Butanol",
+    "data/curation/henry/ethylChloride-2Methyl1Propanol",
+    "data/curation/henry/ethylChloride-2Methyl2Butanol",
+    "data/curation/henry/ethylChloride-2Methyl2Propanol",
+    "data/curation/henry/ethylChloride-2Pentanol",
+    "data/curation/henry/ethylChloride-3Methyl1Butanol",
+    "data/curation/henry/ethylChloride-allylAlcohol",
+    "data/curation/henry/ethylChloride-benzene",
+    "data/curation/henry/ethylChloride-isopropanol",
+    "data/curation/henry/ethylChloride-mCresol",
+    "data/curation/henry/ethylChloride-mXylene",
+    "data/curation/henry/ethylChloride-methanol",
+    "data/curation/henry/ethylChloride-nButanol",
+    "data/curation/henry/ethylChloride-oCresol",
+    "data/curation/henry/ethylChloride-oXylene",
+    "data/curation/henry/ethylChloride-pCresol",
+    "data/curation/henry/ethylChloride-pXylene",
+    "data/curation/henry/ethylChloride-styrene",
+    "data/curation/henry/ethylChloride-tetrahydropyran",
+    "data/curation/henry/ethylChloride-toluene",
+    "data/curation/henry/isoButane-1Pentanol",
+    "data/curation/henry/isoButane-1Propanol",
+    "data/curation/henry/isoButane-2Butanol",
+    "data/curation/henry/isoButane-2Methyl1Propanol",
+    "data/curation/henry/isoButane-2Methyl2Propanol",
+    "data/curation/henry/isoButane-2Pentanol",
+    "data/curation/henry/isoButane-allylAlcohol",
+    "data/curation/henry/isoButane-benzene",
+    "data/curation/henry/isoButane-isopropanol",
+    "data/curation/henry/isoButane-mCresol",
+    "data/curation/henry/isoButane-mXylene",
+    "data/curation/henry/isoButane-nButanol",
+    "data/curation/henry/isoButane-oCresol",
+    "data/curation/henry/isoButane-oXylene",
+    "data/curation/henry/isoButane-pCresol",
+    "data/curation/henry/isoButane-pXylene",
+    "data/curation/henry/isoButane-styrene",
+    "data/curation/henry/isoButane-tetrahydropyran",
+    "data/curation/henry/isoButane-toluene",
+    "data/curation/henry/isoButene-1Pentanol",
+    "data/curation/henry/isoButene-1Propanol",
+    "data/curation/henry/isoButene-2Butanol",
+    "data/curation/henry/isoButene-2Methyl1Propanol",
+    "data/curation/henry/isoButene-2Methyl2Propanol",
+    "data/curation/henry/isoButene-2Pentanol",
+    "data/curation/henry/isoButene-allylAlcohol",
+    "data/curation/henry/isoButene-benzene",
+    "data/curation/henry/isoButene-isopropanol",
+    "data/curation/henry/isoButene-mCresol",
+    "data/curation/henry/isoButene-mXylene",
+    "data/curation/henry/isoButene-nButanol",
+    "data/curation/henry/isoButene-oCresol",
+    "data/curation/henry/isoButene-oXylene",
+    "data/curation/henry/isoButene-pCresol",
+    "data/curation/henry/isoButene-pXylene",
+    "data/curation/henry/isoButene-styrene",
+    "data/curation/henry/isoButene-tetrahydropyran",
+    "data/curation/henry/isoButene-toluene",
+    "data/curation/henry/nButane-1Pentanol",
+    "data/curation/henry/nButane-1Propanol",
+    "data/curation/henry/nButane-2Butanol",
+    "data/curation/henry/nButane-2Methyl1Propanol",
+    "data/curation/henry/nButane-2Methyl2Propanol",
+    "data/curation/henry/nButane-2Pentanol",
+    "data/curation/henry/nButane-allylAlcohol",
+    "data/curation/henry/nButane-benzene",
+    "data/curation/henry/nButane-isopropanol",
+    "data/curation/henry/nButane-mCresol",
+    "data/curation/henry/nButane-mXylene",
+    "data/curation/henry/nButane-nButanol",
+    "data/curation/henry/nButane-oCresol",
+    "data/curation/henry/nButane-oXylene",
+    "data/curation/henry/nButane-pCresol",
+    "data/curation/henry/nButane-pXylene",
+    "data/curation/henry/nButane-styrene",
+    "data/curation/henry/nButane-tetrahydropyran",
+    "data/curation/henry/nButane-toluene",
+    "data/curation/henry/propane-1Pentanol",
+    "data/curation/henry/propane-1Propanol",
+    "data/curation/henry/propane-2Butanol",
+    "data/curation/henry/propane-2Methyl1Propanol",
+    "data/curation/henry/propane-2Methyl2Propanol",
+    "data/curation/henry/propane-2Pentanol",
+    "data/curation/henry/propane-allylAlcohol",
+    "data/curation/henry/propane-benzene",
+    "data/curation/henry/propane-isopropanol",
+    "data/curation/henry/propane-mCresol",
+    "data/curation/henry/propane-mXylene",
+    "data/curation/henry/propane-nButanol",
+    "data/curation/henry/propane-oCresol",
+    "data/curation/henry/propane-oXylene",
+    "data/curation/henry/propane-pCresol",
+    "data/curation/henry/propane-pXylene",
+    "data/curation/henry/propane-styrene",
+    "data/curation/henry/propane-tetrahydropyran",
+    "data/curation/henry/propane-toluene",
+    "data/curation/henry/propylene-1Pentanol",
+    "data/curation/henry/propylene-1Propanol",
+    "data/curation/henry/propylene-2Butanol",
+    "data/curation/henry/propylene-2Methyl1Propanol",
+    "data/curation/henry/propylene-2Methyl2Propanol",
+    "data/curation/henry/propylene-2Pentanol",
+    "data/curation/henry/propylene-allylAlcohol",
+    "data/curation/henry/propylene-benzene",
+    "data/curation/henry/propylene-isopropanol",
+    "data/curation/henry/propylene-mCresol",
+    "data/curation/henry/propylene-mXylene",
+    "data/curation/henry/propylene-nButanol",
+    "data/curation/henry/propylene-oCresol",
+    "data/curation/henry/propylene-oXylene",
+    "data/curation/henry/propylene-pCresol",
+    "data/curation/henry/propylene-pXylene",
+    "data/curation/henry/propylene-styrene",
+    "data/curation/henry/propylene-tetrahydropyran",
+    "data/curation/henry/propylene-toluene",
+    "data/curation/henry/trans2Butene-1Pentanol",
+    "data/curation/henry/trans2Butene-1Propanol",
+    "data/curation/henry/trans2Butene-2Butanol",
+    "data/curation/henry/trans2Butene-2Methyl1Propanol",
+    "data/curation/henry/trans2Butene-2Methyl2Propanol",
+    "data/curation/henry/trans2Butene-2Pentanol",
+    "data/curation/henry/trans2Butene-allylAlcohol",
+    "data/curation/henry/trans2Butene-benzene",
+    "data/curation/henry/trans2Butene-isopropanol",
+    "data/curation/henry/trans2Butene-mCresol",
+    "data/curation/henry/trans2Butene-mXylene",
+    "data/curation/henry/trans2Butene-nButanol",
+    "data/curation/henry/trans2Butene-oCresol",
+    "data/curation/henry/trans2Butene-oXylene",
+    "data/curation/henry/trans2Butene-pCresol",
+    "data/curation/henry/trans2Butene-pXylene",
+    "data/curation/henry/trans2Butene-styrene",
+    "data/curation/henry/trans2Butene-tetrahydropyran",
+    "data/curation/henry/trans2Butene-toluene",
     "data/curation/pairs/124Trimethylbenzene-1Pentanol",
     "data/curation/pairs/124Trimethylbenzene-2Pentanol",
     "data/curation/pairs/124Trimethylbenzene-mEthyltoluene",
@@ -21448,6 +25891,7 @@
     "tutorials/props/electrolyte/edwards01_sour_water_activity",
     "tutorials/props/electrolyte/edwards02_table7_vle",
     "tutorials/props/electrolyte/edwards03_table8_vle",
+    "tutorials/props/electrolyte/electrolyteFit01_nacl",
     "tutorials/props/electrolyte/enrtl_mixed_nacl_ethanol_esteso",
     "tutorials/props/electrolyte/enrtl_multisalt_nacl_kcl",
     "tutorials/props/electrolyte/enthalpy_naoh_water",
@@ -23475,6 +27919,308 @@
     "data/curation/components/triethanolamine",
     "data/curation/components/triethylamine",
     "data/curation/components/vinylPropionate",
+    "data/curation/electrolytes/Ba-Br",
+    "data/curation/electrolytes/Ba-Cl",
+    "data/curation/electrolytes/Ba-I",
+    "data/curation/electrolytes/Ca-Br",
+    "data/curation/electrolytes/Ca-Cl",
+    "data/curation/electrolytes/Ca-I",
+    "data/curation/electrolytes/Cd-NO2",
+    "data/curation/electrolytes/Cd-NO3",
+    "data/curation/electrolytes/Cs-Acetate",
+    "data/curation/electrolytes/Cs-Br",
+    "data/curation/electrolytes/Cs-Cl",
+    "data/curation/electrolytes/Cs-F",
+    "data/curation/electrolytes/Cs-I",
+    "data/curation/electrolytes/Cs-NO3",
+    "data/curation/electrolytes/Cs-OH",
+    "data/curation/electrolytes/Cs-SO4",
+    "data/curation/electrolytes/H-Br",
+    "data/curation/electrolytes/H-Cl",
+    "data/curation/electrolytes/H-I",
+    "data/curation/electrolytes/H-NO3",
+    "data/curation/electrolytes/K-Acetate",
+    "data/curation/electrolytes/K-Br",
+    "data/curation/electrolytes/K-Cl",
+    "data/curation/electrolytes/K-F",
+    "data/curation/electrolytes/K-H2PO4",
+    "data/curation/electrolytes/K-HPO4",
+    "data/curation/electrolytes/K-I",
+    "data/curation/electrolytes/K-NO3",
+    "data/curation/electrolytes/K-OH",
+    "data/curation/electrolytes/K-SO4",
+    "data/curation/electrolytes/Li-Acetate",
+    "data/curation/electrolytes/Li-Br",
+    "data/curation/electrolytes/Li-Cl",
+    "data/curation/electrolytes/Li-I",
+    "data/curation/electrolytes/Li-NO3",
+    "data/curation/electrolytes/Li-OH",
+    "data/curation/electrolytes/Li-SO4",
+    "data/curation/electrolytes/Mg-Br",
+    "data/curation/electrolytes/Mg-Cl",
+    "data/curation/electrolytes/Mg-I",
+    "data/curation/electrolytes/NH4-Cl",
+    "data/curation/electrolytes/NH4-HPO4",
+    "data/curation/electrolytes/NH4-NO3",
+    "data/curation/electrolytes/Na-Acetate",
+    "data/curation/electrolytes/Na-Br",
+    "data/curation/electrolytes/Na-Cl",
+    "data/curation/electrolytes/Na-F",
+    "data/curation/electrolytes/Na-H2PO4",
+    "data/curation/electrolytes/Na-HPO4",
+    "data/curation/electrolytes/Na-I",
+    "data/curation/electrolytes/Na-NO3",
+    "data/curation/electrolytes/Na-OH",
+    "data/curation/electrolytes/Na-SO4",
+    "data/curation/electrolytes/Rb-Acetate",
+    "data/curation/electrolytes/Rb-Br",
+    "data/curation/electrolytes/Rb-Cl",
+    "data/curation/electrolytes/Rb-F",
+    "data/curation/electrolytes/Rb-I",
+    "data/curation/electrolytes/Rb-NO3",
+    "data/curation/electrolytes/Rb-SO4",
+    "data/curation/electrolytes/Sr-Br",
+    "data/curation/electrolytes/Sr-Cl",
+    "data/curation/electrolytes/Sr-I",
+    "data/curation/electrolytes/Zn-Br",
+    "data/curation/electrolytes/Zn-Cl",
+    "data/curation/electrolytes/Zn-I",
+    "data/curation/electrolytes/Zn-NO3",
+    "data/curation/henry/13Butadiene-1Pentanol",
+    "data/curation/henry/13Butadiene-1Propanol",
+    "data/curation/henry/13Butadiene-2Butanol",
+    "data/curation/henry/13Butadiene-2Methyl1Propanol",
+    "data/curation/henry/13Butadiene-2Methyl2Propanol",
+    "data/curation/henry/13Butadiene-2Pentanol",
+    "data/curation/henry/13Butadiene-allylAlcohol",
+    "data/curation/henry/13Butadiene-benzene",
+    "data/curation/henry/13Butadiene-isopropanol",
+    "data/curation/henry/13Butadiene-mCresol",
+    "data/curation/henry/13Butadiene-mXylene",
+    "data/curation/henry/13Butadiene-nButanol",
+    "data/curation/henry/13Butadiene-oCresol",
+    "data/curation/henry/13Butadiene-oXylene",
+    "data/curation/henry/13Butadiene-pCresol",
+    "data/curation/henry/13Butadiene-pXylene",
+    "data/curation/henry/13Butadiene-styrene",
+    "data/curation/henry/13Butadiene-tetrahydropyran",
+    "data/curation/henry/13Butadiene-toluene",
+    "data/curation/henry/1Butene-1Pentanol",
+    "data/curation/henry/1Butene-1Propanol",
+    "data/curation/henry/1Butene-2Butanol",
+    "data/curation/henry/1Butene-2Methyl1Propanol",
+    "data/curation/henry/1Butene-2Methyl2Propanol",
+    "data/curation/henry/1Butene-2Pentanol",
+    "data/curation/henry/1Butene-allylAlcohol",
+    "data/curation/henry/1Butene-benzene",
+    "data/curation/henry/1Butene-isopropanol",
+    "data/curation/henry/1Butene-mCresol",
+    "data/curation/henry/1Butene-mXylene",
+    "data/curation/henry/1Butene-nButanol",
+    "data/curation/henry/1Butene-oCresol",
+    "data/curation/henry/1Butene-oXylene",
+    "data/curation/henry/1Butene-pCresol",
+    "data/curation/henry/1Butene-pXylene",
+    "data/curation/henry/1Butene-styrene",
+    "data/curation/henry/1Butene-tetrahydropyran",
+    "data/curation/henry/1Butene-toluene",
+    "data/curation/henry/Ar-methylChloride",
+    "data/curation/henry/CH4-methylDiEthanolAmine",
+    "data/curation/henry/CO2-cyclohexanol",
+    "data/curation/henry/CO2-methylChloride",
+    "data/curation/henry/He-methylChloride",
+    "data/curation/henry/N2-methylChloride",
+    "data/curation/henry/NH3-ethanol",
+    "data/curation/henry/O2-acetonitrile",
+    "data/curation/henry/O2-cyclohexanol",
+    "data/curation/henry/O2-methylChloride",
+    "data/curation/henry/R32-1Propanol",
+    "data/curation/henry/R32-ethanol",
+    "data/curation/henry/R32-methanol",
+    "data/curation/henry/R32-nButanol",
+    "data/curation/henry/cis2Butene-1Pentanol",
+    "data/curation/henry/cis2Butene-1Propanol",
+    "data/curation/henry/cis2Butene-2Butanol",
+    "data/curation/henry/cis2Butene-2Methyl1Butanol",
+    "data/curation/henry/cis2Butene-2Methyl1Propanol",
+    "data/curation/henry/cis2Butene-2Methyl2Butanol",
+    "data/curation/henry/cis2Butene-2Methyl2Propanol",
+    "data/curation/henry/cis2Butene-2Pentanol",
+    "data/curation/henry/cis2Butene-3Methyl1Butanol",
+    "data/curation/henry/cis2Butene-allylAlcohol",
+    "data/curation/henry/cis2Butene-benzene",
+    "data/curation/henry/cis2Butene-isopropanol",
+    "data/curation/henry/cis2Butene-mCresol",
+    "data/curation/henry/cis2Butene-mXylene",
+    "data/curation/henry/cis2Butene-methanol",
+    "data/curation/henry/cis2Butene-nButanol",
+    "data/curation/henry/cis2Butene-oCresol",
+    "data/curation/henry/cis2Butene-oXylene",
+    "data/curation/henry/cis2Butene-pCresol",
+    "data/curation/henry/cis2Butene-pXylene",
+    "data/curation/henry/cis2Butene-styrene",
+    "data/curation/henry/cis2Butene-tetrahydropyran",
+    "data/curation/henry/cis2Butene-toluene",
+    "data/curation/henry/dimethylEther-1Pentanol",
+    "data/curation/henry/dimethylEther-1Propanol",
+    "data/curation/henry/dimethylEther-2Butanol",
+    "data/curation/henry/dimethylEther-2Methyl1Butanol",
+    "data/curation/henry/dimethylEther-2Methyl1Propanol",
+    "data/curation/henry/dimethylEther-2Methyl2Butanol",
+    "data/curation/henry/dimethylEther-2Methyl2Propanol",
+    "data/curation/henry/dimethylEther-2Pentanol",
+    "data/curation/henry/dimethylEther-3Methyl1Butanol",
+    "data/curation/henry/dimethylEther-allylAlcohol",
+    "data/curation/henry/dimethylEther-benzene",
+    "data/curation/henry/dimethylEther-isopropanol",
+    "data/curation/henry/dimethylEther-mCresol",
+    "data/curation/henry/dimethylEther-mXylene",
+    "data/curation/henry/dimethylEther-methanol",
+    "data/curation/henry/dimethylEther-nButanol",
+    "data/curation/henry/dimethylEther-oCresol",
+    "data/curation/henry/dimethylEther-oXylene",
+    "data/curation/henry/dimethylEther-pCresol",
+    "data/curation/henry/dimethylEther-pXylene",
+    "data/curation/henry/dimethylEther-styrene",
+    "data/curation/henry/dimethylEther-tetrahydropyran",
+    "data/curation/henry/dimethylEther-toluene",
+    "data/curation/henry/ethylChloride-1Pentanol",
+    "data/curation/henry/ethylChloride-1Propanol",
+    "data/curation/henry/ethylChloride-2Butanol",
+    "data/curation/henry/ethylChloride-2Methyl1Butanol",
+    "data/curation/henry/ethylChloride-2Methyl1Propanol",
+    "data/curation/henry/ethylChloride-2Methyl2Butanol",
+    "data/curation/henry/ethylChloride-2Methyl2Propanol",
+    "data/curation/henry/ethylChloride-2Pentanol",
+    "data/curation/henry/ethylChloride-3Methyl1Butanol",
+    "data/curation/henry/ethylChloride-allylAlcohol",
+    "data/curation/henry/ethylChloride-benzene",
+    "data/curation/henry/ethylChloride-isopropanol",
+    "data/curation/henry/ethylChloride-mCresol",
+    "data/curation/henry/ethylChloride-mXylene",
+    "data/curation/henry/ethylChloride-methanol",
+    "data/curation/henry/ethylChloride-nButanol",
+    "data/curation/henry/ethylChloride-oCresol",
+    "data/curation/henry/ethylChloride-oXylene",
+    "data/curation/henry/ethylChloride-pCresol",
+    "data/curation/henry/ethylChloride-pXylene",
+    "data/curation/henry/ethylChloride-styrene",
+    "data/curation/henry/ethylChloride-tetrahydropyran",
+    "data/curation/henry/ethylChloride-toluene",
+    "data/curation/henry/isoButane-1Pentanol",
+    "data/curation/henry/isoButane-1Propanol",
+    "data/curation/henry/isoButane-2Butanol",
+    "data/curation/henry/isoButane-2Methyl1Propanol",
+    "data/curation/henry/isoButane-2Methyl2Propanol",
+    "data/curation/henry/isoButane-2Pentanol",
+    "data/curation/henry/isoButane-allylAlcohol",
+    "data/curation/henry/isoButane-benzene",
+    "data/curation/henry/isoButane-isopropanol",
+    "data/curation/henry/isoButane-mCresol",
+    "data/curation/henry/isoButane-mXylene",
+    "data/curation/henry/isoButane-nButanol",
+    "data/curation/henry/isoButane-oCresol",
+    "data/curation/henry/isoButane-oXylene",
+    "data/curation/henry/isoButane-pCresol",
+    "data/curation/henry/isoButane-pXylene",
+    "data/curation/henry/isoButane-styrene",
+    "data/curation/henry/isoButane-tetrahydropyran",
+    "data/curation/henry/isoButane-toluene",
+    "data/curation/henry/isoButene-1Pentanol",
+    "data/curation/henry/isoButene-1Propanol",
+    "data/curation/henry/isoButene-2Butanol",
+    "data/curation/henry/isoButene-2Methyl1Propanol",
+    "data/curation/henry/isoButene-2Methyl2Propanol",
+    "data/curation/henry/isoButene-2Pentanol",
+    "data/curation/henry/isoButene-allylAlcohol",
+    "data/curation/henry/isoButene-benzene",
+    "data/curation/henry/isoButene-isopropanol",
+    "data/curation/henry/isoButene-mCresol",
+    "data/curation/henry/isoButene-mXylene",
+    "data/curation/henry/isoButene-nButanol",
+    "data/curation/henry/isoButene-oCresol",
+    "data/curation/henry/isoButene-oXylene",
+    "data/curation/henry/isoButene-pCresol",
+    "data/curation/henry/isoButene-pXylene",
+    "data/curation/henry/isoButene-styrene",
+    "data/curation/henry/isoButene-tetrahydropyran",
+    "data/curation/henry/isoButene-toluene",
+    "data/curation/henry/nButane-1Pentanol",
+    "data/curation/henry/nButane-1Propanol",
+    "data/curation/henry/nButane-2Butanol",
+    "data/curation/henry/nButane-2Methyl1Propanol",
+    "data/curation/henry/nButane-2Methyl2Propanol",
+    "data/curation/henry/nButane-2Pentanol",
+    "data/curation/henry/nButane-allylAlcohol",
+    "data/curation/henry/nButane-benzene",
+    "data/curation/henry/nButane-isopropanol",
+    "data/curation/henry/nButane-mCresol",
+    "data/curation/henry/nButane-mXylene",
+    "data/curation/henry/nButane-nButanol",
+    "data/curation/henry/nButane-oCresol",
+    "data/curation/henry/nButane-oXylene",
+    "data/curation/henry/nButane-pCresol",
+    "data/curation/henry/nButane-pXylene",
+    "data/curation/henry/nButane-styrene",
+    "data/curation/henry/nButane-tetrahydropyran",
+    "data/curation/henry/nButane-toluene",
+    "data/curation/henry/propane-1Pentanol",
+    "data/curation/henry/propane-1Propanol",
+    "data/curation/henry/propane-2Butanol",
+    "data/curation/henry/propane-2Methyl1Propanol",
+    "data/curation/henry/propane-2Methyl2Propanol",
+    "data/curation/henry/propane-2Pentanol",
+    "data/curation/henry/propane-allylAlcohol",
+    "data/curation/henry/propane-benzene",
+    "data/curation/henry/propane-isopropanol",
+    "data/curation/henry/propane-mCresol",
+    "data/curation/henry/propane-mXylene",
+    "data/curation/henry/propane-nButanol",
+    "data/curation/henry/propane-oCresol",
+    "data/curation/henry/propane-oXylene",
+    "data/curation/henry/propane-pCresol",
+    "data/curation/henry/propane-pXylene",
+    "data/curation/henry/propane-styrene",
+    "data/curation/henry/propane-tetrahydropyran",
+    "data/curation/henry/propane-toluene",
+    "data/curation/henry/propylene-1Pentanol",
+    "data/curation/henry/propylene-1Propanol",
+    "data/curation/henry/propylene-2Butanol",
+    "data/curation/henry/propylene-2Methyl1Propanol",
+    "data/curation/henry/propylene-2Methyl2Propanol",
+    "data/curation/henry/propylene-2Pentanol",
+    "data/curation/henry/propylene-allylAlcohol",
+    "data/curation/henry/propylene-benzene",
+    "data/curation/henry/propylene-isopropanol",
+    "data/curation/henry/propylene-mCresol",
+    "data/curation/henry/propylene-mXylene",
+    "data/curation/henry/propylene-nButanol",
+    "data/curation/henry/propylene-oCresol",
+    "data/curation/henry/propylene-oXylene",
+    "data/curation/henry/propylene-pCresol",
+    "data/curation/henry/propylene-pXylene",
+    "data/curation/henry/propylene-styrene",
+    "data/curation/henry/propylene-tetrahydropyran",
+    "data/curation/henry/propylene-toluene",
+    "data/curation/henry/trans2Butene-1Pentanol",
+    "data/curation/henry/trans2Butene-1Propanol",
+    "data/curation/henry/trans2Butene-2Butanol",
+    "data/curation/henry/trans2Butene-2Methyl1Propanol",
+    "data/curation/henry/trans2Butene-2Methyl2Propanol",
+    "data/curation/henry/trans2Butene-2Pentanol",
+    "data/curation/henry/trans2Butene-allylAlcohol",
+    "data/curation/henry/trans2Butene-benzene",
+    "data/curation/henry/trans2Butene-isopropanol",
+    "data/curation/henry/trans2Butene-mCresol",
+    "data/curation/henry/trans2Butene-mXylene",
+    "data/curation/henry/trans2Butene-nButanol",
+    "data/curation/henry/trans2Butene-oCresol",
+    "data/curation/henry/trans2Butene-oXylene",
+    "data/curation/henry/trans2Butene-pCresol",
+    "data/curation/henry/trans2Butene-pXylene",
+    "data/curation/henry/trans2Butene-styrene",
+    "data/curation/henry/trans2Butene-tetrahydropyran",
+    "data/curation/henry/trans2Butene-toluene",
     "data/curation/pairs/124Trimethylbenzene-mEthyltoluene",
     "data/curation/pairs/124Trimethylbenzene-oEthyltoluene",
     "data/curation/pairs/124Trimethylbenzene-pEthyltoluene",
@@ -24127,6 +28873,7 @@
     "tutorials/props/curation/curate11_nrtl_acetone_ethanol",
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
     "tutorials/props/electrolyte/archer01_nacl_cold_to_hot",
+    "tutorials/props/electrolyte/electrolyteFit01_nacl",
     "tutorials/props/electrolyte/enrtl_mixed_nacl_ethanol_esteso",
     "tutorials/props/electrolyte/enrtl_multisalt_nacl_kcl",
     "tutorials/props/electrolyte/fpd01_nacl_freezing",
@@ -24429,6 +29176,76 @@
    ],
    "electrolyteActivity": [
     "tutorials/props/electrolyte/pitzer02_nacl_package"
+   ],
+   "electrolyteFit": [
+    "data/curation/electrolytes/Ba-Br",
+    "data/curation/electrolytes/Ba-Cl",
+    "data/curation/electrolytes/Ba-I",
+    "data/curation/electrolytes/Ca-Br",
+    "data/curation/electrolytes/Ca-Cl",
+    "data/curation/electrolytes/Ca-I",
+    "data/curation/electrolytes/Cd-NO2",
+    "data/curation/electrolytes/Cd-NO3",
+    "data/curation/electrolytes/Cs-Acetate",
+    "data/curation/electrolytes/Cs-Br",
+    "data/curation/electrolytes/Cs-Cl",
+    "data/curation/electrolytes/Cs-F",
+    "data/curation/electrolytes/Cs-I",
+    "data/curation/electrolytes/Cs-NO3",
+    "data/curation/electrolytes/Cs-OH",
+    "data/curation/electrolytes/Cs-SO4",
+    "data/curation/electrolytes/H-Br",
+    "data/curation/electrolytes/H-Cl",
+    "data/curation/electrolytes/H-I",
+    "data/curation/electrolytes/H-NO3",
+    "data/curation/electrolytes/K-Acetate",
+    "data/curation/electrolytes/K-Br",
+    "data/curation/electrolytes/K-Cl",
+    "data/curation/electrolytes/K-F",
+    "data/curation/electrolytes/K-H2PO4",
+    "data/curation/electrolytes/K-HPO4",
+    "data/curation/electrolytes/K-I",
+    "data/curation/electrolytes/K-NO3",
+    "data/curation/electrolytes/K-OH",
+    "data/curation/electrolytes/K-SO4",
+    "data/curation/electrolytes/Li-Acetate",
+    "data/curation/electrolytes/Li-Br",
+    "data/curation/electrolytes/Li-Cl",
+    "data/curation/electrolytes/Li-I",
+    "data/curation/electrolytes/Li-NO3",
+    "data/curation/electrolytes/Li-OH",
+    "data/curation/electrolytes/Li-SO4",
+    "data/curation/electrolytes/Mg-Br",
+    "data/curation/electrolytes/Mg-Cl",
+    "data/curation/electrolytes/Mg-I",
+    "data/curation/electrolytes/NH4-Cl",
+    "data/curation/electrolytes/NH4-HPO4",
+    "data/curation/electrolytes/NH4-NO3",
+    "data/curation/electrolytes/Na-Acetate",
+    "data/curation/electrolytes/Na-Br",
+    "data/curation/electrolytes/Na-Cl",
+    "data/curation/electrolytes/Na-F",
+    "data/curation/electrolytes/Na-H2PO4",
+    "data/curation/electrolytes/Na-HPO4",
+    "data/curation/electrolytes/Na-I",
+    "data/curation/electrolytes/Na-NO3",
+    "data/curation/electrolytes/Na-OH",
+    "data/curation/electrolytes/Na-SO4",
+    "data/curation/electrolytes/Rb-Acetate",
+    "data/curation/electrolytes/Rb-Br",
+    "data/curation/electrolytes/Rb-Cl",
+    "data/curation/electrolytes/Rb-F",
+    "data/curation/electrolytes/Rb-I",
+    "data/curation/electrolytes/Rb-NO3",
+    "data/curation/electrolytes/Rb-SO4",
+    "data/curation/electrolytes/Sr-Br",
+    "data/curation/electrolytes/Sr-Cl",
+    "data/curation/electrolytes/Sr-I",
+    "data/curation/electrolytes/Zn-Br",
+    "data/curation/electrolytes/Zn-Cl",
+    "data/curation/electrolytes/Zn-I",
+    "data/curation/electrolytes/Zn-NO3",
+    "tutorials/props/electrolyte/electrolyteFit01_nacl"
    ],
    "elementalComposition": [
     "tutorials/props/thermoTest/atoms01_formula_parser"
