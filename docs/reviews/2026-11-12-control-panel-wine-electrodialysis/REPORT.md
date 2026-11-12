@@ -202,3 +202,11 @@ per cell pair, not 2, and section 9's two conclusions change:
 
 The stop-and-clean voltage per cell pair is to be re-stated on the same
 basis (the limit was given as a figure per pair computed with 50 pairs).
+
+## 11. The declared voltages, on the 100-pair basis
+
+Clean stack: about 1 V per cell pair (about 100 V).  Stop and clean: 1.5 V
+per cell pair (about 150 V).  Fouling therefore raises the voltage at held
+current by a factor of 1.5 over a campaign, as section 8 said; only the
+per-pair figures change.  Wherever the tables, `panelDict.proposed` or the
+scratch case write a limit of 2 V per cell pair, read 1.5 V.
