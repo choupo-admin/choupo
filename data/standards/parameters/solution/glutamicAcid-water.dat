@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Solution thermo: L-GLUTAMIC ACID dissolved in liquid WATER (arity-2, the aqueous-solution tier; the molecular-solute sibling of
+  parameters/solution/citricAcid-water.dat).
+
+  PAIR data: a heat of solution is defined as `crystal -> species dissolved in WATER`, so it lives HERE, keyed by the (solute,
+  solvent) pair, never inside glutamicAcid.dat.  h_aq(T) = Hf_crystal + dHsoln + INT_298^T cp_aq dT'.
+
+  The dissolved species is the zwitterion at infinite dilution: Miller & Smith-Magowan's dHf(aq) = -980.72 +/- 1.27 kJ/mol
+  (Table 3, p. 1054) is dHf(cr) + dH(soln) to the printed digits, and it is the `hfAq` of the zwitterion species of the
+  glutamicacid ladder.  NOT carried: the aqueous heat capacity (no work in hand prints it), so the cp_aq rung refuses by name.
+\*---------------------------------------------------------------------------*/
+
+solute      glutamicAcid;
+solvent     water;
+
+// Standard enthalpy of solution, crystal -> aqueous (infinite dilution), 298.15 K: +24.53 +/- 0.10 kJ/mol, endothermic.
+dHsoln      24530 J/mol;
+dHsoln_provenance
+{
+    origin   literature;
+    method   "Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 3, p. 1054, row dH(soln) (+24.53 +/- 0.10 kJ/mol; their source 80MAT/AMA; Miller notes it is not clear whether the ionisation on dissolution was corrected for; read from a page image); dHf(cr) -1005.25 +/- 1.26 kJ/mol and dHf(aq) -980.72 +/- 1.27 kJ/mol from the same table.";
+}

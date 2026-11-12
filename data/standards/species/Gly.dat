@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/Gly.dat -- ONE model species, ONE typed file: the fully dissociated form of glycine.
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
+  reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
+  1 mol/kg, 298.15 K, H+ = 0.
+  The formation values are DERIVED from printed numbers; the arithmetic, tables and pages are in the
+  source line below and in formation.tsv.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    Gly;
+formula     "C2H4NO2-";
+charge  -1;
+MW { value 74.059; unit g/mol;}
+aqueousThermo
+{
+source "hfAq [kJ/mol] -470.26: dHf(aq glycine) -514.36 + dH_ion2 +44.1 -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 3, p. 1054, and Table 6, p. 1057 (read from a page image) ## sAq [J/mol/K] 119.25: S(aq glycine) 158.45 + dS_ion2 (-39.2) -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 3, p. 1054, and Table 6, p. 1057 (read from a page image)";
+hfAq { value -470260; unit J/mol;}
+sAq  { value 119.25; unit J/mol/K;}
+}

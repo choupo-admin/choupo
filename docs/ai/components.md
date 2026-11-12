@@ -57,7 +57,7 @@ level up.)
 <!-- AUTO-GENERATED below this line by bin/regen-llm-docs. -->
 <!-- Edit the .dat files in data/standards/components/, then re-run. -->
 
-## Components (688 entries)
+## Components (696 entries)
 
 ### Volatile (curated for VLE)
 
@@ -625,6 +625,8 @@ level up.)
 | Name | MW | role | Psat (Trange, K) | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
 |---|---:|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
 | `acetaldehyde` | 44.053 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `alanine` | 89.094 | nonvolatile | — | — | — | ✓ | — | — | — | — |   |
+| `asparticAcid` | 133.103 | nonvolatile | — | — | — | ✓ | — | — | — | — |   |
 | `C` | 12.011 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `C2H` | 25.03 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `C2H3` | 27.046 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
@@ -653,6 +655,8 @@ level up.)
 | `CS2` | 76.131 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `dowthermA` | 165.8 | nonvolatile | — | — | ✓ | — | — | — | — | ✓ |   |
 | `glucose` | 180.16 | nonvolatile | — | — | ✓ | ✓ | — | — | — | ✓ |   |
+| `glutamicAcid` | 147.130 | nonvolatile | — | — | — | ✓ | — | — | — | — |   |
+| `glycine` | 75.067 | nonvolatile | — | — | — | ✓ | — | — | — | — |   |
 | `graphite` | 12.011 | nonvolatile | — | — | — | ✓ | — | — | — | — |   |
 | `H` | 1.008 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `HCCO` | 41.029 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
@@ -666,6 +670,7 @@ level up.)
 | `HSO3` | 81.065 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `KBr` | 119.002 | nonvolatile | — | — | — | — | — | — | — | — |   |
 | `KNO3` | 101.102 | nonvolatile | — | — | — | — | — | — | — | — |   |
+| `lacticAcid` | 90.078 | nonvolatile | — | — | — | ✓ | — | — | — | — |   |
 | `LiCl` | 42.394 | nonvolatile | — | — | ✓ | — | — | — | — | — |   |
 | `MgCl2` | 95.205 | nonvolatile | — | — | — | — | — | — | — | — |   |
 | `MgSO4` | 120.37 | nonvolatile | — | — | — | — | — | — | — | — |   |
@@ -715,14 +720,17 @@ level up.)
 | `CaO` | 56.077 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |
 | `CaSO4` | 136.141 | nonvolatile | — | — | ✓ | ✓ | ✓ | — | — | — |   |
 | `citricAcid` | 192.123 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |
+| `fumaricAcid` | 116.072 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |
 | `K2SO4` | 174.259 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |
 | `KOH` | 56.105 | nonvolatile | — | — | ✓ | ✓ | ✓ | — | — | — |   |
 | `magnesiumHydroxide` | 58.320 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |
+| `malicAcid` | 134.087 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |
 | `Na2CO3` | 105.988 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |
 | `Na2SO4` | 142.036 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |
 | `NaHCO3` | 84.007 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |
 | `NH4Cl` | 53.491 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |
 | `silica` | 60.08 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |
+| `succinicAcid` | 118.088 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |
 | `tartaricAcid` | 150.087 | nonvolatile | — | — | ✓ | ✓ | ✓ | — | — | — |   |
 
 ### Other

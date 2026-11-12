@@ -167,6 +167,21 @@ batch plan, sizing, clean utilities, costing and economics on top
 * Missing: particle-count classification, door widths, travel distances.
 * Witness: `tutorials/batch/plant/donepezil01_tablets` (`pack:layout`).
 
+### Operator panel of a batch run (alarms, limits, displays, operator interface)
+* Checks: `key:elements` in `system/panelDict` of a `choupoBatch` case, read
+  after the time loop: number, bar, trend and lamp displays over published columns, each with
+  a reason, limits with their source and reason, alarms with the action they
+  ask for, messages.  A malformed panel is refused by name; the engine reports
+  FACTS: a quantity not published or constant over the run, a scale that hides
+  the run, a limit outside its scale, a limit violated at k of n written
+  instants and from when, a limit the run never approached, a controller no
+  element shows, several alarms on one quantity, the count of active alarms,
+  the instants a message would fire.  Never a grade.
+* Missing: drawing it (a later slice), a draft tool, the driver binaries
+  (`choupoCtrl`, `choupoSemiContinuous`), a dimension per column; alarm
+  practice is good practice, not verified against a standard.
+* Witness: `tutorials/batch/electrodialysis/edbatch01_constant_current`.
+
 ### Plot plan and site layout (plant layout, equipment spacing, pipe rack, roads)
 * Computes: in `system/layoutDict`, the routes and lengths of the pipes over
   a declared `key:pipeRack`, where each pipe lands on its item (a PORT: a

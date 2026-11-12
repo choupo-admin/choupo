@@ -30,6 +30,7 @@ License
 #include "core/distribution/SizeGrid.H"
 #include "result/BatchPlanJson.H"
 #include "result/BuildingJson.H"
+#include "result/PanelJson.H"
 #include "result/EquipmentList.H"
 #include "thermo/SealCheck.H"
 #include "core/Citation.H"
@@ -2131,6 +2132,10 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
     //  ---- batchPlan: the batch plant on the balance (DEV.md 4c C99) -------
     //  Only when the postDict declares `batchPlan {}`; result/BatchPlanJson.cpp.
     emitBatchPlanJson(os, r.batchPlan);
+
+    //  ---- panel: the operator panel and the facts about it (DEV.md 4c C371) ---
+    //  Only when the case declares `system/panelDict`; result/PanelJson.cpp.
+    emitPanelJson(os, r.panel);
 
     //  ---- postProcessing: the views a steady case DECLARES (C271) ---------
     //  The body views::Reader returned; empty -> nothing is written.

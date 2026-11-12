@@ -454,6 +454,14 @@ try
     //  whatever it said) had been simulated.  Refused by name, with the grammar
     //  this class offers for a timed change: a `Schedule` controller, which
     //  drives a manipulated variable of a unit from a time table (choupoCtrl).
+    //  A PANEL (DEV.md 4c C371): read by choupoBatch in slice S1; the driver
+    //  binaries get the same reader in slice S1b.  Until then a declared file
+    //  is refused by name, never silently ignored.
+    if (fs::exists("system/panelDict"))
+        throw std::runtime_error(cfg.binaryName + ": system/panelDict is"
+            " present, and only choupoBatch reads a panel in this release (the"
+            " time-integrated driver binaries follow in a later slice).  Remove"
+            " the file, or run a batch case with `application choupoBatch;`.");
     if (flowsheetDict->found("recipe"))
         throw std::runtime_error(cfg.binaryName + ": system/flowsheetDict declares a"
             " `recipe`, and this binary does not act on a recipe -- its events"

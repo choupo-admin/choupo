@@ -251,8 +251,8 @@
       ]
     }
   ],
-  "liveTools": 84,
-  "registryTools": 84,
+  "liveTools": 85,
+  "registryTools": 85,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -868,6 +868,19 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=lub-scaleup"
+    },
+    {
+      "id": "chromatography",
+      "label": "Chromatography: peaks, plates and resolution",
+      "blurb": "Separate two solutes on a column: retention, peak width, resolution, overload.",
+      "discipline": "Separations & phase equilibria",
+      "teaches": "Elution chromatography from a bed fed a pulse: the retention time t_R = t0(1 + k') from the isotherm's slope; the plate model and why a peak is a Gaussian, sigma = t_R/sqrt(N); the van Deemter curve H = A + B/v + Cv built from the bed's dispersion and uptake rate; selectivity, resolution and the fundamental resolution equation, with purity and recovery of a cut; and what changes when the column is overloaded on a Langmuir isotherm -- the sharp front, the tail, the competition and the purity-versus-throughput trade -- on a linear pulse the engine runs and checks against the moments, and an overloaded column the page integrates.",
+      "origins": [
+        "engine",
+        "page",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=chromatography"
     },
     {
       "id": "batch-membrane",

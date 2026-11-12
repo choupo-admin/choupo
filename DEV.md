@@ -3446,6 +3446,35 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C375 (2026-11-12; three engine findings met by the chromatography page,
+> confirmed by run and by reading; the architect's decisions).**  (a) THE
+> FIXED BED ADDS ITS OWN DISPERSION: `FixedBedAdsorber` takes first-order
+> upwind face values, which adds v dz/2 to the axial dispersion.  MEASURED on
+> the shipped batch13 (100 cells): the numerical term is 3.1e-4 m2/s against
+> a physical 2.5e-4; the 5-95 % front is 314 s wide where the converged
+> front is about 219 s (30 % of the width is the grid); the pinned
+> breakthrough time 2890.7 s is the grid's, the converged one about 2935 s;
+> the unused-bed length reads 0.0247 m against about 0.0172 m.  The mean
+> (stoichiometric time) is exact at every grid.  All 14 fixed-bed tutorials
+> and the pages `breakthrough` and `lub-scaleup` rest on it; the second
+> carries the widened unused length to full scale.  DECIDED: (1) now, the
+> unit ANNOUNCES the numerical dispersion beside the declared one at the
+> start of every run (its value, its ratio to the physical term, the grid
+> that would bring it under a tenth) -- a number that is wrong by the mesh
+> is said, not hidden; (2) a second-order flux-limited convection scheme is
+> added as a selectable `convectionScheme`, validated against the closed
+> form of the linear pulse (first and second moments) and against mesh
+> convergence on batch13, and becomes the DEFAULT only after that, with the
+> 14 cases re-recorded and every moved row listed; first-order upwind stays
+> selectable and named, because seeing a mesh widen a front is itself a
+> lesson (batch15_mesh_study).  (b) the bed writes `<t>/bed.profile` at
+> every interval although `solutionControl { write false; }` is announced:
+> the unit obeys the declared switch.  (c) the Theory Guide wrote the
+> dispersive flux with the porosity multiplying Dax; the code uses Dax in
+> the flux and divides the balance by the porosity, and the measured
+> moments support the code (0.01-0.2 % against 19-27 % the other way): the
+> guide is corrected (landed with the page).  Branch c375-fixed-bed-scheme.
+
 > **C374 (Vitor, 2026-11-12, on a screenshot of the EduTools home: "esta
 > pagina esta gira, mas acho que podia ter mais cor e aquela linha dificulta
 > a selecao de uma categoria").**  The home (C251) lists the sections as a
@@ -3536,8 +3565,27 @@ accepts today, and that is a policy call.
 > before the lesson -- a disturbance is first a second run of a varied
 > case, the simplest thing that works, and a mid-run `setParameter` on the
 > batch electrodialysis is built only if the lesson shows it is missed.
-> Still open with him: the bounded exception that lets the GUI write
-> `panelDict` (explained to him again; no answer yet).
+> THE GUI-WRITES QUESTION: left to the architect by Vitor (2026-11-12: "ve
+> tu qual e a forma mais util e escalavel de fazer isso").  DECIDED, as a
+> rule that scales rather than as one exception for one file: the GUI may
+> write a case file only if that file is a VIEW FILE -- read by the engine
+> strictly after the solve, never by anything that computes -- and every
+> view file is one row of ONE registry (file name, the reader that consumes
+> it, the gate arm proving a run with and without it is byte-identical
+> outside its own block).  Today the registry has two rows: the `.cho`
+> marker and `system/panelDict`.  A future view file (a saved flowsheet
+> arrangement, a report layout) enters by adding a row and its proof, not
+> by a new argument.  Mechanics, the same for every row: edits live in a
+> browser working copy; ONE explicit "Save to case" writes the file where a
+> local bridge exists, and "Download" hands it over where none does (the
+> public site); the bridge's write endpoint accepts registry rows only (it
+> accepts any path inside a case today: this NARROWS it) and a gate holds
+> both the endpoint's refusal and each row's proof.  A locked file is drawn
+> as written; the GUI can set a lock and never remove one.  The flowsheet,
+> the thermodynamics, the streams and every dict a solver reads stay
+> outside the registry for good: that is the line that keeps the GUI a
+> runner and visualiser.  Built in slice S4, with the credo amended in the
+> same commit; S2 (read-only drawing) and S3 (the draft) need none of it.
 
 > **C370 (2026-11-12; three proposals the cloud says Vitor left to the two
 > sessions' judgement; the architect's answers).**  (a) SOLIDS, simple

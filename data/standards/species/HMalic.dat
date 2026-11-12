@@ -1,11 +1,10 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
-  species/HMalic.dat -- ONE model species, ONE typed file: the singly charged anion of malic acid.
-
-  NO `aqueousThermo` ON PURPOSE.  The ionisation (pK, dH) of malic acid is measured in
-  Eden & Bates, J. Res. Natl. Bur. Stand. 62 (1959) 161, Table 5, p. 169, and is in chemistry/ -- so
-  the SPECIATION (pH, distribution) is complete.  No work in hand prints a formation enthalpy or
-  entropy of this aqueous ion, so a balance that needs its enthalpy REFUSES BY NAME instead of
-  borrowing a value.
+  species/HMalic.dat -- ONE model species, ONE typed file: an intermediate ionisation state of d,l-malic acid.
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
+  reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
+  1 mol/kg, 298.15 K, H+ = 0.
+  The formation values are DERIVED from printed numbers; the arithmetic, tables and pages are in the
+  source line below and in formation.tsv.
 \*-----------------------------------------------------------------------------*/
 recordType modelSpecies;
 schemaVersion 1;
@@ -14,3 +13,8 @@ name    HMalic;
 formula     "HC4H4O5-";
 charge  -1;
 MW { value 133.079; unit g/mol;}
+aqueousThermo
+{
+source "hfAq [kJ/mol] -1080.86: dHf(aq acid, DL) -1083.81 + dH_ion1 +2.95 -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 5 p. 1056 and Table 6 p. 1057 (read from a page image), the aqueous acid is the printed dHf(cr, DL) -1105.66 +/- 0.63 plus dH(soln) 21.85, racemic acid, as the Eden & Bates ionisation constants";
+hfAq { value -1080860; unit J/mol;}
+}

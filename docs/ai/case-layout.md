@@ -19,8 +19,10 @@ are the source of truth.
 │   ├── solverDict           OPTIONAL  per-unit-op solver options
 │   ├── outerDict            OPTIONAL  outer driver (sweep /
 │   │                                   optimization / DesignSpec)
-│   └── layoutDict           OPTIONAL  the plot plan of the SIZED items
-│                                       (bin/choupo-layout --draft)
+│   ├── layoutDict           OPTIONAL  the plot plan of the SIZED items
+│   │                                   (bin/choupo-layout --draft)
+│   └── panelDict            OPTIONAL  the operator panel of a choupoBatch run
+│                                       (facts about it, never a grade)
 ├── constant/
 │   ├── thermoPhysPropDict   REQUIRED; the thermophysical system (v2
 │   │                          grammar).  Declares `recordType
@@ -1955,6 +1957,77 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   GUI draws the result in Reports, "Plant layout (3D)", with the pipe
   register.  Record:
   `docs/design/a-plant-layout-is-declared-and-checked.md`.
+
+## `system/panelDict` — the operator panel (DEV.md 4c C371, slice S1)
+
+Optional; absent, no line of any output changes.  Read ONLY by `choupoBatch`
+(`application choupoBatch;`), AFTER the time loop, from the series the run
+already writes; `choupoSolve`, `choupoProps`, `choupoCtrl` and
+`choupoSemiContinuous` REFUSE the file by name (the driver binaries follow in a
+later slice).  The engine reports FACTS about the panel and never a grade:
+whether a person can tell from it what the process is doing is the student's
+exercise.  It cannot change a number of the run (the pass is in
+`postProcessing/panel`, a layer the physics cannot include).
+
+```
+grid  { columns 12;  rows 8; }            // placement counts, optional
+style { density comfortable; }            // compact | comfortable; trendWindow <time>
+elements
+(
+    {
+        name        overLimiting;                   // unique word
+        title       "Limiting current";
+        kind        lamp;                           // number | bar | trend | lamp
+        measurement { unit rig;  cv i_over_ilim; }  // or { controller C; cv SP|PV|MV; }
+        range       { min 0;  max 2.5; }            // required for bar and lamp
+        limit       { high 1;                       // low and/or high
+                      source "the unit's own film model";
+                      reason "above 1 the extra current splits water"; }
+        alarm       { on high;  delay 0 s;          // high | low | outside; delay has a unit
+                      action "lower the current, or stop the batch"; }
+        words       { normal "BELOW LIMITING";  high "OVER LIMITING"; }   // lamp only
+        place       { column 9;  row 3;  width 4;  height 2; }            // inside the grid
+        reason      "the unit reports this regime boundary itself";      // REQUIRED
+        authored    edited;                         // draft | edited
+    }
+);
+messages ( { name overLimiting; from overLimiting; on high; text "..."; }
+           { name batchEnd; on end; text "Batch finished"; } );
+// lock { by "..."; date "..."; reason "..."; }   present = locked
+```
+
+* `measurement` names a column the run publishes: `<unit>.<cv>` is a
+  `trajectory.csv` column.  An unknown unit or controller is REFUSED (a typo
+  would draw an empty element); a known unit whose column the run does not
+  publish is the FACT `notPublished`, never a zero.
+* A `range` or `limit` written without a named unit is in the unit the series
+  is published in (`_V`, `_A_per_m2`, `_S_per_m` in the column name); a named
+  unit (`313.15 K`) is converted to SI.  The engine cannot check the dimension:
+  no trajectory column declares one.
+* REFUSED by name, with the remedy: an unknown key (with a suggestion), an
+  unknown `kind`, an element with no `reason`, a `limit` with neither end or
+  without `source` or `reason`, an `alarm` without a `limit` or an `action`, a
+  `delay` without a unit, a `bar` or `lamp` with no `range`, a `place` outside
+  the grid or on a cell another element holds, a duplicate name, a message
+  `from` that names no element.
+* FACTS, one record per fact (`panel` block of the result JSON, `[panel]`
+  lines in the log, golden kind `panel`): `notPublished`; `constant` (the
+  series moved by no more than 1e-8 relative over the run); `outOfRange`;
+  `limitOutsideRange`; `violated` / `neverViolated` / `alwaysViolated` (k of n
+  written instants beyond the limit, first and last instant);
+  `neverApproached` (no violation and the closest approach over 0.5 of the
+  range; 0.5 is a default of the design record, not taken from a standard);
+  `controllerWithoutElement`; `sameQuantityAlarms` (same column; two series
+  that are functions of each other are not detected); `alarmsActive` (the
+  maximum number active at once, with the `delay` applied on the write grid);
+  `message:<name>` (whether it fires and the first instant).  Every crossing is
+  resolved to the WRITE GRID (`writeInterval`): an excursion shorter than one
+  interval is missed.  `draftDiffers` is not built (it needs the draft tool).
+* Alarm practice here (a limit with its source, one action per alarm, a count
+  of active alarms) is good practice written from reasoning; it is NOT
+  verified against an alarm-management standard, none is held.
+* Witness: `tutorials/batch/electrodialysis/edbatch01_constant_current`.
+  Gate: `check_panel`.  Record: `docs/design/operator-panel-in-the-case.md`.
 
 ## Where a numerical option lives — the four homes are INTENTIONAL
 

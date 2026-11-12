@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/H3Glu.dat -- ONE model species, ONE typed file: the most protonated form of L-glutamic acid.
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
+  reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
+  1 mol/kg, 298.15 K, H+ = 0.
+  The formation values are DERIVED from printed numbers; the arithmetic, tables and pages are in the
+  source line below and in formation.tsv.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    H3Glu;
+formula     "C5H10NO4+";
+charge  +1;
+MW { value 148.138; unit g/mol;}
+aqueousThermo
+{
+source "hfAq [kJ/mol] -980.45: dHf(aq L-glutamic acid) -980.72 - dH_ion1 (-0.27) -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 3, p. 1054, and Table 6, p. 1057 (read from a page image), the aqueous acid is dHf(cr) -1005.25 +/- 1.26 plus dH(soln) +24.53 ## sAq [J/mol/K] 289.20: S(aq glutamic acid) 246.90 - dS_ion1 (-42.3) -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 3, p. 1054, and Table 6, p. 1057 (read from a page image)";
+hfAq { value -980450; unit J/mol;}
+sAq  { value 289.2; unit J/mol/K;}
+}

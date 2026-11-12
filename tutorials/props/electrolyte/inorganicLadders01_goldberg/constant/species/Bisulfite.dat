@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/Bisulfite.dat -- the aqueous species HSO3- (C320, DEV.md 4c).  ONE model species, ONE
+  typed file.  Made by bin/curate/species_c320.py from
+  data/curation/batches/species_c320/species.tsv, which holds every reading (NBS table, page, row;
+  the CRC second reading; the CODATA key value where the species has one) and the chosen value.
+  Standard state: ideal solution at 1 mol/kg, 298.15 K, H+ = 0 (NBS convention).  The chosen
+  value is NBS (Wagman et al. 1982) unless CODATA (Cox, Wagman & Medvedev 1989) carries the species.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    Bisulfite;
+formula     "HSO3-";
+charge  -1;
+MW { value 81.065; unit g/mol;}
+aqueousThermo
+{
+source "NBS = Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 14:S, p. 2-57 (PDF p. 65), row HSO3- ao ## second reading, enters no value -- the NBS table as reprinted, read via CRC = CRC Handbook, Thermodynamic Properties of Aqueous Systems, p. 5-86 (TeamLRN_5_1_CODATA_KEY_VALUES_FOR_THERMO.pdf), row HSO3- ## hfAq [kJ/mol] chosen -626.22 (NBS): NBS -626.22, CRC -626.2 ## sAq [J/mol/K] chosen 139.7 (NBS): NBS 139.7, CRC 139.7";
+hfAq { value -626220; unit J/mol;}
+sAq  { value 139.7;  unit J/mol/K;}
+}

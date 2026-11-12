@@ -1,0 +1,9 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  goodsBuffers01_hepes_mes -- the HEPES and MES laboratory buffers at half neutralisation, at 25 C
+  and at 37 C, on the C373 phase 4 records (pK and dH of Goldberg, Kishore & Lennen 2002).
+  A structural illustration, not validated against a measured pH.
+\*---------------------------------------------------------------------------*/
+
+application   choupoProps;
+description   "HEPES and MES buffers (0.05 mol/kg, half-neutralised with NaOH) at 25 C and 37 C: the pH and its temperature shift from the evaluated pK and dH of Goldberg, Kishore & Lennen 2002. A structural illustration, not validated against a measured pH.";
+verbosity     2;

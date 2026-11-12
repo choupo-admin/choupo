@@ -1,0 +1,9 @@
+record	family	steps	direction	note
+CO2aq-formation	carbonate	1	formation	Goldberg H2CO3 is the apparent acid CO2(aq) + H2CO3
+CO3-formation	carbonate	2	ionisation	
+H3PO4aq-formation	phosphate	1+2+3	formation	written from the master PO4: the sum of the three steps
+H2PO4-formation	phosphate	2+3	formation	written from the master PO4: the sum of the last two steps
+HPO4-formation	phosphate	3	formation	
+HSO4-formation	sulfate	1	formation	
+NH3aq-formation	ammonia	1	ionisation	
+BOH4-formation	borate	1	ionisation	H3BO3 + H2O = B(OH)4- + H+, the same constant as Goldberg H3BO3 = H2BO3- + H+ (water at unit activity)

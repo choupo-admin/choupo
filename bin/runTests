@@ -1218,6 +1218,36 @@ get_batch() {
         }'
 }
 
+# --- pull one field out of the top-level `"panel": {...}` block (2026-11-12,
+#     DEV.md 4c C371): the operator panel the case declared in
+#     `system/panelDict`, as the engine read it, with the FACTS about it.
+#     The block follows the layout's shape -- EVERY RECORD IS ONE LINE
+#     CARRYING AN `"id"` (`element:<name>`, `<fact>:<name>`, `message:<name>`,
+#     `summary`), so a row resolves on that line and needs no brace walk.  The
+#     case's own sentences ride in a trailing `"text": {}` that is cut off
+#     before a key is looked up, so a number inside a sentence cannot answer.
+get_panel() {
+    local out="$1" id="$2" key="$3"
+    printf '%s\n' "$out" | awk -v id="$id" -v k="$key" '
+        /^  "panel": \{/ { inblk = 1; next }
+        inblk && /^  \}/  { inblk = 0 }
+        !inblk { next }
+        index($0, "\"id\": \"" id "\",") == 0 { next }
+        {
+            line = $0
+            sub(/"text": \{.*/, "", line)
+            if (match(line, "\"" k "\": \"[^\"]*\"")) {
+                s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": "/, "", s); sub(/"$/, "", s)
+                print s; exit
+            }
+            if (match(line, "\"" k "\": *-?[0-9][0-9.eE+-]*")) {
+                s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": */, "", s)
+                print s; exit
+            }
+            exit
+        }'
+}
+
 get_any() {
     local out="$1" kind="$2" name="$3" key="$4"
     #  The CLAIM (published vs self-recorded) is a different column and does
@@ -1233,6 +1263,7 @@ get_any() {
     elif [ "$kind" = ledger ]; then get_ledger  "$out" "$name" "$key"
     elif [ "$kind" = layout ]; then get_layout  "$out" "$name" "$key"
     elif [ "$kind" = batch  ]; then get_batch   "$out" "$name" "$key"
+    elif [ "$kind" = panel  ]; then get_panel   "$out" "$name" "$key"
     else get_value "$out" "$name" "$key"; fi
 }
 
@@ -2113,6 +2144,35 @@ auto_generate() {
                         printf "batch  %-26s %-16s %-18s %s\n", id, N[i], s, tol
                     }
             }'
+        #  THE OPERATOR PANEL (2026-11-12, DEV.md 4c C371): its own top-level
+        #  `"panel"` block, one record per line with an `"id"`, read by
+        #  get_panel.  Pinned: per element the series' min, max, first and
+        #  last value and the number of written instants, and with a limit the
+        #  count of instants beyond it and the closest approach (and its
+        #  fraction of the range); per fact its numbers (the constant value,
+        #  the first and last instant of a violation, the alarm maximum and
+        #  when it first occurs); per message whether it fires and when; the
+        #  summary counts.  NOT pinned: the case's own sentences (`text`), the
+        #  places on the grid and the alarm intervals (the instants of every
+        #  interval are what the pinned `first`/`last` and the maximum come
+        #  from).  The generator emits ONLY keys the line carries, so a case
+        #  without a panel gets no row.
+        printf '%s\n' "$out" | awk -v tol="$reltol" '
+            /^  "panel": \{/ { inblk = 1; next }
+            inblk && /^  \}/  { inblk = 0 }
+            !inblk { next }
+            !match($0, /"id": "[^"]*"/) { next }
+            {
+                id = substr($0, RSTART+7, RLENGTH-8)
+                line = $0
+                sub(/"text": \{.*/, "", line)
+                nn = split("min max first last n violated closestApproach closestApproachFraction value count extreme t fired at alarms alarmsMax alarmsMaxAt elements facts messages instants threshold", N, " ")
+                for (i = 1; i <= nn; i++)
+                    if (match(line, "\"" N[i] "\": *-?[0-9][0-9.eE+-]*")) {
+                        s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": */, "", s)
+                        printf "panel  %-34s %-24s %-18s %s\n", id, N[i], s, tol
+                    }
+            }'
         #  the plant-boundary first law (2026-09-05).  The three TERMS are
         #  pinned at the relative tolerance; the RESIDUAL is their difference
         #  and is pinned only when it is a number and not round-off -- a
@@ -2483,7 +2543,7 @@ if [ -n "$RECORD" ]; then
                     #  is the second home for the list of kinds, and the check
                     #  loop below has no such list at all, so the two cannot
                     #  be kept honest by reading one of them.
-                    case "$gkind" in kpi|stream|diag|aad|closure|utility|verdict|equipment|boundary|ledger|layout|batch) ;; *) continue;; esac
+                    case "$gkind" in kpi|stream|diag|aad|closure|utility|verdict|equipment|boundary|ledger|layout|batch|panel) ;; *) continue;; esac
                     if ! awk -v k="$gkind" -v n="$gname" -v y="$gkey" \
                          '$1==k && $2==n && $3==y {found=1} END{exit !found}' "$exp"; then
                         printf '%-7s %-22s %-16s %-16s %s\n' \
@@ -6904,6 +6964,16 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/speciesrec.$$
+    # species-c373 gate (2026-11-12, DEV.md 4c C373).  The species and ionisation records made from the evaluated compilations (Goldberg 2002, Miller 1990, Eden & Bates 1959, Nims & Smith 1936) reproduce byte for byte from species_c373/*.tsv; hand-written chemistry holds to the same steps; the formation enthalpies of each family are on one scale.
+    if gate_exec "$ROOT/bin/curate/check_species_c373.py" > /tmp/speciesc373.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "species-c373-gate" "$(head -1 /tmp/speciesc373.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_species_c373.py)\n" "species-c373-gate"
+        cat /tmp/speciesc373.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/speciesc373.$$
     # feature-documented gate (2026-11-12, DEV.md 4c C338, CLAUDE.md rule 4d).  Every name a factory registers is in a labelled Theory/Props Guide section AND the docs/ai catalogue; today's debt is pinned in bin/curate/feature_documented_debt.tsv and may only shrink.
     if gate_exec "$ROOT/bin/curate/check_feature_documented.py" > /tmp/featdoc.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "feature-documented-gate" "$(head -1 /tmp/featdoc.$$)"
@@ -8128,6 +8198,22 @@ if [ "$#" -eq 0 ]; then
         fail=$((fail+1))
     fi
     rm -f /tmp/plantlayout.$$
+
+    # Operator-panel gate (2026-11-12, DEV.md 4c C371 slice S1):
+    # system/panelDict is DECLARED by the case and READ by the engine after
+    # the time loop, which reports FACTS about it.  A case run with and without
+    # its panel differs only by the panel block and the [panel] lines; every
+    # malformed panel refuses by name; each fact fires on a fixture built to
+    # trigger it; choupoSolve and choupoProps refuse a panelDict.
+    if gate_exec "$ROOT/bin/curate/check_panel.py" > /tmp/panelgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "panel-gate" "$(gate_claim check_panel /tmp/panelgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_panel.py)\n" "panel-gate"
+        cat /tmp/panelgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/panelgate.$$
 
     # Pipe-port gate (2026-11-05, DEV.md 4c C229): every pipe end lands on a
     # PORT of its item -- a column's feed on its shell at its stage's height,

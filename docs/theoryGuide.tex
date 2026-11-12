@@ -7455,11 +7455,95 @@ citric acid to 0.5--1.3~kJ/mol, inside Kochergina's stated uncertainty (see
 Eden \& Bates (1959), Table~6, and lactic acid from Nims \& Smith (1936), Table~II.
 The tartrate records stand on Goldberg et al.\ (2002), Table~7.63, in agreement with
 Patterson \& Woolley (2001).  Fumaric acid takes its constants from the evaluation of Miller \& Smith-Magowan (1990), Table~6.  Malonic acid is absent: no ionisation work
-covering them has been read.  A triprotic family is declared through its neutral master
+covering it has been read.  Glycolic acid takes its constants from the same table of Miller \& Smith-Magowan (1990).  A triprotic family is declared through its neutral master
 (\code{H3Cit}) or its fully dissociated ion (\code{Cit}); the closure activates
 the records reachable from whichever the case declares.  Worked cases:
 \file{volatileAcids01\_acetic\_formic}, \file{citricAcid01\_speciation} and
 \file{wineAcids01\_tartaric\_malic}.
+
+\subsection{Ionisation families from the evaluated compilations: the ions' formation data on one
+scale}\label{sec:evaluated-ionisation-families}
+
+C373 extends the carboxylic families of the previous subsection from three evaluated compilations.  A family is a
+\emph{ladder} of species $\mathrm{H}_n\mathrm{A}\to\mathrm{H}_{n-1}\mathrm{A}^-\to\cdots\to\mathrm{A}^{n-}$; every
+step is an \code{aqueousSpeciation} record written from the most protonated form (the speciation master), plus the inverse
+written from the fully dissociated form.  Where a compilation prints the enthalpy (and entropy) of formation of the
+\emph{aqueous acid}, the ions' values are not copied from a second source but \emph{derived} from it and from the
+step enthalpies and entropies printed beside the pK:
+\begin{equation}
+   \Delta_fH^\circ(\mathrm{H}_{n-i}\mathrm{A}^{i-}) = \Delta_fH^\circ(\mathrm{H}_n\mathrm{A},\mathrm{aq})
+        + \sum_{k=1}^{i}\Delta_{\rm ion,k}H^\circ ,\qquad
+   S^\circ(\mathrm{H}_{n-i}\mathrm{A}^{i-}) = S^\circ(\mathrm{H}_n\mathrm{A},\mathrm{aq})
+        + \sum_{k=1}^{i}\Delta_{\rm ion,k}S^\circ ,
+   \label{eq:ladder-formation}
+\end{equation}
+with $\Delta_fH^\circ(\mathrm{H}^+)=S^\circ(\mathrm{H}^+)=0$ (the aqueous convention), and
+$\Delta_fH^\circ(\mathrm{H}_n\mathrm{A},\mathrm{aq})=\Delta_fH^\circ(\mathrm{cr})+\Delta_{\rm sol}H^\circ$ the crystal's
+formation enthalpy plus its heat of solution, which is why the catalogue carries the acid as a \emph{component}
+(crystal datum) and a \emph{solution pair} (the heat of solution) and the neutral master species carries no
+\code{hfAq} of its own.  Symbols: $\Delta_{\rm ion,k}H^\circ$, $\Delta_{\rm ion,k}S^\circ$ the enthalpy and entropy of the
+$k$-th ionisation step at $298.15$~K, $i$ the number of protons lost.  Source: Miller \& Smith-Magowan (1990), Tables~2, 5
+and~6 (Table~2 prints the ion values it derived itself, which reproduce Eq.~\eqref{eq:ladder-formation}; the crystal
+enthalpies agree with Domalski (1972), Sections 6.11 to 6.15, to 0.3~kJ/mol).  \emph{Validity:} 25~\textdegree C, infinite
+dilution, zero ionic strength; the uncertainty of an ion is that of the acid's aqueous enthalpy (0.4 to 1.0~kJ/mol) plus
+the printed step enthalpies.
+
+\emph{One scale per family.}  The step enthalpy a record carries (from the work that printed the pK) and the
+difference of the neighbouring species' formation enthalpies are two readings of one quantity, and the gate
+\file{check\_species\_c373} holds them to a per-family tolerance: succinic $0.18$ and $0.06$, fumaric $0.00$ (the
+same table), malic $0.005$ and $0.001$ (Eden \& Bates and Miller print the same constants), lactic $0.20$~kJ/mol; the three
+citric steps differ by $0.5$, $1.3$ and $1.1$~kJ/mol, inside the $\pm1.1$ to $1.6$~kJ/mol Kochergina's formation
+enthalpies carry, which is why the whole citrate family keeps Kochergina's ions (Miller prints no formation enthalpy of
+citrate) and a mix of the two works never occurs.  A glycolic acid whose crystal, heat of solution and aqueous enthalpy
+do not close in the source (they differ by 2.9~kJ/mol) is carried for its speciation only: the energy route through it
+refuses by name.  The records do not carry the printed $\Delta C_p^\circ$ of an ionisation: a constant
+$\Delta C_p$ is exactly the $A_1$, $A_3$, $A_4$ terms of the \code{analytic} form above, proposed but not used.  The
+entropy of the fumarate ion is taken from the sum of the Table~6 steps ($105.3$~J/mol/K), because Table~2's own
+$\Delta G$ and $\Delta H$ imply $-155.4$~J/mol/K for the ionisation and not the $-152.2$ it prints.  Worked case: none for
+the formation data (the ion energies are not exercised by a speciation run).
+
+\emph{Inorganic ladders.}  The pyrophosphate (four steps), arsenate (three), sulfite (two) and hydrazine (two) ladders
+carry only the evaluated step constants of Goldberg, Kishore \& Lennen (2002), Section~8 (pp.~359--360; Sections~7.56,
+7.9, 7.59, 7.40): $\mathrm{p}K$ and $\Delta_{\rm ion}H^\circ$, written from the most protonated form by the same
+cumulative rule as every other family, $\log_{10}K_{25}(\mathrm{H}_{n-i}\mathrm{A})=-\sum_{k\le i}\mathrm{p}K_k$ and
+$\Delta H=\sum_{k\le i}\Delta_{\rm ion,k}H^\circ$.  The records the catalogue already held for carbonate, phosphate,
+hydrogensulfate, ammonia and borate (from PHREEQC) agree with Goldberg's selected $\mathrm{p}K$ to $0.007$ (phosphoric
+acid $0.025$ in the sum of three steps); their enthalpies agree to $0.3$~kJ/mol except phosphate (up to $1.5$) and
+hydrogensulfate, whose catalogue value $-16.1$ differs from the evaluated $-22.4$~kJ/mol by $6.3$; none was changed (the
+comparison is rendered by \file{bin/curate/species\_c373.py compare}).  Worked case:
+\file{inorganicLadders01\_goldberg} (half-neutralisation beakers whose Davies $\mathrm{pH}=\mathrm{p}K+\log_{10}(\gamma_B/\gamma_A)$
+at equal molality).
+
+\emph{Amines, imidazoles, peptides and amino acids.}  Phase~3 writes the ladders of Tris, triethanolamine, triethylamine,
+2-amino-2-methyl-1-propanol and -1,3-propanediol, diethanolamine, ethanolamine, methylamine, piperazine, imidazole,
+2-methylimidazole, N-ethylmorpholine, glycine amide, glycylglycine, glycylglycylglycine, L-histidine, L-cysteine and glycine
+from Goldberg et al.\ (2002) (Sections~7.4--7.68 as listed in the design note) and of L-alanine, L-aspartic and L-glutamic
+acids from Miller \& Smith-Magowan (1990), Table~6.  The master of each is the compound \emph{as weighed} (the neutral base, the zwitterion), and every other species is
+derived from it by one record, a protonation or a dissociation, as for the carbonate family whose master is
+$\mathrm{HCO_3^-}$; a family whose master is the most protonated form keeps the cumulative rule and the inverse record of
+the previous paragraphs.  For glycine, alanine, aspartic and glutamic acids the aqueous zwitterion's enthalpy and entropy are
+printed (Miller, Table~3: $\Delta_fH^\circ(\mathrm{aq})=-514.36,-553.75,-947.50,-980.72$~kJ/mol, crystal plus heat of solution)
+and Eq.~\eqref{eq:ladder-formation} gives the cation and the anion.  A ladder is held to the Gibbs identity
+$\mathrm{p}K=(\Delta H-T\,\Delta S)/(RT\ln 10)$ by the gate \file{check\_logk\_crosscheck}, which found that Miller's glutamic acid
+$\mathrm{p}K_3=9.93$ does not agree with its printed $\Delta_{\rm ion}S=-44.8$~J/mol/K ($9.36$): the entropy of the
+glutamate ion is therefore derived from the pK and the enthalpy.  The neutral amine as a dissolved species and the
+catalogue's volatile component of the same substance are two identities until a gas--liquid record links them.  Worked case:
+\file{aminoBuffers01\_tris\_glycine} (Davies $\mathrm{pH}=\mathrm{p}K+\log_{10}(1/\gamma_+)$ for a half-neutralised amine
+amine with HCl; the isoelectric glycine solution at $(\mathrm{p}K_1+\mathrm{p}K_2)/2$ to $0.01$); inventory and readings:
+\file{docs/design/species-from-evaluated-compilations.md}.
+
+\emph{Laboratory buffers.}  Phase~4 takes every remaining section of Goldberg et al.\ (2002) --- ACES, ADA, AMPSO,
+3-amino-1-propanesulfonic acid, barbital, BES, Bicine, Bis-tris, Bis-tris propane, cacodylate, CAPS, CAPSO, CHES,
+diglycolate, 3,3-dimethylglutarate, DIPSO, glycerol 2-phosphate, HEPES, HEPPS, HEPPSO, 2-mercaptoethanol, MES, MOPS, MOPSO,
+phthalate, PIPES, POPSO, TAPS, TAPSO, TES and Tricine --- as ionisation ladders with the evaluated $\mathrm{p}K$, $\Delta_{\rm ion}H^\circ$
+and the evaluation grade of the section, the formula and molar mass of each species from the section's own header (the
+line ``where $\mathrm{HL}=\dots$'' disagrees with the header in three sections and is not used).  The master is the zwitterion
+or neutral acid as weighed.  No formation data are carried: the compilation prints none, so a balance that needs the
+enthalpy of formation of a buffer species refuses by name.  CABS, HEPBS, MOBS and TABS have no evaluated data and are
+not built.  Because a record carries $\Delta H$ of one step, the temperature dependence is the van't Hoff form
+$\log_{10}K(T)=\log_{10}K_{25}-\frac{\Delta H}{R\ln10}\left(\frac1T-\frac1{298.15}\right)$; for HEPES at 37~\textdegree C it lowers
+$\mathrm{p}K$ by $0.138$ ($\Delta H=20.4$~kJ/mol), the printed $\Delta C_p=47$~J/mol/K would add $0.002$ and is not carried.
+Worked case: \file{goodsBuffers01\_hepes\_mes}.
 
 \subsection{Open systems: the Henry gas pin}\label{sec:gaspin}
 
@@ -22051,8 +22135,10 @@ F^{\mathrm{disp}}_{i,j-\frac12} - F^{\mathrm{disp}}_{i,j+\frac12}
 \end{equation}
 with upwind convective face fluxes $u\,A\,c$ ($u$ the superficial
 velocity), dispersive fluxes
-$-\varepsilon D_{\mathrm{ax}} A\,\partial c/\partial z$ at the
-interior faces, and the LDF sink \eqref{eq:ldf} evaluated at the local
+$-D_{\mathrm{ax}} A\,\partial c/\partial z$ at the
+interior faces (no factor $\varepsilon$: the code divides the whole
+row by $\varepsilon$, so $D_{\mathrm{ax}}/\varepsilon$ is the dispersion
+coefficient of the interstitial fluid), and the LDF sink \eqref{eq:ldf} evaluated at the local
 $p_{ij}$.  Two boundary statements (Danckwerts): at the inlet the
 \emph{flux} is imposed --- the first face carries exactly
 $u\,c_{\mathrm{in}}$, so what enters is what you fed, dispersion
@@ -22363,6 +22449,89 @@ None of this is the engine's arithmetic: the engine's \code{batchAdsorber}
 pressure.  The EduTool \code{batch-adsorption} carries it on the page; the
 design record \file{docs/design/batch-adsorption-in-a-stirred-tank.md}
 proposes the engine side.
+
+\subsection{Elution chromatography: retention, plates and
+resolution}\label{sec:chromatography}
+
+Feed the bed of \eqref{eq:bed-fv} a short rectangular injection of length
+$t_{\mathrm{inj}}$ instead of a step, on a straight isotherm $q^{*}=K_c c$.
+(For a gas $K_c = H R T$ with $H$ the Henry constant per unit partial
+pressure, Wankat's Eq.~(17-14c)\cite{Wankat2007}.)
+With $v=u/\varepsilon$, $k'=\rho_b K_c/\varepsilon$ and the engine's
+interstitial dispersion $D=D_{\mathrm{ax}}/\varepsilon$ (the code divides
+by $\varepsilon$; its dispersive face flux carries $D_{\mathrm{ax}}$ with
+no factor $\varepsilon$), a Laplace transform in time turns the bed into
+$D c'' - v c' - G(s)\,c = 0$ with $G(s) = s\,[1 + k'k/(s+k)]$.  For closed
+(Danckwerts) ends and Peclet number $\mathrm{Pe} = vL/D$ the outlet peak
+has
+\begin{equation}
+\mu_1 = \frac{L(1+k')}{v} + \frac{t_{\mathrm{inj}}}{2},\qquad
+\sigma^2 = \Bigl[\frac{2}{\mathrm{Pe}} - \frac{2(1-e^{-\mathrm{Pe}})}{\mathrm{Pe}^2}\Bigr]
+\Bigl(\frac{L(1+k')}{v}\Bigr)^{2} + \frac{2k'L}{vk} + \frac{t_{\mathrm{inj}}^{2}}{12},
+\label{eq:chrom-moments}
+\end{equation}
+so the retention time is $t_R = t_0(1+k')$, $t_0=L/v$ --- on a straight
+isotherm the stoichiometric time \eqref{eq:t-stoich}.  The factor
+$1+k'$ with $k' = \rho_b K_c/\varepsilon$ is Ruthven's
+Eq.~(8.36)\cite{Ruthven1984} (his $K$ counts the pore fluid with the solid,
+$K=\varepsilon_p+(1-\varepsilon_p)K_c$), Wankat's Eq.~(17-15a)\cite{Wankat2007}
+with the intraparticle term inside $K_c$, and Seader's
+Eq.~(15-171)\cite{SeaderHR2016} for a non-porous sorbent.  Liquid
+chromatography usually measures $t_0$ with a tracer that enters the pores,
+on the total porosity $\varepsilon_t=\varepsilon+(1-\varepsilon)\varepsilon_p$
+(Schmidt-Traub, Eqs.~(2.5), (2.14), (2.40)\cite{SchmidtTraub2020}): the
+retention time is the same, the dead time longer and $k'$ smaller.  The
+variance is Ruthven's Eqs.~(8.37) and (8.40) and Nicoud's Table~2.4 and
+Eq.~(2.50)\cite{Ruthven1984,Nicoud}, which print the dispersion term as
+$(2/\mathrm{Pe})\,t_R^{2}$ for open (simplified) ends; the closed-end
+bracket of \eqref{eq:chrom-moments} was re-derived from the Laplace
+transform above and differs from it by $-2(1-e^{-\mathrm{Pe}})/\mathrm{Pe}^{2}$,
+0.4\,\% of the dispersion term at $\mathrm{Pe}=250$.  For a long
+column the plate height $H = L\sigma^2/t_R^2$ (injection removed) is the van
+Deemter form
+\begin{equation}
+H = \frac{2D}{v} + \frac{2k'}{k(1+k')^2}\,v = A + \frac{B}{v} + Cv,
+\qquad D = \gamma D_m + \lambda d_p v,
+\label{eq:van-deemter}
+\end{equation}
+with $A = 2\lambda d_p$, $B = 2\gamma D_m$, $C = 2k'/(k(1+k')^2)$, a minimum
+$H_{\min} = A + 2\sqrt{BC}$ at $v_{\mathrm{opt}} = \sqrt{B/C}$, and
+$N = L/H$ plates, $\sigma_t = t_R/\sqrt{N}$ (Ruthven's
+Eqs.~(8.48)--(8.49), Schmidt-Traub's Eqs.~(2.16) and (2.19), Wankat's
+Eq.~(17-78)).  Van Deemter, Zuiderweg and Klinkenberg\cite{vanDeemter1956}
+write $D = \gamma D_m + \lambda u d_p$ (their Eq.~(48)) with $u$ the
+\emph{interstitial} velocity, and arrive at $2\lambda d_p + 2\gamma D_m/u$
+plus a mass-transfer term (their Eqs.~(38) and (49)); the letters $A$, $B$,
+$C$ are the later textbooks' (Schmidt-Traub's Eq.~(2.24), Ruthven's
+Eq.~(8.50)), and their paper resolves the mass-transfer term into a film
+and a particle resistance (their Eqs.~(42)--(45)), which the engine lumps
+into $k$.  The page takes $\gamma = 0.7$ (they give 0.5 to 1) and
+$\lambda = 0.5$, which is on the low side (they fitted 0 to 8; Nicoud
+puts the hydrodynamic plate height of a good packing near two particle
+diameters, i.e.\ $\lambda\approx 1$).  The plate model of Martin and
+Synge\cite{MartinSynge1941} (their Eq.~(1)) is the Erlang peak the page
+draws; at $t = 3$ standard deviations it leaves 0.13\,\% on the wrong side.  The engine's first-order
+upwind grid adds $v\,\Delta z/2$ to $D$: on a grid of cells it is itself a
+cascade of stirred plates, one per cell, $H_{\mathrm{grid}} = \Delta z$.
+Two peaks are resolved by
+$R_s = (t_{R,2}-t_{R,1})/\bigl(2(\sigma_1+\sigma_2)\bigr)$ (base widths of
+$4\sigma$; Wankat's Eq.~(17-82), Schmidt-Traub's Eq.~(2.25)), and
+$R_s = 1.5$ is baseline resolution.  With the later peak's width taken for
+both, $R_s = (\sqrt{N}/4)\,((\alpha-1)/\alpha)\,(k'_2/(1+k'_2))$ with
+$\alpha = k'_2/k'_1$ (Schmidt-Traub's Eq.~(2.26)); with one plate count for both
+peaks the exact form is Wankat's Eq.~(17-83),
+$R_s=(\sqrt N/4)(u_{s,1}-u_{s,2})/\bar u_s$.  On a competitive Langmuir isotherm
+(Schmidt-Traub's Eq.~(2.48), one saturation capacity for all solutes) a feed
+dominated by the later solute displaces the earlier one, and one dominated
+by the earlier solute drags the later one along (pp.~40--43).
+
+\emph{What Choupo computes.}  No unit operation is a chromatographic column
+and no operation computes \eqref{eq:chrom-moments}.  The fixed bed runs a
+gas pulse when its feed is switched off by a recipe; the EduTool
+\code{chromatography} writes that case, compares its outlet peaks with
+\eqref{eq:chrom-moments}, and integrates the overloaded (Langmuir) column
+itself.  The derivation, the measurement and the checks are in
+\file{docs/design/chromatography-peaks-and-resolution.md}.
 
 % ---------------------------------------------------------------------
 \section{Rotating equipment: compressors, turbines, pumps}\label{ch:rotating}
@@ -28529,6 +28698,29 @@ Simulators}, 4th ed., Wiley, 2016, Chapter~15: Freundlich Eqs.~(15-19) and
 adsorption, pp.~480--483: the film rate law (15-76), the batch balance (15-77),
 the closed form for a linear isotherm (15-80), Example~15.10 and Glueckauf's
 series resistance (15-100).
+
+\bibitem{MartinSynge1941} Martin, A.~J.~P.\ and Synge, R.~L.~M., ``A new form of
+chromatogram employing two liquid phases'', \emph{Biochem.\ J.}\ \textbf{35}
+(1941) 1358--1368, doi:10.1042/bj0351358: the plate theory, Eq.~(1) and the
+tail areas at $t=1,2,3$ (pp.~1360--1362).
+
+\bibitem{vanDeemter1956} van Deemter, J.~J., Zuiderweg, F.~J.\ and
+Klinkenberg, A., ``Longitudinal diffusion and resistance to mass transfer as
+causes of nonideality in chromatography'', \emph{Chem.\ Eng.\ Sci.}\
+\textbf{5} (1956) 271--289, doi:10.1016/0009-2509(56)80003-1: Eqs.~(38),
+(42)--(49) and the list of symbols (p.~288).
+
+\bibitem{SchmidtTraub2020} Schmidt-Traub, H., Schulte, M.\ and
+Seidel-Morgenstern, A.\ (eds.), \emph{Preparative Chromatography}, 3rd ed.,
+Wiley-VCH, 2020, Chapter~2: Eqs.~(2.5), (2.14)--(2.28), (2.40)--(2.48), the
+displacement and tag-along effects (pp.~40--43) and overloading
+(pp.~43--45).
+
+\bibitem{Nicoud} Nicoud, R.-M., \emph{Chromatographic Processes: Modeling,
+Simulation, and Design}, Cambridge University Press,
+doi:10.1017/CBO9781139998284 (the year is not given in the library copy,
+which has no title page): Table~2.4 (p.~39), Eqs.~(2.48)--(2.50) and
+appendix~B.
 
 \bibitem{Kinniburgh1986} Kinniburgh, D.G., ``General purpose adsorption
 isotherms'', \emph{Environ.\ Sci.\ Technol.} \textbf{20} (1986) 895--904,

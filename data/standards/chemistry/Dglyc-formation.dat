@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/Dglyc-formation.dat -- the first 2 dissociations of diglycolic acid, written from the master:
+      H2Dglyc  <=>  Dglyc + 2 H+
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv.
+
+  logK25 and dH are the PRINTED values of the sources below (standard state ideal solution at 1 mol/kg, 298.15 K):
+      pK1 = 3.05, dH1 = -0.1 kJ/mol, dCp ~-142 J/mol/K (grade BCD)
+      pK2 = 4.37, dH2 = -7.2 kJ/mol, dCp ~-138 J/mol/K (grade BCD)
+  Source: Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231; standard state: hypothetical ideal solution of unit molality, 298.15 K, 0.1 MPa (Section 8, p. 359).
+  This record carries the sum of the first 2 steps (the sign flips with the direction written).
+  The constant-dCp term of the printed dCp is NOT carried: the record grammar has no place for it (a
+  van't Hoff integral with a constant dCp is exactly the `analytic` A1, A3, A4 terms; proposed, not done).
+  Goldberg gives no formation data for a buffer.  The species are the acid form(s) and the conjugate base(s) of the section, charges as the section states them, the formula the section's own empirical formula.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species Dglyc; masters ( { ion H2Dglyc; nu 1; } { ion H; nu -2; } );
+      logK25 -7.42; dH -7300; source "Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231 -- Section 8 summary, p. 359, and Section 7.25, p. 272: pK1 3.05, dH1 -0.1 kJ/mol, pK2 4.37, dH2 -7.2 kJ/mol (pK, dH_ion at 298.15 K)";

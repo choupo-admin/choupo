@@ -1,0 +1,34 @@
+/*---------------------------------------------------------------------------*\
+  goodsBuffers01_hepes_mes -- the HEPES and MES laboratory buffers, 0.05 mol/kg half-neutralised with
+  NaOH (0.025 mol/kg), at 25 C and at 37 C.  Four beakers, the pH a RESULT of the charge balance,
+  read against the evaluated pK and enthalpy of ionisation of Goldberg, Kishore & Lennen,
+  J. Phys. Chem. Ref. Data 31 (2002) 231: HEPES pK 7.564, dH 20.4 kJ/mol (Section 7.36 p. 292);
+  MES pK 6.270, dH 14.8 kJ/mol (Section 7.44 p. 309).
+
+  WHAT THIS CASE IS.  A STRUCTURAL ILLUSTRATION of the C373 phase 4 records (the laboratory buffers,
+  written by bin/curate/species_c373.py from data/curation/batches/species_c373).  It is NOT
+  validated against a measured pH: no work in hand prints a pH for these solutions, so there are
+  no `anchor` rows.  The master of each family is the zwitterion as weighed (HHEPES, HMES); the
+  species are the acid and base forms and carry no formation data (Goldberg prints none).  The
+  temperature dependence is the van't Hoff form from the record's dH; the printed dCp (HEPES 47,
+  MES 5 J/mol/K) is NOT carried (no place in the record grammar) and would move the 37 C pK by
+  0.002 and 0.0002.
+
+  WHAT TO LOOK FOR.  (this run's numbers, Davies)
+   1. At 25 C the half-neutralised buffer sits at pK + log10(gamma): HEPES 7.498 = 7.564 - 0.066,
+      MES 6.204 = 6.270 - 0.066 (the base's activity coefficient 0.8594 at I = 0.025 against 1 for
+      the zwitterion).
+   2. Warming to 37 C lowers the pH by 0.139 (HEPES) and 0.101 (MES): the van't Hoff shift
+      dH/(R ln10) (1/298.15 - 1/310.15) = 0.138 and 0.100 in pK, a little more in pH from the
+      Davies coefficient (0.8566).  The larger the ionisation enthalpy the larger the shift, which
+      is why a Tris buffer (dH 47.45 kJ/mol, aminoBuffers01_tris_glycine) loses about a third of a pH
+      unit between bench and body temperature.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    { name hepes_25C; type speciate; activityModel davies; temperature 298.15; analyticalTotals { HHEPES 0.05 mol/kg; Na 0.025 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H2HEPES HHEPES HEPES ); output { file hepes_25C.csv; } }
+    { name hepes_37C; type speciate; activityModel davies; temperature 310.15; analyticalTotals { HHEPES 0.05 mol/kg; Na 0.025 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H2HEPES HHEPES HEPES ); output { file hepes_37C.csv; } }
+    { name mes_25C; type speciate; activityModel davies; temperature 298.15; analyticalTotals { HMES 0.05 mol/kg; Na 0.025 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( HMES MES ); output { file mes_25C.csv; } }
+    { name mes_37C; type speciate; activityModel davies; temperature 310.15; analyticalTotals { HMES 0.05 mol/kg; Na 0.025 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( HMES MES ); output { file mes_37C.csv; } }
+);

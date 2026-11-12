@@ -964,3 +964,30 @@ operation
 * The cake moisture is DECLARED (`wetToDryCakeRatio`), never predicted; give the
   slurry a liquid viscosity model in the thermo dict (`transport { liquid {
   viscosity { model Vogel; } } }`) or the unit refuses.
+
+## 18. An operator panel for a batch run — facts about it, not a grade  (edbatch01_constant_current)
+
+Put `system/panelDict` beside the `flowsheetDict` of a `choupoBatch` case.  One
+`elements ( ... )` entry per thing a person at the rig would read, each with a
+`reason`; a `limit` carries its `source` and `reason`; an `alarm` names the
+action it asks for.  The engine reads it after the run and prints `[panel]`
+lines and a `panel` block of the result: which element never moves, which limit
+the run crosses and when, how many alarms are active at once.  Read them, change
+the panel, run again; deciding whether the panel is good is the exercise.
+
+```
+elements
+(
+    { name currentDensity;  kind bar;
+      measurement { unit rig;  cv i_A_per_m2; }
+      range { min 0;  max 250; }
+      limit { high 200;  source "the stack record's limits { i_max }, an estimate";
+              reason "the rating the unit checks the run against"; }
+      alarm { on high;  action "lower the current set on the rectifier"; }
+      reason "the stack record declares this limit"; }
+);
+```
+* The columns a unit publishes are the header of `trajectory.csv`
+  (`<unit>.<key>`); a name not in it is the fact `notPublished`.
+* Other binaries refuse the file by name; full grammar and the facts:
+  `case-layout.md`, section `system/panelDict`.

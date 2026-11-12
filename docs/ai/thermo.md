@@ -327,12 +327,39 @@ DERIVED from the NBS rows: theoryGuide `sec:carboxylic-ionisation`), tartaric
 Goldberg 2002 Table 7.22; ion hfAq Kochergina 2006), **malic** (`H2Malic`/`HMalic`/`Malic`,
 Eden & Bates 1959, racemic acid; note `Malic*`, not `Mal*`), **lactic** (`HLac`/`Lac`, Nims &
 Smith 1936), **succinic** (`H2Succ`/`HSucc`/`Succ`), **oxalic** (`H2Ox`/`HOx`/`Ox`),
-**maleic** (`H2Male`/`HMale`/`Male`), **fumaric** (`H2Fumar`/`HFumar`/`Fumar`, Miller & Smith-Magowan 1990 Table 6).  The succinate, maleate, malate, lactate and fumarate species carry
-NO `hfAq` (no work in hand prints one): their speciation is complete, a balance that needs
-their enthalpy refuses by name.  The crystal `citricAcid` carries a formation enthalpy and
-a heat of solution but no Cp or entropy.  Malonic, glycolic, gluconic, ascorbic,
-gallic, propionic, butyric and benzoic acids have no ionisation record.  Inventory, readings,
-consistency checks and the works still missing: `docs/design/organic-acids-in-the-catalogue.md`.
+**maleic** (`H2Male`/`HMale`/`Male`), **fumaric** (`H2Fumar`/`HFumar`/`Fumar`, Miller & Smith-Magowan 1990 Table 6),
+**glycolic** (`HGlyc`/`Glyc`, Miller Table 6; speciation only).  C373 (2026-11-12) put formation data on the ions
+of succinic, fumaric, malic and lactic acids from Miller & Smith-Magowan 1990 (`hfAq`, and `sAq` for succinate and
+fumarate; derived from the acid's aqueous enthalpy plus the printed step enthalpies, theoryGuide
+`sec:evaluated-ionisation-families`) and built the crystal components `succinicAcid`, `fumaricAcid`, `malicAcid` (d,l)
+and `lacticAcid` with their heat-of-solution pairs.  The citrate family keeps Kochergina's ions; maleate, oxalate,
+glycolate and tartrate are unchanged (maleate has none, oxalate NBS, glycolate none because the source does not close).
+The neutral masters carry no `hfAq` (their datum is component + solution pair); a balance that needs an ion
+without one refuses by name.  No component carries a Cp or an entropy.  Malonic, gluconic, ascorbic,
+gallic, propionic, butyric and benzoic acids have no ionisation record.  Inorganic ladders from Goldberg et al. 2002 (C373 phase 2): **pyrophosphate**
+(`H4P2O7`/`H3P2O7`/`H2P2O7`/`HP2O7`/`P2O7`, navigation family `phosphate`), **arsenate** (`H3AsO4`/`H2AsO4`/`HAsO4`/`AsO4`),
+**sulfite** (`H2SO3`/`Bisulfite`/`Sulfite`) and **hydrazine** (`N2H6`/`N2H5`/`Hydrazine`); ionisation only, no formation
+data.  Carbonate, phosphate, hydrogensulfate, ammonia and borate keep their PHREEQC records (compared in the design note;
+hydrogensulfate's ionisation enthalpy is 6.3 kJ/mol off Goldberg's).  Case: `inorganicLadders01_goldberg`.
+Phase 3 (C373): **amines and amino acids** -- master = the compound AS WEIGHED (the base or the zwitterion), so a case
+declares it directly and HCl or NaOH is the titrant: `Tris`/`HTris`, `TEOA`/`HTEOA` (triethanolamine), `TEA`/`HTEA`
+(triethylamine), `AMP`/`HAMP`, `AMPD`/`HAMPD`, `DEA`/`HDEA`, `MEA`/`HMEA`, `MeNH2`/`HMeNH2`, `Piz` (piperazine: `HPiz`,
+`H2Piz`), `Imz`/`HImz`, `MImz`/`HMImz`, `NEM`/`HNEM`, `GlyAmd`/`HGlyAmd`, glycylglycine `HGlyGly` (`H2GlyGly`, `GlyGly`),
+triglycine `HGly3`, histidine `HHis` (`H3His`, `H2His`, `His`), cysteine `H2Cys`, and the amino acids with formation data
+from Miller & Smith-Magowan 1990: glycine `HGly` (`H2Gly`, `Gly`), alanine `HAla`, aspartic `H2Aspt` (`H3Aspt`, `HAspt`,
+`Aspt`), glutamic `H2Glu` (`H3Glu`, `HGlu`, `Glu`); zwitterions carry the printed aqueous enthalpy and entropy; crystal components
+`glycine`, `alanine` (L), `asparticAcid`, `glutamicAcid` with heat-of-solution pairs.  The neutral amine species and the
+volatile component of the same name (monoethanolamine, diethanolamine, triethanolamine, triethylamine, methylamine,
+piperazine) are two identities, not linked by any gas-liquid record.  Case: `aminoBuffers01_tris_glycine`.
+Phase 4 (C373): **laboratory buffers**, every other section of Goldberg 2002 (ACES, ADA, AMPSO, APSA, barbital, BES, Bicine,
+Bis-tris, Bis-tris propane, cacodylate, CAPS, CAPSO, CHES, diglycolate, 3,3-dimethylglutarate, DIPSO, glycerol 2-phosphate,
+HEPES, HEPPS, HEPPSO, 2-mercaptoethanol, MES, MOPS, MOPSO, phthalate, PIPES, POPSO, TAPS, TAPSO, TES, Tricine): species
+`H<acronym>` (the zwitterion or acid, the master) and `<acronym>` (the anion), `H2<acronym>` for a cationic acid; pK, dH and
+the evaluation grade, NO formation data (the compilation prints none), the printed dCp not carried.  CABS, HEPBS, MOBS
+and TABS have no evaluated data and are absent.  Case: `goodsBuffers01_hepes_mes` (HEPES and MES at 25 and 37 C).  Inventory, readings,
+consistency checks and the works still missing: `docs/design/organic-acids-in-the-catalogue.md` and
+`docs/design/species-from-evaluated-compilations.md`; the records are written by `bin/curate/species_c373.py` from
+`data/curation/batches/species_c373/*.tsv` and held by `check_species_c373`.
 Cases: `volatileAcids01_acetic_formic`, `citricAcid01_speciation`, `wineAcids01_tartaric_malic`.
 
 **The REACTIVE shape** (a speciation network + volatiles, as in the

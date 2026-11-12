@@ -2789,6 +2789,96 @@
           }
         }
       ]
+    },
+    "chromatography": {
+      "references": [
+        {
+          "text": "Martin, A. J. P.; Synge, R. L. M. (1941). A new form of chromatogram employing two liquid phases. Biochemical Journal 35(12), 1358–1368.",
+          "doi": "10.1042/bj0351358",
+          "note": "The plate model of step 2: the column as a series of equilibrium plates (their Eq. 1, p. 1360), its Gaussian limit and the t = 3 separation that leaves 0.13 % of a band on the wrong side (p. 1362).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Articles/Adsorption-Chromatography/martin1941-new-form-chromatogram-two-liquid-phases.pdf: authors, title and date (received 19 November 1941) read on the first page; the theory (Eq. 1, the binomial table, the tail areas 15.9 %, 2.27 % and 0.13 % at t = 1, 2, 3) read on pp. 1359-1363; api.crossref.org/works/10.1042/bj0351358: authors, title, container, volume 35, issue 12, pages and year matched (chromatography EduTool integration review)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "van Deemter, J. J.; Zuiderweg, F. J.; Klinkenberg, A. (1956). Longitudinal diffusion and resistance to mass transfer as causes of nonideality in chromatography. Chemical Engineering Science 5(6), 271–289.",
+          "doi": "10.1016/0009-2509(56)80003-1",
+          "note": "The plate-height equation of step 3: the page's eddy and axial-diffusion terms are their Eqs. 47 to 49, its mass-transfer term their Eq. 38 with the film and particle resistances lumped into one rate constant.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Articles/Adsorption-Chromatography/vandeemter1956-longitudinal-diffusion-mass-transfer-chromatography.pdf: title, authors and 'Vol. 5, pp 271 to 289' read on the first page; Eqs. 38 to 49, the list of symbols (p. 288) and the labyrinth and eddy factors (pp. 281-282) read as page images; api.crossref.org/works/10.1016/0009-2509(56)80003-1: authors, title, container, volume 5, issue 6, pages and year matched (chromatography EduTool integration review)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Glueckauf, E. (1955). Theory of chromatography. Part 10. Formulae for diffusion into spheres and their application to chromatography. Trans. Faraday Soc. 51, 1540–1551.",
+          "doi": "10.1039/tf9555101540",
+          "note": "The linear-driving-force uptake both the engine's bed and the page's integration use. The paper is not in the library; Ruthven (Eq. 8.41, p. 243) and Seader (Eq. 15-183, p. 506) print the approximation.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1039/tf9555101540: authors, title, container, volume 51, pages 1540-1551 and year matched, re-run 2026-11-12 (chromatography EduTool integration review); the paper itself was not read",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Guiochon, G. (2002). Preparative liquid chromatography. Journal of Chromatography A 965(1–2), 129–161.",
+          "doi": "10.1016/S0021-9673(01)01471-6",
+          "note": "A review of overloaded (preparative) elution, the subject of steps 5 and 6. It is not in the library: the statements of those steps are checked against Schmidt-Traub, Schulte and Seidel-Morgenstern, chapter 2, and the review itself was not read.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/S0021-9673(01)01471-6: authors, title, container, volume 965, issues 1-2, pages 129-161 and year matched, re-run 2026-11-12 (chromatography EduTool integration review); the review itself was not read",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Schmidt-Traub, H.; Schulte, M.; Seidel-Morgenstern, A. (eds.) (2020). Preparative Chromatography, 3rd ed. Wiley-VCH. ISBN 978-3-527-34486-4.",
+          "note": "Chapter 2: retention and capacity factors (Eqs. 2.14, 2.40), plate number from the moments (Eqs. 2.16 to 2.19), the van Deemter equation (2.24), the resolution (Eqs. 2.25 and 2.26), the competitive Langmuir isotherm (2.48), the displacement and tag-along effects (pp. 40 to 43) and column overloading (pp. 43 to 45).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/schmidttraub-preparative-chromatography-3ed.pdf: editors, title, edition, publisher, year (2020) and print ISBN read on the title and copyright pages; Eqs. 2.3 to 2.5, 2.14 to 2.28, 2.40 to 2.48 and section 2.5 read in the text layer (chromatography EduTool integration review)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Nicoud, R.-M. Chromatographic Processes: Modeling, Simulation, and Design. Cambridge University Press.",
+          "doi": "10.1017/CBO9781139998284",
+          "note": "Chapter 2: the moments of a column with axial dispersion and a linear-driving-force uptake (Table 2.4, p. 39) and the plate height from them (Eq. 2.50); appendix B on the Danckwerts boundary conditions. The library copy has no title page, so the year is not given.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/nicoud-chromatographic-processes-modeling-simulation-design-1ed.pdf (starts at chapter 1, no title page): the publisher and the DOI prefix 10.1017/CBO9781139998284 read in the page footers; Table 2.4, Eqs. 2.48 to 2.50 and appendix B read as page images and text (chromatography EduTool integration review)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Ruthven, D. M. (1984). Principles of Adsorption and Adsorption Processes. Wiley. ISBN 978-0-471-86606-0.",
+          "note": "The adsorption monograph: the moments of a linear column with axial dispersion and mass-transfer resistance (Eqs. 8.36 to 8.42, pp. 242 to 243) and the plate theory and HETP (Eqs. 8.44 to 8.50, pp. 248 to 249).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/ruthven-principles-of-adsorption-and-adsorption-processes-1ed.pdf (a scan): Eqs. 8.35 to 8.42 (pp. 242-243) and 8.44 to 8.50 (pp. 248-249) read as page images; Open Library ISBN 0471866067 (openlibrary.org/isbn/0471866067.json): Wiley, 433 pages, LC TP156.A35 R8 1984 (chromatography EduTool integration review)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Wankat, P. C. (2007). Separation Process Engineering, 2nd ed. Prentice Hall (Pearson Education). ISBN 0-13-084789-5.",
+          "note": "Chapter 17: the solute velocity with the interstitial, intraparticle and sorbed fractions (Eqs. 17-9 to 17-15, pp. 622 to 625), the Gaussian peak, the plate number (Eqs. 17-76 to 17-81, pp. 683 to 685) and the resolution (Eqs. 17-82 and 17-83, p. 685).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/wankat-separation-process-engineering-2ed.pdf: edition, copyright year 2007 and ISBN read on the copyright page; Eqs. 17-9 to 17-15 and 17-76 to 17-83 read in the text layer (chromatography EduTool integration review)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Seader, J. D.; Henley, E. J.; Roper, D. K. (2016). Separation Process Principles with Applications Using Process Simulators, 4th ed. Wiley.",
+          "note": "Chapter 15, section 15.8: the pulse as a wave, the solute wave velocity (Eq. 15-171) and the Gaussian-like peaks that dispersion and mass-transfer resistance produce, pp. 503 to 506. The section prints no resolution formula.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/seader-separation-process-principles-4ed.pdf: authors, title, edition, publisher and year read from the title and copyright pages; section 15.8 and Eqs. 15-171 to 15-183 read in the text layer (chromatography EduTool integration review)",
+            "date": "2026-11-12"
+          }
+        }
+      ]
     }
   }
 }

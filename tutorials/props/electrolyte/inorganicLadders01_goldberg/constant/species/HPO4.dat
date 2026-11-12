@@ -1,0 +1,64 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/HPO4.dat -- ONE model species, ONE typed file (the 2026-07-18
+  structural decision: the aqueous monolith dismantled; a sealed case copies
+  exactly the species it reaches, so the student sees the facts in use).
+  Body fields verbatim from the curated catalogue record (citations ride).
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+// CURATION STUB (Criss-Cobble migration 2026-07-18): the ion's
+// T-averaged Cp is PRIMARY-cited below; hfAq/sAq are NOT curated
+// yet -- a package consuming this ion's formation data must wait
+// for that curation (the loud-absence doctrine), the CC heat-
+// capacity tier alone is served.
+name    HPO4;
+formula     "HPO4-2";
+charge  -2;
+MW { value 95.979; unit g/mol;}
+aqueousThermo
+{
+// Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+// T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+// cal/mol/K on the CC ABSOLUTE single-ion scale.
+cpAvg298
+{
+    model  crissCobble1964;
+    scale  crissCobbleAbsolute;
+    units  "cal/mol/K";
+    averageFrom298
+    (
+        { T 298.15; value -132; }
+        { T 333.15; value -118; }
+        { T 373.15; value -129; }
+        { T 423.15; value -138; }
+        { T 473.15; value -146; }
+    );
+    source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
+}
+}
+
+transport
+{
+    //  D0 ONLY (DEV.md 4c C157).  No `radius` is curated for this ion: the
+    //  tier's radius is the HYDRATED radius of Nightingale, J. Phys. Chem. 63
+    //  (1959) 1381 -- the convention of the eight master ions and of every
+    //  DSPM-DE pore fitted against them -- and that table was not read back
+    //  in the session that wrote this block.  A Stokes radius computed from
+    //  D0 would be a different convention under the same key, so none is
+    //  written: DSPM-DE still refuses this ion by name, while the multi-ionic
+    //  polarisation film and the electrodialysis units read D0 alone.
+    D0 { value 6.9e-10; unit m2/s; }
+    provenance
+    {
+        source  "USGS PHREEQC database phreeqc.dat (usgs-coupled/phreeqc3, branch master, fetched 2026-10-25, sha256 5b80d45c989cd1db7aab485e198321ba550d5902be8097c8be26d85ba03da278), SOLUTION_SPECIES `PO4-3 + H+ = HPO4-2` (line 333), `-dw` line 337: the 25 C tracer diffusion coefficient Dw is its first field; the further fields (temperature and ionic-strength dependence) are not used.  The database names no per-value reference on this line; its file-level references are Appelo, Parkhurst and Post, Geochim. Cosmochim. Acta 125 (2014) 49-67 (its ref. 1) and Appelo, Cem. Concr. Res. 101 (2017) 102-113 (its ref. 3)";
+        licence publicDomain;
+        D0
+        {
+            origin        literature;
+            method        "read from the cited database line by a parse that checks the species equation above it (Dw at 25 C, infinite dilution)";
+            reviewStatus  interim;
+            notes         "Transcribed by machine from the cited public-domain database, not read back against a primary measurement of this ion's limiting conductance; the Stokes-Einstein correction to the run temperature is applied by the consumer (thermo/transport/StokesEinstein.H).";
+        }
+    }
+}

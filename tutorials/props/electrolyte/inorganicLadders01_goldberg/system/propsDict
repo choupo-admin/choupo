@@ -1,0 +1,45 @@
+/*---------------------------------------------------------------------------*\
+  inorganicLadders01_goldberg -- the ionisation ladders of phosphoric, pyrophosphoric,
+  arsenic and sulfurous acids and of hydrazine at 25 C: seven beakers, each made up at a
+  half-neutralisation point of one step, the pH a RESULT of the charge balance, read
+  against the evaluated pK's of Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31
+  (2002) 231, Section 8 (p. 359-360).
+
+  WHAT THIS CASE IS.  A STRUCTURAL ILLUSTRATION of the C373 phase 2 records (pyrophosphate,
+  arsenate, sulfite and hydrazine ladders, written by bin/curate/species_c373.py from
+  data/curation/batches/species_c373).  It is NOT validated against a measured pH: no work
+  in hand prints a pH for these solutions, so there are no `anchor` rows.  The phosphate
+  beaker runs on the catalogue's earlier PHREEQC records (pK2 7.207 there, 7.198 in
+  Goldberg), which this campaign compared and did not change.  `pH solve;` closes the
+  charge balance; `totalsBasis stoichiometric` makes the sodium a titrant (a neutral NaOH
+  feed) and HCl (the chloride) the titrant of the hydrazine beaker, whose master is the
+  neutral base `Hydrazine` as weighed.
+
+  WHAT TO LOOK FOR.  (this run's numbers, Davies, 25 C)
+   1. For two neighbouring species at equal molality the Davies pH is pK + log10(gamma_B /
+      gamma_A) exactly: arsenate (H2AsO4-/HAsO4--, 0.025 each, I = 0.100) pH 6.728 =
+      7.05 - 0.322 (log 0.3725/0.7812); sulfite (HSO3-/SO3--) 6.850 = 7.172 - 0.322;
+      hydrazinium (N2H5+/N2H4, 0.025 each, I = 0.025) 8.086 = 8.02 + 0.066 (gamma 0.8594 of
+      the cation, 1 for the neutral base).  The difference to the printed pK is the activity-coefficient ratio, not an
+      error of the constant.
+   2. Phosphate, equimolar H2PO4-/HPO4-- (0.05 each, I = 0.200): pH 6.826 = 7.207 - 0.38.
+   3. Pyrophosphate: the first two steps overlap (pK 0.83 and 2.26) and the three beakers
+      at 1.5, 2.5 and 3.5 equivalents of sodium give pH 2.230, 6.068 and 8.510 against pK2,
+      pK3, pK4 = 2.26, 6.72, 9.46: the gap grows with the charge of the pair (1.5 eq: H3P2O7-
+      0.0164 against H2P2O7-- 0.0331, the steps overlap; 3.5 eq: HP2O7--- 0.0248 and P2O7----
+      0.0251, gamma 0.059 and 0.0066, a factor of 9 between the two, so -0.95 pH).  Beyond
+      I ~ 0.4 the Davies window is passed, which is why the series stops at 3.5 equivalents.
+   4. No ion pairing with sodium for any of these anions: the catalogue holds none, so the
+      distribution is complete only up to the reactions somebody wrote down.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    { name phosphate_equimolar; type speciate; activityModel davies; analyticalTotals { PO4 0.10 mol/kg; Na 0.15 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H3PO4aq H2PO4 HPO4 PO4 ); output { file phosphate_equimolar.csv; } }
+    { name pyrophosphate_1p5eq; type speciate; activityModel davies; analyticalTotals { H4P2O7 0.05 mol/kg; Na 0.075 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H4P2O7 H3P2O7 H2P2O7 HP2O7 P2O7 ); output { file pyrophosphate_1p5eq.csv; } }
+    { name pyrophosphate_2p5eq; type speciate; activityModel davies; analyticalTotals { H4P2O7 0.05 mol/kg; Na 0.125 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H4P2O7 H3P2O7 H2P2O7 HP2O7 P2O7 ); output { file pyrophosphate_2p5eq.csv; } }
+    { name pyrophosphate_3p5eq; type speciate; activityModel davies; analyticalTotals { H4P2O7 0.05 mol/kg; Na 0.175 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H4P2O7 H3P2O7 H2P2O7 HP2O7 P2O7 ); output { file pyrophosphate_3p5eq.csv; } }
+    { name arsenate_1p5eq; type speciate; activityModel davies; analyticalTotals { H3AsO4 0.05 mol/kg; Na 0.075 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H3AsO4 H2AsO4 HAsO4 AsO4 ); output { file arsenate_1p5eq.csv; } }
+    { name sulfite_1p5eq; type speciate; activityModel davies; analyticalTotals { H2SO3 0.05 mol/kg; Na 0.075 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H2SO3 Bisulfite Sulfite ); output { file sulfite_1p5eq.csv; } }
+    { name hydrazine_half; type speciate; activityModel davies; analyticalTotals { Hydrazine 0.05 mol/kg; Cl 0.025 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( N2H6 N2H5 Hydrazine ); output { file hydrazine_half.csv; } }
+);

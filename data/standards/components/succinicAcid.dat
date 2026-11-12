@@ -1,0 +1,59 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Component: Succinic acid (butanedioic acid), crystal (C4H6O4).  MW 118.088 g/mol (the engine's atomic weights).
+
+  A NON-VOLATILE crystalline organic solid (mp 189-190 C, Perry's 9th ed. Table 2-2, p. 2-43): never enters the vapour (K = 0),
+  no Antoine block.  Built on the citric-acid pattern (components/citricAcid.dat); the C372 campaign had left
+  this acid without a component, and C373 builds it from the formation data of Miller & Smith-Magowan (1990),
+  with Domalski (1972) as the second reading.
+
+  WHAT THIS RECORD CARRIES, AND WHAT IT DELIBERATELY DOES NOT.
+
+    carries   the crystal formation enthalpy dHf = -940.81 +/- 0.42 kJ/mol
+              (Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 2, p. 1059, row dfH(cr) (their ref. a: the evaluation of Cox & Pilcher 1970; read from a page image));
+              the crystal density 1.572 g/cm3 at 25/4 C (Perry's);
+              the heat of solution of the pair file parameters/solution/succinicAcid-water.dat.
+    does NOT  a standard entropy s_298 and any heat capacity: no work in hand prints them for this crystal
+              as a record value (Miller prints S of the crystal only for succinic and fumaric acid, and it
+              enters the ions' entropies through the third-law route of its Table 2, not this record).  An
+              energy balance that reaches the crystal's or the solution's SENSIBLE heat therefore refuses by
+              name, which is the honest behaviour (CLAUDE.md rule 5).
+
+    ALSO BUILT, in their own homes: the succinate family (H2Succ, HSucc, Succ; chemistry/*-formation); pK 4.207 / 5.636 (Goldberg Table 7.57, p. 340).
+              Dissolved, this crystal is the molecular master of the family (the hypothetical non-dissociated
+              acid); a case that needs the dissociation declares that master.
+              Second reading: Domalski, J. Phys. Chem. Ref. Data 1 (1972) 221, Section 6.13, p. 236: succinic acid (c) dHf -224.79 kcal/mol x 4.184 = -940.53 kJ/mol (Section 5.5, p. 225), a second reading, 0.28 kJ/mol away; read from a page image.
+\*---------------------------------------------------------------------------*/
+
+name        succinicAcid;
+formula     C4H6O4;
+MW          118.088;            // kg/kmol
+
+role        nonvolatile;               // crystalline organic acid; never to the vapour (K = 0)
+dissociation 1;                 // molecular (the ions are species/, see the header)
+
+solid
+{
+    rho_p   1572.0;             // crystal density [kg/m^3] [1.572 g/cm3 at 25/4 C, Perry's 9th ed., Table 2-2]
+}
+
+standardThermochemistry
+{
+    dHf_298   -940810;        // J/mol  crystalline [-940.81 +/- 0.42 kJ/mol, Miller & Smith-Magowan 1990]
+    referenceState     pureSolid;
+}
+
+provenance
+{
+    dHf_298
+    {
+        origin        literature;
+        method        "evaluated enthalpy of formation of the crystal (-940.81 +/- 0.42 kJ/mol); second reading: Domalski, J. Phys. Chem. Ref. Data 1 (1972) 221, Section 6.13, p. 236: succinic acid (c) dHf -224.79 kcal/mol x 4.184 = -940.53 kJ/mol (Section 5.5, p. 225), a second reading, 0.28 kJ/mol away; read from a page image";
+        citation      "Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 2, p. 1059, row dfH(cr) (their ref. a: the evaluation of Cox & Pilcher 1970; read from a page image)";
+    }
+    rho_p
+    {
+        origin        literature;
+        method        "tabulated crystal density";
+        citation      "Perry's Chemical Engineers' Handbook, 9th ed., Table 2-2 'Physical Properties of Organic Compounds', p. 2-43, row Succinic acid (1.572 g/cm3 at 25/4 C)";
+    }
+}
