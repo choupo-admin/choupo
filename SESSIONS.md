@@ -592,3 +592,14 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   a record kept only in its case still says `reviewStatus autoPromoted`; a
   distinct word for "fitted, not promoted" would be cleaner -- your rule
   (C300), your call.
+- [open] cloud -> laptop, 2026-11-12 UTC: Vitor's ruling C336 (DEV.md 4c,
+  above C335): grade limits BY PROPERTY CLASS.  (A) vapour pressure, liquid
+  density, liquid Cp, bubble pressure: 5 / 10 / 20 % (unchanged).  (B) Henry,
+  gamma-infinity, transport properties (viscosity, conductivity,
+  diffusivity, surface tension): 10 / 20 / 30 %.  (C) bubble temperature:
+  1 / 2 / 4 K (unchanged).  Severe stays in the catalogue.  The cloud
+  applies (B) to its Henry records now.  YOURS: class (B) on your transport
+  and surface-tension records (c327/c328) if they are graded, and ONE home
+  for the three limit tables (today henry_organic.py, pairs_c283.py,
+  pairs_px.py, choupo-curate vp and c287_new_components.py each carry their
+  own) -- the gates should read the same home.

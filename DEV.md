@@ -3417,6 +3417,28 @@ accepts today, and that is a policy call.
 > (check by grep) are listed, not silently left.  Status: recorded, general to
 > be dispatched (gui only; `--gui` is its validation).  Owner: architect.
 
+> **C336 (Vitor, 2026-11-12, in the cloud session: he proposed stretching
+> "severe" to 29 % and asked whether that is reasonable for a process
+> simulator; the cloud answered "by property kind, not for all", and he
+> said "Concordo, regista e aplica").  THE GRADE LIMITS OF A CURATION FIT
+> DEPEND ON THE KIND OF PROPERTY.**  Three classes, on the maximum error
+> over the kept points:
+> (A) vapour pressure, liquid density, liquid Cp, bubble PRESSURE: clean up
+> to 5 %, warning 5-10 %, severe 10-20 %, refused above 20 % (unchanged);
+> (B) Henry constants, infinite-dilution activity coefficients, transport
+> properties (viscosity, thermal conductivity, diffusivity, surface
+> tension): clean up to 10 %, warning 10-20 %, severe 20-30 %, refused above
+> 30 % -- laboratories themselves disagree by 10-30 % on these, and their
+> effect on a design enters through large margins or fractional exponents;
+> (C) bubble TEMPERATURE (pairs): clean up to 1 K, warning 1-2 K, severe
+> 2-4 K, refused above 4 K (unchanged).
+> A severe record STAYS in the catalogue (C333's note; C300 rule 3
+> reversed); the grade and its number are voiced on every run that uses the
+> record.  The caps of C300 (in-sample, single laboratory, single
+> temperature) still apply on top.  A case may declare another band with its
+> reason.  One home for the three tables is owed (today each tool carries
+> its own limits): the architect's.
+
 > **C335 (Vitor, 2026-11-12, in the cloud session: "Eu nao quero ter
 > problemas com advogados!" and, to the cloud's recommendation, "Faz como
 > recomendas!").  THE PINNED LICENCE DEBTS ARE PAID BEFORE DECEMBER.**  The
