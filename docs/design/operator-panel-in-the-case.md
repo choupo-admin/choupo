@@ -84,7 +84,7 @@ admits no mid-run disturbance; (d) the Control Room never opens on it.
 | `events ( <C> ... recipe )` | `trend` only, optional | instants a Signal/Schedule MV or a recipe action changed, drawn as markers on the time axis |
 | `place { column; row; width; height; }` | integers inside `grid` | refused outside the grid or overlapping another element |
 | `reason` | string, required | why this element is on the panel; a missing reason refuses |
-| `origin` | `draft` or `edited` | who last shaped this element (§6.3) |
+| `authored` | `draft` or `edited` | who last shaped this element (§6.3) |
 
 **Units on scalars.**  A `range`/`limit` value is either a named unit the
 registry has (`313.15 K`, `2 min`), converted to SI, or a raw number in the SI
@@ -101,7 +101,7 @@ trajectory column declares its dimension today: that is stated, not hidden
 | proposed | decided | reason |
 |---|---|---|
 | `recordType controlPanel;` | dropped | no `system/` dict carries one (`layoutDict` does not); a word with one possible value |
-| `draft { origin; by; date; basedOn; }` | `draft { tool; engine; }` + per-element `origin` | the useful question is WHICH ELEMENTS a person changed, not who saved the file; `by`/`date` are git's |
+| `draft { origin; by; date; basedOn; }` | `draft { tool; engine; }` + per-element `authored` (not `origin`: that word belongs to the provenance vocabulary and check_origin_vocabulary holds it) | the useful question is WHICH ELEMENTS a person changed, not who saved the file; `by`/`date` are git's |
 | `lock { locked false; ... }` | `lock {}` present or absent | amplifier rule |
 | `range ( 0 0.6 ) S/m;` | `range { min; max; }` | a list with a trailing unit is no convention in the corpus; `min`/`max` is the outerDict and plot-axis form (`docs/ai/dict-syntax.md:851`, `:1089`); `S/m` is not in the registry |
 | `displayUnit mS/cm;` | dropped | display units already have one home, the reader's preferences (`gui/src/case/applyPrefs.ts`, the Units menu); `mS/cm` is not a registry unit |
@@ -137,7 +137,7 @@ elements
         range       { min 0;  max 1.4; }                 // S/m
         place       { column 1;  row 1;  width 8;  height 4; }
         reason      "the diluate is the product; its conductivity says how far the batch has got";
-        origin      draft;
+        authored    draft;
     }
     {
         name        demineralisation;
@@ -148,7 +148,7 @@ elements
         range       { min 0;  max 1; }                   // fraction
         place       { column 1;  row 5;  width 8;  height 4; }
         reason      "the unit publishes the straight line beside the run; their parting is the over-limiting regime";
-        origin      draft;
+        authored    draft;
     }
     {
         name        voltage;
@@ -158,7 +158,7 @@ elements
         range       { min 0;  max 10; }                  // V
         place       { column 9;  row 1;  width 4;  height 2; }
         reason      "at constant current the voltage is the free electrical variable; it rises as the diluate loses conductivity";
-        origin      edited;                              // the draft scale was 0..12 V
+        authored    edited;                              // the draft scale was 0..12 V
     }
     {
         name        overLimiting;
@@ -174,7 +174,7 @@ elements
         words       { normal "BELOW LIMITING";  high "OVER LIMITING"; }
         place       { column 9;  row 3;  width 4;  height 2; }
         reason      "the unit reports this regime boundary itself; crossing it is the event that ends efficient operation";
-        origin      draft;
+        authored    draft;
     }
     {
         name        currentDensity;
@@ -188,7 +188,7 @@ elements
         alarm       { on high;  action "lower the current set on the rectifier"; }
         place       { column 9;  row 5;  width 4;  height 2; }
         reason      "the stack record declares this limit";
-        origin      draft;
+        authored    draft;
     }
     {
         name        temperature;
@@ -202,7 +202,7 @@ elements
         alarm       { on high;  action "cool the tanks or stop"; }
         place       { column 9;  row 7;  width 4;  height 2; }
         reason      "the stack record declares this limit";
-        origin      draft;
+        authored    draft;
     }
 );
 
@@ -275,7 +275,7 @@ would sit beside the integrator).
 | `sameQuantityAlarms` | more than one `alarm` whose elements resolve to the same column | one cause, one alarm; two series that are functions of each other (`I_A`, `i_A_per_m2`) are NOT detected, and this is said in the gate |
 | `alarmsActive` | per instant, the count of elements in alarm (`delay` applied on the write grid); published: the maximum and its first instant | the count of active alarms is always shown |
 | `messageFired` | first instant each message's trigger holds | a message that never fires is visible as absent |
-| `draftDiffers` | an element marked `origin draft` whose fields differ from what the draft rules (§6) give on this run | the file was hand-edited without saying so, or the draft rules moved |
+| `draftDiffers` | an element marked `authored draft` whose fields differ from what the draft rules (§6) give on this run | the file was hand-edited without saying so, or the draft rules moved |
 
 All crossings are resolved to the **write grid** (`writeInterval`): a crossing
 between two writes is seen at the next one, and an excursion shorter than one
@@ -344,8 +344,8 @@ witness the rules give exactly the example of §3.4 with the voltage range
 
 ### 6.3 Draft against edited
 
-Every drafted element is written `origin draft;`.  The GUI's write marks
-`origin edited;` on every element whose fields differ from the ones it loaded;
+Every drafted element is written `authored draft;`.  The GUI's write marks
+`authored edited;` on every element whose fields differ from the ones it loaded;
 a hand edit in a text editor is caught by the fact `draftDiffers`.  On
 `--force` the drafter KEEPS every `edited` element and every `messages` entry
 and redraws the `draft` ones -- the layout drafter's rule of carrying the

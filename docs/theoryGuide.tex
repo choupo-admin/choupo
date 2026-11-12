@@ -22065,6 +22065,69 @@ blowdown with its first law closed (\file{batch25}). \\
 equilibrium shortcut in a steady flowsheet.
 \end{tutoriallink}
 
+\subsection{Liquid-phase isotherms fitted to laboratory points}\label{sec:adsorption-isotherm-fitting}
+
+Everything above is written for a gas, in partial pressure, because that is
+what the engine's isotherm records carry.  A laboratory course meets the
+other half first: flasks of solution shaken with a weighed dose of adsorbent,
+one equilibrium point $(c, q)$ per flask, with $q = V(c_0 - c)/M$ read from
+what the liquid lost.  Three single-solute models are fitted to such points:
+\begin{equation}
+q = K c, \qquad
+q = \frac{q_{\max}\, c}{K_L + c}, \qquad
+q = K_F\, c^{n} .
+\label{eq:ads-liquid-isotherms}
+\end{equation}
+The first is the Henry limit \eqref{eq:ads-henry} in concentration
+(Geankoplis Eq.~(28.1-1)\cite{GeankoplisHL2018}; $K$ is the Henry constant, with
+the units of $q$ over $c$).  The
+second is the Langmuir site balance of Eq.~\eqref{eq:langmuir} with the
+affinity written as a half-saturation concentration, $K_L = 1/b$; at
+$c \ll K_L$ it tends to the first with $K = q_{\max}/K_L$, so data confined to
+that region fix the ratio and not the two parameters.  The Langmuir form
+with a half-saturation concentration is Geankoplis Eq.~(28.1-3), with his
+$q_o$ and $K$ written $q_{\max}$ and $K_L$ here, because $q_0$ is already the
+loading of the adsorbent as charged in the batch balance; the forms with
+the affinity $b=1/K_L$ are Wankat Eq.~(17-6a), de Haan Eq.~(6.11) and Ruthven
+Eq.~(2.28)\cite{Wankat2007,DeHaan2020,Ruthven1984}.  The third is
+Freundlich's power law\cite{Freundlich1907}, Geankoplis Eq.~(28.1-2), which
+has neither a Henry limit (its slope diverges as $c\to 0$ for $n<1$) nor a
+plateau.  The exponent is written $n$ here, as Geankoplis and the course
+slides write it; Seader writes the same exponent $1/n$ (Eq.~(15-19)
+\cite{SeaderHR2016}), so a value of $n$ from one book is the reciprocal of
+a value of ``$n$'' in the other.
+
+The classical fits are straight lines in transformed variables:
+$1/q = 1/q_{\max} + (K_L/q_{\max})(1/c)$ (Geankoplis, after
+Eq.~(28.1-3): slope $K/q_o$, intercept $1/q_o$; Ruthven Eq.~(2.32), second form)
+and $\log q = \log K_F + n\log c$ (Geankoplis: the log--log slope is $n$).
+The page draws the double-reciprocal form because the course text does.
+Langmuir has a second straight line, $c/q = K_L/q_{\max} + c/q_{\max}$, drawn by
+Ruthven (Eq.~(2.32), first form), Wankat (Example~17-1), de Haan
+(Eq.~(6.12)) and Seader (Eq.~(15-25)) in their own symbols; it weights the
+points differently and returns different parameters from the same data.  Both
+forms minimise the scatter of the
+TRANSFORMED variable, so the double-reciprocal form gives the smallest
+loadings the largest leverage, and the parameters differ from a direct fit
+that minimises $S(\beta)=\sum_i w_i^2[q^*(c_i;\beta)-q_i]^2$ on what was
+measured\cite{Kinniburgh1986,BolsterHornberger2007}.  The direct fit is
+nonlinear in $\beta$ and is solved by damped Gauss--Newton
+(Levenberg--Marquardt\cite{Marquardt63}); near its minimum the parameter
+covariance is approximately $s^2(J^{\mathsf T}WJ)^{-1}$ with
+$s^2 = S(\hat\beta)/(N-p)$, which assumes independent errors of equal size
+after weighting and a model close to linear in $\beta$ over the
+uncertainty.  The single-stage batch balance $V c_0 + M q_0 = V c + M q$ is
+then an operating line of slope $-V/M$ on the isotherm, and the dose for a
+target $c$ is $M = V(c_0-c)/(q^*(c)-q_0)$.
+
+None of this is the engine's arithmetic today: the engine has no
+liquid-phase isotherm record and no Freundlich model, and its isotherm
+regression (\code{fitParameters} with \code{residual.kind isotherm}) reads
+partial pressures.  The EduTool \code{adsorption-isotherms} carries these
+fits on the page and says so; the design record
+\file{docs/design/adsorption-isotherms-from-laboratory-data.md} proposes the
+engine side.
+
 % ---------------------------------------------------------------------
 \section{Rotating equipment: compressors, turbines, pumps}\label{ch:rotating}
 
@@ -28146,6 +28209,48 @@ minimum, used by \cite{GeraldesAfonso2010} to locate $i_\text{lim}$.
 
 \bibitem{Wachinski2017} Wachinski, A. M., \emph{Ion Exchange Treatment for Water}, American Water Works Association, Denver (2017). Practitioner reference for water-softening capacity bases (eq/L bed vs eq/kg dry), regeneration and the sodium ``salt penalty'' \eqref{eq:salt-penalty}.
 
+\bibitem{GeankoplisHL2018} Geankoplis, C. J., Hersel, A. A., \& Lepek, D. H.,
+\emph{Transport Processes and Separation Process Principles}, 5th ed., Pearson
+(Prentice Hall), 2018, Chapter~28 (equations (28.1-1) to (28.1-3) and (28.2-1),
+pp.~1348--1350 of the 5th edition).  The linear, Freundlich and Langmuir forms,
+the log--log and $1/q$ against $1/c$ plots, and the batch balance whose plot
+against $c$ meets the isotherm.
+
+\bibitem{Wankat2007} Wankat, P. C., \emph{Separation Process Engineering},
+2nd ed., Prentice Hall (Pearson Education), 2007, Chapter~17: Eqs.~(17-5a) to
+(17-6c), the liquid-phase Langmuir isotherm, and Example~17-1, which fits
+$p/q$ against $p$.
+
+\bibitem{DeHaan2020} de Haan, A.~B., Eral, H.~B.\ and Schuur, B.,
+\emph{Industrial Separation Processes: Fundamentals}, 2nd ed., De Gruyter, 2020
+(ISBN 978-3-11-065473-8).  The sigma concept and the tubular-bowl cut
+(eqs.~9.41--9.46, pp.~308--309) and the disc-stack $\Sigma$ (eq.~9.52, p.~311).  Chapter~6 for the Langmuir isotherm: Eqs.~(6.6), (6.11), (6.12); for a liquid the physical meaning of $q_{\max}$ and $b'$ is lost and both are empirical constants.
+
+\bibitem{Ruthven1984} Ruthven, D. M., \emph{Principles of Adsorption and
+Adsorption Processes}, Wiley-Interscience (John Wiley \& Sons), 1984,
+pp.~49--50 (Eqs.~(2.27) to (2.32), the Langmuir isotherm and both of its
+linear forms) and p.~121 (Section~4.7, adsorption from the liquid phase).
+
+\bibitem{Freundlich1907} Freundlich, H., ``\"Uber die Adsorption in
+L\"osungen'', \emph{Z.\ Phys.\ Chem.} \textbf{57U} (1907) 385--470,
+doi:10.1515/zpch-1907-5723.  The power-law isotherm of
+Eq.~\eqref{eq:ads-liquid-isotherms}.
+
+\bibitem{SeaderHR2016} Seader, J. D., Henley, E. J., \& Roper, D. K.,
+\emph{Separation Process Principles with Applications Using Process
+Simulators}, 4th ed., Wiley, 2016, Chapter~15: Freundlich Eqs.~(15-19) and
+(15-20) with the exponent $1/n$, Langmuir Eqs.~(15-24) and (15-25).
+
+\bibitem{Kinniburgh1986} Kinniburgh, D.G., ``General purpose adsorption
+isotherms'', \emph{Environ.\ Sci.\ Technol.} \textbf{20} (1986) 895--904,
+doi:10.1021/es00151a008.  Nonlinear least squares for isotherms, and what
+the linearised forms do to the errors.
+
+\bibitem{BolsterHornberger2007} Bolster, C.H., Hornberger, G.M., ``On the use
+of linearized Langmuir equations'', \emph{Soil Sci.\ Soc.\ Am.\ J.} \textbf{71}
+(2007) 1796--1806, doi:10.2136/sssaj2006.0304.  How each linearised form
+weights the points.
+
 \bibitem{Weisbach1845} Weisbach, J., \emph{Lehrbuch der Ingenieur- und
 Maschinen-Mechanik}, Vol.~1, Braunschweig, 1845; and Darcy, H.,
 \emph{Recherches exp\'erimentales relatives au mouvement de l'eau dans
@@ -28319,11 +28424,6 @@ for the sedimentation type centrifuge'', \emph{Journal of Biochemical and
 Microbiological Technology and Engineering} \textbf{1}(2) (1959) 185--205,
 doi:10.1002/jbmte.390010206.  The tubular $\Sigma$ (eqs.~24--28, p.~191), the
 cut size (eq.~9) and the disc-type $\Sigma$ (eqs.~43--46, p.~194).
-
-\bibitem{DeHaan2020} de Haan, A.~B., Eral, H.~B.\ and Schuur, B.,
-\emph{Industrial Separation Processes: Fundamentals}, 2nd ed., De Gruyter, 2020
-(ISBN 978-3-11-065473-8).  The sigma concept and the tubular-bowl cut
-(eqs.~9.41--9.46, pp.~308--309) and the disc-stack $\Sigma$ (eq.~9.52, p.~311).
 
 \bibitem{Perry9} Green, D.~W.\ and Southard, M.~Z.\ (eds.), \emph{Perry's
 Chemical Engineers' Handbook}, 9th ed., McGraw-Hill, 2019.  Section~14:
