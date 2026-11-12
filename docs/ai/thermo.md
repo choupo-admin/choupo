@@ -300,10 +300,10 @@ DERIVED from the NBS rows: theoryGuide `sec:carboxylic-ionisation`), tartaric
 Goldberg 2002 Table 7.22; ion hfAq Kochergina 2006), **malic** (`H2Malic`/`HMalic`/`Malic`,
 Eden & Bates 1959, racemic acid; note `Malic*`, not `Mal*`), **lactic** (`HLac`/`Lac`, Nims &
 Smith 1936), **succinic** (`H2Succ`/`HSucc`/`Succ`), **oxalic** (`H2Ox`/`HOx`/`Ox`),
-**maleic** (`H2Male`/`HMale`/`Male`).  The succinate, maleate, malate and lactate species carry
+**maleic** (`H2Male`/`HMale`/`Male`), **fumaric** (`H2Fumar`/`HFumar`/`Fumar`, Miller & Smith-Magowan 1990 Table 6).  The succinate, maleate, malate, lactate and fumarate species carry
 NO `hfAq` (no work in hand prints one): their speciation is complete, a balance that needs
 their enthalpy refuses by name.  The crystal `citricAcid` carries a formation enthalpy and
-a heat of solution but no Cp or entropy.  Malonic, fumaric, glycolic, gluconic, ascorbic,
+a heat of solution but no Cp or entropy.  Malonic, glycolic, gluconic, ascorbic,
 gallic, propionic, butyric and benzoic acids have no ionisation record.  Inventory, readings,
 consistency checks and the works still missing: `docs/design/organic-acids-in-the-catalogue.md`.
 Cases: `volatileAcids01_acetic_formic`, `citricAcid01_speciation`, `wineAcids01_tartaric_malic`.

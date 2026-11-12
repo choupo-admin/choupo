@@ -150,6 +150,9 @@ speciesNavigation
     H2Malic { familyRoots ( malate );   }   // the neutral master of the family
     HMalic  { familyRoots ( malate );   }
     Malic   { familyRoots ( malate );   }
+    H2Fumar  { familyRoots ( fumarate );  }   // the neutral master of the family
+    HFumar   { familyRoots ( fumarate );  }
+    Fumar    { familyRoots ( fumarate );  }
     HLac    { familyRoots ( lactate );  }   // the neutral master of the family
     Lac     { familyRoots ( lactate );  }
 }

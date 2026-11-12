@@ -26,6 +26,7 @@ points at is read (its README).
 | Patterson & Woolley, J. Chem. Thermodyn. 33 (2001) 1567-1585 | pK and dH_ion of the two steps, 278-393 K (Tables 9 and 10), Cp, V | tartaric only |
 | **Eden & Bates, J. Res. Natl. Bur. Stand. 62 (1959) 161** (Research Paper 2947; US government work; scan, read from the page images) | thermodynamic pK1, pK2 of d,l-MALIC acid at 5-degree intervals 0-50 C, the fitted equations (24) and (25) (p. 168) and, in Tables 5 and 6 (p. 169), dG, dH, dS, dCp of both steps | malic |
 | **Nims & Smith, J. Biol. Chem. 113 (1936) 145** (open access, CC BY; page images) | thermodynamic pK of LACTIC acid at 0.3-50 C, equation (2) pK = 3.862 + 5e-5 (t - 23.5)^2 (p. 149), and dF, dH, dS at five temperatures in Table II (p. 148) | lactic |
+| **Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049** (NIST evaluated compilation; read from page images) | evaluated pK, dH_ion, dS_ion at 25 C for formic, acetic, succinic, FUMARIC, glycolic, lactic, malic, citric and others (Table 6, p. 1057); dHf of some crystals and aqueous acids (Table 5, p. 1056); evaluated Gibbs energies of formation of the aqueous ions (Table 10, p. 1067, with Table 9, p. 1066). Convention: H+(aq) = 0, zero ionic strength, aqueous ions at 1 mol/dm3 (Table 1 caption, p. 1052) | citric, malic, lactic, succinic, fumaric, glycolic |
 | NBS tables, Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 23:C (scanned; read from the page images) | dHf, dGf, S, Cp of aqueous species.  **Only C1 and C2 compounds**: formic acid and formate (p. 2-83), acetic acid and acetate, hydrogenoxalate (p. 2-93) and oxalate (p. 2-92), glycolate (dHf only, p. 2-93), glycolic acid crystal (p. 2-94) | formic, acetic, oxalic (anions), glycolic (partial) |
 | CODATA key values (Cox, Wagman & Medvedev 1989) | about 150 key substances, no organic acid beyond the carbon family | none |
 | CRC Handbook of Chemistry and Physics, 82nd ed. (Lide) | pKa at 25 C of 1070 organic acids; dHf/dGf/S/Cp of crystals and liquids.  **Aggregator: second reading, enters no value.**  Its pKa rows name no source (the table cites Perrin 1965/72, Serjeant & Dempsey 1979, Albert 1963, Sober 1968 as a group) | all |
@@ -46,7 +47,7 @@ pair.  "Goldberg" = the evaluated pK and dH of the work above.
 | **tartaric** | C, S x3, I x3, H (earlier) | the three I records CORRECTED to Goldberg 7.63 (see section 4) | Goldberg 7.63, Patterson Tables 9-10, Eden & Bates Table 6 (the same tartaric values), Kochergina Table 5 | nothing for the ionisation |
 | **malonic** | nothing | nothing | CRC pKa 2.85 / 5.70 | everything: not in Goldberg |
 | **oxalic** | C (`oxalicAcid`) | **S x3, I x3** | Goldberg 7.50: pK 1.27 / 4.266, dH -3.9 / -7.00, dCp ~-231 (BBC / AAA); NBS hfAq and S of HC2O4- and C2O4-- | NBS prints no dGf of the aqueous neutral acid (so pK1 is not derivable from NBS; Goldberg supplies it); no solution pair |
-| **fumaric** | nothing | nothing | CRC pKa 3.02 / 4.38 | everything: not in Goldberg |
+| **fumaric** | nothing | **S x3, I x3** (speciation-complete) | Miller Table 6 p. 1057: pK1 3.095, pK2 4.602, dH +0.46 / -2.85 kJ/mol | dHf, S of the ions and the crystal; no component |
 | **maleic** | C (`maleicAcid`) | **S x3, I x3** (speciation-complete) | Goldberg 7.42: pK 1.92 / 6.27, dH 1.1 / -3.6 (grades CBD / BBD: the weakest in this set) | dHf and S of the ions |
 | **glycolic** | nothing | nothing | NBS glycolate dHf -652.3 (no dGf, no S); Goldberg has no glycolate | dGf / S, pK, dH |
 | **gluconic** | nothing | nothing | nothing in hand (not in the CRC pKa table) | everything |
@@ -73,6 +74,7 @@ table as the pK, never a difference of formation enthalpies.
 | **succinate** | `species/{H2Succ,HSucc,Succ}`; `chemistry/{HSucc,Succ,H2Succ}-formation` | Goldberg Table 7.57, p. 340 | none: nothing in hand | navigation `succinate` |
 | **oxalate** | `species/{H2Ox,HOx,Ox}`; `chemistry/{HOx,Ox,H2Ox}-formation` | Goldberg Table 7.50, p. 316 | NBS Table 23:C: HC2O4- -818.4 kJ/mol, S 149.4 (p. 2-93); C2O4-- -825.1, 45.6 (p. 2-92) | navigation `oxalate` |
 | **maleate** | `species/{H2Male,HMale,Male}`; `chemistry/{HMale,Male,H2Male}-formation` | Goldberg Table 7.42, p. 305 | none: nothing in hand | navigation `maleate` |
+| **fumarate** | `species/{H2Fumar,HFumar,Fumar}`; `chemistry/{HFumar,Fumar,H2Fumar}-formation`; navigation `fumarate` | Miller & Smith-Magowan 1990, Table 6 p. 1057 (an evaluation; no primary of its own in hand) | none | |
 | **malate** | `species/{H2Malic,HMalic,Malic}`; `chemistry/{HMalic,Malic,H2Malic}-formation`; navigation `malate` | Eden & Bates 1959, Table 6 p. 169 (eqs. 24-25 reproduce them: 3.4592 and 5.0966 at 298.15 K) | none: nothing in hand | keys are `Malic*`, not `Mal*`, so they cannot be confused with the maleate keys `Male*`; racemic acid |
 | **lactate** | `species/{HLac,Lac}`; `chemistry/{Lac,HLac}-formation`; navigation `lactate` | Nims & Smith 1936, Table II p. 148 (pK 3.862; dH -60 cal/mol, the unit inferred from dF 5267 = 2.3026 R T pK; their eq. (4) gives -255 J/mol) | none: nothing in hand | |
 | **formate** | `chemistry/HFo-formation` | DERIVED: dG_ion = dGf(HCO2-) - dGf(HCO2H,ao) = -351.0 + 372.3 = 21.3 kJ/mol -> pKa 3.732; dH_ion = -425.55 + 425.43 = -0.12 kJ/mol (NBS Table 23:C p. 2-83) | `Formate` (existing, NBS) | as acetic acid, HFo has no species file |
@@ -87,7 +89,7 @@ rather than borrowing a value.  The headers of the records say so.  If you prefe
 that no species ship without a formation datum, delete the six succinate/maleate
 species files and their six chemistry records; nothing else depends on them.
 
-**What was NOT built:** malonic, fumaric, glycolic, gluconic,
+**What was NOT built:** malonic, glycolic, gluconic,
 ascorbic, gallic, propionic, butyric, benzoic (no ionisation work in hand; the CRC
 pKa rows are second readings only).  Oxalic acid's neutral aqueous Gibbs energy
 and glycolate's are not in NBS either, which is why Goldberg, not NBS, supplies
@@ -187,10 +189,42 @@ Consequence, and what was done:
   shipped case, sealed manifest, GUI file or guide text carried 2.98 / 4.34 / 7.32 for tartaric
   acid (grep of `gui/src`, `gui/tests`, `docs/*.tex`, `docs/ai`, `tutorials/`, `data/`).
 
+**Miller & Smith-Magowan 1990 (Table 6, p. 1057) against the sources the records use.**  No record
+was changed by this comparison; the ionisation records keep the primary measurement or the graded
+evaluation named in each header.
+
+| acid | quantity | record's source | Miller Table 6 | difference |
+|---|---|---|---|---|
+| citric | pK1 / pK2 / pK3 | 3.128 / 4.761 / 6.396 (Goldberg) | 3.128 / 4.761 / 6.396 | 0 |
+| citric | dH1 / dH2 / dH3 (kJ/mol) | +4.07 / +2.23 / -3.38 (Goldberg) | +4.17 / +2.44 / -3.36 | +0.10 / +0.21 / +0.02 |
+| succinic | pK1 / pK2 | 4.207 / 5.636 (Goldberg) | 4.207 / 5.636 | 0 |
+| succinic | dH1 / dH2 | +3.0 / -0.5 (Goldberg) | +3.18 / -0.45 | +0.18 / +0.05 |
+| malic | pK1 / pK2 | 3.459 / 5.097 (Eden & Bates) | 3.458 / 5.097 | -0.001 / 0 |
+| malic | dH1 / dH2 | +2.955 / -1.181 (Eden & Bates) | +2.95 / -1.18 | 0 |
+| lactic | pK | 3.862 (Nims & Smith) | 3.858 | -0.004 |
+| lactic | dH | -0.251 (Nims & Smith, -60 cal) | -0.43 | -0.18 |
+
+All agree inside the sources' own uncertainty: Miller cites the same measurements for the pK's (the
+citric, succinic and lactic constants of its table are Goldberg's and Nims & Smith's families).
+
+**Formation data of the ions, pointed to and NOT entered.**  Miller Table 10 (p. 1067) prints the
+evaluated Gibbs energies of formation of succinate, fumarate, glycolate, L-lactate, L-malate and citrate,
+in two columns ("succinate + acetate" and "all third law"), on the convention H+(aq) = 0, I = 0 (Table 1,
+p. 1052), which is the catalogue's; Table 5 (p. 1056) prints the enthalpies of formation of the crystals
+and of some aqueous acids (DL-malic acid -1105.66 crystal and -1083.81 aqueous; L-lactic -694.0 liquid and
+-686.2 aqueous, kJ/mol).  Turning these into hfAq and sAq of the ions needs the enthalpies of the ions
+(aqueous acid plus the Table 6 ionisation enthalpies) and third-law entropies read from Tables 2-4, and a
+choice between Miller's two columns; that is a reading of its own and it was not done in this pass.
+Consequence: the succinate, maleate, malate, lactate and fumarate species stay without `aqueousThermo`, and
+the energy route through them refuses by name.  Domalski 1972 (JPCRD 1, 221, a scan, sections 6.10-6.14)
+would supply crystal and liquid heats of formation from combustion for malic, succinic, lactic and
+fumaric acids; not read either.
+
 ## 5. The works still missing, in the order that matters for wine and food
 
-1. **Formation data of the aqueous species and the crystals of malic, lactic, succinic and
-   citric acids.**  Malic and lactic acids now have their ionisation (Eden & Bates 1959; Nims &
+1. **Formation data of the aqueous species and the crystals of malic, lactic, succinic, fumaric and
+   citric acids**: Miller & Smith-Magowan 1990 Tables 2-6, 9, 10 and Domalski 1972 are IN HAND and not yet
+   read into records (see above).  Malic and lactic acids now have their ionisation (Eden & Bates 1959; Nims &
    Smith 1936), succinic and citric theirs (Goldberg 2002); none of the C3+ acids has an
    evaluated formation datum in the works read above.  See the continuation of this note.
 2. **Lactic and malic liquid / crystal data** (component records): see the continuation.
