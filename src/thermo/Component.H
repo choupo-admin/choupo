@@ -472,6 +472,8 @@ public:
     //  predictive from MW, Tb and Tc -- which is why the block did not exist
     //  until a measured form (ChemSep's eqno 16, 420 of 431 records) arrived
     //  to need it.  Exposed raw so the next model needs no change here.
+    bool           hasSurfaceTension()    const { return surfaceTensionDict_ != nullptr; }
+    const DictPtr& surfaceTensionDict()   const { return surfaceTensionDict_; }
     bool           hasLiquidConductivity()   const { return liquidCondDict_ != nullptr; }
     const DictPtr& liquidConductivityDict()  const { return liquidCondDict_; }
 
@@ -856,6 +858,7 @@ private:
 
     // Transport: liquid-viscosity parameters; raw block, null if absent.
     DictPtr     liquidViscDict_     = nullptr;
+    DictPtr     surfaceTensionDict_ = nullptr;   // surfaceTension{} block, raw
     scalar      associationFactor_  = 1.0;     // Wilke-Chang φ (solvent)
 
     std::unique_ptr<VaporPressureModel> vp_;

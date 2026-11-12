@@ -37,12 +37,14 @@
   laboratory no point is discarded (no second series to call it an outlier
   against; C321 part 2 amended) and the grade is the series' real error.  Stage 2, minimax on
   the same residual over the kept points; its coefficients are the record's.  GRADE on the max relative
-  error over the kept points: clean up to 5 %, warning up to 10 %, severe up
-  to 20 %, refused above.  An in-sample clean resting on ONE laboratory is
+  error over the kept points (C336 class B, Henry): clean up to 10 %,
+  warning up to 20 %, severe up to 30 %, refused above.  An in-sample
+  clean resting on ONE laboratory is
   capped at warning (C300 rule 2).  One temperature gives no enthalpy: refused.
-  clean and warning are promoted (autoPromoted, review by none) into
-  data/standards/parameters/Henry/; severe stays in this case's
-  constant/parameters/Henry/ (C300 rule 3); refused writes nothing.
+  clean, warning and severe are promoted (autoPromoted, review by none)
+  into data/standards/parameters/Henry/ (C285; Vitor's ruling of
+  2026-11-12; C336 class B: only above 30 % is refused); refused writes
+  nothing.
 
   @@RESULT-BEGIN@@
   7 points of 1 laboratory(ies); 7 kept,

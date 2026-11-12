@@ -3417,6 +3417,101 @@ accepts today, and that is a policy call.
 > (check by grep) are listed, not silently left.  Status: recorded, general to
 > be dispatched (gui only; `--gui` is its validation).  Owner: architect.
 
+> **C340 (was written as C338 by the cloud; renumbered, the laptop's C338 is the guides rule) (Vitor, 2026-11-12, in the cloud session, after asking what the
+> simulator lacks for biotechnology and biorefineries: "Poe os pontos 1 a 4
+> na agenda e da-me os DOIs dos artigos").  BIOPROCESSES, THE FIRST FOUR.**
+> Measured today: the tree has the reactors (cstr, batch, fed-batch on
+> choupoSemiContinuous, dynamicCSTR), the written rate law, campaign plans,
+> GMP layout, the downstream separations and glucose / sucrose / glycerol /
+> ethanol / furfural; it has NO cell component, NO oxygen transfer, NO
+> validated fermentation case, NO lignocellulosic component.  On the agenda,
+> each with its sources (every DOI below resolved on Crossref 2026-11-12):
+> (1) THE CELL AS A COMPONENT -- elemental formula, formation enthalpy from
+> the heat of combustion, element and degree-of-reduction balances: Roels
+> 1980 (10.1002/bit.260221202); Cordier et al. 1987 (10.1007/BF00252538);
+> heat from oxygen uptake, Cooney, Wang & Mateles 1969
+> (10.1002/bit.260110302).  (2) OXYGEN TRANSFER -- kLa, OTR against OUR,
+> gassed power: Van't Riet 1979 (10.1021/i260071a001); Garcia-Ochoa & Gomez
+> 2009 (10.1016/j.biotechadv.2008.10.006); Michel & Miller 1962
+> (10.1002/aic.690080226).  (3) A VALIDATED FERMENTATION CASE (C217 step 2)
+> -- Mazzoleni et al. 2015, open access (10.1186/s12934-015-0295-4);
+> Sonnleitner & Kappeli 1986 (10.1002/bit.260280620).  (4) BIOREFINERY
+> COMPONENTS AND A FIRST KINETICS -- cellulose, xylan, lignin, xylose and
+> the acids: NREL/MP-425-20685, Wooley & Putsche 1996 (10.2172/257362; its
+> reuse terms to be READ before a value enters); the reference plant,
+> NREL/TP-5100-47764, Humbird et al. 2011 (10.2172/1013269); enzymatic
+> saccharification kinetics, Kadam, Rydholm & McMillan 2004
+> (10.1021/bp034316x).  The pedagogical scope of (1) and (2) -- what a
+> student is told a cell and an aerated tank are -- goes to Vitor before
+> any engine slice.  Only Mazzoleni and the two NREL reports are freely
+> readable; the others need Vitor's copies.
+
+> **C340 SCOPE APPROVED (Vitor, 2026-11-12, "aprovo", on the scope put to
+> him in the cloud session).**  (1) THE CELL: biomass is a component the
+> CASE declares -- a measured elemental formula with its source, its
+> formation enthalpy DERIVED from the heat of combustion and the derivation
+> shown; growth is a reaction with declared yield coefficients, and the
+> engine checks the carbon, nitrogen and degree-of-reduction balances and
+> REFUSES a stoichiometry that does not close; the heat of fermentation
+> comes from the formation-enthalpy balance, with the oxygen-uptake rule
+> (about 460 kJ per mol O2) printed beside it as a cross-check, never in its
+> place; said on screen as not modelled: internal metabolism, a varying
+> cell composition, maintenance unless declared.  (2) OXYGEN TRANSFER: an
+> aerated fermenter whose liquid is limited by oxygen -- OTR = kLa (C* - C)
+> set beside the cells' uptake rate; kLa from a correlation chosen in the
+> case (Van't Riet: power per volume and superficial gas velocity), its
+> validity window checked and its source cited, or a measured kLa declared;
+> gassed power by Michel & Miller; the result says WHICH limits growth,
+> oxygen or kinetics (the lesson); said on screen as not modelled: gradients
+> in the tank, foam, non-Newtonian broths.
+
+> **C339 (was written as C337 by the cloud; renumbered, the laptop's C337 is the column sheet) (Vitor, 2026-11-12, in the cloud session, after asking what the
+> kinetics lack: "Implementa ou poe na agenda o que achares que e razoavel do
+> ponto de vista de Pareto").  KINETICS, THE PARETO.**  Measured: the rate
+> forms are complete for teaching (Arrhenius power law, LHHW, the written
+> `expression` law with units and tables, a case's own C++ law); what is
+> missing is around them.  ON THE AGENDA, in this order: (1) THE PELLET --
+> the effectiveness factor inside cstr / pfr / batchReactor / dynamicCSTR
+> (today eta = 1, announced; scope in
+> docs/design/edutools-curriculum-survey.md section 6.1: a `kind catalyst`
+> asset record, the Thiele modulus from a declared D_eff, the rate
+> multiplied in ONE home).  WAITS ON VITOR for one ruling: where D_eff lives
+> (the catalyst record, or the case).  (2) A LIBRARY OF PUBLISHED KINETICS
+> AS REFERENCE CASES -- one `rateLawBench` witness per reaction, the law
+> written in the case's `constant/reactions` (axiom 3 keeps a rate law's
+> numbers in the case, so the library is a set of cases a student copies,
+> not a new data home), each held to the primary's own printed rates:
+> methanol synthesis, steam methane reforming, water-gas shift, ethylbenzene
+> dehydrogenation, a liquid esterification, thermal cracking (C228).  Each
+> needs its primary READ: the laptop's literature folder holds them; the
+> cloud takes those whose primary is open access.  (3) LATER, each with its
+> own case first: catalyst deactivation; Michaelis-Menten / Monod examples
+> (C217); Butler-Volmer for the electrolyser (C214 W7); a kinetic-parameter
+> fit from rate data.  NOT planned: package activities or fugacities as
+> formula symbols (C67's decision stands).
+
+> **C336 (Vitor, 2026-11-12, in the cloud session: he proposed stretching
+> "severe" to 29 % and asked whether that is reasonable for a process
+> simulator; the cloud answered "by property kind, not for all", and he
+> said "Concordo, regista e aplica").  THE GRADE LIMITS OF A CURATION FIT
+> DEPEND ON THE KIND OF PROPERTY.**  Three classes, on the maximum error
+> over the kept points:
+> (A) vapour pressure, liquid density, liquid Cp, bubble PRESSURE: clean up
+> to 5 %, warning 5-10 %, severe 10-20 %, refused above 20 % (unchanged);
+> (B) Henry constants, infinite-dilution activity coefficients, transport
+> properties (viscosity, thermal conductivity, diffusivity, surface
+> tension): clean up to 10 %, warning 10-20 %, severe 20-30 %, refused above
+> 30 % -- laboratories themselves disagree by 10-30 % on these, and their
+> effect on a design enters through large margins or fractional exponents;
+> (C) bubble TEMPERATURE (pairs): clean up to 1 K, warning 1-2 K, severe
+> 2-4 K, refused above 4 K (unchanged).
+> A severe record STAYS in the catalogue (C333's note; C300 rule 3
+> reversed); the grade and its number are voiced on every run that uses the
+> record.  The caps of C300 (in-sample, single laboratory, single
+> temperature) still apply on top.  A case may declare another band with its
+> reason.  One home for the three tables is owed (today each tool carries
+> its own limits): the architect's.
+
 > **C335 (Vitor, 2026-11-12, in the cloud session: "Eu nao quero ter
 > problemas com advogados!" and, to the cloud's recommendation, "Faz como
 > recomendas!").  THE PINNED LICENCE DEBTS ARE PAID BEFORE DECEMBER.**  The
@@ -3494,6 +3589,117 @@ accepts today, and that is a policy call.
 > architect schedules them; the cloud takes Beggs-Brill if the paper is made
 > readable to it.  What Vitor said does NOT worry him: the drawn flowsheet
 > editor, compound count, interoperability.
+
+> **C338 (Vitor, 2026-11-12: "poe isso num sitio bem visivel para ti, porque eu
+> estou a assumir que estas a documentar tudo o que fazes nos guias").**  The
+> rule is now CLAUDE.md section 0 rule 4d and the first lines of BRAIN.md:
+> a capability is not done until the Theory Guide section, the block's Theory
+> link, the Tutorials Guide / catalogue / docs-ai entries and the rebuilt PDFs
+> exist, and every brief carries them as acceptance criteria.  A sentence is
+> not a contract (this file's own lesson), so a gate follows:
+> `check_feature_documented` -- every name a factory registers (unit
+> operations, props operations, activity / EoS / transport / mixing-rule /
+> efficiency / packing models) must appear in a guide section with a label
+> and in the docs/ai catalogue; today's undocumented names are counted and
+> pinned as debt that may only shrink.  Known debt to pay first: C329 (in
+> progress), C328 StoredCorrelation, C311 electrolyteFit, C327 transport
+> records, C321 Henry from Sander, C331 (did its guides).
+
+> **C337 (Vitor, 2026-11-12: "a destilacao deve ter uma visualizacao detalhada
+> se for pedido o design da coluna ... parecido ao que se fez para o
+> permutador").**  Measured: gui/src/ui/ColumnDatasheet.tsx
+> (`columnDatasheetHtml`, :84) already prints an HTML specification sheet of
+> tables (items sized, design basis, trays rated, worst tray, weeping trays,
+> declared geometry), but it has NO drawing, while HeatExchangerDatasheet.tsx
+> draws its bundle as an SVG (:156).  DECIDED: the column sheet gains (1) an
+> elevation to scale (shell, trays or packed beds, feed and draw nozzles,
+> condenser and reboiler), (2) a tray plan view (active area, downcomers, weir,
+> hole pattern at the declared pitch and open area), (3) the operating window
+> of the worst tray (flood, entrainment, weeping, downcomer backup, with the
+> operating point), (4) per-stage profiles: T, composition, vapour and liquid
+> traffic, approach to flood, pressure drop, and -- from C329 -- the computed
+> tray efficiency or the packing HETP.  Everything drawn from the engine's
+> published KPIs and the declared geometry, nothing recomputed in the GUI; a
+> quantity the engine does not publish is listed as missing, not invented.
+> Built on top of the C329 branch (general dispatched).
+
+> **C334 (Vitor, 2026-11-12: "vou estender o severo ate 29 %"; AMENDED the same
+> hour).**  The architect first agreed for pair fits (29 % / 8 K) and then
+> withdrew that part on the cloud session's argument, which is the better
+> physics: the limit belongs to the PROPERTY, by how well it is measured and
+> how hard the design leans on it.  Decided, one table for every tool:
+> vapour pressure, liquid density, liquid Cp, bubble pressure: 5 / 10 / 20 %,
+> refused above (an error there goes straight into the boiling point and the
+> relative volatility); bubble temperature of a pair: 1 / 2 / 4 K; Henry
+> constants, gamma at infinite dilution, viscosity, thermal conductivity,
+> diffusivity: 10 / 20 / 30 %, refused above (laboratories disagree by 10-30 %
+> there, and transfer coefficients depend on them with fractional exponents).
+> Kept from the first version: a SEVERE pair fit is promoted only if it beats
+> the ideal mixture on its own kept points, both maxima written.  Owners: the
+> cloud applies the wide band to Henry (C321), the laptop to transport (C327)
+> and keeps the pair limits as they are.
+
+> **C333 (Vitor, 2026-11-12: "estas a descartar ajustes severos entre 10 % e
+> 20 %, mas esses sao para ficar!  So acima de 20 % e que se descartam!").**
+> C300 rule 3 (the architect's own tightening: `severe` leaves the default
+> catalogue) is REVERSED.  It contradicted the graded acceptance he had ruled in
+> C285/C286 -- clean, warning AND severe are accepted and promoted; only
+> `refused` (above the severe limit) is discarded -- and the technical reason
+> stands on its own: without a record the engine falls back to an ideal pair,
+> which is usually far worse than a severe fit, while a severe record is voiced
+> SEVERE on every run that loads it.  What stays from C300: the in-sample
+> label, the cap at warning for one laboratory / one temperature, `review {}`.
+> What stays out: `refused`, and a pair whose model splits ONE liquid inside
+> its validity span (arm f) whatever its grade.  To promote now: the severe
+> fits kept in their cases -- C290 45 NRTL, C294 18 UNIQUAC and 50 Wilson,
+> C325 its severe NRTL/UNIQUAC/Wilson, C311 12 eNRTL, C327 7 viscosities and 2
+> surface tensions -- minus those that split; the gates that refuse a severe
+> record in the catalogue are changed with the rule, in the same commit.
+
+> **C333 RESULT (slice 1, 2026-11-12, the cloud; branch c333-reference-eos).**
+> ONE Helmholtz kernel (`src/thermo/equationOfState/HelmholtzEnergy`: ideal
+> ln delta / lead / logTau / power / Planck-Einstein, residual power /
+> exponential / Gaussian / non-analytic, analytic derivatives) and
+> `ReferenceFluid` (properties, density from (T, p) on the branch the
+> spinodals bound, saturation by Maxwell with no ancillary).  Coefficients in
+> records, `data/standards/parameters/Helmholtz/<equation>.dat`.  SHIPPED:
+> water, IAPWS-95, read from IAPWS R6-95(2018) (iapws.org, 2026-11-12):
+> 81 of 81 check values reproduced at the printed precision (worst relative
+> deviation 5.0e-7, a six-digit value), at every load (a miss refuses the
+> record) and in an independent Python implementation
+> (`bin/curate/check_reference_eos.py`, two by-hand sabotages caught).
+> Reached by the props op `referenceEoS` and, with NO ThermoPackage or
+> Component change, by a flowsheet through the PureFluidModel factory
+> (`pureFluids { water { method Helmholtz; equation IAPWS95; } }`; rankine02
+> agrees with IF97 to ~1e-4, 100x slower).  NOT shipped: CO2 (primary readable
+> only as a scanned image, jpcrd516.pdf -- a transcription slice), N2, H2,
+> NH3, CH4 (no readable primary located), GERG-2008, transport.  One word
+> added to the held `PropsPlan.cpp` table (the op's file-traffic row,
+> required by check_props_order) and one new GUI schema file.  Record:
+> `docs/design/reference-equations-of-state.md`.  Witness
+> `tutorials/props/thermo/refEoS01_iapws95_verification`.
+
+> **C333 RESULT (slice 2, 2026-11-12, the cloud; branch c333-eos-slice2).**
+> Three more fluids through the same kernel, each record GENERATED by
+> `bin/curate/helmholtz/gen_record.py` from a committed transcription of its
+> primary (`bin/curate/helmholtz/<fluid>/`, each table read twice from the
+> page images -- and from the text layer where one exists -- and diffed):
+> CO2 Span & Wagner 1996 (jpcrd516.pdf, scanned) 67/67 check values
+> reproduced, worst 8.4e-4 (an entropy printed to 3 digits); N2 Span et al.
+> 2000 (jpcrdreprint/1.1349047.pdf, molar basis converted with the paper's M)
+> 67/67, worst 2.7e-4; CH4 Setzmann & Wagner 1991 (jpcrdreprint/1.555898.pdf)
+> 74/74, worst 1.2e-4 -- all at the first load; the check values are rows of
+> each paper's own property tables (none prints a verification table).  NOT
+> shipped: H2 (Leachman 2009 prints no molar mass for its per-kg tables), NH3
+> (Gao et al. 2023, NIST manuscript readable, needs the associating term --
+> a new term type, its own slice).  Flowsheet reach measured on a scratch
+> pure-N2 compressor (0.5 % on the pressure ratio vs ideal gas).  The 100x
+> slowdown is the spinodal scan per new isotherm (13 ms) and the
+> supercritical scan (19 ms); the cheap fixes are named in
+> docs/design/reference-equations-of-state.md section 5, not built.  Rule 4d
+> debt of slice 1 paid: Theory Guide section `ch:helmholtz-eos`, modelDocs
+> links for `referenceEoS`, `Helmholtz` and the four records, catalogue, AI
+> docs, capability index, PDFs rebuilt.
 
 > **C332 (Vitor, 2026-11-12, in the cloud session: "Aprovo tudo!
 > Eventualmente depois podemos rever!").**  Approved: (1) a new EduTools shelf
@@ -3630,7 +3836,12 @@ accepts today, and that is a policy call.
 > (constant/parameters/Henry/, C300 rule 3) -- 234 promoted, henryPairs 486 ->
 > 485, the FASTSET line moved to CO2-cyclohexanol, and check_organic_records
 > refuses a single-laboratory record carrying discarded points (built
-> negative and by-hand sabotage, both caught).
+> negative and by-hand sabotage, both caught).  RULED THE SAME DAY (Vitor, C285
+> over C300 rule 3: "com 19 % ainda pode ficar; so acima de 20 % e que nao"):
+> a severe record stays in the catalogue, voiced severe, so NH3-ethanol is
+> promoted at 19.03 % (235 promoted: 234 warning, 1 severe; henryPairs 485 ->
+> 486, FASTSET line unchanged) and check_organic_records refuses only a fit
+> above 20 % (a > 20 % fit dressed as severe is a built negative).
 
 > **C304 (Vitor, 2026-11-11, an external reviewer's reading of the Pinch
 > report of greenAmmoniaPEQ_baseCase: "a normal case report must be an

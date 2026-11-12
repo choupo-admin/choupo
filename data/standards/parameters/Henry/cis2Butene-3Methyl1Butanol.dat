@@ -12,7 +12,7 @@
   least squares then minimax on the relative residual of H; points above
   20 % after the least-squares stage discarded by name (0 here).
   5 kept points, 249.95-329.99 K; max relative error
-  4.04 % in-sample (graded 5 / 10 / 20 %).
+  4.04 % in-sample (graded 10 / 20 / 30 %, C336 class B).
   Regressed by Choupo, NOT read by a human; the archive's transcription has
   not been read back against the articles.
 
@@ -43,7 +43,7 @@ provenance
     method        "van't Hoff fit, least squares then minimax on H_model/H - 1, bin/curate/henry_organic.py";
     CAS           590-18-1;
     fittedInCase  "data/curation/henry/cis2Butene-3Methyl1Butanol";
-    fitGrade      warning;   // DEV.md 4c C285: max |H_model - H|/H over the kept points, graded 5 / 10 / 20 %
+    fitGrade      warning;   // DEV.md 4c C285: max |H_model - H|/H over the kept points, graded 10 / 20 / 30 % (C336 class B)
     fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
     fitGradeCap   ( singleLaboratory );   // DEV.md 4c C300 rule 2
     fitGradeMaxRelativeError_pct 4.0385;

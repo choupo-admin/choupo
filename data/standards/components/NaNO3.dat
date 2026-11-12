@@ -32,11 +32,54 @@ role           nonvolatile;    // a dissolved salt never enters the vapour (K = 
 // The van't Hoff factor is DERIVED from it (Component.cpp), never stored twice.
 dissociatesTo  { Na 1; NO3 1; }   // ion stoichiometry (formula-like identity)
 
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     -60.81178541;
+        B     6419.234067;
+        C     6.905838515;
+        D     0;
+        E     0;
+        Tmin  590.3;
+        Tmax  752.1;
+    }
+}
+
 provenance
 {
     MW
     {
         origin        literature;
         method        "summed from the IUPAC 2021 abridged standard atomic weights (Prohaska et al., Pure Appl. Chem. 94 (2022) 573): 22.99 + 14.007 + 3 x 15.999";
+    }
+    liquidViscosity
+    {
+        origin        fitted;
+        method        "least squares on ln y of ln(mu/Pa.s) = A + B/T + C ln T (chemsepEq101 with D = 0), 3 parameter(s), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      warning;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeCap   ( singleLaboratory );   // DEV.md 4c C300 rule 2
+        fitGradeMaxRelativeError_pct 3.289963;
+        Trange        (590.3 752.1);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C327)";
+        evidence
+        (
+                { doi "10.1007/s10765-006-0119-1"; articleSha256 "b22277792421a8f546c62ce2b02a9059f75e1d7c4caeed5a3e6f1a8f7b94d350"; pointsKept 14; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     1;
+            pointsKept  14;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     1.659533;
+            max_pct     3.289963;
+        }
     }
 }

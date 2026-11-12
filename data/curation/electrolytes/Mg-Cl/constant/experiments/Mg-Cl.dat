@@ -1,0 +1,49 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Mg-Cl: mean ionic activity coefficient gamma_pm and osmotic coefficient
+  phi of the salt (Mg)1(Cl)2 in water at 298.15 K -- the EVALUATED
+  (recommended) values of
+    R. N. Goldberg and R. L. Nuttall, Evaluated Activity and Osmotic Coefficients for Aqueous Solutions: The Alkaline Earth Metal Halides, J. Phys. Chem. Ref. Data 7 (1978) 263-310,
+    doi:10.1063/1.555569, Table 17, p. 288 (m, gamma, phi, a_w), the recommended values.
+  The evaluation is the primary source of these recommended values (its
+  own references are the measurements behind them).
+  TRANSCRIBED 2026-11-11 (DEV.md 4c C311) from the NIST reprint
+  (nist-jpcrd-1.555569.pdf): every row read by eye from the page image; phi checked against the printed water activity (ln a_w = -nu m phi M_w, to 2.5e-4) and gamma against its neighbours by the Gibbs-Duhem relation; two rows failed the Gibbs-Duhem check (gamma at 0.3 and 1.5 mol/kg, first read .4827 and .7622) and were re-read at higher magnification as .4807 and .7602, which the printed excess Gibbs energy confirms.
+  Rows kept: 0.1 mol/kg up to ionic strength 6 mol/kg; a row the
+  source marks saturated, supersaturated or from another author is not
+  here.  Every 4th row (0-based index % 4 == 3, never the first or the
+  last) is HELD OUT by the case (system/propsDict), not by this file.
+\*-----------------------------------------------------------------------------*/
+provenance
+{
+    source        "R. N. Goldberg and R. L. Nuttall, Evaluated Activity and Osmotic Coefficients for Aqueous Solutions: The Alkaline Earth Metal Halides, J. Phys. Chem. Ref. Data 7 (1978) 263-310";
+    doi           "10.1063/1.555569";
+    location      "Table 17, p. 288 (m, gamma, phi, a_w), the recommended values";
+    reviewStatus  transcribed;
+}
+
+temperature 298.15;   // K, every row
+
+columns
+(
+    { name m;     unit mol/kg; }
+    { name gamma; unit -; }       // gamma_pm, molality scale
+    { name phi;   unit -; }       // molal osmotic coefficient
+);
+
+data
+(
+    0.1     0.5347   0.8648  
+    0.2     0.4935   0.876   
+    0.3     0.4807   0.8963  
+    0.4     0.4796   0.9206  
+    0.5     0.4855   0.9475  
+    0.6     0.4962   0.9765  
+    0.7     0.5111   1.0073  
+    0.8     0.5296   1.0398  
+    0.9     0.5515   1.0738  
+    1       0.5769   1.1092  
+    1.25    0.6561   1.2034  
+    1.5     0.7602   1.3047  
+    1.75    0.8943   1.4123  
+    2       1.0655   1.525   
+);

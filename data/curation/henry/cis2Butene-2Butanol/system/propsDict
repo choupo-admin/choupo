@@ -37,23 +37,23 @@
   laboratory no point is discarded (no second series to call it an outlier
   against; C321 part 2 amended) and the grade is the series' real error.  Stage 2, minimax on
   the same residual over the kept points; its coefficients are the record's.  GRADE on the max relative
-  error over the kept points: clean up to 5 %, warning up to 10 %, severe up
-  to 20 %, refused above.  An in-sample clean resting on ONE laboratory is
+  error over the kept points (C336 class B, Henry): clean up to 10 %,
+  warning up to 20 %, severe up to 30 %, refused above.  An in-sample
+  clean resting on ONE laboratory is
   capped at warning (C300 rule 2).  One temperature gives no enthalpy: refused.
-  clean and warning are promoted (autoPromoted, review by none) into
-  data/standards/parameters/Henry/; severe stays in this case's
-  constant/parameters/Henry/ (C300 rule 3); refused writes nothing.
+  clean, warning and severe are promoted (autoPromoted, review by none)
+  into data/standards/parameters/Henry/ (C285; Vitor's ruling of
+  2026-11-12; C336 class B: only above 30 % is refused); refused writes
+  nothing.
 
   @@RESULT-BEGIN@@
   5 points of 1 laboratory(ies); 5 kept,
   0 discarded after the least-squares stage (> 20 %):
   ONE laboratory: no point was discarded (C321 part 2 amended).
-  THE SERIES DOES NOT FOLLOW VAN'T HOFF within 5 %: the two-parameter
-  form misses its own measurements by up to 5.54 %.
   H_ref = 6.06574e+05 Pa at 298.15 K, enthalpy = -21933 J/mol;
   kept span 249.87-330 K; max relative error
   5.5375 % (least squares 6.1126 %); in-sample
-  grade warning.
+  grade clean, CAPPED to warning (singleLaboratory).
   PROMOTED into data/standards/parameters/Henry/.
   @@RESULT-END@@
 

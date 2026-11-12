@@ -1561,6 +1561,41 @@ DATA SCOPE: sealed (bin/choupo-import); every record named and verified by const
 \end{tutgolden}
 
 \clearpage
+\tutentry{electrolyteFit01\_nacl}{tutorials/props/electrolyte/electrolyteFit01\_nacl}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_pitzer}\\[-1pt]{\tiny electrolyteFit}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{fit\_eNRTL}\\[-1pt]{\tiny electrolyteFit}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{electrolyteFit: Pitzer and eNRTL regressed to the evaluated gamma\_pm and phi of NaCl, 25 C}
+\begin{tutnarrative}
+ONE SALT, TWO MODELS, ONE TABLE. The parameters of NaCl(aq) are regressed to the evaluated mean ionic activity coefficient gamma\_pm and osmotic coefficient phi of Hamer \& Wu, J. Phys. Chem. Ref. Data 1 (1972) 1047, doi:10.1063/1.3253108, Table 16 (constant/experiments/Na-Cl.dat, the same file as the catalogue's curation case data/curation/electrolytes/Na-Cl), 0.1-6 mol/kg at 25 C -- first by Pitzer (beta0, beta1, Cphi), then by eNRTL (two taus, alpha 0.2 fixed).
+
+WHAT TO READ IN THE OUTPUT. The per-point table: Pitzer misses nowhere by more than 0.2 \%; two-parameter eNRTL misses by about 3 \% at 6 mol/kg -- the same data, two model shapes. Compare the fitted values with the literature: Pitzer \& Mayorga (1973) give 0.0765 / 0.2664 / 0.00127, Chen \& Evans (1986) 8.885 / -4.549. Every 4th point is HELD OUT and printed beside the fit: interleaved points of the SAME table, so they show interpolation, not a validation against an independent source.
+
+The rules the catalogue campaign applies (window, grade, cap) are stated in bin/curate/electrolytes\_c311.py (DEV.md 4c C311).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{fit\_pitzer}{grade\_heldOut}{0}
+\goldrow{diag}{fit\_pitzer}{grade\_inSample}{0}
+\goldrow{diag}{fit\_pitzer}{heldOut\_gamma\_AAD\_pct}{0.0597412761731}
+\goldrow{diag}{fit\_pitzer}{heldOut\_max\_pct}{0.120525651013}
+\goldrow{diag}{fit\_pitzer}{heldOut\_phi\_AAD\_pct}{0.0633666466159}
+\goldrow{diag}{fit\_pitzer}{inSample\_gamma\_AAD\_pct}{0.0743035817969}
+\goldrow{diag}{fit\_pitzer}{inSample\_max\_pct}{0.202377039474}
+\goldrow{diag}{fit\_pitzer}{inSample\_phi\_AAD\_pct}{0.0631592025556}
+\goldrow{diag}{fit\_pitzer}{molality\_max}{6}
+\goldrow{diag}{fit\_pitzer}{molality\_min}{0.1}
+\goldrow{diag}{fit\_pitzer}{nFit}{18}
+\goldrow{diag}{fit\_pitzer}{nHeldOut}{5}
+\goldrow{diag}{fit\_pitzer}{param\_Cphi}{0.00128772685997}
+\goldrow{diag}{fit\_pitzer}{param\_beta0}{0.0760798823768}
+\goldmore{19}
+\end{tutgolden}
+
+\clearpage
 \tutentry{enrtl\_mixed\_nacl\_ethanol\_esteso}{tutorials/props/electrolyte/enrtl\_mixed\_nacl\_ethanol\_esteso}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -5160,6 +5195,52 @@ NOT MODELLED, said plainly (the run says it too): nucleation and supercooling --
 \end{tutgolden}
 
 \clearpage
+\tutentry{refEoS01\_iapws95\_verification}{tutorials/props/thermo/refEoS01\_iapws95\_verification}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{sat450}\\[-1pt]{\tiny referenceEoS}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{liquid300}\\[-1pt]{\tiny referenceEoS}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{metastableVapour300}\\[-1pt]{\tiny referenceEoS}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{supercritical900}\\[-1pt]{\tiny referenceEoS}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{extrapolated1500}\\[-1pt]{\tiny referenceEoS}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{co2Sat280}\\[-1pt]{\tiny referenceEoS}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{co2Supercritical350}\\[-1pt]{\tiny referenceEoS}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{n2Sat100}\\[-1pt]{\tiny referenceEoS}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-2.6) {\textbf{n2Liquid100}\\[-1pt]{\tiny referenceEoS}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-3.9) {\textbf{ch4Sat150}\\[-1pt]{\tiny referenceEoS}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-3.9) {\textbf{ch4Dense200}\\[-1pt]{\tiny referenceEoS}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Reference (multiparameter Helmholtz) equations of state through one kernel: water IAPWS-95 (R6-95(2018)), carbon dioxide (Span and Wagner 1996), nitrogen (Span et al. 2000) and methane (Setzmann and Wagner 1991) -- every check value of each publication reproduced at the printed precision at load; states on (T, p) and (T, rho), saturation by the Maxwell criterion.}
+\begin{tutnarrative}
+water from its REFERENCE equation of state, IAPWS-95, through Choupo's one Helmholtz-energy kernel.
+
+The equation is a record, data/standards/parameters/Helmholtz/IAPWS95.dat: 56 residual terms and 8 ideal-gas terms transcribed from IAPWS R6-95(2018), with the release's own computer-program verification values (Tables 6, 7, 8, the virial footnote, the triple point) -- 81 numbers. Loading the record evaluates ALL of them at the precision the release prints them; a single wrong digit refuses the run. The log lists each check (verbosity 3) and the term-by-term contributions to alpha at every state: the glass box of a reference equation.
+
+The operations show the four things a reference equation is asked: a saturation state by the Maxwell criterion (equal p, equal g); a (T, p) state on the liquid side -- the density is SOLVED, and every root of the isotherm is listed with its branch; a (T, p) state on a DECLARED metastable branch (a supersaturated vapour at 300 K, above psat = 3.54 kPa); a supercritical state, and one OUTSIDE the release's validated window (1500 K), which is announced as an extrapolation with the release's own words on extrapolating it. Each writes its CSV (12 significant digits, SI) that bin/curate/check\_reference\_eos.py recomputes independently.
+
+The SAME kernel then carries three more fluids whose records are generated from page-image transcriptions (bin/curate/helmholtz/<fluid>/): carbon dioxide (Span \& Wagner 1996), nitrogen (Span et al. 2000) and methane (Setzmann \& Wagner 1991), each held at load to every value of its own property tables the transcription carries.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{sat450}{T}{450}
+\goldrow{diag}{sat450}{checkValues}{81}
+\goldrow{diag}{sat450}{checksReproduced}{81}
+\goldrow{diag}{sat450}{hL}{749161.585012}
+\goldrow{diag}{sat450}{hLV}{2025249.19488}
+\goldrow{diag}{sat450}{hV}{2774410.77989}
+\goldrow{diag}{sat450}{psat}{932203.563628}
+\goldrow{diag}{sat450}{rhoL}{890.341249762}
+\goldrow{diag}{sat450}{rhoV}{4.81200360126}
+\goldrow{diag}{sat450}{sL}{2108.65844688}
+\goldrow{diag}{sat450}{sV}{6609.21221328}
+\goldrow{diag}{sat450}{worstCheckRelDev}{4.99275183559e-07}
+\goldrow{diag}{liquid300}{T}{300}
+\goldrow{diag}{liquid300}{checkValues}{81}
+\goldmore{139}
+\end{tutgolden}
+
+\clearpage
 \tutentry{standardState01\_hydrogen\_enthalpy\_TP}{tutorials/props/thermo/standardState01\_hydrogen\_enthalpy\_TP}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -5415,6 +5496,53 @@ The brine is NaCl-dominated (3 mol/kg, near seawater) with CaSO4 (0.10 mol/kg) r
 
 \subsection{transport}
 \grouptheory{transport}
+\clearpage
+\tutentry{surfacetension01\_stored\_vs\_brockbird}{tutorials/props/transport/surfacetension01\_stored\_vs\_brockbird}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{sigma\_methanol\_280K\_stored}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{sigma\_methanol\_280K\_brockBird}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{sigma\_methanol\_310K\_stored}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{sigma\_methanol\_310K\_brockBird}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{sigma\_methanol\_340K\_stored}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{sigma\_methanol\_340K\_brockBird}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{sigma\_ethanol\_280K\_stored}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{sigma\_ethanol\_280K\_brockBird}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-2.6) {\textbf{sigma\_ethanol\_310K\_stored}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-3.9) {\textbf{sigma\_ethanol\_310K\_brockBird}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-3.9) {\textbf{sigma\_ethanol\_330K\_stored}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-3.9) {\textbf{sigma\_ethanol\_330K\_brockBird}\\[-1pt]{\tiny propertyPoint}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Liquid surface tension two ways: StoredCorrelation (a power law fitted to the laboratories in the ThermoML archive and stored on each record) beside Brock-Bird (corresponding states from Tc, Pc, Tb), five liquids at three temperatures inside the stored windows; the stored curve is itself a regression, graded in-sample and reviewed by nobody}
+\begin{tutnarrative}
+surfacetension01 -- THE MEASURED CURVE BESIDE THE ESTIMATE (DEV.md 4c C328).
+
+For each of five liquids (methanol, ethanol, 1-propanol, triethanolamine, n-hexane) the sigma(T) of two models is evaluated at three temperatures inside the window the record declares:
+
+StoredCorrelation sigma = A (1 - T/Tc)\textasciicircum{}n + B (1 - T/Tc)\textasciicircum{}(n+1), read from the component's own `surfaceTension \{\}` block. The numbers are a regression Choupo made on every laboratory the ThermoML archive holds for the pure liquid (A, n fitted; B = 0; the largest relative error over the data is the record's own fitGradeMaxRelative Error\_pct: 4.3 \% methanol, 4.0 \% ethanol, 3.9 \% 1-propanol, 3.6 \% triethanolamine, 2.8 \% n-hexane). It is graded inSample and reviewed by nobody; the measured points are not stored in this tree. BrockBird the corresponding-states estimate from Tc, Pc and Tb (Reid-Prausnitz-Poling eq. 12-3.5), no sigma datum.
+
+Read the pairs: n-hexane, a hydrocarbon, is where Brock-Bird works (its largest deviation from the fitted curve over the data is 3.8 \%); methanol (108 \%), ethanol (88 \%), 1-propanol (72 \%) and triethanolamine (76 \%) are where it does not. A property op prints sigma [N/m]; the deviation of the estimate from the stored curve is brockBird / stored - 1, read off the two columns of each pair. The golden master locks every sigma at reltol 1e-5.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{sigma\_methanol\_280K\_stored}{Cp\_ig}{42.41173696}
+\goldrow{diag}{sigma\_methanol\_280K\_stored}{H\_R}{0}
+\goldrow{diag}{sigma\_methanol\_280K\_stored}{H\_ig}{-201722.738725}
+\goldrow{diag}{sigma\_methanol\_280K\_stored}{H\_real}{-201722.738725}
+\goldrow{diag}{sigma\_methanol\_280K\_stored}{P}{100000}
+\goldrow{diag}{sigma\_methanol\_280K\_stored}{S\_R}{0}
+\goldrow{diag}{sigma\_methanol\_280K\_stored}{S\_ig}{237.171843835}
+\goldrow{diag}{sigma\_methanol\_280K\_stored}{S\_real}{237.171843835}
+\goldrow{diag}{sigma\_methanol\_280K\_stored}{T}{280}
+\goldrow{diag}{sigma\_methanol\_280K\_stored}{Z}{1}
+\goldrow{diag}{sigma\_methanol\_280K\_stored}{gamma}{1.24384537411}
+\goldrow{diag}{sigma\_methanol\_280K\_stored}{surface\_tension}{0.0240980488561}
+\goldrow{diag}{sigma\_methanol\_280K\_stored}{v\_molar}{0.0232804953304}
+\goldrow{diag}{sigma\_methanol\_280K\_stored}{viscosity}{6.68764480486e-06}
+\goldmore{406}
+\end{tutgolden}
+
 \clearpage
 \tutentry{transport01\_gas\_bench}{tutorials/props/transport/transport01\_gas\_bench}
 \begin{tutscheme}

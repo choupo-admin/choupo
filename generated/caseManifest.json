@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1493,
+  "cases": 1564,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 15
@@ -63,6 +63,22 @@
    "application": "choupoProps",
    "ops": [
     "estimateComponent",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/batches/transport_c327": {
+   "application": "choupoProps",
+   "ops": [
     "propertyScan1D"
    ],
    "thermo": {
@@ -1712,6 +1728,1078 @@
    "application": "choupoProps",
    "ops": [
     "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Ba-Br": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Ba-Cl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Ba-I": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Ca-Br": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Ca-Cl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Ca-I": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Cd-NO2": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Cd-NO3": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Cs-Acetate": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Cs-Br": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Cs-Cl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Cs-F": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Cs-I": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Cs-NO3": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Cs-OH": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Cs-SO4": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/H-Br": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/H-Cl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/H-I": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/H-NO3": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/K-Acetate": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/K-Br": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/K-Cl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/K-F": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/K-H2PO4": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/K-HPO4": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/K-I": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/K-NO3": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/K-OH": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/K-SO4": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Li-Acetate": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Li-Br": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Li-Cl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Li-I": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Li-NO3": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Li-OH": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Li-SO4": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Mg-Br": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Mg-Cl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Mg-I": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/NH4-Cl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/NH4-HPO4": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/NH4-NO3": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Na-Acetate": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Na-Br": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Na-Cl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Na-F": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Na-H2PO4": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Na-HPO4": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Na-I": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Na-NO3": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Na-OH": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Na-SO4": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Rb-Acetate": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Rb-Br": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Rb-Cl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Rb-F": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Rb-I": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Rb-NO3": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Rb-SO4": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Sr-Br": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Sr-Cl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Sr-I": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Zn-Br": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Zn-Cl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Zn-I": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/electrolytes/Zn-NO3": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -17750,6 +18838,20 @@
    ],
    "hasGolden": true
   },
+  "tutorials/props/electrolyte/electrolyteFit01_nacl": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/electrolyte/enrtl_mixed_nacl_ethanol_esteso": {
    "application": "choupoProps",
    "ops": [
@@ -19075,6 +20177,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/thermo/refEoS01_iapws95_verification": {
+   "application": "choupoProps",
+   "ops": [
+    "referenceEoS"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/thermo/standardState01_hydrogen_enthalpy_TP": {
    "application": "choupoProps",
    "thermo": {
@@ -19146,6 +20262,20 @@
     "scalingScan",
     "speciate"
    ],
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/transport/surfacetension01_stored_vs_brockbird": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
    "roles": [],
    "hasGolden": true
   },
@@ -23731,6 +24861,7 @@
     "data/curation/batches/new_components",
     "data/curation/batches/new_components_c309",
     "data/curation/batches/new_components_estimated",
+    "data/curation/batches/transport_c327",
     "data/curation/components/1122Tetrachloroethane",
     "data/curation/components/11Diethoxyethane",
     "data/curation/components/12Butanediol",
@@ -23834,6 +24965,73 @@
     "data/curation/components/triethanolamine",
     "data/curation/components/triethylamine",
     "data/curation/components/vinylPropionate",
+    "data/curation/electrolytes/Ba-Br",
+    "data/curation/electrolytes/Ba-Cl",
+    "data/curation/electrolytes/Ba-I",
+    "data/curation/electrolytes/Ca-Br",
+    "data/curation/electrolytes/Ca-Cl",
+    "data/curation/electrolytes/Ca-I",
+    "data/curation/electrolytes/Cd-NO2",
+    "data/curation/electrolytes/Cd-NO3",
+    "data/curation/electrolytes/Cs-Acetate",
+    "data/curation/electrolytes/Cs-Br",
+    "data/curation/electrolytes/Cs-Cl",
+    "data/curation/electrolytes/Cs-F",
+    "data/curation/electrolytes/Cs-I",
+    "data/curation/electrolytes/Cs-NO3",
+    "data/curation/electrolytes/Cs-OH",
+    "data/curation/electrolytes/Cs-SO4",
+    "data/curation/electrolytes/H-Br",
+    "data/curation/electrolytes/H-Cl",
+    "data/curation/electrolytes/H-I",
+    "data/curation/electrolytes/H-NO3",
+    "data/curation/electrolytes/K-Acetate",
+    "data/curation/electrolytes/K-Br",
+    "data/curation/electrolytes/K-Cl",
+    "data/curation/electrolytes/K-F",
+    "data/curation/electrolytes/K-H2PO4",
+    "data/curation/electrolytes/K-HPO4",
+    "data/curation/electrolytes/K-I",
+    "data/curation/electrolytes/K-NO3",
+    "data/curation/electrolytes/K-OH",
+    "data/curation/electrolytes/K-SO4",
+    "data/curation/electrolytes/Li-Acetate",
+    "data/curation/electrolytes/Li-Br",
+    "data/curation/electrolytes/Li-Cl",
+    "data/curation/electrolytes/Li-I",
+    "data/curation/electrolytes/Li-NO3",
+    "data/curation/electrolytes/Li-OH",
+    "data/curation/electrolytes/Li-SO4",
+    "data/curation/electrolytes/Mg-Br",
+    "data/curation/electrolytes/Mg-Cl",
+    "data/curation/electrolytes/Mg-I",
+    "data/curation/electrolytes/NH4-Cl",
+    "data/curation/electrolytes/NH4-HPO4",
+    "data/curation/electrolytes/NH4-NO3",
+    "data/curation/electrolytes/Na-Acetate",
+    "data/curation/electrolytes/Na-Br",
+    "data/curation/electrolytes/Na-Cl",
+    "data/curation/electrolytes/Na-F",
+    "data/curation/electrolytes/Na-H2PO4",
+    "data/curation/electrolytes/Na-HPO4",
+    "data/curation/electrolytes/Na-I",
+    "data/curation/electrolytes/Na-NO3",
+    "data/curation/electrolytes/Na-OH",
+    "data/curation/electrolytes/Na-SO4",
+    "data/curation/electrolytes/Rb-Acetate",
+    "data/curation/electrolytes/Rb-Br",
+    "data/curation/electrolytes/Rb-Cl",
+    "data/curation/electrolytes/Rb-F",
+    "data/curation/electrolytes/Rb-I",
+    "data/curation/electrolytes/Rb-NO3",
+    "data/curation/electrolytes/Rb-SO4",
+    "data/curation/electrolytes/Sr-Br",
+    "data/curation/electrolytes/Sr-Cl",
+    "data/curation/electrolytes/Sr-I",
+    "data/curation/electrolytes/Zn-Br",
+    "data/curation/electrolytes/Zn-Cl",
+    "data/curation/electrolytes/Zn-I",
+    "data/curation/electrolytes/Zn-NO3",
     "data/curation/henry/13Butadiene-1Pentanol",
     "data/curation/henry/13Butadiene-1Propanol",
     "data/curation/henry/13Butadiene-2Butanol",
@@ -24724,6 +25922,7 @@
     "tutorials/props/electrolyte/edwards01_sour_water_activity",
     "tutorials/props/electrolyte/edwards02_table7_vle",
     "tutorials/props/electrolyte/edwards03_table8_vle",
+    "tutorials/props/electrolyte/electrolyteFit01_nacl",
     "tutorials/props/electrolyte/enrtl_mixed_nacl_ethanol_esteso",
     "tutorials/props/electrolyte/enrtl_multisalt_nacl_kcl",
     "tutorials/props/electrolyte/enthalpy_naoh_water",
@@ -24825,12 +26024,14 @@
     "tutorials/props/thermo/flashSpec01_wet_steam_expansion",
     "tutorials/props/thermo/heavyWater01_isotope_effect",
     "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol",
+    "tutorials/props/thermo/refEoS01_iapws95_verification",
     "tutorials/props/thermo/standardState01_hydrogen_enthalpy_TP",
     "tutorials/props/thermo/temperature01_gas_thermometer",
     "tutorials/props/thermo/temperature02_engineers_ladder",
     "tutorials/props/thermoTest/atoms01_formula_parser",
     "tutorials/props/thermoTest/h_surface_identity",
     "tutorials/props/thermoTest/model4_speciation_scaling",
+    "tutorials/props/transport/surfacetension01_stored_vs_brockbird",
     "tutorials/props/transport/transport01_gas_bench",
     "tutorials/props/transport/transport02_chapman_enskog",
     "tutorials/steady/optimisation/fitNRTL01_ethanol_water",
@@ -26647,6 +27848,7 @@
     "data/curation/batches/new_components",
     "data/curation/batches/new_components_c309",
     "data/curation/batches/new_components_estimated",
+    "data/curation/batches/transport_c327",
     "data/curation/components/1122Tetrachloroethane",
     "data/curation/components/11Diethoxyethane",
     "data/curation/components/12Butanediol",
@@ -26750,6 +27952,73 @@
     "data/curation/components/triethanolamine",
     "data/curation/components/triethylamine",
     "data/curation/components/vinylPropionate",
+    "data/curation/electrolytes/Ba-Br",
+    "data/curation/electrolytes/Ba-Cl",
+    "data/curation/electrolytes/Ba-I",
+    "data/curation/electrolytes/Ca-Br",
+    "data/curation/electrolytes/Ca-Cl",
+    "data/curation/electrolytes/Ca-I",
+    "data/curation/electrolytes/Cd-NO2",
+    "data/curation/electrolytes/Cd-NO3",
+    "data/curation/electrolytes/Cs-Acetate",
+    "data/curation/electrolytes/Cs-Br",
+    "data/curation/electrolytes/Cs-Cl",
+    "data/curation/electrolytes/Cs-F",
+    "data/curation/electrolytes/Cs-I",
+    "data/curation/electrolytes/Cs-NO3",
+    "data/curation/electrolytes/Cs-OH",
+    "data/curation/electrolytes/Cs-SO4",
+    "data/curation/electrolytes/H-Br",
+    "data/curation/electrolytes/H-Cl",
+    "data/curation/electrolytes/H-I",
+    "data/curation/electrolytes/H-NO3",
+    "data/curation/electrolytes/K-Acetate",
+    "data/curation/electrolytes/K-Br",
+    "data/curation/electrolytes/K-Cl",
+    "data/curation/electrolytes/K-F",
+    "data/curation/electrolytes/K-H2PO4",
+    "data/curation/electrolytes/K-HPO4",
+    "data/curation/electrolytes/K-I",
+    "data/curation/electrolytes/K-NO3",
+    "data/curation/electrolytes/K-OH",
+    "data/curation/electrolytes/K-SO4",
+    "data/curation/electrolytes/Li-Acetate",
+    "data/curation/electrolytes/Li-Br",
+    "data/curation/electrolytes/Li-Cl",
+    "data/curation/electrolytes/Li-I",
+    "data/curation/electrolytes/Li-NO3",
+    "data/curation/electrolytes/Li-OH",
+    "data/curation/electrolytes/Li-SO4",
+    "data/curation/electrolytes/Mg-Br",
+    "data/curation/electrolytes/Mg-Cl",
+    "data/curation/electrolytes/Mg-I",
+    "data/curation/electrolytes/NH4-Cl",
+    "data/curation/electrolytes/NH4-HPO4",
+    "data/curation/electrolytes/NH4-NO3",
+    "data/curation/electrolytes/Na-Acetate",
+    "data/curation/electrolytes/Na-Br",
+    "data/curation/electrolytes/Na-Cl",
+    "data/curation/electrolytes/Na-F",
+    "data/curation/electrolytes/Na-H2PO4",
+    "data/curation/electrolytes/Na-HPO4",
+    "data/curation/electrolytes/Na-I",
+    "data/curation/electrolytes/Na-NO3",
+    "data/curation/electrolytes/Na-OH",
+    "data/curation/electrolytes/Na-SO4",
+    "data/curation/electrolytes/Rb-Acetate",
+    "data/curation/electrolytes/Rb-Br",
+    "data/curation/electrolytes/Rb-Cl",
+    "data/curation/electrolytes/Rb-F",
+    "data/curation/electrolytes/Rb-I",
+    "data/curation/electrolytes/Rb-NO3",
+    "data/curation/electrolytes/Rb-SO4",
+    "data/curation/electrolytes/Sr-Br",
+    "data/curation/electrolytes/Sr-Cl",
+    "data/curation/electrolytes/Sr-I",
+    "data/curation/electrolytes/Zn-Br",
+    "data/curation/electrolytes/Zn-Cl",
+    "data/curation/electrolytes/Zn-I",
+    "data/curation/electrolytes/Zn-NO3",
     "data/curation/henry/13Butadiene-1Pentanol",
     "data/curation/henry/13Butadiene-1Propanol",
     "data/curation/henry/13Butadiene-2Butanol",
@@ -27637,6 +28906,7 @@
     "tutorials/props/curation/curate11_nrtl_acetone_ethanol",
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
     "tutorials/props/electrolyte/archer01_nacl_cold_to_hot",
+    "tutorials/props/electrolyte/electrolyteFit01_nacl",
     "tutorials/props/electrolyte/enrtl_mixed_nacl_ethanol_esteso",
     "tutorials/props/electrolyte/enrtl_multisalt_nacl_kcl",
     "tutorials/props/electrolyte/fpd01_nacl_freezing",
@@ -27699,10 +28969,12 @@
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
     "tutorials/props/thermo/flashSpec01_wet_steam_expansion",
     "tutorials/props/thermo/heavyWater01_isotope_effect",
+    "tutorials/props/thermo/refEoS01_iapws95_verification",
     "tutorials/props/thermo/temperature01_gas_thermometer",
     "tutorials/props/thermo/temperature02_engineers_ladder",
     "tutorials/props/thermoTest/atoms01_formula_parser",
     "tutorials/props/thermoTest/h_surface_identity",
+    "tutorials/props/transport/surfacetension01_stored_vs_brockbird",
     "tutorials/props/transport/transport01_gas_bench",
     "tutorials/props/transport/transport02_chapman_enskog",
     "tutorials/steady/crystallisation/crystalliser01_sugar",
@@ -27938,6 +29210,76 @@
    ],
    "electrolyteActivity": [
     "tutorials/props/electrolyte/pitzer02_nacl_package"
+   ],
+   "electrolyteFit": [
+    "data/curation/electrolytes/Ba-Br",
+    "data/curation/electrolytes/Ba-Cl",
+    "data/curation/electrolytes/Ba-I",
+    "data/curation/electrolytes/Ca-Br",
+    "data/curation/electrolytes/Ca-Cl",
+    "data/curation/electrolytes/Ca-I",
+    "data/curation/electrolytes/Cd-NO2",
+    "data/curation/electrolytes/Cd-NO3",
+    "data/curation/electrolytes/Cs-Acetate",
+    "data/curation/electrolytes/Cs-Br",
+    "data/curation/electrolytes/Cs-Cl",
+    "data/curation/electrolytes/Cs-F",
+    "data/curation/electrolytes/Cs-I",
+    "data/curation/electrolytes/Cs-NO3",
+    "data/curation/electrolytes/Cs-OH",
+    "data/curation/electrolytes/Cs-SO4",
+    "data/curation/electrolytes/H-Br",
+    "data/curation/electrolytes/H-Cl",
+    "data/curation/electrolytes/H-I",
+    "data/curation/electrolytes/H-NO3",
+    "data/curation/electrolytes/K-Acetate",
+    "data/curation/electrolytes/K-Br",
+    "data/curation/electrolytes/K-Cl",
+    "data/curation/electrolytes/K-F",
+    "data/curation/electrolytes/K-H2PO4",
+    "data/curation/electrolytes/K-HPO4",
+    "data/curation/electrolytes/K-I",
+    "data/curation/electrolytes/K-NO3",
+    "data/curation/electrolytes/K-OH",
+    "data/curation/electrolytes/K-SO4",
+    "data/curation/electrolytes/Li-Acetate",
+    "data/curation/electrolytes/Li-Br",
+    "data/curation/electrolytes/Li-Cl",
+    "data/curation/electrolytes/Li-I",
+    "data/curation/electrolytes/Li-NO3",
+    "data/curation/electrolytes/Li-OH",
+    "data/curation/electrolytes/Li-SO4",
+    "data/curation/electrolytes/Mg-Br",
+    "data/curation/electrolytes/Mg-Cl",
+    "data/curation/electrolytes/Mg-I",
+    "data/curation/electrolytes/NH4-Cl",
+    "data/curation/electrolytes/NH4-HPO4",
+    "data/curation/electrolytes/NH4-NO3",
+    "data/curation/electrolytes/Na-Acetate",
+    "data/curation/electrolytes/Na-Br",
+    "data/curation/electrolytes/Na-Cl",
+    "data/curation/electrolytes/Na-F",
+    "data/curation/electrolytes/Na-H2PO4",
+    "data/curation/electrolytes/Na-HPO4",
+    "data/curation/electrolytes/Na-I",
+    "data/curation/electrolytes/Na-NO3",
+    "data/curation/electrolytes/Na-OH",
+    "data/curation/electrolytes/Na-SO4",
+    "data/curation/electrolytes/Rb-Acetate",
+    "data/curation/electrolytes/Rb-Br",
+    "data/curation/electrolytes/Rb-Cl",
+    "data/curation/electrolytes/Rb-F",
+    "data/curation/electrolytes/Rb-I",
+    "data/curation/electrolytes/Rb-NO3",
+    "data/curation/electrolytes/Rb-SO4",
+    "data/curation/electrolytes/Sr-Br",
+    "data/curation/electrolytes/Sr-Cl",
+    "data/curation/electrolytes/Sr-I",
+    "data/curation/electrolytes/Zn-Br",
+    "data/curation/electrolytes/Zn-Cl",
+    "data/curation/electrolytes/Zn-I",
+    "data/curation/electrolytes/Zn-NO3",
+    "tutorials/props/electrolyte/electrolyteFit01_nacl"
    ],
    "elementalComposition": [
     "tutorials/props/thermoTest/atoms01_formula_parser"
@@ -28713,12 +30055,14 @@
     "tutorials/props/steam/steam02_water_transport",
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
     "tutorials/props/thermo/temperature01_gas_thermometer",
-    "tutorials/props/thermo/temperature02_engineers_ladder"
+    "tutorials/props/thermo/temperature02_engineers_ladder",
+    "tutorials/props/transport/surfacetension01_stored_vs_brockbird"
    ],
    "propertyScan1D": [
     "data/curation/batches/new_components",
     "data/curation/batches/new_components_c309",
     "data/curation/batches/new_components_estimated",
+    "data/curation/batches/transport_c327",
     "data/curation/pairs/124Trimethylbenzene-1Pentanol",
     "data/curation/pairs/124Trimethylbenzene-2Pentanol",
     "data/curation/pairs/124Trimethylbenzene-mEthyltoluene",
@@ -29388,6 +30732,9 @@
    "reactionGibbs": [
     "tutorials/props/gibbs/landscape06_nitrogen_fixation_routes",
     "tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff"
+   ],
+   "referenceEoS": [
+    "tutorials/props/thermo/refEoS01_iapws95_verification"
    ],
    "scalingScan": [
     "tutorials/props/electrolyte/pitzer_vs_davies_ro_concentrate",

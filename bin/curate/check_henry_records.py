@@ -44,18 +44,21 @@ def field(t, key):
 # ARM (organic), DEV.md 4c C321 part 2: the Henry records REGRESSED by
 # bin/curate/henry_organic.py from ThermoML measurements (organic solvents).
 # For every record naming a `fittedInCase` under data/curation/henry/ (the
-# catalogue's, and a severe one kept in its own case): the case's series is
+# catalogue's, and any case-local copy): the case's series is
 # regenerated (`henry_organic.fetch`, local cache else NIST, both sha256 sums
 # checked; unreachable = NOT RUN, exit 2, never a pass), the fit is RE-RUN and
 # the record must equal it -- H_ref (its 5 printed digits), enthalpy (J/mol),
 # Trange, the grade, the cap, the max relative error, the kept and discarded
 # counts, the declaration's fingerprint and its evidence (DOI, block, both
-# sums); a severe grade must not sit in data/standards (C300 rule 3) and a
+# sums); a severe record is accepted in data/standards when its refit is severe
+# (C285; Vitor's ruling of 2026-11-12, only above 20 % is refused), and a
 # refused fit must have no record anywhere.  Every case's RESULT block must
-# agree with its record set.  Four BUILT negatives run every time (a
+# agree with its record set.  Five BUILT negatives run every time (a
 # coefficient edited, the grade edited down, a refused fit dressed as
 # promoted, a single-laboratory record carrying discarded points -- C321 part
-# 2 amended: a point is an outlier only against another laboratory): each
+# 2 amended: a point is an outlier only against another laboratory -- and a
+# > 30 % fit dressed as severe, C336 class B) -- and one built POSITIVE, a
+# 25 % fit graded severe, which must be accepted: each
 # must be refused, or the arm cannot see what it claims.
 # NOT CHECKED: the loader does not VOICE a Henry record's fitGrade or its
 # autoPromoted status (src/thermo/henrysLaw/ reads neither; see DEV.md 4c
@@ -68,8 +71,9 @@ def organic_compare(text, res, case, decl, fp, where_std, name):
     tag = name
     if res["grade"] == "refused" or res.get("p") is None:
         return [f"{tag}: the fit of its case is REFUSED ({res.get('why')}) -- a refused fit has no record"]
-    if where_std and res["grade"] == "severe":
-        errs.append(f"{tag}: grade severe in data/standards (C300 rule 3: a severe record stays in its case)")
+    if not where_std:
+        errs.append(f"{tag}: a case-local copy -- every accepted grade (clean, warning, severe) is "
+                    f"promoted into data/standards (Vitor's ruling of 2026-11-12)")
     Href, dH = ho.coefficients(res)
     m = re.search(r"^H_ref\s+([0-9.]+e[+-]\d+)\s+Pa;", text, re.M)
     if not m or abs(float(m.group(1)) / Href - 1) > 2e-5:
@@ -164,7 +168,7 @@ def check_organic_records():
             if "REFUSED" not in said:
                 errs.append(f"{rel}: its RESULT block does not say REFUSED")
             continue
-        want_std = res["grade"] in ("clean", "warning")
+        want_std = True             # clean, warning and severe are all promoted
         if len(mine) != 1 or mine[0][2] != want_std:
             errs.append(f"{rel}: grade {res['grade']} expects one record "
                         f"{'in data/standards' if want_std else 'in the case'}, found "
@@ -193,6 +197,19 @@ def check_organic_records():
         r4 = dict(res, discarded=[("x", 0, 0.0, 0.3)] * 2)
         if t4 == text or not any("ONE laboratory" in e for e in organic_compare(t4, r4, c, decl, fp, True, name)):
             bad.append("a single-laboratory record carrying discarded points")
+        t5 = re.sub(r"^(\s*fitGrade\s+)\w+;", r"\1severe;", text, flags=re.M)
+        t5 = re.sub(r"^\s*fitGradeCap.*\n", "", t5, flags=re.M)
+        r5 = dict(res, grade="refused", grade_in="refused", maxRel_pct=35.0, caps=[],
+                  why="max relative error 35.00 % above 30 %")
+        if not organic_compare(t5, r5, c, decl, fp, True, name):
+            bad.append("a > 30 % fit dressed as severe (C336 class B)")
+        #  and the POSITIVE: a 25 % fit is severe under class (B) and is
+        #  ACCEPTED in the catalogue (C336; Vitor's ruling of 2026-11-12).
+        t6 = re.sub(r"^(\s*fitGradeMaxRelativeError_pct\s+)\S+;", r"\g<1>25.0000;", t5, flags=re.M)
+        r6 = dict(res, grade="severe", grade_in="severe", maxRel_pct=25.0, caps=[])
+        e6 = organic_compare(t6, r6, c, decl, fp, True, name)
+        if e6:
+            bad.append("a 25 % fit graded severe was NOT accepted (C336 class B): " + e6[0])
         r3 = dict(res, grade="refused", why="built negative")
         if not organic_compare(text, r3, c, decl, fp, True, name):
             bad.append("a refused fit dressed as promoted")
@@ -281,9 +298,9 @@ def main() -> int:
         return 2
     print(f"check_henry_records: OK -- {len(made)} Henry records from Sander 2015 reproduce from rows.tsv "
           f"({sum(len(v) for v in rows.values())} M/L rows, no Q or E row); {org_n} organic-solvent "
-          f"Henry records ({org_n - org_local} in the catalogue, {org_local} severe kept in its case) refitted "
+          f"Henry records ({org_n - org_local} in the catalogue, {org_local} case-local) refitted "
           f"from their {org_cases} ThermoML cases equal their fit and grade "
-          f"(4 built negatives refused; one laboratory, no point discarded; NOT CHECKED: the values of the thermo-library records, "
+          f"(5 built negatives refused, a 25 % severe accepted (C336 class B); one laboratory, no point discarded; NOT CHECKED: the values of the thermo-library records, "
           f"and the voicing of a Henry fitGrade, which no loader does)")
     return 0
 

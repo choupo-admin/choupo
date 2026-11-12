@@ -322,6 +322,31 @@ departures, `ionicReferencePlusExcess`) name where the sensible/latent legs
 come from.  When the block is omitted the builder uses the formulation's
 canonical routes and says so.
 
+## pureFluids — a pure component on its own fundamental equation
+
+A component that is effectively pure in a phase may be priced by a
+fundamental equation instead of the generic chain:
+
+```
+pureFluids
+{
+    water { method IF97; }                          // IAPWS-IF97 (industrial)
+    // or a REFERENCE (Helmholtz) equation of state, by its record name:
+    // water { method Helmholtz; equation IAPWS95; }
+    // CO2   { method Helmholtz; equation SpanWagner1996; }
+    // N2    { method Helmholtz; equation Span2000; }
+    // methane { method Helmholtz; equation SetzmannWagner1991; }
+}
+```
+
+The Helmholtz records live in `data/standards/parameters/Helmholtz/` and are
+checked against their publication's own values at every load.  h and s are
+on the publication's datum, valid only where the phase is effectively pure
+(x >= 0.999); a mixture refuses.  A SEALED case must carry the record in
+`constant/parameters/Helmholtz/`.  To evaluate one state or a saturation
+point without a flowsheet, use the props op `referenceEoS`.  Theory Guide:
+"Reference equations of state (Helmholtz energy)".
+
 ## transport  (optional; for unit ops that need μ / k / D / σ)
 
 Transport correlations are declared per PHASE, and an interface block covers

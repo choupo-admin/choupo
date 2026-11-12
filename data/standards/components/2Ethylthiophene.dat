@@ -70,6 +70,30 @@ groups
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group arCH; count 3; } { group arC; count 1; } { group rS; count 1; } );
 }
 
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     -10.27074296;
+        B     976.0742265;
+        C     -0.03821647728;
+        D     0;
+        E     0;
+        Tmin  278.15;
+        Tmax  338.15;
+    }
+}
+
+surfaceTension
+{
+    A     0.06848516383;
+    B     0;
+    Tc    627.852391;
+    n     1.276148802;
+    Tmin  278.15;
+    Tmax  338.15;
+}
+
 provenance
 {
     MW
@@ -223,6 +247,64 @@ provenance
             awAad_pct   14.848341;   // the AmbroseWalton curve it replaces, the same points
             awMax_pct   22.324861;
             Tnb_fit     411.1808;   // K, the fitted curve at 101.325 kPa
+        }
+    }
+    liquidViscosity
+    {
+        origin        fitted;
+        method        "least squares on ln y of ln(mu/Pa.s) = A + B/T + C ln T (chemsepEq101 with D = 0), 3 parameter(s), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      warning;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeCap   ( singleLaboratory );   // DEV.md 4c C300 rule 2
+        fitGradeMaxRelativeError_pct 0.160581;
+        Trange        (278.15 338.15);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C327)";
+        evidence
+        (
+                { doi "10.1021/acs.jced.8b00153"; articleSha256 "88303e38a72c69044fcb13953e67bc10d0ffdca052380bd8f006c153a9eb6ff2"; pointsKept 25; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     1;
+            pointsKept  25;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.098505;
+            max_pct     0.160581;
+        }
+    }
+    surfaceTension
+    {
+        origin        fitted;
+        method        "least squares on ln sigma of sigma/(N/m) = A tau^n, tau = 1 - T/Tc (A, n; B = 0; Tc the record's own), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      warning;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeCap   ( singleLaboratory );   // DEV.md 4c C300 rule 2
+        fitGradeMaxRelativeError_pct 0.286701;
+        Trange        (278.15 338.15);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C328)";
+        evidence
+        (
+                { doi "10.1021/acs.jced.8b00153"; articleSha256 "88303e38a72c69044fcb13953e67bc10d0ffdca052380bd8f006c153a9eb6ff2"; pointsKept 25; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     1;
+            pointsKept  25;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.146975;
+            max_pct     0.286701;
         }
     }
 }
