@@ -137,3 +137,42 @@ still carry the 2 V limit and are to be read with this section.
 Not yet known, and needed to tell resistance from current: the current the
 clean stack draws at that voltage, and whether the stack is the catalogue
 record's (which states 100 cell pairs) or another of 50.
+
+## 9. The clean stack's operating point, and what it says about the model
+
+Further operating figures received the same day: the clean stack draws
+about 50 A at about 100 V (50 cell pairs in series, 2 V per pair) at the
+3000 L/h of section 3; the brine is water kept at pH 3.0 by a pH meter and
+a dosing pump of citric acid at half its saturation concentration.
+
+Read against the engine's run of section 3 (6.710 A over 100 cell pairs,
+0.114 V per pair) this separates into TWO disagreements:
+
+* **Resistance.**  2 V at 50 A is 0.04 ohm per cell pair; with 1 m2 per
+  pair (50 m2 over 50 pairs) that is about 0.04 ohm m2 at 50 A/m2, against
+  the engine's 0.0085 ohm m2 -- a factor of about 5.  A hand estimate
+  reaches the observed value with three corrections the engine does not
+  make (each to be checked, none measured here): a wine conductivity of
+  about 0.2 S/m where the engine computes 0.479 (infinite dilution, every
+  acid taken as fully ionised, no ethanol); a brine that is nearly water
+  with citric acid at pH 3 (about 0.04 S/m by hand: 1 mmol/L of H+ and of
+  dihydrogen citrate), whose channel then dominates the cell-pair
+  resistance; membranes in a dilute medium.  Sum by hand: 0.03 to 0.05
+  ohm m2 per pair.
+* **Charge.**  50 A over 50 pairs is 2500 A of cell-pair current, 93 eq/h,
+  31 meq per litre of wine at 3000 L/h.  The engine needs 671 A (8.3 meq/L)
+  for a 20 % drop of ITS conductivity: a factor of 3.7.  Either the real
+  unit removes more than 20 %, or its current efficiency is far below the
+  engine's, or 20 % of a real wine's conductivity is more charge than 20 %
+  of the engine's.  Not resolved here.
+
+Consequences for the panel: the voltage rises for TWO reasons -- fouling,
+and a brine just refilled with water -- so the voltage element must sit
+beside the brine conductivity or an operator may send clean membranes to be
+washed; and the brine has its own control loop (pH meter, dosing pump, set
+point 3.0), which gives the panel a pump state and a pH reading.  The
+catalogue has no citric acid and no citrate, so neither the brine's pH nor
+its conductivity can be computed today.
+
+Still to be settled: whether the 50-pair stack is the catalogue's
+industrial record (which states 100 cell pairs) or another unit.

@@ -3446,6 +3446,27 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C372 (Vitor, 2026-11-12: "ha uma lacuna que para mim importa: faltam as
+> especies dos acidos organicos mais comuns! Acido citrico, malico,
+> tartarico, lactico, etc.").**  MEASURED the same turn: the tartrate family
+> is in the catalogue (component, H2Tart / HTart / Tart, heat of solution,
+> all from Kochergina et al. 2006); acetate, formate, oxalic, maleic,
+> propionic, butyric and benzoic acids exist as components; citric, malic,
+> lactic and succinic acids are in NO form.  The ThermoML mirror holds
+> articles naming citric acid (24), hydroxybutanedioic = malic (9),
+> 2-hydroxypropanoic = lactic (19), butanedioic = succinic (30),
+> propanedioic = malonic (16), tartaric (8), and the salts (citrates 79,
+> tartrates 24) -- mostly solubilities, densities and activity data, which
+> give the components and the solution behaviour but NOT the ionisation
+> constants.  Those need an evaluated source: Kochergina (2006, in the
+> folder) carries citric and tartaric; for malic, lactic, succinic and the
+> rest the evaluated compilation of buffer ionisation thermodynamics
+> (Goldberg, Kishore & Lennen 2002, J. Phys. Chem. Ref. Data 31, 231) is the
+> candidate and is not in the folder.  Campaign on branch c372-organic-acids:
+> components and species with their ionisation chemistry for citric first,
+> then every acid whose constants a source in hand carries; a list of the
+> exact works still needed for the others.
+
 > **C371 (2026-11-12; a proposal relayed by the cloud session as Vitor's;
 > CONFIRMED by him in the laptop session the same day: "Sim avanca").**
 > AN OPERATOR CONTROL PANEL KEPT IN THE CASE: declared like the flowsheet
