@@ -1,0 +1,98 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  totalReflux01_c6c7_yanagiRun628  --  a column at TOTAL REFLUX: no feed, no
+  products, every mole of overhead vapour back as reflux.  This is how tray
+  efficiency is measured on a test column, and it is the mode every later
+  rate-based comparison (C329) stands on.
+
+  WHAT IS SPECIFIED, AND WHY THESE NUMBERS (the degrees of freedom).  With no
+  stream crossing the column boundary the component balances, summed over the
+  stages, read 0 = 0: c of them are dependent, and what is left open is how
+  much of each component circulates -- a test column fixes it by its charge
+  and hold-up, which a steady stage model does not have.  So the case gives
+  c numbers: the boil-up (one) and the liquid composition at one point (c - 1).
+  Both come from a measured run:
+
+    MEASURED INPUTS -- Yanagi & Sakata, Ind. Eng. Chem. Process Des. Dev. 21
+    (1982) 712, Table III, run 628 (cyclohexane / n-heptane, 34 kPa):
+      reboiler liquid           28.4 mol % cyclohexane
+      vapour rate               1.69 kg/s at vapour density 1.03 kg/m3
+                                -> u = 1.69/(1.03 x 1.131 m2) = 1.451 m/s on
+                                   the 1.2 m tower, F = u sqrt(rho_V) = 1.47
+      column                    1.2 m diameter, 10 trays (Table III numbers
+                                the samples up to tray 10), top 34 kPa
+    ESTIMATED PROPERTIES: everything else (Antoine, ideal liquid, Chung,
+      Fuller, Brock-Bird, Rackett) -- see constant/thermoPhysPropDict.
+    FITTED PARAMETERS: none.
+    HELD-OUT POINTS: the measured profile of the same run, below.
+
+  The trays are declared IDEAL here (no `murphreeEfficiency`, no `efficiency`
+  block): this case is the total-reflux mode itself, and its own check is that
+  ideal trays give an overall efficiency of 1 by the paper's own definition
+  (the Fenske slope of ln(x/(1-x)) per tray over ln alpha) -- printed as the
+  KPI `overallTrayEfficiency`, not 1 to the last digit only because alpha
+  varies from the top tray to the bottom one.
+
+  What the real trays did on that run (Table III): reflux 98.8 %, tray 10
+  97.4 %, tray 8 93.7 %, tray 5 81.9 %, tray 4 73.2 %; overall tray efficiency
+  70.8 %.  The ideal column here separates MORE than that, as it must.  The
+  computed efficiency of the same trays is trayEfficiency01_yanagi14.
+
+  NOT MODELLED: the pressure drop (0.393 kPa per tray measured) is not fed
+  back, so every stage sits at 34 kPa and the reboiler is cooler than the
+  measured 60.2 C; the reflux returns saturated (the run's was subcooled,
+  38.3 C).
+
+  THE HYDRAULICS here run on the default pressure-drop route (Sinnott) and
+  print about 0.79 kPa per tray against the measured 0.393: Sinnott's residual
+  head and full weir head do not see how aerated a froth at 34 kPa is.  The
+  trayEfficiency cases declare `pressureDropModel BollesFair;` (Perry 9ed
+  14-100..14-109), which prints 0.44 kPa on this run.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        column;
+        type        distillationColumn;
+        model       totalReflux;
+
+        operation
+        {
+            nStages        11;          // 10 trays + the reboiler
+            P              34 kPa;
+            condenser      { type total; }
+
+            totalReflux
+            {
+                fFactor        1.47;    // (m/s)(kg/m3)^0.5, reboiler vapour on the tower area
+                specifiedAt    reboiler;
+                composition
+                {
+                    cyclohexane    0.284;
+                    nHeptane       0.716;
+                }
+            }
+
+            hydraulics
+            {
+                trayType               sieve;
+                diameter               1.2;      // m  (Table I)
+                traySpacing            0.610;    // m  (Table I)
+                weirHeight             0.0508;   // m  (Table I, efficiency runs)
+                holeDiameter           0.0127;   // m  (Table I)
+                holeAreaFraction       0.1387;   // 0.118 m2 holes / 0.851 m2 active (Table I)
+                downcomerAreaFraction  0.1238;   // 0.14 m2 / 1.131 m2 (Table I)
+                weirLengthFraction     0.7833;   // 0.940 m / 1.2 m (Table I)
+                orificeCoefficient     0.693;    // Perry 9ed Eq 14-102a: 0.74(0.137) + exp(0.29(1.5/12.7) - 0.56)
+            }
+        }
+    }
+);

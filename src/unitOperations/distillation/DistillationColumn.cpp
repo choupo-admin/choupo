@@ -37,6 +37,9 @@ License
 #include "unitOperations/saturation/DewPoint.H"
 #include "DistillationColumn.H"
 #include "TrayHydraulics.H"
+#include "TrayEfficiency.H"
+#include "core/Constants.H"
+#include "thermo/transport/WilkeChang.H"
 #include "solver/NewtonRaphson.H"
 #include "thermo/electrolyte/ReactiveVLE.H"
 #include "solver/NewtonND.H"
@@ -1320,6 +1323,7 @@ int DistillationColumn::solve(const DictPtr& dict,
 
     //  A recovery specification wraps whichever method is selected: it drives
     //  the RATE those methods already take.  See DistillationColumn.H.
+    if (method == "totalReflux") return solveTotalReflux(dict, thermo, verbosity);
     if (operDict->found("distillateRecovery"))
         return solveForRecovery(dict, thermo, verbosity);
 
@@ -1337,7 +1341,7 @@ int DistillationColumn::solve(const DictPtr& dict,
         throw std::runtime_error("DistillationColumn: "
             + registryRefusal::message("distillation column model", method,
                 {"WangHenke", "simultaneous", "MESH", "NaphtaliSandholm",
-                 "fullMESH"}, "Accepted"));
+                 "fullMESH", "totalReflux"}, "Accepted"));
 
     // Capability boundary, made LOUD (no silent crutch): multiple feeds and
     // side draws live only in the simultaneous MESH.  The Wang-Henke
@@ -4851,6 +4855,508 @@ UnitAcceptance DistillationColumn::acceptance() const
         "by the CMO method (the full MESH route solves it), and a Murphree "
         "efficiency only where declared";
     return a;
+}
+
+
+// ===========================================================================
+//   TOTAL REFLUX (`model totalReflux;`, DEV.md 4c C329 first delivery).
+//
+//   THE PHYSICAL MODE.  No feed, no products: the condenser returns every
+//   mole the top tray sends up, the reboiler boils every mole the bottom tray
+//   sends down.  This is how efficiency is measured on a test column (FRI,
+//   Yanagi & Sakata 1982; Schulz et al. 2018), because the result then
+//   depends on the trays and on nothing else.
+//
+//   WHAT TOTAL REFLUX MAKES EXACT, WITHOUT ANY CMO ASSUMPTION.  Cut the column
+//   between tray j and the stage below it.  Nothing leaves the column, so the
+//   component flows crossing the cut balance one by one:
+//
+//       V_{j+1} y_{j+1,i} = L_j x_{j,i}     for every i
+//
+//   Summing over i gives V_{j+1} = L_j, and then y_{j+1} = x_j: the operating
+//   line IS the diagonal y = x.  The energy crossing the same cut is the one
+//   heat the column receives, so on every cut
+//
+//       V_{j+1} h_V(y_{j+1}, T_{j+1}) - L_j h_L(x_j, T_j) = Q_reboiler
+//
+//   and the vapour flow changes from tray to tray exactly as the latent heat
+//   does.  Every stage energy balance is therefore solved, not assumed.
+//
+//   THE DEGREES OF FREEDOM.  Per stage the unknowns are x (c), y (c), T, L
+//   and V (2c + 3) and the equations are the c component balances, the c
+//   equilibrium/Murphree relations, two summations and the energy balance
+//   (2c + 3).  Over the whole column, with no stream crossing its boundary,
+//   the c component balances SUMMED over the stages read 0 = 0: c of them
+//   are dependent.  The column also carries two duties and one energy
+//   balance over the whole (Q_R + Q_C = 0).  What is left open is c numbers:
+//   how much of each component circulates.  A real test column fixes them
+//   by its CHARGE and the liquid it holds up on each tray -- a steady stage
+//   model has no hold-up, so it cannot.  They are closed here by
+//       (1) the boil-up (one number: the vapour leaving the reboiler, as a
+//           molar rate or as an F-factor on the tower area), and
+//       (2) the liquid composition at one point (c - 1 numbers): the
+//           reboiler liquid, which is what a test report gives (Yanagi &
+//           Sakata 1982, Table III, "reboiler liquid").
+//   With those, the column is solved by MARCHING up from the reboiler, one
+//   bubble point per stage, with no iteration across stages.
+//
+//   When the efficiency is COMPUTED (`efficiency { model AIChE; }`) it
+//   depends on the traffic and the traffic on the compositions, so the
+//   march is repeated on the efficiencies of the previous march until they
+//   stop moving (announced, with the count).
+//
+//   NOT MODELLED, said in the output: the tray pressure drop is not fed back
+//   (every stage at the declared P; the hydraulics pass reports the drop);
+//   the composition can be fixed only at the reboiler.
+// ===========================================================================
+int DistillationColumn::solveTotalReflux(const DictPtr& dict,
+                                         const ThermoPackage& thermo,
+                                         int verbosity)
+{
+    auto operDict = dict->subDict("operation");
+    const std::string unit = dict->name();
+    const std::size_t n = thermo.n();
+
+    //  A column at total reflux has no ports.  Anything that would make one
+    //  is refused by name rather than ignored.
+    for (const char* k : {"feed", "inputStreams", "reaction"})
+        if (dict->found(k))
+            throw std::runtime_error("DistillationColumn '" + unit + "': `model"
+                " totalReflux;` has no feed and no products -- remove the `in` /"
+                " `inputs` wire and any reaction (found `" + std::string(k) + "`).");
+    for (const char* k : {"feeds", "sideDraws", "refluxRatio", "distillateRate",
+                          "feedStage", "distillateRecovery", "refluxTemperature"})
+        if (operDict->found(k))
+            throw std::runtime_error("DistillationColumn '" + unit + "': `" + k
+                + "` has no meaning at total reflux (no feed, no distillate, no"
+                  " bottoms); the specification is `totalReflux { boilupRate |"
+                  " fFactor; specifiedAt reboiler; composition {...}; }`.");
+
+    const int Nint = static_cast<int>(operDict->lookupScalar("nStages"));
+    if (Nint < 3)
+        throw std::runtime_error("DistillationColumn '" + unit + "': total reflux"
+            " needs at least two trays above the reboiler (nStages >= 3).");
+    const std::size_t N = static_cast<std::size_t>(Nint);
+    const scalar P = operDict->lookupScalar("P", Dims::pressure);
+    if (readCondenserType(operDict, unit, verbosity) != CondenserType::total)
+        throw std::runtime_error("DistillationColumn '" + unit + "': total reflux"
+            " is modelled with a TOTAL condenser (every mole of overhead vapour"
+            " returns as reflux).");
+
+    auto tr = operDict->subDict("totalReflux");
+    const std::string at = tr->lookupWordOrDefault("specifiedAt", "reboiler");
+    if (at != "reboiler")
+        throw std::runtime_error("DistillationColumn '" + unit + "': "
+            + registryRefusal::message("total-reflux composition location", at,
+                {"reboiler"}, "Accepted"));
+    sVector xN(n, 0.0);
+    {
+        auto comp = tr->subDict("composition");
+        scalar s = 0.0;
+        for (const auto& key : comp->keys())
+        {
+            const std::size_t i = thermo.indexOf(key);
+            xN[i] = comp->lookupScalar(key);
+            if (xN[i] < 0.0)
+                throw std::runtime_error("DistillationColumn '" + unit
+                    + "': a negative mole fraction in totalReflux.composition");
+            s += xN[i];
+        }
+        if (!(s > 0.0))
+            throw std::runtime_error("DistillationColumn '" + unit
+                + "': totalReflux.composition is empty");
+        for (auto& v : xN) v /= s;
+    }
+    const bool hasRate = tr->found("boilupRate");
+    const bool hasF    = tr->found("fFactor");
+    if (hasRate == hasF)
+        throw std::runtime_error("DistillationColumn '" + unit + "': give exactly"
+            " ONE of `boilupRate` (the vapour leaving the reboiler, a molar flow)"
+            " or `fFactor` (that vapour's F-factor on the TOWER cross-section,"
+            " (m/s)(kg/m3)^0.5, which needs `hydraulics { diameter ...; }`).");
+
+    //  Tray geometry, one home: the hydraulics block.
+    const bool hasHyd = operDict->found("hydraulics");
+    TrayHydraulics::Geometry geo;
+    if (hasHyd) geo = TrayHydraulics::readGeometry(operDict->subDict("hydraulics"));
+    const scalar A_T = (geo.diameter > 0.0)
+                     ? 0.25 * constant::pi * geo.diameter * geo.diameter : 0.0;
+    if (hasF && !(A_T > 0.0))
+        throw std::runtime_error("DistillationColumn '" + unit + "': `fFactor`"
+            " is a velocity on the tower area, so it needs a declared"
+            " `hydraulics { diameter ...; }` (rating mode).");
+
+    //  ---- The efficiency: declared (default 1) or computed ------------
+    const bool declaredE = operDict->found("murphreeEfficiency");
+    const bool computedE = operDict->found("efficiency");
+    if (declaredE && computedE)
+        throw std::runtime_error("DistillationColumn '" + unit + "': declare"
+            " `murphreeEfficiency` OR compute it with `efficiency { model ...; }`,"
+            " not both.");
+    const scalar Edecl = operDict->lookupScalarOrDefault("murphreeEfficiency", 1.0);
+    if (!(Edecl > 0.0))
+        throw std::runtime_error("DistillationColumn: murphreeEfficiency must be "
+            "POSITIVE -- a tray that transfers nothing is not a tray");
+
+    std::size_t lk = 0;
+    bool entrainment = false;
+    scalar muLdecl = 0.0;
+    TrayEfficiency::Geometry tg;
+    if (computedE)
+    {
+        auto ed = operDict->subDict("efficiency");
+        const std::string model = ed->lookupWordOrDefault("model", "AIChE");
+        if (model != "AIChE")
+            throw std::runtime_error("DistillationColumn '" + unit + "': "
+                + registryRefusal::message("tray efficiency model", model,
+                    {"AIChE"}, "Accepted"));
+        if (n != 2)
+            throw std::runtime_error("DistillationColumn '" + unit + "': the AIChE"
+                " tray efficiency is implemented for a BINARY (one key pair, one"
+                " liquid and one gas diffusivity); this package has "
+                + std::to_string(n) + " components.");
+        if (!hasHyd || !(geo.diameter > 0.0))
+            throw std::runtime_error("DistillationColumn '" + unit + "': a computed"
+                " efficiency reads the tray geometry from `hydraulics {}` and"
+                " needs its `diameter` (rating mode).");
+        if (!thermo.hasTransport() || !thermo.hasDiffusivity())
+            throw std::runtime_error("DistillationColumn '" + unit + "': the AIChE"
+                " gas-phase transfer units need the vapour Schmidt number --"
+                " declare `transport { vapour { viscosity { model Chung; }"
+                " diffusivity { model Fuller; } } }` in the thermo package.");
+        if (ed->found("lightKey")) lk = thermo.indexOf(ed->lookupWord("lightKey"));
+        if (ed->found("liquidViscosity"))
+            muLdecl = ed->lookupScalar("liquidViscosity", Dims::viscosity);
+        else if (!thermo.hasLiquidViscosity())
+            throw std::runtime_error("DistillationColumn '" + unit + "': the liquid"
+                " diffusivity (Wilke-Chang) needs a liquid viscosity, and the"
+                " package has no liquidViscosity model -- declare one, or a measured"
+                " `liquidViscosity <Pa s>;` in the efficiency block.");
+        const std::string ent = ed->lookupWordOrDefault("entrainment", "FairMedian");
+        if (ent != "FairMedian" && ent != "none")
+            throw std::runtime_error("DistillationColumn '" + unit + "': "
+                + registryRefusal::message("entrainment correction", ent,
+                    {"FairMedian", "none"}, "Accepted"));
+        entrainment = (ent == "FairMedian");
+        const scalar lw = geo.weirLengthFrac * geo.diameter;
+        tg.activeArea = A_T * (1.0 - 2.0 * geo.downcomerFrac);
+        tg.weirHeight = geo.weirHeight;
+        tg.flowPath   = TrayEfficiency::flowPathLength(geo.diameter, lw);
+        tg.flowWidth  = 0.5 * (geo.diameter + lw);
+    }
+
+    const ColumnEnthalpy hs = columnEnthalpySurface(thermo, P, {{350.0, xN}});
+
+    //  ---- One march up the column on a given efficiency profile -------
+    std::vector<scalar>  T(N, 0.0), V(N, 0.0), L(N, 0.0), E(N, computedE ? 1.0 : Edecl);
+    std::vector<sVector> x(N, sVector(n, 0.0)), y(N, sVector(n, 0.0)), ys(N, sVector(n, 0.0));
+    sVector xD(n, 0.0);
+    scalar TD = 0.0, QR = 0.0, QC = 0.0, Lreflux = 0.0;
+    E[N-1] = 1.0;                                   // the reboiler is an equilibrium stage
+    bool bubbleOk = true, clipped = false;
+
+    auto bubble = [&](const sVector& xl, scalar Tg)
+    {
+        bool ok = true;
+        const scalar Tb = bubbleTWithItsVapour(thermo, xl, P, Tg, 1.0e-12, &ok);
+        bubbleOk = bubbleOk && ok;
+        return Tb;
+    };
+    auto equilibriumVapour = [&](const sVector& xl, scalar Tl)
+    {
+        return normalisedVapour(stageVapourK(thermo, Tl, P, xl), xl);
+    };
+    auto vapourMW = [&](const sVector& yv)
+    {
+        scalar m = 0.0;
+        for (std::size_t i = 0; i < n; ++i) m += yv[i] * thermo.comp(i).MW();
+        return m;
+    };
+
+    auto march = [&]()
+    {
+        bubbleOk = true; clipped = false;
+        x[N-1] = xN;
+        T[N-1] = bubble(xN, 350.0);
+        ys[N-1] = equilibriumVapour(xN, T[N-1]);
+        y[N-1]  = ys[N-1];
+        if (hasRate)
+            V[N-1] = tr->lookupScalar("boilupRate", Dims::molarFlow);
+        else
+        {
+            const scalar rhoV = thermo.density(T[N-1], P, y[N-1], DensityPhase::Vapour);
+            //  F = u sqrt(rho_V),  u = m_V/(rho_V A_T)  =>  m_V = F A_T sqrt(rho_V)
+            V[N-1] = tr->lookupScalar("fFactor") * A_T * std::sqrt(rhoV) / vapourMW(y[N-1]);
+        }
+        if (!(V[N-1] > 0.0))
+            throw std::runtime_error("DistillationColumn '" + unit
+                + "': the boil-up must be positive");
+        L[N-1] = 0.0;                               // no bottoms product
+        //  The liquid falling into the reboiler: y = x on the cut.
+        x[N-2] = y[N-1];
+        T[N-2] = bubble(x[N-2], T[N-1]);
+        L[N-2] = V[N-1];
+        QR = V[N-1] * (hs.hV(y[N-1], T[N-1]) - hs.hL(x[N-2], T[N-2]));
+        for (std::size_t jj = N - 1; jj-- > 0; )
+        {
+            const std::size_t j = jj;
+            ys[j] = equilibriumVapour(x[j], T[j]);
+            scalar s = 0.0;
+            for (std::size_t i = 0; i < n; ++i)
+            {
+                y[j][i] = y[j+1][i] + E[j] * (ys[j][i] - y[j+1][i]);
+                if (y[j][i] < 0.0) { y[j][i] = 0.0; clipped = true; }
+                s += y[j][i];
+            }
+            for (auto& v : y[j]) v /= s;
+            //  The liquid on the cut above this tray carries y_j, at its own
+            //  bubble point (for j = 0 that liquid is the saturated reflux).
+            const sVector xa = y[j];
+            const scalar  Ta = bubble(xa, T[j]);
+            V[j] = QR / (hs.hV(y[j], T[j]) - hs.hL(xa, Ta));
+            if (j > 0) { x[j-1] = xa; T[j-1] = Ta; L[j-1] = V[j]; }
+            else       { xD = xa; TD = Ta; Lreflux = V[0]; }
+        }
+        QC = Lreflux * hs.hL(xD, TD) - V[0] * hs.hV(y[0], T[0]);
+    };
+
+    //  ---- The computed efficiency of one tray on the current march -----
+    std::vector<TrayEfficiency::Result> eff(N);
+    const WilkeChang wilkeChang(nullptr);
+    auto trayEfficiency = [&](std::size_t j, scalar Phi)
+    {
+        const scalar rhoV = thermo.density(T[j], P, y[j], DensityPhase::Vapour);
+        const scalar rhoL = TrayHydraulics::liquidDensity(thermo, T[j], P, x[j]).rho;
+        scalar MWL = 0.0;
+        for (std::size_t i = 0; i < n; ++i) MWL += x[j][i] * thermo.comp(i).MW();
+        const scalar muV = thermo.viscosityGas(T[j], y[j]);
+        const scalar DV  = thermo.diffusivityGas(T[j], P, 0, 1);
+        const scalar muL = (muLdecl > 0.0) ? muLdecl : thermo.viscosityLiquid(T[j], x[j]);
+        //  Infinite-dilution Wilke-Chang both ways, in the mixture's own
+        //  viscosity, combined linearly in mole fraction (Poling, Prausnitz &
+        //  O'Connell 5th ed. Eq. 11-10.2, thermodynamic factor 1).
+        const scalar D01 = wilkeChang.diffusivityLiquidBinary(thermo.comp(0), thermo.comp(1), T[j], muL);
+        const scalar D10 = wilkeChang.diffusivityLiquidBinary(thermo.comp(1), thermo.comp(0), T[j], muL);
+        const scalar DL  = x[j][0] * D10 + x[j][1] * D01;
+        //  The local slope of the equilibrium line for the light key.
+        const scalar xl = x[j][lk];
+        const scalar h  = std::min({1.0e-4, 0.5 * xl, 0.5 * (1.0 - xl)});
+        auto ystarAt = [&](scalar xv)
+        {
+            sVector xp(n, 0.0);
+            xp[lk] = xv; xp[1 - lk] = 1.0 - xv;
+            const scalar Tb = bubble(xp, T[j]);
+            return equilibriumVapour(xp, Tb)[lk];
+        };
+        const scalar m = (h > 0.0) ? (ystarAt(xl + h) - ystarAt(xl - h)) / (2.0 * h) : 1.0;
+        TrayEfficiency::State st;
+        st.vapourVolFlow = V[j] * vapourMW(y[j]) / rhoV;
+        st.liquidVolFlow = L[j] * MWL / rhoL;
+        st.rhoV   = rhoV;
+        st.ScV    = muV / (rhoV * DV);
+        st.DL     = DL;
+        st.lambda = m * V[j] / L[j];
+        st.floodApproach = Phi;
+        return TrayEfficiency::evaluate(tg, st);
+    };
+
+    int passes = 0;
+    march();
+    if (computedE)
+    {
+        scalar dE = 1.0;
+        for (passes = 1; passes <= 100; ++passes)
+        {
+            std::vector<scalar> Phi(N, -1.0);
+            if (entrainment)
+            {
+                std::vector<scalar> Vt(V);
+                Vt[N-1] = 0.0;
+                const auto hr = TrayHydraulics::evaluate(thermo, P, T, x, y, Vt, L, geo, 0);
+                for (const auto& s : hr.stages) Phi[s.index - 1] = s.floodApproach;
+            }
+            dE = 0.0;
+            for (std::size_t j = 0; j + 1 < N; ++j)
+            {
+                eff[j] = trayEfficiency(j, Phi[j]);
+                dE = std::max(dE, std::abs(eff[j].EMV - E[j]));
+                E[j] = eff[j].EMV;
+            }
+            march();
+            if (dE < 1.0e-10) break;
+        }
+        if (!(dE < 1.0e-10))
+            throw std::runtime_error("DistillationColumn '" + unit + "': the"
+                " computed tray efficiencies did not settle in 100 marches"
+                " (last change " + std::to_string(dE) + ").");
+        if (verbosity >= 2)
+            std::cout << "  [totalReflux] efficiency from the internals: " << passes
+                      << " march(es) until every tray's E_MV moved by < 1e-10.\n";
+    }
+    if (!bubbleOk)
+        std::cout << "  [totalReflux] " << unit << ": WARNING -- a bubble point"
+                     " did not meet its tolerance on at least one stage.\n";
+    if (clipped)
+        std::cout << "  [totalReflux] " << unit << ": a Murphree vapour had a"
+                     " negative mole fraction (E_MV > 1 on a trace component);"
+                     " it was clipped to zero and the vapour renormalised.\n";
+
+    //  ---- What the test report would compute (Yanagi & Sakata 1982) ----
+    //  The overall tray efficiency from the composition profile: the slope of
+    //  ln(x/(1-x)) per tray over ln(alpha) (Fenske at total reflux), between
+    //  the liquids leaving the bottom tray and the top tray, alpha the
+    //  geometric mean of the two trays' equilibrium relative volatilities.
+    const std::size_t nTrays = N - 1;
+    const std::size_t hk = (n > 1) ? ((lk == 0) ? 1 : 0) : 0;
+    scalar Eo = 0.0, alphaMean = 0.0, Nt = 0.0;
+    if (n >= 2)
+    {
+        auto alphaAt = [&](std::size_t j)
+        {
+            const sVector K = stageVapourK(thermo, T[j], P, x[j]);
+            return K[lk] / K[hk];
+        };
+        alphaMean = std::sqrt(alphaAt(0) * alphaAt(N - 2));
+        auto r = [&](const sVector& v) { return v[lk] / v[hk]; };
+        Nt = std::log(r(x[0]) / r(x[N-2])) / std::log(alphaMean);
+        Eo = Nt / static_cast<scalar>(nTrays - 1);
+    }
+
+    //  ---- Report ------------------------------------------------------
+    {
+    std::ostringstream rep;
+    rep << "\n=================  DistillationColumn (total reflux)  =================\n"
+              << "  No feed, no products; " << nTrays << " trays + reboiler at "
+              << std::fixed << std::setprecision(3) << P * 1.0e-5 << std::defaultfloat << " bar (pressure drop NOT fed back to the stages).\n"
+              << "  Specified: reboiler liquid ";
+    for (std::size_t i = 0; i < n; ++i)
+        rep << thermo.comp(i).name() << "=" << std::setprecision(5) << xN[i] << " ";
+    rep << "; boil-up " << std::setprecision(6) << V[N-1] * 3600.0 << " kmol/h"
+              << (hasF ? " (from the declared F-factor)" : "") << "\n"
+              << "  Efficiency: " << (computedE ? "COMPUTED, AIChE (Treybal 3ed Eqs 6.38, 6.51-6.64)"
+                                                 : "declared E_MV")
+              << (computedE && entrainment ? " + Colburn/Fair entrainment (Perry 9ed 14-98, 14-99 median)" : "")
+              << "\n\n    stage     T [K]   x(" << thermo.comp(lk).name() << ")   y("
+              << thermo.comp(lk).name() << ")    V [kmol/h]   E_MV\n";
+    for (std::size_t j = 0; j < N; ++j)
+        rep << "    " << std::setw(4) << (j + 1) << "  " << std::fixed
+                  << std::setprecision(2) << std::setw(9) << T[j] << "  "
+                  << std::setprecision(5) << std::setw(8) << x[j][lk] << "  "
+                  << std::setw(8) << y[j][lk] << "  " << std::setprecision(3)
+                  << std::setw(11) << V[j] * 3600.0 << "   " << std::setprecision(4)
+                  << E[j] << ((j + 1 == N) ? "  (reboiler)" : "") << "\n";
+    rep << std::defaultfloat << std::setprecision(6)
+              << "\n  Reflux (= overhead vapour) " << thermo.comp(lk).name() << " = " << xD[lk]
+              << "\n  Q_reboiler = " << QR << " kW   Q_condenser = " << QC << " kW\n"
+              << "  Overall tray efficiency (Fenske slope over the trays, alpha = "
+              << alphaMean << "): " << Eo << "\n";
+    if (computedE)
+        rep << "  NOT SEEN by the AIChE correlations: hole area, hole diameter, tray"
+                     " spacing; open area acts only through the hydraulics (flood approach"
+                     " -> entrainment, pressure drop).  Weeping is not modelled.\n";
+    rep << "=======================================================================\n\n";
+    std::cout << rep.str();
+    }
+
+    //  ---- KPIs, profile, closures --------------------------------------
+    produced_.clear();
+    kpis_.clear();
+    kpis_["nStages"]        = static_cast<scalar>(N);
+    kpis_["T_top"]          = T[0];
+    kpis_["T_bottom"]       = T[N-1];
+    kpis_["T_reflux"]       = TD;
+    kpis_["V_boilup"]       = V[N-1];
+    kpis_["V_top"]          = V[0];
+    kpis_["x_reflux_LK"]    = xD[lk];
+    kpis_["x_reboiler_LK"]  = xN[lk];
+    kpis_["x_topTray_LK"]   = x[0][lk];
+    kpis_["x_bottomTray_LK"]= x[N-2][lk];
+    kpis_["Q_reboiler_kW"]  = QR;
+    kpis_["Q_condenser_kW"] = QC;
+    kpis_["alpha_mean"]     = alphaMean;
+    kpis_["theoreticalStages_trays"] = Nt;
+    kpis_["overallTrayEfficiency"]   = Eo;
+    if (A_T > 0.0)
+    {
+        auto fOf = [&](std::size_t j)
+        {
+            const scalar rhoV = thermo.density(T[j], P, y[j], DensityPhase::Vapour);
+            return V[j] * vapourMW(y[j]) / (rhoV * A_T) * std::sqrt(rhoV);
+        };
+        kpis_["fFactor_reboilerVapour"] = fOf(N - 1);
+        kpis_["fFactor_topTray"]        = fOf(0);
+        //  The superficial velocity of the bottom tray's vapour on the tower
+        //  area -- the abscissa of a test report's pressure-drop plot.
+        const scalar rhoVb = thermo.density(T[N-2], P, y[N-2], DensityPhase::Vapour);
+        kpis_["u_bottomTray"] = V[N-2] * vapourMW(y[N-2]) / (rhoVb * A_T);
+    }
+    {
+        scalar sum = 0.0, lo = 1e300, hi = -1e300;
+        for (std::size_t j = 0; j + 1 < N; ++j)
+        { sum += E[j]; lo = std::min(lo, E[j]); hi = std::max(hi, E[j]); }
+        kpis_["E_MV_mean"] = sum / static_cast<scalar>(nTrays);
+        if (computedE)
+        {
+            kpis_["E_MV_min"] = lo;
+            kpis_["E_MV_max"] = hi;
+            kpis_["efficiencyMarches"] = static_cast<scalar>(passes);
+            scalar sOG = 0.0, sDry = 0.0, sPe = 0.0, sPsi = 0.0;
+            for (std::size_t j = 0; j + 1 < N; ++j)
+            { sOG += eff[j].EOG; sDry += eff[j].EMVdry; sPe += eff[j].Pe; sPsi += eff[j].psi; }
+            const scalar nt = static_cast<scalar>(nTrays);
+            kpis_["E_OG_mean"]     = sOG / nt;
+            kpis_["E_MV_dry_mean"] = sDry / nt;
+            kpis_["Pe_mean"]       = sPe / nt;
+            if (entrainment) kpis_["psi_mean"] = sPsi / nt;
+        }
+    }
+
+    profile_ = UnitProfile{};
+    profile_.xAxis = "stage";
+    for (std::size_t j = 0; j < N; ++j)
+    {
+        profile_.columns["stage"].push_back(static_cast<scalar>(j + 1));
+        profile_.columns["T"].push_back(T[j]);
+        profile_.columns["E_MV"].push_back(E[j]);
+        profile_.columns["V_kmol_h"].push_back(V[j] * 3600.0);
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            profile_.columns["x_" + thermo.comp(i).name()].push_back(x[j][i]);
+            profile_.columns["y_" + thermo.comp(i).name()].push_back(y[j][i]);
+        }
+        if (computedE && j + 1 < N)
+        {
+            profile_.columns["E_OG"].push_back(eff[j].EOG);
+            profile_.columns["Pe"].push_back(eff[j].Pe);
+            profile_.columns["F_active"].push_back(eff[j].Fa);
+        }
+        else if (computedE)
+        {
+            profile_.columns["E_OG"].push_back(1.0);
+            profile_.columns["Pe"].push_back(0.0);
+            profile_.columns["F_active"].push_back(0.0);
+        }
+    }
+
+    //  The first law, by two routes that are independent here: the
+    //  reboiler's own envelope (Q_R) and the condenser's (the column's plug,
+    //  -Q_C, since no stream crosses the boundary).  Every stage energy
+    //  balance is solved by the march, so they must agree.
+    {
+        const scalar terms = std::abs(V[N-1] * hs.hV(y[N-1], T[N-1]))
+                           + std::abs(L[N-2] * hs.hL(x[N-2], T[N-2]));
+        closures_.clear();
+        closures_.push_back(reboilerClosure(-QC, QR, /*fullMesh=*/true, terms,
+                                            "a column of fewer than two stages"));
+    }
+
+    //  ---- The hydraulics of the trays (flood approach, pressure drop) ---
+    {
+        std::vector<scalar> Vt(V);
+        Vt[N-1] = 0.0;                          // the reboiler is not a tray
+        hydraulicsPass(operDict, unit, thermo, P, T, x, y, Vt, L, 0, verbosity);
+    }
+    return bubbleOk ? 0 : 1;
 }
 
 } // namespace Choupo

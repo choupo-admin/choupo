@@ -164,6 +164,11 @@ public:
         scalar floodFraction = 0.80;     // design target
         scalar K2            = 0.0;      // weep chart; 0 => no weep check
         scalar sigma         = 0.0;      // N/m; 0 => ask the thermo package
+        //  Tray pressure-drop route (C329): false = Sinnott (the default,
+        //  h_d + h_w + h_ow + h_r); true = Bolles & Fair as printed by Perry
+        //  9th ed. Eqs. 14-100..14-109, h_d + beta (h_w + h_ow), the aeration
+        //  factor beta read from the hole F-factor and the weir load.
+        bool   bollesFair    = false;
     };
 
     // One tray's verdict.
@@ -175,6 +180,7 @@ public:
         scalar uFlood = 0.0, uVapour = 0.0, floodApproach = 0.0;
         scalar diameterRequired = 0.0;   // m, design mode
         scalar h_d = 0.0, h_ow = 0.0, h_r = 0.0, h_t = 0.0;   // mm liquid
+        scalar beta = 0.0;               // aeration factor (Bolles-Fair route only)
         scalar h_dc = 0.0, h_b = 0.0, h_bMax = 0.0;           // mm liquid
         scalar dP = 0.0;                 // Pa
         scalar u_h = 0.0, u_hMin = 0.0;  // m/s
@@ -247,6 +253,11 @@ public:
                             scalar& maxFraction);
 
     static Geometry readGeometry(const DictPtr& hyd);
+
+    //  Fair's flood velocity multiplier for an open area below 10 % of the
+    //  active area (Perry 9th ed. p. 14-36): 1 at >= 0.10, 0.9 at 0.08,
+    //  0.8 at 0.06, linear between; refuses below 0.06.
+    static scalar holeAreaFloodFactor(scalar holeAreaFrac);
 
     // T[j], x[j], y[j] per stage; V[j], L[j] in kmol/s.  Stage 0 is the
     // condenser and stage N-1 the reboiler: neither is a tray, both are skipped.

@@ -122,6 +122,24 @@ void TrayHydraulics::noteDropped(const LiquidDensity& d, std::string& names,
 }
 
 
+//  FAIR'S FLOOD VELOCITY BELOW 10 % OPEN AREA (DEV.md 4c C329).  The
+//  correlation holds for A_h/A_a >= 0.10; below that Perry 9th ed. p. 14-36
+//  (restriction 4 under Eq. 14-90) tabulates the correction
+//      A_h/A_a   0.10  0.08  0.06
+//      factor    1.00  0.90  0.80
+//  read linearly between the rows.  At 0.10 and above the factor is exactly
+//  1, so every column with that open area is unchanged to the bit; below
+//  0.06 the table says nothing and the pass refuses rather than extrapolate.
+scalar TrayHydraulics::holeAreaFloodFactor(scalar holeAreaFrac)
+{
+    if (holeAreaFrac >= 0.10) return 1.0;
+    if (holeAreaFrac < 0.06)
+        throw std::runtime_error("TrayHydraulics: holeAreaFraction (A_h/A_active) "
+            "below 0.06 is outside the open-area correction of Fair's flooding "
+            "correlation (Perry 9th ed. p. 14-36 tabulates 0.06-0.10)");
+    return 1.0 - 5.0 * (0.10 - holeAreaFrac);
+}
+
 TrayHydraulics::Geometry TrayHydraulics::readGeometry(const DictPtr& hyd)
 {
     const std::string type = hyd->lookupWordOrDefault("trayType", "sieve");
@@ -142,6 +160,13 @@ TrayHydraulics::Geometry TrayHydraulics::readGeometry(const DictPtr& hyd)
     geo.floodFraction  = hyd->lookupScalarOrDefault("floodFraction",   0.80);
     geo.K2             = hyd->lookupScalarOrDefault("K2",              0.0);
     geo.sigma          = hyd->lookupScalarOrDefault("sigma",           0.0);
+    {
+        const std::string dpm = hyd->lookupWordOrDefault("pressureDropModel", "Sinnott");
+        if (dpm != "Sinnott" && dpm != "BollesFair")
+            throw std::runtime_error("TrayHydraulics: pressureDropModel '" + dpm
+                + "' is not implemented.  Accepted: Sinnott (the default), BollesFair");
+        geo.bollesFair = (dpm == "BollesFair");
+    }
 
     if (geo.downcomerFrac <= 0.0 || geo.downcomerFrac >= 0.4)
         throw std::runtime_error("TrayHydraulics: downcomerAreaFraction must lie in (0, 0.4)");
@@ -233,7 +258,8 @@ TrayHydraulics::Result TrayHydraulics::evaluate(const ThermoPackage&        ther
         s.C_SB   = cSB_fair(TS_mm, s.F_LV);
         const scalar sig_dyn = s.sigma * 1000.0;       // N/m -> dyn/cm
         s.uFlood = s.C_SB * std::pow(sig_dyn / 20.0, 0.2)
-                          * std::sqrt((s.rhoL - s.rhoV) / s.rhoV);
+                          * std::sqrt((s.rhoL - s.rhoV) / s.rhoV)
+                          * holeAreaFloodFactor(geo.holeAreaFrac);
 
         const scalar Qv = mV / s.rhoV;                 // m^3/s
         // Net area = tower area less ONE downcomer.  Invert for the diameter that
@@ -331,6 +357,25 @@ TrayHydraulics::Result TrayHydraulics::evaluate(const ThermoPackage&        ther
         s.h_ow = (mL > 0.0) ? 750.0 * std::pow(mL / (s.rhoL * lw), 2.0 / 3.0) : 0.0;
         s.h_r  = 12.5e3 / s.rhoL;
         s.h_t  = s.h_d + hw_mm + s.h_ow + s.h_r;
+        if (geo.bollesFair)
+        {
+            //  Perry 9th ed. p. 14-41/42: h_t = h_d + beta h_ds (14-100,
+            //  14-106), h_ds = h_w + h_ow (14-108, gradient dropped as the
+            //  text allows), h_ow = 664 (Q/L_w)^(2/3) (14-109), and the sieve
+            //  aeration factor beta = 0.0825 ln(Q/L_w) - 0.269 ln F_h + 1.679
+            //  (14-107), F_h the hole F-factor.  h_d stays the orifice
+            //  equation above (Perry 14-101 with K = 50.8/C_v^2 is the same
+            //  form).  No residual head: aeration replaces it.
+            const scalar QperLw = (mL > 0.0) ? mL / (s.rhoL * lw) : 0.0;  // m2/s
+            if (!(QperLw > 0.0))
+                throw std::runtime_error("TrayHydraulics: the Bolles-Fair route"
+                    " needs a liquid load on the weir");
+            const scalar Fh = s.u_h * std::sqrt(s.rhoV);
+            s.h_ow = 664.0 * std::pow(QperLw, 2.0 / 3.0);
+            s.beta = 0.0825 * std::log(QperLw) - 0.269 * std::log(Fh) + 1.679;
+            s.h_r  = 0.0;
+            s.h_t  = s.h_d + s.beta * (hw_mm + s.h_ow);
+        }
         s.dP   = (s.h_t / 1000.0) * s.rhoL * g_acc;     // Pa
 
         // Downcomer: the liquid backs up until it can push through the apron gap.
@@ -388,6 +433,13 @@ void TrayHydraulics::report(const Result& r, const Geometry& geo, int verbosity)
               << " % of the active area\n"
               << "  C_o = " << geo.orificeCoeff
               << "  (declared -- the Liebson chart value for this A_h/A_p and t/d_h)\n";
+    if (geo.bollesFair)
+        std::cout << "  pressure drop: Bolles & Fair, h_d + beta (h_w + h_ow)"
+                     " (Perry 9th ed. Eqs. 14-100..14-109)\n";
+    if (geo.holeAreaFrac < 0.10)
+        std::cout << "  open area below 10 %: Fair's flood velocity x "
+                  << holeAreaFloodFactor(geo.holeAreaFrac)
+                  << " (Perry 9th ed. p. 14-36)\n";
     if (r.designed)
         std::cout << "  sized so no tray passes " << geo.floodFraction * 100.0
                   << " % of its flooding velocity\n";

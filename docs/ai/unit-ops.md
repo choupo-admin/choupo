@@ -1198,6 +1198,28 @@ outer pass (exact at convergence).  Default `1` = the ideal stage, byte-exact.  
 `E` is DECLARED (O'Connell, a chart, or plant data); the engine never invents it.
 Example: `column11_murphree` (E = 0.70 → distillate 98.12 % → 95.05 %).
 
+**Total reflux** (`model totalReflux;`, C329): no feed, no products, no `in`/`outputs`
+wires.  The c degrees of freedom a closed column leaves open (how much of each
+component circulates) are closed by `operation { totalReflux { boilupRate <kmol/h> |
+fFactor <(m/s)(kg/m3)^0.5>; specifiedAt reboiler; composition { a 0.3; b 0.7; } } }`
+-- the boil-up and the reboiler liquid.  On every cut y = x and V = L exactly, and
+every stage energy balance is solved (the vapour flow follows the latent heat); the
+condenser is total, `fFactor` needs `hydraulics { diameter; }`.  KPI
+`overallTrayEfficiency` is a test report's definition: the Fenske slope of
+ln(x/(1-x)) per tray over ln(alpha).  Pressure drop is not fed back (every stage at
+`P`).  Example: `totalReflux01_c6c7_yanagiRun628`.
+
+**Computed tray efficiency** (`operation { efficiency { model AIChE; lightKey a;
+liquidViscosity <Pa s>; entrainment FairMedian|none; } }`, exclusive with
+`murphreeEfficiency`; implemented under `model totalReflux;`, binary only): each tray's
+E_MV from the `hydraulics` geometry, its own traffic and the package's transport
+(Chung + Fuller in the vapour, Wilke-Chang in the liquid) -- AIChE transfer units
+(Treybal 3ed 6.38, 6.61-6.64), point efficiency (6.51-6.52), eddy diffusion along the
+flow path (6.57-6.59), then Colburn's entrainment loss with Fair's median psi at the
+tray's approach to flood (Perry 9ed 14-98/14-99).  The correlations carry NO hole
+area: open area acts only through the hydraulics.  Examples:
+`trayEfficiency01_yanagi14`, `trayEfficiency02_yanagi08` (FRI data, Yanagi & Sakata 1982).
+
 **Sieve-tray hydraulics** (optional `operation { hydraulics { ... } }`, works with BOTH
 methods).  The MESH equations contain no diameter — a column of any width converges to
 the same distillate, and a flooded one converges just as prettily.  This is a **rating

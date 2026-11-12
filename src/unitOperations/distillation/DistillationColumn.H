@@ -194,6 +194,15 @@ private:
                          const ThermoPackage& thermo,
                          int verbosity);
 
+    //  TOTAL REFLUX (`model totalReflux;`, DEV.md 4c C329): no feed, no
+    //  products; closed by the boil-up and the reboiler liquid, solved by a
+    //  march up the column with every stage energy balance solved.  The
+    //  tray efficiency is declared or COMPUTED from the internals
+    //  (`efficiency { model AIChE; }`, TrayEfficiency.H).  See the .cpp.
+    int solveTotalReflux(const DictPtr& dict,
+                         const ThermoPackage& thermo,
+                         int verbosity);
+
     // Sieve-tray hydraulics: an optional RATING pass over the converged
     // profile.  A column that floods separates nothing, and the MESH
     // equations never notice.  Absent an `operation { hydraulics {} }`
