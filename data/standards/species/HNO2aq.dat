@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/HNO2aq.dat -- the aqueous species HNO2 (C320, DEV.md 4c).  ONE model species, ONE
+  typed file.  Made by bin/curate/species_c320.py from
+  data/curation/batches/species_c320/species.tsv, which holds every reading (NBS table, page, row;
+  the CRC second reading; the CODATA key value where the species has one) and the chosen value.
+  Standard state: ideal solution at 1 mol/kg, 298.15 K, H+ = 0 (NBS convention).  The chosen
+  value is NBS (Wagman et al. 1982) unless CODATA (Cox, Wagman & Medvedev 1989) carries the species.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    HNO2aq;
+formula     "HNO2";
+charge  0;
+MW { value 47.013; unit g/mol;}
+aqueousThermo
+{
+source "NBS = Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 18:N, p. 2-65 (PDF p. 73), row HNO2 ao ## no second reading in the CRC or CODATA tables for this species ## hfAq [kJ/mol] chosen -119.2 (NBS): NBS -119.2 ## sAq [J/mol/K] chosen 135.6 (NBS): NBS 135.6";
+hfAq { value -119200; unit J/mol;}
+sAq  { value 135.6;  unit J/mol/K;}
+}

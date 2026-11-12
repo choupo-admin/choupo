@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/ClO3.dat -- the aqueous species ClO3- (C320, DEV.md 4c).  ONE model species, ONE
+  typed file.  Made by bin/curate/species_c320.py from
+  data/curation/batches/species_c320/species.tsv, which holds every reading (NBS table, page, row;
+  the CRC second reading; the CODATA key value where the species has one) and the chosen value.
+  Standard state: ideal solution at 1 mol/kg, 298.15 K, H+ = 0 (NBS convention).  The chosen
+  value is NBS (Wagman et al. 1982) unless CODATA (Cox, Wagman & Medvedev 1989) carries the species.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    ClO3;
+formula     "ClO3-";
+charge  -1;
+MW { value 83.447; unit g/mol;}
+aqueousThermo
+{
+source "NBS = Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 10:Cl, p. 2-47 (PDF p. 55), row ClO3- ao ## CRC = CRC Handbook, Thermodynamic Properties of Aqueous Systems, p. 5-86 (TeamLRN_5_1_CODATA_KEY_VALUES_FOR_THERMO.pdf), row ClO3- ## hfAq [kJ/mol] chosen -103.97 (NBS): NBS -103.97, CRC -104.0 ## sAq [J/mol/K] chosen 162.3 (NBS): NBS 162.3, CRC 162.3";
+hfAq { value -103970; unit J/mol;}
+sAq  { value 162.3;  unit J/mol/K;}
+}

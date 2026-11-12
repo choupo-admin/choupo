@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/H2AsO4.dat -- the aqueous species H2AsO4- (C320, DEV.md 4c).  ONE model species, ONE
+  typed file.  Made by bin/curate/species_c320.py from
+  data/curation/batches/species_c320/species.tsv, which holds every reading (NBS table, page, row;
+  the CRC second reading; the CODATA key value where the species has one) and the chosen value.
+  Standard state: ideal solution at 1 mol/kg, 298.15 K, H+ = 0 (NBS convention).  The chosen
+  value is NBS (Wagman et al. 1982) unless CODATA (Cox, Wagman & Medvedev 1989) carries the species.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    H2AsO4;
+formula     "H2AsO4-";
+charge  -1;
+MW { value 140.934; unit g/mol;}
+aqueousThermo
+{
+source "NBS = Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 20:As, p. 2-77 (PDF p. 85), row H2AsO4- ao ## CRC = CRC Handbook, Thermodynamic Properties of Aqueous Systems, p. 5-86 (TeamLRN_5_1_CODATA_KEY_VALUES_FOR_THERMO.pdf), row H2AsO4- ## hfAq [kJ/mol] chosen -909.56 (NBS): NBS -909.56, CRC -909.6 ## sAq [J/mol/K] chosen 117.0 (NBS): NBS 117.0, CRC 117.0";
+hfAq { value -909560; unit J/mol;}
+sAq  { value 117.0;  unit J/mol/K;}
+}

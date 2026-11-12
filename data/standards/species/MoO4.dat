@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/MoO4.dat -- the aqueous species MoO4-2 (C320, DEV.md 4c).  ONE model species, ONE
+  typed file.  Made by bin/curate/species_c320.py from
+  data/curation/batches/species_c320/species.tsv, which holds every reading (NBS table, page, row;
+  the CRC second reading; the CODATA key value where the species has one) and the chosen value.
+  Standard state: ideal solution at 1 mol/kg, 298.15 K, H+ = 0 (NBS convention).  The chosen
+  value is NBS (Wagman et al. 1982) unless CODATA (Cox, Wagman & Medvedev 1989) carries the species.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    MoO4;
+formula     "MoO4-2";
+charge  -2;
+MW { value 159.946; unit g/mol;}
+aqueousThermo
+{
+source "NBS = Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 52:Mo, p. 2-201 (PDF p. 209), row MoO4 2- ao ## CRC = CRC Handbook, Thermodynamic Properties of Aqueous Systems, p. 5-86 (TeamLRN_5_1_CODATA_KEY_VALUES_FOR_THERMO.pdf), row MoO4-2 ## hfAq [kJ/mol] chosen -997.9 (NBS): NBS -997.9, CRC -997.9 ## sAq [J/mol/K] chosen 27.2 (NBS): NBS 27.2, CRC 27.2";
+hfAq { value -997900; unit J/mol;}
+sAq  { value 27.2;  unit J/mol/K;}
+}

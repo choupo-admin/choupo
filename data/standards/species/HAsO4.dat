@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/HAsO4.dat -- the aqueous species HAsO4-2 (C320, DEV.md 4c).  ONE model species, ONE
+  typed file.  Made by bin/curate/species_c320.py from
+  data/curation/batches/species_c320/species.tsv, which holds every reading (NBS table, page, row;
+  the CRC second reading; the CODATA key value where the species has one) and the chosen value.
+  Standard state: ideal solution at 1 mol/kg, 298.15 K, H+ = 0 (NBS convention).  The chosen
+  value is NBS (Wagman et al. 1982) unless CODATA (Cox, Wagman & Medvedev 1989) carries the species.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    HAsO4;
+formula     "HAsO4-2";
+charge  -2;
+MW { value 139.926; unit g/mol;}
+aqueousThermo
+{
+source "NBS = Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 20:As, p. 2-77 (PDF p. 85), row HAsO4 2- ao ## no second reading in the CRC or CODATA tables for this species ## hfAq [kJ/mol] chosen -906.34 (NBS): NBS -906.34 ## sAq [J/mol/K] chosen -1.7 (NBS): NBS -1.7";
+hfAq { value -906340; unit J/mol;}
+sAq  { value -1.7;  unit J/mol/K;}
+}

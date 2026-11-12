@@ -6814,6 +6814,17 @@ PYEOF
     fi
     rm -f /tmp/henryrec.$$
 
+    # species-records gate (2026-11-12, DEV.md 4c C320).  The aqueous-species records made from the NBS tables (Wagman 1982) and CODATA (Cox 1989) reproduce byte for byte from species.tsv; the two readings agree, the NBS row obeys the Gibbs identity, charge and elements balance, MW is the sum of the engine's atomic weights.
+    if gate_exec "$ROOT/bin/curate/check_species_records.py" > /tmp/speciesrec.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "species-records-gate" "$(head -1 /tmp/speciesrec.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_species_records.py)\n" "species-records-gate"
+        cat /tmp/speciesrec.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/speciesrec.$$
+
     # model-default-registered gate (2026-09-06).  A `massTransfer {}` block
     # that merely forgot its `model` key died naming 'constant' -- a model the
     # ENGINE invented in its own default, pruned from the factory on

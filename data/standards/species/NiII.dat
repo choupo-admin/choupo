@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/NiII.dat -- the aqueous species Ni+2 (C320, DEV.md 4c).  ONE model species, ONE
+  typed file.  Made by bin/curate/species_c320.py from
+  data/curation/batches/species_c320/species.tsv, which holds every reading (NBS table, page, row;
+  the CRC second reading; the CODATA key value where the species has one) and the chosen value.
+  Standard state: ideal solution at 1 mol/kg, 298.15 K, H+ = 0 (NBS convention).  The chosen
+  value is NBS (Wagman et al. 1982) unless CODATA (Cox, Wagman & Medvedev 1989) carries the species.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    NiII;
+formula     "Ni+2";
+charge  +2;
+MW { value 58.693; unit g/mol;}
+aqueousThermo
+{
+source "NBS = Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 39:Ni, p. 2-166 (PDF p. 174), row Ni2+ ao ## CRC = CRC Handbook, Thermodynamic Properties of Aqueous Systems, p. 5-85 (TeamLRN_5_1_CODATA_KEY_VALUES_FOR_THERMO.pdf), row Ni+2 ## hfAq [kJ/mol] chosen -54.0 (NBS): NBS -54.0, CRC -54.0 ## sAq [J/mol/K] chosen -128.9 (NBS): NBS -128.9, CRC -128.9";
+hfAq { value -54000; unit J/mol;}
+sAq  { value -128.9;  unit J/mol/K;}
+}

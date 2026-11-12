@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/Ag.dat -- the aqueous species Ag+ (C320, DEV.md 4c).  ONE model species, ONE
+  typed file.  Made by bin/curate/species_c320.py from
+  data/curation/batches/species_c320/species.tsv, which holds every reading (NBS table, page, row;
+  the CRC second reading; the CODATA key value where the species has one) and the chosen value.
+  Standard state: ideal solution at 1 mol/kg, 298.15 K, H+ = 0 (NBS convention).  The chosen
+  value is NBS (Wagman et al. 1982) unless CODATA (Cox, Wagman & Medvedev 1989) carries the species.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    Ag;
+formula     "Ag+";
+charge  +1;
+MW { value 107.868; unit g/mol;}
+aqueousThermo
+{
+source "NBS = Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 37:Ag, p. 2-160 (PDF p. 168), row Ag+ ao ## CRC = CRC Handbook, Thermodynamic Properties of Aqueous Systems, p. 5-85 (TeamLRN_5_1_CODATA_KEY_VALUES_FOR_THERMO.pdf), row Ag+ ## CODATA = CODATA Key Values for Thermodynamics (Cox, Wagman & Medvedev 1989), p. 5-1 (TeamLRN_5_1_CODATA_KEY_VALUES_FOR_THERMO.pdf), row Ag+ aq, the 5-page Codata-key-values-for-thermodynamics.pdf reads the same ## hfAq [kJ/mol] chosen 105.79 (CODATA): NBS 105.579, CRC 105.6, CODATA 105.79 ## sAq [J/mol/K] chosen 73.45 (CODATA): NBS 72.68, CRC 72.7, CODATA 73.45 ## cpAq [J/mol/K] chosen 21.8 (NBS): NBS 21.8, CRC 21.8";
+hfAq { value 105790; unit J/mol;}
+sAq  { value 73.45;  unit J/mol/K;}
+cpAq { value 21.8; unit J/mol/K;}
+}

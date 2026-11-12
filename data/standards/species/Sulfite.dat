@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/Sulfite.dat -- the aqueous species SO3-2 (C320, DEV.md 4c).  ONE model species, ONE
+  typed file.  Made by bin/curate/species_c320.py from
+  data/curation/batches/species_c320/species.tsv, which holds every reading (NBS table, page, row;
+  the CRC second reading; the CODATA key value where the species has one) and the chosen value.
+  Standard state: ideal solution at 1 mol/kg, 298.15 K, H+ = 0 (NBS convention).  The chosen
+  value is NBS (Wagman et al. 1982) unless CODATA (Cox, Wagman & Medvedev 1989) carries the species.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    Sulfite;
+formula     "SO3-2";
+charge  -2;
+MW { value 80.057; unit g/mol;}
+aqueousThermo
+{
+source "NBS = Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 14:S, p. 2-57 (PDF p. 65), row SO3 2- ao ## CRC = CRC Handbook, Thermodynamic Properties of Aqueous Systems, p. 5-86 (TeamLRN_5_1_CODATA_KEY_VALUES_FOR_THERMO.pdf), row SO3-2 ## hfAq [kJ/mol] chosen -635.5 (NBS): NBS -635.5, CRC -635.5 ## sAq [J/mol/K] chosen -29.0 (NBS): NBS -29.0, CRC -29.0";
+hfAq { value -635500; unit J/mol;}
+sAq  { value -29.0;  unit J/mol/K;}
+}

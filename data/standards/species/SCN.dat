@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/SCN.dat -- the aqueous species SCN- (C320, DEV.md 4c).  ONE model species, ONE
+  typed file.  Made by bin/curate/species_c320.py from
+  data/curation/batches/species_c320/species.tsv, which holds every reading (NBS table, page, row;
+  the CRC second reading; the CODATA key value where the species has one) and the chosen value.
+  Standard state: ideal solution at 1 mol/kg, 298.15 K, H+ = 0 (NBS convention).  The chosen
+  value is NBS (Wagman et al. 1982) unless CODATA (Cox, Wagman & Medvedev 1989) carries the species.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    SCN;
+formula     "SCN-";
+charge  -1;
+MW { value 58.078; unit g/mol;}
+aqueousThermo
+{
+source "NBS = Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 23:C, p. 2-92 (PDF p. 100), row SCN- thiocyanate ion ao ## CRC = CRC Handbook, Thermodynamic Properties of Aqueous Systems, p. 5-86 (TeamLRN_5_1_CODATA_KEY_VALUES_FOR_THERMO.pdf), row SCN- ## hfAq [kJ/mol] chosen 76.44 (NBS): NBS 76.44, CRC 76.4 ## sAq [J/mol/K] chosen 144.3 (NBS): NBS 144.3, CRC 144.3 ## cpAq [J/mol/K] chosen -40.2 (NBS): NBS -40.2, CRC -40.2";
+hfAq { value 76440; unit J/mol;}
+sAq  { value 144.3;  unit J/mol/K;}
+cpAq { value -40.2; unit J/mol/K;}
+}

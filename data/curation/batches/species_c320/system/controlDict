@@ -1,0 +1,12 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+application   choupoProps;
+description   "The 21 aqueous species of C320 (NBS 1982 / CODATA 1989): the atom table of each formula (charge suffix dropped: the operation prints atoms only, the charge is held by the gate) as the engine's own parser reads it; the thermodynamic values are held by bin/curate/check_species_records.py against species.tsv";
+verbosity     1;

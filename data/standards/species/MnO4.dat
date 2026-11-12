@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/MnO4.dat -- the aqueous species MnO4- (C320, DEV.md 4c).  ONE model species, ONE
+  typed file.  Made by bin/curate/species_c320.py from
+  data/curation/batches/species_c320/species.tsv, which holds every reading (NBS table, page, row;
+  the CRC second reading; the CODATA key value where the species has one) and the chosen value.
+  Standard state: ideal solution at 1 mol/kg, 298.15 K, H+ = 0 (NBS convention).  The chosen
+  value is NBS (Wagman et al. 1982) unless CODATA (Cox, Wagman & Medvedev 1989) carries the species.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    MnO4;
+formula     "MnO4-";
+charge  -1;
+MW { value 118.934; unit g/mol;}
+aqueousThermo
+{
+source "NBS = Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 48:Mn, p. 2-191 (PDF p. 199), row MnO4- ao ## CRC = CRC Handbook, Thermodynamic Properties of Aqueous Systems, p. 5-86 (TeamLRN_5_1_CODATA_KEY_VALUES_FOR_THERMO.pdf), row MnO4- ## hfAq [kJ/mol] chosen -541.4 (NBS): NBS -541.4, CRC -541.4 ## sAq [J/mol/K] chosen 191.2 (NBS): NBS 191.2, CRC 191.2 ## cpAq [J/mol/K] chosen -82.0 (NBS): NBS -82.0, CRC -82.0";
+hfAq { value -541400; unit J/mol;}
+sAq  { value 191.2;  unit J/mol/K;}
+cpAq { value -82.0; unit J/mol/K;}
+}

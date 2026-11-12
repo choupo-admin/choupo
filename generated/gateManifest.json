@@ -319,7 +319,7 @@
     "check_electrolyte_records": {
       "exit": 0,
       "claim": "electrolyte-records: OK -- monoliths absent, 55 pitzer-pairs, 65 pitzer-mixing, 3 eNRTL, 63 speciation, 9 gas-liquid, 6 ion-exchange record(s) structurally sound; the mineralSolubility kind stays retired.",
-      "seconds": 0.0
+      "seconds": 0.1
     },
     "check_electrolyte_sidecars": {
       "exit": 0,
@@ -578,8 +578,8 @@
     },
     "check_ion_pins": {
       "exit": 0,
-      "claim": "check_ion_pins: OK -- 3 dissolution anchor(s) (NaOH, NaCl, KCl) reproduce the aqueous ion tier to within 0.2 kJ/mol, and of 2847 component record(s) scanned (data/standards/components + every tutorial constant/components) the 92 carrying dissolutionEnthalpy declare no second, component-level standardThermochemistry block.  NOT CHECKED: whether any ion hfAq or solid Hf is RIGHT -- the anchors validate the arithmetic that relates them, never the published values; and the anchors above reach 4 ion(s) only, so an ion no anchor touches is unvalidated here.",
-      "seconds": 0.2
+      "claim": "check_ion_pins: OK -- 3 dissolution anchor(s) (NaOH, NaCl, KCl) reproduce the aqueous ion tier to within 0.2 kJ/mol, and of 2846 component record(s) scanned (data/standards/components + every tutorial constant/components) the 92 carrying dissolutionEnthalpy declare no second, component-level standardThermochemistry block.  NOT CHECKED: whether any ion hfAq or solid Hf is RIGHT -- the anchors validate the arithmetic that relates them, never the published values; and the anchors above reach 4 ion(s) only, so an ion no anchor touches is unvalidated here.",
+      "seconds": 0.9
     },
     "check_layering": {
       "exit": 0,
@@ -934,7 +934,7 @@
     "check_source_licence": {
       "exit": 0,
       "claim": "check_source_licence: OK -- 2622 TRACKED record(s) scanned (untracked and data/local files are NOT judged; an absent or collapsed scan root REFUSES); no encumbered source stands as the authority for a value, except 4 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted.  NonCommercial compilations: no new record names Burcat/ReSpecTh as a value's origin; 20 existing ones do and are pinned.  No-grant mechanism (C164): no line of the 9368 catalogue records and case-local constant/ files names GRI-Mech as a value's origin (none pinned; a cross-check marker before the name is allowed).  Engineering Toolbox and REFPROP (C65) are among the names refused, and they alone are also sought in the 5483 case-local records under tutorials/**/constant/: 25 name one as a value's origin, all sealed NH3 mirrors awaiting re-import, pinned (every other name is judged in data/standards/ only).  Accepted third-party databanks, by CONTRACT here and cross-checked against the importer's LICENSE constant: ChemSep (Artistic-2.0, 360 record(s)); NASA/TP-2002-211556 (publicDomain, 30 record(s)) -- and that acceptance has a SCOPE: 2 excluded interaction-parameter table classes (ChemSep .ipd, the thermo package's copy) are named as a value's origin by no record.  No source file reproduces a no-grant standard's table (1 class: the API STD 526 orifice-letter areas, matched by their VALUES over 15775 source files, not by the name).  Every source ruled on here has a thirdParty/ card and every card on disk is named by a gate (8 card(s)).  Vendored third-party code, by CONTRACT: NanoFiltran -- 3 file(s) each carrying its own licence notice, the LAPACK text the fetched one, NOTICE naming every holder.  Facts from a copyrighted paper, by CONTRACT: Geraldes & Alves 2008 (NanoFiltran paper) -- 9 file(s) each citing it and saying what it carries, and none of the 20 PDF/image file(s) under bin, tutorials, docs, data, gui/public, gui/src, thirdParty is the paper or a figure of it.",
-      "seconds": 16.8
+      "seconds": 11.3
     },
     "check_species_citation": {
       "exit": 0,
@@ -1649,6 +1649,11 @@
     "check_henry_records": {
       "exit": 0,
       "claim": "check_henry_records: OK -- 45 Henry records from Sander 2015 reproduce from rows.tsv (1851 M/L rows, no Q or E row; NOT CHECKED: the values of the thermo-library records)",
+      "seconds": 0.1
+    },
+    "check_species_records": {
+      "exit": 0,
+      "claim": "check_species_records: OK -- 21 aqueous species reproduce from species.tsv (NBS 1982 read against the CRC reprint and the Gibbs identity, 8 CODATA-chosen quantities, 6 held; NOT CHECKED: any radius or D0 -- none is carried)",
       "seconds": 0.1
     }
   }
