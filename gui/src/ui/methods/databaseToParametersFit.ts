@@ -58,7 +58,7 @@ export const FIT_RULE = {
   outlierK: 3,
   /** pairs_px.py:68 */
   outlierPct: 20,
-  /** pairs_c283.py:86 -- upper limits of clean / warning / severe, K */
+  /** pairs_c283.py:90 -- upper limits of clean / warning / severe, K */
   gradeK: [1, 2, 4] as const,
   /** pairs_c283.py:87 / pairs_px.py:71 -- the same in per cent of P */
   gradePct: [5, 10, 20] as const,

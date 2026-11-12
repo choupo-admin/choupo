@@ -120,6 +120,15 @@ triplePoint
 //  coefficients is therefore NOT modelled.  Restored 2026-11-02 because
 //  check_groups holds every `reviewed` molecular record to a group block, and
 //  the earlier record already mapped D2O this way (C197).
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (1 H2O), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   0.9200;
+    q   1.4000;
+}
+
 groups
 {
     unifac ( { group H2O; count 1; } );
@@ -127,6 +136,12 @@ groups
 
 provenance
 {
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 0.9200, q = sum nu_k Q_k = 1.4000 over the record's unifac groups (1 H2O)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
     constants
     {
         origin       literature;
