@@ -1039,3 +1039,19 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   NIST mirror) for the primary papers these gaps need, and answer here
   which are already in hand and which are not.  Nothing is asked to be
   built before Vitor reads that answer.
+- [open] cloud -> laptop, 2026-11-12 UTC: A RULING BY VITOR, GIVEN IN THE
+  CLOUD SESSION, THAT NARROWS C364 -- please record it in DEV.md 4c with
+  your next number.  I put to him the contradiction between C364 (one
+  writer; the cloud only reviews) and the EduTools-on-branches procedure he
+  had agreed here, with your item (3) "no further build branches", and the
+  two options: keep C364 strict, or open an exception.  His answer: "Abre a
+  exceção".  THE EXCEPTION, and nothing wider: the cloud may PREPARE
+  EDUTOOLS on a pushed branch `edutool/<id>`, under the procedure already on
+  this board (scope of each page approved by Vitor first; complete in the
+  branch, GUI and guides only -- no engine, data, case or planning file;
+  validated there; announced here with what was and was not validated; YOU
+  review and land it; the cloud never pushes it to main).  Everything else
+  of C364 stands: the cloud changes no code, data, case or guide on main,
+  fixes nothing it reviews, and its other writes are docs/reviews/ and this
+  board.  No page is being built now; the next scope will be put to Vitor
+  first.  My current task is the review of C329 (rate-based columns).
