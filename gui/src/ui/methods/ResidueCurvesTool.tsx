@@ -184,7 +184,29 @@ function spName(sp: SingularPoint, comps: readonly string[]): string {
 
 // ---- the pair parameters, as the engine reported them ---------------------------------
 
-interface PairRow { pair: string; status: string; source: string; grade: string; notes: string[] }
+interface PairRow {
+  pair: string; status: string; source: string; grade: string; notes: string[];
+  /** the temperature the record was fitted at, when its validity span is ONE temperature
+   *  (min === max); read from the engine's own pair resolution, never from a table here */
+  singleT: number | null;
+}
+
+/** What the "Not every pair is clean" alert says, one sentence per reason; empty when none
+ *  applies.  The reasons: a non-clean fit grade, a record fitted at a single temperature, an
+ *  advisory the engine printed for the pair.  All three come from `pairRows`. */
+export function pairCautions(rows: readonly PairRow[]): string[] {
+  const out: string[] = [];
+  if (rows.some((r) => r.grade !== "clean"))
+    out.push("At least one of the three pairs carries a warning or a severe fit grade, or no grade "
+      + "at all.");
+  for (const r of rows.filter((x) => x.singleT !== null))
+    out.push(`The record for ${r.pair} is valid at ${r.singleT!.toFixed(2)} K only (one temperature), `
+      + "and the map uses it at the bubble temperatures of the whole triangle: a fit at one "
+      + "temperature says nothing about how the activity coefficients move with T.");
+  if (rows.some((r) => r.notes.length > 0))
+    out.push("The engine printed an advisory for at least one pair; its sentence is in the table above.");
+  return out;
+}
 
 export function pairRows(result: RunResult | null, comps: readonly string[]): PairRow[] {
   if (!result) return [];
@@ -207,6 +229,10 @@ export function pairRows(result: RunResult | null, comps: readonly string[]): Pa
       source: file,
       grade: g ? g.toLowerCase() : "none on record",
       notes: mine.map((v) => v.message),
+      singleT: (() => {
+        const t = res?.validity?.temperature;
+        return t && t.min === t.max ? t.min : null;
+      })(),
     };
   });
 }
@@ -377,14 +403,14 @@ export function ResidueCurvesTool(): JSX.Element {
               </Table>
             </Wide>
           )}
-          {pairs.some((r) => r.grade !== "clean") && (
+          {pairCautions(pairs).length > 0 && (
             <Alert color="yellow" variant="light" title="Not every pair is clean">
-              <Text size="sm">
-                At least one of the three pairs carries a warning or a severe fit grade, or no grade
-                at all, and the engine's sentences above say where each one is used outside the
-                temperatures its data covered. Read the map as what this model predicts, not as
-                what the mixture does.
-              </Text>
+              <Stack gap={4}>
+                {pairCautions(pairs).map((m) => <Text key={m} size="sm">{m}</Text>)}
+                <Text size="sm">
+                  Read the map as what this model predicts, not as what the mixture does.
+                </Text>
+              </Stack>
             </Alert>
           )}
         </Panel>
@@ -665,7 +691,7 @@ export function ResidueCurvesTool(): JSX.Element {
             <Text size="sm">
               At {fmt(Tmin, 2)} K, the lowest bubble temperature on the map, the engine's
               liquid-liquid flash found <b>{fmt(ll["n_ll"] ?? NaN, 0)}</b> two-liquid compositions out
-              of {fmt(ll["n_nodes"] ?? NaN, 0)} it tried
+              of {fmt((ll["n_nodes"] ?? NaN) + (ll["failures"] ?? 0), 0)} it tried
               {(ll["failures"] ?? 0) > 0 ? ` (and ${fmt(ll["failures"]!, 0)} it could not decide)` : ""}.{" "}
               {(ll["n_ll"] ?? 0) > 0
                 ? "The model predicts two liquids there, and this map, which assumes one, is wrong in that part of the triangle."

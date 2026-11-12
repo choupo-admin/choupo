@@ -42,7 +42,7 @@ import {
   type OpLike, type RcmField, type Vec3,
 } from "../src/case/residueCurves.js";
 import { filesToCaseFiles } from "../src/cases/tutorials.js";
-import { ResidueCurvesTool, RCM_PRESETS } from "../src/ui/methods/ResidueCurvesTool.js";
+import { ResidueCurvesTool, RCM_PRESETS, pairCautions, pairRows } from "../src/ui/methods/ResidueCurvesTool.js";
 import { PUBLISHED_AZEOTROPES, RCM_STEPS } from "../src/ui/methods/residueCurvesLesson.js";
 
 // ---- the test's own small model ---------------------------------------------------
@@ -256,5 +256,37 @@ describe("the page", () => {
     const names = new Set(RCM_PRESETS.flatMap((p) => p.comps));
     for (const pa of PUBLISHED_AZEOTROPES)
       for (const c of pa.pair) expect(names.has(c), c).toBe(true);
+  });
+});
+
+describe("the pair caution", () => {
+  const comps = ["acetonitrile", "ethanol", "water"] as const;
+  const res = (i: string, j: string, validity?: { temperature: { min: number; max: number } }) =>
+    ({ model: "NRTL", i, j, status: "standard", source: "x/" + i + "-" + j + ".dat", provSource: "", validity });
+  const fit = (a: string, b: string) =>
+    ({ locus: `pair ${a}-${b}`, message: "fitGrade clean", severity: "info" });
+  const run = (thermoResolution: unknown[], advisories: unknown[] = []) =>
+    pairRows({ thermoResolution, advisories } as never, comps);
+
+  it("is silent when every pair is clean, spans a range and drew no advisory", () => {
+    const r = run([res("acetonitrile", "ethanol", { temperature: { min: 300, max: 350 } })],
+      [fit("acetonitrile", "ethanol"), fit("acetonitrile", "water"), fit("ethanol", "water")]);
+    expect(r.every((x) => x.singleT === null)).toBe(true);
+    // the clean-grade lines are advisories too, so only notes-free rows are silent: strip them
+    expect(pairCautions(r.map((x) => ({ ...x, notes: [] })))).toEqual([]);
+  });
+
+  it("fires, with its own sentence, when a record's validity span is one temperature", () => {
+    const r = run([res("acetonitrile", "ethanol", { temperature: { min: 333.15, max: 333.15 } })]);
+    expect(r[0]!.singleT).toBe(333.15);
+    const c = pairCautions(r.map((x) => ({ ...x, grade: "clean", notes: [] })));
+    expect(c).toHaveLength(1);
+    expect(c[0]).toContain("333.15 K only");
+  });
+
+  it("fires when the engine printed an advisory for the pair, even with a clean grade", () => {
+    const r = run([], [{ locus: "pair ethanol-water", message: "outside the fitted range", severity: "warning" }]);
+    const c = pairCautions(r.map((x) => ({ ...x, grade: "clean" })));
+    expect(c.some((m) => m.includes("advisory"))).toBe(true);
   });
 });
