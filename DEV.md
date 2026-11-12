@@ -3458,10 +3458,14 @@ accepts today, and that is a policy call.
 > (B) The folder is reorganised: books, handbooks and data compilations,
 > articles by topic, simulator manuals, a folder of links to the papers with
 > measured data; names `<firstauthor><year>-<theme>`; a basename cited by a
-> tracked file is kept.  The moves run from a reviewed plan, after the
-> generals that read the folder have finished; INDEX.md is rewritten from
-> the plan and the lines of the repository that cite a path are corrected in
-> the same commit.
+> tracked file is kept.  DONE 2026-11-12: 239 files in their folders, 68
+> links, none broken, its INDEX.md rewritten from the plan.  Of the twenty,
+> present after the day's arrivals: all but Pitzer (1973) part I, Davies
+> (1962), Guiochon (2006), Martin & Synge (1941), Geldart (1973) and Wen & Yu
+> (1966); De Haan is held in its later edition (de Haan, Eral & Schuur).
+> NOT done, on purpose: the lines of the repository that cite a path into
+> the folder are left as they are -- several sit in sealed case files, every
+> cited basename was kept, and the folder's index gives the folder.
 
 > **C367 (2026-11-12; the architect's decision, from the Tb-vs-Antoine gate
 > red on six components).**  Read against the measured ThermoML points: two

@@ -33,7 +33,6 @@ Rules (agreed by both sessions, 2026-11-10):
 | branch | holds (do not edit) | since |
 |---|---|---|
 | c367-vp-window (general running) | `bin/choupo-curate` vapour-pressure path, four component records and their curation cases, `bin/curate/debt_registry.py` | 2026-11-12 |
-| c361-solids-3 (general running) | `src/unitOperations/solids/`, `tutorials/steady/solids/`, the C361 design record | 2026-11-12 |
 | (main, coordinator) | everything else; the cloud writes only `docs/reviews/` and its messages below | 2026-11-12 |
 
 ## Cloud session
