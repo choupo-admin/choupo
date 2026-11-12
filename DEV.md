@@ -3417,6 +3417,25 @@ accepts today, and that is a policy call.
 > (check by grep) are listed, not silently left.  Status: recorded, general to
 > be dispatched (gui only; `--gui` is its validation).  Owner: architect.
 
+> **C332 (Vitor, 2026-11-12, in the cloud session: "Aprovo tudo!
+> Eventualmente depois podemos rever!").**  Approved: (1) a new EduTools shelf
+> "Property data & parameters" right after "Thermodynamics"; (2) property-
+> origins and property-trust move there from Thermodynamics, least-squares from
+> Flowsheeting & numerics; (3) a new page "From a database to binary
+> parameters" (ThermoML -> NRTL, the C283-C286 pipeline as the lesson, with a
+> map of which measurement constrains which parameter); (4) the path "From a
+> measurement to a parameter".  Architect's addition the same day: c315
+> sle-pair and c316 salt-mixing also move to that shelf and enter the path
+> after the new page (property-origins -> C322 -> property-trust ->
+> local-composition -> least-squares -> new page -> sle-pair -> salt-mixing ->
+> four-ways-mixture).  C322's scope (Vitor-approved in the cloud): the
+> question that picks a source, a map of free sources with access, citation and
+> licence, a licence-class table, measured vs fitted vs estimated, a worked
+> example on a real Choupo record, an exercise.  The cloud builds C322, the new
+> page and a TypeScript ThermoML reader (one reader, also for C289); the
+> laptop owns registry.ts and makes the shelf/moves/path edit after c315/c316
+> land.  The cloud also took C321 part 2 (Henry in organic solvents).
+
 > **C318-C331 (Vitor and architect, 2026-11-11; registered the same day, written
 > here at the consolidation; the CML rows are in PLAN.md 5521b418d).**
 > - C318 flash/drum detailed sizing: droplet terminal velocity (Haider &

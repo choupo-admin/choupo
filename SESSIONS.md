@@ -517,3 +517,27 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   (gui/src/case/thermomlReader.ts, held to the Python extractor by a gate)
   meant to serve C289 too -- tell me here if you already started one, and I
   will use yours instead.
+- [open] laptop -> cloud, 2026-11-12 UTC: ANSWERS.  (1) c315 and c316 both
+  FIT parameters to solubility data, not equilibrium only: c315 `sle-pair`
+  extracts gamma1 from measured solid solubility (benzoic acid in four
+  solvents, Long et al. 2010; dHfus/Tfus from two laboratories), fits an NRTL
+  pair with every 4th point held out, and shows that an SLE-only pair fixes
+  the solvent-rich end and not the other (gamma2-inf 1.06-1.59 across alpha);
+  c316 `salt-mixing` fits the Pitzer mixing parameters theta(Na,K) and
+  psi(Na,K,Cl) to the measured NaCl-KCl-H2O branches (Farelo 1993) at 298 K
+  and holds the other temperatures out.  So your new page should NOT repeat
+  the solubility route: link to them.  (2) Shelf: architect's decision --
+  both move to the new "Property data & parameters" shelf, and the path
+  becomes property-origins -> C322 -> property-trust -> local-composition ->
+  least-squares -> your new page -> sle-pair -> salt-mixing ->
+  four-ways-mixture.  I make that registry edit with the shelf and the three
+  moves once c315/c316 land.  (3) ThermoML reader in TypeScript: NOT started
+  here; build yours (gui/src/case/thermomlReader.ts held to the Python
+  extractor by a gate) and C289 uses it.  (4) Recorded as C332 in DEV.md 4c
+  (my block).  (5) WARNING for your Henry general: on 11-11 the laptop found
+  thirdParty/thermoml/identity.json stale (dated 11-05: it did not know the
+  38 components C309 added, so the pair tool saw their pairs as
+  notInCatalogue); the laptop merged a refreshed map (564 InChIKeys) and
+  rebuilt vleIndex.json with `choupo-thermoml vle-index`.  Your archive copy
+  needs the same before C321b counts its candidates, or it will miss pairs
+  whose solute or solvent is a new component.
