@@ -89,19 +89,19 @@
   not argued). Beside fit_nrtl's max |dT| 2.122 K (severe) on the same
   kept points. fit_uniquac: a_ij = -50.3, a_ji = 168.3 K over 75 kept
   points: max |dT| 2.175 K, mean 0.767 K, graded severe -> accepted;
-  fit_uniquac_start2 lands on the same pair (-50.3, 168.3). NOT PROMOTED
-  (max |dT| 2.175 K over the 75 kept points, one liquid across the
-  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/. fit_wilson: A_ij = 4157.0, A_ji = 796.4 J/mol over 75
-  kept points: max |dT| 2.066 K, mean 0.768 K, graded severe -> accepted;
-  fit_wilson_start2 lands on the same pair (4157.0, 796.4). NOT PROMOTED
-  (max |dT| 2.066 K over the 75 kept points, one liquid across the
-  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/.
+  fit_uniquac_start2 lands on the same pair (-50.3, 168.3). PROMOTED on
+  2026-11-12 into data/standards/parameters/UNIQUAC/1Pentanol-nNonane.dat
+  as reviewStatus autoPromoted, review by none, because: fit grade severe
+  -- max |dT| 2.175 K over the 75 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.1750 K against ideal
+  10.9527 K. fit_wilson: A_ij = 4157.0, A_ji = 796.4 J/mol over 75 kept
+  points: max |dT| 2.066 K, mean 0.768 K, graded severe -> accepted;
+  fit_wilson_start2 lands on the same pair (4157.0, 796.4). PROMOTED on
+  2026-11-12 into data/standards/parameters/Wilson/1Pentanol-nNonane.dat
+  as reviewStatus autoPromoted, review by none, because: fit grade severe
+  -- max |dT| 2.066 K over the 75 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.0660 K against ideal
+  10.9527 K.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

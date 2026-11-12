@@ -1,0 +1,92 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/1Hexene.dat"
+        {
+            type          imported;
+            sha256        "821d9d664d5809ec00f90c8ccc661c187f297cba14f81532e4b2c9bbdf886e87";
+            computationalSha256 "78132e6784c9fd65032123f096309de2f861fe08a460d0caee3964b5c08eb091";
+            origin        "data/standards/components/1Hexene.dat";
+            originSha256  "bc17c2f3ba17381464fb1e56a119a2a4f1ec9bd4c1bd8512265b0ea4b37d47a9";
+            release       Choupo-2608;
+        }
+        "components/ethylButanoate.dat"
+        {
+            type          imported;
+            sha256        "ff4a9a120a1dc93217d91a53eb7a3f5b236d7ff9bb770e46cd428ef98cc5d509";
+            computationalSha256 "bba01e23728f628c6a6796bbe0b4955cab3e8626ecfee1dc07653caf637bc39e";
+            origin        "data/standards/components/ethylButanoate.dat";
+            originSha256  "bbe1c05ff36aa50764f159cc9b2913e4e9698ea50e29cad648a1f6817ed7e9d9";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1Hexene-ethylButanoate.dat"
+        {
+            type          imported;
+            sha256        "4cbb3f76d428781fde4083745541a164071236a9167aa30e4f06c3421c15b2ec";
+            computationalSha256 "ceba389cb703536aa53ee90d950488e02f97fbc1465d18119d364ccbc8d0a414";
+            origin        "data/standards/parameters/NRTL/1Hexene-ethylButanoate.dat";
+            originSha256  "f182926137c89bfa6a9552238810e74b126bf64a43713a019aa25a0a8897cdbb";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/1Hexene-ethylButanoate.dat"
+        {
+            type          imported;
+            sha256        "8d46ebfe6193ee1d51046fed1f2921b765de41cb0e97621dee22acada1f4488f";
+            computationalSha256 "9dfa513ca20f1a7a0fadbf8f5ee5e134b2bcfeb4fd495f9a2516624739588768";
+            origin        "data/standards/parameters/UNIQUAC/1Hexene-ethylButanoate.dat";
+            originSha256  "9ac068eaa8851ea94a4251b7e90a3a718aa6795eec87dd5ab050afbe49a94ecb";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Hexene-ethylButanoate.dat"
+        {
+            type          imported;
+            sha256        "d18d7489bdcda28a69c32728d6261e26282d49a1a62e99ef186afce43cf97df0";
+            computationalSha256 "8169594b952d8eb57b4d2f5f823c333ef5eac281dcee94527f7db987ff9a3662";
+            origin        "data/standards/parameters/Wilson/1Hexene-ethylButanoate.dat";
+            originSha256  "778c8cba5c594da82b135054879d41ea8430cdb3e00275955bc16a63334fd293";
+            release       Choupo-2608;
+        }
+    }
+}

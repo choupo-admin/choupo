@@ -1,0 +1,134 @@
+// [imported] origin "data/standards/parameters/Wilson/ethanol-ethylPropionate.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*---------------------------------------------------------------------------*\
+  Wilson binary interaction parameters --- ethanol(i) + ethylPropionate(j)
+
+  REGRESSED BY CHOUPO'S CURATION PIPELINE (bin/choupo-curate pairs --models, DEV.md 4c C294 on C282;
+  record docs/design/binary-pairs-from-open-measurements.md) to measured
+  bubble temperatures.  The articles named under `evidence` are the
+  SOURCE of the measurements; the NIST/TRC ThermoML Archive located them.
+  NO MEASURED POINT IS IN THIS RECORD OR THIS TREE: the case regenerates
+  them from the DOIs and sha256 sums it declares (constant/archiveDatasets).
+  The PARAMETERS are Choupo's own work.
+
+  EQUATION: Wilson, Lambda_ij = (V_j / V_i) exp(-A_ij / (R T)) [A in J/mol],
+  V the components' own Vliq (src/thermo/activityCoefficient/Wilson.cpp).
+  Two parameters A_ij, A_ji (DEV.md 4c C294).  Wilson cannot represent
+  two liquids.
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
+  vapour-pressure records for both pure components.
+
+  reviewStatus autoPromoted; review { by none; }: PROMOTED AUTOMATICALLY by
+  its fitting pipeline (the NRTL case's own evidence and kept points, the
+  max |T_model - T| over the kept points, graded 1 / 2 / 4 K -- DEV.md 4c C285, C294;
+  THIS fit: clean in-sample, 0.9363 K, CAPPED at warning by C300 (singleLaboratory); one liquid across its
+  validity span), and NO HUMAN HAS REVIEWED IT.  The engine says so on every
+  run that reads it, and voices a warning or a severe grade beside it.
+  Nothing was held out: the `validation {}` block says so, and the
+  acceptance is the `curation {}` block.  A curator who reads the series
+  back against the articles records it in the `review {}` block (DEV.md 4c
+  C297).  Revert by reverting the commit that promoted it.
+
+  REPRODUCE: run data/curation/pairs/ethanol-ethylPropionate (after `bin/choupo-curate fetch` on it); its fit_wilson
+  writes ethanol-ethylPropionate.Wilson.proposal.dat, which bin/curate/check_regressed_pairs.py holds
+  equal to this record.
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i ethanol; j ethylPropionate; }
+
+components  ( ethanol  ethylPropionate );
+model       Wilson;
+
+parameters
+{
+    i           ethanol;
+    j           ethylPropionate;
+    A_ij        754.11665988;   // J/mol
+    A_ji        1866.90314639;   // J/mol
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "data/curation/pairs/ethanol-ethylPropionate";
+    reviewStatus  autoPromoted;
+    review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+    fitGrade      warning;   // DEV.md 4c C285 (C294): max |T_model - T| over the kept points, graded 1 / 2 / 4 K
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+    fitGradeCap   ( singleLaboratory );   // DEV.md 4c C300 rule 2: in-sample clean, capped -- nothing held out could have contradicted it
+    fitGradeMaxTemperatureError_K 0.9363;
+    promotedBy    "bin/choupo-curate pairs --models --promote";
+    promotedDate  "2026-11-11";
+    reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+    fitDate       "2026-11-11";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-ethylPropionate-bubble-j.fluid.2018.07.013.dat";
+            doi       "10.1016/j.fluid.2018.07.013";
+            sha256    "bf89dc3bab99040fa861ace6d5ac84da32efae3e49783c85363a7686e5a8eac5";
+            provenance measured;
+            archiveFile "j.fluid.2018.07.013.xml";
+            system    "ethanol + ethylPropionate";
+            pressure  "101300.000000 Pa";
+        }
+    );
+    fingerprint "fbe15f8a713b5c99";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          120.80605478;
+    rms_K         0.59273364;
+    nDataPoints   21;
+    identifiable  true;
+    maxAbsCorr    0.98866857;
+
+    validity
+    {
+        temperature { min 352.00 K; max 371.45 K; }
+        pressure    { min 101300 Pa; max 101300 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validationRefused;
+
+    heldOut     none;   // every declared dataset carried `role fit`
+
+    acceptance  none;   // no band was declared before the fit, so no
+                        // pass/fail may be read out of the residual above
+}
+
+curation
+{
+    rule            "DEV.md 4c C294 (the NRTL case's own evidence and kept points, another activity model) on DEV.md 4c C283 (amended) + C284, graded by C285 (C286)";
+    model           Wilson;
+    discardsFrom    fit_nrtl;   // the outliers were decided ONCE, on the NRTL least-squares stage, and reused (C294)
+    evidence        allLaboratories;   // every study fitted, none held out
+    objective       twoStage;
+    outlierLimit    3 K;   // the NRTL least-squares stage's, reused
+    outliersDropped 0;
+    pointsKept      21;
+    noBubblePoint   0;
+    maxAbsError     0.9363 K;
+    meanAbsError    0.5301 K;
+    acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
+    gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
+    grade           clean;
+    oneLiquid       true;   // arm (f) on this model's own equation over the validity span
+    temperatures    21;   // distinct stated temperatures in the kept evidence
+    laboratories    1;   // distinct articles in the kept evidence
+    singleTemperature false;
+    singleLaboratory  true;
+    verdict         accepted;
+}

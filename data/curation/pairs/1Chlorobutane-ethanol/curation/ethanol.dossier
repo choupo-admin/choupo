@@ -1,0 +1,205 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      ethanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-1Chlorobutane.b_ij  160.25766537;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-1Chlorobutane.b_ji  550.84483596;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1920e05e487a27b8";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-1Chlorobutane-bubbleP-je800535c-b11.dat";
+            doi       "10.1021/je800535c";
+            sha256    "b936ec60ecb4d987ff9b9ae630c23851eb127999e550127382ca762a4e9b3be6";
+            provenance measured;
+            archiveFile "je800535c.xml";
+            system    "ethanol + 1Chlorobutane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0567; max 0.9724; n 38; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-1Chlorobutane.b_ij  160.257659031;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-1Chlorobutane.b_ji  550.844842483;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1920e05e487a27b8";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-1Chlorobutane-bubbleP-je800535c-b11.dat";
+            doi       "10.1021/je800535c";
+            sha256    "b936ec60ecb4d987ff9b9ae630c23851eb127999e550127382ca762a4e9b3be6";
+            provenance measured;
+            archiveFile "je800535c.xml";
+            system    "ethanol + 1Chlorobutane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0567; max 0.9724; n 38; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-1Chlorobutane.A_ij  6378.27696176;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-1Chlorobutane.A_ji  479.381857428;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1920e05e487a27b8";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-1Chlorobutane-bubbleP-je800535c-b11.dat";
+            doi       "10.1021/je800535c";
+            sha256    "b936ec60ecb4d987ff9b9ae630c23851eb127999e550127382ca762a4e9b3be6";
+            provenance measured;
+            archiveFile "je800535c.xml";
+            system    "ethanol + 1Chlorobutane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0567; max 0.9724; n 38; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-1Chlorobutane.A_ij  6378.27694391;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-1Chlorobutane.A_ji  479.381861827;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1920e05e487a27b8";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-1Chlorobutane-bubbleP-je800535c-b11.dat";
+            doi       "10.1021/je800535c";
+            sha256    "b936ec60ecb4d987ff9b9ae630c23851eb127999e550127382ca762a4e9b3be6";
+            provenance measured;
+            archiveFile "je800535c.xml";
+            system    "ethanol + 1Chlorobutane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0567; max 0.9724; n 38; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

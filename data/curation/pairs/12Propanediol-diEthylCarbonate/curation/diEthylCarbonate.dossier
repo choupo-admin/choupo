@@ -1,0 +1,209 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      diEthylCarbonate;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-12Propanediol.b_ij  385.057713579;
+        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-12Propanediol.b_ji  271.264066986;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d7bf9a6de47b6850";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diEthylCarbonate-12Propanediol-bubble-acs.jced.5b00064.dat";
+            doi       "10.1021/acs.jced.5b00064";
+            sha256    "8e77348cc10d394ca436523d85be208e64ba7971f58dc65b935f6907913d5abc";
+            provenance measured;
+            archiveFile "acs.jced.5b00064.xml";
+            system    "diEthylCarbonate + 12Propanediol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.025; max 0.975; n 17; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-12Propanediol.b_ij  385.057713356;
+        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-12Propanediol.b_ji  271.264067871;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d7bf9a6de47b6850";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diEthylCarbonate-12Propanediol-bubble-acs.jced.5b00064.dat";
+            doi       "10.1021/acs.jced.5b00064";
+            sha256    "8e77348cc10d394ca436523d85be208e64ba7971f58dc65b935f6907913d5abc";
+            provenance measured;
+            archiveFile "acs.jced.5b00064.xml";
+            system    "diEthylCarbonate + 12Propanediol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.025; max 0.975; n 17; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-12Propanediol.A_ij  827.794573361;
+        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-12Propanediol.A_ji  5277.85746747;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d7bf9a6de47b6850";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diEthylCarbonate-12Propanediol-bubble-acs.jced.5b00064.dat";
+            doi       "10.1021/acs.jced.5b00064";
+            sha256    "8e77348cc10d394ca436523d85be208e64ba7971f58dc65b935f6907913d5abc";
+            provenance measured;
+            archiveFile "acs.jced.5b00064.xml";
+            system    "diEthylCarbonate + 12Propanediol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.025; max 0.975; n 17; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-12Propanediol.A_ij  827.794571742;
+        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-12Propanediol.A_ji  5277.8574688;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "d7bf9a6de47b6850";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/diEthylCarbonate-12Propanediol-bubble-acs.jced.5b00064.dat";
+            doi       "10.1021/acs.jced.5b00064";
+            sha256    "8e77348cc10d394ca436523d85be208e64ba7971f58dc65b935f6907913d5abc";
+            provenance measured;
+            archiveFile "acs.jced.5b00064.xml";
+            system    "diEthylCarbonate + 12Propanediol";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.025; max 0.975; n 17; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

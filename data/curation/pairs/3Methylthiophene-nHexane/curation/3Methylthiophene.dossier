@@ -1,0 +1,295 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      3Methylthiophene;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.b_ij  207.302952672;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.b_ji  21.9787312246;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2219023882b83034";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methylthiophene-nHexane-bubbleP-j.fluid.2009.11.004-b15.dat";
+            doi       "10.1016/j.fluid.2009.11.004";
+            sha256    "0fac91924225e603c5b68fb030161838f506ee99efd9efd458ceb206dddbec03";
+            provenance measured;
+            archiveFile "j.fluid.2009.11.004.xml";
+            system    "3Methylthiophene + nHexane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.13; max 0.984; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.b_ij  207.302952584;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.b_ji  21.9787314748;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2219023882b83034";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methylthiophene-nHexane-bubbleP-j.fluid.2009.11.004-b15.dat";
+            doi       "10.1016/j.fluid.2009.11.004";
+            sha256    "0fac91924225e603c5b68fb030161838f506ee99efd9efd458ceb206dddbec03";
+            provenance measured;
+            archiveFile "j.fluid.2009.11.004.xml";
+            system    "3Methylthiophene + nHexane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.13; max 0.984; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.A_ij  1387.42711947;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.A_ji  567.265575853;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2219023882b83034";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methylthiophene-nHexane-bubbleP-j.fluid.2009.11.004-b15.dat";
+            doi       "10.1016/j.fluid.2009.11.004";
+            sha256    "0fac91924225e603c5b68fb030161838f506ee99efd9efd458ceb206dddbec03";
+            provenance measured;
+            archiveFile "j.fluid.2009.11.004.xml";
+            system    "3Methylthiophene + nHexane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.13; max 0.984; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.A_ij  1387.42712117;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.A_ji  567.265574294;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2219023882b83034";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methylthiophene-nHexane-bubbleP-j.fluid.2009.11.004-b15.dat";
+            doi       "10.1016/j.fluid.2009.11.004";
+            sha256    "0fac91924225e603c5b68fb030161838f506ee99efd9efd458ceb206dddbec03";
+            provenance measured;
+            archiveFile "j.fluid.2009.11.004.xml";
+            system    "3Methylthiophene + nHexane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.13; max 0.984; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.a_ij  -39.0001439271;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.a_ji  101.67843392;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2219023882b83034";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methylthiophene-nHexane-bubbleP-j.fluid.2009.11.004-b15.dat";
+            doi       "10.1016/j.fluid.2009.11.004";
+            sha256    "0fac91924225e603c5b68fb030161838f506ee99efd9efd458ceb206dddbec03";
+            provenance measured;
+            archiveFile "j.fluid.2009.11.004.xml";
+            system    "3Methylthiophene + nHexane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.13; max 0.984; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.a_ij  -39.0001439033;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.a_ji  101.678433907;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "2219023882b83034";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methylthiophene-nHexane-bubbleP-j.fluid.2009.11.004-b15.dat";
+            doi       "10.1016/j.fluid.2009.11.004";
+            sha256    "0fac91924225e603c5b68fb030161838f506ee99efd9efd458ceb206dddbec03";
+            provenance measured;
+            archiveFile "j.fluid.2009.11.004.xml";
+            system    "3Methylthiophene + nHexane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.13; max 0.984; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

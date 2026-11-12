@@ -87,19 +87,21 @@
   not argued). Beside fit_nrtl's max |dT| 2.199 K (severe) on the same
   kept points. fit_uniquac: a_ij = 172.6, a_ji = -66.7 K over 14 kept
   points: max |dT| 2.160 K, mean 1.020 K, graded severe -> accepted;
-  fit_uniquac_start2 lands on the same pair (172.6, -66.7). NOT PROMOTED
-  (max |dT| 2.160 K over the 14 kept points, one liquid across the
-  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/. fit_wilson: A_ij = 477.7, A_ji = 2838.8 J/mol over 14
-  kept points: max |dT| 2.092 K, mean 0.977 K, graded severe -> accepted;
-  fit_wilson_start2 lands on the same pair (477.7, 2838.8). NOT PROMOTED
-  (max |dT| 2.092 K over the 14 kept points, one liquid across the
-  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/.
+  fit_uniquac_start2 lands on the same pair (172.6, -66.7). PROMOTED on
+  2026-11-12 into
+  data/standards/parameters/UNIQUAC/isobutylAcetate-methylAcetate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.160 K over the 14 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.1597 K against ideal
+  8.0017 K. fit_wilson: A_ij = 477.7, A_ji = 2838.8 J/mol over 14 kept
+  points: max |dT| 2.092 K, mean 0.977 K, graded severe -> accepted;
+  fit_wilson_start2 lands on the same pair (477.7, 2838.8). PROMOTED on
+  2026-11-12 into
+  data/standards/parameters/Wilson/isobutylAcetate-methylAcetate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.092 K over the 14 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.0923 K against ideal
+  8.0017 K.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -107,11 +109,12 @@
   fit_nrtl: b_ij = 671.8 K, b_ji = -252.6 K over 14 kept points of 1
   laboratories (0 discarded): max |dT| 2.199 K, mean 1.064 K, graded
   severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
-  same pair (671.8, -252.6). NOT PROMOTED (max |dT| 2.199 K over the 14
-  kept points, one liquid across the validity span): fit grade severe --
-  DEV.md 4c C300 rule 3: a severe pair does not enter the default
-  catalogue; its record stays in this curation case's constant/, and a
-  case that needs it carries it in its own constant/
+  same pair (671.8, -252.6). PROMOTED on 2026-11-12 into
+  data/standards/parameters/NRTL/isobutylAcetate-methylAcetate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.199 K over the 14 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.1993 K against ideal
+  8.0017 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

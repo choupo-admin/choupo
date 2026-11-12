@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/1Chlorobutane.dat"
+        {
+            type          imported;
+            sha256        "0b1ed4a37c72f538bc59d5e0fc4f512309ec9eb4e0aa391d7ac94f4c7f538772";
+            computationalSha256 "657b7a24dc9fc4f9fc23fe73221076c75bee37ed22ea62e37ff2a50826cb862e";
+            origin        "data/standards/components/1Chlorobutane.dat";
+            originSha256  "847de1b69ae86a6de3e32f9d30b985a7e1c0a2431963dd42ebcd7fd4f9736bdb";
+            release       Choupo-2608;
+        }
+        "components/nHeptane.dat"
+        {
+            type          imported;
+            sha256        "a7070c242b1e983394223ff7eee404bb92b3d786d4084206099da44034d276ff";
+            computationalSha256 "2d3f05b485954c058b6d08f36c865bcce5f50ca5b52320bf4d78be213fb24805";
+            origin        "data/standards/components/nHeptane.dat";
+            originSha256  "c4efb38aaf4080cff55dfda4017e9bc8d4911ccad74c28b2daf7194cc6922c76";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1Chlorobutane-nHeptane.dat"
+        {
+            type          imported;
+            sha256        "96125eb0c14271552cf95426a61d3439828faff08deda694a8fe0368f82f1a04";
+            computationalSha256 "7a468d41e2f913da4a5c972f6ab372c37a59a96fad6792b3806d28c821816b5f";
+            origin        "data/standards/parameters/NRTL/1Chlorobutane-nHeptane.dat";
+            originSha256  "77f66ae2a4c35cfc0f9e7d77e11b38796ee6fc3e5ba1cb3fb93d91594c906160";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Chlorobutane-nHeptane.dat"
+        {
+            type          imported;
+            sha256        "41cad94190b0664b58b4a614249b5b471ce10fa95ab2722ed37b9270db724974";
+            computationalSha256 "ed7759277db106969a342116259ec3cfc0de600816137694848d364c3140c719";
+            origin        "data/standards/parameters/Wilson/1Chlorobutane-nHeptane.dat";
+            originSha256  "6793b60139f02c747d27bf4b567737eef70a2d54e36f1b18ec7490224c4c09a2";
+            release       Choupo-2608;
+        }
+    }
+}

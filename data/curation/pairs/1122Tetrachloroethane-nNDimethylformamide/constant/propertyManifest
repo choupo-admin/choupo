@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/1122Tetrachloroethane.dat"
+        {
+            type          imported;
+            sha256        "ceaf75c88666dc0535c0b68bccaa520eaaee25ce3f5c99ed60117faf5d759af1";
+            computationalSha256 "198d7d857a25ec951e052faa80e091770880c6e53f7c4a26d551a1cb8ee782da";
+            origin        "data/standards/components/1122Tetrachloroethane.dat";
+            originSha256  "6634649d343fe9f78d2f9a3e798cb5b500568dc19d387e81d6aca1b85ac6bcff";
+            release       Choupo-2608;
+        }
+        "components/nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "a88c2d32602da60e27e10ba9e0aedec1cb83216cb771caeb2f8437404df87f5d";
+            computationalSha256 "099dc481e1a60221b28f3cbda6ae34a63399cbe02fb820cb7396d33f8effd64d";
+            origin        "data/standards/components/nNDimethylformamide.dat";
+            originSha256  "2962c91b01e27473cd7cbeb36d60eeb705e5bf442b915f9d5921d7da1c1ddac3";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1122Tetrachloroethane-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "8346bd3d629adc93fdc85577e3c2a4254a991d1f1a96a2558c66d33dc807a57d";
+            computationalSha256 "e489e404486a0850990c6e98eae6658e106a8e9a5dd2f1d8c1f8a9006c29c067";
+            origin        "data/standards/parameters/NRTL/1122Tetrachloroethane-nNDimethylformamide.dat";
+            originSha256  "5386299d7a400f66e83b702584ed9e2461e31dc59203ca2d2f975e96be43dbb4";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1122Tetrachloroethane-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "8b555099f06bdf7f89ff5d8c0b83e3f063ccdf44cc5a73b466171abcb7b8d20e";
+            computationalSha256 "0d38f3f4ac0c0f9891d96de6bfa8cc8c50f090401af5da8e065c140fcffe21a6";
+            origin        "data/standards/parameters/Wilson/1122Tetrachloroethane-nNDimethylformamide.dat";
+            originSha256  "48ac36a602b474b8a0ad66a8b95a41da1ef8af26e27559d46718c52fd002ffce";
+            release       Choupo-2608;
+        }
+    }
+}

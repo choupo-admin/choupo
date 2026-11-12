@@ -1,0 +1,118 @@
+// [imported] origin "data/standards/components/methanol.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Methanol  (CH4O, CAS 67-56-1)
+  Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), Antoine
+           coefficients, Cp polynomials and the ideal-gas formation datum
+           (dHf_298/s_298, JANAF convention) are individual literature
+           values -- primary re-citation pending (IST review).  Viscosity:
+           Andrade/Vogel fits to literature mu(T); UNIQUAC r,q are the van
+           der Waals values (Abrams-Prausnitz) as used by Popken 2000.
+\*---------------------------------------------------------------------------*/
+
+name        methanol;
+formula     CH4O;
+CAS         67-56-1;
+
+
+
+MW          32.042;
+Tc          512.64;
+Pc          80.97;
+omega       0.5650;
+Tb          337.85;
+HvapTb      35210;
+Vliq        4.070e-5;
+//  ANCHOR, never an input.  The engine DERIVES the Hildebrand
+//  parameter from HvapTb and Vliq (the tree stores no derivative);
+//  this is what ChemSep v8.3 computed independently, so the
+//  derivation has something to be wrong against.
+solubilityParameter 29440;   // Pa^0.5  [anchor, ChemSep v8.3, Artistic-2.0]
+
+
+standardThermochemistry
+{
+    dHf_298   -200940.0;        // J/mol  -- ideal-gas reference
+    s_298     239.880;         // J/(mol·K)  -- third-law absolute
+}
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (5.20409   1581.341   -33.50);
+    Trange        (288  356);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (21.152   0.07092   2.587e-5   -2.852e-8);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (81.0);
+    Trange        (280  340);
+}
+
+// Liquid transport (v0.62+).  associationFactor = Wilke-Chang phi (solvent).
+// liquidViscosity: ln(mu/Pa.s) = A + B/T (Andrade) or A + B/(T-C) (Vogel),
+// fitted to literature mu(T) over ~10-100 degC.
+associationFactor  1.9;
+liquidViscosity
+{
+    andrade { A -11.5712; B 1207.4; }
+    vogel   { A -11.5712; B 1207.4; C 0.0; }
+}
+
+groups
+{
+    unifac ( { group CH3OH; count 1; } );
+    joback ( { group CH3; count 1; } { group OH; count 1; } );
+}
+
+uniquac
+{
+    r   1.4311;
+    q   1.4320;     // van der Waals (Abrams-Prausnitz), as used by Popken 2000 Table 2
+}
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0477-PROF.txt bundled in usnistgov/COSMOSAC; CAS 67-56-1";
+        licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
+        installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
+    }
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file METHANOL.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey OKKJLVBELUTLKV-UHFFFAOYSA-N (full match); formula CH4O; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        66.883835;   // sum of the profile below; GAMESS prints 66.88
+        volume      47.79;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.097278     0.723321     1.445691     0.894998     0.720544
+               0.413702     1.058308     1.061493     0.673244     0.967483     0.380336
+               0.570625     2.222730     7.059463     8.538420     4.706027     6.373604
+               5.289052     2.638041     1.364105     2.322613     0.699185     0.971510
+               0.878315     1.145324     0.519256     0.750279     0.506607     1.346040
+               0.500490     1.301539     1.226481     0.992033     1.129486     1.457911
+               1.780075     1.841421     0.316805     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
+    }
+}
+
+// ---- Aqueous-speciation FACTS (substance-level, classifier-read) ----
+// Curated fact: methanol does NOT participate in the aqueous speciation
+// network at this thermodynamic level (pKa ~ 15.5 -- negligible).
+aqueousSpeciation  none;

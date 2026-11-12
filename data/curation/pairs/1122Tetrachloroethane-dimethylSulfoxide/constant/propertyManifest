@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/1122Tetrachloroethane.dat"
+        {
+            type          imported;
+            sha256        "ceaf75c88666dc0535c0b68bccaa520eaaee25ce3f5c99ed60117faf5d759af1";
+            computationalSha256 "198d7d857a25ec951e052faa80e091770880c6e53f7c4a26d551a1cb8ee782da";
+            origin        "data/standards/components/1122Tetrachloroethane.dat";
+            originSha256  "6634649d343fe9f78d2f9a3e798cb5b500568dc19d387e81d6aca1b85ac6bcff";
+            release       Choupo-2608;
+        }
+        "components/dimethylSulfoxide.dat"
+        {
+            type          imported;
+            sha256        "17f9b99ac0c913e567614c63c159770bbc0a1913df97026d01fffbe3b04cf774";
+            computationalSha256 "d843f0b7b938772a1d29d5515b33b2c59fadc96f846788d5aded7916bf16c994";
+            origin        "data/standards/components/dimethylSulfoxide.dat";
+            originSha256  "a9b5f0fee39f8c1914eedda69137802495adf06e015450e16ae426392208ba86";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1122Tetrachloroethane-dimethylSulfoxide.dat"
+        {
+            type          imported;
+            sha256        "b038a6d9a34f27274c3b968bcbe24a3c3779d75ce5627cb038d943f87cadc14c";
+            computationalSha256 "7c29bba627e78bea243c35e748e372d9980f6aee686cc46d1f758d5776859244";
+            origin        "data/standards/parameters/NRTL/1122Tetrachloroethane-dimethylSulfoxide.dat";
+            originSha256  "9b290bc23268475591cb2015f280803d05ce120f284a193285c15e5b5eba37ff";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1122Tetrachloroethane-dimethylSulfoxide.dat"
+        {
+            type          imported;
+            sha256        "dab883c383de859bf5a5ad4591f6ead0162f1d281dd5932853bbc376719e49c3";
+            computationalSha256 "987b72768fce4a9aea4c6bacf7b3707ab6cbe02cd6e3740b9f68b1ed66f24fd8";
+            origin        "data/standards/parameters/Wilson/1122Tetrachloroethane-dimethylSulfoxide.dat";
+            originSha256  "0d0bfd10f67414f98f169dfe802b923fdc864265535399437e6eb6c61601e6df";
+            release       Choupo-2608;
+        }
+    }
+}

@@ -21,26 +21,44 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/dimethylSulfoxide.dat"
         {
             type          imported;
-            sha256        "146549d6b5fff7a0e57a607bd5f78f88f22f2fdc676aea18421963252b02137c";
-            computationalSha256 "f965b44ef5ea770b90f8e5d5263a5322ef24cd12c9fa213806688a4ccdb73e12";
+            sha256        "17f9b99ac0c913e567614c63c159770bbc0a1913df97026d01fffbe3b04cf774";
+            computationalSha256 "d843f0b7b938772a1d29d5515b33b2c59fadc96f846788d5aded7916bf16c994";
             origin        "data/standards/components/dimethylSulfoxide.dat";
-            originSha256  "705eb8c5af775aa597b0b092d2e795e71a47ee20518b93b04cdd533103253f17";
+            originSha256  "a9b5f0fee39f8c1914eedda69137802495adf06e015450e16ae426392208ba86";
             release       Choupo-2608;
         }
         "components/isopropylAcetate.dat"
         {
             type          imported;
-            sha256        "e7ac260d88cf4a0bfa207e4911233608a56c4d10a61c24e4f7747ea6e7c0f438";
-            computationalSha256 "b0aad9448ce9dd1414628dc55a1e66f00915a1d484ade9e5aa47fe646ee093c7";
+            sha256        "a337dda097b5598b1a0116eae6fcd9380a2a91254877d4d81f6830859888311f";
+            computationalSha256 "2311ca25b0216f6f074ebbedb34b42e044fdf4a85d20c707263ce68a64efef3f";
             origin        "data/standards/components/isopropylAcetate.dat";
-            originSha256  "72e882241e06e02aeea5b7957fc17349db5a3ac5b52a361372ead9ddfd714662";
+            originSha256  "22ba816194932dc83c30a16745bafaf33cca58c3f01f9a5333f32f300050abe5";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/dimethylSulfoxide-isopropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "e4426df5d9f80216354fa9cefaf70340cad25fa38c7e65d0904619a618f3a309";
+            computationalSha256 "d284a20b7d54ed911485966ca28636cf4096a365766a9d84cd4cfd8793bc2057";
+            origin        "data/standards/parameters/NRTL/dimethylSulfoxide-isopropylAcetate.dat";
+            originSha256  "e85e3c22c155691d079905398c28c900d87ba6b2ad3b203479704ffa577d66fe";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/dimethylSulfoxide-isopropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "5f11d2a79c95dc81c1a0406554ac3ede075bd2632c11469bbe78d8b96ab19118";
+            computationalSha256 "3a3f37de5bb0cd0e21c45beb6c203e1ec5c7948810fbe403ef789e8bcbe24aae";
+            origin        "data/standards/parameters/Wilson/dimethylSulfoxide-isopropylAcetate.dat";
+            originSha256  "b5d568499bdc107b93b0f94be436754d5d5f5fe7794d3cbe906cc013d47ec426";
             release       Choupo-2608;
         }
     }

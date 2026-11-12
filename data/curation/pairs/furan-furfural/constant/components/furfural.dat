@@ -1,0 +1,232 @@
+// [imported] origin "data/standards/components/furfural.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: furfural  (CAS 98-01-1)
+  PROPOSAL TIER -- UNVERIFIED. Imported from ChemSep v8.3
+  pure-component data under Artistic License 2.0.
+  Critical constants are source data.  Psat is an Antoine FITTED by
+  bin/choupo-curate vp to measured vapour pressures (DEV.md 4c C281;
+  provenance.vaporPressure): reviewStatus autoPromoted, NOT human-reviewed.
+\*---------------------------------------------------------------------------*/
+
+name        furfural;
+CAS         98-01-1;
+formula     C5H4O2;      // counted from the ChemSep v8.3 structure formula "(OC4H3)CHO" (derived 2026-09-03; reproduces MW to 0.001 %)
+reviewStatus interim;
+MW          96.08406;      // kg/kmol [origin=ChemSep v8.3]
+Tc          670.15;      // K [origin=ChemSep v8.3]
+Pc          56.6;      // bar; source Pa / 1e5 [origin=ChemSep v8.3]
+omega       0.367784;      // [-] [origin=ChemSep v8.3]
+Tb          434.85;      // K [origin=ChemSep v8.3]
+
+standardThermochemistry
+{
+    dHf_298   -151000;        // J/mol   [ChemSep v8.3, ideal gas]
+    s_298     333.3;        // J/(mol.K)  third-law absolute
+}
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C), FITTED by bin/choupo-curate vp to
+    // measured vapour pressures -- see provenance.vaporPressure
+    coefficients  (4.578554089  1695.193569  -61.60128775);
+    Trange        (276.7  429.5);   // the fit's own span; outside it the engine announces the extrapolation
+}
+
+Vliq        8.3221e-05;      // m3/mol at 25 C  [ChemSep eqno 105]
+HvapTb      41940.6;      // J/mol at Tb  [ChemSep eqno 106]
+
+idealGasHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    // ChemSep states J/(kmol.K); A and the exp are scaled to per-mole here.
+    coefficients  (45.855  -497.61  5.641244721  -3.3724e-05  -2.8785e-08);
+    Trange        (100  1500);
+}
+
+liquidHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    coefficients  (122.63  404.51  -3.849055279  0.029945  -3.1496e-05);
+    Trange        (246.56  471.95);
+}
+
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     2.6487;
+        B     910.16;
+        C     -2.1754;
+        D     2.8413e-06;
+        E     2;
+        Tmin  236.65;
+        Tmax  536.12;
+    }
+}
+
+liquidThermalConductivity
+{
+    chemsepEq16
+    {
+        A     0.13228;
+        B     19058;
+        C     -182.25;
+        D     0.56426;
+        E     -0.00059782;
+        Tmin  293.15;
+        Tmax  466.63;
+    }
+}
+solubilityParameter 23610;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
+
+source
+{
+    database      "ChemSep pure-component data v8.3";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "chemsep1.xml";
+    sourceSha256  "78b3e0c6408ff35f3b75fb71a1fdd70bb8e967d8996b49452a4a9fa2dd567c76";
+    sourceRecord  "Furfural";
+    importedBy    "chemsep_to_choupo";
+    review        { state pending; reviewer unassigned; }
+}
+
+provenance
+{
+    MW
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Pc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    omega
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tb
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    vaporPressure
+    {
+        origin        fitted;
+        method        "vaporPressureFit (three-parameter Antoine; objective twoStage: least squares in log10 P, then the largest relative error in P minimised from it; every usable study fitted, outliers above 15 % discarded by name)";
+        methodVersion "choupoProps Choupo-dev";
+        fittedInCase  "data/curation/components/furfural";
+        reviewStatus  autoPromoted;
+        humanReviewed false;
+        fitGrade      severe;   // DEV.md 4c C285: the worse of the grades below
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+        fitGradeMaxRelativeError_pct 5.072530;   // grade warning
+        fitGradeBoilingPointGap_K    -2.5394;   // grade severe (Tb outside the kept points' range)
+        promotedBy    "bin/choupo-curate vp --promote";
+        promotedDate  "2026-11-10";
+        reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+        uncertainty   "the fit's maximum relative error over every kept measurement, below";
+        replaces      "model AmbroseWalton (a corresponding-states estimate from Tc, Pc, omega); `bin/choupo-curate revert <component>` restores it";
+        evidence
+        (
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/furfural-vapourPressure-acs.jced.7b00574.dat";
+                doi       "10.1021/acs.jced.7b00574";
+                sha256    "64d5ba959129fd06f8b2ebb9aa49e0d151f90517881859f95f044eac392c357d";
+                articleSha256 "a10ed94316601b1f8b223698c78b8234f18edbe637c9663236ec77b2c5adc1bb";
+                pointsKept    19;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/furfural-vapourPressure-je060406c.dat";
+                doi       "10.1021/je060406c";
+                sha256    "c95fe32c390a1fb26b3478a655d110be38967762a68c6b14d793bea212f1adaf";
+                articleSha256 "3dd393e47cf38af4405874740ce38d7802ad17805f6e2883b410cd05212068e7";
+                pointsKept    16;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/furfural-vapourPressure-je020117y.dat";
+                doi       "10.1021/je020117y";
+                sha256    "bf10819e460ba40b1608c7e623624402290e40a8a4fab6ff18ae111e456b2499";
+                articleSha256 "d1021fbc89eeb52b6ec7aee907fde898c4fd8d431977e1449e0766c4dae85244";
+                pointsKept    9;
+                pointsDropped 0;
+                provenance measured;
+            }
+        );
+        acceptance
+        {
+            rule        "the default of DEV.md 4c C285 (graded): max relative error in P over the kept points 5 / 10 / 20 %, and |Tnb - Tb| 1 / 2 / 4 K where Tb lies outside their range, are the upper limits of clean / warning / severe; above, refused; the grade is the worse of the two";
+            verdict     accepted;
+            studies     3;
+            pointsKept  44;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     2.243450;   // the fitted Antoine, every kept point
+            max_pct     5.072530;
+            awAad_pct   4.291610;   // the AmbroseWalton curve it replaces, the same points
+            awMax_pct   9.343422;
+            Tnb_fit     432.3106;   // K, the fitted curve at 101.325 kPa
+        }
+    }
+}
+
+cosmo
+{
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file FURFURAL.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey HYBBIBNJHNGZAN-UHFFFAOYSA-N (full match); formula C5H4O2; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        126.322584;   // sum of the profile below; GAMESS prints 126.32
+        volume      113.69;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.497505     2.893878     7.644033     7.476045     7.181784
+               5.388300     6.397183     6.754835     3.954554     5.288987     6.033930
+               6.378504     7.929070     5.486959     7.178370     5.666413     4.543745
+               2.810123     1.308208     1.769949     1.936783     2.366724     1.562627
+               2.846613     2.750145     3.940900     4.078459     2.895887     1.362071
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
+    }
+}

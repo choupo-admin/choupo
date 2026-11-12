@@ -21,17 +21,17 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/methanol.dat"
         {
             type          imported;
-            sha256        "8a5d7eada35ef18aafd03f99eaeaa45a0837da565ac71b4ffb3574e7a99df54a";
-            computationalSha256 "687725d9dfbbd996959983f08041d099f4b76c6b1a639d19d9a43a0209f04ab6";
+            sha256        "c31b411d7bdd0857e1a2998503dd5170f75f9a417a9d47306b4095fd28bcebd6";
+            computationalSha256 "d51b98bd9ea6675087f0be387bcb63782ea8fc394f1962cb648ad92e39752faa";
             origin        "data/standards/components/methanol.dat";
-            originSha256  "8cedd68cbab3194cfb72728ae31e42118e256931e9e166b4c53ace9dbbe27376";
+            originSha256  "3e584446eb5b5ffd4ee5547099679b01254cc19dad31a8db909a2068fe9cad43";
             release       Choupo-2608;
         }
         "components/nitrobenzene.dat"
@@ -41,6 +41,15 @@ propertyManifest
             computationalSha256 "0b4a4231f87f80f41544b0e12087ccb13016c93e1b53475a9fe70cce95d732d1";
             origin        "data/standards/components/nitrobenzene.dat";
             originSha256  "4dfd083b1f44673d3672cb463555bdfa03068f10bec14bf97bce1e682ec0db07";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/methanol-nitrobenzene.dat"
+        {
+            type          imported;
+            sha256        "00d1b22ef862b0a7fd2b05f6bdd23fe3a144d344847253ef672854f640861932";
+            computationalSha256 "95d25c76a8ad299c7ae233dd40071a8dd65d213fa9959ef5ee06fed012002c7f";
+            origin        "data/standards/parameters/NRTL/methanol-nitrobenzene.dat";
+            originSha256  "b34fdd6908772c34b10870fe44b6f7b7c7cafc16e0f05edf3d45616be9ebb5e9";
             release       Choupo-2608;
         }
         "parameters/Wilson/methanol-nitrobenzene.dat"

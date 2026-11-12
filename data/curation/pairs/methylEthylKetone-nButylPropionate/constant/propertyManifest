@@ -1,0 +1,92 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/methylEthylKetone.dat"
+        {
+            type          imported;
+            sha256        "5cd52e21cef3f980561fcea6e906e2de747d42d4003d80cf35692db8ef532101";
+            computationalSha256 "800c4ec79e27e6ceb8577d4783b29d2073862cd2bdfc566e1f96c952718467f1";
+            origin        "data/standards/components/methylEthylKetone.dat";
+            originSha256  "d43e0a6ed62af65778e6f579f19a678c6e57c522782543777bb9c4a2081f1498";
+            release       Choupo-2608;
+        }
+        "components/nButylPropionate.dat"
+        {
+            type          imported;
+            sha256        "313b26cdebd4138f38fcdca97d3a1cd58df6f90e76c663c89ef58b9332171b77";
+            computationalSha256 "78723060a1fb44f59005ba01d504e00a270437506566dd6d665d74a183280ee8";
+            origin        "data/standards/components/nButylPropionate.dat";
+            originSha256  "7a33a6e0d5e7f8870ac1d100c25f4771e055a6b2768eee804e7fb1da8ddd88e4";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/methylEthylKetone-nButylPropionate.dat"
+        {
+            type          imported;
+            sha256        "56d68feda04dd4579459ab5a7b496bd666dcee06036fcfaa273b2b575143298d";
+            computationalSha256 "cd7c9091356b7c7aacbe9c9ce571172742cdfdbd5ccd50ab18641cc70416d990";
+            origin        "data/standards/parameters/NRTL/methylEthylKetone-nButylPropionate.dat";
+            originSha256  "af2536b2070febf40cbe006d29e1cc63de6d914d18c7a76ee17022c02849fcb6";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/methylEthylKetone-nButylPropionate.dat"
+        {
+            type          imported;
+            sha256        "a5dad56296872b40bb97d6e03b19de847643bdeb181100d1f3131d79ee71eaa4";
+            computationalSha256 "1149062d4cb70ea78d586848d75211e7c7b444c350195b1ed528cf0147e6d530";
+            origin        "data/standards/parameters/UNIQUAC/methylEthylKetone-nButylPropionate.dat";
+            originSha256  "1613989b17aa62839e8da5b97b3e790f9f9553101aa2701a1bfd33a63ab00423";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/methylEthylKetone-nButylPropionate.dat"
+        {
+            type          imported;
+            sha256        "5c9d04b51f0fd0e5d55666f37de80b3f0b879c1b377674ab09a1c746832a46a2";
+            computationalSha256 "72f350e2b0d70cfee01bb13ca2a4477d1322905b2559ad129b54e37f0a11516d";
+            origin        "data/standards/parameters/Wilson/methylEthylKetone-nButylPropionate.dat";
+            originSha256  "dfff5d5ba5b890d5fa8f9460b360d421fbc58802802527e025541da6269ab135";
+            release       Choupo-2608;
+        }
+    }
+}

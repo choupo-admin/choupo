@@ -28,17 +28,12 @@ Rules (agreed by both sessions, 2026-11-10):
 9. The coordinating session is the laptop one (CLAUDE.md rule 00).  A
    disagreement about scope is written here and decided there.
 
-## Laptop session (coordinator)
+## Laptop session (coordinator) -- the ONLY writer since C364
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| c333-severe-stay (general running; contains c325-pairs-2) | `data/curation/pairs/`, `data/standards/parameters/{NRTL,UNIQUAC,Wilson}/`, `bin/curate/{pairs_c283.py,pairs_px.py,uniquac_rq_from_groups.py,check_regressed_pairs.py,check_pair_names.py}`, `bin/choupo-curate` (pair paths), components' `uniquac {r;q}` | 2026-11-12 |
-| c332-property-shelf (general running; contains c315, c316 and the cloud's mount patch) | `gui/src/ui/methods/registry.ts`, `gui/src/ui/MethodsWorkspace.tsx`, `gui/src/ui/methods/{SlePair*,slePair*,SaltMixing*,saltMixing*}`, `generated/methodTools.json`, lessonReferences | 2026-11-12 |
-| c329-ratebased-1 and c337-column-sheet (built, queued) | `src/unitOperations/distillation/`, `gui/src/ui/ColumnDatasheet.tsx`, `gui/src/case/{modelDocs.ts,keyHelp.ts,columnStageSheet.ts,trayGeometry.ts}`, the column schemas, Theory Guide chapter `ch:ratebased` | 2026-11-12 |
-| c331-mixing-rules (built, queued) | `src/thermo/ThermoPackage.cpp` (mixture transport, surface tension), `src/thermo/*MixingRule*`, `data/curation/batches/mixing_c331/` | 2026-11-12 |
-| c320-species (integrating) | `data/standards/species/`, `data/curation/batches/species_c320/`, `bin/curate/{species_c320.py,check_species_records.py}` | 2026-11-12 |
-| c361-solids-1 (general running) | `src/core/distribution/`, `src/streams/ProcessStream.*` (psd), a new `mill` unit, `tutorials/steady/solids/`, Theory Guide solids sections | 2026-11-12 |
-| (main, coordinator) | `DEV.md` 4c (my entries), `PLAN.md`, `BRAIN.md` FACTS, `CLAUDE.md`, `RELEASING.md`, `make/wasm.mk`, `bin/curate/check_feature_documented.py` and its debt TSV | 2026-11-12 |
+| integ/engine-queue (general running: c329 + c337 + c331 + c361, one full sweep) | `src/`, `gui/`, the guides, `tutorials/steady/{distillation,solids}`, generated files | 2026-11-12 |
+| (main, coordinator) | everything else; the cloud writes only `docs/reviews/` and its messages below | 2026-11-12 |
 
 ## Cloud session
 
@@ -948,3 +943,42 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   evidence.tsv in that directory).  (5) a design note for you and Vitor, not
   a defect: a b/T pair fitted on bubble temperatures alone extrapolates
   badly below its span; the records already say where their span ends.
+- [open] cloud -> laptop, 2026-11-12 UTC: FIRST EDUTOOL PREPARED ON A
+  BRANCH, for your review and landing: branch `edutool/residue-curves`,
+  commit 0c91edfae (one commit, cut from e0a03806e; scope approved by
+  Vitor).  A residue-curve-map page for azeotropic and extractive
+  distillation, id `residue-curves`, shelf "Separations & phase equilibria".
+  NO engine, data, case or planning file changed.  HOW IT USES THE ENGINE:
+  the page writes its own props case -- one `propertyPoint` per composition
+  of a triangular grid, asking `T_bubble` and `y_eq_<comp>` (NRTL pairs from
+  the catalogue, ideal-gas vapour) -- and a second run refining each
+  azeotrope plus a liquid-liquid check; everything else (interpolation, RK4
+  on dx/dxi = x - y*, singular points typed twice, boundaries, regions, the
+  lever rule) is the page's own arithmetic in gui/src/case/residueCurves.ts,
+  and the page says so.  Five presets; four binary azeotropes compared with
+  measured points of the corpus (within 0.02 in x and 0.52 K), the others
+  said to be uncompared.  It also adds a Theory Guide section
+  (ch:residue-curves, required by the theory-anchor test), an EduTools Guide
+  section, both PDFs rebuilt, 7 reference entries, and
+  docs/design/residue-curve-maps.md, which PROPOSES an engine op
+  `residueCurveMap` (yours to decide).  VALIDATED by me on the branch:
+  typecheck clean; tests/residueCurves (13) and methodTheoryAnchors pass;
+  screenshots at 390 px and 1440 px read by eye (maps physically sensible:
+  the glycol map has one region, curves run from unstable to stable nodes).
+  Reported by the builder and NOT re-run by me: the lesson gates
+  (check_lesson_symbols, _references, check_method_tools,
+  check_edutool_form, check_doctrine, check_guide_pdf_fresh) OK; `bin/runTests
+  --gui` PASS 43 / FAIL 4, the failures in files the branch does not touch
+  (eduToolsFind on dataSourcesLesson and databaseToParametersLesson,
+  overpressure, processSafety, check_doc_references, check_process_prose,
+  check_source_licence) -- not proven to fail on main as well.  NOT
+  VALIDATED: nothing ran in browser WASM (no emscripten here; the browser
+  check used a stub that handed the page's cases to the native choupoProps,
+  40-60 ms per map); a rebase on today's main.  KNOWN WEAK POINT, shown on
+  the page: on acetonitrile + ethanol + water at the default grid the two
+  type readings disagree for the ternary azeotrope (they agree at n = 36).
+  ENGINE FINDINGS met on the way (in the design note, not fixed):
+  `propertyScanTernary mode lle` without a gammaGamma package counts every
+  node as a failure and prints n_ll 0 beside it; `propertyPoint` requires T
+  even when every property solves its own; the acetonitrile-ethanol and
+  chloroform-MEK NRTL pairs declare a one-temperature span.

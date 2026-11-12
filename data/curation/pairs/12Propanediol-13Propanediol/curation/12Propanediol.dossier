@@ -1,0 +1,295 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      12Propanediol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-13Propanediol.b_ij  -154.976428646;
+        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-13Propanediol.b_ji  223.627580078;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5fb2d8cfa0b5fe29";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/12Propanediol-13Propanediol-bubble-j.jct.2016.01.019.dat";
+            doi       "10.1016/j.jct.2016.01.019";
+            sha256    "67af4c62caba8fe9644d6ff093aebc32c6ebb933b139d8ff89e558561d21ba3a";
+            provenance measured;
+            archiveFile "j.jct.2016.01.019.xml";
+            system    "12Propanediol + 13Propanediol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0295; max 0.9695; n 93; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-13Propanediol.b_ij  -150.18214839;
+        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-13Propanediol.b_ji  217.569142106;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5fb2d8cfa0b5fe29";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/12Propanediol-13Propanediol-bubble-j.jct.2016.01.019.dat";
+            doi       "10.1016/j.jct.2016.01.019";
+            sha256    "67af4c62caba8fe9644d6ff093aebc32c6ebb933b139d8ff89e558561d21ba3a";
+            provenance measured;
+            archiveFile "j.jct.2016.01.019.xml";
+            system    "12Propanediol + 13Propanediol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0295; max 0.9695; n 93; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-13Propanediol.A_ij  2079.69421563;
+        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-13Propanediol.A_ji  -1362.00594664;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5fb2d8cfa0b5fe29";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/12Propanediol-13Propanediol-bubble-j.jct.2016.01.019.dat";
+            doi       "10.1016/j.jct.2016.01.019";
+            sha256    "67af4c62caba8fe9644d6ff093aebc32c6ebb933b139d8ff89e558561d21ba3a";
+            provenance measured;
+            archiveFile "j.jct.2016.01.019.xml";
+            system    "12Propanediol + 13Propanediol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0295; max 0.9695; n 93; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-13Propanediol.A_ij  2233.60051547;
+        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-13Propanediol.A_ji  -1461.43051289;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5fb2d8cfa0b5fe29";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/12Propanediol-13Propanediol-bubble-j.jct.2016.01.019.dat";
+            doi       "10.1016/j.jct.2016.01.019";
+            sha256    "67af4c62caba8fe9644d6ff093aebc32c6ebb933b139d8ff89e558561d21ba3a";
+            provenance measured;
+            archiveFile "j.jct.2016.01.019.xml";
+            system    "12Propanediol + 13Propanediol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0295; max 0.9695; n 93; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-13Propanediol.a_ij  -28.2240050421;
+        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-13Propanediol.a_ji  41.1122839686;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5fb2d8cfa0b5fe29";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/12Propanediol-13Propanediol-bubble-j.jct.2016.01.019.dat";
+            doi       "10.1016/j.jct.2016.01.019";
+            sha256    "67af4c62caba8fe9644d6ff093aebc32c6ebb933b139d8ff89e558561d21ba3a";
+            provenance measured;
+            archiveFile "j.jct.2016.01.019.xml";
+            system    "12Propanediol + 13Propanediol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0295; max 0.9695; n 93; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-13Propanediol.a_ij  -28.5539422298;
+        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-13Propanediol.a_ji  41.4670238946;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "5fb2d8cfa0b5fe29";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/12Propanediol-13Propanediol-bubble-j.jct.2016.01.019.dat";
+            doi       "10.1016/j.jct.2016.01.019";
+            sha256    "67af4c62caba8fe9644d6ff093aebc32c6ebb933b139d8ff89e558561d21ba3a";
+            provenance measured;
+            archiveFile "j.jct.2016.01.019.xml";
+            system    "12Propanediol + 13Propanediol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0295; max 0.9695; n 93; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

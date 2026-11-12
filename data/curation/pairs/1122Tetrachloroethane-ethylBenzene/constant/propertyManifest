@@ -1,0 +1,74 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/1122Tetrachloroethane.dat"
+        {
+            type          imported;
+            sha256        "ceaf75c88666dc0535c0b68bccaa520eaaee25ce3f5c99ed60117faf5d759af1";
+            computationalSha256 "198d7d857a25ec951e052faa80e091770880c6e53f7c4a26d551a1cb8ee782da";
+            origin        "data/standards/components/1122Tetrachloroethane.dat";
+            originSha256  "6634649d343fe9f78d2f9a3e798cb5b500568dc19d387e81d6aca1b85ac6bcff";
+            release       Choupo-2608;
+        }
+        "components/ethylBenzene.dat"
+        {
+            type          imported;
+            sha256        "281986d8699976dacc4075b5f1cf39c0afb9f528a4d9a8ab8f8c240c589d6fe3";
+            computationalSha256 "6464e1bf592481198bc2c0511993f8dae16a4e63e783219fe11150a800a959ac";
+            origin        "data/standards/components/ethylBenzene.dat";
+            originSha256  "75a9d87bea16679e2c9e462c1526f66464d2b0473d11dff115935f8a8ea363e3";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1122Tetrachloroethane-ethylBenzene.dat"
+        {
+            type          imported;
+            sha256        "8cba4ce649a06dc206c467cf2a7333903a8036f164c1b8d2070c3d7ba7bae8e2";
+            computationalSha256 "facad43dc5bba90d131eba283473bca227de1ec0329efc8bde4ed7def7a0423f";
+            origin        "data/standards/parameters/NRTL/1122Tetrachloroethane-ethylBenzene.dat";
+            originSha256  "12ccf6d61bae6c47ff0e033e1229d25ece6539843017e0661db3471d7ef75b0a";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/1122Tetrachloroethane-ethylBenzene.dat"
+        {
+            type          imported;
+            sha256        "bc3a834f82b40c81ca0658a74a012c4b386a036068f16dcb08afd50479cf7f58";
+            computationalSha256 "e746c6b96f1061102dcfcdbafa1deafcf812c91bb4c79459daf6863a83a99478";
+            origin        "data/standards/parameters/UNIQUAC/1122Tetrachloroethane-ethylBenzene.dat";
+            originSha256  "30642cc7ae863afb58c552fca2b573eab0c6efedd72d6048defae12bc2433843";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1122Tetrachloroethane-ethylBenzene.dat"
+        {
+            type          imported;
+            sha256        "a699da45cade7581f48e1ad6db3be1ab22bee90e93a3e63fe59374807f53ed58";
+            computationalSha256 "d463a237395e8c68d6dabf04091386876e78435307c6b041a496d706357fc0da";
+            origin        "data/standards/parameters/Wilson/1122Tetrachloroethane-ethylBenzene.dat";
+            originSha256  "89c7dbb0ce8087ae3addec713df9b6af4db4f2318f16ac683b8b0825ce3d5c7d";
+            release       Choupo-2608;
+        }
+    }
+}

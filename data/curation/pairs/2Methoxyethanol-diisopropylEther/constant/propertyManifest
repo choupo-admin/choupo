@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/2Methoxyethanol.dat"
+        {
+            type          imported;
+            sha256        "45ed71ba96d41aae2e54fadea97c736727e1d8a5eb945dddb261b86a47acf3e8";
+            computationalSha256 "627a45ea86d8b1b13284c00f93100d356dbfb646d40b8102bcaf4efc83e51015";
+            origin        "data/standards/components/2Methoxyethanol.dat";
+            originSha256  "3cb143ff0f17c455dedd66e2193480b3db5682765d7f6895073788c4bd0a3bae";
+            release       Choupo-2608;
+        }
+        "components/diisopropylEther.dat"
+        {
+            type          imported;
+            sha256        "eb464514c3bf8e1b9baac24c2cabbf87f3f73f18bf9fd3c0b64e216d525dec05";
+            computationalSha256 "a3c5d889d9351449dce1b964eb003484821018b9ea3f471dba2385725320424c";
+            origin        "data/standards/components/diisopropylEther.dat";
+            originSha256  "bc41d3436aa97292e543cf51233c320aada5b1e30ce009e49fd64244f021e65b";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Methoxyethanol-diisopropylEther.dat"
+        {
+            type          imported;
+            sha256        "43c5fc19725f38a86252badd3c0d0b006d7aaf953c3311daddf75aa6bee809a4";
+            computationalSha256 "a3bcb69d0d5d1eb6766092523b717a45644a194fd0b451f6c066c127108243e8";
+            origin        "data/standards/parameters/NRTL/2Methoxyethanol-diisopropylEther.dat";
+            originSha256  "de6835db5ec82e60be99ad09756a4ce4119931444389d6ce879ad26e2f47ded8";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Methoxyethanol-diisopropylEther.dat"
+        {
+            type          imported;
+            sha256        "8d17cc7cfc97b5ab548e8abec5fc4eaf8c1fb1bdf6bb402a780a7a706b5b3944";
+            computationalSha256 "f5f27e7de54cfc5950d085353aabc7f3676c865ae19ed4a1bf5cf83a223be85f";
+            origin        "data/standards/parameters/Wilson/2Methoxyethanol-diisopropylEther.dat";
+            originSha256  "965da5d65c3c8faab66d875982fae870c7aedf678507adafa4f3b597f8f86d62";
+            release       Choupo-2608;
+        }
+    }
+}

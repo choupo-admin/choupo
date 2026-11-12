@@ -1,0 +1,46 @@
+/*---------------------------------------------------------------------------*\
+  2Methyl2Propanol-nButylPropionate -- the thermophysical system: gamma-phi at LOW PRESSURE.
+    * vapour: IDEAL GAS (fugacity coefficient 1, no Poynting term);
+    * pure components: the catalogue's own vapour-pressure records, UNCHANGED;
+    * liquid: NRTL, tau_ij = a_ij + b_ij/T, alpha 0.30 FIXED.
+  The inline pair is the FIT'S STARTING POINT (zero = ideal mixing); the
+  regressed pair is the record under constant/parameters/NRTL/ (or, once
+  promoted, the catalogue's, sealed into this case), read by the scans.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( nButylPropionate  2Methyl2Propanol );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel
+        {
+            model NRTL;
+            binaryParameters   // the FIT'S starting point -- see the header
+            {
+                nButylPropionate-2Methyl2Propanol
+                {
+                    i nButylPropionate;
+                    j 2Methyl2Propanol;
+                    a_ij 0;
+                    b_ij 0;
+                    a_ji 0;
+                    b_ji 0;
+                    alpha 0.30;
+                }
+            }
+        }
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

@@ -21,26 +21,26 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/oCresol.dat"
         {
             type          imported;
-            sha256        "a6194b5d1b0a25638dc767dff9eae61e6ce50061734b73ef2ae935d145e5d509";
-            computationalSha256 "9dab425421f00da5835249ca63b2e26114c53d7aa046a089857516351cd30e17";
+            sha256        "7c34be1ee2dbfaf173a0869b08979b515bb0bcfe2f2d2a91196bbddec69d766e";
+            computationalSha256 "44bceca790cbb45662c23824fee329f147ad84c409d553cba17f230951e6fd60";
             origin        "data/standards/components/oCresol.dat";
-            originSha256  "b7c18c34145a8b2a41947207f9925b59390dbf9d8a52092690ea91dbc0320ce1";
+            originSha256  "0d815930e03fb0663efa65fbbe558587ab7613aa2834d8b2a53bb228bacbebf6";
             release       Choupo-2608;
         }
         "components/trichloroethylene.dat"
         {
             type          imported;
-            sha256        "7d07dc4e8253dcb4cc40928e2aa367ee7bb66b1a6464a9831a2735cdca04f915";
-            computationalSha256 "4ce83dfe6fa7e3926465a1a2ac03556160ec7f5f9670b34f2c9e5962801d9efd";
+            sha256        "ae5491c50f5288ca4efee4064fc7b49b5cb262f303c84decb8e9c03de717a789";
+            computationalSha256 "9e4c132c68d781d6fa9018a967965fc1b055e15c25fc505ac8d4a1dfb3a228bb";
             origin        "data/standards/components/trichloroethylene.dat";
-            originSha256  "ea852920e7231d91a6cbea83e6c13df3f73dbd63ba46111c1338eba1f0ef271e";
+            originSha256  "c1eeb5d3f7db369427457e5def4c51c450fca7e69067277575f1819776038882";
             release       Choupo-2608;
         }
         "parameters/NRTL/oCresol-trichloroethylene.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "eb2ddf0fa2ee7379ab277ac9a260da621613a22588d89c60498fa8e4ada47cb0";
             origin        "data/standards/parameters/NRTL/oCresol-trichloroethylene.dat";
             originSha256  "c7e1340f26020b3b2c7ea8984d73a8faa87906b392aafe9037f93285b067c2fe";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/oCresol-trichloroethylene.dat"
+        {
+            type          imported;
+            sha256        "b5b89b873ba42aee487bf2fd930039970be52266232b0c483490f0f020816770";
+            computationalSha256 "d37b687e7b81d2de082f96b6b1f4bb454ec80f97ebf999fda28ec961d678b218";
+            origin        "data/standards/parameters/Wilson/oCresol-trichloroethylene.dat";
+            originSha256  "01809aeb57d8ab602f9a4178d3a8f1dd45316097b3e5583d3b3db43607026e64";
             release       Choupo-2608;
         }
     }

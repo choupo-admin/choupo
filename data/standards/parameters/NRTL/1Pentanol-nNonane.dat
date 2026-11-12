@@ -63,6 +63,7 @@ provenance
     fitGrade      severe;   // DEV.md 4c C285 (C286): max |T_model - T| over the kept points, graded 1 / 2 / 4 K
     fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
     fitGradeMaxTemperatureError_K 2.1216;
+    fitGradeIdealMaxTemperatureError_K 10.9527;   // DEV.md 4c C334: the ideal mixture (gamma = 1) on the SAME kept points; a severe fit is promoted only if 2.1216 K < 10.9527 K
     promotedBy    "bin/choupo-curate pair --promote";
     promotedDate  "2026-11-10";
     reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";

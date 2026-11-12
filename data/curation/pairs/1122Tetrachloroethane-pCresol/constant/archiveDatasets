@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of 1122Tetrachloroethane-pCresol
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/1122Tetrachloroethane-pCresol-bubble-j.jct.2006.12.017.dat";
+        role          fit;   // C283: every laboratory is fitted
+        doi           "10.1016/j.jct.2006.12.017";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.jct.2006.12.017.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1016/j.jct.2006.12.017.json";
+        articleFile   "j.jct.2006.12.017.xml";
+        articleSha256 "7ba8e22852100570d12f88eb467c03b133f18106c8bf1effea9bc164e0a62ed7";
+        block         25;
+        filter        ( --interior-only );
+        extract       "bin/choupo-thermoml extract-vle <article file> --block 25 --interior-only --into <dir>";
+        sha256        "27ed3918bbd09a74cc9ee148a88ccafe6ffc1d142668e5b2db80005b4488b320";
+        identity
+        {
+            1122Tetrachloroethane { cas "79-34-5"; inchiKey "QPFMBZIOSGYJDE-UHFFFAOYSA-N"; }
+            pCresol        { cas "106-44-5"; inchiKey "IWDCLRJOBJJRNH-UHFFFAOYSA-N"; }
+        }
+    }
+);

@@ -21,26 +21,44 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/acetonitrile.dat"
         {
             type          imported;
-            sha256        "82f930c3a7f7b34ce170c7f8f26afbca4fa1b04a23eb603e1a8dd30074ace302";
-            computationalSha256 "6ab3ef667c9f265ab09fdf84c4f111a6ddb8ed8cdfc6fa4bb18b17e801f51492";
+            sha256        "1648c3e6159adeb40051fa6b622de5ac06367d838d5e29c6c8d2cc5b7e16811d";
+            computationalSha256 "6bf2a55b8cf4c013cb4b9998ffee32b981017af473f039714cd4536f58d46b9f";
             origin        "data/standards/components/acetonitrile.dat";
-            originSha256  "adb8c7d917c6094738a2f22df356534cac882fae333945f33a71a850ad233381";
+            originSha256  "41ad3f70fe71ab5138b8c5c0e56a6ad7edecf567cb1ae3a64dda50c04e266e6e";
             release       Choupo-2608;
         }
         "components/dimethylSulfoxide.dat"
         {
             type          imported;
-            sha256        "146549d6b5fff7a0e57a607bd5f78f88f22f2fdc676aea18421963252b02137c";
-            computationalSha256 "f965b44ef5ea770b90f8e5d5263a5322ef24cd12c9fa213806688a4ccdb73e12";
+            sha256        "17f9b99ac0c913e567614c63c159770bbc0a1913df97026d01fffbe3b04cf774";
+            computationalSha256 "d843f0b7b938772a1d29d5515b33b2c59fadc96f846788d5aded7916bf16c994";
             origin        "data/standards/components/dimethylSulfoxide.dat";
-            originSha256  "705eb8c5af775aa597b0b092d2e795e71a47ee20518b93b04cdd533103253f17";
+            originSha256  "a9b5f0fee39f8c1914eedda69137802495adf06e015450e16ae426392208ba86";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/acetonitrile-dimethylSulfoxide.dat"
+        {
+            type          imported;
+            sha256        "53e98232b19e304d806bba0ce49fb19e13e27eb06b221920d9c21ecf2386801d";
+            computationalSha256 "8627c4fad01e21c04d05e209c9af74060859dab6befde0f5597af7b4d0b18520";
+            origin        "data/standards/parameters/NRTL/acetonitrile-dimethylSulfoxide.dat";
+            originSha256  "b0ea72b37dfb37a526e3e81a0f2be48a30194ab6c38d963df719ade50991ebd4";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/acetonitrile-dimethylSulfoxide.dat"
+        {
+            type          imported;
+            sha256        "0c19d4b6e6590521ff3daa381c0b56766f36d900611910188e9d9f5a14ceb0c5";
+            computationalSha256 "5aa8201062945668ac02287bfda9bd0ff0376f49b5b3d445c02d0364b7fbbf8b";
+            origin        "data/standards/parameters/Wilson/acetonitrile-dimethylSulfoxide.dat";
+            originSha256  "5dfdccef4bcea06879fb1f00714c6959430bc20509870b87687313eab01682df";
             release       Choupo-2608;
         }
     }

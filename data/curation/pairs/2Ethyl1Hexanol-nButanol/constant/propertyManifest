@@ -1,0 +1,92 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/2Ethyl1Hexanol.dat"
+        {
+            type          imported;
+            sha256        "4666c570a0a762ab7250f81f01a370a82b99cc51557d5bc25fb4345b7dca8eee";
+            computationalSha256 "e373ff6f9ca3ce6a6686c78826eb61424132b8bec7c815886c58075166560f68";
+            origin        "data/standards/components/2Ethyl1Hexanol.dat";
+            originSha256  "f541412cd24747047de21ba7260f380f4ab1b7177dea634304c4ed6b2536fc12";
+            release       Choupo-2608;
+        }
+        "components/nButanol.dat"
+        {
+            type          imported;
+            sha256        "eb57ae27f353b279a69e742cc8349504bcedf2e7335daeb40a024789cfc02506";
+            computationalSha256 "a462bf8ebea1da54db64f8a9b25c711a27a005e93cb1a1e0edda7028961967d0";
+            origin        "data/standards/components/nButanol.dat";
+            originSha256  "30905278422e547c776f0c9bad446732d7e1b501bb8a06de57812a2d1a5df1a1";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Ethyl1Hexanol-nButanol.dat"
+        {
+            type          imported;
+            sha256        "ede91e61388dc3ba5948ab03fda2bfb9eef43ed4f60636cf7cc7ce794f172c52";
+            computationalSha256 "f3ba5202bde0adb54f2169af43198b94889edd0ed6befeeb84c75735ffefa4f7";
+            origin        "data/standards/parameters/NRTL/2Ethyl1Hexanol-nButanol.dat";
+            originSha256  "fd2711cfd88df356146b1f2451ac293f42ecca092ac41bae7809f33fa98a660a";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/2Ethyl1Hexanol-nButanol.dat"
+        {
+            type          imported;
+            sha256        "2c4530b90f5958b53346e3c8ee00f7bd7a5196792196582d598ec222e06da25b";
+            computationalSha256 "c25dd894ab3e7eed26e4ee094b97bf79ee78719bead25a860b96af9ffd11edb7";
+            origin        "data/standards/parameters/UNIQUAC/2Ethyl1Hexanol-nButanol.dat";
+            originSha256  "549ec31ce3406df40f3d145c49c8ae084d255f9ac4788856b24d7f9baa760d65";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Ethyl1Hexanol-nButanol.dat"
+        {
+            type          imported;
+            sha256        "84c59a20b7c6548f979196e1cf59307a26b42cb2349f7c55229f4a102433eaab";
+            computationalSha256 "cd7d3f176db2332b6f4ceb12c7a15b910c87922288eda617d6b53f6ecea4dbe9";
+            origin        "data/standards/parameters/Wilson/2Ethyl1Hexanol-nButanol.dat";
+            originSha256  "f13abc5014f12c3fa3aadacda285680731d1b122063abeeee68756b6a231fac7";
+            release       Choupo-2608;
+        }
+    }
+}

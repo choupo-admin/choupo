@@ -1,0 +1,141 @@
+/*---------------------------------------------------------------------------*\
+  Wilson binary interaction parameters --- 12Propanediol(i) + ethyleneGlycol(j)
+
+  REGRESSED BY CHOUPO'S CURATION PIPELINE (bin/choupo-curate pairs --models, DEV.md 4c C294 on C282;
+  record docs/design/binary-pairs-from-open-measurements.md) to measured
+  bubble temperatures.  The articles named under `evidence` are the
+  SOURCE of the measurements; the NIST/TRC ThermoML Archive located them.
+  NO MEASURED POINT IS IN THIS RECORD OR THIS TREE: the case regenerates
+  them from the DOIs and sha256 sums it declares (constant/archiveDatasets).
+  The PARAMETERS are Choupo's own work.
+
+  EQUATION: Wilson, Lambda_ij = (V_j / V_i) exp(-A_ij / (R T)) [A in J/mol],
+  V the components' own Vliq (src/thermo/activityCoefficient/Wilson.cpp).
+  Two parameters A_ij, A_ji (DEV.md 4c C294).  Wilson cannot represent
+  two liquids.
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
+  vapour-pressure records for both pure components.
+
+  reviewStatus autoPromoted; review { by none; }: PROMOTED AUTOMATICALLY by
+  its fitting pipeline (the NRTL case's own evidence and kept points, the
+  max |T_model - T| over the kept points, graded 1 / 2 / 4 K -- DEV.md 4c C285, C294;
+  THIS fit: warning in-sample, 1.0827 K; one liquid across its
+  validity span), and NO HUMAN HAS REVIEWED IT.  The engine says so on every
+  run that reads it, and voices a warning or a severe grade beside it.
+  Nothing was held out: the `validation {}` block says so, and the
+  acceptance is the `curation {}` block.  A curator who reads the series
+  back against the articles records it in the `review {}` block (DEV.md 4c
+  C297).  Revert by reverting the commit that promoted it.
+
+  REPRODUCE: run data/curation/pairs/12Propanediol-ethyleneGlycol (after `bin/choupo-curate fetch` on it); its fit_wilson
+  writes 12Propanediol-ethyleneGlycol.Wilson.proposal.dat, which bin/curate/check_regressed_pairs.py holds
+  equal to this record.
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i 12Propanediol; j ethyleneGlycol; }
+
+components  ( 12Propanediol  ethyleneGlycol );
+model       Wilson;
+
+parameters
+{
+    i           12Propanediol;
+    j           ethyleneGlycol;
+    A_ij        9377.40795785;   // J/mol
+    A_ji        -2593.60545474;   // J/mol
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "data/curation/pairs/12Propanediol-ethyleneGlycol";
+    reviewStatus  autoPromoted;
+    review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+    fitGrade      warning;   // DEV.md 4c C285 (C294): max |T_model - T| over the kept points, graded 1 / 2 / 4 K
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+    fitGradeMaxTemperatureError_K 1.0827;
+    promotedBy    "bin/choupo-curate pairs --models --promote";
+    promotedDate  "2026-11-11";
+    reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+    fitDate       "2026-11-11";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/12Propanediol-ethyleneGlycol-bubble-je5010824.dat";
+            doi       "10.1021/je5010824";
+            sha256    "244c7d3c2d7506d1914d46e14ff6706089ba194ab50a2f631e7cb95fbc4c9e3c";
+            provenance measured;
+            archiveFile "je5010824.xml";
+            system    "12Propanediol + ethyleneGlycol";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/12Propanediol-ethyleneGlycol-bubble-je400082c.dat";
+            doi       "10.1021/je400082c";
+            sha256    "45b473097c34d44a9a11577786b838439c05345f70703e65b8f716298765c316";
+            provenance measured;
+            archiveFile "je400082c.xml";
+            system    "12Propanediol + ethyleneGlycol";
+            pressure  "10000.000000 Pa";
+        }
+    );
+    fingerprint "f1519c95f33b326f";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          113.52557562;
+    rms_K         0.47687656;
+    nDataPoints   48;
+    identifiable  true;
+    maxAbsCorr    0.95126083;
+
+    validity
+    {
+        temperature { min 398.45 K; max 440.91 K; }
+        pressure    { min 10000 Pa; max 40000 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validationRefused;
+
+    heldOut     none;   // every declared dataset carried `role fit`
+
+    acceptance  none;   // no band was declared before the fit, so no
+                        // pass/fail may be read out of the residual above
+}
+
+curation
+{
+    rule            "DEV.md 4c C294 (the NRTL case's own evidence and kept points, another activity model) on DEV.md 4c C283 (amended) + C284, graded by C285 (C286)";
+    model           Wilson;
+    discardsFrom    fit_nrtl;   // the outliers were decided ONCE, on the NRTL least-squares stage, and reused (C294)
+    evidence        allLaboratories;   // every study fitted, none held out
+    objective       twoStage;
+    outlierLimit    3 K;   // the NRTL least-squares stage's, reused
+    outliersDropped 0;
+    pointsKept      48;
+    noBubblePoint   0;
+    maxAbsError     1.0827 K;
+    meanAbsError    0.4226 K;
+    acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
+    gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
+    grade           warning;
+    oneLiquid       true;   // arm (f) on this model's own equation over the validity span
+    temperatures    48;   // distinct stated temperatures in the kept evidence
+    laboratories    2;   // distinct articles in the kept evidence
+    singleTemperature false;
+    singleLaboratory  false;
+    verdict         accepted;
+}

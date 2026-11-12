@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/diethylSuccinate.dat"
+        {
+            type          imported;
+            sha256        "67d605b6c4063e56734485f0b0399c896dacbbfb63e520345e9971c12ea5f4d1";
+            computationalSha256 "b650975a74426db3cfc316daac8816f3d1cf90d242438d9594c68124bedb77ed";
+            origin        "data/standards/components/diethylSuccinate.dat";
+            originSha256  "0caff482e34022007a57ccc01d2f681e95f7afa0576b42e3e25bf5237eafe7ad";
+            release       Choupo-2608;
+        }
+        "components/ethanol.dat"
+        {
+            type          imported;
+            sha256        "380a2ae743c8e8e75eb80075f85fb2ac90dc479a6ff9e062e674aeaa366334b3";
+            computationalSha256 "f2710ae8622b1abc118f9a68c47702e2e2324453ed27c71e0760eb23d799c481";
+            origin        "data/standards/components/ethanol.dat";
+            originSha256  "7c6b2bedb149e1165145d6bedce8fb5588519bb6b1d575caca76236a0d809074";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/diethylSuccinate-ethanol.dat"
+        {
+            type          imported;
+            sha256        "5adff40e25fa0627c0570c01aa44e469a411862eb0c5ef9c906102d0aede3b67";
+            computationalSha256 "b6cd9432b7396ae7017538ad8e0da4d7fca97f698d221ec5d75be259d543d0a8";
+            origin        "data/standards/parameters/NRTL/diethylSuccinate-ethanol.dat";
+            originSha256  "2c2a279a2aad4a22bf344166d24459efcde44414e211759b6f84755822525ad3";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/diethylSuccinate-ethanol.dat"
+        {
+            type          imported;
+            sha256        "ee102045dba365d0af1e47a402cb0474ecad59e7572638e22005ec969a10828a";
+            computationalSha256 "d6a6e96e549dde325f03dde31b5a3d7a80df39997c4d2290a8aa6bf8d53581cd";
+            origin        "data/standards/parameters/UNIQUAC/diethylSuccinate-ethanol.dat";
+            originSha256  "7645ef550901f9deb0cffb7df2a7522144c0187df3e27aac9a54aeef2f285e40";
+            release       Choupo-2608;
+        }
+    }
+}

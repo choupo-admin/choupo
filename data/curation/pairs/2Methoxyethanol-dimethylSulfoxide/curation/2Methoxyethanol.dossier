@@ -1,0 +1,249 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      2Methoxyethanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-dimethylSulfoxide.b_ij  44.3512204417;
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-dimethylSulfoxide.b_ji  -345.645458107;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "db955549ef3c1360";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methoxyethanol-dimethylSulfoxide-bubble-j.fluid.2014.04.025.dat";
+            doi       "10.1016/j.fluid.2014.04.025";
+            sha256    "c678b690c2379ca6cf1d462902fd22cfb08cceb8e24e435714819abf2008b90e";
+            provenance measured;
+            archiveFile "j.fluid.2014.04.025.xml";
+            system    "2Methoxyethanol + dimethylSulfoxide";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methoxyethanol-dimethylSulfoxide-bubble-acs.jced.8b00225.dat";
+            doi       "10.1021/acs.jced.8b00225";
+            sha256    "2eaeb0074950be62406d0e6f3dfa86bb7f05ee724a156e3032eb815dcb419324";
+            provenance measured;
+            archiveFile "acs.jced.8b00225.xml";
+            system    "2Methoxyethanol + dimethylSulfoxide";
+            pressure  "100000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0398; max 0.8554; n 26; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-dimethylSulfoxide.b_ij  1130.16395703;
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-dimethylSulfoxide.b_ji  -825.330478825;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "db955549ef3c1360";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methoxyethanol-dimethylSulfoxide-bubble-j.fluid.2014.04.025.dat";
+            doi       "10.1016/j.fluid.2014.04.025";
+            sha256    "c678b690c2379ca6cf1d462902fd22cfb08cceb8e24e435714819abf2008b90e";
+            provenance measured;
+            archiveFile "j.fluid.2014.04.025.xml";
+            system    "2Methoxyethanol + dimethylSulfoxide";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methoxyethanol-dimethylSulfoxide-bubble-acs.jced.8b00225.dat";
+            doi       "10.1021/acs.jced.8b00225";
+            sha256    "2eaeb0074950be62406d0e6f3dfa86bb7f05ee724a156e3032eb815dcb419324";
+            provenance measured;
+            archiveFile "acs.jced.8b00225.xml";
+            system    "2Methoxyethanol + dimethylSulfoxide";
+            pressure  "100000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0398; max 0.8554; n 26; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-dimethylSulfoxide.A_ij  -2419.90115087;
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-dimethylSulfoxide.A_ji  -111.109636715;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "db955549ef3c1360";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methoxyethanol-dimethylSulfoxide-bubble-j.fluid.2014.04.025.dat";
+            doi       "10.1016/j.fluid.2014.04.025";
+            sha256    "c678b690c2379ca6cf1d462902fd22cfb08cceb8e24e435714819abf2008b90e";
+            provenance measured;
+            archiveFile "j.fluid.2014.04.025.xml";
+            system    "2Methoxyethanol + dimethylSulfoxide";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methoxyethanol-dimethylSulfoxide-bubble-acs.jced.8b00225.dat";
+            doi       "10.1021/acs.jced.8b00225";
+            sha256    "2eaeb0074950be62406d0e6f3dfa86bb7f05ee724a156e3032eb815dcb419324";
+            provenance measured;
+            archiveFile "acs.jced.8b00225.xml";
+            system    "2Methoxyethanol + dimethylSulfoxide";
+            pressure  "100000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0398; max 0.8554; n 26; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-dimethylSulfoxide.A_ij  30000;
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-dimethylSulfoxide.A_ji  -5569.11540934;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "db955549ef3c1360";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methoxyethanol-dimethylSulfoxide-bubble-j.fluid.2014.04.025.dat";
+            doi       "10.1016/j.fluid.2014.04.025";
+            sha256    "c678b690c2379ca6cf1d462902fd22cfb08cceb8e24e435714819abf2008b90e";
+            provenance measured;
+            archiveFile "j.fluid.2014.04.025.xml";
+            system    "2Methoxyethanol + dimethylSulfoxide";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methoxyethanol-dimethylSulfoxide-bubble-acs.jced.8b00225.dat";
+            doi       "10.1021/acs.jced.8b00225";
+            sha256    "2eaeb0074950be62406d0e6f3dfa86bb7f05ee724a156e3032eb815dcb419324";
+            provenance measured;
+            archiveFile "acs.jced.8b00225.xml";
+            system    "2Methoxyethanol + dimethylSulfoxide";
+            pressure  "100000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0398; max 0.8554; n 26; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

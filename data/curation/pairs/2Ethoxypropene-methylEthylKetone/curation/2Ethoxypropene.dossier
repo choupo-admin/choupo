@@ -1,0 +1,295 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      2Ethoxypropene;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-methylEthylKetone.b_ij  311.054322382;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-methylEthylKetone.b_ji  -98.8310014739;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1c25bf202af0145d";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Ethoxypropene-methylEthylKetone-bubble-j.jct.2005.10.001.dat";
+            doi       "10.1016/j.jct.2005.10.001";
+            sha256    "a73ae0da14bc0199e9ea25a050b78d6e0fa744ec5d760b822134ee07cba267a3";
+            provenance measured;
+            archiveFile "j.jct.2005.10.001.xml";
+            system    "2Ethoxypropene + methylEthylKetone";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0505; max 0.95; n 44; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-methylEthylKetone.b_ij  311.054322908;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-methylEthylKetone.b_ji  -98.8310018179;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1c25bf202af0145d";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Ethoxypropene-methylEthylKetone-bubble-j.jct.2005.10.001.dat";
+            doi       "10.1016/j.jct.2005.10.001";
+            sha256    "a73ae0da14bc0199e9ea25a050b78d6e0fa744ec5d760b822134ee07cba267a3";
+            provenance measured;
+            archiveFile "j.jct.2005.10.001.xml";
+            system    "2Ethoxypropene + methylEthylKetone";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0505; max 0.95; n 44; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-methylEthylKetone.A_ij  -884.026075037;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-methylEthylKetone.A_ji  2603.2868561;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1c25bf202af0145d";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Ethoxypropene-methylEthylKetone-bubble-j.jct.2005.10.001.dat";
+            doi       "10.1016/j.jct.2005.10.001";
+            sha256    "a73ae0da14bc0199e9ea25a050b78d6e0fa744ec5d760b822134ee07cba267a3";
+            provenance measured;
+            archiveFile "j.jct.2005.10.001.xml";
+            system    "2Ethoxypropene + methylEthylKetone";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0505; max 0.95; n 44; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-methylEthylKetone.A_ij  -884.026089386;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-methylEthylKetone.A_ji  2603.28687966;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1c25bf202af0145d";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Ethoxypropene-methylEthylKetone-bubble-j.jct.2005.10.001.dat";
+            doi       "10.1016/j.jct.2005.10.001";
+            sha256    "a73ae0da14bc0199e9ea25a050b78d6e0fa744ec5d760b822134ee07cba267a3";
+            provenance measured;
+            archiveFile "j.jct.2005.10.001.xml";
+            system    "2Ethoxypropene + methylEthylKetone";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0505; max 0.95; n 44; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-methylEthylKetone.a_ij  196.366308516;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-methylEthylKetone.a_ji  -107.297754154;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1c25bf202af0145d";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Ethoxypropene-methylEthylKetone-bubble-j.jct.2005.10.001.dat";
+            doi       "10.1016/j.jct.2005.10.001";
+            sha256    "a73ae0da14bc0199e9ea25a050b78d6e0fa744ec5d760b822134ee07cba267a3";
+            provenance measured;
+            archiveFile "j.jct.2005.10.001.xml";
+            system    "2Ethoxypropene + methylEthylKetone";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0505; max 0.95; n 44; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-methylEthylKetone.a_ij  196.366307838;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-methylEthylKetone.a_ji  -107.297753718;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "1c25bf202af0145d";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Ethoxypropene-methylEthylKetone-bubble-j.jct.2005.10.001.dat";
+            doi       "10.1016/j.jct.2005.10.001";
+            sha256    "a73ae0da14bc0199e9ea25a050b78d6e0fa744ec5d760b822134ee07cba267a3";
+            provenance measured;
+            archiveFile "j.jct.2005.10.001.xml";
+            system    "2Ethoxypropene + methylEthylKetone";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0505; max 0.95; n 44; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

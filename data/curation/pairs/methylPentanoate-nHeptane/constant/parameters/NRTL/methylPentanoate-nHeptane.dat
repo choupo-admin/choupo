@@ -1,0 +1,118 @@
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- methylPentanoate(i) + nHeptane(j)
+
+  REGRESSED BY CHOUPO'S CURATION PIPELINE (bin/choupo-curate, DEV.md 4c C282;
+  record docs/design/binary-pairs-from-open-measurements.md) to measured
+  bubble temperatures.  The articles named under `evidence` are the
+  SOURCE of the measurements; the NIST/TRC ThermoML Archive located them.
+  NO MEASURED POINT IS IN THIS RECORD OR THIS TREE: the case regenerates
+  them from the DOIs and sha256 sums it declares (constant/archiveDatasets).
+  The PARAMETERS are Choupo's own work.
+
+  EQUATION: tau_ij = a_ij + b_ij / T [b in K], G_ij = exp(-alpha tau_ij),
+  Renon & Prausnitz direction (src/thermo/activityCoefficient/NRTL.cpp).
+  a_ij = a_ji = 0 and alpha = 0.30 FIXED, not fitted.
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
+  vapour-pressure records for both pure components.
+
+  reviewStatus interim: a case-local record, regressed and not read back.  Fitted on EVERY laboratory (C283), so the
+  `validation {}` block below says, truthfully, that nothing
+  was held out; the acceptance is the `curation {}` block.
+  PROMOTABLE by `bin/choupo-curate pair ... --promote`: fit grade warning
+  -- max |dT| 1.018 K over the 40 kept points (limits 1 / 2 / 4 K), one
+  liquid across the validity span
+
+  REPRODUCE: run data/curation/pairs/methylPentanoate-nHeptane (after `bin/choupo-curate fetch` on it); its fit
+  writes methylPentanoate-nHeptane.proposal.dat, which bin/curate/check_regressed_pairs.py holds
+  equal to this record.
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i methylPentanoate; j nHeptane; }
+
+components  ( methylPentanoate  nHeptane );
+model       NRTL;
+
+parameters
+{
+    i           methylPentanoate;
+    j           nHeptane;
+    a_ij        0.00000000;
+    b_ij        -335.91927583;
+    a_ji        0.00000000;
+    b_ji        810.57049071;
+    alpha       0.30000000;
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "data/curation/pairs/methylPentanoate-nHeptane";
+    reviewStatus  interim;
+    reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+    fitDate       "2026-11-11";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylPentanoate-nHeptane-bubble-je030117d.dat";
+            doi       "10.1021/je030117d";
+            sha256    "6a61bbeb74a4593cd945e8c9a97315a44ceea57c18c715f6a034e2403bca3f09";
+            provenance measured;
+            archiveFile "je030117d.xml";
+            system    "methylPentanoate + nHeptane";
+            pressure  "101325.000000 Pa";
+        }
+    );
+    fingerprint "2f4b056e72bb9bf0";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          93.53372335;
+    rms_K         0.55094208;
+    nDataPoints   40;
+    identifiable  true;
+    maxAbsCorr    0.97621265;
+
+    validity
+    {
+        temperature { min 371.48 K; max 399.54 K; }
+        pressure    { min 101325 Pa; max 101325 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validationRefused;
+
+    heldOut     none;   // every declared dataset carried `role fit`
+
+    acceptance  none;   // no band was declared before the fit, so no
+                        // pass/fail may be read out of the residual above
+}
+
+curation
+{
+    rule            "DEV.md 4c C283 (amended) + C284, graded by C285 (C286)";
+    evidence        allLaboratories;   // every study fitted, none held out
+    objective       twoStage;
+    outlierLimit    3 K;   // |T_model - T| after the least-squares stage
+    outliersDropped 0;
+    pointsKept      40;
+    noBubblePoint   0;
+    maxAbsError     1.0179 K;
+    meanAbsError    0.4774 K;
+    acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
+    gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
+    grade           warning;
+    oneLiquid       true;   // arm (f) over the validity span; a pair that splits ONE liquid is never promoted, whatever its grade
+    verdict         accepted;
+}

@@ -61,6 +61,15 @@ liquidHeatCapacity
     Trange        (288.15  333.15);
 }
 
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (1 CH3 + 7 CH2 + 1 OH), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   6.6219;
+    q   5.8280;
+}
+
 groups
 {
     unifac ( { group CH3; count 1; } { group CH2; count 7; } { group OH; count 1; } );
@@ -107,6 +116,12 @@ surfaceTension
 
 provenance
 {
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 6.6219, q = sum nu_k Q_k = 5.8280 over the record's unifac groups (1 CH3 + 7 CH2 + 1 OH)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
     groups
     {
         origin       definition;

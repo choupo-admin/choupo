@@ -1,0 +1,92 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/nPropylPropionate.dat"
+        {
+            type          imported;
+            sha256        "e158c68c98a6bb2d06514848740cdc6a8fe5c48f0f10e55353de4737a5998918";
+            computationalSha256 "85da01fd59fb422e3c78211aceddb6af7c9b7bf77c21d0bd076929650f5ea4e9";
+            origin        "data/standards/components/nPropylPropionate.dat";
+            originSha256  "bae73233089f619e77b0aaded04ec98d720d1a82aad4ee70933e18354c2b51b4";
+            release       Choupo-2608;
+        }
+        "components/propionicAcid.dat"
+        {
+            type          imported;
+            sha256        "54470f946d56e040a029e2dc7a42386bab0e06d76c4ba00b3b97d37ca21e7929";
+            computationalSha256 "78e6a0e3179fd99a5824633e8fef9dc6823849a78e96d903d6893e322892b97a";
+            origin        "data/standards/components/propionicAcid.dat";
+            originSha256  "b9662f0c5dd4216942e9a3db544171e1e1562beed4cc442c9e0c23f729d0dcf6";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/nPropylPropionate-propionicAcid.dat"
+        {
+            type          imported;
+            sha256        "a6b911b9b3f2ce2b0f956599c068b7bcd6a70530e58dfb78d31dc4cb77cabdf8";
+            computationalSha256 "f7ec0431a240139a3089cd0bc7d8fc07784a63c41d4b3033aee9074a1e90bc99";
+            origin        "data/standards/parameters/NRTL/nPropylPropionate-propionicAcid.dat";
+            originSha256  "30acea56eb78affaea8277800e380a8dd4173e473d2f057acb5dfe74ff1b4d2d";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/nPropylPropionate-propionicAcid.dat"
+        {
+            type          imported;
+            sha256        "5a241c93b8ae6057e8cd025fbfcb6b5f868579fea46d8c61963be8c5d5aa4d19";
+            computationalSha256 "c8527bfec5efd14cf1da8250f92514d70e35f918574fff27c9e866f91d1034bd";
+            origin        "data/standards/parameters/UNIQUAC/nPropylPropionate-propionicAcid.dat";
+            originSha256  "6314cb767aa056e8a82dd4c6393ae6b1029a6fa7df7ccae46f84b552087165df";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/nPropylPropionate-propionicAcid.dat"
+        {
+            type          imported;
+            sha256        "62ecd166fc215b56fa4a18f6a2d11c491731796e92c7deca39047c8d51b7c985";
+            computationalSha256 "d869984d170f1a97d55cd9b3ae99c80feed021652485334e75b3d04f0b6e1a7b";
+            origin        "data/standards/parameters/Wilson/nPropylPropionate-propionicAcid.dat";
+            originSha256  "4b5a0c98685ddd262091e5e7ce75c4ab582b5345010f35bc023f868459429e1c";
+            release       Choupo-2608;
+        }
+    }
+}

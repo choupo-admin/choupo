@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/acetonitrile.dat"
+        {
+            type          imported;
+            sha256        "1648c3e6159adeb40051fa6b622de5ac06367d838d5e29c6c8d2cc5b7e16811d";
+            computationalSha256 "6bf2a55b8cf4c013cb4b9998ffee32b981017af473f039714cd4536f58d46b9f";
+            origin        "data/standards/components/acetonitrile.dat";
+            originSha256  "41ad3f70fe71ab5138b8c5c0e56a6ad7edecf567cb1ae3a64dda50c04e266e6e";
+            release       Choupo-2608;
+        }
+        "components/methylHexanoate.dat"
+        {
+            type          imported;
+            sha256        "0b075acd08ed7a2682e92aa39f15232d065f07a6307a6fd1193170eeeb56e43f";
+            computationalSha256 "d44dbfedc23c61eb375781903db464db6693e43da9cdb6b5e8547e62ec0b262b";
+            origin        "data/standards/components/methylHexanoate.dat";
+            originSha256  "b273875e63e3fda4149d924a9a3033a1e8eeaea85011635693b63fcf1579616f";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/acetonitrile-methylHexanoate.dat"
+        {
+            type          imported;
+            sha256        "b4f7a5d40805a072abdb148f95de2134f7437fb8840cb6c7c0e298020ed6b1d1";
+            computationalSha256 "38ee3ca2d6e8594bddd0f89020734e6853a664e39d02d5d02a3a01341d7f40b3";
+            origin        "data/standards/parameters/NRTL/acetonitrile-methylHexanoate.dat";
+            originSha256  "5b814588b5da46d51cacf8d5dc3625bf2766cb59f1043577fe84fce6649af6d3";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/acetonitrile-methylHexanoate.dat"
+        {
+            type          imported;
+            sha256        "54c998f9abb875cc04309ca6f8658fe211688fdee135e1194206a167ee1b6336";
+            computationalSha256 "1804e0018b004ae2a51cb3c0227849ec18d4f0008189bfdf5fda85a3d170ebcf";
+            origin        "data/standards/parameters/Wilson/acetonitrile-methylHexanoate.dat";
+            originSha256  "781708db66dc05a021a43b2f516b6fa59fb78f1127bc2a2d5d0881b9620ce17f";
+            release       Choupo-2608;
+        }
+    }
+}

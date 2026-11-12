@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/dimethylCarbonate.dat"
+        {
+            type          imported;
+            sha256        "4be4fe8aaf660cad0eb5af7c50824b449c947ecfa3624411275e4ed3fbe1a954";
+            computationalSha256 "d1ce227e9f6035734bb597c6ed3456667048e05d09f1b8b37b390d8bca08653e";
+            origin        "data/standards/components/dimethylCarbonate.dat";
+            originSha256  "00b7cd53761950a5e794e19202e03b9e4d61d019224051fb75aeeba5701ea7b7";
+            release       Choupo-2608;
+        }
+        "components/ethylLactate.dat"
+        {
+            type          imported;
+            sha256        "2792db75c1743ab17bf2df44134bdd09da3c27a8fe7a94308509932a520d2610";
+            computationalSha256 "cbf5ca0bb3dd82daf357bf01e0956a32f3ab293a72cd0fff0d813624009c7037";
+            origin        "data/standards/components/ethylLactate.dat";
+            originSha256  "7e13fdaca3ba4cb773a1bb0735485ae199cb5d0b751f6bf1faed965bb7839d45";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/dimethylCarbonate-ethylLactate.dat"
+        {
+            type          imported;
+            sha256        "2c42159b9a604d585d3eaa623e84cce35544d7fb24acb555915c0257bad5881a";
+            computationalSha256 "ea150121b360afa3f1ca899f781b298de92a89a1a131b5e4b32dfa485292a2e3";
+            origin        "data/standards/parameters/NRTL/dimethylCarbonate-ethylLactate.dat";
+            originSha256  "73aa5c2a55282c9c772619ef7f4905ec65a75bc49c18fde2d15d95d376a5bf04";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/dimethylCarbonate-ethylLactate.dat"
+        {
+            type          imported;
+            sha256        "fb6f67580b22f6cc4a0659cceacb5a88cccde8ea213d611c14271e7b6e49b527";
+            computationalSha256 "b602b170a793fd7eccdd012c86ca029a9164b42967c1c36705a9775c05b71f4c";
+            origin        "data/standards/parameters/Wilson/dimethylCarbonate-ethylLactate.dat";
+            originSha256  "f8c4759213fb4abd169452a62e2a3fd51e945ec11e3ab643257465ef79e05a01";
+            release       Choupo-2608;
+        }
+    }
+}

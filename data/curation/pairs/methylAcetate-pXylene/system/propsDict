@@ -87,19 +87,21 @@
   not argued). Beside fit_nrtl's max |dT| 2.853 K (severe) on the same
   kept points. fit_uniquac: a_ij = 150.5, a_ji = -39.5 K over 15 kept
   points: max |dT| 2.902 K, mean 1.334 K, graded severe -> accepted;
-  fit_uniquac_start2 lands on the same pair (150.5, -39.5). NOT PROMOTED
-  (max |dT| 2.902 K over the 15 kept points, one liquid across the
-  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/. fit_wilson: A_ij = 1367.3, A_ji = 2470.2 J/mol over 15
-  kept points: max |dT| 2.906 K, mean 1.286 K, graded severe -> accepted;
-  fit_wilson_start2 lands on the same pair (1367.3, 2470.2). NOT PROMOTED
-  (max |dT| 2.906 K over the 15 kept points, one liquid across the
-  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/.
+  fit_uniquac_start2 lands on the same pair (150.5, -39.5). PROMOTED on
+  2026-11-12 into
+  data/standards/parameters/UNIQUAC/methylAcetate-pXylene.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.902 K over the 15 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.9016 K against ideal
+  16.1786 K. fit_wilson: A_ij = 1367.3, A_ji = 2470.2 J/mol over 15 kept
+  points: max |dT| 2.906 K, mean 1.286 K, graded severe -> accepted;
+  fit_wilson_start2 lands on the same pair (1367.3, 2470.2). PROMOTED on
+  2026-11-12 into
+  data/standards/parameters/Wilson/methylAcetate-pXylene.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.906 K over the 15 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.9061 K against ideal
+  16.1786 K.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -107,11 +109,12 @@
   fit_nrtl: b_ij = 548.7 K, b_ji = -96.2 K over 15 kept points of 1
   laboratories (0 discarded): max |dT| 2.852 K, mean 1.331 K, graded
   severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
-  same pair (548.7, -96.2). NOT PROMOTED (max |dT| 2.852 K over the 15
-  kept points, one liquid across the validity span): fit grade severe --
-  DEV.md 4c C300 rule 3: a severe pair does not enter the default
-  catalogue; its record stays in this curation case's constant/, and a
-  case that needs it carries it in its own constant/
+  same pair (548.7, -96.2). PROMOTED on 2026-11-12 into
+  data/standards/parameters/NRTL/methylAcetate-pXylene.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.852 K over the 15 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.8525 K against ideal
+  16.1786 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

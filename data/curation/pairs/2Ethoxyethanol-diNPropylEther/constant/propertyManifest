@@ -1,0 +1,92 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/2Ethoxyethanol.dat"
+        {
+            type          imported;
+            sha256        "0b7ecb49920f6b53fdfdd5833eec28ebd57f446c44aa65e53fc982857d80093d";
+            computationalSha256 "5955f830963288748eece85ecea04f20c410c4ac0e2f65c944fee74acba96858";
+            origin        "data/standards/components/2Ethoxyethanol.dat";
+            originSha256  "98e5caef249c63cbb2cd7b95d48e9e54cf81cb40ddeacbf7a1845271d8fc0c6a";
+            release       Choupo-2608;
+        }
+        "components/diNPropylEther.dat"
+        {
+            type          imported;
+            sha256        "3e03eccfe0ac955b885f2303a0128906f6ed849b44c35825242eefbde39c4476";
+            computationalSha256 "4d231049c3a937366d10a08fcd3d63a5ee92bb2bc9806e8d32bc2aca7299e894";
+            origin        "data/standards/components/diNPropylEther.dat";
+            originSha256  "06c038be866580dabd153fe725c9d1c5480fccbfe6787ad2fbb37038c6b33764";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Ethoxyethanol-diNPropylEther.dat"
+        {
+            type          imported;
+            sha256        "805decb5993392aa3eae6c5ebb655a37954e6ae3d4beee7b720170b44ba8c106";
+            computationalSha256 "b5823500b47f2322ba7624c16454c1cf0603de491d51e7c8be6c188d7d92bfa0";
+            origin        "data/standards/parameters/NRTL/2Ethoxyethanol-diNPropylEther.dat";
+            originSha256  "5370167ca4d44ff27b7ee086b370bcd70e712fd1f169c9612088d9e4b1757184";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/2Ethoxyethanol-diNPropylEther.dat"
+        {
+            type          imported;
+            sha256        "555072eac950e5422917b2f2c929f588ba4d2c74af2a1d21d634b10209c36654";
+            computationalSha256 "7879c4535ebfd9af88c3494aee2306fa5c66cf298315056d34ccc2b0ecefe61f";
+            origin        "data/standards/parameters/UNIQUAC/2Ethoxyethanol-diNPropylEther.dat";
+            originSha256  "2c4e9adfc8bd3b739a3ada2d32890d32554becc6b3033d20ed3804e00a6340cb";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Ethoxyethanol-diNPropylEther.dat"
+        {
+            type          imported;
+            sha256        "c9185acd771390431313cfb094d0f33fb74c10dd87101ec349249fcbde92b23b";
+            computationalSha256 "a7162cc13360e42626c775e54b54df30b12143731c1dbaf6d59f71cc3637dbd1";
+            origin        "data/standards/parameters/Wilson/2Ethoxyethanol-diNPropylEther.dat";
+            originSha256  "b3c2c0c434a83bdb040985de0b773ceab0e50647e3fb74425c3e9a6c560d17ce";
+            release       Choupo-2608;
+        }
+    }
+}

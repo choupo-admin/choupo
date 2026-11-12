@@ -1,0 +1,295 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      ethanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.b_ij  336.335134748;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.b_ji  524.005604845;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c7f9dcbe0177e54f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-244Trimethyl1Pentene-bubble-je020105c.dat";
+            doi       "10.1021/je020105c";
+            sha256    "bac875e5aa5a379cc78921c1cc2ebc87a1fabab86643963d93d26147b3cdc494";
+            provenance measured;
+            archiveFile "je020105c.xml";
+            system    "ethanol + 244Trimethyl1Pentene";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0218; max 0.9747; n 24; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.b_ij  336.335134662;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.b_ji  524.00560488;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c7f9dcbe0177e54f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-244Trimethyl1Pentene-bubble-je020105c.dat";
+            doi       "10.1021/je020105c";
+            sha256    "bac875e5aa5a379cc78921c1cc2ebc87a1fabab86643963d93d26147b3cdc494";
+            provenance measured;
+            archiveFile "je020105c.xml";
+            system    "ethanol + 244Trimethyl1Pentene";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0218; max 0.9747; n 24; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.A_ij  7379.81546061;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.A_ji  1723.23102993;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c7f9dcbe0177e54f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-244Trimethyl1Pentene-bubble-je020105c.dat";
+            doi       "10.1021/je020105c";
+            sha256    "bac875e5aa5a379cc78921c1cc2ebc87a1fabab86643963d93d26147b3cdc494";
+            provenance measured;
+            archiveFile "je020105c.xml";
+            system    "ethanol + 244Trimethyl1Pentene";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0218; max 0.9747; n 24; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.A_ij  7379.81545895;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.A_ji  1723.23103432;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c7f9dcbe0177e54f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-244Trimethyl1Pentene-bubble-je020105c.dat";
+            doi       "10.1021/je020105c";
+            sha256    "bac875e5aa5a379cc78921c1cc2ebc87a1fabab86643963d93d26147b3cdc494";
+            provenance measured;
+            archiveFile "je020105c.xml";
+            system    "ethanol + 244Trimethyl1Pentene";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0218; max 0.9747; n 24; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.a_ij  -104.510085019;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.a_ji  570.852869489;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c7f9dcbe0177e54f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-244Trimethyl1Pentene-bubble-je020105c.dat";
+            doi       "10.1021/je020105c";
+            sha256    "bac875e5aa5a379cc78921c1cc2ebc87a1fabab86643963d93d26147b3cdc494";
+            provenance measured;
+            archiveFile "je020105c.xml";
+            system    "ethanol + 244Trimethyl1Pentene";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0218; max 0.9747; n 24; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.a_ij  -104.510084988;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.a_ji  570.852869405;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "c7f9dcbe0177e54f";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/ethanol-244Trimethyl1Pentene-bubble-je020105c.dat";
+            doi       "10.1021/je020105c";
+            sha256    "bac875e5aa5a379cc78921c1cc2ebc87a1fabab86643963d93d26147b3cdc494";
+            provenance measured;
+            archiveFile "je020105c.xml";
+            system    "ethanol + 244Trimethyl1Pentene";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0218; max 0.9747; n 24; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

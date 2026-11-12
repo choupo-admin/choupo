@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -37,10 +37,28 @@ propertyManifest
         "components/methylStearate.dat"
         {
             type          imported;
-            sha256        "75521209faf694ef774256c9b7a3f92faca1c91e7df772d003676eebdd8fae02";
-            computationalSha256 "c77f8e49aae3fadc031b2d1d9c5cd354df65ca30646c01781e8d5d72ccdc858a";
+            sha256        "819685e588f9e6b0869ddac9c02bdf65802534461cf450b623e0dbdc34378048";
+            computationalSha256 "2d74fd85709217ddb848ed30ea216bb134623c04844701ac092f410438948380";
             origin        "data/standards/components/methylStearate.dat";
-            originSha256  "6a353531dfc5a2967952c7a8bd8d44ae223a20a81b04b342777cca76265bf34d";
+            originSha256  "4f9256c8338f3204a3b09c97ea1098c3c841c106b24b057f0896e12c4c6dbd87";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/methylPalmitate-methylStearate.dat"
+        {
+            type          imported;
+            sha256        "1acd53c5973e0b6e80a5dc442e30873cfff6b602df2bf9ee10f76776684d8701";
+            computationalSha256 "eae544a63550719d2635cdf2732adf027fa17583fb2a9e041042306d1f037ab0";
+            origin        "data/standards/parameters/NRTL/methylPalmitate-methylStearate.dat";
+            originSha256  "27b5733de5ab85d80acb0a89ec86b8e1d403fd4c1a523f1a9ce32c072c88d080";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/methylPalmitate-methylStearate.dat"
+        {
+            type          imported;
+            sha256        "ebc15d7141698064766614a8de96a6accc24f1f87d296df94469cc5d02cf051b";
+            computationalSha256 "70e9cf9c2dd8480a98584c74cc68c653d868542e0a259e3d43c00666cb821485";
+            origin        "data/standards/parameters/UNIQUAC/methylPalmitate-methylStearate.dat";
+            originSha256  "a8b520a4995bac909dd47d7194716fe3065d351161413e6c8994f32185a96f5e";
             release       Choupo-2608;
         }
     }

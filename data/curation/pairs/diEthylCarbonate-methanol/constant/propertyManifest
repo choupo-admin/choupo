@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -37,10 +37,28 @@ propertyManifest
         "components/methanol.dat"
         {
             type          imported;
-            sha256        "8a5d7eada35ef18aafd03f99eaeaa45a0837da565ac71b4ffb3574e7a99df54a";
-            computationalSha256 "687725d9dfbbd996959983f08041d099f4b76c6b1a639d19d9a43a0209f04ab6";
+            sha256        "c31b411d7bdd0857e1a2998503dd5170f75f9a417a9d47306b4095fd28bcebd6";
+            computationalSha256 "d51b98bd9ea6675087f0be387bcb63782ea8fc394f1962cb648ad92e39752faa";
             origin        "data/standards/components/methanol.dat";
-            originSha256  "8cedd68cbab3194cfb72728ae31e42118e256931e9e166b4c53ace9dbbe27376";
+            originSha256  "3e584446eb5b5ffd4ee5547099679b01254cc19dad31a8db909a2068fe9cad43";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/diEthylCarbonate-methanol.dat"
+        {
+            type          imported;
+            sha256        "b854354327c633865d7279a25d3642f4b80fb3eeefcb501f7e8d8894d7d736fa";
+            computationalSha256 "1924229cae9adec1976f488c5e651002cd89ea7b35a5115e25b5daac4a5cae8d";
+            origin        "data/standards/parameters/NRTL/diEthylCarbonate-methanol.dat";
+            originSha256  "ac5c89dcd1d49dc594d48f20bfbc7682414007edc291f284a2e84691c0696c3a";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/diEthylCarbonate-methanol.dat"
+        {
+            type          imported;
+            sha256        "a3050b8a23702ba818c938dd8616a9033ae9e7ce561438bdca76e498f8d842d7";
+            computationalSha256 "4a2e647f29c3eab120ad7b5ee165bf8ee83c1ff784c8a3ca1015aaec16693d13";
+            origin        "data/standards/parameters/Wilson/diEthylCarbonate-methanol.dat";
+            originSha256  "23b59f404ad33ccf182afa9e1a33fda09efafbd071fba1384949d9421cdfbf4f";
             release       Choupo-2608;
         }
     }

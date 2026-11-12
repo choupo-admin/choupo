@@ -1,0 +1,301 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      2Ethylthiophene;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.b_ij  1530.84698179;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.b_ji  -449.304373413;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9cb59c889fd57747";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Ethylthiophene-mesitylene-bubble-j.fluid.2015.09.030.dat";
+            doi       "10.1016/j.fluid.2015.09.030";
+            sha256    "8316a0f8ca167f5b5431c20d0d32af3336a350edf5e31d4fe79194b6da11572e";
+            provenance measured;
+            archiveFile "j.fluid.2015.09.030.xml";
+            system    "2Ethylthiophene + mesitylene";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0273; max 0.9711; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.b_ij  1530.84698311;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.b_ji  -449.304373664;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9cb59c889fd57747";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Ethylthiophene-mesitylene-bubble-j.fluid.2015.09.030.dat";
+            doi       "10.1016/j.fluid.2015.09.030";
+            sha256    "8316a0f8ca167f5b5431c20d0d32af3336a350edf5e31d4fe79194b6da11572e";
+            provenance measured;
+            archiveFile "j.fluid.2015.09.030.xml";
+            system    "2Ethylthiophene + mesitylene";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0273; max 0.9711; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.a_ij  723.990158375;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.a_ji  -309.053451979;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9cb59c889fd57747";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Ethylthiophene-mesitylene-bubble-j.fluid.2015.09.030.dat";
+            doi       "10.1016/j.fluid.2015.09.030";
+            sha256    "8316a0f8ca167f5b5431c20d0d32af3336a350edf5e31d4fe79194b6da11572e";
+            provenance measured;
+            archiveFile "j.fluid.2015.09.030.xml";
+            system    "2Ethylthiophene + mesitylene";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0273; max 0.9711; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.a_ij  723.990158391;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.a_ji  -309.053451969;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9cb59c889fd57747";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Ethylthiophene-mesitylene-bubble-j.fluid.2015.09.030.dat";
+            doi       "10.1016/j.fluid.2015.09.030";
+            sha256    "8316a0f8ca167f5b5431c20d0d32af3336a350edf5e31d4fe79194b6da11572e";
+            provenance measured;
+            archiveFile "j.fluid.2015.09.030.xml";
+            system    "2Ethylthiophene + mesitylene";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0273; max 0.9711; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.A_ij  -1499.19537476;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.A_ji  29999.9972893;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9cb59c889fd57747";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Ethylthiophene-mesitylene-bubble-j.fluid.2015.09.030.dat";
+            doi       "10.1016/j.fluid.2015.09.030";
+            sha256    "8316a0f8ca167f5b5431c20d0d32af3336a350edf5e31d4fe79194b6da11572e";
+            provenance measured;
+            archiveFile "j.fluid.2015.09.030.xml";
+            system    "2Ethylthiophene + mesitylene";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0273; max 0.9711; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.A_ij  -1499.19537609;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.A_ji  29999.9992129;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "9cb59c889fd57747";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Ethylthiophene-mesitylene-bubble-j.fluid.2015.09.030.dat";
+            doi       "10.1016/j.fluid.2015.09.030";
+            sha256    "8316a0f8ca167f5b5431c20d0d32af3336a350edf5e31d4fe79194b6da11572e";
+            provenance measured;
+            archiveFile "j.fluid.2015.09.030.xml";
+            system    "2Ethylthiophene + mesitylene";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0273; max 0.9711; n 19; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

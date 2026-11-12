@@ -21,17 +21,17 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/dimethylCarbonate.dat"
         {
             type          imported;
-            sha256        "82aaa1f6328a7ed9424fae60b37cae2ff1bafb8753132f84e5c7466d4287c6c2";
-            computationalSha256 "4e75d782f46cb42b368ec6e5e09250045bd4349540011fbc882cfeb3e7a27e8d";
+            sha256        "4be4fe8aaf660cad0eb5af7c50824b449c947ecfa3624411275e4ed3fbe1a954";
+            computationalSha256 "d1ce227e9f6035734bb597c6ed3456667048e05d09f1b8b37b390d8bca08653e";
             origin        "data/standards/components/dimethylCarbonate.dat";
-            originSha256  "4364b5ed2f6a4ccf01a7fe01b0939072b8747fbf150e92362a4030c825ea8eba";
+            originSha256  "00b7cd53761950a5e794e19202e03b9e4d61d019224051fb75aeeba5701ea7b7";
             release       Choupo-2608;
         }
         "components/methylPhenylCarbonate.dat"
@@ -41,6 +41,15 @@ propertyManifest
             computationalSha256 "a80449178de72d152feb2197fff4ac6cf6c76cc4e477661f497dbb4a3df9b2a7";
             origin        "data/standards/components/methylPhenylCarbonate.dat";
             originSha256  "fe899c2b3399a66ac33fa134f3bb5cd7dab5288f1a2b2d0027742557d978d3a3";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/dimethylCarbonate-methylPhenylCarbonate.dat"
+        {
+            type          imported;
+            sha256        "4fdfd3c080d825963db64a6efb31702df77c53cf0e66496940c9c09075e8b58d";
+            computationalSha256 "c90fd555d0e65d7a54c1bd22ee1567a39fe6a63adc561b69adf9288f100d7a62";
+            origin        "data/standards/parameters/NRTL/dimethylCarbonate-methylPhenylCarbonate.dat";
+            originSha256  "86de2a76040964e1a7554c1e6cbc4a35190c945cae238419ca301451a8db93d1";
             release       Choupo-2608;
         }
     }

@@ -21,26 +21,35 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/styrene.dat"
         {
             type          imported;
-            sha256        "04fc341e1cef4c77c55d4b19b3c209826512264b938fef38b980df185999641c";
-            computationalSha256 "c1a461dbfcc92172749c6a6e1c3a045310a513e07ed9410c22532ada36ece21b";
+            sha256        "57512c9a31aba38b42f3362b13e54ded9f1b51d222203b0622df1e484971cc8f";
+            computationalSha256 "b3e6502ed570ba56a6949e33f06d3bee6bc8ffb22e8f7c4bc3227eebb5e9fa21";
             origin        "data/standards/components/styrene.dat";
-            originSha256  "2441f916e798e03532c8bc1333258b28b4ba60352a8be5441576afe1f062ebfa";
+            originSha256  "153141bc57d8ec5c90343bd2435e5a897af553b0a2d53353c172a7c1d7257e8d";
             release       Choupo-2608;
         }
         "components/sulfolane.dat"
         {
             type          imported;
-            sha256        "3608f9788ff3687e08d902ca6977898c4ab6a466053619faae6ff73913362066";
-            computationalSha256 "7385ac756f3617a1d484545550e657cb980d6b9c42593d66620f003b03c4144b";
+            sha256        "70e9e0d6792df3f58bb6b51bd3b57325abf9708c3f3d4f78f7481463e465ceff";
+            computationalSha256 "f8ee6fd89710bf6383dcbe94e87f2a50ec2b5e655b06f3a245d8d74c472a6e3b";
             origin        "data/standards/components/sulfolane.dat";
-            originSha256  "ac7f8c608764cf5b4538d3877c47f5ffb0e65846642a661fe10cdebb90748d96";
+            originSha256  "6e103bc7e4f574eef823ce1c1b6d25ed7665552b6d39163a14fd49be3b7b318d";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/styrene-sulfolane.dat"
+        {
+            type          imported;
+            sha256        "964f5a5edbedccc16ab31eb6d10c0178d5faf2fa334a22ce0c58a602610fbc26";
+            computationalSha256 "32679667030eb0be706a029abc15931e62c5d557c586751955437364f908abed";
+            origin        "data/standards/parameters/NRTL/styrene-sulfolane.dat";
+            originSha256  "6da130415629edf3f7d0064428f517e670c74f1cd6034710abbf8908c29a811d";
             release       Choupo-2608;
         }
     }

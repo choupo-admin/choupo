@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/3Methyl1Butanol.dat"
+        {
+            type          imported;
+            sha256        "feb9a78f924adea09e52afadb1faea3b86a82592503ef7d91e9fbaf2b171bcd9";
+            computationalSha256 "462f7772a690287cab81b7cc48a247230dce1160f156e4a9bb1c67e6fadb360e";
+            origin        "data/standards/components/3Methyl1Butanol.dat";
+            originSha256  "c0bbb9baf86fc1115d729a714ddfbe0baf220048d635c6c2731ff5d6e9e42c74";
+            release       Choupo-2608;
+        }
+        "components/dimethylSulfoxide.dat"
+        {
+            type          imported;
+            sha256        "17f9b99ac0c913e567614c63c159770bbc0a1913df97026d01fffbe3b04cf774";
+            computationalSha256 "d843f0b7b938772a1d29d5515b33b2c59fadc96f846788d5aded7916bf16c994";
+            origin        "data/standards/components/dimethylSulfoxide.dat";
+            originSha256  "a9b5f0fee39f8c1914eedda69137802495adf06e015450e16ae426392208ba86";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/3Methyl1Butanol-dimethylSulfoxide.dat"
+        {
+            type          imported;
+            sha256        "06de24727dd7a3d071134b1b754f859949a74f9d681081aa6bad0f9633da62c6";
+            computationalSha256 "eb85ddbcaf2c56d4488c54f1f37675e1e08f67c2063c60a7d00859417963ed4a";
+            origin        "data/standards/parameters/NRTL/3Methyl1Butanol-dimethylSulfoxide.dat";
+            originSha256  "de0ea318d2fabab84608d1a79444af7debc2e697685e1664c51a01c50ba2cb76";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/3Methyl1Butanol-dimethylSulfoxide.dat"
+        {
+            type          imported;
+            sha256        "383f062ddb88f19dda58995614b0ed56c1136d01452901325a85e6c24534325d";
+            computationalSha256 "357c7d2a41f0accb87f8e5e0ece4f52bce4ac4dd68c11929a62ffeebbc62493f";
+            origin        "data/standards/parameters/Wilson/3Methyl1Butanol-dimethylSulfoxide.dat";
+            originSha256  "66aeac0108448be255f0ef1be19a2822f8f2dcb2912450da8ae0eea3ae6e6550";
+            release       Choupo-2608;
+        }
+    }
+}

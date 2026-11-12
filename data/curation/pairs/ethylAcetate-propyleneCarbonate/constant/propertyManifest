@@ -21,26 +21,44 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/ethylAcetate.dat"
         {
             type          imported;
-            sha256        "54a2177877292bf69c144e8501a70f5fbdd893d0d52c59b98a2751121bea1d6f";
-            computationalSha256 "a684b58c42fd149250d5211ca6545fa9f6968847122e1a9267a719a700deb26d";
+            sha256        "4ee06f30aae70c1eab14da7bffce60be14bbdddc957964087e3f055599649351";
+            computationalSha256 "80dbe1d46a9004f4170f6e26b03368a10cea61d8233a38611ffce770e21e4914";
             origin        "data/standards/components/ethylAcetate.dat";
-            originSha256  "882d88a79a8cf5677b7b9eb8d6c7eea180a82c7a6ac1c4a90e907913ca261cb6";
+            originSha256  "3d9d32e87fd2417113925a18dbfb0d833a5ef7033a1a0acd05f1cd80c0ab174f";
             release       Choupo-2608;
         }
         "components/propyleneCarbonate.dat"
         {
             type          imported;
-            sha256        "dff290f5f0a67412204102e13e6df1c294db9a32393911daddd541e7da60a016";
-            computationalSha256 "e9a88afe48fdd87c256bf3d916c367093364e965988f8b978dc57197d1755551";
+            sha256        "4fd666e166fdee62d53ad5f976d262fbddcae5ecc1530d1c081fec5a0b341554";
+            computationalSha256 "eda49922fcae77605efb0619274e07c13a42a4f8b970c1d44cb5c0b619fbcc14";
             origin        "data/standards/components/propyleneCarbonate.dat";
-            originSha256  "03d8dd4c781629ba8231f4463db44bbd3407945ab353f8f6fdc6db4fca8c36e0";
+            originSha256  "cf8619dd90d1723864135d9cfcc856abdcf2248f66991efa8117ee55f2597f46";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/ethylAcetate-propyleneCarbonate.dat"
+        {
+            type          imported;
+            sha256        "1da7f161d922e97b9951064eccaf8c2aa6aec481fb25facf4711f6568d9ac9d8";
+            computationalSha256 "5fe73e3bfed429033e9977958eb97268c83479b5dcec9b47dd7b3e4f4cff7f9f";
+            origin        "data/standards/parameters/NRTL/ethylAcetate-propyleneCarbonate.dat";
+            originSha256  "cd551b1888babbc8095ccc02a18f32e6da54d45f71f85748018bc43897fa6978";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/ethylAcetate-propyleneCarbonate.dat"
+        {
+            type          imported;
+            sha256        "f26608d78701cd0c78c425266609a2c4119ae3a03dfe2b50fafcfb3ebfe79b2f";
+            computationalSha256 "e2aab88808b2cce91e683f5d21a2b177b551b8378fc588c04964d1489106e62b";
+            origin        "data/standards/parameters/Wilson/ethylAcetate-propyleneCarbonate.dat";
+            originSha256  "07f7cf869bae1b649ff5e8b1511ef97ee8557daf680b39b6784db1ae9ce9e4f3";
             release       Choupo-2608;
         }
     }

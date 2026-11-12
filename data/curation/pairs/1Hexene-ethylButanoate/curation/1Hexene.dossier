@@ -1,0 +1,301 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      1Hexene;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-ethylButanoate.b_ij  -118.196429401;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-ethylButanoate.b_ji  222.465564163;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "dbffad2da1a95a73";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Hexene-ethylButanoate-bubble-je3009599.dat";
+            doi       "10.1021/je3009599";
+            sha256    "880d8757318cb171e81b38e34a55e59c0104bce8faae24f544c5db08fd407458";
+            provenance measured;
+            archiveFile "je3009599.xml";
+            system    "1Hexene + ethylButanoate";
+            pressure  "100000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.027; max 0.905; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-ethylButanoate.b_ij  -118.196428623;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-ethylButanoate.b_ji  222.465562909;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "dbffad2da1a95a73";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Hexene-ethylButanoate-bubble-je3009599.dat";
+            doi       "10.1021/je3009599";
+            sha256    "880d8757318cb171e81b38e34a55e59c0104bce8faae24f544c5db08fd407458";
+            provenance measured;
+            archiveFile "je3009599.xml";
+            system    "1Hexene + ethylButanoate";
+            pressure  "100000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.027; max 0.905; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-ethylButanoate.a_ij  -94.433314059;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-ethylButanoate.a_ji  132.691964056;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "dbffad2da1a95a73";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Hexene-ethylButanoate-bubble-je3009599.dat";
+            doi       "10.1021/je3009599";
+            sha256    "880d8757318cb171e81b38e34a55e59c0104bce8faae24f544c5db08fd407458";
+            provenance measured;
+            archiveFile "je3009599.xml";
+            system    "1Hexene + ethylButanoate";
+            pressure  "100000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.027; max 0.905; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-ethylButanoate.a_ij  -94.4333135375;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-ethylButanoate.a_ji  132.691963286;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "dbffad2da1a95a73";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Hexene-ethylButanoate-bubble-je3009599.dat";
+            doi       "10.1021/je3009599";
+            sha256    "880d8757318cb171e81b38e34a55e59c0104bce8faae24f544c5db08fd407458";
+            provenance measured;
+            archiveFile "je3009599.xml";
+            system    "1Hexene + ethylButanoate";
+            pressure  "100000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.027; max 0.905; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-ethylButanoate.A_ij  1518.15237742;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-ethylButanoate.A_ji  -687.130722413;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "dbffad2da1a95a73";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Hexene-ethylButanoate-bubble-je3009599.dat";
+            doi       "10.1021/je3009599";
+            sha256    "880d8757318cb171e81b38e34a55e59c0104bce8faae24f544c5db08fd407458";
+            provenance measured;
+            archiveFile "je3009599.xml";
+            system    "1Hexene + ethylButanoate";
+            pressure  "100000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.027; max 0.905; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-ethylButanoate.A_ij  1518.15232025;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-ethylButanoate.A_ji  -687.130688382;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "dbffad2da1a95a73";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/1Hexene-ethylButanoate-bubble-je3009599.dat";
+            doi       "10.1021/je3009599";
+            sha256    "880d8757318cb171e81b38e34a55e59c0104bce8faae24f544c5db08fd407458";
+            provenance measured;
+            archiveFile "je3009599.xml";
+            system    "1Hexene + ethylButanoate";
+            pressure  "100000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.027; max 0.905; n 18; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

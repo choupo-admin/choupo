@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/2Ethoxyethanol.dat"
+        {
+            type          imported;
+            sha256        "0b7ecb49920f6b53fdfdd5833eec28ebd57f446c44aa65e53fc982857d80093d";
+            computationalSha256 "5955f830963288748eece85ecea04f20c410c4ac0e2f65c944fee74acba96858";
+            origin        "data/standards/components/2Ethoxyethanol.dat";
+            originSha256  "98e5caef249c63cbb2cd7b95d48e9e54cf81cb40ddeacbf7a1845271d8fc0c6a";
+            release       Choupo-2608;
+        }
+        "components/ethylAcetate.dat"
+        {
+            type          imported;
+            sha256        "4ee06f30aae70c1eab14da7bffce60be14bbdddc957964087e3f055599649351";
+            computationalSha256 "80dbe1d46a9004f4170f6e26b03368a10cea61d8233a38611ffce770e21e4914";
+            origin        "data/standards/components/ethylAcetate.dat";
+            originSha256  "3d9d32e87fd2417113925a18dbfb0d833a5ef7033a1a0acd05f1cd80c0ab174f";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Ethoxyethanol-ethylAcetate.dat"
+        {
+            type          imported;
+            sha256        "9d0df2db50cc4301725241ea1f6475ee0e7042b4329c2cc83cf55f70db3d4a64";
+            computationalSha256 "f2224ea191a4e66a662190e059975ea8c9e39150b0f0f3982a47dd0dcef66e63";
+            origin        "data/standards/parameters/NRTL/2Ethoxyethanol-ethylAcetate.dat";
+            originSha256  "7654295b9086ad4b77df18bdd13e6247bc331bc3484066ae2c7b7605b12454dc";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/2Ethoxyethanol-ethylAcetate.dat"
+        {
+            type          imported;
+            sha256        "8f253498da1100b27c308c42ee9dbff474c13b0fefcda349288c552bbe862626";
+            computationalSha256 "8688996d7ef95ac61acd3ec107a223f9a2b187e0e1f693cc4eb09cd4e1a4cf5e";
+            origin        "data/standards/parameters/UNIQUAC/2Ethoxyethanol-ethylAcetate.dat";
+            originSha256  "cc822c724ec578e2cbe87cfb106aec9ae1ad8fc7e6e27d65244b64629a1e1659";
+            release       Choupo-2608;
+        }
+    }
+}

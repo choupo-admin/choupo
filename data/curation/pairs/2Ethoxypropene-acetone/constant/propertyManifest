@@ -1,0 +1,83 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/2Ethoxypropene.dat"
+        {
+            type          imported;
+            sha256        "e9ac6d6356f75a4c39342c483b4e41ba908d0f76309aaf55bae1603390b8e1af";
+            computationalSha256 "59bf025ffa41b39f631be80ba9d8cd8d8b63ae50aab618e71c966e991721ab6a";
+            origin        "data/standards/components/2Ethoxypropene.dat";
+            originSha256  "4ff26993f5aa25afde6c85463d4001b427b9ff669edf36b47d4dad6f523d2362";
+            release       Choupo-2608;
+        }
+        "components/acetone.dat"
+        {
+            type          imported;
+            sha256        "3406a1c14e08831da61ec91539024e56d6d827f264176613893b1cc8fa56c967";
+            computationalSha256 "1d40a3796dc0aab8d7216574c9f1c1e63a545faa1c67bf88893f3eac709812b6";
+            origin        "data/standards/components/acetone.dat";
+            originSha256  "29b33932b741e011b332c4d85207bf939f34fc51b4e0550d652d26e75fb9b27a";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Ethoxypropene-acetone.dat"
+        {
+            type          imported;
+            sha256        "5ed67d733ca9f27f285e236f6f07cb6f433c872ae14ea4d94f3fa3a7404c729b";
+            computationalSha256 "3545893709d8f7c14cd9d316b30c013e02fc0a17f0dba028adbc73cfd59048c0";
+            origin        "data/standards/parameters/NRTL/2Ethoxypropene-acetone.dat";
+            originSha256  "b202d0eb5cd246de94ad001a1bcaa969f8b0d271770f77d0e248e65e8606dca6";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/2Ethoxypropene-acetone.dat"
+        {
+            type          imported;
+            sha256        "d1946bea90eaddf2cce92c7317b72c3c43348b94d1e58bb52adf9e214eeaebd1";
+            computationalSha256 "0e09e999f2048d09e8e214ee4a8d4c840f00a622aa8f111c1b15c4249c16c661";
+            origin        "data/standards/parameters/UNIQUAC/2Ethoxypropene-acetone.dat";
+            originSha256  "5e200570cd515ad8e0da074fc88aaa4c00a5f07ba590469fce71f2a389928042";
+            release       Choupo-2608;
+        }
+    }
+}

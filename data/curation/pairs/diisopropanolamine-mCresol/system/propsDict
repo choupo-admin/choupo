@@ -91,16 +91,16 @@
   not argued). Beside fit_nrtl's max |dT| 2.539 K (severe) on the same
   kept points. fit_wilson: A_ij = -1712.3, A_ji = 1931.1 J/mol over 21
   kept points: max |dT| 2.492 K, mean 1.134 K, graded severe -> accepted;
-  fit_wilson_start2 removed (it did not converge). NOT PROMOTED (max |dT|
-  2.492 K over the 21 kept points, one liquid across the validity span):
-  fit grade severe -- DEV.md 4c C300 rule 3: a severe pair does not enter
-  the default catalogue; its record stays in this curation case's
-  constant/, and a case that needs it carries it in its own constant/.
-  Wilson: fit_wilson_start2 was declared and run and did NOT CONVERGE
-  (A_ij at its bound, -30000 .. 30000 J/mol: no finite optimum inside the
-  declared bounds); the op is removed so the case runs (C294). UNIQUAC:
-  not fitted -- mCresol and diisopropanolamine carry no UNIQUAC r and q
-  (no tabulated value, and no UNIFAC groups to sum them from,
+  fit_wilson_start2 removed (it did not converge). PROMOTED on 2026-11-12
+  into data/standards/parameters/Wilson/diisopropanolamine-mCresol.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.492 K over the 21 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.4920 K against ideal
+  4.4226 K. Wilson: fit_wilson_start2 was declared and run and did NOT
+  CONVERGE (A_ij at its bound, -30000 .. 30000 J/mol: no finite optimum
+  inside the declared bounds); the op is removed so the case runs (C294).
+  UNIQUAC: not fitted -- mCresol and diisopropanolamine carry no UNIQUAC
+  r and q (no tabulated value, and no UNIFAC groups to sum them from,
   bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
   is estimated silently.
   @@MODELS-RESULT-END@@
@@ -110,11 +110,12 @@
   fit_nrtl: b_ij = 344.2 K, b_ji = -353.7 K over 21 kept points of 1
   laboratories (2 discarded): max |dT| 2.539 K, mean 1.172 K, graded
   severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
-  same pair (344.2, -353.7). NOT PROMOTED (max |dT| 2.539 K over the 21
-  kept points, one liquid across the validity span): fit grade severe --
-  DEV.md 4c C300 rule 3: a severe pair does not enter the default
-  catalogue; its record stays in this curation case's constant/, and a
-  case that needs it carries it in its own constant/
+  same pair (344.2, -353.7). PROMOTED on 2026-11-12 into
+  data/standards/parameters/NRTL/diisopropanolamine-mCresol.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.539 K over the 21 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.5387 K against ideal
+  4.4226 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

@@ -1,0 +1,472 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  2Ethoxyethanol-dichloromethane -- AN NRTL PAIR FROM EVERY LABORATORY'S BUBBLE PRESSURES.
+
+  WRITTEN BY bin/curate/pairs_px.py (DEV.md 4c C291, the P-x mirror of the
+  C284 bubble-temperature pipeline; record
+  docs/design/binary-pairs-from-open-measurements.md section 12).
+
+  THE DECLARATION -- WRITTEN AND COMMITTED BEFORE ANY FIT RAN (several
+  declarations of a batch share one commit).
+
+  IDENTITY.  dichloromethane (CAS 75-09-2, InChIKey YMWUJEATGCHHMB-UHFFFAOYSA-N)
+  + 2Ethoxyethanol (CAS 110-80-5, InChIKey ZNQVEEAIQZEUHB-UHFFFAOYSA-N), joined
+  to the archive through identity.json -- never by name.  CLASS (C284): both
+  records are volatile molecular liquids (no role nonvolatile/solute, no
+  dissociatesTo, no charge, no solid, a vapour-pressure model), and every
+  measured temperature lies below both critical temperatures.
+
+  NO MEASURED SERIES IN THIS TREE.  constant/archiveDatasets names each
+  dataset (DOI, NIST URL, article sha256, extraction selector, extract
+  sha256); `bin/choupo-curate fetch` writes the points into
+  constant/archiveExtracts/, which is gitignored.
+
+  STUDIES: every isothermal bubble-pressure block of the pair at or below
+  110 kPa that states an uncertainty on every point.  FITTED, ALL OF THEM
+  (1 block(s), 1 laboratory(ies), 1 temperature(s)):
+      10.1021/je034153o              block 6    22 pts  303.15 K  2.403-68.72 kPa  U 0.053-0.273 kPa
+  SET ASIDE BY THE EXTRACTION RULES, BY NAME:
+      (none)
+
+  THE RULE (DEV.md 4c C291, bubble-pressure pairs).  Every block above is
+  fitted together; none is held out.  NRTL, a_ij = a_ji = 0, alpha = 0.30
+  fixed: two parameters (b_ij, b_ji), so tau = b/T carries the temperature
+  dependence.  The residual is the bubble PRESSURE at each point's stated
+  temperature, RELATIVE, (P_model - P)/P; objective twoStage (least squares,
+  then minimax; P_bubble relative).  OUTLIERS: after a least-squares stage over
+  every point, a point with |P_model - P|/P > 20 % is discarded BY NAME
+  (`discard` on its evidence entry, listed below) and the fit repeated
+  without it; a STUDY with more than half of its points beyond 20 % is
+  discarded whole, by name (it contradicts the model and the other
+  laboratories as a whole, e.g. a composition labelled as the other member's).
+  THE GRADED ACCEPTANCE (DEV.md 4c C285, in per cent of P): max |P_model - P|/P over the KEPT points is GRADED -- clean up to 5 %, warning up to 10 %, severe up to 20 %, refused above; a point with no bubble pressure refuses.  Every grade but refused is accepted and promoted (autoPromoted, humanReviewed false) with `fitGrade` and its max relative error in the record's provenance; the engine voices a warning or a severe grade on every run that reads the pair.  A pair that splits ONE liquid inside its validity span is not promoted, whatever its grade (arm f).
+  Two starts: (0, 0) and (800, -400).  The per-point uncertainty U (kPa) is
+  kept in each dataset and is information: this residual is already relative.
+
+  OUTLIERS DISCARDED AFTER THE LEAST-SQUARES STAGE:
+  @@OUTLIERS-BEGIN@@
+      1 point(s) of 22: doi 10.1021/je034153o row 1: x 0.0355, T 303.15
+      K, P 2.403 kPa, dP/P +31.9 %
+  @@OUTLIERS-END@@
+
+  @@MODELS-BEGIN@@
+  THE OTHER ACTIVITY MODELS (DEV.md 4c C294), declared before their fits
+  ran. The SAME datasets and the SAME kept points as fit_nrtl: each op
+  below is fit_nrtl copied verbatim -- evidence, discards, objective,
+  residual, weighting, options -- with only its parameters, its `thermo
+  {}` fragment (the model) and its outputs changed; the outlier discard
+  was decided ONCE, on the NRTL least-squares stage, and is reused, never
+  re-decided per model. UNIQUAC: two parameters a_ij, a_ji (K), tau_ij =
+  exp(-a_ij/T), b = c = 0 fixed (the NRTL default's count; temperature
+  dependence 1/T), r and q each component's own record. Wilson: two
+  parameters A_ij, A_ji (J/mol), Lambda_ij = (V_j/V_i) exp(-A_ij/RT), V
+  the records' Vliq. Two starts each. Each model gets its own record
+  (constant/parameters/<MODEL>/), its own grade at 5 / 10 / 20 % (max
+  |P_model - P|/P), its own one-liquid test (arm f), `fitGradeBasis
+  inSample`, the C300 cap and `review { by none; }`; a severe or refused
+  grade, or a split, is not promoted. The three in-sample residuals are
+  published side by side, never used to choose a model for the student.
+  UNIQUAC: FITTED. Wilson: FITTED.
+  @@MODELS-END@@
+
+  @@MODELS-RESULT-BEGIN@@
+  WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
+  not argued). Beside fit_nrtl's max |dP|/P 12.998 % (severe) on the same
+  kept points. fit_uniquac: a_ij = -147.8, a_ji = 147.8 K over 21 kept
+  points: max |dP|/P 16.353 %, mean 10.232 %, graded severe -> accepted;
+  fit_uniquac_start2 lands on A DIFFERENT pair (3000.0, -349.4). PROMOTED
+  on 2026-11-12 into
+  data/standards/parameters/UNIQUAC/2Ethoxyethanol-dichloromethane.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dP|/P 16.353 % over the 21 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 16.3534 % against ideal
+  48.9174 %.
+  @@MODELS-RESULT-END@@
+
+  @@RESULT-BEGIN@@
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  fit_nrtl: b_ij = -300.2 K, b_ji = 262.5 K over 21 kept points of 1
+  block(s), 1 laboratory(ies), 1 temperature(s) (1 discarded): max |dP|/P
+  13.00 %, mean 8.28 %, graded severe -> accepted. fit_nrtl_start2 lands
+  on A DIFFERENT pair (1337.4, -520.1). PROMOTED on 2026-11-12 into
+  data/standards/parameters/NRTL/2Ethoxyethanol-dichloromethane.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dP|/P 13.00 % over the 21 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 12.9975 % against ideal
+  48.9174 % SINGLE TEMPERATURE: b/T was fitted at one temperature; its
+  extrapolation is untested. SINGLE LABORATORY: one article's data,
+  nothing to cross-check it.
+  @@RESULT-END@@
+
+  WHAT IS NOT CLAIMED.  The pair is correct at these temperatures in this
+  frame (ideal-gas vapour, the catalogue's own vapour-pressure records); the
+  measurements were transcribed by the archive and have NOT been read back
+  against the articles (the CHECKLIST that `fetch` writes is the aid).
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        fit_nrtl;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.dichloromethane-2Ethoxyethanol.b_ij;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.dichloromethane-2Ethoxyethanol.b_ji;  initial 0;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/dichloromethane-2Ethoxyethanol-bubbleP-je034153o-b6.dat";
+                role     fit;
+                discard  ( 1 );   // C291 outliers, by name in the header
+            }
+        );
+
+        objective { method twoStage;  scale { P_bubble relative; } }
+        residual
+        {
+            kind        P_bubble;
+            components  ( dichloromethane 2Ethoxyethanol );
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_history.csv;
+            parity     parity.csv;
+            proposal   2Ethoxyethanol-dichloromethane.proposal.dat;
+        }
+    }
+    {
+        name        fit_nrtl_start2;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.dichloromethane-2Ethoxyethanol.b_ij;  initial 800;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.dichloromethane-2Ethoxyethanol.b_ji;  initial -400;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/dichloromethane-2Ethoxyethanol-bubbleP-je034153o-b6.dat";
+                role     fit;
+                discard  ( 1 );   // C291 outliers, by name in the header
+            }
+        );
+
+        objective { method twoStage;  scale { P_bubble relative; } }
+        residual
+        {
+            kind        P_bubble;
+            components  ( dichloromethane 2Ethoxyethanol );
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            parity     parity_start2.csv;
+        }
+    }
+    {
+        name        txy_nrtl;
+        type        propertyScan1D;
+        vary        { variable x[dichloromethane];  from 0.0;  to 1.0;  n 101; }
+        state       { P 42.332 kPa;  composition { dichloromethane 0.5;  2Ethoxyethanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_dichloromethane );
+        output      { file txy_nrtl.csv; }
+    }
+    // @@C294-OPS-BEGIN@@ -- UNIQUAC and Wilson on the NRTL fit's own evidence (DEV.md 4c C294)
+    {
+        name        fit_uniquac;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.dichloromethane-2Ethoxyethanol.a_ij;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.dichloromethane-2Ethoxyethanol.a_ji;  initial 0;  min -3000;  max 3000; }
+        );
+
+        thermo   // the model, as a fragment of the case's system (C294)
+        {
+            equilibrium
+            {
+                liquid
+                {
+                    activityModel
+                    {
+                        model UNIQUAC;
+                        binaryParameters   // the FIT'S starting point
+                        {
+                            dichloromethane-2Ethoxyethanol { i dichloromethane; j 2Ethoxyethanol; a_ij 0; a_ji 0; }
+                        }
+                    }
+                    standardState pureLiquid;
+                }
+            }
+        }
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/dichloromethane-2Ethoxyethanol-bubbleP-je034153o-b6.dat";
+                role     fit;
+                discard  ( 1 );   // the NRTL fit's outliers, reused: decided once (C294)
+            }
+        );
+
+        objective { method twoStage;  scale { P_bubble relative; } }
+        residual
+        {
+            kind        P_bubble;
+            components  ( dichloromethane 2Ethoxyethanol );
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_history_uniquac.csv;
+            parity     parity_uniquac.csv;
+            proposal   2Ethoxyethanol-dichloromethane.UNIQUAC.proposal.dat;
+        }
+    }
+    {
+        name        fit_uniquac_start2;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.dichloromethane-2Ethoxyethanol.a_ij;  initial 300;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.dichloromethane-2Ethoxyethanol.a_ji;  initial -150;  min -3000;  max 3000; }
+        );
+
+        thermo   // the model, as a fragment of the case's system (C294)
+        {
+            equilibrium
+            {
+                liquid
+                {
+                    activityModel
+                    {
+                        model UNIQUAC;
+                        binaryParameters   // the FIT'S starting point
+                        {
+                            dichloromethane-2Ethoxyethanol { i dichloromethane; j 2Ethoxyethanol; a_ij 0; a_ji 0; }
+                        }
+                    }
+                    standardState pureLiquid;
+                }
+            }
+        }
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/dichloromethane-2Ethoxyethanol-bubbleP-je034153o-b6.dat";
+                role     fit;
+                discard  ( 1 );   // the NRTL fit's outliers, reused: decided once (C294)
+            }
+        );
+
+        objective { method twoStage;  scale { P_bubble relative; } }
+        residual
+        {
+            kind        P_bubble;
+            components  ( dichloromethane 2Ethoxyethanol );
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            parity     parity_uniquac_start2.csv;
+        }
+    }
+    {
+        name        fit_wilson;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.dichloromethane-2Ethoxyethanol.A_ij;  initial 0;  min -30000;  max 30000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.dichloromethane-2Ethoxyethanol.A_ji;  initial 0;  min -30000;  max 30000; }
+        );
+
+        thermo   // the model, as a fragment of the case's system (C294)
+        {
+            equilibrium
+            {
+                liquid
+                {
+                    activityModel
+                    {
+                        model Wilson;
+                        binaryParameters   // the FIT'S starting point
+                        {
+                            dichloromethane-2Ethoxyethanol { i dichloromethane; j 2Ethoxyethanol; A_ij 0; A_ji 0; }
+                        }
+                    }
+                    standardState pureLiquid;
+                }
+            }
+        }
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/dichloromethane-2Ethoxyethanol-bubbleP-je034153o-b6.dat";
+                role     fit;
+                discard  ( 1 );   // the NRTL fit's outliers, reused: decided once (C294)
+            }
+        );
+
+        objective { method twoStage;  scale { P_bubble relative; } }
+        residual
+        {
+            kind        P_bubble;
+            components  ( dichloromethane 2Ethoxyethanol );
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_history_wilson.csv;
+            parity     parity_wilson.csv;
+            proposal   2Ethoxyethanol-dichloromethane.Wilson.proposal.dat;
+        }
+    }
+    {
+        name        fit_wilson_start2;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.dichloromethane-2Ethoxyethanol.A_ij;  initial 4000;  min -30000;  max 30000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.dichloromethane-2Ethoxyethanol.A_ji;  initial -2000;  min -30000;  max 30000; }
+        );
+
+        thermo   // the model, as a fragment of the case's system (C294)
+        {
+            equilibrium
+            {
+                liquid
+                {
+                    activityModel
+                    {
+                        model Wilson;
+                        binaryParameters   // the FIT'S starting point
+                        {
+                            dichloromethane-2Ethoxyethanol { i dichloromethane; j 2Ethoxyethanol; A_ij 0; A_ji 0; }
+                        }
+                    }
+                    standardState pureLiquid;
+                }
+            }
+        }
+
+        evidence
+        (
+            {
+                dataset  "constant/archiveExtracts/dichloromethane-2Ethoxyethanol-bubbleP-je034153o-b6.dat";
+                role     fit;
+                discard  ( 1 );   // the NRTL fit's outliers, reused: decided once (C294)
+            }
+        );
+
+        objective { method twoStage;  scale { P_bubble relative; } }
+        residual
+        {
+            kind        P_bubble;
+            components  ( dichloromethane 2Ethoxyethanol );
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-6;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            parity     parity_wilson_start2.csv;
+        }
+    }
+    // @@C294-OPS-END@@
+    // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
+    {
+        name        txy_uniquac;
+        type        propertyScan1D;
+        vary        { variable x[dichloromethane];  from 0.0;  to 1.0;  n 101; }
+        state       { P 42.332 kPa;  composition { dichloromethane 0.5;  2Ethoxyethanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIQUAC; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_dichloromethane );
+        output      { file txy_uniquac.csv; }
+    }
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[dichloromethane];  from 0.0;  to 1.0;  n 101; }
+        state       { P 42.332 kPa;  composition { dichloromethane 0.5;  2Ethoxyethanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_dichloromethane );
+        output      { file txy_wilson.csv; }
+    }
+    // @@C294-READBACK-END@@
+);

@@ -1,3 +1,4 @@
+// [imported] origin "data/standards/parameters/UNIQUAC/methylAcetate-pXylene.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
 /*---------------------------------------------------------------------------*\
   UNIQUAC binary interaction parameters --- methylAcetate(i) + pXylene(j)
 
@@ -16,15 +17,16 @@
   FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
   vapour-pressure records for both pure components.
 
-  reviewStatus interim: a case-local record, regressed and not read back.
-  Fitted on EVERY laboratory with the NRTL fit's own kept points (C294), so
-  the `validation {}` block says, truthfully, that nothing was held out;
-  the acceptance is the `curation {}` block.
-  NOT PROMOTED (max |dT| 2.902 K over the 15 kept points, one liquid
-  across the validity span): fit grade severe -- DEV.md 4c C300 rule 3: a
-  severe pair does not enter the default catalogue; its record stays in
-  this curation case's constant/, and a case that needs it carries it in
-  its own constant/
+  reviewStatus autoPromoted; review { by none; }: PROMOTED AUTOMATICALLY by
+  its fitting pipeline (the NRTL case's own evidence and kept points, the
+  max |T_model - T| over the kept points, graded 1 / 2 / 4 K -- DEV.md 4c C285, C294;
+  THIS fit: severe in-sample, 2.9016 K; one liquid across its
+  validity span), and NO HUMAN HAS REVIEWED IT.  The engine says so on every
+  run that reads it, and voices a warning or a severe grade beside it.
+  Nothing was held out: the `validation {}` block says so, and the
+  acceptance is the `curation {}` block.  A curator who reads the series
+  back against the articles records it in the `review {}` block (DEV.md 4c
+  C297).  Revert by reverting the commit that promoted it.
 
   REPRODUCE: run data/curation/pairs/methylAcetate-pXylene (after `bin/choupo-curate fetch` on it); its fit_uniquac
   writes methylAcetate-pXylene.UNIQUAC.proposal.dat, which bin/curate/check_regressed_pairs.py holds
@@ -57,7 +59,14 @@ provenance
     method        "fitParameters(T_bubble), Levenberg-Marquardt";
     methodVersion "choupoProps Choupo-dev";
     fittedInCase  "data/curation/pairs/methylAcetate-pXylene";
-    reviewStatus  interim;
+    reviewStatus  autoPromoted;
+    review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+    fitGrade      severe;   // DEV.md 4c C285 (C294): max |T_model - T| over the kept points, graded 1 / 2 / 4 K
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+    fitGradeMaxTemperatureError_K 2.9016;
+    fitGradeIdealMaxTemperatureError_K 16.1786;   // DEV.md 4c C334: the ideal mixture (gamma = 1) on the SAME kept points; a severe fit is promoted only if 2.9016 K < 16.1786 K
+    promotedBy    "bin/choupo-curate pairs --models --promote";
+    promotedDate  "2026-11-12";
     reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
     reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
     fitDate       "2026-11-11";

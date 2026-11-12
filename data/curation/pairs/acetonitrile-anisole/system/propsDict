@@ -90,16 +90,16 @@
   not argued). Beside fit_nrtl's max |dT| 2.219 K (severe) on the same
   kept points. fit_wilson: A_ij = -2191.6, A_ji = 2410.1 J/mol over 14
   kept points: max |dT| 2.079 K, mean 0.284 K, graded severe -> accepted;
-  fit_wilson_start2 removed (it did not converge). NOT PROMOTED (max |dT|
-  2.079 K over the 14 kept points, one liquid across the validity span):
-  fit grade severe -- DEV.md 4c C300 rule 3: a severe pair does not enter
-  the default catalogue; its record stays in this curation case's
-  constant/, and a case that needs it carries it in its own constant/.
-  Wilson: fit_wilson_start2 was declared and run and did NOT CONVERGE
-  (A_ij at its bound, -30000 .. 30000 J/mol: no finite optimum inside the
-  declared bounds); the op is removed so the case runs (C294). UNIQUAC:
-  not fitted -- acetonitrile and anisole carry no UNIQUAC r and q (no
-  tabulated value, and no UNIFAC groups to sum them from,
+  fit_wilson_start2 removed (it did not converge). PROMOTED on 2026-11-12
+  into data/standards/parameters/Wilson/acetonitrile-anisole.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.079 K over the 14 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.0788 K against ideal
+  11.9588 K. Wilson: fit_wilson_start2 was declared and run and did NOT
+  CONVERGE (A_ij at its bound, -30000 .. 30000 J/mol: no finite optimum
+  inside the declared bounds); the op is removed so the case runs (C294).
+  UNIQUAC: not fitted -- acetonitrile and anisole carry no UNIQUAC r and
+  q (no tabulated value, and no UNIFAC groups to sum them from,
   bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
   is estimated silently.
   @@MODELS-RESULT-END@@
@@ -109,11 +109,11 @@
   fit_nrtl: b_ij = 586.9 K, b_ji = -654.9 K over 14 kept points of 1
   laboratories (0 discarded): max |dT| 2.219 K, mean 0.697 K, graded
   severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
-  same pair (586.9, -654.9). NOT PROMOTED (max |dT| 2.219 K over the 14
-  kept points, one liquid across the validity span): fit grade severe --
-  DEV.md 4c C300 rule 3: a severe pair does not enter the default
-  catalogue; its record stays in this curation case's constant/, and a
-  case that needs it carries it in its own constant/
+  same pair (586.9, -654.9). PROMOTED on 2026-11-12 into
+  data/standards/parameters/NRTL/acetonitrile-anisole.dat as reviewStatus
+  autoPromoted, review by none, because: fit grade severe -- max |dT|
+  2.219 K over the 14 kept points, one liquid across the validity span;
+  BEATS THE IDEAL MIXTURE (C334): 2.2188 K against ideal 11.9588 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

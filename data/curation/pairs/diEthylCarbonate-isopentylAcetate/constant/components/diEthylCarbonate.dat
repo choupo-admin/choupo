@@ -1,0 +1,213 @@
+// [imported] origin "data/standards/components/diEthylCarbonate.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diEthylCarbonate  (CAS 105-58-8)
+  PROPOSAL TIER -- UNVERIFIED. Imported from ChemSep v8.3
+  pure-component data under Artistic License 2.0.
+  Critical constants are source data.  Psat is an Antoine FITTED by
+  bin/choupo-curate vp to measured vapour pressures (DEV.md 4c C281;
+  provenance.vaporPressure): reviewStatus autoPromoted, NOT human-reviewed.
+\*---------------------------------------------------------------------------*/
+
+name        diEthylCarbonate;
+CAS         105-58-8;
+formula     C5H10O3;      // counted from the ChemSep v8.3 structure formula "CH3CH2(OCOO)CH2CH3" (derived 2026-09-03; reproduces MW to 0.001 %)
+reviewStatus interim;
+MW          118.1311;      // kg/kmol [origin=ChemSep v8.3]
+Tc          577;      // K [origin=ChemSep v8.3]
+Pc          34.2;      // bar; source Pa / 1e5 [origin=ChemSep v8.3]
+omega       0.3544;      // [-] [origin=ChemSep v8.3]
+Tb          399.95;      // K [origin=ChemSep v8.3]
+
+standardThermochemistry
+{
+    dHf_298   -639100;        // J/mol   [ChemSep v8.3, ideal gas]
+    s_298     404;        // J/(mol.K)  third-law absolute
+}
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C), FITTED by bin/choupo-curate vp to
+    // measured vapour pressures -- see provenance.vaporPressure
+    coefficients  (4.174165095  1387.277067  -67.09090665);
+    Trange        (238.15  399.27);   // the fit's own span; outside it the engine announces the extrapolation
+}
+
+Vliq        0.000121779;      // m3/mol at 25 C  [ChemSep eqno 105]
+HvapTb      37912.7;      // J/mol at Tb  [ChemSep eqno 106]
+
+idealGasHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    // ChemSep states J/(kmol.K); A and the exp are scaled to per-mole here.
+    coefficients  (61.92197  -495.7152  6.010474721  0  0);
+    Trange        (126.937  1500);
+}
+
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     -52.2135;
+        B     2618.11;
+        C     6.516931;
+        D     -1.00719e-05;
+        E     2;
+        Tmin  263.15;
+        Tmax  577;
+    }
+}
+solubilityParameter 18727.9;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
+
+source
+{
+    database      "ChemSep pure-component data v8.3";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "chemsep1.xml";
+    sourceSha256  "78b3e0c6408ff35f3b75fb71a1fdd70bb8e967d8996b49452a4a9fa2dd567c76";
+    sourceRecord  "DiEthyl Carbonate";
+    importedBy    "chemsep_to_choupo";
+    review        { state pending; reviewer unassigned; }
+}
+
+provenance
+{
+    MW
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Pc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    omega
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tb
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    vaporPressure
+    {
+        origin        fitted;
+        method        "vaporPressureFit (three-parameter Antoine; objective twoStage: least squares in log10 P, then the largest relative error in P minimised from it; every usable study fitted, outliers above 15 % discarded by name)";
+        methodVersion "choupoProps Choupo-dev";
+        fittedInCase  "data/curation/components/diEthylCarbonate";
+        reviewStatus  autoPromoted;
+        humanReviewed false;
+        fitGrade      warning;   // DEV.md 4c C285: the worse of the grades below
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+        fitGradeMaxRelativeError_pct 7.543224;   // grade warning
+        fitGradeBoilingPointGap_K    -0.0549;   // grade clean (Tb outside the kept points' range)
+        promotedBy    "bin/choupo-curate vp --promote";
+        promotedDate  "2026-11-10";
+        reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+        uncertainty   "the fit's maximum relative error over every kept measurement, below";
+        replaces      "model AmbroseWalton (a corresponding-states estimate from Tc, Pc, omega); `bin/choupo-curate revert <component>` restores it";
+        evidence
+        (
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/diEthylCarbonate-vapourPressure-j.jct.2008.02.012.dat";
+                doi       "10.1016/j.jct.2008.02.012";
+                sha256    "d9893b511d9bf4c63de7ff48d2af30ac4e85dca6967b139210bb6f9dcf355297";
+                articleSha256 "be53748e8b6274105a9c4cfc3e0cbd9cd338284829286478fff629568fa8cc72";
+                pointsKept    44;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/diEthylCarbonate-vapourPressure-acs.jced.7b00295.dat";
+                doi       "10.1021/acs.jced.7b00295";
+                sha256    "13e0864fd0a30ce745ef1851e75771d81cb32a3001fb0686ccd199c28c60b85b";
+                articleSha256 "3740cb0b456ec247eb321f2c8fd37427f7bddccce5e20cabf03d6a07ac6fc42a";
+                pointsKept    42;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/diEthylCarbonate-vapourPressure-je200784y.dat";
+                doi       "10.1021/je200784y";
+                sha256    "7ad708c09f84b17b89b7840593e93413cf54742e2b654b21eac097bcdfea69f1";
+                articleSha256 "a7695594db44f92cb072af34f2520d0f20b183d2bac95d6a6b68553b91ac8e9a";
+                pointsKept    33;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/diEthylCarbonate-vapourPressure-je800984q.dat";
+                doi       "10.1021/je800984q";
+                sha256    "6902194c46b94a24129f9571ab0d9c127e40baa554c781b9a1bcc9e65b122932";
+                articleSha256 "426f1ceda7058f05de3862b8cf2371db17f028e62a2b7e95587cd9fa5e0fab8b";
+                pointsKept    21;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/diEthylCarbonate-vapourPressure-j.jct.2014.07.004.dat";
+                doi       "10.1016/j.jct.2014.07.004";
+                sha256    "56d4a659e4fc3c25d7e21711e9d5c90abe4218c4f32bec1966a3b5df2ea479cf";
+                articleSha256 "cebd4567148a144cfaf01d7dbd9092730e77942aa417eb1f7e1bce0ff00d5075";
+                pointsKept    17;
+                pointsDropped 0;
+                provenance measured;
+            }
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/diEthylCarbonate-vapourPressure-acs.jced.7b00236.dat";
+                doi       "10.1021/acs.jced.7b00236";
+                sha256    "a30ea8f25c594db05f32cbed254cb0df060764661dbe561afbe6d4970463c367";
+                articleSha256 "1e5e4c9d7d976906b09ca7e8bd4283f28e6358d83b65169c35fb422bc6201cdc";
+                pointsKept    10;
+                pointsDropped 0;
+                provenance measured;
+            }
+        );
+        acceptance
+        {
+            rule        "the default of DEV.md 4c C285 (graded): max relative error in P over the kept points 5 / 10 / 20 %, and |Tnb - Tb| 1 / 2 / 4 K where Tb lies outside their range, are the upper limits of clean / warning / severe; above, refused; the grade is the worse of the two";
+            verdict     accepted;
+            studies     6;
+            pointsKept  167;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     2.228690;   // the fitted Antoine, every kept point
+            max_pct     7.543224;
+            awAad_pct   76.213938;   // the AmbroseWalton curve it replaces, the same points
+            awMax_pct   177.284536;
+            Tnb_fit     399.8951;   // K, the fitted curve at 101.325 kPa
+        }
+    }
+}

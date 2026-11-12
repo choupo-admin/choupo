@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/1Methoxy2PropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "d1578ca69489c0a47df6f21516fba6c34e87ca8bdbed1327654b23c9f8b1c7a6";
+            computationalSha256 "d34ee349837585fb12faf38429dcac1a79c347964105eac63bec54601e258f27";
+            origin        "data/standards/components/1Methoxy2PropylAcetate.dat";
+            originSha256  "6cde30c8336013eb381edd59a4d0775b9a7da0debf663eb44bc6ca9381fd1fa9";
+            release       Choupo-2608;
+        }
+        "components/nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "a88c2d32602da60e27e10ba9e0aedec1cb83216cb771caeb2f8437404df87f5d";
+            computationalSha256 "099dc481e1a60221b28f3cbda6ae34a63399cbe02fb820cb7396d33f8effd64d";
+            origin        "data/standards/components/nNDimethylformamide.dat";
+            originSha256  "2962c91b01e27473cd7cbeb36d60eeb705e5bf442b915f9d5921d7da1c1ddac3";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1Methoxy2PropylAcetate-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "9b178a734fb546ccb4efa4dad6784ec9b0d09e2025c6ab69f681a74ff84f181d";
+            computationalSha256 "35644ed539b03e153e432411b779ebb3b51fb47ff37132527e8b1d50fdb4373f";
+            origin        "data/standards/parameters/NRTL/1Methoxy2PropylAcetate-nNDimethylformamide.dat";
+            originSha256  "4700c7df60d2af706f71848d3a4eb4d251623d72b31ec9811f957c64c60d2a34";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/1Methoxy2PropylAcetate-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "0336f04cc6b7c87f97c1942a79961fe61b54171500f75c5161da10c4165854ee";
+            computationalSha256 "85987ec3f3dbf7b10850c037d3d28b677cb29a7402bb04edb29d7752b17c6a33";
+            origin        "data/standards/parameters/Wilson/1Methoxy2PropylAcetate-nNDimethylformamide.dat";
+            originSha256  "be3986a981074a6ad41fac541b527cd52e07151a2ba58ecb02c63c1e6ece03ac";
+            release       Choupo-2608;
+        }
+    }
+}

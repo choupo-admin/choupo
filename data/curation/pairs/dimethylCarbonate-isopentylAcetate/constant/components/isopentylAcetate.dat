@@ -1,0 +1,269 @@
+// [imported] origin "data/standards/components/isopentylAcetate.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isopentylAcetate  (3-methylbutyl ethanoate (isopentyl acetate); CAS 123-92-2)
+  NEW in the catalogue (DEV.md 4c C309, slice 3 of C287, 2026-11-11), built by
+  bin/curate/c287_new_components.py from the IUPAC critical-property series, the
+  Zabransky liquid heat-capacity review and the measurements the NIST/TRC
+  ThermoML Archive locates (the articles are the sources; every value's
+  citation or DOIs are in provenance).
+  IUPAC RECOMMENDED (critically evaluated measurements): Tc, Pc.
+  MEASURED (archive median): Tb.
+  RECOMMENDED (Zabransky): liquid Cp.
+  FITTED: vapour pressure (bin/choupo-curate vp), Vliq.
+  DERIVED: omega (from the fitted vapour pressure).
+  ESTIMATED (Joback): ideal-gas Cp, dHf_298; s_298 derived from Joback's dHf and dGf.
+  No measured series is reproduced here.
+  reviewStatus autoPromoted, review by none: NO human has read it back.
+  Psat: fitted by `bin/choupo-curate vp`; its promotion replaced the
+  AmbroseWalton block this tool writes (provenance.vaporPressure).
+\*---------------------------------------------------------------------------*/
+
+name        isopentylAcetate;
+CAS         123-92-2;
+formula     C7H14O2;
+reviewStatus autoPromoted;
+review      { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+MW          130.1870;      // kg/kmol, from the formula (IUPAC standard atomic weights)
+Tc          586.1;      // K, IUPAC recommended (provenance.Tc)
+Pc          27.6;      // bar, IUPAC recommended (provenance.Pc)
+omega       0.488653;      // [-] (provenance.omega)
+Tb          414.78;      // K, measured (provenance.Tb)
+
+standardThermochemistry
+{
+    dHf_298   -510370;        // J/mol, ideal gas, Joback ESTIMATE (provenance.dHf_298)
+    s_298     470.44;        // J/(mol K), ideal gas, DERIVED from Joback (provenance.s_298)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C), FITTED by bin/choupo-curate vp to
+    // measured vapour pressures -- see provenance.vaporPressure
+    coefficients  (3.621585262  1095.740462  -111.6484878);
+    Trange        (368.15  416.45);   // the fit's own span; outside it the engine announces the extrapolation
+}
+
+Vliq        1.479876e-04;      // m3/mol at 25 C, FITTED (provenance.Vliq)
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol K)] = a0 + a1 T + a2 T^2 + a3 T^3, Joback ESTIMATE
+    coefficients  (20.252  0.61996  -2.656000e-04  1.450000e-08);
+    Trange        (273  1000);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol K)] = a0 + a1 T, Zabransky RECOMMENDED (provenance.liquidHeatCapacity)
+    coefficients  (126.9293097  0.4176577921);
+    Trange        (310  385);
+}
+
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (2 CH3 + 1 CH + 2 CH2 + 1 CH3COO), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   5.5010;
+    q   4.7320;
+}
+
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group CH2; count 2; } { group CH3COO; count 1; } );
+    joback ( { group CH3; count 3; } { group CH; count 1; } { group CH2; count 2; } { group ester; count 1; } );
+}
+
+provenance
+{
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 5.5010, q = sum nu_k Q_k = 4.7320 over the record's unifac groups (2 CH3 + 1 CH + 2 CH2 + 1 CH3COO)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
+    MW
+    {
+        origin        literature;
+        method        "sum of IUPAC standard atomic weights over the formula";
+    }
+    Tc
+    {
+        origin        measured;
+        method        "IUPAC recommended value: the critical evaluation of every published measurement by the IUPAC critical-properties group (586.1 K)";
+        uncertainty   "+-1 K, the evaluators' estimate";
+        source        "Kudchadker, A.P.; Ambrose, D.; Tsonopoulos, C. Vapor-Liquid Critical Properties of Elements and Compounds. 7. Oxygen Compounds Other Than Alkanols and Cycloalkanols. J. Chem. Eng. Data 46 (2001) 457-479, Table 1 (recommended values)";
+        doi           "10.1021/je0001680";
+        transcribedBy "bin/curate/c287_new_components.py (IUPAC table, hand-transcribed from the PDF, one row per compound)";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+        reviewReason  "transcribed by a model from the article's Table 1 and re-read once; not yet read back by a human";
+    }
+    Pc
+    {
+        origin        measured;
+        method        "IUPAC recommended value: the critical evaluation of every published measurement by the IUPAC critical-properties group (2.76 MPa, stored as 27.6 bar)";
+        uncertainty   "+-0.05 MPa, the evaluators' estimate";
+        source        "Kudchadker, A.P.; Ambrose, D.; Tsonopoulos, C. Vapor-Liquid Critical Properties of Elements and Compounds. 7. Oxygen Compounds Other Than Alkanols and Cycloalkanols. J. Chem. Eng. Data 46 (2001) 457-479, Table 1 (recommended values)";
+        doi           "10.1021/je0001680";
+        transcribedBy "bin/curate/c287_new_components.py (IUPAC table, hand-transcribed from the PDF, one row per compound)";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+        reviewReason  "transcribed by a model from the article's Table 1 and re-read once; not yet read back by a human";
+    }
+    Tb
+    {
+        origin        measured;
+        method        "median of the per-article medians of every value the ThermoML archive locates (3 value(s), 3 article(s)); boiling temperatures reported at 100 - 102.5 kPa";
+        uncertainty   "spread of the reported values 413.9 - 415.15 K";
+        doi           "10.1021/acs.jced.6b00197; 10.1021/acs.jced.6b00221; 10.1021/acs.jced.8b00807";
+        combinedBy    "bin/curate/c287_new_components.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+        reviewReason  "combined by a machine from archive-transcribed values; not yet read back against the articles";
+    }
+    omega
+    {
+        origin        regressed;
+        method        "DERIVED from a fit: omega = -log10(Psat(0.7 Tc)/Pc) - 1 from the Antoine the vapour-pressure pipeline fitted (data/curation/components/isopentylAcetate) and the IUPAC-recommended Tc, Pc; 0.7 Tc = 410.27 K, inside the fitted range; cross-check (C309): omega 0.4887 from the Antoine at 0.7 Tc against Lee-Kesler 0.4922 from the measured Tb 414.78 K, Tc and Pc (difference -0.0035)";
+        derivedBy     "bin/curate/c287_new_components.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+        reviewReason  "derived by a machine; read it with the fitGrade of the vapour pressure it comes from";
+    }
+    Vliq
+    {
+        origin        fitted;
+        method        "one-parameter fit of the engine's own liquid density, V(T) = Vliq Rackett(T)/Rackett(298.15 K) with this record's Tc, Pc, omega (ThermoPackage::density, liquid branch), to every measured liquid mass density at or below 200 kPa; least squares in the relative density error, then its largest value minimised";
+        fittedBy      "bin/curate/c287_new_components.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 %
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+        fitGradeMaxRelativeError_pct 2.066565;
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+        evidence
+        (
+            { doi "10.1007/s10765-005-5571-9"; articleSha256 "66bbda075af691b44b9a7ec34d8f3de2ab7d8507ef584471fd3d29b90dd63aac"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1016/j.fluid.2012.09.038"; articleSha256 "d9ade3b965390b0960b67c29b6eabe8f5319868576cd52516e0323852b74a0c1"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1016/j.fluid.2018.02.003"; articleSha256 "2126160adb4485254a74540047f48bcc7f8e018de11def0b09ced35cdaece03b"; pointsKept 2; pointsDropped 0; provenance measured; }
+            { doi "10.1016/j.jct.2010.12.009"; articleSha256 "da9544d62d6b32e437231eaece0b97957f15376b9acaf9ada0a90af50e9017e0"; pointsKept 6; pointsDropped 0; provenance measured; }
+            { doi "10.1021/acs.jced.6b00197"; articleSha256 "e0784652f24547a53f2dada4a5ebd951e51b00bb5086fef33e141e366dbb2351"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1021/acs.jced.9b00396"; articleSha256 "411a928b55756ced908ac004c2ff09672ac630e7962d5309d2833a5ebad240bd"; pointsKept 4; pointsDropped 0; provenance measured; }
+            { doi "10.1021/acs.jced.9b00430"; articleSha256 "72df180b4a951cd8c4a3904f56dc29cb1b9601743dce8267f38565299440cb71"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je0340248"; articleSha256 "dc0f2ae4bd7caae08fb912fe96f89335e7d9b61611f5e08a3dfd6e2ef33512da"; pointsKept 4; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je050001c"; articleSha256 "d62bb9517b1406f7ac2e3797b7c6b9b5718c88c3d8a33a3a8d354909c1032ee4"; pointsKept 11; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je050170x"; articleSha256 "6b173e98c838572621e5fb505852d79aa49f69a521e1777cc0fa72a93256cc8c"; pointsKept 8; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je050389b"; articleSha256 "57769a3201fae0a0f99aa207513a7ebad8079228536a760a3f01b1986b8e02bc"; pointsKept 4; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je0601208"; articleSha256 "098cc280826fddd727e44819a96aa865374b05abf52aaef526b2a1183d61bb77"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je401095k"; articleSha256 "cc0bf783715f2e015f19845da3005f9a34bc08b1b68d9ecaf600460c79a3a2f1"; pointsKept 1; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je800325d"; articleSha256 "f3446a432b620d29ba722baefb6d65a463cf418a17946b47cf49b2af864dc5a9"; pointsKept 2; pointsDropped 0; provenance measured; }
+            { doi "10.1021/je900812v"; articleSha256 "17baa5eb23d1fe8dcc8e8158f02409943c10e8c4da0395a5fb631b19bd807008"; pointsKept 1; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            rule        "the default graded acceptance of DEV.md 4c C285 on the max relative error over the kept points (clean / warning / severe up to 5 / 10 / 20 %); every laboratory fitted, points beyond 15 % after the least-squares stage discarded by name (C283 amended)";
+            verdict     accepted;
+            studies     15;
+            pointsKept  48;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     1.304352;
+            max_pct     2.066565;
+            Trange      (288.15 358.15);   // K, the kept points
+        }
+    }
+    liquidHeatCapacity
+    {
+        origin        literature;
+        method        "Zabransky et al. recommended saturation (equal to the isobaric one below Tr ~ 0.8, Poling 5e Sect. 6-6) heat capacity, their Eq. 19, C/R = sum_j A(j+1) (T/100)^j with R = 8.31451 J/(mol K): A1 = 15.266, A2 = 5.02324, converted to the record's polynomial in T (a_j = R A(j+1) / 100^j)";
+        source        "Zabransky, M.; Kolska, Z.; Ruzicka, V., Jr.; Domalski, E.S. Heat Capacity of Liquids: Critical Review and Recommended Values. Supplement II. J. Phys. Chem. Ref. Data 39 (2010) 013103, Table 45.43.3 (regression polynomial)";
+        doi           "10.1063/1.3182831";
+        uncertainty   "level II (below 0.3 %), the evaluators' assignment over 310-385 K";
+        transcribedBy "bin/curate/c287_new_components.py (hand-transcribed from the PDF, one row per compound)";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+        reviewReason  "transcribed by a model from the review's parameter table and re-read once; not yet read back by a human";
+    }
+    idealGasHeatCapacity
+    {
+        origin           estimated;
+        method           "Joback";
+        methodVersion    "joback-poling5e-table2-2";
+        input            joback;
+        inputFingerprint "CH:1,CH2:2,CH3:3,ester:1";
+        reproducedInCase "data/curation/batches/new_components_c309";
+        uncertainty      { status unquantified; reason "Joback group contribution (Joback & Reid 1987); a few percent for Cp_ig of ordinary organics"; }
+    }
+    dHf_298
+    {
+        origin           estimated;
+        method           "Joback";
+        methodVersion    "joback-poling5e-table2-2";
+        input            joback;
+        inputFingerprint "CH:1,CH2:2,CH3:3,ester:1";
+        reproducedInCase "data/curation/batches/new_components_c309";
+        uncertainty      { status unquantified; reason "Joback group contribution (Joback & Reid 1987); several kJ/mol, more for polyfunctional molecules"; }
+        notes            "the ThermoML archive carries no enthalpy of formation or combustion block for this compound (searched)";
+    }
+    s_298
+    {
+        origin           estimated;
+        method           "derived from Joback: s_298 = (dHf_298 - dGf_298)/298.15 + the sum of the elements' standard entropies, with Joback's dGf_298 = -304750 J/mol (not stored: dGf derives from dHf and s_298)";
+        methodVersion    "joback-poling5e-table2-2";
+        input            joback;
+        inputFingerprint "CH:1,CH2:2,CH3:3,ester:1";
+        elementEntropies "CODATA Key Values for Thermodynamics (Cox, Wagman & Medvedev, 1989): S(C, graphite) 5.74, S(H2, g) 130.680, S(O2, g) 205.152, S(N2, g) 191.609, S(F2, g) 202.791, S(Cl2, g) 223.081, S(Br2, l) 152.206, S(I2, cr) 116.139 J/(mol K)";
+        reproducedInCase "data/curation/batches/new_components_c309";
+        uncertainty      { status unquantified; reason "inherits the errors of Joback's dHf_298 and dGf_298"; }
+    }
+    vaporPressure
+    {
+        origin        fitted;
+        method        "vaporPressureFit (three-parameter Antoine; objective twoStage: least squares in log10 P, then the largest relative error in P minimised from it; every usable study fitted, outliers above 15 % discarded by name)";
+        methodVersion "choupoProps Choupo-dev";
+        fittedInCase  "data/curation/components/isopentylAcetate";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+        fitGrade      clean;   // DEV.md 4c C285: the worse of the grades below
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+        fitGradeMaxRelativeError_pct 0.122011;   // grade clean
+        promotedBy    "bin/choupo-curate vp --promote";
+        promotedDate  "2026-11-11";
+        reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+        uncertainty   "the fit's maximum relative error over every kept measurement, below";
+        replaces      "model AmbroseWalton (a corresponding-states estimate from Tc, Pc, omega); `bin/choupo-curate revert <component>` restores it";
+        evidence
+        (
+            {
+                role      fit;
+                dataset   "constant/archiveExtracts/isopentylAcetate-vapourPressure-je900812v.dat";
+                doi       "10.1021/je900812v";
+                sha256    "1a32d1565fd89098f1d95f693fcdcd2b88418f376f52dc4ea85bf38f4989cc45";
+                articleSha256 "17baa5eb23d1fe8dcc8e8158f02409943c10e8c4da0395a5fb631b19bd807008";
+                pointsKept    24;
+                pointsDropped 0;
+                provenance measured;
+            }
+        );
+        acceptance
+        {
+            rule        "the default of DEV.md 4c C285 (graded): max relative error in P over the kept points 5 / 10 / 20 %, and |Tnb - Tb| 1 / 2 / 4 K where Tb lies outside their range, are the upper limits of clean / warning / severe; above, refused; the grade is the worse of the two";
+            verdict     accepted;
+            studies     1;
+            pointsKept  24;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.056816;   // the fitted Antoine, every kept point
+            max_pct     0.122011;
+            awAad_pct   0.923182;   // the AmbroseWalton curve it replaces, the same points
+            awMax_pct   1.548247;
+            Tnb_fit     414.6851;   // K, the fitted curve at 101.325 kPa
+        }
+    }
+}

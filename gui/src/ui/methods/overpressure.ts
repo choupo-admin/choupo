@@ -79,8 +79,8 @@ export const LOOP_PLANT: Readonly<Record<LoopOp, string>> = {
  *  test: the page needs the operating pressure to place the pressure ladder
  *  before any run has finished. */
 export const LOOP_OPERATING: Readonly<Record<LoopOp, { P_Pa: number; T_K: number }>> = {
-  loop150: { P_Pa: 15072661.5, T_K: 653.15 },
-  loop50: { P_Pa: 4995510.441, T_K: 593.15 },
+  loop150: { P_Pa: 15069350.27, T_K: 653.15 },
+  loop50: { P_Pa: 4994421.174, T_K: 593.15 },
 };
 
 /** The fire witness's operation and its one component. */

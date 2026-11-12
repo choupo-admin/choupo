@@ -21,26 +21,35 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/R32.dat"
         {
             type          imported;
-            sha256        "5491156fac09b4fbce81854da7bb003a62d0bb2e1b6b29cfff01319723438196";
-            computationalSha256 "753f60fb0dec87e6e9d9df12fbfa5c903e0e7e2d6c24dda16ec6c06fbece9fa4";
+            sha256        "e3d2783d35d404e4ef143937d01405145a261e55bd45dd9e6e71af8c5db6d2d7";
+            computationalSha256 "a9b8d6e653f9e6b6e1c599fad2b305963faf13ce0f5fdad1faea77259aaa903b";
             origin        "data/standards/components/R32.dat";
-            originSha256  "300275313fff9aeb9e195d228555810ab783edd1695f4d7521880f78088a45e3";
+            originSha256  "fb506deeb1621c69e19f5c5d68612d146f1350537dccbd4302678b6dc2342a3f";
             release       Choupo-2608;
         }
         "components/mesitylene.dat"
         {
             type          imported;
-            sha256        "9f7df399fbedf21eea6e8ecb0b54079c66671ff684c383df471087e3852fdbc8";
-            computationalSha256 "d0616a57430b2f4791174445f3c9694fd46904033ce9ccf8d280231a99a6339c";
+            sha256        "143e72f04b07aff5c4387855ee253bf6c3af9c6cc25943cc81a119470aaaec5f";
+            computationalSha256 "7b21fd4ae50ba2e5a7814a1f5d50e63c69c4c2fc67363876560153820e8575a6";
             origin        "data/standards/components/mesitylene.dat";
-            originSha256  "3a027b3cbea6ed940724e03e1b687c122ef2f1c9cbae4b76390c5ed2a57fd375";
+            originSha256  "097d37ca691ade025db9807559b33daa66cc6d0d5f46de467986bdccc1c72bc1";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/R32-mesitylene.dat"
+        {
+            type          imported;
+            sha256        "df2a79400e98685c2f660e3153ae0f148e7dc10ce8acbb04b0d2ee61ca3f275d";
+            computationalSha256 "85c3f68a41c65211678cf09a070755d003f1e060e03ead53d14458edd56d34af";
+            origin        "data/standards/parameters/NRTL/R32-mesitylene.dat";
+            originSha256  "04aecac7c0550c5ad48a4ca1d41810c68efd1ea669312ff84b4f2a50534a7278";
             release       Choupo-2608;
         }
         "parameters/Wilson/R32-mesitylene.dat"

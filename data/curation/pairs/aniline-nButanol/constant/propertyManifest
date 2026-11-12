@@ -21,26 +21,44 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/aniline.dat"
         {
             type          imported;
-            sha256        "da5129ff18c5faebc05550a9bff31607f18785c1c03a75a7812d24dcf5a80cb3";
-            computationalSha256 "47c5aa8a397d5edfb4a8f2016328d98d9f9b5a2dcc81c89f05a7e8d423dcd063";
+            sha256        "7c3adbc973035d899825a8cea68a8552a7790ee3e58dcdffd12b4d592a4612bd";
+            computationalSha256 "0a7fc469db9d1387baa178e9db6e956886278acf98b3d645bb97c5d5b8d00d7f";
             origin        "data/standards/components/aniline.dat";
-            originSha256  "6a049845ce542554bedcf5a2d744d6b785e2bfccf69c861e32b5cd858521cdb4";
+            originSha256  "ce3452f855a3f5f4ae6669d60b85521c229f9226ea80530004dbe0861fb92511";
             release       Choupo-2608;
         }
         "components/nButanol.dat"
         {
             type          imported;
-            sha256        "b94c5a927292040755a5310af8d6b2b35eab4b09a5d42feca3c9079cf7cb05dc";
-            computationalSha256 "84b146c0b864097e855611306486ba58bbca0f893ff1cf743ffd992b673ed825";
+            sha256        "eb57ae27f353b279a69e742cc8349504bcedf2e7335daeb40a024789cfc02506";
+            computationalSha256 "a462bf8ebea1da54db64f8a9b25c711a27a005e93cb1a1e0edda7028961967d0";
             origin        "data/standards/components/nButanol.dat";
-            originSha256  "5b25d70fce421e7c0496c1e6d83620f20a4ee7ca35e9e0cc4762f9059c7ec3d1";
+            originSha256  "30905278422e547c776f0c9bad446732d7e1b501bb8a06de57812a2d1a5df1a1";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/aniline-nButanol.dat"
+        {
+            type          imported;
+            sha256        "3613f8c0660b16a80b58f273f436f05e422ab1116689d3ceb464807ef0ff541f";
+            computationalSha256 "1ec76b79b937cee7e8c1bfd83a670e7e307799cfbe7e920a52b518c5f77d53c8";
+            origin        "data/standards/parameters/NRTL/aniline-nButanol.dat";
+            originSha256  "3015bde68142dec03eb430869266be393f5c8384de8cdfb15f3a1b430dfe15a3";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/aniline-nButanol.dat"
+        {
+            type          imported;
+            sha256        "b6db52029ed6588c3172ae3ccad873969a0b7b40b887c544025c5a03eec392f5";
+            computationalSha256 "d5197ca64327f93163c4645e29e47df610163b3897b5435dc62dcc5b1a0ab463";
+            origin        "data/standards/parameters/Wilson/aniline-nButanol.dat";
+            originSha256  "26bf81df855b985070fd9157d2250cb77ef2eacc6f643704a81c3a498f601269";
             release       Choupo-2608;
         }
     }

@@ -49,6 +49,15 @@ idealGasHeatCapacity
     Trange        (250  1500);
 }
 
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (2 CH3 + 2 CH2), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   3.1510;
+    q   2.7760;
+}
+
 groups
 {
     joback ( { group CH3; count 2; } { group CH2; count 2; } );
@@ -110,4 +119,14 @@ pcsaft
     sigma    3.7086;
     epsilonK 222.88;
     source   "Gross & Sadowski, Ind. Eng. Chem. Res. 40 (2001) 1244, Table 1";
+}
+
+provenance
+{
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 3.1510, q = sum nu_k Q_k = 2.7760 over the record's unifac groups (2 CH3 + 2 CH2)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
 }

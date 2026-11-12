@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/nButanol.dat"
+        {
+            type          imported;
+            sha256        "eb57ae27f353b279a69e742cc8349504bcedf2e7335daeb40a024789cfc02506";
+            computationalSha256 "a462bf8ebea1da54db64f8a9b25c711a27a005e93cb1a1e0edda7028961967d0";
+            origin        "data/standards/components/nButanol.dat";
+            originSha256  "30905278422e547c776f0c9bad446732d7e1b501bb8a06de57812a2d1a5df1a1";
+            release       Choupo-2608;
+        }
+        "components/pyrrole.dat"
+        {
+            type          imported;
+            sha256        "c77f91d1f3d077c6018793f73e5ca763d8e08416e19bb5cbc42ba80f7ac87c6c";
+            computationalSha256 "583f36ca82f9d9f09735f35422e187885ad926d00c5f1b1e1949ecdf83b11671";
+            origin        "data/standards/components/pyrrole.dat";
+            originSha256  "834edcaffe6097db0cc047fd31294b88bd7fb5d09f9bf23ed36b668cfc8412f5";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/nButanol-pyrrole.dat"
+        {
+            type          imported;
+            sha256        "6df06c3d437fceb1d8f941443adf79684c5fef6c5f64052c28b8f62a6c283f38";
+            computationalSha256 "942003ff2fddebd0037ce4e49fcbdc164d363c364e7606bf8f1f064c8ed116cb";
+            origin        "data/standards/parameters/NRTL/nButanol-pyrrole.dat";
+            originSha256  "82beb19cfbcbb7a4444c675cfa142b11dae817dea7a4bf745178e18a7de1187b";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/nButanol-pyrrole.dat"
+        {
+            type          imported;
+            sha256        "e3359b928400ab9a2030c363d676403730115eadfa72b36dd5eb4fd66840e1e6";
+            computationalSha256 "89e19b4940d9b566e536f993026a65d631cc3e9ae0dd75f056148d3db2e64801";
+            origin        "data/standards/parameters/Wilson/nButanol-pyrrole.dat";
+            originSha256  "79106b2119d056289975e6bdc5f97b5a7942af02a80c89ce1fc87faa91974e23";
+            release       Choupo-2608;
+        }
+    }
+}

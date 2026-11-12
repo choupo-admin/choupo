@@ -144,3 +144,30 @@ provenance
         notes         "computed from ChemSep Tc/Pc/omega";
     }
 }
+
+cosmo
+{
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file N,N-DIMETHYLFORMAMIDE.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey ZMXDDKWLCZADIW-UHFFFAOYSA-N (full match); formula C3H7NO; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        115.002098;   // sum of the profile below; GAMESS prints 115.00
+        volume      101.14;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.939831     4.027000     3.375469
+               3.847049     9.364919    14.502591    13.439270    12.323369    14.263873
+               5.924060     3.340216     3.559232     2.483970     1.880545     0.414079
+               0.611778     0.795587     0.952144     0.312326     0.009475     0.475267
+               0.799069     1.032565     0.357517     2.017720     1.845929     1.471312
+               4.606242     3.942959     1.883322     0.203413     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
+    }
+}

@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/allylAlcohol.dat"
+        {
+            type          imported;
+            sha256        "191ab207e5829dd2e148e0b31cab2193023b57895dabb696171e490519763f4b";
+            computationalSha256 "a68d87e0a76731ff44002648a4e399843bab742901a006901d2ef26334eeb0a9";
+            origin        "data/standards/components/allylAlcohol.dat";
+            originSha256  "ad889fe302e1a314414860d2ddc5c03a3f32f3b66f3923e4e61d36afbfb98bda";
+            release       Choupo-2608;
+        }
+        "components/methylPropionate.dat"
+        {
+            type          imported;
+            sha256        "36a59f00d6621cf0db942a07c0eeabcb51a0b2545ab7ffa6a1916ef861938f68";
+            computationalSha256 "03ea8736b3354657111a01d94a644a1388b4cbad78439cd53d77b6042dd37d58";
+            origin        "data/standards/components/methylPropionate.dat";
+            originSha256  "b25160b7db6f015fe931d7df09b72f4924bb4be2ffcbe399e758a740d707396c";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/allylAlcohol-methylPropionate.dat"
+        {
+            type          imported;
+            sha256        "117bfa3cf0e99f9e32a97ccdcfb6f72bed8ae664498724710081b535ebca04ff";
+            computationalSha256 "667e239628a24c5e4d17d0f04f498425ddeec1465135c67c20f1ebcbddea08e6";
+            origin        "data/standards/parameters/NRTL/allylAlcohol-methylPropionate.dat";
+            originSha256  "44c5478e1feef91930637bb0979f363da2dbb1fdb21e1a188663f7917e8fc60a";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/allylAlcohol-methylPropionate.dat"
+        {
+            type          imported;
+            sha256        "744cdc89b4394d236bcbe068b27d710a3f32a9933fb62fdfb7aac71c35ef6aec";
+            computationalSha256 "17a8fef1802c6a1c7bb6f52133bffe2666739bd2d45b1b8601ee0d105ec61e93";
+            origin        "data/standards/parameters/Wilson/allylAlcohol-methylPropionate.dat";
+            originSha256  "5144c731d4ceb4cdc603e7350d8f894662ae4899f59c572832d3e22680b24e5f";
+            release       Choupo-2608;
+        }
+    }
+}

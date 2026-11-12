@@ -100,13 +100,14 @@
   not argued). Beside fit_nrtl's max |dT| 2.597 K (severe) on the same
   kept points. fit_wilson: A_ij = 3757.2, A_ji = -501.6 J/mol over 20
   kept points: max |dT| 2.557 K, mean 0.824 K, graded severe -> accepted;
-  fit_wilson_start2 lands on the same pair (3757.2, -501.6). NOT PROMOTED
-  (max |dT| 2.557 K over the 20 kept points, one liquid across the
-  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/. UNIQUAC: not fitted -- acetonitrile carries no UNIQUAC r
-  and q (no tabulated value, and no UNIFAC groups to sum them from,
+  fit_wilson_start2 lands on the same pair (3757.2, -501.6). PROMOTED on
+  2026-11-12 into
+  data/standards/parameters/Wilson/acetonitrile-isopropanol.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.557 K over the 20 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.5574 K against ideal
+  6.5919 K. UNIQUAC: not fitted -- acetonitrile carries no UNIQUAC r and
+  q (no tabulated value, and no UNIFAC groups to sum them from,
   bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
   is estimated silently.
   @@MODELS-RESULT-END@@

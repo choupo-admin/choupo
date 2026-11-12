@@ -1,0 +1,205 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      aniline;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.aniline-13Dioxolane.b_ij  -174.392706887;
+        equilibrium.liquid.activityModel.binaryParameters.aniline-13Dioxolane.b_ji  -156.486772719;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "6585cb12327c1c63";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/aniline-13Dioxolane-bubbleP-j.tca.2010.07.027-b13.dat";
+            doi       "10.1016/j.tca.2010.07.027";
+            sha256    "c79cf10ff43c6b2636c37af714e2809740f09e9ebc3a2df99a81f34c89a25eaf";
+            provenance measured;
+            archiveFile "j.tca.2010.07.027.xml";
+            system    "aniline + 13Dioxolane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1324; max 0.9041; n 9; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.aniline-13Dioxolane.b_ij  1111.9269295;
+        equilibrium.liquid.activityModel.binaryParameters.aniline-13Dioxolane.b_ji  -690.312074691;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "6585cb12327c1c63";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/aniline-13Dioxolane-bubbleP-j.tca.2010.07.027-b13.dat";
+            doi       "10.1016/j.tca.2010.07.027";
+            sha256    "c79cf10ff43c6b2636c37af714e2809740f09e9ebc3a2df99a81f34c89a25eaf";
+            provenance measured;
+            archiveFile "j.tca.2010.07.027.xml";
+            system    "aniline + 13Dioxolane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1324; max 0.9041; n 9; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.aniline-13Dioxolane.A_ij  -1968.94597614;
+        equilibrium.liquid.activityModel.binaryParameters.aniline-13Dioxolane.A_ji  -667.287588818;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "6585cb12327c1c63";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/aniline-13Dioxolane-bubbleP-j.tca.2010.07.027-b13.dat";
+            doi       "10.1016/j.tca.2010.07.027";
+            sha256    "c79cf10ff43c6b2636c37af714e2809740f09e9ebc3a2df99a81f34c89a25eaf";
+            provenance measured;
+            archiveFile "j.tca.2010.07.027.xml";
+            system    "aniline + 13Dioxolane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1324; max 0.9041; n 9; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.aniline-13Dioxolane.A_ij  29996.7539025;
+        equilibrium.liquid.activityModel.binaryParameters.aniline-13Dioxolane.A_ji  -4241.46079671;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "6585cb12327c1c63";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/aniline-13Dioxolane-bubbleP-j.tca.2010.07.027-b13.dat";
+            doi       "10.1016/j.tca.2010.07.027";
+            sha256    "c79cf10ff43c6b2636c37af714e2809740f09e9ebc3a2df99a81f34c89a25eaf";
+            provenance measured;
+            archiveFile "j.tca.2010.07.027.xml";
+            system    "aniline + 13Dioxolane";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1324; max 0.9041; n 9; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

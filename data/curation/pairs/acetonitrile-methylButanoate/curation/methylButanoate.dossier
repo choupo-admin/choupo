@@ -1,0 +1,209 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      methylButanoate;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-acetonitrile.b_ij  -351.008464962;
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-acetonitrile.b_ji  919.812742467;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "661359eeb41c00d3";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylButanoate-acetonitrile-bubble-je060001s.dat";
+            doi       "10.1021/je060001s";
+            sha256    "b1d7aa9818165e7df99e66d53633ba79305aa612d980b0036377825344db9904";
+            provenance measured;
+            archiveFile "je060001s.xml";
+            system    "methylButanoate + acetonitrile";
+            pressure  "93320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0162; max 0.9683; n 24; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-acetonitrile.b_ij  -351.008464891;
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-acetonitrile.b_ji  919.812742161;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "661359eeb41c00d3";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylButanoate-acetonitrile-bubble-je060001s.dat";
+            doi       "10.1021/je060001s";
+            sha256    "b1d7aa9818165e7df99e66d53633ba79305aa612d980b0036377825344db9904";
+            provenance measured;
+            archiveFile "je060001s.xml";
+            system    "methylButanoate + acetonitrile";
+            pressure  "93320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0162; max 0.9683; n 24; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-acetonitrile.A_ij  5179.42644483;
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-acetonitrile.A_ji  392.967921915;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "661359eeb41c00d3";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylButanoate-acetonitrile-bubble-je060001s.dat";
+            doi       "10.1021/je060001s";
+            sha256    "b1d7aa9818165e7df99e66d53633ba79305aa612d980b0036377825344db9904";
+            provenance measured;
+            archiveFile "je060001s.xml";
+            system    "methylButanoate + acetonitrile";
+            pressure  "93320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0162; max 0.9683; n 24; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-acetonitrile.A_ij  5179.42646468;
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-acetonitrile.A_ji  392.96791981;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "661359eeb41c00d3";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methylButanoate-acetonitrile-bubble-je060001s.dat";
+            doi       "10.1021/je060001s";
+            sha256    "b1d7aa9818165e7df99e66d53633ba79305aa612d980b0036377825344db9904";
+            provenance measured;
+            archiveFile "je060001s.xml";
+            system    "methylButanoate + acetonitrile";
+            pressure  "93320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.0162; max 0.9683; n 24; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

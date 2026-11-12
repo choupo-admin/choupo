@@ -1,0 +1,83 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/1122Tetrachloroethane.dat"
+        {
+            type          imported;
+            sha256        "ceaf75c88666dc0535c0b68bccaa520eaaee25ce3f5c99ed60117faf5d759af1";
+            computationalSha256 "198d7d857a25ec951e052faa80e091770880c6e53f7c4a26d551a1cb8ee782da";
+            origin        "data/standards/components/1122Tetrachloroethane.dat";
+            originSha256  "6634649d343fe9f78d2f9a3e798cb5b500568dc19d387e81d6aca1b85ac6bcff";
+            release       Choupo-2608;
+        }
+        "components/2Methyl1Butanol.dat"
+        {
+            type          imported;
+            sha256        "fdec3a34cedf397745376ced8d6d607aa288a1491af4adc121fd9346da35e662";
+            computationalSha256 "cea5cfdacdd9d606bc08ded12f222ab19f08438af14305c97233e322fcb09498";
+            origin        "data/standards/components/2Methyl1Butanol.dat";
+            originSha256  "3db42e6815d278a8fc5c9d497dfc72f2e51468ebb3bd2d291be1b801d226398c";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1122Tetrachloroethane-2Methyl1Butanol.dat"
+        {
+            type          imported;
+            sha256        "e1c8da4cbd05d40e5252a3395d611e34dcf928b5f8d1559d4968d91616065b46";
+            computationalSha256 "229d6ec51ccbd5f6cc8ae172062f9e80fce58393e909418a33edd7c4a2041b74";
+            origin        "data/standards/parameters/NRTL/1122Tetrachloroethane-2Methyl1Butanol.dat";
+            originSha256  "529d4d78156e6cc9e04538181c865a83b2632a415052473e1c99404a6bd73d7e";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/1122Tetrachloroethane-2Methyl1Butanol.dat"
+        {
+            type          imported;
+            sha256        "8b77ee1aa7f986ccef819909ee7f6eb07a8d7875c52792b238e1bb8682d4daed";
+            computationalSha256 "3ce780ec3e1db44e8d1011eb57b5d59eef6789b21818b5ecae5516b85cd7141a";
+            origin        "data/standards/parameters/UNIQUAC/1122Tetrachloroethane-2Methyl1Butanol.dat";
+            originSha256  "e6493ac3ba3bc813185b37aacb73afc2a9a60714bc55cf7bc25025b5d397c1c8";
+            release       Choupo-2608;
+        }
+    }
+}

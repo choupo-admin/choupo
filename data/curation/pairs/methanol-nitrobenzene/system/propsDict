@@ -106,11 +106,12 @@
   fit_nrtl: b_ij = 726.0 K, b_ji = -790.4 K over 13 kept points of 1
   laboratories (0 discarded): max |dT| 2.431 K, mean 1.469 K, graded
   severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
-  same pair (726.0, -790.4). NOT PROMOTED (max |dT| 2.431 K over the 13
-  kept points, one liquid across the validity span): fit grade severe --
-  DEV.md 4c C300 rule 3: a severe pair does not enter the default
-  catalogue; its record stays in this curation case's constant/, and a
-  case that needs it carries it in its own constant/
+  same pair (726.0, -790.4). PROMOTED on 2026-11-12 into
+  data/standards/parameters/NRTL/methanol-nitrobenzene.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.431 K over the 13 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.4310 K against ideal
+  22.0645 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

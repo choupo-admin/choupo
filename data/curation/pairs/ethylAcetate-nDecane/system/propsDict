@@ -94,12 +94,13 @@
   -- max |dT| 1.829 K over the 19 kept points, one liquid across the
   validity span. fit_wilson: A_ij = 1715.5, A_ji = 3365.9 J/mol over 19
   kept points: max |dT| 2.059 K, mean 1.113 K, graded severe -> accepted;
-  fit_wilson_start2 lands on the same pair (1715.5, 3365.9). NOT PROMOTED
-  (max |dT| 2.059 K over the 19 kept points, one liquid across the
-  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/.
+  fit_wilson_start2 lands on the same pair (1715.5, 3365.9). PROMOTED on
+  2026-11-12 into
+  data/standards/parameters/Wilson/ethylAcetate-nDecane.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.059 K over the 19 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.0587 K against ideal
+  18.3963 K.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -107,11 +108,11 @@
   fit_nrtl: b_ij = 821.2 K, b_ji = -201.4 K over 19 kept points of 1
   laboratories (0 discarded): max |dT| 2.258 K, mean 1.203 K, graded
   severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
-  same pair (821.2, -201.4). NOT PROMOTED (max |dT| 2.258 K over the 19
-  kept points, one liquid across the validity span): fit grade severe --
-  DEV.md 4c C300 rule 3: a severe pair does not enter the default
-  catalogue; its record stays in this curation case's constant/, and a
-  case that needs it carries it in its own constant/
+  same pair (821.2, -201.4). PROMOTED on 2026-11-12 into
+  data/standards/parameters/NRTL/ethylAcetate-nDecane.dat as reviewStatus
+  autoPromoted, review by none, because: fit grade severe -- max |dT|
+  2.258 K over the 19 kept points, one liquid across the validity span;
+  BEATS THE IDEAL MIXTURE (C334): 2.2584 K against ideal 18.3963 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

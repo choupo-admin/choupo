@@ -1,0 +1,92 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/isobutylAcetate.dat"
+        {
+            type          imported;
+            sha256        "08d61349c125568c37c0aa2b4ff19fd08f660e2548abbbf6dcf6aff10aa6b5ca";
+            computationalSha256 "e7e60a903093cc499e88148732769b3868d6b3d4ad324f9e05a25f343add11fd";
+            origin        "data/standards/components/isobutylAcetate.dat";
+            originSha256  "08f2a9910dea65eebb6a65af7ac3c2c4637b57e52d4c3de2b0699110eb292fd0";
+            release       Choupo-2608;
+        }
+        "components/nButylPropionate.dat"
+        {
+            type          imported;
+            sha256        "313b26cdebd4138f38fcdca97d3a1cd58df6f90e76c663c89ef58b9332171b77";
+            computationalSha256 "78723060a1fb44f59005ba01d504e00a270437506566dd6d665d74a183280ee8";
+            origin        "data/standards/components/nButylPropionate.dat";
+            originSha256  "7a33a6e0d5e7f8870ac1d100c25f4771e055a6b2768eee804e7fb1da8ddd88e4";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/isobutylAcetate-nButylPropionate.dat"
+        {
+            type          imported;
+            sha256        "b20988340309cdde86bfcd19a8f44020a34d3d4c6a9113ddd84d83f136cf3546";
+            computationalSha256 "e5f50f8dcb33d253244f04c16fb3a041ae53238020e4da39a3b6d9847495af5a";
+            origin        "data/standards/parameters/NRTL/isobutylAcetate-nButylPropionate.dat";
+            originSha256  "f72a30ad83f54d4b5048c81231a3b2c0caa0dbe50964dbaa9b3817fff0452638";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/isobutylAcetate-nButylPropionate.dat"
+        {
+            type          imported;
+            sha256        "e62a10e65add33e017ad7b96be7ee9c0a7774c1fb960fdb9ef80131412fdd6cf";
+            computationalSha256 "ca01ff5fa0aecebc3fd186ee0f65d9528350dc6be63c2c8f06efc02597946bf9";
+            origin        "data/standards/parameters/UNIQUAC/isobutylAcetate-nButylPropionate.dat";
+            originSha256  "85665645b208ddafc0f4329f0b04bed3419690881f7e1c45a1301a99fa1f034c";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/isobutylAcetate-nButylPropionate.dat"
+        {
+            type          imported;
+            sha256        "380c13b2d823720b2cfc121d001b7bd9c073e1982575a319efd7b84c3e92f235";
+            computationalSha256 "06685d8e073e730f824385cf8baa34c8e8fc6fd3f90208adb2d7a63a44374eac";
+            origin        "data/standards/parameters/Wilson/isobutylAcetate-nButylPropionate.dat";
+            originSha256  "fc1f2098954088c6c566f27666ef1bb19f8b1571ba4384ba45815c0cc16d607e";
+            release       Choupo-2608;
+        }
+    }
+}

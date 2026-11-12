@@ -21,35 +21,53 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/benzene.dat"
         {
             type          imported;
-            sha256        "2c20d6d671dd5884ed8e3668529ddaad20bf3c2a02d1a5130aac02dd790aa62c";
-            computationalSha256 "d710160da938e1163f77e26b0cc49af7c2a2e4563b37f914ce4bb001500decc4";
+            sha256        "34549cda3bccf7c3fcd588c3214c8e64eeb82ad04fa98e937d0a0d0e78bec79c";
+            computationalSha256 "0bc5933b55cb37454fbe448c32d812467a6d596a55f769d2458f74c45e19aaf1";
             origin        "data/standards/components/benzene.dat";
-            originSha256  "dc7869a494c8e333ed57af66fa4086592b32ac5330960750b5d2775030c9b6bc";
+            originSha256  "eedcd4d99e2834d35d50986465798362cf7096e6ed29c789716c21d1333e8574";
             release       Choupo-2608;
         }
         "components/nButanol.dat"
         {
             type          imported;
-            sha256        "b94c5a927292040755a5310af8d6b2b35eab4b09a5d42feca3c9079cf7cb05dc";
-            computationalSha256 "84b146c0b864097e855611306486ba58bbca0f893ff1cf743ffd992b673ed825";
+            sha256        "eb57ae27f353b279a69e742cc8349504bcedf2e7335daeb40a024789cfc02506";
+            computationalSha256 "a462bf8ebea1da54db64f8a9b25c711a27a005e93cb1a1e0edda7028961967d0";
             origin        "data/standards/components/nButanol.dat";
-            originSha256  "5b25d70fce421e7c0496c1e6d83620f20a4ee7ca35e9e0cc4762f9059c7ec3d1";
+            originSha256  "30905278422e547c776f0c9bad446732d7e1b501bb8a06de57812a2d1a5df1a1";
             release       Choupo-2608;
         }
         "parameters/NRTL/benzene-nButanol.dat"
         {
             type          imported;
-            sha256        "19b1cca56dd1787fc91029073031cb5b78110129d778e72c33fab0c4a02c2dba";
-            computationalSha256 "e72cae313716c1cfae9750ebcd9a8cf763c8ce5fb15969d6d0e80e00bf6b3dde";
+            sha256        "54d41768131edb0842c10782e15215a8abe880e4c12350b61ffb383461a6721b";
+            computationalSha256 "466d7cb0f6a23eb6f7c3f889498b7fe3a43d94462c02155de7bcff7dc68b7687";
             origin        "data/standards/parameters/NRTL/benzene-nButanol.dat";
-            originSha256  "a3d311ba65800d4c3ab94db01603a2deaf3259613122e831de000e2b9af3b928";
+            originSha256  "e2aa281ea21e07721b30aec5e02f03d23642dcd38e73f4d0fa7eda58ef220cac";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/benzene-nButanol.dat"
+        {
+            type          imported;
+            sha256        "69828c2ed45ad94e3f2b0bce67e16caab98b7a1a61a4cb461924c7fc30da6c9d";
+            computationalSha256 "e9ff5e9a7f88d30432aa89e77894e259848c341ac3f4c44ef65faecbd3dc80d2";
+            origin        "data/standards/parameters/UNIQUAC/benzene-nButanol.dat";
+            originSha256  "1e009219ef4ddfd75dad05933e0bb042615a43a8889186107b9a465106d95f09";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/benzene-nButanol.dat"
+        {
+            type          imported;
+            sha256        "be9d19d97f4cf0821ea8b9acea6c9095cd790947409ceb3657e2c5d28ec0792d";
+            computationalSha256 "9fcd3aa1910b619c71a2e995fe5e7cd9078d0de2636e6161c013867c6b8c3fd2";
+            origin        "data/standards/parameters/Wilson/benzene-nButanol.dat";
+            originSha256  "9f3b862f6b07bdcd7d650432ca96362657332a69f9b55c203fa2d895da715523";
             release       Choupo-2608;
         }
     }

@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-11";
+    importerVersion    "3";
+    records
+    {
+        "components/methylHexanoate.dat"
+        {
+            type          imported;
+            sha256        "0b075acd08ed7a2682e92aa39f15232d065f07a6307a6fd1193170eeeb56e43f";
+            computationalSha256 "d44dbfedc23c61eb375781903db464db6693e43da9cdb6b5e8547e62ec0b262b";
+            origin        "data/standards/components/methylHexanoate.dat";
+            originSha256  "b273875e63e3fda4149d924a9a3033a1e8eeaea85011635693b63fcf1579616f";
+            release       Choupo-2608;
+        }
+        "components/propionitrile.dat"
+        {
+            type          imported;
+            sha256        "389500d3a92b102455fddd7a42a398a5e5ee0141c8a84a2dd3c7c21a7d0bd414";
+            computationalSha256 "3484e16ffb57c55e88709116d3b59604303570f853b1b8e1e7d9ba69b4be2a25";
+            origin        "data/standards/components/propionitrile.dat";
+            originSha256  "34a41ed821ce97118e9910d504bf8360c64628d84bbe5559863567dc220e5148";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/methylHexanoate-propionitrile.dat"
+        {
+            type          imported;
+            sha256        "8c829ae2cfff9314deaa301cf550a7b9e45d0ca56cf63b1a751890b8478ccfc8";
+            computationalSha256 "19ff6569d1b2518b25e834066beee31de887487c821e42310f589b46e1115dde";
+            origin        "data/standards/parameters/NRTL/methylHexanoate-propionitrile.dat";
+            originSha256  "20a614c7db5cb4e4b1dfcf3def60759b7e8c6119261cb743a30a41b4cbcfdb05";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/methylHexanoate-propionitrile.dat"
+        {
+            type          imported;
+            sha256        "b685b82d415476b8c0a33365d69e18dfef72d81ba17e81e9f71ed6d28d0cda63";
+            computationalSha256 "091a6264791728357216bd09cd62dd884b4e1b0c494f1cb827258e32455da790";
+            origin        "data/standards/parameters/Wilson/methylHexanoate-propionitrile.dat";
+            originSha256  "86d1f1f3d94763900ce6131499f02ba1d9f520d2ddb38e4f1f6b61c2edf28e80";
+            release       Choupo-2608;
+        }
+    }
+}

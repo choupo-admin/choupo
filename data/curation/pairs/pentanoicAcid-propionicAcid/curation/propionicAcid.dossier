@@ -1,0 +1,301 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      propionicAcid;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.propionicAcid-pentanoicAcid.b_ij  411.22556012;
+        equilibrium.liquid.activityModel.binaryParameters.propionicAcid-pentanoicAcid.b_ji  -446.983756912;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "12728c0da8395f9b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/propionicAcid-pentanoicAcid-bubble-j.fluid.2005.08.006.dat";
+            doi       "10.1016/j.fluid.2005.08.006";
+            sha256    "2abfbd359dfdeffe92bbb1f0935a8cc56668901e04bcd276076efd78989237d0";
+            provenance measured;
+            archiveFile "j.fluid.2005.08.006.xml";
+            system    "propionicAcid + pentanoicAcid";
+            pressure  "20000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.035; max 0.973; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.propionicAcid-pentanoicAcid.b_ij  411.225814339;
+        equilibrium.liquid.activityModel.binaryParameters.propionicAcid-pentanoicAcid.b_ji  -446.983888835;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "12728c0da8395f9b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/propionicAcid-pentanoicAcid-bubble-j.fluid.2005.08.006.dat";
+            doi       "10.1016/j.fluid.2005.08.006";
+            sha256    "2abfbd359dfdeffe92bbb1f0935a8cc56668901e04bcd276076efd78989237d0";
+            provenance measured;
+            archiveFile "j.fluid.2005.08.006.xml";
+            system    "propionicAcid + pentanoicAcid";
+            pressure  "20000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.035; max 0.973; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.propionicAcid-pentanoicAcid.a_ij  238.967931476;
+        equilibrium.liquid.activityModel.binaryParameters.propionicAcid-pentanoicAcid.a_ji  -221.730747774;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "12728c0da8395f9b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/propionicAcid-pentanoicAcid-bubble-j.fluid.2005.08.006.dat";
+            doi       "10.1016/j.fluid.2005.08.006";
+            sha256    "2abfbd359dfdeffe92bbb1f0935a8cc56668901e04bcd276076efd78989237d0";
+            provenance measured;
+            archiveFile "j.fluid.2005.08.006.xml";
+            system    "propionicAcid + pentanoicAcid";
+            pressure  "20000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.035; max 0.973; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.propionicAcid-pentanoicAcid.a_ij  238.968052365;
+        equilibrium.liquid.activityModel.binaryParameters.propionicAcid-pentanoicAcid.a_ji  -221.73081471;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "12728c0da8395f9b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/propionicAcid-pentanoicAcid-bubble-j.fluid.2005.08.006.dat";
+            doi       "10.1016/j.fluid.2005.08.006";
+            sha256    "2abfbd359dfdeffe92bbb1f0935a8cc56668901e04bcd276076efd78989237d0";
+            provenance measured;
+            archiveFile "j.fluid.2005.08.006.xml";
+            system    "propionicAcid + pentanoicAcid";
+            pressure  "20000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.035; max 0.973; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.propionicAcid-pentanoicAcid.A_ij  -1983.36143007;
+        equilibrium.liquid.activityModel.binaryParameters.propionicAcid-pentanoicAcid.A_ji  2141.49933216;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "12728c0da8395f9b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/propionicAcid-pentanoicAcid-bubble-j.fluid.2005.08.006.dat";
+            doi       "10.1016/j.fluid.2005.08.006";
+            sha256    "2abfbd359dfdeffe92bbb1f0935a8cc56668901e04bcd276076efd78989237d0";
+            provenance measured;
+            archiveFile "j.fluid.2005.08.006.xml";
+            system    "propionicAcid + pentanoicAcid";
+            pressure  "20000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.035; max 0.973; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.propionicAcid-pentanoicAcid.A_ij  30000;
+        equilibrium.liquid.activityModel.binaryParameters.propionicAcid-pentanoicAcid.A_ji  -5730.42539012;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "12728c0da8395f9b";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/propionicAcid-pentanoicAcid-bubble-j.fluid.2005.08.006.dat";
+            doi       "10.1016/j.fluid.2005.08.006";
+            sha256    "2abfbd359dfdeffe92bbb1f0935a8cc56668901e04bcd276076efd78989237d0";
+            provenance measured;
+            archiveFile "j.fluid.2005.08.006.xml";
+            system    "propionicAcid + pentanoicAcid";
+            pressure  "20000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.035; max 0.973; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

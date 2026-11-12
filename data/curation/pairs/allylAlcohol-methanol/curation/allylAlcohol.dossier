@@ -1,0 +1,301 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      allylAlcohol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-methanol.b_ij  -124.998872156;
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-methanol.b_ji  127.510267769;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "69391f5a5b7a3ff3";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/allylAlcohol-methanol-bubble-acs.jced.5b01048.dat";
+            doi       "10.1021/acs.jced.5b01048";
+            sha256    "385b05af6658dd6826f2a1087fe44d1146d5ed1c9661c43447e9206070a4c727";
+            provenance measured;
+            archiveFile "acs.jced.5b01048.xml";
+            system    "allylAlcohol + methanol";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.057; max 0.967; n 15; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-methanol.b_ij  524.438404519;
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-methanol.b_ji  -364.489845109;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "69391f5a5b7a3ff3";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/allylAlcohol-methanol-bubble-acs.jced.5b01048.dat";
+            doi       "10.1021/acs.jced.5b01048";
+            sha256    "385b05af6658dd6826f2a1087fe44d1146d5ed1c9661c43447e9206070a4c727";
+            provenance measured;
+            archiveFile "acs.jced.5b01048.xml";
+            system    "allylAlcohol + methanol";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.057; max 0.967; n 15; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-methanol.a_ij  267.308844856;
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-methanol.a_ji  -160.389684697;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "69391f5a5b7a3ff3";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/allylAlcohol-methanol-bubble-acs.jced.5b01048.dat";
+            doi       "10.1021/acs.jced.5b01048";
+            sha256    "385b05af6658dd6826f2a1087fe44d1146d5ed1c9661c43447e9206070a4c727";
+            provenance measured;
+            archiveFile "acs.jced.5b01048.xml";
+            system    "allylAlcohol + methanol";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.057; max 0.967; n 15; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-methanol.a_ij  267.308845304;
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-methanol.a_ji  -160.389684928;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "69391f5a5b7a3ff3";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/allylAlcohol-methanol-bubble-acs.jced.5b01048.dat";
+            doi       "10.1021/acs.jced.5b01048";
+            sha256    "385b05af6658dd6826f2a1087fe44d1146d5ed1c9661c43447e9206070a4c727";
+            provenance measured;
+            archiveFile "acs.jced.5b01048.xml";
+            system    "allylAlcohol + methanol";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.057; max 0.967; n 15; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-methanol.A_ij  -3814.62206795;
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-methanol.A_ji  5264.47847947;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "69391f5a5b7a3ff3";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/allylAlcohol-methanol-bubble-acs.jced.5b01048.dat";
+            doi       "10.1021/acs.jced.5b01048";
+            sha256    "385b05af6658dd6826f2a1087fe44d1146d5ed1c9661c43447e9206070a4c727";
+            provenance measured;
+            archiveFile "acs.jced.5b01048.xml";
+            system    "allylAlcohol + methanol";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.057; max 0.967; n 15; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-methanol.A_ij  -3814.62106002;
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-methanol.A_ji  5264.47467775;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "69391f5a5b7a3ff3";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/allylAlcohol-methanol-bubble-acs.jced.5b01048.dat";
+            doi       "10.1021/acs.jced.5b01048";
+            sha256    "385b05af6658dd6826f2a1087fe44d1146d5ed1c9661c43447e9206070a4c727";
+            provenance measured;
+            archiveFile "acs.jced.5b01048.xml";
+            system    "allylAlcohol + methanol";
+            pressure  "101330.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.057; max 0.967; n 15; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

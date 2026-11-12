@@ -21,26 +21,44 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/diisopropanolamine.dat"
         {
             type          imported;
-            sha256        "b138167ecc0d818c5d9e0ce0bd1c3f4b93b63ee97d96b5eeb24a362dcafd79d7";
-            computationalSha256 "02672c22ec9eff4091a6ac661061672415ae350a028f3640c7f2578133144032";
+            sha256        "c2ec9cbb21efcdb834976486f14b39c90c4c875ef9842089adef8c43f9588a49";
+            computationalSha256 "e7c55a34c9543ee21a02421bd49b4031e5343165906066546d0634148aa847e6";
             origin        "data/standards/components/diisopropanolamine.dat";
-            originSha256  "405dc7a853bfa6911ea8d24cc281674749d810b011ed8c17b914654c8d5d8270";
+            originSha256  "e78e3ae9f478afcbfa263495710222d183165c28e0cddba9308b12d81d226a3f";
             release       Choupo-2608;
         }
         "components/mCresol.dat"
         {
             type          imported;
-            sha256        "fcca7c90ed6267003198f47b10659aae7087812247649fab7459b36aae2d0839";
-            computationalSha256 "aa4e5480bc1ca3acda6fb2e775d945f8d0f3b026d54b603bbbd762435cc71152";
+            sha256        "d1e5e6f593eb8b235a4f10546f6760356d7c7b5406f6503a74cdcddc8121ef92";
+            computationalSha256 "7d77407ef5cbbd0d6de9e1463068a820b32e3adc6dd691e917966af5d8fcf5be";
             origin        "data/standards/components/mCresol.dat";
-            originSha256  "5f55ab7fbabf415fcaa36ab0aa005c673edeff6b42aa179f2a8889e9fbd28d1c";
+            originSha256  "8d8f5546a810c7ea24e054ecfd2ae719218d46eefd851cc388397a0711dacb28";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/diisopropanolamine-mCresol.dat"
+        {
+            type          imported;
+            sha256        "2d8331580c245a8d1f004973621575efb2695e985df261760f446ae3f40441df";
+            computationalSha256 "b2b228dbe09db30a60f8f00fbc90caac617657c3e6a6f57fa86d3c2270dc1c1d";
+            origin        "data/standards/parameters/NRTL/diisopropanolamine-mCresol.dat";
+            originSha256  "45dc29151f63655144829967db4c5d02b1b7546ba1828474b2a7c08811958bc3";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/diisopropanolamine-mCresol.dat"
+        {
+            type          imported;
+            sha256        "bc54015e9d2e1ceaf6fb3e1f76784e2ee4d6691ecf45ed227be783c1959c1da4";
+            computationalSha256 "a00b37678700bce4b3305603509625fcc65466865a9510b9aa5c73fa26e29556";
+            origin        "data/standards/parameters/Wilson/diisopropanolamine-mCresol.dat";
+            originSha256  "7f7e5e17a8d82268c11663a9d4b94d3258bb9644602b0bc4e73686e0e1eae4b4";
             release       Choupo-2608;
         }
     }

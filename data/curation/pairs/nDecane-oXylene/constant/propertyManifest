@@ -21,35 +21,35 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/nDecane.dat"
         {
             type          imported;
-            sha256        "dc134490f41e3a8ac612df6c816894cd5d48d78c8de8e358d5d002bc1c168d16";
-            computationalSha256 "db998ca1a7ce1794eeb761efa4f902ab545998f122c5a40a55500321745de919";
+            sha256        "c2efdc318ce9b5bba917d70c65976c28c18ee6eba2667a87e2caa79cbb4c6221";
+            computationalSha256 "261750ad82607c8ed22155f11a8d3e23adeb0327ae976cfdd7974933828939fa";
             origin        "data/standards/components/nDecane.dat";
-            originSha256  "d3eb0769d43d0e76ccbdb97d3a106719a4635b848be11342b1d17f9231985544";
+            originSha256  "e825708595bddfd2ee36e5d605dafbfe7bbc538188911d732eae37fed86a3baa";
             release       Choupo-2608;
         }
         "components/oXylene.dat"
         {
             type          imported;
-            sha256        "1360348dc25bac70a331fc7d65535e3d3cd15689dc0b3bb225194d2687ce957f";
-            computationalSha256 "1c533f2710b61bc84d7205b1850b2db3326e00d5d45dc4ffccbb534ca41574f8";
+            sha256        "6c4a7d5adec5db8abdb585e0462c266044789b3589d463392f40c0ccaf29d7a9";
+            computationalSha256 "e626917fb3b7857eef9e875f756d640498822a49698e4e93d2266b33c3eefeca";
             origin        "data/standards/components/oXylene.dat";
-            originSha256  "4421f5f2225fb65f840043469d7083f59ada5f6066c48198fbbc56e163c28da5";
+            originSha256  "837c57f03871345b012d2425eb52ffbd424d8f2d9234bedf8725ec91c99b27f1";
             release       Choupo-2608;
         }
         "parameters/NRTL/nDecane-oXylene.dat"
         {
             type          imported;
-            sha256        "7aedcae0b97eee5fbf5a528ee6faac755b392f037181f80ae2faf635cd7177b7";
-            computationalSha256 "5fc91653fa593e8f3bd239ec59468b732fbaf577bbc37e9002dbdc9b9883306a";
+            sha256        "12964b1e649b83490dc1e76f6bbb45c13c7c5512444a0239819f33c0260ed9f0";
+            computationalSha256 "a14e24eaac19911410e85fa91828eb3879350e9a3dce0a2ddfe125a5f7acd7e1";
             origin        "data/standards/parameters/NRTL/nDecane-oXylene.dat";
-            originSha256  "26e80acca64000c69abf177256023c76461ad0a4e1d1130556d1015a2ac41f70";
+            originSha256  "5c2ad874361cc28c6b2893a9281c3f58eda64867f6239ead2f97101adee6f199";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/nDecane-oXylene.dat"
+        {
+            type          imported;
+            sha256        "16b6b4cc98cab4628b22863742535ec010af273014de4683e0054fab91da2977";
+            computationalSha256 "551474c3b28243824c63a31f154ef0f32a5e9ecd8c50dd080c6023cd063c6c18";
+            origin        "data/standards/parameters/UNIQUAC/nDecane-oXylene.dat";
+            originSha256  "7c228cac29aaf27187c0713affa41d5b66bc64263a923487884abdcc0b1d3ddf";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/nDecane-oXylene.dat"
+        {
+            type          imported;
+            sha256        "80a10dc7c504cb8b98348c9c500fa59c1ea85fda9be86c5f2a49da19e8dbba47";
+            computationalSha256 "da4eb2675bbbd319f5d945c1855eded65486b8c5444ce46e5b535f03b0ca7b17";
+            origin        "data/standards/parameters/Wilson/nDecane-oXylene.dat";
+            originSha256  "01b2c72950055307b3650206358e24d473b749d206e6d53a80c2dd829560da80";
             release       Choupo-2608;
         }
     }

@@ -1,0 +1,193 @@
+// [imported] origin "data/standards/components/nPropylAcetate.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: nPropylAcetate  (CAS 109-60-4)
+  PROPOSAL TIER -- UNVERIFIED. Imported from ChemSep v8.3
+  pure-component data under Artistic License 2.0.
+  Critical constants are source data; Psat is an explicitly
+  estimated Ambrose-Walton corresponding-states closure.
+\*---------------------------------------------------------------------------*/
+
+name        nPropylAcetate;
+CAS         109-60-4;
+formula     C5H10O2;      // counted from the ChemSep v8.3 structure formula "CH3COO(CH2)2CH3" (derived 2026-09-03; reproduces MW to 0.001 %)
+reviewStatus interim;
+MW          102.1317;      // kg/kmol [origin=ChemSep v8.3]
+Tc          549.4;      // K [origin=ChemSep v8.3]
+Pc          33.3;      // bar; source Pa / 1e5 [origin=ChemSep v8.3]
+omega       0.389;      // [-] [origin=ChemSep v8.3]
+Tb          374.65;      // K [origin=ChemSep v8.3]
+
+standardThermochemistry
+{
+    dHf_298   -464800;        // J/mol   [ChemSep v8.3, ideal gas]
+    s_298     402.3;        // J/(mol.K)  third-law absolute
+}
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)
+    // converted EXACTLY from ChemSep eqno 10, Psat[Pa] = exp(a - b/(T+c))
+    coefficients  (4.156664856  1292.460378  -63.384);
+    Trange        (331.31  493.15);
+}
+
+Vliq        0.000115695;      // m3/mol at 25 C  [ChemSep eqno 105]
+HvapTb      33982.4;      // J/mol at Tb  [ChemSep eqno 106]
+
+idealGasHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    // ChemSep states J/(kmol.K); A and the exp are scaled to per-mole here.
+    coefficients  (108.82  -937.38  6.603244721  -0.00062962  1.4249e-07);
+    Trange        (246.45  1500);
+}
+
+liquidHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    coefficients  (124.41  36.932  1.480544721  0.012662  -1.2028e-05);
+    Trange        (192.29  404.7);
+}
+
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     15.453;
+        B     -157.9;
+        C     -3.9304;
+        D     -3.2102e-07;
+        E     2;
+        Tmin  250;
+        Tmax  473.15;
+    }
+}
+
+liquidThermalConductivity
+{
+    chemsepEq16
+    {
+        A     0.045513;
+        B     -31.328;
+        C     -1.5572;
+        D     -0.00066538;
+        E     -5.3334e-06;
+        Tmin  164.82;
+        Tmax  434.82;
+    }
+}
+
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (1 CH3 + 2 CH2 + 1 CH3COO), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   4.1530;
+    q   3.6560;
+}
+
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH3COO; count 1; } );
+}
+solubilityParameter 17890;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
+
+source
+{
+    database      "ChemSep pure-component data v8.3";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "chemsep1.xml";
+    sourceSha256  "78b3e0c6408ff35f3b75fb71a1fdd70bb8e967d8996b49452a4a9fa2dd567c76";
+    sourceRecord  "N-propyl acetate";
+    importedBy    "chemsep_to_choupo";
+    review        { state pending; reviewer unassigned; }
+}
+
+provenance
+{
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 4.1530, q = sum nu_k Q_k = 3.6560 over the record's unifac groups (1 CH3 + 2 CH2 + 1 CH3COO)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
+    MW
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Pc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    omega
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tb
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    vaporPressure
+    {
+        origin        predictive;
+        method        "Ambrose-Walton corresponding states";
+        methodVersion "choupo-aw-1989";
+        uncertainty   "not quantified; validate against saturation data";
+        notes         "computed from ChemSep Tc/Pc/omega";
+    }
+}
+
+cosmo
+{
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file N-PROPYL_ACETATE.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey YKYONYBAUNKHLG-UHFFFAOYSA-N (full match); formula C5H10O2; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        150.308937;   // sum of the profile below; GAMESS prints 150.31
+        volume      139.84;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     1.563918
+               6.007994    11.421282    12.221453    15.771217    17.803388    16.433919
+              15.042225    11.070106     9.003111     7.271257     1.847852     1.486860
+               0.777969     0.601939     1.667964     1.158373     0.832316     2.732193
+               2.484884     1.106740     1.418611     1.953774     4.769272     2.901521
+               0.958799     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
+    }
+}

@@ -1,0 +1,193 @@
+// [imported] origin "data/standards/components/14Butanediol.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 14Butanediol  (CAS 110-63-4)
+  PROPOSAL TIER -- UNVERIFIED. Imported from ChemSep v8.3
+  pure-component data under Artistic License 2.0.
+  Critical constants are source data; Psat is an explicitly
+  estimated Ambrose-Walton corresponding-states closure.
+\*---------------------------------------------------------------------------*/
+
+name        14Butanediol;
+CAS         110-63-4;
+formula     C4H10O2;      // counted from the ChemSep v8.3 structure formula "HO(CH2)4OH" (derived 2026-09-03; reproduces MW to 0.001 %)
+reviewStatus interim;
+MW          90.121;      // kg/kmol [origin=ChemSep v8.3]
+Tc          667;      // K [origin=ChemSep v8.3]
+Pc          48.8;      // bar; source Pa / 1e5 [origin=ChemSep v8.3]
+omega       1.17696;      // [-] [origin=ChemSep v8.3]
+Tb          501.15;      // K [origin=ChemSep v8.3]
+
+standardThermochemistry
+{
+    dHf_298   -426700;        // J/mol   [ChemSep v8.3, ideal gas]
+    s_298     381;        // J/(mol.K)  third-law absolute
+}
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)
+    // converted EXACTLY from ChemSep eqno 10, Psat[Pa] = exp(a - b/(T+c))
+    coefficients  (5.803943826  2511.394701  -67.663);
+    Trange        (408.15  588.27);
+}
+
+Vliq        8.88514e-05;      // m3/mol at 25 C  [ChemSep eqno 105]
+HvapTb      62902.8;      // J/mol at Tb  [ChemSep eqno 106]
+
+idealGasHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    // ChemSep states J/(kmol.K); A and the exp are scaled to per-mole here.
+    coefficients  (78.857  -613.48  5.885244721  -0.00013274  6.7309e-08);
+    Trange        (273  1500.15);
+}
+
+liquidHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    coefficients  (-147.3  -151.29  6.105244721  0.00082927  -4.8483e-07);
+    Trange        (290  450);
+}
+
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     -135.2818;
+        B     9167.078;
+        C     18.06409;
+        D     -1.15446e-05;
+        E     2;
+        Tmin  293.15;
+        Tmax  501.15;
+    }
+}
+
+liquidThermalConductivity
+{
+    chemsepEq16
+    {
+        A     0.17847;
+        B     -272.57;
+        C     -0.42428;
+        D     -0.0080796;
+        E     3.4419e-06;
+        Tmin  290.15;
+        Tmax  501.15;
+    }
+}
+
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (4 CH2 + 2 OH), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   4.6976;
+    q   4.5600;
+}
+
+groups
+{
+    unifac ( { group CH2; count 4; } { group OH; count 2; } );
+}
+solubilityParameter 28850;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
+
+source
+{
+    database      "ChemSep pure-component data v8.3";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "chemsep1.xml";
+    sourceSha256  "78b3e0c6408ff35f3b75fb71a1fdd70bb8e967d8996b49452a4a9fa2dd567c76";
+    sourceRecord  "1,4-butanediol";
+    importedBy    "chemsep_to_choupo";
+    review        { state pending; reviewer unassigned; }
+}
+
+provenance
+{
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 4.6976, q = sum nu_k Q_k = 4.5600 over the record's unifac groups (4 CH2 + 2 OH)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
+    MW
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Pc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    omega
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tb
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    vaporPressure
+    {
+        origin        predictive;
+        method        "Ambrose-Walton corresponding states";
+        methodVersion "choupo-aw-1989";
+        uncertainty   "not quantified; validate against saturation data";
+        notes         "computed from ChemSep Tc/Pc/omega";
+    }
+}
+
+cosmo
+{
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file 1,4-BUTANEDIOL.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey WERYXYBDKMZEQL-UHFFFAOYSA-N (full match); formula C4H10O2; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        129.067687;   // sum of the profile below; GAMESS prints 129.07
+        volume      120.60;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.461789     1.395433     1.197717     0.402559     0.648189
+               1.401494     0.993274     0.469982     0.463322     1.034324     0.869108
+               0.596558     2.280240     8.254826    17.414166    21.642730    14.523944
+              10.414761     6.489692     7.320470     3.324474     1.369525     1.230306
+               1.441993     1.755950     2.001266     1.215163     1.088567     0.797218
+               1.946042     1.966835     2.191543     1.579836     1.407885     1.801574
+               1.705400     1.747553     1.877264     0.344715     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
+    }
+}

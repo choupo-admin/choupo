@@ -1,0 +1,295 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      3Methylthiophene;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.b_ij  -284.036344333;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.b_ji  380.322756215;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "3f59f1ae22af20b9";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methylthiophene-toluene-bubbleP-j.fluid.2010.02.030-b6.dat";
+            doi       "10.1016/j.fluid.2010.02.030";
+            sha256    "ff6299ef0eff4369f1114e2237c4cde63ead90f595fc9a5b8815c685864dc476";
+            provenance measured;
+            archiveFile "j.fluid.2010.02.030.xml";
+            system    "3Methylthiophene + toluene";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.047; max 0.88; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.b_ij  -284.036353897;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.b_ji  380.322771694;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "3f59f1ae22af20b9";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methylthiophene-toluene-bubbleP-j.fluid.2010.02.030-b6.dat";
+            doi       "10.1016/j.fluid.2010.02.030";
+            sha256    "ff6299ef0eff4369f1114e2237c4cde63ead90f595fc9a5b8815c685864dc476";
+            provenance measured;
+            archiveFile "j.fluid.2010.02.030.xml";
+            system    "3Methylthiophene + toluene";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.047; max 0.88; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.A_ij  2933.3464195;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.A_ji  -2097.9375314;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "3f59f1ae22af20b9";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methylthiophene-toluene-bubbleP-j.fluid.2010.02.030-b6.dat";
+            doi       "10.1016/j.fluid.2010.02.030";
+            sha256    "ff6299ef0eff4369f1114e2237c4cde63ead90f595fc9a5b8815c685864dc476";
+            provenance measured;
+            archiveFile "j.fluid.2010.02.030.xml";
+            system    "3Methylthiophene + toluene";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.047; max 0.88; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.A_ij  2933.34652941;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.A_ji  -2097.93758323;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "3f59f1ae22af20b9";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methylthiophene-toluene-bubbleP-j.fluid.2010.02.030-b6.dat";
+            doi       "10.1016/j.fluid.2010.02.030";
+            sha256    "ff6299ef0eff4369f1114e2237c4cde63ead90f595fc9a5b8815c685864dc476";
+            provenance measured;
+            archiveFile "j.fluid.2010.02.030.xml";
+            system    "3Methylthiophene + toluene";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.047; max 0.88; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.a_ij  -167.298548708;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.a_ji  219.86654151;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "3f59f1ae22af20b9";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methylthiophene-toluene-bubbleP-j.fluid.2010.02.030-b6.dat";
+            doi       "10.1016/j.fluid.2010.02.030";
+            sha256    "ff6299ef0eff4369f1114e2237c4cde63ead90f595fc9a5b8815c685864dc476";
+            provenance measured;
+            archiveFile "j.fluid.2010.02.030.xml";
+            system    "3Methylthiophene + toluene";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.047; max 0.88; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.a_ij  -167.298544422;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.a_ji  219.866534334;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "3f59f1ae22af20b9";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methylthiophene-toluene-bubbleP-j.fluid.2010.02.030-b6.dat";
+            doi       "10.1016/j.fluid.2010.02.030";
+            sha256    "ff6299ef0eff4369f1114e2237c4cde63ead90f595fc9a5b8815c685864dc476";
+            provenance measured;
+            archiveFile "j.fluid.2010.02.030.xml";
+            system    "3Methylthiophene + toluene";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.047; max 0.88; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

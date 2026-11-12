@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/archiveDatasets -- WHERE the measurements of ethylButanoate-nOctane
+  come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+  (Vitor, 2026-11-10: the measured series are not copied; only the fitted
+  parameters are kept).  `bin/choupo-curate fetch <case>` writes each
+  dataset into constant/archiveExtracts/ (gitignored): the article file is taken from
+  the local ThermoML cache when it holds it, else from the NIST URL below,
+  and BOTH sha256 sums are checked -- a mismatch refuses, an unreachable
+  NIST is reported NOT RUN, never a pass.
+\*-----------------------------------------------------------------------------*/
+
+recordType    archiveDatasets;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+    note      "the finding aid; each article file is also served one by one at the NIST URL";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/ethylButanoate-nOctane-bubble-acs.jced.5b01058.dat";
+        role          fit;   // C283: every laboratory is fitted
+        doi           "10.1021/acs.jced.5b01058";
+        url           "https://trc.nist.gov/ThermoML/10.1021/acs.jced.5b01058.xml";
+        page          "https://trc.nist.gov/ThermoML/10.1021/acs.jced.5b01058.json";
+        articleFile   "acs.jced.5b01058.xml";
+        articleSha256 "97e52019491b8e7b6002e92c401a38a3dcff6a8e4aafd17fa6b75f863bed4b2c";
+        block         13;
+        filter        ( --interior-only );
+        extract       "bin/choupo-thermoml extract-vle <article file> --block 13 --interior-only --into <dir>";
+        sha256        "d0c1ba3f522938dcc126e0dcdb3daf89be11a65bf00412dd2e59b7562ec3a7d1";
+        identity
+        {
+            ethylButanoate { cas "105-54-4"; inchiKey "OBNCKNCVKJNDBV-UHFFFAOYSA-N"; }
+            nOctane        { cas "111-65-9"; inchiKey "TVMXDCGIABBOFY-UHFFFAOYSA-N"; }
+        }
+    }
+);

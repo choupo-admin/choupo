@@ -21,17 +21,17 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/1Propanol.dat"
         {
             type          imported;
-            sha256        "de3f1162278fc2d5ee4995ee4887b3f1c0f3669920483a314461b227ac825867";
-            computationalSha256 "d50d84215a5e98b6539bb27d9c7d0d58bb7fc2a8cf3f66c2f943a76cd6b6d056";
+            sha256        "13f21aa546fa0847052f0158a65b23979145b7033a791e9508d9410ef9684e8b";
+            computationalSha256 "95cecd58a68b3db6dc9e540a083c8a167127cf8781e836662598dcc0ebbe0b7d";
             origin        "data/standards/components/1Propanol.dat";
-            originSha256  "ddcf4f1180bb27e9b6dfa2adb55a9ac88396a36d6a68cb8c48df90d2f04bcfd1";
+            originSha256  "c195e55f4a94e4a58aca3703d644f362c546f295ca510a80bf926ae0c53ecff7";
             release       Choupo-2608;
         }
         "components/ethyleneGlycol.dat"
@@ -41,6 +41,15 @@ propertyManifest
             computationalSha256 "535ebabab2b99be2309ed449cdea0a342ca26b3d0ae9cb5e0cc224f53589bb9c";
             origin        "data/standards/components/ethyleneGlycol.dat";
             originSha256  "409fc26748c4dd89998c0398c5023a4cc7143aeb481d53e119933d0d86b235d7";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1Propanol-ethyleneGlycol.dat"
+        {
+            type          imported;
+            sha256        "5fa219dd4f1022e27d137649203b9425e2fd48e8b9d0df2d7f94bd627e0e7682";
+            computationalSha256 "7f55d2c077bf193ceaf26d598ec68ffa8f5e6965a4af86eb67ab79e03fce820f";
+            origin        "data/standards/parameters/NRTL/1Propanol-ethyleneGlycol.dat";
+            originSha256  "8fce36ce9b808a57667ec169a8c7726321702c8f345fd39c19f867d06ca0e24e";
             release       Choupo-2608;
         }
         "parameters/Wilson/1Propanol-ethyleneGlycol.dat"

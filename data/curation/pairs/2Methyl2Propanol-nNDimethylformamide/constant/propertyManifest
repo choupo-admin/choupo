@@ -21,35 +21,44 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/2Methyl2Propanol.dat"
         {
             type          imported;
-            sha256        "17e181c16f08bfa8410737c8f6744b259b00d8c1d985b3ea8efdf9ecb14eaa48";
-            computationalSha256 "646148d2e0ba73b3da0e8baca650e1a51842a343e7909e987a6aabc68f622a9d";
+            sha256        "ab9a93f3aa5f71dd7fe75be5f810327bce2dce3084861490b97d333837b3176e";
+            computationalSha256 "20a287e2c4d20841d0f28fe574535bffc70a8e31cf8fcef3938e77aead89c094";
             origin        "data/standards/components/2Methyl2Propanol.dat";
-            originSha256  "03c4dae4a65edde0ea277bc42cd644162b49728a8612095e20ffd3565c2944b2";
+            originSha256  "25cc1a3086696dc3e0ce0df81e239a4ecf1c0e0dae78f3642d07bc96c2767e01";
             release       Choupo-2608;
         }
         "components/nNDimethylformamide.dat"
         {
             type          imported;
-            sha256        "5dc5e624ec26f7584374f1c24564d0750fe6035d6d04806c118cacafdbb9a9cf";
-            computationalSha256 "a54dfb01aa4f8ccf4cd36ebaaa39c04ad37254ae34c4fd4f112690de9f1d0425";
+            sha256        "a88c2d32602da60e27e10ba9e0aedec1cb83216cb771caeb2f8437404df87f5d";
+            computationalSha256 "099dc481e1a60221b28f3cbda6ae34a63399cbe02fb820cb7396d33f8effd64d";
             origin        "data/standards/components/nNDimethylformamide.dat";
-            originSha256  "9c683ee45a5fcc273e4186865d45184b187b080ff179cec4f0ac16d72933fc21";
+            originSha256  "2962c91b01e27473cd7cbeb36d60eeb705e5bf442b915f9d5921d7da1c1ddac3";
             release       Choupo-2608;
         }
         "parameters/NRTL/2Methyl2Propanol-nNDimethylformamide.dat"
         {
             type          imported;
-            sha256        "f620c3bd8b6b4b1b4905ed9f91f34b9ef3579aec6e498fe28d551bb6b8e854d5";
-            computationalSha256 "d909bf670531ace035bbac4d0c397b0886a67e3af5d76d8d0bb30fc66fec0a6c";
+            sha256        "8876dae31bbcd031d3f72eafda255c49eb081602430e92b56a10a468e056e9dc";
+            computationalSha256 "7e1be951a99439d89794cc3b4dad2a50068a049fbbce8f44b2f81183bdc4c902";
             origin        "data/standards/parameters/NRTL/2Methyl2Propanol-nNDimethylformamide.dat";
-            originSha256  "d4e8d729555fb4c3d11c4e3d3afd720ce3a15ae766774f5feb026580531182b2";
+            originSha256  "482725c45b669f890fc964aeff96c86c59b507cce122bf112d0fc153256f9c4a";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Methyl2Propanol-nNDimethylformamide.dat"
+        {
+            type          imported;
+            sha256        "cbd7a607f1c7ad3c6ad722c55b070d2a2e63f6e93d414dfae35ab32d6ff723a2";
+            computationalSha256 "a205c7b3b0c2a2589a587c9f320222d71fb81b1d0ad031ceb7b99efa431a8410";
+            origin        "data/standards/parameters/Wilson/2Methyl2Propanol-nNDimethylformamide.dat";
+            originSha256  "96a09f0f76399b0196398ca5e2f072c2ec5305bfed9bf77007edc0777ef6a531";
             release       Choupo-2608;
         }
     }

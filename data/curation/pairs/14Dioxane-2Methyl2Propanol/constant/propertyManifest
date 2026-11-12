@@ -21,26 +21,26 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/14Dioxane.dat"
         {
             type          imported;
-            sha256        "aa55552c69f5c4f2f833e57ed19fadde932fd35ce70f7c547fa9f8c34407c5f8";
-            computationalSha256 "7493f320929e8c93885ac0fbfea3ddb5b6d796346c09b563980294104dcd473c";
+            sha256        "b4a154c172ccece7277e5514b338380e6e37e0175ae652dd6af3466fe5b0ee55";
+            computationalSha256 "aede3c35fa6da3606f4448a548b0b8f5d0f58b83ebeb3ac3c42ffb1ceaca5d11";
             origin        "data/standards/components/14Dioxane.dat";
-            originSha256  "280f4901e2b4cf57d51eb8e252737e5acdd4212a342d7b52e4be7c93b6b50211";
+            originSha256  "a35cf193048135597d346a2971dfa2563d3ee4a57ac2b359e8753935f3c399ed";
             release       Choupo-2608;
         }
         "components/2Methyl2Propanol.dat"
         {
             type          imported;
-            sha256        "17e181c16f08bfa8410737c8f6744b259b00d8c1d985b3ea8efdf9ecb14eaa48";
-            computationalSha256 "646148d2e0ba73b3da0e8baca650e1a51842a343e7909e987a6aabc68f622a9d";
+            sha256        "ab9a93f3aa5f71dd7fe75be5f810327bce2dce3084861490b97d333837b3176e";
+            computationalSha256 "20a287e2c4d20841d0f28fe574535bffc70a8e31cf8fcef3938e77aead89c094";
             origin        "data/standards/components/2Methyl2Propanol.dat";
-            originSha256  "03c4dae4a65edde0ea277bc42cd644162b49728a8612095e20ffd3565c2944b2";
+            originSha256  "25cc1a3086696dc3e0ce0df81e239a4ecf1c0e0dae78f3642d07bc96c2767e01";
             release       Choupo-2608;
         }
         "parameters/NRTL/14Dioxane-2Methyl2Propanol.dat"
@@ -68,6 +68,15 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/14Dioxane-2Methyl2Propanol.dat"
+        {
+            type          imported;
+            sha256        "4bc70b34dc87e4556a23b90d405bcbcf07ec18d01d0006c82a60676ac0ea9894";
+            computationalSha256 "3d87101837bd86716669e44ddc2d8012e0e264e31cb6c586fd7f411d0c64a43b";
+            origin        "data/standards/parameters/UNIQUAC/14Dioxane-2Methyl2Propanol.dat";
+            originSha256  "ada763a92983db3789f91259b9f83b8a560f27ef5a4147f6011add9e3bb0c7a8";
             release       Choupo-2608;
         }
         "parameters/Wilson/14Dioxane-2Methyl2Propanol.dat"

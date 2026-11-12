@@ -1,0 +1,295 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      3Methyl1Butanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-14Butanediol.b_ij  -12.4667779835;
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-14Butanediol.b_ji  7.55227551752;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7259e41a85a592ee";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methyl1Butanol-14Butanediol-bubble-acs.jced.6b00092.dat";
+            doi       "10.1021/acs.jced.6b00092";
+            sha256    "74185759f3735575c25b3b41b539f04e467916038a4cf0ae83267aa78e939981";
+            provenance measured;
+            archiveFile "acs.jced.6b00092.xml";
+            system    "3Methyl1Butanol + 14Butanediol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.05; max 0.489; n 33; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-14Butanediol.b_ij  -12.4698530533;
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-14Butanediol.b_ji  7.55539663896;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7259e41a85a592ee";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methyl1Butanol-14Butanediol-bubble-acs.jced.6b00092.dat";
+            doi       "10.1021/acs.jced.6b00092";
+            sha256    "74185759f3735575c25b3b41b539f04e467916038a4cf0ae83267aa78e939981";
+            provenance measured;
+            archiveFile "acs.jced.6b00092.xml";
+            system    "3Methyl1Butanol + 14Butanediol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.05; max 0.489; n 33; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-14Butanediol.A_ij  -43.3568977355;
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-14Butanediol.A_ji  66.5391803595;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7259e41a85a592ee";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methyl1Butanol-14Butanediol-bubble-acs.jced.6b00092.dat";
+            doi       "10.1021/acs.jced.6b00092";
+            sha256    "74185759f3735575c25b3b41b539f04e467916038a4cf0ae83267aa78e939981";
+            provenance measured;
+            archiveFile "acs.jced.6b00092.xml";
+            system    "3Methyl1Butanol + 14Butanediol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.05; max 0.489; n 33; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_wilson_start2;   // type fitParameters
+    model          "Wilson binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-14Butanediol.A_ij  -43.3594501249;
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-14Butanediol.A_ji  66.5412999602;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7259e41a85a592ee";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methyl1Butanol-14Butanediol-bubble-acs.jced.6b00092.dat";
+            doi       "10.1021/acs.jced.6b00092";
+            sha256    "74185759f3735575c25b3b41b539f04e467916038a4cf0ae83267aa78e939981";
+            provenance measured;
+            archiveFile "acs.jced.6b00092.xml";
+            system    "3Methyl1Butanol + 14Butanediol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.05; max 0.489; n 33; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-14Butanediol.a_ij  -16.2116997041;
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-14Butanediol.a_ji  11.3480433475;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7259e41a85a592ee";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methyl1Butanol-14Butanediol-bubble-acs.jced.6b00092.dat";
+            doi       "10.1021/acs.jced.6b00092";
+            sha256    "74185759f3735575c25b3b41b539f04e467916038a4cf0ae83267aa78e939981";
+            provenance measured;
+            archiveFile "acs.jced.6b00092.xml";
+            system    "3Methyl1Butanol + 14Butanediol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.05; max 0.489; n 33; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_uniquac_start2;   // type fitParameters
+    model          "UNIQUAC binary pair, bubble-T residual at fixed P";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-14Butanediol.a_ij  -16.2120996146;
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-14Butanediol.a_ji  11.3484566918;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7259e41a85a592ee";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/3Methyl1Butanol-14Butanediol-bubble-acs.jced.6b00092.dat";
+            doi       "10.1021/acs.jced.6b00092";
+            sha256    "74185759f3735575c25b3b41b539f04e467916038a4cf0ae83267aa78e939981";
+            provenance measured;
+            archiveFile "acs.jced.6b00092.xml";
+            system    "3Methyl1Butanol + 14Butanediol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.05; max 0.489; n 33; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
+);

@@ -21,26 +21,35 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/isobutylAcetate.dat"
         {
             type          imported;
-            sha256        "7a5513321a7f94197cd761fbcda255c75c419151bc192359b5732369c779569a";
-            computationalSha256 "1feca08966bf03786807fe2993c834ead77e0ca86bcc3d74517b22d84404ac6b";
+            sha256        "08d61349c125568c37c0aa2b4ff19fd08f660e2548abbbf6dcf6aff10aa6b5ca";
+            computationalSha256 "e7e60a903093cc499e88148732769b3868d6b3d4ad324f9e05a25f343add11fd";
             origin        "data/standards/components/isobutylAcetate.dat";
-            originSha256  "e76455ecb20132cba36ad3f3a307dcd0c54aa93202987729cabb50cc30626fa2";
+            originSha256  "08f2a9910dea65eebb6a65af7ac3c2c4637b57e52d4c3de2b0699110eb292fd0";
             release       Choupo-2608;
         }
         "components/methylAcetate.dat"
         {
             type          imported;
-            sha256        "2a853f9536c2e28bb0ff43384237e6bf552a62e4f4e5ab2b93bcf2f75ce80870";
-            computationalSha256 "984a3255e049d782ee122f64c337e80aee21d6e71f0e494d074cd23318bb6fa4";
+            sha256        "8fd7e9ac0a66c9ace23e7112a6ceb5f131545a1ca8e7d81488cfe77614ad3954";
+            computationalSha256 "8daaabfc00987a030a4324c496d7e25e5915a77d7c036da66c2f4f4b7346cb15";
             origin        "data/standards/components/methylAcetate.dat";
-            originSha256  "03876631024ae93115fdb03586ab95e3720389bc0e68f5f8cf0b2b5aae74789e";
+            originSha256  "6fec117f381040a52b8564f664430f482315703da51f662403a70e8c323326d5";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/isobutylAcetate-methylAcetate.dat"
+        {
+            type          imported;
+            sha256        "17fbba331bf7a1a9c43e1d7f68b441e119504bcfd6d320fae24d2c639225ccef";
+            computationalSha256 "14f39ce24abf8a20d78c408c436c94ddc548215f6b473a8ecf4c6ee11c2c476c";
+            origin        "data/standards/parameters/NRTL/isobutylAcetate-methylAcetate.dat";
+            originSha256  "6fdfc1d34dab6f5c34056412b5ca6a445bfb604c8b8c56e4601e16c9843234c1";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"
@@ -59,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/isobutylAcetate-methylAcetate.dat"
+        {
+            type          imported;
+            sha256        "eacde70394b38abbb1c1092062fee56fcbd2e63a7439910a6a142a502a489275";
+            computationalSha256 "d9fc2c5a89387c58ebbd6192c2af68272efc1543ccec42463ca7dac96463aecf";
+            origin        "data/standards/parameters/UNIQUAC/isobutylAcetate-methylAcetate.dat";
+            originSha256  "87e2d303c9c5ca595286658c3284b8b91b6fd15721ca92a63434fdfc4ff40852";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/isobutylAcetate-methylAcetate.dat"
+        {
+            type          imported;
+            sha256        "1926ae26f41ba62cba3369b9bedee807a69ad5059c6585b1a810d0f70d6bae54";
+            computationalSha256 "b8b41093455abca040fb695ae2cfcb0f22f0aad41994fdb35413ec4579bd7a83";
+            origin        "data/standards/parameters/Wilson/isobutylAcetate-methylAcetate.dat";
+            originSha256  "859f8de9ecb151b5ebae8bdca363e950378938c7b9b7d8c3fa5f1ec14cbb057c";
             release       Choupo-2608;
         }
     }
