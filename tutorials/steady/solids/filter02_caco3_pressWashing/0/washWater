@@ -1,0 +1,24 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+//  "a volume of wash water equal to 10% of the filtrate volume" (Example
+//  24.2-3): 10 % of 2.02548e-3 m3/s at 996.9 kg/m3 = 0.201920 kg/s, which is
+//  0.337 m3 per 27.73-min cycle.  At the slurry's temperature (the filter
+//  refuses another one: no enthalpy balance across the cake is built).
+
+componentMolarFlows
+{
+    water      40.3504713 kmol/h;
+}
+
+T               298.2 K;
+P               101325 Pa;

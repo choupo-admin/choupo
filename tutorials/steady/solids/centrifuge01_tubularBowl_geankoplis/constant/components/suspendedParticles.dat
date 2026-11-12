@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: suspendedParticles  -- a CASE-LOCAL PSEUDO-SOLID.
+  The particles of Geankoplis, Hersel & Lepek (5th ed.), Example 30.2-2,
+  p. 1437: "particles with a density rho_p = 1461 kg/m3".  The example
+  names no material and gives nothing else.
+
+  MW 100 is a BASIS, not a molecule (it converts a mass flow into kmol/s;
+  no result depends on it).  No heat capacity and no formation datum: the
+  case's only unit is isothermal, and none is invented.
+  Sample-specific: lives in this case only (never data/standards).
+\*---------------------------------------------------------------------------*/
+
+name        suspendedParticles;
+formula     "n/a";
+CAS         "n/a";
+
+MW          100.0;               // kg/kmol -- a BASIS (see header)
+role        nonvolatile;         // a solid: never enters the vapour
+
+solid
+{
+    rho_p   1461.0;              // kg/m^3, Geankoplis Example 30.2-2
+}

@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  centrifuge01_tubularBowl_geankoplis / flowsheetDict
+
+  One tubular bowl, Geankoplis Example 30.2-2.
+\*---------------------------------------------------------------------------*/
+
+//  THE CASE'S SIZE AXIS: a sqrt-2 series from 4 um down (0.177 um is the
+//  pan's top edge), fine enough to see the grade curve between 0.2 and 2 um.
+sizeGrid
+{
+    xMax      4 um;
+    ratio     1.41421356;
+    nClasses  10;
+}
+
+units
+(
+    {
+        name        bowl;
+        type        sedimentingCentrifuge;
+        model       tubularBowl;
+        in          feed;
+        outputs     ( sediment centrate );
+        operation
+        {
+            bowlRadius      0.02225 m;     // r_2
+            liquidRadius    0.00716 m;     // r_1
+            bowlLength      0.1970 m;      // b
+            speed           23000 rpm;     // N
+            //  DECLARED (the example has no discharge): the sediment
+            //  leaves at half solids by mass.
+            sedimentSolids  0.5;
+        }
+    }
+);

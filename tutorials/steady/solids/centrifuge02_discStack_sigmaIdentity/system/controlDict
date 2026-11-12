@@ -1,0 +1,60 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  centrifuge02_discStack_sigmaIdentity
+
+  A DISC-STACK CLARIFIER BY SIGMA THEORY -- A DECLARED ILLUSTRATION.  NO
+  PRINTED OR MEASURED RESULT HOLDS THIS CASE.
+
+  WHY: the `discStack` model of `sedimentingCentrifuge` must be exercised by a
+    shipped case.  A search of the literature folder found no worked example
+    of a disc-stack centrifuge with numbers: de Haan, Eral & Schuur (2nd ed.)
+    section 9.3.5 gives the formula (eq. 9.52) and no example; Geankoplis
+    (5th ed.) describes the disk bowl centrifuge in words (section 30.2D,
+    p. 1442) and prints no equation or example for it; Ambler (1959) derives
+    the disc-type Sigma (his eq. 46, p. 194) and reports a measured efficiency
+    (p. 195) for machines whose geometry is not given in a form this case
+    could repeat; Perry (9th ed.) shows a picture (Fig. 18-131) and no
+    calculation.  Every number below is therefore OURS: a plausible machine,
+    CaCO3 particles in water at 298.15 K.
+  THE ONE THING IT IS HELD TO, AN IDENTITY: the Sigma the engine prints
+    (`sigma_m2`) equals the printed formula evaluated by hand with the same
+    inputs,
+
+        Sigma = 2 pi n omega^2 (r_2^3 - r_1^3) / (3 g tan theta)
+                                        (de Haan et al. eq. 9.52, p. 311)
+
+    n = 100, omega = 2 pi 6000/60 = 628.3185 rad/s, r_2 = 0.10 m, r_1 = 0.04
+    m, theta = 40 deg (tan 0.83910), g = 9.80665 m/s2:
+        r_2^3 - r_1^3 = 9.360e-4 m3
+        Sigma = 2 pi 100 (628.3185)^2 9.360e-4 / (3 9.80665 0.83910)
+              = 9405.03 m2
+    and the cut size follows from Q = 2 v_g(d50) Sigma (Ambler eq. 9, the
+    same relation the tubular bowl uses): d50 = [9 mu Q / (drho g Sigma)]^1/2.
+    With the run's own mu = 8.8987e-4 Pa s (water, Vogel), rho_l = 996.96
+    kg/m3, rho_s = 2710 kg/m3 and Q = 2.7806e-3 m3/s (10.0 m3/h) that is
+    d50 = 0.37543 um by hand.
+    The identity checks the ARITHMETIC of the equation as implemented; it is
+    not a validation of the equation against a disc-stack centrifuge, and no
+    measured performance (Ambler's flow factor C and his measured efficiency,
+    p. 195) is applied: C = 1.
+  DECLARED, NOT SOURCED: the geometry, the speed, the throughput (about 10
+    m3/h of a 0.5 % by volume suspension), the Rosin-Rammler size law (d63 1
+    um, n 1.5) and the sediment's solids fraction (0.2).  The grade curve is
+    the plug-flow drift one, E = min(1, (d/d50)^2/2), DERIVED from Ambler's
+    trajectory and printed by no source.
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "A disc-stack sedimenting centrifuge by Sigma theory, a declared illustration: the engine's Sigma equals de Haan et al. eq. 9.52 evaluated by hand (9405 m2); no printed or measured result holds it.";
+verbosity     3;
+citations
+(
+    "de Haan, A.B.; Eral, H.B.; Schuur, B. (2020) Industrial Separation Processes: Fundamentals, 2nd ed. De Gruyter. Section 9.3.5, eqs. 9.48-9.52, pp. 310-311."
+    "Ambler, C.M. (1959) The theory of scaling up laboratory data for the sedimentation type centrifuge. J. Biochem. Microbiol. Technol. Eng. 1(2), 185-205. Eq. 46, p. 194."
+);

@@ -1,0 +1,73 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+# =============================================================================
+#  THE GEANKOPLIS EXAMPLE 30.2-2 ANCHORS (C361 slice 4), pp. 1437-1438, a
+#  printed worked example.
+#
+#      quantity                      book        Choupo        gap       row
+#      omega [rad/s]                 2410        2408.55       -0.06 %   anchor (printed rounded: 2 pi 23000/60)
+#      bowl volume V [m3]            2.747e-4    2.74663e-4    -0.01 %   anchor
+#      D_pc [um] (eq. 30.2-12)       0.746       0.74677       +0.10 %   anchor (3 figures)
+#      Stokes' range                 "in the"    Re 9.6e-8     --        the unit refuses Re >= 1
+#
+#  NOT ANCHORED, the unit's own: d50 = 0.6327 um, the equal-volume cut of
+#  Ambler (1959) eq. 28 (Sigma 273.2 m2 against Geankoplis's half-layer 196.2
+#  m2); on the uniformly fed bowl's grade curve, Geankoplis's D_pc is the
+#  62.8 % size.  The split (51.6 % of the solids to the sediment) rests on a
+#  DECLARED size distribution the book does not give.
+kpi     bowl                   omega_rad_s      2410             1e-3     anchor
+kpi     bowl                   bowlVolume_m3    2.747e-4         1e-3     anchor
+kpi     bowl                   cutSizeHalfLayer_Dpc_um 0.746            2e-3     anchor
+# =============================================================================
+stream  centrate               F                6.29453282585e-06 1e-4
+stream  centrate               T                298.15           1e-4
+stream  feed                   F                6.306392e-06     1e-4
+stream  feed                   T                298.15           1e-4
+stream  sediment               F                1.18591741527e-08 1e-4
+stream  sediment               T                298.15           1e-4
+kpi     bowl                   Re_cut           9.60198206228e-08 1e-4
+kpi     bowl                   bypass           0                1e-4
+kpi     bowl                   centrate_Sv_m2_m3 20432822.2371    1e-4
+kpi     bowl                   centrate_d10_um  0.0900027463102  1e-4
+kpi     bowl                   centrate_d32_um  0.293645191563   1e-4
+kpi     bowl                   centrate_d50_um  0.363888661077   1e-4
+kpi     bowl                   centrate_d80_um  0.60694350996    1e-4
+kpi     bowl                   centrate_d90_um  0.738797285946   1e-4
+kpi     bowl                   centrate_solids_kg_s 5.56361292366e-07 1e-4
+kpi     bowl                   cutSize_d50_um   0.632709965328   1e-4
+kpi     bowl                   d50_um           0.629437305655   1e-4
+kpi     bowl                   d50c_um          0.629437305655   1e-4
+kpi     bowl                   feed_Sv_m2_m3    13764566.0088    1e-4
+kpi     bowl                   feed_d10_um      0.178142228569   1e-4
+kpi     bowl                   feed_d32_um      0.435901865426   1e-4
+kpi     bowl                   feed_d50_um      0.622252630185   1e-4
+kpi     bowl                   feed_d80_um      1.11375246992    1e-4
+kpi     bowl                   feed_d90_um      1.39924256006    1e-4
+kpi     bowl                   feed_m3_s        7.8666663476e-07 1e-4
+kpi     bowl                   fluidMassClosure 0                1e-4
+kpi     bowl                   fluidMassFlow_kg_s 0.00062948988    1e-4
+kpi     bowl                   fluidTo_sediment 0.000941967021987 1e-4
+kpi     bowl                   gForce_wall      13162.0109486    1e-4
+kpi     bowl                   gradeEfficiency_at_Dpc 0.628272696362   1e-4
+kpi     bowl                   gradeEfficiency_at_d50 0.5              1e-4
+kpi     bowl                   imperfection     0.364173519806   1e-4
+kpi     bowl                   mu_liquid_Pa_s   0.0999999999994  1e-4
+kpi     bowl                   residenceTime_s  349.148059377    1e-4
+kpi     bowl                   rho_liquid       801.000032521    1e-4
+kpi     bowl                   rho_solid        1461             1e-4
+kpi     bowl                   sedimentSolids   0.5              1e-4
+kpi     bowl                   sediment_Sv_m2_m3 7507874.59792    1e-4
+kpi     bowl                   sediment_d10_um  0.479898206285   1e-4
+kpi     bowl                   sediment_d32_um  0.799160923873   1e-4
+kpi     bowl                   sediment_d50_um  0.965265589453   1e-4
+kpi     bowl                   sediment_d80_um  1.38857827421    1e-4
+kpi     bowl                   sediment_d90_um  1.72581440582    1e-4
+kpi     bowl                   sediment_solids_kg_s 5.92958707634e-07 1e-4
+kpi     bowl                   sigmaHalfLayer_m2 196.155406052    1e-4
+kpi     bowl                   sigma_m2         273.249452756    1e-4
+kpi     bowl                   sizeMassClosure  0                1e-4
+kpi     bowl                   solidsMassFlow_kg_s 1.14932e-06      1e-4
+kpi     bowl                   solidsTo_sediment 0.515921334036   1e-4
+kpi     bowl                   vWall_cut_m_s    1.89462682453e-05 1e-4
+kpi     bowl                   volumeFractionOutsideMidRadius 0.628272696362   1e-4

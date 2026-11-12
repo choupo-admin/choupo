@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+//  10 kg/s of solids (DECLARED: the problem gives no throughput) at the
+//  test's concentration, 250 kg per m3 of slurry: with rho_s 2710 and
+//  rho_l 996.9 kg/m3, (1 - 250/2710) x 996.9 / 250 = 3.61974 kg of water per
+//  kg of solids, 36.1974 kg/s.
+
+componentMolarFlows
+{
+    CaCO3       359.6874316 kmol/h;
+    water      7233.4525657 kmol/h;
+}
+
+T               298.15 K;
+P               101325 Pa;
+
+phases
+{
+    liquid
+    {
+        componentMolarFlows
+        {
+            water      7233.4525657 kmol/h;
+        }
+    }
+    solid
+    {
+        componentMolarFlows
+        {
+            CaCO3       359.6874316 kmol/h;
+        }
+    }
+}

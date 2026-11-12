@@ -1,0 +1,37 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  filter01_caco3_rotaryDrum / thermoPhysPropDict
+
+  CaCO3 (calcite, rho_p 2710 kg/m3) in water.  The filter reads the
+  filtrate's viscosity and density from here: Vogel's law from water's
+  record (8.89e-4 Pa s at 298.2 K; the book takes 8.937e-4 from its
+  Appendix A.2) and water's Vliq (996.9 kg/m3, the book's value).  No
+  aqueous chemistry is declared: the calcite does not dissolve here.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( CaCO3 water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel ideal; standardState pureLiquid; }
+    vapour  { fugacityModel idealGas; }
+}
+
+transport
+{
+    liquid
+    {
+        viscosity { model Vogel; }
+    }
+}
