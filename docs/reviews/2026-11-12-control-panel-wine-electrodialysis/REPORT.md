@@ -118,3 +118,22 @@ current, a cold wine, a degraded current efficiency.
 `tables/ctrl_minimalPanels.tsv` applies the general recipe (a controller
 gives a faceplate, a declared disturbance an event marker, an inventory a
 trend) to three control cases.
+
+## 8. Correction received after the analysis (same day)
+
+Two declared values of section 2 are corrected, and the correction changes
+the reading of section 3.  A CLEAN stack of this kind starts at about 2 V
+per cell pair (about 100 V over 50 cell pairs in series, in two hydraulic
+passes of 25), and the stop-and-clean limit is 3 V per cell pair, not 2.
+
+So fouling raises the voltage by a factor of about 1.5 over a campaign, not
+by the factor of about 260 computed in section 3 -- and the gap is in the
+CLEAN prediction: the engine gives 0.114 V per cell pair where about 2 V is
+observed, a factor of about 18.  The engine under-predicts the clean
+resistance (or the current) of a stack on wine; fouling is a modest
+increment on top.  The tables, `panelDict.proposed` and the scratch case
+still carry the 2 V limit and are to be read with this section.
+
+Not yet known, and needed to tell resistance from current: the current the
+clean stack draws at that voltage, and whether the stack is the catalogue
+record's (which states 100 cell pairs) or another of 50.
