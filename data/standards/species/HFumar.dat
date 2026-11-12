@@ -1,0 +1,15 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/HFumar.dat -- ONE model species, ONE typed file: the singly charged anion of fumaric acid.
+
+  NO `aqueousThermo` ON PURPOSE.  The ionisation (pK, dH, dCp) of fumaric acid is evaluated in
+  Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 6 (Ionization data for some Krebs compounds), p. 1057, and is in chemistry/ -- so the SPECIATION (pH, distribution) is complete.  No work
+  in hand prints a formation enthalpy or entropy of this aqueous ion, so a balance that needs its
+  enthalpy REFUSES BY NAME instead of borrowing a value.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    HFumar;
+formula     "HC4H2O4-";
+charge  -1;
+MW { value 115.064; unit g/mol;}

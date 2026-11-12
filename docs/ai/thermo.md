@@ -289,6 +289,24 @@ The stream carries the SALT (the flowsheet/component basis); the model
 activates its ions from the component's `dissociatesTo` and the ion records
 in `species/`.
 
+
+**Weak organic acids (carboxylic) in aqueous chemistry** (C372, 2026-11-12).
+Families that exist, each a neutral master plus its ions and one ionisation record
+per ion (declare the neutral master, or the fully dissociated ion, as the analytical
+total with `totalsBasis stoichiometric; pH solve;`):
+acetic (`Acetate`, `HAc-formation`), formic (`Formate`, `HFo-formation`, logK and dH
+DERIVED from the NBS rows: theoryGuide `sec:carboxylic-ionisation`), tartaric
+(`H2Tart`/`HTart`/`Tart`, Goldberg 2002 Table 7.63), **citric** (`H3Cit`/`H2Cit`/`HCit`/`Cit`;
+Goldberg 2002 Table 7.22; ion hfAq Kochergina 2006), **malic** (`H2Malic`/`HMalic`/`Malic`,
+Eden & Bates 1959, racemic acid; note `Malic*`, not `Mal*`), **lactic** (`HLac`/`Lac`, Nims &
+Smith 1936), **succinic** (`H2Succ`/`HSucc`/`Succ`), **oxalic** (`H2Ox`/`HOx`/`Ox`),
+**maleic** (`H2Male`/`HMale`/`Male`), **fumaric** (`H2Fumar`/`HFumar`/`Fumar`, Miller & Smith-Magowan 1990 Table 6).  The succinate, maleate, malate, lactate and fumarate species carry
+NO `hfAq` (no work in hand prints one): their speciation is complete, a balance that needs
+their enthalpy refuses by name.  The crystal `citricAcid` carries a formation enthalpy and
+a heat of solution but no Cp or entropy.  Malonic, glycolic, gluconic, ascorbic,
+gallic, propionic, butyric and benzoic acids have no ionisation record.  Inventory, readings,
+consistency checks and the works still missing: `docs/design/organic-acids-in-the-catalogue.md`.
+Cases: `volatileAcids01_acetic_formic`, `citricAcid01_speciation`, `wineAcids01_tartaric_malic`.
 **The REACTIVE shape** (a speciation network + volatiles, as in the
 brine-CO₂ and sour-water flashes) declares its IONIC rung inside
 `aqueous {}` and the engine serves what its speciation kernel serves:

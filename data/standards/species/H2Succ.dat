@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/H2Succ.dat -- ONE model species, ONE typed file.
+
+  The NEUTRAL, undissociated aqueous succinic acid: the speciation MASTER of the succinate family, from which
+  the ions are formed by the records in chemistry/ (the tartrate pattern, species/H2Tart.dat).
+  No `aqueousThermo { hfAq }` here, as for H2Tart: the neutral datum belongs to the solution-pair
+  record, not to a species that would start pricing the neutral master on the aqueous energy
+  rung.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    H2Succ;
+formula     "H2C4H4O4";
+charge  0;
+MW { value 118.088; unit g/mol;}

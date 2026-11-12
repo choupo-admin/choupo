@@ -1,0 +1,22 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- the aqueous activity SURFACE of the volatile-acid
+  case: ionic activities from Davies on the molality basis (every beaker is at
+  I <= 0.1 mol/kg, inside Davies' window).  The analysis (analyticalTotals) lives
+  in the OPERATIONS; the species and the ionisation records live in the sealed
+  chemistry tree (constant/chemistry, constant/species).
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water );
+
+aqueousProperties
+{
+
+    activityCoefficients
+    {
+        model          Davies;
+        referenceBasis aqueousMolality;
+    }
+}

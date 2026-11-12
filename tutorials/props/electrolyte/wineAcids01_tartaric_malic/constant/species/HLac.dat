@@ -1,0 +1,15 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/HLac.dat -- ONE model species, ONE typed file.
+
+  The NEUTRAL, undissociated aqueous lactic acid (2-hydroxypropanoic acid): the speciation
+  MASTER of the lactate family, from which Lac- is formed by chemistry/Lac-formation.dat
+  (the tartrate pattern, species/H2Tart.dat).  No `aqueousThermo` here, as for H2Tart.
+  Key names HLac / Lac cannot be confused with the acetate key HAc.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    HLac;
+formula     "HC3H5O3";
+charge  0;
+MW { value 90.078; unit g/mol;}

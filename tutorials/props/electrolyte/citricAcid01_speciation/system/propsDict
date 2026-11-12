@@ -1,0 +1,54 @@
+/*---------------------------------------------------------------------------*\
+  citricAcid01_speciation -- 0.1 mol/kg citric acid titrated with sodium hydroxide:
+  the pH of the acid alone and the distribution H3Cit / H2Cit- / HCit2- / Cit3- as
+  the base is added (0 to 2.5 equivalents of Na per 0.1 mol/kg acid, eight beakers; the ionic strength stays under 0.5 mol/kg, so Davies is inside its window and no beaker is flagged).
+
+  WHAT THIS CASE IS.  A STRUCTURAL ILLUSTRATION of the citrate family built in C372
+  (species H3Cit, H2Cit, HCit, Cit; chemistry H2Cit/HCit/Cit/H3Cit-formation).  It is
+  NOT validated against a measured pH: no work in hand prints one, so the case has
+  no `anchor` rows.  The constants are pK1 3.128, pK2 4.761, pK3 6.396 and dH1 4.07,
+  dH2 2.23, dH3 -3.38 kJ/mol at 25 C, I = 0 (Goldberg, Kishore & Lennen 2002,
+  Table 7.22, p. 265, evaluation grades AAB x3); the formation enthalpies of the
+  ions, hfAq, are Kochergina et al. 2006, Table 4.
+
+  The pH is NOT set: `pH solve;` closes the charge balance, so each point is a
+  beaker somebody could weigh out (acid plus NaOH) and the pH is a result, as in
+  bjerrum01_carbonate_pH.  `totalsBasis stoichiometric` says the sodium is a
+  titrant (a neutral NaOH feed), not a lab-sheet cation to be balanced.
+
+  WHAT TO LOOK FOR.  (this run's numbers, Davies, 25 C)
+   1. The acid alone (Na = 0): pH 2.083, I = 0.009.  The weak-acid hand formula
+      with pK1 = 3.128 and c = 0.1 mol/kg gives 2.06 (the quadratic solution is
+      what the engine solves); the second and third steps add almost nothing.
+   2. The half-neutralisation beakers (Na = 0.05, 0.15, 0.25 mol/kg, i.e. 0.5, 1.5,
+      2.5 equivalents) give pH 3.019, 4.379, 5.765, BELOW the pK's (3.128, 4.761,
+      6.396) by 0.11, 0.38, 0.63.  The gap grows because (a) the pH scale is the
+      activity of H+ and Davies lowers the activity of the multiply charged anion,
+      and (b) the three steps are only 1.6 pK units apart, so the neighbouring
+      steps overlap and no beaker is a clean two-species buffer: at Na = 0.15 the
+      H2Cit-/HCit2- molalities are 0.0479/0.0480 but H3Cit and Cit3- are each
+      0.002 mol/kg.  A textbook Henderson-Hasselbalch plot (gamma = 1, one step at
+      a time) puts every crossover on its pK.
+   3. Cit3- reaches 0.052 of the 0.100 mol/kg total at 2.5 equivalents and would
+      dominate beyond about 3; the run stops there because trisodium citrate
+      (I = 0.6) is past Davies' ~0.5 mol/kg window and the engine would flag it.
+   4. No sodium-citrate ion pair: the catalogue holds no such record, so the
+      distribution is complete only up to the reactions somebody wrote down.
+\*---------------------------------------------------------------------------*/
+
+variables
+{
+    C_T   0.10 mol/kg;
+}
+
+operations
+(
+    { name Na_0p000; type speciate; activityModel davies; analyticalTotals { H3Cit $C_T; } totalsBasis stoichiometric; pH solve; diagSpecies ( H3Cit H2Cit HCit Cit ); output { file Na_0p000.csv; } }
+    { name Na_0p025; type speciate; activityModel davies; analyticalTotals { H3Cit $C_T; Na 0.025 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H3Cit H2Cit HCit Cit ); output { file Na_0p025.csv; } }
+    { name Na_0p050; type speciate; activityModel davies; analyticalTotals { H3Cit $C_T; Na 0.050 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H3Cit H2Cit HCit Cit ); output { file Na_0p050.csv; } }
+    { name Na_0p075; type speciate; activityModel davies; analyticalTotals { H3Cit $C_T; Na 0.075 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H3Cit H2Cit HCit Cit ); output { file Na_0p075.csv; } }
+    { name Na_0p100; type speciate; activityModel davies; analyticalTotals { H3Cit $C_T; Na 0.100 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H3Cit H2Cit HCit Cit ); output { file Na_0p100.csv; } }
+    { name Na_0p150; type speciate; activityModel davies; analyticalTotals { H3Cit $C_T; Na 0.150 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H3Cit H2Cit HCit Cit ); output { file Na_0p150.csv; } }
+    { name Na_0p200; type speciate; activityModel davies; analyticalTotals { H3Cit $C_T; Na 0.200 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H3Cit H2Cit HCit Cit ); output { file Na_0p200.csv; } }
+    { name Na_0p250; type speciate; activityModel davies; analyticalTotals { H3Cit $C_T; Na 0.250 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H3Cit H2Cit HCit Cit ); output { file Na_0p250.csv; } }
+);

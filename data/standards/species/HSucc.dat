@@ -1,0 +1,15 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/HSucc.dat -- ONE model species, ONE typed file: the singly charged anion of succinic acid.
+
+  NO `aqueousThermo` ON PURPOSE.  The ionisation (pK, dH, dCp) of succinic acid is evaluated in
+  Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231, Table 7.57 (Succinate), p. 340, and is in chemistry/ -- so the SPECIATION (pH, distribution) is complete.  No work
+  in hand prints a formation enthalpy or entropy of this aqueous ion, so a balance that needs its
+  enthalpy REFUSES BY NAME instead of borrowing a value.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    HSucc;
+formula     "HC4H4O4-";
+charge  -1;
+MW { value 117.08; unit g/mol;}

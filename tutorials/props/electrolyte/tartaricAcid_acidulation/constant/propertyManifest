@@ -55,10 +55,10 @@ propertyManifest
         "chemistry/H2Tart-formation.dat"
         {
             type          imported;
-            sha256        "6f62657b4666780eaf1caed7e9e013e131bf8ae00c7ff545a580092d64faba22";
-            computationalSha256 "940b23a014341e581e568670e41f08172f7ea241f4e17a5c83e7608919181e3a";
+            sha256        "97c3b9ad52383cc767149e9011e7344fd7a10e2d190789e4d80d393c61096693";
+            computationalSha256 "310602739c7c8eedf1ba4dfd9ee9380090563c4ecbe9727ced977c59adf0f523";
             origin        "data/standards/chemistry/H2Tart-formation.dat";
-            originSha256  "b06202dc827227faad7e2a46bd1b12129e7183421ea363fac142c97a232af5ec";
+            originSha256  "97c3b9ad52383cc767149e9011e7344fd7a10e2d190789e4d80d393c61096693";
             release       Choupo-2607;
         }
         "chemistry/HClaq-formation.dat"
@@ -82,10 +82,10 @@ propertyManifest
         "chemistry/HTart-formation.dat"
         {
             type          imported;
-            sha256        "196d5473c25256f40fdbeb1230fc1df4746369250f04f744e5d62502024b9e65";
-            computationalSha256 "995e4ea128c8526f2477235decb5da843f84da6d96ff43f04ee2e002b4dfb49d";
+            sha256        "97c792e1518ff3e2984c04fc04adf4f413ab2429219a91987fb80e8f9c23c2b0";
+            computationalSha256 "a07b3805c46ae4b97329db4566d0f4a3a8dbc963fec2e8e10aa94b8918cd7617";
             origin        "data/standards/chemistry/HTart-formation.dat";
-            originSha256  "116680e2c5fa098fb558698e02e0f8792907a48298aa47dee099da79ae591be3";
+            originSha256  "97c792e1518ff3e2984c04fc04adf4f413ab2429219a91987fb80e8f9c23c2b0";
             release       Choupo-2607;
         }
         "chemistry/KSO4-formation.dat"
@@ -100,10 +100,10 @@ propertyManifest
         "chemistry/Tart-formation.dat"
         {
             type          imported;
-            sha256        "e14f3bfb11548d7be3ed92906c4457a2ff61919b6c30ef974fee8f38a29a72ee";
-            computationalSha256 "f1c33d7952b4d21e38dbce01d7aa1aa44de1d5b9ae4ecffef5a98fe8d6fb20ba";
+            sha256        "29b9616ffbfda59048da34a7607eb15edca4c692e3f8fbce9a1472e7dee14bf5";
+            computationalSha256 "7daffa2aa0dfdb3540159bcefee4514f04f6a58e3baa75507d6d8cc4a67f0908";
             origin        "data/standards/chemistry/Tart-formation.dat";
-            originSha256  "f4b1139c4ebdf8594c8c30dc556f2537c4dace47865ae077eca5758105d3dbf1";
+            originSha256  "29b9616ffbfda59048da34a7607eb15edca4c692e3f8fbce9a1472e7dee14bf5";
             release       Choupo-2607;
         }
         "chemistry/water-dissociation.dat"

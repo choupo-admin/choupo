@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/H2Male-formation.dat -- the neutral maleic acid as the sum of its fully dissociated form:
+      Male(2-) + 2 H+  <=>  H2Male
+
+  logK25 and dH are the selected values of Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231, Table 7.42 (Maleate), p. 305 (evaluation grades CBD / BBD,
+  scale: standard state ideal solution at 1 mol/kg, 298.15 K, I = 0):
+      pK1 = 1.92, pK2 = 6.27
+      dH1 = 1.1 kJ/mol, dH2 = -3.6 kJ/mol
+  This record carries the sum of those steps (the sign flips with the direction written).
+  The enthalpy is the EVALUATED dH_ion of the same table as the pK, not a difference of formation
+  enthalpies: the two kinds of number are kept apart and cross-checked in
+  docs/design/organic-acids-in-the-catalogue.md.  Hand-curated organic chemistry, not PHREEQC.
+
+  The inverse of the records written from the neutral master; a case declares one master and
+  the closure activates the record reachable from it.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species H2Male; masters ( { ion Male; nu 1; } { ion H; nu 2; } );
+      logK25 8.19; dH 2500; source "Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231, Table 7.42 (Maleate), p. 305: pK1 = 1.92, pK2 = 6.27; dH1 = 1.1 kJ/mol, dH2 = -3.6 kJ/mol (pK, dH_ion at 298.15 K, I = 0)";
