@@ -355,3 +355,31 @@ License
     grid-template-columns: minmax(0, 1fr) !important;
   }
 }
+
+/* EduTools home (DEV.md 4c C374): one accent per section, `--sec`, set inline
+   from sectionAccents.ts.  Accent marks the section on its tile, its heading
+   and its cards' left edge; the text stays the app's ordinary text colour. */
+.choupo-edu-tile {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  min-height: 56px; padding: 8px 12px 8px 14px; border-radius: 6px;
+  border-left: 4px solid var(--sec);
+  background: color-mix(in srgb, var(--sec) 14%, var(--mantine-color-body));
+  transition: background-color 120ms;
+}
+.choupo-edu-tile:hover {
+  background: color-mix(in srgb, var(--sec) 24%, var(--mantine-color-body));
+}
+.choupo-edu-tile[data-dim] { opacity: 0.45; cursor: default; }
+.choupo-edu-tile[data-dim]:hover {
+  background: color-mix(in srgb, var(--sec) 14%, var(--mantine-color-body));
+}
+.choupo-edu-heading::before {
+  content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px;
+  background: var(--sec); margin-right: 8px;
+}
+.choupo-edu-card {
+  border: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+  border-left: 3px solid var(--sec);
+  transition: border-color 120ms, box-shadow 120ms;
+}
+.choupo-edu-card:hover { border-color: var(--sec); box-shadow: 0 0 0 1px var(--sec); }
