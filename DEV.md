@@ -3497,6 +3497,26 @@ accepts today, and that is a policy call.
 > PUT TO VITOR FOR RATIFICATION is the first section of the record
 > (twelve rules, slice 0, the pilot, the cut list).  Nothing is built
 > until he ratifies.
+> A FINAL INDEPENDENT REVIEW (2026-11-12, night; Vitor: "esta e a ultima
+> analise da tua estrategia ... tu e que mandas em ultima analise")
+> recommended starting slice 0 and the isolated CO2 correction.  JUDGED ON
+> CONTENT, seven points, all taken (third amendment block of the record):
+> slice 0 reports PER CONSUMER the value each unit actually uses; a case
+> value displaces an applicable catalogue method only by an explicit act
+> that names what it replaces; a measurement is a method with a HARD BOX
+> (inside it serves every stream of that constituent set, outside it is a
+> domain error and never a switch) -- this replaces the restriction to
+> streams whose state the case fixes; a domain error is typed, so a solver
+> may reject a step, and only a final state outside the domain fails;
+> `neglectedIn` leaves the ratified core (MEASURED: what the engine does
+> today is leave-out-and-renormalise, automatic, in five callers, which is
+> a different operation from mass without volume); "poor" is judged for
+> the method applied to the mixture; the pilot gains the measured NaOH
+> point with an iterated flow feeding pump and CSTR, and postpones the
+> formula interpreter.  DECISION (rule 00): the study phase is closed.
+> SLICE 0 IS LAUNCHED on a branch (it moves no number); the CO2 datum
+> follows in its own commit; the pilot starts only after Vitor has read
+> slice 0's table.
 
 > **C379 (Vitor, 2026-11-12: "achas que e boa ideia criar um EduTool a
 > explicar a estrutura do kernel de propriedades termofisicas?  Isto para
