@@ -618,6 +618,7 @@ void Component::readFromDict(const DictPtr& d)
                 hasSolid_ = true;
                 rho_p_ = cr->lookupScalarOrDefault("rho_p", 0.0);
                 k_v_   = cr->lookupScalarOrDefault("k_v", 0.5235987756);
+                kvDeclared_ = cr->found("k_v");
                 break;
             }
     }
@@ -627,6 +628,7 @@ void Component::readFromDict(const DictPtr& d)
         hasSolid_ = true;
         rho_p_ = sd->lookupScalarOrDefault("rho_p", 0.0);
         k_v_   = sd->lookupScalarOrDefault("k_v", 0.5235987756);  // sphere
+        kvDeclared_ = sd->found("k_v");
     }
 
     // Sublimation reference state (the solid-vapour P-T anchor): triple point +
