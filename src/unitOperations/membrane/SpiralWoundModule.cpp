@@ -51,6 +51,7 @@ License
 #include "transport/TransportModel.H"
 #include "thermo/ThermoPackage.H"
 
+#include <limits>
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
@@ -318,7 +319,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     const int    nNodes     = static_cast<int>(opDict->lookupScalarOrDefault("nNodes", 100.0));
     const scalar rho        = opDict->lookupScalarOrDefault("rho_feed", liquidSource::rhoFeedDefault.value); // kg/m³
     if (opDict->found("rho_feed"))
-        PropertySourceLog::instance().useHere("liquidDensity", liquidSource::declaredByCase, "declared");
+        PropertySourceLog::instance().useHere("liquidDensity", liquidSource::declaredByCase, "declared", took(rho));
     else
         PropertySourceLog::instance().useHere("liquidDensity", liquidSource::rhoFeedDefault);
 
@@ -399,7 +400,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     //  such with the remedy.  No case in the corpus declares liquid
     //  transport, so the model route moves no golden -- checked.
     if (muDeclared)
-        PropertySourceLog::instance().useHere("liquidViscosity", liquidSource::declaredByCase, "declared");
+        PropertySourceLog::instance().useHere("liquidViscosity", liquidSource::declaredByCase, "declared", took(mu_feed));
     else if (!thermo.hasLiquidViscosity())
         PropertySourceLog::instance().useHere("liquidViscosity", liquidSource::waterViscosityKnob);
     if (!muDeclared)
@@ -873,19 +874,19 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     {
         if (DDeclared)
             PropertySourceLog::instance().useHere("liquidDiffusivity",
-                liquidSource::declaredByCase, "declared");
+                liquidSource::declaredByCase, "declared", took(D_solute));
         else if (dSoluteSeverity == "info")
             PropertySourceLog::instance().useHere("liquidDiffusivity",
                 NamedSource{ "kernel.liquidDiffusivity.soluteInWater",
-                             "kernel: the package's liquid-diffusivity model, first nonvolatile solute in the aqueous solvent" },
-                "kernel");
+                             "the property kernel's liquid-diffusivity model, for the first nonvolatile solute in the aqueous solvent" },
+                "kernel", took(D_solute));
         else
             PropertySourceLog::instance().useHere("liquidDiffusivity",
                 liquidSource::soluteDiffusivityLegacy);
     }
     if (opDict->found("massTransfer") && polar.nIons() > 0)
         PropertySourceLog::instance().useHere("liquidDiffusivity",
-            liquidSource::speciesRecordD0, "record");
+            liquidSource::speciesRecordD0, "record", took(std::numeric_limits<double>::quiet_NaN()));
     if (!dSoluteAdvisory.empty() && polar.nIons() < polar.solutes().size())
         AdvisoryLog::instance().add("model", dSoluteSeverity,
             "membrane '" + (dict->name().empty() ? type() : dict->name()) + "'",

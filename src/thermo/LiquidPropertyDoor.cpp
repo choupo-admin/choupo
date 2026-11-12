@@ -17,6 +17,7 @@
 #include "core/PropertySourceLog.H"
 #include "thermo/ThermoPackage.H"
 
+#include <limits>
 #include <set>
 #include <string>
 
@@ -45,9 +46,9 @@ const char* routeLabel(Route r)
 {
     switch (r)
     {
-        case Route::anchoredRackett: return "the record's Vliq (25 C) x Rackett(T)/Rackett(298.15 K)";
-        case Route::flatVliq:        return "the record's Vliq (25 C) held flat (no Tc)";
-        case Route::bareRackett:     return "bare Rackett from Tc, Pc, omega (an estimate)";
+        case Route::anchoredRackett: return "each component's 25 C molar volume scaled to temperature by Rackett";
+        case Route::flatVliq:        return "each component's 25 C molar volume, with no temperature effect (its record has no critical constants)";
+        case Route::bareRackett:     return "an estimate by Rackett from the critical constants (no measured volume in the record)";
         case Route::none:            return "no route";
     }
     return "?";
@@ -107,13 +108,13 @@ Result evaluate(const ThermoPackage& thermo, Property p, scalar T, scalar P,
         r.quality.provenance = "the case's pureFluids selection (" + m + ")";
         if (p == Property::density)
         {
-            r.label = "kernel: the pure-fluid formulation " + m + ", v(T, P)";
+            r.label = "property kernel: the pure-fluid formulation " + m + " at the temperature and pressure";
             r.pressureApplied = true;
             pressure = "applied";
         }
         else
         {
-            r.label = "kernel: the pure-fluid formulation " + m
+            r.label = "property kernel: the pure-fluid formulation " + m
                     + " on the saturation line";
             pressure = (p == Property::viscosity) ? "not applied (saturated liquid)"
                                                   : "";
@@ -134,7 +135,7 @@ Result evaluate(const ThermoPackage& thermo, Property p, scalar T, scalar P,
                                      zs > 0.0 ? x[k] / zs : 0.0 });
             }
         r.methodId = "liquidVolume.idealMix[";
-        r.label    = "kernel: ideal mixing of liquid volumes, ";
+        r.label    = "property kernel: ideal mixing of liquid volumes, ";
         bool first = true;
         for (const Route rt : routes)
         {
@@ -152,9 +153,9 @@ Result evaluate(const ThermoPackage& thermo, Property p, scalar T, scalar P,
         const std::string m = (p == Property::viscosity) ? thermo.liquidViscosityMethod()
                                                          : thermo.surfaceTensionMethod();
         r.methodId = m;
-        r.label = std::string("kernel: ")
-                + (p == Property::viscosity ? "liquid viscosity " : "surface tension ")
-                + m + " (model/mixing rule)";
+        r.label = std::string("property kernel: the ")
+                + (p == Property::viscosity ? "viscosity" : "surface-tension")
+                + " model and mixing rule the case selects (" + m + ")";
         r.quality.origin     = "regressed";
         r.quality.provenance = "the component records' transport blocks";
         pressure = (p == Property::viscosity) ? "not applied (saturated liquid)" : "";
@@ -169,7 +170,9 @@ Result evaluate(const ThermoPackage& thermo, Property p, scalar T, scalar P,
     if (who) { type = who->type; unit = who->unit; }
     else if (!PropertySourceLog::instance().current(type, unit)) return r;
     PropertySourceLog::instance().use(type, unit, name(p),
-        r.methodId, r.label, "kernel", pressure, leftOut);
+        r.methodId, r.label, "kernel", pressure, leftOut,
+        took(r.value, T, P > 0.0 ? P : std::numeric_limits<double>::quiet_NaN(),
+             compositionKey(x)));
     return r;
 }
 

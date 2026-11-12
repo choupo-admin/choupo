@@ -5188,9 +5188,9 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
         const scalar D01 = wilkeChang.diffusivityLiquidBinary(thermo.comp(0), thermo.comp(1), T[j], muL);
         const scalar D10 = wilkeChang.diffusivityLiquidBinary(thermo.comp(1), thermo.comp(0), T[j], muL);
         const scalar DL  = x[j][0] * D10 + x[j][1] * D01;
-        PropertySourceLog::instance().useHere("liquidDiffusivity", liquidSource::ownWilkeChang, "own");
+        PropertySourceLog::instance().useHere("liquidDiffusivity", liquidSource::ownWilkeChang, "own", took(DL, T[j], P));
         if (muLdecl > 0.0)
-            PropertySourceLog::instance().useHere("liquidViscosity", liquidSource::declaredByCase, "declared");
+            PropertySourceLog::instance().useHere("liquidViscosity", liquidSource::declaredByCase, "declared", took(muLdecl));
         //  The local slope of the equilibrium line for the light key.
         const scalar xl = x[j][lk];
         const scalar h  = std::min({1.0e-4, 0.5 * xl, 0.5 * (1.0 - xl)});
@@ -5624,9 +5624,9 @@ int DistillationColumn::solveTotalRefluxPacked(const DictPtr& dict,
         const scalar D01 = wilkeChang.diffusivityLiquidBinary(thermo.comp(0), thermo.comp(1), p.T, st.muL);
         const scalar D10 = wilkeChang.diffusivityLiquidBinary(thermo.comp(1), thermo.comp(0), p.T, st.muL);
         st.DL = x[0] * D10 + x[1] * D01;
-        PropertySourceLog::instance().useHere("liquidDiffusivity", liquidSource::ownWilkeChang, "own");
+        PropertySourceLog::instance().useHere("liquidDiffusivity", liquidSource::ownWilkeChang, "own", took(st.DL, p.T, P));
         if (muLdecl > 0.0)
-            PropertySourceLog::instance().useHere("liquidViscosity", liquidSource::declaredByCase, "declared");
+            PropertySourceLog::instance().useHere("liquidViscosity", liquidSource::declaredByCase, "declared", took(muLdecl));
         st.lambda = p.lambda;
         const PackingRBF::Result r = delft ? PackingDelft::evaluate(dg, st)
                                            : PackingRBF::evaluate(pg, st);

@@ -128,7 +128,7 @@ int SprayDryer::solve(const DictPtr& dict,
         PropertySourceLog::instance().useHere("liquidViscosity", oper->found("liquidViscosity")
             ? liquidSource::declaredByCase : NamedSource{ liquidSource::waterViscosityKnob.id,
                                                           liquidSource::waterViscosityKnob.label },
-            oper->found("liquidViscosity") ? "declared" : "bypass");
+            oper->found("liquidViscosity") ? "declared" : "bypass", took(muL));
     std::string muLSource = "operation.liquidViscosity knob (default water 1e-3; no liquidViscosity model)";
     if (thermo.hasLiquidViscosity())
     {
@@ -397,7 +397,7 @@ int SprayDryer::solve(const DictPtr& dict,
     if (oper->found("surfaceTension"))
     {
         sigma = oper->lookupScalar("surfaceTension");
-        PropertySourceLog::instance().useHere("surfaceTension", liquidSource::declaredByCase, "declared");
+        PropertySourceLog::instance().useHere("surfaceTension", liquidSource::declaredByCase, "declared", took(sigma));
         sigmaSource = "operation{} knob";
     }
     else
@@ -591,7 +591,7 @@ int SprayDryer::solve(const DictPtr& dict,
     if (!multiSolvent)
         PropertySourceLog::instance().useHere("liquidDensity", solv.Vliq() > 0.0 ? liquidSource::recordVliqFlat
             : NamedSource{ liquidSource::dropletDensityFallback.id, liquidSource::dropletDensityFallback.label },
-            "bypass", solv.Vliq() > 0.0 ? "not applied" : "");
+            "bypass", took(rho_L), solv.Vliq() > 0.0 ? "not applied" : "");
     if (multiSolvent)
     {
         //  The solvent liquid's density at its feed composition: molar
@@ -609,7 +609,7 @@ int SprayDryer::solve(const DictPtr& dict,
         if (!(all && V > 0.0))
             PropertySourceLog::instance().useHere("liquidDensity", liquidSource::dropletDensityFallback);
         else
-            PropertySourceLog::instance().useHere("liquidDensity", liquidSource::recordVliqFlat, "bypass", "not applied");
+            PropertySourceLog::instance().useHere("liquidDensity", liquidSource::recordVliqFlat, "bypass", took(rho_L), "not applied");
         if (!all)
             AdvisoryLog::instance().add("model", "warning",
                 "sprayDryer '" + (dict->name().empty() ? type() : dict->name()) + "'",

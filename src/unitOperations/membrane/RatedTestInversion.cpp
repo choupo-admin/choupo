@@ -223,7 +223,7 @@ ModuleAtConditions runModuleAt(const DictPtr& unitDict,
     const std::size_t iS = thermo.indexOf(solute);
     const scalar rho  = op->lookupScalarOrDefault("rho_feed", liquidSource::rhoFeedDefault.value);
     if (op->found("rho_feed"))
-        PropertySourceLog::instance().useHere("liquidDensity", liquidSource::declaredByCase, "declared");
+        PropertySourceLog::instance().useHere("liquidDensity", liquidSource::declaredByCase, "declared", took(rho));
     else
         PropertySourceLog::instance().useHere("liquidDensity", liquidSource::rhoFeedDefault);
     const scalar w    = feedMassFraction;

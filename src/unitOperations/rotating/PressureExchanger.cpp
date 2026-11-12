@@ -216,9 +216,10 @@ int PressureExchanger::solve(const DictPtr& dict,
     };
     const scalar v_hp = molarVolume(hp);
     const scalar v_lp = molarVolume(lp);
-    PropertySourceLog::instance().useHere("liquidVolume", x_ions_total > 0.0
-        ? liquidSource::recordVliqIonsMassKept : liquidSource::recordVliqFlat,
-        "bypass", "not applied");
+    for (const scalar v : { v_hp, v_lp })
+        PropertySourceLog::instance().useHere("liquidVolume", x_ions_total > 0.0
+            ? liquidSource::recordVliqIonsMassKept : liquidSource::recordVliqFlat,
+            "bypass", took(v), "not applied");
     if (x_ions_total > 0.0)
     {
         char b[480];

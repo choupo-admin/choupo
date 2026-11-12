@@ -115,7 +115,6 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
     //  THE LIQUID-PROPERTY SOURCES (C378 slice 0): the two tables -- what
     //  each unit declared at assembly, what each consumer used -- in the
     //  log, just before the result they describe.
-    PropertySourceLog::instance().printDeclared(os);
     PropertySourceLog::instance().printUsed(os);
     os << "<<<Choupo:result-begin>>>\n";
     os << "{ \"version\": 1,\n";

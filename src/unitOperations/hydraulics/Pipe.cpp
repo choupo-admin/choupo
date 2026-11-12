@@ -242,7 +242,7 @@ int Pipe::solve(const DictPtr& dict,
             if (operDict->found("viscosity"))
             {
                 muL = operDict->lookupScalar("viscosity", Dims::viscosity);
-                PropertySourceLog::instance().useHere("liquidViscosity", liquidSource::declaredByCase, "declared");
+                PropertySourceLog::instance().useHere("liquidViscosity", liquidSource::declaredByCase, "declared", took(muL));
                 std::cout << "  [pipe] liquid viscosity: USER OVERRIDE from"
                              " operation.viscosity = " << muL << " Pa.s"
                              " (the thermoPackage liquidViscosity model is"
@@ -453,7 +453,7 @@ int Pipe::solve(const DictPtr& dict,
     if (operDict->found("viscosity"))
     {
         mu = operDict->lookupScalar("viscosity", Dims::viscosity);
-        PropertySourceLog::instance().useHere("liquidViscosity", liquidSource::declaredByCase, "declared");
+        PropertySourceLog::instance().useHere("liquidViscosity", liquidSource::declaredByCase, "declared", took(mu));
         muSource = "operation override";
     }
     else if (thermo.hasLiquidViscosity())

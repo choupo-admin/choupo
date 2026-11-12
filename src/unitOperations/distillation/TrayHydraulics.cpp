@@ -249,7 +249,7 @@ TrayHydraulics::Result TrayHydraulics::evaluate(const ThermoPackage&        ther
         if (geo.sigma > 0.0)
         {
             s.sigma = geo.sigma;
-            PropertySourceLog::instance().useHere("surfaceTension", liquidSource::declaredByCase, "declared");
+            PropertySourceLog::instance().useHere("surfaceTension", liquidSource::declaredByCase, "declared", took(geo.sigma, T[j], P));
         }
         else if (thermo.hasSurfaceTension()) s.sigma = liquidProperty::evaluate(thermo, liquidProperty::Property::surfaceTension, T[j], 0.0, x[j]).value;
         else

@@ -146,7 +146,7 @@ void BatchDiafilter::initialise(const DictPtr&       unitDict,
     {
         rho_ = op->lookupScalar("rho", Dims::density);
         PropertySourceLog::instance().use(type(), name(), "liquidDensity",
-            liquidSource::declaredByCase, "declared");
+            liquidSource::declaredByCase, "declared", took(rho_));
     }
     else
     {
