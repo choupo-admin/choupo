@@ -1675,6 +1675,11 @@
       "exit": 0,
       "claim": "check_species_records: OK -- 21 aqueous species reproduce from species.tsv (NBS 1982 read against the CRC reprint and the Gibbs identity, 8 CODATA-chosen quantities, 6 held; NOT CHECKED: any radius or D0 -- none is carried)",
       "seconds": 0.1
+    },
+    "check_time_integrated": {
+      "exit": 0,
+      "claim": "check_time_integrated: OK -- TI-01 fixture: 34-field header held on every row; TI-02: the closed leaking loop is refused; unsteady03, unsteady04, unsteady05 still run; TI-03: a `recipe` is refused by name under choupoSemiContinuous and choupoCtrl",
+      "seconds": 11.2
     }
   }
 }
