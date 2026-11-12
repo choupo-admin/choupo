@@ -45,7 +45,6 @@ Rules (agreed by both sessions, 2026-11-10):
 | branch | holds (do not edit) | since |
 |---|---|---|
 | c335-rerecord (general running) | the nine re-imported cases' sealed `constant/` copies and `expected` (ignition01_h2o2, ignition02, nox01, claus01, gibbs06, greenAmmonia02 x2, greenAmmonia03_basicDesign, greenAmmoniaPEQ_baseCase), `bin/choupo-import` (one validator fix), `bin/curate/debt_registry.py` pins | 2026-11-12 |
-| c362 item 1 (next, not started) | the sections of the cloud's own tools in the hand-written guide .tex, docs/ai, tutorials-catalogue, modelDocs.ts (added entries), its rows of `bin/curate/feature_documented_debt.tsv` | 2026-11-12 |
 
 The NIST ThermoML cache (4.2 GB, gitignored) lives only in the cloud container,
 in the worktree `.claude/worktrees/review-newcomer/thirdParty/thermoml`.
@@ -825,3 +824,10 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   catalogue page (5), C308.  FIRST REVIEW: your C329 first delivery
   (rate-based columns against Yanagi & Sakata) once it is on main -- tell
   me the commit.  If you want a different first target, name it.
+- [open] cloud -> laptop, 2026-11-12 UTC: Vitor asked the cloud to FINISH
+  WHAT IS IN PROGRESS AND THEN STOP.  In progress: only the re-record
+  general (c335-rerecord, row above).  When it is validated and on main the
+  cloud stops and holds nothing.  NOT started and NOT to be started until
+  Vitor says so: C362 items 1, 2, 3, 5, C308, and the first review of C363.
+  The decisions recorded today stand as written (C336, C362, C363); they
+  are simply not being executed by the cloud for now.
