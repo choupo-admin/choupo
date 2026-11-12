@@ -51,6 +51,39 @@
       "required": [
         "file"
       ]
+    },
+    "table": {
+      "type": "object",
+      "title": "Design table (mass fraction x temperature)",
+      "description": "`{ massFractions ( ... ); temperatures ( ... ); file <name>.csv; }` (or `molalities ( ... )` in place of `massFractions`) — for each point: molality, a_w, the boiling-point rise at that temperature as the boiling temperature, EXACT (a_w Psat(T) = Psat(T − BPE), the evaporator's own relation) and LINEARISED (−R T²/ΔHvap · ln a_w), L_phi, the solution enthalpy on the chart datum (liquid water at 0 °C, the salt at infinite dilution at 20 °C) and, for a model built from separate activity and enthalpy correlations, its Gibbs-Helmholtz gap. Diagnostics aw_/BPE_exact_/BPE_linear_/Lphi_/Hchart_/GHgap_ tagged _w<wt%>_T<°C> (or _m<m>_T<°C>).",
+      "properties": {
+        "massFractions": {
+          "type": "array",
+          "title": "Salt mass fractions",
+          "items": {"type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1},
+          "unit": "-"
+        },
+        "molalities": {
+          "type": "array",
+          "title": "Molalities (in place of mass fractions)",
+          "items": {"type": "number", "exclusiveMinimum": 0},
+          "unit": "mol/kg"
+        },
+        "temperatures": {
+          "type": "array",
+          "title": "Temperatures",
+          "items": {"type": "number", "exclusiveMinimum": 0},
+          "unit": "K"
+        },
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        }
+      },
+      "required": [
+        "temperatures",
+        "file"
+      ]
     }
   },
   "required": [],

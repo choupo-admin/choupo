@@ -1995,6 +1995,45 @@ Speciation/mineral data: case-local constant/electrolyte/ -- a self- contained S
 \end{tutgolden}
 
 \clearpage
+\tutentry{olsson01\_naoh\_high\_concentration}{tutorials/props/electrolyte/olsson01\_naoh\_high\_concentration}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{olsson\_table}\\[-1pt]{\tiny electrolyteActivity}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{olsson\_vs\_parker}\\[-1pt]{\tiny electrolyteActivity}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{olsson\_vs\_geankoplis}\\[-1pt]{\tiny electrolyteActivity}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{olsson\_vs\_geankoplis\_hL}\\[-1pt]{\tiny electrolyteActivity}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{pitzer\_25C}\\[-1pt]{\tiny pitzerActivity}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{pitzer\_100C}\\[-1pt]{\tiny pitzerActivity}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{NaOH-water to 80 wt \%: water activity, exact boiling-point rise and heat of dilution on the OlssonNaOH model, beside Pitzer and Parker}
+\begin{tutnarrative}
+caustic soda the way an evaporator sees it: 10 to 50 wt \% NaOH, 25 to 200 C, on the OlssonNaOH model (Olsson, Jernqvist \& Aly, Int. J. Thermophys. 18 (1997) 779), beside the Na-OH Pitzer pair where that pair is fitted (to 6 mol/kg) and beside two independent readings.
+
+What is held, and by what (rows marked `anchor` in `expected`): L\_phi at 25 C, 10 / 15 / 20 mol/kg, against Parker NSRDS-NBS 2 (1965) Table XIV A (printed: 903, 2290, 3722 cal/mol) -- INDEPENDENT of the paper (calorimetry, not its correlation); tolerance 3 \%, the size of the residual offset the join at 6 mol/kg leaves (Theory Guide sec:olsson-naoh). the solution enthalpy on the chart datum (liquid water at 0 C, NaOH at infinite dilution at 20 C) against the two values Geankoplis 5th ed. PRINTS in Example 32.4-3 (p. 1504), read by the book off its Fig. 32.4-3 (McCabe 1935): 20 wt \% at 60 C, h\_F = 214 kJ/kg; 50 wt \% at 89.5 C, h\_L = 505 kJ/kg. Tolerance 2 \%: a chart reading. NOT fully independent -- the paper's enthalpy data for 0.20-0.52 kg water/kg are Wilson \& McCabe (1942) and Bertetti \& McCabe (1936), the same lineage as the chart. the boiling temperature against Geankoplis Examples 32.4-2 and 32.4-3 (pp. 1501, 1504), read off his Duhring chart, Fig. 32.4-2: 30 wt \% at 25.6 kPa boils at 79.5 C (water 65.6 C), 50 wt \% at 11.7 kPa at 89.5 C (water 48.9 C). These are reported in the run and in the guide, not anchored: the op tabulates the rise at a GIVEN boiling temperature, so the comparison is made at the book's T and its two BPRs (13.9 K, 40.6 K) are printed beside the model's in the Theory Guide table.
+
+Everything else in `expected` is self-recorded (regression, not truth).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{olsson\_table}{BPE\_exact\_w10\_T025}{1.80251536263}
+\goldrow{diag}{olsson\_table}{BPE\_exact\_w10\_T060}{2.31236655437}
+\goldrow{diag}{olsson\_table}{BPE\_exact\_w10\_T100}{2.95757816867}
+\goldrow{diag}{olsson\_table}{BPE\_exact\_w10\_T150}{3.83884180122}
+\goldrow{diag}{olsson\_table}{BPE\_exact\_w10\_T200}{4.76628928396}
+\goldrow{diag}{olsson\_table}{BPE\_exact\_w20\_T025}{5.47798679216}
+\goldrow{diag}{olsson\_table}{BPE\_exact\_w20\_T060}{6.55134596354}
+\goldrow{diag}{olsson\_table}{BPE\_exact\_w20\_T100}{7.62135422178}
+\goldrow{diag}{olsson\_table}{BPE\_exact\_w20\_T150}{8.73317537575}
+\goldrow{diag}{olsson\_table}{BPE\_exact\_w20\_T200}{9.6003506946}
+\goldrow{diag}{olsson\_table}{BPE\_exact\_w30\_T025}{12.8329697955}
+\goldrow{diag}{olsson\_table}{BPE\_exact\_w30\_T060}{14.5490653749}
+\goldrow{diag}{olsson\_table}{BPE\_exact\_w30\_T100}{16.1413199627}
+\goldrow{diag}{olsson\_table}{BPE\_exact\_w30\_T150}{17.5851083915}
+\goldmore{196}
+\end{tutgolden}
+
+\clearpage
 \tutentry{overlay01\_nacl\_ksp}{tutorials/props/electrolyte/overlay01\_nacl\_ksp}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

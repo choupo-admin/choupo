@@ -444,6 +444,7 @@ Mean-ionic activity and osmotic coefficients of the salt the CASE's declared the
 | `molality` |   | object | — | `{ from ...; to ...; n ...; }` — the molality range to sweep. |
 | `temperature` |   | number | K | Defaults to 298.15 K. |
 | `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+| `table` |   | object | — | `{ massFractions ( ... ); temperatures ( ... ); file <name>.csv; }` (or `molalities ( ... )` in place of `massFractions`) — for each poin… |
 
 ## `electrolyteFit`  (electrolyteFit operation)
 

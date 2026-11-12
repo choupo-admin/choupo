@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+//  Geankoplis Example 32.4-3: S = 3255 kg/h of saturated steam at 115.6 C
+//  (172.4 kPa in the book's steam table).  3255 / 18.01528 = 180.67996 kmol/h.
+//  P is THIS case's water Psat at 388.75 K (its Antoine), so the supply sits
+//  on the package's own saturation curve; `phase gas;` says which side
+//  (docs/design/the-word-that-was-not-there.md).
+componentMolarFlows
+{
+    water    180.67996 kmol/h;
+}
+
+T               388.75 K;
+P               178668.26 Pa;
+phase           gas;

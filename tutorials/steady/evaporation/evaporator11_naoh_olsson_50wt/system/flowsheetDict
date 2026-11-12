@@ -1,0 +1,53 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  evaporator11_naoh_olsson_50wt  --  real caustic duty, 20 -> 50 wt % NaOH
+
+  The worked single-effect evaporator of Geankoplis, Transport Processes and
+  Separation Process Principles, 5th ed., Example 32.4-3 (pp. 1502-1505):
+  4536 kg/h of 20 wt % NaOH entering at 60 C, saturated steam at 172.4 kPa
+  (115.6 C), U = 1560 W/m2/K, concentrated to 50 wt %.  The book FIXES the
+  vapour-space pressure (11.7 kPa) and the product (50 %) and finds the area
+  (49.2 m2) and the steam (3255 kg/h) from its Duhring and enthalpy-
+  concentration charts.  This case RATES that design: it gives the unit the
+  book's area, U and steam, and the engine finds the boiling temperature,
+  the vessel pressure and the product concentration.  The book's printed
+  answers are anchored in `expected` (kind: printed; they are chart
+  readings, so the anchors carry the chart's reading tolerance).
+
+  The solution is priced on `model OlssonNaOH;` (Olsson, Jernqvist & Aly,
+  Int. J. Thermophys. 18 (1997) 779): water activity from their vapour-
+  pressure correlation, the heat of dilution from their enthalpy
+  correlation -- valid to 80 wt %, where the Na-OH Pitzer pair is fitted to
+  6 mol/kg (19 wt %) and a 50 % liquor is 25 mol/kg.  Read the run for:
+
+      heat of dilution = X kW   (L_phi: m 6.25 -> ~25 mol/kg salt, ...)
+      BPE = ...                 (the EXACT a_w Psat(T) = Psat(T - BPE))
+
+  and contrast evaporator08 (Pitzer, inside its 6 mol/kg window).
+
+  Steam: 115.6 C is the book's saturation temperature; P is this case's own
+  water Psat at that temperature, so the chest sits ON the package's
+  saturation curve (the catalogue Antoine puts 172.4 kPa at 114.5 C).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        evap;
+        type        evaporator;
+        inputs      ( feed  steam );
+        outputs     ( concentrated  vapour  condensate );
+        operation
+        {
+            area        49.2 m2;
+            U         1560.0 W/m2/K;
+        }
+    }
+);

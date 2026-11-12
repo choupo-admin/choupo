@@ -1,0 +1,53 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- electrolyteGammaPhi on the OlssonNaOH model:
+  NaOH(aq) to 80 wt % (Olsson, Jernqvist & Aly 1997), the Na-OH Pitzer pair
+  below its 4-6 mol/kg handover.  Coefficients:
+  data/standards/parameters/OlssonNaOH/NaOH-water.dat (sealed copy under
+  constant/parameters/OlssonNaOH/).
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water NaOH );
+
+equilibrium
+{
+    formulation electrolyteGammaPhi;    // aqueous electrolyte x ideal vapour
+
+    aqueous
+    {
+        activityModel
+        {
+            model OlssonNaOH;           // Pitzer | eNRTL | OlssonNaOH
+        }
+        compositionBasis molality;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+caloric
+{
+    energyBasis elementsDatum;          // ONE datum: the elements at 298.15 K
+
+    aqueous
+    {
+        enthalpyRoute ionicReferencePlusExcess;   // aqueous inf-dilution ion
+    }                                             //   datum + L_phi excess
+    vapour
+    {
+        enthalpyRoute idealGasCp;
+    }
+}

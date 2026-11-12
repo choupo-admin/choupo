@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+//  Geankoplis Example 32.4-3: F = 4536 kg/h, x_F = 0.20 NaOH, T_F = 60 C.
+//  water 3628.8 kg/h / 18.01528 = 201.42901 kmol/h
+//  NaOH   907.2 kg/h / 39.99711 =  22.68164 kmol/h
+componentMolarFlows
+{
+    water    201.42901 kmol/h;
+    NaOH     22.68164 kmol/h;
+}
+
+T               333.15 K;
+P               101325 Pa;

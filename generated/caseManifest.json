@@ -6,10 +6,10 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1829,
+  "cases": 1831,
   "witnesses": 16,
   "validationOp": 6,
-  "anchored": 21
+  "anchored": 23
  },
  "cases": {
   "data/curation/batches/henry_sander": {
@@ -23155,6 +23155,24 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/electrolyte/olsson01_naoh_high_concentration": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteActivity",
+    "pitzerActivity"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "OlssonNaOH"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [
+    "anchored"
+   ],
+   "hasGolden": true
+  },
   "tutorials/props/electrolyte/overlay01_nacl_ksp": {
    "application": "choupoProps",
    "roles": [],
@@ -26042,6 +26060,23 @@
     "aqueousChemistry": true
    },
    "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/evaporation/evaporator11_naoh_olsson_50wt": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "evaporator"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "OlssonNaOH"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [
+    "anchored"
+   ],
    "hasGolden": true
   },
   "tutorials/steady/flash/adiabaticFlash01_benzene_toluene": {
@@ -30862,6 +30897,7 @@
     "tutorials/props/electrolyte/goodsBuffers01_hepes_mes",
     "tutorials/props/electrolyte/inorganicLadders01_goldberg",
     "tutorials/props/electrolyte/ksp_temperature",
+    "tutorials/props/electrolyte/olsson01_naoh_high_concentration",
     "tutorials/props/electrolyte/overlay01_nacl_ksp",
     "tutorials/props/electrolyte/pb82_calcite_open_co2",
     "tutorials/props/electrolyte/pitzer01_nacl",
@@ -31091,6 +31127,7 @@
     "tutorials/steady/evaporation/evaporator07_nacl_enrtl",
     "tutorials/steady/evaporation/evaporator08_naoh_dilution_heat",
     "tutorials/steady/evaporation/evaporator09_nacl_sucrose_brine",
+    "tutorials/steady/evaporation/evaporator11_naoh_olsson_50wt",
     "tutorials/steady/flash/adiabaticFlash01_benzene_toluene",
     "tutorials/steady/flash/analysis01_water_analysis_inlet",
     "tutorials/steady/flash/analysis02_weighted_least_squares",
@@ -31650,6 +31687,7 @@
     "tutorials/steady/evaporation/evaporator07_nacl_enrtl",
     "tutorials/steady/evaporation/evaporator08_naoh_dilution_heat",
     "tutorials/steady/evaporation/evaporator09_nacl_sucrose_brine",
+    "tutorials/steady/evaporation/evaporator11_naoh_olsson_50wt",
     "tutorials/steady/optimisation/designSpec01_triple_equal_areas",
     "tutorials/steady/thermoTest/model1_lumped_evaporator",
     "tutorials/steady/thermoTest/model2_pitzer_evaporator"
@@ -32957,6 +32995,10 @@
     "tutorials/steady/optimisation/fitNRTL01_ethanol_water",
     "tutorials/steady/optimisation/fitNRTL02_thermoml_isobars",
     "tutorials/steady/thermoTest/model5_nrtl_flash"
+   ],
+   "OlssonNaOH": [
+    "tutorials/props/electrolyte/olsson01_naoh_high_concentration",
+    "tutorials/steady/evaporation/evaporator11_naoh_olsson_50wt"
    ],
    "Pitzer": [
     "tutorials/batch/crystallisation/batch13_nacl_pitzer",
@@ -34681,6 +34723,7 @@
     "tutorials/props/reconciliation/reconcile01_recycle_loop"
    ],
    "electrolyteActivity": [
+    "tutorials/props/electrolyte/olsson01_naoh_high_concentration",
     "tutorials/props/electrolyte/pitzer02_nacl_package"
    ],
    "electrolyteFit": [
@@ -35727,6 +35770,7 @@
    "pitzerActivity": [
     "tutorials/props/electrolyte/archer01_nacl_cold_to_hot",
     "tutorials/props/electrolyte/enthalpy_naoh_water",
+    "tutorials/props/electrolyte/olsson01_naoh_high_concentration",
     "tutorials/props/electrolyte/pitzer01_nacl",
     "tutorials/props/electrolyte/pitzer02_cacl2",
     "tutorials/props/electrolyte/pitzer_gamma_hamer_wu",

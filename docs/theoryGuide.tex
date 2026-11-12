@@ -15825,6 +15825,239 @@ single contract --- and the rest of the unit ops in Choupo are
 being incrementally aligned to the same shape.
 \end{intuition}
 
+\subsection{The exact boiling-point rise of an electrolyte liquor}\label{sec:evap-exact-bpe}
+
+When the package carries an electrolyte model, the rise is not $K_b\,m$:
+it comes from the water activity $a_w(m,T)$ the model returns.  The
+liquor at $T_{\!\text{boil}}$ boils at the pressure its water exerts,
+$a_w\,P^{\text{sat}}(T_{\!\text{boil}})$ (the salt is not volatile and the
+vapour is ideal), and pure water boils at that same pressure at
+$T_{\!\text{boil}}-\mathrm{BPE}$, so
+\begin{equation}
+   a_w(m,T_{\!\text{boil}})\;P^{\text{sat}}_w(T_{\!\text{boil}})
+   \;=\;
+   P^{\text{sat}}_w\bigl(T_{\!\text{boil}}-\mathrm{BPE}\bigr),
+   \label{eq:evap-bpe-exact}
+\end{equation}
+which the evaporator solves for BPE by Newton on
+$\ln P^{\text{sat}}_w$, on the package's own saturation curve
+(\code{exactBoilingPointRise}, \file{src/thermo/electrolyte/BoilingPointRise.H};
+one home, also used by the \code{electrolyteActivity} bench).  Until
+C377 the unit used the first term of~\eqref{eq:evap-bpe-exact},
+\begin{equation}
+   \mathrm{BPE}\;\approx\;-\,\frac{\Rgas\,T_{\!\text{boil}}^2}{\Delta h^{\text{vap}}_w(T_{\!\text{boil}})}\,\ln a_w,
+   \label{eq:evap-bpe-linear}
+\end{equation}
+the Clausius--Clapeyron slope taken at $T_{\!\text{boil}}$ and held over the
+whole rise.  They differ for two reasons.  The linearised form evaluates the
+slope at the wrong end of the interval, and $\ln P^{\text{sat}}$ is curved
+in $T$: negligible at a few kelvin, several kelvin at forty.  And it reads
+the slope from a SECOND source, the record's latent heat (Watson), while the
+pressure the vessel is published at comes from the record's vapour-pressure
+curve; where the two disagree (the water Antoine fit, used above its 373~K
+window, is several per cent steeper than the Watson latent heat says), the
+linearised rise is off by that much even when it is small.  For caustic soda on
+the \code{OlssonNaOH} model (\S\ref{sec:olsson-naoh}):
+
+\begin{center}\small
+\begin{tabular}{@{}rrrrrrr@{}}
+\toprule
+NaOH & \multicolumn{2}{c}{$T_{\!\text{boil}}=60^\circ$C} &
+       \multicolumn{2}{c}{$100^\circ$C} & \multicolumn{2}{c}{$150^\circ$C}\\
+wt\,\% & exact & linear & exact & linear & exact & linear \\
+\midrule
+10 &  2.31 &  2.34 &  2.96 &  3.09 &  3.84 &  4.23 \\
+20 &  6.55 &  6.73 &  7.62 &  8.06 &  8.73 &  9.76 \\
+30 & 14.55 & 15.35 & 16.14 & 17.52 & 17.59 & 20.11 \\
+40 & 26.17 & 28.78 & 28.17 & 31.75 & 30.35 & 35.94 \\
+50 & 39.52 & 45.67 & 42.18 & 49.77 & 45.62 & 56.40 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent (BPE in K, at the stated boiling temperature; the bench case
+\code{olsson01\_naoh\_high\_concentration}.)  At 50\,wt\,\% the linearised
+form overstates the rise by 6--11~K, i.e.\ it puts the vessel at a
+pressure about a third too low.  At the 4--7~K rises of the brine and
+caustic tutorials (\code{evaporator06}--\code{09}) the exact rise is 6\,\%
+SMALLER than the linearised one (6.37 against 6.75~K in
+\code{evaporator08}): the curvature is worth 0.1\,\% there, the rest is the
+latent-heat disagreement above, and the vessel pressure moves by
+0.8--1.4\,\%.  Geankoplis reads the same
+quantity off a D\"uhring chart\cite{GeankoplisHL2018}: 30\,wt\,\% at
+25.6~kPa boils at 79.5$^\circ$C (BPR 13.9~K; Example 32.4-2, p.~1501) and
+50\,wt\,\% at 11.7~kPa at 89.5$^\circ$C (BPR 40.6~K; Example 32.4-3,
+p.~1504); the correlation of \S\ref{sec:olsson-naoh} gives 81.0 and
+90.8$^\circ$C at those pressures (rises 15.6 and 42.0~K over its own pure
+water), within the 1--2~K a chart is read to.
+
+\subsection{Caustic to 50\,wt\,\%: the \texttt{OlssonNaOH} model}\label{sec:olsson-naoh}
+
+The Na--OH Pitzer pair is fitted to Parker's heats of dilution up to
+6~mol/kg (19\,wt\,\%) at 25$^\circ$C; industrial caustic is concentrated to
+50\,wt\,\% (25~mol/kg) at 90--150$^\circ$C.  For that duty a case selects
+\begin{lstlisting}
+aqueous { activityModel { model OlssonNaOH; } compositionBasis molality; }
+\end{lstlisting}
+which serves the SAME electrolyte interface the evaporator reads (water
+activity for the rise, $L_\phi$ for the heat of dilution) from the
+correlations of Olsson, Jernqvist and Aly\cite{OlssonJernqvistAly1997},
+fitted to vapour-pressure, enthalpy and heat-capacity measurements from
+dilute solution to 80\,wt\,\% NaOH and 0--200$^\circ$C.  The model refuses
+any salt other than NaOH and any solvent other than water.  Its
+coefficients are one record,
+\file{data/standards/parameters/OlssonNaOH/NaOH-water.dat}, every list
+with its table and page; the reading (page images, twice) is in
+\file{docs/design/naoh-water-olsson1997.md}.
+
+\paragraph{The equations, as implemented.}  In the paper's variables ---
+$x$ the WATER mass fraction, $t$ in $^\circ$C, $P$ in kPa, $H$ in kJ per kg
+of solution ---
+\begin{align}
+   \ln P &= \frac{a_1 + a_2\,t}{t - a_3},\qquad
+   a_1=\sum_{i=0}^{8}k_{P,i}(\ln x)^i,\;
+   a_2=\sum_{i=0}^{10}l_{P,i}(\ln x)^i,\;
+   a_3=\sum_{i=0}^{10}m_{P,i}(\ln x)^i,
+   \label{eq:olsson-vp}\\
+   H &= c_1 + c_2 t + c_3 t^2 + c_4 t^3,\qquad
+   c_1=\frac{k_{H0}+k_{H2}x+k_{H4}x^2+k_{H6}x^3}{1+k_{H1}x+k_{H3}x^2+k_{H5}x^3+k_{H7}x^4},
+   \label{eq:olsson-h}
+\end{align}
+with $c_2,c_3,c_4$ polynomials in $x$ of degrees 8, 7, 7 (Eqs.~(2)--(5) and
+(12)--(16), Tables~II and~VI, pp.~782--787 of the paper).  $H$ is referred to
+liquid water at $0^\circ$C and to NaOH at infinite dilution at
+$20^\circ$C (p.~786).  Windows: Table~III for~\eqref{eq:olsson-vp} (e.g.\
+$x\ge0.50$ for 20--60$^\circ$C, $x\ge0.20$ for 150--200$^\circ$C) and
+Table~VII for~\eqref{eq:olsson-h} ($x\ge0.54$ at 15--26$^\circ$C down to
+$x\ge0.22$ at 93--204$^\circ$C); outside them the run announces the
+extrapolation once per property.  Stated accuracy: vapour pressure 2.07\,\%
+mean (bubble point 0.48~K), enthalpy 0.32~kJ/kg mean and 2.15~kJ/kg
+maximum; the heat capacities behind $H$ at 100--200$^\circ$C and
+$x=0.5$--0.9 are EXTRAPOLATED by the authors (p.~786).
+
+\paragraph{Water activity.}  $\ln a_w = \ln P(x,t) - \ln P(1,t)$: the
+correlation's OWN pure-water limit is the reference, so $a_w=1$ exactly at
+$x=1$ and its error in water's own curve ($-0.6$\,\% at 200$^\circ$C)
+cancels; the evaporator then applies~\eqref{eq:evap-bpe-exact} on the
+package's $P^{\text{sat}}_w$.  The osmotic coefficient follows from its
+definition, $\phi=-\ln a_w/(\nu m M_w)$, and the mean activity coefficient
+by Gibbs--Duhem at constant $T$ from the handover molality $m_0$ upward,
+\begin{equation}
+   \ln\gamma_\pm(m)=\ln\gamma_\pm^{\text{Pitzer}}(m_0)+[\phi(m)-1]-[\phi^{\text{Pitzer}}(m_0)-1]
+   +\int_{m_0}^{m}\frac{\phi-1}{m'}\,dm' .
+   \label{eq:olsson-gd}
+\end{equation}
+
+\paragraph{The relative apparent molar enthalpy.}  Per mole of NaOH the
+paper's surface gives
+$\Phi(m,t)=M_s\,[H(x,t)-x\,H(1,t)]/(1-x)
+=[\bar H^\infty(t)-\bar H^\infty(20^\circ\mathrm{C})]+L_\phi(m,t)$.  The
+package writes the salt as $\sum\nu h_f^{aq}+H^\infty_{\text{pkg}}(T)+L_\phi$,
+with its own infinite-dilution leg $H^\infty_{\text{pkg}}(T)=\bar
+c_p(T)\,(T-298.15)$ (Criss--Cobble, \S\ref{ch:electrolytes}), so
+\begin{equation}
+   L_\phi(m,T)=\Phi(m,t)-\bigl[H^\infty_{\text{pkg}}(T)-H^\infty_{\text{pkg}}(293.15\,\mathrm{K})\bigr]+\delta .
+   \label{eq:olsson-lphi}
+\end{equation}
+The package's solution enthalpy then has EXACTLY the paper's temperature
+dependence --- the Criss--Cobble leg cancels --- so no heat capacity is
+counted twice and none is lost.  $\delta$ is one constant: the correlation
+cannot resolve the infinite-dilution limit (its 0.32~kJ/kg mean error is
+1.3~kJ/mol of NaOH at 1~mol/kg), so it is fixed where the Pitzer pair IS
+calibrated, Parker at 25$^\circ$C at 6~mol/kg, and carried to every $T$ and
+$m$; it is $+341$~J/mol.
+
+\paragraph{The handover to Pitzer.}  Below $m=4$~mol/kg the model is the
+Na--OH Pitzer pair; above 6~mol/kg it is the correlation; in between both
+$\ln a_w$ and $L_\phi$ are blended with a smooth step.  The reason is
+measured: in dilute solution the correlation's vapour-pressure error is the
+size of the whole lowering, and its $a_w$ swings by tens of per cent in
+$\partial\ln a_w/\partial T$.  The seam (correlation minus Pitzer):
+\begin{center}\small
+\begin{tabular}{@{}rrrrr@{}}
+\toprule
+$t$ ($^\circ$C) & $\Delta\ln a_w$ at 4 & at 6 mol/kg & $\Delta L_\phi$ at 4 & at 6 mol/kg (J/mol)\\
+\midrule
+ 25 & 0.0056 & 0.0000 &   110 &     0 \\
+ 60 & 0.0071 & 0.0004 &  2341 &  2719 \\
+100 & 0.0123 & 0.0037 &  6075 &  6891 \\
+150 & 0.0196 & 0.0059 &  9468 & 10790 \\
+200 & 0.0251 & 0.0029 &  6855 &  8663 \\
+\bottomrule
+\end{tabular}
+\end{center}
+The water activities join within 2.5\,\%.  The enthalpies do not, off
+25$^\circ$C, and the evidence says it is the PITZER side that is wrong
+there: its $T$-slots are fitted to 25$^\circ$C heats of dilution only, so
+$L_\phi$ at 100$^\circ$C is an extrapolation of a derivative, while the
+correlation rests on measured heat capacities to 130$^\circ$C in that
+range; and the classical chart\cite{GeankoplisHL2018} (Fig.~32.4-3, p.~1503,
+read by eye to $\pm5$~kJ/kg) agrees with the correlation: 20\,wt\,\% at
+37.8, 65.6, 93.3, 121.1 and 148.9$^\circ$C reads 129, 234, 341, 441 and
+540~kJ/kg against 131, 234, 336, 440 and 544.  Inside the band
+4--6~mol/kg, at 100$^\circ$C and above, the blend therefore carries a
+partial-molar artefact of several kJ/mol: a feed below 6~mol/kg priced
+above 60$^\circ$C is less certain than the rest of the surface, and the
+heat-of-dilution line of an evaporator that starts there says so by its
+size.
+
+\paragraph{Gibbs--Helmholtz consistency.}  Water activity and enthalpy are
+two SEPARATE fits here, and thermodynamics ties them: for the solvent
+$\partial(\mu_w/T)/\partial T=-\bar h_w/T^2$, so the relative partial molar
+enthalpy of water is
+\begin{equation}
+   \bar L_1 = -\Rgas T^2\left(\frac{\partial\ln a_w}{\partial T}\right)_{x},
+   \label{eq:olsson-gh}
+\end{equation}
+and the heat of diluting one kilogram of NaOH from $x$ to $x_{\text{ref}}$
+is $\int \bar L_1\,dW$ with $W=x/(1-x)$ kg of water per kg of NaOH.  The
+same heat follows from~\eqref{eq:olsson-h}.  A Pitzer or eNRTL model obeys
+this by construction (one excess Gibbs energy gives both $a_w$ and
+$L_\phi$); two independent fits need not.  The gap, (vapour-pressure route)
+minus (enthalpy route), diluting to 20\,wt\,\%, in kJ per kg of the
+concentrated solution (bold: above the paper's 2.15~kJ/kg maximum
+enthalpy error; -- outside the windows):
+\begin{center}\small
+\begin{tabular}{@{}rrrrrr@{}}
+\toprule
+$t$ ($^\circ$C) & 30 & 40 & 50 & 60 & 70 wt\,\% \\
+\midrule
+ 20 & \textbf{+3.9} & \textbf{+9.8} & -- & -- & -- \\
+ 40 & +1.4 & \textbf{+6.5} & $-0.5$ & -- & -- \\
+ 60 & $-0.4$ & \textbf{+4.0} & +1.9 & \textbf{$-7.5$} & -- \\
+ 80 & $-1.4$ & \textbf{+2.4} & \textbf{+4.2} & +1.2 & \textbf{+4.9} \\
+100 & $-1.8$ & +1.9 & \textbf{+6.9} & \textbf{+9.4} & \textbf{+17.7} \\
+125 & $-1.2$ & \textbf{+3.2} & \textbf{+12.1} & \textbf{+20.7} & \textbf{+34.9} \\
+150 & +0.7 & \textbf{+7.3} & \textbf{+20.7} & \textbf{+35.6} & \textbf{+56.2} \\
+175 & \textbf{+4.3} & \textbf{+15.0} & \textbf{+34.2} & \textbf{+56.2} & \textbf{+84.7} \\
+200 & \textbf{+9.7} & \textbf{+27.0} & \textbf{+54.1} & \textbf{+84.9} & \textbf{+123.3} \\
+\bottomrule
+\end{tabular}
+\end{center}
+Below 100$^\circ$C the two agree to a few kJ/kg; above it, and above
+40\,wt\,\%, they part by tens of kJ/kg --- exactly where the authors built
+$H$ from EXTRAPOLATED heat capacities, while the vapour pressures there are
+measured.  Nothing was adjusted.  The evaporator prices the duty on the
+ENTHALPY correlation and, at the concentrate it publishes, prints the gap
+and raises an advisory when it exceeds 2.15~kJ/kg
+(\code{lphiConsistencyGap}); the bench prints it per row
+(\code{GH\_gap\_kJ\_kg}).
+
+\paragraph{What it is held to.}  At 25$^\circ$C the model's $L_\phi$
+against Parker's calorimetry\cite{Parker1965} (independent of the paper):
+3861, 9787 and 15707~J/mol at 10, 15 and 20~mol/kg against 3778, 9581 and
+15573 ($+2.2$, $+2.1$, $+0.9$\,\%).  The solution enthalpy against the two
+values Geankoplis prints in Example 32.4-3 (p.~1504): 214.5 against 214
+kJ/kg (20\,wt\,\%, 60$^\circ$C) and 511.7 against 505 (50\,wt\,\%,
+89.5$^\circ$C).  These and the chart are not fully independent of the
+paper: its enthalpy data for $x=0.20$--0.52 are McCabe's laboratory's, the
+lineage of the chart.  Above 100$^\circ$C the package prices water on its
+own liquid heat capacity (75.5~J/mol/K, fitted to 373~K), which sits
+$-34$~kJ/kg below the paper's water at 200$^\circ$C; that, not the
+correlation, is the $-13$ to $-26$~kJ/kg the bench shows there.
+Single-effect witness: \code{evaporator11\_naoh\_olsson\_50wt} rates
+Geankoplis's Example 32.4-3 (20 $\to$ 50\,wt\,\%).
+
 % ---------------------------------------------------------------------
 \section{Liquid-liquid equilibrium by Gibbs minimisation}\label{ch:lle-gibbs}
 
@@ -28489,6 +28722,27 @@ measurements in experimental catalysis'', \emph{Advances in Catalysis}
 which removes the intrinsic rate constant that a diffusion-limited experiment
 cannot measure.
 
+\bibitem{GeankoplisHL2018} Geankoplis, C. J., Hersel, A. A., \& Lepek, D. H.,
+\emph{Transport Processes and Separation Process Principles}, 5th ed., Pearson
+(Prentice Hall), 2018, Chapter~28 (equations (28.1-1) to (28.1-3) and (28.2-1),
+pp.~1348--1350 of the 5th edition).  The linear, Freundlich and Langmuir forms,
+the log--log and $1/q$ against $1/c$ plots, and the batch balance whose plot
+against $c$ meets the isotherm.
+
+\bibitem{OlssonJernqvistAly1997} Olsson, J., Jernqvist, \AA., \& Aly, G.,
+``Thermophysical Properties of Aqueous NaOH--H$_2$O Solutions at High
+Concentrations'', \emph{Int.\ J.\ Thermophys.}, 18(3), 779--793 (1997).
+Vapour pressure (Eqs.~(1)--(5), Tables~II--III) and enthalpy (Eqs.~(12)--(16),
+Tables~VI--VII) of NaOH(aq), 0--200$^\circ$C, water mass fraction 0.2--1;
+the coefficients of the \code{OlssonNaOH} model.
+
+\bibitem{Parker1965} Parker, V. B., \emph{Thermal Properties of Aqueous
+Uni-univalent Electrolytes}, National Standard Reference Data Series
+NSRDS--NBS~2, U.S.\ National Bureau of Standards, Washington, D.C.\
+(1965). The compiled relative apparent molar enthalpies $\Phi_L(m)$ at
+$25^\circ$C (e.g.\ NaOH) against which the Silvester--Pitzer $T$-slots
+are regressed and the \code{calorimetricFit} gate is evaluated.
+
 \bibitem{Michelsen} Michelsen, M. L., ``The Isothermal Flash Problem.
 Part I --- Stability'' and ``Part II --- Phase-Split Calculation'',
 \emph{Fluid Phase Equilibria}, 9, 1--19, 21--40 (1982). The
@@ -28507,13 +28761,6 @@ Separation Calculations by Linearization'', \emph{AIChE J.}, 17,
 \emph{Separation Process Principles}, 3rd ed., Wiley, 2011. Chapters
 4--7 cover the equilibrium-stage methods used in this simulator
 (flash, distillation, absorption).
-
-\bibitem{Parker1965} Parker, V. B., \emph{Thermal Properties of Aqueous
-Uni-univalent Electrolytes}, National Standard Reference Data Series
-NSRDS--NBS~2, U.S.\ National Bureau of Standards, Washington, D.C.\
-(1965). The compiled relative apparent molar enthalpies $\Phi_L(m)$ at
-$25^\circ$C (e.g.\ NaOH) against which the Silvester--Pitzer $T$-slots
-are regressed and the \code{calorimetricFit} gate is evaluated.
 
 \bibitem{RandolphLarson} Randolph, A. D., \& Larson, M. A.,
 \emph{Theory of Particulate Processes}, 2nd ed., Academic Press, 1988.
@@ -28664,13 +28911,6 @@ minimum, used by \cite{GeraldesAfonso2010} to locate $i_\text{lim}$.
 
 \bibitem{Wachinski2017} Wachinski, A. M., \emph{Ion Exchange Treatment for Water}, American Water Works Association, Denver (2017). Practitioner reference for water-softening capacity bases (eq/L bed vs eq/kg dry), regeneration and the sodium ``salt penalty'' \eqref{eq:salt-penalty}.
 
-\bibitem{GeankoplisHL2018} Geankoplis, C. J., Hersel, A. A., \& Lepek, D. H.,
-\emph{Transport Processes and Separation Process Principles}, 5th ed., Pearson
-(Prentice Hall), 2018, Chapter~28 (equations (28.1-1) to (28.1-3) and (28.2-1),
-pp.~1348--1350 of the 5th edition).  The linear, Freundlich and Langmuir forms,
-the log--log and $1/q$ against $1/c$ plots, and the batch balance whose plot
-against $c$ meets the isotherm.
-
 \bibitem{Wankat2007} Wankat, P. C., \emph{Separation Process Engineering},
 2nd ed., Prentice Hall (Pearson Education), 2007, Chapter~17: Eqs.~(17-5a) to
 (17-6c), the liquid-phase Langmuir isotherm, and Example~17-1, which fits
@@ -28698,29 +28938,6 @@ Simulators}, 4th ed., Wiley, 2016, Chapter~15: Freundlich Eqs.~(15-19) and
 adsorption, pp.~480--483: the film rate law (15-76), the batch balance (15-77),
 the closed form for a linear isotherm (15-80), Example~15.10 and Glueckauf's
 series resistance (15-100).
-
-\bibitem{MartinSynge1941} Martin, A.~J.~P.\ and Synge, R.~L.~M., ``A new form of
-chromatogram employing two liquid phases'', \emph{Biochem.\ J.}\ \textbf{35}
-(1941) 1358--1368, doi:10.1042/bj0351358: the plate theory, Eq.~(1) and the
-tail areas at $t=1,2,3$ (pp.~1360--1362).
-
-\bibitem{vanDeemter1956} van Deemter, J.~J., Zuiderweg, F.~J.\ and
-Klinkenberg, A., ``Longitudinal diffusion and resistance to mass transfer as
-causes of nonideality in chromatography'', \emph{Chem.\ Eng.\ Sci.}\
-\textbf{5} (1956) 271--289, doi:10.1016/0009-2509(56)80003-1: Eqs.~(38),
-(42)--(49) and the list of symbols (p.~288).
-
-\bibitem{SchmidtTraub2020} Schmidt-Traub, H., Schulte, M.\ and
-Seidel-Morgenstern, A.\ (eds.), \emph{Preparative Chromatography}, 3rd ed.,
-Wiley-VCH, 2020, Chapter~2: Eqs.~(2.5), (2.14)--(2.28), (2.40)--(2.48), the
-displacement and tag-along effects (pp.~40--43) and overloading
-(pp.~43--45).
-
-\bibitem{Nicoud} Nicoud, R.-M., \emph{Chromatographic Processes: Modeling,
-Simulation, and Design}, Cambridge University Press,
-doi:10.1017/CBO9781139998284 (the year is not given in the library copy,
-which has no title page): Table~2.4 (p.~39), Eqs.~(2.48)--(2.50) and
-appendix~B.
 
 \bibitem{Kinniburgh1986} Kinniburgh, D.G., ``General purpose adsorption
 isotherms'', \emph{Environ.\ Sci.\ Technol.} \textbf{20} (1986) 895--904,
@@ -28751,6 +28968,29 @@ Formulae for diffusion into spheres and their application to
 chromatography'', \emph{Trans.\ Faraday Soc.} \textbf{51} (1955) 1540--1551,
 doi:10.1039/TF9555101540.  The series film-and-particle resistance of
 Section~\ref{sec:batch-adsorption-stirred-tank}.
+
+\bibitem{SchmidtTraub2020} Schmidt-Traub, H., Schulte, M.\ and
+Seidel-Morgenstern, A.\ (eds.), \emph{Preparative Chromatography}, 3rd ed.,
+Wiley-VCH, 2020, Chapter~2: Eqs.~(2.5), (2.14)--(2.28), (2.40)--(2.48), the
+displacement and tag-along effects (pp.~40--43) and overloading
+(pp.~43--45).
+
+\bibitem{Nicoud} Nicoud, R.-M., \emph{Chromatographic Processes: Modeling,
+Simulation, and Design}, Cambridge University Press,
+doi:10.1017/CBO9781139998284 (the year is not given in the library copy,
+which has no title page): Table~2.4 (p.~39), Eqs.~(2.48)--(2.50) and
+appendix~B.
+
+\bibitem{vanDeemter1956} van Deemter, J.~J., Zuiderweg, F.~J.\ and
+Klinkenberg, A., ``Longitudinal diffusion and resistance to mass transfer as
+causes of nonideality in chromatography'', \emph{Chem.\ Eng.\ Sci.}\
+\textbf{5} (1956) 271--289, doi:10.1016/0009-2509(56)80003-1: Eqs.~(38),
+(42)--(49) and the list of symbols (p.~288).
+
+\bibitem{MartinSynge1941} Martin, A.~J.~P.\ and Synge, R.~L.~M., ``A new form of
+chromatogram employing two liquid phases'', \emph{Biochem.\ J.}\ \textbf{35}
+(1941) 1358--1368, doi:10.1042/bj0351358: the plate theory, Eq.~(1) and the
+tail areas at $t=1,2,3$ (pp.~1360--1362).
 
 \bibitem{Weisbach1845} Weisbach, J., \emph{Lehrbuch der Ingenieur- und
 Maschinen-Mechanik}, Vol.~1, Braunschweig, 1845; and Darcy, H.,

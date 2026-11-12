@@ -833,7 +833,6 @@ int Evaporator::solve(const DictPtr& dict,
     {
         const auto& el = thermo.electrolyte();
         const scalar gap = el.lphiConsistencyGap(molality_salt(V_over_F), T_boil);
-        kpis_["GibbsHelmholtz_gap_kJ_kg"] = gap;
         if (std::abs(gap) > el.lphiConsistencyTolerance())
         {
             std::ostringstream os;
@@ -965,6 +964,11 @@ int Evaporator::solve(const DictPtr& dict,
     kpis_["F_in_kmol_h"]   = F_in_kmols * 3600.0;
     kpis_["F_conc_kmol_h"] = conc.F * 3600.0;
     kpis_["F_vap_kmol_h"]  = vap.F  * 3600.0;
+    //  The model's Gibbs-Helmholtz gap at the concentrate (C377 b), published
+    //  only for a model that can have one (separate activity and enthalpy fits).
+    if (lphiFitted && thermo.electrolyte().lphiConsistencyTolerance() > 0.0)
+        kpis_["GibbsHelmholtz_gap_kJ_kg"] =
+            thermo.electrolyte().lphiConsistencyGap(molality_salt(V_over_F), T_boil);
 
     return r.converged ? 0 : 1;
 }

@@ -305,6 +305,38 @@ NOT a fitted law -- against Archer (1992) NaCl it is off by tens of per cent at
 273 K and 373 K at 3-6 mol/kg while Pitzer stays within 2.1 % (Theory Guide,
 eNRTL "Temperature dependence").  For NaCl-water off 25 C use Pitzer.
 
+**Caustic soda to 50 wt %: `model OlssonNaOH;` (C377 b, 2026-11-12).**  The
+Na-OH Pitzer pair is fitted to Parker's heats of dilution up to 6 mol/kg
+(19 wt %) at 25 C.  For concentrated caustic (an evaporator to 50 wt %, 25
+mol/kg) select `activityModel { model OlssonNaOH; }` in the same
+`electrolyteGammaPhi` system: the water activity (boiling-point rise) and the
+heat of dilution L_phi come from the correlations of Olsson, Jernqvist & Aly,
+Int. J. Thermophys. 18 (1997) 779 (vapour pressure and enthalpy, 0-200 C,
+water mass fraction 0.2-1), record
+`data/standards/parameters/OlssonNaOH/NaOH-water.dat`.  Below 4 mol/kg it
+is the Na-OH Pitzer pair, blended to the correlation by 6 mol/kg.  It
+refuses any salt but NaOH and any solvent but water.  It announces, once per
+property, a point outside the paper's windows, and at the evaporator's
+concentrate the Gibbs-Helmholtz gap between its two correlations when that
+gap exceeds the paper's 2.15 kJ/kg (it does above ~100 C and 40 wt %: the
+paper's enthalpies there rest on extrapolated heat capacities).  Tell a user
+two things: off 25 C the Pitzer pair's L_phi is an extrapolation and sits
+2-11 kJ/mol below this model at 4-6 mol/kg, 60-200 C; and above 100 C the
+package still prices the water itself on a 75.5 J/mol/K liquid Cp fitted
+to 373 K (about -34 kJ/kg of water at 200 C).  Bench:
+`tutorials/props/electrolyte/olsson01_naoh_high_concentration`
+(`electrolyteActivity` with a `table { massFractions (...); temperatures
+(...); file ...; }` block: a_w, exact and linearised BPE, L_phi, chart
+enthalpy, Gibbs-Helmholtz gap); evaporator:
+`tutorials/steady/evaporation/evaporator11_naoh_olsson_50wt`.  Theory Guide
+`sec:olsson-naoh`.
+
+**The evaporator's boiling-point rise is exact (C377 b).**  With an
+electrolyte package the evaporator solves a_w(m,T_b) Psat_w(T_b) =
+Psat_w(T_b - BPE) by Newton on the package's own Psat (it used the
+linearised -(R T_b^2/dHvap) ln a_w, which overstates a 40 K rise by 6-11 K
+at 50 wt % NaOH).  Theory Guide `sec:evap-exact-bpe`.
+
 **Temperature validity of a molecular pair (NRTL, Wilson, UNIQUAC; PO-01..03, 2026-11-12).**
 A catalogue pair outside its declared span prints ONE `[pair-span]` line per pair per run
 and is recorded in the caveat block; no number changes.  Three rules: (i) a pair is "used"

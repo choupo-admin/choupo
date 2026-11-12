@@ -4360,6 +4360,51 @@ Contrast evaporator06 (whose CASE-LOCAL pair overlay omits the T-slots, so ITS N
 \goldmore{29}
 \end{tutgolden}
 
+\clearpage
+\tutentry{evaporator11\_naoh\_olsson\_50wt}{tutorials/steady/evaporation/evaporator11\_naoh\_olsson\_50wt}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (evap) at (0.0,-0.0) {\textbf{evap}\\[-1pt]{\tiny evaporator}};
+  \draw[->] ($(evap.west)+(-1.05,-0.17)$) -- ($(evap.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {feed};
+  \draw[->] ($(evap.west)+(-1.05,0.17)$) -- ($(evap.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {steam};
+  \draw[->] ($(evap.east)+(0,-0.34)$) -- ($(evap.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {concentrated};
+  \draw[->] ($(evap.east)+(0,0.00)$) -- ($(evap.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {vapour};
+  \draw[->] ($(evap.east)+(0,0.34)$) -- ($(evap.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Single-effect caustic evaporator, 20 $\to$ 50 wt \% NaOH, on the high-concentration OlssonNaOH model (Geankoplis Example 32.4-3)}
+\begin{tutnarrative}
+real caustic duty, 20 $\to$ 50 wt \% NaOH
+
+The worked single-effect evaporator of Geankoplis, Transport Processes and Separation Process Principles, 5th ed., Example 32.4-3 (pp. 1502-1505): 4536 kg/h of 20 wt \% NaOH entering at 60 C, saturated steam at 172.4 kPa (115.6 C), U = 1560 W/m2/K, concentrated to 50 wt \%. The book FIXES the vapour-space pressure (11.7 kPa) and the product (50 \%) and finds the area (49.2 m2) and the steam (3255 kg/h) from its Duhring and enthalpy- concentration charts. This case RATES that design: it gives the unit the book's area, U and steam, and the engine finds the boiling temperature, the vessel pressure and the product concentration. The book's printed answers are anchored in `expected` (kind: printed; they are chart readings, so the anchors carry the chart's reading tolerance).
+
+The solution is priced on `model OlssonNaOH;` (Olsson, Jernqvist \& Aly, Int. J. Thermophys. 18 (1997) 779): water activity from their vapour- pressure correlation, the heat of dilution from their enthalpy correlation -- valid to 80 wt \%, where the Na-OH Pitzer pair is fitted to 6 mol/kg (19 wt \%) and a 50 \% liquor is 25 mol/kg. Read the run for:
+
+heat of dilution = X kW (L\_phi: m 6.25 $\to$ \textasciitilde{}25 mol/kg salt, ...) BPE = ... (the EXACT a\_w Psat(T) = Psat(T - BPE))
+
+and contrast evaporator08 (Pitzer, inside its 6 mol/kg window).
+
+Steam: 115.6 C is the book's saturation temperature; P is this case's own water Psat at that temperature, so the chest sits ON the package's saturation curve (the catalogue Antoine puts 172.4 kPa at 114.5 C).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{concentrated}{F}{0.0198750914146}
+\goldrow{stream}{concentrated}{T}{362.059758205}
+\goldrow{stream}{condensate}{F}{0.0501888777778}
+\goldrow{stream}{condensate}{T}{388.75}
+\goldrow{stream}{feed}{F}{0.0622529583333}
+\goldrow{stream}{feed}{T}{333.15}
+\goldrow{stream}{steam}{F}{0.0501888777778}
+\goldrow{stream}{steam}{T}{388.75}
+\goldrow{stream}{vapour}{F}{0.0423778669187}
+\goldrow{stream}{vapour}{T}{362.059758205}
+\goldrow{kpi}{evap}{A}{49.2}
+\goldrow{kpi}{evap}{A\_m2}{49.2}
+\goldrow{kpi}{evap}{BPE}{40.6}
+\goldrow{kpi}{evap}{F\_conc}{0.0198750914146}
+\goldmore{30}
+\end{tutgolden}
+
 \subsection{flash}
 \grouptheory{flash}
 \clearpage

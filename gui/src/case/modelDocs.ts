@@ -331,6 +331,7 @@ const PROPS_MODEL_DEST: Record<string, ModelDest> = {
   // electrolyte activity (options of the activity slot; ElectrolyteModel iface)
   pitzer:   { guide: "theory", dest: "ch:pitzer-hmw" },   // ion-interaction (HMW virial)
   eNRTL:    { guide: "theory", dest: "ch:enrtl" },        // electrolyte-NRTL (local + PDH)
+  OlssonNaOH: { guide: "theory", dest: "sec:olsson-naoh" }, // NaOH-water to 80 wt % (C377 b)
   // -- equation of state (EquationOfState.cpp) ----------------------------
   idealGas:     { guide: "theory", dest: "ch:fugacity" }, // phi = 1
   SRK:          { guide: "theory", dest: "ch:cubic-eos" },// Soave-Redlich-Kwong

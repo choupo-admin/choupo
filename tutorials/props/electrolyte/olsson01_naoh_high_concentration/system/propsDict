@@ -1,0 +1,123 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  olsson01_naoh_high_concentration -- caustic soda the way an evaporator
+  sees it: 10 to 50 wt % NaOH, 25 to 200 C, on the OlssonNaOH model
+  (Olsson, Jernqvist & Aly, Int. J. Thermophys. 18 (1997) 779), beside the
+  Na-OH Pitzer pair where that pair is fitted (to 6 mol/kg) and beside two
+  independent readings.
+
+  What is held, and by what (rows marked `anchor` in `expected`):
+    * L_phi at 25 C, 10 / 15 / 20 mol/kg, against Parker NSRDS-NBS 2 (1965)
+      Table XIV A (printed: 903, 2290, 3722 cal/mol) -- INDEPENDENT of the
+      paper (calorimetry, not its correlation); tolerance 3 %, the size of
+      the residual offset the join at 6 mol/kg leaves (Theory Guide
+      sec:olsson-naoh).
+    * the solution enthalpy on the chart datum (liquid water at 0 C, NaOH at
+      infinite dilution at 20 C) against the two values Geankoplis 5th ed.
+      PRINTS in Example 32.4-3 (p. 1504), read by the book off its
+      Fig. 32.4-3 (McCabe 1935): 20 wt % at 60 C, h_F = 214 kJ/kg; 50 wt % at
+      89.5 C, h_L = 505 kJ/kg.  Tolerance 2 %: a chart reading.  NOT fully
+      independent -- the paper's enthalpy data for 0.20-0.52 kg water/kg are
+      Wilson & McCabe (1942) and Bertetti & McCabe (1936), the same lineage
+      as the chart.
+    * the boiling temperature against Geankoplis Examples 32.4-2 and 32.4-3
+      (pp. 1501, 1504), read off his Duhring chart, Fig. 32.4-2: 30 wt % at
+      25.6 kPa boils at 79.5 C (water 65.6 C), 50 wt % at 11.7 kPa at 89.5 C
+      (water 48.9 C).  These are reported in the run and in the guide, not
+      anchored: the op tabulates the rise at a GIVEN boiling temperature, so
+      the comparison is made at the book's T and its two BPRs (13.9 K,
+      40.6 K) are printed beside the model's in the Theory Guide table.
+
+  Everything else in `expected` is self-recorded (regression, not truth).
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    //  The model's surface on a molality grid at 25 C (CSV only) and the
+    //  table an evaporator designer reads: a_w, BPE exact and linearised,
+    //  L_phi and the chart enthalpy, w = 10..50 wt % x 25..200 C.
+    {
+        name      olsson_table;
+        type      electrolyteActivity;
+        temperature 298.15;
+        molality  { from 0.5; to 25.0; n 50; }
+        output    { file olsson_naoh_25C.csv; }
+        table
+        {
+            massFractions ( 0.10 0.20 0.30 0.40 0.50 );
+            temperatures  ( 298.15 333.15 373.15 423.15 473.15 );
+            file          olsson_naoh_table.csv;
+        }
+    }
+
+    //  L_phi at 25 C on Parker's own molalities (anchored).
+    {
+        name      olsson_vs_parker;
+        type      electrolyteActivity;
+        temperature 298.15;
+        molality  { from 6.0; to 22.0; n 9; }
+        output    { file olsson_naoh_parker.csv; }
+        table
+        {
+            molalities    ( 6 10 15 20 );
+            temperatures  ( 298.15 );
+            file          olsson_naoh_parker_table.csv;
+        }
+    }
+
+    //  The two printed enthalpies of Geankoplis Example 32.4-3 (anchored).
+    {
+        name      olsson_vs_geankoplis;
+        type      electrolyteActivity;
+        temperature 298.15;
+        molality  { from 1.0; to 25.0; n 2; }
+        output    { file olsson_naoh_book.csv; }
+        table
+        {
+            massFractions ( 0.20 );
+            temperatures  ( 333.15 );
+            file          olsson_naoh_book_hF.csv;
+        }
+    }
+    {
+        name      olsson_vs_geankoplis_hL;
+        type      electrolyteActivity;
+        temperature 298.15;
+        molality  { from 1.0; to 25.0; n 2; }
+        output    { file olsson_naoh_book2.csv; }
+        table
+        {
+            massFractions ( 0.50 );
+            temperatures  ( 362.65 );
+            file          olsson_naoh_book_hL.csv;
+        }
+    }
+
+    //  The Na-OH Pitzer pair on its own fitted window, at 25 and 100 C: the
+    //  overlap the handover (4 -> 6 mol/kg) joins.
+    {
+        name      pitzer_25C;
+        type      pitzerActivity;
+        cation    Na;
+        anion     OH;
+        temperature 298.15;
+        molality  { from 0.5; to 6.0; n 12; }
+        output    { file pitzer_naoh_25C.csv; }
+    }
+    {
+        name      pitzer_100C;
+        type      pitzerActivity;
+        cation    Na;
+        anion     OH;
+        temperature 373.15;
+        molality  { from 0.5; to 6.0; n 12; }
+        output    { file pitzer_naoh_100C.csv; }
+    }
+);
