@@ -1,0 +1,5 @@
+id	file	change	check_run	result	restored
+SB-1	src/unitOperations/distillation/TrayEfficiency.cpp	Chan-Fair Eq 26: h_L^0.5 -> h_L^0.6	bin/runTests trayEfficiency05, trayEfficiency01	trayEfficiency05 FAIL (Eo 0.8504 vs 0.8937); trayEfficiency01 PASS (does not use ChanFair)	git checkout + make all -j2
+SB-2	src/unitOperations/distillation/PackingRBF.cpp	a_e = beta a_p -> a_e = a_p (interfacial area factor dropped)	bin/runTests packing01, packing03	packing01 FAIL (HETP 0.1047 vs 0.1595); packing03 PASS (Delft model)	git checkout + make all -j2
+SB-3	src/unitOperations/distillation/DistillationColumn.cpp:5114	Q_R multiplied by 1.10 in the total-reflux march	bin/runTests totalReflux01; runCase on copies of totalReflux01 and trayEfficiency01	golden FAIL (Q 705.6 vs 641.5); the energy report still says VERIFIED, gap 1.1e-13 kW, checkValue = the sabotaged Q_R (RB-02)	git checkout + make all -j2; 4 cases PASS afterwards
+note	-	C329 has no dedicated gate (grep of bin/ for its classes, cases and authors finds none); the only guards are the 13 self-recorded goldens	-	-	-

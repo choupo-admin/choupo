@@ -1,0 +1,23 @@
+quantity	independent	engine	rel_diff_pct
+F_LV	0.038314	0.0383	0.04
+C_SB m/s	0.10428	0.104	0.27
+flood approach	0.58275	0.584	-0.21
+F_active	1.9317	1.9317	-0.00
+E_OG (AIChE)	0.63436	0.63462	-0.04
+Pe (AIChE)	22.95	22.95	-0.00
+E_MV with entrainment (AIChE)	0.74611	0.74642	-0.04
+rhoV	1.0792	not printed	
+rhoL	739.03	not printed	
+muV	7.3253e-06	not printed	
+DV	1.0264e-05	not printed	
+DL	2.8787e-09	not printed	
+sigma	0.02049	not printed	
+m	0.57588	not printed	
+ScV	0.66138	not printed	
+AIChE NG	1.0738	not printed	
+AIChE NL	9.2276	not printed	
+AIChE hL	0.022227	not printed	
+AIChE thL	7.6581	not printed	
+AIChE DE	0.0031662	not printed	
+AIChE EMVdry	0.75274	not printed	
+AIChE psi	0.011668	not printed	

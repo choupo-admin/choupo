@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 229 records already exist
+## 1. Why an index, when 230 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 229 design records, **162 state a rejected alternative and 67 do not** —
+- Of 230 design records, **162 state a rejected alternative and 68 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -331,6 +331,7 @@ is this index failing its own purpose; they move below with their rulings.
 | [`from-a-database-to-binary-parameters.md`](../design/from-a-database-to-binary-parameters.md) | slice record | no | **2026-11-12, C332 item 3 and C334** -- an EduTool on how a ThermoML file becomes an NRTL pair, plus the TypeScript ThermoML reader; no rejected alternative stated. |
 | [`reference-equations-of-state.md`](../design/reference-equations-of-state.md) | slice record | no | **2026-11-12, C333 slice 1** -- one Helmholtz kernel for a reference equation of state, the coefficients as records; no rejected alternative stated. |
 | [`where-to-find-property-data.md`](../design/where-to-find-property-data.md) | slice record | no | **2026-11-12, C322** -- an EduTool on sources and licences of property data, on a new shelf; no rejected alternative stated. |
+| [`residue-curve-maps.md`](../design/residue-curve-maps.md) | slice record | no | **2026-11-12, C366** -- the residue-curve-map EduTool computes its maps in the page from the engine's bubble points; PROPOSES an engine op `residueCurveMap`, not built (no second consumer yet). |
 
 ### Historical
 
@@ -383,7 +384,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**67 of 229 records state no rejected alternative.**  For a FORUM or a STUDY
+**68 of 230 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

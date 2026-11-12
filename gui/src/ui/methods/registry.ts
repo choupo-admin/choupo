@@ -79,7 +79,7 @@ export type MethodToolId =
   | "correlation-simplicity" | "data-reconciliation" | "solvent-mixture"
   | "sines-pta" | "ip-strategy" | "tree-of-chemistry" | "patent-expiry"
   | "economics-errors" | "demand-forecast" | "plant-cost" | "plant-running-cost"
-  | "site-process-price" | "campaign-plan" | "stack-dispersion";
+  | "site-process-price" | "campaign-plan" | "stack-dispersion" | "residue-curves";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1035,6 +1035,31 @@ export const METHOD_TOOLS: MethodTool[] = [
     origins: ["engine", "page", "assumption"],
     teaches: "The graphical Rayleigh integration for a simple still: the area under 1/(y*−x) between the charge and the pot IS ln(W0/W) — drawn from the engine's own equilibrium curve, judged against the engine's time integration of the same still.",
     theory: "ch:rayleigh",
+  },
+  //  The ternary sequel of the batch still (residue curve maps): the
+  //  ENGINE supplies T_bubble and y* at every composition of a triangular
+  //  grid (choupoProps, one propertyPoint per node, run in the browser on a
+  //  case the page writes); the PAGE integrates dx/dxi = x - y*, finds and
+  //  classifies the singular points, draws the boundaries and the lever
+  //  rule (gui/src/case/residueCurves.ts).  The proposal for a durable
+  //  engine home is in docs/design/residue-curve-maps.md.
+  {
+    id: "residue-curves", blurb: "Map where a boiling ternary goes and which products a column reaches.",
+    label: "Residue curve maps (azeotropic and extractive distillation)",
+    discipline: "Separations & phase equilibria", kind: "construction", status: "live",
+    origins: ["engine", "page", "reference"],
+    theory: "ch:residue-curves",
+    teaches: "The residue curve as the path of a simple still's pot, "
+      + "dx/dxi = x - y*, with the boiling temperature rising along it; the "
+      + "singular points (pure components and azeotropes) as unstable "
+      + "nodes, stable nodes and saddles, read from the temperatures around "
+      + "them and from the eigenvalues of the Jacobian; the distillation "
+      + "boundaries out of the saddles and the regions they separate; the "
+      + "lever rule and the direct and indirect limiting splits of a feed you "
+      + "place; and how a heavy entrainer, a decanter, a pressure change or a "
+      + "recycle gets round a boundary -- on NRTL maps the engine computes "
+      + "for five ternaries, with each pair's fit grade shown, a pressure "
+      + "control, and published azeotropes beside the engine's.",
   },
   {
     id: "levenspiel", blurb: "Compare PFR and CSTR volumes for the same conversion.", label: "Reactor sizing (Levenspiel)",
