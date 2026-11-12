@@ -1,40 +1,42 @@
 /*---------------------------------------------------------------------------*\
   aminoBuffers01_tris_glycine -- the Tris and triethanolamine buffers at half neutralisation, and
-  a glycine titration: 0.1 mol/kg glycine hydrochloride with 0.5, 1, 1.5 and 2 equivalents of NaOH,
-  at 25 C.  Six beakers, the pH a RESULT of the charge balance, read against the evaluated pK's of
-  Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231, Section 8 (p. 359-360).
+  a glycine titration both ways: 0.1 mol/kg glycine with 0.5 equivalent of HCl, alone, and with 0.5 and
+  1 equivalent of NaOH, at 25 C.  Six beakers, the pH a RESULT of the charge balance, read against
+  the evaluated pK's of Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231,
+  Section 8 (p. 359-360).
 
   WHAT THIS CASE IS.  A STRUCTURAL ILLUSTRATION of the C373 phase 3 records (amine and amino-acid
   ladders, written by bin/curate/species_c373.py from data/curation/batches/species_c373).  It is
   NOT validated against a measured pH: no work in hand prints a pH for these solutions, so there
-  are no `anchor` rows.  The master of each family is its conjugate ACID (HTris+, HTEOA+, H2Gly+),
-  so the case feeds the hydrochloride (the chloride is the counter-ion) and NaOH is a titrant
-  (`totalsBasis stoichiometric`); `pH solve;` closes the charge balance.  Tris: pK 8.072, dH
+  are no `anchor` rows.  The master of each family is the compound AS WEIGHED -- Tris, TEOA and the
+  glycine zwitterion HGly -- so the case declares it directly and HCl (the chloride) or NaOH is the
+  titrant (`totalsBasis stoichiometric`); `pH solve;` closes the charge balance.  Tris: pK 8.072, dH
   47.45 kJ/mol; triethanolamine: pK 7.762, dH 33.6 (Section 7.68 p. 357, 7.66 p. 353); glycine:
   pK 2.351, 9.780 (Section 7.31 p. 281).
 
   WHAT TO LOOK FOR.  (this run's numbers, Davies, 25 C)
-   1. Tris half-neutralised (0.025 + 0.025 mol/kg, I = 0.050): pH 8.157 = pK 8.072 + log10(1/0.8212),
-      the cation's activity coefficient 0.8212 against 1 for the neutral base; triethanolamine
-      the same: 7.848 = 7.762 + 0.086.  A buffer's pH is its pK only at zero ionic strength.
-   2. Glycine at 1 equivalent of NaOH (the zwitterion): pH 6.075 against (pK1 + pK2)/2 = 6.066
-      (the isoelectric point), the zwitterion 0.09995 of the 0.1 mol/kg, H2Gly+ and Gly- 2.4e-5
-      and 2.5e-5.
-   3. At 0.5 equivalent the first step is not a clean half: pH 2.526 against pK1 2.351, because the
-      free H+ (3.8e-3 mol/kg) is not negligible beside the 0.1 mol/kg acid (H2Gly+ 0.0461,
-      HGly 0.0539).  At 1.5 equivalents (Gly- 0.0499, HGly 0.0501) pH 9.660 = pK2 9.780 - 0.108,
-      the anion's gamma 0.7596; at 2 equivalents the anion is 0.0976 of 0.1 and pH 11.259.
-   4. No ion pairing with sodium for these anions and the HCl ion pair of the catalogue is the only
-      one present (HClaq, 1e-4 or less): the distribution is complete only up to the reactions
+   1. Tris half-neutralised with HCl (0.025 + 0.025 mol/kg, I = 0.025): pH 8.138 = pK 8.072 +
+      log10(1/0.8594), the cation's activity coefficient 0.8594 against 1 for the neutral base;
+      triethanolamine the same: 7.828 = 7.762 + 0.066.  A buffer's pH is its pK only at zero ionic
+      strength.
+   2. Glycine alone (the zwitterion): pH 6.075 against (pK1 + pK2)/2 = 6.066, the isoelectric
+      point; HGly is 0.09996 of the 0.1 mol/kg, H2Gly+ and Gly- 1.9e-5 and 2.0e-5.
+   3. With 0.5 equivalent of HCl the first step is not a clean half: pH 2.504 against pK1 2.351,
+      because the free H+ (3.8e-3 mol/kg) is not negligible beside the 0.1 mol/kg acid (H2Gly+ 0.0461,
+      HGly 0.0539).  With 0.5 equivalent of NaOH (Gly- 0.0499, HGly 0.0501) pH 9.693 = pK2 9.780 +
+      log10(0.8212) (gamma 0.8212 of the anion); with 1 equivalent the anion is 0.0976 of 0.1 and
+      pH 11.278.
+   4. No ion pairing with sodium for these anions; the HCl ion pair of the catalogue is the only one
+      present (HClaq, 1e-4 or less): the distribution is complete only up to the reactions
       somebody wrote down.
 \*---------------------------------------------------------------------------*/
 
 operations
 (
-    { name tris_half; type speciate; activityModel davies; analyticalTotals { HTris 0.05 mol/kg; Cl 0.05 mol/kg; Na 0.025 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( HTris Tris ); output { file tris_half.csv; } }
-    { name triethanolamine_half; type speciate; activityModel davies; analyticalTotals { HTEOA 0.05 mol/kg; Cl 0.05 mol/kg; Na 0.025 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( HTEOA TEOA ); output { file triethanolamine_half.csv; } }
-    { name glycine_Na0p050; type speciate; activityModel davies; analyticalTotals { H2Gly 0.10 mol/kg; Cl 0.10 mol/kg; Na 0.05 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H2Gly HGly Gly ); output { file glycine_Na0p050.csv; } }
-    { name glycine_Na0p100; type speciate; activityModel davies; analyticalTotals { H2Gly 0.10 mol/kg; Cl 0.10 mol/kg; Na 0.10 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H2Gly HGly Gly ); output { file glycine_Na0p100.csv; } }
-    { name glycine_Na0p150; type speciate; activityModel davies; analyticalTotals { H2Gly 0.10 mol/kg; Cl 0.10 mol/kg; Na 0.15 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H2Gly HGly Gly ); output { file glycine_Na0p150.csv; } }
-    { name glycine_Na0p200; type speciate; activityModel davies; analyticalTotals { H2Gly 0.10 mol/kg; Cl 0.10 mol/kg; Na 0.20 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H2Gly HGly Gly ); output { file glycine_Na0p200.csv; } }
+    { name tris_half; type speciate; activityModel davies; analyticalTotals { Tris 0.05 mol/kg; Cl 0.025 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( HTris Tris ); output { file tris_half.csv; } }
+    { name triethanolamine_half; type speciate; activityModel davies; analyticalTotals { TEOA 0.05 mol/kg; Cl 0.025 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( HTEOA TEOA ); output { file triethanolamine_half.csv; } }
+    { name glycine_HCl0p050; type speciate; activityModel davies; analyticalTotals { HGly 0.10 mol/kg; Cl 0.05 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H2Gly HGly Gly ); output { file glycine_HCl0p050.csv; } }
+    { name glycine_zwitterion; type speciate; activityModel davies; analyticalTotals { HGly 0.10 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H2Gly HGly Gly ); output { file glycine_zwitterion.csv; } }
+    { name glycine_Na0p050; type speciate; activityModel davies; analyticalTotals { HGly 0.10 mol/kg; Na 0.05 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H2Gly HGly Gly ); output { file glycine_Na0p050.csv; } }
+    { name glycine_Na0p100; type speciate; activityModel davies; analyticalTotals { HGly 0.10 mol/kg; Na 0.10 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H2Gly HGly Gly ); output { file glycine_Na0p100.csv; } }
 );

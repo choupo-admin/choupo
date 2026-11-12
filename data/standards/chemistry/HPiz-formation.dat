@@ -1,12 +1,13 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
-  chemistry/HPiz-formation.dat -- the first dissociation of piperazine, written from the master:
-      H2Piz  <=>  HPiz + H+
+  chemistry/HPiz-formation.dat -- a protonation of piperazine, written from the master:
+      Piz + H+  <=>  HPiz
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv.
 
   logK25 and dH are the PRINTED values of the sources below (standard state ideal solution at 1 mol/kg, 298.15 K):
-      pK1 = 5.333, dH1 = 31.11 kJ/mol, dCp 86 J/mol/K
-      pK2 = 9.731, dH2 = 42.89 kJ/mol, dCp 75 J/mol/K
+      pK1 = 5.333, dH1 = 31.11 kJ/mol, dCp 86 J/mol/K (grade AAB)
+      pK2 = 9.731, dH2 = 42.89 kJ/mol, dCp 75 J/mol/K (grade AAB)
   Source: Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231; standard state: hypothetical ideal solution of unit molality, 298.15 K, 0.1 MPa (Section 8, p. 359).
-  This record carries the first step (the sign flips with the direction written).
+  The master is Piz, the form a case declares; this record carries step 2 (the sign flips with the direction written).
   The constant-dCp term of the printed dCp is NOT carried: the record grammar has no place for it (a
   van't Hoff integral with a constant dCp is exactly the `analytic` A1, A3, A4 terms; proposed, not done).
   The neutral base is a different object from the catalogue component of the same substance (monoethanolamine, diethanolamine, triethanolamine, triethylamine, methylamine, piperazine exist as components); no gas-liquid record links this species to it, so the dissolved base and the component are two identities until one is written.
@@ -14,5 +15,5 @@
 recordType aqueousSpeciation;
 schemaVersion 1;
 
-species HPiz; masters ( { ion H2Piz; nu 1; } { ion H; nu -1; } );
-      logK25 -5.333; dH 31110; source "Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231 -- Section 8 summary, p. 360, and Section 7.53, p. 329: pK1 5.333, dH1 31.11 kJ/mol (pK, dH_ion at 298.15 K)";
+species HPiz; masters ( { ion Piz; nu 1; } { ion H; nu 1; } );
+      logK25 9.731; dH -42890; source "Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231 -- Section 8 summary, p. 360, and Section 7.53, p. 329: pK2 9.731, dH2 42.89 kJ/mol (pK, dH_ion at 298.15 K)";

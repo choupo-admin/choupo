@@ -134,7 +134,7 @@ below.  Standard state: hypothetical ideal solution of unit molality, 298.15 K, 
 | **arsenate** | species `H2AsO4`, `HAsO4` (NBS, C320), **no record** | `H3AsO4`, `AsO4` and four records: `H2AsO4-formation`, `HAsO4-formation`, `AsO4-formation`, `H3AsO4-formation` | 7.9, p. 248: pK 2.31 / 7.05 / 11.9, dH -7.8 / 1.7 / 15.9; no dCp printed | formation data of `H3AsO4`, `AsO4` (the NBS tables in hand were not searched in this pass) |
 | **pyrophosphate** | nothing | five species `H4P2O7` ... `P2O7` and five records; navigation family `phosphate` | 7.56, p. 333: pK 0.83 / 2.26 / 6.72 / 9.46, dH -9.2 / -5.0 / 0.5 / 1.4, dCp ~-90 / ~-130 / -136 / -141 | formation data (none in Goldberg) |
 | **sulfite** | species `Bisulfite`, `Sulfite` (NBS, C320), **no record** | `H2SO3` and three records | 7.59, p. 344: pK 1.857 / 7.172, dH -17.80 / -3.65, dCp -272 / -262 | `H2SO3` formation data; the sulfurous acid is formally aqueous SO2 and no gas-liquid record links `H2SO3` to the component `SO2` |
-| **hydrazine** | component `N2H4` only | `N2H6`, `N2H5`, `Hydrazine` (not `N2H4aq`: the identity gate pins the `aq` class as closed, so the neutral base takes a word key) and three records | 7.40, p. 300: pK -0.99 / 8.02, dH 38.1 / 41.7; no dCp | formation data; the gas-liquid link of `Hydrazine` to the component |
+| **hydrazine** | component `N2H4` only | `N2H6`, `N2H5`, `Hydrazine` (not `N2H4aq`: the identity gate pins the `aq` class as closed, so the neutral base takes a word key; the master is `Hydrazine`, as weighed) and three records | 7.40, p. 300: pK -0.99 / 8.02, dH 38.1 / 41.7; no dCp | formation data; the gas-liquid link of `Hydrazine` to the component |
 
 Not in Goldberg and so not touched: nitrite, nitrate, hydrofluoric, hydrogen sulfide, silicic, hypochlorous (several exist in the catalogue from
 other works); cacodylate (arsenic, an organoarsenic acid) and the other organic buffers are phase 4.
@@ -175,7 +175,7 @@ the goldens of the cases that run off 25 C would move.  The three phosphate reco
 ### 2.3 Case
 
 `tutorials/props/electrolyte/inorganicLadders01_goldberg`: seven `speciate` beakers at half-neutralisation points
-(phosphate, pyrophosphate x3, arsenate, sulfite, hydrazinium chloride), Davies, `pH solve`.  A structural illustration; no
+(phosphate, pyrophosphate x3, arsenate, sulfite, hydrazine with HCl), Davies, `pH solve`.  A structural illustration; no
 `anchor` rows (no pH printed in a work in hand).  For two neighbouring species at equal molality the Davies pH equals
 pK + log(gamma_B/gamma_A) to the printed digits (arsenate 6.728 = 7.05 - 0.322), which the header shows; sealed and
 recorded the way C372's cases were.
@@ -188,8 +188,13 @@ glutamic acids and for the formation data of glycine.  Read as in phases 1 and 2
 
 ### 3.1 What was built
 
-Master of every family = its most protonated form (the conjugate ACID of a base).  Neutral bases and zwitterions are
-derived species.  `Piz` = piperazine, `Imz` = imidazole.
+**Master of a family = the compound AS WEIGHED** (the form a case declares as the analytical total): the zwitterion of an
+amino acid or Good buffer, the neutral base of an amine, the neutral acid of a carboxylic or inorganic acid.  The other
+species are derived from it, one record each (the carbonate pattern, where `HCO3` is the master); a ladder whose master is
+the most protonated form also carries the inverse record from its fully dissociated form (the C372 pattern).  This
+REVISES the first build of phase 3 (cation master, a case had to feed the hydrochloride): the `master` column of
+`families.tsv`, the tool's interior-master record and a stale-file sweep were added, the 30 affected families regenerated and
+the two cases re-sealed and re-recorded.  `Piz` = piperazine, `Imz` = imidazole.
 
 | family | species (master first) | source | what is entered |
 |---|---|---|---|
@@ -262,25 +267,79 @@ aspartic acid, by hand: 22.31 kJ/mol from dH and dS against 22.26 from the pK).
 
 Held before: nothing of these families (ammonia, borate and carbonate are in phase 2).  Missing: gas-liquid links to the
 components (above); formation data of every amine, imidazole and peptide (Goldberg prints none; NBS has no C3+ rows);
-the heat capacity of ionisation (the printed dCp is not carried: see section 4.1); the amino acids other than the four of
+the heat capacity of ionisation (the printed dCp is not carried: see section 5.1); the amino acids other than the four of
 Miller (serine, proline, threonine, ...), which no evaluated ionisation work in hand covers; acid-gas chemistry of the
 alkanolamines.
 
 ### 3.5 Case
 
-`tutorials/props/electrolyte/aminoBuffers01_tris_glycine`: Tris and triethanolamine hydrochlorides half-neutralised, and
-glycine hydrochloride with 0.5, 1, 1.5 and 2 equivalents of NaOH (six beakers, Davies, `pH solve`).  A structural
-illustration; no `anchor` rows.  The Davies pH of the half-neutralised bases is pK + log(1/gamma+) (Tris 8.157 =
-8.072 + 0.086); the isoelectric glycine solution is at pH 6.075 against (pK1 + pK2)/2 = 6.066.
+`tutorials/props/electrolyte/aminoBuffers01_tris_glycine`: Tris and triethanolamine half-neutralised with HCl, and
+glycine alone and with HCl and NaOH (six beakers, Davies, `pH solve`; the masters are Tris, TEOA and the zwitterion
+`HGly`).  A structural illustration; no `anchor` rows.  The Davies pH of the half-neutralised bases is pK + log(1/gamma+)
+(Tris 8.138 = 8.072 + 0.066); the isoelectric glycine solution is at pH 6.075 against (pK1 + pK2)/2 = 6.066.
 
-## 4. What phases 1 to 3 left undone
+## 4. Phase 4: the laboratory buffers (Goldberg, Kishore & Lennen 2002)
+
+Every remaining section of Goldberg that phases 1 to 3 did not take.  Species: the acid form and the conjugate base(s),
+charges as the section states them, the formula and molar mass from the section's own header (`Empirical formula`,
+`Molecular weight`).  **No formation data**: Goldberg prints none, so the species carry no `aqueousThermo` and the header
+says so.  Master = the zwitterion or neutral acid as weighed.  Keys: `H<acronym>` for the acid or zwitterion, `<acronym>` for
+the anion (`HMES`/`MES`), `H2<acronym>` for a cationic acid (`H2HEPES`); the acronym is the natural key and none collides with
+an existing key or an element symbol.  Evaluation grades are those of the Section 7 tables (carried in the records' headers
+for every Goldberg step of the campaign since this phase).
+
+| family (keys) | section, p. | pK | dH (kJ/mol) | grade |
+|---|---|---|---|---|
+| ACES (`HACES`, `ACES`) | 7.1, 237 | 6.847 | 30.43 | AAA |
+| ADA (`H3ADA`, `H2ADA`, `HADA`, `ADA`; master `H2ADA`) | 7.3, 241 | 1.59 / 2.48 / 6.844 | -- / 16.7 / 12.23 | C / CC / ABB |
+| AMPSO | 7.8, 247 | 9.138 | 43.19 | AAB |
+| 3-amino-1-propanesulfonic acid (`HAPSA`, `APSA`) | 7.6, 245 | 10.2 | -- | D |
+| barbital (`H2Barb`, `HBarb`, `Barb`) | 7.10, 251 | 7.980 / 12.8 | 24.27 / -- | AAA / C |
+| BES | 7.11, 253 | 7.187 | 24.25 | AAA |
+| Bicine (`H2Bicine`, `HBicine`, `Bicine`) | 7.12, 255 | 2.0 / 8.334 | -- / 26.34 | DD / AAA |
+| Bis-tris (`HBisTris`, `BisTris`) | 7.13, 257 | 6.484 | 28.4 | AAA |
+| Bis-tris propane (`H2BTP`, `HBTP`, `BTP`) | 7.14, 258 | 6.65 / 9.10 | -- | D / D |
+| cacodylate (`H2Cac`, `HCac`, `Cac`) | 7.17, 261 | 1.78 / 6.28 | -3.5 / -3.0 | CBB / BBB |
+| CAPS, CAPSO, CHES | 7.18, 7.19, 7.21 | 10.499, 9.825, 9.394 | 48.1, 46.67, 39.55 | AAC, AAB, AAB |
+| diglycolate (`H2Dglyc`, `HDglyc`, `Dglyc`) | 7.25, 272 | 3.05 / 4.37 | -0.1 / -7.2 | BCD |
+| 3,3-dimethylglutarate (`H2DMG`, ...) | 7.26, 275 | 3.70 / 6.34 | -- | B / B |
+| DIPSO | 7.27, 276 | 7.576 | 30.18 | AAB |
+| glycerol 2-phosphate (`H2G2P`, `HG2P`, `G2P`) | 7.30, 280 | 1.329 / 6.650 | -12.2 / -1.85 | ABB / AAA |
+| HEPES (`H2HEPES`, `HHEPES`, `HEPES`) | 7.36, 292 | ~3.0 / 7.564 | -- / 20.4 | U / ABB |
+| HEPPS, HEPPSO | 7.37, 7.38 | 7.957, 8.042 | 21.3, 23.70 | AAA, AAB |
+| 2-mercaptoethanol (`HMerEtOH`, `MerEtOH`) | 7.43, 308 | 9.75 | 26.2 | CB |
+| MES, MOPS | 7.44, 7.48 | 6.270, 7.184 | 14.8, 21.1 | AAA, AAA |
+| MOPSO (`H2MOPSO`, `HMOPSO`, `MOPSO`) | 7.49, 315 | 0.060 / 6.90 | -- / 25.0 | A / BCB |
+| phthalate (`H2Phth`, `HPhth`, `Phth`) | 7.52, 326 | 2.950 / 5.408 | -2.70 / -2.17 | AAA |
+| PIPES, POPSO | 7.54, 7.55 | 7.141, ~8.0 | 11.2, -- | ABA, U |
+| TAPS, TAPSO, TES | 7.61, 7.62, 7.64 | 8.44, 7.635, 7.550 | 40.4, 39.09, 32.13 | BBB, AAB, AAB |
+| Tricine (`H2Tricine`, `HTricine`, `Tricine`) | 7.65, 351 | 2.023 / 8.135 | 5.85 / 31.37 | AAB / AAA |
+
+Not built: **CABS, HEPBS, MOBS and TABS**, whose sections state that no thermodynamic data for the ionisation exist in the
+literature (the summary table prints a dash).  Entries printed as approximate (HEPES pK1 about 3.0, POPSO about 8.0, the
+first dH of cysteine and several dCp values) are entered at the printed digit and flagged in the evidence table and in the
+record header; a `U` grade is Goldberg's for an unevaluated value.  Where an ionisation step has no printed dH, the records
+that sum it carry no dH and their K is flat in T, which the engine announces; the dH of a later step is used by the record
+of that step alone when the master sits beside it (HEPES: `H2HEPES` has no dH, `HEPES` carries 20.4).
+
+**Misprints in the source, found while taking the formulas from the section headers.**  The line `where HL = ...` of three
+sections disagrees with the section's own empirical formula and molar mass: HEPPS prints `C6H20N2O4S` (the header and the
+molar mass 252.33 give C9H20N2O4S), glycerol 2-phosphate `C3H9NO6P` (header C3H9O6P, 172.07), cacodylate `HL = C2H6AsO2` (the
+anion; header C2H7AsO2, 138.00).  The header formulas are used; the records' MW is the sum of the engine's atomic weights.
+
+**Case.**  `tutorials/props/electrolyte/goodsBuffers01_hepes_mes`: HEPES and MES, 0.05 mol/kg half-neutralised with NaOH, at 25
+and 37 C (four beakers).  HEPES 7.498 -> 7.359 and MES 6.204 -> 6.103: the van't Hoff shift of the pK from the record's dH
+(0.138 and 0.100) plus the Davies coefficient; the printed dCp would add 0.002 and 0.0002 and is not carried.  A structural
+illustration, no `anchor` rows.
+
+## 5. What the four phases left undone
 
 Malonic acid (not in Goldberg, Miller or NBS), gluconic, ascorbic, gallic, propionic, butyric, benzoic: no evaluated
 ionisation work in hand.  Entropies of malate, lactate and the crystals.  The aqueous heat capacities.  Formation data
 of the new inorganic ions (the NBS tables in hand carry several of them and were not searched in phase 2).  The `dCp` of
 every ionisation (see the proposal below).
 
-### 4.1 Where a `dCp` would go
+### 5.1 Where a `dCp` would go
 
   The printed ionisation heat capacity change is not carried by any record: the grammar reads
 `logK25`, `dH` and an `analytic` block.  A constant dCp is exactly the `A1`, `A3`, `A4` terms of the `analytic` form

@@ -7417,9 +7417,10 @@ at equal molality).
 2-amino-2-methyl-1-propanol and -1,3-propanediol, diethanolamine, ethanolamine, methylamine, piperazine, imidazole,
 2-methylimidazole, N-ethylmorpholine, glycine amide, glycylglycine, glycylglycylglycine, L-histidine, L-cysteine and glycine
 from Goldberg et al.\ (2002) (Sections~7.4--7.68 as listed in the design note) and of L-alanine, L-aspartic and L-glutamic
-acids from Miller \& Smith-Magowan (1990), Table~6.  The master of each is its \emph{conjugate acid}
-($\mathrm{HL}^+$, $\mathrm{H_2L}^+$), the neutral base or zwitterion and the anion follow by the cumulative rule of the
-previous paragraphs.  For glycine, alanine, aspartic and glutamic acids the aqueous zwitterion's enthalpy and entropy are
+acids from Miller \& Smith-Magowan (1990), Table~6.  The master of each is the compound \emph{as weighed} (the neutral base, the zwitterion), and every other species is
+derived from it by one record, a protonation or a dissociation, as for the carbonate family whose master is
+$\mathrm{HCO_3^-}$; a family whose master is the most protonated form keeps the cumulative rule and the inverse record of
+the previous paragraphs.  For glycine, alanine, aspartic and glutamic acids the aqueous zwitterion's enthalpy and entropy are
 printed (Miller, Table~3: $\Delta_fH^\circ(\mathrm{aq})=-514.36,-553.75,-947.50,-980.72$~kJ/mol, crystal plus heat of solution)
 and Eq.~\eqref{eq:ladder-formation} gives the cation and the anion.  A ladder is held to the Gibbs identity
 $\mathrm{p}K=(\Delta H-T\,\Delta S)/(RT\ln 10)$ by the gate \file{check\_logk\_crosscheck}, which found that Miller's glutamic acid
@@ -7427,8 +7428,21 @@ $\mathrm{p}K_3=9.93$ does not agree with its printed $\Delta_{\rm ion}S=-44.8$~J
 glutamate ion is therefore derived from the pK and the enthalpy.  The neutral amine as a dissolved species and the
 catalogue's volatile component of the same substance are two identities until a gas--liquid record links them.  Worked case:
 \file{aminoBuffers01\_tris\_glycine} (Davies $\mathrm{pH}=\mathrm{p}K+\log_{10}(1/\gamma_+)$ for a half-neutralised amine
-hydrochloride; the isoelectric glycine solution at $(\mathrm{p}K_1+\mathrm{p}K_2)/2$ to $0.01$); inventory and readings:
+amine with HCl; the isoelectric glycine solution at $(\mathrm{p}K_1+\mathrm{p}K_2)/2$ to $0.01$); inventory and readings:
 \file{docs/design/species-from-evaluated-compilations.md}.
+
+\emph{Laboratory buffers.}  Phase~4 takes every remaining section of Goldberg et al.\ (2002) --- ACES, ADA, AMPSO,
+3-amino-1-propanesulfonic acid, barbital, BES, Bicine, Bis-tris, Bis-tris propane, cacodylate, CAPS, CAPSO, CHES,
+diglycolate, 3,3-dimethylglutarate, DIPSO, glycerol 2-phosphate, HEPES, HEPPS, HEPPSO, 2-mercaptoethanol, MES, MOPS, MOPSO,
+phthalate, PIPES, POPSO, TAPS, TAPSO, TES and Tricine --- as ionisation ladders with the evaluated $\mathrm{p}K$, $\Delta_{\rm ion}H^\circ$
+and the evaluation grade of the section, the formula and molar mass of each species from the section's own header (the
+line ``where $\mathrm{HL}=\dots$'' disagrees with the header in three sections and is not used).  The master is the zwitterion
+or neutral acid as weighed.  No formation data are carried: the compilation prints none, so a balance that needs the
+enthalpy of formation of a buffer species refuses by name.  CABS, HEPBS, MOBS and TABS have no evaluated data and are
+not built.  Because a record carries $\Delta H$ of one step, the temperature dependence is the van't Hoff form
+$\log_{10}K(T)=\log_{10}K_{25}-\frac{\Delta H}{R\ln10}\left(\frac1T-\frac1{298.15}\right)$; for HEPES at 37~\textdegree C it lowers
+$\mathrm{p}K$ by $0.138$ ($\Delta H=20.4$~kJ/mol), the printed $\Delta C_p=47$~J/mol/K would add $0.002$ and is not carried.
+Worked case: \file{goodsBuffers01\_hepes\_mes}.
 
 \subsection{Open systems: the Henry gas pin}\label{sec:gaspin}
 

@@ -314,16 +314,22 @@ gallic, propionic, butyric and benzoic acids have no ionisation record.  Inorgan
 **sulfite** (`H2SO3`/`Bisulfite`/`Sulfite`) and **hydrazine** (`N2H6`/`N2H5`/`Hydrazine`); ionisation only, no formation
 data.  Carbonate, phosphate, hydrogensulfate, ammonia and borate keep their PHREEQC records (compared in the design note;
 hydrogensulfate's ionisation enthalpy is 6.3 kJ/mol off Goldberg's).  Case: `inorganicLadders01_goldberg`.
-Phase 3 (C373): **amines and amino acids** -- master = the conjugate ACID, so a case feeds the hydrochloride:
-`HTris`/`Tris`, `HTEOA`/`TEOA` (triethanolamine), `HTEA`/`TEA` (triethylamine), `HAMP`/`AMP`, `HAMPD`/`AMPD`, `HDEA`/`DEA`,
-`HMEA`/`MEA`, `HMeNH2`/`MeNH2`, `H2Piz`/`HPiz`/`Piz` (piperazine), `HImz`/`Imz`, `HMImz`/`MImz`, `HNEM`/`NEM`,
-`HGlyAmd`/`GlyAmd`, `H2GlyGly`/`HGlyGly`/`GlyGly`, `H2Gly3`/`HGly3`/`Gly3`, `H3His`..`His`, `H3Cys`..`Cys`, and the amino acids
-with formation data from Miller & Smith-Magowan 1990: glycine `H2Gly`/`HGly`/`Gly`, alanine `H2Ala`/`HAla`/`Ala`,
-aspartic `H3Aspt`..`Aspt`, glutamic `H3Glu`..`Glu` (zwitterion = the `H2`-form with the printed aqueous enthalpy and
-entropy); crystal components `glycine`, `alanine` (L), `asparticAcid`, `glutamicAcid` with heat-of-solution pairs.
-The neutral amine species and the volatile component of the same name (monoethanolamine, diethanolamine, triethanolamine,
-triethylamine, methylamine, piperazine) are two identities, not linked by any gas-liquid record.  Case:
-`aminoBuffers01_tris_glycine`.  Inventory, readings,
+Phase 3 (C373): **amines and amino acids** -- master = the compound AS WEIGHED (the base or the zwitterion), so a case
+declares it directly and HCl or NaOH is the titrant: `Tris`/`HTris`, `TEOA`/`HTEOA` (triethanolamine), `TEA`/`HTEA`
+(triethylamine), `AMP`/`HAMP`, `AMPD`/`HAMPD`, `DEA`/`HDEA`, `MEA`/`HMEA`, `MeNH2`/`HMeNH2`, `Piz` (piperazine: `HPiz`,
+`H2Piz`), `Imz`/`HImz`, `MImz`/`HMImz`, `NEM`/`HNEM`, `GlyAmd`/`HGlyAmd`, glycylglycine `HGlyGly` (`H2GlyGly`, `GlyGly`),
+triglycine `HGly3`, histidine `HHis` (`H3His`, `H2His`, `His`), cysteine `H2Cys`, and the amino acids with formation data
+from Miller & Smith-Magowan 1990: glycine `HGly` (`H2Gly`, `Gly`), alanine `HAla`, aspartic `H2Aspt` (`H3Aspt`, `HAspt`,
+`Aspt`), glutamic `H2Glu` (`H3Glu`, `HGlu`, `Glu`); zwitterions carry the printed aqueous enthalpy and entropy; crystal components
+`glycine`, `alanine` (L), `asparticAcid`, `glutamicAcid` with heat-of-solution pairs.  The neutral amine species and the
+volatile component of the same name (monoethanolamine, diethanolamine, triethanolamine, triethylamine, methylamine,
+piperazine) are two identities, not linked by any gas-liquid record.  Case: `aminoBuffers01_tris_glycine`.
+Phase 4 (C373): **laboratory buffers**, every other section of Goldberg 2002 (ACES, ADA, AMPSO, APSA, barbital, BES, Bicine,
+Bis-tris, Bis-tris propane, cacodylate, CAPS, CAPSO, CHES, diglycolate, 3,3-dimethylglutarate, DIPSO, glycerol 2-phosphate,
+HEPES, HEPPS, HEPPSO, 2-mercaptoethanol, MES, MOPS, MOPSO, phthalate, PIPES, POPSO, TAPS, TAPSO, TES, Tricine): species
+`H<acronym>` (the zwitterion or acid, the master) and `<acronym>` (the anion), `H2<acronym>` for a cationic acid; pK, dH and
+the evaluation grade, NO formation data (the compilation prints none), the printed dCp not carried.  CABS, HEPBS, MOBS
+and TABS have no evaluated data and are absent.  Case: `goodsBuffers01_hepes_mes` (HEPES and MES at 25 and 37 C).  Inventory, readings,
 consistency checks and the works still missing: `docs/design/organic-acids-in-the-catalogue.md` and
 `docs/design/species-from-evaluated-compilations.md`; the records are written by `bin/curate/species_c373.py` from
 `data/curation/batches/species_c373/*.tsv` and held by `check_species_c373`.

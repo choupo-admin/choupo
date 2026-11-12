@@ -1,5 +1,5 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
-  species/Imz.dat -- ONE model species, ONE typed file: the fully dissociated form of imidazole, as its conjugate acid.
+  species/Imz.dat -- ONE model species, ONE typed file: imidazole, as its conjugate acid in the form a case declares (the compound as weighed), the speciation MASTER of its family.
   Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
   reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
   1 mol/kg, 298.15 K, H+ = 0.

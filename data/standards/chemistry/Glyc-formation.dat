@@ -1,6 +1,7 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
   chemistry/Glyc-formation.dat -- the first dissociation of glycolic acid, written from the master:
       HGlyc  <=>  Glyc + H+
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv.
 
   logK25 and dH are the PRINTED values of the sources below (standard state ideal solution at 1 mol/kg, 298.15 K):
       pK1 = 3.831, dH1 = 0.46 kJ/mol

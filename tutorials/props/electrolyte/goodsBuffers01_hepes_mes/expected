@@ -1,0 +1,47 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    hepes_25C              I                0.025000960552     1e-4
+diag    hepes_25C              T_K              298.15             1e-4
+diag    hepes_25C              aw               0.99864978011      1e-4
+diag    hepes_25C              chargeImposed    1                  1e-4
+diag    hepes_25C              chargeResidual   -2.73963106414e-14 1e-4
+diag    hepes_25C              gamma_H2HEPES    0.859399687878     1e-4
+diag    hepes_25C              gamma_HEPES      0.859399687878     1e-4
+diag    hepes_25C              gamma_HHEPES     1                  1e-4
+diag    hepes_25C              m_H2HEPES        9.2360557979e-07   1e-4
+diag    hepes_25C              m_HEPES          0.0250005945783    1e-4
+diag    hepes_25C              m_HHEPES         0.0249984818161    1e-4
+diag    hepes_25C              pH               7.49823189474      1e-4
+diag    hepes_37C              I                0.0250013291739    1e-4
+diag    hepes_37C              T_K              310.15             1e-4
+diag    hepes_37C              aw               0.998649775096     1e-4
+diag    hepes_37C              chargeImposed    1                  1e-4
+diag    hepes_37C              chargeResidual   -5.81885906913e-14 1e-4
+diag    hepes_37C              gamma_H2HEPES    0.856634001999     1e-4
+diag    hepes_37C              gamma_HEPES      0.856634001999     1e-4
+diag    hepes_37C              gamma_HHEPES     1                  1e-4
+diag    hepes_37C              m_H2HEPES        1.27804798503e-06  1e-4
+diag    hepes_37C              m_HEPES          0.025000698725     1e-4
+diag    hepes_37C              m_HHEPES         0.0249980232271    1e-4
+diag    hepes_37C              pH               7.35856319863      1e-4
+diag    mes_25C                I                0.0250007270839    1e-4
+diag    mes_25C                T_K              298.15             1e-4
+diag    mes_25C                aw               0.998649773943     1e-4
+diag    mes_25C                chargeImposed    1                  1e-4
+diag    mes_25C                chargeResidual   -1.6762383723e-14  1e-4
+diag    mes_25C                gamma_HMES       1                  1e-4
+diag    mes_25C                gamma_MES        0.859400172709     1e-4
+diag    mes_25C                m_HMES           0.0249992915129    1e-4
+diag    mes_25C                m_MES            0.0250007084871    1e-4
+diag    mes_25C                pH               6.20422005199      1e-4
+diag    mes_37C                I                0.025000921929     1e-4
+diag    mes_37C                T_K              310.15             1e-4
+diag    mes_37C                aw               0.998649770143     1e-4
+diag    mes_37C                chargeImposed    1                  1e-4
+diag    mes_37C                chargeResidual   -2.77200518741e-14 1e-4
+diag    mes_37C                gamma_HMES       1                  1e-4
+diag    mes_37C                gamma_MES        0.856634862902     1e-4
+diag    mes_37C                m_HMES           0.0249991130328    1e-4
+diag    mes_37C                m_MES            0.0250008869672    1e-4
+diag    mes_37C                pH               6.1025068006       1e-4

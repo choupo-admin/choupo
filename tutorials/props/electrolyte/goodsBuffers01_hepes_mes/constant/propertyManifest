@@ -1,0 +1,155 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-12";
+    importerVersion    "3";
+    records
+    {
+        "chemistry/H2HEPES-formation.dat"
+        {
+            type          imported;
+            sha256        "4ab8e9e78328aa403b07bbb10c8022dbc71da5d6cda72c279d3b0b8bfe73cb55";
+            computationalSha256 "5c3880232824088d5228b8c7ca9585af2c7ec3c6ad531b0b5aaf83b0224ca194";
+            origin        "data/standards/chemistry/H2HEPES-formation.dat";
+            originSha256  "ca008e3255f8cce0cc5cc81b55091896c98c02c18d49646ed3df99dceec24670";
+            release       Choupo-2608;
+        }
+        "chemistry/HEPES-formation.dat"
+        {
+            type          imported;
+            sha256        "2d6dac8767ff9d18ad553b582fb56b2d28f8f99cfb3be377a9a771bcb0e9d5bf";
+            computationalSha256 "22d54570ed964782e0da68d6cd0400b5db24c5bbcddf7b7e9cf3c2885aee89f4";
+            origin        "data/standards/chemistry/HEPES-formation.dat";
+            originSha256  "d16f31a0aa833982b08680847cf570404e513aaee8326e49c6d66a6e432e0fed";
+            release       Choupo-2608;
+        }
+        "chemistry/HMES-formation.dat"
+        {
+            type          imported;
+            sha256        "6e66a3fe4000597dcbb86b790657ecb722102e04a376c1a694e14bf25191eaf1";
+            computationalSha256 "5037d1c07ceae0ba8158c62a46eadaf9c5c55a483fce4ab439f96d2114bf44fd";
+            origin        "data/standards/chemistry/HMES-formation.dat";
+            originSha256  "bb87bd621744568dd50e45d33c9520655255d2bc4b35fc02f6e90d63a4e41edb";
+            release       Choupo-2608;
+        }
+        "chemistry/MES-formation.dat"
+        {
+            type          imported;
+            sha256        "50277424d31351fb1178887a0f6506ea2789dba6cd160fba0a8264207cc07b37";
+            computationalSha256 "9b6c86a632267d84546739263ab4085bc7a25e204abcab02d6a6212fcdedc152";
+            origin        "data/standards/chemistry/MES-formation.dat";
+            originSha256  "24d320eb41db955745b3c239def3fab9fe7b3a71889070fd13c1c2066b8367c6";
+            release       Choupo-2608;
+        }
+        "chemistry/water-dissociation.dat"
+        {
+            type          imported;
+            sha256        "e5e166abb5a1f1482bd50c50caf65cfaa46d725422cc78f6ab04786c8891f58f";
+            computationalSha256 "a4bf1f8f902f95e740a3100399b149894b8d380a82c9dfb17c6e81362ff91c89";
+            origin        "data/standards/chemistry/water-dissociation.dat";
+            originSha256  "b2ae1698798cd472c4e75d1c4b186e1ac762852b40512a998ba247a22a0b9a80";
+            release       Choupo-2608;
+        }
+        "components/water.dat"
+        {
+            type          imported;
+            sha256        "b32cd13a8a4783d0ce02bf84800b74462e3fd46d8983942f70e958da3c731aae";
+            computationalSha256 "f9080a8aa18a3730b43c799b58ec335cab2bf5258c4cc955a781cda5ed311d9b";
+            origin        "data/standards/components/water.dat";
+            originSha256  "374ccb2ee48a45af9782204286a7e4de134729f99653a95af0a2d3d24b23e0c1";
+            release       Choupo-2608;
+        }
+        "species/H.dat"
+        {
+            type          imported;
+            sha256        "db12e22773e81e351e5e87f9e19bcc8a756e5e8fec7dcdb4e51a40e42d547d98";
+            computationalSha256 "4e92d2bb435b9e5380178d63e6ec12ca75e23d96e906623edaed07901bd1b9a5";
+            origin        "data/standards/species/H.dat";
+            originSha256  "db12e22773e81e351e5e87f9e19bcc8a756e5e8fec7dcdb4e51a40e42d547d98";
+            release       Choupo-2608;
+        }
+        "species/H2HEPES.dat"
+        {
+            type          imported;
+            sha256        "56f89cdfd9a49bcb05adf470ad7463952647f95d2d0e2f8b65aece17860fcc20";
+            computationalSha256 "9ce8f50d202842ac52b9d981b896575351b64eac60f9f7f7d64290679a3f80b1";
+            origin        "data/standards/species/H2HEPES.dat";
+            originSha256  "56f89cdfd9a49bcb05adf470ad7463952647f95d2d0e2f8b65aece17860fcc20";
+            release       Choupo-2608;
+        }
+        "species/HEPES.dat"
+        {
+            type          imported;
+            sha256        "a3ac66c70d6382ea7d5955a85fda14f4c90579b834db51289f240bfcb31097f7";
+            computationalSha256 "737b27d06bd0218e612e5d557c5d91f8b3839257b95f049b35174223d0afc992";
+            origin        "data/standards/species/HEPES.dat";
+            originSha256  "a3ac66c70d6382ea7d5955a85fda14f4c90579b834db51289f240bfcb31097f7";
+            release       Choupo-2608;
+        }
+        "species/HHEPES.dat"
+        {
+            type          imported;
+            sha256        "6efedf35594aaa55d3ee37fe5fece3fc89fbb633b2820f0cf18134ae1bb92691";
+            computationalSha256 "495cd30da57c49f62bc0176595e514c2e62bbbd01a0d33a7266ba2a5ed57e971";
+            origin        "data/standards/species/HHEPES.dat";
+            originSha256  "6efedf35594aaa55d3ee37fe5fece3fc89fbb633b2820f0cf18134ae1bb92691";
+            release       Choupo-2608;
+        }
+        "species/HMES.dat"
+        {
+            type          imported;
+            sha256        "c6ff9a2c6476217ca43cbbc805327986def6d1c45bb20c32b252dfdb00fce562";
+            computationalSha256 "d4da372e5e12e2ff41aa7679fe1edb24dde6eeae8b21c317ee5248391de95fb2";
+            origin        "data/standards/species/HMES.dat";
+            originSha256  "c6ff9a2c6476217ca43cbbc805327986def6d1c45bb20c32b252dfdb00fce562";
+            release       Choupo-2608;
+        }
+        "species/MES.dat"
+        {
+            type          imported;
+            sha256        "229b114fc49cc1ceee35bc6b7860cf0ea59aa86ac3693b059ebb0f0e1f6ea327";
+            computationalSha256 "8fd92d4bc362512eca1a2ac4c2a9a826b456d6ef002b37f47effadbc29de7ed0";
+            origin        "data/standards/species/MES.dat";
+            originSha256  "229b114fc49cc1ceee35bc6b7860cf0ea59aa86ac3693b059ebb0f0e1f6ea327";
+            release       Choupo-2608;
+        }
+        "species/Na.dat"
+        {
+            type          imported;
+            sha256        "767e2aed4f42b2a7b7c787cb953518e09857f8e962755ccff687134ef7752d3a";
+            computationalSha256 "5762461aed546e6519b0702da00e3474648e4d2f0c62c5bad477e41dce103e99";
+            origin        "data/standards/species/Na.dat";
+            originSha256  "767e2aed4f42b2a7b7c787cb953518e09857f8e962755ccff687134ef7752d3a";
+            release       Choupo-2608;
+        }
+        "species/OH.dat"
+        {
+            type          imported;
+            sha256        "98431ec3c1a79c4f506a0e80d671f5c536b94c38bc08abc3b0cddb0910020fad";
+            computationalSha256 "b57ad1c6ff6b54320f763b6f683dce92482d33317ad38750c7804e093406fd9d";
+            origin        "data/standards/species/OH.dat";
+            originSha256  "98431ec3c1a79c4f506a0e80d671f5c536b94c38bc08abc3b0cddb0910020fad";
+            release       Choupo-2608;
+        }
+    }
+}

@@ -1242,37 +1242,37 @@ WHAT IS NOT CLAIMED. The pair lives in this frame: ideal-gas vapour, the catalog
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{tris\_half}\\[-1pt]{\tiny speciate}};
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{triethanolamine\_half}\\[-1pt]{\tiny speciate}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{glycine\_Na0p050}\\[-1pt]{\tiny speciate}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{glycine\_Na0p100}\\[-1pt]{\tiny speciate}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{glycine\_Na0p150}\\[-1pt]{\tiny speciate}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{glycine\_Na0p200}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{glycine\_HCl0p050}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{glycine\_zwitterion}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{glycine\_Na0p050}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{glycine\_Na0p100}\\[-1pt]{\tiny speciate}};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{Tris and triethanolamine buffers at half neutralisation and a glycine titration (glycine hydrochloride with 0.5, 1, 1.5 and 2 equivalents of NaOH) at 25 C against the evaluated pK's of Goldberg, Kishore \& Lennen 2002. A structural illustration, not validated against a measured pH.}
+\tutwhat{Tris and triethanolamine buffers at half neutralisation and a glycine titration with HCl and NaOH at 25 C against the evaluated pK's of Goldberg, Kishore \& Lennen 2002. A structural illustration, not validated against a measured pH.}
 \begin{tutnarrative}
-the Tris and triethanolamine buffers at half neutralisation, and a glycine titration: 0.1 mol/kg glycine hydrochloride with 0.5, 1, 1.5 and 2 equivalents of NaOH, at 25 C. Six beakers, the pH a RESULT of the charge balance, read against the evaluated pK's of Goldberg, Kishore \& Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231, Section 8 (p. 359-360).
+the Tris and triethanolamine buffers at half neutralisation, and a glycine titration both ways: 0.1 mol/kg glycine with 0.5 equivalent of HCl, alone, and with 0.5 and 1 equivalent of NaOH, at 25 C. Six beakers, the pH a RESULT of the charge balance, read against the evaluated pK's of Goldberg, Kishore \& Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231, Section 8 (p. 359-360).
 
-WHAT THIS CASE IS. A STRUCTURAL ILLUSTRATION of the C373 phase 3 records (amine and amino-acid ladders, written by bin/curate/species\_c373.py from data/curation/batches/species\_c373). It is NOT validated against a measured pH: no work in hand prints a pH for these solutions, so there are no `anchor` rows. The master of each family is its conjugate ACID (HTris+, HTEOA+, H2Gly+), so the case feeds the hydrochloride (the chloride is the counter-ion) and NaOH is a titrant (`totalsBasis stoichiometric`); `pH solve;` closes the charge balance. Tris: pK 8.072, dH 47.45 kJ/mol; triethanolamine: pK 7.762, dH 33.6 (Section 7.68 p. 357, 7.66 p. 353); glycine: pK 2.351, 9.780 (Section 7.31 p. 281).
+WHAT THIS CASE IS. A STRUCTURAL ILLUSTRATION of the C373 phase 3 records (amine and amino-acid ladders, written by bin/curate/species\_c373.py from data/curation/batches/species\_c373). It is NOT validated against a measured pH: no work in hand prints a pH for these solutions, so there are no `anchor` rows. The master of each family is the compound AS WEIGHED -- Tris, TEOA and the glycine zwitterion HGly -- so the case declares it directly and HCl (the chloride) or NaOH is the titrant (`totalsBasis stoichiometric`); `pH solve;` closes the charge balance. Tris: pK 8.072, dH 47.45 kJ/mol; triethanolamine: pK 7.762, dH 33.6 (Section 7.68 p. 357, 7.66 p. 353); glycine: pK 2.351, 9.780 (Section 7.31 p. 281).
 
-WHAT TO LOOK FOR. (this run's numbers, Davies, 25 C) 1. Tris half-neutralised (0.025 + 0.025 mol/kg, I = 0.050): pH 8.157 = pK 8.072 + log10(1/0.8212), the cation's activity coefficient 0.8212 against 1 for the neutral base; triethanolamine the same: 7.848 = 7.762 + 0.086. A buffer's pH is its pK only at zero ionic strength. 2. Glycine at 1 equivalent of NaOH (the zwitterion): pH 6.075 against (pK1 + pK2)/2 = 6.066 (the isoelectric point), the zwitterion 0.09995 of the 0.1 mol/kg, H2Gly+ and Gly- 2.4e-5 and 2.5e-5. 3. At 0.5 equivalent the first step is not a clean half: pH 2.526 against pK1 2.351, because the free H+ (3.8e-3 mol/kg) is not negligible beside the 0.1 mol/kg acid (H2Gly+ 0.0461, HGly 0.0539). At 1.5 equivalents (Gly- 0.0499, HGly 0.0501) pH 9.660 = pK2 9.780 - 0.108, the anion's gamma 0.7596; at 2 equivalents the anion is 0.0976 of 0.1 and pH 11.259. 4. No ion pairing with sodium for these anions and the HCl ion pair of the catalogue is the only one present (HClaq, 1e-4 or less): the distribution is complete only up to the reactions somebody wrote down.
+WHAT TO LOOK FOR. (this run's numbers, Davies, 25 C) 1. Tris half-neutralised with HCl (0.025 + 0.025 mol/kg, I = 0.025): pH 8.138 = pK 8.072 + log10(1/0.8594), the cation's activity coefficient 0.8594 against 1 for the neutral base; triethanolamine the same: 7.828 = 7.762 + 0.066. A buffer's pH is its pK only at zero ionic strength. 2. Glycine alone (the zwitterion): pH 6.075 against (pK1 + pK2)/2 = 6.066, the isoelectric point; HGly is 0.09996 of the 0.1 mol/kg, H2Gly+ and Gly- 1.9e-5 and 2.0e-5. 3. With 0.5 equivalent of HCl the first step is not a clean half: pH 2.504 against pK1 2.351, because the free H+ (3.8e-3 mol/kg) is not negligible beside the 0.1 mol/kg acid (H2Gly+ 0.0461, HGly 0.0539). With 0.5 equivalent of NaOH (Gly- 0.0499, HGly 0.0501) pH 9.693 = pK2 9.780 + log10(0.8212) (gamma 0.8212 of the anion); with 1 equivalent the anion is 0.0976 of 0.1 and pH 11.278. 4. No ion pairing with sodium for these anions; the HCl ion pair of the catalogue is the only one present (HClaq, 1e-4 or less): the distribution is complete only up to the reactions somebody wrote down.
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{diag}{tris\_half}{I}{0.0500017459749}
-\goldrow{diag}{tris\_half}{SI\_halite}{-4.64419099088}
+\goldrow{diag}{tris\_half}{I}{0.025001595711}
 \goldrow{diag}{tris\_half}{T\_K}{298.15}
-\goldrow{diag}{tris\_half}{aw}{0.997750627031}
+\goldrow{diag}{tris\_half}{aw}{0.998649758497}
 \goldrow{diag}{tris\_half}{chargeImposed}{1}
-\goldrow{diag}{tris\_half}{chargeResidual}{-1.67643142071e-17}
-\goldrow{diag}{tris\_half}{gamma\_HTris}{0.821201054714}
+\goldrow{diag}{tris\_half}{chargeResidual}{-4.93242389106e-16}
+\goldrow{diag}{tris\_half}{gamma\_HTris}{0.859398368895}
 \goldrow{diag}{tris\_half}{gamma\_Tris}{1}
-\goldrow{diag}{tris\_half}{m\_HTris}{0.0250017375015}
-\goldrow{diag}{tris\_half}{m\_Tris}{0.0249982624985}
-\goldrow{diag}{tris\_half}{pH}{8.15749013453}
-\goldrow{diag}{triethanolamine\_half}{I}{0.0500008550473}
-\goldrow{diag}{triethanolamine\_half}{SI\_halite}{-4.64418990722}
+\goldrow{diag}{tris\_half}{m\_HTris}{0.0250015872377}
+\goldrow{diag}{tris\_half}{m\_Tris}{0.0249984127623}
+\goldrow{diag}{tris\_half}{pH}{8.13775032864}
+\goldrow{diag}{triethanolamine\_half}{I}{0.0250007815097}
 \goldrow{diag}{triethanolamine\_half}{T\_K}{298.15}
-\goldmore{60}
+\goldrow{diag}{triethanolamine\_half}{aw}{0.998649772985}
+\goldrow{diag}{triethanolamine\_half}{chargeImposed}{1}
+\goldmore{54}
 \end{tutgolden}
 
 \clearpage
@@ -1868,6 +1868,43 @@ Until this case the crystal was exercised only by check\_ice\_freezing's probe; 
 \end{tutgolden}
 
 \clearpage
+\tutentry{goodsBuffers01\_hepes\_mes}{tutorials/props/electrolyte/goodsBuffers01\_hepes\_mes}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{hepes\_25C}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{hepes\_37C}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{mes\_25C}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{mes\_37C}\\[-1pt]{\tiny speciate}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{HEPES and MES buffers (0.05 mol/kg, half-neutralised with NaOH) at 25 C and 37 C: the pH and its temperature shift from the evaluated pK and dH of Goldberg, Kishore \& Lennen 2002. A structural illustration, not validated against a measured pH.}
+\begin{tutnarrative}
+the HEPES and MES laboratory buffers, 0.05 mol/kg half-neutralised with NaOH (0.025 mol/kg), at 25 C and at 37 C. Four beakers, the pH a RESULT of the charge balance, read against the evaluated pK and enthalpy of ionisation of Goldberg, Kishore \& Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231: HEPES pK 7.564, dH 20.4 kJ/mol (Section 7.36 p. 292); MES pK 6.270, dH 14.8 kJ/mol (Section 7.44 p. 309).
+
+WHAT THIS CASE IS. A STRUCTURAL ILLUSTRATION of the C373 phase 4 records (the laboratory buffers, written by bin/curate/species\_c373.py from data/curation/batches/species\_c373). It is NOT validated against a measured pH: no work in hand prints a pH for these solutions, so there are no `anchor` rows. The master of each family is the zwitterion as weighed (HHEPES, HMES); the species are the acid and base forms and carry no formation data (Goldberg prints none). The temperature dependence is the van't Hoff form from the record's dH; the printed dCp (HEPES 47, MES 5 J/mol/K) is NOT carried (no place in the record grammar) and would move the 37 C pK by 0.002 and 0.0002.
+
+WHAT TO LOOK FOR. (this run's numbers, Davies) 1. At 25 C the half-neutralised buffer sits at pK + log10(gamma): HEPES 7.498 = 7.564 - 0.066, MES 6.204 = 6.270 - 0.066 (the base's activity coefficient 0.8594 at I = 0.025 against 1 for the zwitterion). 2. Warming to 37 C lowers the pH by 0.139 (HEPES) and 0.101 (MES): the van't Hoff shift dH/(R ln10) (1/298.15 - 1/310.15) = 0.138 and 0.100 in pK, a little more in pH from the Davies coefficient (0.8566). The larger the ionisation enthalpy the larger the shift, which is why a Tris buffer (dH 47.45 kJ/mol, aminoBuffers01\_tris\_glycine) loses about a third of a pH unit between bench and body temperature.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{hepes\_25C}{I}{0.025000960552}
+\goldrow{diag}{hepes\_25C}{T\_K}{298.15}
+\goldrow{diag}{hepes\_25C}{aw}{0.99864978011}
+\goldrow{diag}{hepes\_25C}{chargeImposed}{1}
+\goldrow{diag}{hepes\_25C}{chargeResidual}{-2.73963106414e-14}
+\goldrow{diag}{hepes\_25C}{gamma\_H2HEPES}{0.859399687878}
+\goldrow{diag}{hepes\_25C}{gamma\_HEPES}{0.859399687878}
+\goldrow{diag}{hepes\_25C}{gamma\_HHEPES}{1}
+\goldrow{diag}{hepes\_25C}{m\_H2HEPES}{9.2360557979e-07}
+\goldrow{diag}{hepes\_25C}{m\_HEPES}{0.0250005945783}
+\goldrow{diag}{hepes\_25C}{m\_HHEPES}{0.0249984818161}
+\goldrow{diag}{hepes\_25C}{pH}{7.49823189474}
+\goldrow{diag}{hepes\_37C}{I}{0.0250013291739}
+\goldrow{diag}{hepes\_37C}{T\_K}{310.15}
+\goldmore{30}
+\end{tutgolden}
+
+\clearpage
 \tutentry{inorganicLadders01\_goldberg}{tutorials/props/electrolyte/inorganicLadders01\_goldberg}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -1884,9 +1921,9 @@ Until this case the crystal was exercised only by check\_ice\_freezing's probe; 
 \begin{tutnarrative}
 the ionisation ladders of phosphoric, pyrophosphoric, arsenic and sulfurous acids and of hydrazine at 25 C: seven beakers, each made up at a half-neutralisation point of one step, the pH a RESULT of the charge balance, read against the evaluated pK's of Goldberg, Kishore \& Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231, Section 8 (p. 359-360).
 
-WHAT THIS CASE IS. A STRUCTURAL ILLUSTRATION of the C373 phase 2 records (pyrophosphate, arsenate, sulfite and hydrazine ladders, written by bin/curate/species\_c373.py from data/curation/batches/species\_c373). It is NOT validated against a measured pH: no work in hand prints a pH for these solutions, so there are no `anchor` rows. The phosphate beaker runs on the catalogue's earlier PHREEQC records (pK2 7.207 there, 7.198 in Goldberg), which this campaign compared and did not change. `pH solve;` closes the charge balance; `totalsBasis stoichiometric` makes the sodium a titrant (a neutral NaOH feed) and the chloride of the hydrazine beaker the counter-ion of hydrazinium chloride.
+WHAT THIS CASE IS. A STRUCTURAL ILLUSTRATION of the C373 phase 2 records (pyrophosphate, arsenate, sulfite and hydrazine ladders, written by bin/curate/species\_c373.py from data/curation/batches/species\_c373). It is NOT validated against a measured pH: no work in hand prints a pH for these solutions, so there are no `anchor` rows. The phosphate beaker runs on the catalogue's earlier PHREEQC records (pK2 7.207 there, 7.198 in Goldberg), which this campaign compared and did not change. `pH solve;` closes the charge balance; `totalsBasis stoichiometric` makes the sodium a titrant (a neutral NaOH feed) and HCl (the chloride) the titrant of the hydrazine beaker, whose master is the neutral base `Hydrazine` as weighed.
 
-WHAT TO LOOK FOR. (this run's numbers, Davies, 25 C) 1. For two neighbouring species at equal molality the Davies pH is pK + log10(gamma\_B / gamma\_A) exactly: arsenate (H2AsO4-/HAsO4--, 0.025 each, I = 0.100) pH 6.728 = 7.05 - 0.322 (log 0.3725/0.7812); sulfite (HSO3-/SO3--) 6.850 = 7.172 - 0.322; hydrazinium (N2H5+/N2H4, I = 0.100) 8.127 = 8.02 + 0.107, the neutral base having gamma 1. The difference to the printed pK is the activity-coefficient ratio, not an error of the constant. 2. Phosphate, equimolar H2PO4-/HPO4-- (0.05 each, I = 0.200): pH 6.826 = 7.207 - 0.38. 3. Pyrophosphate: the first two steps overlap (pK 0.83 and 2.26) and the three beakers at 1.5, 2.5 and 3.5 equivalents of sodium give pH 2.230, 6.068 and 8.510 against pK2, pK3, pK4 = 2.26, 6.72, 9.46: the gap grows with the charge of the pair (1.5 eq: H3P2O7- 0.0164 against H2P2O7-- 0.0331, the steps overlap; 3.5 eq: HP2O7--- 0.0248 and P2O7---- 0.0251, gamma 0.059 and 0.0066, a factor of 9 between the two, so -0.95 pH). Beyond I \textasciitilde{} 0.4 the Davies window is passed, which is why the series stops at 3.5 equivalents. 4. No ion pairing with sodium for any of these anions: the catalogue holds none, so the distribution is complete only up to the reactions somebody wrote down.
+WHAT TO LOOK FOR. (this run's numbers, Davies, 25 C) 1. For two neighbouring species at equal molality the Davies pH is pK + log10(gamma\_B / gamma\_A) exactly: arsenate (H2AsO4-/HAsO4--, 0.025 each, I = 0.100) pH 6.728 = 7.05 - 0.322 (log 0.3725/0.7812); sulfite (HSO3-/SO3--) 6.850 = 7.172 - 0.322; hydrazinium (N2H5+/N2H4, 0.025 each, I = 0.025) 8.086 = 8.02 + 0.066 (gamma 0.8594 of the cation, 1 for the neutral base). The difference to the printed pK is the activity-coefficient ratio, not an error of the constant. 2. Phosphate, equimolar H2PO4-/HPO4-- (0.05 each, I = 0.200): pH 6.826 = 7.207 - 0.38. 3. Pyrophosphate: the first two steps overlap (pK 0.83 and 2.26) and the three beakers at 1.5, 2.5 and 3.5 equivalents of sodium give pH 2.230, 6.068 and 8.510 against pK2, pK3, pK4 = 2.26, 6.72, 9.46: the gap grows with the charge of the pair (1.5 eq: H3P2O7- 0.0164 against H2P2O7-- 0.0331, the steps overlap; 3.5 eq: HP2O7--- 0.0248 and P2O7---- 0.0251, gamma 0.059 and 0.0066, a factor of 9 between the two, so -0.95 pH). Beyond I \textasciitilde{} 0.4 the Davies window is passed, which is why the series stops at 3.5 equivalents. 4. No ion pairing with sodium for any of these anions: the catalogue holds none, so the distribution is complete only up to the reactions somebody wrote down.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -1904,7 +1941,7 @@ WHAT TO LOOK FOR. (this run's numbers, Davies, 25 C) 1. For two neighbouring spe
 \goldrow{diag}{phosphate\_equimolar}{m\_HPO4}{0.0499996277312}
 \goldrow{diag}{phosphate\_equimolar}{m\_PO4}{6.51584654407e-07}
 \goldrow{diag}{phosphate\_equimolar}{pH}{6.82600967837}
-\goldmore{87}
+\goldmore{86}
 \end{tutgolden}
 
 \clearpage

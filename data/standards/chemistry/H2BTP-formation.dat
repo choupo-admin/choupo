@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/H2BTP-formation.dat -- the first 2 protonations of Bis-tris propane, written from the master:
+      BTP + 2 H+  <=>  H2BTP
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv.
+
+  logK25 and dH are the PRINTED values of the sources below (standard state ideal solution at 1 mol/kg, 298.15 K):
+      pK1 = 6.65, dH not printed (grade D)
+      pK2 = 9.10, dH not printed (grade D)
+  Source: Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231; standard state: hypothetical ideal solution of unit molality, 298.15 K, 0.1 MPa (Section 8, p. 359).
+  The master is BTP, the form a case declares; this record carries steps 1 to 2 (the sign flips with the direction written).
+  A dH is not printed for the step this record carries, so it carries NO dH and its K is flat in T,
+  which the engine announces; nothing is borrowed.
+  The constant-dCp term of the printed dCp is NOT carried: the record grammar has no place for it (a
+  van't Hoff integral with a constant dCp is exactly the `analytic` A1, A3, A4 terms; proposed, not done).
+  Goldberg gives no formation data for a buffer.  The species are the acid form(s) and the conjugate base(s) of the section, charges as the section states them, the formula the section's own empirical formula.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species H2BTP; masters ( { ion BTP; nu 1; } { ion H; nu 2; } );
+      logK25 15.75; source "Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231 -- Section 8 summary, p. 359, and Section 7.14, p. 258: pK1 6.65, pK2 9.10 (pK, dH_ion at 298.15 K)";

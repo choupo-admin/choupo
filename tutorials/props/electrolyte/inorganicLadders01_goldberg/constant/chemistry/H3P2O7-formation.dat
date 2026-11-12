@@ -2,12 +2,13 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
   chemistry/H3P2O7-formation.dat -- the first dissociation of pyrophosphoric acid, written from the master:
       H4P2O7  <=>  H3P2O7 + H+
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv.
 
   logK25 and dH are the PRINTED values of the sources below (standard state ideal solution at 1 mol/kg, 298.15 K):
-      pK1 = 0.83, dH1 = -9.2 kJ/mol, dCp ~-90 J/mol/K
-      pK2 = 2.26, dH2 = -5.0 kJ/mol, dCp ~-130 J/mol/K
-      pK3 = 6.72, dH3 = 0.5 kJ/mol, dCp -136 J/mol/K
-      pK4 = 9.46, dH4 = 1.4 kJ/mol, dCp -141 J/mol/K
+      pK1 = 0.83, dH1 = -9.2 kJ/mol, dCp ~-90 J/mol/K (grade CDD) [printed as approximate]
+      pK2 = 2.26, dH2 = -5.0 kJ/mol, dCp ~-130 J/mol/K (grade BCD) [printed as approximate]
+      pK3 = 6.72, dH3 = 0.5 kJ/mol, dCp -136 J/mol/K (grade BBC)
+      pK4 = 9.46, dH4 = 1.4 kJ/mol, dCp -141 J/mol/K (grade DCC)
   Source: Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231; standard state: hypothetical ideal solution of unit molality, 298.15 K, 0.1 MPa (Section 8, p. 359).
   This record carries the first step (the sign flips with the direction written).
   The constant-dCp term of the printed dCp is NOT carried: the record grammar has no place for it (a

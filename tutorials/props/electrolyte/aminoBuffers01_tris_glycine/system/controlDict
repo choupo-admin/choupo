@@ -1,10 +1,10 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
   aminoBuffers01_tris_glycine -- Tris and triethanolamine buffers at half neutralisation and a glycine
-  titration (0.1 mol/kg glycine hydrochloride with 0.5 to 2 equivalents of NaOH) at 25 C, on the C373
+  titration (0.1 mol/kg glycine with HCl or NaOH) at 25 C, on the C373
   phase 3 amine and amino-acid ladders (Goldberg, Kishore & Lennen 2002; glycine formation data
   Miller & Smith-Magowan 1990).  A structural illustration, not validated against a measured pH.
 \*---------------------------------------------------------------------------*/
 
 application   choupoProps;
-description   "Tris and triethanolamine buffers at half neutralisation and a glycine titration (glycine hydrochloride with 0.5, 1, 1.5 and 2 equivalents of NaOH) at 25 C against the evaluated pK's of Goldberg, Kishore & Lennen 2002. A structural illustration, not validated against a measured pH.";
+description   "Tris and triethanolamine buffers at half neutralisation and a glycine titration with HCl and NaOH at 25 C against the evaluated pK's of Goldberg, Kishore & Lennen 2002. A structural illustration, not validated against a measured pH.";
 verbosity     2;

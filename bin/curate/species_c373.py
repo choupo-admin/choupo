@@ -125,8 +125,13 @@ def render_species(t, sp):
     last = len(lad) - 1
     form = [r for r in t["formation"] if r["species"] == sp["key"]]
     label = fam["label"]
-    if pos == 0:
+    m = master_pos(fam)
+    if pos == m and m == 0:
         kind = f"the most protonated form of {label}, the speciation MASTER of its family"
+    elif pos == m:
+        kind = f"{label} in the form a case declares (the compound as weighed), the speciation MASTER of its family"
+    elif pos == 0:
+        kind = f"the most protonated form of {label}"
     elif pos == last:
         kind = f"the fully dissociated form of {label}"
     else:
@@ -163,6 +168,10 @@ def render_species(t, sp):
 
 
 # ---------------------------------------------------------------- chemistry records
+def master_pos(fam):
+    return int(fam.get("master") or 0)
+
+
 def ladder_data(t, family):
     lad = ladder(t, family)
     st = steps_of(t, family)
@@ -185,7 +194,8 @@ def step_lines(t, fam, st):
         bits = [f"pK{r['step']} = {r['pK']}"]
         L.append(bits[0] + (f", dH{r['step']} = {r['dH']} kJ/mol" if r["dH"] else ", dH not printed")
                  + (f", dCp {r['dCp']} J/mol/K" if r["dCp"] else "")
-                 + (f" (grade {r['grade']})" if r["grade"] else ""))
+                 + (f" (grade {r['grade']})" if r["grade"] else "")
+                 + (" [printed as approximate]" if "approximate" in r["note"] else ""))
     return L
 
 
@@ -198,6 +208,54 @@ def source_line(t, fam, st):
         groups.setdefault(r["where"], []).append(item)
     cit = "; ".join(cite(t, k) for k in src_keys)
     return clean(f"{cit} -- " + "; ".join(f"{w}: " + ", ".join(items) for w, items in groups.items()) + " (pK, dH_ion at 298.15 K)")
+
+
+def render_chem_master(t, family, j, m):
+    """record of the species at ladder position j, written from a master at position m > 0 (no inverse record)."""
+    fam = t["fam"][family]
+    lad, st = ladder_data(t, family)
+    label = fam["label"]
+    if j > m:
+        ks = st[m:j]
+        pk = sum(D(r["pK"]) for r in ks)
+        dhj = sum(D(r["dH"]) for r in ks) * 1000 if all(r["dH"] for r in ks) else None
+        logk, nuh = -pk, -(j - m)
+        eq = f"{lad[m]['key']}  <=>  {lad[j]['key']} + {j - m} H+" if j - m > 1 else f"{lad[m]['key']}  <=>  {lad[j]['key']} + H+"
+        what = f"{'a dissociation' if j - m == 1 else 'the first %d dissociations' % (j - m)} of {label}, written from the master"
+    else:
+        ks = st[j:m]
+        pk = sum(D(r["pK"]) for r in ks)
+        dhj = -sum(D(r["dH"]) for r in ks) * 1000 if all(r["dH"] for r in ks) else None
+        logk, nuh = pk, m - j
+        eq = f"{lad[m]['key']} + {m - j} H+  <=>  {lad[j]['key']}" if m - j > 1 else f"{lad[m]['key']} + H+  <=>  {lad[j]['key']}"
+        what = f"{'a protonation' if m - j == 1 else 'the first %d protonations' % (m - j)} of {label}, written from the master"
+    a, b = (ks[0]["step"], ks[-1]["step"])
+    carries = f"step {a}" if a == b else f"steps {a} to {b}"
+    L = ["/*--------------------------------*- Choupo -*--------------------------------*\\",
+         f"  chemistry/{lad[j]['key']}-formation.dat -- {what}:",
+         f"      {eq}", f"  Made by {TOOL} from {TABLES}/*.tsv.", ""]
+    L.append("  logK25 and dH are the PRINTED values of the sources below (standard state ideal solution at 1 mol/kg, 298.15 K):")
+    for ln in step_lines(t, fam, st):
+        L.append("      " + ln)
+    for k in sorted({r["src"] for r in st}):
+        L.append(f"  Source: {cite(t, k)}; {t['src'][k]['scale']}.")
+    L.append(f"  The master is {lad[m]['key']}, the form a case declares; this record carries {carries} (the sign flips with the direction written).")
+    if dhj is None:
+        L.append("  A dH is not printed for the step this record carries, so it carries NO dH and its K is flat in T,")
+        L.append("  which the engine announces; nothing is borrowed.")
+    L.append("  The constant-dCp term of the printed dCp is NOT carried: the record grammar has no place for it (a")
+    L.append("  van't Hoff integral with a constant dCp is exactly the `analytic` A1, A3, A4 terms; proposed, not done).")
+    if fam["note"]:
+        L.append("  " + fam["note"])
+    L += ["\\*-----------------------------------------------------------------------------*/",
+          "recordType aqueousSpeciation;", "schemaVersion 1;", "",
+          f"species {lad[j]['key']}; masters ( {{ ion {lad[m]['key']}; nu 1; }} {{ ion H; nu {nuh}; }} );"]
+    tail = f"      logK25 {logk_text(logk)};"
+    if dhj is not None:
+        tail += f" dH {jnum(dhj)};"
+    tail += f' source "{source_line(t, fam, ks)}";'
+    L.append(tail)
+    return "\n".join(L) + "\n"
 
 
 def render_chem(t, family, i):
@@ -226,7 +284,7 @@ def render_chem(t, family, i):
     carries = "the sum of the first %d steps" % (n if i == 0 else i) if (i == 0 and n > 1) or i > 1 else "the first step" if i == 1 else "the one step"
     L = ["/*--------------------------------*- Choupo -*--------------------------------*\\",
          f"  chemistry/{mname}-formation.dat -- {what}:",
-         f"      {eq}", ""]
+         f"      {eq}", f"  Made by {TOOL} from {TABLES}/*.tsv.", ""]
     L.append(f"  logK25 and dH are the PRINTED values of the sources below (standard state ideal solution at 1 mol/kg, 298.15 K):")
     for ln in step_lines(t, fam, st):
         L.append("      " + ln)
@@ -257,8 +315,12 @@ def chem_files(t):
         if fam["chem"] != "build":
             continue
         lad = ladder(t, fam["family"])
+        m = master_pos(fam)
         for i in range(0, len(lad)):
-            out[CHEM / f"{lad[i]['key']}-formation.dat"] = render_chem(t, fam["family"], i)
+            if m == 0:
+                out[CHEM / f"{lad[i]['key']}-formation.dat"] = render_chem(t, fam["family"], i)
+            elif i != m:
+                out[CHEM / f"{lad[i]['key']}-formation.dat"] = render_chem_master(t, fam["family"], i, m)
     return out
 
 
@@ -274,7 +336,7 @@ def nav_block(t):
         for r in ladder(t, fam["family"]):
             if r["status"] != "build":
                 continue    # `update`: already named in the hand-written part of the file
-            c = "   // the master of the family" if int(r["position"]) == 0 else ""
+            c = "   // the master of the family" if int(r["position"]) == master_pos(fam) else ""
             L.append(f"    {r['key']:<9} {{ familyRoots ( {fam['root']} ); }}{c}")
     L.append(END)
     return "\n".join(L) + "\n"
@@ -291,6 +353,16 @@ def nav_text(t):
     marker = "}\n\n// The CLOSED vocabulary of process topics."
     assert marker in txt
     return txt.replace(marker, blk + marker, 1)
+
+
+def stale(files):
+    """tool-made species/chemistry files that no table governs any more."""
+    out = []
+    for d, mark in ((SPECIES, f"Made by {TOOL}"), (CHEM, f"Made by {TOOL}")):
+        for p in sorted(d.glob("*.dat")):
+            if p not in files and mark in p.read_text(encoding="utf-8")[:900]:
+                out.append(p)
+    return out
 
 
 def expected(t):
@@ -330,7 +402,10 @@ def neutral_hf(t, fam):
 def check(t):
     bad = []
     n = 0
-    for path, text in expected(t).items():
+    exp = expected(t)
+    for p in stale(exp):
+        bad.append(f"stale: {p.relative_to(ROOT)} was made by the tool and no table governs it any more")
+    for path, text in exp.items():
         n += 1
         if not path.exists():
             bad.append(f"missing: {path.relative_to(ROOT)}")
@@ -441,7 +516,11 @@ def main():
         return 0
     if cmd == "write":
         n = 0
-        for path, text in expected(t).items():
+        exp = expected(t)
+        for p in stale(exp):
+            p.unlink()
+            n += 1
+        for path, text in exp.items():
             if not path.exists() or path.read_text(encoding="utf-8") != text:
                 path.write_text(text, encoding="utf-8")
                 n += 1

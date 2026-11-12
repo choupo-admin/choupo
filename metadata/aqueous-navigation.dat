@@ -166,64 +166,139 @@ speciesNavigation
     HP2O7     { familyRoots ( phosphate ); }
     P2O7      { familyRoots ( phosphate ); }
     H2SO3     { familyRoots ( sulfite ); }   // the master of the family
-    N2H6      { familyRoots ( hydrazine ); }   // the master of the family
+    N2H6      { familyRoots ( hydrazine ); }
     N2H5      { familyRoots ( hydrazine ); }
-    Hydrazine { familyRoots ( hydrazine ); }
-    HTris     { familyRoots ( amine ); }   // the master of the family
-    Tris      { familyRoots ( amine ); }
-    HTEOA     { familyRoots ( amine ); }   // the master of the family
-    TEOA      { familyRoots ( amine ); }
-    HTEA      { familyRoots ( amine ); }   // the master of the family
-    TEA       { familyRoots ( amine ); }
-    HAMP      { familyRoots ( amine ); }   // the master of the family
-    AMP       { familyRoots ( amine ); }
-    HAMPD     { familyRoots ( amine ); }   // the master of the family
-    AMPD      { familyRoots ( amine ); }
-    HDEA      { familyRoots ( amine ); }   // the master of the family
-    DEA       { familyRoots ( amine ); }
-    HMEA      { familyRoots ( amine ); }   // the master of the family
-    MEA       { familyRoots ( amine ); }
-    HMeNH2    { familyRoots ( amine ); }   // the master of the family
-    MeNH2     { familyRoots ( amine ); }
-    H2Piz     { familyRoots ( piperazine ); }   // the master of the family
+    Hydrazine { familyRoots ( hydrazine ); }   // the master of the family
+    HTris     { familyRoots ( amine ); }
+    Tris      { familyRoots ( amine ); }   // the master of the family
+    HTEOA     { familyRoots ( amine ); }
+    TEOA      { familyRoots ( amine ); }   // the master of the family
+    HTEA      { familyRoots ( amine ); }
+    TEA       { familyRoots ( amine ); }   // the master of the family
+    HAMP      { familyRoots ( amine ); }
+    AMP       { familyRoots ( amine ); }   // the master of the family
+    HAMPD     { familyRoots ( amine ); }
+    AMPD      { familyRoots ( amine ); }   // the master of the family
+    HDEA      { familyRoots ( amine ); }
+    DEA       { familyRoots ( amine ); }   // the master of the family
+    HMEA      { familyRoots ( amine ); }
+    MEA       { familyRoots ( amine ); }   // the master of the family
+    HMeNH2    { familyRoots ( amine ); }
+    MeNH2     { familyRoots ( amine ); }   // the master of the family
+    H2Piz     { familyRoots ( piperazine ); }
     HPiz      { familyRoots ( piperazine ); }
-    Piz       { familyRoots ( piperazine ); }
-    HImz      { familyRoots ( imidazole ); }   // the master of the family
-    Imz       { familyRoots ( imidazole ); }
-    HMImz     { familyRoots ( imidazole ); }   // the master of the family
-    MImz      { familyRoots ( imidazole ); }
-    HNEM      { familyRoots ( morpholine ); }   // the master of the family
-    NEM       { familyRoots ( morpholine ); }
-    HGlyAmd   { familyRoots ( glycine ); }   // the master of the family
-    GlyAmd    { familyRoots ( glycine ); }
-    H2Gly     { familyRoots ( glycine ); }   // the master of the family
-    HGly      { familyRoots ( glycine ); }
+    Piz       { familyRoots ( piperazine ); }   // the master of the family
+    HImz      { familyRoots ( imidazole ); }
+    Imz       { familyRoots ( imidazole ); }   // the master of the family
+    HMImz     { familyRoots ( imidazole ); }
+    MImz      { familyRoots ( imidazole ); }   // the master of the family
+    HNEM      { familyRoots ( morpholine ); }
+    NEM       { familyRoots ( morpholine ); }   // the master of the family
+    HGlyAmd   { familyRoots ( glycine ); }
+    GlyAmd    { familyRoots ( glycine ); }   // the master of the family
+    H2Gly     { familyRoots ( glycine ); }
+    HGly      { familyRoots ( glycine ); }   // the master of the family
     Gly       { familyRoots ( glycine ); }
-    H2Ala     { familyRoots ( alanine ); }   // the master of the family
-    HAla      { familyRoots ( alanine ); }
+    H2Ala     { familyRoots ( alanine ); }
+    HAla      { familyRoots ( alanine ); }   // the master of the family
     Ala       { familyRoots ( alanine ); }
-    H3Aspt    { familyRoots ( aspartate ); }   // the master of the family
-    H2Aspt    { familyRoots ( aspartate ); }
+    H3Aspt    { familyRoots ( aspartate ); }
+    H2Aspt    { familyRoots ( aspartate ); }   // the master of the family
     HAspt     { familyRoots ( aspartate ); }
     Aspt      { familyRoots ( aspartate ); }
-    H3Glu     { familyRoots ( glutamate ); }   // the master of the family
-    H2Glu     { familyRoots ( glutamate ); }
+    H3Glu     { familyRoots ( glutamate ); }
+    H2Glu     { familyRoots ( glutamate ); }   // the master of the family
     HGlu      { familyRoots ( glutamate ); }
     Glu       { familyRoots ( glutamate ); }
-    H2GlyGly  { familyRoots ( peptide ); }   // the master of the family
-    HGlyGly   { familyRoots ( peptide ); }
+    H2GlyGly  { familyRoots ( peptide ); }
+    HGlyGly   { familyRoots ( peptide ); }   // the master of the family
     GlyGly    { familyRoots ( peptide ); }
-    H2Gly3    { familyRoots ( peptide ); }   // the master of the family
-    HGly3     { familyRoots ( peptide ); }
+    H2Gly3    { familyRoots ( peptide ); }
+    HGly3     { familyRoots ( peptide ); }   // the master of the family
     Gly3      { familyRoots ( peptide ); }
-    H3His     { familyRoots ( histidine ); }   // the master of the family
+    H3His     { familyRoots ( histidine ); }
     H2His     { familyRoots ( histidine ); }
-    HHis      { familyRoots ( histidine ); }
+    HHis      { familyRoots ( histidine ); }   // the master of the family
     His       { familyRoots ( histidine ); }
-    H3Cys     { familyRoots ( cysteine ); }   // the master of the family
-    H2Cys     { familyRoots ( cysteine ); }
+    H3Cys     { familyRoots ( cysteine ); }
+    H2Cys     { familyRoots ( cysteine ); }   // the master of the family
     HCys      { familyRoots ( cysteine ); }
     Cys       { familyRoots ( cysteine ); }
+    HACES     { familyRoots ( buffer ); }   // the master of the family
+    ACES      { familyRoots ( buffer ); }
+    HAMPSO    { familyRoots ( buffer ); }   // the master of the family
+    AMPSO     { familyRoots ( buffer ); }
+    HAPSA     { familyRoots ( buffer ); }   // the master of the family
+    APSA      { familyRoots ( buffer ); }
+    HBES      { familyRoots ( buffer ); }   // the master of the family
+    BES       { familyRoots ( buffer ); }
+    HCAPS     { familyRoots ( buffer ); }   // the master of the family
+    CAPS      { familyRoots ( buffer ); }
+    HCAPSO    { familyRoots ( buffer ); }   // the master of the family
+    CAPSO     { familyRoots ( buffer ); }
+    HCHES     { familyRoots ( buffer ); }   // the master of the family
+    CHES      { familyRoots ( buffer ); }
+    HDIPSO    { familyRoots ( buffer ); }   // the master of the family
+    DIPSO     { familyRoots ( buffer ); }
+    HHEPPS    { familyRoots ( buffer ); }   // the master of the family
+    HEPPS     { familyRoots ( buffer ); }
+    HHEPPSO   { familyRoots ( buffer ); }   // the master of the family
+    HEPPSO    { familyRoots ( buffer ); }
+    HMES      { familyRoots ( buffer ); }   // the master of the family
+    MES       { familyRoots ( buffer ); }
+    HMOPS     { familyRoots ( buffer ); }   // the master of the family
+    MOPS      { familyRoots ( buffer ); }
+    HPIPES    { familyRoots ( buffer ); }   // the master of the family
+    PIPES     { familyRoots ( buffer ); }
+    HPOPSO    { familyRoots ( buffer ); }   // the master of the family
+    POPSO     { familyRoots ( buffer ); }
+    HTAPS     { familyRoots ( buffer ); }   // the master of the family
+    TAPS      { familyRoots ( buffer ); }
+    HTAPSO    { familyRoots ( buffer ); }   // the master of the family
+    TAPSO     { familyRoots ( buffer ); }
+    HTES      { familyRoots ( buffer ); }   // the master of the family
+    TES       { familyRoots ( buffer ); }
+    HMerEtOH  { familyRoots ( mercaptoethanol ); }   // the master of the family
+    MerEtOH   { familyRoots ( mercaptoethanol ); }
+    H2Bicine  { familyRoots ( buffer ); }
+    HBicine   { familyRoots ( buffer ); }   // the master of the family
+    Bicine    { familyRoots ( buffer ); }
+    H2HEPES   { familyRoots ( buffer ); }
+    HHEPES    { familyRoots ( buffer ); }   // the master of the family
+    HEPES     { familyRoots ( buffer ); }
+    H2MOPSO   { familyRoots ( buffer ); }
+    HMOPSO    { familyRoots ( buffer ); }   // the master of the family
+    MOPSO     { familyRoots ( buffer ); }
+    H2Tricine { familyRoots ( buffer ); }
+    HTricine  { familyRoots ( buffer ); }   // the master of the family
+    Tricine   { familyRoots ( buffer ); }
+    H2Barb    { familyRoots ( barbital ); }   // the master of the family
+    HBarb     { familyRoots ( barbital ); }
+    Barb      { familyRoots ( barbital ); }
+    H2Dglyc   { familyRoots ( diglycolate ); }   // the master of the family
+    HDglyc    { familyRoots ( diglycolate ); }
+    Dglyc     { familyRoots ( diglycolate ); }
+    H2DMG     { familyRoots ( dimethylglutarate ); }   // the master of the family
+    HDMG      { familyRoots ( dimethylglutarate ); }
+    DMG       { familyRoots ( dimethylglutarate ); }
+    H2G2P     { familyRoots ( phosphate ); }   // the master of the family
+    HG2P      { familyRoots ( phosphate ); }
+    G2P       { familyRoots ( phosphate ); }
+    H2Phth    { familyRoots ( phthalate ); }   // the master of the family
+    HPhth     { familyRoots ( phthalate ); }
+    Phth      { familyRoots ( phthalate ); }
+    H3ADA     { familyRoots ( buffer ); }
+    H2ADA     { familyRoots ( buffer ); }   // the master of the family
+    HADA      { familyRoots ( buffer ); }
+    ADA       { familyRoots ( buffer ); }
+    HBisTris  { familyRoots ( buffer ); }
+    BisTris   { familyRoots ( buffer ); }   // the master of the family
+    H2BTP     { familyRoots ( buffer ); }
+    HBTP      { familyRoots ( buffer ); }
+    BTP       { familyRoots ( buffer ); }   // the master of the family
+    H2Cac     { familyRoots ( cacodylate ); }
+    HCac      { familyRoots ( cacodylate ); }   // the master of the family
+    Cac       { familyRoots ( cacodylate ); }
     // END C373
 }
 

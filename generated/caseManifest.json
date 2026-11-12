@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1828,
+  "cases": 1829,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 21
@@ -23127,6 +23127,16 @@
    ],
    "hasGolden": true
   },
+  "tutorials/props/electrolyte/goodsBuffers01_hepes_mes": {
+   "application": "choupoProps",
+   "thermo": {
+    "activityModels": [
+     "davies"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/electrolyte/inorganicLadders01_goldberg": {
    "application": "choupoProps",
    "thermo": {
@@ -30849,6 +30859,7 @@
     "tutorials/props/electrolyte/farelo_licl_range",
     "tutorials/props/electrolyte/farelo_nacl_nh4cl",
     "tutorials/props/electrolyte/fpd01_nacl_freezing",
+    "tutorials/props/electrolyte/goodsBuffers01_hepes_mes",
     "tutorials/props/electrolyte/inorganicLadders01_goldberg",
     "tutorials/props/electrolyte/ksp_temperature",
     "tutorials/props/electrolyte/overlay01_nacl_ksp",
@@ -33011,6 +33022,7 @@
     "tutorials/props/electrolyte/citricAcid01_speciation",
     "tutorials/props/electrolyte/davies01_band_edge",
     "tutorials/props/electrolyte/edwards01_sour_water_activity",
+    "tutorials/props/electrolyte/goodsBuffers01_hepes_mes",
     "tutorials/props/electrolyte/inorganicLadders01_goldberg",
     "tutorials/props/electrolyte/pitzer_calcite_brine",
     "tutorials/props/electrolyte/pitzer_vs_davies_ro_concentrate",

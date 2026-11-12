@@ -2,10 +2,11 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
   chemistry/Bisulfite-formation.dat -- the first dissociation of sulfurous acid, written from the master:
       H2SO3  <=>  Bisulfite + H+
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv.
 
   logK25 and dH are the PRINTED values of the sources below (standard state ideal solution at 1 mol/kg, 298.15 K):
-      pK1 = 1.857, dH1 = -17.80 kJ/mol, dCp -272 J/mol/K
-      pK2 = 7.172, dH2 = -3.65 kJ/mol, dCp -262 J/mol/K
+      pK1 = 1.857, dH1 = -17.80 kJ/mol, dCp -272 J/mol/K (grade BBA)
+      pK2 = 7.172, dH2 = -3.65 kJ/mol, dCp -262 J/mol/K (grade BAB)
   Source: Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231; standard state: hypothetical ideal solution of unit molality, 298.15 K, 0.1 MPa (Section 8, p. 359).
   This record carries the first step (the sign flips with the direction written).
   The constant-dCp term of the printed dCp is NOT carried: the record grammar has no place for it (a

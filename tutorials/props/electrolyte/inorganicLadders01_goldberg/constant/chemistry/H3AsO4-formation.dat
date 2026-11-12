@@ -2,11 +2,12 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
   chemistry/H3AsO4-formation.dat -- the arsenic acid master as the sum of its fully dissociated form (the inverse of the records written from the master; a case declares one master and the closure activates the record reachable from it):
       AsO4(-3) + 3 H+  <=>  H3AsO4
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv.
 
   logK25 and dH are the PRINTED values of the sources below (standard state ideal solution at 1 mol/kg, 298.15 K):
-      pK1 = 2.31, dH1 = -7.8 kJ/mol
-      pK2 = 7.05, dH2 = 1.7 kJ/mol
-      pK3 = 11.9, dH3 = 15.9 kJ/mol
+      pK1 = 2.31, dH1 = -7.8 kJ/mol (grade CC)
+      pK2 = 7.05, dH2 = 1.7 kJ/mol (grade CC)
+      pK3 = 11.9, dH3 = 15.9 kJ/mol (grade CC)
   Source: Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231; standard state: hypothetical ideal solution of unit molality, 298.15 K, 0.1 MPa (Section 8, p. 359).
   This record carries the sum of the first 3 steps (the sign flips with the direction written).
   The constant-dCp term of the printed dCp is NOT carried: the record grammar has no place for it (a

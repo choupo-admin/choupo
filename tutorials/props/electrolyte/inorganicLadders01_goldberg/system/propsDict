@@ -12,14 +12,15 @@
   beaker runs on the catalogue's earlier PHREEQC records (pK2 7.207 there, 7.198 in
   Goldberg), which this campaign compared and did not change.  `pH solve;` closes the
   charge balance; `totalsBasis stoichiometric` makes the sodium a titrant (a neutral NaOH
-  feed) and the chloride of the hydrazine beaker the counter-ion of hydrazinium chloride.
+  feed) and HCl (the chloride) the titrant of the hydrazine beaker, whose master is the
+  neutral base `Hydrazine` as weighed.
 
   WHAT TO LOOK FOR.  (this run's numbers, Davies, 25 C)
    1. For two neighbouring species at equal molality the Davies pH is pK + log10(gamma_B /
       gamma_A) exactly: arsenate (H2AsO4-/HAsO4--, 0.025 each, I = 0.100) pH 6.728 =
       7.05 - 0.322 (log 0.3725/0.7812); sulfite (HSO3-/SO3--) 6.850 = 7.172 - 0.322;
-      hydrazinium (N2H5+/N2H4, I = 0.100) 8.127 = 8.02 + 0.107, the neutral base having
-      gamma 1.  The difference to the printed pK is the activity-coefficient ratio, not an
+      hydrazinium (N2H5+/N2H4, 0.025 each, I = 0.025) 8.086 = 8.02 + 0.066 (gamma 0.8594 of
+      the cation, 1 for the neutral base).  The difference to the printed pK is the activity-coefficient ratio, not an
       error of the constant.
    2. Phosphate, equimolar H2PO4-/HPO4-- (0.05 each, I = 0.200): pH 6.826 = 7.207 - 0.38.
    3. Pyrophosphate: the first two steps overlap (pK 0.83 and 2.26) and the three beakers
@@ -40,5 +41,5 @@ operations
     { name pyrophosphate_3p5eq; type speciate; activityModel davies; analyticalTotals { H4P2O7 0.05 mol/kg; Na 0.175 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H4P2O7 H3P2O7 H2P2O7 HP2O7 P2O7 ); output { file pyrophosphate_3p5eq.csv; } }
     { name arsenate_1p5eq; type speciate; activityModel davies; analyticalTotals { H3AsO4 0.05 mol/kg; Na 0.075 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H3AsO4 H2AsO4 HAsO4 AsO4 ); output { file arsenate_1p5eq.csv; } }
     { name sulfite_1p5eq; type speciate; activityModel davies; analyticalTotals { H2SO3 0.05 mol/kg; Na 0.075 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( H2SO3 Bisulfite Sulfite ); output { file sulfite_1p5eq.csv; } }
-    { name hydrazine_half; type speciate; activityModel davies; analyticalTotals { N2H6 0.05 mol/kg; Cl 0.10 mol/kg; Na 0.075 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( N2H6 N2H5 Hydrazine ); output { file hydrazine_half.csv; } }
+    { name hydrazine_half; type speciate; activityModel davies; analyticalTotals { Hydrazine 0.05 mol/kg; Cl 0.025 mol/kg; } totalsBasis stoichiometric; pH solve; diagSpecies ( N2H6 N2H5 Hydrazine ); output { file hydrazine_half.csv; } }
 );

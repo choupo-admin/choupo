@@ -1,6 +1,7 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
   chemistry/HGlyc-formation.dat -- the glycolic acid master as the sum of its fully dissociated form (the inverse of the records written from the master; a case declares one master and the closure activates the record reachable from it):
       Glyc(-1) + 1 H+  <=>  HGlyc
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv.
 
   logK25 and dH are the PRINTED values of the sources below (standard state ideal solution at 1 mol/kg, 298.15 K):
       pK1 = 3.831, dH1 = 0.46 kJ/mol

@@ -1,0 +1,14 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/H2Cac.dat -- ONE model species, ONE typed file: the most protonated form of cacodylic acid (dimethylarsinic acid).
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
+  reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
+  1 mol/kg, 298.15 K, H+ = 0.
+  NO `aqueousThermo` ON PURPOSE: the ionisation (pK, dH) of this family is evaluated in a work in hand and is in chemistry/, so the SPECIATION is complete; the evaluated compilation prints ionisation quantities only (no formation enthalpy or entropy), and none was entered from another work in this pass, so a balance that needs the enthalpy of this species REFUSES BY NAME instead of borrowing a value.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    H2Cac;
+formula     "C2H8AsO2+";
+charge  +1;
+MW { value 139.006; unit g/mol;}

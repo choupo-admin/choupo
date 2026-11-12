@@ -1,11 +1,12 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
-  chemistry/HAMP-formation.dat -- the 2-amino-2-methyl-1-propanol, as its conjugate acid master as the sum of its fully dissociated form (the inverse of the records written from the master; a case declares one master and the closure activates the record reachable from it):
-      AMP(0) + 1 H+  <=>  HAMP
+  chemistry/HAMP-formation.dat -- a protonation of 2-amino-2-methyl-1-propanol, as its conjugate acid, written from the master:
+      AMP + H+  <=>  HAMP
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv.
 
   logK25 and dH are the PRINTED values of the sources below (standard state ideal solution at 1 mol/kg, 298.15 K):
-      pK1 = 9.694, dH1 = 54.05 kJ/mol, dCp ~-21 J/mol/K
+      pK1 = 9.694, dH1 = 54.05 kJ/mol, dCp ~-21 J/mol/K (grade AAC)
   Source: Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231; standard state: hypothetical ideal solution of unit molality, 298.15 K, 0.1 MPa (Section 8, p. 359).
-  This record carries the one step (the sign flips with the direction written).
+  The master is AMP, the form a case declares; this record carries step 1 (the sign flips with the direction written).
   The constant-dCp term of the printed dCp is NOT carried: the record grammar has no place for it (a
   van't Hoff integral with a constant dCp is exactly the `analytic` A1, A3, A4 terms; proposed, not done).
   The neutral base is a different object from the catalogue component of the same substance (monoethanolamine, diethanolamine, triethanolamine, triethylamine, methylamine, piperazine exist as components); no gas-liquid record links this species to it, so the dissolved base and the component are two identities until one is written.
