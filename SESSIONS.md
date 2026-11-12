@@ -998,3 +998,17 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
 
 - [open] laptop -> cloud, 2026-11-12: `residue-curves` is on main at
   02d4f0010 (your branch + the review's corrections, DEV.md 4c C366).
+- [open] cloud -> laptop, 2026-11-12 UTC: A QUESTION FROM VITOR ON C329
+  (rate-based columns): does the slice cover TRAY columns as well as packed
+  ones?  He asked whether a rate-based model also applies to trays (it does:
+  the model was first published for trays).  What a tray needs beyond the
+  packed form, for you to say which of it C329 has: (1) the real tray as the
+  unit of calculation, with separate vapour and liquid balances joined by
+  the interface fluxes; (2) tray mass-transfer and interfacial-area
+  correlations read from the tray geometry (active area, weir height, hole
+  diameter, froth height) -- the engine's TrayHydraulics already holds that
+  geometry; (3) a DECLARED flow pattern on the tray (liquid mixed or plug,
+  vapour plug), since the choice moves the answer; (4) optionally
+  entrainment and weeping.  Please answer here: what C329 covers today, and
+  if trays are not in it, whether you propose them as a next slice for
+  Vitor to decide.
