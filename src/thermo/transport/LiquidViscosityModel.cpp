@@ -30,6 +30,7 @@ License
 #include "Andrade.H"
 #include "ChemSepVisc101.H"
 #include "Vogel.H"
+#include "LiquidViscosityMixingRule.H"
 
 #include <map>
 #include <memory>
@@ -71,6 +72,9 @@ void LiquidViscosityModel::registerBuiltins()
     registerModel("andrade", [](const DictPtr& d) { return std::make_unique<Andrade>(d); });
     registerModel("Vogel",   [](const DictPtr& d) { return std::make_unique<Vogel>(d); });
     registerModel("vogel",   [](const DictPtr& d) { return std::make_unique<Vogel>(d); });
+    //  The mixing rules of the same property (C331), registered with it:
+    //  a package that reads this model also reads its `mixingRule`.
+    LiquidViscosityMixingRule::registerBuiltins();
 }
 
 std::vector<std::string> LiquidViscosityModel::availableModels()

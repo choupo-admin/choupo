@@ -2117,7 +2117,7 @@ static DictPtr v2TransportDict(const DictPtr& v2)
 {
     // T13 transport: the authored phase-structured block maps onto the
     // canonical flat hierarchy -- as DICT OBJECTS (no text emission);
-    // mixingRule stays non-selectable (refused, never by accident).
+    // mixingRule is selectable for the liquid properties only (C331).
     DictPtr transportDict;
     if (v2->found("transport"))
     {
@@ -2139,14 +2139,30 @@ static DictPtr v2TransportDict(const DictPtr& v2)
             auto ph = tr->subDict(mrow.v2phase);
             if (!ph->found(mrow.v2prop)) continue;
             auto pb = ph->subDict(mrow.v2prop);
-            if (pb->found("mixingRule"))
+            //  `mixingRule` is SELECTABLE since C331 for the three LIQUID
+            //  properties (surface tension, liquid viscosity, liquid
+            //  conductivity: transport/*MixingRule.H); the gas rules (Wilke,
+            //  Wassiljewa-Mason-Saxena) and the diffusivities have one rule
+            //  each, so naming one there is still refused.
+            const bool liquidMixing =
+                std::string(mrow.v1key) == "liquidViscosity"
+             || std::string(mrow.v1key) == "liquidConductivity"
+             || std::string(mrow.v1key) == "surfaceTension";
+            if ((pb->found("mixingRule") || pb->found("interaction"))
+                && !liquidMixing)
                 throw std::runtime_error("thermophysicalPropertySystem:"
-                    " transport mixingRule is not SELECTABLE yet -- the"
-                    " implemented rule is announced by the model; declare"
-                    " only `model <X>;` (a selectable rule is a future,"
-                    " deliberate extension -- never an accident).");
+                    " transport " + std::string(mrow.v2phase) + "."
+                    + mrow.v2prop + " has ONE mixing rule (announced by the"
+                    " model), so its mixingRule is not SELECTABLE;"
+                    " `mixingRule` and `interaction` are selectable"
+                    " only for liquid viscosity, liquid thermalConductivity"
+                    " and interface surfaceTension.");
             auto mb = std::make_shared<Dictionary>(mrow.v1key);
             mb->insert("model", pb->entryValue("model"));
+            if (pb->found("mixingRule"))
+                mb->insert("mixingRule", pb->entryValue("mixingRule"));
+            if (pb->found("interaction"))
+                mb->insert("interaction", pb->entryValue("interaction"));
             transportDict->insert(mrow.v1key, EntryValue(mb));
         }
 

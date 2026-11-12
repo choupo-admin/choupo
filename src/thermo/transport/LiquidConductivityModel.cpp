@@ -29,6 +29,7 @@ License
 #include "LiquidConductivityModel.H"
 #include "ChemSepCond16.H"
 #include "SatoRiedel.H"
+#include "LiquidConductivityMixingRule.H"
 
 #include <map>
 #include <memory>
@@ -67,6 +68,9 @@ void LiquidConductivityModel::registerBuiltins()
     registerModel("chemsepEq16", [](const DictPtr& d) { return std::make_unique<ChemSepCond16>(d); });
     registerModel("SatoRiedel", [](const DictPtr& d) { return std::make_unique<SatoRiedel>(d); });
     registerModel("satoRiedel", [](const DictPtr& d) { return std::make_unique<SatoRiedel>(d); });
+    //  The mixing rules of the same property (C331), registered with it:
+    //  a package that reads this model also reads its `mixingRule`.
+    LiquidConductivityMixingRule::registerBuiltins();
 }
 
 std::vector<std::string> LiquidConductivityModel::availableModels()
