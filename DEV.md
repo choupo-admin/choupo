@@ -3531,6 +3531,21 @@ accepts today, and that is a policy call.
 > readable to it.  What Vitor said does NOT worry him: the drawn flowsheet
 > editor, compound count, interoperability.
 
+> **C338 (Vitor, 2026-11-12: "poe isso num sitio bem visivel para ti, porque eu
+> estou a assumir que estas a documentar tudo o que fazes nos guias").**  The
+> rule is now CLAUDE.md section 0 rule 4d and the first lines of BRAIN.md:
+> a capability is not done until the Theory Guide section, the block's Theory
+> link, the Tutorials Guide / catalogue / docs-ai entries and the rebuilt PDFs
+> exist, and every brief carries them as acceptance criteria.  A sentence is
+> not a contract (this file's own lesson), so a gate follows:
+> `check_feature_documented` -- every name a factory registers (unit
+> operations, props operations, activity / EoS / transport / mixing-rule /
+> efficiency / packing models) must appear in a guide section with a label
+> and in the docs/ai catalogue; today's undocumented names are counted and
+> pinned as debt that may only shrink.  Known debt to pay first: C329 (in
+> progress), C328 StoredCorrelation, C311 electrolyteFit, C327 transport
+> records, C321 Henry from Sander, C331 (did its guides).
+
 > **C337 (Vitor, 2026-11-12: "a destilacao deve ter uma visualizacao detalhada
 > se for pedido o design da coluna ... parecido ao que se fez para o
 > permutador").**  Measured: gui/src/ui/ColumnDatasheet.tsx

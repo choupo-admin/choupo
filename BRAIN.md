@@ -9,6 +9,11 @@ the answers to the questions Vítor asks.  It is read at the start of every
 session before `PLAN.md`, and it is answered FROM, not searched.  A question it
 cannot answer gets "I do not know yet" and a measurement, never an improvisation.
 
+**BEFORE CALLING ANYTHING DONE: is it in the guides?**  Theory Guide section
+with a label, the block's Theory link opening it, Tutorials Guide and
+catalogue, PDFs rebuilt (CLAUDE.md rule 4d, Vitor 2026-11-12).  Every brief
+carries these four as acceptance criteria.
+
 Rules that keep it alive:
 1. **A landing that changes an answer changes the row, in the same commit.**
    A row older than the fact it states is corrupted memory (CLAUDE.md §10).
