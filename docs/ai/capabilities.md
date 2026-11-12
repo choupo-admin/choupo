@@ -168,8 +168,8 @@ batch plan, sizing, clean utilities, costing and economics on top
 * Witness: `tutorials/batch/plant/donepezil01_tablets` (`pack:layout`).
 
 ### Operator panel of a batch run (alarms, limits, displays, operator interface)
-* Checks: `system/panelDict` of a `choupoBatch` case, read after the time loop:
-  elements (`number`, `bar`, `trend`, `lamp`) over published columns, each with
+* Checks: `key:elements` in `system/panelDict` of a `choupoBatch` case, read
+  after the time loop: number, bar, trend and lamp displays over published columns, each with
   a reason, limits with their source and reason, alarms with the action they
   ask for, messages.  A malformed panel is refused by name; the engine reports
   FACTS: a quantity not published or constant over the run, a scale that hides
