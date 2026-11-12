@@ -29,8 +29,8 @@ Description
     THE ONE SPLIT EVERY SIZE CLASSIFIER PERFORMS (DEV.md 4c C361 slice 3).
 
     `classifier`, `screen` and `hydrocyclone` differ only in how they obtain
-    the partition a_k (a declared curve, Karra's screen model, Nageswararao's
-    hydrocyclone correlations).  Once a_k is known, the split is King's
+    the partition a_k (a declared curve, Karra's screen model).  Once a_k is
+    known, the split is King's
     mass balance over each class (2001, eqs. 4.20-4.29, pp. 86-87):
 
         coarse_k = a_k f_k m_s          fine_k = f_k m_s - coarse_k

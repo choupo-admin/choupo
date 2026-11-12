@@ -160,7 +160,7 @@ Two lines each: what the student SEES and SETS, and what is REFUSED.
    (textbook model Vitor supplies -- no DOI-bearing primary verified); sees
    the partition number per class and the over/undersize distributions.
    Refused: an aperture outside the grid; a feed not on the grid.
-4. **Hydrocyclone (slice 3).**  Sets geometry and slurry state (Nageswararao,
+4. **Hydrocyclone (slice 3).**  (The Nageswararao correlation planned here was not built, see 7.5.)  Sets geometry and slurry state (Nageswararao,
    Wiseman & Napier-Munn 2004); sees d50c, the water split to underflow, the
    bypass and the corrected and actual partition curves.  Refused: a dry
    feed; geometry outside the correlation's data window.
@@ -256,7 +256,7 @@ below is as implemented, with the page it was read from.
 | the one split every classifier performs; feed reader; passing fraction; KPIs and profile | `src/unitOperations/solids/ClassifierCore.{H,cpp}` |
 | unit `classifier` (a curve and a bypass, nothing else) | `src/unitOperations/solids/Classifier.{H,cpp}` |
 | unit `screen` (`karra` / `declared`) | `src/unitOperations/solids/Screen.{H,cpp}` |
-| unit `hydrocyclone` (`declared` / `nageswararao`) | `src/unitOperations/solids/Hydrocyclone.{H,cpp}` |
+| unit `hydrocyclone` (`declared`) | `src/unitOperations/solids/Hydrocyclone.{H,cpp}` |
 | grid solids in the recycle tear vector | `src/unitOperations/flowsheet/Flowsheet.cpp:1813-1828` (pack), `:1880-1899` (unpack) |
 | units `shortTon/kWh`, `shortTon/h` | `src/core/Units.cpp:261-262` |
 | cases | `tutorials/steady/solids/circuit01_herbstFuerstenau_closedCircuit`, `screen01_dolomite_karra`, `hydrocyclone01_quartz_willsTable91` |
@@ -274,7 +274,7 @@ coarse product.  Two curves are kept apart:
   p. 214, written forward; Nageswararao et al. 2004 eq. 21 is the same
   algebra for the overflow, E_oa = C (1 - c), C = 1 - R_f).
   `Classifier.cpp:89`, `Screen.cpp` (after its model block),
-  `Hydrocyclone.cpp:305`.
+  `Hydrocyclone.cpp:126`.
 
 Per class, m_s the feed's solids mass flow and f_k its fractions
 (`ClassifierCore.cpp:147-148`):
@@ -352,38 +352,25 @@ grid.
 `declared`: a `partition {}` curve with its cut size and `waterToUnderflow`
 R_f, which is also the solids bypass.
 
-`nageswararao`: Nageswararao, Wiseman & Napier-Munn (2004) eqs. 13-15, p. 677
-(units of its footnote 4: lengths m, theta degrees, Q m3/h per cyclone,
-P kPa, rho_p t/m3, g m/s2, d50c um), with the Whiten curve of eq. 21
-(`alpha`):
-
-    eq. 13  Q/(D_c^2 sqrt(P/rho_p)) = K_Q0 D_c^-0.10 (D_o/D_c)^0.68 (D_i/D_c)^0.45
-            (L_c/D_c)^0.20 theta^-0.10  -> solved for P from the feed's own Q
-                                                       (Hydrocyclone.cpp:242-252)
-    eq. 14  d50c/D_c = K_D0 D_c^-0.65 (D_o/D_c)^0.52 (D_u/D_c)^-0.50 (D_i/D_c)^0.20
-            (L_c/D_c)^0.20 theta^0.15 (P/(rho_p g D_c))^-0.22 lambda^0.93   (:255)
-    eq. 15  R_f = K_W0 (D_o/D_c)^-1.19 (D_u/D_c)^2.40 (D_i/D_c)^0.50 (L_c/D_c)^0.22
-            theta^-0.24 (P/(rho_p g D_c))^-0.53 lambda^0.27                 (:260)
-
-lambda is DECLARED: `hinderedSettling original`, C_V/(1 - C_V)^3 (p. 676), or
-`steinour`, 10^(1.82 C_V)/(1 - C_V)^2, the complete Steinour form unscaled
-(Castro 1990, p. 684; conclusion 8, p. 685) (`Hydrocyclone.cpp:236-237`): a
-case's K_D0 and K_W0 belong to one of them.  K_Q0, K_D0, K_W0 and alpha are
-material constants the case declares (p. 679); no default exists.  R_V
-(eq. 16) is not built (conclusion 5: redundant).  Also published: the
-hydraulic power P Q (Wills eq. 9.20, p. 217) and the products' dilutions.
-
-DATA WINDOW, enforced by name (`Hydrocyclone.cpp:55-56`): feed solids 40-70 %
-by weight (the fitting set, pp. 678, 681, 684); D_c 0.102-0.381 m (the
-database's 10.2-38.1 cm cyclones, p. 677); the fluid water only (p. 675).
-The paper prints no window for the geometric ratios, so none is enforced.
-Anchor: an identity at a printed point, p. 681 -- "an increase in D_u of 10 %
-will always result in an increase of 26 % in R_f": 1.1^2.40 = 1.2570 against
-1.26 (0.24 %, the paper's rounding).  The model has NO case: the paper prints
-no K values for any material and no worked example, and inventing K for a
-tutorial would be the default the brief forbids.  It was exercised on a
-scratch copy of hydrocyclone01 (it runs; D_c 0.5 m and 25 % solids are
-refused by name).
+`nageswararao` -- REMOVED before integration (2026-11-12).  The builder had
+implemented Nageswararao, Wiseman & Napier-Munn (2004) eqs. 13-15, p. 677 (the
+pressure-flow, corrected cut size and water-split correlations, with the Whiten
+curve of eq. 21), the data window enforced by name and every K a declared input.
+It shipped with NO case, because the 2004 paper prints no value of K_Q0, K_D0,
+K_W0 for any material and no worked example, and prints its water-split equation
+with opposite signs on the inlet exponent (eq. 15 (D_i/D_c)^+0.50, p. 677; its
+repetition eq. 18 ^-0.50, p. 680).  The sources were then searched for a printed
+worked example with constants that would anchor a case and decide the sign:
+King (2001) -- the hydrocyclone sections (4.5, from p. 98; 4.5.7 is Plitt's model)
+-- does not mention Nageswararao at all; Wills & Napier-Munn (2006) p. 217 only
+NAMES the model ("It also requires the estimate of feed-specific constants from
+data, though first approximations can be obtained from libraries of previous case
+studies") and prints no constants and no example.  None exists in the literature
+folder, so the model is unregistered and its code deleted: a registered model
+that no case exercises and no number holds does not ship.  The correlation waits
+for a source with constants and a worked example (it would also decide the sign).
+`hydrocyclone` keeps `declared`.  The Whiten curve stays (the `whiten` partition
+object, eq. 21, anchored by identity).
 
 ### 7.6 The recycle of a grid solid
 
@@ -394,12 +381,24 @@ distribution on the grid, `packTears` now appends its class molar flows
 (total solid kmol/s x w_k) AFTER every tear's [F, z, T, P] block (the
 pressure check's per-tear stride is unchanged), and `unpackTears` sets the
 distribution from them and rescales every solid component in proportion.  A
-case without a grid packs exactly what it packed before.  Only
-`directSubstitution` and `Wegstein` read this vector; the default
-`Newton`-on-tears does not, and a gridded solids recycle under Newton is NOT
-validated (circuit01 declares `directSubstitution`, `recycleTol 1e-12`: at
-1e-9 the mixer's published inlets missed its outlet by 2.6 W of enthalpy on
-the elements datum, which `check_energy_closure` refuses at 0.1 W).
+case without a grid packs exactly what it packed before.  Only the fixed-point
+loop reads this vector (`directSubstitution`, `Wegstein`, and `DominantEigenvalue`
+which runs the same loop).  circuit01 declares `directSubstitution`, `recycleTol
+1e-12`: at 1e-9 the mixer's published inlets missed its outlet by 2.6 W of
+enthalpy on the elements datum, which `check_energy_closure` refuses at 0.1 W.
+
+THE NEWTON QUESTION, MEASURED (2026-11-12, a scratch copy of circuit01 with
+`recycleSolver Newton;`): exit 2, "the recycle Newton cannot start: the seed tear
+has no feasible neighbourhood: fdJacobian: no feasible perturbation for variable
+0".  The Newton-on-tears step differentiates the fluid block [F, z, T, P]; a dry
+solids recycle has F = 0 and nothing to perturb, and the class flows are not in
+what it iterates, so it could never have converged on anything but the fluid.
+Decision: the engine REFUSES, before solving, a tear carrying a size distribution
+on the grid under Newton, naming the tear and the solvers that carry it
+(`Flowsheet.cpp`, after the solver-word check; held by a new arm of
+`bin/curate/check_driver_convergence.py`).  `directSubstitution`, `Wegstein` and
+`DominantEigenvalue` reach the same circuit (Y = 0.7213 to the printed digits;
+closures 0 / 1e-17).
 
 ### 7.7 Cases and anchors
 
@@ -438,13 +437,13 @@ the declared bulk density), said in its thermoPhysPropDict.
 * Nageswararao et al. 2004 print eq. 15 twice with different signs on the
   inlet exponent: (D_i/D_c)^+0.50 in eq. 15 (p. 677), ^-0.50 in its
   repetition eq. 18 (p. 680); R_V likewise (eq. 16 ^+0.25, eq. 19 ^-0.25).
-  Eq. 15, the model's statement, is implemented and the run says so; within
-  one geometry K_W0 absorbs the difference, across inlet sizes it does not.
+  The model was UNREGISTERED (7.5), so neither sign is implemented; the
+  contradiction is the reason a source with a worked example is needed.
   The nomenclature (p. 672) prints the scaled Steinour factor as
   "8.05 x 10^(1.82 C_V)/(1 - C_V)^2" while p. 684 puts the 8.05 in the
   DENOMINATOR; only the unscaled form (conclusion 8) is offered.
-* The paper prints no data-window table and no K values; the window enforced
-  is assembled from its text (7.5), and no case runs the model.
+* The paper prints no data-window table and no K values (the reason the model
+  is not shipped, 7.5).
 * Wills's own Table 9.1 contradicts Kelsall's assumption in its finest class
   (37.2 % of the -74 um solids to underflow against 39 % of the water): the
   corrected recovery would be negative.  hydrocyclone01 declares 0 there and
@@ -464,5 +463,8 @@ the declared bulk density), said in its thermoPhysPropDict.
   awaits experiments on the crowded length L_c (p. 97).
 * A vapour-bearing fluid: refused by all three units (a gas-borne powder is a
   `cyclone`'s).
-* The gridded tear under Newton-on-tears (7.6), the time-integrated binaries
-  (6), a sizer or cost for any classifier: not in this slice.
+* The empirical hydrocyclone correlation (Nageswararao et al. 2004 eqs. 13-15):
+  unregistered, awaiting a source with constants and a worked example (7.5).
+* The gridded tear under Newton-on-tears: REFUSED by name (7.6).
+* The time-integrated binaries (6), a sizer or cost for any classifier: not in
+  this slice.

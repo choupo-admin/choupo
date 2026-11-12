@@ -30,49 +30,24 @@ Class
 
 Description
     A HYDROCYCLONE CLASSIFYING A SLURRY ON THE CASE'S SIZE GRID (DEV.md 4c
-    C361 slice 3).  `model` selects how the cut size, the water split and the
-    pressure are obtained:
+    C361 slice 3).  One model:
 
       declared       the student gives the corrected curve (`partition {}`,
                      with its d50c) and the water recovery to underflow
                      `waterToUnderflow` R_f; the solids bypass is R_f
                      (Kelsall's assumption, Wills & Napier-Munn 2006 eq. 9.15,
-                     p. 214).
-      nageswararao   the empirical model of Nageswararao (1978) in the form of
-                     Nageswararao, Wiseman & Napier-Munn (2004), eqs. 13-15,
-                     p. 677, with the Whiten curve of eq. 21, p. 681:
-                       eq. 13  Q/(D_c^2 sqrt(P/rho_p)) = K_Q0 D_c^-0.10
-                               (D_o/D_c)^0.68 (D_i/D_c)^0.45 (L_c/D_c)^0.20
-                               theta^-0.10          -> P from the feed's Q
-                       eq. 14  d50c/D_c = K_D0 D_c^-0.65 (D_o/D_c)^0.52
-                               (D_u/D_c)^-0.50 (D_i/D_c)^0.20 (L_c/D_c)^0.20
-                               theta^0.15 (P/(rho_p g D_c))^-0.22 lambda^0.93
-                       eq. 15  R_f = K_W0 (D_o/D_c)^-1.19 (D_u/D_c)^2.40
-                               (D_i/D_c)^0.50 (L_c/D_c)^0.22 theta^-0.24
-                               (P/(rho_p g D_c))^-0.53 lambda^0.27
-                     in the paper's units (footnote 4: lengths m, theta
-                     degrees, Q m3/h, P kPa, rho_p t/m3, d50c um).  The three
-                     K are MATERIAL constants, declared by the case (p. 679:
-                     "it is necessary to source appropriate K values"); the
-                     sharpness alpha likewise (p. 681).  The hindered-settling
-                     factor is DECLARED: `hinderedSettling original`
-                     lambda = C_V/(1 - C_V)^3 (p. 676) or `steinour`
-                     lambda = 10^(1.82 C_V)/(1 - C_V)^2, the complete Steinour
-                     form unscaled (Castro 1990, p. 684; conclusion 8, p. 685)
-                     -- the K_D0 and K_W0 of a case belong to ONE of them.
-                     THE PAPER PRINTS eq. 15 TWICE: as eq. 18 (p. 680) the
-                     exponent of D_i/D_c is -0.50, not +0.50.  This unit
-                     implements eq. 15, the model's statement (section 3.2.4),
-                     and says so at run time; within one geometry the
-                     difference is absorbed by K_W0, across inlets it is not.
-                     R_V (eq. 16) is not built: the paper finds it redundant
-                     (conclusion 5).
+                     p. 214), a_k = R_f + (1 - R_f) c_k.
 
-    THE CORRELATION'S DATA WINDOW IS ENFORCED, by name: feed solids 40-70 %
-    by weight (the model-fitting set, pp. 678, 681, 684); cyclone diameter
-    0.102-0.381 m (the database's 10.2-38.1 cm cyclones, p. 677); the fluid
-    WATER (p. 675: "applicable only when water is the fluid medium").  The
-    paper prints no window for the geometric ratios, so none is enforced.
+    THE EMPIRICAL CORRELATION IS NOT BUILT.  Nageswararao, Wiseman &
+    Napier-Munn (2004, eqs. 13-15) would give the cut size, the water split
+    and the pressure from the cyclone's geometry, but the paper prints no
+    value of its material constants K_Q0, K_D0, K_W0 for any material and no
+    worked example, and prints its water-split equation with opposite signs on
+    the inlet-diameter exponent (eq. 15 +0.50, p. 677; its repetition eq. 18
+    -0.50, p. 680); neither King (2001) nor Wills & Napier-Munn (2006) prints a
+    worked example or the constants.  A model no case exercises and no number
+    holds does not ship: it waits for a source with the constants and a worked
+    example (docs/design/c361-solids-processing.md 7.5).
 
     ONE SOLID POPULATION (docs/design/c361-solids-processing.md 2.3, still
     DEFERRED): every solid component of the feed is classified in the same
@@ -85,14 +60,11 @@ Description
     exactly; the closure is printed.  The fluid splits by one fraction.
     ENERGY: no work, no heat; both products leave at the feed's T and P.
 
-    REFUSED, by name: a dry feed (no liquid); a feed not on the grid; for
-    `nageswararao`, any variable outside the window above, a K, alpha or
-    geometry missing, a predicted R_f outside (0, 1).
+    REFUSED, by name: a dry feed (no liquid); a feed not on the grid; a
+    `model` other than `declared`; a partition with no cut size; a missing or
+    out-of-range `waterToUnderflow`.
 
-    Operation (declared):     partition { ... d50c ...; };  waterToUnderflow R_f;
-    Operation (nageswararao): geometry { Dc; Do; Du; Di; Lc; coneAngle (deg); }
-                              nCyclones; constants { KQ0; KD0; KW0; }
-                              alpha; hinderedSettling original|steinour;
+    Operation:  partition { ... d50c ...; };  waterToUnderflow R_f;
 
     Inputs ( feed );   outputs ( underflow overflow );
 \*---------------------------------------------------------------------------*/

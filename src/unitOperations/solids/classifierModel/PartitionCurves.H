@@ -101,7 +101,7 @@ public:
                                 const std::string& owner) = 0;
 
     //  The CUT SIZE when it comes from somewhere else (a correlation that
-    //  predicts d50c, Nageswararao eq. 14): a curve with a cut size takes it,
+    //  predicts d50c): a curve with a cut size takes it,
     //  a tabulated one refuses.
     virtual void setCutSize(scalar d50c) = 0;
 

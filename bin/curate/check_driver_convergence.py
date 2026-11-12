@@ -426,6 +426,7 @@ def expect_runs(tmp, tag, rel, text, announce):
 COL = "tutorials/steady/distillation/column02_simultaneous"
 STRIP = "tutorials/steady/distillation/stripper02_sour_water_h2s"
 CSTR = "tutorials/steady/reactors/cstr03_series_selectivity"
+CIRCUIT = "tutorials/steady/solids/circuit01_herbstFuerstenau_closedCircuit"
 
 
 def arm_knobs(tmp: Path):
@@ -454,6 +455,18 @@ def arm_knobs(tmp: Path):
     expect_refused(tmp, "colword", COL,
                    "distillationColumn { lineSearch maybe; }",
                    "`lineSearch` must be")
+    #  C361 slice 3: a tear that carries a size distribution on the grid is
+    #  iterated by the fixed-point loop only; Newton on it (which could not
+    #  even start on a dry solids recycle) is refused by tear name.
+    def newton_on_grid_tear(c):
+        fd = c / "system" / "flowsheetDict"
+        t = fd.read_text()
+        assert "recycleSolver  directSubstitution;" in t
+        fd.write_text(t.replace("recycleSolver  directSubstitution;",
+                                "recycleSolver  Newton;"))
+    expect_refused(tmp, "gridnewton", CIRCUIT, "// no solver override",
+                   "recycleSolver Newton cannot converge tear 'recycle'",
+                   edit=newton_on_grid_tear)
 
 
 def strip_comments(src: str) -> str:

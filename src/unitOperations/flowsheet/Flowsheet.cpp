@@ -3289,6 +3289,29 @@ int Flowsheet::solve(const DictPtr& dict,
             throw std::runtime_error(
                 "recycleSolver '" + recSolver + "' is not known.  Accepted: "
                 "Newton, Wegstein, DominantEigenvalue, directSubstitution.");
+        //  A TEAR THAT CARRIES A SIZE DISTRIBUTION IS NOT NEWTON'S (C361
+        //  slice 3).  packTears/unpackTears put the class flows of a gridded
+        //  tear into the vector the fixed-point loop below iterates; the
+        //  Newton-on-tears step differentiates the FLUID block alone, so on a
+        //  dry solids recycle (F = 0) it has no variable to perturb ("no
+        //  feasible perturbation for variable 0": measured on circuit01) and
+        //  could only ever converge on the fluid.  Refuse by name, before
+        //  solving, rather than let that path exist.
+        if (recSolver == "Newton")
+            for (const auto& tn : tears)
+            {
+                auto it = streams_.find(tn);
+                if (it != streams_.end() && it->second.psd.onGrid())
+                    throw std::runtime_error(
+                        "recycleSolver Newton cannot converge tear '" + tn + "': it "
+                        "carries a particle-size distribution on the case's size "
+                        "grid, whose class flows only the fixed-point loop iterates "
+                        "(the Newton step differentiates the fluid block, and a dry "
+                        "solids recycle has none).  Declare `recycleSolver "
+                        "directSubstitution;` or `recycleSolver Wegstein;` (the "
+                        "solvers that carry the class flows; DominantEigenvalue runs "
+                        "the same loop).");
+            }
         //  THE RELAXATION RUNG (DEV.md 4c C246 (2)): the fixed factor w of
         //  x+ = (1 - w) x + w G(x), 0 < w <= 1, the OpenFOAM `relaxationFactors`
         //  idea on the tear loop.  It belongs to direct substitution only:
