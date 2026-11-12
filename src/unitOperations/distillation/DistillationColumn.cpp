@@ -5053,9 +5053,9 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
                     {"AIChE", "ChanFair", "SyedaChuang"}, "Accepted"));
         effModelName = model;
         if (n != 2)
-            throw std::runtime_error("DistillationColumn '" + unit + "': the AIChE"
-                " tray efficiency is implemented for a BINARY (one key pair, one"
-                " liquid and one gas diffusivity); this package has "
+            throw std::runtime_error("DistillationColumn '" + unit + "': the "
+                + model + " tray efficiency is implemented for a BINARY (one key"
+                " pair, one liquid and one gas diffusivity); this package has "
                 + std::to_string(n) + " components.");
         if (!hasHyd || !(geo.diameter > 0.0))
             throw std::runtime_error("DistillationColumn '" + unit + "': a computed"

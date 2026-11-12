@@ -228,7 +228,7 @@ if missing:
     print("  note: %d explained key(s) no longer reported -- if the plant was"
           " fixed, trim EXPECTED above." % len(missing))
 
-# --- 5. a block ONLY `totalReflux` reads is REFUSED, not announced -------
+# --- 5 + 6. a block ONLY `totalReflux` reads is REFUSED, not announced -------
 #  RB-03 / RB-07 of docs/reviews/2026-11-12-rate-based-columns.  `efficiency {}`
 #  and `packing {}` are read by `model totalReflux;` and by no other column
 #  model.  Declared on a Wang-Henke column they used to leave ONE "[dict] key
@@ -272,6 +272,40 @@ try:
         else:
             ok("RB-03: `%s {}` on a Wang-Henke column is REFUSED before solving,"
                " naming model totalReflux" % blk)
+
+    #  RB-07: the multicomponent refusal names the model that was declared.
+    src6 = os.path.join(ROOT, "tutorials", "steady", "distillation",
+                        "trayEfficiency05_chanFair_yanagi14")
+    dst6 = os.path.join(tmp5, "ternary")
+    shutil.copytree(src6, dst6)
+    shutil.rmtree(os.path.join(dst6, "expected"), ignore_errors=True)
+    for f in ("outerDict",):
+        try:
+            os.remove(os.path.join(dst6, "system", f))
+        except OSError:
+            pass
+    shutil.copy(os.path.join(ROOT, "data", "standards", "components", "toluene.dat"),
+                os.path.join(dst6, "constant", "components", "toluene.dat"))
+    tp = os.path.join(dst6, "constant", "thermoPhysPropDict")
+    t6 = open(tp).read().replace("components ( cyclohexane nHeptane );",
+                                 "components ( cyclohexane nHeptane toluene );")
+    open(tp, "w").write(t6)
+    fp = os.path.join(dst6, "system", "flowsheetDict")
+    f6 = open(fp).read()
+    f6n = re.sub(r"(\n\s*)cyclohexane(\s+)0\.29;", r"\1cyclohexane\g<2>0.29; toluene 0.1;", f6, count=1)
+    if f6n == f6:
+        fail("RB-07: the ternary probe edit changed nothing -- the arm would test nothing")
+    else:
+        open(fp, "w").write(f6n)
+        r6 = run(dst6)
+        o6 = r6.stdout + r6.stderr
+        if r6.returncode == 0:
+            fail("RB-07: a ternary package under efficiency ChanFair RAN")
+        elif "the ChanFair tray efficiency is implemented for a BINARY" not in o6:
+            fail("RB-07: the multicomponent refusal does not name the declared model"
+                 " (ChanFair): " + o6.strip().splitlines()[-1][:200])
+        else:
+            ok("RB-07: the multicomponent refusal names the declared model (ChanFair)")
 finally:
     shutil.rmtree(tmp5, ignore_errors=True)
 
