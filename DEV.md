@@ -3417,6 +3417,47 @@ accepts today, and that is a policy call.
 > (check by grep) are listed, not silently left.  Status: recorded, general to
 > be dispatched (gui only; `--gui` is its validation).  Owner: architect.
 
+> **C333 (Vitor, 2026-11-12, in the cloud session, after reading where the
+> plan leaves Choupo short of breadth-first simulators: "equacoes de estado
+> de alta precisao?! Nos nao podemos implementar isso ja?! Isso e facil!" and,
+> of the crude column and two-phase pipe flow (Beggs-Brill): "Isso tem de ser
+> feito ASAP.  O resto nao me preocupa").  THREE ITEMS MOVE TO THE FRONT.**
+> (1) REFERENCE (multiparameter Helmholtz) EQUATIONS OF STATE: one generic
+> kernel (ideal part + residual terms: polynomial, exponential, Gaussian,
+> non-analytic), the coefficients in RECORDS read from each fluid's primary
+> publication and held to that publication's own check values; first the
+> fluids whose primary is freely readable (IAPWS-95 water), then the fluids
+> of the corpus plants (H2, N2, NH3, CO2, CH4), then a mixture model
+> (GERG-2008) as its own slice.  Taken by the CLOUD (new files under
+> src/thermo/equationOfState/ and one registration line; a stop-and-report
+> if ThermoPackage.cpp, held by C331, must change).  (2) THE ATMOSPHERIC
+> CRUDE COLUMN (C329 part 3 / C228) and (3) BEGGS-BRILL two-phase pipe flow
+> (C214 W4) are ASAP: both need sources that live in the laptop's literature
+> folder (Beggs & Brill 1973; the crude unit's public case), and the crude
+> column sits in src/unitOperations/distillation/, held by C329 -- the
+> architect schedules them; the cloud takes Beggs-Brill if the paper is made
+> readable to it.  What Vitor said does NOT worry him: the drawn flowsheet
+> editor, compound count, interoperability.
+
+> **C332 (Vitor, 2026-11-12, in the cloud session: "Aprovo tudo!
+> Eventualmente depois podemos rever!").**  Approved: (1) a new EduTools shelf
+> "Property data & parameters" right after "Thermodynamics"; (2) property-
+> origins and property-trust move there from Thermodynamics, least-squares from
+> Flowsheeting & numerics; (3) a new page "From a database to binary
+> parameters" (ThermoML -> NRTL, the C283-C286 pipeline as the lesson, with a
+> map of which measurement constrains which parameter); (4) the path "From a
+> measurement to a parameter".  Architect's addition the same day: c315
+> sle-pair and c316 salt-mixing also move to that shelf and enter the path
+> after the new page (property-origins -> C322 -> property-trust ->
+> local-composition -> least-squares -> new page -> sle-pair -> salt-mixing ->
+> four-ways-mixture).  C322's scope (Vitor-approved in the cloud): the
+> question that picks a source, a map of free sources with access, citation and
+> licence, a licence-class table, measured vs fitted vs estimated, a worked
+> example on a real Choupo record, an exercise.  The cloud builds C322, the new
+> page and a TypeScript ThermoML reader (one reader, also for C289); the
+> laptop owns registry.ts and makes the shelf/moves/path edit after c315/c316
+> land.  The cloud also took C321 part 2 (Henry in organic solvents).
+
 > **C318-C331 (Vitor and architect, 2026-11-11; registered the same day, written
 > here at the consolidation; the CML rows are in PLAN.md 5521b418d).**
 > - C318 flash/drum detailed sizing: droplet terminal velocity (Haider &
