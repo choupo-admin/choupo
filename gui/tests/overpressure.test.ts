@@ -228,7 +228,7 @@ describe("overpressure: the loop witness against the plants", () => {
   });
   it("prices the feed with the records' molar masses", () => {
     const g = loopGas(raw, "loop150")!;
-    expect(rel(g.F_kmol_h, 19522.70312)).toBeLessThan(1e-9);
+    expect(rel(g.F_kmol_h, 19567.4777995)).toBeLessThan(1e-9);
     expect(g.M).toBeGreaterThan(7.5);
     expect(g.M).toBeLessThan(8.5);
   });

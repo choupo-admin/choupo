@@ -241,6 +241,12 @@ const ThermometerTrustTool = lazy(() =>
 const PropertyTrustTool = lazy(() =>
   import("./methods/PropertyTrustTool.js")
     .then((m) => ({ default: m.PropertyTrustTool })));
+const DatabaseToParametersTool = lazy(() =>
+  import("./methods/DatabaseToParametersTool.js")
+    .then((m) => ({ default: m.DatabaseToParametersTool })));
+const DataSourcesTool = lazy(() =>
+  import("./methods/DataSourcesTool.js")
+    .then((m) => ({ default: m.DataSourcesTool })));
 const PropertyOriginsTool = lazy(() =>
   import("./methods/PropertyOriginsTool.js")
     .then((m) => ({ default: m.PropertyOriginsTool })));
@@ -253,6 +259,9 @@ const CosmoSacTheoryTool = lazy(() =>
 const LocalCompositionTool = lazy(() =>
   import("./methods/LocalCompositionTool.js")
     .then((m) => ({ default: m.LocalCompositionTool })));
+const SlePairTool = lazy(() =>
+  import("./methods/SlePairTool.js")
+    .then((m) => ({ default: m.SlePairTool })));
 const UnifacTheoryTool = lazy(() =>
   import("./methods/UnifacTheoryTool.js")
     .then((m) => ({ default: m.UnifacTheoryTool })));
@@ -279,6 +288,8 @@ const FlashOperatingLineTool = lazy(() =>
     .then((m) => ({ default: m.FlashOperatingLineTool })));
 const BjerrumTool = lazy(() =>
   import("./methods/BjerrumTool.js").then((m) => ({ default: m.BjerrumTool })));
+const SaltMixingTool = lazy(() =>
+  import("./methods/SaltMixingTool.js").then((m) => ({ default: m.SaltMixingTool })));
 const BodeTool = lazy(() =>
   import("./methods/BodeTool.js").then((m) => ({ default: m.BodeTool })));
 const TearStreamsTool = lazy(() =>
@@ -606,9 +617,12 @@ export function MethodsWorkspace() {
             : tool === "thermometer-trust" ? <ThermometerTrustTool />
             : tool === "property-trust" ? <PropertyTrustTool />
             : tool === "property-origins" ? <PropertyOriginsTool />
+            : tool === "property-data-sources" ? <DataSourcesTool />
+            : tool === "database-to-parameters" ? <DatabaseToParametersTool />
             : tool === "four-ways-mixture" ? <FourWaysMixtureTool />
             : tool === "cosmo-sac-theory" ? <CosmoSacTheoryTool />
             : tool === "local-composition" ? <LocalCompositionTool />
+            : tool === "sle-pair" ? <SlePairTool />
             : tool === "unifac-theory" ? <UnifacTheoryTool />
             : tool === "pcsaft-theory" ? <PcSaftTheoryTool />
             : tool === "claus-gibbs" ? <ClausGibbsTool />
@@ -617,6 +631,7 @@ export function MethodsWorkspace() {
             : tool === "ponchon-savarit" ? <PonchonSavaritTool />
             : tool === "flash-operating-line" ? <FlashOperatingLineTool />
             : tool === "bjerrum" ? <BjerrumTool />
+            : tool === "salt-mixing" ? <SaltMixingTool />
             : tool === "bode" ? <BodeTool />
             : tool === "tear-streams" ? <TearStreamsTool />
             : tool === "case-assembly" ? <CaseAssemblyTool />

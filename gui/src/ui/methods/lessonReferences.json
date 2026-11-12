@@ -173,6 +173,71 @@
         }
       ]
     },
+    "salt-mixing": {
+      "pageSources": "Sources of the measured data",
+      "references": [
+        {
+          "text": "Farelo, F.; von Brachel, G.; Offermann, H. (1993). Solid-liquid equilibria in the ternary system NaCl-KCl-H2O. Can. J. Chem. Eng. 71, 141-146.",
+          "doi": "10.1002/cjce.5450710119",
+          "note": "The measured binary and ternary solubilities this page fits (Tables 1-4) and the Holmes theta(T) it quotes (eq. 10).",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/cjce.5450710119: authors, title, container, volume 71, pages 141-146, 1993 matched; PDF read in ~/Choupo-Literature/farelo1993-nacl-kcl-water-solid-liquid-equilibria.pdf (C316)",
+            "date": "2026-11-11"
+          }
+        },
+        {
+          "text": "Farelo, F.; Fernandes, C.; Avelino, A. (2005). Solubilities for six ternary systems: NaCl + NH4Cl + H2O, KCl + NH4Cl + H2O, NaCl + LiCl + H2O, KCl + LiCl + H2O, NaCl + AlCl3 + H2O, and KCl + AlCl3 + H2O at T = (298 to 333) K. J. Chem. Eng. Data 50, 1470-1477.",
+          "doi": "10.1021/je050111j",
+          "note": "The six systems of the third prediction.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/je050111j: authors, title, container, volume 50, pages 1470-1477, 2005 matched; DOI printed on p. 1470 of ~/Choupo-Literature/FatimaFarelo/farelo2005-solubilities-six-ternary-chloride-systems.pdf (C316)",
+            "date": "2026-11-11"
+          }
+        },
+        {
+          "text": "Pitzer, K. S.; Kim, J. J. (1974). Thermodynamics of electrolytes. IV. Activity and osmotic coefficients for mixed electrolytes. J. Am. Chem. Soc. 96, 5701-5707.",
+          "doi": "10.1021/ja00825a004",
+          "note": "Table I (p. 5704): theta and psi for NaCl-KCl, NaCl-LiCl and KCl-LiCl, set beside the fit.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ja00825a004: authors, title, container, volume 96, pages 5701-5707, 1974 matched; Table I read in ~/Choupo-Literature/pitzer1974-electrolytes-iv-mixed.pdf (C316)",
+            "date": "2026-11-11"
+          }
+        },
+        {
+          "text": "Pitzer, K. S. (1973). Thermodynamics of electrolytes. I. Theoretical basis and general equations. J. Phys. Chem. 77, 268-277.",
+          "doi": "10.1021/j100621a026",
+          "note": "The virial form of ln gamma used on this page.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/j100621a026: author, title, container, volume 77, pages 268-277, 1973 matched (C316)",
+            "date": "2026-11-11"
+          }
+        },
+        {
+          "text": "Harvie, C. E.; Møller, N.; Weare, J. H. (1984). The prediction of mineral solubilities in natural waters: the Na-K-Mg-Ca-H-Cl-SO4-OH-HCO3-CO3-CO2-H2O system to high ionic strengths at 25 °C. Geochim. Cosmochim. Acta 48, 723-751.",
+          "doi": "10.1016/0016-7037(84)90098-X",
+          "note": "The multi-ion assembly the engine evaluates, and the source the catalogue's theta(K,Na) and psi(K,Na,Cl) records name.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0016-7037(84)90098-X: authors, title, container, volume 48, pages 723-751, 1984 matched (C316)",
+            "date": "2026-11-11"
+          }
+        },
+        {
+          "text": "Holmes, H. F.; Baes, C. F., Jr.; Mesmer, R. E. (1979). Isopiestic studies of aqueous solutions at elevated temperatures. II. NaCl + KCl mixtures. J. Chem. Thermodyn. 11, 1035-1050.",
+          "doi": "10.1016/0021-9614(79)90134-4",
+          "note": "The theta_NaK(T) of the Holmes model, quoted through Farelo et al. (1993) eq. 10; the paper itself was not read.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works?query.bibliographic=Holmes Baes Mesmer isopiestic NaCl KCl mixtures: DOI 10.1016/0021-9614(79)90134-4, title and authors matched; volume and pages as cited by Farelo et al. 1993 (C316)",
+            "date": "2026-11-11"
+          }
+        }
+      ]
+    },
     "solvent-mixture": {
       "references": [
         {
@@ -730,6 +795,69 @@
             "method": "catalogue",
             "evidence": "Open Library ISBN 0139777458: authors, title, 3rd ed., Prentice Hall PTR, 1999 (C259 thermodynamics-and-reaction audit)",
             "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "sle-pair": {
+      "references": [
+        {
+          "text": "Long, B.; Li, J.; Zhang, R.; Wan, L. (2010). Solubility of benzoic acid in acetone, 2-propanol, acetic acid and cyclohexane: Experimental measurement and thermodynamic modeling. Fluid Phase Equilib. 297(1), 113–120.",
+          "doi": "10.1016/j.fluid.2010.06.021",
+          "note": "The four measured solubility series.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/j.fluid.2010.06.021: authors, title, container, volume, issue, pages and year matched (C316 sle-pair)",
+            "date": "2026-11-11"
+          }
+        },
+        {
+          "text": "Wang, T.-C.; Lai, T.-Y.; Chen, Y.-P. (2010). Solid–Liquid Equilibria for Hexanedioic Acid + Benzoic Acid, Benzoic Acid + Pentanedioic Acid, and Hexanedioic Acid + Pentanedioic Acid. J. Chem. Eng. Data 55(12), 5797–5800.",
+          "doi": "10.1021/je100749m",
+          "note": "Melting temperature and enthalpy of fusion of benzoic acid (the default).",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/je100749m: authors, title, container, volume, issue, pages and year matched (C316 sle-pair)",
+            "date": "2026-11-11"
+          }
+        },
+        {
+          "text": "Yang, H.; Thati, J.; Rasmuson, Å. C. (2012). Thermodynamics of molecular solids in organic solvents. J. Chem. Thermodyn. 48, 150–159.",
+          "doi": "10.1016/j.jct.2011.12.015",
+          "note": "A second laboratory's fusion data, and the heat capacities of crystal and liquid.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/j.jct.2011.12.015: authors, title, container, volume, pages and year matched (C316 sle-pair)",
+            "date": "2026-11-11"
+          }
+        },
+        {
+          "text": "Renon, H.; Prausnitz, J. M. (1968). Local compositions in thermodynamic excess functions for liquid mixtures. AIChE Journal 14(1), 135–144.",
+          "doi": "10.1002/aic.690140124",
+          "note": "NRTL and its non-randomness parameter.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/renon1968-nrtl.pdf (C259 thermodynamics-and-reaction audit); Crossref 10.1002/aic.690140124 title, volume and pages matched again 2026-11-11 (C316 sle-pair)",
+            "date": "2026-11-11"
+          }
+        },
+        {
+          "text": "Prausnitz, J. M.; Lichtenthaler, R. N.; Gomes de Azevedo, E. (1999). Molecular Thermodynamics of Fluid-Phase Equilibria, 3rd ed. Prentice Hall PTR. ISBN 0-13-977745-8.",
+          "note": "The solubility of solids in liquids, and the subcooled-liquid standard state.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0139777458: authors, title, 3rd ed., Prentice Hall PTR, 1999 (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "NIST Thermodynamics Research Center. ThermoML/Data Archive, version 1.2.6 (file ThermoML.v2020-09-30.tgz). National Institute of Standards and Technology.",
+          "doi": "10.18434/mds2-2422",
+          "note": "The finding aid through which the three articles' values were located.",
+          "verified": {
+            "method": "official",
+            "evidence": "doi.org/10.18434/mds2-2422 resolves to data.nist.gov/od/id/mds2-2422 (checked 2026-11-11, C316 sle-pair); the record as read in thirdParty/thermoml/README.md",
+            "date": "2026-11-11"
           }
         }
       ]
@@ -2193,6 +2321,96 @@
             "method": "official",
             "evidence": "doc.cfd.direct/openfoam/user-guide-v12: section 4.6.6 'Solution under-relaxation' read (p 0.3, U 0.7 in the steady incompressible example) and the case directory structure 0/, constant/, system/ (C259 numerics audit)",
             "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "property-data-sources": {
+      "pageSources": "The map of free sources",
+      "references": [
+        {
+          "text": "Fukano, M.; Matsuda, H.; Kurihara, K.; Ochi, K. (2006). Ebulliometric Determination of Vapor–Liquid Equilibria for Methanol + Ethanol + Dimethyl Carbonate. J. Chem. Eng. Data 51(4), 1458–1463.",
+          "doi": "10.1021/je0601309",
+          "note": "The fit set of the worked example's NRTL pair.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/je0601309: authors, title, container, volume, issue, pages and year matched (C322)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Chen, X.; Cai, F.; Wu, X.; Asumana, C.; Yu, G. (2013). Isobaric Vapor–Liquid Equilibrium for Methanol + Dimethyl Carbonate + 1-Butyl-3-methylimidazolium Dibutylphosphate. J. Chem. Eng. Data 58(5), 1186–1192.",
+          "doi": "10.1021/je301290c",
+          "note": "The held-out set of the worked example, from another laboratory.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/je301290c: authors, title, container, volume, issue, pages and year matched (C322)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Sander, R. (2023). Compilation of Henry's law constants (version 5.0.0) for water as solvent. Atmos. Chem. Phys. 23(19), 10901–12440.",
+          "doi": "10.5194/acp-23-10901-2023",
+          "note": "The open (CC BY 4.0) compilation of Henry's constants for water as solvent.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.5194/acp-23-10901-2023: authors, title, container, volume, issue, pages and year matched (C322)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "McBride, B. J.; Zehe, M. J.; Gordon, S. (2002). NASA Glenn Coefficients for Calculating Thermodynamic Properties of Individual Species. NASA/TP-2002-211556, NASA Glenn Research Center.",
+          "url": "https://ntrs.nasa.gov/citations/20020085330",
+          "note": "The public-domain source of ideal-gas heat capacities and formation enthalpies.",
+          "verified": {
+            "method": "official",
+            "evidence": "ntrs.nasa.gov/api/citations/20020085330: title, the three authors, date 2002-09 and distribution PUBLIC matched (C322)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Cox, J. D.; Wagman, D. D.; Medvedev, V. A. (1989). CODATA Key Values for Thermodynamics. Hemisphere Publishing Corp., New York.",
+          "url": "https://www.codata.info/resources/databases/key1.html",
+          "note": "The internationally agreed formation enthalpies and entropies of key substances.",
+          "verified": {
+            "method": "official",
+            "evidence": "www.codata.info/resources/databases/key1.html: CODATA's own table page names this book as its reference (C322)",
+            "date": "2026-11-12"
+          }
+        }
+      ]
+    },
+    "database-to-parameters": {
+      "references": [
+        {
+          "text": "Renon, H.; Prausnitz, J. M. (1968). Local compositions in thermodynamic excess functions for liquid mixtures. AIChE Journal 14(1), 135–144.",
+          "doi": "10.1002/aic.690140124",
+          "note": "NRTL, the model the curated pairs fit.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/aic.690140124: authors, title, container, volume, issue, pages and year matched (C334)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Frenkel, M.; Chirico, R. D.; Diky, V. V.; Dong, Q.; Frenkel, S.; Franchois, P. R.; Embry, D. L.; Teague, T. L.; Marsh, K. N.; Wilhoit, R. C. (2003). ThermoML — An XML-Based Approach for Storage and Exchange of Experimental and Critically Evaluated Thermophysical and Thermochemical Property Data. 1. Experimental Data. J. Chem. Eng. Data 48(1), 2–13.",
+          "doi": "10.1021/je025645o",
+          "note": "The ThermoML format the page reads.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/je025645o: authors, title, container, volume, issue, pages and year matched (C334)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "NIST Thermodynamics Research Center. ThermoML/Data Archive, version 1.2.6 (file ThermoML.v2020-09-30.tgz). National Institute of Standards and Technology.",
+          "doi": "10.18434/mds2-2422",
+          "url": "https://data.nist.gov/od/id/mds2-2422",
+          "note": "The archive the pipeline searches; it locates the articles, which are the sources.",
+          "verified": {
+            "method": "official",
+            "evidence": "data.nist.gov/rmm/records?@id=ark:/88434/mds2-2422: title, DOI, version 1.2.6, licence field and the file name read (C334)",
+            "date": "2026-11-12"
           }
         }
       ]

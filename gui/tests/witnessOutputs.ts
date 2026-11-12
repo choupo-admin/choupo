@@ -126,6 +126,23 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     file: "sweep_pumpSystem.csv",
     readBy: ["pumpSystemLesson.test.ts"],
   },
+  //  The salt-mixtures EduTool (C316): the page's own Pitzer gamma_+- held to
+  //  the engine's single-salt kernel, NaCl and KCl at 25 C and NaCl at 100 C.
+  {
+    caseDir: "tutorials/props/electrolyte/pitzer_gamma_hamer_wu",
+    file: "pitzer_nacl.csv",
+    readBy: ["saltMixing.test.ts"],
+  },
+  {
+    caseDir: "tutorials/props/electrolyte/pitzer_gamma_hamer_wu",
+    file: "pitzer_kcl.csv",
+    readBy: ["saltMixing.test.ts"],
+  },
+  {
+    caseDir: "tutorials/props/electrolyte/pitzer_hmw_hot_agreement",
+    file: "kernel_nacl_100C.csv",
+    readBy: ["saltMixing.test.ts"],
+  },
   //  The element-potential lesson (C15): the gibbsReactor's opt-in
   //  `newtonLog`, one file per reactor that declares it.
   {
@@ -254,6 +271,15 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     caseDir: "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol",
     file: "log.choupoProps",
     readBy: ["phaseSplitScan.test.ts"],
+    stdout: true,
+  },
+  //  The sle-pair EduTool's NRTL (DEV.md 4c C316): the page transcribes the
+  //  engine's NRTL loop, and the test holds it to the gamma this run prints
+  //  (12 significant digits in the result block) for the catalogue pair.
+  {
+    caseDir: "tutorials/props/molecular/nrtl01_ethanol_water_package",
+    file: "log.choupoProps",
+    readBy: ["slePair.test.ts"],
     stdout: true,
   },
   //  A props run's VIEWS (DEV.md 4c C149): the result block's `postProcessing`
