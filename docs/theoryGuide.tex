@@ -2478,6 +2478,109 @@ it.
 \end{intuition}
 
 % ---------------------------------------------------------------------
+\section{Where a unit takes its liquid properties from}\label{sec:liquid-property-sources}
+
+A unit that needs the density, viscosity, surface tension or diffusivity
+of a liquid either asks the property kernel or computes the number
+itself.  Until 2026-11 nothing told the reader which: a pump and a pipe
+carrying the same water could sit on two densities, and the run said
+nothing.  The first step of the property kernel's reorganisation
+(DEV.md 4c C378, slice 0) changes \emph{no number}; it makes every unit
+say, at the end of each run, which number it took and where from.
+
+\paragraph{The one door.}  A unit asks for one property of one liquid at a
+state --- temperature, pressure and the liquid's own mole fractions --- through
+\code{liquidProperty::evaluate} (\code{src/thermo/LiquidPropertyDoor.H}).
+It receives the value and the method that produced it: a stable identifier,
+a description \emph{generated from the route the kernel took} (never written
+beside it), the leaves of a composite method with the share each carries,
+whether pressure was applied, and three statements of quality --- where the
+value comes from, whether the state is inside a declared domain, and the
+quantitative evidence or ``not quantified''.  In this slice the door is a
+wrapper: the value is \code{ThermoPackage::density}, \code{viscosityLiquid}
+or \code{surfaceTension} --- the same double, bit for bit
+(\code{check\_property\_route\_bench} compares the two at every state of its
+grid) --- and a refusal is the kernel's own message, now typed
+(\code{PropertyDomainError}: outside a hard domain, an invalid state, a
+missing datum).  The liquid density of a component is chosen once per
+component by \code{ThermoPackage::liquidVolumeRouteOf}: the record's
+25\,$^\circ$C volume scaled to temperature by Rackett (\S\ref{ch:rackett})
+when the record has a volume and critical constants; that volume held flat
+when it has no critical constants; Rackett alone, an estimate, when it has no
+volume; a refusal when it has neither.  The mixture is ideal mixing of these
+volumes.  A case that selects \code{pureFluids \{ water \{ method IF97; \} \}}
+prices pure water by that formulation instead, at the temperature
+\emph{and pressure}; it is the only liquid route that applies pressure.
+
+\paragraph{The table.}  Just before the result block every run prints one
+line per unit, property and source:
+\begin{verbatim}
+[liquid properties] Where each unit took its liquid properties from ...
+  methanolPump (pump)   liquid density   787.27 kg/m3 at 300.0 K, 1.01 bar
+      computed by the unit itself, not by the property kernel: each
+      component's 25 C molar volume, with no temperature or pressure effect
+  methanolTank (storageTank)   liquid density   785.12 kg/m3 at 300.0 K ...
+      property kernel: ideal mixing of liquid volumes, each component's
+      25 C molar volume scaled to temperature by Rackett; pressure not applied
+  [twice] the same liquid (300.0 K, 1.01 bar, one composition) is given
+      two densities: methanolPump (pump) 787.27 kg/m3, methanolTank ... 785.12
+\end{verbatim}
+(\code{tutorials/plant/aceticAcid02\_plant}).  The value is the variable the
+unit computed with; when a unit took several in the run (a column's trays,
+an iteration) the line gives the range and the count.  A \code{[mismatch]}
+line appears when a unit took a number from a kind of source its type does
+not declare; a \code{[twice]} line when two consumers gave one liquid state
+two densities.  The same content, with what each unit declared at assembly,
+is the result block \code{propertySources}; its golden row kind is
+\code{source}.
+
+\paragraph{The sources, by class.}
+\begin{itemize}
+\item \textbf{Property kernel} --- valve, storage tank, tray rating, column
+  efficiency and packing, heat exchanger in geometry mode, pipe, phase
+  changer in geometry mode, hydrocyclone, cake filter, thickener,
+  sedimenting centrifuge, a vessel with a level, every sizing pass.  Where a
+  component has no liquid volume at the state (a gas above its critical
+  temperature dissolved in the liquid), several of these leave it out of the
+  volume and keep its mass; the table names what was left out.
+\item \textbf{Computed by the unit itself} --- the pump, the pressure
+  exchanger, the CSTR and the liquid PFR, the MSMPR and FVM crystalliser, the
+  spray dryer: each component's 25\,$^\circ$C molar volume, with no
+  temperature or pressure effect.  The pump and the pressure exchanger give a
+  dissolved ion no volume and keep its mass; the crystalliser gives a
+  component without a volume none, and does not say so.
+\item \textbf{A constant of the unit} --- 1000\,kg/m$^3$ in the
+  electrodialysis cell, stack and batch rig (the dilute carrier they are
+  built on), in the spiral-wound module when the case declares no
+  \code{rho\_feed}, in the batch diafilter when it declares no \code{rho}
+  (announced); 1\,mPa\,s, 72\,mN/m and $1.6\times10^{-9}$\,m$^2$/s as the
+  spray dryer's and the module's defaults.
+\item \textbf{Declared by the case} --- a viscosity or surface tension a pipe,
+  a column or a module reads from its own block.
+\item \textbf{The unit's own correlation} --- the column's liquid diffusivity
+  (Wilke--Chang both ways at infinite dilution in the mixture viscosity,
+  combined linearly in mole fraction), whatever diffusivity model the case
+  selects.
+\end{itemize}
+
+\paragraph{Known deviations of today's routes.}  Measured in the study of
+the routes (\code{docs/design/thermophysical-property-routes.md}, \S1.2) and
+its numerical review; do not size on them in silence:
+\begin{itemize}
+\item a record whose stored volume is not a 25\,$^\circ$C liquid datum is
+  read as one: CO$_2$ (stored at 273\,K) +31.8\,\% at 298.15\,K against its
+  reference equation, ethane +71\,\%, HCl +45\,\%; liquid N$_2$ at 90\,K and
+  CH$_4$ at 120\,K are refused although reference equations exist;
+\item water without its pure-fluid formulation: +2.0\,\% at 273.16\,K,
+  $-$3.5\,\% at 373.16\,K, $-$6.5\,\% at 573.16\,K, no density maximum at
+  4\,$^\circ$C, and $-$2.1\,\% at 500\,bar (no pressure effect);
+\item water--ethanol liquid viscosity with no interaction parameter:
+  $-$59.7\,\% at $x=0.30$, 298.15\,K;
+\item Brock--Bird surface tension of water at 25\,$^\circ$C: +49\,\%.
+\end{itemize}
+These are the targets of the slices that follow; this one only makes them
+visible where they are used.
+
 \section{Heat capacity}\label{ch:heat}
 
 The molar heat capacity is parametrised as a polynomial in temperature:

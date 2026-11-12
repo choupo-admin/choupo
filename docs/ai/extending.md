@@ -82,6 +82,24 @@ runCase       tutorials/steady/userops/userOp01_yield_reactor
 
 ---
 
+### A liquid property: ask the door, never price it yourself
+
+A unit that needs a liquid density, viscosity or surface tension asks the
+property kernel through one call, and gets the number and its method:
+
+```cpp
+#include "thermo/LiquidPropertyDoor.H"
+using namespace Choupo::liquidProperty;
+const scalar rho = evaluate(thermo, Property::density, T, P, x).value;   // kg/m3
+```
+
+Do not read a component's `Vliq()` or write `1000.0` for a density:
+`bin/curate/check_liquid_property_ratchet.py` fails on a new one, and the
+run's liquid-properties table would show your unit as computing the
+property itself.  The call records the use, so the table names your unit
+and the number it took.  Theory Guide: "Where a unit takes its liquid
+properties from".
+
 ## 3. A custom PROPERTY-ESTIMATION method (props bench)
 
 The same mechanism, but derive from `PropertyOperation` and set the case's

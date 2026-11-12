@@ -103,6 +103,7 @@ ORDER=(
     stream-state
     case-layout
     thermo
+    thermophysical-properties
     unit-ops
     energy
     outer-drivers

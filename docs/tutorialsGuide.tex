@@ -461,6 +461,18 @@ Three reading rules:
         \file{expected} file pin their KPIs; the validation AADs quoted in
         the entries are locked by the regression suite and re-verified on
         every change.
+  \item \textbf{Read where the liquid properties came from.}  Just before
+        the result block every run prints one line per unit: the liquid
+        density, viscosity, surface tension or diffusivity it took, the
+        number, the state, and whether the property kernel gave it or the
+        unit computed it itself (a 25\,\textdegree C molar volume, a
+        constant 1000\,kg/m\textsuperscript{3}).  A \texttt{[twice]} line
+        means two units gave the same liquid two densities: in
+        \file{plant/aceticAcid02\_plant} the methanol tank says
+        785.12\,kg/m\textsuperscript{3} and the pump 787.27; in
+        \file{steady/membranes/membrane27\_swro\_energy\_recovery} the
+        high-pressure pump prices the seawater at 1030.94 and the RO module at
+        1000.  Theory Guide, ``Where a unit takes its liquid properties from''.
 \end{enumerate}
 
 % =====================================================================

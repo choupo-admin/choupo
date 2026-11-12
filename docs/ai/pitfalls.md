@@ -731,3 +731,11 @@ and the other doesn't, the case may have produced one but not the
 other (e.g. a propsDict case has KPIs from `propertyPoint` ops but no
 streams).
 
+## A unit's liquid density is not always the package's
+
+Several units compute a liquid density themselves (a pump, a CSTR, a
+crystalliser: the 25 C molar volume, no temperature or pressure effect; a
+membrane module or an electrodialysis stack: 1000 kg/m3).  Read the
+liquid-properties table every run prints before quoting a volumetric flow, a
+head or a residence time, and say so when two units give one liquid two
+densities.  [thermophysical-properties.md](thermophysical-properties.md).

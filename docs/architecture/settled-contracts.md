@@ -3730,3 +3730,25 @@ parameters/PAIR, packages/UNIT — one Gibbs surface per phase, never two.  Reje
   engine instead and returned the correction.  Prefer the durable form: not
   *"X and Y differ by 12 %"* but *"when a document claims a current
   limitation, verify it against the engine before repeating it."*
+
+### A UNIT NEVER PRICES A LIQUID PROPERTY ITSELF (2026-11-12, DEV.md 4c C378 slice 0)
+
+**A UNIT NEVER PRICES A LIQUID PROPERTY ITSELF (2026-11-12, DEV.md 4c C378 slice 0).**
+A unit or a sizing pass that needs the density, viscosity or surface tension
+of a liquid asks the one door, `liquidProperty::evaluate`
+(`src/thermo/LiquidPropertyDoor.H`), and receives the value and the method
+that produced it; it does not read a component's `Vliq()` and does not write
+a density, viscosity, surface tension or diffusivity as a literal.  Every
+number a unit takes is recorded where it is taken and printed per unit at
+the end of the run (the liquid-properties table; result block
+`propertySources`; golden row kind `source`), so a unit that bypasses the
+kernel says so with its number.  The units that bypassed it when the rule
+was written are pinned debt (`bin/curate/liquid_property_ratchet_debt.tsv`,
+gate `check_liquid_property_ratchet`, two-sided); moving them onto the door
+moves numbers and is done unit by unit, each a listed change, from the
+pilot on.  A constant a unit keeps is a `ConstantSource`
+(`core/PropertySourceLog.H`): the value and its words in one object, the
+computation reads `.value`.  Gates: `check_liquid_property_ratchet` ·
+`check_property_route_bench` (the door against the kernel, bit for bit, on
+every record and route) · `check_property_sources_pinned`.  Record:
+[`docs/design/thermophysical-slice0-plan.md`](../design/thermophysical-slice0-plan.md).

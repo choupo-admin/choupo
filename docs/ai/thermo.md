@@ -471,6 +471,10 @@ point without a flowsheet, use the props op `referenceEoS`.  Theory Guide:
 
 ## transport  (optional; for unit ops that need μ / k / D / σ)
 
+Which unit takes which liquid property from where -- the property kernel or
+its own number -- and how to read the run's liquid-properties table:
+[thermophysical-properties.md](thermophysical-properties.md).
+
 Transport correlations are declared per PHASE, and an interface block covers
 surface tension:
 
