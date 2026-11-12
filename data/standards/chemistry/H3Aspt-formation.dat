@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/H3Aspt-formation.dat -- the L-aspartic acid master as the sum of its fully dissociated form (the inverse of the records written from the master; a case declares one master and the closure activates the record reachable from it):
+      Aspt(-2) + 3 H+  <=>  H3Aspt
+
+  logK25 and dH are the PRINTED values of the sources below (standard state ideal solution at 1 mol/kg, 298.15 K):
+      pK1 = 1.990, dH1 = 7.46 kJ/mol
+      pK2 = 3.900, dH2 = 4.60 kJ/mol
+      pK3 = 10.002, dH3 = 37.76 kJ/mol
+  Source: Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049; H+(aq) = 0, zero ionic strength, aqueous species at 1 mol/dm3 (Table 1 caption, p. 1052).
+  This record carries the sum of the first 3 steps (the sign flips with the direction written).
+  The constant-dCp term of the printed dCp is NOT carried: the record grammar has no place for it (a
+  van't Hoff integral with a constant dCp is exactly the `analytic` A1, A3, A4 terms; proposed, not done).
+  Table 3 prints the second ionisation enthalpy of aspartic acid as +4.64 kJ/mol (and the monoanion formation enthalpy -942.86 built on it), Table 6 as +4.60; the printed formation enthalpy is entered and the 0.04 difference is in the one-scale table.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species H3Aspt; masters ( { ion Aspt; nu 1; } { ion H; nu 3; } );
+      logK25 15.892; dH -49820; source "Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049 -- Table 6, p. 1057: pK1 1.990, dH1 7.46 kJ/mol (read from a page image), pK2 3.900, dH2 4.60 kJ/mol (read from a page image), pK3 10.002, dH3 37.76 kJ/mol (read from a page image) (pK, dH_ion at 298.15 K)";

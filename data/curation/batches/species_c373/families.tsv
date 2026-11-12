@@ -14,3 +14,24 @@ phosphate	phosphate	phosphoric acid	compare	-
 sulfate	sulfate	hydrogensulfate	compare	-			
 ammonia	ammonia	the ammonium ion	compare	-			
 borate	borate	boric acid	compare	-			
+tris	amine	Tris (tris(hydroxymethyl)aminomethane), as its conjugate acid	build	-			The neutral base is a different object from the catalogue component of the same substance (monoethanolamine, diethanolamine, triethanolamine, triethylamine, methylamine, piperazine exist as components); no gas-liquid record links this species to it, so the dissolved base and the component are two identities until one is written.
+triethanolamine	amine	triethanolamine, as its conjugate acid	build	-			The neutral base is a different object from the catalogue component of the same substance (monoethanolamine, diethanolamine, triethanolamine, triethylamine, methylamine, piperazine exist as components); no gas-liquid record links this species to it, so the dissolved base and the component are two identities until one is written.
+triethylamine	amine	triethylamine, as its conjugate acid	build	-			The neutral base is a different object from the catalogue component of the same substance (monoethanolamine, diethanolamine, triethanolamine, triethylamine, methylamine, piperazine exist as components); no gas-liquid record links this species to it, so the dissolved base and the component are two identities until one is written.
+amp	amine	2-amino-2-methyl-1-propanol, as its conjugate acid	build	-			The neutral base is a different object from the catalogue component of the same substance (monoethanolamine, diethanolamine, triethanolamine, triethylamine, methylamine, piperazine exist as components); no gas-liquid record links this species to it, so the dissolved base and the component are two identities until one is written.
+ampd	amine	2-amino-2-methyl-1,3-propanediol, as its conjugate acid	build	-			The neutral base is a different object from the catalogue component of the same substance (monoethanolamine, diethanolamine, triethanolamine, triethylamine, methylamine, piperazine exist as components); no gas-liquid record links this species to it, so the dissolved base and the component are two identities until one is written.
+diethanolamine	amine	diethanolamine, as its conjugate acid	build	-			The neutral base is a different object from the catalogue component of the same substance (monoethanolamine, diethanolamine, triethanolamine, triethylamine, methylamine, piperazine exist as components); no gas-liquid record links this species to it, so the dissolved base and the component are two identities until one is written.
+ethanolamine	amine	ethanolamine (monoethanolamine), as its conjugate acid	build	-			The neutral base is a different object from the catalogue component of the same substance (monoethanolamine, diethanolamine, triethanolamine, triethylamine, methylamine, piperazine exist as components); no gas-liquid record links this species to it, so the dissolved base and the component are two identities until one is written.
+methylamine	amine	methylamine, as its conjugate acid	build	-			The neutral base is a different object from the catalogue component of the same substance (monoethanolamine, diethanolamine, triethanolamine, triethylamine, methylamine, piperazine exist as components); no gas-liquid record links this species to it, so the dissolved base and the component are two identities until one is written.
+piperazine	piperazine	piperazine	build	-			The neutral base is a different object from the catalogue component of the same substance (monoethanolamine, diethanolamine, triethanolamine, triethylamine, methylamine, piperazine exist as components); no gas-liquid record links this species to it, so the dissolved base and the component are two identities until one is written.
+imidazole	imidazole	imidazole, as its conjugate acid	build	-			
+methylimidazole	imidazole	2-methylimidazole, as its conjugate acid	build	-			
+ethylmorpholine	morpholine	N-ethylmorpholine, as its conjugate acid	build	-			
+glycineamide	glycine	glycine amide, as its conjugate acid	build	-			
+glycine	glycine	glycine	build	-	0.2		The pK and dH are the evaluated values of Goldberg, Kishore & Lennen (7.31); the formation data are Miller & Smith-Magowan's (Table 3, with their Table 6 step enthalpies and entropies), which agree on the steps to 0.01 and 0.1 kJ/mol.
+alanine	alanine	L-alanine	build	-	0.05		
+asparticacid	aspartate	L-aspartic acid	build	-	0.1		Table 3 prints the second ionisation enthalpy of aspartic acid as +4.64 kJ/mol (and the monoanion formation enthalpy -942.86 built on it), Table 6 as +4.60; the printed formation enthalpy is entered and the 0.04 difference is in the one-scale table.
+glutamicacid	glutamate	L-glutamic acid	build	-	0.05		
+glycylglycine	peptide	glycylglycine	build	-			
+triglycine	peptide	glycylglycylglycine	build	-			
+histidine	histidine	L-histidine	build	-			
+cysteine	cysteine	L-cysteine	build	-			

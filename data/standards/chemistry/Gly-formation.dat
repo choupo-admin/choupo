@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/Gly-formation.dat -- the first 2 dissociations of glycine, written from the master:
+      H2Gly  <=>  Gly + 2 H+
+
+  logK25 and dH are the PRINTED values of the sources below (standard state ideal solution at 1 mol/kg, 298.15 K):
+      pK1 = 2.351, dH1 = 4.00 kJ/mol, dCp -139 J/mol/K
+      pK2 = 9.780, dH2 = 44.2 kJ/mol, dCp -57 J/mol/K
+  Source: Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231; standard state: hypothetical ideal solution of unit molality, 298.15 K, 0.1 MPa (Section 8, p. 359).
+  This record carries the sum of the first 2 steps (the sign flips with the direction written).
+  The constant-dCp term of the printed dCp is NOT carried: the record grammar has no place for it (a
+  van't Hoff integral with a constant dCp is exactly the `analytic` A1, A3, A4 terms; proposed, not done).
+  The pK and dH are the evaluated values of Goldberg, Kishore & Lennen (7.31); the formation data are Miller & Smith-Magowan's (Table 3, with their Table 6 step enthalpies and entropies), which agree on the steps to 0.01 and 0.1 kJ/mol.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species Gly; masters ( { ion H2Gly; nu 1; } { ion H; nu -2; } );
+      logK25 -12.131; dH 48200; source "Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231 -- Section 8 summary, p. 359, and Section 7.31, p. 281: pK1 2.351, dH1 4.00 kJ/mol, pK2 9.780, dH2 44.2 kJ/mol (pK, dH_ion at 298.15 K)";

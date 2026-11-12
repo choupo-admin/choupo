@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Component: L-Glutamic acid (2-aminopentanedioic acid), crystal (C5H9NO4).  MW 147.130 g/mol (the engine's atomic weights).
+
+  A NON-VOLATILE crystalline organic solid: never enters the vapour (K = 0), no Antoine block.  Built on the
+  citric-acid pattern (components/citricAcid.dat) from the formation data of Miller & Smith-Magowan (1990), C373 phase 3.
+
+  WHAT THIS RECORD CARRIES, AND WHAT IT DELIBERATELY DOES NOT.
+
+    carries   the crystal formation enthalpy dHf = -1005.25 +/- 1.26 kJ/mol
+              (Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 3, p. 1054, row dfH(cr) (their ref. b: Cox & Pilcher 1970, for D-glutamic acid, adopted for the L acid (the footnote lists -1003.32 +/- 1.17 kJ/mol as a later value); read from a page image));
+              the heat of solution of the pair file parameters/solution/glutamicAcid-water.dat.
+    does NOT  a density, a standard entropy s_298 and any heat capacity as record values: no density is
+              in a work read for this record, and Miller prints the crystal entropy only as an intermediate of
+              its third-law route to the aqueous species (Table 3), which enter through the species records.  An
+              energy balance that reaches the crystal's or the solution's SENSIBLE heat therefore refuses by
+              name (CLAUDE.md rule 5).
+
+    ALSO BUILT, in their own homes: the glutamicacid ladder (H3Glu, H2Glu, HGlu, Glu; chemistry/*-formation), whose zwitterion carries
+              the aqueous enthalpy and entropy of Miller's Table 3.
+\*---------------------------------------------------------------------------*/
+
+name        glutamicAcid;
+formula     C5H9NO4;
+MW          147.130;            // kg/kmol
+
+role        nonvolatile;               // crystalline amino acid; never to the vapour (K = 0)
+dissociation 1;                 // molecular (the ions are species/, see the header)
+
+standardThermochemistry
+{
+    dHf_298   -1005250;        // J/mol  crystalline [-1005.25 +/- 1.26 kJ/mol, Miller & Smith-Magowan 1990, Table 3]
+    referenceState     pureSolid;
+}
+
+provenance
+{
+    dHf_298
+    {
+        origin        literature;
+        method        "evaluated enthalpy of formation of the crystal (-1005.25 +/- 1.26 kJ/mol)";
+        citation      "Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 3, p. 1054, row dfH(cr) (their ref. b: Cox & Pilcher 1970, for D-glutamic acid, adopted for the L acid (the footnote lists -1003.32 +/- 1.17 kJ/mol as a later value); read from a page image)";
+    }
+}

@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/HAspt.dat -- ONE model species, ONE typed file: an intermediate ionisation state of L-aspartic acid.
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
+  reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
+  1 mol/kg, 298.15 K, H+ = 0.
+  The formation values are DERIVED from printed numbers; the arithmetic, tables and pages are in the
+  source line below and in formation.tsv.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    HAspt;
+formula     "C4H6NO4-";
+charge  -1;
+MW { value 132.095; unit g/mol;}
+aqueousThermo
+{
+source "hfAq [kJ/mol] -942.86: printed dHf of the monoanion (-+-) -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 3, p. 1054 (read from a page image), built there on dH_ion +4.64, Table 6 prints +4.60, which would give -942.90 ## sAq [J/mol/K] 170.09: S(aq aspartic acid) 229.49 + dS_ion2 (-59.4) -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 3, p. 1054, and Table 6, p. 1057 (read from a page image)";
+hfAq { value -942860; unit J/mol;}
+sAq  { value 170.09; unit J/mol/K;}
+}

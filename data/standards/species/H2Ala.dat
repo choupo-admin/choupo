@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/H2Ala.dat -- ONE model species, ONE typed file: the most protonated form of L-alanine, the speciation MASTER of its family.
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
+  reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
+  1 mol/kg, 298.15 K, H+ = 0.
+  The formation values are DERIVED from printed numbers; the arithmetic, tables and pages are in the
+  source line below and in formation.tsv.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    H2Ala;
+formula     "C3H8NO2+";
+charge  +1;
+MW { value 90.102; unit g/mol;}
+aqueousThermo
+{
+source "hfAq [kJ/mol] -556.76: dHf(aq L-alanine) -553.75 - dH_ion1 +3.01 -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 3, p. 1054, and Table 6, p. 1057 (read from a page image), the aqueous alanine is dHf(cr) -561.24 +/- 0.63 plus dH(soln) +7.49 ## sAq [J/mol/K] 194.50: S(aq alanine) 159.80 - dS_ion1 (-34.7) -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 3, p. 1054, and Table 6, p. 1057 (read from a page image)";
+hfAq { value -556760; unit J/mol;}
+sAq  { value 194.5; unit J/mol/K;}
+}

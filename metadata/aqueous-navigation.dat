@@ -169,6 +169,61 @@ speciesNavigation
     N2H6      { familyRoots ( hydrazine ); }   // the master of the family
     N2H5      { familyRoots ( hydrazine ); }
     Hydrazine { familyRoots ( hydrazine ); }
+    HTris     { familyRoots ( amine ); }   // the master of the family
+    Tris      { familyRoots ( amine ); }
+    HTEOA     { familyRoots ( amine ); }   // the master of the family
+    TEOA      { familyRoots ( amine ); }
+    HTEA      { familyRoots ( amine ); }   // the master of the family
+    TEA       { familyRoots ( amine ); }
+    HAMP      { familyRoots ( amine ); }   // the master of the family
+    AMP       { familyRoots ( amine ); }
+    HAMPD     { familyRoots ( amine ); }   // the master of the family
+    AMPD      { familyRoots ( amine ); }
+    HDEA      { familyRoots ( amine ); }   // the master of the family
+    DEA       { familyRoots ( amine ); }
+    HMEA      { familyRoots ( amine ); }   // the master of the family
+    MEA       { familyRoots ( amine ); }
+    HMeNH2    { familyRoots ( amine ); }   // the master of the family
+    MeNH2     { familyRoots ( amine ); }
+    H2Piz     { familyRoots ( piperazine ); }   // the master of the family
+    HPiz      { familyRoots ( piperazine ); }
+    Piz       { familyRoots ( piperazine ); }
+    HImz      { familyRoots ( imidazole ); }   // the master of the family
+    Imz       { familyRoots ( imidazole ); }
+    HMImz     { familyRoots ( imidazole ); }   // the master of the family
+    MImz      { familyRoots ( imidazole ); }
+    HNEM      { familyRoots ( morpholine ); }   // the master of the family
+    NEM       { familyRoots ( morpholine ); }
+    HGlyAmd   { familyRoots ( glycine ); }   // the master of the family
+    GlyAmd    { familyRoots ( glycine ); }
+    H2Gly     { familyRoots ( glycine ); }   // the master of the family
+    HGly      { familyRoots ( glycine ); }
+    Gly       { familyRoots ( glycine ); }
+    H2Ala     { familyRoots ( alanine ); }   // the master of the family
+    HAla      { familyRoots ( alanine ); }
+    Ala       { familyRoots ( alanine ); }
+    H3Aspt    { familyRoots ( aspartate ); }   // the master of the family
+    H2Aspt    { familyRoots ( aspartate ); }
+    HAspt     { familyRoots ( aspartate ); }
+    Aspt      { familyRoots ( aspartate ); }
+    H3Glu     { familyRoots ( glutamate ); }   // the master of the family
+    H2Glu     { familyRoots ( glutamate ); }
+    HGlu      { familyRoots ( glutamate ); }
+    Glu       { familyRoots ( glutamate ); }
+    H2GlyGly  { familyRoots ( peptide ); }   // the master of the family
+    HGlyGly   { familyRoots ( peptide ); }
+    GlyGly    { familyRoots ( peptide ); }
+    H2Gly3    { familyRoots ( peptide ); }   // the master of the family
+    HGly3     { familyRoots ( peptide ); }
+    Gly3      { familyRoots ( peptide ); }
+    H3His     { familyRoots ( histidine ); }   // the master of the family
+    H2His     { familyRoots ( histidine ); }
+    HHis      { familyRoots ( histidine ); }
+    His       { familyRoots ( histidine ); }
+    H3Cys     { familyRoots ( cysteine ); }   // the master of the family
+    H2Cys     { familyRoots ( cysteine ); }
+    HCys      { familyRoots ( cysteine ); }
+    Cys       { familyRoots ( cysteine ); }
     // END C373
 }
 

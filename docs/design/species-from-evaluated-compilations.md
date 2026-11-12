@@ -180,14 +180,107 @@ the goldens of the cases that run off 25 C would move.  The three phosphate reco
 pK + log(gamma_B/gamma_A) to the printed digits (arsenate 6.728 = 7.05 - 0.322), which the header shows; sealed and
 recorded the way C372's cases were.
 
-## 3. What phases 1 and 2 left undone
+## 3. Phase 3: amines and amino acids
+
+Sources: Goldberg, Kishore & Lennen 2002, Section 8 (pp. 359-360) and Sections 7.4, 7.5, 7.23, 7.24, 7.28, 7.29, 7.31 to
+7.34, 7.39, 7.41, 7.45, 7.46, 7.53, 7.66 to 7.68; Miller & Smith-Magowan 1990, Tables 3 and 6 for alanine, aspartic and
+glutamic acids and for the formation data of glycine.  Read as in phases 1 and 2; Miller's tables from page images.
+
+### 3.1 What was built
+
+Master of every family = its most protonated form (the conjugate ACID of a base).  Neutral bases and zwitterions are
+derived species.  `Piz` = piperazine, `Imz` = imidazole.
+
+| family | species (master first) | source | what is entered |
+|---|---|---|---|
+| Tris | `HTris`, `Tris` | 7.68 p. 357 | pK 8.072, dH 47.45 |
+| triethanolamine | `HTEOA`, `TEOA` | 7.66 p. 353 | 7.762, 33.6 |
+| triethylamine | `HTEA`, `TEA` | 7.67 p. 355 | 10.72, 43.13 |
+| 2-amino-2-methyl-1-propanol | `HAMP`, `AMP` | 7.5 p. 244 | 9.694, 54.05 |
+| 2-amino-2-methyl-1,3-propanediol | `HAMPD`, `AMPD` | 7.4 p. 243 | 8.801, 49.85 |
+| diethanolamine | `HDEA`, `DEA` | 7.24 p. 270 | 8.883, 42.08 |
+| ethanolamine | `HMEA`, `MEA` | 7.28 p. 277 | 9.498, 50.52 |
+| methylamine | `HMeNH2`, `MeNH2` | 7.45 p. 310 | 10.645, 55.34 |
+| piperazine | `H2Piz`, `HPiz`, `Piz` | 7.53 p. 329 | 5.333 / 9.731, 31.11 / 42.89 |
+| imidazole, 2-methylimidazole | `HImz`/`Imz`, `HMImz`/`MImz` | 7.41 p. 302, 7.46 p. 312 | 6.993, 36.64; 8.01, 36.8 |
+| N-ethylmorpholine | `HNEM`, `NEM` | 7.29 p. 279 | 7.77, 27.4 |
+| glycine amide | `HGlyAmd`, `GlyAmd` | 7.32 p. 286 | 8.04, 42.9 |
+| glycylglycine, glycylglycylglycine | `H2GlyGly`/`HGlyGly`/`GlyGly`, `H2Gly3`/`HGly3`/`Gly3` | 7.33 p. 287, 7.34 p. 289 | two steps each |
+| L-histidine | `H3His`, `H2His`, `HHis`, `His` | 7.39 p. 296 | 1.54 / 6.07 / 9.34, dH 3.6 / 29.5 / 43.8 (pK1 1.54 is printed 1.5 with a subscript 4) |
+| L-cysteine | `H3Cys`, `H2Cys`, `HCys`, `Cys` | 7.23 p. 268 | 1.71 / 8.36 / 10.75, dH ~-0.6 / 36.1 / 34.1 (the first approximate) |
+| glycine | `H2Gly`, `HGly`, `Gly` | 7.31 p. 281 + Miller Table 3 | pK 2.351 / 9.780, dH 4.00 / 44.2 (Goldberg); hfAq, sAq (Miller) |
+| L-alanine | `H2Ala`, `HAla`, `Ala` | Miller Table 6 p. 1057 + Table 3 | pK 2.340 / 9.870, dH 3.01 / 45.23; hfAq, sAq |
+| L-aspartic acid | `H3Aspt`, `H2Aspt`, `HAspt`, `Aspt` | Miller Tables 6, 3 | pK 1.990 / 3.900 / 10.002; hfAq, sAq |
+| L-glutamic acid | `H3Glu`, `H2Glu`, `HGlu`, `Glu` | Miller Tables 6, 3 | pK 2.162 / 4.272 / 9.93; hfAq, sAq |
+
+Crystal components `glycine`, `alanine` (L), `asparticAcid`, `glutamicAcid` with heat-of-solution pairs, from Miller
+Table 3 (dHf(cr) -528.52, -561.24, -973.32, -1005.25 kJ/mol; dH(soln) +14.16, +7.49, +25.82, +24.53); the zwitterion
+`hfAq` is the printed dHf(aq) (-514.36, -553.75, -947.50, -980.72), i.e. crystal plus heat of solution.  No density is in a
+work read, and no component carries an entropy or a Cp.
+
+### 3.2 Naming and the links to components
+
+The identity gate pins a key ending in a lowercase `p` or `m` (or `aq`) as an opaque class that may not grow, so the
+natural keys `Pip`, `Im`, `Asp`, `GlyAm` were refused and replaced (`Piz`, `Imz`, `Aspt`, `GlyAmd`); `N2H4aq` was
+refused in phase 2 for the same reason.  The conjugate-acid keys are `H<base>` (`HTris`); the bases are the
+acronyms `TEOA`, `TEA`, `DEA`, `MEA`, `AMP`, `AMPD`.  Components of the same substances exist for monoethanolamine,
+diethanolamine, triethanolamine, triethylamine, methylamine and piperazine, with no species and no aqueous chemistry in
+the catalogue before this pass (searched: `data/standards/chemistry` and `species` hold no amine other than NH3).  A
+derived species named like a component must carry `aq`, which the identity gate forbids to grow, so the species keys
+are distinct words and the substance has two identities -- the volatile component (gas phase, liquid mixtures) and the
+dissolved species of the speciation network -- until a gas-liquid record (`dissolvedSpecies`) links them, as
+`aceticAcid-dissolution` does for acetic acid.  That record needs a Henry constant from a source and was not written.
+The amine acid-gas chemistry the catalogue does not hold (carbamate formation) is not touched.  "Pyridine-type entries"
+of the brief: pyridine is not in Goldberg; imidazole, 2-methylimidazole and N-ethylmorpholine are.
+
+### 3.3 The formation data of the four amino acids (Miller Tables 3 and 6)
+
+Same rule as phase 1: the aqueous zwitterion's enthalpy and entropy are printed (Table 3); the cation and anion follow by
+the Table 6 step enthalpies and entropies (`eq:ladder-formation`).  Ladder-step check, `species_c373.py scale`:
+
+| family | step | hf difference | record dH | difference | tolerance |
+|---|---|---|---|---|---|
+| glycine | 1 | +4.01 | +4.00 (Goldberg) | +0.01 | 0.2 |
+| glycine | 2 | +44.10 | +44.2 (Goldberg) | -0.10 | 0.2 |
+| alanine | 1, 2 | +3.01, +45.23 | same (Miller) | 0 | 0.05 |
+| aspartic | 1, 2, 3 | +7.46, +4.64, +37.76 | +7.46, +4.60, +37.76 (Miller Table 6) | 0, +0.04, 0 | 0.1 |
+| glutamic | 1, 2, 3 | -0.27, +1.56, +40.07 | same | 0 | 0.05 |
+
+**Two findings in Miller's tables.**  (1) Table 3 prints the second ionisation enthalpy of aspartic acid as +4.64 and
+builds the monoanion's formation enthalpy (-942.86) on it, Table 6 prints +4.60; the printed formation enthalpy is
+entered (a 0.04 kJ/mol difference).  (2) **Glutamic acid, third step.**  Table 6 prints pK3 = 9.93 and dS_ion = -44.8
+J/mol/K with dH_ion = +40.07 kJ/mol.  These three do not close: the Gibbs identity gives pK3 = 9.36 from the
+enthalpy and entropy, and 9.93 from the pK (footnote h: Miller replaced the literature 9.37 by 9.93, calculated at I = 0
+from 9.67 at 0.1 mol/dm3 KCl, and kept the entropy of the old constant).  `check_logk_crosscheck` found the
+disagreement (0.567 log units, a factor 3.7 in K) on the first build, which is what that gate is for.  The record keeps
+pK3 = 9.93 (the one Miller uses) and the entropy of the glutamate ion is DERIVED from the pK and dH so the identity
+closes (114.59 J/mol/K; the printed route would give 125.50); both are in the evidence table.  The other steps of
+the four amino acids close inside the gate's tolerance (it compares each ladder from its master to its last species; step 2 of
+aspartic acid, by hand: 22.31 kJ/mol from dH and dS against 22.26 from the pK).
+
+### 3.4 What the catalogue held and what is still missing
+
+Held before: nothing of these families (ammonia, borate and carbonate are in phase 2).  Missing: gas-liquid links to the
+components (above); formation data of every amine, imidazole and peptide (Goldberg prints none; NBS has no C3+ rows);
+the heat capacity of ionisation (the printed dCp is not carried: see section 4.1); the amino acids other than the four of
+Miller (serine, proline, threonine, ...), which no evaluated ionisation work in hand covers; acid-gas chemistry of the
+alkanolamines.
+
+### 3.5 Case
+
+`tutorials/props/electrolyte/aminoBuffers01_tris_glycine`: Tris and triethanolamine hydrochlorides half-neutralised, and
+glycine hydrochloride with 0.5, 1, 1.5 and 2 equivalents of NaOH (six beakers, Davies, `pH solve`).  A structural
+illustration; no `anchor` rows.  The Davies pH of the half-neutralised bases is pK + log(1/gamma+) (Tris 8.157 =
+8.072 + 0.086); the isoelectric glycine solution is at pH 6.075 against (pK1 + pK2)/2 = 6.066.
+
+## 4. What phases 1 to 3 left undone
 
 Malonic acid (not in Goldberg, Miller or NBS), gluconic, ascorbic, gallic, propionic, butyric, benzoic: no evaluated
 ionisation work in hand.  Entropies of malate, lactate and the crystals.  The aqueous heat capacities.  Formation data
 of the new inorganic ions (the NBS tables in hand carry several of them and were not searched in phase 2).  The `dCp` of
 every ionisation (see the proposal below).
 
-### 3.1 Where a `dCp` would go
+### 4.1 Where a `dCp` would go
 
   The printed ionisation heat capacity change is not carried by any record: the grammar reads
 `logK25`, `dH` and an `analytic` block.  A constant dCp is exactly the `A1`, `A3`, `A4` terms of the `analytic` form

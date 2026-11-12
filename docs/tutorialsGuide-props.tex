@@ -1237,6 +1237,45 @@ WHAT IS NOT CLAIMED. The pair lives in this frame: ideal-gas vapour, the catalog
 \subsection{electrolyte}
 \grouptheory{electrolyte}
 \clearpage
+\tutentry{aminoBuffers01\_tris\_glycine}{tutorials/props/electrolyte/aminoBuffers01\_tris\_glycine}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{tris\_half}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{triethanolamine\_half}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{glycine\_Na0p050}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{glycine\_Na0p100}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{glycine\_Na0p150}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{glycine\_Na0p200}\\[-1pt]{\tiny speciate}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Tris and triethanolamine buffers at half neutralisation and a glycine titration (glycine hydrochloride with 0.5, 1, 1.5 and 2 equivalents of NaOH) at 25 C against the evaluated pK's of Goldberg, Kishore \& Lennen 2002. A structural illustration, not validated against a measured pH.}
+\begin{tutnarrative}
+the Tris and triethanolamine buffers at half neutralisation, and a glycine titration: 0.1 mol/kg glycine hydrochloride with 0.5, 1, 1.5 and 2 equivalents of NaOH, at 25 C. Six beakers, the pH a RESULT of the charge balance, read against the evaluated pK's of Goldberg, Kishore \& Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231, Section 8 (p. 359-360).
+
+WHAT THIS CASE IS. A STRUCTURAL ILLUSTRATION of the C373 phase 3 records (amine and amino-acid ladders, written by bin/curate/species\_c373.py from data/curation/batches/species\_c373). It is NOT validated against a measured pH: no work in hand prints a pH for these solutions, so there are no `anchor` rows. The master of each family is its conjugate ACID (HTris+, HTEOA+, H2Gly+), so the case feeds the hydrochloride (the chloride is the counter-ion) and NaOH is a titrant (`totalsBasis stoichiometric`); `pH solve;` closes the charge balance. Tris: pK 8.072, dH 47.45 kJ/mol; triethanolamine: pK 7.762, dH 33.6 (Section 7.68 p. 357, 7.66 p. 353); glycine: pK 2.351, 9.780 (Section 7.31 p. 281).
+
+WHAT TO LOOK FOR. (this run's numbers, Davies, 25 C) 1. Tris half-neutralised (0.025 + 0.025 mol/kg, I = 0.050): pH 8.157 = pK 8.072 + log10(1/0.8212), the cation's activity coefficient 0.8212 against 1 for the neutral base; triethanolamine the same: 7.848 = 7.762 + 0.086. A buffer's pH is its pK only at zero ionic strength. 2. Glycine at 1 equivalent of NaOH (the zwitterion): pH 6.075 against (pK1 + pK2)/2 = 6.066 (the isoelectric point), the zwitterion 0.09995 of the 0.1 mol/kg, H2Gly+ and Gly- 2.4e-5 and 2.5e-5. 3. At 0.5 equivalent the first step is not a clean half: pH 2.526 against pK1 2.351, because the free H+ (3.8e-3 mol/kg) is not negligible beside the 0.1 mol/kg acid (H2Gly+ 0.0461, HGly 0.0539). At 1.5 equivalents (Gly- 0.0499, HGly 0.0501) pH 9.660 = pK2 9.780 - 0.108, the anion's gamma 0.7596; at 2 equivalents the anion is 0.0976 of 0.1 and pH 11.259. 4. No ion pairing with sodium for these anions and the HCl ion pair of the catalogue is the only one present (HClaq, 1e-4 or less): the distribution is complete only up to the reactions somebody wrote down.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{tris\_half}{I}{0.0500017459749}
+\goldrow{diag}{tris\_half}{SI\_halite}{-4.64419099088}
+\goldrow{diag}{tris\_half}{T\_K}{298.15}
+\goldrow{diag}{tris\_half}{aw}{0.997750627031}
+\goldrow{diag}{tris\_half}{chargeImposed}{1}
+\goldrow{diag}{tris\_half}{chargeResidual}{-1.67643142071e-17}
+\goldrow{diag}{tris\_half}{gamma\_HTris}{0.821201054714}
+\goldrow{diag}{tris\_half}{gamma\_Tris}{1}
+\goldrow{diag}{tris\_half}{m\_HTris}{0.0250017375015}
+\goldrow{diag}{tris\_half}{m\_Tris}{0.0249982624985}
+\goldrow{diag}{tris\_half}{pH}{8.15749013453}
+\goldrow{diag}{triethanolamine\_half}{I}{0.0500008550473}
+\goldrow{diag}{triethanolamine\_half}{SI\_halite}{-4.64418990722}
+\goldrow{diag}{triethanolamine\_half}{T\_K}{298.15}
+\goldmore{60}
+\end{tutgolden}
+
+\clearpage
 \tutentry{archer01\_nacl\_cold\_to\_hot}{tutorials/props/electrolyte/archer01\_nacl\_cold\_to\_hot}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

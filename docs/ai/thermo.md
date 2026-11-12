@@ -313,7 +313,17 @@ gallic, propionic, butyric and benzoic acids have no ionisation record.  Inorgan
 (`H4P2O7`/`H3P2O7`/`H2P2O7`/`HP2O7`/`P2O7`, navigation family `phosphate`), **arsenate** (`H3AsO4`/`H2AsO4`/`HAsO4`/`AsO4`),
 **sulfite** (`H2SO3`/`Bisulfite`/`Sulfite`) and **hydrazine** (`N2H6`/`N2H5`/`Hydrazine`); ionisation only, no formation
 data.  Carbonate, phosphate, hydrogensulfate, ammonia and borate keep their PHREEQC records (compared in the design note;
-hydrogensulfate's ionisation enthalpy is 6.3 kJ/mol off Goldberg's).  Case: `inorganicLadders01_goldberg`.  Inventory, readings,
+hydrogensulfate's ionisation enthalpy is 6.3 kJ/mol off Goldberg's).  Case: `inorganicLadders01_goldberg`.
+Phase 3 (C373): **amines and amino acids** -- master = the conjugate ACID, so a case feeds the hydrochloride:
+`HTris`/`Tris`, `HTEOA`/`TEOA` (triethanolamine), `HTEA`/`TEA` (triethylamine), `HAMP`/`AMP`, `HAMPD`/`AMPD`, `HDEA`/`DEA`,
+`HMEA`/`MEA`, `HMeNH2`/`MeNH2`, `H2Piz`/`HPiz`/`Piz` (piperazine), `HImz`/`Imz`, `HMImz`/`MImz`, `HNEM`/`NEM`,
+`HGlyAmd`/`GlyAmd`, `H2GlyGly`/`HGlyGly`/`GlyGly`, `H2Gly3`/`HGly3`/`Gly3`, `H3His`..`His`, `H3Cys`..`Cys`, and the amino acids
+with formation data from Miller & Smith-Magowan 1990: glycine `H2Gly`/`HGly`/`Gly`, alanine `H2Ala`/`HAla`/`Ala`,
+aspartic `H3Aspt`..`Aspt`, glutamic `H3Glu`..`Glu` (zwitterion = the `H2`-form with the printed aqueous enthalpy and
+entropy); crystal components `glycine`, `alanine` (L), `asparticAcid`, `glutamicAcid` with heat-of-solution pairs.
+The neutral amine species and the volatile component of the same name (monoethanolamine, diethanolamine, triethanolamine,
+triethylamine, methylamine, piperazine) are two identities, not linked by any gas-liquid record.  Case:
+`aminoBuffers01_tris_glycine`.  Inventory, readings,
 consistency checks and the works still missing: `docs/design/organic-acids-in-the-catalogue.md` and
 `docs/design/species-from-evaluated-compilations.md`; the records are written by `bin/curate/species_c373.py` from
 `data/curation/batches/species_c373/*.tsv` and held by `check_species_c373`.

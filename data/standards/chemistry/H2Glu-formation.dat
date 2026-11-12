@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/H2Glu-formation.dat -- the first dissociation of L-glutamic acid, written from the master:
+      H3Glu  <=>  H2Glu + H+
+
+  logK25 and dH are the PRINTED values of the sources below (standard state ideal solution at 1 mol/kg, 298.15 K):
+      pK1 = 2.162, dH1 = -0.27 kJ/mol
+      pK2 = 4.272, dH2 = 1.56 kJ/mol
+      pK3 = 9.93, dH3 = 40.07 kJ/mol
+  Source: Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049; H+(aq) = 0, zero ionic strength, aqueous species at 1 mol/dm3 (Table 1 caption, p. 1052).
+  This record carries the first step (the sign flips with the direction written).
+  The constant-dCp term of the printed dCp is NOT carried: the record grammar has no place for it (a
+  van't Hoff integral with a constant dCp is exactly the `analytic` A1, A3, A4 terms; proposed, not done).
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species H2Glu; masters ( { ion H3Glu; nu 1; } { ion H; nu -1; } );
+      logK25 -2.162; dH -270; source "Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049 -- Table 6, p. 1057: pK1 2.162, dH1 -0.27 kJ/mol (read from a page image) (pK, dH_ion at 298.15 K)";

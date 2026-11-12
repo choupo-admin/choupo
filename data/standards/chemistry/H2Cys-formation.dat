@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/H2Cys-formation.dat -- the first dissociation of L-cysteine, written from the master:
+      H3Cys  <=>  H2Cys + H+
+
+  logK25 and dH are the PRINTED values of the sources below (standard state ideal solution at 1 mol/kg, 298.15 K):
+      pK1 = 1.71, dH1 = -0.6 kJ/mol
+      pK2 = 8.36, dH2 = 36.1 kJ/mol, dCp ~-66 J/mol/K
+      pK3 = 10.75, dH3 = 34.1 kJ/mol, dCp ~-204 J/mol/K
+  Source: Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231; standard state: hypothetical ideal solution of unit molality, 298.15 K, 0.1 MPa (Section 8, p. 359).
+  This record carries the first step (the sign flips with the direction written).
+  The constant-dCp term of the printed dCp is NOT carried: the record grammar has no place for it (a
+  van't Hoff integral with a constant dCp is exactly the `analytic` A1, A3, A4 terms; proposed, not done).
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species H2Cys; masters ( { ion H3Cys; nu 1; } { ion H; nu -1; } );
+      logK25 -1.71; dH -600; source "Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231 -- Section 8 summary, p. 359, and Section 7.23, p. 268: pK1 1.71, dH1 -0.6 kJ/mol (pK, dH_ion at 298.15 K)";

@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Component: Glycine (aminoacetic acid), crystal (C2H5NO2).  MW 75.067 g/mol (the engine's atomic weights).
+
+  A NON-VOLATILE crystalline organic solid: never enters the vapour (K = 0), no Antoine block.  Built on the
+  citric-acid pattern (components/citricAcid.dat) from the formation data of Miller & Smith-Magowan (1990), C373 phase 3.
+
+  WHAT THIS RECORD CARRIES, AND WHAT IT DELIBERATELY DOES NOT.
+
+    carries   the crystal formation enthalpy dHf = -528.52 +/- 0.50 kJ/mol
+              (Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 3, p. 1054, row dfH(cr) (their ref. a: the evaluation of Cox & Pilcher 1970 (the footnote lists -528.61 +/- 0.21 kJ/mol from ref. 77NGA/SAB as a later value); read from a page image));
+              the heat of solution of the pair file parameters/solution/glycine-water.dat.
+    does NOT  a density, a standard entropy s_298 and any heat capacity as record values: no density is
+              in a work read for this record, and Miller prints the crystal entropy only as an intermediate of
+              its third-law route to the aqueous species (Table 3), which enter through the species records.  An
+              energy balance that reaches the crystal's or the solution's SENSIBLE heat therefore refuses by
+              name (CLAUDE.md rule 5).
+
+    ALSO BUILT, in their own homes: the glycine ladder (H2Gly, HGly, Gly; chemistry/*-formation), whose zwitterion carries
+              the aqueous enthalpy and entropy of Miller's Table 3.
+\*---------------------------------------------------------------------------*/
+
+name        glycine;
+formula     C2H5NO2;
+MW          75.067;            // kg/kmol
+
+role        nonvolatile;               // crystalline amino acid; never to the vapour (K = 0)
+dissociation 1;                 // molecular (the ions are species/, see the header)
+
+standardThermochemistry
+{
+    dHf_298   -528520;        // J/mol  crystalline [-528.52 +/- 0.50 kJ/mol, Miller & Smith-Magowan 1990, Table 3]
+    referenceState     pureSolid;
+}
+
+provenance
+{
+    dHf_298
+    {
+        origin        literature;
+        method        "evaluated enthalpy of formation of the crystal (-528.52 +/- 0.50 kJ/mol)";
+        citation      "Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 3, p. 1054, row dfH(cr) (their ref. a: the evaluation of Cox & Pilcher 1970 (the footnote lists -528.61 +/- 0.21 kJ/mol from ref. 77NGA/SAB as a later value); read from a page image)";
+    }
+}

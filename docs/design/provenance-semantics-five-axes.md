@@ -317,7 +317,7 @@ blocks nested one level deeper —
 value it derives, and the form the Explorer's component inspector was taught to
 read on 2026-09-03.  Recounted at both depths:
 
-**census: 2344 direct + 3669 per-value = 6013 across 2995 files**
+**census: 2344 direct + 3673 per-value = 6017 across 2999 files**
 
 (recounted 2026-11-01: sixteen catalogue records re-sourced from NASA/TP-2002-211556, DEV.md 4c C170 item 4, each adds three per-value `literature` blocks and gains a `provenance {}` it lacked: +48 per-value, +16 files; and, before it,
 2026-10-31: the six functional membrane classes of DEV.md 4c C189

@@ -57,7 +57,7 @@ level up.)
 <!-- AUTO-GENERATED below this line by bin/regen-llm-docs. -->
 <!-- Edit the .dat files in data/standards/components/, then re-run. -->
 
-## Components (692 entries)
+## Components (696 entries)
 
 ### Volatile (curated for VLE)
 
@@ -625,6 +625,8 @@ level up.)
 | Name | MW | role | Psat (Trange, K) | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
 |---|---:|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
 | `acetaldehyde` | 44.053 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `alanine` | 89.094 | nonvolatile | — | — | — | ✓ | — | — | — | — |   |
+| `asparticAcid` | 133.103 | nonvolatile | — | — | — | ✓ | — | — | — | — |   |
 | `C` | 12.011 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `C2H` | 25.03 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `C2H3` | 27.046 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
@@ -653,6 +655,8 @@ level up.)
 | `CS2` | 76.131 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `dowthermA` | 165.8 | nonvolatile | — | — | ✓ | — | — | — | — | ✓ |   |
 | `glucose` | 180.16 | nonvolatile | — | — | ✓ | ✓ | — | — | — | ✓ |   |
+| `glutamicAcid` | 147.130 | nonvolatile | — | — | — | ✓ | — | — | — | — |   |
+| `glycine` | 75.067 | nonvolatile | — | — | — | ✓ | — | — | — | — |   |
 | `graphite` | 12.011 | nonvolatile | — | — | — | ✓ | — | — | — | — |   |
 | `H` | 1.008 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `HCCO` | 41.029 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |

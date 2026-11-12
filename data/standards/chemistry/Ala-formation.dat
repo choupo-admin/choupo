@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/Ala-formation.dat -- the first 2 dissociations of L-alanine, written from the master:
+      H2Ala  <=>  Ala + 2 H+
+
+  logK25 and dH are the PRINTED values of the sources below (standard state ideal solution at 1 mol/kg, 298.15 K):
+      pK1 = 2.340, dH1 = 3.01 kJ/mol
+      pK2 = 9.870, dH2 = 45.23 kJ/mol
+  Source: Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049; H+(aq) = 0, zero ionic strength, aqueous species at 1 mol/dm3 (Table 1 caption, p. 1052).
+  This record carries the sum of the first 2 steps (the sign flips with the direction written).
+  The constant-dCp term of the printed dCp is NOT carried: the record grammar has no place for it (a
+  van't Hoff integral with a constant dCp is exactly the `analytic` A1, A3, A4 terms; proposed, not done).
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species Ala; masters ( { ion H2Ala; nu 1; } { ion H; nu -2; } );
+      logK25 -12.21; dH 48240; source "Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049 -- Table 6, p. 1057: pK1 2.340, dH1 3.01 kJ/mol (read from a page image), pK2 9.870, dH2 45.23 kJ/mol (read from a page image) (pK, dH_ion at 298.15 K)";

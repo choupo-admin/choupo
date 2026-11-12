@@ -29,3 +29,37 @@ sulfite	1	1.857	-17.80	-272		GOLD02	Section 8 summary, p. 360, and Section 7.59,
 sulfite	2	7.172	-3.65	-262		GOLD02	Section 8 summary, p. 360, and Section 7.59, p. 344	no	Section 8 summary text layer, checked against the page image
 hydrazine	1	-0.99	38.1			GOLD02	Section 8 summary, p. 360, and Section 7.40, p. 300	no	Section 8 summary text layer, checked against the page image
 hydrazine	2	8.02	41.7			GOLD02	Section 8 summary, p. 360, and Section 7.40, p. 300	no	Section 8 summary text layer, checked against the page image
+tris	1	8.072	47.45	-59		GOLD02	Section 8 summary, p. 360, and Section 7.68, p. 357	no	Section 8 summary text layer, checked against the page image
+triethanolamine	1	7.762	33.6	50		GOLD02	Section 8 summary, p. 360, and Section 7.66, p. 353	no	Section 8 summary text layer, checked against the page image
+triethylamine	1	10.72	43.13	151		GOLD02	Section 8 summary, p. 360, and Section 7.67, p. 355	no	Section 8 summary text layer, checked against the page image
+amp	1	9.694	54.05	~-21		GOLD02	Section 8 summary, p. 359, and Section 7.5, p. 244	no	Section 8 summary text layer, checked against the page image
+ampd	1	8.801	49.85	-44		GOLD02	Section 8 summary, p. 359, and Section 7.4, p. 243	no	Section 8 summary text layer, checked against the page image
+diethanolamine	1	8.883	42.08	36		GOLD02	Section 8 summary, p. 359, and Section 7.24, p. 270	no	Section 8 summary text layer, checked against the page image
+ethanolamine	1	9.498	50.52	26		GOLD02	Section 8 summary, p. 359, and Section 7.28, p. 277	no	Section 8 summary text layer, checked against the page image
+methylamine	1	10.645	55.34	33		GOLD02	Section 8 summary, p. 360, and Section 7.45, p. 310	no	Section 8 summary text layer, checked against the page image
+piperazine	1	5.333	31.11	86		GOLD02	Section 8 summary, p. 360, and Section 7.53, p. 329	no	Section 8 summary text layer, checked against the page image
+piperazine	2	9.731	42.89	75		GOLD02	Section 8 summary, p. 360, and Section 7.53, p. 329	no	Section 8 summary text layer, checked against the page image
+imidazole	1	6.993	36.64	-9		GOLD02	Section 8 summary, p. 360, and Section 7.41, p. 302	no	Section 8 summary text layer, checked against the page image
+methylimidazole	1	8.01	36.8			GOLD02	Section 8 summary, p. 360, and Section 7.46, p. 312	no	Section 8 summary text layer, checked against the page image
+ethylmorpholine	1	7.77	27.4			GOLD02	Section 8 summary, p. 359, and Section 7.29, p. 279	no	Section 8 summary text layer, checked against the page image
+glycineamide	1	8.04	42.9			GOLD02	Section 8 summary, p. 359, and Section 7.32, p. 286	no	Section 8 summary text layer, checked against the page image
+glycine	1	2.351	4.00	-139		GOLD02	Section 8 summary, p. 359, and Section 7.31, p. 281	no	Section 8 summary text layer, checked against the page image
+glycine	2	9.780	44.2	-57		GOLD02	Section 8 summary, p. 359, and Section 7.31, p. 281	no	Section 8 summary text layer, checked against the page image
+alanine	1	2.340	3.01			MILL90	Table 6, p. 1057	yes	OCR text layer and page image agree
+alanine	2	9.870	45.23			MILL90	Table 6, p. 1057	yes	OCR text layer and page image agree
+asparticacid	1	1.990	7.46			MILL90	Table 6, p. 1057	yes	OCR text layer and page image agree
+asparticacid	2	3.900	4.60			MILL90	Table 6, p. 1057	yes	OCR text layer and page image agree
+asparticacid	3	10.002	37.76			MILL90	Table 6, p. 1057	yes	OCR text layer and page image agree
+glutamicacid	1	2.162	-0.27			MILL90	Table 6, p. 1057	yes	OCR text layer and page image agree
+glutamicacid	2	4.272	1.56			MILL90	Table 6, p. 1057	yes	OCR text layer and page image agree
+glutamicacid	3	9.93	40.07			MILL90	Table 6, p. 1057	yes	pK3 9.93 is Miller's own calculation at I = 0 from pK 9.67 at 0.1 mol/dm3 KCl (Table 6 footnote h), not a measurement
+glycylglycine	1	3.140	0.11	-128		GOLD02	Section 8 summary, p. 359, and Section 7.33, p. 287	no	Section 8 summary text layer, checked against the page image
+glycylglycine	2	8.265	43.4	-16		GOLD02	Section 8 summary, p. 359, and Section 7.33, p. 287	no	Section 8 summary text layer, checked against the page image
+triglycine	1	3.224	0.84			GOLD02	Section 8 summary, p. 359, and Section 7.34, p. 289	no	Section 8 summary text layer, checked against the page image
+triglycine	2	8.090	41.7			GOLD02	Section 8 summary, p. 359, and Section 7.34, p. 289	no	Section 8 summary text layer, checked against the page image
+histidine	1	1.54	3.6			GOLD02	Section 8 summary, p. 360, and Section 7.39, p. 296	no	Section 8 summary text layer, checked against the page image
+histidine	2	6.07	29.5	176		GOLD02	Section 8 summary, p. 360, and Section 7.39, p. 296	no	Section 8 summary text layer, checked against the page image
+histidine	3	9.34	43.8	-233		GOLD02	Section 8 summary, p. 360, and Section 7.39, p. 296	no	Section 8 summary text layer, checked against the page image
+cysteine	1	1.71	-0.6			GOLD02	Section 8 summary, p. 359, and Section 7.23, p. 268	no	Section 8 summary text layer, checked against the page image; dH printed as approximate
+cysteine	2	8.36	36.1	~-66		GOLD02	Section 8 summary, p. 359, and Section 7.23, p. 268	no	Section 8 summary text layer, checked against the page image
+cysteine	3	10.75	34.1	~-204		GOLD02	Section 8 summary, p. 359, and Section 7.23, p. 268	no	Section 8 summary text layer, checked against the page image

@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1827,
+  "cases": 1828,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 21
@@ -22951,6 +22951,16 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/electrolyte/aminoBuffers01_tris_glycine": {
+   "application": "choupoProps",
+   "thermo": {
+    "activityModels": [
+     "davies"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/electrolyte/archer01_nacl_cold_to_hot": {
    "application": "choupoProps",
    "ops": [
@@ -30823,6 +30833,7 @@
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
     "tutorials/props/curation/curate13_synthetic_lle_butanol_water",
     "tutorials/props/curation/curate14_nrtl_butanol_water",
+    "tutorials/props/electrolyte/aminoBuffers01_tris_glycine",
     "tutorials/props/electrolyte/archer01_nacl_cold_to_hot",
     "tutorials/props/electrolyte/bjerrum01_carbonate_pH",
     "tutorials/props/electrolyte/citricAcid01_speciation",
@@ -32996,6 +33007,7 @@
     "tutorials/batch/electrodialysis/edbatch02_constant_voltage",
     "tutorials/batch/electrodialysis/edbatch03_multiionic_split",
     "tutorials/plant/swro01_campoDalias",
+    "tutorials/props/electrolyte/aminoBuffers01_tris_glycine",
     "tutorials/props/electrolyte/citricAcid01_speciation",
     "tutorials/props/electrolyte/davies01_band_edge",
     "tutorials/props/electrolyte/edwards01_sour_water_activity",
