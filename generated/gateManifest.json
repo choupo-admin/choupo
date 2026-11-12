@@ -1665,6 +1665,11 @@
       "exit": 0,
       "claim": "check_reference_eos: OK -- 1 reference equation(s) (IAPWS95); 81 published check values reproduced at the printed precision by an independent implementation and by the engine; 5 engine states agree with the recomputation to 1e-9.  NOT checked: whether an equation is right (its uncertainty is the publication's), the flowsheet route, states nearer the critical point than the check values.",
       "seconds": 12.0
+    },
+    "check_feature_documented": {
+      "exit": 0,
+      "claim": "check_feature_documented: OK -- 253 registered names, 212 documented in a labelled guide section and the catalogue, 41 pinned as debt (ActivityModel 1, AqueousVolumetric 2, Atomizer 1, BatchUnitOperation 2, BedWallHeatTransfer 1, ConstantEstimator 3, DynamicUnitOperation 1, EquipmentSize 2, FrictionFactorCorrelation 1, HeatCapacityModel 5, HeatTransferCorrelation 1, IsothermModel 1, LiquidViscosityModel 2, ODEIntegrator 2, PhaseChangeHTC 3, PureFluidModel 1, Report 2, Signal 1, SizeDistribution 3, SurfaceTensionModel 1, TransportModel 1, UnitOperation 3, VaporPressureModel 1); NOT COVERED: that the section's equations match the implementation",
+      "seconds": 0.3
     }
   }
 }
