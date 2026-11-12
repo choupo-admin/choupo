@@ -204,7 +204,7 @@ before the UNIFAC matrix.  UNIFAC itself: 52x on column19 from one string-keyed 
 | todo | Two EduTools in Pareto mode: liquid effluent treatment and gaseous emission treatment (the Pareto first, against the corpus plants' boundary streams; then the scope to Vitor) | C206 |
 | todo | C199 leftovers: the vessel port positions, the pressure-centre alternative case and the pump curves | C199 |
 | todo | Release Choupo-2612, the first since 2608 | ROADMAP S4 |
-| blocked | Seawater boron on Pitzer: BOH4/CaBOH4/MgBOH4 formation and eight mixing records, each from its primary (blocked on reading Felmy & Weare 1986) | C198 |
+| to do (the primary is in the literature folder since 11-09; nothing waits on Vitor) | Seawater boron on Pitzer: BOH4/CaBOH4/MgBOH4 formation and eight mixing records, each read from Felmy & Weare 1986 | C198 |
 | todo | Boron Stage 2: the pH along the channel, the seawater feed as major ions, a dosing unit, and a recycle solver that refuses the trivial fixed point by name | C198 |
 | todo | The methanation reactor EduTool and a Power-to-Gas plant case (pedagogical scope written first) | C191 (B) |
 | todo | A cumene case (the graph's three cumene routes link nothing) | C191 |
