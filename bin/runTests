@@ -1248,6 +1248,25 @@ get_panel() {
         }'
 }
 
+#  source <unit> <property> -- WHERE a consumer took a liquid property from
+#  (C378 slice 0): the `sourceId` WORD(s) of the result block
+#  `propertySources.used` for that unit and property, sorted and joined by a
+#  comma when the unit took it from more than one.  The unit name carries `_`
+#  for each blank (a golden column is one token).  Compared `exact`, on the
+#  `verdict` precedent: a unit that silently changes where its density comes
+#  from moves this row even when no other number of the case does.
+get_source() {
+    local out="$1" unit="$2" prop="$3"
+    printf '%s\n' "$out" | sed -n '/"propertySources": {/,/^  }/p' \
+        | grep -F '"sourceId"' | while IFS= read -r line; do
+            u=$(printf '%s' "$line" | grep -oP '"unit": "\K[^"]*' | head -1 | tr ' ' '_')
+            [ "$u" = "$unit" ] || continue
+            p=$(printf '%s' "$line" | grep -oP '"property": "\K[^"]*' | head -1)
+            [ "$p" = "$prop" ] || continue
+            printf '%s' "$line" | grep -oP '"sourceId": "\K[^"]*' | head -1
+        done | sort -u | paste -sd, -
+}
+
 get_any() {
     local out="$1" kind="$2" name="$3" key="$4"
     #  The CLAIM (published vs self-recorded) is a different column and does
@@ -1264,6 +1283,7 @@ get_any() {
     elif [ "$kind" = layout ]; then get_layout  "$out" "$name" "$key"
     elif [ "$kind" = batch  ]; then get_batch   "$out" "$name" "$key"
     elif [ "$kind" = panel  ]; then get_panel   "$out" "$name" "$key"
+    elif [ "$kind" = source ]; then get_source  "$out" "$name" "$key"
     else get_value "$out" "$name" "$key"; fi
 }
 
@@ -2460,6 +2480,18 @@ auto_generate() {
                     }
                 }
             }'
+        #  source rows (C378 slice 0): where each consumer took a liquid
+        #  property from, one WORD per (unit, property), `exact`.
+        printf '%s\n' "$block" | sed -n '/"propertySources": {/,/^  }/p' \
+            | grep -F '"sourceId"' | while IFS= read -r line; do
+                u=$(printf '%s' "$line" | grep -oP '"unit": "\K[^"]*' | head -1 | tr ' ' '_')
+                p=$(printf '%s' "$line" | grep -oP '"property": "\K[^"]*' | head -1)
+                s=$(printf '%s' "$line" | grep -oP '"sourceId": "\K[^"]*' | head -1)
+                printf '%s\t%s\t%s\n' "$u" "$p" "$s"
+            done | sort -u | awk -F'\t' '
+                { k = $1 "\t" $2; v[k] = (k in v) ? v[k] "," $3 : $3; if (!(k in seen)) { seen[k] = 1; ord[++n] = k } }
+                END { for (i = 1; i <= n; i++) { split(ord[i], a, "\t");
+                      printf "source  %-22s %-16s %-18s %s\n", a[1], a[2], v[ord[i]], "exact" } }'
     } > "$dest"
     return 0
 }
@@ -2543,7 +2575,7 @@ if [ -n "$RECORD" ]; then
                     #  is the second home for the list of kinds, and the check
                     #  loop below has no such list at all, so the two cannot
                     #  be kept honest by reading one of them.
-                    case "$gkind" in kpi|stream|diag|aad|closure|utility|verdict|equipment|boundary|ledger|layout|batch|panel) ;; *) continue;; esac
+                    case "$gkind" in kpi|stream|diag|aad|closure|utility|verdict|equipment|boundary|ledger|layout|batch|panel|source) ;; *) continue;; esac
                     if ! awk -v k="$gkind" -v n="$gname" -v y="$gkey" \
                          '$1==k && $2==n && $3==y {found=1} END{exit !found}' "$exp"; then
                         printf '%-7s %-22s %-16s %-16s %s\n' \
@@ -8089,6 +8121,16 @@ if [ "$#" -eq 0 ]; then
     #  Their witness and sabotage arms are untouched -- always live.
     [ -n "$SUITE_OUT_DIR" ] && export CHOUPO_SUITE_OUTPUTS="$SUITE_OUT_DIR"
     gate_prefetch POST
+    # property-sources-pinned gate (2026-11-12, DEV.md 4c C378 slice 0).  Every (unit, property) a case publishes in `propertySources` -- where its liquid density, viscosity, surface tension or diffusivity came from -- is pinned by a `source` row of its golden (published => pinned).
+    if gate_exec "$ROOT/bin/curate/check_property_sources_pinned.py" > /tmp/srcpin.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "property-sources-pinned-gate" "$(head -1 /tmp/srcpin.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_property_sources_pinned.py)\n" "property-sources-pinned-gate"
+        cat /tmp/srcpin.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/srcpin.$$
 
     # A model's degenerate limit is the LIMIT: a one-stage absorber/stripper
     # is a flash of its combined feeds, and an absent product contributes
