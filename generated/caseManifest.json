@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1260,
+  "cases": 1261,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 15
@@ -16110,6 +16110,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/transport/mixing01_water_acetone": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "UNIFAC"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/transport/surfacetension01_stored_vs_brockbird": {
    "application": "choupoProps",
    "ops": [
@@ -21572,6 +21586,7 @@
     "tutorials/props/thermoTest/atoms01_formula_parser",
     "tutorials/props/thermoTest/h_surface_identity",
     "tutorials/props/thermoTest/model4_speciation_scaling",
+    "tutorials/props/transport/mixing01_water_acetone",
     "tutorials/props/transport/surfacetension01_stored_vs_brockbird",
     "tutorials/props/transport/transport01_gas_bench",
     "tutorials/props/transport/transport02_chapman_enskog",
@@ -23290,6 +23305,7 @@
     "tutorials/props/compare/lle01_acetic_mibk_perry",
     "tutorials/props/scan/ternary03_lle_water_ethanol_benzene",
     "tutorials/props/solvents/solvent02_polystyrene_hexane_blends",
+    "tutorials/props/transport/mixing01_water_acetone",
     "tutorials/steady/absorption/extract01_ethanol_water_benzene",
     "tutorials/steady/absorption/extract02_declared_interior",
     "tutorials/steady/absorption/extract03_acetic_acid_mibk_perry",
@@ -25223,6 +25239,7 @@
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
     "tutorials/props/thermo/temperature01_gas_thermometer",
     "tutorials/props/thermo/temperature02_engineers_ladder",
+    "tutorials/props/transport/mixing01_water_acetone",
     "tutorials/props/transport/surfacetension01_stored_vs_brockbird"
    ],
    "propertyScan1D": [

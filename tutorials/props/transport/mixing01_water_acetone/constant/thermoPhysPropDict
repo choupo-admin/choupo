@@ -1,0 +1,26 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  mixing01 -- water, acetone and ethanol in one liquid, gamma from UNIFAC.
+    UNIFAC because the catalogue holds no NRTL pair for water-acetone, and
+    Butler's surface tension needs an activity model for every pair it
+    meets.  Each operation brings its own `transport {}` (system/propsDict),
+    so the rules sit side by side.  Not sealed: the records come from
+    data/standards/components.  */
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water acetone ethanol );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid { activityModel { model UNIFAC; } }
+    vapour { fugacityModel idealGas; }
+}
