@@ -3531,6 +3531,24 @@ accepts today, and that is a policy call.
 > readable to it.  What Vitor said does NOT worry him: the drawn flowsheet
 > editor, compound count, interoperability.
 
+> **C337 (Vitor, 2026-11-12: "a destilacao deve ter uma visualizacao detalhada
+> se for pedido o design da coluna ... parecido ao que se fez para o
+> permutador").**  Measured: gui/src/ui/ColumnDatasheet.tsx
+> (`columnDatasheetHtml`, :84) already prints an HTML specification sheet of
+> tables (items sized, design basis, trays rated, worst tray, weeping trays,
+> declared geometry), but it has NO drawing, while HeatExchangerDatasheet.tsx
+> draws its bundle as an SVG (:156).  DECIDED: the column sheet gains (1) an
+> elevation to scale (shell, trays or packed beds, feed and draw nozzles,
+> condenser and reboiler), (2) a tray plan view (active area, downcomers, weir,
+> hole pattern at the declared pitch and open area), (3) the operating window
+> of the worst tray (flood, entrainment, weeping, downcomer backup, with the
+> operating point), (4) per-stage profiles: T, composition, vapour and liquid
+> traffic, approach to flood, pressure drop, and -- from C329 -- the computed
+> tray efficiency or the packing HETP.  Everything drawn from the engine's
+> published KPIs and the declared geometry, nothing recomputed in the GUI; a
+> quantity the engine does not publish is listed as missing, not invented.
+> Built on top of the C329 branch (general dispatched).
+
 > **C334 (Vitor, 2026-11-12: "vou estender o severo ate 29 %"; AMENDED the same
 > hour).**  The architect first agreed for pair fits (29 % / 8 K) and then
 > withdrew that part on the cloud session's argument, which is the better
