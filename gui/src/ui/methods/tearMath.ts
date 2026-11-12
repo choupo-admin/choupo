@@ -275,7 +275,7 @@ export interface PlanVerdict {
   valid: boolean;
   /** Tear VARIABLES this plan costs, per solver.  Wegstein packs
    *  (F, z_1..z_Nc, T, P) per torn stream
-   *  (src/unitOperations/flowsheet/Flowsheet.cpp:1796-1814) and Newton packs
+   *  (src/unitOperations/flowsheet/Flowsheet.cpp:1796-1829) and Newton packs
    *  (F_1..F_Nc, T, P) (src/unitOperations/flowsheet/Flowsheet.cpp:3653-3662):
    *  the pressure has been a tear variable since DEV.md 4c C186 (5). */
   variablesWegstein: number;
@@ -381,7 +381,7 @@ export function bestOrder(g: TeachGraph): BestOrder {
 
 /** The engine's own way of naming a cycle in a refusal, reproduced so the
  *  construction and the run beside it read in one vocabulary
- *  (src/unitOperations/flowsheet/Flowsheet.cpp:4753-4762). */
+ *  (src/unitOperations/flowsheet/Flowsheet.cpp:4811-4820). */
 // ---- Judging a DECLARATION: an order, and the tears the reader chose --------
 
 /*  WHY THIS EXISTS BESIDE `judgePlan`, and why it is not the same function.

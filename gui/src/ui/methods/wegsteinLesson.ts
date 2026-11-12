@@ -102,7 +102,7 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
     derivation: [
       { step: "The wegstein branch packs the total flow, every mole "
           + "fraction, the temperature and the pressure — per torn stream "
-          + "(src/unitOperations/flowsheet/Flowsheet.cpp:1796-1814; the "
+          + "(src/unitOperations/flowsheet/Flowsheet.cpp:1796-1829; the "
           + "pressure, in bar, at Flowsheet.cpp:1811).",
         eq: String.raw`x = ( F,\ z_1,\ z_2,\ \ldots,\ z_{N_c},\ T,\ P )`},
       { step: "That is one number more than the stream has independent "
@@ -512,8 +512,8 @@ export const WEGSTEIN_LIMITS: readonly LessonLimit[] = [
     title: "The tear carries a flow, a composition, a temperature and a "
       + "pressure — and not the phase split",
     body: "The pack and unpack move exactly those four things "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:1796-1814 and "
-      + "src/unitOperations/flowsheet/Flowsheet.cpp:1838-1880). The pressure "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:1796-1829 and "
+      + "src/unitOperations/flowsheet/Flowsheet.cpp:1838-1900). The pressure "
       + "has been a tear variable since DEV.md 4c C186 (5) — the engine's "
       + "comment at Flowsheet.cpp:1806 says so in capitals — because a loop "
       + "whose units lower the pressure has no steady state unless the "

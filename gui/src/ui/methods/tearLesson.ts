@@ -179,7 +179,7 @@ export const TEAR_STEPS: readonly LessonStep[] = [
     derivation: [
       { step: "Per torn stream, the Wegstein branch packs the total flow, "
           + "every mole fraction, the temperature and the pressure "
-          + "(src/unitOperations/flowsheet/Flowsheet.cpp:1796-1814).",
+          + "(src/unitOperations/flowsheet/Flowsheet.cpp:1796-1829).",
         eq: String.raw`n_W = N_t (N_c + 3)`},
       { step: "Per torn stream, the Newton branch packs component flows, "
           + "the temperature and the pressure "

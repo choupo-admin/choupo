@@ -68,7 +68,7 @@
   (src/unitOperations/flowsheet/Flowsheet.cpp:3552, the norm itself at
   src/unitOperations/flowsheet/Flowsheet.cpp:1902-1911) over the packed tear
   vector `[F, z_0..z_{nC-1}, T, P]`, P in bar
-  (src/unitOperations/flowsheet/Flowsheet.cpp:1796-1814, renormalised onto the
+  (src/unitOperations/flowsheet/Flowsheet.cpp:1796-1829, renormalised onto the
   simplex on the way back at src/unitOperations/flowsheet/Flowsheet.cpp:1865)
   — a plain Euclidean norm over a flow in kmol/s, mole fractions, a
   temperature in kelvin and a pressure in bar, with no per-variable scale.
