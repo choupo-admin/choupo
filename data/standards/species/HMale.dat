@@ -1,0 +1,15 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/HMale.dat -- ONE model species, ONE typed file: the singly charged anion of maleic acid.
+
+  NO `aqueousThermo` ON PURPOSE.  The ionisation (pK, dH, dCp) of maleic acid is evaluated in
+  Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231, Table 7.42 (Maleate), p. 305, and is in chemistry/ -- so the SPECIATION (pH, distribution) is complete.  No work
+  in hand prints a formation enthalpy or entropy of this aqueous ion, so the energy rung of the
+  DISSOCIATED route is not available and refuses by name; nothing is borrowed.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    HMale;
+formula     "HC4H2O4-";
+charge  -1;
+MW { value 115.064; unit g/mol;}

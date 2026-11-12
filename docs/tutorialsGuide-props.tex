@@ -1339,6 +1339,49 @@ NOT VALIDATED AGAINST MEASUREMENT. This case is a STRUCTURAL witness: it shows t
 \end{tutgolden}
 
 \clearpage
+\tutentry{citricAcid01\_speciation}{tutorials/props/electrolyte/citricAcid01\_speciation}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{Na\_0p000}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{Na\_0p025}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{Na\_0p050}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{Na\_0p075}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{Na\_0p100}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{Na\_0p150}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{Na\_0p200}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{Na\_0p250}\\[-1pt]{\tiny speciate}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Citric acid 0.1 mol/kg titrated with NaOH (0 to 2.5 equivalents) at 25 C: pH and the H3Cit/H2Cit/HCit/Cit distribution on the citrate family (pK 3.128/4.761/6.396, Goldberg 2002 Table 7.22). A structural illustration, not validated against a measured pH.}
+\begin{tutnarrative}
+0.1 mol/kg citric acid titrated with sodium hydroxide: the pH of the acid alone and the distribution H3Cit / H2Cit- / HCit2- / Cit3- as the base is added (0 to 2.5 equivalents of Na per 0.1 mol/kg acid, eight beakers; the ionic strength stays under 0.5 mol/kg, so Davies is inside its window and no beaker is flagged).
+
+WHAT THIS CASE IS. A STRUCTURAL ILLUSTRATION of the citrate family built in C372 (species H3Cit, H2Cit, HCit, Cit; chemistry H2Cit/HCit/Cit/H3Cit-formation). It is NOT validated against a measured pH: no work in hand prints one, so the case has no `anchor` rows. The constants are pK1 3.128, pK2 4.761, pK3 6.396 and dH1 4.07, dH2 2.23, dH3 -3.38 kJ/mol at 25 C, I = 0 (Goldberg, Kishore \& Lennen 2002, Table 7.22, p. 265, evaluation grades AAB x3); the formation enthalpies of the ions, hfAq, are Kochergina et al. 2006, Table 4.
+
+The pH is NOT set: `pH solve;` closes the charge balance, so each point is a beaker somebody could weigh out (acid plus NaOH) and the pH is a result, as in bjerrum01\_carbonate\_pH. `totalsBasis stoichiometric` says the sodium is a titrant (a neutral NaOH feed), not a lab-sheet cation to be balanced.
+
+WHAT TO LOOK FOR. (this run's numbers, Davies, 25 C) 1. The acid alone (Na = 0): pH 2.083, I = 0.009. The weak-acid hand formula with pK1 = 3.128 and c = 0.1 mol/kg gives 2.06 (the quadratic solution is what the engine solves); the second and third steps add almost nothing. 2. The half-neutralisation beakers (Na = 0.05, 0.15, 0.25 mol/kg, i.e. 0.5, 1.5, 2.5 equivalents) give pH 3.019, 4.379, 5.765, BELOW the pK's (3.128, 4.761, 6.396) by 0.11, 0.38, 0.63. The gap grows because (a) the pH scale is the activity of H+ and Davies lowers the activity of the multiply charged anion, and (b) the three steps are only 1.6 pK units apart, so the neighbouring steps overlap and no beaker is a clean two-species buffer: at Na = 0.15 the H2Cit-/HCit2- molalities are 0.0479/0.0480 but H3Cit and Cit3- are each 0.002 mol/kg. A textbook Henderson-Hasselbalch plot (gamma = 1, one step at a time) puts every crossover on its pK. 3. Cit3- reaches 0.052 of the 0.100 mol/kg total at 2.5 equivalents and would dominate beyond about 3; the run stops there because trisodium citrate (I = 0.6) is past Davies' \textasciitilde{}0.5 mol/kg window and the engine would flag it. 4. No sodium-citrate ion pair: the catalogue holds no such record, so the distribution is complete only up to the reactions somebody wrote down.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{Na\_0p000}{I}{0.00913819583954}
+\goldrow{diag}{Na\_0p000}{T\_K}{298.15}
+\goldrow{diag}{Na\_0p000}{aw}{0.998036268103}
+\goldrow{diag}{Na\_0p000}{chargeImposed}{1}
+\goldrow{diag}{Na\_0p000}{chargeResidual}{-4.98975134936e-16}
+\goldrow{diag}{Na\_0p000}{gamma\_Cit}{0.40934717054}
+\goldrow{diag}{Na\_0p000}{gamma\_H2Cit}{0.905522170902}
+\goldrow{diag}{Na\_0p000}{gamma\_H3Cit}{1}
+\goldrow{diag}{Na\_0p000}{gamma\_HCit}{0.672351460148}
+\goldrow{diag}{Na\_0p000}{m\_Cit}{2.05077475917e-09}
+\goldrow{diag}{Na\_0p000}{m\_H2Cit}{0.00906125746107}
+\goldrow{diag}{Na\_0p000}{m\_H3Cit}{0.090913098464}
+\goldrow{diag}{Na\_0p000}{m\_HCit}{2.56420241601e-05}
+\goldrow{diag}{Na\_0p000}{pH}{2.083461099}
+\goldmore{98}
+\end{tutgolden}
+
+\clearpage
 \tutentry{composition01\_nacl}{tutorials/props/electrolyte/composition01\_nacl}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -2443,6 +2486,45 @@ Data: curated USGS PHREEQC records (public domain) resolved from data/standards/
 \goldrow{diag}{acidulation\_pitzer}{m\_H2Tart}{0.0656066}
 \goldrow{diag}{acidulation\_pitzer}{m\_HTart}{0.0314016}
 \goldmore{74}
+\end{tutgolden}
+
+\clearpage
+\tutentry{volatileAcids01\_acetic\_formic}{tutorials/props/electrolyte/volatileAcids01\_acetic\_formic}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{acetic\_acid}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{acetic\_half}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{acetic\_sodium}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{formic\_acid}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{formic\_half}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{formic\_sodium}\\[-1pt]{\tiny speciate}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Acetic and formic acid, 0.1 mol/kg in water at 25 C: pH of the acid alone, at half neutralisation and as the sodium salt, on the ionisation records HAc-formation (Goldberg 2002) and HFo-formation (derived from NBS 1982). A structural illustration, not validated against a measured pH.}
+\begin{tutnarrative}
+six beakers: for each acid, 0.1 mol/kg total carboxylate (the analytical total of the MASTER species, Acetate / Formate) with 0, 0.05 and 0.10 mol/kg sodium. `totalsBasis stoichiometric` declares these as neutral-molecule feeds (acid, half-neutralised acid, sodium salt), and `pH solve` lets the charge balance, not the user, set the pH -- the same construction as bjerrum01\_carbonate\_pH.
+
+WHAT TO LOOK FOR (the numbers are this run's, Davies, 25 C). 1. The acid alone: acetic acid pH 2.881 (I = 0.0014), formic acid pH 2.376 (I = 0.0045). The weak-acid hand formula pH = 1/2 (pKa - log c) gives 2.88 and 2.37 -- the activity coefficients move the third digit. Formic acid's equilibrium constant is 10\textasciicircum{}1.02 = 10 times acetic acid's, and it is the more strongly dissociated, so its beaker carries more ions. 2. Half neutralisation (Na = 0.05): pH 4.671 (acetic) and 3.651 (formic), BELOW the records' pKa (4.756, 3.732) by 0.085 and 0.081. That is not an error: the pH scale is the activity of H+, and at I = 0.05 Davies gives the anion gamma = 0.82, so pH = pKa + log(gamma\_anion) = pKa - 0.086. A textbook Henderson-Hasselbalch plot with gamma = 1 would land on the pKa. 3. The sodium salt (Na = 0.10): the conjugate-base pH, 8.772 (acetate) and 8.260 (formate), differing by roughly half the pKa gap, as the hydrolysis constant Kw/Ka demands.
+
+No `anchor` rows: no work in hand prints a pH for these solutions.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{acetic\_acid}{I}{0.00137088690909}
+\goldrow{diag}{acetic\_acid}{T\_K}{298.15}
+\goldrow{diag}{acetic\_acid}{aw}{0.998175469954}
+\goldrow{diag}{acetic\_acid}{chargeImposed}{1}
+\goldrow{diag}{acetic\_acid}{chargeResidual}{1.87058337115e-16}
+\goldrow{diag}{acetic\_acid}{gamma\_Acetate}{0.95940269903}
+\goldrow{diag}{acetic\_acid}{gamma\_HAc}{1}
+\goldrow{diag}{acetic\_acid}{m\_Acetate}{0.00137088690118}
+\goldrow{diag}{acetic\_acid}{m\_HAc}{0.0986291130988}
+\goldrow{diag}{acetic\_acid}{pH}{2.88099743482}
+\goldrow{diag}{acetic\_half}{I}{0.0500259823931}
+\goldrow{diag}{acetic\_half}{T\_K}{298.15}
+\goldrow{diag}{acetic\_half}{aw}{0.997300930971}
+\goldrow{diag}{acetic\_half}{chargeImposed}{1}
+\goldmore{46}
 \end{tutgolden}
 
 \subsection{estimate}

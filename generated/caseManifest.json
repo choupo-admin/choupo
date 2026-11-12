@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1823,
+  "cases": 1825,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 21
@@ -22972,6 +22972,16 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/electrolyte/citricAcid01_speciation": {
+   "application": "choupoProps",
+   "thermo": {
+    "activityModels": [
+     "davies"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/electrolyte/composition01_nacl": {
    "application": "choupoProps",
    "roles": [],
@@ -23298,6 +23308,16 @@
     "activityModels": [
      "davies",
      "pitzerHMW"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/volatileAcids01_acetic_formic": {
+   "application": "choupoProps",
+   "thermo": {
+    "activityModels": [
+     "davies"
     ]
    },
    "roles": [],
@@ -30785,6 +30805,7 @@
     "tutorials/props/curation/curate14_nrtl_butanol_water",
     "tutorials/props/electrolyte/archer01_nacl_cold_to_hot",
     "tutorials/props/electrolyte/bjerrum01_carbonate_pH",
+    "tutorials/props/electrolyte/citricAcid01_speciation",
     "tutorials/props/electrolyte/composition01_nacl",
     "tutorials/props/electrolyte/davies01_band_edge",
     "tutorials/props/electrolyte/edwards01_sour_water_activity",
@@ -30814,6 +30835,7 @@
     "tutorials/props/electrolyte/scaling_ro_brackish",
     "tutorials/props/electrolyte/softener_brackish",
     "tutorials/props/electrolyte/tartaricAcid_acidulation",
+    "tutorials/props/electrolyte/volatileAcids01_acetic_formic",
     "tutorials/props/estimate/estimate_acetone",
     "tutorials/props/estimate/estimate_ethanol_benzene",
     "tutorials/props/estimate/estimate_petroleum_cut",
@@ -32952,11 +32974,13 @@
     "tutorials/batch/electrodialysis/edbatch02_constant_voltage",
     "tutorials/batch/electrodialysis/edbatch03_multiionic_split",
     "tutorials/plant/swro01_campoDalias",
+    "tutorials/props/electrolyte/citricAcid01_speciation",
     "tutorials/props/electrolyte/davies01_band_edge",
     "tutorials/props/electrolyte/edwards01_sour_water_activity",
     "tutorials/props/electrolyte/pitzer_calcite_brine",
     "tutorials/props/electrolyte/pitzer_vs_davies_ro_concentrate",
     "tutorials/props/electrolyte/tartaricAcid_acidulation",
+    "tutorials/props/electrolyte/volatileAcids01_acetic_formic",
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
     "tutorials/steady/distillation/column13_sour_water_stage_identity",
     "tutorials/steady/distillation/stripper01_sour_water",

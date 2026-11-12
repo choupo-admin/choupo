@@ -1,0 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  citricAcid01_speciation -- citric acid, 0.1 mol/kg, titrated with sodium
+  hydroxide at 25 C: the pH and the species distribution H3Cit / H2Cit- / HCit2- /
+  Cit3-, on the triprotic family built in C372 (Goldberg, Kishore & Lennen 2002
+  for pK and dH; Kochergina et al. 2006 for the ion formation enthalpies).
+  A structural illustration: not validated against a measured pH (none in hand).
+\*---------------------------------------------------------------------------*/
+
+application   choupoProps;
+description   "Citric acid 0.1 mol/kg titrated with NaOH (0 to 2.5 equivalents) at 25 C: pH and the H3Cit/H2Cit/HCit/Cit distribution on the citrate family (pK 3.128/4.761/6.396, Goldberg 2002 Table 7.22). A structural illustration, not validated against a measured pH.";
+verbosity     2;

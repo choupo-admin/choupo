@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/Cit.dat -- ONE model species, ONE typed file: the triply charged anion of citric acid.
+
+  hfAq: Kochergina, Volkov, Krutov & Krutova, Russ. J. Phys. Chem. 80 (2006) 899-903, Table 4 (weighted mean of two calorimetric procedures; the species are the hypothetical non-dissociated H2Cit-/HCit2- and Cit3- of the paper's reference state).
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    Cit;
+formula     "C6H5O7-3";
+charge  -3;
+MW { value 189.099; unit g/mol;}
+aqueousThermo
+{
+source "Kochergina, Volkov, Krutov & Krutova, Russ. J. Phys. Chem. 80 (2006) 899-903, Table 4 (weighted mean of two calorimetric procedures; the species are the hypothetical non-dissociated H2Cit-/HCit2- and Cit3- of the paper's reference state)";
+hfAq { value -1528500; unit J/mol;}
+}

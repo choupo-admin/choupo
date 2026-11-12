@@ -289,6 +289,25 @@ The stream carries the SALT (the flowsheet/component basis); the model
 activates its ions from the component's `dissociatesTo` and the ion records
 in `species/`.
 
+
+**Weak organic acids (carboxylic) in aqueous chemistry** (C372, 2026-11-12).
+Families that exist, each a neutral master plus its ions and one ionisation record
+per ion (declare the neutral master, or the fully dissociated ion, as the analytical
+total with `totalsBasis stoichiometric; pH solve;`):
+acetic (`Acetate`, `HAc-formation`), formic (`Formate`, `HFo-formation`, logK and dH
+DERIVED from the NBS rows: theoryGuide `sec:carboxylic-ionisation`), tartaric
+(`H2Tart`/`HTart`/`Tart`), **citric** (`H3Cit`/`H2Cit`/`HCit`/`Cit`; pK 3.128 /
+4.761 / 6.396, Goldberg 2002 Table 7.22; ion hfAq Kochergina 2006), **succinic**
+(`H2Succ`/`HSucc`/`Succ`), **oxalic** (`H2Ox`/`HOx`/`Ox`), **maleic**
+(`H2Male`/`HMale`/`Male`).  The succinate and maleate ions carry NO `hfAq` (no work
+in hand prints one): their speciation is complete, the energy rung of the dissociated
+route refuses by name.  The crystal `citricAcid` carries a formation enthalpy and a
+heat of solution but no Cp or entropy.  **Malic and lactic acids are absent** (and
+malonic, fumaric, glycolic, gluconic, ascorbic, gallic, propionic, butyric and benzoic
+have no ionisation record): no admissible pK source is in the reference library
+yet.  Inventory, readings, consistency checks and the works still missing:
+`docs/design/organic-acids-in-the-catalogue.md`.  Cases: `volatileAcids01_acetic_formic`,
+`citricAcid01_speciation`.
 **The REACTIVE shape** (a speciation network + volatiles, as in the
 brine-CO₂ and sour-water flashes) declares its IONIC rung inside
 `aqueous {}` and the engine serves what its speciation kernel serves:

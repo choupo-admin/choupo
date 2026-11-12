@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/Ox.dat -- ONE model species, ONE typed file: the doubly charged anion of oxalic acid.
+
+  hfAq: Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 23:C, p. 2-93 (HC2O4-, ao: -818.4 kJ/mol, S 149.4 J/mol/K) and p. 2-92 (C2O4--, ao: -825.1 kJ/mol, S 45.6 J/mol/K).
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    Ox;
+formula     "C2O4-2";
+charge  -2;
+MW { value 88.018; unit g/mol;}
+aqueousThermo
+{
+source "Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 23:C, p. 2-93 (HC2O4-, ao: -818.4 kJ/mol, S 149.4 J/mol/K) and p. 2-92 (C2O4--, ao: -825.1 kJ/mol, S 45.6 J/mol/K)";
+hfAq { value -825100; unit J/mol;}
+sAq  { value 45.6; unit J/mol/K;}
+}

@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/H2Cit.dat -- ONE model species, ONE typed file: the singly charged anion of citric acid.
+
+  hfAq: Kochergina, Volkov, Krutov & Krutova, Russ. J. Phys. Chem. 80 (2006) 899-903, Table 4 (weighted mean of two calorimetric procedures; the species are the hypothetical non-dissociated H2Cit-/HCit2- and Cit3- of the paper's reference state).
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    H2Cit;
+formula     "H2C6H5O7-";
+charge  -1;
+MW { value 191.115; unit g/mol;}
+aqueousThermo
+{
+source "Kochergina, Volkov, Krutov & Krutova, Russ. J. Phys. Chem. 80 (2006) 899-903, Table 4 (weighted mean of two calorimetric procedures; the species are the hypothetical non-dissociated H2Cit-/HCit2- and Cit3- of the paper's reference state)";
+hfAq { value -1529700; unit J/mol;}
+}

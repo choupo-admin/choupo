@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/HCit-formation.dat -- the first 2 dissociations of citric acid, written from the neutral master:
+      H3Cit  <=>  HCit + 2 H+
+
+  logK25 and dH are the selected values of Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231, Table 7.22 (Citrate), p. 265 (evaluation grades AAB / AAB / AAB,
+  scale: standard state ideal solution at 1 mol/kg, 298.15 K, I = 0):
+      pK1 = 3.128, pK2 = 4.761, pK3 = 6.396
+      dH1 = 4.07 kJ/mol, dH2 = 2.23 kJ/mol, dH3 = -3.38 kJ/mol
+  This record carries the sum of those steps (the sign flips with the direction written).
+  The enthalpy is the EVALUATED dH_ion of the same table as the pK, not a difference of formation
+  enthalpies: the two kinds of number are kept apart and cross-checked in
+  docs/design/organic-acids-in-the-catalogue.md.  Hand-curated organic chemistry, not PHREEQC.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species HCit; masters ( { ion H3Cit; nu 1; } { ion H; nu -2; } );
+      logK25 -7.889; dH 6300; source "Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231, Table 7.22 (Citrate), p. 265: pK1 = 3.128, pK2 = 4.761, pK3 = 6.396; dH1 = 4.07 kJ/mol, dH2 = 2.23 kJ/mol, dH3 = -3.38 kJ/mol (pK, dH_ion at 298.15 K, I = 0)";

@@ -1,0 +1,48 @@
+/*---------------------------------------------------------------------------*\
+  volatileAcids01_acetic_formic -- six beakers: for each acid, 0.1 mol/kg total
+  carboxylate (the analytical total of the MASTER species, Acetate / Formate)
+  with 0, 0.05 and 0.10 mol/kg sodium.  `totalsBasis stoichiometric` declares
+  these as neutral-molecule feeds (acid, half-neutralised acid, sodium salt), and
+  `pH solve` lets the charge balance, not the user, set the pH -- the same
+  construction as bjerrum01_carbonate_pH.
+
+  WHAT TO LOOK FOR (the numbers are this run's, Davies, 25 C).
+   1. The acid alone: acetic acid pH 2.881 (I = 0.0014), formic acid pH 2.376
+      (I = 0.0045).  The weak-acid hand formula pH = 1/2 (pKa - log c) gives
+      2.88 and 2.37 -- the activity coefficients move the third digit.  Formic
+      acid's equilibrium constant is 10^1.02 = 10 times acetic acid's, and it
+      is the more strongly dissociated, so its beaker carries more ions.
+   2. Half neutralisation (Na = 0.05): pH 4.671 (acetic) and 3.651 (formic),
+      BELOW the records' pKa (4.756, 3.732) by 0.085 and 0.081.  That is not an
+      error: the pH scale is the activity of H+, and at I = 0.05 Davies gives
+      the anion gamma = 0.82, so pH = pKa + log(gamma_anion) = pKa - 0.086.
+      A textbook Henderson-Hasselbalch plot with gamma = 1 would land on the pKa.
+   3. The sodium salt (Na = 0.10): the conjugate-base pH, 8.772 (acetate) and
+      8.260 (formate), differing by roughly half the pKa gap, as the hydrolysis
+      constant Kw/Ka demands.
+
+  No `anchor` rows: no work in hand prints a pH for these solutions.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    { name acetic_acid;      type speciate; activityModel davies;
+      analyticalTotals { Acetate 0.10 mol/kg; } totalsBasis stoichiometric; pH solve;
+      diagSpecies ( HAc Acetate ); output { file acetic_acid.csv; } }
+    { name acetic_half;      type speciate; activityModel davies;
+      analyticalTotals { Acetate 0.10 mol/kg; Na 0.05 mol/kg; } totalsBasis stoichiometric; pH solve;
+      diagSpecies ( HAc Acetate ); output { file acetic_half.csv; } }
+    { name acetic_sodium;    type speciate; activityModel davies;
+      analyticalTotals { Acetate 0.10 mol/kg; Na 0.10 mol/kg; } totalsBasis stoichiometric; pH solve;
+      diagSpecies ( HAc Acetate ); output { file acetic_sodium.csv; } }
+
+    { name formic_acid;      type speciate; activityModel davies;
+      analyticalTotals { Formate 0.10 mol/kg; } totalsBasis stoichiometric; pH solve;
+      diagSpecies ( HFo Formate ); output { file formic_acid.csv; } }
+    { name formic_half;      type speciate; activityModel davies;
+      analyticalTotals { Formate 0.10 mol/kg; Na 0.05 mol/kg; } totalsBasis stoichiometric; pH solve;
+      diagSpecies ( HFo Formate ); output { file formic_half.csv; } }
+    { name formic_sodium;    type speciate; activityModel davies;
+      analyticalTotals { Formate 0.10 mol/kg; Na 0.10 mol/kg; } totalsBasis stoichiometric; pH solve;
+      diagSpecies ( HFo Formate ); output { file formic_sodium.csv; } }
+);

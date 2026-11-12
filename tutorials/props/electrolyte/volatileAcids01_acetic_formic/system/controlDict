@@ -1,0 +1,30 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  volatileAcids01_acetic_formic -- the two simplest volatile carboxylic acids of a
+  wine or a food stream, dissolved in water: pH of the acid alone, at half
+  neutralisation and fully neutralised.
+
+  WHAT THIS CASE IS.  A STRUCTURAL ILLUSTRATION of the two ionisation records
+  that make the acetate and formate families whole (chemistry/HAc-formation.dat,
+  chemistry/HFo-formation.dat -- the second written for this case, C372).  It is
+  NOT validated against a measured pH: no work in hand prints a pH for these
+  solutions, so the case carries no `anchor` rows and says so.  What it does hold
+  is an internal consistency the reader can check by hand: at half
+  neutralisation the pH lands on the pKa of the record (corrected by the Davies
+  activity coefficients), and the acid alone gives the weak-acid pH.
+
+  TARGET: pH and species distribution (HAc/Acetate, HFo/Formate) at 25 C,
+  0.1 mol/kg total acid, Davies activity (I <= 0.1 mol/kg, inside its window).
+
+  SOURCES OF THE CONSTANTS.
+    acetic acid  pKa 4.756, dH -0.41 kJ/mol: Goldberg, Kishore & Lennen, J. Phys.
+                 Chem. Ref. Data 31 (2002) 231 (the record's own citation).  The
+                 NBS rows (Wagman et al. 1982, Table 23:C p. 2-93) reproduce it:
+                 dfG(CH3COO-,ao) -369.31, dfG(CH3COOH,ao) -396.46 kJ/mol give
+                 pKa 4.757 -- two independent routes agree to 0.001.
+    formic acid  pKa 3.732, dH +0.12 kJ/mol (formation sense): DERIVED from the NBS
+                 rows of Table 23:C p. 2-83 (see chemistry/HFo-formation.dat).
+\*---------------------------------------------------------------------------*/
+
+application   choupoProps;
+description   "Acetic and formic acid, 0.1 mol/kg in water at 25 C: pH of the acid alone, at half neutralisation and as the sodium salt, on the ionisation records HAc-formation (Goldberg 2002) and HFo-formation (derived from NBS 1982). A structural illustration, not validated against a measured pH.";
+verbosity     2;

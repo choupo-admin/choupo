@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/HFo-formation.dat -- dissolved molecular FORMIC acid from its masters,
+  the catalogue formation convention (the exact sibling of HAc-formation.dat):
+
+      Formate- + H+  =  HFo(aq)          [HFo = HCOOH(aq)]
+
+  Until this record the formate family was HALF built: species/Formate.dat
+  (C320, NBS Table 23:C) existed but nothing joined it to its acid, so a case
+  declaring `Formate` as a total had an anion with no protonated form and
+  silently computed the pH of a fully dissociated acid.
+
+  logK25 = +pKa = 3.732 and dH = +120 J/mol are DERIVED, not copied from a pKa
+  table, from the two NBS rows that describe the same two species (Wagman et al.
+  1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 23:C, p. 2-83, PDF p. 91):
+
+      HCO2-   formate       ao   dfH -425.55   dfG -351.0   S  92.    kJ/mol, J/mol/K
+      HCO2H   formic acid   ao   dfH -425.43   dfG -372.3   S 163.
+
+  ionisation HCO2H(ao) = HCO2-(ao) + H+ :
+      dG_ion = -351.0 - (-372.3) = +21.3 kJ/mol  ->  pKa = 21300 / (R T ln10) = 3.732
+      dH_ion = -425.55 - (-425.43) = -0.12 kJ/mol   -> formation +0.12 kJ/mol
+  The dH is a difference of two numbers printed to 0.01-0.12 kJ/mol, so it is
+  good to about +/-0.1 kJ/mol: it says "athermal at 25 C", which is all the
+  tables resolve.  (Entropy check, a misread-digit guard: dH - T dS with dS =
+  92 - 163 = -71 J/mol/K gives +21.3 kJ/mol, i.e. the table is self-consistent.)
+
+  SECOND READING, entering no value: the CRC Handbook, 82nd ed., 'Dissociation
+  Constants of Organic Acids and Bases', lists formic acid pKa 3.75 at 25 C
+  (its references are Perrin, Serjeant & Dempsey and others, not tied to the
+  row); the NBS-derived 3.73 is 0.02 below it, inside the spread two evaluated
+  routes show for a weak acid.
+
+  Hand-curated organic chemistry -- NOT from the PHREEQC inorganic import that
+  supplies most of this directory.  No gate pairs a logK with hfAq/sAq for a
+  derived neutral (HFo has no species file, like HAc); the derivation above is
+  the cross-check and is recomputed in docs/design/organic-acids-in-the-catalogue.md.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species HFo; ion "HCOOH"; z 0; masters ( { ion Formate; nu 1; } { ion H; nu 1; } );
+      logK25 3.732; dH 120; source "DERIVED from NBS Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 23:C p. 2-83: dfG(HCO2-,ao) -351.0 and dfG(HCO2H,ao) -372.3 kJ/mol -> pKa 3.732; dH_ion = dfH(HCO2-) - dfH(HCO2H,ao) = -425.55 - (-425.43) = -0.12 kJ/mol; second reading CRC 82nd ed. pKa 3.75 (enters no value)";

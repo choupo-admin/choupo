@@ -1,0 +1,81 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Component: Citric acid, anhydrous crystal (C6H8O7).  MW 192.123 g/mol
+  (C 12.011, H 1.008, O 15.999; Perry's 9th ed. Table 2-2 p. 2-31 prints 192.12).
+
+  The wine / fruit-juice / soft-drink triprotic acid.  A NON-VOLATILE crystalline
+  organic solid (mp 153 C with decomposition, Perry's 9th ed. Table 2-2, p. 2-31):
+  never enters the vapour (K = 0), no Antoine block.  Built on the tartaric-acid
+  pattern (components/tartaricAcid.dat), from the SAME work for the same reason:
+  the crystal datum and the heat of solution come from one study on one material.
+
+  WHAT THIS RECORD CARRIES, AND WHAT IT DELIBERATELY DOES NOT.
+
+    carries   the crystal formation enthalpy (Kochergina, Volkov, Krutov &
+              Krutova, Russ. J. Phys. Chem. 80 (2006) 899-903, Table 4:
+              -dHf(H3Cit, cr) = 1551.7 +/- 1.3 kJ/mol, bomb calorimetry), the
+              crystal density (Perry's, Table 2-2: 1.542 g/cm3 at 20/4 C) and the
+              heat of solution of the pair file parameters/solution/
+              citricAcid-water.dat.
+
+    does NOT  (1) a standard entropy s_298 and (2) any heat capacity.  No work in
+              hand prints them for citric acid; the ThermoML mirror lists the
+              articles that measure the crystal Cp (index.json, 'citric acid':
+              10.1021/acs.jced.5b00989 and 10.1021/acs.jced.8b00064) but a value
+              enters a record only from the ARTICLE, read, and neither article is
+              in hand.  An energy balance that reaches the crystal's or the
+              solution's SENSIBLE heat therefore refuses by name, which is the
+              honest behaviour (CLAUDE.md rule 5), instead of borrowing a proxy.
+              Gibbs-based quantities (K_eq, solubility product) need s_298 and are
+              absent for the same reason.
+
+    ALSO BUILT, in their own homes: the citrate family (species/H3Cit, H2Cit, HCit,
+              Cit and chemistry/{H2Cit,HCit,Cit,H3Cit}-formation) on the tartrate
+              pattern.  The three pK's and dH_ion's are the evaluated selected values
+              of Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231,
+              Table 7.22 p. 265; the ion formation enthalpies are Kochergina's
+              Table 4.  Dissolved, this crystal is the molecular H3Cit of the
+              solution/ pair file (hypothetical non-dissociated), and a case that
+              needs the dissociation declares the master `H3Cit`.
+\*---------------------------------------------------------------------------*/
+
+name        citricAcid;
+formula     C6H8O7;
+MW          192.123;            // kg/kmol  (anhydrous citric acid)
+
+role        nonvolatile;               // crystalline organic acid; never to the vapour (K = 0) --
+                                //   the solid datum routes it on the solid line in liquid
+                                //   streams too (same as tartaric acid, glucose, sucrose)
+dissociation 1;                 // molecular (the citrate ions are species/Cit, HCit, H2Cit, see the header)
+
+solid
+{
+    rho_p   1542.0;             // crystal density [kg/m^3] [Perry's 9th ed., Table 2-2, p. 2-31: 1.542 g/cm3, 20/4 C]
+}
+
+// Solid-phase formation datum (crystalline H3Cit).  PRIMARY: Kochergina, Volkov,
+// Krutov & Krutova, "The Standard Enthalpies of Formation of Citric and Tartaric
+// Acids and Their Dissociation Products in Aqueous Solutions", Russ. J. Phys.
+// Chem. 80 (2006) 899-903, Table 4 (row H3Cit (cr): -dfH = 1551.7 +/- 1.3 kJ/mol;
+// the text of p. 900 gives the same, from the combustion energy of Table 1,
+// -dcU = 1954.1 +/- 1.2 kJ/mol, Washburn-corrected to the standard state).
+standardThermochemistry
+{
+    dHf_298   -1551700;        // J/mol  crystalline [Kochergina et al. 2006, Tab.4: -1551.7 +/- 1.3 kJ/mol]
+    referenceState     pureSolid;
+}
+
+provenance
+{
+    dHf_298
+    {
+        origin        measured;
+        method        "bomb calorimetry of the crystalline acid (combustion energy -dcU = 1954.1 +/- 1.2 kJ/mol), Washburn correction, then Hess's law with dHf(CO2,g) = -393.51 and dHf(H2O,l) = -285.83 kJ/mol";
+        citation      "Kochergina, Volkov, Krutov & Krutova, Russ. J. Phys. Chem. 80 (2006) 899-903, Tables 1 and 4, eq. (5)";
+    }
+    rho_p
+    {
+        origin        literature;
+        method        "tabulated crystal density of the anhydrous acid";
+        citation      "Perry's Chemical Engineers' Handbook, 9th ed., Table 2-2 'Physical Properties of Organic Compounds', p. 2-31, row Citric acid (1.542 g/cm3 at 20/4 C)";
+    }
+}
