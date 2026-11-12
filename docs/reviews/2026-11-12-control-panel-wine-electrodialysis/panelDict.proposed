@@ -24,12 +24,12 @@
 
 recordType   controlPanel;
 
-//  Who wrote THIS version.  `origin engineDraft` = written by --panel-draft;
+//  Who wrote THIS version.  `authored engineDraft` = written by --panel-draft;
 //  `edited` = a person saved it from the GUI.  The draft's own analysis
 //  (why each element is there) is carried in each element's `reason`.
 draft
 {
-    origin    edited;                  // engineDraft | edited
+    authored    edited;                  // engineDraft | edited
     by        "reviewing session (proposal)";
     date      "2026-11-12";
     basedOn   engineDraft;             // what this edit started from
