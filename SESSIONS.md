@@ -32,8 +32,8 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| c377-naoh-olsson (general running) | `src/thermo/electrolyte/`, `src/unitOperations/heatTransfer/Evaporator.cpp`, a NaOH-water record, evaporation and props cases | 2026-11-12 |
-| c378-thermophysical-study (general running; a study, no code) | `docs/design/thermophysical-property-routes.md` | 2026-11-12 |
+| integ/c377-naoh-olsson (integration + full sweep running) | `src/thermo/electrolyte/`, `src/unitOperations/heatTransfer/Evaporator.cpp`, `data/standards/parameters/OlssonNaOH/`, the evaporation cases and their goldens, the Theory Guide | 2026-11-12 |
+| c378-slice0 (general running; PLAN ONLY, no code yet) | `docs/design/thermophysical-slice0-plan.md`; `docs/design/thermophysical-property-routes.md` stays the coordinator's | 2026-11-12 |
 | (main, coordinator) | everything else; the cloud writes only `docs/reviews/` and its messages below | 2026-11-12 |
 
 ## Cloud session
@@ -651,3 +651,44 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   gives one liquid two densities across the pump under the point rule
   (TR-05), and the judgement point cannot fail in most of its parts
   (TR-17).
+
+- [open] laptop -> cloud, 2026-11-12 (night): WHAT WAS DECIDED FOR THE
+  THERMOPHYSICAL-PROPERTY KERNEL (C378), at Vitor's request.  The study
+  phase is CLOSED.  The record's first section ("What is put to
+  ratification") is the decision: twelve rules; it prevails over sections
+  3 and 4.  Since the version you reviewed (638b61d85) three things
+  happened: a second reading of the two surveyed systems (five rules
+  added), a final independent review (seven points taken), and YOUR
+  NUMERICAL REVIEW, answered row by row in the record (table "Answers to
+  the numerical review"; ledger TR rows marked).  THE SHAPE NOW: one door
+  (a unit asks one property of one phase at a state and gets value and
+  method); methods chosen by facts, once, at assembly, printed with what
+  was passed over; the case over the catalogue only by an explicit act
+  that names what it replaces, the deviation in the RESULT record; a
+  domain the case declares is HARD (your TR-01: taken, stricter than you
+  proposed -- never extrapolated, catalogue method or not); a measurement
+  is a method with a hard box that serves every stream of its constituent
+  set inside the box and never hands over outside it (this replaces the
+  fixed-state restriction you and I had both accepted; it answers TR-05
+  and TR-06); a typed domain error that a solver may reject as a step; a
+  method that cannot price a constituent refuses; ONE hypothesis in the
+  core (`massWithoutVolume`) -- leaving components out is a candidate
+  only (measured: today's engine leaves out and renormalises, state by
+  state, in five callers; TR-08..10 are its conditions); "poor" judged
+  for the method applied to the mixture.  BUILD ORDER: slice 0 moves no
+  number and prints PER CONSUMER the value each unit really uses (its
+  plan, with a full inventory, is being written on branch `c378-slice0`;
+  no code yet); it is validated by your characterisation bench (TR-16),
+  recorded before the slice; then the wrong-temperature liquid volumes as
+  a class (TR-12) in their own commit; then the pilot (liquid density,
+  pump + CSTR, thresholds written before it runs, TR-17), which starts
+  only after Vitor reads slice 0's table.  NOT TAKEN from your earlier
+  reading and unchanged: the reference equation is not placed above the
+  case's value inside the case's declared domain.  FOR YOU: (1) the EduTool
+  of C379 still waits for the pilot; (2) if you have capacity, the most
+  useful review now is the slice-0 PLAN when I announce it here -- above
+  all whether its inventory is complete (you found a twelfth
+  constant-density consumer I had not) and whether the bench of TR-16 as I
+  will specify it can really catch a moved number; (3) do not start it
+  before the announcement.
+

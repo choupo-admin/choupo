@@ -31,8 +31,9 @@ the comparative study that names them is kept outside the tracked tree.
 ## What is put to ratification (one page; it prevails over sections 3 and 4 where they differ)
 
 The text below is the proposal after the independent review, the reviewing
-session's reading, a second reading of the two surveyed systems and a
-final independent review (the three amendment blocks follow section 2).  Sections 3 and 4 are its long form.
+session's reading, a second reading of the two surveyed systems, a final
+independent review and the reviewing session's numerical review (the
+amendment blocks and the answers follow section 2).  Sections 3 and 4 are its long form.
 
 **The kernel, in twelve rules.**
 
@@ -71,7 +72,10 @@ final independent review (the three amendment blocks follow section 2).  Section
    hard limit the method refuses at that state.  An evaluation outside a
    hard limit, or at an invalid state (a negative fraction), returns a
    typed DOMAIN ERROR: a solver may reject the step and try another; only
-   a converged or final state outside the domain fails the run.
+   a converged or final state outside the domain fails the run.  A domain
+   the CASE declares (a measurement's box, a declared correlation's range
+   and constituent set) is always hard: the case's value is never
+   extrapolated beyond where the case itself said it stands.
 8. EVERY REFUSAL NAMES ITS REMEDY, of the kind that fits: a missing datum
    and where it would be written; a state outside a declared domain and
    who declared it; an invalid state, which no method remedies.
@@ -100,15 +104,18 @@ one door and the printed table, describing what the engine does today --
 PER CONSUMER, with the value each unit actually uses, so that a unit which
 bypasses the kernel is printed as bypassing it (a pump on 1000 kg/m3 is
 reported as that, never as the kernel's value).
-The CO2 liquid-volume datum is corrected in its own commit with the list
-of cases it moves.  THE PILOT is liquid density only, end to end through a
+The liquid-volume data stored at a temperature other than the one they
+are read at (CO2 and its class: the review found ethane, HCl, N2 and CH4)
+are corrected in their own commit with the list of cases it moves.  THE PILOT is liquid density only, end to end through a
 pump and a CSTR on one stream, held to five demonstrations (water;
 water + ethanol; aqueous NaOH by a record; ONE measured point of an NaOH
 solution of fixed composition, its flow iterated, feeding BOTH units so
 that a student checks the volumetric flow and the residence time by hand;
 NaCl in water + ethanol refused for the right reason), with CO2 dissolved
 in water at 20 and 40 C as a test of selection and refusal that needs no
-new correlation, and it measures its own cost.  It is followed by a judgement:
+new correlation, and it measures its own cost.  Each demonstration's
+PASS threshold is written by the architect BEFORE the pilot runs, from the
+source's stated uncertainty and a dataset the slice did not fit.  It is followed by a judgement:
 continue, change or discard.  NOT in the pilot, and decided one by one
 before any later slice: a local value per unit or sector (when built, a
 boundary between two methods is announced), the acceptance word, tables
@@ -426,6 +433,33 @@ points, six taken, one taken in a stricter form.
    refusal (a `v_inf` enters only if read from a source); the formula
    interpreter for case-declared correlations and every generalisation
    beyond liquid density are postponed.
+
+## Answers to the numerical review (TR-01..TR-21; 2026-11-12, night)
+
+The reviewing session recomputed the record's motivation (it reproduces)
+and attacked the proposal as it stood before the third amendment block
+(`docs/reviews/2026-11-12-thermophysical-routes-proposal/REPORT.md`).  The
+case-over-catalogue order stands INSIDE the domain and constituent set the
+case declares, which the review agrees with; TR-01 is the counterexample
+asked for and changes what happens outside.
+
+| row | ruling |
+|---|---|
+| TR-01 | TAKEN, stricter than proposed: a domain the case declares is HARD.  Outside it the case's correlation or measurement returns a domain error; it is never extrapolated, whether or not a catalogue method exists.  The case widens its domain with a reason, or scopes the declaration. |
+| TR-02 | TAKEN as a condition of the deferred mechanism: a case declaration names its constituent set and basis, as a solution record does. |
+| TR-03 | TAKEN: the deviation is always printed; it is COUNTED only against a stated uncertainty, and where the catalogue method states none the line says "not quantified". |
+| TR-04 | TAKEN: the comparison is part of the result record, not of the console; under an outer driver or a time-integrated run the largest deviation and its state over all passes or instants is kept. |
+| TR-05, TR-06 | ALREADY CHANGED by the third block: a measurement is a method with a hard box, so one liquid has one density across the pump, and applicability is membership of a box, never an equality of floating-point numbers. |
+| TR-07 | TAKEN: within a tier, case-local beats the standards (the tree's precedence); two methods of one tier and one home for the same request are refused at assembly, naming both, until the case selects; a model the case names explicitly is its explicit act and pins the method (it is then labelled by rule 11). |
+| TR-08, TR-09, TR-10 | CONSISTENT with the third block: leaving components out is no longer in the ratified core.  Recorded for its decision: today's selection is state by state, a bound on a macromolecule must be a mass fraction, and the two operations must not both name one component. |
+| TR-11 | TAKEN: `associating` as derived misses 43 of 95 hydrogen-bonding records, so no method may test its ABSENCE, and none tests it at all before a curation pass; rule 11 reads the method's own parameters instead. |
+| TR-12 | TAKEN: the datum read at the wrong temperature is a class, not one record; the correction is widened (first section) and the two refused cryogenic liquids are part of it. |
+| TR-13, TR-20, TR-21 | RECORDED as conditions of their slices: a diffusivity request names solute and medium and its inputs are not a state of one phase; a declared formula's RESULT is dimension-checked as the rate laws are; the vapour's density stays with the case's equation of state -- this kernel is the liquid's. |
+| TR-14 | TAKEN: precedence is by the KIND of method; the quality of the leaves is reported with the share each carries, so a trace leaf does not demote a phase. |
+| TR-15 | TAKEN: resolved once per run when the package is assembled, for every binary; an outer driver's passes share the resolution unless the varied parameter changes which data exist, which is refused. |
+| TR-16 | TAKEN: slice 0 is validated by a characterisation bench (every record and route, the old call against the door, bit for bit, recorded BEFORE the slice), not by witnesses alone. |
+| TR-17 | TAKEN: thresholds are written before the pilot runs (first section). |
+| TR-18, TR-19 | TAKEN as corrections of fact: no record binds the reference equation today, the case selects it; the counts are retaken by slice 0's inventory (a twelfth constant-density consumer among them). |
 
 ## 3. The proposal (revision 2)
 

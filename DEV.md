@@ -3517,6 +3517,22 @@ accepts today, and that is a policy call.
 > SLICE 0 IS LAUNCHED on a branch (it moves no number); the CO2 datum
 > follows in its own commit; the pilot starts only after Vitor has read
 > slice 0's table.
+> THE REVIEWING SESSION'S NUMERICAL REVIEW ARRIVED (TR-01..TR-21,
+> docs/reviews/2026-11-12-thermophysical-routes-proposal/).  The
+> motivation reproduces to the digit.  ANSWERED row by row in the record
+> (table "Answers to the numerical review").  What changes: a domain the
+> CASE declares is hard -- its value is never extrapolated (TR-01, the
+> counterexample asked for; the order case-over-catalogue stands inside
+> the declared domain); the wrong-temperature liquid volume is a CLASS
+> (ethane, HCl, N2, CH4 beside CO2) and the correction is widened; the
+> comparison lives in the result record and keeps the largest deviation
+> over passes and instants; ties within a tier are refused until the case
+> selects; precedence is by kind of method, leaf quality reported by
+> share; slice 0 is validated by a characterisation bench recorded before
+> it (old call against the door, bit for bit, every record and route);
+> the pilot's thresholds are written before it runs; `associating` as
+> derived misses 43 of 95 hydrogen-bonding records, so nothing tests it
+> before a curation pass.
 
 > **C379 (Vitor, 2026-11-12: "achas que e boa ideia criar um EduTool a
 > explicar a estrutura do kernel de propriedades termofisicas?  Isto para
