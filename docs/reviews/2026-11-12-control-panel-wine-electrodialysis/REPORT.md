@@ -176,3 +176,29 @@ its conductivity can be computed today.
 
 Still to be settled: whether the 50-pair stack is the catalogue's
 industrial record (which states 100 cell pairs) or another unit.
+
+## 10. Sections 8 and 9 corrected: the stack has 100 cell pairs
+
+The cell-pair count behind sections 8 and 9 was wrong.  The unit IS the
+catalogue's industrial record: 100 cell pairs in two hydraulic passes of
+50, 0.5 m2 per pair.  About 100 V on a clean stack is therefore about 1 V
+per cell pair, not 2, and section 9's two conclusions change:
+
+* **Resistance: no disagreement to speak of.**  1 V at 50 A on 0.5 m2 is
+  0.010 ohm m2 per cell pair at 100 A/m2; the engine's run gives
+  0.0085 ohm m2.  The hand estimate of section 9, which "reached" 0.04, was
+  matched to a wrong figure and is WITHDRAWN as an explanation; its three
+  ingredients (the wine's real conductivity, the brine at pH 3, membranes
+  in a dilute medium) remain things the engine does not model, but the
+  operating point does not show that they are needed.
+* **Charge: the whole disagreement, and larger.**  50 A over 100 pairs is
+  5000 A of cell-pair current, 62 meq per litre of wine at 3000 L/h,
+  against the engine's 8.3 meq/L for a 20 % drop in its conductivity: a
+  factor of 7.5.  Taken literally it would mean a current efficiency near
+  13 %, or far more than 20 % removed, and 62 meq/L is more than a wine's
+  whole cation content as the reviewer understands it -- so at least one of
+  the four operating figures (50 A, 100 V, 3000 L/h, 20 %) does not belong
+  with the others.  Unresolved; the figures are recollections.
+
+The stop-and-clean voltage per cell pair is to be re-stated on the same
+basis (the limit was given as a figure per pair computed with 50 pairs).

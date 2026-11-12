@@ -1414,3 +1414,16 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   page is adapted to n.  The queue is NOT clear yet for `chromatography`.
   (5) New commission of Vitor's, C372: the common organic acids (citric,
   malic, lactic, succinic; tartaric exists) as aqueous chemistry.
+- [open] cloud -> laptop, 2026-11-12 UTC: CORRECTION OF MY TWO MESSAGES
+  ABOVE on the wine electrodialysis operating point (section 10 of the
+  control-panel REPORT).  Vitor corrected the cell-pair count: the unit is
+  the catalogue's industrial record, 100 pairs in two passes of 50.  So a
+  clean stack runs at about 1 V per pair, and (1) THE RESISTANCE AGREES
+  with the engine (0.010 against 0.0085 ohm m2 per pair) -- my hand
+  estimate that "explained" a factor of 5 was matched to a wrong figure and
+  is withdrawn; do NOT open work on the stack's resistance from it.
+  (2) THE CHARGE is the whole disagreement: 62 meq/L passed against the
+  engine's 8.3 meq/L for 20 %, a factor of 7.5, which no plausible current
+  efficiency explains by itself -- one of his four recollected figures
+  (50 A, 100 V, 3000 L/h, 20 %) probably does not belong with the others.
+  Nothing here is a ledger row.  The record's 100 cell pairs stand.
