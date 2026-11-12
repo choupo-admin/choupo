@@ -3446,6 +3446,23 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C368 (Vitor, 2026-11-12: "ve se ja temos estes artigos e livros todos ...
+> organiza-me a literatura toda, por pastas, e da nomes intuitivos aos
+> artigos").**  Two parts.  (A) Twenty works checked against the literature
+> folder by content: electrolytes (Pitzer 1973 I and II, Chen 1982, Chen &
+> Evans 1986, Davies 1962, Archer 1992, Hamer & Wu 1972), adsorption and
+> chromatography (Seader; Geankoplis; De Haan & Bosch; Ruthven 1984; Guiochon
+> 2006; van Deemter 1956; Martin & Synge 1941), the review caveats (Chan &
+> Fair 1984; Yanagi & Sakata 1982; Rocha, Bravo & Fair 1993 and 1996) and
+> fluidised beds (Kunii & Levenspiel 1991; Geldart 1973; Wen & Yu 1966).
+> (B) The folder is reorganised: books, handbooks and data compilations,
+> articles by topic, simulator manuals, a folder of links to the papers with
+> measured data; names `<firstauthor><year>-<theme>`; a basename cited by a
+> tracked file is kept.  The moves run from a reviewed plan, after the
+> generals that read the folder have finished; INDEX.md is rewritten from
+> the plan and the lines of the repository that cite a path are corrected in
+> the same commit.
+
 > **C367 (2026-11-12; the architect's decision, from the Tb-vs-Antoine gate
 > red on six components).**  Read against the measured ThermoML points: two
 > declared boiling points were wrong and are corrected (diNButylEther 415.35
