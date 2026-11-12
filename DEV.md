@@ -3477,20 +3477,21 @@ accepts today, and that is a policy call.
 > readable to it.  What Vitor said does NOT worry him: the drawn flowsheet
 > editor, compound count, interoperability.
 
-> **C334 (Vitor, 2026-11-12: "vou estender o severo ate 29 %").**  The severe
-> band of PAIR fits widens: bubble pressure 5 / 10 / 29 % (was 20), bubble
-> temperature 1 / 2 / 8 K (was 4; 8 K is the Clausius-Clapeyron equivalent of
-> 29 % near 350 K, and the old 4 K was stricter than the old 20 %).  The
-> architect's condition, same commit: a severe fit is promoted only if it
-> BEATS THE IDEAL MIXTURE on its own kept points (both maxima written in the
-> record), because "better than nothing" is the only reason to ship a severe
-> pair and it must be measured, not assumed.  NOT widened: pure-component
-> vapour pressure and liquid density (a 29 % error there has no excuse: the
-> forms fit to a few per cent), the electrolyte scale (2 / 5 / 10 %).
-> Transport (viscosity, conductivity) may follow: correlations of that kind
-> carry 20-30 % anyway; decided when C327 lands.  Reading for a user: severe
-> means screening and teaching, never column design; the engine says SEVERE
-> on every load.
+> **C334 (Vitor, 2026-11-12: "vou estender o severo ate 29 %"; AMENDED the same
+> hour).**  The architect first agreed for pair fits (29 % / 8 K) and then
+> withdrew that part on the cloud session's argument, which is the better
+> physics: the limit belongs to the PROPERTY, by how well it is measured and
+> how hard the design leans on it.  Decided, one table for every tool:
+> vapour pressure, liquid density, liquid Cp, bubble pressure: 5 / 10 / 20 %,
+> refused above (an error there goes straight into the boiling point and the
+> relative volatility); bubble temperature of a pair: 1 / 2 / 4 K; Henry
+> constants, gamma at infinite dilution, viscosity, thermal conductivity,
+> diffusivity: 10 / 20 / 30 %, refused above (laboratories disagree by 10-30 %
+> there, and transfer coefficients depend on them with fractional exponents).
+> Kept from the first version: a SEVERE pair fit is promoted only if it beats
+> the ideal mixture on its own kept points, both maxima written.  Owners: the
+> cloud applies the wide band to Henry (C321), the laptop to transport (C327)
+> and keeps the pair limits as they are.
 
 > **C333 (Vitor, 2026-11-12: "estas a descartar ajustes severos entre 10 % e
 > 20 %, mas esses sao para ficar!  So acima de 20 % e que se descartam!").**
