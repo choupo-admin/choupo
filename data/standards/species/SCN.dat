@@ -15,7 +15,7 @@ charge  -1;
 MW { value 58.078; unit g/mol;}
 aqueousThermo
 {
-source "NBS = Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 23:C, p. 2-92 (PDF p. 100), row SCN- thiocyanate ion ao ## CRC = CRC Handbook, Thermodynamic Properties of Aqueous Systems, p. 5-86 (TeamLRN_5_1_CODATA_KEY_VALUES_FOR_THERMO.pdf), row SCN- ## hfAq [kJ/mol] chosen 76.44 (NBS): NBS 76.44, CRC 76.4 ## sAq [J/mol/K] chosen 144.3 (NBS): NBS 144.3, CRC 144.3 ## cpAq [J/mol/K] chosen -40.2 (NBS): NBS -40.2, CRC -40.2";
+source "NBS = Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 23:C, p. 2-92 (PDF p. 100), row SCN- thiocyanate ion ao ## second reading, enters no value -- the NBS table as reprinted, read via CRC = CRC Handbook, Thermodynamic Properties of Aqueous Systems, p. 5-86 (TeamLRN_5_1_CODATA_KEY_VALUES_FOR_THERMO.pdf), row SCN- ## hfAq [kJ/mol] chosen 76.44 (NBS): NBS 76.44, CRC 76.4 ## sAq [J/mol/K] chosen 144.3 (NBS): NBS 144.3, CRC 144.3 ## cpAq [J/mol/K] chosen -40.2 (NBS): NBS -40.2, CRC -40.2";
 hfAq { value 76440; unit J/mol;}
 sAq  { value 144.3;  unit J/mol/K;}
 cpAq { value -40.2; unit J/mol/K;}

@@ -15,7 +15,7 @@ charge  +1;
 MW { value 107.868; unit g/mol;}
 aqueousThermo
 {
-source "NBS = Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 37:Ag, p. 2-160 (PDF p. 168), row Ag+ ao ## CRC = CRC Handbook, Thermodynamic Properties of Aqueous Systems, p. 5-85 (TeamLRN_5_1_CODATA_KEY_VALUES_FOR_THERMO.pdf), row Ag+ ## CODATA = CODATA Key Values for Thermodynamics (Cox, Wagman & Medvedev 1989), p. 5-1 (TeamLRN_5_1_CODATA_KEY_VALUES_FOR_THERMO.pdf), row Ag+ aq, the 5-page Codata-key-values-for-thermodynamics.pdf reads the same ## hfAq [kJ/mol] chosen 105.79 (CODATA): NBS 105.579, CRC 105.6, CODATA 105.79 ## sAq [J/mol/K] chosen 73.45 (CODATA): NBS 72.68, CRC 72.7, CODATA 73.45 ## cpAq [J/mol/K] chosen 21.8 (NBS): NBS 21.8, CRC 21.8";
+source "NBS = Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 37:Ag, p. 2-160 (PDF p. 168), row Ag+ ao ## second reading, enters no value -- the NBS table as reprinted, read via CRC = CRC Handbook, Thermodynamic Properties of Aqueous Systems, p. 5-85 (TeamLRN_5_1_CODATA_KEY_VALUES_FOR_THERMO.pdf), row Ag+ ## CODATA = CODATA Key Values for Thermodynamics (Cox, Wagman & Medvedev 1989), p. 5-1 (TeamLRN_5_1_CODATA_KEY_VALUES_FOR_THERMO.pdf), row Ag+ aq, the 5-page Codata-key-values-for-thermodynamics.pdf reads the same ## hfAq [kJ/mol] chosen 105.79 (CODATA): NBS 105.579, CRC 105.6, CODATA 105.79 ## sAq [J/mol/K] chosen 73.45 (CODATA): NBS 72.68, CRC 72.7, CODATA 73.45 ## cpAq [J/mol/K] chosen 21.8 (NBS): NBS 21.8, CRC 21.8";
 hfAq { value 105790; unit J/mol;}
 sAq  { value 73.45;  unit J/mol/K;}
 cpAq { value 21.8; unit J/mol/K;}

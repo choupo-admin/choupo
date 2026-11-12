@@ -45,7 +45,7 @@
   WHAT THE RUN ACTUALLY SAYS (recorded, not predicted -- read `expected`):
 
     furnace, adiabatic          1515.34 K
-      S2   10.42 %      S8   9.4e-14      <- sulfur vapour is the DIMER here
+      S2   10.43 %      S8   9.4e-14      <- sulfur vapour is the DIMER here
       H2S   3.91 %      SO2   3.75 %      ratio 1.04
       H2    2.85 %      CO    0.80 %      <- thermal cracking of H2S, which
                                              is why the ratio is not 2

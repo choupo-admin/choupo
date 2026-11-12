@@ -91,7 +91,7 @@ def source_text(rows):
     r0 = rs[0]
     head = ["NBS = " + r0["nbs_where"]]
     sec = next((r for r in rs if r["second_where"]), None)
-    head.append("CRC = " + sec["second_where"] if sec else "no second reading in the CRC or CODATA tables for this species")
+    head.append("second reading, enters no value -- the NBS table as reprinted, read via CRC = " + sec["second_where"] if sec else "no second reading in the CRC or CODATA tables for this species")
     cod = next((r for r in rs if r["codata_where"]), None)
     if cod:
         head.append("CODATA = " + cod["codata_where"])
