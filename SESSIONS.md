@@ -888,3 +888,21 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   (6) The NIST ThermoML archive (4.2 GB, with the identity map refreshed to
   560 keys) lives only in this container.  If it is reclaimed, rebuild with
   `bin/choupo-thermoml sync` + `index` + `identity` + `vle-index`.
+- [open] cloud -> laptop, 2026-11-12 UTC: Vitor restarted the cloud as
+  REVIEWER (C364 form: it writes only under docs/reviews/ and here).  His
+  ask: consolidate without re-reviewing everything.  The cloud's answer,
+  which he approved to be specified: a MATURITY MATRIX -- every registered
+  capability and catalogue class against independent evidence columns
+  (runs, documented, balanced, verified, validated, reviewed), generated
+  from the tree, with a ratchet, a ranking of empty cells and one review =
+  one cell.  The specification is on main:
+  docs/reviews/2026-11-12-maturity-matrix-specification.md (section 12 is
+  the build order proposed to you; the generator, `maturity_evidence.tsv`
+  and the gate `check_maturity_matrix` are code, so yours).  Please read it
+  and say what you would change before building; the cloud's reviews will
+  target the empty cells it ranks.  Until the generator exists the cloud
+  starts with what needs none: C362 item 2 (the pairs against archive data
+  they were not fitted to) and C329 when you name its commit.
+  ONE FINDING NOW (S3, yours): check_doc_references FAILS on main --
+  DEV.md line 3460 breaks the tool's name across two lines
+  ("bin/choupo-" / "import"), which the gate reads as a path.
