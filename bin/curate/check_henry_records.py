@@ -57,7 +57,8 @@ def field(t, key):
 # coefficient edited, the grade edited down, a refused fit dressed as
 # promoted, a single-laboratory record carrying discarded points -- C321 part
 # 2 amended: a point is an outlier only against another laboratory -- and a
-# > 20 % fit dressed as severe): each
+# > 30 % fit dressed as severe, C336 class B) -- and one built POSITIVE, a
+# 25 % fit graded severe, which must be accepted: each
 # must be refused, or the arm cannot see what it claims.
 # NOT CHECKED: the loader does not VOICE a Henry record's fitGrade or its
 # autoPromoted status (src/thermo/henrysLaw/ reads neither; see DEV.md 4c
@@ -198,10 +199,17 @@ def check_organic_records():
             bad.append("a single-laboratory record carrying discarded points")
         t5 = re.sub(r"^(\s*fitGrade\s+)\w+;", r"\1severe;", text, flags=re.M)
         t5 = re.sub(r"^\s*fitGradeCap.*\n", "", t5, flags=re.M)
-        r5 = dict(res, grade="refused", grade_in="refused", maxRel_pct=24.0, caps=[],
-                  why="max relative error 24.00 % above 20 %")
+        r5 = dict(res, grade="refused", grade_in="refused", maxRel_pct=35.0, caps=[],
+                  why="max relative error 35.00 % above 30 %")
         if not organic_compare(t5, r5, c, decl, fp, True, name):
-            bad.append("a > 20 % fit dressed as severe")
+            bad.append("a > 30 % fit dressed as severe (C336 class B)")
+        #  and the POSITIVE: a 25 % fit is severe under class (B) and is
+        #  ACCEPTED in the catalogue (C336; Vitor's ruling of 2026-11-12).
+        t6 = re.sub(r"^(\s*fitGradeMaxRelativeError_pct\s+)\S+;", r"\g<1>25.0000;", t5, flags=re.M)
+        r6 = dict(res, grade="severe", grade_in="severe", maxRel_pct=25.0, caps=[])
+        e6 = organic_compare(t6, r6, c, decl, fp, True, name)
+        if e6:
+            bad.append("a 25 % fit graded severe was NOT accepted (C336 class B): " + e6[0])
         r3 = dict(res, grade="refused", why="built negative")
         if not organic_compare(text, r3, c, decl, fp, True, name):
             bad.append("a refused fit dressed as promoted")
@@ -292,7 +300,7 @@ def main() -> int:
           f"({sum(len(v) for v in rows.values())} M/L rows, no Q or E row); {org_n} organic-solvent "
           f"Henry records ({org_n - org_local} in the catalogue, {org_local} case-local) refitted "
           f"from their {org_cases} ThermoML cases equal their fit and grade "
-          f"(5 built negatives refused; one laboratory, no point discarded; NOT CHECKED: the values of the thermo-library records, "
+          f"(5 built negatives refused, a 25 % severe accepted (C336 class B); one laboratory, no point discarded; NOT CHECKED: the values of the thermo-library records, "
           f"and the voicing of a Henry fitGrade, which no loader does)")
     return 0
 

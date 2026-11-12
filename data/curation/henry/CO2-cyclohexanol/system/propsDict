@@ -50,12 +50,10 @@
   4 points of 1 laboratory(ies); 4 kept,
   0 discarded after the least-squares stage (> 20 %):
   ONE laboratory: no point was discarded (C321 part 2 amended).
-  THE SERIES DOES NOT FOLLOW VAN'T HOFF within 5 %: the two-parameter
-  form misses its own measurements by up to 5.27 %.
   H_ref = 2.30429e+07 Pa at 298.15 K, enthalpy = -5435 J/mol;
   kept span 303.8-392 K; max relative error
   5.2716 % (least squares 5.4889 %); in-sample
-  grade warning.
+  grade clean, CAPPED to warning (singleLaboratory).
   PROMOTED into data/standards/parameters/Henry/.
   @@RESULT-END@@
 

@@ -12,9 +12,9 @@
   least squares then minimax on the relative residual of H; points above
   20 % after the least-squares stage discarded by name (0 here).
   6 kept points, 277.35-328.15 K; max relative error
-  19.03 % in-sample (graded 5 / 10 / 20 %).
+  19.03 % in-sample (graded 10 / 20 / 30 %, C336 class B).
   ONE laboratory: no point discarded (C321 part 2 amended); the series does not
-  follow van't Hoff within 5 % -- it misses its own points by up to 19.03 %.
+  follow van't Hoff within 10 % -- it misses its own points by up to 19.03 %.
   Regressed by Choupo, NOT read by a human; the archive's transcription has
   not been read back against the articles.
 
@@ -45,7 +45,7 @@ provenance
     method        "van't Hoff fit, least squares then minimax on H_model/H - 1, bin/curate/henry_organic.py";
     CAS           7664-41-7;
     fittedInCase  "data/curation/henry/NH3-ethanol";
-    fitGrade      severe;   // DEV.md 4c C285: max |H_model - H|/H over the kept points, graded 5 / 10 / 20 %
+    fitGrade      warning;   // DEV.md 4c C285: max |H_model - H|/H over the kept points, graded 10 / 20 / 30 % (C336 class B)
     fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
     fitGradeMaxRelativeError_pct 19.0299;
     pointsKept    6;

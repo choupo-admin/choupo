@@ -50,13 +50,13 @@
   6 points of 1 laboratory(ies); 6 kept,
   0 discarded after the least-squares stage (> 20 %):
   ONE laboratory: no point was discarded (C321 part 2 amended).
-  THE SERIES DOES NOT FOLLOW VAN'T HOFF within 5 %: the two-parameter
+  THE SERIES DOES NOT FOLLOW VAN'T HOFF within 10 %: the two-parameter
   form misses its own measurements by up to 19.03 %.
   H_ref = 6.31930e+05 Pa at 298.15 K, enthalpy = -31373 J/mol;
   kept span 277.35-328.15 K; max relative error
   19.0299 % (least squares 20.9390 %); in-sample
-  grade severe.
-  PROMOTED into data/standards/parameters/Henry/ with a SEVERE grade (C285).
+  grade warning.
+  PROMOTED into data/standards/parameters/Henry/.
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The constant is the infinite-dilution H_xp at the
