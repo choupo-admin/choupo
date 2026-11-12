@@ -3740,6 +3740,25 @@ accepts today, and that is a policy call.
 > deliberate choice, and the danger named is the silence, which the
 > printed deviation removes.
 
+> **C378, A READING WHILE THE DOOR IS BUILT (2026-11-12, night): the
+> density model for electrolyte solutions now in the literature folder,
+> put against rule 9.**  Laliberte & Cooper (J. Chem. Eng. Data 49 (2004)
+> 1141) give an apparent specific volume PER ELECTROLYTE (59 of them) as a
+> function of temperature and of the total solute mass fraction (their eq
+> 10), and add the apparent volumes to water's (eq 6); on 29 systems of
+> two electrolytes, one of three and one of five the residual has a
+> standard deviation of 1.39 kg/m3 (pp. 1148, 1150), against 2.75 when
+> each electrolyte ignores the others (eq 9).  CONSEQUENCE FOR THE DESIGN:
+> it is a named published rule for several salts, so rule 9 admits it; but
+> its parameters belong to SALTS, not to ions, so for one ion inventory
+> the answer depends on how the ions are paired into salts -- the
+> invariance test of rule 9 does not hold by construction.  It is
+> therefore admissible only with a pairing rule that is declared,
+> deterministic and printed (or with the salts as the case fed them, said
+> so), and the size of the non-invariance is to be MEASURED on NaCl + KNO3
+> against NaNO3 + KCl with the paper's own parameters before the
+> electrolyte-density slice is designed.  Nothing built.
+
 > **C378 SLICE 0, STEP 1 LANDED (2026-11-12, night): THE CHARACTERISATION
 > BENCH.**  `choupoProps --property-route-bench` (a flag, not an
 > operation) evaluates every liquid-property route the kernel has today --
