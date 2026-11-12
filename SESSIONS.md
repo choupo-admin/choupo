@@ -1121,3 +1121,59 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   is being built now (25 C only, because of EL-01); three more are approved
   by him and follow one at a time -- isotherms from laboratory data, batch
   adsorption in a stirred tank, chromatography peaks and resolution.
+- [open] cloud -> laptop, 2026-11-12 UTC: EDUTOOL READY ON A BRANCH for
+  your review and landing: `edutool/adsorption-isotherms`, commit
+  044f9e7571 (one commit; scope approved by Vitor; it supports his course
+  unit on adsorption).  Id `adsorption-isotherms`, placed before
+  `breakthrough`.  GUI and guides only.  WHAT IT IS: laboratory (c, q)
+  points -- an example or the student's own pasted data -- fitted by the
+  linear, Langmuir and Freundlich isotherms, the classical straight-line
+  fits BESIDE a direct least-squares fit so the student sees they give
+  different parameters; residual plots, standard errors, a diagnostic of
+  whether the data span can tell the models apart, the range outside the
+  data shaded as "not a prediction", and the single-stage batch balance as
+  an operating line.  THE ENGINE IS NOT USED, and the page says so: the
+  engine's isotherms are `henry` and `langmuir` in gas partial pressure,
+  its isotherm fit takes a pressure column, and there is no Freundlich --
+  so every number is the page's arithmetic (badge `page`).  This departs
+  from the credo's "no physics in TypeScript"; it is recorded in
+  docs/design/adsorption-isotherms-from-laboratory-data.md with a proposal
+  for the engine (a concentration basis, a `freundlich` model, a
+  concentration column in the fit) -- yours and Vitor's to decide.  The
+  three example sets are SYNTHETIC and labelled (no table is copied from a
+  textbook).  VALIDATED by me on the branch: typecheck clean; its 37 tests
+  pass (parameters recovered from noise-free data to 1e-8, straight-line
+  fits against a hand calculation, standard errors against an independent
+  Jacobian, the paste parser's refusals, the batch balance by hand);
+  screenshots at 390 px read by eye.  Reported by the builder, not re-run
+  by me: the lesson gates OK; `bin/runTests --gui` PASS 46 / FAIL 1, the
+  one failure (check_origin_vocabulary on a sentence of the design note)
+  fixed and that gate re-run, the suite not repeated.  NOT validated: any
+  comparison with measured isotherms (none is shipped); a rebase on
+  today's main.  It adds `sec:adsorption-isotherm-fitting` to the Theory
+  Guide's adsorption chapter and rebuilds both PDFs, so it will conflict
+  with any guide rebuild of yours: regenerate, do not merge the PDFs.
+  NEXT from the cloud, already approved by Vitor: `electrolyte-models`
+  (building), then batch adsorption in a stirred tank, then chromatography.
+- [open] cloud -> laptop, 2026-11-12 UTC: A RULING BY VITOR ON THE
+  LITERATURE -- please record it.  The books and articles are many and sit
+  in his literature folder on your side; the cloud cannot read them.  So:
+  EVERYTHING THAT NEEDS THE LITERATURE IS YOURS.  What that means in
+  practice: (1) each EduTool branch the cloud announces carries, in its
+  design note, a table "to check against the source" -- one row per
+  equation, constant or number the page states from a published work, with
+  the work and where it sits in the page; the cloud writes those from
+  memory of the published forms and marks them unchecked; YOU check each
+  row against the file when you review the page, and correct it in the
+  integration.  (2) the reviews' own caveats of this kind are yours too:
+  the Chan-Fair liquid-side term and the measured points of Yanagi and
+  Sakata (review of C329), the Rocha-Bravo-Fair equations, and Archer's
+  NaCl values behind EL-01.  (3) work that IS the literature -- filling the
+  Pitzer catalogue's gaps, temperature functions, measured isotherms as
+  page examples -- is yours from the start.  Of the twenty works of C368,
+  the page builders most need: Pitzer and Mayorga (1973) and Chen (1982)
+  for `electrolyte-models`; Ruthven (1984) and the adsorption chapter of
+  Seader for `adsorption-isotherms` and `batch-adsorption`; van Deemter
+  (1956) for the chromatography page (Guiochon 2006 is still missing).  The
+  branch `edutool/adsorption-isotherms` already announced has no such table
+  yet: its three isotherm forms and the two linearisations are the rows.
