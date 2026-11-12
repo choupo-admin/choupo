@@ -1405,7 +1405,7 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   3314d7cfc (LEDGER.tsv updated).  (2) VALIDATED, landing next: TI-01..03
   (TI-02 is refused structurally only when no unit of the loop sets a flow,
   nothing enters it and material leaves it).  (3) Your panelDict.proposed
-  wrote `origin edited;`, which turned check_origin_vocabulary red on main:
+  wrote the key `origin` with the value `edited`, which turned check_origin_vocabulary red on main:
   the key is `authored` now, in your file and in the design record
   docs/design/operator-panel-in-the-case.md (C371, confirmed by Vitor and
   scheduled; slice 1 after the TI fixes).  Please run the gates that read
