@@ -441,10 +441,10 @@ students' approved files are the ground truth: **do not regenerate the case.**
   absorber ports ....... src/unitOperations/separation/Absorber.cpp:70,99,282-289
   shortcut KPIs ........ src/unitOperations/distillation/ShortcutColumn.cpp:305-316
   turbine keys ......... src/unitOperations/rotating/Turbine.cpp:78-86 (as read by the pressure-pack general)
-  tearStreams .......... src/unitOperations/flowsheet/Flowsheet.cpp:339
-  ports in/inputs/outputs src/unitOperations/flowsheet/Flowsheet.cpp:832,1075
+  tearStreams .......... src/unitOperations/flowsheet/Flowsheet.cpp:341
+  ports in/inputs/outputs src/unitOperations/flowsheet/Flowsheet.cpp:834,1075
   -init0 ............... src/applications/choupoSolve/main.cpp:156,209,536
-  material forms ....... src/streams/StreamStateIO.cpp:1052-1086
+  material forms ....... src/streams/StreamStateIO.cpp:1069-1103
   two-variable rule .... docs/ai/stream-state.md §2; gate check_overspecified_stream
   heater takes Q only .. src/unitOperations/heatTransfer/Heater.cpp:70-79
   NRTL catalogue pairs . data/standards/parameters/NRTL/ (9 files, 2026-11-01)
@@ -456,6 +456,6 @@ students' approved files are the ground truth: **do not regenerate the case.**
   §10 apply a reply .... gui/src/agent/clipboardContext.ts:57 (FILE_RE needs END FILE), :138-166 (applyEdits:
                          replace or add into rawFiles/extraFiles, parse-validated dicts, no delete);
                          gui/src/ui/ClipboardBridge.tsx:80-93 (changed files applied, then Complete 0/ hint)
-  §10 ORPHAN / MISSING . src/unitOperations/flowsheet/Flowsheet.cpp:2403-2432,2464 (0/ completeness refusal)
+  §10 ORPHAN / MISSING . src/unitOperations/flowsheet/Flowsheet.cpp:2412-2441,2464 (0/ completeness refusal)
   §10 init0 no overwrite src/applications/choupoSolve/main.cpp:537-538; gui/src/case/completeZero.ts:20-28
 -->

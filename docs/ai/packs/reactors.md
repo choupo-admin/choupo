@@ -365,6 +365,6 @@ kinetic 52 % is below it; the irreversible law has no knowledge of this ceiling,
  rate laws: thermo/reaction/RateLaw.cpp:40-130 (Arrhenius/LHHW keys, basis concentration|activity, A_rev, reversible, adsorption), 135-170 (net rate);
    Reaction.cpp:45 (A exp(-Ea/RT)), 245-275 (order required), 202-237 (detailed balance refusal);
    ExpressionRate.cpp:112-166 (no order/reversible; source, basis, rateOf required), 202-215 (parameters), 287-293 (definitions), 374-385 (rate/forward/reverse), 431 (rateConstant), 460 (validity).
- expression symbols/units: docs/ai/unit-ops.md section "A RATE LAW WRITTEN IN THE CASE" cross-checked by the run; unit table src/core/Units.cpp:257-279.
+ expression symbols/units: docs/ai/unit-ops.md section "A RATE LAW WRITTEN IN THE CASE" cross-checked by the run; unit table src/core/Units.cpp:265-287.
  ports/in/outputs: the brief; flowsheet usage in the four run cases.
 -->

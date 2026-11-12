@@ -130,8 +130,11 @@ batch plan, sizing, clean utilities, costing and economics on top
   dried by a `unit:solidDryer` with its own air heater.
 * Checks: each as a rated machine (`kind:batchVolume`, `kind:massRate`,
   `kind:packagingLine`).
-* Missing: blend uniformity and segregation, milled particle size, coating
-  film thickness and weight gain kinetics.
+* A size-reducing mill with a particle-size distribution exists as
+  `unit:mill` (a breakage population balance on the case's `key:sizeGrid`,
+  see section 2); the tablet plant's mill box is still a `unit:splitter`.
+* Missing: blend uniformity and segregation, coating film thickness and
+  weight gain kinetics.
 * Witness: `tutorials/batch/plant/apalutamide01_tablets`.
 
 ### Clean utilities: HVAC air changes and purified water (cleanroom air, AHU, PW generator)
@@ -273,6 +276,8 @@ batch plan, sizing, clean utilities, costing and economics on top
 | Heat exchange (heater, cooler, exchanger, condenser, pinch) | duty, outlet T, area when sized; pinch targets | `unit:heater`, `unit:heatExchanger` (`model BellDelaware;` rates the shell side by the Bell-Delaware method), `op:bellDelawareBench`, `unit:phaseChanger`, `pass:pinchPass` | `tutorials/steady/heat/heatExchanger01_water_water`, `tutorials/steady/heat/heatExchanger04_bell_delaware_rating`, `tutorials/steady/heat/pinch01_four_stream_classic` |
 | Pumps, compressors, pipes (pressure drop, hydraulics) | shaft work, outlet state, friction loss | `unit:pump`, `unit:compressor`, `unit:pipe` (`pack:pressure`) | `tutorials/steady/hydraulics/pipe01_water_line` |
 | Gas-solid (cyclone, bag filter, conveying) | collection efficiency, pressure drop | `unit:cyclone`, `unit:bagFilter`, `unit:pneumaticConveyor` | `tutorials/steady/gas-solid/bagFilter01_dust` |
+| Particle-size distribution on one grid (sieve classes, PSD, d50, d80, Sauter mean, specific surface, blending powders) | every inlet's distribution put on the case's declared geometric grid (a fitted law integrated, a sieve table re-binned, mass exact and printed), blends class by class, d10/d50/d80/d90, Sauter d32 and S_v published per stream.  Checks: a grid leaving > 1 % of a powder above its top refused; two different grids refused.  Missing: one distribution per solid species (a multi-mineral feed is ONE material); the time-integrated binaries | `key:sizeGrid`, `unit:mixer` | `tutorials/steady/solids/psd01_grid_and_moments` |
+| Size reduction (milling, grinding, comminution, ball mill, Bond work index, breakage) | a breakage population balance on the size grid: selection function `austin`, `herbstFuerstenau` (energy-specific) or `vogelPeukert` (impact, with a threshold), breakage function `austin`, plug flow or perfectly mixed; product distribution, T rise from the shaft work, Bond's energy printed beside.  Checks: mass closure per class printed; a feed off the grid, a rate law without a residence time, two energy specs refused.  Missing: classification and closed circuits (screen, hydrocyclone: C361 slice 3), residence-time distributions between the two limits, mill sizing and cost | `unit:mill` | `tutorials/steady/solids/mill01_limestone_herbstFuerstenau`, `tutorials/steady/solids/mill02_bond_crosscheck` |
 | Membranes (RO, NF, UF, diafiltration) | solution-diffusion and pore transport, polarisation | `unit:spiralWoundModule`, `batchUnit:batchDiafilter` | `tutorials/steady/membranes/membrane01_RO_NaCl_seawater` |
 | Electrodialysis (ED stack, limiting current) | limiting current, multi-ion transport | `unit:electrodialysisStack`, `batchUnit:batchElectrodialysis` | `tutorials/steady/electrodialysis/ed01_nacl_desalination` |
 | Adsorption, PSA, ion exchange | swing cycle, loadings | `unit:psa`, `unit:ionExchanger`, `batchUnit:fixedBedAdsorber` | `tutorials/steady/separation/psa01_h2_psa` |

@@ -85,7 +85,7 @@ P  8 bar;
 ## 4. Refusals a newcomer meets
 
 All are one error, exit 2, headed `Flowsheet: the declared unit order is not a
-valid sequential plan:` (`Flowsheet.cpp:2501-2515`, texts `:4381-4560`):
+valid sequential plan:` (`Flowsheet.cpp:2510-2524`, texts `:4381-4560`):
 
 * `MISSING TEAR: stream 'recycle' closes the material cycle  M1 -> F1 -> S1
   --recycle--> M1  but is not declared a tear.`  Add it to `tearStreams`.
@@ -236,7 +236,7 @@ closes the material cycle  M1 -> F1 -> S1 --recycle--> M1`.
  Non-converged: "WARNING: recycle did NOT converge" :3272 (Wegstein), :3450 (Newton); return planConverged ? 0 : 1 :4042.
  Exit 2 on a thrown refusal: src/applications/choupoSolve/main.cpp:1627 (measured).
  0/ completeness message: measured in the run.
- Mixer operation { T }: src/unitOperations/mixer/Mixer.cpp:100-104.
+ Mixer operation { T }: src/unitOperations/mixer/Mixer.cpp:101-105.
  Splitter fractions and normalising warning: src/unitOperations/mixer/Splitter.cpp:90-100.
  Flash T/P from operation else feed: src/unitOperations/flash/IsothermalFlash.cpp:2086-2091; outputs (liquid vapor): docs/ai/unit-ops.md:53 and measured.
 -->

@@ -23045,6 +23045,257 @@ with tabulated rows was found, and none is invented.
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
+\section{Size distribution on one grid, and size reduction}\label{sec:size-grid}
+
+\begin{whatyoulllearn}
+A solids flowsheet is a chain of units that each receive a particle-size
+distribution, transform it and hand it on.  That is only well posed when
+they all speak about the SAME size classes.  This section gives the one
+axis a case declares (\dict{sizeGrid}), how a fitted law or a measured
+sieve table is put on it without creating or losing mass, the moments the
+engine derives from it, and the first unit that moves material along it:
+the \code{mill}, a breakage population balance (Austin 1971) with three
+selectable rate laws, one breakage function, two residence-time limits and
+Bond's third theory printed beside it as an energy cross-check.  Design
+record: \file{docs/design/c361-solids-processing.md}.
+\end{whatyoulllearn}
+
+\subsection{The size grid and its conservation}\label{sec:size-grid-mapping}
+
+The case declares, once, in \file{system/flowsheetDict},
+\begin{verbatim}
+sizeGrid { xMax 2.36 mm; ratio 1.41421356; nClasses 13; }
+\end{verbatim}
+with $n$ = \dict{nClasses} classes on the edges
+\begin{equation}
+x_0 = 0,\qquad x_k = \frac{x_{\max}}{r^{\,n-k}}\quad(k = 1,\dots,n),
+\label{eq:size-grid-edges}
+\end{equation}
+so class $0$ is the PAN $[0, x_1]$ and classes $1..n-1$ are geometric sieve
+cuts $[x_k, x_{k+1}]$ (the $\sqrt2$ ratio is the Tyler series).  The
+representative size of a cut is $\bar x_k = \sqrt{x_k x_{k+1}}$; the pan's is
+$x_1/\sqrt r$.  A stream on the grid carries its mass fractions $w_k$ and the
+edges (\code{ParticleSizeDistribution::edges}).
+
+\paragraph{A continuous law} (\code{RosinRammler}, \code{logNormal}) is
+INTEGRATED in its mass basis over each class,
+\begin{equation}
+w_k = F_3(x_{k+1}) - F_3(x_k),\qquad F_3(x) = \frac{\int_{d_{\min}}^{x}
+d^{\,3-Q} f_Q(d)\,\mathrm{d}d}{\int_{d_{\min}}^{d_{\max}} d^{\,3-Q} f_Q(d)\,
+\mathrm{d}d},
+\label{eq:size-grid-law}
+\end{equation}
+with $Q$ the basis the law is declared in (a Rosin--Rammler's closed-form
+cumulative is used as it is; a number-basis law is integrated by Simpson's
+rule in $\ln d$).  The fractions are DIFFERENCES of one cumulative, so they
+telescope: $\sum_k w_k = F_3(x_n) - F_3(0) = 1$ exactly, whatever the
+quadrature error.  The mass above $x_{\max}$ is folded into the top class and
+announced; above 1\,\% of a powder the grid is REFUSED (it does not describe
+that powder).
+
+\paragraph{A measured table} on its own edges $[a_j, b_j]$ (a first edge of
+$0$ is its pan) is RE-BINNED assuming the mass uniform in $\ln x$ inside each
+of its classes (uniform in $x$ inside a pan):
+\begin{equation}
+w_k = \sum_j m_j\,\frac{\ln\min(b_j, x_{k+1}) - \ln\max(a_j, x_k)}
+{\ln b_j - \ln a_j}\quad(\text{positive parts only}).
+\label{eq:size-grid-rebin}
+\end{equation}
+Each source class hands out fractions of itself that sum to one, so the total
+is exact.  A table with no \dict{edges} has them inferred at the geometric
+midpoints of its sizes, and the run says so.  Every mapping prints its sums
+(\code{[psd-grid] ... sum in 1, out 1}).
+
+\paragraph{Two streams on different grids.}  The \code{mixer} blends gridded
+streams class by class, $w = \sum_j \dot m_j w_j / \sum_j \dot m_j$, exactly.
+A stream on a unit's own bins is re-binned onto the grid first, with its $d_{50}$
+shift announced; two DIFFERENT declared grids are REFUSED --- a case has one
+grid, so a second means a unit did not write on it, and that unit is the
+defect.  With no \dict{sizeGrid} declared nothing of this runs.
+
+\paragraph{The moments, from one home} (\code{psdMoments}).  The size below
+which a mass fraction $p$ lies is found by log-interpolation of the
+cumulative between class edges (linear in $x$ inside the pan) --- the
+re-binning's own within-class assumption --- giving $d_{10}, d_{50},
+d_{80}, d_{90}$; the Sauter mean and the volume-specific surface are
+\begin{equation}
+\frac{1}{d_{32}} = \sum_k \frac{w_k}{\bar x_k},\qquad S_v = \frac{6}{d_{32}}.
+\label{eq:size-grid-sauter}
+\end{equation}
+They are published on every stream with a distribution (\code{psd.moments}
+in the result) and as KPIs by the units that move solids; the GUI draws the
+published numbers.
+
+\paragraph{One distribution per stream.}  The stream carries ONE
+distribution for its combined solid phase.  A multi-mineral feed is
+therefore ground and classified as ONE material; one distribution per solid
+species on the shared grid is the deferred general case (design record
+\S2.3).
+
+\subsection{The mill: a breakage population balance}\label{sec:mill}
+
+Austin (1971) showed that every grinding model of the preceding thirty years
+is one first-order balance on size classes (his eq.~37).  With $w_i$ the mass
+fraction in class $i$, $S_i$ the SELECTION function (the specific rate at which
+class $i$ breaks) and $b_{ij}$ the BREAKAGE function (the share of class $j$'s
+fragments that lands in class $i$),
+\begin{equation}
+\frac{\mathrm{d}w_i}{\mathrm{d}t} = -S_i w_i + \sum_{j>i} b_{ij} S_j w_j .
+\label{eq:mill-pbe}
+\end{equation}
+The \code{mill} integrates eq.~(\ref{eq:mill-pbe}) over ONE PASS in terms
+of the breakage extent $\kappa_i$ the selection function returns:
+$\kappa_i = S_i\tau$ for a rate law ($\tau$ = \dict{residenceTime}, or
+\dict{holdup}/$\dot m$, Austin eq.~46), or $\kappa_i = S^E_i E$ for the
+energy-specific law below.  Two residence-time limits, both in Austin (1971):
+\begin{align}
+\text{\dict{residence plugFlow;}}\quad & \mathbf p = \exp(\mathbf M)\,\mathbf f,
+\quad M_{ij} = b_{ij}\kappa_j\ (i<j),\ M_{jj} = -\kappa_j
+&&\text{(Austin eq.~49: a batch mill ground for $\tau$)}
+\label{eq:mill-plug}\\
+\text{\dict{residence perfectlyMixed;}}\quad & p_i(1+\kappa_i) = f_i +
+\sum_{j>i} b_{ij}\kappa_j p_j
+&&\text{(Austin eq.~44a)}
+\label{eq:mill-mixed}
+\end{align}
+($\mathbf f$ the feed fractions, $\mathbf p$ the product).  The matrix
+exponential is computed by scaling and squaring with a Taylor series.  The
+partially back-mixed mill (Austin eqs.~50--53, a residence-time
+distribution) is not built.
+
+\paragraph{The breakage matrix and mass conservation.}  With $B(u)$ the
+cumulative breakage function (the mass fraction of the fragments of a parent
+of size $y$ that lies below $x$, $u = x/y$, Austin p.~2) and the parent's
+size taken as its LOWER edge (breakage is out of the class; King 2001
+eq.~5.79),
+\begin{equation}
+b_{ij} = B\!\left(\frac{x_{i+1}}{x_j}\right) - B\!\left(\frac{x_i}{x_j}\right)
+\quad (i<j),\qquad \sum_{i<j} b_{ij} = B(1) - B(0) = 1 .
+\label{eq:mill-bij}
+\end{equation}
+Every column of $\mathbf M$ therefore sums to zero, and so does every power of
+it, so $\sum p_i = \sum f_i$ in the algebra, not within a tolerance; the run
+prints $\sum p - \sum f$ (\code{sizeMassClosure}, $10^{-16}$ in the cases).
+The pan does not break.  The chemistry is untouched: each solid component's
+flow passes through.
+
+\paragraph{Energy (the rotating-equipment rule).}  The case declares EXACTLY
+ONE of \dict{W\_shaft} (the net shaft power) and \dict{specificEnergy}
+$E = W/\dot m$; the other follows.  Comminution turns essentially all of the
+power into heat (Wills \& Napier-Munn, p.~110), so the mill is adiabatic and
+the outlet temperature is the result of
+$H(\text{out}, T_{\text{out}}) = H(\text{in}) + W$ on the elements datum.  The
+shaft work is published as \code{W\_shaft\_kW}, the energy report's work item.
+For a RATE law the shaft power is only priced --- it grinds nothing, and the
+run says so; only \code{herbstFuerstenau} lets $E$ break particles.
+
+\paragraph{What is refused.}  A feed not on the case's grid; a rate law with
+no \dict{residenceTime}/\dict{holdup} (or with both); an energy law with a
+residence time; both or neither of \dict{W\_shaft}/\dict{specificEnergy}; a
+feed with no solids.
+
+\subsubsection{Selection function \texttt{austin}}\label{sec:mill-selection-austin}
+
+\begin{equation}
+S(x) = S_1\left(\frac{x}{x_1}\right)^{\alpha}\Big/\left[1 +
+\left(\frac{x}{\mu}\right)^{\Lambda}\right]
+\label{eq:mill-austin-S}
+\end{equation}
+(King 2001, eq.~5.127, after Austin, Klimpel \& Luckie).  $S_1$ [1/time] is
+the rate at the reference size $x_1$ (default 1\,mm), $\alpha$ the slope;
+$\mu$ and $\Lambda$ (default 2) put a maximum near $\mu$; without \dict{mu}
+the law is the power law of Herbst \& Fuerstenau (1980) eq.~22.  WINDOW:
+tumbling mills, first-order breakage, parameters fitted to batch tests of
+the same material in the same mill.  ANCHOR (identity, said as such): $S(x_1)
+= S_1$ with H\&F's $k_1 = 0.780$\,min$^{-1}$ (p.~19) --- the primaries print
+no worked $S$ at a second size.  Keys: \dict{S1}, \dict{x1}, \dict{alpha},
+\dict{mu}, \dict{Lambda}.
+
+\subsubsection{Selection function \texttt{herbstFuerstenau}}\label{sec:mill-selection-hf}
+
+Herbst \& Fuerstenau (1980) eq.~10: the rate is proportional to the net
+specific POWER, $S_i = S^E_i P/H$, so one pass breaks
+\begin{equation}
+\kappa_i = S^E_i\,E,\qquad
+\ln\frac{S^E_i}{S^E_1} = \zeta_1\ln\frac{x_i}{x_1} + \zeta_2\left(\ln\frac{x_i}{x_1}\right)^2
+\label{eq:mill-hf}
+\end{equation}
+(size dependence: King 2001 eq.~5.138).  $S^E_1$ in t/kWh, $\zeta_2 \le 0$
+(a positive value gives a minimum; refused).  This is the energy-specific
+scale-up: the same $E$ gives the same product in any mill, and no residence
+time is needed.  WINDOW: ball mills in the normal operating range (H\&F
+Fig.~3: $P/H \approx 15$--50\,kW/t, 25--76\,cm mills); $S^E$ depends on the
+ball size.  ANCHOR (arithmetic): H\&F's design power $1.82$\,kWh/t $\times$
+350\,t/h $= 637.0$\,kW (p.~23).  Keys: \dict{S1E}, \dict{x1}, \dict{zeta1},
+\dict{zeta2}.
+
+\subsubsection{Selection function \texttt{vogelPeukert}}\label{sec:mill-selection-vp}
+
+Vogel \& Peukert (2003) eq.~14 give the probability that a particle of size
+$x$ breaks under $k$ impacts of mass-specific energy $W_{m,\text{kin}}$:
+\begin{equation}
+P_B(x) = 1 - \exp\!\left[-f_{\text{Mat}}\,x\,k\left(W_{m,\text{kin}} -
+\frac{(xW_{m,\min})}{x}\right)\right],\qquad S(x) = f\,P_B(x),
+\label{eq:mill-vp}
+\end{equation}
+$P_B = 0$ below the threshold $x < (xW_{m,\min})/W_{m,\text{kin}}$.
+$f_{\text{Mat}}$ and $(xW_{m,\min})$ are MATERIAL parameters (their Fig.~6
+table: limestone 0.318\,kg/(J\,m) and 0.5\,J\,m/kg).  The transfer to a mill as
+$S = f P_B$ with $f$ the stress frequency is OURS --- the paper is
+single-particle and reports such a transfer as work in progress (p.~109).
+WINDOW: impact breakage, polymers, limestone, glass, 0.095--8\,mm.  ANCHOR
+(identity at a printed point): a stressing parameter of 1 is a breakage
+probability of 63\,\% (p.~108; Choupo 63.21\,\%).  Keys: \dict{fMat},
+\dict{xWmMin}, \dict{Wkin}, \dict{stressFrequency}, \dict{impacts}.
+
+\subsubsection{Breakage function \texttt{austin}}\label{sec:mill-breakage-austin}
+
+\begin{equation}
+B(u) = \phi\,u^{\gamma} + (1-\phi)\,u^{\beta},\qquad u = x/y \le 1
+\label{eq:mill-austin-B}
+\end{equation}
+(King 2001 eqs.~5.78--5.79), normalised: the fragment distribution depends on
+$x/y$ only (H\&F 1980 eq.~21).  $\gamma$ is the fine-range slope (0.75 for
+H\&F's limestone, p.~20).  WINDOW: normalisable materials, $0<\phi\le1$,
+$\gamma,\beta>0$.  ANCHOR (worked example): King's Illustrative example 5.2,
+$b_{52} = B(7.5/11.28) - B(5.6/11.28) = 0.1459$ with $\phi = 0.3$, $\gamma =
+0.45$, $\beta = 3.2$ (Choupo 0.14593).  Keys: \dict{breakage \{ model austin;
+phi; gamma; beta; \}}.
+
+\subsubsection{Bond's third theory: the energy cross-check}\label{sec:mill-bond}
+
+\begin{equation}
+W = 10\,W_i\left(\frac{1}{\sqrt{P_{80}}} - \frac{1}{\sqrt{F_{80}}}\right)
+= W_i\left(\sqrt{\frac{100\,\mu\text{m}}{P_{80}}} -
+\sqrt{\frac{100\,\mu\text{m}}{F_{80}}}\right)
+\label{eq:mill-bond}
+\end{equation}
+(Bond 1952, as given by Wills \& Napier-Munn 2006 eq.~5.2, p.~111; King 2001
+eq.~5.167), $W$ and the work index $W_i$ in kWh per SHORT ton, $P_{80}$ and
+$F_{80}$ in $\mu$m (the second form holds in any unit).  With
+\dict{bond \{ workIndex 12.74 kWh/shortTon; \}} the mill prints $W$ on its
+OWN $F_{80}$ and $P_{80}$ beside the population-balance $E$, their ratio and
+the operating work index $W_{io} = W_i E/W$ (Wills p.~112).  It is a
+CROSS-CHECK and never the mill's answer: Bond predicts one number (the energy
+for a change of $d_{80}$) and nothing about the distribution, and the standard
+$W_i$ calibrates a 2.44\,m wet overflow ball mill in closed circuit at 250\,\%
+circulating load (King p.~202) --- a dry open-circuit pass reads far from 1,
+as \code{mill02} shows.  ANCHOR (identity): $W(F_{80}\to\infty,\,P_{80} =
+100\,\mu\text{m}) = W_i$ (the definition, Wills p.~111).
+
+\begin{tutoriallink}
+\file{tutorials/steady/solids/psd01\_grid\_and\_moments} --- a fitted law and a
+measured sieve table put on one grid and blended. \\
+\file{tutorials/steady/solids/mill01\_limestone\_herbstFuerstenau} --- H\&F's
+limestone; plug flow for 2\,min reproduces their $\exp(-0.78\times2) =
+0.2101$ of the feed size remaining. \\
+\file{tutorials/steady/solids/mill02\_bond\_crosscheck} --- the same limestone on
+the energy basis, plug flow against perfectly mixed, Bond beside each. \\
+\file{tutorials/steady/solids/mill03\_impact\_vogelPeukert} --- an impact mill
+with a breakage threshold.
+\end{tutoriallink}
+
+% ---------------------------------------------------------------------
 \section{Drying: spray dryer and solid dryer}\label{ch:drying-overview}
 
 %  This section and \S\ref{ch:drying} are a deliberate PAIR, not a double

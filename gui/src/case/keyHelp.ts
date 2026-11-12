@@ -53,7 +53,7 @@ import { Tokenizer, type Token } from "../dict/tokenizer.js";
 import type { JsonDict } from "../dict/index.js";
 import { rawOperationSchema } from "./operationSchemas.js";
 import { locatePropsBlocks } from "./propsDictLocate.js";
-import { propsModelTheoryLink, propsOpHelpLink, theoryLink } from "./modelDocs.js";
+import { propsModelTheoryLink, propsOpHelpLink, theoryLink, unitModelTheoryLink } from "./modelDocs.js";
 import controlDictSchema from "../../schemas/controlDict.schema.json";
 
 const RECORD_GLOB = import.meta.glob("../../schemas/records/*.schema.json", { eager: true }) as
@@ -191,9 +191,17 @@ export function keyHelp(file: string, text: string, line: number,
     let type = "";
     for (const m of types) if (text.slice(0, m.index).split("\n").length <= line) type = m[1]!;
     const schema = type ? rawOperationSchema(type) : null;
+    //  A `model <word>;` line inside a unit opens the section deriving THAT
+    //  model when the unit's slot names one (SLOT_MODEL_DEST, keyed by the
+    //  unit type and the key's path inside the unit) -- the block's own
+    //  theory otherwise (DEV.md 4c C361 for the mill's two `austin`s).
+    const word = /^\s*model\s+([A-Za-z0-9_]+)\s*;/.exec(text.split("\n")[line - 1] ?? "")?.[1];
+    const slotUrl = word && type
+      ? unitModelTheoryLink(type, segs.slice(1).join("."), word) : null;
     if (schema)
       return fromSchema({ ...base, source: `the ${type} unit's schema (gui/schemas/operations/${type}.schema.json)`,
-        guide: { url: theoryLink(type), label: `the theory of ${type}` } }, schema, segs.slice(1), `unit ${type}`);
+        guide: slotUrl ? { url: slotUrl, label: `the theory of ${word}` }
+                       : { url: theoryLink(type), label: `the theory of ${type}` } }, schema, segs.slice(1), `unit ${type}`);
   }
   if (/(^|\/)system\/controlDict$/.test(file))
     return fromSchema({ ...base, source: "the controlDict schema (gui/schemas/controlDict.schema.json)" },

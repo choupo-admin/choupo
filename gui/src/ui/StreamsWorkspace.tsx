@@ -827,6 +827,13 @@ function PSDBlock({
   // before the engine published them shows none.
   const m = psd.moments;
   const um = (v: number): string => (v * 1e6).toFixed(1);
+  // The table's running sum is a column of the bins as published -- a
+  // display, not a moment (no interpolation, no percentile).
+  const cumulative: number[] = [];
+  {
+    let sum = 0;
+    for (const f of psd.massFrac) { sum += f; cumulative.push(sum); }
+  }
 
   return (
     <Stack gap={4}>

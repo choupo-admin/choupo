@@ -19,7 +19,7 @@ import type { CaseFiles } from "../src/case/types";
 
 const read = (rel: string) => readFileSync(resolve(__dirname, "..", "..", rel), "utf8");
 
-//  The message Flowsheet.cpp:2407-2425 throws, as the browser log shows it.
+//  The message Flowsheet.cpp:2416-2434 throws, as the browser log shows it.
 const REFUSAL = [
   "[stderr] ERROR: Flowsheet: 0/ COMPLETENESS violated BEFORE the solve (graph stream IDs != 0/ state files):",
   "  MISSING  0/V1  (graph stream, no state file)",
