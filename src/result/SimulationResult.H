@@ -48,6 +48,7 @@ Description
 #include "core/Advisory.H"
 #include "core/BatchPlanRecords.H"   // the batch plant (C99)
 #include "core/BuildingRecords.H"     // the GMP interior (C97)
+#include "core/PanelRecords.H"        // the operator panel (C371)
 #include "core/ProblemDivergence.H"
 #include "core/Dictionary.H"         // DictPtr (unitDicts)
 #include "core/FlatUnit.H"          // topology, not output -- see that header
@@ -506,6 +507,10 @@ struct SimulationResult
     //  empty unless the postDict declares `batchPlan {}`
     //  (`postProcessing/BatchPlanPass`).
     BatchPlanRecord                                               batchPlan;
+    //  The operator panel a case declared in `system/panelDict` and the
+    //  FACTS about it (DEV.md 4c C371); empty (`present` false) unless the
+    //  case declares one (`postProcessing/panel/PanelPass`).
+    PanelRecord                                                   panel;
     //  THE DECLARED VIEWS of this run (C271): the JSON object views::Reader
     //  returns for a steady case whose `system/postDict` carries `views`;
     //  emitted as the result's top-level `postProcessing` block, empty (and

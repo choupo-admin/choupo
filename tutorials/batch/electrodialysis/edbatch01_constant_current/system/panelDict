@@ -1,0 +1,132 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  edbatch01_constant_current / system/panelDict
+
+  WHAT THIS IS.  The OPERATOR PANEL of the constant-current batch rig: the six
+  things a person standing at the rectifier would want to read, each with the
+  reason it is there.  The engine reads this file AFTER the time loop, from
+  the series the run already writes, and reports FACTS about it -- which of
+  these elements never moves, which limit the run crosses and when, how many
+  alarms are active at once, when a message would be sent (the `panel` block
+  of the result and the `[panel]` lines of the log).  It reports NO GRADE:
+  whether this panel lets a person tell what the process is doing is the
+  student's exercise, and no engine can mark it.  Nothing in this file can
+  change a number of the run: it is opened only after the physics has ended.
+
+  HOW IT WAS MADE.  Written by hand to the design record's worked example
+  (docs/design/operator-panel-in-the-case.md, section 3.4).  The drafting
+  tool of that record does not exist yet, so there is no `draft {}` block and
+  every element is `authored edited`: a person shaped it.
+
+  WHERE EACH NUMBER COMES FROM.  A range or a limit written without a named
+  unit is in the unit the series is published in (the column's own name says
+  it: `_V`, `_A_per_m2`, `_S_per_m`); the engine cannot check that dimension,
+  because no trajectory column declares one.  The two limits are the stack
+  record's own `limits { i_max; T_max; }` (constant/assets/EUR2C-7P18.dat),
+  which that record marks as ESTIMATES: the vendor data sheet is not in hand.
+  The over-limiting boundary is the unit's own `i_over_ilim` = 1.
+
+  WHAT THE FACTS SAY ON THIS RUN (read them in the log, do not trust this
+  paragraph): two of the six elements show a quantity that does not move at
+  constant current (`currentDensity`, `temperature`) -- which is the first
+  finding of the exercise; the over-limiting lamp is the only element whose
+  limit the run crosses.  `alarm` texts and the 0.5 default of the
+  `neverApproached` fact are good practice written from reasoning, NOT
+  verified against an alarm-management standard (none is held).
+\*---------------------------------------------------------------------------*/
+
+grid  { columns 12;  rows 8; }
+
+style { density comfortable; }          // no trendWindow: the whole 2000 s
+
+elements
+(
+    {
+        name        diluate;
+        title       "Diluate conductivity";
+        kind        trend;
+        measurement { unit rig;  cv kappa_dil_S_per_m; }
+        range       { min 0;  max 1.4; }                 // S/m
+        place       { column 1;  row 1;  width 8;  height 4; }
+        reason      "the diluate is the product; its conductivity says how far the batch has got";
+        authored    edited;
+    }
+    {
+        name        demineralisation;
+        title       "Demineralisation, actual against ideal at I(0)";
+        kind        trend;
+        measurement { unit rig;  cv deminActual; }
+        reference   { unit rig;  cv deminIdeal; }
+        range       { min 0;  max 1; }                   // fraction
+        place       { column 1;  row 5;  width 8;  height 4; }
+        reason      "the unit publishes the straight line beside the run; their parting is the over-limiting regime";
+        authored    edited;
+    }
+    {
+        name        voltage;
+        title       "Stack voltage";
+        kind        trend;
+        measurement { unit rig;  cv U_V; }
+        range       { min 0;  max 10; }                  // V
+        place       { column 9;  row 1;  width 4;  height 2; }
+        reason      "at constant current the voltage is the free electrical variable; it rises as the diluate loses conductivity";
+        authored    edited;
+    }
+    {
+        name        overLimiting;
+        title       "Limiting current";
+        kind        lamp;
+        measurement { unit rig;  cv i_over_ilim; }
+        range       { min 0;  max 2.5; }                 // -
+        limit       { high    1;
+                      source  "the limiting current of the unit's own film model";
+                      reason  "above 1 the extra current splits water instead of moving salt"; }
+        alarm       { on high;  delay 0 s;
+                      action "lower the current, or stop the batch: past the limiting current the extra current removes no salt"; }
+        words       { normal "BELOW LIMITING";  high "OVER LIMITING"; }
+        place       { column 9;  row 3;  width 4;  height 2; }
+        reason      "the unit reports this regime boundary itself; crossing it is the event that ends efficient operation";
+        authored    edited;
+    }
+    {
+        name        currentDensity;
+        title       "Current density against the stack rating";
+        kind        bar;
+        measurement { unit rig;  cv i_A_per_m2; }
+        range       { min 0;  max 250; }                 // A/m2
+        limit       { high    200;                       // A/m2
+                      source  "the stack record's limits { i_max }, an estimate (see the record's provenance)";
+                      reason  "the rating the unit checks the run against"; }
+        alarm       { on high;  action "lower the current set on the rectifier"; }
+        place       { column 9;  row 5;  width 4;  height 2; }
+        reason      "the stack record declares this limit";
+        authored    edited;
+    }
+    {
+        name        temperature;
+        title       "Rig temperature";
+        kind        number;
+        measurement { unit rig;  cv T; }
+        range       { min 273.15 K;  max 333.15 K; }
+        limit       { high    313.15 K;
+                      source  "the stack record's limits { T_max }, an estimate (see the record's provenance)";
+                      reason  "the membranes' temperature ceiling"; }
+        alarm       { on high;  action "cool the tanks or stop"; }
+        place       { column 9;  row 7;  width 4;  height 2; }
+        reason      "the stack record declares this limit";
+        authored    edited;
+    }
+);
+
+messages
+(
+    { name overLimiting;  from overLimiting;  on high;  text "Limiting current reached: the batch has stopped removing salt efficiently"; }
+    { name batchEnd;      on end;                       text "Batch finished"; }
+);

@@ -636,6 +636,18 @@ try
     //       backwards-compat (every flat tutorial + the composite ROOTs).
     // The flowsheetDict is NEVER inherited from a parent (it IS the node), so
     // there is no resolveUp here -- only this local two-place lookup.
+    //  A PANEL READS A TIME-INTEGRATED RUN (DEV.md 4c C371).  A steady solve
+    //  has no time axis; silently ignoring a declared file is the unread-key
+    //  defect, so it is refused by name.
+    if (fs::exists("system/panelDict"))
+    {
+        std::cerr << "\nERROR: choupoSolve: system/panelDict is present, and a"
+                     " panel reads a time-integrated run -- a steady solve has"
+                     " no time axis to read it over.  Run the case with"
+                     " `application choupoBatch;` if it is a batch run, or"
+                     " remove the file.\n";
+        return 2;
+    }
     const std::string flowsheetPath =
         fs::exists("flowsheetDict") ? "flowsheetDict" : "system/flowsheetDict";
     auto flowsheetDict = Dictionary::fromFile(flowsheetPath);

@@ -505,6 +505,15 @@ try
         std::cout << "Description:       " << description << "\n"
                   << std::string(56, '-') << "\n";
 
+    //  A PANEL READS A TIME-INTEGRATED RUN (DEV.md 4c C371): the property
+    //  bench has no time axis, so a declared file is refused by name.
+    if (fs::exists("system/panelDict"))
+    {
+        std::cerr << "\nERROR: choupoProps: system/panelDict is present, and a"
+                     " panel reads a time-integrated run -- the property bench"
+                     " has no time axis to read it over.  Remove the file.\n";
+        return 2;
+    }
     auto propsDict = Dictionary::fromFile("system/propsDict");
 
     //  THE ORDER IS AN ENGINE FACT (DEV.md 4c C172 slice 2): the operations

@@ -293,6 +293,11 @@
       ]
     },
     {
+      "title": "The operator panel of a batch run — declared, then reported",
+      "label": "operator-panel",
+      "subsections": []
+    },
+    {
       "title": "Effluent treatment — liquid & gaseous",
       "label": "effluent-treatment--liquid--gaseous",
       "subsections": [

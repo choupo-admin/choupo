@@ -1685,6 +1685,11 @@
       "exit": 0,
       "claim": "check_time_integrated: OK -- TI-01 fixture: 34-field header held on every row; TI-02: the closed leaking loop is refused; unsteady03, unsteady04, unsteady05 still run; TI-03: a `recipe` is refused by name under choupoSemiContinuous and choupoCtrl",
       "seconds": 7.0
+    },
+    "check_panel": {
+      "exit": 0,
+      "claim": "check_panel: OK -- (a) the witness with and without its panelDict: trajectory.csv, every written file, the log minus [panel] lines and the JSON minus its panel block are byte-identical; (b) a case without one prints and publishes nothing of a panel; (c) 21 refusals fired through the real reader, each exit 2 and naming its defect; (d) 29 fact checks on fixtures, each recomputed from trajectory.csv: notPublished, constant, outOfRange, limitOutsideRange, violated / neverViolated / alwaysViolated (k, n, first, last, closest approach), neverApproached, controllerWithoutElement, sameQuantityAlarms, alarmsActive with a delay, three messages; on the log, the JSON block; the witness's golden pins 71 panel rows; (e) 4 other binaries refuse a panelDict by name.  NOT CHECKED: that a panel is good (no engine can grade it), alarm practice (no standard is held), the 0.5 `neverApproached` default, the dimension of a limit against its column, `draftDiffers` (slice S3), the GUI drawing (slice S2), a crossing between two written instants (facts are resolved to the write grid) and byte-identity of other cases against an earlier build (measured once in the slice report, not gated).",
+      "seconds": 10.4
     }
   }
 }

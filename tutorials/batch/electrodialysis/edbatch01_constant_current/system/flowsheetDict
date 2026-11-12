@@ -81,6 +81,21 @@
   and the rig is isothermal with the Joule heat removed by no modelled duty
   (which is why the campaign energy balance reports UNAVAILABLE and says
   why).  The full list is in the unit's own header.
+
+  THE OPERATOR PANEL.  `system/panelDict` declares what a person at the
+  rectifier would read: six elements (the diluate conductivity, the actual
+  demineralisation against Faraday's straight line, the stack voltage, the
+  over-limiting lamp, the current density against the stack rating, the rig
+  temperature), each with the reason it is there, two limits taken from the
+  stack record and one from the unit's own film model, three alarms and two
+  messages.  The engine reads the file AFTER the time loop and reports FACTS
+  about it -- in the log (`[panel]` lines) and in the result's `panel` block,
+  pinned by the golden's `panel` rows: the lamp's limit is crossed at 9 of 41
+  written instants from t = 1600 s on the write grid (the unit's own
+  step-resolved crossing is 1593 s); the current density and the temperature
+  never move at constant current.  It reports NO GRADE: whether this panel
+  tells a person what the rig is doing is the exercise.  It cannot change a
+  number of the run above, which is held by the unchanged golden rows.
 \*---------------------------------------------------------------------------*/
 
 units

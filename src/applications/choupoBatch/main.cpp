@@ -93,10 +93,13 @@ Description
 #include "solver/ODE/AdaptiveTimeStep.H"
 #include "result/ComponentIdentity.H"
 #include "result/ResultEmitter.H"
+#include "postProcessing/panel/PanelPass.H"
 
 #include <variant>
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
@@ -702,6 +705,26 @@ if (flowsheetDict->found("cycle"))
             csv << "," << unit->name() << "." << k;
     csv << "\n";
 
+    //  THE OPERATOR PANEL's read-only copy of what is written (DEV.md 4c C371,
+    //  slice S1).  Kept in memory ONLY when the case declares
+    //  `system/panelDict`; each value is rounded through the CSV's own `%.8e`,
+    //  so a fact says what a reader of trajectory.csv would see.  The panel is
+    //  read after the time loop, from this copy, and holds no handle on a unit.
+    const bool panelOn = fs::exists("system/panelDict");
+    PublishedSeries panelSeries;
+    if (panelOn)
+    {
+        panelSeries.labels.push_back("t");
+        for (const auto& unit : units)
+            for (std::size_t i = 0; i < thermo.n(); ++i)
+                panelSeries.labels.push_back(unit->name() + ".n_" + thermo.comp(i).name());
+        for (const auto& unit : units)
+            panelSeries.labels.push_back(unit->name() + ".T");
+        for (const auto& unit : units)
+            for (const auto& [k, v] : unit->trajectoryExtras())
+                panelSeries.labels.push_back(unit->name() + "." + k);
+    }
+
     auto writeSnapshot = [&](scalar t)
     {
         for (std::size_t u = 0; u < units.size(); ++u)
@@ -715,6 +738,25 @@ if (flowsheetDict->found("cycle"))
             for (const auto& [k, v] : unit->trajectoryExtras())
                 csv << "," << v;
         csv << "\n";
+
+        if (panelOn)
+        {
+            std::vector<scalar> prow;
+            prow.reserve(panelSeries.labels.size());
+            auto keepRounded = [&](scalar v)
+            {
+                char buf[64];
+                std::snprintf(buf, sizeof buf, "%.8e", v);
+                prow.push_back(std::strtod(buf, nullptr));
+            };
+            keepRounded(t);
+            for (const auto& unit : units)
+                for (auto v : unit->state().n) keepRounded(v);
+            for (const auto& unit : units) keepRounded(unit->state().T);
+            for (const auto& unit : units)
+                for (const auto& [k, v] : unit->trajectoryExtras()) keepRounded(v);
+            panelSeries.rows.push_back(std::move(prow));
+        }
 
         // OpenFOAM-style real-time instant, in the layout of `0/`: each
         // vessel's holdup at t under internalStates/ (a closed batch vessel
@@ -2276,6 +2318,24 @@ if (flowsheetDict->found("cycle"))
         //  binary prints it: a caveat surface that exists in one application
         //  and not the others teaches the reader that its ABSENCE means
         //  "nothing to report", which is false in the three that never had it.
+        //  THE OPERATOR PANEL (DEV.md 4c C371, slice S1): read AFTER the time
+        //  loop, from the read-only copy of the published series; reports FACTS
+        //  about the panel the case declared and never a grade.  A malformed
+        //  panel refuses by name (exit 2).  It is not an advisory: nothing in a
+        //  panel changes a number, and the caveat block says how far the
+        //  numbers can be trusted.
+        if (panelOn)
+        {
+            panel::Context pctx;
+            for (const auto& u : units) pctx.units.push_back(u->name());
+            pctx.controllers = panel::controllersOf(*flowsheetDict);
+            pctx.hasRecipe   = flowsheetDict->found("recipe");
+            auto panelDict   = Dictionary::fromFile("system/panelDict");
+            result.panel     = panel::evaluate(*panelDict, panelSeries, pctx);
+            if (verbosity >= 1)
+                for (const auto& l : result.panel.logLines)
+                    std::cout << l << "\n";
+        }
         result.advisories = AdvisoryLog::instance().entries();
         result.divergences = ProblemDivergence::instance().entries();
         printProblemDivergence(ProblemDivergence::instance().entries());

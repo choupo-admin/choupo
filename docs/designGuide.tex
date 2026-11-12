@@ -2785,6 +2785,92 @@ Piping Design}, Prentice Hall; Kister, \emph{Distillation Operation},
 McGraw-Hill (the column group in operation); and, for anything that
 touches safety, the standards named above.
 
+\hypertarget{operator-panel}{%
+\section{The operator panel of a batch run --- declared, then
+reported}\label{operator-panel}\label{sec:operatorPanel}}
+
+A panel is the answer to a question a person asks at the rig: \emph{what
+is the process doing, and what should I do about it?} It is good when the
+person can tell, and no engine can grade that. Choupo therefore treats a
+panel like the plant layout above: the case \emph{declares} it, the engine
+\emph{reads} it and reports \emph{facts} about it, and the student decides
+whether the panel is good. Nothing in the file can change a number of the
+run, because the engine opens it only after the time loop has ended and
+reads only the series the run already writes.
+
+\textbf{The file.} \file{system/panelDict}, optional, read by
+\code{choupoBatch} (the other binaries refuse it by name). It holds
+\code{elements}: each has a \code{name}, a display \code{kind}
+(\code{number}, \code{bar}, \code{trend} or \code{lamp}), a
+\code{measurement} (\code{unit u; cv key;} --- a column of
+\file{trajectory.csv} --- or \code{controller C; cv SP|PV|MV;}), an optional
+\code{range \{min; max;\}}, an optional \code{limit \{low; high; source;
+reason;\}}, an optional \code{alarm \{on; delay; action;\}} and a
+mandatory \code{reason}: why this element is on the panel. A limit says
+where it comes from; an alarm says which action it asks for. Optional
+blocks give a \code{grid} with placements, a \code{style}, a
+\code{lock \{by; date; reason;\}} (present means locked) and
+\code{messages} to someone not looking at the panel. A \code{range} or
+\code{limit} written without a named unit is in the unit the column is
+published in (its name says so: \code{U\_V}, \code{i\_A\_per\_m2}); no
+trajectory column declares its dimension, so the engine cannot check it.
+
+\textbf{Refused, by name.} What makes the file not a panel: an unknown key,
+unit, controller or kind, an element with no \code{reason}, a limit with
+neither end or with no \code{source} or \code{reason}, an alarm with no limit
+or no action, a time without its unit, a placement outside the grid or on
+another element, a duplicate name, a message that names no element.
+
+\textbf{The facts.} What makes it a panel to defend. Each is a record of the
+result (the \code{panel} block), a \code{[panel]} line of the log, and a row
+a case can pin with the golden kind \code{panel}. With $n$ written
+instants $t_k$ and values $v_k$ of the element's column:
+\begin{itemize}
+\item \emph{not published}: the column is absent from the run. The panel is
+ drawn with ``not published'', never a zero.
+\item \emph{constant}: $\max v - \min v \le 10^{-8}\,\max(1,|\max v|)$ ---
+ the last digit \file{trajectory.csv} writes. The element shows a quantity
+ that never moved in this run.
+\item \emph{out of range}: a value below \code{range.min} or above
+ \code{range.max}; the scale hides part of the run. \emph{Limit outside
+ range}: the limit cannot be seen on its own scale.
+\item \emph{violated}: the count $k$ of instants with $v_k>$ high or $v_k<$
+ low (strictly), and the first and last such instant; $k=0$ is
+ \emph{never violated} and $k=n$ \emph{always violated}. The closest
+ approach is $d=\min(\text{high}-\max v,\ \min v-\text{low})$, published
+ with its fraction of the range.
+\item \emph{never approached}: $k=0$ and $d/(\text{range.max}-\text{range.min})
+ > 0.5$. The $0.5$ is a default of the design record, not taken from a
+ practice or a standard.
+\item \emph{controller without element}: a PID of the flowsheet whose measured
+ value no element shows. \emph{Same quantity alarms}: more than one alarm on
+ the same column (two columns that are functions of each other are not
+ detected).
+\item \emph{alarms active}: per instant the number of alarms in alarm, an
+ alarm being active once its condition has held for its \code{delay}; the
+ maximum and its first instant are published. \emph{Messages}: the first
+ instant each message's trigger holds (or that it never does).
+\end{itemize}
+Every crossing is resolved to the \emph{write grid}: a crossing between two
+writes is seen at the next one and an excursion shorter than one
+\code{writeInterval} is missed; the remedy is a smaller interval.
+
+\textbf{What is not claimed.} The practice of alarm management --- one
+cause one alarm, an action per alarm, the count of active alarms always in
+view --- is written here as good practice from reasoning, \emph{not
+verified against a standard}: none is held. The thresholds are the
+record's defaults. A fact is not a mark: a panel with two constant elements
+is not wrong, it shows a mode of operation in which two quantities do not
+move.
+
+\textbf{Worked example.} \file{edbatch01\_constant\_current} carries a panel
+of six elements. At constant current the current density and the
+temperature never move (two \emph{constant} facts); the lamp on
+$i/i_{\text{lim}}$ is the only limit the run crosses, from $1600$~s on the
+write grid (the unit's own step-resolved crossing is $1593$~s). Design
+record: \file{docs/design/operator-panel-in-the-case.md}; reference for
+authors: \file{docs/ai/case-layout.md}.
+
 \hypertarget{effluent-treatment--liquid--gaseous}{%
 \section{Effluent treatment --- liquid \&
 gaseous}\label{effluent-treatment--liquid--gaseous}}
