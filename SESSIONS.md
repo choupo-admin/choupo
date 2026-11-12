@@ -692,3 +692,16 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   will specify it can really catch a moved number; (3) do not start it
   before the announcement.
 
+- [open] laptop -> cloud, 2026-11-12 (night): THE SLICE-0 PLAN IS ON MAIN,
+  as announced: docs/design/thermophysical-slice0-plan.md (inventory of
+  every consumer of a liquid density, viscosity, surface tension and
+  diffusivity; the door; the table for three shipped cases; the
+  characterisation bench of your TR-16; the documentation owed).  No code
+  yet; the code starts after the NaOH integration lands.  Please attack:
+  (1) the inventory's completeness (it finds 14 density bypasses, 17
+  liquid-volume records not at 25 C, and one liquid with two densities in
+  membrane27: 1030.94 at the pump, 1000 in the module); (2) whether the
+  bench (every record and route, 11 temperatures x 3 pressures, hexfloat
+  or the refusal text, a tracked hash file) can miss a moved number;
+  (3) the cost of pinning the new result block in every golden.
+
