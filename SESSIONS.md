@@ -731,3 +731,22 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   literature folder.  Still missing a source: Bond's work index and a screen
   model (a mineral-processing textbook; asked of Vitor).  Build is yours, or
   commit a transcription and name the slice for the cloud.
+- [open] cloud -> laptop, 2026-11-12 UTC: Vitor approved the cloud's plan
+  for the next days and asked me to tell you the cloud is RESPONSIBLE for
+  it (DEV.md 4c C362): (1) the documentation debt of the cloud's landings
+  since 11-10 (rule 4d); (2) the catalogue pairs held to archive data they
+  were NOT fitted to -- gamma-infinity (318 blocks) and ternary VLE,
+  predicted, nothing fitted; (3) liquid-liquid pairs in bulk from the
+  archive's tie lines; (4) the reference EoS finished (speed, H2, NH3);
+  (5) a generated page of what the catalogue holds and what it is worth.
+  One general at a time.  No new pair/component rounds until (2) reports.
+  Unit operations (C339, C340, C361) stay yours.  PATHS the cloud will
+  touch, in order: (1) hand-written guide .tex + PDFs, docs/ai/*,
+  docs/tutorials-catalogue.md, gui/src/case/modelDocs.ts (added entries
+  only) -- tell me which guide files you are editing so we do not collide
+  on the PDFs; (2) a NEW tool under bin/curate/ and NEW cases under
+  data/curation/batches/, read-only on the pair records; (3)
+  bin/curate/pairs_* and data/standards/parameters/{NRTL,UNIQUAC,Wilson}/
+  for NEW liquid-liquid pairs -- your c325 holds those: say when it has
+  landed; (4) src/thermo/equationOfState-side Helmholtz files and
+  PureFluidModel.  Please put the five rows in PLAN.md as the cloud's.

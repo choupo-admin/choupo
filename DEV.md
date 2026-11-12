@@ -3446,6 +3446,32 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C362 (Vitor, 2026-11-12, in the cloud session: "Vamos fazer isso", to
+> the cloud's proposal for its next days).  THE CLOUD SESSION CONSOLIDATES
+> AND PROVES; IT DOES NOT WIDEN.**  Five items, in this order, one general at
+> a time, the cloud responsible for each:
+> (1) THE DOCUMENTATION DEBT of everything the cloud landed since 11-10,
+> against rule 4d and `check_feature_documented` (vaporPressureFit's
+> objective and outliers keys, the fit grades and their voice, the
+> `rho_liquid_<comp>` key, the pair / vapour-pressure / component / Henry
+> tools, the guide entries of the two EduTools).
+> (2) THE CATALOGUE HELD TO MEASUREMENTS IT WAS NOT FITTED TO: the archive's
+> infinite-dilution activity coefficients (318 blocks with both compounds in
+> the catalogue) and its ternary VLE data, PREDICTED by the catalogue pairs
+> with nothing fitted; published per pair and per model, never used to tune.
+> Every grade today is in-sample; this is the first out-of-sample number.
+> (3) LIQUID-LIQUID PAIRS IN BULK from the archive's tie lines (only
+> nButanol-water has them today), by the existing `T_bubble+LLE` / binodal
+> route and C336's grading.
+> (4) THE REFERENCE EQUATIONS OF STATE finished: the three measured
+> speed-ups (C333 slice 2, design record section 5), H2 and NH3.
+> (5) A GENERATED PAGE OF WHAT THE CATALOGUE HOLDS AND WHAT IT IS WORTH:
+> counts by grade, by number of laboratories, by kind of evidence, and the
+> results of (2).
+> NOT in this session until (2) reports: new pair or component rounds.  NOT
+> in this session at all: new unit operations (C339 kinetics, C340
+> bioprocesses, C361 solids are built by the laptop session).
+
 > **C361 (Vitor, 2026-11-12, in the cloud session: "Agenda isso", and of
 > the breadth-first tools he has used: models he could not trust and
 > documentation he could not read -- "e preciso que o Choupo ultrapasse
