@@ -52,6 +52,13 @@ enum class Origin
 {
     unattributed,   // no provenance declared (the honest default)
     literature,     // measured / experimental / from a cited table
+    derived,        // COMPUTED from NAMED measured values by a STATED method
+                    //   (e.g. a Clausius-Clapeyron interpolation between two
+                    //   measured boiling points): not a regression over a
+                    //   dataset (`regressed`), not an estimate (`estimated`).
+                    //   Ranked just below the measurements it comes from and
+                    //   above every fit and estimate; it NEVER outranks a
+                    //   measured value of the same quantity (DEV.md 4c C367)
     regressed,      // fitted to data (Antoine, Andrade, NRTL pair, ...)
     predictive,     // a MODEL's prediction transcribed as a value (UNIFAC-derived
                     //   pair, corresponding-states surrogate) -- the P4 ladder
@@ -113,6 +120,7 @@ struct OriginInfo
 inline Origin originFromWord(const std::string& w)
 {
     if (w == "literature" || w == "experimental" || w == "measured") return Origin::literature;
+    if (w == "derived")                                              return Origin::derived;
     if (w == "regressed"  || w == "fitted")                          return Origin::regressed;
     // `measuredFit` (2026-09-06): a constant FITTED TO MEASURED transport
     // data -- Svehla 1962's methods 1-4 (least-squares / graphical fits of
@@ -134,6 +142,7 @@ inline const char* originToWord(Origin o)
     switch (o)
     {
         case Origin::literature:   return "literature";
+        case Origin::derived:      return "derived";
         case Origin::regressed:    return "regressed";
         case Origin::predictive:   return "predictive";
         case Origin::estimated:    return "estimated";

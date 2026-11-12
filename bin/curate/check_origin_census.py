@@ -86,6 +86,10 @@ RECORD = ROOT / "docs" / "design" / "provenance-semantics-five-axes.md"
 #  The words the tree uses today.  `core/Origin.H` accepts synonyms; this is the
 #  set actually WRITTEN, and a new one must be a decision, not a surprise.
 KNOWN = {"literature", "predictive", "estimated", "assumed", "measured",
+         # 2026-11-12 (DEV.md 4c C367): a value COMPUTED from named measured
+         # values by a stated method (resolves to Origin::derived in
+         # core/Origin.H); check_record_form requires its method and inputs.
+         "derived",
          "standard", "regressed", "definition", "asserted", "placeholder",
          "experimental", "fitted", "predicted", "calculated",
          # 2026-09-06: the lennardJones records' word for a constant fitted
@@ -128,6 +132,52 @@ def split_levels(body):
     return "".join(out)
 
 
+def sub_blocks(body):
+    """[(name, text)] of the blocks one level below `body` (brace matching)."""
+    out, i = [], 0
+    while True:
+        m = re.compile(r"(\w+)\s*\{").search(body, i)
+        if not m:
+            return out
+        lvl, j = 1, m.end()
+        while j < len(body) and lvl:
+            lvl += (body[j] == "{") - (body[j] == "}")
+            j += 1
+        out.append((m.group(1), body[m.end():j - 1]))
+        i = j
+
+
+def derived_failures(rel, body):
+    """(d) DEV.md 4c C367: `origin derived;` is a value COMPUTED from NAMED
+    measured values by a STATED method, so its entry must carry the method and
+    an `inputs ( { value <x>; doi "..."; } ... )` list naming each input and its
+    source.  Without them `derived` would be an unattributed `literature`."""
+    out = []
+    for name, blk in sub_blocks(body):
+        if not re.search(r"^\s*origin\s+derived\s*;", split_levels(blk), re.M):
+            continue
+        if not re.search(r'^\s*method\s+"[^"]+"\s*;', blk, re.M):
+            out.append("%s: `%s` is `origin derived;` with no `method \"...\";` -- "
+                       "the stated method is what makes a value derived" % (rel, name))
+        im = re.search(r"inputs\s*\(", blk)
+        ins = []
+        if im:
+            lvl, j = 1, im.end()
+            while j < len(blk) and lvl:
+                lvl += (blk[j] == "(") - (blk[j] == ")")
+                j += 1
+            ins = re.findall(r"\{([^{}]*)\}", blk[im.end():j - 1])
+        if not ins:
+            out.append("%s: `%s` is `origin derived;` with no `inputs ( { ... } )` -- "
+                       "each measured input must be named" % (rel, name))
+        for b in ins:
+            if not (re.search(r"\bvalue\s+[-0-9.eE+]+\s*;", b)
+                    and re.search(r'\bdoi\s+"[^"]+"\s*;', b)):
+                out.append("%s: `%s` has a derived input without a numeric `value` and "
+                           "a `doi` source: {%s}" % (rel, name, " ".join(b.split())[:80]))
+    return out
+
+
 def main():
     if not STANDARDS.is_dir():
         print("check_origin_census: FAIL")
@@ -136,12 +186,14 @@ def main():
         return 1
 
     direct, per_value, unknown = {}, {}, []
+    derived_bad = []
     files = 0
     for p in sorted(STANDARDS.rglob("*.dat")):
         body = provenance_body(strip_comments(p.read_text(errors="ignore")))
         if body is None:
             continue
         files += 1
+        derived_bad.extend(derived_failures(p.relative_to(ROOT), body))
         top = split_levels(body)
         d = re.findall(r"^\s*origin\s+(\w+)\s*;", top, re.M)
         allw = re.findall(r"^\s*origin\s+(\w+)\s*;", body, re.M)
@@ -165,6 +217,8 @@ def main():
         fails.append("%s declares `origin %s;` -- not one of the words this "
                      "tree uses; a new origin is a decision somebody has to "
                      "write down, not a value a gate absorbs" % (rel, w))
+
+    fails.extend(derived_bad)           # (d) derived carries its method and inputs
 
     # ---- (b) the record states the current numbers ------------------------
     if not RECORD.exists():

@@ -1490,6 +1490,16 @@ lies above 2\,bar, the Antoine is refitted from the lowest measured point up
 to 200\,kPa; where no point exceeds 2\,bar the window would be the whole range
 and none is declared.  A window is never chosen to satisfy a check.
 
+\textbf{The origin \code{derived}.}  A value a record could not take from one
+article but could COMPUTE from named measurements --- a normal boiling point
+interpolated between two measured boiling points, say --- is marked
+\code{origin derived;}.  It is neither a regression over a dataset
+(\code{regressed}) nor an estimate (\code{estimated}): its provenance entry
+states the \code{method} and lists, as \code{inputs}, each measured value with
+its source, so the arithmetic can be repeated by hand.  It ranks just below the
+measurements it comes from and above every fit and estimate, and it never
+outranks a measured value of the same quantity.
+
 \textbf{Where the numbers live.}  The limits are carried by the curation tools
 (\file{bin/choupo-curate} for vapour pressures, \file{bin/curate/pairs\_c283.py}
 and \file{bin/curate/pairs\_px.py} for pairs,
