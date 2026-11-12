@@ -118,12 +118,18 @@ public:
     const ElectrolyteModel* asElectrolyte() const override { return this; }
 
     // ---- ElectrolyteModel interface (molality scale) -- routed pitzer|eNRTL --
+    //  Each of the three reads the record's temperature validity first
+    //  (EL-01/EL-02): outside it ONE `[pair-span]` line per pair per run, no
+    //  number changes.  The same call is made by the pitzerActivity op and the
+    //  pitzerHMW route, so the three say the same thing.
+    void checkSpan_(scalar T) const
+    { if (isENRTL_) enrtl_.span.check(T); else salt_.span.check(T); }
     scalar waterActivity(scalar m, scalar T = 298.15) const override
-    { return isENRTL_ ? enrtl_.waterActivity(m, T) : salt_.waterActivity(m, T); }
+    { checkSpan_(T); return isENRTL_ ? enrtl_.waterActivity(m, T) : salt_.waterActivity(m, T); }
     scalar gammaPM(scalar m, scalar T = 298.15) const override
-    { return isENRTL_ ? enrtl_.gammaPM(m, T) : salt_.gammaPM(m, T); }
+    { checkSpan_(T); return isENRTL_ ? enrtl_.gammaPM(m, T) : salt_.gammaPM(m, T); }
     scalar osmotic(scalar m, scalar T = 298.15) const override
-    { return isENRTL_ ? enrtl_.osmoticCoefficient(m, T) : salt_.osmoticCoefficient(m, T); }
+    { checkSpan_(T); return isENRTL_ ? enrtl_.osmoticCoefficient(m, T) : salt_.osmoticCoefficient(m, T); }
     scalar gammaPMMixed(scalar m, scalar xAnti, scalar MwAnti,
                         scalar epsAnti, scalar vAnti, scalar T = 298.15) const override
     { return isENRTL_ ? enrtl_.gammaPMMixed(m, xAnti, MwAnti, epsAnti, vAnti, T) : gammaPM(m, T); }

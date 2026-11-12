@@ -24,3 +24,14 @@ parameters
 }
 
 source "MODEL-TO-MODEL anchor (2026-06-11): least squares vs the Parker-slotted Pitzer gamma_pm(m) at 25 C, m 0.1-6 mol/kg, rms(ln gamma) 0.023 (bin: /tmp fit vs pitzer_naoh.csv). NOT an independent measurement fit -- replace when a primary eNRTL regression lands.";
+
+provenance
+{
+    origin  predictive;
+    validity
+    {
+        temperature { min 298.15 K; max 298.15 K; }
+        note        "the temperature of the Pitzer surface it was matched to (298.15 K); off it the temperature scaling is the engine's own 298.15/T, not a fitted dependence";
+    }
+}
+

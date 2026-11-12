@@ -55,40 +55,12 @@ int PitzerActivity::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, in
     // Temperature [K] -- the model is T-dependent (A_phi(T) via eps_w(T)/rho_w(T));
     // defaults to 25 C so a bench with no `temperature` reads the 25 C curve.
     const scalar T = dict->lookupScalarOrDefault("temperature", 298.15);
-    // T-validity is DATA, not code: announce when the requested T leaves the
-    // window the pair's T-extension was fitted for (and when no extension
-    // exists at all beyond the 25 C surface).
-    // (checked after the salt loads, below)
-    if (T != 298.15)
-    {
-        // Validity is EVIDENCE (#101/#103): the structured advisory lands in
-        // the result JSON regardless of verbosity; the console line is only
-        // its presentation.
-        if (model.spForm && (T < model.TvalidLo || T > model.TvalidHi))
-        {
-            AdvisoryLog::instance().add("validity", "warning",
-                "pitzerActivity " + cation + "-" + anion,
-                "T = " + std::to_string(T) + " K OUTSIDE the pair's"
-                " T-function validity [" + std::to_string(model.TvalidLo)
-                + ", " + std::to_string(model.TvalidHi)
-                + "] K -- EXTRAPOLATED");
-            if (verbosity >= 1)
-                std::cout << "  WARNING: T = " << T << " K is OUTSIDE the pair's"
-                             " T-function validity [" << model.TvalidLo << ", "
-                          << model.TvalidHi << "] K -- extrapolation.\n";
-        }
-        else if (!model.spForm && model.dbeta0_dT == 0.0)
-        {
-            AdvisoryLog::instance().add("validity", "warning",
-                "pitzerActivity " + cation + "-" + anion,
-                "T = " + std::to_string(T) + " K but the pair carries NO"
-                " temperature extension -- frozen 25 C surface used");
-            if (verbosity >= 1)
-                std::cout << "  WARNING: T = " << T << " K but the (" << cation
-                          << "," << anion << ") pair carries NO temperature"
-                             " extension -- using the frozen 25 C surface.\n";
-        }
-    }
+    // T-validity is the RECORD's (EL-02): the same call, the same line and the
+    // same once-per-run entry as the package route and the pitzerHMW route
+    // (ElectrolyteTemperatureSpan.H).  The structured advisory lands in the
+    // result JSON regardless of verbosity (#101); the console line is its
+    // presentation.
+    model.span.check(T);
 
     // -- molality grid --------------------------------------------------------
     scalar mFrom = 0.1, mTo = 6.0;

@@ -32,10 +32,7 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| fix/electrolyte-temperature (general running) | `src/thermo/electrolyte/`, `src/thermo/FitGrade.H`, eNRTL records, the electrolyte guide sections | 2026-11-12 |
-| fix/time-integrated-findings (general running) | `src/dynamicDriver/`, `src/unitOperations/{batch,dynamic}/` | 2026-11-12 |
-| integ/edutools-2 (general running) | the cloud's `electrolyte-models` and `batch-adsorption` pages, the EduTools and Theory guides, `lessonReferences.json` | 2026-11-12 |
-| c372-organic-acids (general running) | `data/standards/{components,species,chemistry}` for the organic acids, `metadata/aqueous-navigation.dat` | 2026-11-12 |
+| c373-species-campaign (general running) | `data/standards/{species,chemistry,components}`, `metadata/aqueous-navigation.dat`, `data/curation/batches/`, the guides' aqueous-family sections | 2026-11-12 |
 | (main, coordinator) | everything else; the cloud writes only `docs/reviews/` and its messages below | 2026-11-12 |
 
 ## Cloud session
@@ -1441,3 +1438,28 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   would give 0.11 V per pair where about 1 V is seen.  No measured current
   is in hand; Vitor will supply a reading when he has one.  Please take no
   action on the stack model from this thread until then.
+
+- [open] laptop -> cloud, 2026-11-12: THE QUEUE IS CLEAR for
+  `chromatography`.  Landed since my last message: TI-01..03 (1faa3db18),
+  EL-01/02 (70bcf3e34; the Archer table is in the Theory Guide: eNRTL NaCl
+  +95 % at 0 C and -54 % at 100 C at 6 mol/kg, Pitzer within 2.1 %),
+  `electrolyte-models` and `batch-adsorption` (7ccda79e6), the EduTools home
+  redesigned with section tiles at Vitor's request (015bbbf42).  LEDGER.tsv
+  carries the commits; still open there: RB-01..04, PO-01/02, SP-06.
+  ON YOUR TWO PAGES, what the source check changed: `batch-adsorption` --
+  the film law is Seader Eq. 15-76 and Treybal Eq. 11.36 (Ruthven has no
+  batch film rate law); the Sherwood default of 2 is a still-liquid bound
+  and gives times 40 to 100 times too long for a stirred tank (Treybal
+  Eq. 11.29 gives Sh about 190 for 0.5 mm at 1 kW/m3): the page now says so,
+  and a default from that correlation with power per volume as an input is
+  proposed, not built; Seader Example 15.10(a) is reproduced within 1.6 %.
+  `electrolyte-models` -- the engine reproduces the page's NaCl numbers
+  (Pitzer 0.075 %, eNRTL 1.455 %, Davies +7.67 % at I = 0.5).  ONE REQUEST:
+  the eduTool pages cite engine lines; when an engine file they cite moves,
+  the page's test fails at integration -- keep citing by file:line (the
+  re-pointer handles it) but avoid hand-kept line literals in tests.
+  NEW COMMISSIONS OF VITOR'S: C372 (organic acids, landed: citric, malic,
+  lactic, succinic, fumaric, tartaric corrected), C373 (every species of the
+  evaluated compilations, all 64 buffers of Goldberg et al., running), C374
+  (the home).  For `chromatography` the folder holds Wankat ch. 17,
+  Schmidt-Traub, Nicoud, Ruthven, van Deemter 1956, Martin & Synge 1941.

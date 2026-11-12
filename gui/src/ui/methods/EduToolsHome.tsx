@@ -33,7 +33,7 @@ License
   Reshaped 2026-11-09 (Vítor: the guided sequences "não fazem sentido nenhum";
   "tudo por secções e com o Find logo muito destacado em cima").  Top to
   bottom: title and one sentence, a WIDE search field (focused on arrival), a
-  count line, a one-line row of section links, then every live tool by
+  count line, a grid of section tiles (C374), then every live tool by
   section (METHOD_DISCIPLINES order).  Typing filters the page live with the
   SAME index and matcher as the Find dialog (eduToolsIndex.ts); a tool matched
   only inside a lesson shows that chapter as its reason.  No sequence is
@@ -41,16 +41,28 @@ License
   registry only and is not a panel or a menu.
 \*---------------------------------------------------------------------------*/
 
-import { Anchor, Box, Group, SimpleGrid, Stack, Text, TextInput, UnstyledButton } from "@mantine/core";
+import { Box, SimpleGrid, Stack, Text, TextInput, UnstyledButton } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { useCoarsePointer } from "./methodsChrome.js";
+import { accentCss } from "./sectionAccents.js";
 import { groupHits, type HomeMatch } from "./homeFilter.js";
 import {
-  METHOD_DISCIPLINES, METHOD_TOOLS, openMethodToolAt, openToolFromHome,
+  METHOD_DISCIPLINES, METHOD_TOOLS, type MethodDiscipline, openMethodToolAt, openToolFromHome,
 } from "./registry.js";
 
 type IndexModule = typeof import("./eduToolsIndex.js");
+
+/** One tile per section that has live tools, with the number of tools that
+ *  survive the filter (the matches under a query, all of them otherwise). */
+export function homeTiles(
+  live: readonly { id: string; discipline: string }[],
+  kept: (id: string) => boolean,
+): { d: MethodDiscipline; n: number }[] {
+  return METHOD_DISCIPLINES
+    .filter((d) => live.some((m) => m.discipline === d))
+    .map((d) => ({ d, n: live.filter((m) => m.discipline === d && kept(m.id)).length }));
+}
 
 export function EduToolsHome(): JSX.Element {
   const coarse = useCoarsePointer();
@@ -85,6 +97,9 @@ export function EduToolsHome(): JSX.Element {
   const sections = METHOD_DISCIPLINES.map((d) => ({
     d, tools: live.filter((m) => m.discipline === d && kept(m.id)),
   })).filter((s) => s.tools.length > 0);
+  // One tile per section that has live tools; under a query its count is the
+  // number of MATCHES and a section with none is dimmed (its shelf is hidden).
+  const tiles = homeTiles(live, kept);
 
   return (
     <Box data-method-home="" style={{ flex: 1, minHeight: 0, minWidth: 0,
@@ -110,23 +125,28 @@ export function EduToolsHome(): JSX.Element {
             : searching ? "Reading the lessons…" : `${live.length} tools`}
         </Text>
 
-        {sections.length > 0 && (
-          <Group gap="md" wrap="nowrap" data-method-home-jump=""
-            style={{ overflowX: "auto" }}>
-            <Text size="xs" c="dimmed" style={{ flex: "none" }}>Jump to</Text>
-            {sections.map((s) => (
-              <Anchor key={s.d} size="xs" style={{ flex: "none" }}
-                href={`#method-section-${encodeURIComponent(s.d)}`}
+        <SimpleGrid cols={{ base: 2, md: 3, lg: 4 }} spacing="xs"
+          data-method-home-tiles="" role="navigation" aria-label="EduTools sections">
+          {tiles.map((t) => {
+            const on = t.n > 0;
+            return (
+              <UnstyledButton key={t.d} component="a" className="choupo-edu-tile"
+                data-method-tile={t.d} data-dim={on ? undefined : ""}
+                aria-disabled={on ? undefined : true}
+                tabIndex={on ? 0 : -1}
+                href={`#method-section-${encodeURIComponent(t.d)}`}
+                style={{ "--sec": accentCss(t.d) } as CSSProperties}
                 onClick={(e) => {
                   e.preventDefault();
-                  document.getElementById(`method-section-${s.d}`)
+                  if (on) document.getElementById(`method-section-${t.d}`)
                     ?.scrollIntoView?.({ block: "start" });
                 }}>
-                {s.d}
-              </Anchor>
-            ))}
-          </Group>
-        )}
+                <Text size="sm" fw={600} style={{ minWidth: 0 }}>{t.d}</Text>
+                <Text size="sm" data-method-tile-count="" style={{ flex: "none" }}>{t.n}</Text>
+              </UnstyledButton>
+            );
+          })}
+        </SimpleGrid>
 
         {filtering && nKept === 0 && (
           <Text size="sm">Nothing matches every word. Try fewer words, or a method, a model or a quantity.</Text>
@@ -135,17 +155,16 @@ export function EduToolsHome(): JSX.Element {
         <Stack gap="md" data-method-home-shelves="">
           {sections.map((s) => (
             <Box key={s.d} component="section" id={`method-section-${s.d}`} data-method-shelf={s.d}
-              style={{ marginTop: 14 }}>
-              <Text size="lg" fw={600} mb={8}>
+              style={{ marginTop: 14, "--sec": accentCss(s.d) } as CSSProperties}>
+              <Text size="lg" fw={600} mb={8} className="choupo-edu-heading">
                 {s.d} <Text span size="sm" c="dimmed" fw={400}>({s.tools.length})</Text>
               </Text>
               <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="xs">
                 {s.tools.map((m) => {
                   const ch = match.chapter.get(m.id);
                   return (
-                    <Box key={m.id} data-method-home-tool={m.id}
-                      style={{ borderRadius: 4, minWidth: 0,
-                        border: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))" }}>
+                    <Box key={m.id} data-method-home-tool={m.id} className="choupo-edu-card"
+                      style={{ borderRadius: 4, minWidth: 0 }}>
                       <UnstyledButton onClick={() => openToolFromHome(m.id)}
                         style={{ display: "block", width: "100%", textAlign: "left",
                           padding: coarse ? "10px 12px" : "6px 10px" }}>

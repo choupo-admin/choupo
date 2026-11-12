@@ -12,7 +12,7 @@ still missing, in the order that matters for wine and food streams.
 
 **Rule that bounds it.**  A value enters a record only from a work that was READ,
 cited with table and page; primary or evaluated sources only.  Nothing from
-memory, the web, DECHEMA/DWSIM/ChemSep or any NonCommercial compilation.  An
+memory, the web, a third-party databank or any NonCommercial compilation.  An
 aggregator (the CRC Handbook) is a SECOND READING that enters no value.  The
 ThermoML mirror is a finding aid: no value enters from it unless the article it
 points at is read (its README).

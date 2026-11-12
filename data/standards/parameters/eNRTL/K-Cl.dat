@@ -31,3 +31,14 @@ parameters
 // gives 8.1354/-4.1341 -- this independent refit lands within 0.2 % of the
 // original values.  Two roads, one answer.
 source "REFIT to Hamer & Wu 1972, J. Phys. Chem. Ref. Data 1, 1047, Table 28 (gamma_pm, 25 C); cross-checked vs Chen & Evans 1986 Table 1";
+
+provenance
+{
+    origin  regressed;
+    validity
+    {
+        temperature { min 298.15 K; max 298.15 K; }
+        note        "the temperature of the fitted values (298.15 K); off it the temperature scaling is the engine's own 298.15/T, not a fitted dependence";
+    }
+}
+

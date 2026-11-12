@@ -41,7 +41,13 @@ License
       (SolventProperties).  = A_DH(25) at 25 C.
     * Born / PDH evaluated at the actual T, not a hard-coded 298.15.
   Every term is anchored so that at T = 298.15 K it returns EXACTLY the
-  validated 25 C kernel (golden masters unchanged); off 25 C it is physical.
+  validated 25 C kernel (golden masters unchanged).  OFF 25 C IT IS NOT
+  VALIDATED, and the tau(T) = tau_ref x 298.15/T above is this engine's OWN
+  simplification: Chen & Evans (1986) eq 45 carries FITTED temperature terms
+  (tau = a + b(1/T - 1/theta) + c[...]) that the catalogue records do not.
+  Against Archer (1992) for NaCl it errs by tens of per cent at 273 K and
+  373 K (Theory Guide, eNRTL temperature statement, with the table).  The run
+  announces it once per pair (`span`, ElectrolyteTemperatureSpan.H).
 
   PRIMARY: Chen & Evans, AIChE J. 32 (1986) 444 (model + water-NaCl tau =
   (8.885, -4.549), alpha = 0.2).  The local-composition term runs on the
@@ -59,6 +65,7 @@ License
 #pragma once
 
 #include "thermo/electrolyte/SolventProperties.H"
+#include "thermo/electrolyte/ElectrolyteTemperatureSpan.H"
 
 #include <array>
 #include <cmath>
@@ -78,6 +85,9 @@ public:
     double A_DH    = 2.9127;   // mole-fraction Debye-Huckel param, water 25 C (reference)
     double rho     = 14.9;     // closest-approach
     double Mw      = 18.015;   // solvent molar mass [g/mol]
+    // Temperature validity of the record's parameters (declared span, else 25 C);
+    // read by the package route through span.check(T).  Inactive until loadENRTL sets it.
+    electrolyte::TemperatureSpan span;
 
     // ---- Temperature helpers -------------------------------------------
     double aDH(double T)  const { return A_DH * SolventProperties::debyeHuckelFactor(T); }

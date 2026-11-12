@@ -5585,6 +5585,85 @@ and solubility; do not read a heat of dilution off its $T$-slope without
 a refit.
 \end{pitfall}
 
+\paragraph{Off 25\,\textdegree C the eNRTL kernel is not validated, and the
+measured size of the error.}\label{par:enrtl-temperature-validity}
+The rule $\tau(T)=\tau^{\mathrm{ref}}\,T_{\mathrm{ref}}/T$ above is
+\emph{Choupo's own simplification}, not a fitted temperature dependence.
+Chen \& Evans (1986, Eq.~45)~\cite{ChenEvans1986} write
+$\tau = a + b\,(1/T - 1/\theta) + c\,[\,\cdots\,]$ with temperature terms
+fitted to data over a range; the catalogue records
+(\file{parameters/eNRTL/}) carry only the 25\,\textdegree C pair, so $b$ is
+set by that single point and $a=c=0$.  What this costs was measured against
+Archer's critical evaluation of NaCl(aq)~\cite{Archer1992}, whose
+Tables~9 and~10 (p.~819) give $\phi$ and $\gamma_\pm$ at 0.1\,MPa from 273 to
+373\,K.  Both models were evaluated through the package route (the one every
+process unit reads) at $T = 273.15,\ 298.15,\ 323.15,\ 373.15$\,K (Archer's
+printed 273, 298, 323, 373\,K; a 0.15\,K reading shift moves $\gamma_\pm$ of
+the Pitzer surface by less than $2\times10^{-4}$):
+
+\begin{center}
+\small
+\begin{tabular}{r r r r r r r r}
+\hline
+ & & \multicolumn{3}{c}{$\gamma_\pm$} & \multicolumn{3}{c}{$\phi$} \\
+$T$ (K) & $m$ & Archer & eNRTL & Pitzer & Archer & eNRTL & Pitzer \\
+\hline
+273 & 0.1 & 0.7796 & $+0.7$\,\% & $+0.2$\,\% & 0.9316 & $+0.4$\,\% & $+0.1$\,\%  \\
+273 & 1   & 0.6340 & $+13.0$\,\% & $+1.3$\,\% & 0.9157 & $+7.6$\,\% & $+0.5$\,\%  \\
+273 & 3   & 0.6585 & $+54.1$\,\% & $+1.0$\,\% & 1.0107 & $+22.4$\,\% & $-0.1$\,\%  \\
+273 & 6   & 0.8990 & $+94.9$\,\% & $+2.1$\,\% & 1.2466 & $+22.1$\,\% & $+0.7$\,\%  \\
+\hline
+298 & 0.1 & 0.7771 & $-0.5$\,\% & $+0.1$\,\% & 0.9322 & $-0.3$\,\% & $+0.0$\,\%  \\
+298 & 1   & 0.6572 & $-1.4$\,\% & $-0.0$\,\% & 0.9371 & $-0.1$\,\% & $-0.1$\,\%  \\
+298 & 3   & 0.7177 & $+1.9$\,\% & $-0.5$\,\% & 1.0486 & $+1.9$\,\% & $-0.3$\,\%  \\
+298 & 6   & 0.9885 & $-3.9$\,\% & $+0.2$\,\% & 1.2694 & $-3.2$\,\% & $+0.4$\,\%  \\
+\hline
+323 & 0.1 & 0.7697 & $-1.1$\,\% & $+0.1$\,\% & 0.9302 & $-0.6$\,\% & $+0.0$\,\%  \\
+323 & 1   & 0.6569 & $-8.2$\,\% & $-0.0$\,\% & 0.9431 & $-4.1$\,\% & $-0.1$\,\%  \\
+323 & 3   & 0.7299 & $-18.8$\,\% & $-0.5$\,\% & 1.0609 & $-8.9$\,\% & $-0.3$\,\%  \\
+323 & 6   & 0.9933 & $-35.3$\,\% & $-0.1$\,\% & 1.2648 & $-17.4$\,\% & $+0.1$\,\%  \\
+\hline
+373 & 0.1 & 0.7459 & $-1.8$\,\% & $+0.1$\,\% & 0.9219 & $-1.0$\,\% & $+0.0$\,\%  \\
+373 & 1   & 0.6228 & $-14.2$\,\% & $-0.1$\,\% & 0.9340 & $-7.7$\,\% & $-0.1$\,\%  \\
+373 & 3   & 0.6801 & $-33.4$\,\% & $-0.6$\,\% & 1.0459 & $-18.4$\,\% & $-0.3$\,\%  \\
+373 & 6   & 0.8727 & $-53.9$\,\% & $-0.7$\,\% & 1.2111 & $-30.6$\,\% & $-0.2$\,\%  \\
+\hline
+\end{tabular}
+\end{center}
+\noindent Deviations are $(\text{model}/\text{Archer}-1)$.  Source:
+Archer~\cite{Archer1992}, J.~Phys.\ Chem.\ Ref.\ Data \textbf{21}, 793
+(1992), Table~10 ($\gamma_\pm$) and Table~9 ($\phi$), printed page~819,
+$m = 0.1,\,1,\,3,\,6$\,mol/kg.  The 75\,\textdegree C row asked for is
+\emph{not} in those tables (they print 273, 298, 323, 373, 473 and 573\,K), so
+it is not compared here; every cell shown was read from the page image, not
+from its text layer.  Archer's values are a critical fit, not raw
+measurements, so this is agreement with an evaluation; Pitzer's NaCl
+temperature functions (Silvester \& Pitzer~\cite{SilvesterPitzer1977}) are
+the second column.  The 25\,\textdegree C eNRTL row is the validated one
+($\le 3.9$\,\%); away from it the error grows to tens of per cent at 3--6\,m,
+with the sign set by the side of 25\,\textdegree C.  \emph{The run says so:}
+every eNRTL pair record declares the temperature of its data
+(\code{validity \{ temperature \{ min; max; \} \}}, 298.15\,K for the whole
+catalogue), and a pair evaluated outside that span is announced once per run,
+by name, with the words ``the temperature scaling used is
+$\tau(T)=\tau(25\,^\circ\mathrm{C})\times298.15/T$, the engine's own
+simplification, not a fitted temperature dependence''
+(\code{[pair-span]} line and the result's caveat block;
+\file{src/thermo/electrolyte/ElectrolyteTemperatureSpan.H}).  No number
+changes.
+
+\paragraph{What a fitted $\tau(T)$ would need.}  Not built, and not
+invented here.  It needs (i) the equation: Chen \& Evans Eq.~45, or the
+the form widely used in process simulators, $\tau = a + b/T + c[(T^{\mathrm{ref}}-T)/T + \ln(T/T^{\mathrm{ref}})]$ with
+per-pair $a,b,c$ (two or three numbers per $\tau$, four to six per salt);
+(ii) data that constrain it: $\gamma_\pm$ and $\phi$ at several temperatures
+per salt (for NaCl, Archer's evaluation~\cite{Archer1992}; for others the
+Goldberg and Nuttall evaluations at 25\,\textdegree C are not enough), with
+the heat-of-dilution data $L_\phi$ to fix the slope that
+$\gamma_\pm,\phi$ alone leave loose; (iii) the curation route of
+\code{electrolyteFit} extended to a temperature column and held out by
+temperature, so a refit is graded on a temperature it did not see.
+
 \subsection{The mixed solvent: drowning-out and the Born
 term}\label{sec:enrtl-mixed}
 
@@ -5641,7 +5720,9 @@ $\rho=14.9$):
    \approx -0.550.
 \]
 \emph{Local term} (Eq.~\ref{eq:enrtl-lc}, with $\tau_{m,ca}=8.885$,
-$\tau_{ca,m}=-4.549$, $\alpha=0.2$, evaluated unsymmetrically) adds a
+$\tau_{ca,m}=-4.549$ --- Table~1 of Chen et al.~\cite{ChenSongEvans1982},
+their fit to the NaCl activity-coefficient data at 298.15\,K --- and
+$\alpha=0.2$, evaluated unsymmetrically) adds a
 positive short-range contribution; summed and mole-fraction-to-molality
 converted via \eqref{eq:enrtl-mean} the kernel returns
 \[
@@ -18369,6 +18450,28 @@ with $T_{\!0}=298.15$~K, so the $25^\circ$C $\gamma_\pm$/$\phi$ anchor is
 \emph{only} the heat-of-dilution information.  The dominant long-range
 slope is already in $A_\phi(T)$ (the Born--Bjerrum factor,
 \S\ref{ch:electrolytes}); the three slots add the short-range correction.
+
+\paragraph{Temperature validity of a Pitzer pair: one reading, three
+routes.}\label{par:pitzer-temperature-validity}
+Three routes read the same pair records --- the \code{pitzerActivity} bench
+operation, the package route every process unit uses
+(\code{electrolyteActivity}, \code{ElectrolyteActivity}) and the
+\code{pitzerHMW} speciation route --- and they used to announce a pair used
+off its temperature differently (the package route not at all).  They now
+call one reader of the \emph{record}
+(\file{src/thermo/electrolyte/ElectrolyteTemperatureSpan.H}), so the line, the
+caveat-block entry and the once-per-run rule are the same.  The span is the
+record's \code{validity \{ temperature \{ min; max; \} \}} when it declares
+one; else, for a record that carries temperature functions or slopes, the
+window \code{TvalidLo}--\code{TvalidHi} (default 273.15--573.15\,K); else
+298.15\,K, the temperature of the data.  Of the 99 catalogue pair records, 96
+carry no temperature dependence --- $\beta^{(0)}$, $\beta^{(1)}$ and
+$C^\phi$ stay at their 25\,\textdegree C values at every $T$ and only
+$A_\phi(T)$ moves --- so for those a run at 373\,K is announced as
+``used\ldots ABOVE its validity span (298.15 298.15 K)\ldots the record
+carries no temperature dependence of its own''; the three with temperature
+functions (Na--Cl, K--Cl, Na--OH) are announced outside their window.  The
+announcement moves no number; it does not say how large the error is.
 With all slots zero, $L_\phi$ is still computed --- but from $A_\phi(T)$
 alone, the \emph{calorimetrically uncalibrated} guess.
 
@@ -27839,10 +27942,35 @@ electrolyte-NRTL formulation underlying \S\ref{ch:enrtl}.
 \bibitem{ChenEvans1986} Chen, C.-C., \& Evans, L. B., ``A Local
 Composition Model for the Excess Gibbs Energy of Aqueous Electrolyte
 Systems'', \emph{AIChE J.}, 32(3), 444--454 (1986). The
-electrolyte-NRTL model (\S\ref{ch:enrtl}); source of the water--NaCl
-energy parameters $\tau = (8.885, -4.549)$ and $\alpha = 0.2$, and the
+electrolyte-NRTL model (\S\ref{ch:enrtl}); its Table~1 is the
+\emph{osmotic}-coefficient fit of the water--NaCl pair ($\tau = 9.0234,
+-4.5916$), \emph{not} the $(8.885, -4.549)$ the catalogue carries, which are
+Table~1 of Chen et al.\ (1982)~\cite{ChenSongEvans1982}; Eq.~45 is the
+fitted temperature form that Choupo does not implement
+(\S\ref{ch:enrtl}).  Also the
 unsymmetric-reference local-composition equations the
 \code{ENRTLSingleSalt} kernel implements.
+
+\bibitem{Archer1992} Archer, D. G., ``Thermodynamic Properties of the
+NaCl + H$_2$O System.\ II.\ Thermodynamic Properties of NaCl(aq),
+NaCl$\cdot$2H$_2$O(cr), and Phase Equilibria'', \emph{J.\ Phys.\ Chem.\
+Ref.\ Data}, 21(4), 793--829 (1992), DOI 10.1063/1.555915.  A critical
+fit of the NaCl--water system, 250 to 600\,K; its Tables~9 (osmotic
+coefficient) and~10 (stoichiometric activity coefficient), p.~819, are the
+reference against which the eNRTL temperature statement of
+\S\ref{ch:enrtl} was measured.
+
+\bibitem{SilvesterPitzer1977} Silvester, L. F., \& Pitzer, K. S.,
+``Thermodynamics of Electrolytes. 8.\ High-Temperature Properties,
+Including Enthalpy and Heat Capacity, with Application to Sodium
+Chloride'', \emph{J.\ Phys.\ Chem.}, 81(19), 1822--1828 (1977). The
+temperature derivatives of the Pitzer virial parameters
+($\partial\beta^{(0)}/\partial T$, $\partial\beta^{(1)}/\partial T$,
+$\partial C^\phi/\partial T$, Eq.~\ref{eq:silvester-slots}) from which
+the relative apparent molar enthalpy $L_\phi$ is obtained by
+Gibbs--Helmholtz; carried per pair in the
+\file{parameters/Pitzer/pairs/} records and fitted by
+\code{bin/curate/fit\_lphi\_pitzer.py}.
 
 \bibitem{HamerWu1972} Hamer, W. J., \& Wu, Y.-C., ``Osmotic
 Coefficients and Mean Activity Coefficients of Uni-univalent
@@ -28256,18 +28384,6 @@ Separation Calculations by Linearization'', \emph{AIChE J.}, 17,
 \emph{Separation Process Principles}, 3rd ed., Wiley, 2011. Chapters
 4--7 cover the equilibrium-stage methods used in this simulator
 (flash, distillation, absorption).
-
-\bibitem{SilvesterPitzer1977} Silvester, L. F., \& Pitzer, K. S.,
-``Thermodynamics of Electrolytes. 8.\ High-Temperature Properties,
-Including Enthalpy and Heat Capacity, with Application to Sodium
-Chloride'', \emph{J.\ Phys.\ Chem.}, 81(19), 1822--1828 (1977). The
-temperature derivatives of the Pitzer virial parameters
-($\partial\beta^{(0)}/\partial T$, $\partial\beta^{(1)}/\partial T$,
-$\partial C^\phi/\partial T$, Eq.~\ref{eq:silvester-slots}) from which
-the relative apparent molar enthalpy $L_\phi$ is obtained by
-Gibbs--Helmholtz; carried per pair in the
-\file{parameters/Pitzer/pairs/} records and fitted by
-\code{bin/curate/fit\_lphi\_pitzer.py}.
 
 \bibitem{Parker1965} Parker, V. B., \emph{Thermal Properties of Aqueous
 Uni-univalent Electrolytes}, National Standard Reference Data Series

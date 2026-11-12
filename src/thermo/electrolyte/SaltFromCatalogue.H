@@ -48,6 +48,7 @@ License
 #include "thermo/PairAudit.H"
 #include "thermo/electrolyte/PitzerSingleSalt.H"
 #include "thermo/electrolyte/ENRTLSingleSalt.H"
+#include "thermo/electrolyte/ElectrolyteTemperatureSpan.H"
 #include "core/Advisory.H"
 #include "core/Dictionary.H"
 
@@ -294,6 +295,22 @@ inline void auditRegressedSaltRecord(const DictPtr& raw, const std::string& labe
     fillPairAudit(r, raw->subDict("provenance"), label, /*requireOrigin=*/true);
 }
 
+// The record's DECLARED temperature validity, flattened for the bridges
+// (`validityTmin`/`validityTmax` [K]); nothing is written when the record
+// declares none.  One reader for both kernels (ElectrolyteTemperatureSpan.H).
+inline void appendDeclaredTemperatureSpan(std::ostringstream& os, const DictPtr& r)
+{
+    if (!r->found("provenance")) return;
+    auto prov = r->subDict("provenance");
+    if (!prov->found("validity")) return;
+    auto v = prov->subDict("validity");
+    if (!v->found("temperature")) return;
+    auto t = v->subDict("temperature");
+    if (!t->found("min") || !t->found("max")) return;
+    os << "validityTmin " << t->lookupScalar("min", Dims::temperature) << "; ";
+    os << "validityTmax " << t->lookupScalar("max", Dims::temperature) << "; ";
+}
+
 inline DictPtr bridgePitzerPair(const DictPtr& r)
 {
     auto pr = r->subDict("parameters");
@@ -310,6 +327,7 @@ inline DictPtr bridgePitzerPair(const DictPtr& r)
         if (pr->found(k)) os << k << " " << pr->lookupScalar(k) << "; ";
     if (pr->found("calorimetricFit"))
         os << "calorimetricFit " << pr->lookupWord("calorimetricFit") << "; ";
+    appendDeclaredTemperatureSpan(os, r);
     return Dictionary::fromString(os.str());
 }
 
@@ -533,6 +551,7 @@ inline PitzerSingleSalt loadSalt(const std::string& cation, const std::string& a
         s.TvalidLo = p->lookupScalarOrDefault("TvalidLo", 273.15);
         s.TvalidHi = p->lookupScalarOrDefault("TvalidHi", 573.15);
     }
+    s.span = pitzerSpan(p, cation + "-" + anion);
     return s;
 }
 
@@ -615,6 +634,7 @@ inline DictPtr bridgeENRTLPair(const DictPtr& r)
     os << "tau_m_ca " << pr->lookupScalar("tau_m_ca") << "; ";
     os << "tau_ca_m " << pr->lookupScalar("tau_ca_m") << "; ";
     if (pr->found("alpha")) os << "alpha " << pr->lookupScalar("alpha") << "; ";
+    appendDeclaredTemperatureSpan(os, r);
     return Dictionary::fromString(os.str());
 }
 
@@ -670,6 +690,7 @@ inline ENRTLSingleSalt loadENRTL(const std::string& cation, const std::string& a
     s.tau_m_ca = p->lookupScalar("tau_m_ca");
     s.tau_ca_m = p->lookupScalar("tau_ca_m");
     s.alpha    = p->lookupScalarOrDefault("alpha", 0.2);
+    s.span     = enrtlSpan(p, cation + "-" + anion);
     return s;
 }
 

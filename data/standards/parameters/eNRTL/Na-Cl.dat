@@ -5,8 +5,15 @@
   water, -4.549) with nonrandomness alpha 0.2 -- the short-range half of the
   eNRTL excess Gibbs energy (the long-range Pitzer-Debye-Huckel part is
   parameter-free), consumed by the eNRTL activity engine for aqueous NaCl.
-  Source: Chen & Evans, AIChE J. 32 (1986) 444, the water-NaCl reference
-  regression (their Table 1) -- full string in the source entry below.
+  Source: Chen, Britt, Boston & Evans, AIChE J. 28 (1982) 588, Table 1
+  (p. 592), the fit to the molality mean ionic activity coefficient of
+  NaCl(aq) at 298.15 K -- full string in the source entry below.  (Chen &
+  Evans 1986 Table 1 is the OSMOTIC-coefficient fit of the same salt and
+  carries other numbers, 9.0234 / -4.5916; these are not those.)
+  Temperature: the pair was fitted at 298.15 K only and the record carries no
+  temperature dependence; the engine scales tau by 298.15/T off that point,
+  which is its own simplification, not a fitted law (the validity block
+  below; Theory Guide, eNRTL temperature statement).
 \*-----------------------------------------------------------------------------*/
 recordType electrolyteNRTLParameters;
 schemaVersion 1;
@@ -22,4 +29,15 @@ parameters
     alpha 0.2;
 }
 
-source "Chen & Evans, AIChE J. 32 (1986) 444 (water-NaCl reference)";
+source "Chen, Britt, Boston & Evans, AIChE J. 28 (1982) 588, Table 1, p. 592 (water-NaCl, mean ionic activity coefficient fit at 298.15 K)";
+
+provenance
+{
+    origin  literature;
+    validity
+    {
+        temperature { min 298.15 K; max 298.15 K; }
+        note        "the temperature of the fit (298.15 K); off it the temperature scaling is the engine's own 298.15/T, not a fitted dependence";
+    }
+}
+

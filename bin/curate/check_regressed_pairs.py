@@ -2061,6 +2061,8 @@ def main():
         check_vp_window_negatives(tmp, fails)
         vp_grades = ", ".join(f"{VP_GRADE_COUNT.get(g, 0)} {g}" for g in VP_GRADES[:3])
         span_held = check_span_announcement(tmp, fails)
+        import electrolyte_span_arms   # arms (m)-(o): electrolyte pairs, EL-01/EL-02
+        el_rec, el_routes, el_grade = electrolyte_span_arms.run_arms(tmp, fails)
         ll_held = check_ll_arm(tmp, fails)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
@@ -2130,7 +2132,11 @@ def main():
           "voiced; "
           f"{span_held} water pair(s) used BELOW their span announce it once "
           "per run, into the caveat block, say nothing inside it, and publish "
-          "the same gammas as a span-less inline twin (arm g).  NOT "
+          "the same gammas as a span-less inline twin (arm g); "
+          f"{el_rec} eNRTL record(s) declare their temperature validity and an eNRTL "
+          f"pair off it is announced once (arm m); {el_routes} Pitzer routes print ONE "
+          "identical line for a pair with no temperature dependence (arm n); the "
+          "fit-grade sentence reads the record's held-out points (arm o).  NOT "
           "checked: whether the transcribed measurements agree with the "
           "articles (a curator's read-back), whether the band was well "
           "chosen, or phase stability below a validity span (it is "
