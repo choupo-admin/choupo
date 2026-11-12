@@ -3481,6 +3481,22 @@ accepts today, and that is a policy call.
 > some liquid-phase properties are hard to predict, so each route SAYS its
 > expected error at the point of use and a measured value from the case
 > always overrides an estimate.
+> AND A HARD CONSTRAINT (Vitor, the same hour: "isso tem de ser feito de
+> forma elegante! Porque a forma como se organiza os componentes e a
+> informacao vai depender disso! Martelar isto a bruta e exigir correcoes
+> brutas para componentes caso a caso pode dar super confusao").  BINDING:
+> (1) NOTHING is built for liquid density, viscosity or surface tension
+> until he has read the study and the design is ratified; (2) the
+> NaOH-only density and viscosity seam that had been added to the C377
+> slice is WITHDRAWN (the paper's correlations are transcribed as evidence
+> for the study, not implemented); (3) the proposal is judged by: no
+> component name and no per-component special case in code; the record's
+> organisation designed, each fact in one home (a solution property belongs
+> to the salt-solvent system, like a Pitzer pair, not to a component); few
+> concepts; exceptions as declared data with a reason; no big-bang edit of
+> records; a pilot on one property first, reversible.  Declared
+> hypotheses, if adopted, extend the existing `approximations {}` block
+> under a closed vocabulary -- never a new free-form dictionary.
 
 > **C377 (Vitor, 2026-11-12: "se eu fizer evaporacao multi-efeito de
 > agua+NaOH o Choupo ja lida com o calor de dissolucao de forma elegante?").**
