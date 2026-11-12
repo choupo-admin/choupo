@@ -47,6 +47,7 @@
   @@RESULT-BEGIN@@
   5 points of 1 laboratory(ies); 5 kept,
   0 discarded after the least-squares stage (> 20 %):
+  ONE laboratory: no point was discarded (C321 part 2 amended).
   H_ref = 2.98917e+05 Pa at 298.15 K, enthalpy = -22320 J/mol;
   kept span 250.06-329.97 K; max relative error
   1.7507 % (least squares 2.0625 %); in-sample

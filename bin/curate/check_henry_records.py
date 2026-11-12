@@ -52,9 +52,11 @@ def field(t, key):
 # counts, the declaration's fingerprint and its evidence (DOI, block, both
 # sums); a severe grade must not sit in data/standards (C300 rule 3) and a
 # refused fit must have no record anywhere.  Every case's RESULT block must
-# agree with its record set.  Three BUILT negatives run every time (a
+# agree with its record set.  Four BUILT negatives run every time (a
 # coefficient edited, the grade edited down, a refused fit dressed as
-# promoted): each must be refused, or the arm cannot see what it claims.
+# promoted, a single-laboratory record carrying discarded points -- C321 part
+# 2 amended: a point is an outlier only against another laboratory): each
+# must be refused, or the arm cannot see what it claims.
 # NOT CHECKED: the loader does not VOICE a Henry record's fitGrade or its
 # autoPromoted status (src/thermo/henrysLaw/ reads neither; see DEV.md 4c
 # C321 part 2) -- the grade is in the record and on the pairLookup card only.
@@ -91,6 +93,9 @@ def organic_compare(text, res, case, decl, fp, where_std, name):
         errs.append(f"{tag}: fitGradeMaxRelativeError_pct {mx} != refit {res['maxRel_pct']:.4f}")
     if ho.grade_of(float(mx or 1e9)) != res["grade_in"]:
         errs.append(f"{tag}: the number {mx} % does not grade to {res['grade_in']}")
+    if len(re.findall(r'^\s*doi\s+"', text, re.M)) < 2 and field(text, "pointsDiscarded") not in ("0", None):
+        errs.append(f"{tag}: ONE laboratory and pointsDiscarded {field(text, 'pointsDiscarded')} -- with a "
+                    f"single series no point is an outlier (C321 part 2 amended)")
     for k, n in (("pointsKept", len(res["kept"])), ("pointsDiscarded", len(res["discarded"]))):
         if field(text, k) != str(n):
             errs.append(f"{tag}: {k} {field(text, k)} != {n}")
@@ -121,6 +126,7 @@ def check_organic_records():
     """(errors, not_run, n_records, n_cases); see the comment above."""
     import henry_organic as ho
     errs, not_run, n = [], [], 0
+    n_local = 0
     cases = sorted(p.parent.parent for p in ho.CASES.glob("*/system/controlDict"))
     recs = {}
     for p in sorted(hs.HENRY.glob("*.dat")):
@@ -166,6 +172,7 @@ def check_organic_records():
             continue
         p, text, std = mine[0]
         n += 1
+        n_local += 0 if std else 1
         errs += organic_compare(text, res, c, decl, fp, std, p.name)
         if f"{res['maxRel_pct']:.4f} %" not in said or ("PROMOTED" in said) != want_std:
             errs.append(f"{rel}: its RESULT block does not state this fit (max {res['maxRel_pct']:.4f} %)")
@@ -182,12 +189,16 @@ def check_organic_records():
         t2 = re.sub(r"^\s*fitGradeCap.*\n", "", t2, flags=re.M)
         if t2 == text or not organic_compare(t2, res, c, decl, fp, True, name):
             bad.append("a grade edited down to clean")
+        t4 = re.sub(r"^(\s*pointsDiscarded\s+)\d+;", r"\g<1>2;", text, flags=re.M)
+        r4 = dict(res, discarded=[("x", 0, 0.0, 0.3)] * 2)
+        if t4 == text or not any("ONE laboratory" in e for e in organic_compare(t4, r4, c, decl, fp, True, name)):
+            bad.append("a single-laboratory record carrying discarded points")
         r3 = dict(res, grade="refused", why="built negative")
         if not organic_compare(text, r3, c, decl, fp, True, name):
             bad.append("a refused fit dressed as promoted")
         for b in bad:
             errs.append(f"built negative NOT refused: {b} -- the arm cannot see what it claims")
-    return errs, not_run, n, len(cases)
+    return errs, not_run, n, len(cases), n_local
 
 
 def main() -> int:
@@ -256,7 +267,7 @@ def main() -> int:
     if summary != made:
         errs.append(f"summary 'new' set differs from the records: only in summary "
                     f"{sorted(summary - made)}, only records {sorted(made - summary)}")
-    org_errs, org_not_run, org_n, org_cases = check_organic_records()
+    org_errs, org_not_run, org_n, org_cases, org_local = check_organic_records()
     errs += org_errs
     if errs:
         print(f"FAIL: {len(errs)} problem(s)")
@@ -270,8 +281,9 @@ def main() -> int:
         return 2
     print(f"check_henry_records: OK -- {len(made)} Henry records from Sander 2015 reproduce from rows.tsv "
           f"({sum(len(v) for v in rows.values())} M/L rows, no Q or E row); {org_n} organic-solvent "
-          f"Henry records refitted from their {org_cases} ThermoML cases equal their fit and grade "
-          f"(3 built negatives refused; NOT CHECKED: the values of the thermo-library records, "
+          f"Henry records ({org_n - org_local} in the catalogue, {org_local} severe kept in its case) refitted "
+          f"from their {org_cases} ThermoML cases equal their fit and grade "
+          f"(4 built negatives refused; one laboratory, no point discarded; NOT CHECKED: the values of the thermo-library records, "
           f"and the voicing of a Henry fitGrade, which no loader does)")
     return 0
 

@@ -3525,7 +3525,15 @@ accepts today, and that is a policy call.
 > regenerated (caseManifest, releaseInventory henryPairs 251 -> 486,
 > docs/ai/components.md) and gate_manifest --check, the gate's claim
 > re-observed with --only.  NOT RUN: a full sweep, --gui, check_regressed_pairs
-> (not touched).
+> (not touched).  AMENDED THE SAME DAY (the commander's rule, to be reported
+> to Vitor; it supersedes the outlier and promotion counts above): with ONE
+> laboratory no point is an outlier, so NH3-ethanol keeps all 6 points, misses
+> them by up to 19.03 % (the series does not follow van't Hoff, said in its
+> case), is graded SEVERE and its record moves to its own case
+> (constant/parameters/Henry/, C300 rule 3) -- 234 promoted, henryPairs 486 ->
+> 485, the FASTSET line moved to CO2-cyclohexanol, and check_organic_records
+> refuses a single-laboratory record carrying discarded points (built
+> negative and by-hand sabotage, both caught).
 
 > **C304 (Vitor, 2026-11-11, an external reviewer's reading of the Pinch
 > report of greenAmmoniaPEQ_baseCase: "a normal case report must be an

@@ -10,14 +10,14 @@
 
   FIT (DEV.md 4c C321 part 2): van't Hoff in 1/T, every laboratory together,
   least squares then minimax on the relative residual of H; points above
-  20 % after the least-squares stage discarded by name (2 here).
-  4 kept points, 288.65-328.15 K; max relative error
-  8.00 % in-sample (graded 5 / 10 / 20 %).
+  20 % after the least-squares stage discarded by name (0 here).
+  6 kept points, 277.35-328.15 K; max relative error
+  19.03 % in-sample (graded 5 / 10 / 20 %).
   Regressed by Choupo, NOT read by a human; the archive's transcription has
   not been read back against the articles.
 
   NOTE: INFINITE-DILUTION coefficient at the solvent's own vapour pressure;
-  validity 288-329 K (the measured span; outside it an extrapolation).
+  validity 277-329 K (the measured span; outside it an extrapolation).
 \*---------------------------------------------------------------------------*/
 
 solute      NH3;
@@ -28,10 +28,10 @@ dissolvedSpecies  NH3;
 convention        Sander-Hxp-v1;
 
 model       vantHoff;
-H_ref       6.66030e+05 Pa;
+H_ref       6.31930e+05 Pa;
 T_ref       298.15 K;
-enthalpy    -34324  J/mol;
-Trange      ( 288  329 );
+enthalpy    -31373  J/mol;
+Trange      ( 277  329 );
 
 reviewStatus autoPromoted;
 review      { by none; }
@@ -43,11 +43,11 @@ provenance
     method        "van't Hoff fit, least squares then minimax on H_model/H - 1, bin/curate/henry_organic.py";
     CAS           7664-41-7;
     fittedInCase  "data/curation/henry/NH3-ethanol";
-    fitGrade      warning;   // DEV.md 4c C285: max |H_model - H|/H over the kept points, graded 5 / 10 / 20 %
+    fitGrade      severe;   // DEV.md 4c C285: max |H_model - H|/H over the kept points, graded 5 / 10 / 20 %
     fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
-    fitGradeMaxRelativeError_pct 7.9963;
-    pointsKept    4;
-    pointsDiscarded 2;
+    fitGradeMaxRelativeError_pct 19.0299;
+    pointsKept    6;
+    pointsDiscarded 0;
     fingerprint   "8934846c7a161bb7";   // of the declaration, frozen before the fit
     evidence
     (

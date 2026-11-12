@@ -47,6 +47,9 @@
   @@RESULT-BEGIN@@
   5 points of 1 laboratory(ies); 5 kept,
   0 discarded after the least-squares stage (> 20 %):
+  ONE laboratory: no point was discarded (C321 part 2 amended).
+  THE SERIES DOES NOT FOLLOW VAN'T HOFF within 5 %: the two-parameter
+  form misses its own measurements by up to 6.45 %.
   H_ref = 4.17809e+05 Pa at 298.15 K, enthalpy = -22742 J/mol;
   kept span 249.98-329.94 K; max relative error
   6.4499 % (least squares 6.6420 %); in-sample
