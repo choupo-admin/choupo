@@ -1,0 +1,6 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    h_trans2Butene_styrene budget_bytes     2048               1e-4
+diag    h_trans2Butene_styrene card_bytes       804                1e-4
+diag    h_trans2Butene_styrene n_records        1                  1e-4

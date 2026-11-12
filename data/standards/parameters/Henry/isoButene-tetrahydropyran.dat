@@ -1,0 +1,63 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Henry's-law constant for isoButene in liquid tetrahydropyran (infinite dilution).
+
+  Source DATA: the measurements of
+    Miyano, Y.[Yoshimori]; Uno, S.[Shigemichi]; Tochigi, K.[Katsumi] et al. (2007) J. Chem. Eng. Data 52, 2245-2249, doi:10.1021/je700270d
+  located through the NIST/TRC ThermoML Archive (doi 10.18434/mds2-2422);
+  the values belong to those articles.  NO measured point is reproduced here
+  or anywhere in this tree; data/curation/henry/isoButene-tetrahydropyran
+  declares each dataset by DOI, block and sha256 and regenerates it.
+
+  FIT (DEV.md 4c C321 part 2): van't Hoff in 1/T, every laboratory together,
+  least squares then minimax on the relative residual of H; points above
+  20 % after the least-squares stage discarded by name (0 here).
+  5 kept points, 250.06-329.97 K; max relative error
+  2.13 % in-sample (graded 5 / 10 / 20 %).
+  Regressed by Choupo, NOT read by a human; the archive's transcription has
+  not been read back against the articles.
+
+  NOTE: INFINITE-DILUTION coefficient at the solvent's own vapour pressure;
+  validity 250-330 K (the measured span; outside it an extrapolation).
+\*---------------------------------------------------------------------------*/
+
+solute      isoButene;
+solvent     tetrahydropyran;
+
+gasSpecies        isoButene;
+dissolvedSpecies  isoButene;
+convention        Sander-Hxp-v1;
+
+model       vantHoff;
+H_ref       3.75263e+05 Pa;
+T_ref       298.15 K;
+enthalpy    -21559  J/mol;
+Trange      ( 250  330 );
+
+reviewStatus autoPromoted;
+review      { by none; }
+
+provenance
+{
+    origin        fitted;
+    source        "doi:10.1021/je700270d (located through ThermoML, doi 10.18434/mds2-2422)";
+    method        "van't Hoff fit, least squares then minimax on H_model/H - 1, bin/curate/henry_organic.py";
+    CAS           115-11-7;
+    fittedInCase  "data/curation/henry/isoButene-tetrahydropyran";
+    fitGrade      warning;   // DEV.md 4c C285: max |H_model - H|/H over the kept points, graded 5 / 10 / 20 %
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+    fitGradeCap   ( singleLaboratory );   // DEV.md 4c C300 rule 2
+    fitGradeMaxRelativeError_pct 2.1257;
+    pointsKept    5;
+    pointsDiscarded 0;
+    fingerprint   "97b354024618e1cb";   // of the declaration, frozen before the fit
+    evidence
+    (
+        {
+            doi           "10.1021/je700270d";
+            block         12;
+            archiveFile   "je700270d.xml";
+            articleSha256 "f7967975b3a192763335c4cd4016617b06f704a5404e0cf426076989a83013bc";
+            sha256        "9ca00f133a1745265d3039eae06bfb319b0fa716f56bfdc08a25620d96bf6806";
+        }
+    );
+}

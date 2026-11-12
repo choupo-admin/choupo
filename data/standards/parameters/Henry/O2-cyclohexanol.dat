@@ -1,0 +1,63 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Henry's-law constant for O2 in liquid cyclohexanol (infinite dilution).
+
+  Source DATA: the measurements of
+    Merker, T.; Vrabec, J.; Hasse, H. (2012) J. Chem. Thermodyn. 49, 114-118, doi:10.1016/j.jct.2012.01.017
+  located through the NIST/TRC ThermoML Archive (doi 10.18434/mds2-2422);
+  the values belong to those articles.  NO measured point is reproduced here
+  or anywhere in this tree; data/curation/henry/O2-cyclohexanol
+  declares each dataset by DOI, block and sha256 and regenerates it.
+
+  FIT (DEV.md 4c C321 part 2): van't Hoff in 1/T, every laboratory together,
+  least squares then minimax on the relative residual of H; points above
+  20 % after the least-squares stage discarded by name (0 here).
+  3 kept points, 303.8-352.9 K; max relative error
+  2.40 % in-sample (graded 5 / 10 / 20 %).
+  Regressed by Choupo, NOT read by a human; the archive's transcription has
+  not been read back against the articles.
+
+  NOTE: INFINITE-DILUTION coefficient at the solvent's own vapour pressure;
+  validity 303-353 K (the measured span; outside it an extrapolation).
+\*---------------------------------------------------------------------------*/
+
+solute      O2;
+solvent     cyclohexanol;
+
+gasSpecies        O2;
+dissolvedSpecies  O2;
+convention        Sander-Hxp-v1;
+
+model       vantHoff;
+H_ref       2.05166e+08 Pa;
+T_ref       298.15 K;
+enthalpy    2254  J/mol;
+Trange      ( 303  353 );
+
+reviewStatus autoPromoted;
+review      { by none; }
+
+provenance
+{
+    origin        fitted;
+    source        "doi:10.1016/j.jct.2012.01.017 (located through ThermoML, doi 10.18434/mds2-2422)";
+    method        "van't Hoff fit, least squares then minimax on H_model/H - 1, bin/curate/henry_organic.py";
+    CAS           7782-44-7;
+    fittedInCase  "data/curation/henry/O2-cyclohexanol";
+    fitGrade      warning;   // DEV.md 4c C285: max |H_model - H|/H over the kept points, graded 5 / 10 / 20 %
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+    fitGradeCap   ( singleLaboratory );   // DEV.md 4c C300 rule 2
+    fitGradeMaxRelativeError_pct 2.3988;
+    pointsKept    3;
+    pointsDiscarded 0;
+    fingerprint   "fda08b1404b737e2";   // of the declaration, frozen before the fit
+    evidence
+    (
+        {
+            doi           "10.1016/j.jct.2012.01.017";
+            block         0;
+            archiveFile   "j.jct.2012.01.017.xml";
+            articleSha256 "c570c0becef37771abe2f2d983f48b115d032eb1d94e56f053b478e312904b68";
+            sha256        "94137129773a49f85291add85898ebce6ce3695c75a2368834d0bb6211625267";
+        }
+    );
+}

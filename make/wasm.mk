@@ -53,12 +53,17 @@ endif
 #  block (DEV.md 4c C171 B), while wasm/version.json beside it did.
 WASM_CXXFLAGS := -std=c++17 -fexceptions $(WASM_OPT) -Isrc -I. -MMD -MP
 
+# INITIAL_MEMORY 64 MiB (2026-11-11): --embed-file puts all of data/standards in
+# the binary's data segment; it passed the 16 MiB default once the pair
+# catalogues grew (19 MB: wasm-ld "initial memory too small, 20009744 bytes
+# needed").  Growth stays on; this only moves the floor above the embedded data.
 # Link-time flags.  See CLAUDE.md §13 for the load-bearing rationale of
 # each flag (Emscripten 3.1.6 quirks documented there).
 WASM_LDFLAGS := \
 	-std=c++17 -fexceptions $(WASM_OPT) \
 	-sWASM=1 \
 	-sALLOW_MEMORY_GROWTH=1 \
+	-sINITIAL_MEMORY=67108864 \
 	-sMODULARIZE=1 \
 	-sFORCE_FILESYSTEM=1 \
 	-sENVIRONMENT=web \

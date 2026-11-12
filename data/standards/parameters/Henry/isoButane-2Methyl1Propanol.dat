@@ -1,0 +1,63 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Henry's-law constant for isoButane in liquid 2Methyl1Propanol (infinite dilution).
+
+  Source DATA: the measurements of
+    Miyano, Y.[Yoshimori] (2004) J. Chem. Thermodyn. 36, 865-869, doi:10.1016/j.jct.2004.05.010
+  located through the NIST/TRC ThermoML Archive (doi 10.18434/mds2-2422);
+  the values belong to those articles.  NO measured point is reproduced here
+  or anywhere in this tree; data/curation/henry/isoButane-2Methyl1Propanol
+  declares each dataset by DOI, block and sha256 and regenerates it.
+
+  FIT (DEV.md 4c C321 part 2): van't Hoff in 1/T, every laboratory together,
+  least squares then minimax on the relative residual of H; points above
+  20 % after the least-squares stage discarded by name (0 here).
+  5 kept points, 249.99-330 K; max relative error
+  3.70 % in-sample (graded 5 / 10 / 20 %).
+  Regressed by Choupo, NOT read by a human; the archive's transcription has
+  not been read back against the articles.
+
+  NOTE: INFINITE-DILUTION coefficient at the solvent's own vapour pressure;
+  validity 249-330 K (the measured span; outside it an extrapolation).
+\*---------------------------------------------------------------------------*/
+
+solute      isoButane;
+solvent     2Methyl1Propanol;
+
+gasSpecies        isoButane;
+dissolvedSpecies  isoButane;
+convention        Sander-Hxp-v1;
+
+model       vantHoff;
+H_ref       1.25646e+06 Pa;
+T_ref       298.15 K;
+enthalpy    -20004  J/mol;
+Trange      ( 249  330 );
+
+reviewStatus autoPromoted;
+review      { by none; }
+
+provenance
+{
+    origin        fitted;
+    source        "doi:10.1016/j.jct.2004.05.010 (located through ThermoML, doi 10.18434/mds2-2422)";
+    method        "van't Hoff fit, least squares then minimax on H_model/H - 1, bin/curate/henry_organic.py";
+    CAS           75-28-5;
+    fittedInCase  "data/curation/henry/isoButane-2Methyl1Propanol";
+    fitGrade      warning;   // DEV.md 4c C285: max |H_model - H|/H over the kept points, graded 5 / 10 / 20 %
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+    fitGradeCap   ( singleLaboratory );   // DEV.md 4c C300 rule 2
+    fitGradeMaxRelativeError_pct 3.7000;
+    pointsKept    5;
+    pointsDiscarded 0;
+    fingerprint   "9111ee482d089280";   // of the declaration, frozen before the fit
+    evidence
+    (
+        {
+            doi           "10.1016/j.jct.2004.05.010";
+            block         7;
+            archiveFile   "j.jct.2004.05.010.xml";
+            articleSha256 "4d53b9c689cddc5571149b0f561e85887b9e55738b1907cc944fe5c78ddc84bd";
+            sha256        "9a349c01c3f9fa3b5cfee6133737a8111111debdc78b84c84bd3bfa689cbaf13";
+        }
+    );
+}

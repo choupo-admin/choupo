@@ -3417,6 +3417,198 @@ accepts today, and that is a policy call.
 > (check by grep) are listed, not silently left.  Status: recorded, general to
 > be dispatched (gui only; `--gui` is its validation).  Owner: architect.
 
+> **C335 (Vitor, 2026-11-12, in the cloud session: "Eu nao quero ter
+> problemas com advogados!" and, to the cloud's recommendation, "Faz como
+> recomendas!").  THE PINNED LICENCE DEBTS ARE PAID BEFORE DECEMBER.**  The
+> three classes `check_source_licence` pins today: (1) the 20 records that
+> name the Burcat / ReSpecTh compilation (NonCommercial) as a value's origin
+> -- replaced through the clean route `bin/curate/import_gibbs_nasa.py`
+> already names (NASA/TP-2002-211556, public domain; ATcT where NASA has no
+> entry), each value re-read from the primary; (2) the 4 pinned records
+> whose authority is an encumbered source -- a primary datum each, or the
+> value removed and the gap announced, never a guess; (3) the 25 sealed
+> case-local NH3 mirrors that name a no-grant source -- re-imported from the
+> corrected catalogue record.  Every pin leaves `debt_registry` only with its
+> record fixed.  Any golden row that moves is LISTED to Vitor with its reason
+> before a re-record.  Then a one-page source/licence/use sheet for a
+> jurist's one-hour review (Vitor decides whether to ask for one).  Cloud.
+
+> **C333 (Vitor, 2026-11-12, in the cloud session, after reading where the
+> plan leaves Choupo short of breadth-first simulators: "equacoes de estado
+> de alta precisao?! Nos nao podemos implementar isso ja?! Isso e facil!" and,
+> of the crude column and two-phase pipe flow (Beggs-Brill): "Isso tem de ser
+> feito ASAP.  O resto nao me preocupa").  THREE ITEMS MOVE TO THE FRONT.**
+> (1) REFERENCE (multiparameter Helmholtz) EQUATIONS OF STATE: one generic
+> kernel (ideal part + residual terms: polynomial, exponential, Gaussian,
+> non-analytic), the coefficients in RECORDS read from each fluid's primary
+> publication and held to that publication's own check values; first the
+> fluids whose primary is freely readable (IAPWS-95 water), then the fluids
+> of the corpus plants (H2, N2, NH3, CO2, CH4), then a mixture model
+> (GERG-2008) as its own slice.  Taken by the CLOUD (new files under
+> src/thermo/equationOfState/ and one registration line; a stop-and-report
+> if ThermoPackage.cpp, held by C331, must change).  (2) THE ATMOSPHERIC
+> CRUDE COLUMN (C329 part 3 / C228) and (3) BEGGS-BRILL two-phase pipe flow
+> (C214 W4) are ASAP: both need sources that live in the laptop's literature
+> folder (Beggs & Brill 1973; the crude unit's public case), and the crude
+> column sits in src/unitOperations/distillation/, held by C329 -- the
+> architect schedules them; the cloud takes Beggs-Brill if the paper is made
+> readable to it.  What Vitor said does NOT worry him: the drawn flowsheet
+> editor, compound count, interoperability.
+
+> **C333 (Vitor, 2026-11-12: "estas a descartar ajustes severos entre 10 % e
+> 20 %, mas esses sao para ficar!  So acima de 20 % e que se descartam!").**
+> C300 rule 3 (the architect's own tightening: `severe` leaves the default
+> catalogue) is REVERSED.  It contradicted the graded acceptance he had ruled in
+> C285/C286 -- clean, warning AND severe are accepted and promoted; only
+> `refused` (above the severe limit) is discarded -- and the technical reason
+> stands on its own: without a record the engine falls back to an ideal pair,
+> which is usually far worse than a severe fit, while a severe record is voiced
+> SEVERE on every run that loads it.  What stays from C300: the in-sample
+> label, the cap at warning for one laboratory / one temperature, `review {}`.
+> What stays out: `refused`, and a pair whose model splits ONE liquid inside
+> its validity span (arm f) whatever its grade.  To promote now: the severe
+> fits kept in their cases -- C290 45 NRTL, C294 18 UNIQUAC and 50 Wilson,
+> C325 its severe NRTL/UNIQUAC/Wilson, C311 12 eNRTL, C327 7 viscosities and 2
+> surface tensions -- minus those that split; the gates that refuse a severe
+> record in the catalogue are changed with the rule, in the same commit.
+
+> **C332 (Vitor, 2026-11-12, in the cloud session: "Aprovo tudo!
+> Eventualmente depois podemos rever!").**  Approved: (1) a new EduTools shelf
+> "Property data & parameters" right after "Thermodynamics"; (2) property-
+> origins and property-trust move there from Thermodynamics, least-squares from
+> Flowsheeting & numerics; (3) a new page "From a database to binary
+> parameters" (ThermoML -> NRTL, the C283-C286 pipeline as the lesson, with a
+> map of which measurement constrains which parameter); (4) the path "From a
+> measurement to a parameter".  Architect's addition the same day: c315
+> sle-pair and c316 salt-mixing also move to that shelf and enter the path
+> after the new page (property-origins -> C322 -> property-trust ->
+> local-composition -> least-squares -> new page -> sle-pair -> salt-mixing ->
+> four-ways-mixture).  C322's scope (Vitor-approved in the cloud): the
+> question that picks a source, a map of free sources with access, citation and
+> licence, a licence-class table, measured vs fitted vs estimated, a worked
+> example on a real Choupo record, an exercise.  The cloud builds C322, the new
+> page and a TypeScript ThermoML reader (one reader, also for C289); the
+> laptop owns registry.ts and makes the shelf/moves/path edit after c315/c316
+> land.  The cloud also took C321 part 2 (Henry in organic solvents).
+
+> **C318-C331 (Vitor and architect, 2026-11-11; registered the same day, written
+> here at the consolidation; the CML rows are in PLAN.md 5521b418d).**
+> - C318 flash/drum detailed sizing: droplet terminal velocity (Haider &
+>   Levenspiel 1989, doi 10.1016/0032-5910(89)80008-7), Souders-Brown,
+>   vertical vs horizontal, liquid hold-up and levels, demister, nozzles;
+>   today VesselSize sizes a drum by residence time only (VesselSize.H).
+> - C319 absorber/stripper with film theory: today Absorber.cpp/Stripper.cpp
+>   are Kremser equilibrium stages with Henry K; folded into C329's interfacial
+>   model (Billet & Schultes 1999 doi 10.1205/026387699526520; Onda 1968;
+>   Treybal).
+> - C320 aqueous species from the NBS tables (Wagman 1982) and CODATA (Cox
+>   1989), checked against each other; measured dHf to replace the 81 Joback
+>   estimates in components.
+> - C321 Henry pairs: water from Sander 2015 LANDED (207 -> 252); organic
+>   solvents from the ThermoML archive (315 catalogue pairs, ~136 non-water)
+>   open; a Henry record without enthalpy is refused by the loader today.
+> - C322 EduTool "how to find properties" (free sources, licences, primary
+>   citation, measured vs estimated; Choupo's provenance as the example).
+> - C323 molten salts: part 1 (solar salt, Hitec, chlorides as heat-transfer
+>   fluids; Janz JPCRD 17 Suppl 2 1988) next; part 2 (machinery + LiCl-KCl,
+>   NaNO3-KNO3, LiF-BeF2, each validated on a measured phase diagram) after the
+>   electrolyte campaign (Vitor's order).
+> - C326 WASM: `--embed-file data/standards` (19 MB) passed the 16 MiB initial
+>   memory (wasm-ld "initial memory too small, 20009744 bytes needed");
+>   INITIAL_MEMORY raised to 64 MiB; the durable fix is ONE shared data
+>   package instead of 19 MB inside each of five binaries.
+> - C327/C328 transport: 92 measured viscosity/conductivity records, 88
+>   measured surface tensions, `StoredCorrelation` model with Brock-Bird as the
+>   announced fallback (Brock-Bird +102 % on methanol, 0 % on n-hexane).
+> - C329 Vitor's next campaign (rate-based columns + atmospheric crude unit),
+>   full brief in PLAN.md rows and the architect's notes; first delivery: total
+>   reflux + Yanagi 1982 + Schulz 2018.
+> - C330/C331 mixing rules, BEST PRACTICE BY DEFAULT (students choose through
+>   AI): today ThermoPackage.cpp uses Wilke and Wassiljewa-Mason-Saxena for
+>   gases (kept), Grunberg-Nissan WITHOUT interaction for liquid viscosity,
+>   a MASS-fraction average for liquid conductivity, a MOLE-fraction average
+>   for surface tension (ThermoPackage.cpp:2229); to come: Butler with the
+>   case's activity model, Grunberg-Nissan with G12, Filippov/Li, density
+>   reviewed; each beside the old rule, validated on ThermoML mixture data,
+>   default switched only after the moved goldens are listed.
+> - Checklist for a NEW props operation (C311 cost a failed integration): a
+>   file-traffic row in PropsPlan.cpp, the generated GUI schema, one case in
+>   tutorials/ that builds it, a FASTSET line for a new curation family.
+> - The credit restriction of 11-11 (pairs only until Saturday) was LIFTED the
+>   same evening.
+
+> **C321 part 2 RESULT (2026-11-12, cloud general, branch c321b-henry-organic).
+> HENRY CONSTANTS IN ORGANIC SOLVENTS FROM THERMOML.**  TOOL
+> `bin/curate/henry_organic.py` (census, declare, fetch, fit).  IDENTITY MAP
+> refreshed first (the coordinator's warning): `choupo-thermoml identity`
+> 522 -> 560 InChIKeys (resolved 524 -> 562 of 596 CAS-bearing records; 13
+> still incomplete, 4 formula mismatches, 2 ambiguous) and `vle-index`
+> rebuilt; the candidate set did NOT change (235 blocks before and after),
+> only the refusals moved.  CENSUS (non-water, two-compound blocks): Henry
+> mole-fraction scale 462 -- 235 candidates, 161 a compound outside the
+> catalogue, 24 no stated uncertainty, 18 solvent not less volatile than the
+> solute, 16 solute a liquid over the whole range, 8 solvent at or above its
+> Tc (methanol to 513 K); molality scale 2 and concentration scale 1, Ostwald
+> 14, gamma-infinity 2598 (318 with both compounds catalogued), liquid
+> composition at stated (T, P) 776 (200 catalogued): all REFUSED BY NAME, the
+> conversion to H_xp needing a quantity the measurement does not carry
+> (density, molar mass, the solute's vapour pressure, the vapour composition).
+> 235 PAIRS, each ONE block of ONE laboratory (16 articles; Miyano et al.'s
+> C3-C4 hydrocarbons, DME, chloroethane and R32 in alcohols, aromatics and
+> cresols, plus O2, CO2, N2, Ar, He, CH4, NH3).  Declarations committed before
+> the fit (dfb22d8cd).  FIT (C283 amended, C285, C300): van't Hoff in 1/T,
+> least squares then minimax on H_model/H - 1; outliers > 20 % by name after
+> the least-squares stage -- 2 points, both NH3-ethanol (277.35 and 298.15 K;
+> its series is not van't Hoff, and the record misses its own 298.15 K
+> measurement by ~25 %: the rule's consequence, named, graded warning 8.00 %).
+> GRADES in-sample: 225 clean, 10 warning, 0 severe, 0 refused (max 0.01-8.00
+> %, median 2.44 %); every clean CAPPED to warning (`fitGradeCap (
+> singleLaboratory )`), so 235 records PROMOTED as warning into
+> data/standards/parameters/Henry/ (autoPromoted, `review { by none; }`,
+> fitGrade + fitGradeMaxRelativeError_pct + fitGradeBasis inSample,
+> fittedInCase, evidence DOI/block/both sha256); no single-temperature pair
+> exists, so none was refused for want of an enthalpy.  NOT VOICED: the Henry
+> loader (src/thermo/henrysLaw/) reads neither `reviewStatus` nor `fitGrade`,
+> so no `[fit-grade]` or autoPromoted line reaches a run; the grade is on the
+> pairLookup card only.  Owed (src/, not done): call `announceFitGrade` from
+> `HenrysLaw::readFromDict` or the registry scan.  DESIGN NOTES for the
+> coordinator: (1) the series file is `constant/henryArchiveDatasets`, NOT
+> `archiveDatasets`, because bin/runTests runs `bin/choupo-curate fetch` on
+> every case carrying the latter and it has no Henry extractor; folding in
+> needs an `extractor henryConstant` branch in bin/choupo-curate that calls
+> henry_organic.fetch (laptop's path); (2) two hunks outside the declared
+> paths, commit e35f9980b: `FIT_KEYS` in bin/curate/migrate_henry_identity.py
+> (its --check refuses unknown record keys, as SANDER_KEYS did for part 1) and
+> a FASTSET line `data/curation/henry/NH3-ethanol` (check_fastset S5 requires
+> one per walked curation family); `curation_roots.ORIGINS` does not name
+> `henry` (bin/runTests walks the whole root, so the cases are run).  GATE:
+> check_henry_records gains `check_organic_records` (fetch, refit, the record
+> must equal the fit: H_ref, enthalpy, Trange, grade, cap, max error, counts,
+> fingerprint, evidence; severe outside a case and a refused fit with a
+> record refused; NOT RUN, exit 2, where no series can be regenerated; three
+> built negatives every run).  By-hand sabotages, all caught: enthalpy edited,
+> H_ref edited, grade edited down to clean with the cap removed, the grade
+> limits tightened so every refit is refused while its record stands (458
+> problems).  VALIDATED: make all; --scope data/curation/henry,
+> batches/henry_sander and the 27 unsealed tutorials whose package reads a
+> Henry pair (267 PASS, 0 FAIL; goldens recorded for the 235 new cases only,
+> none moved); --fast 82 PASS, 0 FAIL, 5 EXPECTED-FAIL; check_henry_records,
+> check_source_licence, check_doctrine, check_glossary_bans,
+> check_record_form, check_review_status, check_caveat_surface,
+> check_schema_coverage, check_legacy_schema, check_fastset; generated views
+> regenerated (caseManifest, releaseInventory henryPairs 251 -> 486,
+> docs/ai/components.md) and gate_manifest --check, the gate's claim
+> re-observed with --only.  NOT RUN: a full sweep, --gui, check_regressed_pairs
+> (not touched).  AMENDED THE SAME DAY (the commander's rule, to be reported
+> to Vitor; it supersedes the outlier and promotion counts above): with ONE
+> laboratory no point is an outlier, so NH3-ethanol keeps all 6 points, misses
+> them by up to 19.03 % (the series does not follow van't Hoff, said in its
+> case), is graded SEVERE and its record moves to its own case
+> (constant/parameters/Henry/, C300 rule 3) -- 234 promoted, henryPairs 486 ->
+> 485, the FASTSET line moved to CO2-cyclohexanol, and check_organic_records
+> refuses a single-laboratory record carrying discarded points (built
+> negative and by-hand sabotage, both caught).
+
 > **C304 (Vitor, 2026-11-11, an external reviewer's reading of the Pinch
 > report of greenAmmoniaPEQ_baseCase: "a normal case report must be an
 > engineering report, not a textbook chapter").**  DECIDED: every case view

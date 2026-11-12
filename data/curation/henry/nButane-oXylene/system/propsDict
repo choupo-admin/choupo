@@ -1,0 +1,66 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+  nButane-oXylene -- A HENRY'S-LAW CONSTANT FROM EVERY LABORATORY'S MEASUREMENTS.
+
+  WRITTEN BY bin/curate/henry_organic.py declare (DEV.md 4c C321 part 2).
+
+  THE DECLARATION -- WRITTEN AND COMMITTED BEFORE ANY FIT RAN (the
+  declarations of the run share one commit).
+
+  IDENTITY.  Solute nButane (CAS 106-97-8) in solvent oXylene (CAS 95-47-6),
+  joined to the archive by InChIKey through identity.json -- never by name.
+  The solute is the compound the block's Henry property names.
+  CLASS: nButane: Tb 272.65 K, Tc 425.12 K; oXylene: Tb 417.521 K, Tc 630.259 K.
+
+  NO MEASURED SERIES IN THIS TREE.  constant/henryArchiveDatasets names each
+  dataset (DOI, NIST URL, article sha256, block, extract sha256);
+  `bin/curate/henry_organic.py fetch` writes the points into
+  constant/archiveExtracts/, which is gitignored.
+
+  STUDIES: every mole-fraction-scale Henry block of the pair with a stated
+  uncertainty on every point (1 block(s)).  FITTED, ALL OF THEM:
+      10.1021/je060395n              block 29    5 pts  249.97-329.99 K   Miyano, Y.[Yoshimori]; Kimura, A.[Arisa]; Kuroda, M.[Mikiko] et al. (2007) J. Chem. Eng. Data 52, 291-297, doi:10.1021/je060395n
+
+  THE RULE (DEV.md 4c C283 amended, C285, C300; C321 part 2).  The van't Hoff
+  form the loader reads, ln H = ln H_ref + (enthalpy/R)(1/T - 1/298.15 K):
+  two parameters.  Stage 1, least squares on the relative residual
+  H_model/H - 1 (equal weights); a point above 20 % is DISCARDED BY NAME and
+  stage 1 repeated -- ONLY when two or more laboratories are fitted: with ONE
+  laboratory no point is discarded (no second series to call it an outlier
+  against; C321 part 2 amended) and the grade is the series' real error.  Stage 2, minimax on
+  the same residual over the kept points; its coefficients are the record's.  GRADE on the max relative
+  error over the kept points: clean up to 5 %, warning up to 10 %, severe up
+  to 20 %, refused above.  An in-sample clean resting on ONE laboratory is
+  capped at warning (C300 rule 2).  One temperature gives no enthalpy: refused.
+  clean and warning are promoted (autoPromoted, review by none) into
+  data/standards/parameters/Henry/; severe stays in this case's
+  constant/parameters/Henry/ (C300 rule 3); refused writes nothing.
+
+  @@RESULT-BEGIN@@
+  5 points of 1 laboratory(ies); 5 kept,
+  0 discarded after the least-squares stage (> 20 %):
+  ONE laboratory: no point was discarded (C321 part 2 amended).
+  H_ref = 4.07157e+05 Pa at 298.15 K, enthalpy = -20649 J/mol;
+  kept span 249.97-329.99 K; max relative error
+  2.1924 % (least squares 2.7678 %); in-sample
+  grade clean, CAPPED to warning (singleLaboratory).
+  PROMOTED into data/standards/parameters/Henry/.
+  @@RESULT-END@@
+
+  WHAT IS NOT CLAIMED.  The constant is the infinite-dilution H_xp at the
+  solvent's own vapour pressure, in the measured range only; the archive's
+  transcription has NOT been read back against the articles.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    { name h_nButane_oXylene; type pairLookup; components ( nButane oXylene ); }
+);

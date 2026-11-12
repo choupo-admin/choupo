@@ -1,0 +1,54 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Henry's-law constant for 2Butanol in liquid water (infinite dilution).
+
+  Source DATA: Sander, R. (2015) "Compilation of Henry's law constants
+  (version 4.0) for water as solvent," Atmos. Chem. Phys. 15, 4399-4981,
+  doi:10.5194/acp-15-4399-2015, Table 6, p. 4492.  Licensed CC-BY 3.0.
+
+  CHANGES (indicated per CC-BY): the 6 Table 6 rows of types M
+  (measured) and L (literature) were reduced to their MEDIAN Hcp
+  = 1.05 mol/(m3 Pa) at 298.15 K (the PDF prints 2 significant
+  figures; row range 0.96 to 1.1, spread max/min 1.15) and converted to
+  the mole-fraction constant H_ref = 55345 / Hcp [Pa] (55345 mol/m3 = water
+  at 298.15 K).  The temperature coefficient is the median of the 4
+  d ln Hcp / d(1/T) values those rows carry (7300 K), so
+  enthalpy = -R * (7300 K) = -60696 J/mol.  Rows of types Q (QSPR),
+  E (estimates), V, T, X, C, ? and W are EXCLUDED.  Reproduce with
+  bin/curate/henry_sander.py (rows: data/curation/batches/henry_sander/rows.tsv).
+  A literature median, not a fit; not read by a human.
+
+  NOTE: INFINITE-DILUTION coefficient -- for water-miscible species it is
+  only the dilute limit; prefer an activity-coefficient model for the full
+  composition range.  Validity ~273-373 K (linear Henry form).
+\*---------------------------------------------------------------------------*/
+
+solute      2Butanol;
+solvent     water;
+
+gasSpecies        2Butanol;
+dissolvedSpecies  2Butanol;
+convention        Sander-Hxp-v1;
+
+model       vantHoff;
+H_ref       5.2710e+04 Pa;
+T_ref       298.15 K;
+enthalpy    -60696  J/mol;
+Trange      ( 273  373 );
+
+reviewStatus autoPromoted;
+review      { by none; }
+
+provenance
+{
+    origin        literature;
+    source        "Sander 2015, ACP 15, 4399, doi:10.5194/acp-15-4399-2015, Table 6, p. 4492; CC-BY 3.0";
+    method        "median of 6 rows of types M and L, Sander 2015 Table 6";
+    CAS           78-92-2;
+    rowsUsed      6;
+    rowTypes      "M L";
+    excluded      "Q (QSPR) E (estimate) V T X C ? W";
+    hcpMedian     1.05;   // mol/(m3 Pa), 2 significant figures as printed
+    spread        1.15;   // max/min of the rows used
+    dlnHrows      4;
+    rowsFile      "data/curation/batches/henry_sander/rows.tsv";
+}
