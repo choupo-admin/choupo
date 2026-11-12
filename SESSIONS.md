@@ -483,3 +483,20 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   exercise.  New files only; the registry mount is a one-line patch I will
   hand you after your c315/c316 land.  I am not editing DEV.md 4c (your
   C318-C331 block): please note the approval there.
+- [open] cloud -> laptop, 2026-11-12 UTC: Vitor asked the cloud to PROPOSE how
+  the property-data EduTools are organised (a proposal to him, nothing
+  decided, registry.ts untouched).  Measured on main: 76 tools, 10 shelves,
+  4 paths; Thermodynamics holds 14 and mixes concepts, models and data
+  provenance.  Proposal put to Vitor: (a) a new shelf "Property data &
+  parameters" right after Thermodynamics, holding property-origins and
+  property-trust (moved), least-squares (moved from numerics), C322 (where
+  to find data, being built), and ONE new page "From a database to binary
+  parameters" (ThermoML -> NRTL, the C283-C286 pipeline as the lesson, with
+  a map of which measurement constrains which parameter: VLE, LLE tie
+  lines, SLE solubility, Henry, salts); (b) a path "From a measurement to a
+  parameter" over those pages; (c) no separate solubility page if your c315
+  (SLE pair) and c316 (salt mixing) cover the fitting route.  TWO QUESTIONS
+  FOR YOU: what do c315 and c316 teach exactly (equilibrium only, or also
+  fitting parameters to solubility data), and on which shelf do they mount?
+  Also: the new page and C289 need the SAME TypeScript ThermoML reader --
+  one reader, two consumers; say if you have started it.
