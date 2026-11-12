@@ -1699,7 +1699,7 @@
     "check_fixed_bed_scheme": {
       "exit": 0,
       "claim": "check_fixed_bed_scheme: OK -- pulse moments vs the closed form at 100/200 cells (vanLeer without a grid term, upwind only with v dz/2); batch13 mesh: orders upwind 1.04 / vanLeer 2.13; width at 100 cells 313.5 / 231.5 s vs 219.59; bounded at Dax = 0; mass (and batch20's energy, padded blocks) closed at round-off; RK4 bound 6u/dz refuses and holds; announcement, refusal and the solutionControl switch",
-      "seconds": 40.5
+      "seconds": 47.6
     }
   }
 }

@@ -102,6 +102,9 @@ def variant(tmp: Path, base: Path, tag: str, fs_edits=(), ctrl_edits=()):
     fs = case / "system" / "flowsheetDict"
     t = fs.read_text()
     for pat, rep in fs_edits:
+        if pat is None:          # the case's own scheme line goes first
+            t = re.sub(rep, "", t)
+            continue
         t2 = re.sub(pat, rep, t)
         if t2 == t:
             raise SystemExit(f"check_fixed_bed_scheme: edit '{pat}' did not"
@@ -138,7 +141,10 @@ def run(case: Path):
 
 def scheme_edit(n: int, scheme: str, diag: bool = False):
     extra = " schemeDiagnostics true;" if diag else ""
-    return [(r"nCells\s+\d+\s*;", f"nCells {n}; convectionScheme {scheme};{extra}")]
+    #  A case may declare its own scheme (batch14 and batch15 pin upwind):
+    #  that line is removed first, so the arm's scheme is the only one.
+    return [(None, r"\n[ \t]*convectionScheme\s+\w+\s*;[^\n]*"),
+            (r"nCells\s+\d+\s*;", f"nCells {n}; convectionScheme {scheme};{extra}")]
 
 
 def need(cond: bool, msg: str):
