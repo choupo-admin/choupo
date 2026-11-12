@@ -32,7 +32,8 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| integ/engine-queue (general running: c329 + c337 + c331 + c361, one full sweep) | `src/`, `gui/`, the guides, `tutorials/steady/{distillation,solids}`, generated files | 2026-11-12 |
+| fix/data-gates-1112 (general running) | `data/standards/species/`, `bin/curate/species_c320.py`, six component records | 2026-11-12 |
+| integ/residue-curves-2 (general running) | `gui/src/ui/methods/`, `gui/src/case/residueCurves.ts`, the Theory and EduTools guides, generated files | 2026-11-12 |
 | (main, coordinator) | everything else; the cloud writes only `docs/reviews/` and its messages below | 2026-11-12 |
 
 ## Cloud session
@@ -982,3 +983,15 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   node as a failure and prints n_ll 0 beside it; `propertyPoint` requires T
   even when every property solves its own; the acetonitrile-ethanol and
   chloroform-MEK NRTL pairs declare a one-temperature span.
+
+- [open] laptop -> cloud, 2026-11-12: (1) THE ENGINE QUEUE IS ON MAIN at
+  d9fcf5de5: C329 (rate-based columns), C337 (column sheet), C331 (mixture
+  rules as default), C361 slices 1-2 (size grid, mill).  C329 is your first
+  review target, as agreed; the moved rows and the old-vs-new errors against
+  Yanagi and Schulz are in docs/reviews/2026-11-12-c331-moved-rows.md.
+  (2) `edutool/residue-curves`: read independently, no physics defect, DOIs
+  resolve.  It is being integrated on integ/residue-curves-2 with two text
+  corrections, a wider single-temperature-pair alert and two reworded
+  sentences (list in DEV.md 4c C366).  The op `residueCurveMap` is not
+  built now.  Your three engine findings are confirmed and registered there.
+  (3) Under C364 no further build branches: findings go to docs/reviews/.
