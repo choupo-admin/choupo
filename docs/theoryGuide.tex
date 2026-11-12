@@ -23717,6 +23717,58 @@ refuses to fake it and warns when the loading leaves the dilute range.
 
 
 % ---------------------------------------------------------------------
+\section{Fluidised beds: minimum fluidisation, regimes and
+bubbles}\label{sec:fluidised-bed}
+
+Blow a gas up through a bed of particles.  Below the minimum fluidisation
+velocity $u_{\mathrm{mf}}$ the bed is packed and the pressure gradient is
+Ergun's, the same two terms the plug-flow reactor integrates through a
+catalyst bed (\code{PFR::ergunTerms}):
+\begin{equation}
+\frac{\Delta P}{L} = 150\,\frac{(1-\varepsilon)^2}{\varepsilon^3}\,
+\frac{\mu u}{d_p^2} + 1.75\,\frac{1-\varepsilon}{\varepsilon^3}\,
+\frac{\rho_g u^2}{d_p}.
+\label{eq:fb-ergun}
+\end{equation}
+The bed fluidises when that drop carries the particles' weight less their
+buoyancy, $\Delta P/L_{\mathrm{mf}} = (1-\varepsilon_{\mathrm{mf}})
+(\rho_p-\rho_g)\,g$; above $u_{\mathrm{mf}}$ the drop no longer changes.
+Equating the two at $\varepsilon=\varepsilon_{\mathrm{mf}}$ gives a quadratic
+in $\mathrm{Re}_{\mathrm{mf}} = \rho_g u_{\mathrm{mf}} d_p/\mu$,
+\begin{equation}
+\frac{1.75}{\varepsilon_{\mathrm{mf}}^3}\,\mathrm{Re}_{\mathrm{mf}}^2
++ \frac{150\,(1-\varepsilon_{\mathrm{mf}})}{\varepsilon_{\mathrm{mf}}^3}\,
+\mathrm{Re}_{\mathrm{mf}} = \mathrm{Ar}
+= \frac{g\,d_p^3\,\rho_g(\rho_p-\rho_g)}{\mu^2},
+\label{eq:fb-umf}
+\end{equation}
+whose positive root Wen and Yu wrote as
+$\mathrm{Re}_{\mathrm{mf}} = \sqrt{C_1^2 + C_2\,\mathrm{Ar}} - C_1$ with two
+fitted constants; $C_2 = \varepsilon_{\mathrm{mf}}^3/1.75$ fixes
+$\varepsilon_{\mathrm{mf}} \approx 0.415$ for a sphere, and $C_1$ then absorbs a
+shape factor.  A single particle is carried up when the gas is faster than its
+terminal velocity $u_t$, the root of $C_D(\mathrm{Re}_t)\,\mathrm{Re}_t^2 =
+\tfrac43\,\mathrm{Ar}$ with Schiller and Naumann's drag coefficient, the law the
+pneumatic conveyor uses (\S\ref{sec:pneumatic-conveying}).  Between the two lie
+the regimes: for a fine (Geldart A) powder a window of bubble-free expansion,
+then bubbling, turbulent fluidisation, and fast fluidisation or pneumatic
+transport.  In the two-phase picture the gas beyond $u_{\mathrm{mf}}$ rises as
+bubbles; the bed expands to $H = L_{\mathrm{mf}}/(1-\bar\delta)$ with $\bar\delta$
+the mean bubble fraction, and bubble gas that does not exchange into the cloud
+on its way up bypasses the solid --- which is why a catalyst converts less in
+a fluidised bed than the same catalyst in a plug-flow packed bed.
+
+\emph{What Choupo computes.}  No unit operation is a fluidised bed: the engine
+computes no $u_{\mathrm{mf}}$, no expansion and no bubble.  It has
+\eqref{eq:fb-ergun} in the plug-flow reactor's opt-in pressure drop, the
+terminal velocity in the pneumatic conveyor, and the cyclone
+(\S\ref{ch:solids-sep}) that catches what a bed throws out.  The EduTool
+\code{fluidised-beds} computes \eqref{eq:fb-umf}, the regimes, the bubbles and
+the elutriation in the page; the correlations it uses, their constants (all
+still to be checked against the papers) and a proposal for an engine unit are
+in \file{docs/design/fluidised-bed-hydrodynamics.md}.
+
+% ---------------------------------------------------------------------
 \section{Gas-solid separation: cyclone, bag filter, ideal
 splitter}\label{ch:solids-sep}
 

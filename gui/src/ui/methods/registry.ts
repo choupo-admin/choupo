@@ -80,7 +80,8 @@ export type MethodToolId =
   | "sines-pta" | "ip-strategy" | "tree-of-chemistry" | "patent-expiry"
   | "economics-errors" | "demand-forecast" | "plant-cost" | "plant-running-cost"
   | "site-process-price" | "campaign-plan" | "stack-dispersion" | "residue-curves"
-  | "adsorption-isotherms" | "electrolyte-models" | "batch-adsorption" | "chromatography";
+  | "adsorption-isotherms" | "electrolyte-models" | "batch-adsorption" | "chromatography"
+  | "fluidised-beds";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1416,6 +1417,32 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "the tail, the competition and the purity-versus-throughput trade -- "
       + "on a linear pulse the engine runs and checks against the moments, "
       + "and an overloaded column the page integrates.",
+  },
+  //  THE BED THAT LIFTS (2026-11-12, scope approved by the project owner):
+  //  the same particles as the breakthrough and chromatography beds, with the
+  //  gas blown up through them fast enough to carry them.  ON THIS SHELF,
+  //  beside the other bed pages, because that is where a student looking for
+  //  beds scans; "Hydraulics & control" was the other candidate (Ergun is a
+  //  pressure drop) and was set aside so the bed pages stay together.  ALL
+  //  OF IT IS THE PAGE'S ARITHMETIC (gui/src/case/fluidisedBeds.ts): the
+  //  engine has no fluidised bed.  The page writes the engine's Ergun
+  //  gradient (PFR.cpp) and Schiller-Naumann terminal velocity
+  //  (PneumaticConveyor.cpp) in the same form and says so.  Record:
+  //  docs/design/fluidised-bed-hydrodynamics.md.
+  {
+    id: "fluidised-beds", blurb: "Find when a bed lifts, how it bubbles and what gas bypasses.",
+    label: "Fluidised beds: minimum fluidisation, regimes and bubbles",
+    discipline: "Separations & phase equilibria", kind: "construction", status: "live",
+    origins: ["page", "assumption"],
+    theory: "sec:fluidised-bed",
+    teaches: "A bed of particles in a rising gas: the pressure drop climbs on Ergun's line "
+      + "until it carries the bed's weight, which fixes the minimum fluidisation velocity "
+      + "(solved, and set beside Wen and Yu's correlation); Geldart's groups on an "
+      + "approximate map; the velocities that bound the regimes -- minimum bubbling, the "
+      + "terminal velocity from the drag balance, the turbulent and transport onsets; the "
+      + "two-phase bed, its expansion, its growing bubbles and the gas that bypasses the "
+      + "solid; and which size classes the gas carries out to a cyclone -- all the page's "
+      + "own arithmetic, because the engine has no fluidised bed.",
   },
   //  THE BATCH HALF of the membrane physics (2026-09-22).  Everything this
   //  page needs was already in the engine -- the transport laws, the osmotic

@@ -251,8 +251,8 @@
       ]
     }
   ],
-  "liveTools": 85,
-  "registryTools": 85,
+  "liveTools": 86,
+  "registryTools": 86,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -881,6 +881,18 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=chromatography"
+    },
+    {
+      "id": "fluidised-beds",
+      "label": "Fluidised beds: minimum fluidisation, regimes and bubbles",
+      "blurb": "Find when a bed lifts, how it bubbles and what gas bypasses.",
+      "discipline": "Separations & phase equilibria",
+      "teaches": "A bed of particles in a rising gas: the pressure drop climbs on Ergun's line until it carries the bed's weight, which fixes the minimum fluidisation velocity (solved, and set beside Wen and Yu's correlation); Geldart's groups on an approximate map; the velocities that bound the regimes -- minimum bubbling, the terminal velocity from the drag balance, the turbulent and transport onsets; the two-phase bed, its expansion, its growing bubbles and the gas that bypasses the solid; and which size classes the gas carries out to a cyclone -- all the page's own arithmetic, because the engine has no fluidised bed.",
+      "origins": [
+        "page",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=fluidised-beds"
     },
     {
       "id": "batch-membrane",

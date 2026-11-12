@@ -2879,6 +2879,69 @@
           }
         }
       ]
+    },
+    "fluidised-beds": {
+      "references": [
+        {
+          "text": "Wen, C. Y.; Yu, Y. H. (1966). A generalized method for predicting the minimum fluidization velocity. AIChE Journal 12(3), 610–612.",
+          "doi": "10.1002/aic.690120343",
+          "note": "The correlation of step 1 set beside the Ergun root; its constants on the page are unchecked against the paper.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/aic.690120343: authors, title, container, volume, issue, pages and year matched (Wen, Yu; AIChE Journal 12(3) 610-612, 1966; fluidised-beds EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Geldart, D. (1973). Types of gas fluidization. Powder Technology 7(5), 285–292.",
+          "doi": "10.1016/0032-5910(73)80037-3",
+          "note": "The four groups of step 2; the page draws its own straight-line approximation of the map, not the map.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0032-5910(73)80037-3: authors, title, container, volume, issue, pages and year matched (Geldart; Powder Technology 7(5) 285-292, 1973; fluidised-beds EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Abrahamsen, A. R.; Geldart, D. (1980). Behaviour of gas-fluidized beds of fine powders part I. Homogeneous expansion. Powder Technology 26(1), 35–46.",
+          "doi": "10.1016/0032-5910(80)85005-4",
+          "note": "The minimum bubbling velocity of a group A powder (step 3); constants unchecked.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0032-5910(80)85005-4: authors, title, container, volume, issue, pages and year matched (Abrahamsen, Geldart; Powder Technology 26(1) 35-46, 1980; fluidised-beds EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Bi, H. T.; Grace, J. R. (1995). Flow regime diagrams for gas-solid fluidization and upward transport. International Journal of Multiphase Flow 21(6), 1229–1236.",
+          "doi": "10.1016/0301-9322(95)00037-X",
+          "note": "The onsets of turbulent fluidisation and of significant entrainment (step 3); constants unchecked.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0301-9322(95)00037-X: authors, title, container, volume, issue, pages and year matched (Bi, Grace; Int. J. Multiphase Flow 21(6) 1229-1236, 1995; fluidised-beds EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Mori, S.; Wen, C. Y. (1975). Estimation of bubble diameter in gaseous fluidized beds. AIChE Journal 21(1), 109–115.",
+          "doi": "10.1002/aic.690210114",
+          "note": "The bubble diameter along the height of step 4; constants and stated ranges unchecked.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/aic.690210114: authors, title, container, volume, issue, pages and year matched (Mori, Wen; AIChE Journal 21(1) 109-115, 1975; fluidised-beds EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Kunii, D.; Levenspiel, O. (1991). Fluidization Engineering, 2nd ed. Butterworth-Heinemann. ISBN 978-0-409-90233-4.",
+          "note": "The bubble, cloud, wake and emulsion picture and the bubble-to-cloud exchange coefficient of step 4.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0409902330 (openlibrary.org/isbn/0409902330.json): 'Fluidization Engineering, Second Edition', Butterworth-Heinemann, 25 October 1991, ISBN-13 9780409902334; chapters of the same edition on Crossref, e.g. 10.1016/b978-0-08-050664-7.50009-3 (fluidised-beds EduTool)",
+            "date": "2026-11-12"
+          }
+        }
+      ]
     }
   }
 }
