@@ -1,0 +1,34 @@
+case	unit	quantity	engine	independent	rel_diff	tolerance_used	route
+screen01_dolomite_karra	screen	h_T [mm]	29.0693	29.0693	<1e-12	1e-9	King eq. 4.31 by hand
+screen01_dolomite_karra	screen	K (loading)	1.0385182	1.0385182	3.7e-12	1e-9	King eqs. 4.32-4.42, own P^F on the grid
+screen01_dolomite_karra	screen	d50 [um]	25109.166	25109.166	3.6e-13	1e-9	King eq. 4.43
+screen01_dolomite_karra	screen	oversize/feed	0.29329369	0.29329202	5.7e-06	1e-4	partition at class geometric means on own re-binned feed (difference = re-binning round-off of the 0/ table)
+screen01_dolomite_karra	screen	area utilisation factor	1.0820009	1.0820034	-2.4e-06	1e-4	King eqs. 4.30, 4.48
+screen01_dolomite_karra	screen	partition c at 22654 / 32038 / 45309 um	(profile)	0.3145 / 0.9460 / 1.0000	n/a	n/a	1 - exp(-0.693 (d/d50)^5.9)
+hydrocyclone01_quartz_willsTable91	cyclone	solids to underflow	0.65568013	0.65568013	-6.2e-13	1e-9	a_k = R_f + (1-R_f) c_k on the declared curve
+hydrocyclone01_quartz_willsTable91	cyclone	underflow dilution	0.33903727	0.33903727	1.0e-08	1e-6	R_f m_w / (Y m_s)
+hydrocyclone01_quartz_willsTable91	cyclone	overflow dilution	1.0098168	1.0098168	1.0e-08	1e-6	(1-R_f) m_w / ((1-Y) m_s)
+hydrocyclone01_quartz_willsTable91	cyclone	d50 actual [um]	176.01225	176.01225	8.5e-13	1e-9	linear in ln x between class means
+hydrocyclone01_quartz_willsTable91	cyclone	d50c corrected [um]	278.54315	278.54315	-1.8e-13	1e-9	same, on the declared corrected curve (no correlation implemented)
+circuit01_herbstFuerstenau_closedCircuit	classifier	recycle (coarse) [kg/s]	65.2154136	65.215414	3.3e-10	1e-6	own successive substitution, 289 passes to 1e-14
+circuit01_herbstFuerstenau_closedCircuit	circuit	circulating load	2.58796	2.58796	3e-10	1e-6	recycle / fresh (H&F 2.50: +3.52 %)
+circuit01_herbstFuerstenau_closedCircuit	millFirstHalf	specific energy [kWh/t]	0.978513	0.978513	-2.6e-10	1e-6	P/2 over mill-feed solids (whole mill 1.7754 kWh/short ton vs H&F 1.82: -2.45 %)
+filter01_caco3_rotaryDrum	drum	alpha [m/kg]	1.22547337e11	1.22547337e11	-3.4e-12	1e-9	4.37e9 dp^0.3
+filter01_caco3_rotaryDrum	drum	c_S [kg/m3]	308.106562	308.100293	2.0e-05	1e-4	G eq. 24.2-10 with the engine's rho (the 2e-5 is a MW/rho rounding between my inputs and the engine's; not pursued)
+filter01_caco3_rotaryDrum	drum	area [m2]	6.64340547	6.64347305	-1.0e-05	1e-4	G eq. 24.2-24 with engine mu; with G's own mu 8.937e-4: 6.66125 (book 6.60)
+filter02_caco3_pressWashing	press	K_p [s/m6]	37.7186911	37.718091	1.6e-05	1e-4	G eq. 24.2-14, engine mu; G's mu: 37.9271 (book 37.93)
+filter02_caco3_pressWashing	press	B [s/m3]	16.0104565	16.0104565	-1.1e-12	1e-9	G eq. 24.2-15
+filter02_caco3_pressWashing	press	t_f [s]	268.13894	268.135532	1.3e-05	1e-4	G eq. 24.2-17; G's mu: 269.616 (book 269.7)
+filter02_caco3_pressWashing	press	t_w [s]	192.929057	192.92626	1.5e-05	1e-4	G eq. 24.2-20 (1/4 of final rate); G's mu: 193.993 (book 194.0)
+filter02_caco3_pressWashing	press	t_c [s]	1661.068	1661.06179	3.7e-06	1e-4	t_f + t_w + 1200 s; G's mu: 1663.609 (book 1663.8)
+thickener01_settlingTest_talmageFitch	thickener	H_u [m]	0.128571429	0.128571429	-3.3e-12	1e-9	C0 H0 / C_u
+thickener01_settlingTest_talmageFitch	thickener	slope at t_c [m/s]	1.62037037e-05	1.62037037e-05	-2.3e-13	1e-9	own 3-point Lagrange derivative
+thickener01_settlingTest_talmageFitch	thickener	Talmage-Fitch area [m2]	846.938775	846.938775	4.9e-13	1e-9	W t_u/(C0 H0); backward secant 805.39, forward secant 1128.57
+thickener01_settlingTest_talmageFitch	thickener	Coe-Clevenger area [m2]	1102.25564	1102.25564	-5.2e-13	1e-9	max over Kynch layers
+centrifuge01_tubularBowl_geankoplis	bowl	omega [rad/s]	2408.55437	2408.55437	-9.0e-13	1e-9	2 pi N (book prints 2410)
+centrifuge01_tubularBowl_geankoplis	bowl	D_pc half-layer [um]	0.746765394	0.746765391	4.4e-09	1e-6	bisection on the Stokes trajectory from (r1+r2)/2 (book 0.746)
+centrifuge01_tubularBowl_geankoplis	bowl	d50 uniform feed [um]	0.632709965	0.632709963	4.4e-09	1e-6	bisection on E(d) = 1/2 of the trajectory-derived grade curve
+centrifuge01_tubularBowl_geankoplis	bowl	Sigma [m2]	273.249453	273.249453	-3.6e-13	1e-9	Q/(2 v_g(d50)) from the trajectory = Ambler closed form to 2e-16
+centrifuge01_tubularBowl_geankoplis	bowl	E at D_pc	0.628272696	0.628272696	3.5e-13	1e-9	(r2^2 - r*^2)/(r2^2 - r1^2)
+centrifuge02_discStack_sigmaIdentity	stack	Sigma [m2]	9405.02584	9405.02584	3.6e-13	1e-9	2 pi n w^2 (r2^3-r1^3)/(3 g tan theta)
+centrifuge02_discStack_sigmaIdentity	stack	d50 [um]	0.375432884	0.375432884	9.9e-13	1e-9	Q = 2 v_g Sigma with the engine's rho and mu

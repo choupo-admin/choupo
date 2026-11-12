@@ -1,0 +1,160 @@
+section	key	value	detail
+assoc	records	696	data/standards/components
+assoc	unifacDonorGroup	61	groups ACNH2 ACOH CH2NH CH2NH2 CH3NH CH3NH2 CH3OH CHNH CHNH2 COOH H2O HCOOH NH NH2 OH rNH
+assoc	pcsaftAssocScheme	2	ethanol water
+assoc	wilkeChangFactorDeclared	5	
+assoc	wilkeChangFactorAbove1	3	ethanol methanol water
+undetected	H2O2	noDerivableFact	record surfaceTension law: no
+undetected	NH3	noDerivableFact	record surfaceTension law: no
+undetected	asparticAcid	noDerivableFact	record surfaceTension law: no
+undetected	benzoicAcid	noDerivableFact	record surfaceTension law: no
+undetected	citricAcid	noDerivableFact	record surfaceTension law: no
+undetected	diethanolamine	noDerivableFact	record surfaceTension law: yes
+undetected	diethylamine	noDerivableFact	record surfaceTension law: no
+undetected	diethyleneGlycol	noDerivableFact	record surfaceTension law: no
+undetected	diethylenetriamine	noDerivableFact	record surfaceTension law: no
+undetected	diethylethanolamine	noDerivableFact	record surfaceTension law: yes
+undetected	diisopropanolamine	noDerivableFact	record surfaceTension law: no
+undetected	diisopropylamine	noDerivableFact	record surfaceTension law: no
+undetected	dimethylethanolamine	noDerivableFact	record surfaceTension law: no
+undetected	ethylamine	noDerivableFact	record surfaceTension law: no
+undetected	ethyleneGlycol	noDerivableFact	record surfaceTension law: yes
+undetected	ethylenediamine	noDerivableFact	record surfaceTension law: no
+undetected	fumaricAcid	noDerivableFact	record surfaceTension law: no
+undetected	glutamicAcid	noDerivableFact	record surfaceTension law: no
+undetected	lacticAcid	noDerivableFact	record surfaceTension law: no
+undetected	mCresol	noDerivableFact	record surfaceTension law: no
+undetected	malicAcid	noDerivableFact	record surfaceTension law: no
+undetected	methylDiEthanolAmine	noDerivableFact	record surfaceTension law: yes
+undetected	methylamine	noDerivableFact	record surfaceTension law: no
+undetected	methylethanolamine	noDerivableFact	record surfaceTension law: no
+undetected	monoethanolamine	noDerivableFact	record surfaceTension law: no
+undetected	nAminoethylEthanolamine	noDerivableFact	record surfaceTension law: no
+undetected	nNDimethylacetamide	noDerivableFact	record surfaceTension law: no
+undetected	nNDimethylformamide	noDerivableFact	record surfaceTension law: yes
+undetected	oCresol	noDerivableFact	record surfaceTension law: no
+undetected	oToluicAcid	noDerivableFact	record surfaceTension law: no
+undetected	pCresol	noDerivableFact	record surfaceTension law: no
+undetected	pPhenylenediamine	noDerivableFact	record surfaceTension law: no
+undetected	pToluicAcid	noDerivableFact	record surfaceTension law: no
+undetected	phenol	noDerivableFact	record surfaceTension law: no
+undetected	phthalicAcid	noDerivableFact	record surfaceTension law: no
+undetected	salicylicAcid	noDerivableFact	record surfaceTension law: no
+undetected	succinicAcid	noDerivableFact	record surfaceTension law: no
+undetected	terephthalicAcid	noDerivableFact	record surfaceTension law: no
+undetected	tetraethyleneGlycol	noDerivableFact	record surfaceTension law: no
+undetected	triethanolamine	noDerivableFact	record surfaceTension law: yes
+undetected	triethylamine	noDerivableFact	record surfaceTension law: no
+undetected	triethyleneGlycol	noDerivableFact	record surfaceTension law: no
+undetected	trimethylamine	noDerivableFact	record surfaceTension law: no
+undetected	TOTAL	43 of 95	name-suggestive records with no derivable fact
+vliqT	Ar	noTemperatureStated	// m^3/mol
+vliqT	CH4	atTb	// m^3/mol  (37.4 cm^3/mol at Tb)
+vliqT	CO	atTb	// m^3/mol  (35.5 cm^3/mol at Tb)
+vliqT	CO2	273K	// m^3/mol  (47.0 cm^3/mol at 273 K)
+vliqT	Cl2	noTemperatureStated	// m^3/mol
+vliqT	H2	atTb	// m^3/mol  (28.4 cm^3/mol at Tb)
+vliqT	H2O2	noTemperatureStated	// m^3/mol
+vliqT	H2S	noTemperatureStated	// m^3/mol
+vliqT	H2SO4	noTemperatureStated	// m^3/mol  (= MW / 1830 kg/m^3)
+vliqT	HCHO	noTemperatureStated	// m^3/mol
+vliqT	HCN	noTemperatureStated	// m^3/mol
+vliqT	HCl	noTemperatureStated	// m^3/mol
+vliqT	HNO3	noTemperatureStated	// m^3/mol  (= MW / 1513 kg/m^3)
+vliqT	He	noTemperatureStated	// m^3/mol
+vliqT	N2	atTb	// m^3/mol  (34.6 cm^3/mol at Tb)
+vliqT	N2O	noTemperatureStated	// m^3/mol
+vliqT	NH3	noTemperatureStated	
+vliqT	NO	atTb	// m^3/mol  (23 cm^3/mol at Tb)
+vliqT	NO2	noTemperatureStated	// m^3/mol
+vliqT	O2	atTb	// m^3/mol  (28.0 cm^3/mol at Tb)
+vliqT	O3	noTemperatureStated	// m^3/mol
+vliqT	SO2	noTemperatureStated	// m^3/mol
+vliqT	acetylene	noTemperatureStated	// m^3/mol
+vliqT	compA	noTemperatureStated	
+vliqT	compB	noTemperatureStated	
+vliqT	compC	noTemperatureStated	
+vliqT	ethane	noTemperatureStated	// m^3/mol
+vliqT	ethanol	noTemperatureStated	//  ANCHOR, never an input.  The engine DERIVES the Hildebrand
+vliqT	ethylene	noTemperatureStated	// m^3/mol
+vliqT	hitecSalt	465K	// m^3/mol at 465 K (MW / ρ(465))
+vliqT	methanol	noTemperatureStated	//  ANCHOR, never an input.  The engine DERIVES the Hildebrand
+vliqT	methylAcetate	noTemperatureStated	//  ANCHOR, never an input.  The engine DERIVES the Hildebrand
+vliqT	nButane	noTemperatureStated	// m^3/mol
+vliqT	nButanol	noTemperatureStated	//  ANCHOR, never an input.  The engine DERIVES the Hildebrand
+vliqT	nHexane	noTemperatureStated	//  ANCHOR, never an input.  The engine DERIVES the Hildebrand
+vliqT	nOctane	noTemperatureStated	// m^3/mol
+vliqT	propane	noTemperatureStated	// m³/mol saturated-liquid molar volume (84.2 cm³/mol)
+vliqT	propylene	noTemperatureStated	// m^3/mol
+vliqT	sucrose	solutionQuantity	// apparent molar volume in aqueous solution [m^3/mol]
+vliqT	toluene	noTemperatureStated	//  ANCHOR, never an input.  The engine DERIVES the Hildebrand
+vliqT	water	noTemperatureStated	//  ANCHOR, never an input.  The engine DERIVES the Hildebrand
+vliqBranch	anchored	525	
+vliqBranch	flat	6	H2SO4 HNO3 glucose hitecSalt propyleneGlycol30 sucrose
+vliqBranch	bare	19	2Methoxy2MethylHeptane 2Methyl2Heptanol D2 OrthoDeuterium OrthoHydrogen ParaDeuterium ParaHydrogen Xe air diButylCarbonate diPhenylCarbonate ethylPhenylCarbonate fluorine krypton methylEthylCarbonate methylPalmitate methylPhenylCarbonate methylStearate neon
+vliqBranch	neither	146	
+approx	tutorials/plant/aceticAcid02_plant/constant/thermoPhysPropDict	componentOutsideActivityModel	reason
+approx	tutorials/plant/acetonePlant/constant/thermoPhysPropDict	componentOutsideActivityModel	reason
+approx	tutorials/steady/flowsheets/esterification2sector/constant/thermoPhysPropDict	idealBinaryPair	reason
+approx	tutorials/steady/flowsheets/acetone03_luyben_reaction_section/constant/thermoPhysPropDict	componentOutsideActivityModel	reason
+approx	tutorials/steady/crystallisation/crystalliser09_KHT_KCl_series/constant/thermoPhysPropDict	idealBinaryPair	reason
+approx	tutorials/steady/thermo/basis01_two_unit_chain/constant/thermoPhysPropDict	idealMolecularVLE	reason
+approx	tutorials/steady/flash/flash12_nh3_acetic_ethanol_reactive/constant/thermoPhysPropDict	idealMolecularVLE	reason
+brockBird	tutorials/batch/plant/apalutamide01_tablets/constant/thermoPhysPropDict	water	acetone N2 O2 water apalutamide hpmcas microcrystallineCellulose silicifiedMCC croscarmelloseSodium colloidalSilica magnesiumStearate polyvinylAlcohol polyethyleneGlycol talcPowder titaniumDioxide ironOxide
+brockBird	tutorials/steady/distillation/trayEfficiency05_chanFair_yanagi14/constant/thermoPhysPropDict	noWater	cyclohexane nHeptane
+brockBird	tutorials/steady/distillation/totalReflux01_c6c7_yanagiRun628/constant/thermoPhysPropDict	noWater	cyclohexane nHeptane
+brockBird	tutorials/steady/distillation/trayEfficiency03_yanagi14_165kPa/constant/thermoPhysPropDict	noWater	cyclohexane nHeptane
+brockBird	tutorials/steady/distillation/column09_tray_hydraulics/constant/thermoPhysPropDict	noWater	benzene toluene
+brockBird	tutorials/steady/distillation/column17_exchanger_design/constant/thermoPhysPropDict	noWater	benzene toluene
+brockBird	tutorials/steady/distillation/packing03_schulz_delft_0p10bar/constant/thermoPhysPropDict	noWater	pXylene oXylene
+brockBird	tutorials/steady/distillation/packing02_schulz_0p02bar/constant/thermoPhysPropDict	noWater	pXylene oXylene
+brockBird	tutorials/steady/distillation/packing04_schulz_delft_0p02bar/constant/thermoPhysPropDict	noWater	pXylene oXylene
+brockBird	tutorials/steady/distillation/trayEfficiency06_syedaChuang_yanagi14/constant/thermoPhysPropDict	noWater	cyclohexane nHeptane
+brockBird	tutorials/steady/distillation/trayEfficiency07_syedaChuang_yanagi08/constant/thermoPhysPropDict	noWater	cyclohexane nHeptane
+brockBird	tutorials/steady/distillation/column11_murphree/constant/thermoPhysPropDict	noWater	benzene toluene
+brockBird	tutorials/steady/distillation/column10_flooding/constant/thermoPhysPropDict	noWater	benzene toluene
+brockBird	tutorials/steady/distillation/packing01_schulz_0p10bar/constant/thermoPhysPropDict	noWater	pXylene oXylene
+brockBird	tutorials/steady/distillation/trayEfficiency02_yanagi08/constant/thermoPhysPropDict	noWater	cyclohexane nHeptane
+brockBird	tutorials/steady/distillation/trayEfficiency01_yanagi14/constant/thermoPhysPropDict	noWater	cyclohexane nHeptane
+brockBird	tutorials/steady/distillation/trayEfficiency04_yanagi08_165kPa/constant/thermoPhysPropDict	noWater	cyclohexane nHeptane
+brockBird	tutorials/steady/economics/economics04_building_royalty_breakeven/constant/thermoPhysPropDict	water	water air sucrose
+brockBird	tutorials/steady/hydraulics/pipe02_airwater_twophase/constant/thermoPhysPropDict	water	N2 water
+brockBird	tutorials/steady/drying/sprayDryer07_design/constant/thermoPhysPropDict	water	water air sucrose
+brockBird	tutorials/steady/drying/sprayDryer03_pressure_nozzle/constant/thermoPhysPropDict	water	water air sucrose
+brockBird	tutorials/steady/drying/sprayDryer05_whey/constant/thermoPhysPropDict	water	water air sucrose
+brockBird	tutorials/steady/drying/sprayDryer04_profiles/constant/thermoPhysPropDict	water	water air sucrose
+brockBird	tutorials/steady/drying/sprayDryer01_sugar/constant/thermoPhysPropDict	water	water air sucrose
+brockBird	tutorials/steady/drying/sprayDryer06_rea/constant/thermoPhysPropDict	water	water air sucrose
+rawVliq	src/unitOperations/reactor/CSTR.cpp:245	Vliq()	if (thermo.comp(i).Vliq() <= 0.0)
+rawVliq	src/unitOperations/reactor/CSTR.cpp:248	Vliq()	V_mol_in += z_in[i] * thermo.comp(i).Vliq();
+rawVliq	src/unitOperations/reactor/CSTR.cpp:660	Vliq()	if (thermo.comp(i).Vliq() <= 0.0)
+rawVliq	src/unitOperations/reactor/CSTR.cpp:663	Vliq()	V_mol_in += z_in[i] * thermo.comp(i).Vliq();
+rawVliq	src/unitOperations/reactor/PFR.cpp:193	Vliq()	if (thermo.comp(i).Vliq() <= 0.0)
+rawVliq	src/unitOperations/reactor/PFR.cpp:196	Vliq()	V_mol_in += z_in[i] * thermo.comp(i).Vliq();
+rawVliq	src/unitOperations/reactor/PFR.cpp:690	Vliq()	if (thermo.comp(i).Vliq() <= 0.0)
+rawVliq	src/unitOperations/reactor/PFR.cpp:693	Vliq()	V_mol_in += z_in[i] * thermo.comp(i).Vliq();
+rawVliq	src/unitOperations/rotating/PressureExchanger.cpp:191	Vliq()	const scalar vi = thermo.comp(i).Vliq();
+rawVliq	src/unitOperations/rotating/Pump.cpp:103	Vliq()	const scalar vi = thermo.comp(i).Vliq();
+rawVliq	src/unitOperations/rotating/Pump.cpp:238	Vliq()	if (thermo.comp(i).Vliq() <= 0.0 && thermo.comp(i).hasAqueousMapping())
+rawVliq	src/unitOperations/heatTransfer/SprayDryer.cpp:580	Vliq()	scalar rho_L = (solv.Vliq() > 0.0) ? (MW_w / 1000.0) / solv.Vliq() : 1000.0;
+rawVliq	src/unitOperations/heatTransfer/SprayDryer.cpp:591	Vliq()	if (thermo.comp(i).Vliq() > 0.0) V += xs[i] * thermo.comp(i).Vliq();
+rawVliq	src/unitOperations/crystallisation/CrystallisationSaturation.cpp:124	Vliq()	MwAnti = anti.MW();  epsAnti = anti.relativePermittivity();  vAnti = anti.Vliq()
+rawVliq	src/unitOperations/crystallisation/Crystalliser.cpp:380	Vliq()	thermo.comp(iAnti).relativePermittivity(), thermo.comp(iAnti).Vliq(), T_op)
+rawVliq	src/unitOperations/crystallisation/Crystalliser.cpp:506	Vliq()	Q += F * z[i] * 1000.0 * thermo.comp(i).Vliq();    // kmol/s·(mol/kmol)·(m^3/mol
+rawVliq	src/unitOperations/crystallisation/Crystalliser.cpp:802	Vliq()	Q += F * z[i] * 1000.0 * thermo.comp(i).Vliq();
+rawVliq	src/thermo/ThermoPackage.cpp:2433	Vliq()	const scalar Vdecl = c.Vliq();
+rawVliq	src/thermo/transport/WilkeChang.cpp:45	Vliq()	const scalar Va_m3 = solute.Vliq();                      // m³/mol
+rawVliq	src/thermo/phase/SaturatedVapour.cpp:148	Vliq()	if (!(c.Vliq() > 0.0))
+rawVliq	src/thermo/phase/SaturatedVapour.cpp:153	Vliq()	return v * std::exp(c.Vliq() * (P - Psat) / (constant::R * T));
+rawVliq	src/thermo/activityCoefficient/Wilson.cpp:108	Vliq()	if (comps[i].Vliq() <= 0.0)
+rawVliq	src/thermo/activityCoefficient/Wilson.cpp:111	Vliq()	V_[i] = comps[i].Vliq();
+rawVliq	src/result/ComponentIdentity.cpp:55	Vliq()	cc.vliq        = c.Vliq() > 0.0;
+rawVliq	src/propertyOps/SolubilityParameter.cpp:124	Vliq()	if (c.Vliq() <= 0)
+rawVliq	src/propertyOps/SolubilityParameter.cpp:142	Vliq()	d.Vm    = c.Vliq();                      // m3/mol at 25 C
+rawVliq	src/applications/choupoProps/main.cpp:141	Vliq()	const bool vliq = c.Vliq() > 0.0;
+rawVliq	src/applications/choupoProps/main.cpp:1183	Vliq()	<< ", \"vliq\": "        << b(c.Vliq() > 0.0)
+rawVliq	src/unitOperations/electrochem/EDCell.H:102	constant1000	constexpr scalar RHO_CARRIER = 1000.0;
+rawVliq	src/unitOperations/electrochem/EDCell.cpp:158	constant1000	const scalar rho_w = 1000.0;                 // kg/m3 (dilute carrier approx)
+rawVliq	src/unitOperations/electrochem/ElectrodialysisStack.cpp:347	constant1000	const scalar rho_carrier = 1000.0;      // kg/m3, the dilute-carrier value this 
+rawVliq	src/unitOperations/membrane/RatedTestInversion.cpp:223	constant1000	const scalar rho  = op->lookupScalarOrDefault("rho_feed", 1000.0);
+rawVliq	src/unitOperations/membrane/SpiralWoundModule.cpp:317	constant1000	const scalar rho        = opDict->lookupScalarOrDefault("rho_feed", 1000.0); // 

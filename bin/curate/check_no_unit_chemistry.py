@@ -42,7 +42,7 @@ ROOT = Path(__file__).resolve().parents[2]
 UNITS = ROOT / "src" / "unitOperations"
 
 # The models an `aqueous { activityModel { model … } }` block may name.
-IMPLEMENTED = {"davies", "Pitzer", "eNRTL", "pitzerHMW"}
+IMPLEMENTED = {"davies", "Pitzer", "eNRTL", "pitzerHMW", "OlssonNaOH"}
 
 # Constructing an activity/speciation engine, or naming a model as a choice.
 # A unit may CONSTRUCT a solver with the model the package declared; what it

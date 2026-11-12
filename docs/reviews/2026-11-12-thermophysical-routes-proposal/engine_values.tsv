@@ -1,0 +1,64 @@
+quantity	state	value	unit	route
+rho_liquid (w)	2.73160000e+02	1.01965778e+03	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w)	2.77160000e+02	1.01606459e+03	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w)	2.81160000e+02	1.01245635e+03	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w)	2.85160000e+02	1.00883279e+03	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w)	2.89160000e+02	1.00519365e+03	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w)	2.93160000e+02	1.00153862e+03	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w)	2.97160000e+02	9.97867432e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w)	3.01160000e+02	9.94179769e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w)	3.05160000e+02	9.90475322e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w)	3.09160000e+02	9.86753774e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w)	3.13160000e+02	9.83014791e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w)	3.17160000e+02	9.79258035e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w)	3.21160000e+02	9.75483154e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w)	3.25160000e+02	9.71689783e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w)	3.29160000e+02	9.67877550e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w)	3.33160000e+02	9.64046067e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w)	3.37160000e+02	9.60194933e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w)	3.41160000e+02	9.56323736e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w)	3.45160000e+02	9.52432048e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w)	3.49160000e+02	9.48519426e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w)	3.53160000e+02	9.44585412e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w)	3.57160000e+02	9.40629533e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w)	3.61160000e+02	9.36651296e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w)	3.65160000e+02	9.32650192e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w)	3.69160000e+02	9.28625692e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w)	3.73160000e+02	9.24577249e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w573)	2.98150000e+02	9.96956281e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (w573)	5.73150000e+02	6.65668158e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (wP)	1.00000000e+05	9.96956281e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (wP)	5.00000000e+07	9.96956281e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (co2)	2.80000000e+02	1.15310398e+03	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (co2)	2.98150000e+02	9.36382979e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (eth)	2.50000000e+02	7.69586822e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (eth)	2.98000000e+02	5.47140643e+02	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (hcl)	2.50000000e+02	1.48259969e+03	kg/m3	ThermoPackage::density liquid branch
+rho_liquid (hcl)	2.98000000e+02	1.19665078e+03	kg/m3	ThermoPackage::density liquid branch
+rho_liquid N2	T=90 K	1 refusal line(s)	-	Rackett cannot anchor component 'N2''s 25 C `Vliq` 
+rho_liquid CH4	T=120 K	1 refusal line(s)	-	Rackett cannot anchor component 'CH4''s 25 C `Vliq` 
+reference rho_liquid	w_273.16	999.792520032	kg/m3	referenceEoS op
+reference rho_liquid	w_277.16	999.925130319	kg/m3	referenceEoS op
+reference rho_liquid	w_373.16	958.341874829	kg/m3	referenceEoS op
+reference rho_liquid	w_573.16	712.115078712	kg/m3	referenceEoS op
+reference rho_liquid	w_500bar	1018.43922421	kg/m3	referenceEoS op
+reference rho_liquid	co2_280	883.582771998	kg/m3	referenceEoS op
+reference rho_liquid	co2_298.15	710.502373253	kg/m3	referenceEoS op
+reference rho_liquid	n2_90	745.023175795	kg/m3	referenceEoS op
+reference rho_liquid	ch4_120	409.902333028	kg/m3	referenceEoS op
+viscosity_liquid	mu_GrunbergNissan_x0.25 298.15 K	0.000934795226154	Pa.s	propertyPoint
+viscosity_liquid	mu_logMoleAverage_x0.25 298.15 K	0.000934795226154	Pa.s	propertyPoint
+viscosity_liquid	mu_GrunbergNissan_x0.30 298.15 K	0.000944049109899	Pa.s	propertyPoint
+viscosity_liquid	mu_logMoleAverage_x0.30 298.15 K	0.000944049109899	Pa.s	propertyPoint
+surface_tension	sig_water_BrockBird 298.15 K	0.106530993652	N/m	propertyPoint
+surface_tension	sig_water_StoredCorrelation 298.15 K	0.0714894079627	N/m	propertyPoint
+surface_tension	sig_triethanolamine_BrockBird 298.15 K	0.0754454784621	N/m	propertyPoint
+surface_tension	sig_triethanolamine_StoredCorrelation 298.15 K	0.047092920868	N/m	propertyPoint
+surface_tension	sig_ethyleneGlycol_BrockBird 298.15 K	0.073386625085	N/m	propertyPoint
+surface_tension	sig_ethyleneGlycol_StoredCorrelation 298.15 K	0.0492540232948	N/m	propertyPoint
+surface_tension	sig_monoethanolamine_BrockBird 298.15 K	0.0686053371651	N/m	propertyPoint
+surface_tension	sig_monoethanolamine_StoredCorrelation 298.15 K	0.0686053371651	N/m	propertyPoint
+surface_tension	sig_nHexane_BrockBird 298.15 K	0.0178126011231	N/m	propertyPoint
+surface_tension	sig_nHexane_StoredCorrelation 298.15 K	0.0179310442734	N/m	propertyPoint
+G=0 announcement	water-ethanol	1 line(s)	-	Grunberg-Nissan
+diffusivity_liquid	CO2 in water 298.15 K	1.68416891106e-09	m2/s	Wilke-Chang, Va = CO2 record Vliq

@@ -1418,6 +1418,9 @@
   "OdsWriter": [
    "src/core/OdsWriter.H"
   ],
+  "OlssonNaOH": [
+   "src/thermo/electrolyte/OlssonNaOH.H"
+  ],
   "OpSlots": [
    "src/propertyOps/PropsPlan.H"
   ],
@@ -6053,6 +6056,7 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
+   "src/thermo/electrolyte/BoilingPointRise.H",
    "src/thermo/electrolyte/ElectrolyteModel.H"
   ],
   "src/propertyOps/ElementCompositionOp.cpp": [
@@ -8429,6 +8433,7 @@
    "src/thermo/electrolyte/ENRTLSingleSalt.H",
    "src/thermo/electrolyte/ElectrolyteModel.H",
    "src/thermo/electrolyte/ElectrolyteTemperatureSpan.H",
+   "src/thermo/electrolyte/OlssonNaOH.H",
    "src/thermo/electrolyte/PitzerForm.H",
    "src/thermo/electrolyte/PitzerSingleSalt.H",
    "src/thermo/electrolyte/ReactiveVLE.H",
@@ -8490,6 +8495,7 @@
    "src/thermo/electrolyte/ENRTLSingleSalt.H",
    "src/thermo/electrolyte/ElectrolyteModel.H",
    "src/thermo/electrolyte/ElectrolyteTemperatureSpan.H",
+   "src/thermo/electrolyte/OlssonNaOH.H",
    "src/thermo/electrolyte/PitzerForm.H",
    "src/thermo/electrolyte/PitzerSingleSalt.H",
    "src/thermo/electrolyte/ReactiveVLE.H",
@@ -8530,6 +8536,7 @@
    "src/thermo/electrolyte/ENRTLSingleSalt.H",
    "src/thermo/electrolyte/ElectrolyteModel.H",
    "src/thermo/electrolyte/ElectrolyteTemperatureSpan.H",
+   "src/thermo/electrolyte/OlssonNaOH.H",
    "src/thermo/electrolyte/PitzerForm.H",
    "src/thermo/electrolyte/PitzerSingleSalt.H",
    "src/thermo/electrolyte/SolventProperties.H"
@@ -8565,6 +8572,7 @@
    "src/thermo/electrolyte/ENRTLSingleSalt.H",
    "src/thermo/electrolyte/ElectrolyteModel.H",
    "src/thermo/electrolyte/ElectrolyteTemperatureSpan.H",
+   "src/thermo/electrolyte/OlssonNaOH.H",
    "src/thermo/electrolyte/PitzerForm.H",
    "src/thermo/electrolyte/PitzerSingleSalt.H",
    "src/thermo/electrolyte/SaltFromCatalogue.H",
@@ -8784,6 +8792,13 @@
    "src/thermo/electrolyte/SaltFromCatalogue.H",
    "src/thermo/electrolyte/SolventProperties.H",
    "src/thermo/electrolyte/SpeciationSolver.H"
+  ],
+  "src/thermo/electrolyte/OlssonNaOH.cpp": [
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/thermo/electrolyte/OlssonNaOH.H"
   ],
   "src/thermo/electrolyte/PitzerHMW.cpp": [
    "src/core/Advisory.H",
@@ -10901,6 +10916,7 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
+   "src/thermo/electrolyte/BoilingPointRise.H",
    "src/thermo/electrolyte/ElectrolyteModel.H",
    "src/thermo/electrolyte/UnmodelledSolutes.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
@@ -13354,6 +13370,7 @@
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
    "src/thermo/adsorbent/IsothermModel.cpp",
+   "src/thermo/electrolyte/OlssonNaOH.cpp",
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
@@ -13702,6 +13719,7 @@
    "src/thermo/electrolyte/AqueousVolumetric.cpp",
    "src/thermo/electrolyte/EdwardsCatalogue.cpp",
    "src/thermo/electrolyte/ExchangeInput.cpp",
+   "src/thermo/electrolyte/OlssonNaOH.cpp",
    "src/thermo/electrolyte/PitzerHMW.cpp",
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
@@ -14103,6 +14121,7 @@
    "src/thermo/electrolyte/AqueousVolumetric.cpp",
    "src/thermo/electrolyte/EdwardsCatalogue.cpp",
    "src/thermo/electrolyte/ExchangeInput.cpp",
+   "src/thermo/electrolyte/OlssonNaOH.cpp",
    "src/thermo/electrolyte/PitzerHMW.cpp",
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
@@ -15825,6 +15844,7 @@
    "src/thermo/electrolyte/AqueousVolumetric.cpp",
    "src/thermo/electrolyte/EdwardsCatalogue.cpp",
    "src/thermo/electrolyte/ExchangeInput.cpp",
+   "src/thermo/electrolyte/OlssonNaOH.cpp",
    "src/thermo/electrolyte/PitzerHMW.cpp",
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
@@ -20119,6 +20139,10 @@
    "src/streams/StreamStateIO.cpp",
    "src/thermo/electrolyte/AqueousVolumetric.cpp"
   ],
+  "src/thermo/electrolyte/BoilingPointRise.H": [
+   "src/propertyOps/ElectrolytePackageActivity.cpp",
+   "src/unitOperations/heatTransfer/Evaporator.cpp"
+  ],
   "src/thermo/electrolyte/ENRTLMixedSolvent.H": [
    "src/propertyOps/ENRTLMixedSolventOp.cpp"
   ],
@@ -20219,6 +20243,13 @@
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp"
+  ],
+  "src/thermo/electrolyte/OlssonNaOH.H": [
+   "src/thermo/ThermoPackage.cpp",
+   "src/thermo/ThermoPackageBuilder.cpp",
+   "src/thermo/activityCoefficient/ActivityModel.cpp",
+   "src/thermo/activityCoefficient/ElectrolyteActivity.cpp",
+   "src/thermo/electrolyte/OlssonNaOH.cpp"
   ],
   "src/thermo/electrolyte/PitzerForm.H": [
    "src/propertyOps/ENRTLMultiSaltOp.cpp",

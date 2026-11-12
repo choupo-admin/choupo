@@ -37,6 +37,7 @@ License
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <map>
 #include <stdexcept>
 
 namespace Choupo {
