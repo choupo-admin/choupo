@@ -5234,6 +5234,26 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/transrec.$$
+    # regressed-electrolytes gate (2026-11-11, DEV.md 4c C311).  The sibling
+    # of the regressed-pairs gate for the SALT records: every Pitzer / eNRTL
+    # record carrying `fittedInCase` is reproduced by re-running its case
+    # (data/curation/electrolytes/<c>-<a>), its grade is held to the C311
+    # rule and the C300 cap, a severe fit is refused in the catalogue, and a
+    # probe requires the engine to voice a promoted record.  Exit 2 = cannot
+    # run (no binary), reported SKIP, never a pass.
+    gate_exec "$ROOT/bin/curate/check_regressed_electrolytes.py" > /tmp/regelec.$$ 2>&1
+    re_rc=$?
+    if [ "$re_rc" = 0 ]; then
+        printf "PASS  %-40s  (%s)\n" "regressed-electrolytes-gate" "$(tail -1 /tmp/regelec.$$)"
+        pass=$((pass+1))
+    elif [ "$re_rc" = 2 ]; then
+        printf "SKIP  %-40s  (%s; NOT counted as a pass)\n" "regressed-electrolytes-gate" "$(tail -1 /tmp/regelec.$$)"
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_regressed_electrolytes.py)\n" "regressed-electrolytes-gate"
+        cat /tmp/regelec.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/regelec.$$
 
     # inline-pair announcement gate (2026-11-05, DEV.md 4c C224).  A binary
     # pair typed in the case is ANNOUNCED `[unreviewed] pair` once per run

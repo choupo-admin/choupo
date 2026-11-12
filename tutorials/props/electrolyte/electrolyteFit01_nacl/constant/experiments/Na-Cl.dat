@@ -1,0 +1,62 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Na-Cl: mean ionic activity coefficient gamma_pm and osmotic coefficient
+  phi of the salt (Na)1(Cl)1 in water at 298.15 K -- the EVALUATED
+  (recommended) values of
+    W. J. Hamer and Y.-C. Wu, Osmotic Coefficients and Mean Activity Coefficients of Uni-univalent Electrolytes in Water at 25 C, J. Phys. Chem. Ref. Data 1 (1972) 1047-1100,
+    doi:10.1063/1.3253108, Table 16, p. 1067 (m, phi, gamma), the recommended values.
+  The evaluation is the primary source of these recommended values (its
+  own references are the measurements behind them).
+  TRANSCRIBED 2026-11-11 (DEV.md 4c C311) from the NIST reprint
+  (nist-jpcrd-1.3253108.pdf): rows read by optical character recognition of the reprint's text layer and each row accepted only where it agrees, to 0.0012, with a smooth Gibbs-Duhem-consistent curve through the same table (the Hamer-Wu equation form with the table's printed B*); the rows that disagreed were dropped, not guessed.
+  Rows kept: 0.1 mol/kg up to ionic strength 6 mol/kg; a row the
+  source marks saturated, supersaturated or from another author is not
+  here.  Every 4th row (0-based index % 4 == 3, never the first or the
+  last) is HELD OUT by the case (system/propsDict), not by this file.
+\*-----------------------------------------------------------------------------*/
+provenance
+{
+    source        "W. J. Hamer and Y.-C. Wu, Osmotic Coefficients and Mean Activity Coefficients of Uni-univalent Electrolytes in Water at 25 C, J. Phys. Chem. Ref. Data 1 (1972) 1047-1100";
+    doi           "10.1063/1.3253108";
+    location      "Table 16, p. 1067 (m, phi, gamma), the recommended values";
+    reviewStatus  transcribed;
+    citation      "W. J. Hamer and Y.-C. Wu (1972). Osmotic Coefficients and Mean Activity Coefficients of Uni-univalent Electrolytes in Water at 25 C. J. Phys. Chem. Ref. Data 1, 1047-1100. doi:10.1063/1.3253108";
+    sha256        "8399084b29b4db4ce35ab47ed679446dbedb9bf1686f99f43fce7b2073ee4beb";   // of the NIST reprint the rows were read from (nist-jpcrd-1.3253108.pdf)
+}
+
+system ( water NaCl );   // the salt in water; the fit names it by its ions (Na, Cl)
+
+temperature 298.15;   // K, every row
+
+columns
+(
+    { name m;     unit mol/kg; }
+    { name gamma; unit -; }       // gamma_pm, molality scale
+    { name phi;   unit -; }       // molal osmotic coefficient
+);
+
+data
+(
+    0.1     0.779    0.933   
+    0.2     0.734    0.924   
+    0.3     0.709    0.921   
+    0.4     0.693    0.92    
+    0.5     0.681    0.921   
+    0.6     0.673    0.923   
+    0.7     0.667    0.926   
+    0.8     0.662    0.929   
+    0.9     0.659    0.932   
+    1       0.657    0.936   
+    1.2     0.655    0.944   
+    1.4     0.656    0.953   
+    1.6     0.658    0.962   
+    1.8     0.662    0.973   
+    2       0.668    0.984   
+    2.5     0.688    1.013   
+    3       0.714    1.045   
+    3.5     0.746    1.08    
+    4       0.783    1.116   
+    4.5     0.826    1.153   
+    5       0.874    1.191   
+    5.5     0.928    1.231   
+    6       0.986    1.27    
+);

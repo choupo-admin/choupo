@@ -1,0 +1,49 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Zn-I: mean ionic activity coefficient gamma_pm and osmotic coefficient
+  phi of the salt (Zn)1(I)2 in water at 298.15 K -- the EVALUATED
+  (recommended) values of
+    R. N. Goldberg, Evaluated Activity and Osmotic Coefficients for Aqueous Solutions: Bi-Univalent Compounds of Zinc, Cadmium, and Ethylene Bis(Trimethylammonium) Chloride and Iodide, J. Phys. Chem. Ref. Data 10 (1981) 1-55,
+    doi:10.1063/1.555639, the ZnI2 table of recommended values, p. 29 (m, gamma, phi, a_w).
+  The evaluation is the primary source of these recommended values (its
+  own references are the measurements behind them).
+  TRANSCRIBED 2026-11-11 (DEV.md 4c C311) from the NIST reprint
+  (nist-jpcrd-1.555639.pdf): every row read by eye from the page image; phi checked against the printed water activity (ln a_w = -nu m phi M_w, to 2.5e-4) and gamma against its neighbours by the Gibbs-Duhem relation; one row failed the water-activity check (phi at 0.3 mol/kg, first read .9568) and was re-read as .9558, which a_w and the printed excess Gibbs energy confirm.
+  Rows kept: 0.1 mol/kg up to ionic strength 6 mol/kg; a row the
+  source marks saturated, supersaturated or from another author is not
+  here.  Every 4th row (0-based index % 4 == 3, never the first or the
+  last) is HELD OUT by the case (system/propsDict), not by this file.
+\*-----------------------------------------------------------------------------*/
+provenance
+{
+    source        "R. N. Goldberg, Evaluated Activity and Osmotic Coefficients for Aqueous Solutions: Bi-Univalent Compounds of Zinc, Cadmium, and Ethylene Bis(Trimethylammonium) Chloride and Iodide, J. Phys. Chem. Ref. Data 10 (1981) 1-55";
+    doi           "10.1063/1.555639";
+    location      "the ZnI2 table of recommended values, p. 29 (m, gamma, phi, a_w)";
+    reviewStatus  transcribed;
+}
+
+temperature 298.15;   // K, every row
+
+columns
+(
+    { name m;     unit mol/kg; }
+    { name gamma; unit -; }       // gamma_pm, molality scale
+    { name phi;   unit -; }       // molal osmotic coefficient
+);
+
+data
+(
+    0.1     0.6011   0.9019  
+    0.2     0.5741   0.9198  
+    0.3     0.5798   0.9558  
+    0.4     0.6025   1.0008  
+    0.5     0.6351   1.0482  
+    0.6     0.6734   1.0939  
+    0.7     0.7145   1.1355  
+    0.8     0.7563   1.1718  
+    0.9     0.7971   1.2023  
+    1       0.8358   1.2272  
+    1.25    0.9197   1.2672  
+    1.5     0.983    1.2834  
+    1.75    1.0287   1.2848  
+    2       1.0623   1.2793  
+);

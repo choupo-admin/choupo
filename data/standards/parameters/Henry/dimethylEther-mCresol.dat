@@ -1,0 +1,63 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Henry's-law constant for dimethylEther in liquid mCresol (infinite dilution).
+
+  Source DATA: the measurements of
+    Miyano, Y.[Yoshimori]; Ashimori, S.[Shunsuke]; Otuka, T.[Takumi] et al. (2010) J. Chem. Eng. Data 55, 4956-4960, doi:10.1021/je100529s
+  located through the NIST/TRC ThermoML Archive (doi 10.18434/mds2-2422);
+  the values belong to those articles.  NO measured point is reproduced here
+  or anywhere in this tree; data/curation/henry/dimethylEther-mCresol
+  declares each dataset by DOI, block and sha256 and regenerates it.
+
+  FIT (DEV.md 4c C321 part 2): van't Hoff in 1/T, every laboratory together,
+  least squares then minimax on the relative residual of H; points above
+  20 % after the least-squares stage discarded by name (0 here).
+  5 kept points, 289.97-329.99 K; max relative error
+  1.56 % in-sample (graded 10 / 20 / 30 %, C336 class B).
+  Regressed by Choupo, NOT read by a human; the archive's transcription has
+  not been read back against the articles.
+
+  NOTE: INFINITE-DILUTION coefficient at the solvent's own vapour pressure;
+  validity 289-330 K (the measured span; outside it an extrapolation).
+\*---------------------------------------------------------------------------*/
+
+solute      dimethylEther;
+solvent     mCresol;
+
+gasSpecies        dimethylEther;
+dissolvedSpecies  dimethylEther;
+convention        Sander-Hxp-v1;
+
+model       vantHoff;
+H_ref       6.65643e+04 Pa;
+T_ref       298.15 K;
+enthalpy    -31112  J/mol;
+Trange      ( 289  330 );
+
+reviewStatus autoPromoted;
+review      { by none; }
+
+provenance
+{
+    origin        fitted;
+    source        "doi:10.1021/je100529s (located through ThermoML, doi 10.18434/mds2-2422)";
+    method        "van't Hoff fit, least squares then minimax on H_model/H - 1, bin/curate/henry_organic.py";
+    CAS           115-10-6;
+    fittedInCase  "data/curation/henry/dimethylEther-mCresol";
+    fitGrade      warning;   // DEV.md 4c C285: max |H_model - H|/H over the kept points, graded 10 / 20 / 30 % (C336 class B)
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+    fitGradeCap   ( singleLaboratory );   // DEV.md 4c C300 rule 2
+    fitGradeMaxRelativeError_pct 1.5607;
+    pointsKept    5;
+    pointsDiscarded 0;
+    fingerprint   "bce1d0f8f7903da9";   // of the declaration, frozen before the fit
+    evidence
+    (
+        {
+            doi           "10.1021/je100529s";
+            block         43;
+            archiveFile   "je100529s.xml";
+            articleSha256 "d340e8f411415f84e0fbfbd1cb7f8fd61a36b614dc5a1f728a2515615ab4f2cc";
+            sha256        "34862651e645e8989b326e14a94f7985ff95289ac103a02cd0eea1c2d40cf488";
+        }
+    );
+}
