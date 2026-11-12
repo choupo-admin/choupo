@@ -1326,6 +1326,82 @@ def check_vp_grade_channel(tmp, fails):
 
 VP_GRADE_COUNT = {}
 
+VP_WINDOW_WITNESS = "methylDiEthanolAmine"   # a windowed vapour pressure (DEV.md 4c C367)
+
+
+def check_vp_window_negatives(tmp, fails):
+    """C367: the fit-window logic of arm (i) refuses what it must, each named.
+    The witness (a windowed record and its case) must pass as it stands, and
+      (1) a curationDict whose window DISAGREES with the propsDict's is refused
+          (checked on a scratch copy of the case's system/ directory), and
+      (2) a record whose `window.pointsLeftOut` is FALSIFIED is refused, through
+          arm (i) itself on a scratch catalogue holding only that record."""
+    global STD_COMP, VP_FLOOR
+    src = STD_COMP / (VP_WINDOW_WITNESS + ".dat")
+    if not src.exists():
+        fails.append(f"arm (i) window negatives: witness {src.relative_to(ROOT)} is gone")
+        return
+    text = src.read_text()
+    case_rel = word(vp_entry(text) or "", "fittedInCase")
+    case = ROOT / case_rel if case_rel else None
+    if case is None or not (case / "system" / "curationDict").exists() \
+            or "window" not in (vp_entry(text) or ""):
+        fails.append("arm (i) window negatives: the witness no longer carries a fit "
+                     "window and its curationDict -- it tests nothing")
+        return
+    pd_text = strip_comments((case / "system" / "propsDict").read_text())
+    got = []
+    fit_window(case, pd_text, "witness", got)
+    if got:
+        fails.append(f"arm (i) window negatives [as shipped]: the witness was accused: {got[0][:160]}")
+    #  (1) disagreeing window
+    work = Path(tempfile.mkdtemp(prefix="vpwin-", dir=ROOT / "build"))
+    try:
+        shutil.copytree(case / "system", work / "system")
+        cd = work / "system" / "curationDict"
+        edited = re.sub(r"pressureMax\s+[0-9.eE+-]+\s+kPa", "pressureMax  150 kPa",
+                        cd.read_text())
+        if edited == cd.read_text():
+            fails.append("arm (i) window negatives: the witness's curationDict has no "
+                         "`pressureMax <x> kPa` to edit")
+        cd.write_text(edited)
+        got = []
+        fit_window(work, pd_text, "witness", got)
+        if not any("differs from the propsDict" in g for g in got):
+            fails.append("arm (i) window negatives [window disagrees]: not refused: "
+                         f"{got[:1]}")
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+    #  (2) falsified left-out count, through arm (i) on a one-record catalogue
+    bad = re.sub(r"(pointsLeftOut\s+)7(\s*;\s*\n\s*leftOut\s)", r"\g<1>3\2", text)
+    if bad == text:
+        fails.append("arm (i) window negatives: the witness has no window `pointsLeftOut 7;` "
+                     "to falsify")
+        return
+    keep, keep_floor, keep_count = STD_COMP, VP_FLOOR, dict(VP_GRADE_COUNT)
+    VP_FLOOR = 0
+    work = Path(tempfile.mkdtemp(prefix="vpwin-", dir=ROOT / "build"))
+    try:
+        for label, body, must_fail in (("as shipped", text, False),
+                                       ("left-out count falsified", bad, True)):
+            for old in work.glob("*.dat"):
+                old.unlink()
+            (work / src.name).write_text(body)
+            STD_COMP = work
+            got = []
+            check_vapour_pressures(Path(tempfile.mkdtemp(prefix="vpwin-run-", dir=tmp)),
+                                   got, [], {})
+            if must_fail and not any("window.pointsLeftOut" in g for g in got):
+                fails.append(f"arm (i) window negatives [{label}]: not refused: {got[:1]}")
+            if not must_fail and got:
+                fails.append(f"arm (i) window negatives [{label}]: the witness was accused: "
+                             f"{got[0][:200]}")
+    finally:
+        STD_COMP, VP_FLOOR = keep, keep_floor
+        VP_GRADE_COUNT.clear()
+        VP_GRADE_COUNT.update(keep_count)
+        shutil.rmtree(work, ignore_errors=True)
+
 
 C286_GRADE_COUNT = {}
 
@@ -1982,6 +2058,7 @@ def main():
         model_done = check_model_records(tmp, runs, fetched, fails, not_run)
         vp_done = check_vapour_pressures(tmp, fails, not_run, fetched)
         check_vp_grade_channel(tmp, fails)
+        check_vp_window_negatives(tmp, fails)
         vp_grades = ", ".join(f"{VP_GRADE_COUNT.get(g, 0)} {g}" for g in VP_GRADES[:3])
         span_held = check_span_announcement(tmp, fails)
         ll_held = check_ll_arm(tmp, fails)
