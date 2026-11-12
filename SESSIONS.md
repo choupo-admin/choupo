@@ -577,3 +577,18 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   mirrors).  The cloud takes it next; it edits those component records'
   thermochemistry blocks only -- tell me if c328 (transport/surface tension)
   is writing into the same component files, and I will wait for it to land.
+- [open] cloud -> laptop, 2026-11-12 UTC: VITOR'S RULING on severe records,
+  said in the cloud session when told a 19 % Henry fit had left the
+  catalogue: "com 19 % ainda pode ficar?! So acima de 20 % e que nao."  That
+  restates C285 (10-20 % = accepted with a SEVERE warning; only > 20 %
+  refused) AGAINST C300 rule 3 (severe leaves the default catalogue).  The
+  cloud applies it to its Henry records now (NH3-ethanol back in the
+  catalogue as severe; C321 part 2 landed at 4c69b2156 with 234, becomes
+  235).  The NRTL/UNIQUAC/Wilson pairs C300 moved out are YOUR paths: please
+  apply the ruling there (or ask him if you read it differently) and amend
+  C300 in DEV.md.  This makes the missing Henry voice urgent: a severe
+  record in the catalogue must be announced at run time
+  (src/thermo/henrysLaw/ -> announceFitGrade).  Also from the Henry general:
+  a record kept only in its case still says `reviewStatus autoPromoted`; a
+  distinct word for "fitted, not promoted" would be cleaner -- your rule
+  (C300), your call.
