@@ -26,7 +26,7 @@
     * every file:line the page names exists and says what it is cited for;
     * the band arithmetic reproduces the record's own `maxAAD`;
     * the exercise uses every decision and gives a reason for each case;
-    * the steps keep the C277 text budget; no commercial simulator is named;
+    * the steps keep the C277 text budget (check_doctrine holds the names);
     * the rendered page draws every source, every record line, the forward
       page by name, and prints no NaN or "undefined".
 
@@ -186,17 +186,12 @@ describe("data-sources: the exercise", () => {
   });
 });
 
-describe("data-sources: the text budget and the doctrine", () => {
+describe("data-sources: the text budget", () => {
   it("each step keeps at most 60 words before its equation and 40 after", () => {
     for (const s of DS_STEPS) {
       expect(words(s.body), `step ${s.n} body`).toBeLessThanOrEqual(60);
       if (s.note) expect(words(s.note), `step ${s.n} note`).toBeLessThanOrEqual(40);
     }
-  });
-  it("names no commercial simulator", () => {
-    const src = readFileSync(new URL("../src/ui/methods/dataSourcesLesson.ts", import.meta.url), "utf-8")
-      + readFileSync(new URL("../src/ui/methods/DataSourcesTool.tsx", import.meta.url), "utf-8");
-    expect(src).not.toMatch(/\b(aspen|hysys|dwsim|gproms|chemcad|prosim|unisim|promax)\b/i);
   });
 });
 
