@@ -3461,6 +3461,11 @@ accepts today, and that is a policy call.
 > C372 branch has landed (same files).  Sources found through the reference
 > lists of a NonCommercial digitised dataset are fetched and read as
 > primaries; nothing enters from that dataset.
+> SCOPE CONFIRMED by Vitor the same hour ("Quero mesmo todos!"): ALL 64
+> buffers of Goldberg et al., the laboratory zwitterionic buffers included,
+> not only the process-relevant ones; order of work: wine, food and water
+> first (phosphate, carbonate, sulfite, borate, ammonia, amino acids,
+> pyruvate, fumarate), then amines, then the laboratory buffers.
 
 > **C372 (Vitor, 2026-11-12: "ha uma lacuna que para mim importa: faltam as
 > especies dos acidos organicos mais comuns! Acido citrico, malico,
