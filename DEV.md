@@ -3417,7 +3417,7 @@ accepts today, and that is a policy call.
 > (check by grep) are listed, not silently left.  Status: recorded, general to
 > be dispatched (gui only; `--gui` is its validation).  Owner: architect.
 
-> **C338 (Vitor, 2026-11-12, in the cloud session, after asking what the
+> **C340 (was written as C338 by the cloud; renumbered, the laptop's C338 is the guides rule) (Vitor, 2026-11-12, in the cloud session, after asking what the
 > simulator lacks for biotechnology and biorefineries: "Poe os pontos 1 a 4
 > na agenda e da-me os DOIs dos artigos").  BIOPROCESSES, THE FIRST FOUR.**
 > Measured today: the tree has the reactors (cstr, batch, fed-batch on
@@ -3446,7 +3446,26 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
-> **C337 (Vitor, 2026-11-12, in the cloud session, after asking what the
+> **C340 SCOPE APPROVED (Vitor, 2026-11-12, "aprovo", on the scope put to
+> him in the cloud session).**  (1) THE CELL: biomass is a component the
+> CASE declares -- a measured elemental formula with its source, its
+> formation enthalpy DERIVED from the heat of combustion and the derivation
+> shown; growth is a reaction with declared yield coefficients, and the
+> engine checks the carbon, nitrogen and degree-of-reduction balances and
+> REFUSES a stoichiometry that does not close; the heat of fermentation
+> comes from the formation-enthalpy balance, with the oxygen-uptake rule
+> (about 460 kJ per mol O2) printed beside it as a cross-check, never in its
+> place; said on screen as not modelled: internal metabolism, a varying
+> cell composition, maintenance unless declared.  (2) OXYGEN TRANSFER: an
+> aerated fermenter whose liquid is limited by oxygen -- OTR = kLa (C* - C)
+> set beside the cells' uptake rate; kLa from a correlation chosen in the
+> case (Van't Riet: power per volume and superficial gas velocity), its
+> validity window checked and its source cited, or a measured kLa declared;
+> gassed power by Michel & Miller; the result says WHICH limits growth,
+> oxygen or kinetics (the lesson); said on screen as not modelled: gradients
+> in the tank, foam, non-Newtonian broths.
+
+> **C339 (was written as C337 by the cloud; renumbered, the laptop's C337 is the column sheet) (Vitor, 2026-11-12, in the cloud session, after asking what the
 > kinetics lack: "Implementa ou poe na agenda o que achares que e razoavel do
 > ponto de vista de Pareto").  KINETICS, THE PARETO.**  Measured: the rate
 > forms are complete for teaching (Arrhenius power law, LHHW, the written

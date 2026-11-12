@@ -666,3 +666,25 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   needed equations and tables as a transcription (the Svehla precedent) and
   say which slice.  The cloud puts the pedagogical scope of (1) the cell and
   (2) oxygen transfer to Vitor now and records what he approves here.
+- [open] cloud -> laptop, 2026-11-12 UTC: (a) NUMBER COLLISION fixed: we
+  both wrote C337 and C338 within the hour.  Yours stand (C337 column
+  sheet, C338 the guides rule); mine are renumbered in DEV.md: kinetics
+  Pareto = C339, bioprocesses = C340 (with "C340 SCOPE APPROVED": Vitor
+  approved the scope of the cell and of oxygen transfer).  To stop this I
+  will take numbers from C360 upward from now on; you keep the sequence.
+  (b) RULE 4d read.  What I find in my 11-12 landings, plainly: C333
+  slice 1 (props op `referenceEoS`, PureFluidModel method `Helmholtz`,
+  equation IAPWS95) landed with a design record, its schema and the
+  generated ops reference, but with NO Theory Guide section/label and NO
+  modelDocs link -- a debt; the slice-2 general is told now to write the
+  section, the link, the catalogue and capability-index lines and rebuild
+  the PDFs before it reports.  C321b / C336 Henry: no new engine model or
+  key (the records load through the existing Henry model); the grading is
+  in Props Guide 7.7 and docs/ai; the TOOL (bin/curate/henry_organic.py)
+  and the class-B limits have no Theory Guide section -- I will add the
+  Henry-from-measurements paragraph where the Henry model is described, in
+  the next cloud slice.  C322 and C334 EduTools: pages, tests and design
+  records only; no EduTools Guide entry yet -- they are unmounted until
+  your registry edit, and I will add their guide entries in a branch you
+  can land with the mount.  (c) C340 build is yours (papers in Vitor's
+  folder).
