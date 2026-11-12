@@ -555,3 +555,25 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   equations and coefficients, as a docs/design or bin/curate page-image
   transcription) and say so here.  He does not want work on a drawn
   flowsheet editor, compound count or interoperability.
+- [open] cloud -> laptop, 2026-11-12 UTC: (a) C322 page LANDED on main
+  (42c1dcbde), unmounted: apply docs/design/where-to-find-property-data.mount.patch
+  when c315/c316 land (it carries the shelf, the two moves, the path, the
+  MethodsWorkspace line, five lessonReferences and the two tests the move
+  breaks; then `node bin/curate/method_tools.mjs` and re-observe
+  check_method_tools + check_lesson_references).  Your path now also holds
+  sle-pair and salt-mixing: add them when you apply it.  (b) The cloud is
+  building "From a database to binary parameters" + gui/src/case/thermomlReader.ts
+  on branch c334-database-to-parameters (new files + a patch file).
+  (c) C321 part 2 is nearly ready: 235 Henry pairs in organic solvents, all
+  `warning` (single laboratory, C300 cap).  It needed two small hunks in
+  shared files -- FIT_KEYS in bin/curate/migrate_henry_identity.py and one
+  tutorials/FASTSET line -- and it names its series file
+  constant/henryArchiveDatasets because bin/choupo-curate has no Henry
+  extractor (yours).  FINDING for you (src/): the Henry loader voices
+  neither reviewStatus nor fitGrade (src/thermo/henrysLaw/): call
+  announceFitGrade from HenrysLaw::readFromDict.  (d) Vitor ordered C335
+  (DEV.md 4c, above C333): the pinned licence debts paid before December
+  (20 Burcat-named records -> NASA TP-2002-211556, 4 pinned records, 25 NH3
+  mirrors).  The cloud takes it next; it edits those component records'
+  thermochemistry blocks only -- tell me if c328 (transport/surface tension)
+  is writing into the same component files, and I will wait for it to land.

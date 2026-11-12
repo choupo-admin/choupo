@@ -3417,6 +3417,22 @@ accepts today, and that is a policy call.
 > (check by grep) are listed, not silently left.  Status: recorded, general to
 > be dispatched (gui only; `--gui` is its validation).  Owner: architect.
 
+> **C335 (Vitor, 2026-11-12, in the cloud session: "Eu nao quero ter
+> problemas com advogados!" and, to the cloud's recommendation, "Faz como
+> recomendas!").  THE PINNED LICENCE DEBTS ARE PAID BEFORE DECEMBER.**  The
+> three classes `check_source_licence` pins today: (1) the 20 records that
+> name the Burcat / ReSpecTh compilation (NonCommercial) as a value's origin
+> -- replaced through the clean route `bin/curate/import_gibbs_nasa.py`
+> already names (NASA/TP-2002-211556, public domain; ATcT where NASA has no
+> entry), each value re-read from the primary; (2) the 4 pinned records
+> whose authority is an encumbered source -- a primary datum each, or the
+> value removed and the gap announced, never a guess; (3) the 25 sealed
+> case-local NH3 mirrors that name a no-grant source -- re-imported from the
+> corrected catalogue record.  Every pin leaves `debt_registry` only with its
+> record fixed.  Any golden row that moves is LISTED to Vitor with its reason
+> before a re-record.  Then a one-page source/licence/use sheet for a
+> jurist's one-hour review (Vitor decides whether to ask for one).  Cloud.
+
 > **C333 (Vitor, 2026-11-12, in the cloud session, after reading where the
 > plan leaves Choupo short of breadth-first simulators: "equacoes de estado
 > de alta precisao?! Nos nao podemos implementar isso ja?! Isso e facil!" and,
