@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1565,
+  "cases": 1578,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 15
@@ -20281,6 +20281,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/transport/mixing01_water_acetone": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "UNIFAC"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/transport/surfacetension01_stored_vs_brockbird": {
    "application": "choupoProps",
    "ops": [
@@ -20994,6 +21008,78 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/distillation/packing01_schulz_0p10bar": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "RochaBravoFair",
+    "totalReflux"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/packing02_schulz_0p02bar": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "RochaBravoFair",
+    "totalReflux"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/packing03_schulz_delft_0p10bar": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "Delft",
+    "totalReflux"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/packing04_schulz_delft_0p02bar": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "Delft",
+    "totalReflux"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/distillation/shortcut01_benzene_toluene": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -21040,6 +21126,149 @@
      "davies"
     ],
     "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/totalReflux01_c6c7_yanagiRun628": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "totalReflux"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/trayEfficiency01_yanagi14": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "AIChE",
+    "totalReflux"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/trayEfficiency02_yanagi08": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "AIChE",
+    "totalReflux"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/trayEfficiency03_yanagi14_165kPa": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "AIChE",
+    "totalReflux"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/trayEfficiency04_yanagi08_165kPa": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "AIChE",
+    "totalReflux"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/trayEfficiency05_chanFair_yanagi14": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "ChanFair",
+    "totalReflux"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/trayEfficiency06_syedaChuang_yanagi14": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "SyedaChuang",
+    "totalReflux"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/trayEfficiency07_syedaChuang_yanagi08": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "SyedaChuang",
+    "totalReflux"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
    },
    "roles": [],
    "hasGolden": true
@@ -26048,6 +26277,7 @@
     "tutorials/props/thermoTest/atoms01_formula_parser",
     "tutorials/props/thermoTest/h_surface_identity",
     "tutorials/props/thermoTest/model4_speciation_scaling",
+    "tutorials/props/transport/mixing01_water_acetone",
     "tutorials/props/transport/surfacetension01_stored_vs_brockbird",
     "tutorials/props/transport/transport01_gas_bench",
     "tutorials/props/transport/transport02_chapman_enskog",
@@ -26122,9 +26352,21 @@
     "tutorials/steady/distillation/column18_partial_condenser",
     "tutorials/steady/distillation/column19_mtbe_reactive_mesh",
     "tutorials/steady/distillation/column20_mtbe_kinetic_mesh",
+    "tutorials/steady/distillation/packing01_schulz_0p10bar",
+    "tutorials/steady/distillation/packing02_schulz_0p02bar",
+    "tutorials/steady/distillation/packing03_schulz_delft_0p10bar",
+    "tutorials/steady/distillation/packing04_schulz_delft_0p02bar",
     "tutorials/steady/distillation/shortcut01_benzene_toluene",
     "tutorials/steady/distillation/stripper01_sour_water",
     "tutorials/steady/distillation/stripper02_sour_water_h2s",
+    "tutorials/steady/distillation/totalReflux01_c6c7_yanagiRun628",
+    "tutorials/steady/distillation/trayEfficiency01_yanagi14",
+    "tutorials/steady/distillation/trayEfficiency02_yanagi08",
+    "tutorials/steady/distillation/trayEfficiency03_yanagi14_165kPa",
+    "tutorials/steady/distillation/trayEfficiency04_yanagi08_165kPa",
+    "tutorials/steady/distillation/trayEfficiency05_chanFair_yanagi14",
+    "tutorials/steady/distillation/trayEfficiency06_syedaChuang_yanagi14",
+    "tutorials/steady/distillation/trayEfficiency07_syedaChuang_yanagi08",
     "tutorials/steady/drying/convDryer01_sugar_curve",
     "tutorials/steady/drying/evapDryer01_nacl",
     "tutorials/steady/drying/evapDryer02_energy_limited",
@@ -26600,8 +26842,20 @@
     "tutorials/steady/distillation/column18_partial_condenser",
     "tutorials/steady/distillation/column19_mtbe_reactive_mesh",
     "tutorials/steady/distillation/column20_mtbe_kinetic_mesh",
+    "tutorials/steady/distillation/packing01_schulz_0p10bar",
+    "tutorials/steady/distillation/packing02_schulz_0p02bar",
+    "tutorials/steady/distillation/packing03_schulz_delft_0p10bar",
+    "tutorials/steady/distillation/packing04_schulz_delft_0p02bar",
     "tutorials/steady/distillation/stripper01_sour_water",
     "tutorials/steady/distillation/stripper02_sour_water_h2s",
+    "tutorials/steady/distillation/totalReflux01_c6c7_yanagiRun628",
+    "tutorials/steady/distillation/trayEfficiency01_yanagi14",
+    "tutorials/steady/distillation/trayEfficiency02_yanagi08",
+    "tutorials/steady/distillation/trayEfficiency03_yanagi14_165kPa",
+    "tutorials/steady/distillation/trayEfficiency04_yanagi08_165kPa",
+    "tutorials/steady/distillation/trayEfficiency05_chanFair_yanagi14",
+    "tutorials/steady/distillation/trayEfficiency06_syedaChuang_yanagi14",
+    "tutorials/steady/distillation/trayEfficiency07_syedaChuang_yanagi08",
     "tutorials/steady/flowsheets/process05_isomerization_recycle",
     "tutorials/steady/flowsheets/recycle02_dominant_eigenvalue",
     "tutorials/steady/heat/heatlink01_condenser_to_heater",
@@ -27766,6 +28020,7 @@
     "tutorials/props/compare/lle01_acetic_mibk_perry",
     "tutorials/props/scan/ternary03_lle_water_ethanol_benzene",
     "tutorials/props/solvents/solvent02_polystyrene_hexane_blends",
+    "tutorials/props/transport/mixing01_water_acetone",
     "tutorials/steady/absorption/extract01_ethanol_water_benzene",
     "tutorials/steady/absorption/extract02_declared_interior",
     "tutorials/steady/absorption/extract03_acetic_acid_mibk_perry",
@@ -29011,7 +29266,19 @@
     "tutorials/steady/distillation/column16_declared_interior",
     "tutorials/steady/distillation/column17_exchanger_design",
     "tutorials/steady/distillation/column18_partial_condenser",
+    "tutorials/steady/distillation/packing01_schulz_0p10bar",
+    "tutorials/steady/distillation/packing02_schulz_0p02bar",
+    "tutorials/steady/distillation/packing03_schulz_delft_0p10bar",
+    "tutorials/steady/distillation/packing04_schulz_delft_0p02bar",
     "tutorials/steady/distillation/shortcut01_benzene_toluene",
+    "tutorials/steady/distillation/totalReflux01_c6c7_yanagiRun628",
+    "tutorials/steady/distillation/trayEfficiency01_yanagi14",
+    "tutorials/steady/distillation/trayEfficiency02_yanagi08",
+    "tutorials/steady/distillation/trayEfficiency03_yanagi14_165kPa",
+    "tutorials/steady/distillation/trayEfficiency04_yanagi08_165kPa",
+    "tutorials/steady/distillation/trayEfficiency05_chanFair_yanagi14",
+    "tutorials/steady/distillation/trayEfficiency06_syedaChuang_yanagi14",
+    "tutorials/steady/distillation/trayEfficiency07_syedaChuang_yanagi08",
     "tutorials/steady/drying/convDryer01_sugar_curve",
     "tutorials/steady/drying/evapDryer01_nacl",
     "tutorials/steady/drying/evapDryer02_energy_limited",
@@ -30075,6 +30342,7 @@
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
     "tutorials/props/thermo/temperature01_gas_thermometer",
     "tutorials/props/thermo/temperature02_engineers_ladder",
+    "tutorials/props/transport/mixing01_water_acetone",
     "tutorials/props/transport/surfacetension01_stored_vs_brockbird"
    ],
    "propertyScan1D": [

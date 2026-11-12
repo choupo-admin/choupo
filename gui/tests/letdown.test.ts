@@ -466,7 +466,7 @@ describe("letdown: the lesson text", () => {
       "src/unitOperations/valve/Valve.H:32": "isenthalpic",
       "src/unitOperations/valve/Valve.cpp:147": "flashState::priceState(T, Pout",
       "src/unitOperations/valve/Valve.cpp:263": "HOMOGENEOUS, NO SLIP",
-      "src/thermo/ThermoPackage.cpp:2265": "ThermoPackage::density",
+      "src/thermo/ThermoPackage.cpp:2270": "ThermoPackage::density",
       "src/unitOperations/flash/StreamEquilibrium.H:862": "inline scalar priceState(",
       "src/propertyOps/PropertyPoint.cpp:73": "Cp_ig / (Cp_ig - constant::R)",
       "src/propertyOps/PropertyEvaluator.cpp:167": "thermo.Psat(i, T)",

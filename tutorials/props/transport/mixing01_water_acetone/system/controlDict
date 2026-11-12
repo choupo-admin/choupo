@@ -1,0 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoProps;
+description   "Liquid mixing rules, old beside new, at measured points: surface tension of water + acetone (mole-fraction average vs Butler with UNIFAC), viscosity of water + ethanol (log-mole average vs Grunberg-Nissan with a fitted G), thermal conductivity of water + ethanol (mass-fraction average vs Filippov vs Li); the measured value of each point is quoted with its DOI in system/propsDict";
+verbosity     2;

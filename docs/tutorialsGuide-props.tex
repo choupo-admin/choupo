@@ -5497,6 +5497,59 @@ The brine is NaCl-dominated (3 mol/kg, near seawater) with CaSO4 (0.10 mol/kg) r
 \subsection{transport}
 \grouptheory{transport}
 \clearpage
+\tutentry{mixing01\_water\_acetone}{tutorials/props/transport/mixing01\_water\_acetone}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{sigma\_acetone0500\_moleFractionAverage}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{sigma\_acetone0500\_Butler}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{sigma\_acetone1999\_moleFractionAverage}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{sigma\_acetone1999\_Butler}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{sigma\_acetone4999\_moleFractionAverage}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{sigma\_acetone4999\_Butler}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{sigma\_acetone7999\_moleFractionAverage}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{sigma\_acetone7999\_Butler}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-2.6) {\textbf{mu\_ethanol1000\_logMoleAverage}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-3.9) {\textbf{mu\_ethanol1000\_GrunbergNissan}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-3.9) {\textbf{mu\_ethanol3000\_logMoleAverage}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-3.9) {\textbf{mu\_ethanol3000\_GrunbergNissan}\\[-1pt]{\tiny propertyPoint}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Liquid mixing rules, old beside new, at measured points: surface tension of water + acetone (mole-fraction average vs Butler with UNIFAC), viscosity of water + ethanol (log-mole average vs Grunberg-Nissan with a fitted G), thermal conductivity of water + ethanol (mass-fraction average vs Filippov vs Li); the measured value of each point is quoted with its DOI in system/propsDict}
+\begin{tutnarrative}
+mixing01 -- THE OLD MIXING RULE BESIDE THE NEW ONE, AT MEASURED POINTS (DEV.md 4c C331).
+
+A mixture property is the pure values PLUS a rule that combines them, and the rule is a model with its own error. Every operation below evaluates one property at one measured (T, x) with one rule, selected by `mixingRule` beside the pure-component `model`. The measured value of each point is quoted here with its source; the run prints only what the engine computes.
+
+SURFACE TENSION, water + acetone, 298.15 K, sigma [mN/m] measured: Enders, Kahl \& Winkelmann, J. Chem. Eng. Data (2007), doi 10.1021/je7000182. Pure sigma: StoredCorrelation of each record. x\_acetone measured moleFractionAverage Butler (UNIFAC) 0.0500 46.14 69.08 (+50 \%) 31.93 (-31 \%) 0.1999 32.21 61.86 (+92 \%) 27.52 (-15 \%) 0.4999 27.04 47.41 (+75 \%) 25.81 ( -5 \%) 0.7999 24.51 32.95 (+34 \%) 24.39 ( -0.5 \%) The straight line ignores that acetone crowds the surface; Butler puts the surface in equilibrium with the bulk and recovers most of the drop, but with the case's own UNIFAC on BOTH phases it over-enriches the dilute end (Poling 5ed sec. 12-5: "none of these versions ... was particularly successful for aqueous mixtures"; Suarez et al. 1989 modify the combinatorial term for that reason, not done here).
+
+VISCOSITY, water + ethanol, 298.15 K, mu [mPa s] measured: Pires, Costa, Ferreira et al., J. Chem. Eng. Data (2007), doi 10.1021/je600565m. Pure mu: Vogel of each record. x\_ethanol measured logMoleAverage GrunbergNissan 0.1000 1.923 0.908 (-53 \%) 1.558 (-19 \%) 0.3000 2.342 0.944 (-60 \%) 2.460 ( +5 \%) 0.5984 1.761 1.001 (-43 \%) 1.783 ( +1 \%) The water-ethanol viscosity has a MAXIMUM near x\_ethanol 0.25 that no average of the pure values can produce. G(T, x) below is Choupo's fit to 311 points from 9 laboratories (268-328 K); it is in-sample, and its largest error over those points is 27.5 \% (mean 10.2 \%).
+
+THERMAL CONDUCTIVITY, water + ethanol, lambda [W/(m K)] measured: Cui, Zhu, He, Wu et al., J. Chem. Eng. Data (2019), doi 10.1021/acs.jced.8b01147. Pure lambda: chemsepEq16 of each record. T [K] x\_ethanol measured massFractionAverage Filippov Li 293.26 0.2069 0.362 0.4245 (+17 \%) 0.3499 (-3 \%) 0.3393 (-6 \%) 293.16 0.4771 0.240 0.2951 (+23 \%) 0.2298 (-4 \%) 0.2288 (-5 \%)
+
+Over every measured point of the archive (bin/curate/mixing\_fit.py validate; max / mean |error| in \%): sigma water-acetone (60 pts) moleFractionAverage 104 / 63 Butler 33 / 12 mu water-ethanol (311 pts) logMoleAverage 72 / 42 GrunbergNissan 28 / 10 k water-ethanol (117 pts) massFractionAverage 28 / 17 Filippov 5 / 3 Li 10 / 6
+
+The golden master locks every computed value at reltol 1e-4.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{sigma\_acetone0500\_moleFractionAverage}{Cp\_ig}{35.6466579814}
+\goldrow{diag}{sigma\_acetone0500\_moleFractionAverage}{H\_R}{0}
+\goldrow{diag}{sigma\_acetone0500\_moleFractionAverage}{H\_ig}{-240589.7}
+\goldrow{diag}{sigma\_acetone0500\_moleFractionAverage}{H\_real}{-240589.7}
+\goldrow{diag}{sigma\_acetone0500\_moleFractionAverage}{P}{100000}
+\goldrow{diag}{sigma\_acetone0500\_moleFractionAverage}{S\_R}{0}
+\goldrow{diag}{sigma\_acetone0500\_moleFractionAverage}{S\_ig}{195.80784757}
+\goldrow{diag}{sigma\_acetone0500\_moleFractionAverage}{S\_real}{195.80784757}
+\goldrow{diag}{sigma\_acetone0500\_moleFractionAverage}{T}{298.15}
+\goldrow{diag}{sigma\_acetone0500\_moleFractionAverage}{Z}{1}
+\goldrow{diag}{sigma\_acetone0500\_moleFractionAverage}{gamma}{1.30420032154}
+\goldrow{diag}{sigma\_acetone0500\_moleFractionAverage}{surface\_tension}{0.0690805514903}
+\goldrow{diag}{sigma\_acetone0500\_moleFractionAverage}{v\_molar}{0.0247895702956}
+\goldrow{diag}{sigma\_acetone0500\_moleFractionAverage}{viscosity}{7.98074944224e-06}
+\goldmore{266}
+\end{tutgolden}
+
+\clearpage
 \tutentry{surfacetension01\_stored\_vs\_brockbird}{tutorials/props/transport/surfacetension01\_stored\_vs\_brockbird}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

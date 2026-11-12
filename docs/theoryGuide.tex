@@ -13245,31 +13245,72 @@ $\sim$2\% accuracy for binary gas mixtures across the full
 composition range, with the rule reducing exactly to $\mu_i$ in the
 pure-component limit by construction.
 
-\subsection{Liquid viscosity: log-mole-fraction average}
+\subsection{Liquid viscosity: log-mole-fraction average and Grunberg-Nissan}
 
 \begin{equation}
    \ln \mu^{\mathrm{liq}}_{\mathrm{mix}} \;=\;
-     \sum_i x_i\,\ln \mu_i.
+     \sum_i x_i\,\ln \mu_i
+     \;+\; \sum_{i<j} x_i x_j\, G_{ij}(T, x),
+   \qquad
+   G_{ij} = A + \frac{B}{T} + \Bigl(C + \frac{D}{T}\Bigr)(x_i - x_j).
    \label{eq:liq-visc-mix}
 \end{equation}
-The motivation is empirical (Arrhenius rule for ideal liquid
-mixtures) but the form is well behaved: it is exact when the mixing
-is athermal and the simplest non-trivial answer otherwise.  For
-strongly hydrogen-bonded mixtures the Grunberg-Nissan correction
-adds a binary interaction term $\sum_i \sum_j x_i x_j G_{ij}$ but
-we will not need it.
+With every $G_{ij} = 0$ this is the log-mole-fraction average
+(\code{mixingRule logMoleAverage}), exact for an athermal mixture and the
+simplest non-trivial answer otherwise.  It cannot produce the viscosity
+MAXIMUM of water with an alcohol: against 311 measured points of water +
+ethanol (nine laboratories, 268--328\,K, ThermoML archive) it is 42\,\% low
+on average and 72\,\% at worst.  The interaction term is Grunberg and
+Nissan's\cite{GrunbergNissan1949} (\code{mixingRule GrunbergNissan}),
+Poling's eq.~9-13.1, where $G_{ij}$ is ``a function of the components $i$
+and $j$ as well as the temperature (and, in some cases, the composition)'';
+the case declares each pair's $A, B, C, D$ from a fit to measured mixture
+viscosities, with its window and its source, and a pair with no declared
+row mixes with $G = 0$, announced.  Choupo's fit for water + ethanol brings
+the mean error to 10\,\% (in-sample).  No predictive form in Poling covers
+water (``with aqueous solutions, neither the Grunberg-Nissan form nor the
+UNIFAC-VISCO method is recommended'', p.~9.90), so none is offered.
 
-\subsection{Liquid thermal conductivity: mass-fraction average}
+\subsection{Liquid thermal conductivity: mass average, Filippov, Li}
 
 \begin{equation}
-   \kappa^{\mathrm{liq}}_{\mathrm{mix}} \;=\;
-     \sum_i w_i\,\kappa_i,
-   \qquad w_i \;=\; \frac{x_i M_i}{\sum_j x_j M_j}.
+   \kappa_{\mathrm{w}} = \sum_i w_i\,\kappa_i,
+   \qquad
+   \kappa_{\mathrm{F}} = w_1\kappa_1 + w_2\kappa_2 - 0.72\,w_1 w_2\,|\kappa_2-\kappa_1|,
+   \qquad
+   \kappa_{\mathrm{Li}} = \sum_i\sum_j \phi_i\phi_j\,\frac{2\kappa_i\kappa_j}{\kappa_i+\kappa_j}.
    \label{eq:liq-kappa-mix}
 \end{equation}
-The mass weighting is empirical; Filippov's binary correlation is
-more accurate but needs an interaction term per pair.  For
-engineering accuracy mass-fraction mixing is enough.
+Liquid mixtures conduct LESS than either average of the pure values
+(Poling sec.~10-12).  The mass-fraction average
+(\code{mixingRule massFractionAverage}, $w_i = x_iM_i/\sum_j x_jM_j$) misses
+that: 17\,\% high on average for water + ethanol (117 measured points).
+Filippov's binary rule\cite{Filippov1955} (\code{Filippov}, Poling
+eq.~10-12.1) brings it to 3\,\%; Li's\cite{Li1976} (\code{Li}, Perry 9th
+ed.\ eq.~2-114), with $\phi_i = x_iV_i/\sum_j x_jV_j$ from the package's own
+liquid molar volumes, takes any number of components and gives 6\,\%.
+
+\subsection{Surface tension of a liquid mixture: Butler}
+
+\begin{equation}
+   \sigma_m = \sigma_i + \frac{RT}{A_i}\,
+      \ln\frac{x^{s}_i\,\gamma^{s}_i}{x_i\,\gamma_i}\quad(\text{every } i),
+   \qquad \sum_i x^{s}_i = 1,
+   \qquad A_i = 1.021\times10^{8}\,V_{c,i}^{6/15}V_{b,i}^{4/15}.
+   \label{eq:butler}
+\end{equation}
+The surface is a phase in equilibrium with the bulk\cite{Butler1932,SprowPrausnitz1966}
+(Poling eqs.~12-5.16, 12-5.17, molar areas 12-5.20 in cm$^2$/mol from
+$V_c$ and $V_b$ in cm$^3$/mol); $\gamma$ is the case's OWN activity model at
+the bulk composition and $\gamma^s$ the same model at the surface
+composition, solved by substitution (\code{mixingRule Butler}).  $V_b$ is
+the package's liquid molar volume at $T_b$; the records carry no $V_c$, so
+the Rackett critical volume $RT_cZ_{RA}/P_c$ stands for it, announced.  The
+mole-fraction average (\code{moleFractionAverage}) ignores that the
+lower-$\sigma$ component crowds the surface: for water + acetone it is
+63\,\% high on average over 60 measured points; Butler on UNIFAC gives
+12\,\%, but over-enriches the dilute end ($-31$\,\% at $x_{\mathrm{acetone}}
+= 0.05$), the weakness Poling notes for aqueous systems.
 
 \subsection{Gas thermal conductivity: Wassiljewa with Mason-Saxena}
 
@@ -13298,11 +13339,12 @@ Notice the pattern: every mixture rule reduces to the pure-component
 value when $x_i = 1$, and most are weighted means (linear,
 logarithmic, or harmonic) of the pure values with an interaction
 correction.  The engine ships exactly the rules of this
-chapter --- Wilke, the log-mole-fraction (Grunberg-Nissan) average,
-mass-fraction $\kappa$, Wassiljewa/Mason-Saxena --- and a
-\code{mixingRule} key is deliberately \emph{not} selectable yet: the
-builder refuses it by name rather than letting a refinement switch on
-by accident.
+chapter --- Wilke and Wassiljewa/Mason-Saxena for the gas, which are
+fixed (the builder refuses a \code{mixingRule} there by name), and, for
+the three liquid properties, a \code{mixingRule} selected beside the
+pure model (DEV.md 4c C331): the old rule and the better one side by side,
+each announced, each held to measured mixture data in
+\file{tutorials/props/transport/mixing01\_water\_acetone}.
 \end{intuition}
 
 % ---------------------------------------------------------------------
@@ -26690,6 +26732,28 @@ ed.\ (1987), eq.~11-4.4.  Choupo's \code{Fuller} model.
 517--519, 1950.  The interaction factor $\phi_{ij}$ of
 eq.~\eqref{eq:wilke-rule} and the gas-viscosity mixing rule built on it;
 ONE home in \file{src/thermo/transport/GasMixingRules.H}.
+
+\bibitem{GrunbergNissan1949} Grunberg, L. \& Nissan, A. H., \emph{Nature}
+\textbf{164}, 799--800, 1949.  The one-parameter liquid-mixture viscosity
+rule of eq.~\eqref{eq:liq-visc-mix}, as Poling, Prausnitz \& O'Connell,
+5th ed.\ (2001), eqs.~9-13.1/9-13.2 write it.
+
+\bibitem{Filippov1955} Filippov, L. P., \emph{Vest. Mosk. Univ., Ser. Fiz.
+Mat. Estestv. Nauk} \textbf{10}, 67, 1955.  The binary liquid-conductivity
+rule of eq.~\eqref{eq:liq-kappa-mix}; Poling 5th ed.\ eq.~10-12.1.
+
+\bibitem{Li1976} Li, C. C., \emph{AIChE J.}\ \textbf{22}, 927, 1976.  The
+volume-fraction liquid-conductivity rule of eq.~\eqref{eq:liq-kappa-mix}, as
+Perry's Chemical Engineers' Handbook, 9th ed., eq.~2-114 writes it.
+
+\bibitem{Butler1932} Butler, J. A. V., \emph{Proc. R. Soc. Lond. A}
+\textbf{135}, 348, 1932.  The surface as a phase in equilibrium with the
+bulk, eq.~\eqref{eq:butler}.
+
+\bibitem{SprowPrausnitz1966} Sprow, F. B. \& Prausnitz, J. M.,
+\emph{Trans. Faraday Soc.}\ \textbf{62}, 1105, 1966.  Butler's equation
+with activity coefficients in both phases, as Poling 5th ed.\ eqs.
+12-5.16/12-5.17 write it.
 
 \bibitem{Wassiljewa1904} Wassiljewa, A., \emph{Physik. Z.}\ \textbf{5},
 737--742, 1904.  The gas thermal-conductivity mixing rule that shares

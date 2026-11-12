@@ -91,12 +91,12 @@ class Database;
 class DiffusivityModel;
 class ElectrolyteModel;
 class EquationOfState;
-class LiquidConductivityModel;
+class LiquidConductivityModel; class LiquidConductivityMixingRule;
 class LiquidDiffusivityModel;
-class LiquidViscosityModel;
+class LiquidViscosityModel; class LiquidViscosityMixingRule;
 class Phase;
 class PureFluidModel;
-class SurfaceTensionModel;
+class SurfaceTensionModel; class SurfaceTensionMixingRule; struct LiquidMixingContext;
 class ThermalConductivityModel;
 class TransportModel;
 namespace electrolyte {
@@ -645,7 +645,9 @@ public:
     //   liquidViscosity   { model Andrade;    }   // ln μ = A + B/T  (Pa·s)
     //   liquidConductivity{ model SatoRiedel; }   // W/(m·K)
     //   liquidDiffusivity { model WilkeChang; }   // D°_AB [m²/s], i=solute, j=solvent
-    // Mixture rules: Grunberg-Nissan (viscosity), mass-fraction (conductivity).
+    // Mixture rules: selectable by `mixingRule` (C331) -- viscosity
+    // logMoleAverage | GrunbergNissan, conductivity massFractionAverage |
+    // Filippov | Li (transport/Liquid*MixingRule.H).
     // diffusivityLiquid needs the solvent viscosity, so a liquidViscosity
     // model must be present alongside.  Each throws if its sub-block is absent.
     bool   hasLiquidViscosity()    const { return liquidViscosity_ != nullptr; }
@@ -660,7 +662,8 @@ public:
     // is effectively pure in a pure-fluid-flagged component (water + IF97),
     // the fundamental-equation package's own sigma(T) is used (R1-76);
     // otherwise the generic correlation; otherwise it throws asking for a
-    // surfaceTension sub-block.  Mixture rule: mole-fraction average (v1).
+    // surfaceTension sub-block.  Mixture rule: selectable by `mixingRule`
+    // (C331) -- moleFractionAverage | Butler (SurfaceTensionMixingRule.H).
     bool   hasSurfaceTension() const { return surfaceTension_ != nullptr; }
     scalar surfaceTension(scalar T_K, const sVector& x) const;
 
@@ -823,6 +826,14 @@ private:
     std::vector<std::string>
     loadComponentSet(std::vector<std::string> names, const Database& db);
 
+    //  The liquid molar volume of ONE component at T [m3/mol], by the route
+    //  the liquid density takes for it (its 25 C `Vliq` anchored on Rackett,
+    //  a flat `Vliq`, or bare Rackett -- each announced once).  density()
+    //  mixes these; the liquid mixing rules read them (C331).
+    scalar liquidMolarVolumeOf(std::size_t i, scalar T_K) const;
+    //  What a liquid mixing rule may read from this package.
+    LiquidMixingContext liquidMixingContext() const;
+
 
     std::vector<Component>                 components_;
     std::vector<std::unique_ptr<Phase>>    phases_;
@@ -836,6 +847,11 @@ private:
     std::unique_ptr<LiquidConductivityModel>  liquidConductivity_;
     std::unique_ptr<LiquidDiffusivityModel>   liquidDiffusivity_;
     std::unique_ptr<SurfaceTensionModel>      surfaceTension_;
+    //  The LIQUID MIXING RULES (DEV.md 4c C331), one per property, built
+    //  from the same sub-block as the pure model (`mixingRule <name>;`).
+    std::unique_ptr<LiquidViscosityMixingRule>    liquidViscosityMixing_;
+    std::unique_ptr<LiquidConductivityMixingRule> liquidConductivityMixing_;
+    std::unique_ptr<SurfaceTensionMixingRule>     surfaceTensionMixing_;
     std::string                               solventName_;
     // The DECLARED aqueous solvent (see aqueousSolventName()); empty until
     // the builder stamps a declaration, and the default stands for it.

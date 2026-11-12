@@ -391,6 +391,40 @@ Pick by need:
 When a unit op needs a transport property the system doesn't supply, the
 solver throws a clear error naming the missing slot.
 
+### Liquid mixing rules (`mixingRule`, C331)
+
+The three LIQUID properties also select how the pure values are combined,
+with `mixingRule` beside `model` (the gas rules, Wilke and
+Wassiljewa-Mason-Saxena, are fixed and refuse the key).  The DEFAULT is the
+best-practice rule (C331); the old rule stays selectable by name:
+
+```
+liquid
+{
+    viscosity
+    {
+        model       Vogel;
+        mixingRule  GrunbergNissan;
+        interaction ( { i water; j ethanol; A -5.51544; B 2572.66; C -11.528; D 4515.19;
+                        Tmin 268.1 K; Tmax 328.15 K; source "..."; } );
+    }
+    thermalConductivity { model chemsepEq16; mixingRule Li; }
+}
+interface { surfaceTension { model StoredCorrelation; mixingRule Butler; } }
+```
+
+| Property | Rules | What the new rule needs |
+|---|---|---|
+| Surface tension | **`Butler`** (default) · `moleFractionAverage` | the case's activity model (bulk AND surface composition; Poling 5ed eqs. 12-5.16/17); falls back to the linear rule, announced, if the package has none |
+| Liquid viscosity | **`GrunbergNissan`** (default) · `logMoleAverage` | `interaction` rows `G_ij(T,x) = A + B/T + (C + D/T)(x_i - x_j)` fitted to measured mixture data, with `source`; a pair with no row mixes with G = 0, announced |
+| Liquid thermal conductivity | **`Li`** (default) · **`Filippov`** (binary only) · `massFractionAverage` | Li reads the package's liquid molar volumes |
+
+Measured (ThermoML archive, `bin/curate/mixing_fit.py validate`): surface
+tension of water + acetone 63 % mean error with the linear rule, 12 % with
+Butler on UNIFAC; viscosity of water + ethanol 42 % with `logMoleAverage`,
+10 % with the fitted G; conductivity of water + ethanol 17 % with the mass
+average, 3 % Filippov, 6 % Li (tutorial `props/transport/mixing01_water_acetone`).
+
 Every registered transport model states its **validity window**, its
 **primary citation** and a **self-check anchor** (`verify()`), and the
 `choupoProps` operation **`transportBench`** runs them all — verify table

@@ -29,6 +29,7 @@ License
 #include "SurfaceTensionModel.H"
 #include "transport/BrockBird.H"
 #include "transport/StoredCorrelation.H"
+#include "transport/SurfaceTensionMixingRule.H"
 
 #include <map>
 #include <memory>
@@ -70,6 +71,9 @@ void SurfaceTensionModel::registerBuiltins()
     registerType("brockbird", [](const DictPtr& d) { return std::make_unique<BrockBird>(d); });
     registerType("StoredCorrelation", [](const DictPtr& d) { return std::make_unique<StoredCorrelation>(d); });
     registerType("storedCorrelation", [](const DictPtr& d) { return std::make_unique<StoredCorrelation>(d); });
+    //  The mixing rules of the same property (C331), registered with it:
+    //  a package that reads this model also reads its `mixingRule`.
+    SurfaceTensionMixingRule::registerBuiltins();
 }
 
 std::vector<std::string> SurfaceTensionModel::availableModels()

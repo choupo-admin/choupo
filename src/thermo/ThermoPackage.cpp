@@ -46,6 +46,9 @@ License
 #include "transport/ThermalConductivityModel.H"
 #include "transport/DiffusivityModel.H"
 #include "transport/LiquidViscosityModel.H"
+#include "transport/LiquidViscosityMixingRule.H"
+#include "transport/LiquidConductivityMixingRule.H"
+#include "transport/SurfaceTensionMixingRule.H"
 #include "transport/LiquidConductivityModel.H"
 #include "transport/LiquidDiffusivityModel.H"
 
@@ -103,6 +106,9 @@ ThermoPackage& ThermoPackage::operator=(ThermoPackage&& o) noexcept
         liquidConductivity_ = std::move(o.liquidConductivity_);
         liquidDiffusivity_  = std::move(o.liquidDiffusivity_);
         surfaceTension_     = std::move(o.surfaceTension_);
+        liquidViscosityMixing_    = std::move(o.liquidViscosityMixing_);
+        liquidConductivityMixing_ = std::move(o.liquidConductivityMixing_);
+        surfaceTensionMixing_     = std::move(o.surfaceTensionMixing_);
         solventName_        = std::move(o.solventName_);
         declaredAqueousSolvent_ = std::move(o.declaredAqueousSolvent_);
         declaredSolutes_    = std::move(o.declaredSolutes_);
@@ -505,18 +511,32 @@ void ThermoPackage::readTransportBlock(const DictPtr& td)
     if (td->found("diffusivity"))
         diffusivity_ = DiffusivityModel::New(td->subDict("diffusivity"));
     // Liquid transport.
+    //  Each liquid property's block also names its MIXING RULE (C331):
+    //  `mixingRule <name>;` beside `model`, the factory's default otherwise.
     if (td->found("liquidViscosity"))
+    {
         liquidViscosity_ =
             LiquidViscosityModel::New(td->subDict("liquidViscosity"));
+        liquidViscosityMixing_ =
+            LiquidViscosityMixingRule::New(td->subDict("liquidViscosity"));
+    }
     if (td->found("liquidConductivity"))
+    {
         liquidConductivity_ =
             LiquidConductivityModel::New(td->subDict("liquidConductivity"));
+        liquidConductivityMixing_ =
+            LiquidConductivityMixingRule::New(td->subDict("liquidConductivity"));
+    }
     if (td->found("liquidDiffusivity"))
         liquidDiffusivity_ =
             LiquidDiffusivityModel::New(td->subDict("liquidDiffusivity"));
     if (td->found("surfaceTension"))
+    {
         surfaceTension_ =
             SurfaceTensionModel::New(td->subDict("surfaceTension"));
+        surfaceTensionMixing_ =
+            SurfaceTensionMixingRule::New(td->subDict("surfaceTension"));
+    }
 }
 
 void ThermoPackage::readPureFluids(const DictPtr& pf)
@@ -2158,18 +2178,14 @@ scalar ThermoPackage::viscosityLiquid(scalar T, const sVector& x) const
             " add `transport { liquidViscosity { model Andrade; } }` to the"
             " thermoPackage (a propertyPackage's propertyMethods `transport`"
             " slot covers gas viscosity only).");
-    // Grunberg-Nissan (no interaction term): ln μ_mix = Σ xᵢ ln μᵢ.
+    // The pure values at T, then the declared mixing rule (C331;
+    // transport/LiquidViscosityMixingRule.H).
     const std::size_t N = n();
-    scalar lnmu = 0.0, xsum = 0.0;
+    sVector mu(N, 0.0);
     for (std::size_t i = 0; i < N; ++i)
-    {
-        if (x[i] <= 0.0) continue;
-        lnmu += x[i] * std::log(liquidViscosity_->viscosityLiquidPure(components_[i], T));
-        xsum += x[i];
-    }
-    if (xsum <= 0.0)
-        throw std::runtime_error("ThermoPackage::viscosityLiquid: empty composition");
-    return std::exp(lnmu / xsum);                       // Pa·s
+        if (x[i] > 0.0)
+            mu[i] = liquidViscosity_->viscosityLiquidPure(components_[i], T);
+    return liquidViscosityMixing_->mix(T, x, mu, liquidMixingContext());   // Pa·s
 }
 
 scalar ThermoPackage::thermalConductivityLiquid(scalar T, const sVector& x) const
@@ -2192,21 +2208,14 @@ scalar ThermoPackage::thermalConductivityLiquid(scalar T, const sVector& x) cons
             " model --- add `transport { liquidConductivity { model"
             " SatoRiedel; } }` to the thermoPackage (a propertyPackage's"
             " propertyMethods `transport` slot covers gas viscosity only).");
-    // Mass-fraction weighting: λ_mix = Σ wᵢ λᵢ.
+    // The pure values at T, then the declared mixing rule (C331;
+    // transport/LiquidConductivityMixingRule.H).
     const std::size_t N = n();
-    scalar Mbar = 0.0;
+    sVector lam(N, 0.0);
     for (std::size_t i = 0; i < N; ++i)
-        if (x[i] > 0.0) Mbar += x[i] * components_[i].MW();
-    if (Mbar <= 0.0)
-        throw std::runtime_error("ThermoPackage::thermalConductivityLiquid: empty composition");
-    scalar k = 0.0;
-    for (std::size_t i = 0; i < N; ++i)
-    {
-        if (x[i] <= 0.0) continue;
-        const scalar w = x[i] * components_[i].MW() / Mbar;
-        k += w * liquidConductivity_->conductivityLiquidPure(components_[i], T);
-    }
-    return k;                                           // W/(m·K)
+        if (x[i] > 0.0)
+            lam[i] = liquidConductivity_->conductivityLiquidPure(components_[i], T);
+    return liquidConductivityMixing_->mix(T, x, lam, liquidMixingContext());   // W/(m·K)
 }
 
 scalar ThermoPackage::diffusivityLiquid(scalar T, std::size_t i, std::size_t j) const
@@ -2248,18 +2257,14 @@ scalar ThermoPackage::surfaceTension(scalar T, const sVector& x) const
             " add `transport { surfaceTension { model BrockBird; } }` to the"
             " thermoPackage (a propertyPackage's propertyMethods `transport`"
             " slot covers gas viscosity only).");
-    // Mole-fraction average of the pure-component surface tensions (v1).
+    // The pure values at T, then the declared mixing rule (C331;
+    // transport/SurfaceTensionMixingRule.H).
     const std::size_t N = n();
-    scalar s = 0.0, xsum = 0.0;
+    sVector sig(N, 0.0);
     for (std::size_t i = 0; i < N; ++i)
-    {
-        if (x[i] <= 0.0) continue;
-        s    += x[i] * surfaceTension_->sigmaPure(components_[i], T);
-        xsum += x[i];
-    }
-    if (xsum <= 0.0)
-        throw std::runtime_error("ThermoPackage::surfaceTension: empty composition");
-    return s / xsum;                                    // N/m
+        if (x[i] > 0.0)
+            sig[i] = surfaceTension_->sigmaPure(components_[i], T);
+    return surfaceTensionMixing_->mix(T, x, sig, liquidMixingContext());   // N/m
 }
 
 scalar ThermoPackage::density(scalar T, scalar P_Pa, const sVector& z,
@@ -2337,101 +2342,11 @@ scalar ThermoPackage::density(scalar T, scalar P_Pa, const sVector& z,
     //  declared constant and is told it has no temperature dependence.
     //  Each route ANNOUNCES itself, because three routes reported as one
     //  number is the thing this engine exists not to do.
-    constexpr scalar Tref_Vliq = 298.15;                        // `Vliq` datum
-    static bool announcedAnchored = false, announcedBare = false,
-                announcedFlat     = false;
     scalar Vmix = 0.0;                                          // m³/mol
     for (std::size_t i = 0; i < N; ++i)
     {
         if (z[i] <= 0.0) continue;
-        const Component& c = components_[i];
-        const scalar Tc = c.Tc(), Pc_Pa = c.Pc() * 1.0e5, omega = c.omega();
-        const scalar Vdecl = c.Vliq();
-        const bool   hasCrit = (Tc > 0.0 && Pc_Pa > 0.0);
-
-        scalar Vi = 0.0;
-        if (Vdecl > 0.0 && hasCrit)
-        {
-            const scalar Vr  = closures::rackettVliq(T, Tc, Pc_Pa, omega);
-            const scalar Vr0 = closures::rackettVliq(Tref_Vliq, Tc, Pc_Pa, omega);
-            if ((!(Vr0 > 0.0) || !std::isfinite(Vr0)) && T < Tc)
-                throw std::runtime_error("ThermoPackage::density: Rackett"
-                    " cannot anchor component '" + c.name() + "''s 25 C `Vliq`"
-                    " (its reference volume at 298.15 K is not a finite"
-                    " positive number; Tc = " + std::to_string(Tc) + " K).");
-            Vi = Vdecl * (Vr / Vr0);
-            if (!announcedAnchored)
-            {
-                std::cout << "liquid density: the record's own Vliq at 25 C,"
-                             " with Rackett supplying only the temperature"
-                             " dependence (V = Vliq * Rackett(T)/Rackett(298.15))"
-                             " -- the measured value sets the level, the"
-                             " correlation sets the shape\n";
-                announcedAnchored = true;
-            }
-        }
-        else if (Vdecl > 0.0)
-        {
-            Vi = Vdecl;
-            if (!announcedFlat)
-            {
-                std::cout << "liquid density: component '" << c.name()
-                          << "' declares Vliq but no critical constants, so its"
-                             " molar volume is held CONSTANT at the 25 C datum"
-                             " -- no thermal expansion is modelled for it\n";
-                announcedFlat = true;
-            }
-        }
-        else if (hasCrit)
-        {
-            Vi = closures::rackettVliq(T, Tc, Pc_Pa, omega);
-            if (!announcedBare)
-            {
-                std::cout << "liquid density: component '" << c.name()
-                          << "' declares no Vliq, so its molar volume is bare"
-                             " Rackett -- a generic saturated-liquid ESTIMATE,"
-                             " unanchored to any measurement of this substance\n";
-                announcedBare = true;
-            }
-        }
-        else
-            throw std::runtime_error("ThermoPackage::density: liquid density"
-                " for component '" + c.name() + "' needs either a `Vliq` in its"
-                " record or the critical constants Tc and Pc for Rackett;"
-                " it declares neither.");
-
-        //  A COMPONENT ABOVE ITS CRITICAL TEMPERATURE HAS NO LIQUID MOLAR
-        //  VOLUME HERE (DEV.md 4c C76/C79, C110 G7).  Rackett is a
-        //  SATURATED-liquid correlation: at T > Tc, (1 - T/Tc) is negative
-        //  and its 2/7 power is NaN, and a NaN fails every `<=` guard, so the
-        //  mixture's density used to come back NaN in silence (a liquid
-        //  acetic acid carrying dissolved CO: the lights column's rating
-        //  printed dP -nan at exit 0; a pipe carrying liquid ammonia with
-        //  dissolved H2, N2 and Ar printed rho = -nan).  A dissolved gas DOES
-        //  occupy volume in a liquid -- its partial molar volume at infinite
-        //  dilution, the Krichevsky-Kasarnovsky `v_inf` a Henry pair record
-        //  may carry (parameters/Henry/N2-NH3.dat does) -- but this route
-        //  does not read it, and inventing a volume for it here would be a
-        //  second, unannounced model.  So it REFUSES, by name; a caller that
-        //  can do without the component asks over the others
-        //  (`pricedDensity::select`) and says so in its own words.
-        if (hasCrit && T >= Tc)
-            throw std::runtime_error("ThermoPackage::density: no liquid molar"
-                " volume for component '" + c.name() + "' at T = "
-                + std::to_string(T) + " K: it is above its critical"
-                " temperature (Tc = " + std::to_string(Tc) + " K), where Rackett"
-                " -- a saturated-liquid correlation -- describes no liquid."
-                "  A gas dissolved in a liquid occupies its partial molar"
-                " volume, which this density route does not model (a Henry"
-                " pair's `v_inf` is that datum, read today only for the"
-                " Poynting correction).  Ask for the density over the"
-                " components that have a liquid volume, and say which were"
-                " left out.");
-        if (!(Vi > 0.0) || !std::isfinite(Vi))
-            throw std::runtime_error("ThermoPackage::density: the liquid molar"
-                " volume of component '" + c.name() + "' at T = "
-                + std::to_string(T) + " K is not a finite positive number.");
-        Vmix += (z[i] / zsum) * Vi;
+        Vmix += (z[i] / zsum) * liquidMolarVolumeOf(i, T);
     }
     if (!(Vmix > 0.0) || !std::isfinite(Vmix))
         throw std::runtime_error("ThermoPackage::density: liquid molar volume"
@@ -2498,6 +2413,122 @@ ThermoPackage& ThermoPackage::stampAqueousSolvent(const DictPtr& aq)
         (void)aqueousSolventIndex();   // refuses by name when not a component
     }
     return *this;
+}
+
+
+// ---- ONE COMPONENT'S LIQUID MOLAR VOLUME (C331) ----------------------------
+//  The per-component body of density()'s liquid branch, moved here VERBATIM
+//  so the liquid mixing rules (Li's volume fractions, Butler's molar areas)
+//  read the SAME volume the density does -- one route, announced once.  The
+//  refusals keep their `ThermoPackage::density:` prefix because density()
+//  is still their first caller.  Placed at the end of the file so that no
+//  line an EduTool lesson cites above it moved twice.
+scalar ThermoPackage::liquidMolarVolumeOf(std::size_t i, scalar T) const
+{
+    constexpr scalar Tref_Vliq = 298.15;                        // `Vliq` datum
+    static bool announcedAnchored = false, announcedBare = false,
+                announcedFlat     = false;
+    const Component& c = components_[i];
+    const scalar Tc = c.Tc(), Pc_Pa = c.Pc() * 1.0e5, omega = c.omega();
+    const scalar Vdecl = c.Vliq();
+    const bool   hasCrit = (Tc > 0.0 && Pc_Pa > 0.0);
+
+    scalar Vi = 0.0;
+    if (Vdecl > 0.0 && hasCrit)
+    {
+        const scalar Vr  = closures::rackettVliq(T, Tc, Pc_Pa, omega);
+        const scalar Vr0 = closures::rackettVliq(Tref_Vliq, Tc, Pc_Pa, omega);
+        if ((!(Vr0 > 0.0) || !std::isfinite(Vr0)) && T < Tc)
+            throw std::runtime_error("ThermoPackage::density: Rackett"
+                " cannot anchor component '" + c.name() + "''s 25 C `Vliq`"
+                " (its reference volume at 298.15 K is not a finite"
+                " positive number; Tc = " + std::to_string(Tc) + " K).");
+        Vi = Vdecl * (Vr / Vr0);
+        if (!announcedAnchored)
+        {
+            std::cout << "liquid density: the record's own Vliq at 25 C,"
+                         " with Rackett supplying only the temperature"
+                         " dependence (V = Vliq * Rackett(T)/Rackett(298.15))"
+                         " -- the measured value sets the level, the"
+                         " correlation sets the shape\n";
+            announcedAnchored = true;
+        }
+    }
+    else if (Vdecl > 0.0)
+    {
+        Vi = Vdecl;
+        if (!announcedFlat)
+        {
+            std::cout << "liquid density: component '" << c.name()
+                      << "' declares Vliq but no critical constants, so its"
+                         " molar volume is held CONSTANT at the 25 C datum"
+                         " -- no thermal expansion is modelled for it\n";
+            announcedFlat = true;
+        }
+    }
+    else if (hasCrit)
+    {
+        Vi = closures::rackettVliq(T, Tc, Pc_Pa, omega);
+        if (!announcedBare)
+        {
+            std::cout << "liquid density: component '" << c.name()
+                      << "' declares no Vliq, so its molar volume is bare"
+                         " Rackett -- a generic saturated-liquid ESTIMATE,"
+                         " unanchored to any measurement of this substance\n";
+            announcedBare = true;
+        }
+    }
+    else
+        throw std::runtime_error("ThermoPackage::density: liquid density"
+            " for component '" + c.name() + "' needs either a `Vliq` in its"
+            " record or the critical constants Tc and Pc for Rackett;"
+            " it declares neither.");
+
+    //  A COMPONENT ABOVE ITS CRITICAL TEMPERATURE HAS NO LIQUID MOLAR
+    //  VOLUME HERE (DEV.md 4c C76/C79, C110 G7).  Rackett is a
+    //  SATURATED-liquid correlation: at T > Tc, (1 - T/Tc) is negative
+    //  and its 2/7 power is NaN, and a NaN fails every `<=` guard, so the
+    //  mixture's density used to come back NaN in silence (a liquid
+    //  acetic acid carrying dissolved CO: the lights column's rating
+    //  printed dP -nan at exit 0; a pipe carrying liquid ammonia with
+    //  dissolved H2, N2 and Ar printed rho = -nan).  A dissolved gas DOES
+    //  occupy volume in a liquid -- its partial molar volume at infinite
+    //  dilution, the Krichevsky-Kasarnovsky `v_inf` a Henry pair record
+    //  may carry (parameters/Henry/N2-NH3.dat does) -- but this route
+    //  does not read it, and inventing a volume for it here would be a
+    //  second, unannounced model.  So it REFUSES, by name; a caller that
+    //  can do without the component asks over the others
+    //  (`pricedDensity::select`) and says so in its own words.
+    if (hasCrit && T >= Tc)
+        throw std::runtime_error("ThermoPackage::density: no liquid molar"
+            " volume for component '" + c.name() + "' at T = "
+            + std::to_string(T) + " K: it is above its critical"
+            " temperature (Tc = " + std::to_string(Tc) + " K), where Rackett"
+            " -- a saturated-liquid correlation -- describes no liquid."
+            "  A gas dissolved in a liquid occupies its partial molar"
+            " volume, which this density route does not model (a Henry"
+            " pair's `v_inf` is that datum, read today only for the"
+            " Poynting correction).  Ask for the density over the"
+            " components that have a liquid volume, and say which were"
+            " left out.");
+    if (!(Vi > 0.0) || !std::isfinite(Vi))
+        throw std::runtime_error("ThermoPackage::density: the liquid molar"
+            " volume of component '" + c.name() + "' at T = "
+            + std::to_string(T) + " K is not a finite positive number.");
+    return Vi;                                                  // m³/mol
+}
+
+LiquidMixingContext ThermoPackage::liquidMixingContext() const
+{
+    LiquidMixingContext ctx;
+    ctx.components = &components_;
+    if (activity_)
+    {
+        ctx.gamma = [this](scalar T, const sVector& x) { return activity_->gamma(T, x); };
+        ctx.activityModelName = activity_->modelName();
+    }
+    ctx.molarVolume = [this](std::size_t i, scalar T) { return liquidMolarVolumeOf(i, T); };
+    return ctx;
 }
 
 } // namespace Choupo
