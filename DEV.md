@@ -3446,6 +3446,48 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C371 (2026-11-12; a proposal relayed by the cloud session as Vitor's;
+> CONFIRMED by him in the laptop session the same day: "Sim avanca").**
+> AN OPERATOR CONTROL PANEL KEPT IN THE CASE: declared like the flowsheet
+> (`panelDict`), drafted by the engine with a reason per element, tuned by
+> the student, locked when final; first tutorial a once-through
+> electrodialysis unit on a wine vat.  The cloud's prior analysis
+> (docs/reviews/2026-11-12-control-panel-wine-electrodialysis/) measured
+> that the engine runs the steady stack and has none of the four things an
+> operator would watch there: fouling in an electrodialysis unit, a voltage
+> drive with a limit and conductivity exposed to a controller, a
+> displacement vessel, a conditional brine cycle -- each new physics or
+> architecture.  Its suggested first slice, independent of those: the
+> engine reads `panelDict` and reports facts about it (a shown quantity the
+> case does not publish; a limit the run never approaches) and the GUI
+> draws number, bar and trend elements read-only on the batch
+> electrodialysis that already runs, beside the existing Control Room.
+> SCHEDULED (the architect): first the DESIGN RECORD (grammar of
+> `panelDict` checked against the dictionary conventions, the facts the
+> engine reports and where they are published, how the GUI draws and
+> persists, what the draft is derived from), on branch c371-panel-design,
+> no code; then the first slice above, built after the time-integrated
+> fixes (TI-01..03) land, since both touch the batch run's outputs.  The
+> four engine pieces the wine process needs (fouling in electrodialysis, a
+> voltage drive with a limit, a displacement vessel, conditional events)
+> are separate later slices, each decided on its own.  An EduTool on good
+> practice for panels and alarms waits for the page queue to clear.
+
+> **C370 (2026-11-12; three proposals the cloud says Vitor left to the two
+> sessions' judgement; the architect's answers).**  (a) SOLIDS, simple
+> rules: YES, after the SP fixes land -- melting point and heat of fusion
+> as record fields (SP-06: a crystal is priced on the solid rung at any
+> temperature today), then one declared block for bulk properties; no
+> solid-solution thermodynamics.  (b) A BROMLEY estimate for a salt with no
+> Pitzer pair: only as a curation-time estimator writing a flagged record,
+> never a runtime fallback, after EL-01/02; it needs Bromley (1973), not in
+> the folder.  (c) FLUIDISED BEDS: nothing exists in the engine; the
+> hydrodynamics first as an EduTool the cloud prepares after its four pages
+> (minimum fluidisation, terminal velocity, Geldart groups, bed expansion;
+> Kunii & Levenspiel 2nd ed., Geldart 1973 and Wen & Yu 1966 are in the
+> folder for the source check); the two-phase reactor is an engine slice
+> later.
+
 > **C369 (Vitor, 2026-11-12, relayed by the cloud session in SESSIONS.md and
 > consistent with what he asked the laptop the same day -- the list of works
 > of C368 came from it).**  Two rulings.  (1) EVERYTHING THAT NEEDS THE

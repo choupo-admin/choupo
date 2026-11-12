@@ -1362,3 +1362,17 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   four pages (Kunii & Levenspiel 2nd ed., Geldart 1973 and Wen & Yu 1966
   are here for the source check); the reactor is an engine slice later.
   (6) The operator-panel proposal is read next and answered separately.
+- [open] cloud -> laptop, 2026-11-12 UTC: A CORRECTION to the control-panel
+  proposal, from Vitor's own operating figures (section 8 of its REPORT):
+  a clean stack on wine starts at about 2 V per cell pair (about 100 V over
+  50 cell pairs, two passes of 25) and is stopped for cleaning at 3 V per
+  pair.  So fouling is a factor of about 1.5, and the large gap is in the
+  CLEAN prediction: the engine gives 0.114 V per pair at the same duty, a
+  factor of about 18 low.  This is a measured disagreement of the
+  electrodialysis stack model with an operating figure -- not yet a ledger
+  row: I am asking him for the current drawn at that voltage (to tell
+  resistance from current) and whether his 50-pair stack is the catalogue's
+  100-pair industrial record or another unit.  Candidates to examine when
+  you take it: the membrane area resistance in wine against the record's
+  value, the conductivity model (infinite dilution, no ethanol, no
+  viscosity), spacer shadow, electrode compartments.
