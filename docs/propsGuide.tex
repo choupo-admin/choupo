@@ -1416,6 +1416,70 @@ statistics (confidence intervals, parameter correlation) the fit reports ---
 never a ``good fit'' badge --- and copy the proposal into the case's
 \code{constant/} when you trust it.
 
+\subsection{How a curated catalogue record is graded}\label{sec:fit-grade}
+
+The records Choupo's curation pipeline fits from archive measurements and
+promotes into \file{data/standards/} --- a vapour pressure, a binary pair, a
+Henry constant --- each carry a \emph{grade} in their \code{provenance}:
+\code{fitGrade} with the number that decided it
+(\code{fitGradeMaxRelativeError\_pct}, or \code{fitGradeMaxTemperatureError\_K}
+for a pair fitted to bubble temperatures).  The number is the \emph{largest}
+error of the fitted curve over the measurements it kept, never a mean, and the
+limits depend on the kind of property:
+
+\begin{center}\footnotesize
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}Xcccc@{}}
+\toprule
+\textbf{Property class} & \textbf{clean} & \textbf{warning} & \textbf{severe} & \textbf{refused} \\
+\midrule
+(A) vapour pressure, liquid density, liquid $C_p$, bubble \emph{pressure} & $\le 5$\,\% & 5--10\,\% & 10--20\,\% & $>20$\,\% \\
+(B) Henry constant, $\gamma^\infty$, transport (viscosity, conductivity, diffusivity, surface tension) & $\le 10$\,\% & 10--20\,\% & 20--30\,\% & $>30$\,\% \\
+(C) bubble \emph{temperature} (binary pairs) & $\le 1$\,K & 1--2\,K & 2--4\,K & $>4$\,K \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\textbf{What the grade means for you.}  A \code{clean}, \code{warning} or
+\code{severe} record is in the catalogue and you may use it; for a
+\code{warning} or \code{severe} one the engine says, on every run that reads
+it, the grade and its number (a \code{[fit-grade]} line, repeated in the
+end-of-run caveat block), so a result that leans on a weak record says so.  A
+\code{severe} record is usable with care: check the result against the
+measurements before you cite it.  A \code{refused} fit is not shipped at all;
+its curation case keeps the attempt and the reason.
+
+\textbf{Why class (B) is wider.}  Independent laboratories disagree by
+10--30\,\% on Henry constants, infinite-dilution activity coefficients and
+transport properties, so a 5\,\% limit would refuse curves better than the
+measurements themselves; and these properties enter a design through generous
+margins or fractional exponents (a mass-transfer coefficient goes as a power of
+the viscosity), so a 15\,\% error moves a sized unit far less than 15\,\%.
+
+\textbf{The caps.}  The grade is \emph{in-sample} (\code{fitGradeBasis
+inSample;}): it measures how well the curve reproduces the very points it was
+fitted to.  A curve resting on ONE laboratory or ONE temperature, with nothing
+that could have contradicted it, is never \code{clean}: it is capped to
+\code{warning} and says why (\code{fitGradeCap ( singleLaboratory );}).  With
+one laboratory no measurement is discarded as an outlier --- there is no second
+series to call it one against --- so the grade is that series' real error.  A
+property that cannot be fitted at all from the data (an enthalpy from a single
+temperature) is refused, never invented.
+
+\textbf{Your own band.}  A curation case may declare another band in its
+\code{acceptance \{\}} block, with its reason; the default above is announced
+when it is used.
+
+\textbf{Where the numbers live.}  The limits are carried by the curation tools
+(\file{bin/choupo-curate} for vapour pressures, \file{bin/curate/pairs\_c283.py}
+and \file{bin/curate/pairs\_px.py} for pairs,
+\file{bin/curate/henry\_organic.py} for Henry constants); the sentence the
+engine prints is \file{src/thermo/FitGrade.H}.  Each promoted record names the
+case it was fitted in (\code{fittedInCase}), and a gate re-runs that case and
+holds the record to its fit and its grade.  Not yet done: the Henry-record
+loader does not print the grade (it is on the record and on the
+\code{pairLookup} evidence card), and the three tables are not yet in one
+shared home.
+
 % =====================================================================
 \section{Fitting a membrane to measured rejections --- one case, two modes}\label{ch:membrane-fit}
 % =====================================================================

@@ -1,0 +1,68 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+  13Butadiene-oCresol -- A HENRY'S-LAW CONSTANT FROM EVERY LABORATORY'S MEASUREMENTS.
+
+  WRITTEN BY bin/curate/henry_organic.py declare (DEV.md 4c C321 part 2).
+
+  THE DECLARATION -- WRITTEN AND COMMITTED BEFORE ANY FIT RAN (the
+  declarations of the run share one commit).
+
+  IDENTITY.  Solute 13Butadiene (CAS 106-99-0) in solvent oCresol (CAS 95-48-7),
+  joined to the archive by InChIKey through identity.json -- never by name.
+  The solute is the compound the block's Henry property names.
+  CLASS: 13Butadiene: Tb 268.62 K, Tc 425.0 K; oCresol: Tb 464.17 K, Tc 697.6 K.
+
+  NO MEASURED SERIES IN THIS TREE.  constant/henryArchiveDatasets names each
+  dataset (DOI, NIST URL, article sha256, block, extract sha256);
+  `bin/curate/henry_organic.py fetch` writes the points into
+  constant/archiveExtracts/, which is gitignored.
+
+  STUDIES: every mole-fraction-scale Henry block of the pair with a stated
+  uncertainty on every point (1 block(s)).  FITTED, ALL OF THEM:
+      10.1021/je100529s              block 17    4 pts  299.99-329.99 K   Miyano, Y.[Yoshimori]; Ashimori, S.[Shunsuke]; Otuka, T.[Takumi] et al. (2010) J. Chem. Eng. Data 55, 4956-4960, doi:10.1021/je100529s
+
+  THE RULE (DEV.md 4c C283 amended, C285, C300; C321 part 2).  The van't Hoff
+  form the loader reads, ln H = ln H_ref + (enthalpy/R)(1/T - 1/298.15 K):
+  two parameters.  Stage 1, least squares on the relative residual
+  H_model/H - 1 (equal weights); a point above 20 % is DISCARDED BY NAME and
+  stage 1 repeated -- ONLY when two or more laboratories are fitted: with ONE
+  laboratory no point is discarded (no second series to call it an outlier
+  against; C321 part 2 amended) and the grade is the series' real error.  Stage 2, minimax on
+  the same residual over the kept points; its coefficients are the record's.  GRADE on the max relative
+  error over the kept points (C336 class B, Henry): clean up to 10 %,
+  warning up to 20 %, severe up to 30 %, refused above.  An in-sample
+  clean resting on ONE laboratory is
+  capped at warning (C300 rule 2).  One temperature gives no enthalpy: refused.
+  clean, warning and severe are promoted (autoPromoted, review by none)
+  into data/standards/parameters/Henry/ (C285; Vitor's ruling of
+  2026-11-12; C336 class B: only above 30 % is refused); refused writes
+  nothing.
+
+  @@RESULT-BEGIN@@
+  4 points of 1 laboratory(ies); 4 kept,
+  0 discarded after the least-squares stage (> 20 %):
+  ONE laboratory: no point was discarded (C321 part 2 amended).
+  H_ref = 7.59655e+05 Pa at 298.15 K, enthalpy = -18668 J/mol;
+  kept span 299.99-329.99 K; max relative error
+  0.7045 % (least squares 0.8579 %); in-sample
+  grade clean, CAPPED to warning (singleLaboratory).
+  PROMOTED into data/standards/parameters/Henry/.
+  @@RESULT-END@@
+
+  WHAT IS NOT CLAIMED.  The constant is the infinite-dilution H_xp at the
+  solvent's own vapour pressure, in the measured range only; the archive's
+  transcription has NOT been read back against the articles.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    { name h_13Butadiene_oCresol; type pairLookup; components ( 13Butadiene oCresol ); }
+);

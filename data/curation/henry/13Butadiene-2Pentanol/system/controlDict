@@ -1,0 +1,15 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Curation case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  13Butadiene-2Pentanol: a Henry's-law constant of 13Butadiene in 2Pentanol regressed by
+    bin/curate/henry_organic.py to every laboratory's measurements (DEV.md 4c
+    C321 part 2).  See system/propsDict for the declaration and the result.  */
+
+application   choupoProps;
+description   "Henry 13Butadiene in 2Pentanol, van't Hoff fitted by the curation pipeline to every laboratory's measured Henry constants (ThermoML locates, the articles source), graded by max relative error (clean 10 %, warning 20 %, severe 30 %, refused above; C285, C336 class B)";
+verbosity     1;
