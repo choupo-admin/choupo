@@ -33,6 +33,7 @@ License
 #include "thermo/ThermoPackage.H"
 #include "thermo/electrolyte/ElectrolyteModel.H"
 #include "thermo/electrolyte/UnmodelledSolutes.H"
+#include "thermo/electrolyte/BoilingPointRise.H"
 #include "core/Advisory.H"
 #include "core/Constants.H"
 
@@ -429,8 +430,12 @@ int Evaporator::solve(const DictPtr& dict,
     //  The boiling-point rise at a given V/F, and so the vessel pressure
     //  P_op = Psat_pure(T_boil - BPE).  ONE home, so the pressure the balance
     //  prices the outlets at is the pressure they are published at.
-    //    electrolyte: a_w * Psat_pure(T_boil) = Psat_pure(T_boil - BPE), by
-    //                 Clausius-Clapeyron BPE = -(R T_boil^2 / dHvap) ln a_w;
+    //    electrolyte: the EXACT relation (C377 b, 2026-11-12)
+    //                     a_w(m, T_boil) Psat_pure(T_boil) = Psat_pure(T_boil - BPE)
+    //                 solved for BPE by Newton on the package's own Psat --
+    //                 it replaced the linearised Clausius-Clapeyron form
+    //                 BPE = -(R T_boil^2 / dHvap) ln a_w, which is its first
+    //                 term and drifts from it as the rise grows;
     //    otherwise:   the ideal ebullioscopic K_b * m_solute.
     auto BPE_of = [&](scalar VoF, scalar T_boil) -> scalar
     {
@@ -438,8 +443,9 @@ int Evaporator::solve(const DictPtr& dict,
         {
             const scalar aw = thermo.electrolyte().waterActivity(
                 molality_salt(VoF), T_boil);
-            return -(constant::R * T_boil * T_boil / dHvap_solv(T_boil))
-                   * std::log(aw);
+            return exactBoilingPointRise(
+                [&](scalar T) { return thermo.Psat(iSolvent, T); }, aw, T_boil,
+                -(constant::R * T_boil * T_boil / dHvap_solv(T_boil)) * std::log(aw));
         }
         return K_b * molality_solute(VoF);
     };
