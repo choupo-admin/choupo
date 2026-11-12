@@ -207,8 +207,22 @@ inline void fillPairAudit(PairResolution&    r,
 //  (x_i > 0 and x_j > 0) in the evaluated phase.  A pair whose components
 //  are absent shapes nothing a run publishes; announcing it would fill the
 //  caveat block of a big flowsheet with pairs that were never in play.  (An
-//  infinite-dilution gamma of an ABSENT component does read the pair, and is
-//  deliberately not announced: no stream carries that component.)
+//  infinite-dilution gamma of an ABSENT component does read the pair, and in a
+//  FLASH or a column stage is deliberately not announced: no stream carries
+//  that component.)
+//
+//  THE ONE PLACE WHERE ZERO COMPOSITION IS THE EVALUATION (PO-01, 2026-11-12).
+//  The `activityCoefficients` operation publishes gamma_i for every component,
+//  and for a component at exactly zero that number IS the infinite-dilution
+//  coefficient -- the subject of the operation, not a by-product of a stream
+//  that does not carry it.  Reproducer of the review: nButanol + nHeptane,
+//  NRTL, 303.15 K (below the span), {nButanol 0; nHeptane 1}: gamma 9.4268
+//  printed with no `[pair-span]`, and the same number with nButanol at 1e-9
+//  WITH it.  That operation opens an `InfiniteDilutionScope`; inside it a
+//  pair is used when EITHER component is present (gamma_i of an absent i reads
+//  tau_ij of every present j; a pair with both absent is still not read).
+//  The scope is explicit at the call site and thread-local: no flash, column
+//  or stream evaluation opens one, so the rule above is unchanged for them.
 //
 //  ONCE PER PAIR PER RUN, as ruled: the key is the pair, not the side, so a
 //  run that walks both below and above a span reports its FIRST excursion.
@@ -219,6 +233,22 @@ inline void fillPairAudit(PairResolution&    r,
 class PairSpanGuard
 {
 public:
+    //  While one of these is alive on this thread, a component at EXACTLY zero
+    //  composition counts as present for the guard: the caller's subject is the
+    //  infinite-dilution value (PO-01, see the rationale above).  Opened by the
+    //  `activityCoefficients` operation and by nothing else.
+    class InfiniteDilutionScope
+    {
+    public:
+        InfiniteDilutionScope()  { ++depth(); }
+        ~InfiniteDilutionScope() { --depth(); }
+        InfiniteDilutionScope(const InfiniteDilutionScope&)            = delete;
+        InfiniteDilutionScope& operator=(const InfiniteDilutionScope&) = delete;
+        static bool active() { return depth() > 0; }
+    private:
+        static int& depth() { static thread_local int d = 0; return d; }
+    };
+
     //  Register the span a resolved pair record declares, if it declares one.
     void add(const std::string&    model,
              std::size_t           i,
@@ -241,11 +271,14 @@ public:
     //  comparison per guarded pair, no string built.
     void check(scalar T, const sVector& x) const
     {
+        const bool zeroIsSubject = InfiniteDilutionScope::active();
         for (const auto& s : spans_)
         {
             if (T >= s.lo && T <= s.hi) continue;
             if (s.i >= x.size() || s.j >= x.size()) continue;
-            if (!(x[s.i] > 0.0 && x[s.j] > 0.0)) continue;
+            const bool used = zeroIsSubject ? (x[s.i] > 0.0 || x[s.j] > 0.0)
+                                            : (x[s.i] > 0.0 && x[s.j] > 0.0);
+            if (!used) continue;
             announce(s, T);
         }
     }

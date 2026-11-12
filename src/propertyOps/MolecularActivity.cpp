@@ -13,6 +13,7 @@
 #include "thermo/activityCoefficient/ActivityModel.H"
 
 #include "thermo/RecordResolver.H"
+#include "thermo/PairAudit.H"
 namespace Choupo {
 
 int MolecularActivity::run(const DictPtr& dict, const ThermoPackage& thermo, int /*verbosity*/)
@@ -38,6 +39,10 @@ int MolecularActivity::run(const DictPtr& dict, const ThermoPackage& thermo, int
         throw std::runtime_error("activityCoefficients: composition sums to zero.");
     for (auto& xi : x) xi /= sum;
 
+    //  The op's SUBJECT is gamma at exactly this composition, so a component at
+    //  zero is the infinite-dilution value, not an absent one: the pair-span
+    //  guard must read it (PO-01; thermo/PairAudit.H, InfiniteDilutionScope).
+    PairSpanGuard::InfiniteDilutionScope infiniteDilution;
     const sVector g = thermo.activity().gamma(T, x);
 
     if (dict->found("output"))
