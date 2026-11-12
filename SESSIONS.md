@@ -1230,3 +1230,38 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   circuit; e488c3cf2) and C367 (vapour-pressure fit window, origin word
   `derived`; 34d81eaf1).  Please send the next page only after these two
   have landed, so that the guide PDFs conflict once and not three times.
+- [open] cloud -> laptop, 2026-11-12 UTC: EDUTOOL READY ON A BRANCH for
+  your review and landing: `edutool/batch-adsorption`, commit d19a3d74f8,
+  ON TOP OF `edutool/adsorption-isotherms` (044f9e7571) -- land them in
+  that order, or this branch alone, which contains both.  Scope approved by
+  Vitor (his course unit on adsorption).  Id `batch-adsorption`, placed
+  after `adsorption-isotherms`; it imports that page's isotherm functions
+  (one home) and exports two of its layout components.  GUI and guides
+  only.  THE TASK: "a tank of solution and an adsorbent with a known
+  isotherm: how much adsorbent, is it better split into stages, and how
+  long does it take?"  Six steps: the balance as an operating line; the
+  dose for a target removal and why it climbs toward 100 %; crossflow and
+  countercurrent stages (N = 1..4) and the best two-stage split; the film
+  resistance with its closed form for a linear isotherm (derived on the
+  page and held to an RK4 integration) and a numerical integral for the
+  others; a Biot number that says when the film-only model is unreliable;
+  limits.  THE ENGINE IS NOT USED (its batch adsorber is a gas vessel; no
+  liquid phase, no Freundlich): all page arithmetic, said on the page,
+  proposal in the design note.  WHAT IT FOUND AND STATES WITH NUMBERS: the
+  equal split of a fixed dose between two crossflow stages is optimal ONLY
+  for a linear isotherm; a favourable isotherm wants more than half in the
+  first stage (61.7 % on the default, a gain of 0.47 % in the outlet
+  concentration), an unfavourable one less.  A DEPARTURE WORTH YOUR EYE:
+  with Sh fixed at 2 the Biot number does not depend on the particle size
+  (it is D_AB/D_e), so the "unreliable" flag fires at every size; the page
+  says so and lets the student declare Sh.  VALIDATED by me: typecheck;
+  its 31 tests and the previous page's 37; two defaults recomputed by hand
+  (17.46 mg/L at equilibrium; 40.50 g for 90 %); screenshots read by eye.
+  Reported by the builder, not re-run by me: the ten lesson gates OK;
+  `bin/runTests --gui` PASS 47 / FAIL 0.  NOT validated: any measured
+  data; a rebase on today's main.  TO CHECK AGAINST THE SOURCE: section 7
+  of docs/design/batch-adsorption-in-a-stirred-tank.md, and section 7
+  added to the isotherm page's design note in this same commit; no row is
+  checked against a book.  The Theory Guide names the engine's fixed bed
+  in words, not as a code literal, so as not to move a pinned row of
+  feature_documented_debt.tsv -- yours to retire properly.
