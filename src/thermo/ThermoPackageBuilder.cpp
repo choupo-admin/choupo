@@ -3027,10 +3027,14 @@ static void buildOlssonRoute(ElectrolyteAssembly& a, const std::string& saltName
             " correlation of Olsson, Jernqvist & Aly (1997) for NaOH in water"
             " and nothing else, but the active salt here is '" + saltName
             + "' (" + cat + "+ / " + an + "-).  Select Pitzer or eNRTL for it.");
-    if (solvent != "water")
+    //  The correlations were fitted to NaOH in WATER; the package's default
+    //  aqueous solvent (ThermoPackage::defaultAqueousSolvent, its one home) is
+    //  that substance, so a system declaring any other solvent is refused.
+    if (solvent != ThermoPackage::defaultAqueousSolvent())
         throw std::runtime_error("activityModel OlssonNaOH: the solvent must"
-            " be water (the correlations were fitted to NaOH-water only); this"
-            " system's solvent is '" + solvent + "'.");
+            " be " + ThermoPackage::defaultAqueousSolvent() + " (the"
+            " correlations were fitted to NaOH in it only); this system's"
+            " solvent is '" + solvent + "'.");
     if (rec.empty() || !fs::exists(rec))
         throw std::runtime_error("activityModel OlssonNaOH: its coefficient"
             " record parameters/OlssonNaOH/NaOH-water.dat was not found (a"
