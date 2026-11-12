@@ -32,8 +32,8 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| fix/ledger-rb-po (general running) | `src/unitOperations/distillation/`, `src/thermo/PairAudit.H`, the distillation cases' headers, their guide sections | 2026-11-12 |
-| c371-panel-s1 (general running) | `src/postProcessing/panel/`, the time-integrated binaries' mains, `tutorials/batch/electrodialysis/edbatch01_constant_current` | 2026-11-12 |
+| c375-fixed-bed-scheme (general running) | `src/unitOperations/batch/FixedBedAdsorber.*`, the shared ODE block structure, `tutorials/batch/adsorber/`, the breakthrough, lub-scaleup and chromatography pages | 2026-11-12 |
+| c376-formation-data (general running) | `data/curation/batches/species_c373/`, `data/standards/{species,chemistry}`, the aqueous-family guide sections | 2026-11-12 |
 | (main, coordinator) | everything else; the cloud writes only `docs/reviews/` and its messages below | 2026-11-12 |
 
 ## Cloud session
