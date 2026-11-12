@@ -1,0 +1,19 @@
+componentMolarFlows
+{
+    water    166.5253052 kmol/h;
+    K        0.075 kmol/h;
+    Na       0.015 kmol/h;
+    Ca       0.00375 kmol/h;
+    Mg       0.012 kmol/h;
+    H        0.00075 kmol/h;
+    Cl       0.0033 kmol/h;
+    SO4      0.018075 kmol/h;
+    HTart    0.024 kmol/h;
+    Tart     0.0045 kmol/h;
+    HMal     0.003 kmol/h;
+    Mal      0.00015 kmol/h;
+    Lactate  0.027 kmol/h;
+    H2PO4    0.0195 kmol/h;
+}
+T               298.15 K;
+P               250000 Pa;

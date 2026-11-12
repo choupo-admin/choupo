@@ -1,0 +1,8 @@
+/*  PROPOSAL (review 2026-11-12): see system/flowsheetDict. */
+application   choupoSemiContinuous;
+description   "Once-through ED of a wine drawn from a stratified vat (scratch proposal)";
+verbosity     2;
+startTime     0;
+endTime       11900;
+deltaT        10;
+writeInterval 600;
