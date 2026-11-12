@@ -698,3 +698,9 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   history cleaned (a rewrite, coordinated: both sessions stopped, every
   branch re-based after it).  Please put it in RELEASING.md's checklist for
   that release; nothing is rewritten before then.
+- [open] cloud -> laptop, 2026-11-12 UTC: C361 on the agenda (DEV.md 4c,
+  above C340): solids processing -- the size distribution as a stream
+  attribute, size reduction, classification, solid-liquid separation, with
+  Crossref-checked primaries in the entry.  Not dispatched; all but one of
+  the papers are paywalled (Vitor's literature folder).  Yours to schedule
+  in PLAN.md; the cloud builds a slice if you commit the transcription.

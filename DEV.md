@@ -3446,6 +3446,44 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C361 (Vitor, 2026-11-12, in the cloud session: "Agenda isso", and of
+> the breadth-first tools he has used: models he could not trust and
+> documentation he could not read -- "e preciso que o Choupo ultrapasse
+> isso").  SOLIDS PROCESSING, THE SKELETON.**  Measured today in the
+> registered types: cyclone (several models), bag filter, gas-solid
+> splitter, crystalliser with a size distribution, four dryers, pneumatic
+> conveying, a solid phase with its own size distribution on the stream, and
+> the tablet plant (lots, campaigns, GMP layout, cost).  NOT in the engine:
+> any size reduction, any size classification of a slurry or a powder, cake
+> filtration, a centrifuge, a thickener, and a size distribution that every
+> unit receives, transforms and hands on.  ON THE AGENDA, in this order,
+> each unit a correlation OBJECT (validity window, citation, verify anchor),
+> each documented in the guides in the same slice (rule 4d), each with a
+> case held to its primary's own worked numbers:
+> (1) THE SIZE DISTRIBUTION AS A STREAM ATTRIBUTE every solids unit reads and
+> writes, on one discretisation: Hounslow, Ryall & Marshall 1988
+> (10.1002/aic.690341108); Kumar & Ramkrishna 1996
+> (10.1016/0009-2509(96)88489-2).
+> (2) SIZE REDUCTION -- a mill as a breakage population balance, with the
+> specific energy beside it: Austin 1971 (10.1016/0032-5910(71)80064-5);
+> Herbst & Fuerstenau 1980 (10.1016/0301-7516(80)90034-4); Vogel & Peukert
+> 2003 (10.1016/S0032-5910(02)00217-6); Bond's third theory from a handbook
+> (the 1952 paper has no DOI).
+> (3) CLASSIFICATION -- screen and hydrocyclone by a partition curve:
+> Nageswararao, Wiseman & Napier-Munn 2004 (10.1016/j.mineng.2004.01.017);
+> the screen model from a readable textbook Vitor supplies (no DOI-bearing
+> primary was verified).
+> (4) SOLID-LIQUID SEPARATION -- cake filtration with washing: Ruth 1935
+> (10.1021/ie50306a024); thickener: Kynch 1952 (10.1039/tf9524800166),
+> Talmage & Fitch 1955 (10.1021/ie50541a022); sedimenting centrifuge (sigma
+> theory): Ambler 1959 (10.1002/jbmte.390010206).
+> A published open-source solids flowsheet framework exists to compare
+> answers against, never to copy from: Skorych et al. 2020
+> (10.1016/j.softx.2020.100572).  Every DOI above resolved on Crossref
+> 2026-11-12.  The pedagogical scope of each unit goes to Vitor before its
+> engine slice.  THE BAR (his): every model a student can read, with its
+> source, its window and its refusal -- documentation is part of the model.
+
 > **C340 SCOPE APPROVED (Vitor, 2026-11-12, "aprovo", on the scope put to
 > him in the cloud session).**  (1) THE CELL: biomass is a component the
 > CASE declares -- a measured elemental formula with its source, its
