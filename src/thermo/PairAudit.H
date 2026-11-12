@@ -303,7 +303,9 @@ private:
             " pair may predict phase behaviour that evidence does not show"
             " (a two-parameter b/T pair can split a liquid miscible in every"
             " proportion), and every activity coefficient computed from it"
-            " inherits that");
+            " inherits that",
+            "declared validity span",
+            /*echoUnderTrial=*/false);     // PO-02: a visited state is not the answer
     }
 
 public:
@@ -322,7 +324,8 @@ public:
                                 scalar lo, scalar hi,
                                 const std::string& consequence,
                                 const std::string& spanWord
-                                    = "declared validity span")
+                                    = "declared validity span",
+                                bool echoUnderTrial = true)
     {
         const bool   above = (T > hi);
         const scalar edge  = above ? hi : lo;
@@ -334,7 +337,7 @@ public:
 
         if (!AdvisoryLog::instance().addAnnouncedOnce(key, "validity",
                                                        "warning", locus,
-                                                       m.str()))
+                                                       m.str(), echoUnderTrial))
             return false;
         std::cerr << "[pair-span] " << tag << ": " << m.str()
                   << ".  Read the record's validity block and header before"

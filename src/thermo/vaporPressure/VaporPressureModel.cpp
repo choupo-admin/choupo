@@ -88,14 +88,25 @@ static std::string trimNum(scalar v)
 
 void VaporPressureModel::noteRange(scalar T_K) const
 {
-    if (announcedOutside_) return;                 // one bool test, hot path
+    if (announcedOutside_ && announcedTrial_) return;   // two bool tests, hot path
 
     const auto [lo, hi] = range();
     if (lo == 0.0 && hi == 0.0) return;            // no window declared
     if (hi <= lo)               return;            // not a window; not ours to judge
     if (T_K >= lo && T_K <= hi) return;
 
-    announcedOutside_ = true;
+    //  AN EXCURSION AT A TRIAL STATE DOES NOT SILENCE THE ONE AT THE ANSWER
+    //  (PO-02, 2026-11-12).  A bubble-point search starts at the mole-weighted
+    //  normal boiling point and may leave the window there while converging
+    //  inside it -- or converge outside it.  The instance latch is therefore
+    //  kept per CONTEXT: a raise under a trial frame latches `announcedTrial_`
+    //  only, so the first raise at an accepted state (no trial frame open) is
+    //  still announced, and `AdvisoryLog::add` stamps it `accepted`.  The lock
+    //  is taken only past the window test, so a state inside the window pays
+    //  nothing for it.
+    const bool trialNow = AdvisoryLog::instance().anyTrialFrameOpen();
+    if (trialNow ? announcedTrial_ : announcedOutside_) return;
+    if (trialNow) announcedTrial_ = true; else announcedOutside_ = true;
     const std::string who =
         owner_.empty() ? modelName() + " vapour pressure"
                        : "component '" + owner_ + "'";
@@ -148,7 +159,7 @@ void VaporPressureModel::noteRange(scalar T_K) const
             " its critical temperature Tc = " + trimNum(Tc_declared_)
             + " K -- there is no saturation state there; the value returned"
               " is not a vapour pressure");
-        if (!fresh) return;
+        if (!fresh || trialNow) return;        // PO-02: a visited state is not echoed
         std::cerr << "[psat] " << who << ": vapour pressure requested at T = "
                   << trimNum(T_K) << " K, ABOVE its critical temperature Tc = "
                   << trimNum(Tc_declared_) << " K.\n     Above Tc a substance"
@@ -165,7 +176,7 @@ void VaporPressureModel::noteRange(scalar T_K) const
         "vapour pressure evaluated at T = " + trimNum(T_K) + " K, OUTSIDE its"
         " declared Trange (" + trimNum(lo) + " " + trimNum(hi)
         + ") -- extrapolated, still returned");
-    if (!fresh) return;
+    if (!fresh || trialNow) return;            // PO-02: recorded as the solver's path, not echoed
     std::cerr << "[psat] " << who << ": " << modelName()
               << " evaluated at T = " << trimNum(T_K)
               << " K, OUTSIDE its declared Trange (" << trimNum(lo) << " "

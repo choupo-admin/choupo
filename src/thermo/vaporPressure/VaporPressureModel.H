@@ -201,7 +201,8 @@ protected:
 
     std::string  owner_;
     scalar       Tc_declared_ = 0.0;
-    mutable bool announcedOutside_ = false;
+    mutable bool announcedOutside_ = false;   // an excursion at an ANSWER was announced
+    mutable bool announcedTrial_   = false;   // ... or at a trial state of a search (PO-02)
 
     //  The continuation, built lazily on the first call (the owner and Tc are
     //  stamped AFTER construction, so the constructor cannot build it).

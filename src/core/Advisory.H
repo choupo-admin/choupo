@@ -145,6 +145,7 @@ Description
 
 #pragma once
 
+#include <map>
 #include <mutex>
 #include <set>
 #include <atomic>
@@ -203,6 +204,15 @@ public:
         return !frames_.empty();
     }
 
+    //  True while a TRIAL frame is open: what is raised now describes a state
+    //  a solver is visiting.  For a per-instance hot-path latch that must not
+    //  let a trial raise silence the later raise at the answer (PO-02).
+    bool anyTrialFrameOpen() const
+    {
+        std::lock_guard<std::mutex> lk(mutex_);
+        return anyTrialLocked();
+    }
+
     // Returns true if the advisory was NEW (added), false if it was a
     // duplicate and skipped.  Callers gate their own log line on the return
     // value so the SAME event is not printed twice (e.g. a thermo package
@@ -233,12 +243,41 @@ public:
     //      was new to the log -- the caller prints its site line on that
     //      answer and on no other, so the line appears once per run exactly
     //      as it always has.
+    //
+    //    * `echoUnderTrial` (default true, the behaviour every existing site
+    //      has): when false, a raise made under a TRIAL frame is RECORDED (as a
+    //      `trial` entry, "the solver's path") but never echoed and never
+    //      consumes the process latch, so the first raise at an ACCEPTED state
+    //      is the one that speaks on the console (PO-02: a bubble-point search
+    //      must not print "used at T = 387.9 K" for an answer at 365.3 K).
     bool addAnnouncedOnce(const std::string& key,
                           std::string category, std::string severity,
-                          std::string locus, std::string message)
+                          std::string locus, std::string message,
+                          bool echoUnderTrial = true)
     {
         std::lock_guard<std::mutex> lk(mutex_);
-        if (!passKeys_.insert(key).second) return false;   // this pass has it
+        //  A KEY RAISED UNDER A TRIAL FRAME IS NOT YET ABOUT THE ANSWER
+        //  (PO-02, 2026-11-12).  The pass remembers whether the key's entry is
+        //  `accepted` or still a `trial`.  A trial raise changes nothing once
+        //  the key is held; an ACCEPTED raise of a key held only as a trial
+        //  proceeds (and `addLocked` promotes or records it), so a search that
+        //  visited an out-of-span temperature and then CONVERGED outside the
+        //  span still says so about its answer.
+        const bool trialNow = anyTrialLocked();
+        auto held = passKeys_.find(key);
+        if (held != passKeys_.end())
+        {
+            if (held->second || trialNow) return false;    // this pass has it
+            held->second = true;                           // promoted to the answer
+        }
+        else
+            passKeys_.emplace(key, !trialNow);
+        if (trialNow && !echoUnderTrial)
+        {
+            addLocked(std::move(category), std::move(severity),
+                      std::move(locus), std::move(message));
+            return false;                        // recorded, not echoed, latch unspent
+        }
         const bool firstInProcess = processKeys_.insert(key).second;
         const bool isNew = addLocked(std::move(category), std::move(severity),
                                      std::move(locus), std::move(message));
@@ -252,7 +291,10 @@ public:
     bool passHas(const std::string& key) const
     {
         std::lock_guard<std::mutex> lk(mutex_);
-        return passKeys_.count(key) != 0;
+        const auto held = passKeys_.find(key);
+        if (held == passKeys_.end()) return false;
+        return held->second || anyTrialLocked();   // a trial-only key still
+                                                   // admits an accepted raise
     }
 
     //  A copy, not a reference: the caller may read while a solver is still
@@ -266,6 +308,14 @@ public:
 
 private:
     friend class AdvisoryFrame;
+
+    //  Is a trial frame open?  The caller holds `mutex_`.
+    bool anyTrialLocked() const
+    {
+        for (const auto& f : frames_)
+            if (f.trial) return true;
+        return false;
+    }
 
     //  The one recording path; the caller holds `mutex_`.
     bool addLocked(std::string category, std::string severity,
@@ -333,7 +383,7 @@ private:
     std::vector<Frame>    frames_;
     unsigned long long    nextFrameId_{0};
     std::atomic<unsigned long long> generation_{1};
-    std::set<std::string> passKeys_;      // keys raised in THIS pass
+    std::map<std::string, bool> passKeys_;   // keys raised in THIS pass -> recorded as `accepted`?
     std::set<std::string> processKeys_;   // keys whose line was printed; never cleared
 };
 

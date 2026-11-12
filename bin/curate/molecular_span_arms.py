@@ -136,8 +136,48 @@ def arm_p(tmp, fails):
     return 1
 
 
+def arm_q(tmp, fails):
+    comps = ["ethanol", "ethyleneGlycol", "water"]
+    op = ("    { name tb; type propertyScan1D; vary { variable T; from 360 K; to 361 K; n 2; }"
+          " state { P 101300 Pa; composition { ethanol 0.078; ethyleneGlycol 0.169;"
+          " water 0.753; } } properties ( T_bubble ); output { file tb.csv; } }")
+    rc, out = _case(tmp, "q", comps, "NRTL", [op])
+    if rc:
+        fails.append(f"arm (q): the bubble-point probe exited {rc}")
+        return 0
+    try:
+        rows = (Path(tmp) / "q" / "tb.csv").read_text().splitlines()
+        Tans = float(rows[1].split(",")[1])
+    except (OSError, IndexError, ValueError):
+        fails.append("arm (q): the probe published no T_bubble -- cannot judge")
+        return 0
+    js = _result(out)
+    adv = [a for a in (js or {}).get("advisories", []) if a.get("category") == "validity"]
+    temps = lambda a: [float(t) for t in re.findall(r"T = ([0-9.]+) K", a.get("message", ""))]  # noqa: E731
+    trial = [a for a in adv if a.get("status") == "trial"]
+    if not trial:
+        fails.append("arm (q): no validity advisory was raised at a visited temperature -- "
+                     "the starting guess no longer leaves the spans, so the arm is vacuous")
+    for a in adv:
+        if a.get("status", "accepted") != "trial":
+            for t in temps(a):
+                if abs(t - Tans) > 0.5:
+                    fails.append(f"arm (q): an ACCEPTED validity advisory is about T = {t} K "
+                                 f"but the published bubble temperature is {Tans:.3f} K: "
+                                 + a.get("message", "")[:140])
+    #  The console says the same: every [pair-span] / [psat] line is about the answer.
+    for ln in out.splitlines():
+        if ln.startswith(("[pair-span]", "[psat]")):
+            for t in temps({"message": ln}) + [float(x) for x in re.findall(r"T = ([0-9.]+) K", ln)]:
+                if abs(t - Tans) > 0.5:
+                    fails.append(f"arm (q): the console announced a temperature the solve only "
+                                 f"visited ({t} K, answer {Tans:.3f} K): {ln[:140]}")
+                    break
+    return 1
+
+
 def run_arms(tmp, fails):
-    return arm_p(tmp, fails)
+    return arm_p(tmp, fails) + arm_q(tmp, fails)
 
 
 def main():
