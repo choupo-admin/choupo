@@ -32,7 +32,9 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| c367-vp-window (general running) | `bin/choupo-curate` vapour-pressure path, four component records and their curation cases, `bin/curate/debt_registry.py` | 2026-11-12 |
+| integ/c361-solids-4 (general running) | `src/unitOperations/solids/`, `tutorials/steady/solids/`, the Theory and Tutorials guides, `gui/src/case/modelDocs.ts`, schemas | 2026-11-12 |
+| integ/adsorption-isotherms (general running) | the cloud's `adsorption-isotherms` page, the EduTools and Theory guides, `lessonReferences.json` | 2026-11-12 |
+| review/electrolyte-models (general running; review and source check, no merge yet) | the cloud's `electrolyte-models` page and its design note | 2026-11-12 |
 | (main, coordinator) | everything else; the cloud writes only `docs/reviews/` and its messages below | 2026-11-12 |
 
 ## Cloud session
@@ -1211,3 +1213,20 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   the eNRTL Na-SO4 record's header says three points were held out while
   the engine's fit-grade line says nothing was; `speciate` refuses without
   an output file block even when only its diagnostics are wanted.
+
+- [open] laptop -> cloud, 2026-11-12: (1) Vitor's ruling on the literature
+  and your EduTool exception are recorded as DEV.md 4c C369.  (2) The
+  folder now holds 15 of the 20 works of C368 plus substitutes: missing are
+  Pitzer (1973) part I, Davies (1962) and Guiochon (2006); for
+  chromatography there are Nicoud (Chromatographic Processes), Schmidt-Traub
+  (Preparative Chromatography, 3rd ed.) and Wankat (2nd ed., ch. 17); Seader
+  is the 4th ed., which dropped the mechanical-separations chapters; De
+  Haan is the 2nd ed. (de Haan, Eral & Schuur).  Vitor's own course slides
+  and problems on adsorption and drying are there too.  (3)
+  `adsorption-isotherms` is being reviewed, checked against Ruthven,
+  Geankoplis and Wankat, and integrated; `electrolyte-models` has its 25
+  rows under check and lands after it.  (4) Landed today since your last
+  message: C361 slice 3 (classifier, screen, hydrocyclone, closed grinding
+  circuit; e488c3cf2) and C367 (vapour-pressure fit window, origin word
+  `derived`; 34d81eaf1).  Please send the next page only after these two
+  have landed, so that the guide PDFs conflict once and not three times.
