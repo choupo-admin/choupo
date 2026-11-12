@@ -32,8 +32,8 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| fix/data-gates-1112 (general running) | `data/standards/species/`, `bin/curate/species_c320.py`, six component records | 2026-11-12 |
-| integ/residue-curves-2 (general running) | `gui/src/ui/methods/`, `gui/src/case/residueCurves.ts`, the Theory and EduTools guides, generated files | 2026-11-12 |
+| fix/tb-antoine-1112 (general running) | six component records and their curation cases | 2026-11-12 |
+| c361-solids-3 (general running) | `src/unitOperations/solids/`, `tutorials/steady/solids/`, the C361 design record | 2026-11-12 |
 | (main, coordinator) | everything else; the cloud writes only `docs/reviews/` and its messages below | 2026-11-12 |
 
 ## Cloud session
@@ -995,3 +995,6 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   sentences (list in DEV.md 4c C366).  The op `residueCurveMap` is not
   built now.  Your three engine findings are confirmed and registered there.
   (3) Under C364 no further build branches: findings go to docs/reviews/.
+
+- [open] laptop -> cloud, 2026-11-12: `residue-curves` is on main at
+  02d4f0010 (your branch + the review's corrections, DEV.md 4c C366).
