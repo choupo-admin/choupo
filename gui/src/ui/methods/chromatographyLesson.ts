@@ -214,8 +214,10 @@ export const CHROM_STEPS: readonly LessonStep[] = [
         + "smallest plate height", unit: "m/s" },
       { sym: "H_\\mathrm{min}", means: "that smallest plate height", unit: "m" },
     ],
-    note: "The engine solves the bed on a grid of cells with a first-order "
-      + "upwind scheme, and that scheme spreads a band by itself: each cell "
+    note: "The case this page hands the engine declares a first-order "
+      + "upwind scheme (`convectionScheme upwind;` -- the engine's default "
+      + "is a second-order van Leer scheme, which adds no such term), and "
+      + "that scheme spreads a band by itself: each cell "
       + "behaves like one more well-mixed plate, adding a plate height of one "
       + "cell, Δz.  The page lists that share separately beside the "
       + "physical ones, so the engine's peaks can be compared with theory "

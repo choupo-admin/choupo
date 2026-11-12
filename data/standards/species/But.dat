@@ -1,0 +1,29 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/But.dat -- ONE model species, ONE typed file: the fully dissociated form of n-butyric acid.
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
+  reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
+  1 mol/kg, 298.15 K, H+ = 0.
+  The formation values are the PRINTED numbers of the source; the table, page and row are in the
+  source line below and in formation.tsv.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    But;
+formula     "C4H7O2-";
+charge  -1;
+MW { value 87.098; unit g/mol;}
+aqueousThermo
+{
+source "hfAq [kJ/mol] -538.19: printed DfH -128630 cal/mol x 4.184 -- Shock, Organic acids in hydrothermal solutions: standard molal thermodynamic properties of carboxylic acids, and estimates of dissociation constants at high temperatures and pressures, Am. J. Sci. 295 (1995) 496-580, Table 4, p. 518 (PDF p. 23), row butanoate (read from a page image), calculated by the paper from the acid's DfH and the selected dissociation enthalpy (Table 4 footnote x or ab) ## sAq [J/mol/K] 133.05: printed S 31.8 cal/mol/K x 4.184 -- Shock, Organic acids in hydrothermal solutions: standard molal thermodynamic properties of carboxylic acids, and estimates of dissociation constants at high temperatures and pressures, Am. J. Sci. 295 (1995) 496-580, Table 4, p. 518 (PDF p. 23), row butanoate (read from a page image), S of the anion is the acid's estimated S plus the selected dissociation entropy (footnote s): it inherits the estimate";
+hfAq { value -538190; unit J/mol;}
+sAq  { value 133.05; unit J/mol/K;}
+provenance
+{
+    sAq
+    {
+        origin  estimated;
+        method  "Shock (1995): anion S from the acid's ESTIMATED S and the selected dissociation entropy of Table 3 (Table 4 footnote s)";
+    }
+}
+}

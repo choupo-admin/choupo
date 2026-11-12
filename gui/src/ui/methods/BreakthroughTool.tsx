@@ -653,8 +653,9 @@ export function BreakthroughTool(): JSX.Element {
             the front spreading that axial dispersion
             ({view.pe !== null ? `Pe = ${fmt(view.pe)}` : "Pe not emitted"}),
             the finite LDF uptake rate and — on a run that computes one — heat
-            effects buy.  On this witness the mesh contributes too; see the
-            limits below.
+            effects buy.  On this witness the mesh adds about 5 % to the front's
+            width under the default van Leer scheme (about 43 % if the case
+            declares first-order upwind); see the limits below.
           </Text>
           <Text size="xs" c="dimmed">{view.norm.caption}</Text>
         </Stack>

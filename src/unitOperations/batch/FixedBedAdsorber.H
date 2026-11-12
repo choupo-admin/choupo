@@ -51,8 +51,12 @@ Description
     adsorbent identity and gas viscosity from the canonical transport model.
 
     Discretisation (spec section 2, audited): conservative finite volumes on
-    a DECLARED uniform mesh of nCells, first-order upwind advection + central
-    dispersion at the faces, Danckwerts inlet as the IMPOSED face flux
+    a DECLARED uniform mesh of nCells, the DECLARED convection scheme
+    (operation.convectionScheme: `upwind`, first order, or `vanLeer`, a
+    MUSCL face value with the van Leer limiter and the stated default --
+    C375; faceValue_ is its one
+    home, with the inlet slope reading the feed and the outlet slope zero)
+    + central dispersion at the faces, Danckwerts inlet as the IMPOSED face flux
     F_1/2 = u*c_in (the exact conservative form -- no ghost cell), outlet
     face without a dispersive term (dc/dz|L = 0), source rho_b*k*(q*-q)
     with NO (1-eps) factor.  The scheme is telescopic: discrete conservation
@@ -70,12 +74,18 @@ Description
         Rosenbrock23 sub-steps each interval in samplingInterval chunks;
       * `timeStepping fixed;` -> explicit RK4 at the case deltaT, REFUSED
         when deltaT exceeds the Gershgorin bound printed term by term
-        (advection 2u_i/dz + dispersion 4D_i/dz^2 + LDF k(1+rho_b q*'(0)/eps))
-        -- the student SEES which term rules the step.
+        (advection 2u_i/dz + dispersion 4D_i/dz^2 + LDF k(1+rho_b q*'(0)/eps);
+        advection 6u_i/dz under vanLeer, whose face value's derivatives sum
+        in absolute value to at most 3) -- the student SEES which term rules
+        the step.
 
     Announced pre-run (spec section 1.3): Pe = uL/Dax, retention factor
     R_f = eps + rho_b q*(c_in)/c_in, stoichiometric time t_st = (L/u) R_f,
-    shock speed u_sh = u/R_f, |lambda_LDF| and the stiff/non-stiff verdict.
+    shock speed u_sh = u/R_f, |lambda_LDF| and the stiff/non-stiff verdict;
+    and (C375) the scheme's own NUMERICAL dispersion beside the declared
+    one, interstitial basis: D_num = v dz/2 for first-order upwind against
+    D_L = Dax/eps, their ratio and the nCells (> 5 Pe) that would bring it
+    under 0.1 -- in the header, on the advisory log, and as KPIs.
 
     Species classification (I = isotherm record on the adsorbent, K = entry
     in operation.kLDF.k), refused without silence -- the A2 pattern:
@@ -167,10 +177,14 @@ Description
 
     Outputs: trajectory extras c_out/y_out/qbar/closure per component;
     axial profiles `<t>/<unit>.profile` (columns z, c_i..., q_i...) written
-    OpenFOAM-style every writeInterval; KPIs t_breakthrough_5pct / t_50 /
+    OpenFOAM-style every writeInterval, unless controlDict declares
+    `solutionControl { write false; }` (no <t>/ directories at all); KPIs t_breakthrough_5pct / t_50 /
     t_breakthrough_95pct / integral_anchor (trapezoid of (1 - c_out/c_in)
     over the internal <= samplingInterval samples, gate G5) /
-    t_stoichiometric (analytic) / mass_closure per component.
+    t_stoichiometric (analytic) / mass_closure per component; with
+    `schemeDiagnostics true;` (C375) also outlet_m0 / outlet_mean /
+    outlet_variance (moments of c_out about t = 0) and the field extremes
+    c_max_over_feed / c_min / q_max_over_qstar_feed / q_min.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -285,6 +299,35 @@ private:
     scalar rhoB_ = 0.0;      // bulk density [kg/m3] from the catalogue
     std::size_t N_ = 0;      // nCells (declared -- no silent default)
     scalar dz_   = 0.0;      // L/N [m]
+    //  C375: the convection scheme of the face values (operation.
+    //  convectionScheme).  `upwind` takes the upwind cell's value (first
+    //  order: it adds a numerical dispersion u dz/2 to Dax, announced at the
+    //  start of every run); `vanLeer` reconstructs a van Leer-limited linear
+    //  profile in the upwind cell (second order where smooth, bounded at
+    //  fronts).  The stencil of the second reaches two cells upstream, so the
+    //  declared Jacobian gathers TWO cells per block (buildOdeStructure_).
+    //  The stated default is vanLeer (C375 part 4, after the closed-form and
+    //  mesh validation of part 3); absent, the run says it is the default.
+    std::string convectionScheme_ = "vanLeer";
+    bool        secondOrder_      = true;    // convectionScheme_ == vanLeer
+    bool        convectionDeclared_ = false; // the case named the scheme
+    //  The declared switch for <t>/ time directories (controlDict
+    //  solutionControl { write ...; }): the axial profiles obey it (C375 b).
+    bool        writeProfiles_    = true;
+    //  C375: the scheme's witnesses (operation.schemeDiagnostics true;),
+    //  per integrated species: the zeroth, first and second moments of
+    //  c_out(t) about t = 0 (trapezoid over the sampler's chunks; a pulse's
+    //  mean and variance are what the closed form of the linear model
+    //  predicts), and the extremes of c and q over every cell and every
+    //  sampled instant against the largest feed (and its q*) declared.
+    bool        schemeDiagnostics_ = false;
+    std::vector<scalar> mom0_, mom1_, mom2_, cOutPrev_;
+    std::vector<scalar> cMaxField_, cMinField_, cFeedMax_;
+    std::vector<scalar> qMaxField_, qMinField_, qStarFeedMax_;
+    //  The numerical and the physical dispersion, frozen at initialise
+    //  (interstitial basis, the one the moments obey: D_L = Dax/eps).
+    scalar      dNumAnn_ = 0.0;
+    scalar      dPhysAnn_ = 0.0;
     scalar cTot_ = 0.0;      // P/(R T) [mol/m3], constant by declaration
     bool   ergun_ = false;    // A4: all species integrated, P derived, u algebraic
     //  A5-T1: adiabatic one-temperature energy balance (ergun mode ONLY --
@@ -409,6 +452,19 @@ private:
     void    commit_(const sVector& y);       // y_ <- y, refresh state_.n
     void    sample_(scalar t);               // crossings + G5 integral update
     void    rk4Step_(scalar dt);
+    //  C375: the advected (face) concentration at face f (1 <= f <= N-1)
+    //  of the concentration row starting at y[row0], for a face velocity of
+    //  sign uf, with cIn the inlet ghost (the feed) -- the ONE home of the
+    //  convection scheme, read by the species and the energy fluxes.
+    scalar  faceValue_(const sVector& y, std::size_t row0, std::size_t f,
+                       scalar uf, scalar cIn) const;
+    //  C375: the numerical dispersion the scheme adds [m2/s, interstitial
+    //  basis: v dz/2 for upwind, 0 to leading order for vanLeer], the smallest nCells that brings it under
+    //  a tenth of D_L, and the one sentence the header and the advisory
+    //  both print.
+    scalar      numericalDispersion_() const;
+    scalar      nCellsForTenth_() const;
+    std::string convectionSchemeSentence_() const;
     void    writeProfile_(scalar t) const;   // <t>/<name>.profile
     scalar  gershgorin_(scalar& adv, scalar& disp, scalar& ldf) const;
     scalar  carrierCell_(std::size_t j) const;   // c_carrier in cell j [mol/m3]

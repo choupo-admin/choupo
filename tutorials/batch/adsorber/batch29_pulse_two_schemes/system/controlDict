@@ -1,0 +1,30 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch29_pulse_two_schemes / system/controlDict
+
+  The pulse leaves the bed around t_R + t_inj/2 = 54.6 s with a standard
+  deviation of 6-8 s; endTime 200 s is about twenty standard deviations
+  past the mean, so the moments are not truncated.  The beds integrate
+  themselves (Rosenbrock23) in samplingInterval = 0.05 s chunks, and the
+  outlet moments are trapezoids over those chunks.  deltaT only matters in
+  `timeStepping fixed`.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "A linear pulse through two identical fixed beds, upwind and van Leer, against the closed-form mean and variance: the grid widens the upwind peak by v dz/2, never moves its centre";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         200;      // s   (about 20 standard deviations past the mean)
+deltaT          0.05;     // s   (only relevant in timeStepping fixed)
+writeInterval   10;       // s   (trajectory row + <t>/<bed>.profile)
+timeStepping    adaptive; // Rosenbrock23

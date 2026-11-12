@@ -3472,6 +3472,31 @@ accepts today, and that is a policy call.
 > sources and is kept OUTSIDE the tracked tree; the repository gets the
 > design record, which describes the other systems by what they are.
 > Branch c378-thermophysical-study; no code in this slice.
+> VITOR'S GUIDANCE the same hour, binding on the proposal: the method may
+> depend on how the COMPOUND IS CLASSIFIED, so the study finds the smallest
+> classification that changes which method is right (from what the records
+> already carry where possible); "muito bom senso e Pareto": few simple
+> routes that cover most of what a flowsheet meets, not a method for every
+> cell -- "todos os modelos sao errados, mas ha alguns que sao uteis"; and
+> some liquid-phase properties are hard to predict, so each route SAYS its
+> expected error at the point of use and a measured value from the case
+> always overrides an estimate.
+> AND A HARD CONSTRAINT (Vitor, the same hour: "isso tem de ser feito de
+> forma elegante! Porque a forma como se organiza os componentes e a
+> informacao vai depender disso! Martelar isto a bruta e exigir correcoes
+> brutas para componentes caso a caso pode dar super confusao").  BINDING:
+> (1) NOTHING is built for liquid density, viscosity or surface tension
+> until he has read the study and the design is ratified; (2) the
+> NaOH-only density and viscosity seam that had been added to the C377
+> slice is WITHDRAWN (the paper's correlations are transcribed as evidence
+> for the study, not implemented); (3) the proposal is judged by: no
+> component name and no per-component special case in code; the record's
+> organisation designed, each fact in one home (a solution property belongs
+> to the salt-solvent system, like a Pitzer pair, not to a component); few
+> concepts; exceptions as declared data with a reason; no big-bang edit of
+> records; a pilot on one property first, reversible.  Declared
+> hypotheses, if adopted, extend the existing `approximations {}` block
+> under a closed vocabulary -- never a new free-form dictionary.
 
 > **C377 (Vitor, 2026-11-12: "se eu fizer evaporacao multi-efeito de
 > agua+NaOH o Choupo ja lida com o calor de dissolucao de forma elegante?").**
@@ -3549,6 +3574,21 @@ accepts today, and that is a policy call.
 > of Goldberg et al. -- so a balance in which the buffer's total amount is
 > conserved depends only on measured quantities, and the estimate cancels.
 > Branch c376-formation-data: routes 1 and 2 first.
+> LANDED 2026-11-12 (3bd797fe6): species with hfAq 84 -> 123 (of 250),
+> with sAq 76 -> 117, from the NBS tables, Amend & Helgeson (1997), Shock
+> (1995) and Alberty (2003); every family on one scale, disagreements
+> tabulated in docs/design/species-from-evaluated-compilations.md
+> (phosphate and pyrophosphate stay on NBS against Alberty's 6-22 kJ/mol;
+> citrate stays on its calorimetric source; amino acids on Miller).
+> DECIDED on the laboratory buffers: NO estimated formation data -- the
+> group method has no sulfonic acid group or piperazine, and Tris lacks a
+> measured heat of solution; they stay pH-only.  A CONDITION, OPEN: some
+> entropies and enthalpies from Shock are correlation ESTIMATES and are
+> marked `origin estimated` per value, but the engine does not read or
+> announce a species datum's origin on use (only components are audited);
+> nothing consumes them today.  Before any energy or entropy balance prices
+> a species through these data, the engine reads `aqueousThermo.provenance`
+> and announces an estimated value at the point of use.
 
 > **C375 (2026-11-12; three engine findings met by the chromatography page,
 > confirmed by run and by reading; the architect's decisions).**  (a) THE

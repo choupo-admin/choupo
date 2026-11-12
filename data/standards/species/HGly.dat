@@ -3,7 +3,7 @@
   Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
   reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
   1 mol/kg, 298.15 K, H+ = 0.
-  The formation values are DERIVED from printed numbers; the arithmetic, tables and pages are in the
+  The formation values are the PRINTED numbers of the source; the table, page and row are in the
   source line below and in formation.tsv.
 \*-----------------------------------------------------------------------------*/
 recordType modelSpecies;

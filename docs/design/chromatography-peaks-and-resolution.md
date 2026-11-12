@@ -95,7 +95,11 @@ long column the first bracket is `2/Pe`, and the plate height
 
     H = 2 D / v + 2 k' v / (k (1 + k')^2).
 
-**The engine's grid.**  The engine discretises advection first-order upwind.
+**The engine's grid.**  The case the page writes declares `convectionScheme
+upwind;` (C375: the engine's default became the second-order van Leer scheme,
+which has no `v dz / 2` term; the page keeps first-order upwind because the
+grid share below is the lesson and its arithmetic is exact for upwind only).
+Under that declaration the engine discretises advection first-order upwind.
 Its modified equation carries a numerical dispersion `v dz / 2` in the place of
 `D`; equivalently, upwind cells with no dispersion are exactly a cascade of
 stirred tanks, one plate per cell, `H_grid = dz`.  `linearPulseMoments` takes
@@ -104,7 +108,7 @@ The page's own integrator uses a second-order face reconstruction, whose
 share is much smaller and falls with the square of the cell.
 
 **Tested**, in `gui/tests/chromatography.test.ts`: the page's integration with
-the engine's own first-order scheme on 200 cells reproduces these moments
+the first-order scheme the engine case declares, on 200 cells, reproduces these moments
 (grid share included) to 1e-5 in the first moment and 2e-3 in the variance;
 with its own second-order scheme the variance error is under 3 % on 100 cells
 and falls by more than three times on 200.  Against the engine itself, see

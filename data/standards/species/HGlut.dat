@@ -1,0 +1,34 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/HGlut.dat -- ONE model species, ONE typed file: an intermediate ionisation state of glutaric acid.
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
+  reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
+  1 mol/kg, 298.15 K, H+ = 0.
+  The formation values are the PRINTED numbers of the source; the table, page and row are in the
+  source line below and in formation.tsv.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    HGlut;
+formula     "HC5H6O4-";
+charge  -1;
+MW { value 131.107; unit g/mol;}
+aqueousThermo
+{
+source "hfAq [kJ/mol] -935.42: printed DfH -223570 cal/mol x 4.184 -- Shock, Organic acids in hydrothermal solutions: standard molal thermodynamic properties of carboxylic acids, and estimates of dissociation constants at high temperatures and pressures, Am. J. Sci. 295 (1995) 496-580, Table 4, p. 519 (PDF p. 24), row H-glutarate (read from a page image), ion: calculated by the paper from DfG and an ESTIMATED S through the elements' entropies (Table 4 footnote ab), so the dissociation enthalpy it implies is an estimate ## sAq [J/mol/K] 221.33: printed S 52.9 cal/mol/K x 4.184 -- Shock, Organic acids in hydrothermal solutions: standard molal thermodynamic properties of carboxylic acids, and estimates of dissociation constants at high temperatures and pressures, Am. J. Sci. 295 (1995) 496-580, Table 4, p. 519 (PDF p. 24), row H-glutarate (read from a page image), the paper marks this S as estimated (Table 4 footnote af)";
+hfAq { value -935420; unit J/mol;}
+sAq  { value 221.33; unit J/mol/K;}
+provenance
+{
+    hfAq
+    {
+        origin  estimated;
+        method  "Shock (1995) Table 4 footnote ab: DfH computed from the tabulated DfG and S (S estimated, footnotes af and ae) with the elements' entropies";
+    }
+    sAq
+    {
+        origin  estimated;
+        method  "Shock (1995) Table 4 footnote af: S estimated with the author's correlation (eq 16) or from the divalent anion's estimate plus the dissociation entropy";
+    }
+}
+}

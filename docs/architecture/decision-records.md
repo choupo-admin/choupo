@@ -340,6 +340,7 @@ is this index failing its own purpose; they move below with their rulings.
 | [`reference-equations-of-state.md`](../design/reference-equations-of-state.md) | slice record | no | **2026-11-12, C333 slice 1** -- one Helmholtz kernel for a reference equation of state, the coefficients as records; no rejected alternative stated. |
 | [`where-to-find-property-data.md`](../design/where-to-find-property-data.md) | slice record | no | **2026-11-12, C322** -- an EduTool on sources and licences of property data, on a new shelf; no rejected alternative stated. |
 | [`residue-curve-maps.md`](../design/residue-curve-maps.md) | slice record | no | **2026-11-12, C366** -- the residue-curve-map EduTool computes its maps in the page from the engine's bubble points; PROPOSES an engine op `residueCurveMap`, not built (no second consumer yet). |
+| [`fixed-bed-numerics-c375.md`](../design/fixed-bed-numerics-c375.md) | slice record | yes | **2026-11-12, C375** -- the fixed bed's first-order upwind scheme widened breakthrough fronts by the grid (v dz/2); a van Leer limited scheme becomes the default and upwind stays selectable (rejected: keeping upwind as default with a finer grid, 1250 cells for the same accuracy); two open defects on profile writing recorded. |
 
 ### Historical
 

@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/H2Maln-formation.dat -- the malonic acid master as the sum of its fully dissociated form (the inverse of the records written from the master; a case declares one master and the closure activates the record reachable from it):
+      Maln(-2) + 2 H+  <=>  H2Maln
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv.
+
+  logK25 and dH are the PRINTED values of the sources below (standard state ideal solution at 1 mol/kg, 298.15 K):
+      pK1 = 2.85, dH1 = 0.084 kJ/mol
+      pK2 = 5.70, dH2 = -4.812 kJ/mol
+  Source: Shock, Organic acids in hydrothermal solutions: standard molal thermodynamic properties of carboxylic acids, and estimates of dissociation constants at high temperatures and pressures, Am. J. Sci. 295 (1995) 496-580; H+ = 0, 25 C, 1 bar, hypothetical 1 molal ideal solution (Appendix 1); cal/mol and cal/mol/K converted at 4.184 exactly; a superscript on a table value names how the author obtained it (Table 4 footnotes, p. 519; Table 10 footnotes, p. 544).
+  This record carries the sum of the first 2 steps (the sign flips with the direction written).
+  The constant-dCp term of the printed dCp is NOT carried: the record grammar has no place for it (a
+  van't Hoff integral with a constant dCp is exactly the `analytic` A1, A3, A4 terms; proposed, not done).
+  The neutral master carries its own aqueous formation data (no component + solution pair is in the catalogue for this acid).  Source: Shock (1995); values the paper marks as estimated carry `origin estimated` per value.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species H2Maln; masters ( { ion Maln; nu 1; } { ion H; nu 2; } );
+      logK25 8.55; dH 4728; source "Shock, Organic acids in hydrothermal solutions: standard molal thermodynamic properties of carboxylic acids, and estimates of dissociation constants at high temperatures and pressures, Am. J. Sci. 295 (1995) 496-580 -- pK: Table 7, p. 534 (log K at 25 C, as printed), dH: the printed DfH of the anion minus that of the acid in Table 4, p. 518 (PDF p. 23) / Table 4, p. 519 (PDF p. 24): pK1 2.85, dH1 0.084 kJ/mol (read from a page image), pK2 5.70, dH2 -4.812 kJ/mol (read from a page image) (pK, dH_ion at 298.15 K)";

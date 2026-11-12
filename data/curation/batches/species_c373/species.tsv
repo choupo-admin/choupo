@@ -12,7 +12,7 @@ Fumar	C4H2O4-2	-2	fumarate	2	update
 H2Malic	H2C4H4O5	0	malate	0	existing
 HMalic	HC4H4O5-	-1	malate	1	update
 Malic	C4H4O5-2	-2	malate	2	update
-HLac	HC3H5O3	0	lactate	0	existing
+HLac	HC3H5O3	0	lactate	0	update
 Lac	C3H5O3-	-1	lactate	1	update
 HGlyc	HC2H3O3	0	glycolate	0	build
 Glyc	C2H3O3-	-1	glycolate	1	build
@@ -174,3 +174,15 @@ BTP	C11H26N2O6	0	btp	2	build
 H2Cac	C2H8AsO2+	1	cacodylate	0	build
 HCac	C2H7AsO2	0	cacodylate	1	build
 Cac	C2H6AsO2-	-1	cacodylate	2	build
+HPropn	HC3H5O2	0	propionic	0	build
+Propn	C3H5O2-	-1	propionic	1	build
+HBut	HC4H7O2	0	butyric	0	build
+But	C4H7O2-	-1	butyric	1	build
+HBenz	HC7H5O2	0	benzoic	0	build
+Benz	C7H5O2-	-1	benzoic	1	build
+H2Maln	H2C3H2O4	0	malonic	0	build
+HMaln	HC3H2O4-	-1	malonic	1	build
+Maln	C3H2O4-2	-2	malonic	2	build
+H2Glut	H2C5H6O4	0	glutaric	0	build
+HGlut	HC5H6O4-	-1	glutaric	1	build
+Glut	C5H6O4-2	-2	glutaric	2	build

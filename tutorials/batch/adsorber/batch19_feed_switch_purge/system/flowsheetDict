@@ -13,8 +13,9 @@
   a TWO-STEP cycle in one campaign:
 
       0 .. 3600 s     LOAD    -- identical to batch13's feed; the front
-                                 arrives on the batch13 anchors (t_5 =
-                                 2890.7, t_50 = 3036.4, t_95 = 3204.2 s)
+                                 arrives on batch13's front (t_5 =
+                                 2934.1, t_50 = 3035.1, t_95 = 3165.6 s
+                                 on the default van Leer scheme, C375)
       3600 s          SWITCH  -- recipe setParameter bed.feed.CO2 = 0:
                                  the feed becomes pure He (concentration-
                                  swing regeneration)
@@ -41,7 +42,7 @@
 
   * The adsorption duty stays an EXACT state difference on the adsorbed
     inventory: E_adsorption = dH_ads * (n_ads(end) - n_ads(0)).  batch13
-    (load only) ledgers -413.6 kJ; here the purge takes part of the
+    (load only) ledgers -413.6 kJ; here (-20.3 kJ at 9000 s) the purge takes part of the
     loading back OUT, so |E| is SMALLER -- desorption is endothermic and
     the ledger shows the heat returning, with no new formula anywhere.
 

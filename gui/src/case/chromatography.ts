@@ -132,8 +132,9 @@ export interface PulseMoments {
 /** Moments of the outlet peak of a rectangular injection of length tInj into a
  *  linear column, for the equations above with closed (Danckwerts)
  *  boundaries.  `dzUpwind`, when given, adds the numerical dispersion of a
- *  first-order upwind grid, v dz / 2 -- the engine's scheme -- to the
- *  physical one.  Derivation in the design record, s 2:
+ *  first-order upwind grid, v dz / 2 -- the scheme the page's engine case
+ *  declares (`convectionScheme upwind;`; the engine's default is van Leer,
+ *  which has no such term) -- to the physical one.  Derivation in the design record, s 2:
  *
  *    mu1      = L (1 + k') / v + tInj/2
  *    variance = (2/Pe - 2 (1 - e^-Pe)/Pe^2) (L (1+k')/v)^2   dispersion
@@ -358,8 +359,9 @@ export interface SolveOptions {
   /** injection length [s] */ tInj: number;
   /** end of the run [s] */ tEnd: number;
   /** cells */ N: number;
-  /** face reconstruction: second-order MUSCL (van Leer limiter) or the
-   *  engine's first-order upwind */
+  /** face reconstruction: second-order MUSCL (van Leer limiter, the
+   *  engine's default) or first-order upwind (what the page's engine case
+   *  declares) */
   scheme?: "muscl" | "upwind";
   /** outlet samples kept (approximately) */ nOut?: number;
 }
@@ -615,6 +617,11 @@ export function chromCaseFiles(s: EngineSpec): Record<string, string> {
       `            P           ${num(col.P_bar)} bar;`,
       `            Dax  [0 2 -1 0 0]  ${num(s.Dax)};`,
       `            nCells      ${CHROM_CELLS};`,
+      //  DECLARED upwind (C375: the engine's default is now van Leer).  The
+      //  page teaches the plate count of a first-order grid and adds that
+      //  grid's v dz/2 to the dispersion; that arithmetic is exact for
+      //  upwind only, so the page's own case names the scheme it explains.
+      "            convectionScheme upwind;   // the page adds this grid's v dz/2 to the theory",
       `            feed    { molarComposition { ${a} ${CHROM_Y_INJ}; ${b} ${CHROM_Y_INJ}; ${CHROM_CARRIER} ${num(yC)}; } }`,
       `            initial { molarComposition { ${CHROM_CARRIER} 1.0; } }`,
       "            kLDF",

@@ -29,14 +29,14 @@
 
     what the engine solves            src/unitOperations/batch/FixedBedAdsorber.H:41
     the declared lab column           system/flowsheetDict operation {L, area,
-                                      eps, u, T, P} -- FixedBedAdsorber.cpp:169-174
+                                      eps, u, T, P} -- FixedBedAdsorber.cpp:209-214
     rho_b from the adsorbent record   Adsorbent.cpp:42 (`rho_bulk`),
-                                      FixedBedAdsorber.cpp:222
-    the pre-run t_st claim            FixedBedAdsorber.cpp:774-775, printed at
-                                      841-845
-    the engine's own trapezoid        FixedBedAdsorber.cpp:1743
-    the engine's own 5 % crossing     FixedBedAdsorber.cpp:1744-1751
-    the KPIs the tool reads           FixedBedAdsorber.cpp:2906-2917, 2932
+                                      FixedBedAdsorber.cpp:262
+    the pre-run t_st claim            FixedBedAdsorber.cpp:845-846, printed at
+                                      996-1002
+    the engine's own trapezoid        FixedBedAdsorber.cpp:2012
+    the engine's own 5 % crossing     FixedBedAdsorber.cpp:2013-2020
+    the KPIs the tool reads           FixedBedAdsorber.cpp:3192-3203, 3240
     the witness's numbers             tutorials/batch/adsorber/
                                         batch13_breakthrough_co2/{system,expected}
 \*---------------------------------------------------------------------------*/
@@ -138,7 +138,7 @@ t_\mathrm{st} &= \int_0^\infty \left( 1 - \frac{c_\mathrm{out}}{c_\mathrm{in}} \
         + "outlet reaches the declared fraction f_b, found by linear "
         + "interpolation between the two samples that bracket it, which is "
         + "the engine's own rule for its 5 % crossing "
-        + "(FixedBedAdsorber.cpp:1744-1751)", unit: "s" },
+        + "(FixedBedAdsorber.cpp:2013-2020)", unit: "s" },
       { sym: "f_b", means: "the breakthrough criterion, c_out/c_in at which "
         + "you switch beds -- a specification you declare (the knob), never "
         + "a datum the curve carries" },
@@ -154,7 +154,7 @@ t_\mathrm{st} &= \int_0^\infty \left( 1 - \frac{c_\mathrm{out}}{c_\mathrm{in}} \
       { sym: "f_k,\\ f_{k+1}", means: "c_out/c_in at those two samples -- the "
         + "trapezoid rule applied to the data, which is exactly the "
         + "quadrature the engine runs on its own outlet "
-        + "(FixedBedAdsorber.cpp:1743)" },
+        + "(FixedBedAdsorber.cpp:2012)" },
     ],
     note: "The tail is handled honestly rather than extrapolated.  The sum "
       + "runs to the last sample; whatever the curve would still have "
@@ -169,7 +169,7 @@ t_\mathrm{st} &= \int_0^\infty \left( 1 - \frac{c_\mathrm{out}}{c_\mathrm{in}} \
       + "makes the bed look worse than it is.  Do not size from it; extend the curve first.  "
       + "The engine publishes its own t_st for the same "
       + "curve -- the analytic (L/u)·R_f it announced before integrating "
-      + "(t_stoichiometric_<i>, FixedBedAdsorber.cpp:774-775) -- and the "
+      + "(t_stoichiometric_<i>, FixedBedAdsorber.cpp:845-846) -- and the "
       + "tool prints it beside the trapezoid: two readings of one quantity, "
       + "and the gap between them is the mesh plus the dropped tail, nothing "
       + "else.  On the witness they agree to about seven digits.",
@@ -203,11 +203,11 @@ q^*_\mathrm{isotherm} &= \frac{(R_f - \varepsilon)\, c_\mathrm{in}}{\rho_b}
       { sym: "q^*_\\mathrm{isotherm}",
         means: "the same loading as the isotherm gives "
         + "it, recovered from the engine's own retention factor "
-        + "(retention_factor_<i>, FixedBedAdsorber.cpp:2906-2907) by "
+        + "(retention_factor_<i>, FixedBedAdsorber.cpp:3192-3193) by "
         + "inverting the definition the engine prints", unit: "mol/kg" },
       { sym: "R_f", means: "the retention factor, how many empty-tube "
         + "transit times the front lags the gas -- defined at "
-        + "FixedBedAdsorber.cpp:898 exactly as written here" },
+        + "FixedBedAdsorber.cpp:994 exactly as written here" },
     ],
     note: "A disagreement is the diagnostic, and it points at the data, not "
       + "at the isotherm.  If q*_curve falls short, the curve's tail was cut "
@@ -219,7 +219,7 @@ q^*_\mathrm{isotherm} &= \frac{(R_f - \varepsilon)\, c_\mathrm{in}}{\rho_b}
       + "recorded is not the one the column saw.  Neither is something to "
       + "tune away; both are reasons to go back to the column.  The tool "
       + "also prints the bed-average loading the run actually reached at "
-      + "its end (qbar_<i>_final, FixedBedAdsorber.cpp:2932), which equals "
+      + "its end (qbar_<i>_final, FixedBedAdsorber.cpp:3240), which equals "
       + "q* only on a saturated bed.",
   },
   {
@@ -255,9 +255,9 @@ L_\mathrm{MTZ} &\approx 2\, \mathrm{LUB} \qquad \text{(a symmetric front only)}
     note: "The plot marks both areas: above the curve up to t_b is the "
       + "capacity you used, between t_b and t_st is the capacity you paid "
       + "for and switched away.  The two vertical lines are the two times "
-      + "of step 2.  On the witness's own numbers, t_b(5 %) = 2891 s against "
-      + "t_st = 3041 s, so about 5 % of the half-metre column -- some "
-      + "2.5 cm -- is unused.  Move the criterion knob and watch LUB move "
+      + "of step 2.  On the witness's own numbers, t_b(5 %) = 2934 s against "
+      + "t_st = 3041 s, so about 3.5 % of the half-metre column -- some "
+      + "1.75 cm -- is unused.  Move the criterion knob and watch LUB move "
       + "with it: a stricter specification switches earlier and wastes more "
       + "bed, which is the trade the specification buys.",
   },
@@ -303,8 +303,8 @@ m_\mathrm{ads} &= \rho_b \frac{\pi D^2}{4} L_\mathrm{full}
     ],
     note: "The point of the lesson is in η_bed.  LUB is fixed by the conditions, "
       + "so a longer bed wastes a smaller fraction: a half-metre laboratory "
-      + "column that throws away 5 % of itself looks poor, and a three-metre "
-      + "plant bed with the same 2.5 cm unused wastes under 1 %.  That is "
+      + "column that throws away 3.5 % of itself looks poor, and a three-metre "
+      + "plant bed with the same 1.75 cm unused wastes under 1 %.  That is "
       + "why laboratory columns look terrible and plant beds do not, and why "
       + "the plant bed's service time is not the laboratory column's "
       + "breakthrough time scaled by length -- it is a little longer than that, because the unused "
@@ -402,8 +402,11 @@ export const LUB_SCALEUP_LIMITS: readonly LessonLimit[] = [
     title: "The engine's curve is a model, and the measured column is empty "
       + "until a case brings one.",
     body: "Everything on the plot by default is the engine's integration of "
-      + "the witness -- the same 1-D, LDF, first-order-upwind model the "
-      + "breakthrough tool draws, mesh spreading included.  A measurement "
+      + "the witness -- the same 1-D, LDF model the breakthrough tool draws, "
+      + "on the engine's default second-order van Leer scheme, whose mesh "
+      + "adds about 5 % to the front's width at 100 cells (first-order "
+      + "upwind, if the case declares it, adds about 43 % and makes the "
+      + "unused length 2.5 cm instead of 1.75 cm).  A measurement "
       + "enters through the open case: ship `constant/experimental/"
       + "breakthrough.csv` (a `t_s,c_over_c0` header, `#` comments allowed, "
       + "one row per sample, the same shape as the digitised figures under "

@@ -1695,6 +1695,11 @@
       "exit": 0,
       "claim": "check_panel: OK -- (a) the witness with and without its panelDict: trajectory.csv, every written file, the log minus [panel] lines and the JSON minus its panel block are byte-identical; (b) a case without one prints and publishes nothing of a panel; (c) 21 refusals fired through the real reader, each exit 2 and naming its defect; (d) 29 fact checks on fixtures, each recomputed from trajectory.csv: notPublished, constant, outOfRange, limitOutsideRange, violated / neverViolated / alwaysViolated (k, n, first, last, closest approach), neverApproached, controllerWithoutElement, sameQuantityAlarms, alarmsActive with a delay, three messages; on the log, the JSON block; the witness's golden pins 71 panel rows; (e) 4 other binaries refuse a panelDict by name.  NOT CHECKED: that a panel is good (no engine can grade it), alarm practice (no standard is held), the 0.5 `neverApproached` default, the dimension of a limit against its column, `draftDiffers` (slice S3), the GUI drawing (slice S2), a crossing between two written instants (facts are resolved to the write grid) and byte-identity of other cases against an earlier build (measured once in the slice report, not gated).",
       "seconds": 10.3
+    },
+    "check_fixed_bed_scheme": {
+      "exit": 0,
+      "claim": "check_fixed_bed_scheme: OK -- pulse moments vs the closed form at 100/200 cells (vanLeer without a grid term, upwind only with v dz/2); batch13 mesh: orders upwind 1.04 / vanLeer 2.13; width at 100 cells 313.5 / 231.5 s vs 219.59; bounded at Dax = 0; mass (and batch20's energy, padded blocks) closed at round-off; RK4 bound 6u/dz refuses and holds; announcement, refusal and the solutionControl switch",
+      "seconds": 47.6
     }
   }
 }

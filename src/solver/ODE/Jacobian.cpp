@@ -111,6 +111,7 @@ ColoredODEJacobian fdJacobianODEColored(
             for (std::size_t b = color; b < N; b += 3)
             {
                 const std::size_t col = s.blockRows[b * nv + k];
+                if (col == ODEBlockStructure::kPad) continue;   // padding
                 const scalar scale = std::max(std::abs(y[col]),
                     (col < typ.size() ? std::abs(typ[col]) : 1.0));
                 scalar eps = kSqrtEps * std::max(scale, 1.0e-30);
@@ -123,6 +124,7 @@ ColoredODEJacobian fdJacobianODEColored(
             for (std::size_t b = color; b < N; b += 3)
             {
                 const std::size_t col = s.blockRows[b * nv + k];
+                if (col == ODEBlockStructure::kPad) continue;   // padding
                 //  recompute this column's own step (yp[col] - y[col] is
                 //  NOT used: the dense builder divides by eps, so do we)
                 const scalar scale = std::max(std::abs(y[col]),
@@ -140,6 +142,7 @@ ColoredODEJacobian fdJacobianODEColored(
                     {
                         const std::size_t r =
                             s.blockRows[std::size_t(brow) * nv + i];
+                        if (r == ODEBlockStructure::kPad) continue;
                         blk[i][k] = (fp[r] - f0[r]) * inv;
                     }
                 }
