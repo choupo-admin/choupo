@@ -57,6 +57,7 @@ units
             P           1     bar;
             Dax  [0 2 -1 0 0]  1e-4;   // m2/s (Pe = 250)
             nCells      200;           // the G1 mesh (spec: t_50 = 3.9756 s)
+            convectionScheme upwind;   // pinned (C375): this header's deviations and the RK4 deltaT are first-order upwind's
 
             feed    { molarComposition { CO2 0.15; He 0.85; } }
             initial { molarComposition { He  1.0; } }
