@@ -1,0 +1,796 @@
+{
+ "tool": "bin/curate/mixing_fit.py",
+ "commission": "DEV.md 4c C331",
+ "note": "Choupo's own regressions and validation statistics; the measured points are regenerated from the ThermoML archive cache by this tool and are not stored.",
+ "pairs": [
+  {
+   "i": "water",
+   "j": "ethanol",
+   "A": -5.51544,
+   "B": 2572.66,
+   "C": -11.528,
+   "D": 4515.19,
+   "Tmin": 268.1,
+   "Tmax": 328.15,
+   "nPoints": 311,
+   "nLaboratories": 9,
+   "src": "C331 fit to 311 points, 9 laboratories (ThermoML archive; DOIs in data/curation/batches/mixing_c331/constant/mixingDataset.json)",
+   "method": "least squares on ln(mu_meas/mu_logMoleAverage) = x_i x_j G_ij(T, x); in-sample",
+   "sources": [
+    {
+     "doi": "10.1016/j.jct.2007.05.004",
+     "authors": [
+      "Gonzalez, B.[Begona]",
+      "Calvar, N.[Noelia]",
+      "Gomez, E.[Elena]",
+      "Dominguez, A.[Angeles]"
+     ],
+     "year": "2007",
+     "title": "Density, dynamic viscosity, and derived properties of binary mixtures of methanol or ethanol with water, ethyl acetate, and methyl acetate at T = (293.15, 298.15, and 303.15) K",
+     "journal": "J. Chem. Thermodyn.",
+     "archiveFileSha256": "77861ea7b0ceeb9d49b5500053210b4f0cae44a8f099b1e21c5e422f82bb3a0f"
+    },
+    {
+     "doi": "10.1016/j.jct.2018.02.022",
+     "authors": [
+      "Hoga, Heloisa Emi",
+      "Torres, Ricardo Belchior",
+      "Volpe, Pedro Luiz Onofrio"
+     ],
+     "year": "2018",
+     "title": "Thermodynamics properties of binary mixtures of aqueous solutions of glycols at several temperatures and atmospheric pressure",
+     "journal": "J. Chem. Thermodyn.",
+     "archiveFileSha256": "88dd61634822781e916f6162a9e8068aaa872f7682e37c7959c81cb726f93c7d"
+    },
+    {
+     "doi": "10.1021/acs.jced.8b00086",
+     "authors": [
+      "Goncalves, Daniel",
+      "Paludetti, Mayara F.",
+      "Florido, Priscila M.",
+      "Tonetti, Camila",
+      "Goncalves, Cintia B.",
+      "Rodrigues, Christianne E. C."
+     ],
+     "year": "2018",
+     "title": "Physical Behavior of the Phases from the Liquid-Liquid Equilibrium of Citrus Essential Oils Systems at 298.2 K",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "24383c3980526116721910b9b4b4c5813435c98c1c6b7ce09eb7613b8a91f6b1"
+    },
+    {
+     "doi": "10.1021/acs.jced.8b00939",
+     "authors": [
+      "Koshima, Cristina C.",
+      "Goncalves, Daniel",
+      "Nakamoto, Karina T.",
+      "Umeda, Thayla K.",
+      "Goncalves, Cintia B.",
+      "Rodrigues, Christianne E. C."
+     ],
+     "year": "2019",
+     "title": "Physical Properties of Model and Real Systems Composed of Essential Oils and Hydroalcoholic Solvents at 298.2 K and Atmospheric Pressure",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "5bca1188300873e98a2894d50eacba00a439c6480c11dc05b28680e8a020c088"
+    },
+    {
+     "doi": "10.1021/je600565m",
+     "authors": [
+      "Pires, R. M.[Rui M.]",
+      "Costa, H. F.[Henrique F.]",
+      "Ferreira, A. G. M.[Abel G. M.]",
+      "Fonseca, I. M. A.[Isabel M. A.]"
+     ],
+     "year": "2007",
+     "title": "Viscosity and Density of Water + Ethyl Acetate + Ethanol Mixtures at 298.15 and 318.15 K and Atmospheric Pressure",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "c1c6521c07a3fda72e93a033502465ab16e2b277e1c31bbe38eba0fd9e877d76"
+    },
+    {
+     "doi": "10.1021/je700618y",
+     "authors": [
+      "Arce, A.[Alberto]",
+      "Soto, A.[Ana]",
+      "Ortega, J.[Juan]",
+      "Sabater, G.[Gisela]"
+     ],
+     "year": "2008",
+     "title": "Viscosities and Volumetric Properties of Binary and Ternary Mixtures of Tris(2-hydroxyethyl) Methylammonium Methylsulfate + Water + Ethanol at 298.15 K",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "161c04d1157e963c52ba47038578e9a95c47ec6afd9616bba82002dc85bdd3f5"
+    },
+    {
+     "doi": "10.1021/je800150h",
+     "authors": [
+      "Rehman, H.[Hafiz]",
+      "Ansari, M. S."
+     ],
+     "year": "2008",
+     "title": "Density, Viscosity, and Electrical Conductivity Measurements on the Ternary System H2O + C2H5OH + LiCl over the Entire Ranges of Solvent Composition and LiCl Solubility from (-5 to +50) deg C",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "8f011eab6680c7c1692ddd322aeeba06f86787ddc1310b63d553477e4a25015b"
+    },
+    {
+     "doi": "10.1021/je800942u",
+     "authors": [
+      "Wang, Y.[Ying]",
+      "Lian, H.-L.[Hong-Lei]",
+      "Luo, T.-L.[Ting-Liang]",
+      "Liu, G.-J.[Guo-Ji]"
+     ],
+     "year": "2009",
+     "title": "Densities and Viscosities of (1,6-Hexanediamine + Ethanol) and (1,6-Hexanediamine + Ethanol + Water) Mixtures at T ) (303.15 to 328.15) K",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "3ea4e64e4e1b0f185069f581dafc201c061e6ea1c4a315f4517be954ff1aa019"
+    },
+    {
+     "doi": "10.1021/je900743e",
+     "authors": [
+      "Yang, X.-Z.[Xu-Zhao]",
+      "Wang, J.[Jun]"
+     ],
+     "year": "2010",
+     "title": "Densities and Viscosities of 1,1'-(Pentane-1,5-diyl)-bis(pyridinium) Dibromide in Ethanol + Water from (293.15 to 344.15) K",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "f0535ea913a9808e8efe218cf2c853abde59669011f2c0b9768443c25c05b80b"
+    }
+   ]
+  },
+  {
+   "i": "water",
+   "j": "methanol",
+   "A": -3.03414,
+   "B": 1736.21,
+   "C": -11.5351,
+   "D": 4022.15,
+   "Tmin": 273.15,
+   "Tmax": 323.15,
+   "nPoints": 59,
+   "nLaboratories": 3,
+   "src": "C331 fit to 59 points, 3 laboratories (ThermoML archive; DOIs in data/curation/batches/mixing_c331/constant/mixingDataset.json)",
+   "method": "least squares on ln(mu_meas/mu_logMoleAverage) = x_i x_j G_ij(T, x); in-sample",
+   "sources": [
+    {
+     "doi": "10.1016/j.jct.2007.05.004",
+     "authors": [
+      "Gonzalez, B.[Begona]",
+      "Calvar, N.[Noelia]",
+      "Gomez, E.[Elena]",
+      "Dominguez, A.[Angeles]"
+     ],
+     "year": "2007",
+     "title": "Density, dynamic viscosity, and derived properties of binary mixtures of methanol or ethanol with water, ethyl acetate, and methyl acetate at T = (293.15, 298.15, and 303.15) K",
+     "journal": "J. Chem. Thermodyn.",
+     "archiveFileSha256": "77861ea7b0ceeb9d49b5500053210b4f0cae44a8f099b1e21c5e422f82bb3a0f"
+    },
+    {
+     "doi": "10.1016/j.jct.2019.05.013",
+     "authors": [
+      "Semenov, A. P.[Anton P.]",
+      "Stoporev, A. S.[Andrey S.]",
+      "Mendgaziev, R. I.[Rais I.]",
+      "Gushchin, P. A.[Pavel A.]",
+      "Khlebnikov, V. N.[Vadim N.]",
+      "Yakushev, V. S.[Vladimir S.]",
+      "Istomin, V. A.[Vladimir A.]",
+      "Sergeeva, D. V.[Daria V.]",
+      "Vinokurov, V. A.[Vladimir A.]"
+     ],
+     "year": "2019",
+     "title": "Synergistic effect of salts and methanol in thermodynamic inhibition of sII gas hydrates",
+     "journal": "J. Chem. Thermodyn.",
+     "archiveFileSha256": "e3135a30856f16953bca81af39d749ab7929853b52435120a2b7c0f6910fda18"
+    },
+    {
+     "doi": "10.1021/je2003622",
+     "authors": [
+      "Bhattarai, A.[Ajaya]",
+      "Chatterjee, S. K.[Sujeet K.]",
+      "Deo, T. K.[Tarun K.]",
+      "Niraula, T. P.[Tulasi Prasad]"
+     ],
+     "year": "2011",
+     "title": "Effects of Concentration, Temperature, and Solvent Composition on the Partial Molar Volumes of Sodium Lauryl Sulfate in Methanol (1) + Water (2) Mixed Solvent Media",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "ed1305c0a5873cb3f1364102dab88e1c4cb4c81b620614b8dfd598278de57210"
+    }
+   ]
+  },
+  {
+   "i": "ethanol",
+   "j": "toluene",
+   "A": -0.166755,
+   "B": -167.209,
+   "C": -0.118909,
+   "D": 46.612,
+   "Tmin": 293.15,
+   "Tmax": 353.15,
+   "nPoints": 40,
+   "nLaboratories": 2,
+   "src": "C331 fit to 40 points, 2 laboratories (ThermoML archive; DOIs in data/curation/batches/mixing_c331/constant/mixingDataset.json)",
+   "method": "least squares on ln(mu_meas/mu_logMoleAverage) = x_i x_j G_ij(T, x); in-sample",
+   "sources": [
+    {
+     "doi": "10.1007/s10765-005-8089-2",
+     "authors": [
+      "Zeberg-Mikkelsen, C. K.[Claus K.]",
+      "Baylaucq, A.",
+      "Watson, G.",
+      "Boned, C."
+     ],
+     "year": "2005",
+     "title": "High-Pressure Viscosity Measurements for the Ethanol + Toluene Binary System",
+     "journal": "Int. J. Thermophys.",
+     "archiveFileSha256": "e32403882edbcf6b9204216a49deebe1a5ab26ed1fad1282ce0be24bbc234ecd"
+    },
+    {
+     "doi": "10.1021/acs.jced.6b00096",
+     "authors": [
+      "Lai, G.-H.[Guan-Hong]",
+      "Tu, C.-H.[Chein-Hsiun]"
+     ],
+     "year": "2016",
+     "title": "Densities, Viscosities, and Correlations for the Ternary System of Ethanol + Methylbenzene + 2-Methyl-2-propanol and Its Binary Subsystems at T = 298.15 and 318.15 K",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "d6bc2cf942666894d77a6d55611d08747f2f174703a125f9c2d0666115af4d8b"
+    }
+   ]
+  }
+ ],
+ "validation": [
+  {
+   "property": "sigma",
+   "i": "water",
+   "j": "acetone",
+   "pureModel": "StoredCorrelation",
+   "activityModel": "UNIFAC",
+   "nPoints": 60,
+   "nLaboratories": 1,
+   "Tmin": 288.15,
+   "Tmax": 328.15,
+   "rules": {
+    "moleFractionAverage": {
+     "maxPct": 104.1856,
+     "meanPct": 63.285
+    },
+    "Butler": {
+     "maxPct": 32.6063,
+     "meanPct": 12.2806
+    }
+   },
+   "sources": [
+    {
+     "doi": "10.1021/je7000182",
+     "authors": [
+      "Enders, S.[Sabine]",
+      "Kahl, H.[Heike]",
+      "Winkelmann, J.[Jochen]"
+     ],
+     "year": "2007",
+     "title": "Surface Tension of the Ternary System Water + Acetone + Toluene",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "a357c52d16273d9ff1cb88313d92333d4bea38227942a55660db17e8c1bced54"
+    }
+   ]
+  },
+  {
+   "property": "sigma",
+   "i": "water",
+   "j": "ethanol",
+   "pureModel": "StoredCorrelation",
+   "activityModel": "NRTL",
+   "nPoints": 16,
+   "nLaboratories": 3,
+   "Tmin": 293.15,
+   "Tmax": 313.0,
+   "rules": {
+    "moleFractionAverage": {
+     "maxPct": 104.8013,
+     "meanPct": 66.3692
+    },
+    "Butler": {
+     "maxPct": 16.3295,
+     "meanPct": 8.2488
+    }
+   },
+   "sources": [
+    {
+     "doi": "10.1021/acs.jced.5b00485",
+     "authors": [
+      "Ludzik, K.[Katarzyna]",
+      "Kustrzepa, K.[Kinga]",
+      "Piekarski, H.[Henryk]",
+      "Jozwiak, M.[Malgorzata]"
+     ],
+     "year": "2016",
+     "title": "Application of Conductance Study to Analyze Micellization Behavior of Cationic Gemini Surfactants in Water and Water Ethanol Solvent Mixed Media",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "053508d543eeea66eabbb08fbab2508d545de87e8864095528b53f4c4723f178"
+    },
+    {
+     "doi": "10.1021/acs.jced.8b00086",
+     "authors": [
+      "Goncalves, Daniel",
+      "Paludetti, Mayara F.",
+      "Florido, Priscila M.",
+      "Tonetti, Camila",
+      "Goncalves, Cintia B.",
+      "Rodrigues, Christianne E. C."
+     ],
+     "year": "2018",
+     "title": "Physical Behavior of the Phases from the Liquid-Liquid Equilibrium of Citrus Essential Oils Systems at 298.2 K",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "24383c3980526116721910b9b4b4c5813435c98c1c6b7ce09eb7613b8a91f6b1"
+    },
+    {
+     "doi": "10.1021/acs.jced.9b00026",
+     "authors": [
+      "Raza, M. A.[Mohsin Ali]",
+      "Hallett, P. D.[Paul D.]",
+      "Liu, X.[Xiangyang]",
+      "He, M.[Maogang]",
+      "Afzal, W.[Waheed]"
+     ],
+     "year": "2019",
+     "title": "Surface Tension of Aqueous Solutions of Small-Chain Amino and Organic Acids",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "e2b6a00b526f1289e60e5465ad9d31a623035657177263fc328e166e810f66b7"
+    }
+   ]
+  },
+  {
+   "property": "sigma",
+   "i": "water",
+   "j": "ethanol",
+   "pureModel": "StoredCorrelation",
+   "activityModel": "UNIFAC",
+   "nPoints": 16,
+   "nLaboratories": 3,
+   "Tmin": 293.15,
+   "Tmax": 313.0,
+   "rules": {
+    "moleFractionAverage": {
+     "maxPct": 104.8013,
+     "meanPct": 66.3692
+    },
+    "Butler": {
+     "maxPct": 23.6626,
+     "meanPct": 12.6526
+    }
+   },
+   "sources": [
+    {
+     "doi": "10.1021/acs.jced.5b00485",
+     "authors": [
+      "Ludzik, K.[Katarzyna]",
+      "Kustrzepa, K.[Kinga]",
+      "Piekarski, H.[Henryk]",
+      "Jozwiak, M.[Malgorzata]"
+     ],
+     "year": "2016",
+     "title": "Application of Conductance Study to Analyze Micellization Behavior of Cationic Gemini Surfactants in Water and Water Ethanol Solvent Mixed Media",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "053508d543eeea66eabbb08fbab2508d545de87e8864095528b53f4c4723f178"
+    },
+    {
+     "doi": "10.1021/acs.jced.8b00086",
+     "authors": [
+      "Goncalves, Daniel",
+      "Paludetti, Mayara F.",
+      "Florido, Priscila M.",
+      "Tonetti, Camila",
+      "Goncalves, Cintia B.",
+      "Rodrigues, Christianne E. C."
+     ],
+     "year": "2018",
+     "title": "Physical Behavior of the Phases from the Liquid-Liquid Equilibrium of Citrus Essential Oils Systems at 298.2 K",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "24383c3980526116721910b9b4b4c5813435c98c1c6b7ce09eb7613b8a91f6b1"
+    },
+    {
+     "doi": "10.1021/acs.jced.9b00026",
+     "authors": [
+      "Raza, M. A.[Mohsin Ali]",
+      "Hallett, P. D.[Paul D.]",
+      "Liu, X.[Xiangyang]",
+      "He, M.[Maogang]",
+      "Afzal, W.[Waheed]"
+     ],
+     "year": "2019",
+     "title": "Surface Tension of Aqueous Solutions of Small-Chain Amino and Organic Acids",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "e2b6a00b526f1289e60e5465ad9d31a623035657177263fc328e166e810f66b7"
+    }
+   ]
+  },
+  {
+   "property": "sigma",
+   "i": "nHeptane",
+   "j": "toluene",
+   "pureModel": "StoredCorrelation",
+   "activityModel": "NRTL",
+   "nPoints": 24,
+   "nLaboratories": 1,
+   "Tmin": 287.81,
+   "Tmax": 327.88,
+   "rules": {
+    "moleFractionAverage": {
+     "maxPct": 9.9234,
+     "meanPct": 8.0291
+    },
+    "Butler": {
+     "maxPct": 1.425,
+     "meanPct": 0.8233
+    }
+   },
+   "sources": [
+    {
+     "doi": "10.1021/je0201323",
+     "authors": [
+      "Kahl, H.[Heike]",
+      "Wadewitz, T.[Tino]",
+      "Winkelmann, J.[Jochen]"
+     ],
+     "year": "2003",
+     "title": "Surface Tension of Pure Liquids and Binary Liquid Mixtures",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "c7899aaf15ed19de424bcb6afad7cea63591d5a6ed367ba3ddc3594b5cd6c1ff"
+    }
+   ]
+  },
+  {
+   "property": "sigma",
+   "i": "acetone",
+   "j": "cyclohexane",
+   "pureModel": "StoredCorrelation",
+   "activityModel": "UNIFAC",
+   "nPoints": 46,
+   "nLaboratories": 2,
+   "Tmin": 287.81,
+   "Tmax": 317.86,
+   "rules": {
+    "moleFractionAverage": {
+     "maxPct": 8.4179,
+     "meanPct": 5.3881
+    },
+    "Butler": {
+     "maxPct": 8.3343,
+     "meanPct": 5.328
+    }
+   },
+   "sources": [
+    {
+     "doi": "10.1016/j.fluid.2008.06.006",
+     "authors": [
+      "Mejia, A.[Andres]",
+      "Segura, H.[Hugo]",
+      "Cartes, M.[Marcela]",
+      "Calvo, C.[Catherine]"
+     ],
+     "year": "2008",
+     "title": "Vapor liquid equilibria and interfacial tensions for the ternary system acetone + 2,2 -oxybis[propane] + cyclohexane and its constituent binary systems",
+     "journal": "Fluid Phase Equilib.",
+     "archiveFileSha256": "52dbf010232bc160ad7a38c6261f759b10374ce373a3e69a9d27ddf6a8856f6f"
+    },
+    {
+     "doi": "10.1021/je034062r",
+     "authors": [
+      "Kahl, H.[Heike]",
+      "Wadewitz, T.[Tino]",
+      "Winkelmann, J.[Jochen]"
+     ],
+     "year": "2003",
+     "title": "Surface Tension and Interfacial Tension of Binary Organic Liquid Mixtures",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "00b35aa8dbc1781b9a918ac47ba80360f640e93dbf44005eb398d3f45f7d9209"
+    }
+   ]
+  },
+  {
+   "property": "visc",
+   "i": "water",
+   "j": "ethanol",
+   "pureModel": "Vogel",
+   "activityModel": null,
+   "nPoints": 311,
+   "nLaboratories": 9,
+   "Tmin": 268.1,
+   "Tmax": 328.15,
+   "rules": {
+    "logMoleAverage": {
+     "maxPct": 71.9771,
+     "meanPct": 41.8794
+    },
+    "GrunbergNissan": {
+     "maxPct": 27.496,
+     "meanPct": 10.2447
+    }
+   },
+   "sources": [
+    {
+     "doi": "10.1016/j.jct.2007.05.004",
+     "authors": [
+      "Gonzalez, B.[Begona]",
+      "Calvar, N.[Noelia]",
+      "Gomez, E.[Elena]",
+      "Dominguez, A.[Angeles]"
+     ],
+     "year": "2007",
+     "title": "Density, dynamic viscosity, and derived properties of binary mixtures of methanol or ethanol with water, ethyl acetate, and methyl acetate at T = (293.15, 298.15, and 303.15) K",
+     "journal": "J. Chem. Thermodyn.",
+     "archiveFileSha256": "77861ea7b0ceeb9d49b5500053210b4f0cae44a8f099b1e21c5e422f82bb3a0f"
+    },
+    {
+     "doi": "10.1016/j.jct.2018.02.022",
+     "authors": [
+      "Hoga, Heloisa Emi",
+      "Torres, Ricardo Belchior",
+      "Volpe, Pedro Luiz Onofrio"
+     ],
+     "year": "2018",
+     "title": "Thermodynamics properties of binary mixtures of aqueous solutions of glycols at several temperatures and atmospheric pressure",
+     "journal": "J. Chem. Thermodyn.",
+     "archiveFileSha256": "88dd61634822781e916f6162a9e8068aaa872f7682e37c7959c81cb726f93c7d"
+    },
+    {
+     "doi": "10.1021/acs.jced.8b00086",
+     "authors": [
+      "Goncalves, Daniel",
+      "Paludetti, Mayara F.",
+      "Florido, Priscila M.",
+      "Tonetti, Camila",
+      "Goncalves, Cintia B.",
+      "Rodrigues, Christianne E. C."
+     ],
+     "year": "2018",
+     "title": "Physical Behavior of the Phases from the Liquid-Liquid Equilibrium of Citrus Essential Oils Systems at 298.2 K",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "24383c3980526116721910b9b4b4c5813435c98c1c6b7ce09eb7613b8a91f6b1"
+    },
+    {
+     "doi": "10.1021/acs.jced.8b00939",
+     "authors": [
+      "Koshima, Cristina C.",
+      "Goncalves, Daniel",
+      "Nakamoto, Karina T.",
+      "Umeda, Thayla K.",
+      "Goncalves, Cintia B.",
+      "Rodrigues, Christianne E. C."
+     ],
+     "year": "2019",
+     "title": "Physical Properties of Model and Real Systems Composed of Essential Oils and Hydroalcoholic Solvents at 298.2 K and Atmospheric Pressure",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "5bca1188300873e98a2894d50eacba00a439c6480c11dc05b28680e8a020c088"
+    },
+    {
+     "doi": "10.1021/je600565m",
+     "authors": [
+      "Pires, R. M.[Rui M.]",
+      "Costa, H. F.[Henrique F.]",
+      "Ferreira, A. G. M.[Abel G. M.]",
+      "Fonseca, I. M. A.[Isabel M. A.]"
+     ],
+     "year": "2007",
+     "title": "Viscosity and Density of Water + Ethyl Acetate + Ethanol Mixtures at 298.15 and 318.15 K and Atmospheric Pressure",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "c1c6521c07a3fda72e93a033502465ab16e2b277e1c31bbe38eba0fd9e877d76"
+    },
+    {
+     "doi": "10.1021/je700618y",
+     "authors": [
+      "Arce, A.[Alberto]",
+      "Soto, A.[Ana]",
+      "Ortega, J.[Juan]",
+      "Sabater, G.[Gisela]"
+     ],
+     "year": "2008",
+     "title": "Viscosities and Volumetric Properties of Binary and Ternary Mixtures of Tris(2-hydroxyethyl) Methylammonium Methylsulfate + Water + Ethanol at 298.15 K",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "161c04d1157e963c52ba47038578e9a95c47ec6afd9616bba82002dc85bdd3f5"
+    },
+    {
+     "doi": "10.1021/je800150h",
+     "authors": [
+      "Rehman, H.[Hafiz]",
+      "Ansari, M. S."
+     ],
+     "year": "2008",
+     "title": "Density, Viscosity, and Electrical Conductivity Measurements on the Ternary System H2O + C2H5OH + LiCl over the Entire Ranges of Solvent Composition and LiCl Solubility from (-5 to +50) deg C",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "8f011eab6680c7c1692ddd322aeeba06f86787ddc1310b63d553477e4a25015b"
+    },
+    {
+     "doi": "10.1021/je800942u",
+     "authors": [
+      "Wang, Y.[Ying]",
+      "Lian, H.-L.[Hong-Lei]",
+      "Luo, T.-L.[Ting-Liang]",
+      "Liu, G.-J.[Guo-Ji]"
+     ],
+     "year": "2009",
+     "title": "Densities and Viscosities of (1,6-Hexanediamine + Ethanol) and (1,6-Hexanediamine + Ethanol + Water) Mixtures at T ) (303.15 to 328.15) K",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "3ea4e64e4e1b0f185069f581dafc201c061e6ea1c4a315f4517be954ff1aa019"
+    },
+    {
+     "doi": "10.1021/je900743e",
+     "authors": [
+      "Yang, X.-Z.[Xu-Zhao]",
+      "Wang, J.[Jun]"
+     ],
+     "year": "2010",
+     "title": "Densities and Viscosities of 1,1'-(Pentane-1,5-diyl)-bis(pyridinium) Dibromide in Ethanol + Water from (293.15 to 344.15) K",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "f0535ea913a9808e8efe218cf2c853abde59669011f2c0b9768443c25c05b80b"
+    }
+   ]
+  },
+  {
+   "property": "visc",
+   "i": "water",
+   "j": "methanol",
+   "pureModel": "Vogel",
+   "activityModel": null,
+   "nPoints": 59,
+   "nLaboratories": 3,
+   "Tmin": 273.15,
+   "Tmax": 323.15,
+   "rules": {
+    "logMoleAverage": {
+     "maxPct": 61.0915,
+     "meanPct": 36.7488
+    },
+    "GrunbergNissan": {
+     "maxPct": 10.9505,
+     "meanPct": 4.3088
+    }
+   },
+   "sources": [
+    {
+     "doi": "10.1016/j.jct.2007.05.004",
+     "authors": [
+      "Gonzalez, B.[Begona]",
+      "Calvar, N.[Noelia]",
+      "Gomez, E.[Elena]",
+      "Dominguez, A.[Angeles]"
+     ],
+     "year": "2007",
+     "title": "Density, dynamic viscosity, and derived properties of binary mixtures of methanol or ethanol with water, ethyl acetate, and methyl acetate at T = (293.15, 298.15, and 303.15) K",
+     "journal": "J. Chem. Thermodyn.",
+     "archiveFileSha256": "77861ea7b0ceeb9d49b5500053210b4f0cae44a8f099b1e21c5e422f82bb3a0f"
+    },
+    {
+     "doi": "10.1016/j.jct.2019.05.013",
+     "authors": [
+      "Semenov, A. P.[Anton P.]",
+      "Stoporev, A. S.[Andrey S.]",
+      "Mendgaziev, R. I.[Rais I.]",
+      "Gushchin, P. A.[Pavel A.]",
+      "Khlebnikov, V. N.[Vadim N.]",
+      "Yakushev, V. S.[Vladimir S.]",
+      "Istomin, V. A.[Vladimir A.]",
+      "Sergeeva, D. V.[Daria V.]",
+      "Vinokurov, V. A.[Vladimir A.]"
+     ],
+     "year": "2019",
+     "title": "Synergistic effect of salts and methanol in thermodynamic inhibition of sII gas hydrates",
+     "journal": "J. Chem. Thermodyn.",
+     "archiveFileSha256": "e3135a30856f16953bca81af39d749ab7929853b52435120a2b7c0f6910fda18"
+    },
+    {
+     "doi": "10.1021/je2003622",
+     "authors": [
+      "Bhattarai, A.[Ajaya]",
+      "Chatterjee, S. K.[Sujeet K.]",
+      "Deo, T. K.[Tarun K.]",
+      "Niraula, T. P.[Tulasi Prasad]"
+     ],
+     "year": "2011",
+     "title": "Effects of Concentration, Temperature, and Solvent Composition on the Partial Molar Volumes of Sodium Lauryl Sulfate in Methanol (1) + Water (2) Mixed Solvent Media",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "ed1305c0a5873cb3f1364102dab88e1c4cb4c81b620614b8dfd598278de57210"
+    }
+   ]
+  },
+  {
+   "property": "visc",
+   "i": "ethanol",
+   "j": "toluene",
+   "pureModel": "Vogel",
+   "activityModel": null,
+   "nPoints": 40,
+   "nLaboratories": 2,
+   "Tmin": 293.15,
+   "Tmax": 353.15,
+   "rules": {
+    "logMoleAverage": {
+     "maxPct": 20.4848,
+     "meanPct": 14.0925
+    },
+    "GrunbergNissan": {
+     "maxPct": 3.9377,
+     "meanPct": 1.0877
+    }
+   },
+   "sources": [
+    {
+     "doi": "10.1007/s10765-005-8089-2",
+     "authors": [
+      "Zeberg-Mikkelsen, C. K.[Claus K.]",
+      "Baylaucq, A.",
+      "Watson, G.",
+      "Boned, C."
+     ],
+     "year": "2005",
+     "title": "High-Pressure Viscosity Measurements for the Ethanol + Toluene Binary System",
+     "journal": "Int. J. Thermophys.",
+     "archiveFileSha256": "e32403882edbcf6b9204216a49deebe1a5ab26ed1fad1282ce0be24bbc234ecd"
+    },
+    {
+     "doi": "10.1021/acs.jced.6b00096",
+     "authors": [
+      "Lai, G.-H.[Guan-Hong]",
+      "Tu, C.-H.[Chein-Hsiun]"
+     ],
+     "year": "2016",
+     "title": "Densities, Viscosities, and Correlations for the Ternary System of Ethanol + Methylbenzene + 2-Methyl-2-propanol and Its Binary Subsystems at T = 298.15 and 318.15 K",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "d6bc2cf942666894d77a6d55611d08747f2f174703a125f9c2d0666115af4d8b"
+    }
+   ]
+  },
+  {
+   "property": "cond",
+   "i": "water",
+   "j": "ethanol",
+   "pureModel": "chemsepEq16",
+   "activityModel": null,
+   "nPoints": 117,
+   "nLaboratories": 2,
+   "Tmin": 279.23,
+   "Tmax": 338.71,
+   "rules": {
+    "massFractionAverage": {
+     "maxPct": 27.7209,
+     "meanPct": 16.5046
+    },
+    "Filippov": {
+     "maxPct": 5.1895,
+     "meanPct": 3.263
+    },
+    "Li": {
+     "maxPct": 10.0067,
+     "meanPct": 5.5289
+    }
+   },
+   "sources": [
+    {
+     "doi": "10.1021/acs.jced.8b01147",
+     "authors": [
+      "Cui, Xing",
+      "Zhu, Hai",
+      "He, Chao-Hong",
+      "Wu, Ke-Jun"
+     ],
+     "year": "2019",
+     "title": "Measurement of the Thermal Conductivity of 1-Butyl-3-methylimidazolium l-Tryptophan + Water + Ethanol Mixtures at T = (283.15 to 333.15) K",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "855d5d8c5e2eda3b21f3fd12b33716775d57845a2567c6e093e66ae47408f5fe"
+    },
+    {
+     "doi": "10.1021/je301171y",
+     "authors": [
+      "Zhou, J.-C.[Jun-Chao]",
+      "Che, Y.-Y.[Yuan-Yuan]",
+      "Wu, K.-J.[Ke-Jun]",
+      "Shen, J.[Jian]",
+      "He, C.-H.[Chao-Hong]"
+     ],
+     "year": "2013",
+     "title": "Thermal Conductivity of DMSO + C2H5OH, DMSO + H2O, and DMSO + C2H5OH + H2O Mixtures at T = (278.15 to 338.15) K",
+     "journal": "J. Chem. Eng. Data",
+     "archiveFileSha256": "ac484c3e30dd5f585ec6ebcd5331c0bfa5e360fcafd7308bfae6b6a05402f84f"
+    }
+   ]
+  }
+ ]
+}
